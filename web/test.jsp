@@ -25,13 +25,12 @@ try {
 	out.write("request.getPathInfo: " + request.getPathInfo() + "<br>");
 	out.write("request.getServletPath: " + request.getServletPath() + "<br>");
 	
-	Context context = (Context)session.getValue("__openmrs_context");
-	context.authenticate("admin", "test");			
+	Context.authenticate("admin", "test");			
 	out.write("<br>Authenticated<br>");
-	User user = context.getAuthenticatedUser();
+	User user = Context.getAuthenticatedUser();
 	out.write("As " + user.getFirstName() + " " + user.getLastName());
 
-	UserService us = context.getUserService();		out.write("--Getting userService--<br>");
+	UserService us = Context.getUserService();		out.write("--Getting userService--<br>");
 	String uname = "USER-1";
 	User u2 = us.getUserByUsername(uname);	out.write("--Getting by username--<br>");
 	

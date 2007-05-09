@@ -13,26 +13,22 @@ public class ConceptDatatypeEditor extends PropertyEditorSupport {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	Context context;
-	
-	public ConceptDatatypeEditor(Context c) {
-		this.context = c;
-	}
+	public ConceptDatatypeEditor() {	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		if (context != null) {
-			ConceptService cs = context.getConceptService(); 
-			if (StringUtils.hasText(text)) {
-				try {
-					setValue(cs.getConceptDatatype(Integer.valueOf(text)));
-				}
-				catch (Exception ex) {
-					throw new IllegalArgumentException("ConceptDatatype not found: " + ex.getMessage());
-				}
+		log.debug("setting text: " + text);
+		ConceptService cs = Context.getConceptService(); 
+		if (StringUtils.hasText(text)) {
+			try {
+				setValue(cs.getConceptDatatype(Integer.valueOf(text)));
 			}
-			else {
-				setValue(null);
+			catch (Exception ex) {
+				log.error("Error setting text: " + text, ex);
+				throw new IllegalArgumentException("ConceptDatatype not found: " + ex.getMessage());
 			}
+		}
+		else {
+			setValue(null);
 		}
 	}
 

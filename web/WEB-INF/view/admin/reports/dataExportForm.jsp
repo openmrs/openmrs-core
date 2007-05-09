@@ -1,22 +1,20 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="View Data Exports" otherwise="/login.htm" redirect="/admin/dataExports/dataExport.form" />
+<openmrs:require privilege="View Data Exports" otherwise="/login.htm" redirect="/admin/reports/dataExport.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 <% pageContext.setAttribute("linefeed", "\r\n"); %>
 
-<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+
 <script type="text/javascript">
+	dojo.require("dojo.widget.openmrs.PatientSearch");
+	dojo.require("dojo.widget.openmrs.ConceptSearch");
+	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
+	
+	var searchWidget;
 	
 	function selectTab(tab) {
 		var displays = new Array();
@@ -162,7 +160,7 @@
 	}
 	
 	var idCount = new Array();
-	function addNew(button, id) {
+	function addNew(button, id, objId) {
 		var obj = document.getElementById(id);
 		var newObj = obj.cloneNode(true);
 		var count = idCount[id];
@@ -174,7 +172,48 @@
 		newObj.id += "_" + count;
 		newObj.style.display = "";
 		button.parentNode.insertBefore(newObj, button);
-		if (id == "newColumn") {
+		//newObj.parentNode = button.parentNode;
+		
+		var props = new Array();
+		if (id == "newPatient") {
+			// create patient search
+			var obj = getChildById(newObj, "patientSearch");
+			if (objId)
+				props.patientId = objId;
+			var pSearch = dojo.widget.createWidget("PatientSearch", props, obj);
+			
+			// create patient popup
+			props.widgetId = "pSelection" + "_" + count;
+			props.searchWidget = pSearch.widgetId;
+			props.hiddenInputName = "patientId";
+			obj = pSearch.domNode.parentNode;
+			var pSelection = dojo.widget.createWidget("OpenmrsPopup", props, obj);
+			dojo.event.connect(pSearch, "doSelect", pSelect(pSelection), "select");
+			
+			// add 'remove' button
+			var removeButton = document.createElement("input");
+			removeButton.type="button";
+			removeButton.value=" X ";
+			removeButton.className="closeButton";
+			removeButton.style.cssFloat="none";
+			removeButton.onclick=function() { this.parentNode.parentNode.removeChild(this.parentNode); }
+			pSelection.domNode.insertBefore(removeButton, pSelection.domNode.firstChild);
+		}
+		else if (id == "newColumn") {
+			// create concept search
+			var obj = getChildById(newObj, "conceptSearch");
+			props.showVerboseListing = true;
+			var cSearch = dojo.widget.createWidget("ConceptSearch", props, obj);
+			
+			// create concept popup
+			props.widgetId = "cSelection" + "_" + count;
+			props.searchWidget = cSearch.widgetId;
+			props.hiddenInputName = "conceptId";
+			props.searchTitle='<spring:message code="general.search"/>';
+			obj = cSearch.domNode.parentNode;
+			var cSelection = dojo.widget.createWidget("OpenmrsPopup", props, obj);
+			dojo.event.connect(cSearch, "doSelect", cSelect(cSelection), "select");
+			
 			renameColumnInputs(newObj, count);
 			updateColumnClasses(newObj);
 			selectTab(getChildById(newObj, 'simpleTab'));
@@ -212,7 +251,10 @@
 		getChildByName(obj, "simpleValue").name += suffix;
 		getChildByName(obj, "simplePatient").name += suffix;
 		getChildByName(obj, "conceptColumnName").name += suffix;
-		getChildByName(obj, "conceptName").name += suffix;
+		var widget = dojo.widget.manager.getWidgetById("cSelection" + suffix);
+		widget.hiddenInputNode.name += suffix;
+		//getChildByName(obj, "conceptButton").name += suffix;
+		
 		var mod = getChildByName(obj, "conceptModifier");
 		while (mod != null) {
 			mod.name += suffix;
@@ -223,31 +265,45 @@
 			ext.name += suffix;
 			ext = getChildByName(obj, "conceptExtra");
 		}
-		getChildByName(obj, "conceptButton").name += suffix;
+		getChildByName(obj, "conceptModifierNum").name += suffix;
 		getChildByName(obj, "calculatedName").name += suffix;
 		getChildByName(obj, "calculatedValue").name += suffix;
 		getChildByName(obj, "calculatedPatient").name += suffix;
 	}
 	
-	var mySearch = null;
-	var searchType = "";
-	var changeButton = null;
+	var pSelect = function(p) { return {
+			popup: p,
+			select: function(msg) {
+				str = msg.objs[0].givenName;
+				str += ' ';
+				str += msg.objs[0].middleName;
+				str += ' ';
+				str += msg.objs[0].familyName;
+				this.popup.displayNode.innerHTML = str;
+				this.popup.hiddenInputNode.value = msg.objs[0].patientId;
+				}
+			}
+		};
+	var cSelect = function(p) { return {
+			popup: p,
+			select: function(msg) {
+				var obj = msg;
+				if (msg.objs)
+					obj = msg.objs[0];
+				var id = this.popup.hiddenInputNode.name.substr(this.popup.hiddenInputNode.name.indexOf("_")+1, 3);
+				var name = getChildByName(this.popup.domNode.parentNode.parentNode, "conceptColumnName_" + id);
+				if (name && name.value == "")
+					name.value = obj.name;
+				
+				this.popup.displayNode.innerHTML = obj.name;
+				this.popup.hiddenInputNode.value = obj.conceptId;
+				}
+			}
+		};
 	
-	var init = function() {
-		mySearch = new fx.Resize("searchForm", {duration: 100});
-		mySearch.hide();
+	dojo.addOnLoad( function() {
 		propertySetup();
-	};
-
-	var findObjects = function(txt) {
-		if (searchType == 'patient') {
-			DWRPatientService.findPatients(fillTable, txt, 0);
-		}
-		else if (searchType == 'concept') {
-			DWRConceptService.findConcepts(fillTable, txt, [], 0, ['N/A']);
-		}
-		return false;
-	}
+	});
 
 	var onSelect = function(objs) {
 		var obj;
@@ -259,7 +315,7 @@
 			var input = getPreviousSibling(changeButton, "patientId");
 			input.value = obj.patientId
 			var oldTxt = changeButton.nextSibling;
-			var txt = document.createTextNode(" " + getName(obj));
+			var txt = document.createTextNode(obj);
 			oldTxt.parentNode.replaceChild(txt, oldTxt);
 		}
 		else if (searchType == 'concept') {
@@ -274,61 +330,6 @@
 					index = obj.name.length;
 				input.value = obj.name.substr(0, index);
 			}
-		}
-				
-		mySearch.hide();
-		searchType = "";
-		if (changeButton != null)
-			changeButton.focus();
-		
-		return false;
-	}
-
-	function showSearch(btn, type) {
-		mySearch.hide();
-		if (searchType != type) {
-			//if they've changed which form they want
-			setPosition(btn, $("searchForm"), 465, 515);
-			resetForm();
-			mySearch.toggle();
-			DWRUtil.removeAllRows("searchBody");
-			searchType = type;
-			var searchText = $("searchText");
-			searchText.value = '';
-			searchText.select();
-			changeButton = btn;
-		}
-		else {
-			searchType = "";
-			changeButton.focus();
-		}
-	}
-	
-	var getName = function(obj) {
-		if (typeof obj == 'string') return obj;
-		str = '';
-		if (searchType == 'patient') {
-			str += obj.givenName;
-			str += ' ';
-			str += obj.middleName;
-			str += ' ';
-			str += obj.familyName;
-		}
-		else if (searchType == 'concept') {
-			return getCellContent(obj);
-		}
-		return str;
-	}
-	
-	var customCellFunctions = [getNumber, getName];
-	
-	var oldonload = window.onload;
-	if (typeof window.onload != 'function') {
-		window.onload = init;
-	} else {
-		window.onload = function() {
-			oldonload();
-			init();
 		}
 	}
 	
@@ -345,25 +346,7 @@
 			}
 		}
 	}
-		
-	function allowAutoListWithNumber() {
-		return true;
-	}
 	
-	function closeBox() {
-		searchType = "";
-		mySearch.hide();
-		return false;
-	}
-	
-	function redirectPage(url) {
-		setTimeout("document.location='" + url + "'", 3000);
-	}
-	
-	function customGetRowHeight(h) {
-		return (h - 6);
-	}
-
 </script>
 
 <style>
@@ -373,6 +356,12 @@
 		font-size: 10px;
 		margin: 3px;
 		cursor: pointer;
+	}
+	
+	.tabBar {
+		margin-left: auto;
+		margin-right: auto;
+		width: 98%;
 	}
 	
 	.tabBar .tab:visited, .tabBar .tab:link {
@@ -411,25 +400,6 @@
 	.evenRow .box, .evenRow .tabBar .selectedTab {
 		background-color: whitesmoke;
 	}
-	
-	.searchForm {
-		width: 450px;
-		position: absolute;
-		z-index: 10;
-		margin: 5px;
-		left: -1000px;
-	}
-	.searchForm .wrapper {
-		padding: 2px;
-		background-color: whitesmoke;
-		border: 1px solid grey;
-		height: 500px;
-	}
-	.searchResults {
-		height: 415px;
-		overflow: auto;
-		width: 440px;
-	}
 </style>
 
 <h2><spring:message code="DataExport.title"/></h2>
@@ -462,7 +432,7 @@
 		<th valign="top"><spring:message code="general.description"/></th>
 		<td valign="top" colspan="5">
 			<spring:bind path="dataExport.description">
-				<textarea name="description" rows="2" cols="40">${status.value}</textarea>
+				<textarea name="description" rows="2" cols="40" type="_moz">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -471,7 +441,7 @@
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>
 			<td>
-				${dataExport.creator.firstName} ${dataExport.creator.lastName} -
+				${dataExport.creator.personName} -
 				<openmrs:formatDate date="${dataExport.dateCreated}" type="long" />
 			</td>
 		</tr>
@@ -490,19 +460,37 @@
 	<div id="defineCohort" class="box">
 		<table>
 			<tr>
-				<th colspan="2"><spring:message code="DataExport.patientMatch"/></th>
+				<th colspan="2"><spring:message code="DataExport.cohortMatch"/></th>
 			</tr>
 			<tr>
-				<td colspan="2">
-					<div id="newPatient" style="display: none">
-						<input type="hidden" name="patientId">
-						<input type="button" id="patientButton" class="smallButton" 
-							value='<spring:message code="general.change"/>' 
-							onclick="showSearch(this, 'patient')" />
-					</div>
-					<input type="button" onClick="return addNew(this, 'newPatient');" class="addNew" id="newPatientButton" value='<spring:message code="DataExport.addPatient" />' />
-					<br/>
+				<td><spring:message code="Cohort.title"/></td>
+				<td>
+					<spring:bind path="dataExport.cohortId">
+						<select name="cohortId">
+							<option value=""></option>
+							<openmrs:forEachRecord name="cohort">
+								<option value="${record.cohortId}" <c:if test="${status.value == record.cohortId}">selected</c:if>>${record.name}</option>
+							</openmrs:forEachRecord>
+						</select>
+					</spring:bind>
 				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center"><spring:message code="general.andOr"/></td>
+			</tr>
+			<tr>
+				<td><spring:message code="CohortDefinition.title"/></td>
+				<td>
+					<spring:bind path="dataExport.cohortDefinitionId">
+						<select name="cohortDefinitionId">
+							<option value=""></option>
+							<openmrs:forEachRecord name="reportObject" reportObjectType="Patient Filter">
+								<option value="${record.reportObjectId}" <c:if test="${status.value == record.reportObjectId}">selected</c:if>>${record.name}</option>
+							</openmrs:forEachRecord>
+						</select>
+					</spring:bind>
+				</td>
+			</td>
 			<tr>
 				<th colspan="2"><spring:message code="DataExport.encounterMatch"/></th>
 			</tr>
@@ -527,6 +515,20 @@
 							</openmrs:forEachRecord>
 						</select>
 					</spring:bind>
+				</td>
+			</tr>
+			<tr>
+				<th colspan="2"><spring:message code="DataExport.patientMatch"/></th>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div id="newPatient" style="display: none">
+						<div id="patientSearch">
+							<!-- dojo search widget/popup are added here via the addNew() function -->
+						</div>
+					</div>
+					<input type="button" onClick="return addNew(this, 'newPatient');" class="addNew" id="newPatientButton" value='<spring:message code="DataExport.addPatient" />' />
+					<br/>
 				</td>
 			</tr>
 		</table>
@@ -561,33 +563,14 @@
 	
 </div>
 
-<br />
-<input type="checkbox" id="saveAsNew" name="saveAsNew" value="1" /><label for="saveAsNew"><spring:message code="DataExport.saveAs"/></label>
+<c:if test="${dataExport.reportObjectId != null}">
+	<br />
+	<input type="checkbox" id="saveAsNew" name="saveAsNew" value="1" /><label for="saveAsNew"><spring:message code="DataExport.saveAs"/></label>
+</c:if>
 <br />
 <input type="submit" name="action" value='<spring:message code="DataExport.save"/>'>
 <!-- <input type="submit" name="action" value='<spring:message code="DataExport.saveGenerate"/>' onclick="redirectPage('dataExport.list')"> -->
 </form>
-
-<div id="searchForm" class="searchForm">
-	<div class="wrapper">
-		<input type="button" onClick="return closeBox();" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('searchBody', searchText, event, false, 0); return false;">
-			<h3><spring:message code="general.search"/></h3>
-			<input type="text" id="searchText" size="35" onkeyup="return searchBoxChange('searchBody', this, event, false, 400);"> &nbsp;
-			<input type="checkbox" id="verboseListing" value="true" <c:if test="${defaultVerbose == true}">checked</c:if> onclick="searchBoxChange('searchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
-		</form>
-		<div id="searchResults" class="searchResults">
-			<table width="100%">
-				<tbody id="searchBody">
-					<tr>
-						<td></td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
 
 <script type="text/javascript">
 
@@ -603,11 +586,12 @@
 				<c:if test="${column.columnType == 'simple'}">
 					selectTab(getChildById(obj, 'simpleTab'));
 					getChildByName(obj, "simpleName_" + count).value = "${column.columnName}";
-					getChildByName(obj, "simpleValue_" + count).value = "${column.returnValue}";
+					getChildByName(obj, "simpleValue_" + count).value = "<spring:message javaScriptEscape="true" text="${column.returnValue}" />";
 				</c:if>
 				<c:if test="${column.columnType == 'concept'}">
 					selectTab(getChildById(obj, 'conceptTab'));
 					getChildByName(obj, "conceptColumnName_" + count).value = "${column.columnName}";
+					getChildByName(obj, "conceptModifierNum_" + count).value = "${column.modifierNum}";
 					var extras = new Array();
 					<c:forEach items="${column.extras}" var="ext">
 						extras["${ext}"] = 1;
@@ -619,7 +603,17 @@
 						if (children[i].name == ("conceptExtra_" + count))
 							children[i].checked = (extras[children[i].value] == 1);
 					}
-					getChildByName(obj, "conceptName_" + count).value = "${column.conceptName}";
+					var widget = dojo.widget.manager.getWidgetById("cSelection_" + count);
+					if ("${column.conceptId}" != "") {
+						widget.hiddenInputNode.value = "${column.conceptId}";
+						DWRConceptService.getConcept(widget.searchWidget.simpleClosure(new cSelect(widget), "select"), "${column.conceptId}");
+					}
+					else { 
+						// left for backwards compatibility to pre 1.0.43
+						widget.hiddenInputNode.value = "${column.conceptName}";
+						widget.displayNode.innerHTML = "${column.conceptName}";
+					}
+					
 				</c:if>
 				<c:if test="${column.columnType == 'calculated'}">
 					selectTab(getChildById(obj, 'calcTab'));
@@ -631,13 +625,10 @@
 				</c:if>
 			</c:forEach>
 			
-			btn = $('newPatientButton');
-			searchType = "patient";
 			DWREngine.setOrdered(true);
+			var btn = $('newPatientButton');
 			<c:forEach items="${dataExport.patientIds}" var="id">
-				var obj = addNew(btn, "newPatient");
-				changeButton = getChildById(obj, "patientButton");
-				DWRPatientService.getPatient(onSelect, '${id}');
+				addNew(btn, "newPatient", '${id}');
 			</c:forEach>
 			DWREngine.setOrdered(false);
 		</c:if>

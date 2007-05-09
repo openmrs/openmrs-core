@@ -25,7 +25,6 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 
 public class  HiRiskLeadScreen{
-private Context context;
 private Patient patient;
 private Locale locale;
 private String firstname;
@@ -33,19 +32,18 @@ private HashMap<String, String> userVarMap;
 
 
 //Constructor
-public  HiRiskLeadScreen(Context c, Integer pid, Locale l){
-	context = c;
+public  HiRiskLeadScreen(Integer pid, Locale l){
 	locale = l;
 	patient = c.getPatientService().getPatient(pid);
 	userVarMap = new HashMap <String, String>();
-	firstname = patient.getPatientName().getGivenName();
+	firstname = patient.getPersonName().getGivenName();
 }
 
 
 public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {
 	Set <Obs> MyObs;
 	Obs obs = new Obs();
-	{		MyObs = context.getObsService().getObservations(patient, concept);
+	{		MyObs = Context.getObsService().getObservations(patient, concept);
 		Iterator iter = MyObs.iterator();
 		if(iter.hasNext()) {
 			while(iter.hasNext())	{
@@ -75,7 +73,7 @@ public boolean evaluate_Last_Pb(){
 	boolean retVal = false;
 	Obs obs;
 
-	concept = context.getConceptService().getConceptByName("BLOOD LEAD LEVEL");
+	concept = Context.getConceptService().getConceptByName("BLOOD LEAD LEVEL");
 	obs = getObsForConceptForPatient(concept,locale, patient);
 	if(obs != null) {
 		double Last_Pb = obs.getValueNumeric();
@@ -92,7 +90,7 @@ public boolean evaluate_Qual_Pb(){
 	boolean retVal = false;
 	Obs obs;
 
-	concept = context.getConceptService().getConceptByName("Qualitative_Blood_Lead");
+	concept = Context.getConceptService().getConceptByName("Qualitative_Blood_Lead");
 	obs = getObsForConceptForPatient(concept,locale, patient);
 	if(obs != null) {
 		boolean Qual_Pb = obs.getValueAsBoolean();
@@ -109,7 +107,7 @@ public boolean evaluate_HousePre50(){
 	boolean retVal = false;
 	Obs obs;
 
-	concept = context.getConceptService().getConceptByName("HouseBltPre1950");
+	concept = Context.getConceptService().getConceptByName("HouseBltPre1950");
 	obs = getObsForConceptForPatient(concept,locale, patient);
 	if(obs != null) {
 		String HousePre50 = obs.getValueText();
@@ -126,7 +124,7 @@ public boolean evaluate_RenovatedPre78(){
 	boolean retVal = false;
 	Obs obs;
 
-	concept = context.getConceptService().getConceptByName("RenovatedPre78");
+	concept = Context.getConceptService().getConceptByName("RenovatedPre78");
 	obs = getObsForConceptForPatient(concept,locale, patient);
 	if(obs != null) {
 		String RenovatedPre78 = obs.getValueText();
@@ -143,7 +141,7 @@ public boolean evaluate_HiPbSibFriend(){
 	boolean retVal = false;
 	Obs obs;
 
-	concept = context.getConceptService().getConceptByName("HiPbSibFriend");
+	concept = Context.getConceptService().getConceptByName("HiPbSibFriend");
 	obs = getObsForConceptForPatient(concept,locale, patient);
 	if(obs != null) {
 		String HiPbSibFriend = obs.getValueText();

@@ -31,12 +31,12 @@ public class FieldTypeFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			FieldType fieldType = (FieldType)obj;
-			context.getAdministrationService().updateFieldType(fieldType);
+			Context.getAdministrationService().updateFieldType(fieldType);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "FieldType.saved");
 		}
@@ -53,13 +53,10 @@ public class FieldTypeFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		FieldType fieldType = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			FormService rs = context.getFormService();
+		if (Context.isAuthenticated()) {
+			FormService rs = Context.getFormService();
 			String fieldTypeId = request.getParameter("fieldTypeId");
 	    	if (fieldTypeId != null)
 	    		fieldType = rs.getFieldType(Integer.valueOf(fieldTypeId));	

@@ -47,12 +47,12 @@ public class OrderTypeFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			OrderType orderType = (OrderType)obj;
-			context.getAdministrationService().updateOrderType(orderType);
+			Context.getOrderService().updateOrderType(orderType);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "OrderType.saved");
 		}
@@ -69,13 +69,10 @@ public class OrderTypeFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		OrderType orderType = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			OrderService os = context.getOrderService();
+		if (Context.isAuthenticated()) {
+			OrderService os = Context.getOrderService();
 			String orderTypeId = request.getParameter("orderTypeId");
 	    	if (orderTypeId != null)
 	    		orderType = os.getOrderType(Integer.valueOf(orderTypeId));	

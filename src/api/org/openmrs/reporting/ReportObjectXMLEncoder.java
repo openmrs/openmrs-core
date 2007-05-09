@@ -7,9 +7,14 @@ import java.beans.XMLEncoder;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.PatientSetService;
 
 public class ReportObjectXMLEncoder {
 
@@ -23,19 +28,33 @@ public class ReportObjectXMLEncoder {
 	
 	public String toXmlString() {
 		ByteArrayOutputStream arr = new ByteArrayOutputStream();
+		EnumDelegate enumDelegate = new EnumDelegate();
 	    XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(arr));
+	    Set<Class> alreadyAdded = new HashSet<Class>();
+	    {
+	    	List<Class> enumClasses = new ArrayList<Class>();
+	    	enumClasses.add(PatientSetService.Modifier.class);
+	    	enumClasses.add(PatientSetService.TimeModifier.class);
+	    	enumClasses.add(PatientSetService.BooleanOperator.class);
+	    	enumClasses.add(PatientSetService.GroupMethod.class);
+	    	for (Class clz : enumClasses) {
+		    	enc.setPersistenceDelegate(clz, enumDelegate);
+		    	alreadyAdded.add(clz);
+	    	}
+	    }
+	    // This original implementation won't handle enums that aren't direct properties of the bean, but I'm leaving it here anyway.
 	    for ( Field f : this.objectToEncode.getClass().getDeclaredFields() ) {
-    		//System.out.println("\n\n\nABOUT TO CHECK ENUM: " + f.getName() + " is " + f.getType().getName() + "\n\n\n");
-	    	if ( f.getType().isEnum() ) {
-	    		//System.out.println("\n\n\nABOUT TO WRITE AN ENUM\n\n\n");
+	    	Class clz = f.getType();
+	    	if ( clz.isEnum() && !alreadyAdded.contains(clz) ) {
 	    		try {
-	    			enc.setPersistenceDelegate(f.getType(), new EnumDelegate());
+	    			enc.setPersistenceDelegate(clz, enumDelegate);
+	    			alreadyAdded.add(clz);
 	    		} catch( Exception e ) {
-	    			//System.out.println("ReportObjectXMLEncoder failed to write enumeration " + f.getName());
+	    			log.error("ReportObjectXMLEncoder failed to write enumeration " + f.getName(), e);
 	    		}
 	    	}
 	    }
-	    log.error("objectToEncode.type: " + objectToEncode.getClass());
+	    log.debug("objectToEncode.type: " + objectToEncode.getClass());
 	    enc.writeObject(this.objectToEncode);
 	    enc.close();
 	    

@@ -37,5 +37,46 @@
 	<%
 	}
 	%>
+	<tr><td colspan="2" align="center"><h3>Thread MXBean</h3></td></tr>
+	<tr>
+		<td>Peak Thread Count</td>
+		<td><%= ManagementFactory.getThreadMXBean().getPeakThreadCount() %></td>
+	</tr>
+	<tr>
+		<td>Current Thread CPU Time</td>
+		<td><%= ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime() %></td>
+	</tr>
+	<tr>
+		<td>Current Thread User Time</td>
+		<td><%= ManagementFactory.getThreadMXBean().getCurrentThreadUserTime() %></td>
+	</tr>
+	<tr>
+		<td>Daemon Thread Count</td>
+		<td><%= ManagementFactory.getThreadMXBean().getDaemonThreadCount() %></td>
+	</tr>
+	<tr>
+		<td>Thread Count</td>
+		<td><%= ManagementFactory.getThreadMXBean().getThreadCount() %></td>
+	</tr>
+	<%
+	        for(long id : ManagementFactory.getThreadMXBean().getAllThreadIds()) {
+	%>
+		<tr>
+			<td colspan="2">
+				<table border="0" width="100%" style="border: 1px #98AAB1 solid;">
+					<tr><td colspan="2" align="center"><b><%= ManagementFactory.getThreadMXBean().getThreadInfo(id) %></b></td></tr>
+					<tr><td width="200">Thread CPU Time</td><td><%= ManagementFactory.getThreadMXBean().getThreadCpuTime(id) %></td></tr>
+					<tr><td>Thread User Time</td><td><%= ManagementFactory.getThreadMXBean().getThreadUserTime(id) %></td></tr>
+					<tr><td>Thread Info (with stack trace)</td><td><%= ManagementFactory.getThreadMXBean().getThreadInfo(id, Integer.MAX_VALUE) %></td></tr>
+				</table>
+			</td>
+		</tr>
+		<tr><td colspan="2">&nbsp;</td></tr>
+	<%
+	}
+	%>
+
+
+
 
 </table>

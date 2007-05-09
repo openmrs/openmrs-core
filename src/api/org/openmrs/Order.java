@@ -2,6 +2,9 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Order 
  * 
@@ -10,11 +13,13 @@ import java.util.Date;
  */
 public class Order implements java.io.Serializable {
 
+	protected final Log log = LogFactory.getLog(getClass());
 	public static final long serialVersionUID = 4334343L;
 
 	// Fields
 
 	private Integer orderId;
+	private Patient patient;
 	private OrderType orderType;
 	private Concept concept;
 	private String instructions;
@@ -27,7 +32,7 @@ public class Order implements java.io.Serializable {
 	private Boolean discontinued = false;
 	private User discontinuedBy;
 	private Date discontinuedDate;
-	private String discontinuedReason;
+	private Concept discontinuedReason;
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
@@ -138,7 +143,7 @@ public class Order implements java.io.Serializable {
 	/**
 	 * @return Returns the discontinued status.
 	 */
-	public Boolean isDiscontinued() {
+	public Boolean getDiscontinued() {
 		return discontinued;
 	}
 
@@ -180,14 +185,14 @@ public class Order implements java.io.Serializable {
 	/**
 	 * @return Returns the discontinuedReason.
 	 */
-	public String getDiscontinuedReason() {
+	public Concept getDiscontinuedReason() {
 		return discontinuedReason;
 	}
 
 	/**
 	 * @param discontinuedReason The discontinuedReason to set.
 	 */
-	public void setDiscontinuedReason(String discontinuedReason) {
+	public void setDiscontinuedReason(Concept discontinuedReason) {
 		this.discontinuedReason = discontinuedReason;
 	}
 
@@ -208,7 +213,7 @@ public class Order implements java.io.Serializable {
 	/**
 	 * @return Returns the voided.
 	 */
-	public Boolean isVoided() {
+	public Boolean getVoided() {
 		return voided;
 	}
 
@@ -330,6 +335,88 @@ public class Order implements java.io.Serializable {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
+	
+	/**
+	 * Convenience method to determine if order is current
+	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @return boolean indicating whether the order was current on the input date
+	 */
+	public boolean isCurrent(Date checkDate) {
+		if (checkDate == null) {
+			checkDate = new Date();
+		}
+		if (startDate == null || checkDate.before(startDate)) {
+			return false;
+		}
+		if (discontinuedDate != null && discontinuedDate.before(checkDate)) {
+			return false;
+		}
+		if (autoExpireDate != null && autoExpireDate.before(checkDate)) {
+			return false;
+		}
+		if (this.voided || this.discontinued) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean isCurrent() {
+		return isCurrent(new Date());
+	}
 
+	public boolean isFuture(Date checkDate) {
+		log.debug("Check if this is in the future");
+		if ( checkDate == null ) {
+			checkDate = new Date();
+		}
+		
+		if ( startDate != null && checkDate.before(startDate) && !voided && !discontinued){
+			log.debug("Looks like this order IS in the future");
+			return true;
+		}
+		
+		log.debug("Looks like this order is not in the future");
+		return false;
+	}
 
+	public boolean isFuture() {
+		return isFuture(new Date());
+	}
+
+	
+	/**
+	 * Convenience method to determine if order is discontinued
+	 * @param checkDate - the date on which to check order. if null, will use current date
+	 * @return boolean indicating whether the order was discontinued on the input date
+	 */
+	public boolean isDiscontinued(Date checkDate) {
+		if (checkDate == null) {
+			checkDate = new Date();
+		}
+		if (startDate == null || checkDate.before(startDate)) {
+			return false;
+		}
+		if (discontinuedDate != null && discontinuedDate.after(checkDate)) {
+			return false;
+		}
+		if (discontinuedDate == null) {
+			return false;
+		}
+		if (this.voided || !this.discontinued) {
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean isDiscontinued() {
+		return isDiscontinued(new Date());
+	}
+
+	public Patient getPatient() {
+		return patient;
+	}
+
+	public void setPatient(Patient patient) {
+		this.patient = patient;
+	}
 }

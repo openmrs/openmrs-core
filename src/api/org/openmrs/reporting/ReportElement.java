@@ -1,54 +1,41 @@
 package org.openmrs.reporting;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 public class ReportElement {
 
-	private PatientAnalysis analysis;
-	private String formatDescriptor;
-	private String layoutDescriptor;
+	private Map<String, PatientDataProducer> producers;
+	private List<TableGroupAndAggregate> groupAndAggregate;
 
-	public ReportElement() { }
+	public ReportElement() {
+		producers = new LinkedHashMap<String, PatientDataProducer>();
+		groupAndAggregate = new ArrayList<TableGroupAndAggregate>();
+	}
 	
-	public ReportElement(PatientAnalysis analysis, String formatDescriptor, String layoutDescriptor) {
-		this.analysis = analysis;
-		this.formatDescriptor = formatDescriptor;
-		this.layoutDescriptor = layoutDescriptor;
+	public void addProducer(String columnName, PatientDataProducer p) {
+		producers.put(columnName, p);
 	}
+	
+	public void addGroupAndAggregate(TableGroupAndAggregate tga) {
+		groupAndAggregate.add(tga);
+	}
+	
+	public DataTable run(PatientSet ps) {
+		PatientDataTable patientTable = new PatientDataTable(ps);
+		List<Integer> patientIds = new ArrayList<Integer>(patientTable.keySet());
+		for (Map.Entry<String, PatientDataProducer> e : producers.entrySet()) {
+			patientTable.addColumn(e.getKey(), e.getValue().produceData(patientIds));
+		}
+		DataTable table = patientTable.toDataTable();
+		
 
-	/**
-	 * @return Returns the analysis.
-	 */
-	public PatientAnalysis getAnalysis() {
-		return analysis;
-	}
-	/**
-	 * @param analysis The analysis to set.
-	 */
-	public void setAnalysis(PatientAnalysis analysis) {
-		this.analysis = analysis;
-	}
-	/**
-	 * @return Returns the formatDescriptor.
-	 */
-	public String getFormatDescriptor() {
-		return formatDescriptor;
-	}
-	/**
-	 * @param formatDescriptor The formatDescriptor to set.
-	 */
-	public void setFormatDescriptor(String formatDescriptor) {
-		this.formatDescriptor = formatDescriptor;
-	}
-	/**
-	 * @return Returns the layoutDescriptor.
-	 */
-	public String getLayoutDescriptor() {
-		return layoutDescriptor;
-	}
-	/**
-	 * @param layoutDescriptor The layoutDescriptor to set.
-	 */
-	public void setLayoutDescriptor(String layoutDescriptor) {
-		this.layoutDescriptor = layoutDescriptor;
+		for (TableGroupAndAggregate tga : groupAndAggregate)
+			table = tga.run(table);
+
+		return table;
 	}
 	
 }

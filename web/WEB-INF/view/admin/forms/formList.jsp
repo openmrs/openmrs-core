@@ -7,15 +7,6 @@
 
 <h2><spring:message code="Form.manage" /></h2>	
 
-<script type="text/javascript">
-	function duplicate() {
-		var id = document.getElementById('duplicateFormId').value;
-		if (id == '')
-			return false;
-		window.location = "formEdit.form?duplicate=true&formId=" + id;
-	}
-</script>
-
 <a href="formEdit.form"><spring:message code="Form.add" /></a>
 
 <form style="padding: 0px; margin: 0px; display: inline;">
@@ -29,13 +20,22 @@
 	<input type="button" value="<spring:message code="Form.duplicate"/>" onclick="return duplicate()" />
 </form>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formListHeader" type="html">
+	<c:forEach items="${extension.links}" var="link">
+		| <a href="${pageContext.request.contextPath}/${link.key}"><spring:message code="${link.value}"/></a>
+	</c:forEach>
+</openmrs:extensionPoint>
+
 <br /><br />
 
-<b class="boxHeader">
-	<spring:message code="Form.list.title" />
-</b>
+<div class="boxHeader">
+	<span style="float: right">
+		<a href="#" id="showRetired" onClick="return toggleRowVisibilityForClass('formTable', 'voided');"><spring:message code="general.toggle.retired"/></a>
+	</span>
+	<b><spring:message code="Form.list.title" /></b>
+</div>
 <form method="post" class="box">
-	<table cellpadding="2" cellspacing="0">
+	<table cellpadding="2" cellspacing="0" id="formTable" width="98%">
 		<tr>
 			<th> </th>
 			<th> <spring:message code="general.name" /> </th>
@@ -45,8 +45,8 @@
 			<th> <spring:message code="Form.published" /> </th>
 
 		</tr>
-		<c:forEach var="form" items="${formList}">
-			<tr>
+		<c:forEach var="form" items="${formList}" varStatus="status">
+			<tr class="<c:if test="${form.retired}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
 				<td valign="top" style="white-space: nowrap">
 					<a href="formEdit.form?formId=${form.formId}"><spring:message code="Form.editProperties"/></a> | 
 					<a href="formSchemaDesign.form?formId=${form.formId}"><spring:message code="Form.designSchema"/></a>
@@ -60,5 +60,17 @@
 		</c:forEach>
 	</table>
 </form>
+
+<script type="text/javascript">
+	function duplicate() {
+		var id = document.getElementById('duplicateFormId').value;
+		if (id == '')
+			return false;
+		window.location = "formEdit.form?duplicate=true&formId=" + id;
+	}
+	
+	toggleRowVisibilityForClass("formTable", "voided");
+	
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

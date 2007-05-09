@@ -1,49 +1,101 @@
 package org.openmrs.api;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterType;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.db.DAOContext;
+import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.db.OrderDAO;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.order.RegimenSuggestion;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Order-related services
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
- * @version 1.0
- */
-public class OrderService {
+@Transactional
+public interface OrderService {
 
-	private Context context;
-	private DAOContext daoContext;
-	
-	public OrderService(Context c, DAOContext d) {
-		this.context = c;
-		this.daoContext = d;
-	}
-	
-	private OrderDAO getOrderDAO() {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ORDERS);
-		
-		return daoContext.getOrderDAO();
-	}
-	
+	public static final int SHOW_CURRENT = 1;
+
+	public static final int SHOW_ALL = 2;
+
+	public static final int SHOW_COMPLETE = 3;
+
+	public static final int SHOW_NOTVOIDED = 4;
+
+	public void setOrderDAO(OrderDAO dao);
+
 	/**
-	 * Creates a new order record
-	 * 
-	 * @param order to be created
+	 * Create a new Order
+	 * @param Order to create
 	 * @throws APIException
 	 */
-	public void createOrder(Order order) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_ADD_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_ORDERS);
-		getOrderDAO().createOrder(order);
-	}
+	public void createOrder(Order order) throws APIException;
+
+	/**
+	 * Update Order
+	 * @param Order to update
+	 * @throws APIException
+	 */
+	public void updateOrder(Order order) throws APIException;
+	
+	/**
+	 * Delete Order
+	 * @param Order to delete
+	 * @throws APIException
+	 */
+	public void deleteOrder(Order order) throws APIException;
+
+	/**
+	 * Void Order
+	 * @param voidReason 
+	 * @param Order to void
+	 * @throws APIException
+	 */
+	public void voidOrder(Order order, String voidReason) throws APIException;
+
+	/**
+	 * Void Order
+	 * @param voidReason 
+	 * @param Order to void
+	 * @throws APIException
+	 */
+	public void discontinueOrder(Order order, Concept discontinueReason,
+			Date discontinueDate) throws APIException;
+
+	/**
+	 * Create a new OrderType
+	 * @param OrderType to create
+	 * @throws APIException
+	 */
+	public void createOrderType(OrderType orderType) throws APIException;
+
+	/**
+	 * Update OrderType
+	 * @param OrderType to update
+	 * @throws APIException
+	 */
+	public void updateOrderType(OrderType orderType) throws APIException;
+
+	/**
+	 * Delete OrderType
+	 * @param OrderType to delete
+	 * @throws APIException
+	 */
+	public void deleteOrderType(OrderType orderType) throws APIException;
+
+	/**
+	 * Creates a collection of orders and an encounter to hold them. orders[i].encounter will be set to the new encounter.
+	 * If there's an EncounterType with name "Regimen Change", then the newly-created encounter will have that type
+	 * @throws APIException if there is no User with username Unknown or no Location with name Unknown.
+	 */
+	public void createOrdersAndEncounter(Patient p, Collection<Order> orders)
+			throws APIException;
 
 	/**
 	 * Get order by internal identifier
@@ -52,92 +104,62 @@ public class OrderService {
 	 * @return order with given internal identifier
 	 * @throws APIException
 	 */
-	public Order getOrder(Integer orderId) throws APIException {
-		return getOrderDAO().getOrder(orderId);
-	}
+	@Transactional(readOnly=true)
+	public Order getOrder(Integer orderId) throws APIException;
 
 	/**
-	 * Update order 
+	 * Get all orders
 	 * 
-	 * @param Order order to update
+	 * @return orders list
 	 * @throws APIException
 	 */
-	public void updateOrder(Order order) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ORDERS);
-		getOrderDAO().updateOrder(order);
-	}
-	
+	@Transactional(readOnly=true)
+	public List<Order> getOrders() throws APIException;
+
 	/**
-	 * Get order by orderer
+	 * Get all drug orders
 	 * 
-	 * @param User orderer
-	 * @return orders that were ordered by given User
+	 * @return drug orders list
 	 * @throws APIException
 	 */
-//	public Order getOrder(User orderer) throws APIException {
-		
+	@Transactional(readOnly=true)
+	public List<DrugOrder> getDrugOrders() throws APIException;
+
 	/**
-	 * Discontinue order record
+	 * Get all orders by User
 	 * 
-	 * @param order order to be discontinued
-	 * @param reason reason for discontinuing order
+	 * @return orders list
+	 * @throws APIException
 	 */
-	public void discontinueOrder(Order order, String reason) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ORDERS);
-		getOrderDAO().discontinueOrder(order, reason);
-	}
+	@Transactional(readOnly=true)
+	public List<Order> getOrdersByUser(User user) throws APIException;
+
+	/**
+	 * Get all orders by Patient
+	 * 
+	 * @return orders list
+	 * @throws APIException
+	 */
+	@Transactional(readOnly=true)
+	public List<Order> getOrdersByPatient(Patient patient) throws APIException;
+
+	@Transactional(readOnly=true)
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient,
+			int whatToShow);
 
 	/**
 	 * Undiscontinue order record
 	 * 
 	 * @param order order to be undiscontinued
 	 */
-	public void undiscontinueOrder(Order order) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ORDERS);
-		getOrderDAO().undiscontinueOrder(order);
-	}
-
-	
-	/**
-	 * Delete order from database. This <b>should not be called</b>
-	 * except for testing and administration purposes.  Use the discontinue
-	 * method instead.
-	 * 
-	 * @param orderId internal identifier of order to be deleted
-	 * 
-	 * @see #discontinueOrder(Order, String) 
-	 */
-	public void deleteOrder(Order order) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_ORDERS);
-		getOrderDAO().deleteOrder(order);
-	}
-
-	/**
-	 * Void order record
-	 * 
-	 * @param order order to be voided
-	 * @param reason reason for voiding order
-	 */
-	public void voidOrder(Order order, String reason) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ORDERS);
-		getOrderDAO().voidOrder(order, reason);
-	}
+	public void undiscontinueOrder(Order order) throws APIException;
 
 	/**
 	 * Unvoid order record
 	 * 
 	 * @param order order to be unvoided
 	 */
-	public void unvoidOrder(Order order) throws APIException {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ORDERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ORDERS);
-		getOrderDAO().unvoidOrder(order);
-	}
+	public void unvoidOrder(Order order) throws APIException;
 
 	/**
 	 * Get all order types
@@ -145,9 +167,8 @@ public class OrderService {
 	 * @return order types list
 	 * @throws APIException
 	 */
-	public List<OrderType> getOrderTypes() throws APIException {
-		return getOrderDAO().getOrderTypes();
-	}
+	@Transactional(readOnly=true)
+	public List<OrderType> getOrderTypes() throws APIException;
 
 	/**
 	 * Get orderType by internal identifier
@@ -156,8 +177,40 @@ public class OrderService {
 	 * @return orderType with given internal identifier
 	 * @throws APIException
 	 */
-	public OrderType getOrderType(Integer orderTypeId) throws APIException {
-		return getOrderDAO().getOrderType(orderTypeId);
-	}
-	
+	@Transactional(readOnly=true)
+	public OrderType getOrderType(Integer orderTypeId) throws APIException;
+
+	/**
+	 * Get all orders by Patient
+	 * 
+	 * @return orders list
+	 * @throws APIException
+	 */
+	@Transactional(readOnly=true)
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient)
+			throws APIException;
+
+	@Transactional(readOnly=true)
+	public Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(
+			List<DrugOrder> drugOrders, List<Concept> drugSets)
+			throws APIException;
+
+	@Transactional(readOnly=true)
+	public List<RegimenSuggestion> getStandardRegimens();
+
+	@Transactional(readOnly=true)
+	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(
+			List<DrugOrder> orderList, String drugSetIdList, String delimiter);
+
+	@Transactional(readOnly=true)
+	public Map<String, String> getDrugSetHeadersByDrugSetIdList(
+			String drugSetIds);
+
+	public void discontinueDrugSet(Patient patient, String drugSetId,
+			Concept discontinueReason, Date discontinueDate);
+
+	public void voidDrugSet(Patient patient, String drugSetId,
+			String voidReason, int whatToVoid);
+
+	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) throws APIException;
 }

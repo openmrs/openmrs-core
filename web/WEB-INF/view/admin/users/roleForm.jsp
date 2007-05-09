@@ -58,7 +58,7 @@
 		<th valign="top"><spring:message code="general.description"/></th>
 		<td valign="top">
 			<spring:bind path="role.description">
-				<textarea name="description" rows="3" cols="50" onKeyUp="formChanged = true;">${status.value}</textarea>
+				<textarea name="description" rows="3" cols="50" onKeyUp="formChanged = true;" type="_moz">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -90,7 +90,7 @@
 			<i><spring:message code="Role.inheritedRoles.description"/></i>
 			<c:if test="${role.role == superuser}"><spring:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
-				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}" contextPath="${pageContext.request.contextPath}" />
+				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}" />
 			</c:if>
 		</td>
 	</tr>
@@ -102,7 +102,7 @@
 		<td>
 			<c:if test="${role.role == superuser}"><spring:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
-				<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" contextPath="${pageContext.request.contextPath}" />
+				<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" />
 			</c:if>
 		</td>
 	</tr>

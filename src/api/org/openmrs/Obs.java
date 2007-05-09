@@ -1,9 +1,17 @@
 package org.openmrs;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.Format;
+import org.openmrs.util.Format.FORMAT_TYPE;
 
 /**
  * Obs
@@ -13,6 +21,7 @@ import org.openmrs.util.Format;
  */
 public class Obs implements java.io.Serializable {
 
+	protected final Log log = LogFactory.getLog(getClass());
 	public static final long serialVersionUID = 112342333L;
 
 	// Fields
@@ -30,8 +39,8 @@ public class Obs implements java.io.Serializable {
 	protected String valueModifier;
 	protected String valueText;
 	protected String comment;
-	protected Integer patientId;
-	protected Patient patient;
+	protected Integer personId;
+	protected Person person;
 	protected Order order;
 	protected Location location;
 	protected Encounter encounter;
@@ -258,26 +267,53 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
+	 * @deprecated use getPerson()
 	 * @return Returns the patient.
 	 */
 	public Patient getPatient() {
-		return patient;
+		return (Patient)getPerson();
 	}
 
 	/**
+	 * To associate a patient with an obs, use <code>setPerson(org.openmrs.Person)</code>
+	 * @deprecated use setPerson(org.openmrs.Person)
 	 * @param patient
-	 *            The patient to set.
 	 */
 	public void setPatient(Patient patient) {
-		this.patient = patient;
+		setPerson(patient);
 	}
-
-	public Integer getPatientId() {
-		return patientId;
+	
+	/**
+	 * The person id
+	 * @return
+	 */
+	public Integer getPersonId() {
+		return personId;
 	}
-
-	public void setPatientId(Integer patientId) {
-		this.patientId = patientId;
+	
+	/**
+	 * Set the person id
+	 * @param personId
+	 */
+	protected void setPersonId(Integer personId) {
+		this.personId = personId;
+	}
+	
+	/**
+	 * Get the person object
+	 * @return
+	 */
+	public Person getPerson() {
+		return person;
+	}
+	
+	/**
+	 * Set the person object
+	 * @param person
+	 * @return
+	 */
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 
 	/**
@@ -516,8 +552,12 @@ public class Obs implements java.io.Serializable {
 			}
 			else if (abbrev.equals("NM") || abbrev.equals("SN"))
 				return getValueNumeric().toString();
-			else if (abbrev.equals("DT") || abbrev.equals("TM") || abbrev.equals("TS"))
-				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale));
+			else if (abbrev.equals("DT"))
+				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.DATE));
+			else if (abbrev.equals("TM") )
+				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIME));
+			else if (abbrev.equals("TS"))
+				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.TIMESTAMP));
 			else if (abbrev.equals("ST"))
 				return getValueText();
 		}
@@ -532,11 +572,47 @@ public class Obs implements java.io.Serializable {
 				return getValueCoded().getName(locale).getName();
 		}
 		else if (getValueDatetime() != null)
-			return Format.format(getValueDatetime(), locale);
+			return Format.format(getValueDatetime(), locale, FORMAT_TYPE.DATE);
 		else if (getValueText() != null)
 			return getValueText();
 		
 		return "";
+	}
+	
+	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	public void setValueAsString(String s) throws ParseException {
+		log.debug("getConcept() == " + getConcept());
+		if (getConcept() != null) {
+			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
+			if (abbrev.equals("BIT")) {
+				setValueNumeric(Boolean.valueOf(s) ? 1.0 : 0.0);
+			} else if (abbrev.equals("CWE")) {
+				throw new RuntimeException("Not Yet Implemented");
+			} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
+				setValueNumeric(Double.valueOf(s));
+			} else if (abbrev.equals("DT") || abbrev.equals("TM") || abbrev.equals("TS")) {
+				setValueDatetime(df.parse(s));
+			} else if (abbrev.equals("ST")) {
+				setValueText(s);
+			} else {
+				throw new RuntimeException("Don't know how to handle " + abbrev);
+			}
+		} else {
+			throw new RuntimeException("concept is null for " + this);
+		}
+	}
+	
+	/**
+	 * Convenience method for obtaining a Map of available locale 
+	 * to observation's value as a string
+	 */
+	public Map<Locale, String> getValueAsString() {
+		Map<Locale, String> ret = new HashMap<Locale, String>();
+		Locale[] locales = Locale.getAvailableLocales();
+		for (int i=0; i<locales.length; i++) {
+			ret.put(locales[i], getValueAsString(locales[i]));
+		}
+		return ret;
 	}
 	
 	public String toString() {

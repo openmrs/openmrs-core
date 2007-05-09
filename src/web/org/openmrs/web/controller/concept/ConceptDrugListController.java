@@ -21,9 +21,6 @@ public class ConceptDrugListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	//HttpSession httpSession = request.getSession();
-		//Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		return "";
 		
     }

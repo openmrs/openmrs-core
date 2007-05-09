@@ -12,5 +12,7 @@ cannot be found.  Check the link and try again.
 
 <br><br>
 
+<openmrs:extensionPoint pointId="org.openmrs.missing" type="html" />
+
 
 <%@ include file="/WEB-INF/template/footer.jsp" %> 

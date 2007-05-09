@@ -2,24 +2,30 @@ package org.openmrs.reporting.export;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Location;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
+import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSet;
 
 public class DataExportReportObject extends AbstractReportObject implements Serializable {
 
 	public final static long serialVersionUID = 1231231343212L;
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private static Log log = LogFactory.getLog(DataExportReportObject.class);
 	
 	List<Integer> patientIds = new Vector<Integer>();
 	Location location;
+	// cohort and cohortDefinition should really be of type Cohort and PatientFilter, but this is temporary, and I want to avoid the known bug with xml serialization of ReportObjects  
+	Integer cohortId;
+	Integer cohortDefinitionId;
 	
 	List<ExportColumn> columns = new Vector<ExportColumn>();
 
@@ -67,10 +73,12 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	 * Append a concept based column
 	 * @param columnName
 	 * @param modifier
-	 * @param columnValue
+	 * @param modifierNum
+	 * @param conceptId
+	 * @param extras String[]
 	 */
-	public void addConceptColumn(String columnName, String modifier, String columnValue, String[] extras) {
-		columns.add(new ConceptColumn(columnName, modifier, columnValue, extras));
+	public void addConceptColumn(String columnName, String modifier, Integer modifierNum, String conceptId, String[] extras) {
+		columns.add(new ConceptColumn(columnName, modifier, modifierNum, conceptId, extras));
 	}
 	
 	/**
@@ -131,21 +139,35 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	/**
 	 * Generate the patientSet according to this report's characteristics
-	 * @param context
 	 * @return patientSet to be used with report template
 	 */
-	public PatientSet generatePatientSet(Context context) {
-		PatientSetService pss = context.getPatientSetService();
-		PatientSet patientSet = new PatientSet();
+	public PatientSet generatePatientSet() {
+		PatientSetService pss = Context.getPatientSetService();
 		
-		for (Integer p : patientIds)
-			patientSet.add(p);
+		PatientSet patientSet = null;
+		
+		if (getPatientIds() == null || getPatientIds().size() == 0)
+			patientSet = Context.getPatientSetService().getAllPatients();
+		else {
+			patientSet = new PatientSet();
+			for (Integer p : patientIds)
+				patientSet.add(p);
+		}
 		
 		if (location != null && !location.equals(""))
-			patientSet = pss.getPatientsHavingLocation(getLocation());
-		else if (patientIds.size() == 0) {
-			// Add all patients
-			patientSet = context.getPatientSetService().getAllPatients();
+			patientSet = patientSet.intersect(pss.getPatientsHavingLocation(getLocation()));
+		
+		if (cohortId != null) {
+			// hack to hydrate this
+			Cohort cohort = Context.getCohortService().getCohort(cohortId);
+			if (cohort != null)
+				patientSet = patientSet.intersect(cohort.toPatientSet());
+		}
+		
+		if (cohortDefinitionId != null) {
+			PatientFilter cohortDefinition = (PatientFilter) Context.getReportService().getReportObject(cohortDefinitionId);
+			if (cohortDefinition != null)
+				patientSet = cohortDefinition.filter(patientSet);
 		}
 		
 		return patientSet;
@@ -178,6 +200,22 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 
 	public void setPatientIds(List<Integer> patientIds) {
 		this.patientIds = patientIds;
+	}
+
+	public Integer getCohortDefinitionId() {
+		return cohortDefinitionId;
+	}
+
+	public void setCohortDefinitionId(Integer cohortDefinitionId) {
+		this.cohortDefinitionId = cohortDefinitionId;
+	}
+
+	public Integer getCohortId() {
+		return cohortId;
+	}
+
+	public void setCohortId(Integer cohortId) {
+		this.cohortId = cohortId;
 	}
 
 }

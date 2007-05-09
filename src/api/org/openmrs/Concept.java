@@ -6,16 +6,18 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 
 /**
  * Concept 
  */
-public class Concept implements java.io.Serializable {
+public class Concept implements java.io.Serializable, Attributable<Concept> {
 
 	public static final long serialVersionUID = 5733L;
 	public Log log = LogFactory.getLog(this.getClass());
@@ -27,9 +29,6 @@ public class Concept implements java.io.Serializable {
 	private ConceptDatatype datatype;
 	private ConceptClass conceptClass;
 	private Boolean set = false;
-	private String units;
-	private String icd10;
-	private String loinc;
 	private String version;
 	private User creator;
 	private Date dateCreated;
@@ -62,9 +61,6 @@ public class Concept implements java.io.Serializable {
 		retired = cn.isRetired();
 		datatype = cn.getDatatype();
 		conceptClass = cn.getConceptClass();
-		units = cn.getUnits();
-		icd10 = cn.getIcd10();
-		loinc = cn.getLoinc();
 		version = cn.getVersion();
 		creator = cn.getCreator();
 		dateCreated = cn.getDateCreated();
@@ -79,7 +75,7 @@ public class Concept implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof Concept) {
 			Concept c = (Concept)obj;
-			return (this.conceptId.equals(c.getConceptId()));
+			return (this.getConceptId().equals(c.getConceptId()));
 		}
 		return false;
 	}
@@ -274,34 +270,6 @@ public class Concept implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the icd10.
-	 */
-	public String getIcd10() {
-		return icd10;
-	}
-
-	/**
-	 * @param icd10 The icd10 to set.
-	 */
-	public void setIcd10(String icd10) {
-		this.icd10 = icd10;
-	}
-
-	/**
-	 * @return Returns the loinc.
-	 */
-	public String getLoinc() {
-		return loinc;
-	}
-
-	/**
-	 * @param loinc The loinc to set.
-	 */
-	public void setLoinc(String loinc) {
-		this.loinc = loinc;
-	}
-
-	/**
 	 * Finds the name of the concept in the given locale.  Returns null if none found. 
 	 * 
 	 * @param locale
@@ -309,6 +277,17 @@ public class Concept implements java.io.Serializable {
 	 */
 	public ConceptName getName(Locale locale) {
 		return getName(locale, false);
+	}
+	
+	/**
+	 * Finds the name of the concept using the current locale in Context.getLocale().
+	 * Returns null if none found. 
+	 * 
+	 * @param locale
+	 * @return ConceptName attributed to the Concept in the given locale
+	 */
+	public ConceptName getName() {
+		return getName(Context.getLocale());
 	}
 	
 	/**
@@ -343,8 +322,22 @@ public class Concept implements java.io.Serializable {
 			return null;
 		}
 		
-//		returning default name locale ("en") if exact match desired
+		// returning default name locale ("en") if exact match not desired
+		if (defaultName == null)
+			log.warn("No concept name found for default locale for concept id " + conceptId);
+		
 		return defaultName;
+	}
+	
+	/**
+	 * @param name A name
+	 * @return whether this concept has the given name in any locale
+	 */
+	public boolean isNamed(String name) {
+		for (ConceptName cn : getNames())
+			if (name.equals(cn.getName()))
+				return true;
+		return false;
 	}
 	
 	/**
@@ -469,20 +462,6 @@ public class Concept implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the units.
-	 */
-	public String getUnits() {
-		return units;
-	}
-
-	/**
-	 * @param units The units to set.
-	 */
-	public void setUnits(String units) {
-		this.units = units;
-	}
-
-	/**
 	 * @return Returns the version.
 	 */
 	public String getVersion() {
@@ -554,4 +533,47 @@ public class Concept implements java.io.Serializable {
 			return c;
 		}
 	}
+
+	
+	public List<Concept> findPossibleValues(String searchText) {
+		List<Concept> concepts = new Vector<Concept>();
+		try {
+			for (ConceptWord word : Context.getConceptService().findConcepts(searchText, Context.getLocale(), false)) {
+				concepts.add(word.getConcept());
+			}
+		}
+		catch (Exception e) {
+			// pass
+		}
+		return concepts;
+	}
+	
+
+	public List<Concept> getPossibleValues() {
+		try {
+			return Context.getConceptService().getConceptsByName("");
+		}
+		catch (Exception e) {
+			// pass
+		}
+		return Collections.emptyList();
+	}
+	
+
+	public Concept hydrate(String s) {
+		try {
+			return Context.getConceptService().getConcept(Integer.valueOf(s));
+		}
+		catch (Exception e) {
+			// pass
+		}
+		return null;
+	}
+	
+
+	public String serialize() {
+		return "" + this.getConceptId();
+	}
+
+	
 }

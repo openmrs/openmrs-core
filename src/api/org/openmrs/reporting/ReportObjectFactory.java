@@ -8,11 +8,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 
 public class ReportObjectFactory {
+
+	private static ReportObjectFactory singleton;
+	
+	private static Log log = LogFactory.getLog(ReportObjectFactory.class);
+	
 	private String defaultValidator;
 	private List<ReportObjectFactoryModule> modules;
+	
+	public ReportObjectFactory() {
+		if (singleton == null)
+			singleton = this;
+	}
+	
+	public static ReportObjectFactory getInstance() {
+		if (singleton == null)
+			throw new RuntimeException("Not Yet Instantiated");
+		else
+			return singleton;
+	}
 	
 	public Set<String> getReportObjectTypes() {
 		if ( modules != null ) {
@@ -121,7 +140,7 @@ public class ReportObjectFactory {
 	}
 	
 	public static AbstractReportObject getInstance(String reportObjectName, Map<String, Object> initialValues, Context context) {
-		ReportObjectFactory rof = context.getReportService().getReportObjectFactory();
+		ReportObjectFactory rof = ReportObjectFactory.singleton;
 		String className = rof.getReportObjectClassByName(reportObjectName);
 		AbstractReportObject reportObj = null;
 		
@@ -132,7 +151,7 @@ public class ReportObjectFactory {
 				// attempt to populate setters with initialValues Map
 
 			} catch ( Throwable t ) {
-				//System.out.println("Could not create class: " + className + " when trying to get report object from the factory");
+				log.error("Could not create class: " + className + " when trying to get report object from the factory");
 			}
 		}
 		
@@ -148,7 +167,7 @@ public class ReportObjectFactory {
 				reportObj = (AbstractReportObject)ct.newInstance();
 				reportObj = ReportObjectFactory.initInstance(reportObj, initialValues);
 			} catch ( Throwable t ) {
-				//System.out.println("Could not instantiate class: " + reportObjectClass.getName() + " when trying to get report object from the factory");
+				log.error("Could not instantiate class: " + reportObjectClass.getName() + " when trying to get report object from the factory");
 			}
 		}
 		
@@ -176,21 +195,18 @@ public class ReportObjectFactory {
 						m = reportObj.getClass().getMethod(methodName, setterParamSupers);
 					} catch ( Exception e ) {
 						m = null;
-						//System.out.println("Could not instantiate setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
-						//System.out.println(e.toString());
+						log.error("Could not instantiate setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
 					}
 				} catch ( Exception e ) {
 					m = null;
-					//System.out.println("Could not instantiate setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
-					//System.out.println(e.toString());
+					log.error("Could not instantiate setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
 				}
 
 				if ( m != null ) {
 					try {
 						Object fieldObj = m.invoke(reportObj, setterParams);
 					} catch ( Exception e ) {
-						//System.out.println("Could not invoke setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
-						//System.out.println(e.toString());
+						log.error("Could not invoke setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
 					}
 				}
 			}

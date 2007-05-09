@@ -27,11 +27,10 @@ public class LogoutServlet extends HttpServlet {
 
 		HttpSession httpSession = request.getSession();
 		
-		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		Context.logout();
 		
-		if (context != null)
-			context.logout();
-		httpSession.removeAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		//httpSession.removeAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		httpSession.removeAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
 		httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.logged.out");
 		httpSession.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getContextPath());
 		response.sendRedirect(request.getContextPath() + "/login.htm");

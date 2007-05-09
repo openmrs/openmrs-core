@@ -48,8 +48,6 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		this.setDatatype(c.getDatatype());
 		this.setDateChanged(c.getDateChanged());
 		this.setDateCreated(c.getDateCreated());
-		this.setIcd10(c.getIcd10());
-		this.setLoinc(c.getLoinc());
 		this.setSet(c.isSet());
 		this.setNames(c.getNames());
 		this.setRetired(c.getRetired());

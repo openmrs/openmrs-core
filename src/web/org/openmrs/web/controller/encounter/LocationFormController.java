@@ -47,12 +47,12 @@ public class LocationFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Location location = (Location)obj;
-			context.getAdministrationService().updateLocation(location);
+			Context.getAdministrationService().updateLocation(location);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Location.saved");
 		}
@@ -69,13 +69,10 @@ public class LocationFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Location location = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			EncounterService os = context.getEncounterService();
+		if (Context.isAuthenticated()) {
+			EncounterService os = Context.getEncounterService();
 			String locationId = request.getParameter("locationId");
 	    	if (locationId != null)
 	    		location = os.getLocation(Integer.valueOf(locationId));	

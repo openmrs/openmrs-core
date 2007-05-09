@@ -1,5 +1,6 @@
 package org.openmrs.reporting;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,9 +12,11 @@ public class ReportObjectList {
 		reportObjects = new HashSet<AbstractReportObject>();
 	}
 
-	public ReportObjectList( Set<AbstractReportObject> objList ) {
-		this.reportObjects = objList;
+	public ReportObjectList( Collection<AbstractReportObject> objList ) {
+		this.reportObjects = new HashSet<AbstractReportObject>();
+		this.reportObjects.addAll(objList);
 	}
+	
 
 	public int getSize() {
 		return reportObjects.size();

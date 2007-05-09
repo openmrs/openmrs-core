@@ -3,6 +3,8 @@ package org.openmrs.web.controller.form;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -16,8 +18,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
+import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.propertyeditor.EncounterTypeEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -39,13 +43,11 @@ public class FormFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request,
 			ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		Context context = (Context) request.getSession().getAttribute(
-				WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		// NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class,
 				new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(EncounterType.class,
-				new EncounterTypeEditor(context));
+				new EncounterTypeEditor());
 	}
 
 	/**
@@ -62,11 +64,9 @@ public class FormFormController extends SimpleFormController {
 			throws Exception {
 
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		String view = getFormView();
 
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Form form = (Form) obj;
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
@@ -89,7 +89,7 @@ public class FormFormController extends SimpleFormController {
 						}
 
 						// save form
-						context.getFormService().updateForm(form);
+						Context.getFormService().updateForm(form);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 								"Form.saved");
 					} catch (Exception e) {
@@ -102,7 +102,7 @@ public class FormFormController extends SimpleFormController {
 					}
 				} else if (action.equals(msa.getMessage("Form.delete"))) {
 					try {
-						context.getFormService().deleteForm(form);
+						Context.getFormService().deleteForm(form);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 								"Form.deleted");
 					} catch (Exception e) {
@@ -113,9 +113,23 @@ public class FormFormController extends SimpleFormController {
 								"Form.cannot.delete");
 						return showForm(request, response, errors);
 					}
+				} else if (action.equals(msa.getMessage("Form.updateSortOrder"))) {
+					
+					FormService fs = Context.getFormService();
+					
+					TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
+					for (Integer parentFormFieldId : treeMap.keySet()) {
+						float sortWeight = 0;
+						for (FormField formField : treeMap.get(parentFormFieldId)) {
+							formField.setSortWeight(sortWeight);
+							fs.updateFormField(formField);
+							sortWeight += 50;
+						}
+					}
+					
 				} else {
 					try {
-						context.getFormService().duplicateForm(form);
+						Context.getFormService().duplicateForm(form);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 								"Form.duplicated");
 					} catch (Exception e) {
@@ -134,7 +148,7 @@ public class FormFormController extends SimpleFormController {
 
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
 	 * 
 	 * This is called prior to displaying a form for the first time. It tells
@@ -145,14 +159,10 @@ public class FormFormController extends SimpleFormController {
 	protected Object formBackingObject(HttpServletRequest request)
 			throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
 		Form form = null;
 
-		if (context != null && context.isAuthenticated()) {
-			FormService fs = context.getFormService();
+		if (Context.isAuthenticated()) {
+			FormService fs = Context.getFormService();
 			String formId = request.getParameter("formId");
 			if (formId != null)
 				form = fs.getForm(Integer.valueOf(formId));
@@ -167,18 +177,14 @@ public class FormFormController extends SimpleFormController {
 	protected Map referenceData(HttpServletRequest request, Object obj,
 			Errors errors) throws Exception {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession
-				.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		List<FieldType> fieldTypes = new Vector<FieldType>();
 		List<EncounterType> encTypes = new Vector<EncounterType>();
 
-		if (context != null && context.isAuthenticated()) {
-			fieldTypes = context.getFormService().getFieldTypes();
-			encTypes = context.getEncounterService().getEncounterTypes();
+		if (Context.isAuthenticated()) {
+			fieldTypes = Context.getFormService().getFieldTypes();
+			encTypes = Context.getEncounterService().getEncounterTypes();
 		}
 
 		map.put("fieldTypes", fieldTypes);

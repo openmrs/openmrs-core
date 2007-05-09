@@ -1,7 +1,6 @@
 package org.openmrs.web.controller.patient;
 
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -50,13 +49,12 @@ public class PatientListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = request.getLocale();
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] patientList = request.getParameterValues("patientId");
-			PatientService ps = context.getPatientService();
+			PatientService ps = Context.getPatientService();
 			
 			for (String o : patientList) {
 				//TODO convenience method deletePatient(Integer, String) ??
@@ -80,14 +78,14 @@ public class PatientListController extends SimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
     	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		
 		//default empty Object
 		Set<Patient> patientList = new HashSet<Patient>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			PatientService ps = context.getPatientService();
+		if (Context.isAuthenticated()) {
+			PatientService ps = Context.getPatientService();
 	    	patientList.addAll(ps.getPatientsByName(""));
 		}
     	

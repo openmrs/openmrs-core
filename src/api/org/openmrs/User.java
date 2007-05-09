@@ -12,34 +12,36 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * User
+ * Defines a User in the system.  A user is simply an extension
+ * of a person and all that that implies.  A user is defined as someone who
+ * will be manipulating the system and must log in or is being referred to as
+ * a provider, etc 
  * 
  * @author Burke Mamlin
- * @version 1.0
+ * @author Ben Wolfe
+ * @version 2.0
  */
-public class User implements java.io.Serializable {
+public class User extends Person implements java.io.Serializable {
 
 	public static final long serialVersionUID = 4489L;
 	public Log log = LogFactory.getLog(getClass());
 
 	// Fields
-
-	private Person person;
+	
+	private Integer userId;
 	
 	private String systemId;
-	private Integer userId;
 	private String username;
-	private String firstName;
-	private String middleName;
-	private String lastName;
 	private String secretQuestion;
 	private Set<Role> roles;
-	private Map<String, String> properties;
+	private Map<String, String> userProperties;
 
 	private User creator;
 	private Date dateCreated;
+	
 	private User changedBy;
 	private Date dateChanged;
+	
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
@@ -48,16 +50,22 @@ public class User implements java.io.Serializable {
 	// Constructors
 
 	/** default constructor */
-	public User() {
-	}
+	public User() { }
 
 	/** constructor with id */
 	public User(Integer userId) {
 		this.userId = userId;
 	}
 
+	/** constructor with person object */
+	public User(Person person) {
+		super(person);
+		if (person != null)
+			userId = person.getPersonId();
+	}
+	
 	/**
-	 * Return true is this user has all privileges
+	 * Return true if this user has all privileges
 	 * @return
 	 */
 	public boolean isSuperUser() {
@@ -139,64 +147,34 @@ public class User implements java.io.Serializable {
 		return privileges;
 	}
 	
+	/**
+	 * Compares two objects for similarity
+	 * 
+	 * This must pass through to the parent object (org.openmrs.Person) in order to get similarity
+	 * of person/user objects
+	 * 
+	 * @param obj
+	 * @return boolean true/false whether or not they are the same objects
+	 * 
+	 * @see org.openmrs.Person#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
-		if (obj instanceof User) {
-			User u = (User)obj;;
-			return (getUserId().equals(u.getUserId()));
-		}
-		return false;
+		return super.equals(obj);
 	}
-	
+
+	/**
+	 * The hashcode for a user/person is used to index the objects in a tree
+	 * 
+	 * This must pass through to the parent object (org.openmrs.Person) in order to get similarity
+	 * of person/user objects
+	 * 
+	 * @see org.openmrs.Person#hashCode()
+	 */
 	public int hashCode() {
-		if (this.getUserId() == null) return super.hashCode();
-		int hash = 2;
-		hash = 31 * hash + this.getUserId(); 
-		return hash;
+		return super.hashCode();
 	}
 	
 	// Property accessors
-
-	/**
-	 * @return Returns the firstName.
-	 */
-	public String getFirstName() {
-		return firstName;
-	}
-
-	/**
-	 * @param firstName The firstName to set.
-	 */
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	/**
-	 * @return Returns the lastName.
-	 */
-	public String getLastName() {
-		return lastName;
-	}
-
-	/**
-	 * @param lastName The lastName to set.
-	 */
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	/**
-	 * @return Returns the middleName.
-	 */
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	/**
-	 * @param middleName The middleName to set.
-	 */
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
 
 	/**
 	 * 
@@ -289,7 +267,19 @@ public class User implements java.io.Serializable {
 	 * @param userId The userId to set.
 	 */
 	public void setUserId(Integer userId) {
+		super.setPersonId(userId);
 		this.userId = userId;
+	}
+	
+	/**
+	 * Overrides the parent setPersonId(Integer) so that we can be sure user id
+	 * is also set correctly.
+	 * 
+	 * @see org.openmrs.Person#setPersonId(java.lang.Integer)
+	 */
+	public void setPersonId(Integer personId) {
+		super.setPersonId(personId);
+		this.userId = personId;
 	}
 
 	/**
@@ -306,73 +296,6 @@ public class User implements java.io.Serializable {
 		this.username = username;
 	}
 
-	/*
-	public User getChangedBy() {
-		return changedBy;
-	}
-
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-
-	public User getCreator() {
-		return creator;
-	}
-
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	public Date getDateVoided() {
-		return dateVoided;
-	}
-
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-	
-	public Boolean isVoided() {
-		return voided;
-	}
-
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
-
-	public User getVoidedBy() {
-		return voidedBy;
-	}
-
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
-	}
-
-	public String getVoidReason() {
-		return voidReason;
-	}
-
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
-	}
-
-	 */
-	
 	/**
 	 * @return Returns the secretQuestion.
 	 */
@@ -388,21 +311,37 @@ public class User implements java.io.Serializable {
 	}
 
 	public String toString() {
-		return firstName + " " + lastName;
+		return "" + getPersonName();
 	}
 
 	/**
-	 * @return Returns the properties.
+	 * @return Returns the userProperties.
 	 */
-	public Map<String, String> getProperties() {
-		return properties;
+	public Map<String, String> getUserProperties() {
+		return userProperties;
 	}
 
 	/**
 	 * @param properties The properties to set.
 	 */
-	public void setProperties(Map<String, String> properties) {
-		this.properties = properties;
+	public void setUserProperties(Map<String, String> userProperties) {
+		this.userProperties = userProperties;
+	}
+	
+	/**
+	 * Convenience method. Adds the given property to the user's properties
+	 */
+	public void setUserProperty(String prop, String value) {
+		if (userProperties != null)
+			userProperties.put(prop, value);
+	}
+	
+	/**
+	 * Convenience method. Removes the given property from the user's properties
+	 */
+	public void removeUserProperty(String prop) {
+		if (userProperties != null && userProperties.containsKey(prop))
+			userProperties.remove(prop);
 	}
 	
 	/**
@@ -411,12 +350,28 @@ public class User implements java.io.Serializable {
 	 * @param prop
 	 * @return property value
 	 */
-	public String getProperty(String prop) {
-		if (properties != null)
-			if (properties.containsKey(prop))
-				return properties.get(prop);
+	public String getUserProperty(String prop) {
+		if (userProperties != null && userProperties.containsKey(prop))
+			return userProperties.get(prop);
 		
 		return "";
+	}
+	
+	/**
+	 * Get prop property from this user's properties.
+	 * If prop is not found in properties, return <code>defaultValue</code>
+	 * 
+	 * @param prop
+	 * @param defaultValue
+	 * @return property value
+	 * 
+	 * @see getUserProperty(java.lang.String)
+	 */
+	public String getUserProperty(String prop, String defaultValue) {
+		if (userProperties != null && userProperties.containsKey(prop))
+			return userProperties.get(prop);
+		
+		return defaultValue;
 	}
 	
 	/**
@@ -536,18 +491,18 @@ public class User implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the person.
+	 * @deprecated use <tt>getGivenName</tt> on <tt>Person</tt>
+	 * @return String user's first name
 	 */
-	public Person getPerson() {
-		return person;
+	public String getFirstName() {
+		return getGivenName();
 	}
-
+	
 	/**
-	 * @param person The person to set.
+	 * @deprecated use <tt>getFamilyName</tt> on <tt>Person</tt>
+	 * @return String user's last name
 	 */
-	public void setPerson(Person person) {
-		this.person = person;
+	public String getLastName() {
+		return getFamilyName();
 	}
-
-
 }

@@ -9,14 +9,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.WebConstants;
 
 public class DownloadDictionaryServlet extends HttpServlet {
 
@@ -30,47 +29,74 @@ public class DownloadDictionaryServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		if (context == null) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
-			return;
-		}
+		Locale locale = Context.getLocale();
 		
-		Locale locale = context.getLocale();
-		
-		ConceptService cs = context.getConceptService();
+		ConceptService cs = Context.getConceptService();
 		String s = new SimpleDateFormat("dMy_Hm").format(new Date());
 
 		response.setHeader("Content-Type", "text/csv");
 		response.setHeader("Content-Disposition", "attachment; filename=conceptDictionary" + s + ".csv");
 		
+		String line = "Concept Id,Name,Description,Synonyms,Answers,Class,Datatype,Creator,Changed By";
+		response.getOutputStream().println(line);
+		
 		for (Concept c : cs.getConcepts("conceptId", "asc")){
 			
-			String line = c.getConceptId()+ ",";
-			String name, description;
-			ConceptName cn = c.getName(locale);
-			if (cn == null)	
-				name = description = "";
-			else {
-				name = cn.getName();
-				description = cn.getDescription();
+			if (c.isRetired() == false) {
+			
+				line = c.getConceptId()+ ",";
+				String name, description;
+				ConceptName cn = c.getName(locale);
+				if (cn == null)	
+					name = description = "";
+				else {
+					name = cn.getName();
+					description = cn.getDescription();
+				}
+				line += '"' + name.replace("\"", "\"\"") + "\",";
+				
+				if (description == null) description = "";
+				line = line + '"' + description.replace("\"", "\"\"") + "\",";
+				
+				String tmp = "";
+				for (ConceptSynonym syn : c.getSynonyms()) {
+					tmp += syn + "\n";
+				}
+				line += '"' + tmp.trim() + "\",";
+				
+				tmp = "";
+				for (ConceptAnswer answer : c.getAnswers()) {
+					if (answer.getAnswerConcept() != null)
+						tmp += answer.getAnswerConcept().toString() + "\n";
+					else if (answer.getAnswerDrug() != null)
+						tmp += answer.getAnswerDrug().toString() + "\n";
+				}
+				line += '"' + tmp.trim() + "\",";
+				
+				
+				line += '"';
+				if (c.getConceptClass() != null)
+					line += c.getConceptClass().getName();
+				line += "\",";
+				
+				line += '"';
+				if (c.getDatatype() != null)
+					line += c.getDatatype().getName();
+				line += "\",";
+				
+				line += '"';
+				if (c.getChangedBy() != null)
+					line += c.getChangedBy().getPersonName();
+				line += "\",";
+				
+				line += '"';
+				if (c.getCreator() != null)
+					line += c.getCreator().getPersonName();
+				line += "\"";
+			
+				response.getOutputStream().println(line);
+				
 			}
-			line = line + '"' + name.replace("\"", "\"\"") + "\",";
-			
-			if (description == null) description = "";
-			line = line + '"' + description.replace("\"", "\"\"") + "\",";
-			
-			String tmp = "";
-			for (ConceptSynonym syn : c.getSynonyms()) {
-				tmp += syn + "\n";
-			}
-			line = line + '"' + tmp.trim() + "\",";
-			
-			line = line + c.getRetired().toString();
-			
-			response.getOutputStream().println(line);
 		}
 	}
 	

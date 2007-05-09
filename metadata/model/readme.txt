@@ -3,12 +3,12 @@ metadata/model folder
 Contains model-specific information, including SQL scripts,
 model image, version information, etc.
 
-openmrs_createdb-mysql.sql			MySQL script to generate OpenMRS database
-openmrs_x.xx-data-mysql.sql	MySQL script to populate tables
+openmrs_createdb-mysql.sql		MySQL script to drop/generate OpenMRS database
+openmrs_x.xx-data-mysql.sql		MySQL script to populate tables
 openmrs_x.xx-mysql.sql			MySQL script for generating data model
-readme.txt							this readme file
-release-notes.txt					notes about model changes
-openmrs_data_model_x.xx.png			data model images
+readme.txt						this readme file
+release-notes.txt				notes about model changes
+openmrs_data_model_x.xx.png		data model images
 
 --------
 
@@ -20,11 +20,17 @@ To install database:
 	2. Run openmrs_x.xx-mysql.sql to create tables
 
 	3. Run openmrs_x.xx-data-mysql.sql to populate tables with data
+		a) The first section of the script populates the *required* data
+		b) The second section populates the *starter* data.  Comment this 
+		   out if you are creating your own concepts/forms/etc
+
+	4. Run openmrs_x.xx-to-latest-mysqldiff.sql to update 
+	   the database schema (MUST BE DONE LAST)
 
 	The createdb script simply creates an "openmrs" database for you.
 	If you want to install into a different database, create the database
 	manually, make it the default database (e.g., "use mydb") and then
-	run the second two scripts for tables/data.
+	run the last three scripts for tables/data/updates.
 
 --------
 

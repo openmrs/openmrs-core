@@ -57,12 +57,6 @@
         length="19"
     />
     <property
-        name="discontinuedReason"
-        type="java.lang.String"
-        column="discontinued_reason"
-        length="255"
-    />
-    <property
         name="dateCreated"
         type="java.util.Date"
         column="date_created"
@@ -107,6 +101,25 @@
     >
         <column name="encounter_id" />
     </many-to-one>
+
+    <!-- bi-directional many-to-one association to Encounter -->
+    <many-to-one
+        name="patient"
+        class="org.openmrs.Patient"
+        not-null="true"
+    >
+        <column name="patient_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to Concept -->
+    <many-to-one
+        name="discontinuedReason"
+        class="org.openmrs.Concept"
+        not-null="false"
+    >
+        <column name="discontinued_reason" />
+    </many-to-one>
+
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="orderer"
@@ -115,6 +128,7 @@
     >
         <column name="orderer" />
     </many-to-one>
+
     <!-- bi-directional many-to-one association to User -->
     <many-to-one
         name="voidedBy"
@@ -154,9 +168,15 @@
 		
 	    <property
 	        name="dose"
-	        type="int"
+	        type="double"
 	        column="dose"
-	        length="11"
+	        length="22"
+	    />
+	    <property
+	        name="equivalentDailyDose"
+	        type="double"
+	        column="equivalent_daily_dose"
+	        length="22"
 	    />
 	    <property
 	        name="units"

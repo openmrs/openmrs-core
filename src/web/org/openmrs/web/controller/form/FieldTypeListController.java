@@ -37,13 +37,13 @@ public class FieldTypeListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] fieldTypeList = request.getParameterValues("fieldTypeId");
-			AdministrationService as = context.getAdministrationService();
-			FormService rs = context.getFormService();
+			AdministrationService as = Context.getAdministrationService();
+			FormService rs = Context.getFormService();
 			//FieldTypeService rs = new TestFieldTypeService();
 			
 			String success = "";
@@ -63,7 +63,7 @@ public class FieldTypeListController extends SimpleFormController {
 						success += textFieldType + " " + p + " " + deleted;
 					}
 					catch (APIException e) {
-						log.warn(e);
+						log.warn("Error deleting field type", e);
 						if (!error.equals("")) error += "<br>";
 						error += textFieldType + " " + p + " " + notDeleted;
 					}
@@ -90,15 +90,12 @@ public class FieldTypeListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		//default empty Object
 		List<FieldType> fieldTypeList = new Vector<FieldType>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			FormService fs = context.getFormService();
+		if (Context.isAuthenticated()) {
+			FormService fs = Context.getFormService();
 			//FieldTypeService rs = new TestFieldTypeService();
 	    	fieldTypeList = fs.getFieldTypes();
 		}

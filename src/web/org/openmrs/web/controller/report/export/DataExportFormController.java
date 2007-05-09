@@ -12,6 +12,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.reporting.export.DataExportReportObject;
@@ -23,7 +25,7 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -46,13 +48,13 @@ public class DataExportFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+        
 		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()), context.getLocale());
+		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(org.openmrs.Location.class,
-        		new LocationEditor(context));
+        		new LocationEditor());
 	}
 
 	/** 
@@ -65,10 +67,10 @@ public class DataExportFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			DataExportReportObject report = (DataExportReportObject)obj;
 			
 			// create PatientSet from selected values in report
@@ -79,12 +81,12 @@ public class DataExportFormController extends SimpleFormController {
 					if (patientId != null && !patientId.equals("")) 
 						report.addPatientId(Integer.valueOf(patientId));
 			
-			Integer location = RequestUtils.getIntParameter(request, "location", 0);
+			Integer location = ServletRequestUtils.getIntParameter(request, "location", 0);
 			if (location > 0)
-				report.setLocation(context.getPatientService().getLocation(location));
+				report.setLocation(Context.getEncounterService().getLocation(location));
 			
-			//String startDate = RequestUtils.getStringParameter(request, "startDate", "");
-			//String endDate = RequestUtils.getStringParameter(request, "endDate", "");
+			//String startDate = ServletRequestUtils.getStringParameter(request, "startDate", "");
+			//String endDate = ServletRequestUtils.getStringParameter(request, "endDate", "");
 			//if (!startDate.equals(""))
 			//	report.setStartDate(dateFormat.parse(startDate));
 			//if (!endDate.equals(""))
@@ -104,10 +106,24 @@ public class DataExportFormController extends SimpleFormController {
 						columnName = request.getParameter("conceptColumnName_" + columnId);
 						if (columnName != null) {
 							// concept column
-							String modifier = request.getParameter("conceptModifier_" + columnId);
-							String conceptName = request.getParameter("conceptName_" + columnId);
+							String conceptId = request.getParameter("conceptId_" + columnId);
+							try {
+								Integer.valueOf(conceptId);
+							}
+							catch (NumberFormatException e) {
+								// for backwards compatibility to pre 1.0.43
+								Concept c = Context.getConceptService().getConceptByName(conceptId);
+								if (c == null)
+									throw new APIException("Concept name : + '" + conceptId + "' could not be found in the dictionary");
+								conceptId = c.getConceptId().toString();
+							}
 							String[] extras = request.getParameterValues("conceptExtra_" + columnId);
-							report.addConceptColumn(columnName, modifier, conceptName, extras);
+							String modifier = request.getParameter("conceptModifier_" + columnId);
+							String modifierNumStr = request.getParameter("conceptModifierNum_" + columnId);
+							Integer modifierNum = null;
+							if (modifierNumStr.length() > 0)
+								modifierNum = Integer.valueOf(modifierNumStr);
+							report.addConceptColumn(columnName, modifier, modifierNum, conceptId, extras);
 						}
 						else {
 							columnName = request.getParameter("calculatedName_" + columnId);
@@ -123,13 +139,13 @@ public class DataExportFormController extends SimpleFormController {
 				}
 			}
 			
-			String saveAsNew = RequestUtils.getStringParameter(request, "saveAsNew", "");
+			String saveAsNew = ServletRequestUtils.getStringParameter(request, "saveAsNew", "");
 			if (!saveAsNew.equals(""))
 				report.setReportObjectId(null);
 			
-			context.getReportService().updateReportObject(report);
+			Context.getReportService().updateReportObject(report);
 			
-			String action = RequestUtils.getRequiredStringParameter(request, "action");
+			String action = ServletRequestUtils.getRequiredStringParameter(request, "action");
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			if (action.equals(msa.getMessage("DataExport.save"))) {
 				view = getSuccessView();
@@ -152,13 +168,10 @@ public class DataExportFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		DataExportReportObject report = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			ReportService rs = context.getReportService();
+		if (Context.isAuthenticated()) {
+			ReportService rs = Context.getReportService();
 			String reportId = request.getParameter("dataExportId");
 	    	if (reportId != null)
 	    		report = (DataExportReportObject)rs.getReportObject(Integer.valueOf(reportId));	
@@ -172,14 +185,11 @@ public class DataExportFormController extends SimpleFormController {
     
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";
 		
-		if (context != null && context.isAuthenticated()) {
-			defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+		if (Context.isAuthenticated()) {
+			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 

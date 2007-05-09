@@ -1,48 +1,17 @@
 package org.openmrs.notification;
 
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.db.DAOContext;
 import org.openmrs.notification.db.AlertDAO;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Service calls for the Alerting notification system
- * 
- * @author Ben Wolfe
- * 
- */
-public class AlertService implements Serializable {
+@Transactional
+public interface AlertService {
 
-	private static final long serialVersionUID = 564561231321112365L;
-
-	private Log log = LogFactory.getLog(this.getClass());
-
-	private Context context;
-	private DAOContext daoContext;
-	
-	public AlertService(Context c, DAOContext dao) {
-		this.context = c;
-		this.daoContext = dao;
-	}
-
-	private AlertDAO dao() {
-		if (daoContext == null)
-			daoContext = context.getDaoContext();
-		return daoContext.getAlertDAO();
-	}
-	
-	public void setContext(Context c) {
-		this.context = c;
-	}
+	public void setAlertDAO(AlertDAO dao);
 
 	/**
 	 * Creates a new alert record
@@ -51,54 +20,25 @@ public class AlertService implements Serializable {
 	 *            to be created
 	 * @throws APIException
 	 */
-	public void createAlert(Alert alert) throws Exception {
-		log.debug("Create a alert " + alert);
-		
-		if (alert.getCreator() == null)
-			alert.setCreator(context.getAuthenticatedUser());
-		if (alert.getDateCreated() == null)
-			alert.setDateCreated(new Date());
-		
-		alert.setChangedBy(context.getAuthenticatedUser());
-		alert.setDateChanged(new Date());
-		
-		dao().createAlert(alert);
-	}
-	
+	public void createAlert(Alert alert) throws Exception;
+
 	/**
 	 * Convenience method for creating an alert
 	 * @param text
 	 * @param User assigned to this alert
 	 * @throws Exception
 	 */
-	public void createAlert(String text, User user) throws Exception {
-		List<User> users = new Vector<User>();
-		users.add(user);
-		createAlert(text, users);
-	}
-	
+	public void createAlert(String text, User user) throws Exception;
+
 	/**
 	 * Convenience method for creating an alert
 	 * @param text
 	 * @param Collection<User> users assigned to this alert
 	 * @throws Exception
 	 */
-	public void createAlert(String text, Collection<User> users) throws Exception {
-		Alert alert = new Alert();
-		alert.setText(text);
-		for (User user : users) 
-			alert.addRecipient(user);
-		
-		// Make sure all recipients are assigned to this alert
-		if (alert.getRecipients() != null) {
-			for (AlertRecipient recipient : alert.getRecipients()) {
-				if (!alert.equals(recipient.getAlert()))
-					recipient.setAlert(alert);
-			}
-		}
-		createAlert(alert);
-	}
-		
+	public void createAlert(String text, Collection<User> users)
+			throws Exception;
+
 	/**
 	 * Get alert by internal identifier
 	 * 
@@ -107,10 +47,8 @@ public class AlertService implements Serializable {
 	 * @return alert with given internal identifier
 	 * @throws APIException
 	 */
-	public Alert getAlert(Integer alertId) throws Exception {
-		log.debug("Get alert " + alertId);
-		return dao().getAlert(alertId);
-	}
+	@Transactional(readOnly=true)
+	public Alert getAlert(Integer alertId) throws Exception;
 
 	/**
 	 * Update alert
@@ -119,46 +57,15 @@ public class AlertService implements Serializable {
 	 *            to be updated
 	 * @throws APIException
 	 */
-	public void updateAlert(Alert alert) throws Exception {
-		log.debug("Update alert " + alert);
-		
-		if (alert.getCreator() == null)
-			alert.setCreator(context.getAuthenticatedUser());
-		if (alert.getDateCreated() == null)
-			alert.setDateCreated(new Date());
-		
-		alert.setChangedBy(context.getAuthenticatedUser());
-		alert.setDateChanged(new Date());
-		
-		// Make sure all recipients are assigned to this alert
-		if (alert.getRecipients() != null) {
-			for (AlertRecipient recipient : alert.getRecipients()) {
-				if (!alert.equals(recipient.getAlert()))
-					recipient.setAlert(alert);
-			}
-		}
-		
-		dao().updateAlert(alert);
-	}
-	
+	public void updateAlert(Alert alert) throws Exception;
+
 	/**
 	 * Mark the given alert as read by the authenticated user
 	 * 
 	 * @param alert
 	 * @throws Exception
 	 */
-	public void markAlertRead(Alert alert) throws Exception {
-		log.debug("Marking alert as read " + alert);
-		User authUser = context.getAuthenticatedUser();
-		if (authUser != null) {
-			AlertRecipient ar = alert.getRecipient(authUser);
-			ar.setAlertRead(true);
-			if (alert.isSatisfiedByAny())
-				alert.setAlertRead(true);
-			dao().updateAlert(alert);
-		}
-			
-	}
+	public void markAlertRead(Alert alert) throws Exception;
 
 	/**
 	 * Find all alerts for a user whether or not the alert has
@@ -167,22 +74,18 @@ public class AlertService implements Serializable {
 	 * @return all alerts attributed to the user (with expired and read included)
 	 * @throws Exception
 	 */
-	public List<Alert> getAllAlerts(User user) throws Exception {
-		log.debug("Getting all alerts for user " + user);
-		return getAlerts(user, true, true);
-	}
-	
+	@Transactional(readOnly=true)
+	public List<Alert> getAllAlerts(User user) throws Exception;
+
 	/**
 	 * Find all alerts for a user that have not expired
 	 * @param User
 	 * @return alerts that are unread _or_ read that have not expired
 	 * @throws Exception
 	 */
-	public List<Alert> getAllActiveAlerts(User user) throws Exception {
-		log.debug("Getting all active alerts for user " + user);
-		return getAlerts(user, true, false);
-	}
-	
+	@Transactional(readOnly=true)
+	public List<Alert> getAllActiveAlerts(User user) throws Exception;
+
 	/**
 	 * Find the alerts that are not read and have not expired for a user
 	 * This will probably be the most commonly called method
@@ -191,30 +94,19 @@ public class AlertService implements Serializable {
 	 * @return alerts that are unread and unexpired
 	 * @throws Exception
 	 */
-	public List<Alert> getAlerts(User user) throws Exception {
-		log.debug("Getting unread alerts for user " + user);
-		return getAlerts(user, false, false);
-	}
-	
+	@Transactional(readOnly=true)
+	public List<Alert> getAlerts(User user) throws Exception;
+
 	/**
 	 * Find alerts for the currently authenticated user.  If no user is 
 	 *  authenticated, search on "new User()" (for "Anonymous" role 
 	 *  possibilities)
-	 * @return roles associated with context.getAuthenticatedUser()
+	 * @return roles associated with Context.getAuthenticatedUser()
 	 * @throws Exception
 	 */
-	public List<Alert> getAlerts() throws Exception {
-		log.debug("Getting alerts for the authenticated user");
-		// the default user is not null because we may need to find alerts 
-		//  for the "Anonymous" role
-		User user = new User();
-		
-		if (context.isAuthenticated())
-			user = context.getAuthenticatedUser();
-		
-		return getAlerts(user);
-	}
-	
+	@Transactional(readOnly=true)
+	public List<Alert> getAlerts() throws Exception;
+
 	/**
 	 * 
 	 * @param user to restrict to 
@@ -223,20 +115,17 @@ public class AlertService implements Serializable {
 	 * @return alerts for this user with these options
 	 * @throws Exception
 	 */
-	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws Exception {
-		log.debug("Getting alerts for user " + user + " read? " + includeRead + " expired? " + includeExpired);
-		return dao().getAlerts(user, includeRead, includeExpired);
-	}
-	
+	@Transactional(readOnly=true)
+	public List<Alert> getAlerts(User user, boolean includeRead,
+			boolean includeExpired) throws Exception;
+
 	/**
 	 * Get all unexpired alerts for all users
 	 * @return list of unexpired alerts
 	 * @throws Exception
 	 */
-	public List<Alert> getAllAlerts() throws Exception {
-		log.debug("Getting alerts for all users");
-		return getAllAlerts(false);
-	}
+	@Transactional(readOnly=true)
+	public List<Alert> getAllAlerts() throws Exception;
 
 	/**
 	 * Get alerts for all users while obeying includeExpired
@@ -244,8 +133,7 @@ public class AlertService implements Serializable {
 	 * @return list of alerts
 	 * @throws Exception
 	 */
-	public List<Alert> getAllAlerts(boolean includeExpired) throws Exception {
-		log.debug("Getting alerts for all users");
-		return dao().getAllAlerts(includeExpired);
-	}
+	@Transactional(readOnly=true)
+	public List<Alert> getAllAlerts(boolean includeExpired) throws Exception;
+
 }

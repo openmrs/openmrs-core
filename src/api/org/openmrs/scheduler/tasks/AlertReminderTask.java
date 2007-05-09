@@ -6,14 +6,13 @@ import java.util.HashSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.api.context.ContextFactory;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.Message;
 import org.openmrs.scheduler.Schedulable;
-import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.TaskConfig;
 
 /**
@@ -24,10 +23,7 @@ public class AlertReminderTask implements Schedulable {
 
 	// Logger 
 	private Log log = LogFactory.getLog( AlertReminderTask.class );
-
-	// Instance of context used during task execution
-	private Context context;
-
+	
 	// Instance of configuration information for task
 	private TaskConfig taskConfig;
 
@@ -35,14 +31,7 @@ public class AlertReminderTask implements Schedulable {
 	 * Public constructor
 	 *
 	 */
-	public AlertReminderTask() { 
-		this.context = ContextFactory.getContext();
-		try {
-			context.authenticate(SchedulerConstants.SCHEDULER_USERNAME,
-					SchedulerConstants.SCHEDULER_PASSWORD);
-		} catch (ContextAuthenticationException e) {
-			log.error("Error authenticating user", e);
-		}		
+	public AlertReminderTask() {
 	}
 	
 	/**
@@ -50,9 +39,7 @@ public class AlertReminderTask implements Schedulable {
 	 *
 	 *  @param  Context  context
 	 */
-	public void setContext( Context context ) { 
-		this.context = context;
-	}
+	public void setContext( ) { }
 
 	/**
 	 * Initialize task.
@@ -67,10 +54,13 @@ public class AlertReminderTask implements Schedulable {
 	 */
 	public void run() {
 		try { 
+			if (Context.isAuthenticated() == false)
+				authenticate();
+			
 			// TODO Change to getAllAlerts(Boolean includeRead, Boolean includeExpired);
-			Collection<Alert> alerts = context.getAlertService().getAllAlerts(false);
+			Collection<Alert> alerts = Context.getAlertService().getAllAlerts(false);
 			Collection<User> users = new HashSet<User>();
-			Message message = context.getMessageService().create("Alert Reminder", "You have unread alerts.");
+			Message message = Context.getMessageService().create("Alert Reminder", "You have unread alerts.");
 
 			for (Alert alert : alerts) { 
 				log.debug("Send email to alert recipient(s) ...");
@@ -83,13 +73,24 @@ public class AlertReminderTask implements Schedulable {
 			}
 			
 			// Send a message to each person only once
-			context.getMessageService().send(message, users);
+			Context.getMessageService().send(message, users);
 		} 
 		catch (Exception e) { 
 			log.error(e);
 			e.printStackTrace();
 		}
 	
+	}
+	
+	private void authenticate() {
+		try {
+			AdministrationService adminService = Context.getAdministrationService();
+			Context.authenticate(adminService.getGlobalProperty("scheduler.username"),
+				adminService.getGlobalProperty("scheduler.password"));
+			
+		} catch (ContextAuthenticationException e) {
+			log.error("Error authenticating user", e);
+		}
 	}
 
 }

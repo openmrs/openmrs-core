@@ -229,7 +229,7 @@ dojo.lang.extend(dojo.dnd.HtmlDragObject, {
 
 	/** Moves the node to follow the mouse */
 	onDragMove: function(e){
-		this.updateDragOffset();
+		//this.updateDragOffset();
 		var x = this.dragOffset.x + e.pageX;
 		var y = this.dragOffset.y + e.pageY;
 

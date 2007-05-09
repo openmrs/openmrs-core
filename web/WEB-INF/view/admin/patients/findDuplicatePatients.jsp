@@ -5,41 +5,15 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src='<%= request.getContextPath() %>/dwr/interface/DWRPatientService.js'></script>
-<script src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script src='<%= request.getContextPath() %>/scripts/openmrsSearch.js'></script>
-<script src='<%= request.getContextPath() %>/scripts/patientSearch.js'></script>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+
+<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false1" var="showTribe"/>
 
 <script type="text/javascript">
+	dojo.require("dojo.widget.openmrs.PatientSearch");
 
-	var form;
-	var tbody;
+	var searchWidget;
 	var searchOn;
-	var savedSearchOn;
-	
-	function onSelect(patients) {
-		return false;
-	}
-	
-	var init = function() {
-		form = $("patientForm");
-		tbody = $("patientTableBody");
-		searchOn = new Array();
-		$("patientsFound").style.display = "none";
-		
-		var inputs = document.getElementsByTagName("input");
-		for (var i=0; i<inputs.length; i++) {
-			var input = inputs[i];
-			if (input.type == "checkbox") {
-				selectAttribute(input);
-			}
-		}
-		
-		DWRUtil.useLoadingMessage();
-	};
-	
-	onload=init;
 	
 	var getCheckbox = function(patient) {
 		if (typeof patient == "string") return "";
@@ -55,20 +29,6 @@
 	var getPatientId = function(patient) {
 		if (typeof patient == "string") return "";
 		return patient.patientId;
-	}
-	
-	var fillTable = function(patients) {
-		var funcs = [getCheckbox, getPatientId].concat(customCellFunctions);
-		
-		var customRowOptions = {'rowCreator':rowCreator};
-		
-		$("patientsFound").style.display = "";
-		
-		$("patientListSize").innerHTML = patients.length;
-		
-		resetForm();
-		DWRUtil.removeAllRows(tbody);
-		DWRUtil.addRows(tbody, patients, funcs, customRowOptions);
 	}
 	
 	function selectAttribute(input) {
@@ -92,36 +52,80 @@
 		return true;
 	}
 	
-	function showSearch() {
-		if (searchOn.length > 1) {
-			savedSearchOn = searchOn;
-			DWRPatientService.findDuplicatePatients(fillTable, searchOn, null);
-		}
+	function showSearch(e) {
+		searchWidget.findObjects(e);
 	}
+	
+	dojo.addOnLoad( function() {
 		
-	window.onload = init;
+		searchWidget = dojo.widget.manager.getWidgetById("pSearch");
+		
+		searchOn = new Array();
+		$('patientsFound').style.display = "none";
+		
+		var inputs = document.getElementsByTagName("input");
+		for (var i=0; i<inputs.length; i++) {
+			var input = inputs[i];
+			if (input.type == "checkbox") {
+				selectAttribute(input);
+			}
+		}
+		
+		var row = searchWidget.headerRow;
+		var th = document.createElement("th");
+		th.innerHTML = "Patient Id";
+		row.insertBefore(th, row.firstChild.nextSibling);
+		
+		searchWidget.showAddPatientLink = false;
+		
+		searchWidget.getCellFunctions = function() {
+			//alert("super: " + dojo.widget.openmrs.PatientSearch.prototype);
+			var arr = dojo.widget.openmrs.PatientSearch.prototype.getCellFunctions();
+			
+			arr.splice(1, 0, getCheckbox);
+			arr.splice(2, 0, getPatientId);
+			
+			return arr;
+		};
+		
+		dojo.event.topic.subscribe("pSearch/objectsFound", 
+			function(msg) {	
+				$("patientListSize").innerHTML = msg.objs.length;
+				$('patientsFound').style.display = "";
+			}
+		);
+		
+		searchWidget.findObjects = function(phrase) {
+			if (searchOn.length > 1)
+				DWRPatientService.findDuplicatePatients(searchWidget.simpleClosure(searchWidget, "doObjectsFound"), searchOn);
+		}
+		
+	});
 	
 </script>
 
 <style>
-	.searchIndex { display: none; }
+	.searchIndex, .searchIndexHighlight { display: none; }
+	#searchNode, #searchInfoBar  { display: none; }
 </style>
 
 <h2><spring:message code="Patient.merge.title"/></h2>
 
 <spring:message code="Patient.merge.search_on"/>: <br/>
 <input type="checkbox" name="attr" id="identifier" value="identifier" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="identifier"><spring:message code="Patient.identifier"/></label> <br/>
-<input type="checkbox" name="attr" id="gender" value="gender" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="gender"><spring:message code="Patient.gender"/></label> <br/>
-<input type="checkbox" name="attr" id="tribe" value="tribe" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="tribe"><spring:message code="Patient.tribe"/></label> <br/>
-<input type="checkbox" name="attr" id="birthdate" value="birthdate" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="birthdate"><spring:message code="Patient.birthdate"/></label> <br/>
-<input type="checkbox" name="attr" id="givenName" value="givenName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="givenName"><spring:message code="PatientName.givenName"/></label> <br/>
-<input type="checkbox" name="attr" id="middleName" value="middleName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="middleName"><spring:message code="PatientName.middleName"/></label> <br/>
-<input type="checkbox" name="attr" id="familyName" value="familyName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="familyName"><spring:message code="PatientName.familyName"/></label> <br/>
+<input type="checkbox" name="attr" id="gender" value="gender" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="gender"><spring:message code="Person.gender"/></label> <br/>
+<c:if test="${showTribe == 'true'}">
+	<input type="checkbox" name="attr" id="tribe" value="tribe" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="tribe"><spring:message code="Patient.tribe"/></label> <br/>
+</c:if>
+<input type="checkbox" name="attr" id="birthdate" value="birthdate" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="birthdate"><spring:message code="Person.birthdate"/></label> <br/>
+<input type="checkbox" name="attr" id="givenName" value="givenName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="givenName"><spring:message code="PersonName.givenName"/></label> <br/>
+<input type="checkbox" name="attr" id="middleName" value="middleName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="middleName"><spring:message code="PersonName.middleName"/></label> <br/>
+<input type="checkbox" name="attr" id="familyName" value="familyName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="familyName"><spring:message code="PersonName.familyName"/></label> <br/>
 <br/>
 <input type="checkbox" name="attr" id="includeVoided" value="includeVoided" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="includeVoided"><spring:message code="Patient.merge.includeVoided"/></label> <br/>
 
 <br />
-<input type="button" value='<spring:message code="general.search"/>' onclick="showSearch()" /><br />
+<input type="button" value='<spring:message code="general.search"/>' onclick="showSearch(event)" /><br />
 
 <i>(<spring:message code="Patient.merge.minimum"/>)</i>
 
@@ -130,10 +134,7 @@
 <form action="mergePatients.form" id="patientsFound">
 	<span id="patientListSize"></span> <spring:message code="Patient.returned"/>.
 	<spring:message code="Patient.merge.select"/>
-	<table cellspacing="0" cellpadding="1" width="100%">
-		<tbody id="patientTableBody">
-		</tbody>
-	</table>
+	<div dojoType="PatientSearch" widgetId="pSearch" inputId="searchNode" tableHeight="1000"></div>
 	<input type="submit" value='<spring:message code="general.continue"/>'/>
 </form>
 

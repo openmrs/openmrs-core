@@ -254,7 +254,7 @@ public class Alert implements Serializable {
 	
 	public AlertRecipient getRecipient(User recipient) {
 		for (AlertRecipient ar : recipients) {
-			if (ar.getRecipient() == recipient)
+			if (ar.getRecipient().equals(recipient))
 				return ar;
 		}
 		return null;

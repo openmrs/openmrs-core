@@ -33,65 +33,6 @@ function showError(isValid, obj, msgNode, btn) {
 	}
 }
 
-function isValidCheckDigit(value) {
-	if (value == null) return false;
-	
-	if (value.length < 3 || value.indexOf('-') != value.length - 2)
-		return false;
-	
-	var checkDigit = value.charAt(value.length - 1).valueOf();
-	
-	var valueWithoutCheckDigit = value.substr(0, value.length - 2);
-	
-	return (checkDigit == getCheckDigit(valueWithoutCheckDigit));
-}
-
-function getCheckDigit(value) {
-
-	// allowable characters within identifier
-	var validChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVYWXZ_";
-	
-	if (stripCharsInBag(value, validChars) != "") {
-		//Invalid character in string
-	}
-	
-	// remove whitespace
-	value = value.replace([ 	], "");
-	// convert to uppercase
-	value = value.toUpperCase();
-	
-	// running total
-	var sum = 0;
-	
-	//alert("sum: " + sum + " ch: " + ch + " digit: " + digit + " weight: " + weight);
-	
-	// loop through digits from right to left
-	for (var i = 0; i < value.length; i++) {
-		//set ch to "current" character to be processed
-		var ch = value.charCodeAt(value.length - i - 1);
-		var digit = ch - 48;
-		var weight;
-		if (i % 2 == 0) {
-			// for alternating digits starting with the rightmost, we use our formula
-			// this is the same as multiplying x 2 and adding digits together for values
-			// 0 to 9.  Using the following formula allows us to gracefully calculate a
-			// weight for non-numeric "digits" as well (from their ASCII value - 48).
-			weight = (2 * digit) - Math.floor(digit / 5) * 9;
-		}
-		else {
-			// even-positioned digits just contribute their ascii value minus 48
-			weight = digit;
-		}
-		// keep a running total of weights
-		sum = sum + weight;
-	}	
- 	// avoid sum less than 10 (if characters below "0" allowed, this could happen)
- 	sum = Math.abs(sum) + 10;
-	// check digit is amount needed to reach next number divisible by ten 
-	return (10 - (sum % 10)) % 10;
-	
-}
-
 function isValidInteger(s){
 	var i;
     for (i = 0; i < s.length; i++){   
@@ -101,18 +42,6 @@ function isValidInteger(s){
     }
     // All characters are numbers.
     return true;
-}
-
-function stripCharsInBag(s, bag){
-	var i;
-    var returnString = "";
-    // Search through string's characters one by one.
-    // If character is not in bag, append to returnString.
-    for (i = 0; i < s.length; i++){   
-        var c = s.charAt(i);
-        if (bag.indexOf(c) == -1) returnString += c;
-    }
-    return returnString;
 }
 
 function daysInFebruary (year){

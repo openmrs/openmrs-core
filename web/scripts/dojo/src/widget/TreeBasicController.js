@@ -280,7 +280,8 @@ dojo.lang.extend(dojo.widget.TreeBasicController, {
 
 		parent.addChild(newChild, index);
 
-		this.expand(parent);
+		if (parent.expand)
+			this.expand(parent);
 
 		if (callFunc) {
 			callFunc.apply(callObj, [newChild]);

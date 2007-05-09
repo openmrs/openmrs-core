@@ -9,22 +9,16 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<c:if test="'Still working on this' == 'true'">
-		<openmrs:hasPrivilege privilege="Manage Relationships">
-			<li <c:if test="<%= request.getRequestURI().contains("relationship") %>">class="active"</c:if>>
-				<a href="${pageContext.request.contextPath}/admin/patients/relationship.list">
-					<spring:message code="Relationship.manage"/>
+	<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
+	<c:if test="${showTribe == 'true'}">
+		<openmrs:hasPrivilege privilege="Manage Tribes">
+			<li <c:if test="<%= request.getRequestURI().contains("tribe") %>">class="active"</c:if>>
+				<a href="${pageContext.request.contextPath}/admin/patients/tribe.list">
+					<spring:message code="Tribe.manage"/>
 				</a>
 			</li>
 		</openmrs:hasPrivilege>
 	</c:if>
-	<openmrs:hasPrivilege privilege="Manage Tribes">
-		<li <c:if test="<%= request.getRequestURI().contains("tribe") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/patients/tribe.list">
-				<spring:message code="Tribe.manage"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Identifier Types">
 		<li <c:if test="<%= request.getRequestURI().contains("patientIdentifierType") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/patients/patientIdentifierType.list">
@@ -32,4 +26,11 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:extensionPoint pointId="org.openmrs.admin.patients.localHeader" type="html">
+			<c:forEach items="${extension.links}" var="link">
+				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >
+					<a href="${pageContext.request.contextPath}/${link.key}"><spring:message code="${link.value}"/></a>
+				</li>
+			</c:forEach>
+	</openmrs:extensionPoint>
 </ul>

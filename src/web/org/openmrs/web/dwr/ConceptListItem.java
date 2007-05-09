@@ -6,7 +6,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptWord;
+import org.openmrs.api.context.Context;
 import org.openmrs.web.WebUtil;
 
 public class ConceptListItem {
@@ -21,6 +23,15 @@ public class ConceptListItem {
 	private Boolean retired;
 	private String hl7Abbreviation;
 	private String className;
+	private Boolean isSet;
+	private Boolean isNumeric;
+	private Double hiAbsolute;
+	private Double hiCritical;
+	private Double hiNormal;
+	private Double lowAbsolute;
+	private Double lowCritical;
+	private Double lowNormal;
+	private String units;
 
 	public ConceptListItem() { }
 	
@@ -52,6 +63,19 @@ public class ConceptListItem {
 			retired = concept.isRetired();
 			hl7Abbreviation = concept.getDatatype().getHl7Abbreviation();
 			className = concept.getConceptClass().getName();
+			isSet = concept.isSet();
+			isNumeric = concept.isNumeric();
+			if (isNumeric) {
+				// TODO: There's probably a better way to do this, but just doing "(ConceptNumeric) concept" throws "java.lang.ClassCastException: org.openmrs.Concept$$EnhancerByCGLIB$$85e62ac7"
+				ConceptNumeric num = Context.getConceptService().getConceptNumeric(concept.getConceptId());
+				hiAbsolute = num.getHiAbsolute();
+				hiCritical = num.getHiCritical();
+				hiNormal = num.getHiNormal();
+				lowAbsolute = num.getLowAbsolute();
+				lowCritical = num.getLowCritical();
+				lowNormal = num.getLowNormal();
+				units = num.getUnits();				
+			}
 		}
 	}
 	
@@ -136,4 +160,74 @@ public class ConceptListItem {
 	public void setClassName(String className) {
 		this.className = className;
 	}
+	
+	public Boolean getIsSet() {
+		return isSet;
+	}
+
+	public Double getHiAbsolute() {
+		return hiAbsolute;
+	}
+
+	public void setHiAbsolute(Double hiAbsolute) {
+		this.hiAbsolute = hiAbsolute;
+	}
+
+	public Double getHiCritical() {
+		return hiCritical;
+	}
+
+	public void setHiCritical(Double hiCritical) {
+		this.hiCritical = hiCritical;
+	}
+
+	public Double getHiNormal() {
+		return hiNormal;
+	}
+
+	public void setHiNormal(Double hiNormal) {
+		this.hiNormal = hiNormal;
+	}
+
+	public Double getLowAbsolute() {
+		return lowAbsolute;
+	}
+
+	public void setLowAbsolute(Double lowAbsolute) {
+		this.lowAbsolute = lowAbsolute;
+	}
+
+	public Double getLowCritical() {
+		return lowCritical;
+	}
+
+	public void setLowCritical(Double lowCritical) {
+		this.lowCritical = lowCritical;
+	}
+
+	public Double getLowNormal() {
+		return lowNormal;
+	}
+
+	public void setLowNormal(Double lowNormal) {
+		this.lowNormal = lowNormal;
+	}
+
+	public String getUnits() {
+		return units;
+	}
+
+	public void setUnits(String units) {
+		this.units = units;
+	}
+
+	public Boolean getIsNumeric() {
+		return isNumeric;
+	}
+
+	public void setIsNumeric(Boolean isNumeric) {
+		this.isNumeric = isNumeric;
+	}
+	
+	
 }

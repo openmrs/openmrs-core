@@ -1,28 +1,15 @@
 <%@page isErrorPage="true" %>
 <%@ page import="org.openmrs.web.WebUtil" %>
 <%@ page import="org.openmrs.web.WebConstants" %>
+<%@ page import="org.openmrs.util.OpenmrsConstants" %>
 <%@ page import="org.openmrs.api.APIAuthenticationException" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<%@ include file="/WEB-INF/template/header.jsp" %>
+<%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
 
 &nbsp;<br />
 
 <h2>An Internal Error has Occured</h2>
-
-<style>
-	#stackTrace {
-		display: none;
-		font-size: 11px;
-		padding: 2px;
-		width: 585px;
-	}
-	#exceptionMessage {
-		background-color: white;
-		padding: 1px;
-		color: black;
-	}
-</style>
 
 <script>
 	function showOrHide() {
@@ -57,7 +44,7 @@ try {
 	%>
 	
 	<br /><br />
-	Consult the <a href="<%= request.getContextPath() %>/help.jsp">help document</a>. <br />
+	Consult the <a href="<%= request.getContextPath() %>/help.htm">help document</a>. <br />
 	Contact your friendly neighborhood administrator if it cannot be resolved.
 	
 	<br /><br />
@@ -73,24 +60,38 @@ try {
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getAttribute("javax.servlet.error.request_uri"));
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 		}
-		else if (exception instanceof ServletException) {
-			// It's a ServletException: we should extract the root cause
-			ServletException sEx = (ServletException) exception;
-			Throwable rootCause = sEx.getRootCause();
-			if (rootCause == null)
-				rootCause = sEx;
-			out.println("<br><br>** Root cause is: "+ rootCause.getMessage());
-			rootCause.printStackTrace(new java.io.PrintWriter(out)); 
-		}
 		else {
-			// It's not a ServletException, so we'll just show it
-			exception.printStackTrace(new java.io.PrintWriter(out)); 
+			java.lang.StackTraceElement[] elements;
+			
+			if (exception instanceof ServletException) {
+				// It's a ServletException: we should extract the root cause
+				ServletException sEx = (ServletException) exception;
+				Throwable rootCause = sEx.getRootCause();
+				if (rootCause == null)
+					rootCause = sEx;
+				out.println("<br><br>** Root cause is: "+ rootCause.getMessage());
+				elements = rootCause.getStackTrace();
+			}
+			else {
+				// It's not a ServletException, so we'll just show it
+				elements = exception.getStackTrace(); 
+			}
+			for (StackTraceElement element : elements) {
+				if (element.getClassName().contains("openmrs"))
+					out.println("<b>" + element + "</b><br/>");
+				else
+					out.println(element + "<br/>");
+			}
 		}
 	} 
 	else  {
     	out.println("<br>No error information available");
 	} 
-
+	
+	// Display current version
+	out.println("<br><br>Version: " + OpenmrsConstants.OPENMRS_VERSION);
+	out.println("<br>Database Version: " + OpenmrsConstants.DATABASE_VERSION);
+	
 	// Display cookies
 	out.println("<br><br>Cookies:<br>");
 	Cookie[] cookies = request.getCookies();
@@ -104,7 +105,8 @@ try {
 	ex.printStackTrace(new java.io.PrintWriter(out));
 }
 %>
-		</div> <!-- close stack trace box -->
-	</div> <!-- close box -->
+	</div> <!-- close stack trace box -->
+	
+<openmrs:extensionPoint pointId="org.openmrs.uncaughtException" type="html" />
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/template/footerMinimal.jsp" %>

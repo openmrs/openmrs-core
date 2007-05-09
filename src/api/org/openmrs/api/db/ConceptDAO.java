@@ -108,6 +108,12 @@ public interface ConceptDAO {
 	public Drug getDrug(Integer drugId);
 	
 	/**
+	 * Return drug object corresponding to the given name
+	 * @return Drug
+	 */
+	public Drug getDrug(String drugName);
+	
+	/**
 	 * Return a list of drugs currently in the database
 	 * @return List of Drugs
 	 */
@@ -137,15 +143,30 @@ public interface ConceptDAO {
 	
 	/**
 	 * Return a Concept class matching the given identifier
+	 * @param i Integer
 	 * @return ConceptClass
 	 */
 	public ConceptClass getConceptClass(Integer i);
+	
+	/**
+	 * Return a Concept class matching the given identifier
+	 * @param name String
+	 * @return ConceptClass
+	 */
+	public ConceptClass getConceptClassByName(String name);
 	
 	/**
 	 * Return a list of concept datatypes currently in the database
 	 * @return List of ConceptDatatypes
 	 */
 	public List<ConceptDatatype> getConceptDatatypes();
+	
+	/**
+	 * Return concept datatype with given name
+	 * @param name
+	 * @return
+	 */
+	public ConceptDatatype getConceptDatatypeByName(String name);
 	
 	/**
 	 * Return a ConceptDatatype matching the given identifier
@@ -160,19 +181,30 @@ public interface ConceptDAO {
 	public List<ConceptSet> getConceptSets(Concept c);
 	
 	/**
+	 * @see org.openmrs.api.ConceptService#getSetsContainingConcept(org.openmrs.Concept)
+	 */
+	public List<ConceptSet> getSetsContainingConcept(Concept concept);
+	
+	/**
 	 * Return a concept numeric object given the concept id
 	 * @return ConceptNumeric
 	 */
 	public ConceptNumeric getConceptNumeric(Integer conceptId);
-	
+
 	/**
 	 * Searches on given phrase via the concept word table
 	 * @param phrase/search/words String
 	 * @param locale Locale
 	 * @param includeRetired boolean
+	 * @param requireClasses List<ConceptClass>
+	 * @param excludeClasses List<ConceptClass>
+	 * @param requireDatatypes List<ConceptDatatype>
+	 * @param excludeDatatypes List<ConceptDatatype>
 	 * @return
 	 */
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired);
+	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, 
+			List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+			List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes);
 	
 	/**
 	 * Searches on given phrase via the concept word table
@@ -182,7 +214,7 @@ public interface ConceptDAO {
 	 * @param locale Locale
 	 * @param Concept
 	 * @param includeRetired boolean
-	 * @return
+	 * @return list of concept words
 	 */
 	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired);
 	
@@ -232,4 +264,9 @@ public interface ConceptDAO {
 	public void proposeConcept(ConceptProposal cp);
 	
 	public Integer getNextAvailableId();
+
+	public List<Concept> getConceptsByClass(ConceptClass cc);
+	
+	public List<Concept> getConceptsWithDrugsInFormulary();
+	
 }

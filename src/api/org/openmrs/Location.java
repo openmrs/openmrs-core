@@ -1,6 +1,10 @@
 package org.openmrs;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+
+import org.openmrs.api.context.Context;
 
 /**
  * Location 
@@ -8,10 +12,11 @@ import java.util.Date;
  * @author Ben Wolfe
  * @version 1.0
  */
-public class Location implements java.io.Serializable {
+public class Location implements java.io.Serializable, Attributable<Location> {
 
 	public static final long serialVersionUID = 455634L;
-
+	public static final int LOCATION_UNKNOWN = 1;
+	
 	// Fields
 
 	private Integer locationId;
@@ -25,6 +30,8 @@ public class Location implements java.io.Serializable {
 	private String postalCode;
 	private String latitude;
 	private String longitude;
+	private String countyDistrict;
+	private String neighborhoodCell;
 	private User creator;
 	private Date dateCreated;
 
@@ -258,5 +265,81 @@ public class Location implements java.io.Serializable {
 	public String toString() {
 		return name;
 	}
+
+	/**
+	 * @return Returns the countyDistrict.
+	 */
+	public String getCountyDistrict() {
+		return countyDistrict;
+	}
+
+	/**
+	 * @param countyDistrict The countyDistrict to set.
+	 */
+	public void setCountyDistrict(String countyDistrict) {
+		this.countyDistrict = countyDistrict;
+	}
+
+	/**
+	 * @return Returns the neighborhoodCell.
+	 */
+	public String getNeighborhoodCell() {
+		return neighborhoodCell;
+	}
+
+	/**
+	 * @param neighborhoodCell The neighborhoodCell to set.
+	 */
+	public void setNeighborhoodCell(String neighborhoodCell) {
+		this.neighborhoodCell = neighborhoodCell;
+	}
+
+	
+	/**
+	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
+	 */
+	public List<Location> findPossibleValues(String searchText) {
+		try {
+			return Context.getEncounterService().findLocations(searchText);
+		}
+		catch (Exception e) {
+			return Collections.emptyList();
+		}
+	}
+
+	
+	/**
+	 * @see org.openmrs.Attributable#getPossibleValues()
+	 */
+	public List<Location> getPossibleValues() {
+		try {
+			return Context.getEncounterService().getLocations();
+		}
+		catch (Exception e) {
+			return Collections.emptyList();
+		}
+	}
+
+	
+	/**
+	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
+	 */
+	public Location hydrate(String locationId) {
+		try {
+			return Context.getEncounterService().getLocation(Integer.valueOf(locationId));
+		}
+		catch (Exception e) {
+			return new Location();
+		}
+	}
+
+	
+	/**
+	 * @see org.openmrs.Attributable#serialize()
+	 */
+	public String serialize() {
+		return "" + getLocationId();
+	}
+
 	
 }

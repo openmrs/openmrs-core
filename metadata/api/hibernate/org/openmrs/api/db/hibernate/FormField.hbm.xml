@@ -41,6 +41,9 @@
 		<property name="required" type="boolean" 
 			column="required" length="1" not-null="true"/>
 
+		<property name="sortWeight" type="float"
+			column="sort_weight" length="5" not-null="false" />
+
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
 		</many-to-one>

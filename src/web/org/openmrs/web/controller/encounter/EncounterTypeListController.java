@@ -1,7 +1,6 @@
 package org.openmrs.web.controller.encounter;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -53,13 +52,12 @@ public class EncounterTypeListController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		Locale locale = request.getLocale();
+		
 		String view = getFormView();
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			String[] encounterTypeList = request.getParameterValues("encounterTypeId");
-			AdministrationService as = context.getAdministrationService();
-			EncounterService os = context.getEncounterService();
+			AdministrationService as = Context.getAdministrationService();
+			EncounterService os = Context.getEncounterService();
 			
 			String success = "";
 			String error = "";
@@ -75,7 +73,7 @@ public class EncounterTypeListController extends SimpleFormController {
 					success += p + " " + deleted;
 				}
 				catch (APIException e) {
-					log.warn(e);
+					log.warn("Error deleting encounter type", e);
 					if (!error.equals("")) error += "<br>";
 					error += p + " " + notDeleted;
 				}
@@ -100,15 +98,12 @@ public class EncounterTypeListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		//default empty Object
 		List<EncounterType> encounterTypeList = new Vector<EncounterType>();
 		
 		//only fill the Object is the user has authenticated properly
-		if (context != null && context.isAuthenticated()) {
-			EncounterService os = context.getEncounterService();
+		if (Context.isAuthenticated()) {
+			EncounterService os = Context.getEncounterService();
 	    	encounterTypeList = os.getEncounterTypes();
 		}
     	

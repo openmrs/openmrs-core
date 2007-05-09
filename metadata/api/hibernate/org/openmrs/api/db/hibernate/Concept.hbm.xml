@@ -5,9 +5,9 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="Concept" table="concept">
+	<class name="Concept" table="concept" batch-size="25">
 		
-		<cache usage="read-write"/>
+		<!--  cache usage="read-write"/ -->
 		
 		<id name="conceptId" type="java.lang.Integer"
 			column="concept_id">
@@ -16,21 +16,14 @@
 
 		<property name="retired" type="java.lang.Boolean"
 			column="retired" length="1" not-null="true"/>
-		<property name="icd10" type="java.lang.String" column="icd10"
-			length="255" />
-		<property name="loinc" type="java.lang.String" column="loinc"
-			length="255" />
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 		<property name="version" type="java.lang.String"
 			column="version" length="50" /> 
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
-		<property name="units" type="java.lang.String" column="units"
-			length="50" />
 		<property name="set" type="java.lang.Boolean" column="is_set"
 			length="1" not-null="true" />
-		
 		
 		<!-- Associations -->
 
@@ -40,7 +33,7 @@
 			<column name="datatype_id" />
 		</many-to-one>
 
-		<set name="names" lazy="true" cascade="all-delete-orphan" 
+		<set name="names" lazy="true" cascade="all,delete-orphan,evict" 
 				table="concept_name" order-by="name asc">
 			<key column="concept_id" not-null="true" />
 			<composite-element class="ConceptName">
@@ -54,7 +47,7 @@
 			</composite-element>
 		</set>
 
-		<set name="answers" lazy="true" cascade="all" 
+		<set name="answers" lazy="true" cascade="all,evict" 
 				table="concept_answer" order-by="concept_answer_id asc" access="field">
 			<key column="concept_id" not-null="true" />
 			<composite-element class="ConceptAnswer">
@@ -72,7 +65,7 @@
 			that action via the .equals() and .hashCode() because we are using
 			a Set.
 		-->
-		<set name="synonyms" lazy="true" cascade="all" 
+		<set name="synonyms" lazy="true" cascade="all,evict" 
 			table="concept_synonym" order-by="synonym asc">
 			<key not-null="true">
 				<column name="concept_id" />
@@ -87,7 +80,7 @@
 		</set>
 		
 		<set name="conceptSets" table="concept_set" lazy="true" 
-				cascade="all" order-by="sort_weight asc">
+				cascade="all,evict" order-by="sort_weight asc">
 			<key not-null="true">
 				<column name="concept_set" />
 			</key>
@@ -116,7 +109,7 @@
 			<column name="creator" />
 		</many-to-one>
 		
-		<joined-subclass name="org.openmrs.ConceptNumeric" table="concept_numeric" extends="org.openmrs.Concept">
+		<joined-subclass name="org.openmrs.ConceptNumeric" table="concept_numeric" extends="org.openmrs.Concept" lazy="false">
 			<key column="concept_id" not-null="true" on-delete="cascade" />
 			<property name="hiAbsolute" type="java.lang.Double" column="hi_absolute" length="22" />
 			<property name="hiCritical" type="java.lang.Double" column="hi_critical" length="22" />
@@ -127,6 +120,15 @@
 			<property name="units" type="java.lang.String" column="units" length="50" />
 			<property name="precise" type="java.lang.Boolean" column="precise" length="1" not-null="true"/>
 		</joined-subclass>
+		
+		<joined-subclass name="org.openmrs.ConceptDerived" table="concept_derived" extends="org.openmrs.Concept" lazy="false">
+			<key column="concept_id" not-null="true" on-delete="cascade" />
+			<property name="rule" type="java.lang.String" column="rule" length="1000000" />
+			<property name="compileDate" type="java.util.Date" column="compile_date" />
+			<property name="compileStatus" type="java.lang.String" column="compile_status" length="255" />
+			<property name="className" type="java.lang.String" column="class_name" length="1024" />
+		</joined-subclass>
+		
 		
 	</class>
 

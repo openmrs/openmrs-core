@@ -12,9 +12,9 @@ public class Relationship implements java.io.Serializable {
 	// Fields
 
 	private Integer relationshipId;
-	private Person person;
-	private RelationshipType relationship;
-	private Person relative;
+	private Person personA;
+	private RelationshipType relationshipType;
+	private Person personB;
 	private User creator;
 	private Date dateCreated;
 	private Boolean voided = false;
@@ -32,7 +32,13 @@ public class Relationship implements java.io.Serializable {
 	public Relationship(Integer relationshipId) {
 		this.relationshipId = relationshipId;
 	}
-
+	
+	public Relationship(Person personA, Person personB, RelationshipType type) {
+		this.personA = personA;
+		this.personB = personB;
+		this.relationshipType = type;
+	}
+	
 	/** 
 	 * Compares two objects for similarity
 	 * 
@@ -97,31 +103,31 @@ public class Relationship implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the person.
+	 * @return Returns the personA.
 	 */
-	public Person getPerson() {
-		return person;
+	public Person getPersonA() {
+		return personA;
 	}
 
 	/**
 	 * @param person The person to set.
 	 */
-	public void setPerson(Person person) {
-		this.person = person;
+	public void setPersonA(Person personA) {
+		this.personA = personA;
 	}
 
 	/**
-	 * @return Returns the relationship.
+	 * @return Returns the relationship type.
 	 */
-	public RelationshipType getRelationship() {
-		return relationship;
+	public RelationshipType getRelationshipType() {
+		return relationshipType;
 	}
 
 	/**
-	 * @param relationship The relationship to set.
+	 * @param relationship The relationship type to set.
 	 */
-	public void setRelationship(RelationshipType relationship) {
-		this.relationship = relationship;
+	public void setRelationshipType(RelationshipType type) {
+		this.relationshipType = type;
 	}
 
 	/**
@@ -139,23 +145,32 @@ public class Relationship implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the relative.
+	 * @return Returns the personB.
 	 */
-	public Person getRelative() {
-		return relative;
+	public Person getPersonB() {
+		return personB;
 	}
 
 	/**
-	 * @param relative The relative to set.
+	 * @param personB The relative to set.
 	 */
-	public void setRelative(Person relative) {
-		this.relative = relative;
+	public void setPersonB(Person personB) {
+		this.personB = personB;
 	}
 
 	/**
+	 * @deprecated Use isVoided()
+	 * @see isVoided()
 	 * @return Returns the voided.
 	 */
-	public Boolean getVoided() {
+	protected Boolean getVoided() {
+		return isVoided();
+	}
+	
+	/**
+	 * @return returns the voided status
+	 */
+	public Boolean isVoided() {
 		return voided;
 	}
 
@@ -194,6 +209,8 @@ public class Relationship implements java.io.Serializable {
 		this.voidReason = voidReason;
 	}
 
-
+	public String toString() {
+		return personA + " is the " + relationshipType.getaIsToB() + " of " + personB;  
+	}
 
 }

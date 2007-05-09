@@ -38,9 +38,9 @@ public class FormFieldListItem {
 			maxOccurs = ff.getMaxOccurs();
 			required = ff.isRequired() == true ? "yes" : "no";
 			if (ff.getCreator() != null)
-				creator = ff.getCreator().getFirstName() + " " + ff.getCreator().getLastName();
+				creator = ff.getCreator().getPersonName().toString();
 			if (ff.getChangedBy() != null)
-				changedBy = ff.getChangedBy().getFirstName() + " " + ff.getChangedBy().getLastName();
+				changedBy = ff.getChangedBy().getPersonName().toString();
 		}
 	}
 

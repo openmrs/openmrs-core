@@ -37,6 +37,26 @@
 		</td>
 	</tr>
 	<tr>
+	<td><spring:message code="PatientIdentifierType.formatDescription"/></td>
+		<td>
+			<spring:bind path="patientIdentifierType.formatDescription">
+				<input type="text" name="${status.expression}" value="${fn:replace(status.value, "\"", "&quot;")}" size="50" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="PatientIdentifierType.required" /></td>
+		<td><spring:bind path="patientIdentifierType.required">
+			<input type="hidden" name="_${status.expression}">
+			<input type="checkbox" name="${status.expression}" value="true"
+				<c:if test="${status.value == true}">checked</c:if> />
+			<c:if test="${status.errorMessage != ''}">
+				<span class="error">${status.errorMessage}</span>
+			</c:if>
+		</spring:bind></td>
+	</tr>
+	<tr>
 		<td><spring:message code="PatientIdentifierType.checkDigit" /></td>
 		<td><spring:bind path="patientIdentifierType.checkDigit">
 			<input type="hidden" name="_${status.expression}">
@@ -51,7 +71,7 @@
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>
 			<td>
-				${patientIdentifierType.creator.firstName} ${patientIdentifierType.creator.lastName} -
+				${patientIdentifierType.creator.personName} -
 				<openmrs:formatDate date="${patientIdentifierType.dateCreated}" type="long" />
 			</td>
 		</tr>

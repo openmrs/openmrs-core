@@ -6,8 +6,7 @@
 ////////////////////////////////////////////////////////
 
 <%
-	org.openmrs.api.context.Context context = (org.openmrs.api.context.Context)session.getAttribute(org.openmrs.web.WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-	String datePattern = org.openmrs.util.OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase());
+	String datePattern = org.openmrs.util.OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(org.openmrs.api.context.Context.getLocale().toString().toLowerCase());
 	pageContext.setAttribute("datePatternSeparator", datePattern.substring(2,3));
 	pageContext.setAttribute("datePatternStart", datePattern.substring(0,1).toLowerCase());
 %>

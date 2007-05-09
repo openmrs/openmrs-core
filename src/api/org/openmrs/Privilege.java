@@ -27,6 +27,11 @@ public class Privilege implements java.io.Serializable {
 		this.privilege = privilege;
 	}
 	
+	public Privilege(String privilege, String description) {
+		this.privilege = privilege;
+		this.description = description;
+	}
+	
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof Privilege)) return false;
 		return privilege.equals(((Privilege)obj).privilege);

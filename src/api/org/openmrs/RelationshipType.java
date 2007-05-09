@@ -12,8 +12,11 @@ public class RelationshipType implements java.io.Serializable {
 	// Fields
 
 	private Integer relationshipTypeId;
-	private String name;
+	private String aIsToB;
+	private String bIsToA;
 	private String description;
+	private Integer weight = 0;
+	private Boolean preferred = false;
 	private User creator;
 	private Date dateCreated;
 
@@ -35,7 +38,7 @@ public class RelationshipType implements java.io.Serializable {
 	 * @return boolean true/false whether or not they are the same objects
 	 */
 	public boolean equals(Object obj) {
-		if (obj instanceof RelationshipType) {
+		if (relationshipTypeId != null && obj instanceof RelationshipType) {
 			RelationshipType m = (RelationshipType)obj;
 			return (relationshipTypeId.equals(m.getRelationshipTypeId()));
 		}
@@ -78,17 +81,77 @@ public class RelationshipType implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the name.
+	 * @return the weight
 	 */
-	public String getName() {
-		return name;
+	public Integer getWeight() {
+		return weight;
 	}
 
 	/**
-	 * @param relationshipType The name to set.
+	 * @param weight the weight to set
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setWeight(Integer weight) {
+		this.weight = weight;
+	}
+
+	/**
+	 * The java bean spec says that if an attribute has the second letter
+	 * capitablized (as the "I" is), the initial "a" is not to be capitalized.
+	 * Both Spring and Hibernate use this "getter" definition
+	 *  
+	 * @return the aIsToB
+	 */
+	public String getaIsToB() {
+		return aIsToB;
+	}
+
+	/**
+	 * @param isToB the aIsToB to set
+	 */
+	public void setaIsToB(String aisToB) {
+		aIsToB = aisToB;
+	}
+
+	/**
+	 * @return the bIsToA
+	 */
+	public String getbIsToA() {
+		return bIsToA;
+	}
+
+	/**
+	 * @deprecated use isPreferred()
+	 * @return the preferred status
+	 */
+	private Boolean getPreferred() {
+		return isPreferred();
+	}
+	
+	/**
+	 * "Preferred" relationship types are those that should be shown as
+	 * default types when adding/editing a person's relationships
+	 * 
+	 * @return the preferred status
+	 */
+	public Boolean isPreferred() {
+		return preferred;
+	}
+
+	/**
+	 * "Preferred" relationship types are those that should be shown as
+	 * default types when adding/editing a person's relationships
+	 *
+	 * @param preferred sets the preferred status of this relationship type
+	 */
+	public void setPreferred(Boolean preferred) {
+		this.preferred = preferred;
+	}
+
+	/**
+	 * @param isToA the bIsToA to set
+	 */
+	public void setbIsToA(String bisToA) {
+		bIsToA = bisToA;
 	}
 
 	/**
@@ -117,6 +180,10 @@ public class RelationshipType implements java.io.Serializable {
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
+	}
+	
+	public String toString() {
+		return getaIsToB() + "/" + getbIsToA();
 	}
 
 }

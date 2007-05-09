@@ -3,7 +3,7 @@ package org.openmrs;
 import java.util.Date;
 
 /**
- * ConceptConceptSet 
+ * This represents a single concept within a concept set.
  */
 public class ConceptSet implements java.io.Serializable {
 

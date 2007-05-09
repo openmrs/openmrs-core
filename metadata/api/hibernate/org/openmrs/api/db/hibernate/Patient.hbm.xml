@@ -5,76 +5,29 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<class name="Patient" table="patient">
+	<joined-subclass name="Patient" table="patient" extends="Person">
 
-		<id name="patientId" type="int" column="patient_id"
-			unsaved-value="0">
-			<generator class="native" />
-		</id>
+		<key column="patient_id" not-null="true" on-delete="cascade" />
 
-		<property name="gender" type="java.lang.String" column="gender"
-			not-null="true" length="50" />
+		<property name="patientId" type="int" not-null="true"
+			column="patient_id" update="false" insert="false" />
 
-		<property name="race" type="java.lang.String" column="race"
-			length="50" />
+		<many-to-one name="tribe" class="Tribe" />
 
-		<property name="birthdate" type="java.util.Date"
-			column="birthdate" length="10" />
-
-		<property name="birthdateEstimated" type="boolean"
-			column="birthdate_estimated" />
-
-		<property name="birthplace" type="java.lang.String"
-			column="birthplace" length="50" />
-
-		<many-to-one name="tribe" class="Tribe">
-			<column name="tribe" />
-		</many-to-one>
-
-		<property name="citizenship" type="java.lang.String"
-			column="citizenship" length="50" />
-
-		<property name="mothersName" type="java.lang.String"
-			column="mothers_name" length="50" />
-		
-		<many-to-one name="civilStatus" class="Concept" not-null="false">
-			<column name="civil_status" />
-		</many-to-one>
-		
-		<property name="dead" type="boolean" not-null="true"/>
-		
-		<property name="deathDate" type="java.util.Date"
-			column="death_date" length="19" />
-
-		<property name="causeOfDeath" type="java.lang.String"
-			column="cause_of_death" length="255" />
-
-		<property name="healthDistrict" type="java.lang.String"
-			column="health_district" length="255" />
-
-		<property name="healthCenter" type="int" column="health_center"
-			length="11" />
-
-		<many-to-one name="creator" class="User">
-			<column name="creator" />
-		</many-to-one>
+		<many-to-one name="creator" class="User" lazy="no-proxy" />
 
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 
-		<many-to-one name="changedBy" class="User">
-			<column name="changed_by" />
-		</many-to-one>
+		<many-to-one name="changedBy" class="User" column="changed_by" />
 
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
 
-		<property name="voided" type="boolean" column="voided" not-null="true"/>
+		<property name="voided" type="boolean" not-null="true" />
 
-		<many-to-one name="voidedBy" class="User">
-			<column name="voided_by" />
-		</many-to-one>
-		
+		<many-to-one name="voidedBy" class="User" column="voided_by" />
+
 		<property name="dateVoided" type="java.util.Date"
 			column="date_voided" length="19" />
 
@@ -83,42 +36,14 @@
 
 		<!-- Associations -->
 
-		<!-- bi-directional one-to-many association to PatientAddress -->
-		<set name="addresses" lazy="true" inverse="true" cascade="all-delete-orphan"
-			order-by="voided asc, preferred desc, date_created desc">
-			<key column="patient_id" not-null="true" />
-			<one-to-many class="PatientAddress" />
-		</set>
-		
-		<!-- bi-directional one-to-many association to PatientName -->
-		<set name="names" lazy="false" inverse="true" cascade="all-delete-orphan" order-by="voided asc, preferred desc, date_created desc">
-			<key column="patient_id" />
-			<one-to-many class="PatientName" />
-		</set>
-		
 		<!-- bi-directional one-to-many association to PatientIdentifier -->
-		<set name="identifiers" lazy="true" cascade="all-delete-orphan" 
-			table="patient_identifier" order-by="voided desc,preferred desc,identifier_type desc,date_created desc">
-			<key not-null="true">
-				<column name="patient_id" />
-			</key>
-			<composite-element class="org.openmrs.PatientIdentifier" >
-				<parent name="patient" />
-				<property name="identifier" type="java.lang.String" length="50" not-null="true"/>
-				<many-to-one name="identifierType" class="PatientIdentifierType" column="identifier_type" not-null="true" />
-				<many-to-one name="location" class="Location" column="location_id" />
-				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
-				<property name="dateVoided" type="java.util.Date" column="date_voided"/>
-				<property name="preferred" type="boolean" not-null="true" />
-				<property name="voided" type="boolean" not-null="true" />
-				<property name="voidReason" type="java.lang.String" column="void_reason" length="255"/>
-				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
-				<many-to-one name="voidedBy" class="User" column="voided_by" />
-			</composite-element>
+		<set name="identifiers" lazy="true" cascade="all-delete-orphan"
+			table="patient_identifier" inverse="true"
+			order-by="voided asc,preferred desc,identifier_type desc,date_created desc">
+			<key not-null="true" column="patient_id" />
+			<one-to-many class="PatientIdentifier" />
 		</set>
 
-		<one-to-one name="person" property-ref="patient" />
-
-	</class>
+	</joined-subclass>
 
 </hibernate-mapping>

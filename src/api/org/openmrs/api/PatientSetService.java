@@ -1,112 +1,374 @@
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Concept;
+import org.openmrs.Drug;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.db.DAOContext;
+import org.openmrs.Patient;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
+import org.openmrs.reporting.PatientAnalysis;
 import org.openmrs.reporting.PatientSet;
-import org.openmrs.util.OpenmrsConstants;
+import org.springframework.transaction.annotation.Transactional;
 
-public class PatientSetService {
+@Transactional
+public interface PatientSetService {
 
-	private Context context;
-	private DAOContext daoContext;
-	
-	public PatientSetService(Context c, DAOContext d) {
-		this.context = c;
-		this.daoContext = d;
-	}
+	public void setPatientSetDAO(PatientSetDAO dao);
 
-	private PatientSetDAO getPatientSetDAO() {
-		if (!context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENT_SETS)) {
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENT_SETS);
-		}
-		return daoContext.getPatientSetDAO();
-	}
-	
 	/**
 	 * @param ps The set you want to export as XML
 	 * @return an XML representation of this patient-set, including patient characteristics, and observations
 	 */
-	public String exportXml(PatientSet ps) {
-		return getPatientSetDAO().exportXml(ps);
-	}
+	@Transactional(readOnly=true)
+	public String exportXml(PatientSet ps);
 
-	public String exportXml(Integer patientId) {
-		return getPatientSetDAO().exportXml(patientId);
-	}
-	
-	public PatientSet getAllPatients() throws DAOException {
-		return getPatientSetDAO().getAllPatients();
-	}
-	
-	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
-		return getPatientSetDAO().getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate);
-	}
-	
-	public PatientSet getPatientsHavingNumericObs(Concept concept, PatientSetService.Modifier modifier, Number value) {
-		return getPatientsHavingNumericObs(concept.getConceptId(), modifier, value);
-	}
-	
-	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.Modifier modifier, Number value) {
-		return getPatientSetDAO().getPatientsHavingNumericObs(conceptId, modifier, value);
-	}
-	
-	public PatientSet getPatientsHavingTextObs(Concept concept, String value) {
-		return getPatientsHavingTextObs(concept.getConceptId(), value);
-	}
-	
-	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value) {
-		return getPatientSetDAO().getPatientsHavingTextObs(conceptId, value);
-	}
-	
-	public PatientSet getPatientsHavingLocation(Location loc) {
-		return getPatientsHavingLocation(loc.getLocationId());
-	}
-	
-	public PatientSet getPatientsHavingLocation(Integer locationId) {
-		return getPatientSetDAO().getPatientsHavingLocation(locationId);
-	}
-	
-	public Map<Integer, String> getShortPatientDescriptions(PatientSet patients) {
-		return getPatientSetDAO().getShortPatientDescriptions(patients);
-	}
-	
-	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) {
-		return getPatientSetDAO().getObservations(patients, concept);
-	}
+	@Transactional(readOnly=true)
+	public String exportXml(Integer patientId);
 
-	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
-		return getPatientSetDAO().getEncountersByType(patients, encType);
-	}
+	@Transactional(readOnly=true)
+	public PatientSet getAllPatients() throws DAOException;
+
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsByCharacteristics(String gender,
+			Date minBirthdate, Date maxBirthdate) throws DAOException;
+
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsByCharacteristics(String gender,
+			Date minBirthdate, Date maxBirthdate, Integer minAge,
+			Integer maxAge, Boolean aliveOnly, Boolean deadOnly)
+			throws DAOException;
+
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingNumericObs(Integer conceptId,
+			TimeModifier timeModifier, PatientSetService.Modifier modifier,
+			Number value, Date fromDate, Date toDate);
 	
-	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) {
-		return getPatientSetDAO().getPatientAttributes(patients, className, property, returnAll);
-	}
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingObs(Integer conceptId,
+			TimeModifier timeModifier, Modifier modifier, Object value,
+			Date fromDate, Date toDate);
 	
-	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String classNameDotProperty, boolean returnAll) {
-		String[] temp = classNameDotProperty.split("\\.");
-		if (temp.length != 2) {
-			throw new IllegalArgumentException(classNameDotProperty + " must be ClassName.property");
-		}
-		return getPatientAttributes(patients, temp[0], temp[1], returnAll);
-	}
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Date fromDate, Date toDate, Integer minCount, Integer maxCount);
 	
-	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) {
-		return getPatientSetDAO().getCharacteristics(patients);
-	}
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsByProgramAndState(Program program, ProgramWorkflowState state, Date fromDate, Date toDate);
+
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsInProgram(Program program, Date fromDate, Date toDate);
 	
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime);
+	
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingTextObs(Concept concept, String value, TimeModifier timeModifier);
+
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier);
+	
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingLocation(Location loc);
+	
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingLocation(Location loc, PatientLocationMethod method);
+
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingLocation(Integer locationId);
+	
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingLocation(Integer locationId, PatientLocationMethod method);
+
+	/**
+	 * Returns a PatientSet of patient who had drug orders for a set of drugs active on a certain date.
+	 * Can also be used to find patient with no drug orders on that date.
+	 * @param patientIds Collection of patientIds you're interested in. NULL means all patients.
+	 * @param takingAny Collection of drugIds the patient is taking. (Or the empty set to mean "any drug" or NULL to mean "no drugs")
+	 * @param onDate Which date to look at the patients' drug orders. (NULL defaults to now().)
+	 */
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingDrugOrder(
+			Collection<Integer> patientIds, Collection<Integer> takingIds,
+			Date onDate);
+
+	/**
+	 * Returns a PatientSet of patient who had drug orders for a set of drugs active between a pair of dates.
+	 * Can also be used to find patient with no drug orders on that date.
+	 * @param patientIds Collection of patientIds you're interested in. NULL means all patients.
+	 * @param drugIds Collection of drugIds the patient is taking. (Or the empty set to mean "any drug" or NULL to mean "no drugs")
+	 * @param groupMethod whether to do NONE, ALL, or ANY of the list of specified ids.
+	 * @param fromDate Beginning of date range to look at (NULL defaults to toDate if that isn't null, or now() if it is.) 
+	 * @param toDate End of date range to look at (NULL defaults to fromDate if that isn't null, or now() if it is.)
+	 */
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingDrugOrder(
+			Collection<Integer> patientIds, Collection<Integer> drugIds, GroupMethod groupMethod,
+			Date fromDate, Date toDate);
+	
+	/**
+	 * @return A PatientSet of patients who had drug order for particular drugs or generics, with start dates within a range, with end dates within a range, and a reason for discontinuation. 
+	 */
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingDrugOrder(
+			List<Drug> drug, List<Concept> drugConcept,
+			Date startDateFrom, Date startDateTo,
+			Date stopDateFrom, Date stopDateTo,
+			Boolean discontinued, List<Concept> discontinuedReason);
+	
+	/**
+	 * At least one of attribute and value must be non-null
+	 * @param attribute if not null, look for this attribute
+	 * @param value if not null, look for this value
+	 * @return PatientSet of patients who have a person attribute (optionally) with attributeType of attribute and (optionally) value of value.
+	 */
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value);
+	
+	@Transactional(readOnly=true)
+	public Map<Integer, String> getShortPatientDescriptions(
+			Collection<Integer> patientIds);
+
+	@Transactional(readOnly=true)
+	public Map<Integer, List<Obs>> getObservations(PatientSet patients,
+			Concept concept);
+
+	/**
+	 * Date range is inclusive of both endpoints 
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, List<Obs>> getObservations(PatientSet patients,
+			Concept concept, Date fromDate, Date toDate);
+
+	/**
+	 * 
+	 * Map<patientId, List<Obs values>>
+	 * 
+	 * @param patients
+	 * @param c
+	 * @return Map<patientId, List<Obs values>>
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c);
+	
+	/**
+	 * Returns a mapping from patient id to obs for concept <code>c</code>
+	 * 
+	 * The returned List< attribute value > is [obs value, attr value, attr value, attr value...]
+	 * The returned List<List< attribute value >> represents the obs rows 
+	 * 
+	 * @param patients
+	 * @param c
+	 * @param attributes list of attributes
+	 * @return <code>Map<patientId, List<List< attribute value >>></code>
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c, List<String> attributes);
+	
+	/**
+	 * 
+	 * @param patients
+	 * @param encType
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType);
+	
+	/**
+	 * 
+	 * @param patients
+	 * @param encTypes
+	 * @param attr
+	 * @return
+	 */
+	public Map<Integer, Object> getEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr);
+	
+	/**
+	 * 
+	 * @param patients
+	 * @param encType
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, List<EncounterType> encType);
+
+	/**
+	 * 
+	 * @param patients
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, Encounter> getEncounters(PatientSet patients);
+	
+	/**
+	 * 
+	 * @param patients
+	 * @param encType
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, Encounter> getFirstEncountersByType(
+			PatientSet patients, EncounterType encType);
+	
+	/**
+	 * 
+	 * @param patients
+	 * @param types
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, List<EncounterType> types);
+	
+
+	/**
+	 * 
+	 * @param patients
+	 * @param encTypes
+	 * @param attr
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, Object> getFirstEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr);
+	
+	
+	/**
+	 * 
+	 * @param patients
+	 * @param className
+	 * @param property
+	 * @param returnAll
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, Object> getPatientAttributes(PatientSet patients,
+			String className, String property, boolean returnAll);
+
+	/**
+	 * 
+	 * @param patients
+	 * @param classNameDotProperty
+	 * @param returnAll
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, Object> getPatientAttributes(PatientSet patients,
+			String classNameDotProperty, boolean returnAll);
+
+	/**
+	 * 
+	 * @param patients
+	 * @param attributeName
+	 * @param joinClass
+	 * @param joinProperty
+	 * @param outputColumn
+	 * @param returnAll
+	 * @return
+	 */@Transactional(readOnly=true)
+	public Map<Integer, Object> getPersonAttributes(PatientSet patients,
+			String attributeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll);
+	
+	/**
+	 * 
+	 * @param patients
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, Map<String, Object>> getCharacteristics(
+			PatientSet patients);
+
+	/**
+	 * 
+	 * @param identifiers
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public PatientSet convertPatientIdentifier(List<String> identifiers);
+	
+	/**
+	 * 
+	 * @param patientIds
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public List<Patient> getPatients(Collection<Integer> patientIds);
+
+	/**
+	 * 
+	 * @param ps
+	 */
+	public void setMyPatientSet(PatientSet ps);
+
+	/**
+	 * 
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public PatientSet getMyPatientSet();
+
+	/**
+	 * 
+	 * @param ptId
+	 */
+	public void addToMyPatientSet(Integer ptId);
+
+	/**
+	 * 
+	 * @param ptId
+	 */
+	public void removeFromMyPatientSet(Integer ptId);
+
+	public void clearMyPatientSet();
+
+	@Transactional(readOnly=true)
+	public Map<Integer, PatientState> getCurrentStates(PatientSet ps,
+			ProgramWorkflow wf);
+
+	@Transactional(readOnly=true)
+	public Map<Integer, PatientProgram> getCurrentPatientPrograms(
+			PatientSet ps, Program program);
+
+	@Transactional(readOnly=true)
+	public Map<Integer, PatientProgram> getPatientPrograms(PatientSet ps,
+			Program program);
+	
+	@Transactional(readOnly=true)
+	public Map<Integer, List<Relationship>> getRelationships(PatientSet ps, RelationshipType relType);
+
+	/**
+	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's null) 
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(PatientSet ps,
+			Concept drugSet);
+
+	/**
+	 * @return all active or finished drug orders whose drug concept is in the given set (or all drugs if that's null) 
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, List<DrugOrder>> getDrugOrders(PatientSet ps,
+			Concept drugSet);
+	
+	public void setMyPatientAnalysis(PatientAnalysis pa);
+
+	@Transactional(readOnly=true)
+	public PatientAnalysis getMyPatientAnalysis();
+
 	public enum Modifier {
-		EXISTS (""),
 		LESS_THAN ("<"),
 		LESS_EQUAL ("<="),
 		EQUAL ("="),
@@ -120,6 +382,36 @@ public class PatientSetService {
 		public String getSqlRepresentation() {
 			return sqlRep;
 		}
+	}
+	
+	public enum TimeModifier {
+		ANY,
+		NO,
+		FIRST,
+		LAST,
+		MIN,
+		MAX,
+		AVG;
+	}
+
+	public enum BooleanOperator {
+		AND,
+		OR,
+		NOT;
+	}
+	
+	// probably should combine this with TimeModifier
+	public enum GroupMethod {
+		ANY,
+		ALL,
+		NONE;
+	}
+	
+	public enum PatientLocationMethod {
+		EARLIEST_ENCOUNTER,
+		LATEST_ENCOUNTER,
+		ANY_ENCOUNTER,
+		PATIENT_HEALTH_CENTER
 	}
 	
 }

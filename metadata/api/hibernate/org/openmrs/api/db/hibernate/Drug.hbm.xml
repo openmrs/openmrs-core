@@ -38,58 +38,22 @@
         not-null="true"
     />
     <property
-        name="dailyMgPerKg"
-        type="java.lang.Double"
-        column="daily_mg_per_kg"
-        length="22"
-    />
-    <property
-        name="dosageForm"
-        type="java.lang.String"
-        column="dosage_form"
-        length="255"
-    />
-    <property
         name="doseStrength"
         type="java.lang.Double"
         column="dose_strength"
         length="22"
     />
     <property
-        name="inn"
-        type="java.lang.String"
-        column="inn"
-        length="2147483647"
-    />
-    <property
-        name="maximumDose"
+        name="maximumDailyDose"
         type="java.lang.Double"
-        column="maximum_dose"
+        column="maximum_daily_dose"
         length="22"
     />
     <property
-        name="minimumDose"
+        name="minimumDailyDose"
         type="java.lang.Double"
-        column="minimum_dose"
+        column="minimum_daily_dose"
         length="22"
-    />
-    <property
-        name="route"
-        type="java.lang.String"
-        column="route"
-        length="255"
-    />
-    <property
-        name="shelfLife"
-        type="java.lang.Integer"
-        column="shelf_life"
-        length="11"
-    />
-    <property
-        name="therapyClass"
-        type="java.lang.Integer"
-        column="therapy_class"
-        length="11"
     />
     <property
         name="units"
@@ -104,6 +68,26 @@
         not-null="true"
         length="19"
     />
+    <property
+        name="voided"
+        type="java.lang.Boolean"
+        column="voided"
+        length="1"
+        not-null="true"
+    />
+	<property
+        name="dateVoided"
+        type="java.util.Date"
+        column="date_voided"
+        not-null="false"
+        length="19"
+    />
+    <property
+        name="voidReason"
+        type="java.lang.String"
+        column="void_reason"
+        length="255"
+    />
 
     <!-- Associations -->
   
@@ -115,6 +99,23 @@
     >
         <column name="concept_id" />
     </many-to-one>
+	<!-- bi-directional many-to-one association to Concept -->
+    <many-to-one
+        name="dosageForm"
+        class="org.openmrs.Concept"
+        not-null="false"
+    >
+        <column name="dosage_form" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Concept -->
+    <many-to-one
+        name="route"
+        class="org.openmrs.Concept"
+        not-null="false"
+    >
+        <column name="route" />
+    </many-to-one>
+
     <!-- bi-directional one-to-many association to DrugOrder -->
     <!--
     <set
@@ -138,6 +139,14 @@
         not-null="true"
     >
         <column name="creator" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="voidedBy"
+        class="org.openmrs.User"
+        not-null="false"
+    >
+        <column name="voided_by" />
     </many-to-one>
 
 </class>

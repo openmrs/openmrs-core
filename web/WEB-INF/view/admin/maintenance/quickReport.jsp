@@ -5,7 +5,7 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <br />
 <h2><spring:message code="QuickReport.manage"/></h2>
@@ -28,6 +28,18 @@
 			else
 				rows[i].style.display = "none";
 		}
+	}
+	
+	function clearAutoComplete() {
+		if (document.getElementsByTagName) {
+		var inputs = document.getElementsByTagName("input");
+		for (var i=0;i<inputs.length; i++) {
+			if (inputs[i].onclick &&
+				inputs[i].onclick.toString().indexOf("showCalendar") != -1) {
+					inputs[i].setAttribute("autocomplete", "on");
+			}
+		}
+	}
 	}
 
 </script>
@@ -67,7 +79,7 @@
 		
 	</table>
 	<br/>
-	<input type="submit" value='<spring:message code="QuickReport.view" />' />
+	<input type="submit" value='<spring:message code="QuickReport.view" />' onClick="clearAutoComplete()" />
 </form>
 
 <br/>

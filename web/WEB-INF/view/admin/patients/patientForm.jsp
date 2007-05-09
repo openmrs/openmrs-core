@@ -1,15 +1,12 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ page import="org.openmrs.PatientName" %>
-<%@ page import="org.openmrs.PatientIdentifier" %>
-<%@ page import="org.openmrs.PatientAddress" %>
 
 <openmrs:require privilege="Edit Patients" otherwise="/login.htm" redirect="/admin/patients/patient.form"/>
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script src="<%= request.getContextPath() %>/scripts/calendar/calendar.js"></script>
-<script src="<%= request.getContextPath() %>/scripts/validation.js"></script>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/validation.js" />
 
 <script>
 	// Saves the last tab clicked on (aka "current" or "selected" tab)
@@ -42,10 +39,10 @@
 		if (tab != null && tab.id != null) {
 			var data = document.getElementById(tab.id + "Data");
 			if (data != null) {
-				tab.className = "selected";                             //set the tab as selected
+				addClass(tab, 'selected');                              //set the tab as selected
 				data.style.display = "";                                //show the data box
 				if (lastTab[type] != null && lastTab[type] != tab) {    //if there was a last tab
-					lastTab[type].className = "";                       //set the last tab as unselected
+					removeClass(lastTab[type], 'selected');             //set the last tab as unselected
 					var lastData = document.getElementById(lastTab[type].id + "Data");
 					if (lastData != null) 
 						lastData.style.display = "none";                //hide last data tab
@@ -126,16 +123,16 @@
 		tab.childNodes[child].innerHTML = value;
 	}
 	
-	function voidedBoxClick(chk) {
+	function voidedBoxClicked(chk) {
 		var parent = chk.parentNode;
 		while (parent.id.indexOf("Data") == -1)
 			parent = parent.parentNode;
 		var tabId = parent.id.substring(0, parent.id.lastIndexOf("Data"));
 		var tab = document.getElementById(tabId);
 		if (chk.checked == true)
-			tab.style["text-decoration"] = "";	//TODO find previous text-decoration ?
+			addClass(tab, 'voided');
 		else
-			tab.style["text-decoration"] = "line-through";
+			removeClass(tab, 'voided');
 	}
 	
 	function removeBlankData() {
@@ -168,8 +165,8 @@
 	.tabBar {
 		float: left;
 		font-size: 11px;
-		width: 150px;
-	}
+		width: 158px;
+		}
 		.tabBar a {
 			display: block;
 			border-width: 2px;
@@ -188,7 +185,7 @@
 			border-color: navy;
 		}
 	.tabBoxes {
-		margin-left: 148px;
+		margin-left: 156px;
 		border: 2px solid navy;
 		padding: 3px;
 		min-height: 150px;
@@ -207,7 +204,21 @@
 
 <h2><spring:message code="Patient.title"/></h2>
 
+<c:if test="${patient.voided}">
+	<div id="patientFormVoided" class="retiredMessage">
+		<div><spring:message code="Patient.voidedMessage"/></div>
+	</div>
+</c:if>
+
+<c:if test="${patient.dead}">
+	<div id="patientFormDeceased" class="retiredMessage">
+		<div><spring:message code="Patient.patientDeceased"/></div>
+	</div>
+</c:if>
+
 <c:if test="${patient.patientId != null}">
+	<a href="${pageContext.request.contextPath}/patientDashboard.form?patientId=${patient.patientId}"><spring:message code="patientDashboard.viewDashboard"/></a>
+	|
 	<a href="${pageContext.request.contextPath}/admin/patients/mergePatients.form?patientId=${patient.patientId}"><spring:message code="Patient.mergeThis"/></a><br/><br/>
 </c:if>
 
@@ -228,16 +239,16 @@
 		</spring:hasBindErrors>
 		<div id="pIds">
 			<div class="tabBar" id="pIdTabBar">
-				<c:forEach var="identifier" items="${patient.identifiers}" varStatus="status">
-					<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifier${status.index}" <c:if test="${identifier.voided}">class='voided'</c:if>><span>${identifier.identifierType.name}</span>&nbsp;</a>
+				<c:forEach var="identifier" items="${patient.identifiers}" varStatus="varStatus">
+					<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifier${varStatus.index}" <c:if test="${identifier.voided}">class='voided'</c:if>><span>${identifier.identifierType.name}</span>&nbsp;</a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifierTab" style="display: none"><span></span>&nbsp;</a>
 				<input type="button" onClick="return addNew('identifier');" class="addNew" id="identifier" value="Add New Identifier"/>
 			</div>
 			<div class="tabBoxes" id="identifierDataBoxes">
-				<c:forEach var="identifier" items="${patient.identifiers}" varStatus="status">
-					<spring:nestedPath path="patient.identifiers[${status.index}]">
-						<div id="identifier${status.index}Data" class="tabBox">
+				<c:forEach var="identifier" items="${patient.identifiers}" varStatus="varStatus">
+					<spring:nestedPath path="patient.identifiers[${varStatus.index}]">
+						<div id="identifier${varStatus.index}Data" class="tabBox">
 							<%@ include file="include/editPatientIdentifier.jsp" %>
 							<!-- <input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value="Remove this identifier"/><br/> --> <br/>
 						</div>
@@ -260,24 +271,24 @@
 		</spring:hasBindErrors>
 		<div id="pNames">
 			<div class="tabBar" id="pNameTabBar">
-				<c:forEach var="name" items="${patient.names}" varStatus="status">
-					<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="name${status.index}" <c:if test="${name.voided}">class='voided'</c:if>><span>${name.givenName}</span>&nbsp;<span>${name.familyName}</span></a>
+				<c:forEach var="name" items="${patient.names}" varStatus="varStatus">
+					<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="name${varStatus.index}" <c:if test="${name.voided}">class='voided'</c:if>><span>${name.givenName}</span>&nbsp;<span>${name.familyName}</span></a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="nameTab" style="display: none"><span></span>&nbsp;<span></span></a>
 				<input type="button" onClick="return addNew('name');" class="addNew" id="name" value="Add New Name"/>
 			</div>
 			<div class="tabBoxes" id="nameDataBoxes">
-				<c:forEach var="name" items="${patient.names}" varStatus="status">
-					<spring:nestedPath path="patient.names[${status.index}]">
-						<div id="name${status.index}Data" class="tabBox">
-							<%@ include file="include/editPatientName.jsp" %>
+				<c:forEach var="name" items="${patient.names}" varStatus="varStatus">
+					<spring:nestedPath path="patient.names[${varStatus.index}]">
+						<div id="name${varStatus.index}Data" class="tabBox">
+							<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true" />
 							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this name"/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="nameData" class="tabBox">
 					<spring:nestedPath path="emptyName">
-						<%@ include file="include/editPatientName.jsp" %>
+						<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true" />
 						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this name"/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
@@ -292,24 +303,25 @@
 		</spring:hasBindErrors>
 		<div id="pAddresses">
 			<div class="tabBar" id="pAddressesTabBar">
-				<c:forEach var="address" items="${patient.addresses}" varStatus="status">
-					<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="address${status.index}" <c:if test="${address.voided}">class='voided'</c:if>><span>${address.cityVillage}</span>&nbsp;</a>
+				<c:forEach var="address" items="${patient.addresses}" varStatus="varStatus">
+					<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="address${varStatus.index}" <c:if test="${address.voided}">class='voided'</c:if>><span>${address.cityVillage}</span>&nbsp;</a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="addressTab" style="display: none"><span></span>&nbsp;</a>
 				<input type="button" onClick="return addNew('address');" class="addNew" id="address" value="Add New Address"/>			
 			</div>
 			<div class="tabBoxes" id="addressDataBoxes">
-				<c:forEach var="address" items="${patient.addresses}" varStatus="status">
-					<spring:nestedPath path="patient.addresses[${status.index}]">
-						<div id="address${status.index}Data" class="tabBox">
-							<%@ include file="include/editPatientAddress.jsp" %>
+				<c:forEach var="address" items="${patient.addresses}" varStatus="varStatus">
+					<spring:nestedPath path="patient.addresses[${varStatus.index}]">
+						<div id="address${varStatus.index}Data" class="tabBox">
+							<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true" />
+							<%-- @ include file="include/editPersonAddress.jsp" --%>
 							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this address"/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="addressData" class="tabBox">
 					<spring:nestedPath path="emptyAddress">
-						<%@ include file="include/editPatientAddress.jsp" %>
+						<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true" />
 						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this address"/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
@@ -321,13 +333,16 @@
 	<h3><spring:message code="Patient.information"/></h3>
 		<div class="tabBox" id="pInformationBox">
 			<div class="tabBoxes">
-				<%@ include file="include/editPatientInfo.jsp" %>
+				<table>
+					<spring:nestedPath path="patient">
+						<%@ include file="../person/include/editPersonInfo.jsp" %>
+					</spring:nestedPath>
+				</table>
 			</div>
 		</div>	
 
 	<br />
 	<spring:bind path="patient.patientId">
-		
 		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 	</spring:bind>
 	<input type="submit" name="action" id="saveButton" value='<spring:message code="Patient.save"/>' />

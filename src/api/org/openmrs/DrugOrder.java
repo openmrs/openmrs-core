@@ -12,7 +12,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 
 	// Fields
 
-	private Integer dose;
+	private Double dose;
+	private Double equivalentDailyDose;
 	private String units;
 	private String frequency;
 	private Boolean prn = false;
@@ -59,22 +60,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * Gets the dosage for this drug order
-	 * @return dose
-	 */
-	public Integer getDose() {
-		return this.dose;
-	}
-
-	/**
-	 * Sets the dosage for this drug order
-	 * @param dose
-	 */
-	public void setDose(Integer dose) {
-		this.dose = dose;
-	}
-
-	/**
 	 * Gets the units of this drug order
 	 * @return units
 	 */
@@ -110,7 +95,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * Returns true/false whether the drug is a "pro re nata" (as needed) drug
 	 * @return Boolean
 	 */
-	public Boolean isPrn() {
+	public Boolean getPrn() {
 		return this.prn;
 	}
 
@@ -126,7 +111,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * Gets whether this drug is complex
 	 * @return Boolean
 	 */
-	public Boolean isComplex() {
+	public Boolean getComplex() {
 		return this.complex;
 	}
 
@@ -168,5 +153,25 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setDrug(Drug drug) {
 		this.drug = drug;
+	}
+
+	public Double getEquivalentDailyDose() {
+		return equivalentDailyDose;
+	}
+
+	public void setEquivalentDailyDose(Double equivalentDailyDose) {
+		this.equivalentDailyDose = equivalentDailyDose;
+	}
+
+	public void setDose(Double dose) {
+		this.dose = dose;
+	}
+
+	public Double getDose() {
+		return dose;
+	}
+	
+	public String toString() {
+		return "DrugOrder(" + getDose() + getUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]") + " from " + getStartDate() + " to " + (getDiscontinued() ? getDiscontinuedDate() : getAutoExpireDate()) + ")";
 	}
 }

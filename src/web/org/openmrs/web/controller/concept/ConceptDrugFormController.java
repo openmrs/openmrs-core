@@ -40,9 +40,8 @@ public class ConceptDrugFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		Context context = (Context) request.getSession().getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(context.getLocale().toString().toLowerCase()), context.getLocale());
+		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
 		
         //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
         binder.registerCustomEditor(java.lang.Integer.class,
@@ -62,13 +61,13 @@ public class ConceptDrugFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			Drug drug = (Drug)obj;
-			drug.setConcept(context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
-			context.getConceptService().updateDrug(drug);
+			drug.setConcept(Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
+			Context.getConceptService().updateDrug(drug);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.saved");
 		}
@@ -85,13 +84,10 @@ public class ConceptDrugFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		Drug drug = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			ConceptService cs = context.getConceptService();
+		if (Context.isAuthenticated()) {
+			ConceptService cs = Context.getConceptService();
 			String id = request.getParameter("drugId");
 	    	if (id != null) {
 	    		drug = cs.getDrug(Integer.valueOf(id));
@@ -106,20 +102,15 @@ public class ConceptDrugFormController extends SimpleFormController {
     
     protected Map referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
 		
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-
 		Drug drug = (Drug)obj;
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";
 		
-		if (context != null && context.isAuthenticated()) {
-			ConceptService cs = context.getConceptService();
-			
+		if (Context.isAuthenticated()) {
 			if (drug.getConcept() != null)
 				map.put("conceptName", drug.getConcept().getName(request.getLocale()));
-			defaultVerbose = context.getAuthenticatedUser().getProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
 		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 

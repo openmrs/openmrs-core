@@ -2,6 +2,8 @@ package org.openmrs.web.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
@@ -9,26 +11,23 @@ import org.springframework.util.StringUtils;
 
 public class FormEditor extends PropertyEditorSupport {
 
-	Context context;
+	private Log log = LogFactory.getLog(this.getClass());
 	
-	public FormEditor(Context c) {
-		this.context = c;
-	}
+	public FormEditor() {	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		if (context != null) {
-			FormService ps = context.getFormService(); 
-			if (StringUtils.hasText(text)) {
-				try {
-					setValue(ps.getForm(Integer.valueOf(text)));
-				}
-				catch (Exception ex) {
-					throw new IllegalArgumentException("Form not found: " + ex.getMessage());
-				}
+		FormService ps = Context.getFormService(); 
+		if (StringUtils.hasText(text)) {
+			try {
+				setValue(ps.getForm(Integer.valueOf(text)));
 			}
-			else {
-				setValue(null);
+			catch (Exception ex) {
+				log.error("Error setting text: " + text, ex);
+				throw new IllegalArgumentException("Form not found: " + ex.getMessage());
 			}
+		}
+		else {
+			setValue(null);
 		}
 	}
 

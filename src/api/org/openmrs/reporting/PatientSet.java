@@ -1,26 +1,34 @@
 package org.openmrs.reporting;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 
 public class PatientSet {
 
 	private Integer patientSetId;
 	private String name;
-	private Set<Integer> patientIds;
+	private List<Integer> patientIds;
 	
 	public PatientSet() {
-		patientIds = new HashSet<Integer>();
+		patientIds = new ArrayList<Integer>();
 	}
-	
-	public PatientSet(Set<Patient> patients) {
-		patientIds = new HashSet<Integer>();
+		
+	public PatientSet(Collection<Patient> patients) {
+		patientIds = new ArrayList<Integer>();
 		for (Patient patient : patients) {
-			patientIds.add(patient.getPatientId());
+			Integer ptId = patient.getPatientId();
+			if (!patientIds.contains(ptId)) {
+				patientIds.add(ptId);
+			}
 		}
 	}
 	
@@ -41,14 +49,14 @@ public class PatientSet {
 	/**
 	 * @return Returns the patientIds.
 	 */
-	public Set<Integer> getPatientIds() {
+	public List<Integer> getPatientIds() {
 		return patientIds;
 	}
 
 	/**
 	 * @param patientIds The patientIds to set.
 	 */
-	public void setPatientIds(Set<Integer> patientIds) {
+	public void setPatientIds(List<Integer> patientIds) {
 		this.patientIds = patientIds;
 	}
 
@@ -57,6 +65,14 @@ public class PatientSet {
 	 */
 	public Integer getPatientSetId() {
 		return patientSetId;
+	}
+	
+	/**
+	 * @return the current PatientSet
+	 */
+	public PatientSet copyPatientIds(Collection<Integer> patientIds) {
+		this.patientIds = new ArrayList<Integer>(patientIds);
+		return this;
 	}
 
 	/**
@@ -67,11 +83,19 @@ public class PatientSet {
 	}
 
 	public void add(Integer patientId) {
-		patientIds.add(patientId);
+		if (!patientIds.contains(patientId)) {
+			patientIds.add(patientId);
+		}
 	}
 	
 	public void add(Patient patient) {
-		patientIds.add(patient.getPatientId());
+		if (!patientIds.contains(patient.getPatientId())) {
+			patientIds.add(patient.getPatientId());
+		}
+	}
+	
+	public void add(PatientSet patientSet) {
+		this.patientIds.addAll(patientSet.getPatientIds());
 	}
 	
 	public boolean remove(Integer patientId) {
@@ -80,6 +104,10 @@ public class PatientSet {
 	
 	public boolean remove(Patient patient) {
 		return patientIds.remove(patient.getPatientId());
+	}
+	
+	public boolean removeAllIds(Collection<Integer> ptIds) {
+		return patientIds.removeAll(ptIds);
 	}
 	
 	public boolean contains(Integer patientId) {
@@ -132,7 +160,8 @@ public class PatientSet {
 	public static PatientSet parseCommaSeparatedPatientIds(String s) {
 		PatientSet ret = new PatientSet();
 		for (StringTokenizer st = new StringTokenizer(s, ","); st.hasMoreTokens(); ) {
-			ret.add(new Integer(st.nextToken()));
+			String id = st.nextToken();
+			ret.add(new Integer(id.trim()));
 		}
 		return ret;
 	}
@@ -148,11 +177,30 @@ public class PatientSet {
 		return sb.toString();
 	}
 	
+	// For bean-style calls
+	public String getCommaSeparatedPatientIds() {
+		return toCommaSeparatedPatientIds();
+	}
+	
 	public int size() {
 		return patientIds.size();
 	}
 	
 	public int getSize() {
-		return patientIds.size();
+		return size();
+	}
+	
+	/**
+	 * This method can be resource-intensive for large patient sets
+	 * @return An alphabetically-sorted list of the patients in this set
+	 */
+	public List<Patient> getPatients() {
+		List<Patient> ret = Context.getPatientSetService().getPatients(getPatientIds());
+		Collections.sort(ret, new Comparator<Patient>() {
+				public int compare(Patient left, Patient right) {
+					return OpenmrsUtil.compareWithNullAsGreatest(left.getPersonName(), right.getPersonName());
+				}
+			});
+		return ret;
 	}
 }

@@ -5,86 +5,30 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/prototype.lite.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.js"></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/moo.fx.pack.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/engine.js'></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/util.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/openmrsSearch.js"></script>
-<script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRConceptService.js'></script>
-<script type="text/javascript" src="<%= request.getContextPath() %>/scripts/conceptSearch.js"></script>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
-
-var mySearch = null;
-var changeButton = null;
-var searchType = "";
-
-var init = function() {
-	mySearch = new fx.Resize("searchForm", {duration: 100});
-	mySearch.hide();
-};
-
-var findObjects = function(txt) {
-	if (searchType == 'concept') {
-		DWRConceptService.findConcepts(fillTable, txt, [], 0, ['N/A']);
-	}
-	return false;
-}
-
-var onSelect = function(objs) {
-	var obj;
-	if (objs instanceof Array)
-		obj = objs[0];
-	else
-		obj = objs;
-	if (searchType == 'concept') {
-		$("concept").value = obj.conceptId;
-		$("conceptName").innerHTML = obj.name;
-		$("conceptDescription").innerHTML = obj.description;
-	}
+	dojo.require("dojo.widget.openmrs.ConceptSearch");
+	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	
-	mySearch.hide();
-	searchType = "";
-	if (changeButton != null)
-		changeButton.focus();
+	var cSearch;
+	var popup;
 	
-	return false;
-}
-
-function showSearch(btn, type) {
-	mySearch.hide();
-	if (searchType != type) {
-		setPosition(btn, $("searchForm"), 450, 350);
-		resetForm();
-		DWRUtil.removeAllRows("searchBody");
-		searchType = type;
-		mySearch.toggle();
-		$("searchText").value = '';
-		$("searchText").select();
-		changeButton = btn;
-	}
-	else {
-		searchType = "";
-		changeButton.focus();
-	}
-}
-
-function closeBox() {
-	searchType = "";
-	mySearch.hide();
-	return false;
-}
-
-var oldonload = window.onload;
-if (typeof window.onload != 'function') {
-	window.onload = init;
-} else {
-	window.onload = function() {
-		oldonload();
-		init();
-	}
-}
+	dojo.addOnLoad( function() {
+		cSearch = dojo.widget.manager.getWidgetById("cSearch");
+		popup = dojo.widget.manager.getWidgetById("cSelection");
+		
+		dojo.event.topic.subscribe("cSearch/select", 
+			function(msg) {
+				if (msg) {
+					var concept = msg.objs[0];
+					popup.displayNode.innerHTML = concept.name;
+					dojo.byId("conceptDescription").innerHTML = concept.description;
+					popup.hiddenInputNode.value = concept.conceptId;
+				}
+			}
+		);		
+	})
 
 </script>
 
@@ -92,24 +36,6 @@ if (typeof window.onload != 'function') {
 
 <style>
 	th { text-align: left; }
-	.searchForm {
-		width: 450px;
-		position: absolute;
-		z-index: 10;
-		left: -1000px;
-		margin: 5px;
-		}
-		.searchForm .wrapper {
-			padding: 2px;
-			background-color: whitesmoke;
-			border: 1px solid grey;
-			height: 350px;
-		}
-	.searchResults {
-		height: 265px;
-		overflow: auto;
-		width: 440px;
-	}
 </style>
 
 <form method="post">
@@ -133,9 +59,8 @@ if (typeof window.onload != 'function') {
 							<div id="conceptName">${conceptName}</div>
 						</c:when>
 						<c:otherwise>
-							<div style="width:200px; float:left;" id="conceptName">${conceptName}</div>
-							<input type="hidden" id="concept" value="${status.value.conceptId}" name="conceptId" />
-							<input type="button" id="conceptButton" class="smallButton" value="<spring:message code="general.change"/>" onclick="showSearch(this, 'concept')" />
+							<div dojoType="ConceptSearch" widgetId="cSearch" showVerboseListing="true"></div>
+							<div dojoType="OpenmrsPopup" widgetId="cSelection" hiddenInputName="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="general.search"/>'></div>
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</c:otherwise>
 					</c:choose>
@@ -157,22 +82,5 @@ if (typeof window.onload != 'function') {
 <input type="submit" value="<spring:message code="ConceptProposal.propose"/>">
 
 </form>
-
-<div id="searchForm" class="searchForm">
-	<div class="wrapper">
-		<input type="button" onClick="return closeBox();" class="closeButton" value="X"/>
-		<form method="get" onSubmit="return searchBoxChange('searchBody', searchText, event, false, 0); return false;">
-			<h3><spring:message code="general.search"/></h3>
-			<input type="text" id="searchText" size="35" onkeyup="return searchBoxChange('searchBody', this, event, false, 400);"> &nbsp;
-			<input type="checkbox" id="verboseListing" value="true" <c:if test="${defaultVerbose == true}">checked</c:if> onclick="searchBoxChange('searchBody', searchText, event, false, 0); searchText.focus();"><label for="verboseListing"><spring:message code="dictionary.verboseListing"/></label>
-		</form>
-		<div id="searchResults" class="searchResults">
-			<table width="100%">
-				<tbody id="searchBody">
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

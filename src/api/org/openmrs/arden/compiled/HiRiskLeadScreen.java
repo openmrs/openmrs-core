@@ -16,189 +16,156 @@
 package org.openmrs.arden.compiled;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Set;
-
-import org.openmrs.Concept;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.Concept;
+import org.openmrs.Patient;
+import org.openmrs.arden.*;
+import org.openmrs.arden.compiled.*;
+import java.util.Map;
 
-public class  HiRiskLeadScreen{
-private Context context;
+public class HiRiskLeadScreen implements ArdenRule{
 private Patient patient;
-private Locale locale;
 private String firstname;
+private ArdenDataSource dataSource;
 private HashMap<String, String> userVarMap;
+private HashMap<String, ArdenValue> valueMap;
+private ArdenClause ardenClause;
 
 
 //Constructor
-public  HiRiskLeadScreen(Context c, Integer pid, Locale l){
-	context = c;
-	locale = l;
-	patient = c.getPatientService().getPatient(pid);
+public HiRiskLeadScreen(Patient p, ArdenDataSource d){
+
+	patient = p;
+	dataSource = d;
+	ardenClause = new ArdenClause();
 	userVarMap = new HashMap <String, String>();
-	firstname = patient.getPatientName().getGivenName();
+	valueMap = new HashMap <String, ArdenValue>();
+	firstname = patient.getPersonName().getGivenName();
 	userVarMap.put("firstname", firstname);
-	initAction();}
-
-
-public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {
-	Set <Obs> MyObs;
-	Obs obs = new Obs();
-	{		MyObs = context.getObsService().getObservations(patient, concept);
-		Iterator iter = MyObs.iterator();
-		if(iter.hasNext()) {
-			while(iter.hasNext())	{
-				obs = (Obs) iter.next();
-				System.out.println(obs.getValueAsString(locale));
-			}
-				return obs;
-		}
-		else {
-			return null;
-		}
+	initAction();
 	}
+
+
+public ArdenRule getChildren() {
+	ArdenRule rule = null;
+	return rule;
 }
 
-public boolean run() {
-	boolean retVal = false;
-	if(evaluate()) {
-		String str = action();
-		System.out.println(str);
+public ArdenRule getInstance() {
+	ArdenRule rule = null;
+	if (this != null){
+		rule = this;
 	}
-	return retVal;
+		return rule;
 }
 
-public boolean evaluate_Last_Pb(){
-	Concept concept;
-	boolean retVal = false;
-	Obs obs;
-
-	concept = context.getConceptService().getConceptByName("BLOOD LEAD LEVEL");
-	obs = getObsForConceptForPatient(concept,locale, patient);
-	if(obs != null) {
-		double Last_Pb = obs.getValueNumeric();
-		if (Last_Pb >= 14) {
-		retVal = true;
-		}
-	}
-
-	return retVal;
+private ArdenValue Last_Pb(){
+	Concept c = new Concept();
+	c.setConceptId(31); // BLOOD LEAD LEVEL 
+	 //return dataSource.eval(patient, Aggregation.last(2), c, DateCriteria.within(Duration.past(Days(330))) );
+	return dataSource.eval(patient, ardenClause.concept(c).last(2).within().past().Days(330));
 }
 
-public boolean evaluate_Qual_Pb(){
-	Concept concept;
-	boolean retVal = false;
-	Obs obs;
-
-	concept = context.getConceptService().getConceptByName("Qualitative_Blood_Lead");
-	obs = getObsForConceptForPatient(concept,locale, patient);
-	if(obs != null) {
-		boolean Qual_Pb = obs.getValueAsBoolean();
-		if (Qual_Pb == true) {
-		retVal = true;
-		}
-	}
-
-	return retVal;
+private ArdenValue Qual_Pb(){
+	Concept c = new Concept();
+	c.setConceptId(8); // CHICA REPORTED LEAD 
+	 //return dataSource.eval(patient, Aggregation.last(1), c, DateCriteria.within(Duration.past(Days(330))) );
+	return dataSource.eval(patient, ardenClause.concept(c).last(1).within().past().Days(330));
 }
 
-public boolean evaluate_HousePre50(){
-	Concept concept;
-	boolean retVal = false;
-	Obs obs;
-
-	concept = context.getConceptService().getConceptByName("HouseBltPre1950");
-	obs = getObsForConceptForPatient(concept,locale, patient);
-	if(obs != null) {
-		String HousePre50 = obs.getValueText();
-		if (HousePre50.equals("YES")) {
-		retVal = true;
-		}
-	}
-
-	return retVal;
-}
-
-public boolean evaluate_RenovatedPre78(){
-	Concept concept;
-	boolean retVal = false;
-	Obs obs;
-
-	concept = context.getConceptService().getConceptByName("RenovatedPre78");
-	obs = getObsForConceptForPatient(concept,locale, patient);
-	if(obs != null) {
-		String RenovatedPre78 = obs.getValueText();
-		if (RenovatedPre78.equals("YES")) {
-		retVal = true;
-		}
-	}
-
-	return retVal;
-}
-
-public boolean evaluate_HiPbSibFriend(){
-	Concept concept;
-	boolean retVal = false;
-	Obs obs;
-
-	concept = context.getConceptService().getConceptByName("HiPbSibFriend");
-	obs = getObsForConceptForPatient(concept,locale, patient);
-	if(obs != null) {
-		String HiPbSibFriend = obs.getValueText();
-		if (HiPbSibFriend.equals("YES")) {
-		retVal = true;
-		}
-	}
-
-	return retVal;
+private ArdenValue EnvHx(){
+	Concept c = new Concept();
+	c.setConceptId(3); // ENVIRONMENTAL HISTORY 
+	 //return dataSource.eval(patient, Aggregation.last(1), c, DateCriteria.within(Duration.past(Days(365))) );
+	return dataSource.eval(patient, ardenClause.concept(c).last(1).within().past().Days(365));
 }
 
 
 public boolean evaluate() {
-	Concept concept;
+			return evaluate_logic();
+}
+
+private boolean evaluate_logic() {
 	boolean retVal = false;
-	Obs obs;
+	ArdenValue val;
 
-
-	if(evaluate_Last_Pb()) {
-		//LeadRisk = "has lead level greater than 14 mg/dcl"
+	if ( (val = Last_Pb()) != null ) {
+		if (val.getValueNumeric() >= 14 ) {
+			//LeadRisk = "has lead level greater than 14 mg/dcl"
 		userVarMap.put("LeadRisk", "has lead level greater than 14 mg/dcl");
+		valueMap.put("Last_Pb", val);
+
 	}
-	if(evaluate_Qual_Pb()) {
+	}
+
+
+	if ( (val = Qual_Pb()) != null ) {
+	
+	 //LESS THAN 10 MG/DL
+	if (val.getValueCoded() == 24 ) {
+	
+	 //conclude here
+		retVal = false;
+		valueMap.put("Qual_Pb", val);
+		return retVal;
+
+	}
+	}
+
+
+	if ( (val = EnvHx()) != null ) {
+	
+	 //HOME BUILT BEFORE 1960
+	if (val.getValueCoded() == 4 ) {
+			//LeadRisk = "lives in a house built before 1950"
+		userVarMap.put("LeadRisk", "lives in a house built before 1950");
+		valueMap.put("EnvHx", val);
+
+	}
+	}
+
+	else if ( (val = EnvHx()) != null ) {
+	
+	 //HOME RENOVATED BEFORE 1978
+	if (val.getValueCoded() == 55 ) {
+			//LeadRisk = "lives in a house built before 1950"
+		userVarMap.put("LeadRisk", "lives in a house built before 1950");
+		valueMap.put("EnvHx", val);
+
+	}
+	}
+
+	else if ( (val = EnvHx()) != null ) {
+	
+	 //TB EXPOSURE
+	if (val.getValueCoded() == 104 ) {
+			//LeadRisk = "lives in a house built before 1950"
+		userVarMap.put("LeadRisk", "lives in a house built before 1950");
+		valueMap.put("EnvHx", val);
+
+	}
+	}
+
+	else {
+
+	 //conclude here
 		retVal = false;
 		return retVal;
 
 	}
-	if(evaluate_HousePre50()) {
-		//LeadRisk = "lives in a house built before 1950"
-		userVarMap.put("LeadRisk", "lives in a house built before 1950");
-	}
-	else if(evaluate_RenovatedPre78()) {
-		//LeadRisk = "lives in a pre-1978 house undergoing renovation"
-		userVarMap.put("LeadRisk", "lives in a pre-1978 house undergoing renovation");
-	}
-	else if(evaluate_HiPbSibFriend()) {
-		//LeadRisk = "has a friend or sibling with elevated blood lead"
-		userVarMap.put("LeadRisk", "has a friend or sibling with elevated blood lead");
-	}
-	else {
+
+
+	 //conclude here
 		retVal = true;
 		return retVal;
 
-	}
- //conclude here
-		retVal = true;
-		return retVal;
 
 	}
 public void initAction() {
 		userVarMap.put("ActionStr", "||firstname|| reportedly ||LeadRisk||.  Drawing a blood lead level is recommended annually:");
 }
 
-public String action() {
+public String doAction() {
 	int index = 0, nindex = 0, endindex = 0, startindex = 0;
 	String tempstr, variable, outStr = "";
 	String inStr = userVarMap.get("ActionStr");
@@ -211,7 +178,7 @@ public String action() {
 			nindex = tempstr.indexOf("||", index+1);
 			startindex = index + 2;
 			endindex = nindex;
-			variable = inStr.substring(startindex, endindex);
+			variable = inStr.substring(startindex, endindex).trim();
 			outStr += userVarMap.get(variable);
 			index = tempstr.indexOf("||", nindex+2);
 		}
@@ -229,7 +196,7 @@ public String action() {
 			nindex = tempstr.indexOf("||", index+2);
 			startindex = index + 2;
 			endindex = nindex;
-			variable = inStr.substring(startindex, endindex);
+			variable = inStr.substring(startindex, endindex).trim();
 			outStr += userVarMap.get(variable);
 			index = tempstr.indexOf("||", nindex+2);
 		}
@@ -240,4 +207,13 @@ public String action() {
 	}
 	return outStr;
 }
+public void printDebug(){
+	for (Map.Entry<String,ArdenValue> entry : valueMap.entrySet()) {
+		System.out.println("__________________________________");
+		System.out.println (entry.getKey () + ": ");
+		ArdenValue val = entry.getValue ();
+		val.PrintObsMap();
+		System.out.println("__________________________________");
+		}
+	}
 }

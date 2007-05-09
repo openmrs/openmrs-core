@@ -7,6 +7,19 @@ function showCalendar(obj) {
 }
 
 function makeCalendar(obj) {
+
+	// turn off auto complete on inputs using this calendar
+	if (document.getElementsByTagName) {
+		var inputs = document.getElementsByTagName("input");
+		for (var i=0;i<inputs.length; i++) {
+			if (inputs[i].onclick &&
+				inputs[i].onclick.toString().indexOf("showCalendar") != -1) {
+					inputs[i].setAttribute("autocomplete", "off");
+			}
+		}
+	}
+
+	// make the iframe to contain the calendar
 	var id = "gToday:normal.htm";
 	if (document.getElementById(id) == null) {
 		var iframe = document.createElement("iframe");
@@ -29,12 +42,14 @@ function makeCalendar(obj) {
 	}
 }
 
-var oldCalOnload = window.onload;
-if (typeof window.onload != 'function') {
-	window.onload = makeCalendar;
-} else {
-	window.onload = function() {
-		oldCalOnload();
-		makeCalendar();
+if (!oldCalOnload) {
+	var oldCalOnload = window.onload;
+	if (typeof window.onload != 'function') {
+		window.onload = makeCalendar;
+	} else {
+		window.onload = function() {
+			oldCalOnload();
+			makeCalendar();
+		}
 	}
 }

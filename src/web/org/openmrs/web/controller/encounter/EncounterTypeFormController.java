@@ -47,12 +47,12 @@ public class EncounterTypeFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
 		String view = getFormView();
 		
-		if (context != null && context.isAuthenticated()) {
+		if (Context.isAuthenticated()) {
 			EncounterType encounterType = (EncounterType)obj;
-			context.getAdministrationService().updateEncounterType(encounterType);
+			Context.getAdministrationService().updateEncounterType(encounterType);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.saved");
 		}
@@ -69,13 +69,10 @@ public class EncounterTypeFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		HttpSession httpSession = request.getSession();
-		Context context = (Context) httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		
 		EncounterType encounterType = null;
 		
-		if (context != null && context.isAuthenticated()) {
-			EncounterService os = context.getEncounterService();
+		if (Context.isAuthenticated()) {
+			EncounterService os = Context.getEncounterService();
 			String encounterTypeId = request.getParameter("encounterTypeId");
 	    	if (encounterTypeId != null)
 	    		encounterType = os.getEncounterType(Integer.valueOf(encounterTypeId));	

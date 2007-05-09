@@ -1,29 +1,27 @@
 package org.openmrs.scheduler;
 
 import java.util.Collection;
+import java.util.SortedMap;
 
-import org.openmrs.api.db.DAOContext;
+import org.openmrs.annotation.Authorized;
+import org.openmrs.util.OpenmrsMemento;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
 *  Defines methods required to schedule a task.  
 */
+@Transactional
 public interface SchedulerService { 
 
 	/**
 	 * Set the data access context.
 	 */
-	public void setDaoContext(DAOContext daoContext);
+	//public void setDaoContext(DAOContext daoContext);
 	
 	/**
 	 * Start all tasks that should be running
 	 */
 	public void startup();
-	
-	/**
-	 * Stop all running tasks.
-	 *
-	 */
-	public void stop();
 	
 	/**
 	 * Stop all tasks and clean up.
@@ -61,17 +59,19 @@ public interface SchedulerService {
 	 */
 	public void startTask(TaskConfig task) throws SchedulerException;
 	
-	
 	/**
-	 * Reschedule a scheduled task.  This changes the existing schedule task.  
+	 * Loop over all currently started tasks and cycle them.
+	 * This should be done after the classloader has been changed
+	 * (e.g. during module start/stop)
 	 */
-	//public void rescheduleTask( TaskConfig task, Schedule schedule );
+	public void restartTasks() throws SchedulerException;
 	
 	/**
 	 * Get scheduled tasks.
 	 *  
 	 * @return 	all scheduled tasks
 	 */
+	@Transactional(readOnly=true)
 	public Collection<TaskConfig> getScheduledTasks();
 
 	/**
@@ -80,6 +80,7 @@ public interface SchedulerService {
 	 * 
 	 * @return	all available tasks
 	 */
+	@Transactional(readOnly=true)
 	public Collection<TaskConfig> getAvailableTasks();
 
 	/**
@@ -87,13 +88,8 @@ public interface SchedulerService {
 	 *  
 	 * @param	tasks 	the tasks that should be scheduled
 	 */
-	public void startTasks(Collection<TaskConfig> tasks);
-
-	/**
-	 * Set scheduled tasks.
-	 *  
-	 * @param	tasks 	the tasks that should be scheduled
-	 */
+	@Authorized({"Manage Scheduler"})
+	@Transactional(readOnly=true)
 	public Collection<TaskConfig> getTasks();
 
 	/**
@@ -101,6 +97,8 @@ public interface SchedulerService {
 	 *  
 	 * @param	id 		the identifier of the task
 	 */
+	@Authorized({"Manage Scheduler"})
+	@Transactional(readOnly=true)
 	public TaskConfig getTask(Integer id);
 
 	/**
@@ -108,6 +106,7 @@ public interface SchedulerService {
 	 *  
 	 * @param	id 		the identifier of the task
 	 */
+	@Authorized({"Manage Scheduler"})
 	public void deleteTask(Integer id);
 
 	/**
@@ -115,6 +114,7 @@ public interface SchedulerService {
 	 *  
 	 * @param	task 		the task to be updated
 	 */
+	@Authorized({"Manage Scheduler"})
 	public void updateTask(TaskConfig task);
 
 	/**
@@ -122,6 +122,26 @@ public interface SchedulerService {
 	 *  
 	 * @param	task 		the task to be created
 	 */
+	@Authorized({"Manage Scheduler"})
 	public void createTask(TaskConfig task);
 
+	/**
+	 * Return SchedularConstants
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public SortedMap<String,String> getSystemVariables();
+	
+	/**
+	 * Save the state of the scheduler service to Memento
+	 * @return
+	 */
+	public OpenmrsMemento saveToMemento();
+	
+	/**
+	 * Restore the scheduler service to state defined by Memento
+	 * @param memento
+	 * @return
+	 */
+	public void restoreFromMemento(OpenmrsMemento memento);
 }
