@@ -347,71 +347,33 @@ public class NealReportController implements Controller {
 		{
 			
 			PersonService personService = Context.getPersonService();
-			RelationshipType relType = personService.findRelationshipType("Accompagnateur");
-			// get the accomp leader as well
-			RelationshipType accompLeaderType = personService.findRelationshipType("Accompagnateur Leader");
-			Map<Person, List<Person>> accompRelations = personService.getRelationships(accompLeaderType);
+			RelationshipType relType = personService.findRelationshipType("Accompagnateur/Patient");
 
 			if (relType != null) {
-				Map<Integer, List<Relationship>> chws = pss.getRelationships(ps, relType);
-				for (Map.Entry<Integer, List<Relationship>> e : chws.entrySet()) {
-					Person chw = e.getValue().get(0).getPersonA();
-					if ( chw != null ) {
-						User chwUser = Context.getUserService().getUser(chw.getPersonId());
-						if (chwUser != null) {
-							
-							patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_FIRST_NAME, chwUser.getGivenName());
-							patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LAST_NAME, chwUser.getFamilyName());
-						}
+				// get the accomp leader as well
+				RelationshipType accompLeaderType = personService.findRelationshipType("Accompagnateur Leader/Opposite of Accompagnateur Leader");
+				Map<Integer, List<Person>> accompRelations = null;
+				if (accompLeaderType != null)
+					accompRelations = pss.getRelatives(null, accompLeaderType, false);
+				else
+					accompRelations = new HashMap<Integer, List<Person>>();
 
-						// try to get accomp leader too
-						List<Person> accompLeaderRels = accompRelations.get(chw);
-						if ( accompLeaderRels != null ) {
-							if ( accompLeaderRels.size() > 0 ) {
-								Person leader = accompLeaderRels.get(0);
-								User accompLeader = Context.getUserService().getUser(leader.getPersonId());
-								if ( accompLeader != null ) {
-									log.debug("Got accomp leader!!");
-									patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LEADER_FIRST_NAME, accompLeader.getGivenName());
-									patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LEADER_LAST_NAME, accompLeader.getFamilyName());
-								} else {
-									log.debug("No User for accomp leader available");
-								}
-							} else {
-								log.debug("Relationships is size 0 for this accompagnateur");
-							}
-						} else {
-							log.debug("No accomp leader relationships at all to this accompagnateur, so can't find leader");
-						}
-						
-						/*
-						if ( accompLeaderType != null ) {
-							List<Relationship> accompRelations = Context.getPatientService().getRelationships(chw, accompLeaderType);
-							if ( accompRelations != null ) {
-								if ( accompRelations.size() > 0 ) {
-									Relationship firstAccompLeader = accompRelations.get(0);
-									if ( firstAccompLeader != null ) {
-										User accompLeader = firstAccompLeader.getPerson().getUser();
-										if ( accompLeader != null ) {
-											log.debug("Got accomp leader!!");
-											patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LEADER_FIRST_NAME, accompLeader.getFirstName());
-											patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LEADER_LAST_NAME, accompLeader.getLastName());
-										} else {
-											log.debug("No User for accomp leader available");
-										}
-									} else {
-										log.debug("No relationship available to find accomp leader from");
-									}
-								} else {
-									log.debug("Relationships is size 0 for this accompagnateur");
-								}
-							} else {
-								log.debug("No relationships at all to this accompagnateur, so can't find leader");
-							}
-						} else {
-							log.debug("There is NO type called accomp leader... aborting.");
-						}
-						*/
+				Map<Integer, List<Person>> chws = pss.getRelatives(ps, relType, false);
+				for (Map.Entry<Integer, List<Person>> e : chws.entrySet()) {
+					Person chw = e.getValue().get(0);
+					if (chw != null) {
+						patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_FIRST_NAME, chw.getGivenName());
+						patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LAST_NAME, chw.getFamilyName());
+					}
+
+					// try to get accomp leader too
+					List<Person> accompLeaderRels = accompRelations.get(chw.getPersonId());
+					if ( accompLeaderRels != null && accompLeaderRels.size() > 0 ) {
+						Person leader = accompLeaderRels.get(0);
+						patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LEADER_FIRST_NAME, leader.getGivenName());
+						patientDataHolder.get(e.getKey()).put(Hiv.ACCOMP_LEADER_LAST_NAME, leader.getFamilyName());
+					} else {
+						log.debug("No accomp leader relationships at all to this accompagnateur, so can't find leader");
 					}
 				}
 			}

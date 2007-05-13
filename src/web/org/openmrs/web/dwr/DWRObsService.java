@@ -180,13 +180,13 @@ public class DWRObsService {
 		
 		if ( p != null && c != null ) {
 			log.debug("Getting obss with patient and concept");
-			obss = Context.getObsService().getObservations(p, c);
+			obss = Context.getObsService().getObservations(p, c, true);
 		} else if ( e != null ) {
 			log.debug("Getting obss with encounter");
 			obss = Context.getObsService().getObservations(e);
 		} else if ( p != null ) {
 			log.debug("Getting obss with just patient");
-			obss = Context.getObsService().getObservations(p);
+			obss = Context.getObsService().getObservations(p, true);
 		}
 
 		if ( obss != null ) {

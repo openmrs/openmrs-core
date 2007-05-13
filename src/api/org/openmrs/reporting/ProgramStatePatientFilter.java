@@ -34,7 +34,7 @@ public class ProgramStatePatientFilter extends AbstractPatientFilter implements
 			if (getProgram().getConcept() == null)
 				ret.append(" <CONCEPT> ");
 			else {
-				ret.append(getConceptName(program.getConcept()));
+				ret.append(getConceptName(program.getConcept()) + " ");
 			}
 		}
 		
@@ -56,9 +56,9 @@ public class ProgramStatePatientFilter extends AbstractPatientFilter implements
 		}
 		// TODO untilDaysAgo untilMonthsAgo
 		if (sinceDate != null)
-			ret.append("on or after " + sinceDate + " ");
+			ret.append("on or after " + Context.getDateFormat().format(sinceDate) + " ");
 		if (untilDate != null)
-			ret.append("on or before " + untilDate + " ");
+			ret.append("on or before " + Context.getDateFormat().format(untilDate) + " ");
 
 		return ret.toString();
 	}

@@ -51,7 +51,7 @@ public interface ReportService {
 	@Transactional(readOnly=true)
 	public ArrayList<PatientFilter> getAllPatientFilters() throws APIException;
 
-	public void createReportObject(AbstractReportObject reportObject)
+	public Integer createReportObject(AbstractReportObject reportObject)
 			throws APIException;
 
 	public void deleteReport(AbstractReportObject reportObject)

@@ -170,52 +170,52 @@ public class ObsServiceImpl implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person)
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, boolean includeVoided)
 	 */
-	public Set<Obs> getObservations(Person who) {
-		return getObsDAO().getObservations(who);
+	public Set<Obs> getObservations(Person who, boolean includeVoided) {
+		return getObsDAO().getObservations(who, includeVoided);
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept, org.openmrs.Location, java.lang.String, java.lang.Integer)
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept, org.openmrs.Location, java.lang.String, java.lang.Integer, boolean includeVoided)
 	 */
-	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer personType) {
+	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer personType, boolean includeVoided) {
 		return getObsDAO().getObservations(c, loc, sort, personType);
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, org.openmrs.Concept)
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, org.openmrs.Concept, boolean includeVoided)
 	 */
-	public Set<Obs> getObservations(Person who, Concept question) {
-		return getObsDAO().getObservations(who, question);
+	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided) {
+		return getObsDAO().getObservations(who, question, includeVoided);
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getLastNObservations(java.lang.Integer, org.openmrs.Person, org.openmrs.Concept)
+	 * @see org.openmrs.api.ObsService#getLastNObservations(java.lang.Integer, org.openmrs.Person, org.openmrs.Concept, boolean includeVoided)
 	 */
 	public List<Obs> getLastNObservations(Integer n, Person who,
-			Concept question) {
+			Concept question, boolean includeVoided) {
 		return getObsDAO().getLastNObservations(n, who, question);
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept, java.lang.String, java.lang.Integer)
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept, java.lang.String, java.lang.Integer, boolean includeVoided)
 	 */
-	public List<Obs> getObservations(Concept question, String sort, Integer personType) {
+	public List<Obs> getObservations(Concept question, String sort, Integer personType, boolean includeVoided) {
 		return getObsDAO().getObservations(question, sort, personType);
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept, java.lang.Integer)
+	 * @see org.openmrs.api.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept, java.lang.Integer, boolean includeVoided)
 	 */
-	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType) {
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType, boolean includeVoided) {
 		return getObsDAO().getObservationsAnsweredByConcept(answer, personType);
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getNumericAnswersForConcept(org.openmrs.Concept, java.lang.Boolean, java.lang.Integer)
+	 * @see org.openmrs.api.ObsService#getNumericAnswersForConcept(org.openmrs.Concept, java.lang.Boolean, java.lang.Integer, boolean includeVoided)
 	 */
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType) {
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType, boolean includeVoided) {
 		return getObsDAO().getNumericAnswersForConcept(answer, sortByValue, personType);
 	}
 	
@@ -261,7 +261,7 @@ public class ObsServiceImpl implements ObsService {
 		// todo: make this efficient, and add a sort option
 
 		Locale l = Context.getLocale();
-		List<Obs> obs = getObservations(question, null, personType);
+		List<Obs> obs = getObservations(question, null, personType, false);
 		SortedSet<String> set = new TreeSet<String>();
 		for (Obs o : obs) {
 			set.add(o.getValueAsString(l));

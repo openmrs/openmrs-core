@@ -2,9 +2,16 @@
 	<li class="firstChild">
 		<a href="${pageContext.request.contextPath}/"><spring:message code="Navigation.home"/></a>
 	</li>
-	
+
 	<li>
-		<a href="${pageContext.request.contextPath}/findPatient.htm"><spring:message code="Navigation.findPatient"/></a>
+		<a href="${pageContext.request.contextPath}/findPatient.htm">
+			<openmrs:hasPrivilege privilege="Add Patients">
+				<spring:message code="Navigation.findCreatePatient"/>
+			</openmrs:hasPrivilege>
+			<openmrs:hasPrivilege privilege="Add Patients" inverse="true">
+				<spring:message code="Navigation.findPatient"/>
+			</openmrs:hasPrivilege>
+		</a>
 	</li>
 	
 	<openmrs:hasPrivilege privilege="View Concepts">

@@ -755,6 +755,7 @@ public class PatientServiceImpl implements PatientService {
 		}
 	}
 
+	// TODO: Patients should actually be allowed to exit multiple times 
 	private void saveReasonForExitObs(Patient patient, Date exitDate, Concept cause) {
 		if ( patient != null && exitDate != null && cause != null ) {
 			
@@ -765,7 +766,7 @@ public class PatientServiceImpl implements PatientService {
 			Concept reasonForExit = Context.getConceptService().getConceptByIdOrName(codProp);
 
 			if ( reasonForExit != null ) {
-				Set<Obs> obssExit = Context.getObsService().getObservations(patient, reasonForExit);
+				Set<Obs> obssExit = Context.getObsService().getObservations(patient, reasonForExit, false);
 				if ( obssExit != null ) {
 					if ( obssExit.size() > 1 ) {
 						log.error("Multiple reasons for exit (" + obssExit.size() + ")?  Shouldn't be...");
@@ -860,7 +861,7 @@ public class PatientServiceImpl implements PatientService {
 			Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
 
 			if ( causeOfDeath != null ) {
-				Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath);
+				Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath, false);
 				if ( obssDeath != null ) {
 					if ( obssDeath.size() > 1 ) {
 						log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");

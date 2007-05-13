@@ -231,8 +231,13 @@ public class CohortSearchHistory extends AbstractReportObject {
 		Set<String> orWords = new HashSet<String>();
 		Set<String> notWords = new HashSet<String>();
 		andWords.add("and");
+		andWords.add("intersection");
+		andWords.add("*");
 		orWords.add("or");
+		orWords.add("union");
+		orWords.add("+");
 		notWords.add("not");
+		notWords.add("!");
 
 		List<Object> currentLine = new ArrayList<Object>();
 

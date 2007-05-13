@@ -124,7 +124,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 					map.put("displayType", "numeric");
 					
 					// Object[obsId, obsDatetime, valueNumeric] 
-					List<Object[]> numericAnswers = obsService.getNumericAnswersForConcept(concept, true, ObsService.PERSON);
+					List<Object[]> numericAnswers = obsService.getNumericAnswersForConcept(concept, true, ObsService.PERSON, false);
 					
 					if (numericAnswers.size() > 0) {
 						Double min = (Double)numericAnswers.get(0)[2];
@@ -273,7 +273,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 					// create pie graph for coded answers
 					map.put("displayType", "coded");
 					
-					List<Obs> obs = obsService.getObservations(concept, null, ObsService.PERSON);
+					List<Obs> obs = obsService.getObservations(concept, null, ObsService.PERSON, false);
 					
 					DefaultPieDataset pieDataset = new DefaultPieDataset();
 					

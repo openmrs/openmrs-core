@@ -60,13 +60,14 @@ public class HibernateReportObjectDAO implements
 		return reportObject;
 	}
 
-	public void createReportObject(AbstractReportObject reportObj) throws DAOException {
+	public Integer createReportObject(AbstractReportObject reportObj) throws DAOException {
 		reportObj.setCreator(Context.getAuthenticatedUser());
 		reportObj.setDateCreated(new Date());
 		log.debug("Saving: " + reportObj);
 		
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);
 		sessionFactory.getCurrentSession().save(wrappedReportObject);
+		return wrappedReportObject.getReportObjectId();
 	}
 
 	public void deleteReportObject(AbstractReportObject reportObj) throws DAOException {

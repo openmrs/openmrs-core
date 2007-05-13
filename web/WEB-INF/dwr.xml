@@ -191,6 +191,9 @@
 			<include method="getResultCombineWithOr"/>
 			<include method="getLastResult"/>
 			<include method="getSavedFilters"/>
+			<include method="getSavedCohorts"/>
+			<include method="getFilterResultAsCommaSeparatedIds"/>
+			<include method="getCohortAsCommaSeparatedIds"/>
 			<include method="getSearchHistories"/>
 			<include method="saveSearchHistory"/>
 			<include method="loadSearchHistory"/>

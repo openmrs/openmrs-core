@@ -8,7 +8,7 @@ import org.openmrs.reporting.AbstractReportObject;
 public interface ReportObjectDAO {
 	List<AbstractReportObject> getAllReportObjects();
 	AbstractReportObject getReportObject(Integer reportObjId) throws DAOException;
-	void createReportObject(AbstractReportObject reportObj) throws DAOException;
+	Integer createReportObject(AbstractReportObject reportObj) throws DAOException;
 	void deleteReportObject(AbstractReportObject reportObj) throws DAOException;
 	void updateReportObject(AbstractReportObject reportObj) throws DAOException;
 	List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException;

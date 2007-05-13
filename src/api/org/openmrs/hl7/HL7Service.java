@@ -19,6 +19,9 @@ public interface HL7Service {
 
 	@Transactional(readOnly=true)
 	public HL7Source getHL7Source(Integer hl7SourceId);
+	
+	@Transactional(readOnly=true)
+	public HL7Source getHL7Source(String name);
 
 	@Transactional(readOnly=true)
 	public Collection<HL7Source> getHL7Sources();

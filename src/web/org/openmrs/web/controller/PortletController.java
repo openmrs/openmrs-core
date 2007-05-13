@@ -127,7 +127,7 @@ public class PortletController implements Controller {
 						model.put("patientEncounters", Context.getEncounterService().getEncounters(p));
 					
 					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
-						model.put("patientObs", Context.getObsService().getObservations(p));
+						model.put("patientObs", Context.getObsService().getObservations(p, false));
 					else
 						model.put("patientObs", new HashSet<Obs>());
 
@@ -136,7 +136,7 @@ public class PortletController implements Controller {
 					String dateOfExitText = "";
 					Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
 					if ( reasonForExitConcept != null ) {
-						Set<Obs> patientExitObs = Context.getObsService().getObservations(p, reasonForExitConcept);
+						Set<Obs> patientExitObs = Context.getObsService().getObservations(p, reasonForExitConcept, false);
 						if ( patientExitObs != null ) {
 							log.debug("Exit obs is size " + patientExitObs.size() );
 							if ( patientExitObs.size() == 1 ) {
@@ -256,39 +256,6 @@ public class PortletController implements Controller {
 				}
 				model.put("conceptMap", concepts);
 				model.put("conceptMapByStringIds", conceptsByStringIds);
-			}
-
-			// TODO: This should check a different privilege
-			// TODO: If we really need to do this we should write a service method getAnswerFrequency() or something
-			if (Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
-				//String arvGroups =  (String)Context.getAdministrationService().getGlobalProperty("arv_groups");
-				List<Obs> treatmentGroupObs = Context.getObsService().getObservations(Context.getConceptService().getConceptByName("ANTIRETROVIRAL TREATMENT GROUP"), null, ObsService.PATIENT);
-				if ( treatmentGroupObs != null ) {
-					TreeSet<String> treatmentGroupSet = new TreeSet<String>();
-					log.debug("tgo is size " + treatmentGroupObs.size());
-					for ( Obs ob : treatmentGroupObs ) {
-						String group = ob.getValueText();
-						if ( group != null ) {
-							if ( group.length() > 0 ) {
-								// hack to order items properly
-								if ( group.length() == 1 ) group = "0" + group;
-								treatmentGroupSet.add(group);
-							}
-						}
-					}
-
-					String arvGroups = "";
-
-					for ( String s : treatmentGroupSet ) {
-						if ( arvGroups.length() > 0 ) arvGroups += ",";
-						if ( s.startsWith("0")) s = s.substring(1);
-						arvGroups += s;
-					}
-
-					model.put("arvGroups", arvGroups);
-				} else {
-					log.debug("tgo is null");
-				}
 			}
 			
 			populateModel(request, model);

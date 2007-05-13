@@ -20,10 +20,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.Drug;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
@@ -36,9 +38,11 @@ import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.ReportObjectXMLDecoder;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.propertyeditor.CohortEditor;
 import org.openmrs.web.propertyeditor.ConceptEditor;
 import org.openmrs.web.propertyeditor.DrugEditor;
 import org.openmrs.web.propertyeditor.EncounterTypeEditor;
+import org.openmrs.web.propertyeditor.FormEditor;
 import org.openmrs.web.propertyeditor.LocationEditor;
 import org.openmrs.web.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.web.propertyeditor.ProgramEditor;
@@ -81,6 +85,14 @@ public class CohortBuilderController implements Controller {
 	public void setLinks(List<String> links) {
 		this.links = links;
 	}
+	
+	private void setMySearchHistory(HttpServletRequest request, CohortSearchHistory history) {
+		Context.setVolatileUserData("CohortBuilderSearchHistory", history);
+	}
+	
+	private CohortSearchHistory getMySearchHistory(HttpServletRequest request) {
+		return (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+	}
 
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
@@ -88,10 +100,10 @@ public class CohortBuilderController implements Controller {
 			List<PatientFilter> savedFilters = Context.getReportService().getAllPatientFilters();
 			if (savedFilters == null)
 				savedFilters = new ArrayList<PatientFilter>();
-			CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+			CohortSearchHistory history = getMySearchHistory(request);
 			if (history == null) {
 				history = new CohortSearchHistory();
-				Context.setVolatileUserData("CohortBuilderSearchHistory", history);
+				setMySearchHistory(request, history);
 			}
 			List<Shortcut> shortcuts = new ArrayList<Shortcut>();
 			String shortcutProperty = Context.getAdministrationService().getGlobalProperty("cohort.cohortBuilder.shortcuts");
@@ -146,6 +158,7 @@ public class CohortBuilderController implements Controller {
 			model.put("programs", Context.getProgramWorkflowService().getPrograms());
 			model.put("encounterTypes", Context.getEncounterService().getEncounterTypes());
 			model.put("locations", Context.getEncounterService().getLocations());
+			model.put("forms", Context.getFormService().getForms());
 			model.put("drugs", Context.getConceptService().getDrugs());
 			model.put("drugConcepts", genericDrugs);
 			model.put("orderStopReasons", orderStopReasons);
@@ -284,14 +297,14 @@ public class CohortBuilderController implements Controller {
 	
 	public ModelAndView clearHistory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (Context.isAuthenticated()) {
-			Context.setVolatileUserData("CohortBuilderSearchHistory", null);
+			setMySearchHistory(request, null);
 		}
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 	
 	public ModelAndView addFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (Context.isAuthenticated()) {
-			CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+			CohortSearchHistory history = getMySearchHistory(request);
 			String temp = request.getParameter("filter_id");
 			if (temp != null) {
 				Integer filterId = new Integer(temp);
@@ -327,7 +340,7 @@ public class CohortBuilderController implements Controller {
 	
 	public ModelAndView removeFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (Context.isAuthenticated()) {
-			CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+			CohortSearchHistory history = getMySearchHistory(request);
 			String temp = request.getParameter("index");
 			if (temp != null) {
 				Integer index = new Integer(temp);
@@ -487,6 +500,10 @@ public class CohortBuilderController implements Controller {
 									EncounterTypeEditor ed = new EncounterTypeEditor();
 									ed.setAsText(val);
 									thisVal = ed.getValue();
+								} else if (checkClassHelper(Form.class, pd.getPropertyType(), arg.getArgClass())) {
+									FormEditor ed = new FormEditor();
+									ed.setAsText(val);
+									thisVal = ed.getValue();
 								} else if (checkClassHelper(Drug.class, pd.getPropertyType(), arg.getArgClass())) {
 									DrugEditor ed = new DrugEditor();
 									ed.setAsText(val);
@@ -498,6 +515,10 @@ public class CohortBuilderController implements Controller {
 									thisVal = ed.getValue();
 								} else if (checkClassHelper(PersonAttributeType.class, pd.getPropertyType(), arg.getArgClass())) {
 									PersonAttributeTypeEditor ed = new PersonAttributeTypeEditor();
+									ed.setAsText(val);
+									thisVal = ed.getValue();
+								} else if (checkClassHelper(Cohort.class, pd.getPropertyType(), arg.getArgClass())) {
+									CohortEditor ed = new CohortEditor();
 									ed.setAsText(val);
 									thisVal = ed.getValue();
 								} else if (pd.getPropertyType().isEnum()) {
@@ -535,7 +556,7 @@ public class CohortBuilderController implements Controller {
 			log.debug("final filter is " + filterInstance);
 			
 			if (filterInstance != null) {
-				CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+				CohortSearchHistory history = getMySearchHistory(request);
 				history.addSearchItem(filterInstance);
 			}
 		}
@@ -549,7 +570,7 @@ public class CohortBuilderController implements Controller {
 			if ( (name == null || "".equals(name)) && (description == null || "".equals(description)) ) {
 				throw new RuntimeException("Name and Description are required");
 			}
-			CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+			CohortSearchHistory history = getMySearchHistory(request);
 			if (history.getReportObjectId() != null)
 				throw new RuntimeException("Re-saving histories is not yet implemented");
 			history.setName(name);

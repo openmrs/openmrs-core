@@ -63,7 +63,7 @@ public class SampleFlowsheetServlet extends HttpServlet {
 
 		Integer patientId = Integer.parseInt(pid);
 		Patient patient = Context.getPatientService().getPatient(patientId);
-		Set<Obs> obsList = Context.getObsService().getObservations(patient);
+		Set<Obs> obsList = Context.getObsService().getObservations(patient, true);
 
 		if (obsList == null || obsList.size() < 1) {
 			out.print("No observations found");

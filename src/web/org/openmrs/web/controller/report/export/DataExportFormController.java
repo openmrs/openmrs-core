@@ -132,8 +132,27 @@ public class DataExportFormController extends SimpleFormController {
 								String columnValue = request.getParameter("calculatedValue_" + columnId);
 								report.addCalculatedColumn(columnName, columnValue);
 							}
-							else
-								log.warn("Cannot determine column type for column: " + columnId);
+							else {
+								columnName = request.getParameter("cohortName_" + columnId);
+								if (columnName != null) {
+									// cohort column
+									String cohortIdValue = request.getParameter("cohortIdValue_" + columnId);
+									String filterIdValue = request.getParameter("filterIdValue_" + columnId);
+									String valueIfTrue = request.getParameter("cohortIfTrue_" + columnId);
+									String valueIfFalse = request.getParameter("cohortIfFalse_" + columnId);
+									Integer cohortId = null;
+									Integer filterId = null;
+									try {
+										cohortId = Integer.valueOf(cohortIdValue);
+									} catch (Exception ex) { }
+									try {
+										filterId = Integer.valueOf(filterIdValue);
+									} catch (Exception ex) { }
+									if (cohortId != null || filterId != null)
+										report.addCohortColumn(columnName, cohortId, filterId, valueIfTrue, valueIfFalse);
+								} else
+									log.warn("Cannot determine column type for column: " + columnId);
+							}
 						}
 					}
 				}

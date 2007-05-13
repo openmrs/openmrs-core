@@ -30,7 +30,7 @@ public class ObsTest extends BaseTest {
 		if (!conceptsWords.isEmpty()) {
 			    ConceptWord conceptWord = conceptsWords.get(0);
 			    Concept c = conceptWord.getConcept(); 
-				MyObs = Context.getObsService().getObservations(patient, c);
+				MyObs = Context.getObsService().getObservations(patient, c, true);
 				Iterator iter = MyObs.iterator();
 				while(iter.hasNext())
 			{

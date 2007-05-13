@@ -2,16 +2,20 @@ package org.openmrs.reporting.export;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
@@ -30,6 +34,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -82,7 +87,9 @@ public class DataExportFunctions {
 	
 	// Map<tablename+columnname, Map<personId, columnvalue>>
 	protected Map<String, Map<Integer, Object>> personAttributeMap = new HashMap<String, Map<Integer, Object>>();
-	
+
+	// Map<key, Collection<personId>>, where key is like "Cohort.1" or "Filter.3"
+	protected Map<String, Collection<Integer>> cohortMap = new HashMap<String, Collection<Integer>>();
 	
 	protected PatientSetService patientSetService;
 	protected PatientService patientService;
@@ -239,6 +246,35 @@ public class DataExportFunctions {
 	 */
 	public void setSeparator(String separator) {
 		this.separator = separator;
+	}
+	
+	public String getCohortMembership(Integer cohortId, String valueIfTrue, String valueIfFalse) {
+		return getCohortHelper("C." + cohortId) ? valueIfTrue : valueIfFalse;
+	}
+	
+	public String getCohortDefinitionMembership(Integer filterId, String valueIfTrue, String valueIfFalse) {
+		return getCohortHelper("F." + filterId) ? valueIfTrue : valueIfFalse;
+	}
+	
+	protected Boolean getCohortHelper(String key) {
+		if (cohortMap.containsKey(key))
+			return cohortMap.get(key).contains(getPatientId());
+		
+		log.debug("getting cohort/definition for key: " + key);
+		PatientSet ps = null;
+		if (key.startsWith("C.")) {
+			Cohort c = Context.getCohortService().getCohort(Integer.valueOf(key.substring(2)));
+			ps = c.toPatientSet();
+		} else if (key.startsWith("F.")) {
+			PatientFilter pf = Context.getReportService().getPatientFilterById(Integer.valueOf(key.substring(2)));
+			ps = pf.filter(getPatientSet());
+		} else {
+			log.error("key = " + key);
+		}
+		Set<Integer> set = new HashSet<Integer>(ps.getPatientIds());
+		cohortMap.put(key, set);
+		
+		return set.contains(getPatientId());
 	}
 	
 	/**

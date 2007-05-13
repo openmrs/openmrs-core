@@ -2,7 +2,6 @@ package org.openmrs.reporting.export;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -88,6 +87,16 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	 */
 	public void addCalculatedColumn(String columnName, String columnValue) {
 		columns.add(new CalculatedColumn(columnName, columnValue));
+	}
+	
+	/**
+	 * Append a cohort column
+	 * @param columnName
+	 * @param cohortId only one of this or filterId should be non-null 
+	 * @param filterId only one of this or cohortId should be non-null
+	 */
+	public void addCohortColumn(String columnName, Integer cohortId, Integer filterId, String valueIfTrue, String valueIfFalse) {
+		columns.add(new CohortColumn(columnName, cohortId, filterId, valueIfTrue, valueIfFalse));
 	}
 	
 	/**

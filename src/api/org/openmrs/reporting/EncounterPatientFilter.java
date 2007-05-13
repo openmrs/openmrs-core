@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -14,6 +15,7 @@ import org.openmrs.util.OpenmrsUtil;
 public class EncounterPatientFilter extends AbstractPatientFilter implements PatientFilter {
 
 	private EncounterType encounterType;
+	private Form form;
 	private Integer atLeastCount;
 	private Integer atMostCount;
 	private Integer withinLastDays;
@@ -56,12 +58,14 @@ public class EncounterPatientFilter extends AbstractPatientFilter implements Pat
 			ret.append("on or after " + sinceDate + " ");
 		if (untilDate != null)
 			ret.append("on or before " + untilDate + " ");
+		if (form != null)
+			ret.append("from the " + form.getName() + " form ");
 		return ret.toString();
 	}
 	
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsHavingEncounters(encounterType, location,
+		return input.intersect(service.getPatientsHavingEncounters(encounterType, location, form,
 				OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
 				OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
 				atLeastCount, atMostCount));
@@ -69,7 +73,10 @@ public class EncounterPatientFilter extends AbstractPatientFilter implements Pat
 
 	public PatientSet filterInverse(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.subtract(service.getPatientsHavingEncounters(encounterType, location, fromDateHelper(), toDateHelper(), atLeastCount, atMostCount));
+		return input.subtract(service.getPatientsHavingEncounters(encounterType, location, form,
+				OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
+				OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
+				atLeastCount, atMostCount));
 	}
 
 	public boolean isReadyToRun() {
@@ -186,6 +193,14 @@ public class EncounterPatientFilter extends AbstractPatientFilter implements Pat
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public Form getForm() {
+		return form;
+	}
+
+	public void setForm(Form form) {
+		this.form = form;
 	}
 
 }

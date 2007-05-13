@@ -89,6 +89,8 @@
 	}
 </style>
 
+<a href="../../patientDashboard.form?patientId=${encounter.patient.patientId}"><spring:message code="patientDashboard.viewDashboard"/></a>
+
 <h2><spring:message code="Encounter.manage.title"/></h2>
 
 <spring:hasBindErrors name="encounter">

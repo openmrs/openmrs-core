@@ -106,8 +106,8 @@ public class ReportServiceImpl implements ReportService {
 		return allPatientFilters;
 	}
 
-	public void createReportObject(AbstractReportObject reportObject) throws APIException {
-		getReportObjectDAO().createReportObject(reportObject);
+	public Integer createReportObject(AbstractReportObject reportObject) throws APIException {
+		return getReportObjectDAO().createReportObject(reportObject);
 	}
 	
 	public void deleteReport(AbstractReportObject reportObject) throws APIException {

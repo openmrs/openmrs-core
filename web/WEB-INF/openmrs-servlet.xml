@@ -129,6 +129,8 @@
 				<prop key="admin/programs/conversion.form">stateConversionForm</prop>
 				<prop key="admin/programs/workflow.form">workflowFormController</prop>
 				<prop key="admin/programs/patientProgram.form">patientProgramFormController</prop>
+				
+				<prop key="remotecommunication/postHl7.form">postHl7FormController</prop>
 
 				<prop key="admin/maintenance/globalProps.form">globalPropertyController</prop>
 				<!--<prop key="**/calendar.list">calendarController</prop>-->
@@ -1063,6 +1065,9 @@
 	<!-- =========================== -->
 	<!-- =====      Other      ===== -->
 	<!-- =========================== -->
+	<bean id="postHl7FormController" class="org.openmrs.web.controller.remotecommunication.PostHl7Controller">
+		<property name="formView"><value>/remotecommunication/postHl7Form</value></property>
+	</bean>
 	<bean id="optionsForm" class="org.openmrs.web.controller.OptionsFormController">
 		<property name="commandName"><value>opts</value></property>
 		<property name="commandClass"><value>org.openmrs.web.OptionsForm</value></property>

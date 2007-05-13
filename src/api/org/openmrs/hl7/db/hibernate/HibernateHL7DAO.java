@@ -5,8 +5,10 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.hl7.HL7InArchive;
@@ -54,6 +56,12 @@ public class HibernateHL7DAO implements HL7DAO {
 	 */
 	public HL7Source getHL7Source(Integer hl7SourceId) throws DAOException {
 		return (HL7Source) sessionFactory.getCurrentSession().get(HL7Source.class, hl7SourceId);
+	}
+	
+	public HL7Source getHL7Source(String name) throws DAOException {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(HL7Source.class);
+		crit.add(Restrictions.eq("name", name));
+		return (HL7Source) crit.uniqueResult();
 	}
 
 	/*

@@ -380,7 +380,7 @@ public class PatientFormController extends PersonFormController {
 					Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
 
 					if ( causeOfDeath != null ) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath);
+						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath, false);
 						if ( obssDeath != null ) {
 							if ( obssDeath.size() > 1 ) {
 								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
@@ -556,7 +556,7 @@ public class PatientFormController extends PersonFormController {
 		
 		Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
 		if ( reasonForExitConcept != null ) {
-			Set<Obs> patientExitObs = Context.getObsService().getObservations(patient, reasonForExitConcept);
+			Set<Obs> patientExitObs = Context.getObsService().getObservations(patient, reasonForExitConcept, false);
 			if ( patientExitObs != null ) {
 				log.debug("Exit obs is size " + patientExitObs.size() );
 				if ( patientExitObs.size() == 1 ) {

@@ -60,6 +60,13 @@ public class HL7ServiceImpl implements HL7Service {
 					"Insufficient privilege to view an HL7 source");
 		return getHL7DAO().getHL7Source(hl7SourceId);
 	}
+	
+	public HL7Source getHL7Source(String name) {
+		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_SOURCE))
+			throw new APIAuthenticationException(
+					"Insufficient privilege to view an HL7 source");
+		return getHL7DAO().getHL7Source(name);
+	}
 
 	public Collection<HL7Source> getHL7Sources() {
 		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_SOURCE))

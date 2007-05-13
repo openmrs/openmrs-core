@@ -111,6 +111,33 @@
 		}
 	}
 	
+	function setValueHelper(htmlEl, val) {
+		if (htmlEl.id != null && htmlEl.id != '')
+			DWRUtil.setValue(htmlEl.id, val);
+		else
+			DWRUtil.setValue(htmlEl.name, val);
+	}
+	
+	function updateCohortColumn(sel) {
+		if (sel.value != "") {
+			var count = sel.name.substr(sel.name.indexOf("_")+1, 3);
+			var val = DWRUtil.getValue(sel.name);
+			var temp = val.split(".");
+			var opt = sel.options[sel.selectedIndex];
+			var tbl = getParentByTagName(sel, "table");
+			setValueHelper(getChildByName(tbl, "cohortName_" + count), opt.text);
+			setValueHelper(getChildByName(tbl, "cohortIfTrue_" + count), opt.text);
+			setValueHelper(getChildByName(tbl, "cohortIfFalse_" + count), '');
+			if (temp[0] == 'C') {
+				setValueHelper(getChildByName(tbl, "cohortIdValue_" + count), val);
+				setValueHelper(getChildByName(tbl, "filterIdValue_" + count), '');
+			} else if (temp[0] == 'F') {
+				setValueHelper(getChildByName(tbl, "cohortIdValue_" + count), '');
+				setValueHelper(getChildByName(tbl, "filterIdValue_" + count), val);
+			}
+		}
+	}
+	
 	function getPreviousSibling(obj, name) {
 		var sibling = obj.previousSibling;
 		name = name.toLowerCase();
@@ -269,6 +296,11 @@
 		getChildByName(obj, "calculatedName").name += suffix;
 		getChildByName(obj, "calculatedValue").name += suffix;
 		getChildByName(obj, "calculatedPatient").name += suffix;
+		getChildByName(obj, "cohortName").name += suffix;
+		getChildByName(obj, "cohortIdValue").name += suffix;
+		getChildByName(obj, "filterIdValue").name += suffix;
+		getChildByName(obj, "cohortIfTrue").name += suffix;
+		getChildByName(obj, "cohortIfFalse").name += suffix;
 	}
 	
 	var pSelect = function(p) { return {
@@ -541,6 +573,7 @@
 				<a id="simpleTab" class="tab" href="#selectSimpleTab" onclick="selectTab(this)"><spring:message code="DataExport.simpleTab"/></a>
 				<a id="conceptTab" class="tab" href="#selectConceptTab" onclick="selectTab(this)"><spring:message code="DataExport.conceptTab"/></a>
 				<a id="calcTab" class="tab" href="#selectCalcTab" onclick="selectTab(this)"><spring:message code="DataExport.calculatedTab"/></a>
+				<a id="cohortTab" class="tab" href="#selectCohortTab" onclick="selectTab(this)"><spring:message code="DataExport.cohortTab"/></a>
 				&nbsp; 
 				<a href="#deleteColumn" onclick="deleteTab(this)"><img src="${pageContext.request.contextPath}/images/delete.gif" title="Delete this column"/></a>
 				&nbsp; 
@@ -556,6 +589,9 @@
 			</div>
 			<div id="calc" class="box">
 				<%@ include file="include/calculatedColumns.jsp" %>
+			</div>
+			<div id="cohort" class="box">
+				<%@ include file="include/cohortColumns.jsp" %>
 			</div>
 		</div>
 		<input type="button" onClick="return addNew(this, 'newColumn');" class="addNew" id="newColumnButtom" value='<spring:message code="DataExport.addColumn" />' />
@@ -622,6 +658,14 @@
 						getChildByName(obj, "calculatedValue_" + count).value += "${line}" <c:if test="${varStatus.last != true}"> + '\n'</c:if>;
 					</c:forEach>
 					getChildByName(obj, "calculatedValue_" + count).value += '\n';
+				</c:if>
+				<c:if test="${column.columnType == 'cohort'}">
+					selectTab(getChildById(obj, 'cohortTab'));
+					getChildByName(obj, "cohortName_" + count).value = "${column.columnName}";
+					getChildByName(obj, "cohortIdValue_" + count).value = "${column.cohortId}";
+					getChildByName(obj, "filterIdValue_" + count).value = "${column.filterId}";
+					getChildByName(obj, "cohortIfTrue_" + count).value = "${column.valueIfTrue}";
+					getChildByName(obj, "cohortIfFalse_" + count).value = "${column.valueIfFalse}";
 				</c:if>
 			</c:forEach>
 			

@@ -65,7 +65,7 @@ public class ShowGraphServlet extends HttpServlet {
 			String chartTitle, rangeAxisTitle, domainAxisTitle, titleFontSize = "";
 			if (concept != null ) { 
 				// Get observations
-				observations = Context.getObsService().getObservations(patient, concept);				
+				observations = Context.getObsService().getObservations(patient, concept, false);				
 				chartTitle = concept.getName(request.getLocale()).getName();
 				rangeAxisTitle = chartTitle;
 			}

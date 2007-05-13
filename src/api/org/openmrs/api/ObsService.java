@@ -113,10 +113,11 @@ public interface ObsService {
 	 * Get all Observations for a person
 	 * 
 	 * @param who
+	 * @param includeVoided
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public Set<Obs> getObservations(Person who);
+	public Set<Obs> getObservations(Person who, boolean includeVoided);
 
 	/**
 	 * Get all Observations for this concept/location Sort is optional
@@ -125,21 +126,22 @@ public interface ObsService {
 	 * @param location
 	 * @param sort
 	 * @param personType
+	 * @param includeVoided
 	 * @return list of obs for a location
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer persontType);
+	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer personType, boolean includeVoided);
 
 	/**
 	 * e.g. get all CD4 counts for a person
 	 * 
 	 * @param who
 	 * @param question
-	 * @param personType
+	 * @param includeVoided
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public Set<Obs> getObservations(Person who, Concept question);
+	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided);
 
 	/**
 	 * e.g. get last 'n' number of observations for a person for given concept
@@ -152,7 +154,7 @@ public interface ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Obs> getLastNObservations(Integer n, Person who,
-			Concept question);
+			Concept question, boolean includeVoided);
 
 	/**
 	 * e.g. get all observations referring to RETURN VISIT DATE
@@ -166,7 +168,7 @@ public interface ObsService {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservations(Concept question, String sort, Integer personType);
+	public List<Obs> getObservations(Concept question, String sort, Integer personType, boolean includeVoided);
 
 	/**
 	 * Return all observations that have the given concept as an answer
@@ -177,7 +179,7 @@ public interface ObsService {
 	 * @return list of obs
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType);
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType, boolean includeVoided);
 	
 	/**
 	 * Return all numeric answer values for the given concept ordered by value
@@ -192,7 +194,7 @@ public interface ObsService {
 	 * @return List<Object[]> [0]=<code>obsId</code>, [1]=<code>obsDatetime</code>, [2]=<code>valueNumeric</code>s
 	 */
 	@Transactional(readOnly = true)
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType);
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType, boolean includeVoided);
 	
 	/**
 	 * Get all observations from a specific encounter

@@ -52,7 +52,7 @@ public interface ObsDAO {
 	/**
 	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person)
 	 */
-	public Set<Obs> getObservations(Person who) throws DAOException;
+	public Set<Obs> getObservations(Person who, boolean includeVoided) throws DAOException;
 
 	/**
 	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept,org.openmrs.Location,java.lang.String,java.lang.Integer)
@@ -63,7 +63,7 @@ public interface ObsDAO {
 	/**
 	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person,org.openmrs.Concept)
 	 */
-	public Set<Obs> getObservations(Person who, Concept question)
+	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided)
 			throws DAOException;
 
 	/**

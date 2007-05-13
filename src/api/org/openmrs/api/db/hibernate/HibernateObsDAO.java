@@ -184,9 +184,11 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#getObservations(org.openmrs.Person, org.openmrs.Concept)
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Obs> getObservations(Person who, Concept question) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Obs obs where obs.person = :p and obs.concept = :c");
+	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided) {
+		String s = "from Obs obs where obs.person = :p and obs.concept = :c";
+		if (!includeVoided)
+			s += " and obs.voided = false";
+		Query query = sessionFactory.getCurrentSession().createQuery(s);
 		query.setParameter("p", who);
 		query.setParameter("c", question);
 		Set<Obs> ret = new HashSet<Obs>(query.list());
@@ -320,9 +322,11 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#getObservations(org.openmrs.Person)
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Obs> getObservations(Person who) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from Obs obs where obs.person = :p");
+	public Set<Obs> getObservations(Person who, boolean includeVoided) {
+		String s = "from Obs obs where obs.person = :p";
+		if (!includeVoided)
+			s += " and obs.voided = false";
+		Query query = sessionFactory.getCurrentSession().createQuery(s);
 		query.setParameter("p", who);
 		Set<Obs> ret = new HashSet<Obs>(query.list());
 

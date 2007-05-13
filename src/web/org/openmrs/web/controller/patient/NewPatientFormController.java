@@ -442,7 +442,7 @@ public class NewPatientFormController extends SimpleFormController {
 					Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
 	
 					if ( causeOfDeath != null ) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath);
+						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath, false);
 						if ( obssDeath != null ) {
 							if ( obssDeath.size() > 1 ) {
 								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
@@ -623,7 +623,7 @@ public class NewPatientFormController extends SimpleFormController {
 		    		String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 					Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
 					if ( conceptCause != null ) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause);
+						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause, false);
 						if ( obssDeath.size() == 1 ) {
 							Obs obsDeath = obssDeath.iterator().next();
 							causeOfDeathOther = obsDeath.getValueText();
