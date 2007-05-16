@@ -351,6 +351,9 @@ public final class Module {
 					extensions.add(ext);
 					log.debug("Added extension: " + ext.getExtensionId() + " : " + ext.getClass());
 				}
+				catch (NoClassDefFoundError e) {
+					log.warn("Unable to find class definition for extension: " + point, e);
+				}
 				catch (ClassNotFoundException e) {
 					log.warn("Unable to load class for extension: " + point, e);
 				}

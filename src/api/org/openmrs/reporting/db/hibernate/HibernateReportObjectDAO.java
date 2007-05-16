@@ -54,8 +54,12 @@ public class HibernateReportObjectDAO implements
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper();
 		wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObjId);
 		
-		AbstractReportObject reportObject = (wrappedReportObject == null) ? null : wrappedReportObject.getReportObject();
-		if ( reportObject.getReportObjectId() == null ) reportObject.setReportObjectId(wrappedReportObject.getReportObjectId());
+		if (wrappedReportObject == null)
+			return null;
+		
+		AbstractReportObject reportObject = wrappedReportObject.getReportObject();
+		if ( reportObject.getReportObjectId() == null )
+			reportObject.setReportObjectId(wrappedReportObject.getReportObjectId());
 		
 		return reportObject;
 	}
