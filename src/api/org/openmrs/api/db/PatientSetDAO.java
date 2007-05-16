@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.Query;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
@@ -47,7 +46,7 @@ public interface PatientSetDAO {
 	
 	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) throws DAOException;
 	
-	public PatientSet getPatientsByProgramAndState(Program program, ProgramWorkflowState state, Date fromDate, Date toDate) throws DAOException;
+	public PatientSet getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate) throws DAOException;
 	
 	public PatientSet getPatientsInProgram(Integer programId, Date fromDate, Date toDate) throws DAOException;
 	

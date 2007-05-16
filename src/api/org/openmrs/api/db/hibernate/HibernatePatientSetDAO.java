@@ -455,32 +455,38 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @param toDate If not null, then only patients in the given program/workflow/state on or before this date
 	 * @return
 	 */
-	public PatientSet getPatientsByProgramAndState(Program program, ProgramWorkflowState state, Date fromDate, Date toDate) {
+	public PatientSet getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate) {
 		Integer programId = program == null ? null : program.getProgramId();
-		Integer stateId = state == null ? null : state.getProgramWorkflowStateId();
+		List<Integer> stateIds = null;
+		if (stateList != null && stateList.size() > 0) {
+			stateIds = new ArrayList<Integer>();
+			for (ProgramWorkflowState state : stateList)
+				stateIds.add(state.getProgramWorkflowStateId());
+		}
+		
 		List<String> clauses = new ArrayList<String>();
 		clauses.add("pp.voided = false");
 		if (programId != null)
 			clauses.add("pp.program_id = :programId");
-		if (stateId != null) {
-			clauses.add("ps.state = :stateId");
+		if (stateIds != null) {
+			clauses.add("ps.state in (:stateIds)");
 			clauses.add("ps.voided = false");
 		}
 		if (fromDate != null) {
 			clauses.add("(pp.date_completed is null or pp.date_completed >= :fromDate)");
-			if (stateId != null)
+			if (stateIds != null)
 				clauses.add("(ps.end_date is null or ps.end_date >= :fromDate)");
 		}
 		if (toDate != null) {
 			clauses.add("(pp.date_enrolled is null or pp.date_enrolled <= :toDate)");
-			if (stateId != null)
+			if (stateIds != null)
 				clauses.add("(ps.start_date is null or ps.start_date <= :toDate)");
 		}
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("select pp.patient_id ");
 		sql.append("from patient_program pp ");
-		sql.append((stateId == null ? " left outer" : " inner") + " join patient_state ps on pp.patient_program_id = ps.patient_program_id ");
+		sql.append((stateIds == null ? " left outer" : " inner") + " join patient_state ps on pp.patient_program_id = ps.patient_program_id ");
 		for (ListIterator<String> i = clauses.listIterator(); i.hasNext(); ) {
 			sql.append(i.nextIndex() == 0 ? " where " : " and ");
 			sql.append(i.next());
@@ -491,8 +497,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		if (programId != null)
 			query.setInteger("programId", programId);
-		if (stateId != null)
-			query.setInteger("stateId", stateId);
+		if (stateIds != null)
+			query.setParameterList("stateIds", stateIds);
 		if (fromDate != null)
 			query.setDate("fromDate", fromDate);
 		if (toDate != null)

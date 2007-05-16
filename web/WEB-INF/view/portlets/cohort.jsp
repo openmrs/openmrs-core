@@ -20,7 +20,10 @@
 	var cohort_endIndex = cohort_pageSize;
 	
 	function cohort_setIdsHelper(commaSeparatedIds) {
-		cohort_patientIds = commaSeparatedIds.split(',');
+		if (commaSeparatedIds != null)
+			cohort_patientIds = commaSeparatedIds.split(',');
+		else
+			cohort_patientIds = new Array();
 		cohort_setStartIndex(0);
 	}
 	
@@ -119,21 +122,25 @@
 
 <div>
 	<div id="cohort_nameDiv">
-		<b><span id="cohort_name"></span></b>
+		<b><u><span id="cohort_name">${model.cohortTitle}</span></u></b>
 	</div>
 	<div id="cohort_viewMethodDiv">
-		View method: <b>List</b>
+		View method:
+			<b>List</b>
+			&nbsp;&nbsp; <small>Other methods are not yet implemented</small>
 	</div>
 	<div id="cohort_navButtons">
+		<b><u>
 		<a href="javascript:cohort_goToStart()">|&lt;</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:cohort_pageBack()">&lt;</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
-		Displaying <span id="cohort_fromNumber"></span> to <span id="cohort_toNumber"></span> of <span id="cohort_ofNumber"></span>	
+		<spring:message code="general.displayingXtoYofZ" arguments='<span id="cohort_fromNumber"></span>,<span id="cohort_toNumber"></span>,<span id="cohort_ofNumber"></span>' />
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:cohort_pageForwards()">&gt;</a>
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<a href="javascript:cohort_goToEnd()">&gt;|</a>
+		</u></b>
 	</div>
 	<div id="cohort_contents">
 	</div>

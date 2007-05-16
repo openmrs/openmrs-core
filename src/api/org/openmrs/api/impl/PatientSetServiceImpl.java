@@ -110,8 +110,8 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getPatientsHavingEncounters(encounterType, location, form, fromDate, toDate, minCount, maxCount);
 	}
 	
-	public PatientSet getPatientsByProgramAndState(Program program, ProgramWorkflowState state, Date fromDate, Date toDate) {
-		return getPatientSetDAO().getPatientsByProgramAndState(program, state, fromDate, toDate);
+	public PatientSet getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate) {
+		return getPatientSetDAO().getPatientsByProgramAndState(program, stateList, fromDate, toDate);
 	}
 	
 	public PatientSet getPatientsInProgram(Program program, Date fromDate, Date toDate) {
