@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -72,10 +73,10 @@ public abstract class BaseTest extends AbstractTransactionalSpringContextTests  
 	private JTextField usernameField;
 	
 	/*
-	 * This window contains the password dialog box.  In order to bring the window
+	 * This frame contains the password dialog box.  In order to bring the frame
 	 * to the front in the TimerTask method, we make it a private field  
 	 */
-	private Window window;
+	private Frame frame;
 	
 	/**
 	 * Utility method for obtaining username and password through Swing
@@ -122,25 +123,44 @@ public abstract class BaseTest extends AbstractTransactionalSpringContextTests  
 				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
 				new Insets(0, 0, 0, 0), 0, 0));
 		
-		Frame frame = new Frame();
-		window = new Window(frame);
+		frame = new JFrame();
+		Window window = new Window(frame);
+		frame.setVisible(true);
+		frame.setTitle("JUnit Test Credentials");
 		
 		// We use a TimerTask to force focus on username, but still use
 		// JOptionPane for model dialog
 		TimerTask later = new TimerTask() {
 			public void run() {
-				// TODO it would be nice if this worked  reliably...or if it created a 
-				// blinking taskbar item for the dialog
-				window.toFront();	// bring the dialog's window to the front
-				usernameField.grabFocus();
+				if (frame != null) {
+					frame.toFront(); // bring the dialog's window to the front
+					usernameField.grabFocus();
+				}
 			}
 		};
-		new Timer().schedule(later, 750);
+		new Timer().schedule(later, 500); // try setting focus half a second from now
 		
+		// attention grabber for those people that aren't as observant
+		TimerTask laterStill = new TimerTask() {
+			public void run() {
+				if (frame != null) {
+					frame.toFront(); // bring the dialog's window to the front
+					usernameField.grabFocus();
+				}
+			}
+		};
+		new Timer().schedule(laterStill, 10000); // if the user hasn't done anything in 10 seconds, tell them the window is there
+		
+		// show the dialog box
 		int response = JOptionPane.showConfirmDialog(window, panel,
-				message, JOptionPane.DEFAULT_OPTION);
+				message, JOptionPane.OK_CANCEL_OPTION);
 		
-		return (response == -1 ? null : new String[] { usernameField.getText(),
+		// clear out the window so the timer doesn't screw up
+		laterStill.cancel();
+		frame = null;
+		
+		// response of 2 is the cancel button, response of -1 is the little red X in the top right
+		return (response == 2 || response == -1 ? null : new String[] { usernameField.getText(),
 				String.valueOf(passwordField.getPassword()) });
 	}
 	
@@ -153,8 +173,13 @@ public abstract class BaseTest extends AbstractTransactionalSpringContextTests  
 		Integer attempts = 0;
 		String message = null;
 		while (Context.isAuthenticated() == false && attempts < 3) {
-			System.out.println("Asking for valid credentials...");
+			//System.out.println("Asking for valid credentials...");
 			String[] credentials = getUsernameAndPassword(message);
+			
+			// credentials are null if the user clicked "cancel"
+			if (credentials == null)
+				return;
+			
 			try {
 				Context.authenticate(credentials[0], credentials[1]);
 			}
