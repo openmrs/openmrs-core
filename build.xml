@@ -20,16 +20,32 @@
 	<!-- Library versions and JARs -->
     <property name="lib.dir" location="lib" />
     <property file="${lib.dir}/lib.properties" />
-    
+	<fileset id="lib.files" dir="${lib.dir}">
+        <include name="**/*.jar" />
+    </fileset>
+	<path id="lib.path">
+        <fileset refid="lib.files" />
+	</path>
+	
 	<!-- Base definitions (cannot be overwritten by user property file) -->
 	<property file="build.properties" />
 	
 	<!-- Taskdefs -->
 	<taskdef name="splash" classname="org.apache.tools.ant.taskdefs.optional.splash.SplashTask">
-        <classpath>
-			<fileset dir="${lib.dir}" includes="**/*.jar" />
-		</classpath>
+		<classpath refid="lib.path"/>
     </taskdef>
+	
+	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+		<classpath>
+			<fileset dir="${junit.dir}" includes="*.jar" />
+		</classpath>
+	</taskdef>
+
+	<taskdef name="junitreport" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator">
+		<classpath refid="lib.path"/>
+	</taskdef>
+		
+		
 	
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
@@ -86,6 +102,10 @@
 		<property name="splash.dir" location="."/>
 		<splash imageurl="file:${metadata.dir}/images/openmrs-logo-small.gif" showduration="0"/>
 	</target>
+	
+	<target name="nosplash">
+        <property name="nosplash" value="true" />
+    </target>
 	
 	<target name="init" depends="splash" description="initialization">
 
@@ -224,13 +244,22 @@
 	</target>
 
 	<target name="compile-api-tests" depends="package-api" description="compile api tests">
+		<delete dir="${build.dir}/test/api" />
 		<mkdir dir="${build.dir}/test/api" />
-		<touch file="${metadata.dir}/api/applicationContext-service.xml"/>
-		<copy todir="${build.dir}/test/api">
+		<copy todir="${build.dir}"> <!-- /build is the root of junit standalone builds -->
 			<fileset dir="${metadata.dir}/api" includes="*.xml" />
 			<fileset dir="${metadata.dir}/api/hibernate" includes="*.*" />
 			<filterset>
-				<filter token="MAPPING.JAR.LOCATIONS" value="file:dist/${openmrs.api.name}" />
+				<!-- <filter token="MAPPING.JAR.LOCATIONS" value="classpath:${openmrs.api.name}" /> -->
+				<filter token="MAPPING.JAR.LOCATIONS" value="file:${dist.dir}/${openmrs.api.name}" />
+			</filterset>
+		</copy>
+		<copy todir="${build.dir}/test/api"> <!-- /build/test/api is the root for ant junit tests -->
+			<fileset dir="${metadata.dir}/api" includes="*.xml" />
+			<fileset dir="${metadata.dir}/api/hibernate" includes="*.*" />
+			<filterset>
+				<!-- <filter token="MAPPING.JAR.LOCATIONS" value="classpath:${openmrs.api.name}" /> -->
+				<filter token="MAPPING.JAR.LOCATIONS" value="file:${dist.dir}/${openmrs.api.name}" />
 			</filterset>
 		</copy>
 		
@@ -499,6 +528,15 @@
          </java>
      </target>
 	
+	<target name="tomcat-cycle" description="Remove current webapp, stop tomcat, start tomcat, install webapp">
+		<sequential>
+			<antcall target="remove"/>
+			<antcall target="tomcat-stop"/>
+			<antcall target="tomcat-start"/>
+			<antcall target="install"/>
+		</sequential>
+	</target>
+	
 	<target name="schemaexport">
 		<taskdef name="schemaexport" classname="org.hibernate.tool.hbm2ddl.SchemaExportTask" classpathref="hibernate.classpath" />
 
@@ -555,5 +593,43 @@
 			</classpath>
 		</java>
 	</target>
+	
+	<target name="junit-report" depends="nosplash, junit" description="Run tests and create JUnit report (requires driver.jar property)">
+		<property name="nosplash" value="true" />
+        <delete dir="${junit-reports.dir}" failonerror="false" />
+        <mkdir dir="${junit-reports.dir}" />
+        <junitreport todir="${junit-reports.dir}">
+			<fileset dir="${junit-tests.dir}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report format="frames" todir="${junit-reports.dir}"/>
+		</junitreport>
+	</target>
 
+    <target name="junit" depends="compile-api-tests" description="Run the test suite (requires driver.jar property)">
+		<delete dir="${junit-tests.dir}" failonerror="false"/>
+		<mkdir dir="${junit-tests.dir}" />
+	
+	    <path id="junit-path">
+			<fileset refid="lib.files" />
+		    <pathelement path="${build.dir}/test/api"/>
+		    <pathelement path="${build.dir}/api"/>
+			<pathelement location="${dist.dir}/${openmrs.api.name}"/>
+		</path>
+
+        <junit printsummary="yes" dir="${build.dir}/test" maxmemory="256M" fork="yes" forkmode="perBatch">
+			<classpath refid="junit-path"/>
+			<formatter type="plain"/>
+			<formatter type="xml"/>
+            <batchtest todir="${junit-tests.dir}" haltonfailure="no">
+				<fileset dir="${build.dir}/test/api">
+					<include name="org/openmrs/**/*.class" />
+					<exclude name="org/openmrs/BaseTest.class" />
+					<!--custom selector to make sure only those tests in the AllTests suite get picked up here -->
+					<!-- <custom classname="org.hibernate.test.TestSelector" classpathref="selector.classpath" /> -->
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+	
 </project>

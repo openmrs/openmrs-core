@@ -1,9 +1,11 @@
 package org.openmrs;
 
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Window;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -20,10 +22,12 @@ import javax.swing.UIManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.test.AbstractTransactionalSpringContextTests;
 
-public class BaseTest extends org.springframework.test.AbstractTransactionalSpringContextTests {
+public abstract class BaseTest extends AbstractTransactionalSpringContextTests  {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -66,7 +70,13 @@ public class BaseTest extends org.springframework.test.AbstractTransactionalSpri
 	 * the field within an anonymous TimerTask method.
 	 */
 	private JTextField usernameField;
-
+	
+	/*
+	 * This window contains the password dialog box.  In order to bring the window
+	 * to the front in the TimerTask method, we make it a private field  
+	 */
+	private Window window;
+	
 	/**
 	 * Utility method for obtaining username and password through Swing
 	 * interface for tests. Any tests extending the org.openmrs.BaseTest class
@@ -75,14 +85,21 @@ public class BaseTest extends org.springframework.test.AbstractTransactionalSpri
 	 * non-interactive tests, since this method will try to render an
 	 * interactive dialog box for authentication!</em></b>
 	 * 
+	 * @param message string to display above username field
+	 * 
 	 * @return Two-member String array containing username and password,
 	 *         respectively, or <code>null</code> if user aborts dialog
 	 */
-	public synchronized String[] getUsernameAndPassword() {
+	public synchronized String[] getUsernameAndPassword(String message) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
+		
 		}
+		
+		if (message == null || "".equals(message))
+			message = "Enter credentials...";
+		
 		JPanel panel = new JPanel(new GridBagLayout());
 		JLabel usernameLabel = new JLabel("Username");
 		usernameLabel.setFont(font);
@@ -104,27 +121,58 @@ public class BaseTest extends org.springframework.test.AbstractTransactionalSpri
 		panel.add(passwordField, new GridBagConstraints(1, 1, 1, 1, 0, 0,
 				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
 				new Insets(0, 0, 0, 0), 0, 0));
+		
+		Frame frame = new Frame();
+		window = new Window(frame);
+		
 		// We use a TimerTask to force focus on username, but still use
 		// JOptionPane for model dialog
 		TimerTask later = new TimerTask() {
 			public void run() {
+				// TODO it would be nice if this worked  reliably...or if it created a 
+				// blinking taskbar item for the dialog
+				window.toFront();	// bring the dialog's window to the front
 				usernameField.grabFocus();
 			}
 		};
-		new Timer().schedule(later, 500);
-		int response = JOptionPane.showConfirmDialog(null, panel,
-				"Enter credentials...", JOptionPane.DEFAULT_OPTION);
+		new Timer().schedule(later, 750);
+		
+		int response = JOptionPane.showConfirmDialog(window, panel,
+				message, JOptionPane.DEFAULT_OPTION);
+		
 		return (response == -1 ? null : new String[] { usernameField.getText(),
 				String.valueOf(passwordField.getPassword()) });
 	}
-
+	
+	/**
+	 * Asks the user for credentials and authenticates to the context
+	 * 
+	 * @throws Exception
+	 */
+	public void authenticate() throws Exception {
+		Integer attempts = 0;
+		String message = null;
+		while (Context.isAuthenticated() == false && attempts < 3) {
+			System.out.println("Asking for valid credentials...");
+			String[] credentials = getUsernameAndPassword(message);
+			try {
+				Context.authenticate(credentials[0], credentials[1]);
+			}
+			catch (ContextAuthenticationException e) {
+				message = "Invalid username/password.  Try again.";
+			}
+			
+			attempts++;
+		}
+	}
+	
 	/**
 	 * used for runtime properties
 	 * 
 	 * @return
 	 */
 	public String getWebappName() {
-		return "amrs";
+		return "openmrs";
 	}
 	
 	/**
@@ -180,7 +228,28 @@ public class BaseTest extends org.springframework.test.AbstractTransactionalSpri
 
 		} catch (IOException e) {
 		}
+		
 		return props;
 	}
-
+	
+	/**
+	 * Called before every 'test' method in the test class
+	 * 
+	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpBeforeTransaction()
+	 */
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		Context.openSession();
+	}
+	
+	/**
+	 * Called after every 'test' method in the test class
+	 * 
+	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onTearDownAfterTransaction()
+	 */
+	@Override
+	protected void onTearDownAfterTransaction() throws Exception {
+		Context.closeSession();
+	}
+	
 }

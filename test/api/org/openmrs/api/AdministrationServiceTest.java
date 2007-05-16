@@ -7,9 +7,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.BaseTest;
@@ -36,10 +33,13 @@ public class AdministrationServiceTest extends BaseTest {
 	protected FormService formService = null;
 	protected EncounterService encounterService = null;
 	
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
+
 	public void testDataEntryStats() throws Exception {
-		
-		startup();
-		Context.authenticate("admin", "test");
 		
 		ps = Context.getPatientService();
 		us = Context.getUserService();
@@ -382,16 +382,6 @@ public class AdministrationServiceTest extends BaseTest {
 		as.deleteLocation(newLocation);
 		assertNull(encounterService.getLocation(newLocation.getLocationId()));
 
-		
-		
-		
-		
-		shutdown();
-		
 	}
 	
-	public static Test suite() {
-		return new TestSuite(AdministrationServiceTest.class, "Basic AdministrationService functionality");
-	}
-
 }

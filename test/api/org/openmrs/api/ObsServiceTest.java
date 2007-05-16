@@ -2,9 +2,6 @@ package org.openmrs.api;
 
 import java.util.Date;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.openmrs.BaseTest;
 import org.openmrs.ComplexObs;
 import org.openmrs.Concept;
@@ -25,9 +22,13 @@ public class ObsServiceTest extends BaseTest {
 	protected OrderService orderService = Context.getOrderService();
 	protected ConceptService conceptService = Context.getConceptService();
 
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
+
 	public void testObsCreateUpdateDelete() throws Exception {
-		
-		Context.authenticate("USER-1", "test");
 		
 		Obs o = new Obs();
 		
@@ -43,7 +44,7 @@ public class ObsServiceTest extends BaseTest {
 		Location location1 = es.getLocation(3);
 		Integer groupId1 = new Integer(1);
 		Integer valueGroupId1 = new Integer(5);
-		boolean valueBoolean1 = true;
+		//boolean valueBoolean1 = true;
 		Date valueDatetime1 = new Date();
 		Concept valueCoded1 = conceptService.getConcept(11);
 		Double valueNumeric1 = 1.0;
@@ -81,7 +82,7 @@ public class ObsServiceTest extends BaseTest {
 		Location location2 = es.getLocation(2);
 		Integer groupId2 = new Integer(2);
 		Integer valueGroupId2 = new Integer(3);
-		boolean valueBoolean2 = false;
+		//boolean valueBoolean2 = false;
 		Date valueDatetime2 = new Date();
 		Concept valueCoded2 = conceptService.getConcept(22);
 		Double valueNumeric2 = 2.0;
@@ -91,7 +92,7 @@ public class ObsServiceTest extends BaseTest {
 		
 		o2.setOrder(order2);
 		o2.setConcept(concept2);
-		o2.setPatient(patient2);
+		o2.setPerson(patient2);
 		o2.setEncounter(encounter2);
 		o2.setObsDatetime(datetime2);
 		o2.setLocation(location2);
@@ -149,8 +150,6 @@ public class ObsServiceTest extends BaseTest {
 	
 	public void testComplexObsCreateUpdateDelete() throws Exception {
 		
-		Context.authenticate("USER-1", "test");
-		
 		ComplexObs o = new ComplexObs();
 		
 		//testing creation
@@ -163,7 +162,7 @@ public class ObsServiceTest extends BaseTest {
 		Location location1 = es.getLocation(3);
 		Integer groupId1 = new Integer(1);
 		Integer valueGroupId1 = new Integer(5);
-		boolean valueBoolean1 = true;
+		//boolean valueBoolean1 = true;
 		Date valueDatetime1 = new Date();
 		Concept valueCoded1 = conceptService.getConcept(13);
 		Double valueNumeric1 = 1.0;
@@ -176,7 +175,7 @@ public class ObsServiceTest extends BaseTest {
 		
 		o.setOrder(order1);
 		o.setConcept(concept1);
-		o.setPatient(patient1);
+		o.setPerson(patient1);
 		o.setEncounter(encounter1);
 		o.setObsDatetime(datetime1);
 		o.setLocation(location1);
@@ -281,8 +280,4 @@ public class ObsServiceTest extends BaseTest {
 		assertNull(obsService.getObs(o.getObsId()));
 	}	
 	
-	public static Test suite() {
-		return new TestSuite(ObsServiceTest.class, "Basic ObsService functionality");
-	}
-
 }

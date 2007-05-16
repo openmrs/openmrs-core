@@ -1,14 +1,18 @@
 package org.openmrs.api.util;
 
 import junit.framework.Test;
-import org.openmrs.BaseTest;
 import junit.framework.TestSuite;
 
+import org.openmrs.BaseTest;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.test.annotation.NotTransactional;
 
 public class OpenmrsUtilTest extends BaseTest {
 	
+	@NotTransactional
 	public void testGetCheckDigit() throws Exception {
+		
+		System.out.println("In testGetCheckDigit()");
 		
 		String[] ids = {"9", "99", "999", "123MT", "asdf"};
 		int[] cds = {1, 2, 3, 2, 8} ;
@@ -17,6 +21,13 @@ public class OpenmrsUtilTest extends BaseTest {
 			System.out.println(ids[i]);
 			assertEquals(OpenmrsUtil.getCheckDigit(ids[i]), cds[i]);
 		}
+		
+	}
+	
+	@NotTransactional
+	public void testIsValidCheckDigit() throws Exception {
+		
+		System.out.println("In testIsValidCheckDigit()");
 		
 		String[] ids2 = {"9-1", "99-2", "999-3", "123MT-2", "asdf-8"};
 		for (int i = 0; i< ids2.length; i++) {
@@ -35,20 +46,17 @@ public class OpenmrsUtilTest extends BaseTest {
 			try {
 				System.out.println(ids4[i]);
 				OpenmrsUtil.isValidCheckDigit(ids4[i]);
-				fail();
+				fail("An exception was not thrown for invalid identifier: " + ids4[i]);
 			}
 			catch (Exception e) {}
 		}
 	}
 	
-	public void testIsValidCheckDigit() throws Exception {
-		
-	}
-
-	
-	
 	public static Test suite() {
-		return new TestSuite(OpenmrsUtilTest.class, "Basic OpenmrsUtil class tests");
+		System.out.println("In suite()");
+		return new TestSuite(OpenmrsUtilTest.class);
 	}
 
+	
+	
 }

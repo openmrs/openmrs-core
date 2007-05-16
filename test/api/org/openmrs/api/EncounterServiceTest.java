@@ -2,18 +2,12 @@ package org.openmrs.api;
 
 import java.util.Date;
 
-import junit.framework.Test;
 import org.openmrs.BaseTest;
-import junit.framework.TestSuite;
-
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 
 public class EncounterServiceTest extends BaseTest {
@@ -22,6 +16,12 @@ public class EncounterServiceTest extends BaseTest {
 	protected PatientService ps = Context.getPatientService();
 	protected UserService us = Context.getUserService();
 	protected Encounter enc = new Encounter();
+
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
 
 	public void testEncounterCreateUpdateDelete() throws Exception {
 		
@@ -87,8 +87,4 @@ public class EncounterServiceTest extends BaseTest {
 		
 	}	
 	
-	public static Test suite() {
-		return new TestSuite(EncounterServiceTest.class, "Basic EncounterService functionality");
-	}
-
 }

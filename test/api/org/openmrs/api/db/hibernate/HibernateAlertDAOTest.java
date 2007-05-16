@@ -5,21 +5,21 @@ import org.openmrs.api.context.Context;
 import org.openmrs.notification.AlertService;
 
 public class HibernateAlertDAOTest extends BaseTest {
+	
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
 
 	public void testClass() throws Exception {
-		startup();
 		
+		Context.openSession();
 		
-		Context.authenticate("ben", "");
-
-		try {
-			AlertService as = Context.getAlertService();
-
-			System.out.println(as.getAlerts());
-		}  finally {
-			shutdown();
-		}
+		AlertService as = Context.getAlertService();
+		System.out.println(as.getAlerts());
 		
+		Context.closeSession();
 	}
 
 }

@@ -41,11 +41,13 @@ public class ClinicalSummaryTest extends BaseTest {
 			"BLOOD OXYGEN SATURATION", "CD4, BY FACS", "SERUM CREATININE",
 			"SERUM GLUTAMIC-PYRUVIC TRANSAMINASE", "X-RAY, CHEST" };
 
-	public void testLogic() throws Exception {
-		startup();
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
 
-		// Setup
-		Context.authenticate("admin", "test");
+	public void testLogic() throws Exception {
 		
 		Integer[] pidList = new Integer[] { 4 };
 		
@@ -86,7 +88,6 @@ public class ClinicalSummaryTest extends BaseTest {
 
 		// Output results
 
-		shutdown();
 	}
 
 	private void registerRules(LogicService logic) throws LogicException {

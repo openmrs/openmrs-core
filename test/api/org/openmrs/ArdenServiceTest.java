@@ -1,16 +1,16 @@
 package org.openmrs;
 
-import java.util.Iterator;
-
 import org.openmrs.api.context.Context;
-import org.openmrs.arden.ArdenDataSource;
-import org.openmrs.arden.ArdenRule;
-import org.openmrs.arden.DefaultArdenDataSource;
-import org.openmrs.arden.compiled.*;
 
 public class ArdenServiceTest extends BaseTest {
 	int MAX_MLM = 1000;
 	
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
+
 	public void testClass() throws Exception {
 
 	//	Integer pid = 1;
@@ -25,9 +25,6 @@ public class ArdenServiceTest extends BaseTest {
 				"leadspecpws2.mlm"
 		};
 		String defaultPath = "test/arden test/";
-		
-		startup();
-		Context.authenticate("vibha", "chicachica");
 		
 		for (int i = 0; i<mlmNames.length; i++) {
 			Context.getArdenService().compileFile(defaultPath + mlmNames[i]);
@@ -57,8 +54,6 @@ public class ArdenServiceTest extends BaseTest {
 			}
 		}
 */	
-		shutdown();
 	}
-	
 	
 }

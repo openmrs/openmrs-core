@@ -7,14 +7,20 @@ import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.LogicService;
 import org.openmrs.logic.Result;
-import org.openmrs.logic.rule.*;
+import org.openmrs.logic.rule.NameRule;
 
 public class RuleRunTest extends BaseTest {
 	
 	protected final Log log = LogFactory.getLog(getClass());
-	String[] conceptList = new String[] { "VENOUS BLOOD LEAD - QUALITATIVE"
-			
-	};
+	
+	String[] conceptList = new String[] { "VENOUS BLOOD LEAD - QUALITATIVE" };
+	
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
+
 	public void testClass() throws Exception {
 		String [] ruleList = {
 			"NAME_RULE",
@@ -27,8 +33,6 @@ public class RuleRunTest extends BaseTest {
 			
 		};
 		
-		startup();
-		Context.authenticate("vibha", "chicachica");
 		LogicService logic = Context.getLogicService();
 		registerRules(logic);
 		registerConcepts(logic);
@@ -55,22 +59,20 @@ public class RuleRunTest extends BaseTest {
 			e.printStackTrace();
 		}
 		
-		
-		
-		
-		
-		shutdown();
 	}
+	
+	
 	private void registerRules(LogicService logic) throws LogicException {
 		// Register rules
 		logic.addToken("NAME RULE",NameRule.class);
+		/*
 		logic.addToken("LEAD RULE", leadspecpws.class);
 		logic.addToken("HI RISK LEAD RULE", HiRiskLeadScreen.class);
 		logic.addToken("DIRECT TB CONTACT", directtbcontact.class);
 		logic.addToken("INDIRECT TB CONTACT", indirecttbcontact.class);
 		logic.addToken("DIRECT EXP HI RISK COUNTRY", directexphiriskcountry.class);
 		logic.addToken("DIRECT TB CONTACT", indirectexphiriskcountry.class);
-		
+		*/
  	
 	}
 	
@@ -85,4 +87,5 @@ public class RuleRunTest extends BaseTest {
 				log.error("Missing concept: " + conceptName);
 		}
 	}
+	
 }

@@ -2,9 +2,6 @@ package org.openmrs.api;
 
 import java.util.Date;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.openmrs.BaseTest;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
@@ -13,12 +10,6 @@ import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.User;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.ObsService;
-import org.openmrs.api.OrderService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 
 public class OrderServiceTest extends BaseTest {
@@ -30,10 +21,14 @@ public class OrderServiceTest extends BaseTest {
 	protected OrderService orderService = Context.getOrderService();
 	protected ConceptService conceptService = Context.getConceptService();
 	
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
+
 	public void testOrderCreateUpdateDelete() throws Exception {
 
-		Context.authenticate("USER-1", "test");
-		
 		Order order1 = new Order();
 		
 		//testing creation
@@ -123,8 +118,6 @@ public class OrderServiceTest extends BaseTest {
 	}	
 	
 	public void testDrugOrderCreateUpdateDelete() throws Exception {
-		
-		Context.authenticate("USER-1", "test");
 		
 		DrugOrder drugorder1 = new DrugOrder();
 		
@@ -244,11 +237,6 @@ public class OrderServiceTest extends BaseTest {
 		 
 		assertNull(orderService.getOrder(drugorder1.getOrderId()));
 		
-		
 	}	
 	
-	public static Test suite() {
-		return new TestSuite(OrderServiceTest.class, "Basic Order Service functionality");
-	}
-
 }

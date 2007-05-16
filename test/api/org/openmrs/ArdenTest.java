@@ -19,6 +19,12 @@ import antlr.BaseAST;
 
 
 public class ArdenTest extends BaseTest {
+	
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
 
 	public static void RunTest(String file, MLMObject ardObj) {
 	    // Use a try/catch block for parser exceptions
@@ -38,8 +44,10 @@ public class ArdenTest extends BaseTest {
 	      e.printStackTrace(System.err);   // so we can get stack trace
 	    }
 	}
-	  // This method decides what action to take based on the type of
-	  //   file we are looking at
+	  
+	/** This method decides what action to take based on the type of
+	   file we are looking at */
+	
 	  public static void doFile(File f, MLMObject ardObj) throws Exception {
 	    // If this is a directory, walk each file/dir in that directory
 	    if (f.isDirectory()) {
@@ -60,7 +68,9 @@ public class ArdenTest extends BaseTest {
 	    }
 	  }
 
-	  // Here's where we do the real work...
+	  /**
+	   * Here's where we do the real work...
+	   */ 
 	  public static void parseFile(InputStream s, String fn, MLMObject ardObj) throws Exception {
 	  	//new ArdenReadNode();
 	    try {
@@ -198,9 +208,6 @@ public class ArdenTest extends BaseTest {
 	
 	public void testClass() throws Exception {
 		
-		startup();
-		
-		Context.authenticate("vibha", "chicachica");
 		Locale locale = Context.getLocale();
 		
 	//	HiRiskLeadScreen mlm = new HiRiskLeadScreen(context,1,locale);
@@ -255,8 +262,6 @@ public class ArdenTest extends BaseTest {
 	//		}
 	//	}
 		
-		shutdown();
 	}
-	
 	
 }

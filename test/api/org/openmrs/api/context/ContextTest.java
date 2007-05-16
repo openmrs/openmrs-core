@@ -1,28 +1,42 @@
 package org.openmrs.api.context;
 
-import junit.framework.Test;
 import org.openmrs.BaseTest;
-import junit.framework.TestSuite;
-
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 
 public class ContextTest extends BaseTest {
-
-	public void testAuthentication() throws Exception {
-		Context.authenticate("USER-1", "test");
+	
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
 	}
 
-	public void testUserService() {
+	public void testGettingUser() {
+		Context.openSession();
+		
 		UserService us = Context.getUserService();
-		String username = "USER-1";
+		String username = "admin";
 		User user = us.getUserByUsername(username);
 		assertNotNull("user " + username, user);
 		System.out.println("Successfully found user: " + user.getPersonName() + " (" + username + ")");
+		
+		Context.closeSession();
 	}
-
-	public static Test suite() {
-		return new TestSuite(ContextTest.class, "OpenMRS context");
+	
+	public void testProxyPrivilege() {
+		
+		Context.openSession();
+		
+		//create a bum user
+		
+		// make sure they can't do High Level Task X
+		
+		// give them privileges to do High Level Task X
+		
+		// delete the user
+		
+		Context.closeSession();
 	}
 
 }

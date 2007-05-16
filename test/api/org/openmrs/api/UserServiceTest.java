@@ -4,9 +4,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.openmrs.BaseTest;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
@@ -18,9 +15,13 @@ public class UserServiceTest extends BaseTest {
 	
 	protected UserService us = Context.getUserService();
 
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
+
 	public void testUpdateUser() throws Exception {
-		
-		Context.authenticate("USER-1", "test");
 		
 		System.out.println("##start method");
 		
@@ -82,11 +83,6 @@ public class UserServiceTest extends BaseTest {
 			}
 		}
 		
-		shutdown();
-	}
-
-	public static Test suite() {
-		return new TestSuite(UserServiceTest.class, "Basic UserService functionality");
 	}
 
 }

@@ -17,10 +17,14 @@ import org.openmrs.reporting.ReportService;
 public class DataExportTest extends BaseTest {
 	
 	private Log log = LogFactory.getLog(this.getClass());
+	
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
 
-	public void testClass() throws Exception {
-		
-		startup();
+	public void testDataExport4() throws Exception {
 		
 		try {
 			Velocity.init();
@@ -28,10 +32,11 @@ public class DataExportTest extends BaseTest {
 			log.error("Error initializing Velocity engine", e);
 		}
 		
-		Context.authenticate("admin", "test");
-		
 		ReportService rs = Context.getReportService();
 		DataExportReportObject dataExport = (DataExportReportObject)rs.getReportObject(4);
+		
+		if (dataExport == null)
+			return;
 		
 		VelocityContext velocityContext = new VelocityContext();
 		Writer report = new StringWriter();
@@ -64,7 +69,6 @@ public class DataExportTest extends BaseTest {
 		report.append("\ntemplate: " + template);
 		log.error("report: " + report);
 		
-		shutdown();
 	}
-	
+
 }

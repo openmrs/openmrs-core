@@ -5,18 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.openmrs.BaseTest;
 import org.openmrs.Patient;
-import org.openmrs.PersonAddress;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 
 public class PatientServiceTest extends BaseTest {
@@ -26,10 +20,14 @@ public class PatientServiceTest extends BaseTest {
 	protected EncounterService encounterService = Context.getEncounterService();
 	protected Patient createdPatient;
 	
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
+
 	public void testGetPatient() throws Exception {
 
-		Context.authenticate("USER-1", "test");
-		
 		this.createPatient();
 		
 		Set patientList;
@@ -67,8 +65,6 @@ public class PatientServiceTest extends BaseTest {
 	}
 	
 	public void createPatient() throws Exception {
-		
-		Context.authenticate("USER-1", "test");
 		
 		Patient patient = new Patient();
 		
@@ -126,8 +122,4 @@ public class PatientServiceTest extends BaseTest {
 		
 	}
 	
-	public static Test suite() {
-		return new TestSuite(PatientServiceTest.class, "Basic Patient Service functionality");
-	}
-
 }

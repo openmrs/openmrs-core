@@ -145,4 +145,18 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			
 	}
 
+	/**
+	 * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#destroy()
+	 */
+	@Override
+	public void destroy() throws HibernateException {
+		try {
+			super.destroy();
+		}
+		catch (IllegalStateException e) {
+			// ignore errors sometimes thrown by the CacheManager trying to shut down twice
+			// see net.sf.ehcache.CacheManager#removeShutdownHook()
+		}
+	}
+	
 }

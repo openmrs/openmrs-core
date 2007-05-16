@@ -4,18 +4,23 @@ import org.openmrs.api.context.Context;
 
 public class RoleTest extends BaseTest {
 
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
+
 	public void testClass() throws Exception {
 		
-		startup();
-		
-		Context.authenticate("admin", "test");
-		
-		Role r = Context.getUserService().getRole("Lab Technician");
+		Role r = Context.getUserService().getRole("Anonymous");
 		System.out.println(r);
+		
+		assertNotNull(r);
+		
 		System.out.println("all roles: " + r.getAllParentRoles());
+		
 		assertFalse(r.getAllParentRoles().contains(r));
 		
-		shutdown();
 	}
 	
 }

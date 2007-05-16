@@ -4,22 +4,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Test;
 import org.openmrs.BaseTest;
-import junit.framework.TestSuite;
-
 import org.openmrs.Concept;
 import org.openmrs.Field;
 import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.FormService;
-import org.openmrs.api.ObsService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 
 public class FormServiceTest extends BaseTest {
@@ -31,9 +22,14 @@ public class FormServiceTest extends BaseTest {
 	protected FormService formService = Context.getFormService();
 	protected ConceptService conceptService = Context.getConceptService();
 	
+	@Override
+	protected void onSetUpBeforeTransaction() throws Exception {
+		super.onSetUpBeforeTransaction();
+		authenticate();
+	}
+
+	
 	public void testFormCreateUpdateDelete() throws Exception {
-		
-		Context.authenticate("USER-1", "test");
 		
 		//testing Form creation
 		
@@ -90,8 +86,6 @@ public class FormServiceTest extends BaseTest {
 	}
 	
 	public void xtestFormFieldCreateUpdateDelete() throws Exception {
-		
-		Context.authenticate("USER-1", "test");
 		
 		//testing creation
 		
@@ -262,8 +256,4 @@ public class FormServiceTest extends BaseTest {
 		assertNull(formService.getField(field3.getFieldId()));
 	}
 	
-	public static Test suite() {
-		return new TestSuite(FormServiceTest.class, "Basic Form Service functionality");
-	}
-
 }
