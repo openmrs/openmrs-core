@@ -35,7 +35,7 @@
 		<classpath refid="lib.path"/>
     </taskdef>
 	
-	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" onerror="ignore">
 		<classpath>
 			<fileset dir="${junit.dir}" includes="*.jar" />
 		</classpath>
