@@ -630,7 +630,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 
 		if (useValue) {
-			sb.append(doSqlAggregation ? " having " : (conceptId == null ? " where " : " and "));
+			sb.append(doSqlAggregation ? " having " : " and ");
 			sb.append(valueSql + " ");
 			sb.append(modifier.getSqlRepresentation() + " :value");
 		}
