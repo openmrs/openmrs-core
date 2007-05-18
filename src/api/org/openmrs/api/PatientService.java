@@ -220,6 +220,20 @@ public interface PatientService {
 	public List<Patient> findPatients(String query, boolean includeVoided);
 
 	/**
+	 * This method tries to find a patient in the database given the attributes
+	 * on the given <code>patientToMatch</code> object.
+	 * 
+	 * Assumes there could be a PersonAttribute on this Patient with 
+	 * PersonAttributeType.name = "Other Matching Information". This PersonAttribute
+	 * has a "value" that is just key value pairs in the form of key:value;nextkey:nextvalue;
+	 * 
+	 * @param patientToMatch
+	 * @return null if no match found, a fresh patient object from the db if is found
+	 */
+	@Transactional(readOnly=true)
+	public Patient findPatient(Patient patientToMatch);
+	
+	/**
 	 * Search the database for patients that share the given attributes
 	 * attributes similar to: [gender, tribe, givenName, middleName, familyname]
 	 * 

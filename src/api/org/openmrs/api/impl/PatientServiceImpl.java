@@ -526,6 +526,20 @@ public class PatientServiceImpl implements PatientService {
 	}
 	
 	/**
+	 * This default implementation simply looks at the OpenMRS internal id (patient_id).  If 
+	 * the id is null, assume this patient isn't found.  If the patient_id is not null, try 
+	 * and find that id in the database
+	 * 
+	 * @see org.openmrs.api.PatientService#findPatient(org.openmrs.Patient)
+	 */
+	public Patient findPatient(Patient patientToMatch) {
+		if (patientToMatch == null || patientToMatch.getPatientId() == null)
+			return null;
+		
+		return getPatient(patientToMatch.getPatientId());
+	}
+
+	/**
 	 * Search the database for patients that share the given attributes
 	 * attributes similar to: [gender, tribe, givenName, middleName, familyname]
 	 * 

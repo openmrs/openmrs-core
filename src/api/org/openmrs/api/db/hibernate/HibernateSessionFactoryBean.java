@@ -66,7 +66,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		if (check == 0)
 			return config.buildSessionFactory();
 		else
-			throw new APIException("Error connecting to database");
+			throw new APIException("Error connecting to database. See error log for details.");
 		
 	}
 	

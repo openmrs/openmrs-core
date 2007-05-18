@@ -205,7 +205,7 @@ public class ObsServiceTest extends BaseTest {
 		Location location2 = es.getLocation(2);
 		Integer groupId2 = new Integer(2);
 		Integer valueGroupId2 = new Integer(3);
-		boolean valueBoolean2 = false;
+		//boolean valueBoolean2 = false;
 		Date valueDatetime2 = new Date();
 		Concept valueCoded2 = conceptService.getConcept(25);
 		Double valueNumeric2 = 2.0;
@@ -218,7 +218,7 @@ public class ObsServiceTest extends BaseTest {
 		
 		o2.setOrder(order2);
 		o2.setConcept(concept2);
-		o2.setPatient(patient2);
+		o2.setPerson(patient2);
 		o2.setEncounter(encounter2);
 		o2.setObsDatetime(datetime2);
 		o2.setLocation(location2);

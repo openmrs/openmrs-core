@@ -157,6 +157,8 @@ public abstract class BaseTest extends AbstractTransactionalSpringContextTests  
 		
 		// clear out the window so the timer doesn't screw up
 		laterStill.cancel();
+		frame.setVisible(false);
+		window.setVisible(false);
 		frame = null;
 		
 		// response of 2 is the cancel button, response of -1 is the little red X in the top right

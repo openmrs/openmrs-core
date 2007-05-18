@@ -24,7 +24,7 @@ public class ArdenServiceTest extends BaseTest {
 			//	"HiRiskLeadScreen.mlm",
 				"leadspecpws2.mlm"
 		};
-		String defaultPath = "test/arden test/";
+		String defaultPath = "asd fasdf asdf test/arden test/";
 		
 		for (int i = 0; i<mlmNames.length; i++) {
 			Context.getArdenService().compileFile(defaultPath + mlmNames[i]);

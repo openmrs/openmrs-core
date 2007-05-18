@@ -35,18 +35,6 @@
 		<classpath refid="lib.path"/>
     </taskdef>
 	
-	<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" onerror="ignore">
-		<classpath>
-			<fileset dir="${junit.dir}" includes="*.jar" />
-		</classpath>
-	</taskdef>
-
-	<taskdef name="junitreport" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator">
-		<classpath refid="lib.path"/>
-	</taskdef>
-		
-		
-	
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
 			<fileset dir="${ant-contrib.dir}" includes="*.jar" />
