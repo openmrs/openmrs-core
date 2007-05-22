@@ -196,7 +196,7 @@
 					<td><spring:message code="Program.agent"/>:</td>
 					<th>
 						<c:forEach items="${model.patientRelationships}" var="r" varStatus="s">
-							<c:if test="${r.relationshipType.relationshipTypeId == 1}">
+							<c:if test="${r.relationshipType.relationshipTypeId == 1 && r.personA.personId != model.patientId}">
 								<c:if test="${accompFound}">, </c:if>
 								${r.personA.personName}
 								<c:set var="accompFound" value="true"/>
