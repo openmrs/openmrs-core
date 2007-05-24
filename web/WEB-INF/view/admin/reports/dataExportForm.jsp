@@ -522,7 +522,7 @@
 						</select>
 					</spring:bind>
 				</td>
-			</td>
+			</tr>
 			<tr>
 				<th colspan="2"><spring:message code="DataExport.encounterMatch"/></th>
 			</tr>

@@ -506,6 +506,18 @@ table.patientTreatmentPrograms td {
 #content .boxHeader a:link {
 	color: white;
 }
+
+.boxHeader .oddRow {
+  background-color: #8FABC7;
+}
+
+.boxHeader .evenRow {
+  background-color: #BBCCF7;
+}
+
+.boxHeader .popupSearchForm {
+  background-color: #8FABC7;
+}
 	
 #selectFormForm {
 	padding: 2px;
