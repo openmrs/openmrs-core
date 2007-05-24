@@ -24,7 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
 /**
  * Utility methods for working and manipulating modules
@@ -450,4 +453,42 @@ public class ModuleUtil {
 		return "true".equals(prop);
 	}
 	
+	/**
+	 * Refreshes the given application context 
+	 * @param ctx
+	 */
+	public static AbstractRefreshableApplicationContext refreshApplicationContext(AbstractRefreshableApplicationContext ctx) {
+		OpenmrsClassLoader.saveState();
+		ServiceContext.destroyInstance();
+		
+		try {
+			ctx.stop();
+			ctx.close();
+		}
+		catch (Exception e) {
+			log.warn("Exception while stopping and closing context: ", e);
+			// Spring seems to be trying to refresh the context instead of /just/ stopping
+			// pass
+		}
+		OpenmrsClassLoader.destroyInstance();
+		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		
+		ServiceContext.getInstance().startRefreshingContext();
+		ctx.refresh();
+		ServiceContext.getInstance().doneRefreshingContext();
+		
+		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		
+		OpenmrsClassLoader.restoreState();
+		
+		// reload the advice points that were lost when refreshing Spring
+		log.debug("Reloading advice for all started modules: " + ModuleFactory.getStartedModules().size());
+		for (Module module : ModuleFactory.getStartedModules()) {
+			ModuleFactory.loadAdvice(module);
+		}
+		
+		return ctx;
+	}
 }

@@ -36,7 +36,7 @@ public abstract class BaseTest extends AbstractTransactionalSpringContextTests  
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 	    return new String[] {
-	    		"applicationContext-service.xml",
+	    		"classpath:applicationContext-service.xml",
 	    		"classpath*:moduleApplicationContext.xml"
 	    };
 	}

@@ -10,8 +10,9 @@
 	<context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-        	/WEB-INF/applicationContext-service.xml
+        	classpath:applicationContext-service.xml
         	classpath*:/moduleApplicationContext.xml
+        	classpath*:/webModuleApplicationContext.xml
         	/WEB-INF/@WEBAPP.NAME@-servlet.xml
         </param-value>
     </context-param>

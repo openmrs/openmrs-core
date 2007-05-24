@@ -454,9 +454,9 @@
 	<!--  **************************  SESSION FACTORY  *************************  -->
 
 	<bean id="sessionFactory" class="org.openmrs.api.db.hibernate.HibernateSessionFactoryBean">
-		<property name="mappingJarLocations">
+		<property name="configLocations">
 			<list>
-				<value>@MAPPING.JAR.LOCATIONS@</value>
+				<value>classpath:hibernate.cfg.xml</value>
 			</list>
 		</property>
 		<!-- <property name="mappingResources">

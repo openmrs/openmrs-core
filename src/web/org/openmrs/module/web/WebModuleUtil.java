@@ -27,11 +27,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.ServiceContext;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
-import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.DispatcherServlet;
 import org.openmrs.web.dwr.OpenmrsDWRServlet;
@@ -441,10 +440,19 @@ public class WebModuleUtil {
 	 */
 	private static void stopModule(Module mod, ServletContext servletContext, boolean skipRefresh) {
 		
+		String moduleId = mod.getModuleId();
+		String modulePackage = mod.getPackageName();
+		
+		// stop all dependent modules
+		for (Module dependentModule : ModuleFactory.getStartedModules()) {
+			if (!dependentModule.equals(mod) && dependentModule.getRequiredModules().contains(modulePackage))
+				stopModule(dependentModule, servletContext, skipRefresh);
+		}
+		
 		String realPath = servletContext.getRealPath("");
 		
 		// delete the web files from the webapp
-		String absPath = realPath + "/WEB-INF/view/module/" + mod.getModuleId();
+		String absPath = realPath + "/WEB-INF/view/module/" + moduleId;
 		File moduleWebFolder = new File(absPath.replace("/", File.separator));
 		if (moduleWebFolder.exists()) {
 			try {
@@ -480,7 +488,7 @@ public class WebModuleUtil {
 			}
 		}
 		catch (IOException io) {
-			log.warn("Unable to delete files from module " + mod.getModuleId() + " in the web layer", io);
+			log.warn("Unable to delete files from module " + moduleId + " in the web layer", io);
 		}
 		finally {
 			if (jarFile != null) {
@@ -523,7 +531,7 @@ public class WebModuleUtil {
 						"signatures".equals(current.getNodeName())) {
 							NamedNodeMap attrs = current.getAttributes();
 							Node attr = attrs.getNamedItem("moduleId");
-							if (attr != null && mod.getModuleId().equals(attr.getNodeValue())) {
+							if (attr != null && moduleId.equals(attr.getNodeValue())) {
 								outputRoot.removeChild(current);
 							}
 					}
@@ -573,36 +581,7 @@ public class WebModuleUtil {
 	public static XmlWebApplicationContext refreshWAC(ServletContext servletContext) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext)WebApplicationContextUtils.getWebApplicationContext(servletContext);
 		log.debug("WAC class: " + wac.getClass().getName());
-		
-		// save state and destroy classloader instance
-		OpenmrsClassLoader.saveState();
-		ServiceContext.destroyInstance();
-		try {
-			wac.stop();
-			wac.close();
-		}
-		catch (Exception e) {
-			// Spring seems to be trying to refresh the context instead of /just/ stopping
-			// pass
-		}
-		OpenmrsClassLoader.destroyInstance();
-		
-		// save the new classloader instance
-		wac.setClassLoader(OpenmrsClassLoader.getInstance());
-		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		
-		// do the restart
-		ServiceContext.getInstance().startRefreshingContext();
-		wac.refresh();
-		ServiceContext.getInstance().doneRefreshingContext();
-		
-		// save the new classloader instance
-		wac.setClassLoader(OpenmrsClassLoader.getInstance());
-		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		
-		// restore the state
-		OpenmrsClassLoader.restoreState();
-		
+		wac = (XmlWebApplicationContext)ModuleUtil.refreshApplicationContext(wac);
 		return wac;
 	}
 	

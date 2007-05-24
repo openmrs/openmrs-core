@@ -142,7 +142,8 @@ public class ModuleFactory {
 							startModule(mod);
 						}
 						catch (Exception e) {
-							log.error("Error while loading module: " + mod.getName(), e);
+							log.error("Error while starting module: " + mod.getName(), e);
+							mod.setStartupErrorMessage(e.getMessage());
 						}
 					else
 						leftoverModules.add(mod);
@@ -166,7 +167,7 @@ public class ModuleFactory {
 							modulesJustLoaded.add(leftoverModule);
 						}
 						catch (Exception e) {
-							log.error("Error while loading leftover module: " + leftoverModule.getName(), e);
+							log.error("Error while starting leftover module: " + leftoverModule.getName(), e);
 						}
 					}
 				}
@@ -174,8 +175,11 @@ public class ModuleFactory {
 			}
 			
 			if (leftoverModules.size() > 0)
-				for (Module leftoverModule : leftoverModules)
-					log.error("Unable to load module '" + leftoverModule.getName() + "'.  All required modules are not available");
+				for (Module leftoverModule : leftoverModules) {
+					String message = "Unable to start module '" + leftoverModule.getName() + "'.  All required modules are not available: " + OpenmrsUtil.join(leftoverModule.getRequiredModules(), ", ");
+					log.error(message);
+					leftoverModule.setStartupErrorMessage(message);
+				}
 		}
 		
 	}
@@ -287,11 +291,11 @@ public class ModuleFactory {
 				
 				// check for required modules
 				if (!requiredModulesStarted(module)) {
-					throw new ModuleException("Not all required modules are started: (" + OpenmrsUtil.join(module.getRequiredModules(), ", ") + "). ", module.getName());
+					throw new ModuleException("Not all required modules are started: " + OpenmrsUtil.join(module.getRequiredModules(), ", ") + ". ", module.getName());
 				}
 				
 				// fire up the classloader for this module
-				ModuleClassLoader moduleClassLoader = new ModuleClassLoader(module, ModuleFactory.class.getClassLoader());
+				ModuleClassLoader moduleClassLoader = new ModuleClassLoader(module, OpenmrsClassLoader.getInstance());
 				getModuleClassLoaderMap().put(module, moduleClassLoader);
 				
 				// load the advice objects into the Context
@@ -376,6 +380,8 @@ public class ModuleFactory {
 			}
 			
 		}
+		
+		//refresh spring service context?
 		
 		return module;
 	}
@@ -483,6 +489,13 @@ public class ModuleFactory {
 		
 		if (mod != null) {
 			String moduleId = mod.getModuleId();
+			String modulePackage = mod.getPackageName();
+			
+			// stop all dependent modules
+			for (Module dependentModule : getStartedModules()) {
+				if (!dependentModule.equals(mod) && dependentModule.getRequiredModules().contains(modulePackage))
+					stopModule(dependentModule, isShuttingDown);
+			}
 			
 			getStartedModulesMap().remove(moduleId);
 			

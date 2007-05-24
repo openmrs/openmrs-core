@@ -161,14 +161,17 @@ public class HibernateContextDAO implements ContextDAO {
 		if (!participate) {
 			log.debug("Unbinding session from synchronization mangaer ("
 						+ sessionFactory.hashCode() + ")");
-			Object value = TransactionSynchronizationManager.unbindResource(sessionFactory);
-			try {
-				if (value instanceof SessionHolder) {
-					Session session = ((SessionHolder)value).getSession();
-					SessionFactoryUtils.releaseSession(session, sessionFactory);
+
+			if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
+				Object value = TransactionSynchronizationManager.unbindResource(sessionFactory);
+				try {
+					if (value instanceof SessionHolder) {
+						Session session = ((SessionHolder)value).getSession();
+						SessionFactoryUtils.releaseSession(session, sessionFactory);
+					}
+				} catch (RuntimeException e) {
+					log.error("Unexpected exception on closing Hibernate Session", e);
 				}
-			} catch (RuntimeException e) {
-				log.error("Unexpected exception on closing Hibernate Session", e);
 			}
 		} else {
 			log.debug("Participating in existing session, so not releasing session through synchronization manager");

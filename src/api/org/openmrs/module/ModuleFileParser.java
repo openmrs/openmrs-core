@@ -224,23 +224,27 @@ public class ModuleFileParser {
 	 * @return
 	 */
 	private List<String> getRequiredModules(Element root, String version) {
-		NodeList mods = root.getElementsByTagName("require_modules");
+		NodeList requiredModulesParents = root.getElementsByTagName("require_modules");
 		
-		List<String> requiredModules = new Vector<String>();
+		List<String> packageNames = new Vector<String>();
 		
 		// TODO test require_modules section
-		if (mods.getLength() > 0) {
+		if (requiredModulesParents.getLength() > 0) {
+			Node requiredModulesParent = requiredModulesParents.item(0);
+			
+			NodeList requiredModules = requiredModulesParent.getChildNodes();
+			
 			int i = 0;
-			while (i < mods.getLength()) {
-				Node n = mods.item(i);
+			while (i < requiredModules.getLength()) {
+				Node n = requiredModules.item(i);
 				if (n != null && "require_module".equals(n.getNodeName()))
-					requiredModules.add(n.getTextContent());
+					packageNames.add(n.getTextContent());
 				
 				i++;
 			}
 		}
 		
-		return requiredModules;
+		return packageNames;
 	}
 	
 	/**

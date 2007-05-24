@@ -158,7 +158,6 @@
 			<filter token="OPENMRS.VERSION.LONG" value="${openmrs.version.long}" />
 			<filter token="DATABASE.VERSION.EXPECTED" value="${openmrs.database.version.expected}" />
 			<filter token="API.NAME" value="${openmrs.api.name}" />
-			<filter token="MAPPING.JAR.LOCATIONS" value="WEB-INF/lib/${openmrs.api.name}" />
 			<!-- Address properties -->
 			<filter token="ADDRESS.FORMAT" value="${address.format}" />
 			<filter token="NAME.FORMAT" value="${name.format}" />
@@ -181,6 +180,7 @@
 		<!-- Copy hibernate metadata -->
 		<copy todir="${build.dir}/api">
 			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
+			<fileset dir="${metadata.dir}/api/" includes="applicationContext-service.xml" />
 			<fileset dir="${src.dir}/api">
 				<include name="**/*" />
 				<exclude name="**/ibatis/*" />
@@ -188,14 +188,6 @@
 			</fileset>
 			<filterset refid="variables.to.replace" />
 		</copy>
-		<!--
-		<copy todir="${build.dir}/api">
-			<fileset dir="${metadata.dir}/api" includes="*.xml" />
-			<filterset>
-				<filter token="MAPPING.JAR.LOCATIONS" value="classpath:${openmrs.api.name}" />
-			</filterset>
-		</copy>
-		-->
 		<javac destdir="${build.dir}/api" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.compile.classpath">
 			<compilerarg line="${compile.arguments}" />
 			<src path="${build.dir}/api" />
@@ -236,19 +228,11 @@
 		<mkdir dir="${build.dir}/test/api" />
 		<copy todir="${build.dir}"> <!-- /build is the root of junit standalone builds -->
 			<fileset dir="${metadata.dir}/api" includes="*.xml" />
-			<fileset dir="${metadata.dir}/api/hibernate" includes="*.*" />
-			<filterset>
-				<!-- <filter token="MAPPING.JAR.LOCATIONS" value="classpath:${openmrs.api.name}" /> -->
-				<filter token="MAPPING.JAR.LOCATIONS" value="file:${dist.dir}/${openmrs.api.name}" />
-			</filterset>
+			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*.*" />
 		</copy>
 		<copy todir="${build.dir}/test/api"> <!-- /build/test/api is the root for ant junit tests -->
 			<fileset dir="${metadata.dir}/api" includes="*.xml" />
 			<fileset dir="${metadata.dir}/api/hibernate" includes="*.*" />
-			<filterset>
-				<!-- <filter token="MAPPING.JAR.LOCATIONS" value="classpath:${openmrs.api.name}" /> -->
-				<filter token="MAPPING.JAR.LOCATIONS" value="file:${dist.dir}/${openmrs.api.name}" />
-			</filterset>
 		</copy>
 		
 		<javac srcdir="${test.dir}/api" destdir="${build.dir}/test/api" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.test.classpath">
@@ -342,10 +326,12 @@
 				<include name="**/*.omod" />
 			</fileset>
 		</copy>
+		<!--
 		<copy todir="${dist.dir}/web/WEB-INF" preservelastmodified="true" overwrite="true">
 			<fileset dir="${metadata.dir}/api" includes="*.xml" />
 			<filterset refid="variables.to.replace" />
 		</copy>
+		-->
 		<!-- Rename spring servlet(s) to name of webapp -->
 		<move file="${dist.dir}/web/WEB-INF/openmrs-servlet.xml" tofile="${dist.dir}/web/WEB-INF/${webapp.name}-servlet.xml" preservelastmodified="true" overwrite="true" />
 		<move file="${dist.dir}/web/WEB-INF/openmrs_static_content-servlet.xml" tofile="${dist.dir}/web/WEB-INF/${webapp.name}_static_content-servlet.xml" preservelastmodified="true" overwrite="true" />
@@ -520,7 +506,9 @@
 		<sequential>
 			<antcall target="remove"/>
 			<antcall target="tomcat-stop"/>
+			<sleep seconds="2" />
 			<antcall target="tomcat-start"/>
+			<sleep seconds="2" />
 			<antcall target="install"/>
 		</sequential>
 	</target>
