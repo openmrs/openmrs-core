@@ -266,6 +266,19 @@ public class ModuleFactory {
 	}
 	
 	/**
+	 * 
+	 * @param module package
+	 * @return Module matching module package or null if none
+	 */
+	public static Module getModuleByPackage(String modulePackage) {
+		for (Module mod : getLoadedModulesMap().values()) {
+			if (mod.getPackageName().equals(modulePackage))
+				return mod;
+		}
+		return null;
+	}
+	
+	/**
 	 * Runs through extensionPoints and then calls 
 	 * mod.Activator.startup()
 	 * 
@@ -295,7 +308,7 @@ public class ModuleFactory {
 				}
 				
 				// fire up the classloader for this module
-				ModuleClassLoader moduleClassLoader = new ModuleClassLoader(module, OpenmrsClassLoader.getInstance());
+				ModuleClassLoader moduleClassLoader = new ModuleClassLoader(module, ModuleFactory.class.getClassLoader());
 				getModuleClassLoaderMap().put(module, moduleClassLoader);
 				
 				// load the advice objects into the Context

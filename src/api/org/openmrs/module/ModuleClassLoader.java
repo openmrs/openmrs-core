@@ -41,15 +41,10 @@ public class ModuleClassLoader extends URLClassLoader {
 	private final Module module;
 	
 	private Module[] publicImports;
-	private Module[] privateImports;
-	//private Module[] reverseLookups; // TODO could implement this instead of looking at each other module for class files
 	//private ModuleResourceLoader resourceLoader;
 	//private Map<URL, ResourceFilter> resourceFilters;
 	private Map<URL, File> libraryCache;
 	private boolean probeParentLoaderLast = true;
-	
-	// used to prevent infinite looping when looking for classes in parent classloader
-	private boolean loadingFromParent = false;
 	
 	/**
 	 * @param module Module
@@ -225,43 +220,16 @@ public class ModuleClassLoader extends URLClassLoader {
 	protected void collectImports() {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
-		Map<String, Module> privateImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
-//		for (String requiredId : getModule().getRequiredModules()) {
-//			Module requiredModule = ModuleFactory.getModuleById(requiredId);
-//			if (ModuleFactory.isModuleStarted(requiredModule)) {
-//				publicImportsMap.put(requiredModule.getModuleId(), requiredModule);
-//			} else {
-//				privateImportsMap.put(requiredModule.getModuleId(), requiredModule);
-//			}
-//		}
-		// TODO can probably get rid of the public and private imports.  The classloader hierarchy allows for 
-		// all modules to import from each other
+		
+		for (String requiredPackage : getModule().getRequiredModules()) {
+			Module requiredModule = ModuleFactory.getModuleByPackage(requiredPackage);
+			if (ModuleFactory.isModuleStarted(requiredModule)) {
+				publicImportsMap.put(requiredModule.getModuleId(), requiredModule);
+			}
+		}
 		publicImports = (Module[]) publicImportsMap.values().toArray(
 				new Module[publicImportsMap.size()]);
-		privateImports =
-			(Module[]) privateImportsMap.values().toArray(
-				new Module[privateImportsMap.size()]);
 		
-		// collect reverse look up modules (exclude duplicates)
-//		Map<String, Module> reverseLookupsMap = new WeakHashMap<String, Module>();
-//		for (Module module : ModuleFactory.getLoadedModules()) {
-//			if (module.equals(getModule())
-//					|| publicImportsMap.containsKey(module.getModuleId())
-//					|| privateImportsMap.containsKey(module.getModuleId())) {
-//				continue;
-//			}
-//			for (String requiredModulePackage : module.getRequiredModules()) {
-//				Module requiredModule = ModuleFactory.getModuleById(requiredModuleId);
-//				if (!requiredModule.equals(getModule())) {
-//					continue;
-//				}
-//				reverseLookupsMap.put(module.getModuleId(), module);
-//				break;
-//			}
-//		}
-//		reverseLookups =
-//			(Module[]) reverseLookupsMap.values().toArray(
-//				new Module[reverseLookupsMap.size()]);
 	}
 	
 	protected void collectFilters() {
@@ -321,8 +289,6 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		libraryCache.clear();
 		//resourceFilters.clear();
-		//reverseLookups = null;
-		privateImports = null;
 		publicImports = null;
 		//resourceLoader = null;
 	}
@@ -343,58 +309,27 @@ public class ModuleClassLoader extends URLClassLoader {
 			try {
 				result = loadClass(name, resolve, this, null);
 			} catch (ClassNotFoundException cnfe) {
-				result = probeParent(name);
+				if (getParent() != null)
+					result = getParent().loadClass(name);
 			} catch (NullPointerException e) {
 				log.debug("Error while attempting to load class: " + name + " from: " + this.toString());
 			}
-			
-			if (result == null)
-				return probeParent(name);
-			
+			if (result == null) {
+				if (getParent() != null)
+					result = getParent().loadClass(name);
+			}
 		} else {
 			try {
-				result = probeParent(name);
+				if (getParent() != null)
+					result = getParent().loadClass(name);
 			} catch (ClassNotFoundException cnfe) {
 				result = loadClass(name, resolve, this, null);
 			}
 		}
-		
-		if (result != null)
+		if (result != null) {
 			return result;
-		
-		throw new ClassNotFoundException(name);
-	}
-	
-	/**
-	 * Helper method for loadClass(java.lang.String,boolean)
-	 * Attempts to load <code>name</code> from parent if and only if
-	 * it is not in the process of doing so already.
-	 * 
-	 * @param name
-	 * @return Class defined by name
-	 * @throws ClassNotFoundException
-	 */
-	private Class probeParent(String name) throws ClassNotFoundException {
-		if (getParent() != null && loadingFromParent == false) {
-			loadingFromParent = true;
-			try {
-				return getParent().loadClass(name);
-			}
-			finally {
-				loadingFromParent = false;
-			}
 		}
-		
 		throw new ClassNotFoundException(name);
-	}
-	
-	/**
-	 * If this module class loader is in the middle of getParent().loadClass(java.lang.String) return true
-	 * , false otherwise
-	 * @return true/false
-	 */
-	public boolean isLoadingFromParent() {
-		return loadingFromParent;
 	}
 	
 	protected Class loadClass(final String name, final boolean resolve,
@@ -480,41 +415,22 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		
 		if ((this == requestor) && (result == null)) {
-			for (Module privateImport : privateImports) {
-				if (seenModules.contains(privateImport.getModuleId())) {
+			for (Module reverseLookup : ModuleFactory.getStartedModules()) {
+				if (seenModules.contains(reverseLookup.getModuleId())) {
 					continue;
 				}
 				result = ((ModuleClassLoader) ModuleFactory
-						.getModuleClassLoader(privateImport)).loadClass(
+						.getModuleClassLoader(reverseLookup)).loadClass(
 								name, resolve, requestor, seenModules);
 				if (result != null) {
 					/*if (resolve) {
 						resolveClass(result);
 					}*/
-					break; // found class in privately imported module
+					break; // found class in module that marks itself as
+						   // allowed reverse look up
 				}
 			}
 		}
-//		if ((this == requestor) && (result == null)) {
-//			for (Module reverseLookup : reverseLookups) {
-//				if (seenModules.contains(reverseLookup.getModuleId())) {
-//					continue;
-//				}
-//				if (!ModuleFactory.isModuleStarted(reverseLookup)) {
-//					continue;
-//				}
-//				result = ((ModuleClassLoader) ModuleFactory
-//						.getModuleClassLoader(reverseLookup)).loadClass(
-//								name, resolve, requestor, seenModules);
-//				if (result != null) {
-//					/*if (resolve) {
-//						resolveClass(result);
-//					}*/
-//					break; // found class in module that marks itself as
-//						   // allowed reverse look up
-//				}
-//			}
-//		}
 		return result;
 	}
 	
@@ -752,33 +668,19 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		
 		if ((this == requestor) && (result == null)) {
-			for (int i = 0; i < privateImports.length; i++) {
-				if (seenModules.contains(privateImports[i].getModuleId())) {
+			for (Module reverseLookup : ModuleFactory.getStartedModules()) {
+				if (seenModules.contains(reverseLookup.getModuleId())) {
 					continue;
 				}
 				result = ((ModuleClassLoader) ModuleFactory
-						.getModuleClassLoader(privateImports[i])).findResource(
+						.getModuleClassLoader(reverseLookup)).findResource(
 								name, requestor, seenModules);
 				if (result != null) {
-					break; // found resource in privately imported module
+					break; // found resource in module that marks itself as
+						   // allowed reverse look up
 				}
 			}
 		}
-		
-//		if ((this == requestor) && (result == null)) {
-//			for (Module reverseLookup : reverseLookups) {
-//				if (seenModules.contains(reverseLookup.getModuleId())) {
-//					continue;
-//				}
-//				result = ((ModuleClassLoader) ModuleFactory
-//						.getModuleClassLoader(reverseLookup)).findResource(
-//								name, requestor, seenModules);
-//				if (result != null) {
-//					break; // found resource in module that marks itself as
-//						   // allowed reverse look up
-//				}
-//			}
-//		}
 		
 		return result;
 		
@@ -819,22 +721,14 @@ public class ModuleClassLoader extends URLClassLoader {
 							requestor, seenModules);
 		}
 		if (this == requestor) {
-			for (Module privateImport : privateImports) {
-				if (seenModules.contains(privateImport.getModuleId())) {
+			for (Module reverseLookup : ModuleFactory.getStartedModules()) {
+				if (seenModules.contains(reverseLookup.getModuleId())) {
 					continue;
 				}
 				((ModuleClassLoader) ModuleFactory.getModuleClassLoader(
-						privateImport)).findResources(result, name,
+						reverseLookup)).findResources(result, name,
 								requestor, seenModules);
 			}
-//			for (Module reverseLookup : reverseLookups) {
-//				if (seenModules.contains(reverseLookup.getModuleId())) {
-//					continue;
-//				}
-//				((ModuleClassLoader) ModuleFactory.getModuleClassLoader(
-//						reverseLookup)).findResources(result, name,
-//								requestor, seenModules);
-//			}
 		}
 	}
 	

@@ -581,8 +581,7 @@ public class WebModuleUtil {
 	public static XmlWebApplicationContext refreshWAC(ServletContext servletContext) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext)WebApplicationContextUtils.getWebApplicationContext(servletContext);
 		log.debug("WAC class: " + wac.getClass().getName());
-		wac = (XmlWebApplicationContext)ModuleUtil.refreshApplicationContext(wac);
-		return wac;
+		return (XmlWebApplicationContext)ModuleUtil.refreshApplicationContext(wac);
 	}
 	
 	/**

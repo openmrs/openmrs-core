@@ -68,17 +68,10 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	public Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
-//		Throwable t = new Throwable(); 
-//		StackTraceElement[] elements = t.getStackTrace();
-//		log.error("elements 0: " + elements[0]);
-//		log.error("elements 1: " + elements[1]);
-//		log.error("elements 2: " + elements[2]);
-//		log.error("elements 3: " + elements[3]);
-//		log.error("elements 4: " + elements[4]);
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			try {
-				if (classLoader.isLoadingFromParent() == false)
-					return classLoader.loadClass(name);
+				//if (classLoader.isLoadingFromParent() == false)
+				return classLoader.loadClass(name);
 			}
 			catch (ClassNotFoundException e) {
 				//log.debug("Didn't find entry for: " + name);

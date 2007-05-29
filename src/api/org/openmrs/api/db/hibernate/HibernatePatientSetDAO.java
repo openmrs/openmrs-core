@@ -1442,7 +1442,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		query.setParameterList("ids", ids);
 		query.setString("typeName", attributeTypeName);
 
-		log.error("query: " + queryString);
+		log.debug("query: " + queryString);
 		
 		List<Object[]> rows = query.list();
 		

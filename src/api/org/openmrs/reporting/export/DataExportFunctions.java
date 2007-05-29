@@ -166,7 +166,7 @@ public class DataExportFunctions {
 	 */
 	@Override
 	protected void finalize() throws Throwable {
-		log.error("GC is collecting the data export functions..." + this);
+		log.debug("GC is collecting the data export functions..." + this);
 		super.finalize();
 	}
 
