@@ -85,8 +85,8 @@
 		<appender-ref ref="PATIENT_FILE" />
 	</logger>
 
-	<logger name="org.openmrs.web.controller.analysis">
-		<level value="DEBUG" />
+	<logger name="org.apache.fop">
+		<level value="ERROR" />
 	</logger>
 
 	<logger name="org.openmrs.web.dwr">

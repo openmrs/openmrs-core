@@ -269,12 +269,6 @@ public class WebModuleUtil {
 					refreshWAC(servletContext);
 				}
 				
-				// reload the advice points that were lost when refreshing Spring
-				log.debug("Reloading advice for all started modules: " + ModuleFactory.getStartedModules().size());
-				for (Module module : ModuleFactory.getStartedModules()) {
-					ModuleFactory.loadAdvice(module);
-				}
-				
 				return;
 			}
 			

@@ -79,9 +79,11 @@ public class DWRUserService {
 				
 				List<Role> roles = new Vector<Role>();
 				for (String r : roleStrings) {
-					Role role = us.getRole(r);
-					if (role != null)
-						roles.add(role);
+					if (!"".equals(r)) {
+						Role role = us.getRole(r);
+						if (role != null)
+							roles.add(role);
+					}
 				}
 				
 				users.addAll(us.getAllUsers(roles, includeVoided));

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -390,4 +391,12 @@ public class HL7ServiceImpl implements HL7Service {
 	public void garbageCollect() {
 		getHL7DAO().garbageCollect();
 	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#encounterCreated(org.openmrs.Encounter)
+	 */
+	public void encounterCreated(Encounter encounter) {
+		// nothing is done here in core.  Modules override/hook on this method
+	}
+	
 }

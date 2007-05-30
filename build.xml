@@ -502,17 +502,6 @@
          </java>
      </target>
 	
-	<target name="tomcat-cycle" description="Remove current webapp, stop tomcat, start tomcat, install webapp">
-		<sequential>
-			<antcall target="remove"/>
-			<antcall target="tomcat-stop"/>
-			<sleep seconds="2" />
-			<antcall target="tomcat-start"/>
-			<sleep seconds="2" />
-			<antcall target="install"/>
-		</sequential>
-	</target>
-	
 	<target name="schemaexport">
 		<taskdef name="schemaexport" classname="org.hibernate.tool.hbm2ddl.SchemaExportTask" classpathref="hibernate.classpath" />
 
