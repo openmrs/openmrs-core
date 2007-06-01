@@ -173,21 +173,22 @@ public class ModuleUtil {
 	public static File getModuleRepository() {
 		
 		AdministrationService as = Context.getAdministrationService();
-		String folderName = as.getGlobalProperty(ModuleConstants.PROPERTY_REPOSITORY_FOLDER, ModuleConstants.PROPERTY_REPOSITORY_FOLDER_DEFAULT);
+		String folderName = as.getGlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY, ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
 		
-		String filepath = OpenmrsUtil.getApplicationDataDirectory() + folderName;
+		// try to load the repository folder straight away.
+		File folder = new File(folderName);
 		
-		File folder = new File(filepath);
-
+		// if the property wasn't a full path already, assume it was intended to be a folder in the 
+		// application directory
 		if (!folder.exists()) {
-			log.warn("Module repository doesn't exist: "
-					+ folder.getAbsolutePath());
+			String filepath = OpenmrsUtil.getApplicationDataDirectory() + folderName;
+			folder = new File(filepath);
+		}
 
-			// create the modules folder if it doesn't exist
-			if (!folder.exists()) {
-				log.warn(folder.getAbsolutePath() + " doesn't exist.  Creating directories now.");
-				folder.mkdirs();
-			}
+		// now create the modules folder if it doesn't exist
+		if (!folder.exists()) {
+			log.warn("Module repository " + folder.getAbsolutePath() + " doesn't exist.  Creating directories now.");
+			folder.mkdirs();
 		}
 
 		if (!folder.isDirectory())

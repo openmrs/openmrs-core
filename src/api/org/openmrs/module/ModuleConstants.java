@@ -11,8 +11,8 @@ public class ModuleConstants {
 	
 	public static final String UPDATE_FILE_NAME = "update.rdf";
 	
-	public static final String PROPERTY_REPOSITORY_FOLDER = "module_repository_folder";
-	public static final String PROPERTY_REPOSITORY_FOLDER_DEFAULT = "modules";
+	public static final String REPOSITORY_FOLDER_PROPERTY = "module_repository_folder";
+	public static final String REPOSITORY_FOLDER_PROPERTY_DEFAULT = "modules";
 	
 	// either of these properties will block web administration of modules
 	public static final String RUNTIMEPROPERTY_ALLOW_UPLOAD = "module.allow_upload";
