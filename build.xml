@@ -275,6 +275,18 @@
 	</target>
 
 	
+    <target name="deploy" depends="package-web" if="tomcat.home"
+        description="unwar into the servlet container's deployment directory">
+<!--
+        <unwar src="${dist.dir}/${webapp.name}.war"
+            dest="${tomcat.home}/webapps/${webapp.name}"/>
+-->
+		<copy todir="${tomcat.home}/webapps">
+			<fileset file="${dist.dir}/${webapp.name}.war" />
+		</copy>
+    </target>
+
+	
 	<target name="deploy-web" description="standalone copy web target">
 		<copy todir="${dist.dir}/web">
 			<fileset dir="web">
@@ -339,6 +351,7 @@
 	
 	<target name="package-web" depends="package-web-init" description="create webapp war file">
 		<war destfile="${dist.dir}/${webapp.name}.war" basedir="${dist.dir}/web" excludes="**/web.xml" webxml="${dist.dir}/web/WEB-INF/web.xml" duplicate="add">
+			<!--<metainf dir="${dist.dir}" includes="context.xml"/>		-->
 			<classes dir="${build.dir}/web" />
 			<lib file="${dist.dir}/${openmrs.api.name}" />
 			<lib dir="${antlr.dir}" includes="*.jar" />
