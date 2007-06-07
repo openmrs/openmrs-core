@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="org.openmrs.PersonAttribute"
+		table="person_attribute">
+
+		<id name="personAttributeId" type="java.lang.Integer"
+			column="person_attribute_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		
+		<many-to-one name="person" class="Person">
+			<column name="person_id" />
+		</many-to-one>
+		
+		<many-to-one name="attributeType" class="org.openmrs.PersonAttributeType"
+			column="person_attribute_type_id" not-null="true" />
+		
+		<property name="value" type="java.lang.String"
+			not-null="true" length="50" />
+		
+
+		<many-to-one name="creator" class="org.openmrs.User"
+			column="creator" not-null="true" />
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" />
+		
+		<many-to-one name="changedBy" class="org.openmrs.User"
+			column="changed_by" />
+		<property name="dateChanged" type="java.util.Date"
+			column="date_changed"  />
+
+		<many-to-one name="voidedBy" class="org.openmrs.User"
+			column="voided_by" />
+		<property name="dateVoided" type="java.util.Date"
+			column="date_voided" />
+		<property name="voided" type="boolean" not-null="true" />
+		<property name="voidReason" type="java.lang.String"
+			column="void_reason" length="255" />
+
+	</class>
+</hibernate-mapping>

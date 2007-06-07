@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping package="org.openmrs.reporting">
+
+<class 
+    name="Report" 
+    table="report"
+>
+    <id
+        name="reportId"
+        type="java.lang.Integer"
+        column="report_id"
+    >
+        <generator class="native" />
+    </id>
+
+    <property
+        name="name"
+        type="java.lang.String"
+        column="name"
+        not-null="true"
+        length="255"
+    />
+	<property
+		name="description"
+		type="java.lang.String"
+		column="description"
+		length="65535"
+	/>
+    <property
+        name="dateCreated"
+        type="java.util.Date"
+        column="date_created"
+        not-null="true"
+        length="19"
+    />
+    <property
+        name="dateChanged"
+        type="java.util.Date"
+        column="date_changed"
+        length="19"
+    />
+	<property
+		name="voided"
+		type="boolean"
+		column="voided"
+	/>
+	<property
+		name="dateVoided"
+		type="java.util.Date"
+		column="date_voided"
+		length="19"
+	/>
+	<property
+		name="voidReason"
+		type="java.lang.String"
+		column="void_reason"
+		length="255"
+	/>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="creator"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+	    <column name="creator" />
+    </many-to-one>
+
+	<many-to-one
+		name="changedBy"
+		class="org.openmrs.User"
+	>
+		<column name="changed_by" />
+	</many-to-one>
+
+	<many-to-one
+		name="voidedBy"
+		class="org.openmrs.User"
+	>
+		<column name="voided_by" />
+	</many-to-one>
+</class>
+</hibernate-mapping>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.FieldType">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createFieldType" parameterClass="org.openmrs.FieldType">
+	INSERT INTO field_type
+		(
+		name,
+		description,
+		is_set,
+		creator,
+		date_created
+		)
+	VALUES
+		(
+		#name#,
+		#description#,
+		#isSet#,
+		#creator.userId#,
+		NOW()
+		);
+	<selectKey keyProperty="fieldTypeId">
+		SELECT LAST_INSERT_ID() AS fieldTypeId
+	</selectKey>
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="fieldTypeResult" class="org.openmrs.FieldType">
+	<result property="fieldTypeId" column="field_type_id" />
+	<result property="name" column="name" />
+	<result property="description" column="description" />
+	<result property="isSet" column="is_set" nullValue="false" />
+	<result property="creator" column="creator" select="getUser" />
+	<result property="dateCreated" column="date_created" />
+</resultMap>
+
+<select id="getFieldType" parameterClass="int" resultMap="fieldTypeResult">
+	SELECT * FROM field_type WHERE field_type_id = #value#
+</select>
+
+<select id="getAllFieldTypes" resultMap="fieldTypeResult">
+	SELECT * FROM field_type
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updateFieldType" parameterClass="org.openmrs.FieldType">
+	UPDATE
+		field_type
+	SET
+		name = #name#,
+		description = #description#,
+		is_set = #isSet#
+	WHERE
+		field_type_id = #fieldTypeId#
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Deletion                                               ** -->
+<!-- ************************************************************ -->
+
+<delete id="deleteFieldType" parameterClass="int">
+	DELETE FROM field_type WHERE field_type_id = #value#
+</delete>
+
+</sqlMap>

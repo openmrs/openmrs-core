@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.Role">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createRole" parameterClass="org.openmrs.Role">
+	INSERT INTO role (role, description) VALUES (#role#, #description#)
+</insert>
+
+<insert id="grantUserRole" parameterClass="java.util.Map">
+	INSERT INTO user_role (user_id, role) VALUES (#userId#, #role#)
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="roleResult" class="org.openmrs.Role">
+	<result property="role" column="role" />
+	<result property="description" column="description" />
+	<result property="privileges" column="role" select="getPrivilegeByRole" />
+</resultMap>
+
+<select id="getRoleByUser" parameterClass="int" resultMap="roleResult">
+	SELECT r.* FROM
+		user_role AS ur LEFT OUTER JOIN role AS r ON ur.role = r.role
+	WHERE
+		user_id = #value#
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updateRole" parameterClass="org.openmrs.Role">
+	UPDATE
+		role
+	SET
+		description = #description#
+	WHERE
+		role = #role#
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Deletion                                               ** -->
+<!-- ************************************************************ -->
+
+<delete id="deleteRole" parameterClass="string">
+	DELETE FROM role WHERE role = #value#
+</delete>
+
+<delete id="revokeUserRole" parameterClass="java.util.Map">
+	DELETE FROM user_role WHERE user_id = #userId# AND role = #role#
+</delete>
+
+</sqlMap>

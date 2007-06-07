@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="OrderType" table="order_type">
+
+		<id name="orderTypeId" type="int" column="order_type_id"
+			unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<property name="name" type="java.lang.String" column="name"
+			not-null="true" length="255" />
+		<property name="description" type="java.lang.String"
+			column="description" not-null="true" length="255" />
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="creator" class="User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
+		<!-- bi-directional one-to-many association to Order -->
+		<!--
+		<set name="orders" lazy="true" inverse="true" cascade="all">
+			<key column="order_type_id" />
+			<one-to-many class="Order" />
+		</set>
+		-->
+
+	</class>
+	
+</hibernate-mapping>

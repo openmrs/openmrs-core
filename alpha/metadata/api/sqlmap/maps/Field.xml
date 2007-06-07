@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+	PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="org.openmrs.Field">
+
+<!-- ************************************************************ -->
+<!-- ** Creation                                               ** -->
+<!-- ************************************************************ -->
+
+<insert id="createField" parameterClass="org.openmrs.Field">
+	INSERT INTO field
+		(
+		concept_id,
+		name,
+		description,
+		field_type,
+		table_name,
+		attribute_name,
+		select_multiple,
+		creator,
+		date_created,
+		changed_by,
+		date_changed
+		)
+	VALUES
+		(
+		#concept.conceptId#,
+		#name#,
+		#description#,
+		#fieldType.fieldTypeId#,
+		#tableName#,
+		#attributeName#,
+		#selectMultiple#,
+		#creator.userId#,
+		NOW(),
+		#changedBy.userId#,
+		NOW()
+		);
+	<selectKey keyProperty="fieldId">
+		SELECT LAST_INSERT_ID() AS fieldId
+	</selectKey>
+</insert>
+
+<!-- ************************************************************ -->
+<!-- ** Read                                                   ** -->
+<!-- ************************************************************ -->
+
+<resultMap id="fieldResult" class="org.openmrs.Field">
+	<result property="fieldId" column="field_id" />
+	<result property="concept" column="concept_id" select="getConcept" />
+	<result property="name" column="name" />
+	<result property="description" column="description" />
+	<result property="fieldType" column="field_type" select="getFieldType" />
+	<result property="tableName" column="table_name" />
+	<result property="attributeName" column="attribute_name" />
+	<result property="selectMultiple" column="select_multiple" />
+	<result property="creator" column="creator" select="getUser" />
+	<result property="dateCreated" column="date_created" />
+	<result property="changedBy" column="changed_by" select="getUser" />
+	<result property="dateChanged" column="date_changed" />
+	<result property="answers" column="field_id" select="getFieldAnswer" />
+	<result property="formFields" column="field_id" select="getFormFieldByFieldId" />
+</resultMap>
+
+<select id="getField" parameterClass="int" resultMap="fieldResult">
+	SELECT * FROM field WHERE field_id = #value#
+</select>
+
+<!-- ************************************************************ -->
+<!-- ** Update                                                 ** -->
+<!-- ************************************************************ -->
+
+<update id="updateField" parameterClass="org.openmrs.Field">
+	UPDATE
+		field
+	SET
+		concept_id = #concept.conceptId#,
+		name = #name#,
+		description = #description#,
+		field_type = #fieldType.fieldTypeId#,
+		table_name = #tableName#,
+		attribute_name = #attributeName#,
+		select_multiple = #selectMultiple#,
+		changed_by = #changedBy.userId#,
+		date_changed = NOW()
+	WHERE
+		field_id = #fieldId#
+</update>
+
+<!-- ************************************************************ -->
+<!-- ** Deletion                                               ** -->
+<!-- ************************************************************ -->
+
+<delete id="deleteField" parameterClass="org.openmrs.Field">
+	DELETE FROM field WHERE field_id = #fieldId#
+</delete>
+
+</sqlMap>

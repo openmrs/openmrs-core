@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.notification">
+
+	<class name="org.openmrs.notification.AlertRecipient" table="notification_alert_recipient">
+		
+		<composite-id >
+			<key-many-to-one name="alert" column="alert_id"	class="org.openmrs.notification.Alert" />
+			<key-many-to-one name="recipient" class="org.openmrs.User" column="user_id" />
+		</composite-id>
+		
+		<property name="recipientId" column="user_id" type="java.lang.Integer" 
+				not-null="true" update="false" insert="false" />
+		
+		<property name="alertRead" column="alert_read" type="java.lang.Boolean" 
+				not-null="true" length="1"/>
+		
+		<property name="dateChanged" type="java.util.Date"
+				column="date_changed" length="19" update="false" insert="false" />
+		
+	</class>
+
+</hibernate-mapping>
