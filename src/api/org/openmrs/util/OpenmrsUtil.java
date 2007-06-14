@@ -752,12 +752,14 @@ public class OpenmrsUtil {
     public static String getApplicationDataDirectory() {
     	String filepath;
     	
-    	if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
+    	if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
 			filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
-		else
+        }
+		else {
 			filepath = System.getProperty("user.home") + File.separator + 
 					"Application Data" + File.separator + 
 					"OpenMRS";
+        }
 				
 		filepath = filepath + File.separator;
 		
