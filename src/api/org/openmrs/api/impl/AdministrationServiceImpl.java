@@ -760,6 +760,7 @@ public class AdministrationServiceImpl implements AdministrationService {
 		systemVariables.put("OPERATING_SYSTEM_MAC_OSX", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_MAC_OSX));
 		systemVariables.put("WINDOWS_BASED_OPERATING_SYSTEM", String.valueOf(OpenmrsConstants.WINDOWS_BASED_OPERATING_SYSTEM));
 		systemVariables.put("UNIX_BASED_OPERATING_SYSTEM", String.valueOf(OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM));
+		systemVariables.put("OPERATING_SYSTEM_WINDOWS_VISTA", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_WINDOWS_VISTA));
 
 		return systemVariables;
 	}

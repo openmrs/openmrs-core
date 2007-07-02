@@ -450,6 +450,7 @@ public class OpenmrsConstants {
 	public static String OPERATING_SYSTEM_KEY = "os.name";
 	public static String OPERATING_SYSTEM = System.getProperty(OPERATING_SYSTEM_KEY);
 	public static String OPERATING_SYSTEM_WINDOWS_XP = "Windows XP";
+	public static String OPERATING_SYSTEM_WINDOWS_VISTA = "Windows Vista";
 	public static String OPERATING_SYSTEM_LINUX = "Linux";
 	public static String OPERATING_SYSTEM_FREEBSD = "FreeBSD";	
 	public static String OPERATING_SYSTEM_MAC_OSX = "Mac OS X";
@@ -462,4 +463,6 @@ public class OpenmrsConstants {
          OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_FREEBSD) > -1 ||
          OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_MAC_OSX) > -1);
     public static boolean WINDOWS_BASED_OPERATING_SYSTEM = OPERATING_SYSTEM.indexOf("Windows") > -1;
+    public static boolean WINDOWS_VISTA_OPERATING_SYSTEM = 
+		OPERATING_SYSTEM.equals(OPERATING_SYSTEM_WINDOWS_VISTA);
 }

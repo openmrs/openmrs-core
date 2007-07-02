@@ -756,9 +756,11 @@ public class OpenmrsUtil {
 			filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
         }
 		else {
+			String appData = (OpenmrsConstants.WINDOWS_VISTA_OPERATING_SYSTEM ?
+								"AppData" : "Application Data");
+
 			filepath = System.getProperty("user.home") + File.separator + 
-					"Application Data" + File.separator + 
-					"OpenMRS";
+						appData + File.separator + "OpenMRS";
         }
 				
 		filepath = filepath + File.separator;
