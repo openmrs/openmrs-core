@@ -13,8 +13,10 @@ public interface CohortService {
 	
 	public void createCohort(Cohort cohort);
 	
+	@Transactional(readOnly=true)
 	public Cohort getCohort(Integer id);
 	
+	@Transactional(readOnly=true)
 	public List<Cohort> getCohorts();
 
 }

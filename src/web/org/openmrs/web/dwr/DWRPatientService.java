@@ -27,7 +27,7 @@ import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 public class DWRPatientService {
 
@@ -236,8 +236,7 @@ public class DWRPatientService {
 		
 		Date exitDate = null;
 		if ( dateOfExit != null ) {
-			String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
-			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
 			try {
 				exitDate = sdf.parse(dateOfExit);
 			} catch (ParseException e) {

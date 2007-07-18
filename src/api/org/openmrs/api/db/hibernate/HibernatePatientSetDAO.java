@@ -486,7 +486,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		StringBuilder sql = new StringBuilder();
 		sql.append("select pp.patient_id ");
 		sql.append("from patient_program pp ");
-		sql.append((stateIds == null ? " left outer" : " inner") + " join patient_state ps on pp.patient_program_id = ps.patient_program_id ");
+		if (stateIds != null)
+			sql.append("inner join patient_state ps on pp.patient_program_id = ps.patient_program_id ");
 		for (ListIterator<String> i = clauses.listIterator(); i.hasNext(); ) {
 			sql.append(i.nextIndex() == 0 ? " where " : " and ");
 			sql.append(i.next());
@@ -1552,7 +1553,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" where e.location_id = :location_id ");
 			sb.append(" group by e.patient_id ");
 		} else {
-			sb.append(" select patient_id from Patient p, Person_Attribute attr, Person_Attribute_Type type ");
+			sb.append(" select patient_id from patient p, person_attribute attr, person_attribute_type type ");
 			sb.append(" where type.name = 'Health Center' ");
 			sb.append(" and type.person_attribute_type_id = attr.person_attribute_type_id ");
 			sb.append(" and attr.value = :location_id ");

@@ -240,11 +240,11 @@ public class UserFormController extends PersonFormController {
 		if (user == null) {
 			user = new User();
 			
-			String name = request.getParameter("name");
+			String name = request.getParameter("addName");
 			if (name != null) {
-				String gender = request.getParameter("gndr");
-				String date = request.getParameter("birthyear");
-				String age = request.getParameter("age");
+				String gender = request.getParameter("addGender");
+				String date = request.getParameter("addBirthdate");
+				String age = request.getParameter("addAge");
 				
 				getMiniPerson(user, name, gender, date, age);
 			}

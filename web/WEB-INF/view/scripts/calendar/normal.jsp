@@ -5,37 +5,27 @@
 // Since the plugins are loaded after theme config, sometimes we would redefine(override) some theme options there for convenience.
 ////////////////////////////////////////////////////////
 
-<%
-	String datePattern = org.openmrs.util.OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(org.openmrs.api.context.Context.getLocale().toString().toLowerCase());
-	pageContext.setAttribute("datePatternSeparator", datePattern.substring(2,3));
-	pageContext.setAttribute("datePatternStart", datePattern.substring(0,1).toLowerCase());
-%>
+var datePattern = '<openmrs:datePattern />';
+var datePatternSeparator = datePattern.substr(2,1);
+var datePatternStart = datePattern.substr(0,1).toLowerCase();
 
 // ---- PopCalendar Specific Options ----
 
-<c:if test="${datePatternSeparator == null}">
-	var gsSplit="/";	// separator of date string. If set it to empty string, then giMonthMode and gbPadZero will be fixed to 0 and true.
-</c:if>
-<c:if test="${datePatternSeparator != null}">
-	var gsSplit="${datePatternSeparator}";
-</c:if>
+var gsSplit="/";	// separator of date string. If set it to empty string, then giMonthMode and gbPadZero will be fixed to 0 and true.
+if (datePatternSeparator != null)
+	gsSplit=datePatternSeparator;
 
+var giDatePos=0;	// date format sequence  0: D-M-Y ; 1: M-D-Y; 2: Y-M-D
+if (datePatternStart != null) {
+	if (datePatternStart == 'd')
+		giDatePos=0;
+	else if (datePatternStart == 'm')
+		giDatePos=1;
+	else if (datePatternStart == 'y')
+		giDatePos=2;
+}
 
-<c:if test="${datePatternStart == null}">
-	var giDatePos=1;	// date format sequence  0: D-M-Y ; 1: M-D-Y; 2: Y-M-D
-</c:if>
-<c:if test="${datePatternStart != null}">
-	<c:if test="${datePatternStart == 'd'}">
-		var giDatePos=0;
-	</c:if>
-	<c:if test="${datePatternStart == 'm'}">
-		var giDatePos=1;
-	</c:if>
-	<c:if test="${datePatternStart == 'y'}">
-		var giDatePos=2;
-	</c:if>
-</c:if>
-
+/*alert("sep: " + datePatternSeparator + " start: " + datePatternStart);*/
 
 var gbPadZero=true;	// whether to pad the digits with 0 in the left when less than 10.
 var giMonthMode=0;	// month format 0: digits ; 1: full name from gMonths; >2: abbreviated month name in specified length.

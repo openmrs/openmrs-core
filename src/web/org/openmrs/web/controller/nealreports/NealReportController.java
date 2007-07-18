@@ -34,16 +34,12 @@ import org.openmrs.PatientState;
 import org.openmrs.Person;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSet;
-import org.openmrs.reporting.LocationFilter.Method;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -67,9 +63,7 @@ public class NealReportController implements Controller {
 		String fDate = ServletRequestUtils.getStringParameter(request, "fDate", "");
 		String tDate = ServletRequestUtils.getStringParameter(request, "tDate", "");
 		
-		String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
-
-		SimpleDateFormat sdfEntered = new SimpleDateFormat(datePattern);
+		SimpleDateFormat sdfEntered = OpenmrsUtil.getDateFormat();
 		SimpleDateFormat sdfExpected = new SimpleDateFormat("yyyy-MM-dd");
 
 		Date fromDate = null;

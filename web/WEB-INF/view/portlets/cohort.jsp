@@ -93,8 +93,8 @@
 		for (var i = 0; i < patientList.length; ++i) {
 			var pli = patientList[i];
 			str += (cohort_startIndex + i + 1) + '. ';
-			<c:if test="{not empty model.linkUrl}">
-				str += '<a href="${model.linkUrl}?patient_id=' + pli.patientId + '">';
+			<c:if test="${not empty model.linkUrl}">
+				str += '<a href="${model.linkUrl}?patientId=' + pli.patientId + '">';
 			</c:if>
 			str += pli.givenName + ' ' + pli.familyName + ' (' + pli.age + ' year old ' + (pli.gender == 'M' ? 'Male' : 'Female') + ')';
 			<c:if test="{not empty model.linkUrl}">

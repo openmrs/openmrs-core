@@ -26,6 +26,8 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Tribe;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -127,10 +129,8 @@ public class HibernatePatientDAO implements PatientDAO {
 			query.setBoolean("void", includeVoided);
 		}
 		
-		List<Patient> patients = query.list();
-		
 		Set<Patient> returnSet = new LinkedHashSet<Patient>();
-		returnSet.addAll(patients);
+		returnSet.addAll(query.list());
 		
 		return returnSet;
 	}
@@ -143,22 +143,32 @@ public class HibernatePatientDAO implements PatientDAO {
 	@SuppressWarnings("unchecked")
 	public Set<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException {
 		
-		String regex = OpenmrsConstants.PATIENT_IDENTIFIER_REGEX;
-		
-		regex = regex.replace("@SEARCH@", identifier);
-		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifier.class);
 		criteria.setProjection(Projections.property("patient"));
-		criteria.add(Restrictions.sqlRestriction("identifier regexp '" + regex + "'"));
+		
+		AdministrationService adminService = Context.getAdministrationService();
+		String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "");
+		
+		// if the regex is empty, default to a simple "like" search
+		if (regex.equals("")) {
+			String prefix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "");
+			String suffix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "");
+			StringBuffer likeString = new StringBuffer(prefix).append(identifier).append(suffix);
+			criteria.add(Expression.like("identifier", likeString.toString()));
+		}
+		// if the regex is present, search on that
+		else {
+			regex = regex.replace("@SEARCH@", identifier);
+			criteria.add(Restrictions.sqlRestriction("identifier regexp '" + regex + "'"));
+		}
+		
 		if (includeVoided == false) {
 			criteria.createAlias("patient", "pat");
 			criteria.add(Restrictions.eq("pat.voided", false));
 		}
 		
-		List<Patient> patients = criteria.list();
-		
 		Set<Patient> returnSet = new LinkedHashSet<Patient>();
-		returnSet.addAll(patients);
+		returnSet.addAll(criteria.list());
 		
 		return returnSet;
 	}
@@ -208,7 +218,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientService#deletePatient(org.openmrs.Patient)
 	 */
 	public void deletePatient(Patient patient) throws DAOException {
-		sessionFactory.getCurrentSession().delete(patient);
+		HibernatePersonDAO.deletePersonAndAttributes(sessionFactory, patient);
 	}
 
 	/**

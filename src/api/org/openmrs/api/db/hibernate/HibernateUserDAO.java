@@ -55,7 +55,7 @@ public class HibernateUserDAO implements
 	 * @see org.openmrs.api.db.UserService#createUser(org.openmrs.User)
 	 */
 	public User createUser(User user, String password) {
-		if (hasDuplicateUsername(user))
+		if (hasDuplicateUsername(user.getUsername(), user.getSystemId(), user.getUserId()))
 			throw new DAOException("Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
 		
 		try {
@@ -95,21 +95,18 @@ public class HibernateUserDAO implements
 
 		return users.get(0);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
-	public boolean hasDuplicateUsername(User user) {
-		String username = user.getUsername();
+	public boolean hasDuplicateUsername(String username, String systemId, Integer userId) {
 		if (username == null || username.length() == 0)
 			username = "-";
-		String systemId = user.getSystemId();
 		if (systemId == null || username.length() == 0)
 			systemId = "-";
 		
-		Integer userid = user.getUserId();
-		if (userid == null)
-			userid = new Integer(-1);
+		if (userId == null)
+			userId = new Integer(-1);
 		
 		String usernameWithCheckDigit = username;
 		try {
@@ -125,7 +122,7 @@ public class HibernateUserDAO implements
 				.setString("sysid1", systemId)
 				.setString("sysid2", systemId)
 				.setString("uname3", usernameWithCheckDigit)
-				.setInteger("uid", userid)
+				.setInteger("uid", userId)
 				.uniqueResult();
 
 		log.debug("# users found: " + count);
@@ -209,7 +206,7 @@ public class HibernateUserDAO implements
 	 * @see org.openmrs.api.db.UserService#deleteUser(org.openmrs.User)
 	 */
 	public void deleteUser(User user) {
-		sessionFactory.getCurrentSession().delete(user);
+		HibernatePersonDAO.deletePersonAndAttributes(sessionFactory, user);
 	}
 
 	/**
@@ -517,11 +514,9 @@ public class HibernateUserDAO implements
 	}
 	
 	/**
-	 * Get/generate/find the next system id to be doled out.  Assume check digit <b>not</b> applied
-	 * in this method (is applied by UserService.generateSystemId()
-	 * @return new system id
+	 * @see org.openmrs.api.db.UserDAO#generateSystemId()
 	 */
-	public String generateSystemId() {
+	public Integer generateSystemId() {
 		
 		// TODO this algorithm will fail if someone deletes a user that is not the last one.
 		
@@ -531,9 +526,12 @@ public class HibernateUserDAO implements
 		
 		Integer id = ((BigInteger)query.uniqueResult()).intValue() + 1;
 		
-		return id.toString();
+		return id;
 	}
 
+	/**
+	 * @see org.openmrs.api.db.UserDAO#findUsers(java.lang.String, java.lang.String, boolean)
+	 */
 	@SuppressWarnings("unchecked")
 	public List<User> findUsers(String givenName, String familyName, boolean includeVoided) {
 		List<User> users = new Vector<User>();

@@ -16,6 +16,8 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -771,7 +773,7 @@ public class OpenmrsUtil {
 		
 		return filepath;
     }
-    
+        
     /**
      * Save the given xml document to the given outfile
      * @param doc Document to be saved
@@ -914,6 +916,25 @@ public class OpenmrsUtil {
     		map.put(key, list);
     	}
     	list.add(obj);
+    }
+    
+    /**
+     * Get the current user's date format
+     * Will look similar to "mm-dd-yyyy".  Depends on user's locale.
+     * 
+     * @return a simple date format
+     */
+    public static SimpleDateFormat getDateFormat() {
+    	String localeKey = Context.getLocale().toString().toLowerCase();
+    	
+    	// get the actual pattern from the constants
+    	String pattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(localeKey);
+    	
+    	// default to the "first" locale pattern
+    	if (pattern == null)
+    		pattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(0);
+    	
+    	return new SimpleDateFormat(pattern, Context.getLocale());
     }
 
 }

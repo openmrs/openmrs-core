@@ -59,7 +59,7 @@ public class OpenmrsFilter implements Filter {
 				userContext = new UserContext();
 				httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
 			}
-        	log.info("Set user context " + userContext + " as attribute on session");
+        	log.debug("Set user context " + userContext + " as attribute on session");
         	
         	// Add the user context to the current thread 
         	Context.setUserContext(userContext);

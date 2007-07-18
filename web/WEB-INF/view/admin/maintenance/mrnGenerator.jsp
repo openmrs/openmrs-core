@@ -35,7 +35,7 @@
 		<tr>
 			<td rowspan="4" align="left" valign="top">
 				<label for="site"><spring:message code="MRNGenerator.select.site"/></label><br>
-				<select name="site" size="17">
+				<select name="site" size="24">
 					<optgroup label="Group A sites">
 						<option value="BF">BF - Burnt Forest</option>
 						<option value="MO">MO - Mosoriot</option>
@@ -59,6 +59,7 @@
 						<option value="WB">WB - Webuye</option>
 					</optgroup>
 					<optgroup label="Other sites">
+						<option value="PM">PM - PMTCT</option>
 						<option value="VC">VC - OVC</option>
 					</optgroup>
 				</select>

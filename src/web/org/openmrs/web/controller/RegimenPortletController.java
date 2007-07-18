@@ -1,6 +1,5 @@
 package org.openmrs.web.controller;
 
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +9,7 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.web.WebConstants;
 
 public class RegimenPortletController extends PortletController {
 	
@@ -43,12 +40,9 @@ public class RegimenPortletController extends PortletController {
 				model.put("completedDrugOrderSets", completedDrugOrderSets);
 			}
 
-			if ( !model.containsKey("drugOrderHeaders") || !model.containsKey("drugOrderDatePattern")) {
+			if ( !model.containsKey("drugOrderHeaders")) {
 				Map<String, Concept> drugOrderHeaders = OpenmrsUtil.delimitedStringToConceptMap(drugSetIds, ",");
-				String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
-
 				model.put("drugOrderHeaders", drugOrderHeaders);
-				model.put("drugOrderDatePattern", datePattern);
 			}
 			
 		} // else do nothing - we already have orders in the model

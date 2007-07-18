@@ -164,7 +164,7 @@ public class WebModuleUtil {
 							outStream.close();
 						}
 					}
-					else if (name.equals("moduleApplicationContext.xml")) {
+					else if (name.equals("moduleApplicationContext.xml") || name.equals("webModuleApplicationContext.xml")) {
 						refreshContext = true;
 					}
 					else if (name.equals(mod.getModuleId() + "Context.xml")) {
@@ -238,14 +238,14 @@ public class WebModuleUtil {
 			if (refreshContext) {
 				try {
 					
+					refreshWAC(servletContext);
+					log.debug("Done Refreshing WAC");
+					
 					// must "refresh" the spring dispatcherservlet as well to add in 
 					//the new handlerMappings
 					if (dispatcherServlet != null)
 						dispatcherServlet.reInitFrameworkServlet();
 						
-					refreshWAC(servletContext);
-					log.debug("Done Refreshing WAC");
-					
 					if (dwrServlet != null)
 						dwrServlet.reInitServlet();
 					

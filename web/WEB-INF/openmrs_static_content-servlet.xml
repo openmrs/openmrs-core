@@ -12,6 +12,7 @@
 	 <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		 <property name="mappings">
 			 <props>
+				 <prop key="**/OpenmrsSearch.js">jstlContentController</prop>
 				 <prop key="**/PersonSearch.js">jstlContentController</prop>
 				 <prop key="**/PatientSearch.js">jstlContentController</prop>
 				 <prop key="**/UserSearch.js">jstlContentController</prop>

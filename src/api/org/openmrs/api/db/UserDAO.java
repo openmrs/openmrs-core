@@ -42,11 +42,13 @@ public interface UserDAO {
 
 	/**
 	 * true/false if username or systemId is already in db in username or system_id columns
-	 * @param User to compare
+	 * @param username to compare
+	 * @param systemId to compare
+	 * @param userId to ignore
 	 * @return boolean
 	 * @throws DAOException
 	 */
-	public boolean hasDuplicateUsername(User user) throws DAOException;
+	public boolean hasDuplicateUsername(String username, String systemId, Integer userId) throws DAOException;
 		
 	/**
 	 * Save changes to user
@@ -147,6 +149,6 @@ public interface UserDAO {
 	 * in this method
 	 * @return new system id
 	 */
-	public String generateSystemId() throws DAOException;
+	public Integer generateSystemId() throws DAOException;
 
 }

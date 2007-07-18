@@ -1456,6 +1456,9 @@
 				<value>longitude</value>
 				<value>countyDistrict</value>
 				<value>neighborhoodCell</value>
+				<value>townshipDivision</value>
+				<value>subregion</value>
+				<value>region</value>
 			</list>
 		</property>
 	</bean>
@@ -1578,19 +1581,44 @@
 		<property name="country"><value>Kenya</value></property>
 		<property name="nameMappings">
 			<props>
+				
+				<prop key="address1">Location.address1</prop>
+				
+				<prop key="address2">Location.sectionHomestead</prop>
+				
+				<prop key="neighborhoodCell">Location.estateNearestCentre</prop>
+				<prop key="cityVillage">Location.townVillage</prop>
+				
+				<prop key="subregion">Location.sublocation</prop>
+				<prop key="region">Location.location</prop>
+				
+				<prop key="townshipDivision">Location.division</prop>
+				<prop key="countyDistrict">Location.district</prop>
+				
 				<prop key="stateProvince">Location.province</prop>
-				<prop key="cityVillage">Location.village</prop>
-				<prop key="address1">Location.location</prop>
-				<prop key="address2">Location.sublocation</prop>
+				<prop key="postalCode">Location.postalCode</prop>
 				<prop key="country">Location.country</prop>
 			</props>
 		</property>
 		<property name="sizeMappings">
 			<props>
-				<prop key="cityVillage">16</prop>
-				<prop key="address1">50</prop>
-				<prop key="address2">50</prop>
+				<prop key="address1">55</prop>
+				
+				<prop key="address2">55</prop>
+				
+				<prop key="neighborhoodCell">24</prop>
+				<prop key="cityVillage">24</prop>
+				
+				<prop key="subregion">24</prop>
+				<prop key="region">24</prop>
+				
+				<prop key="townshipDivision">24</prop>
+				<prop key="countyDistrict">24</prop>
+				
+				<prop key="stateProvince">24</prop>
+				<prop key="postalCode">6</prop>
 				<prop key="country">10</prop>
+				
 			</props>
 		</property>
 		<property name="elementDefaults">
@@ -1602,7 +1630,10 @@
 			<list>
 				<value>address1</value>
 				<value>address2</value>
-				<value>cityVillage country</value>
+				<value>neighborhoodCell cityVillage</value>
+				<value>subregion region</value>
+				<value>townshipDivision countyDistrict</value>
+				<value>stateProvince postalCode country</value>
 			</list>
 		</property>
 	</bean>

@@ -31,10 +31,6 @@
 	<property file="build.properties" />
 	
 	<!-- Taskdefs -->
-	<taskdef name="splash" classname="org.apache.tools.ant.taskdefs.optional.splash.SplashTask">
-		<classpath refid="lib.path"/>
-    </taskdef>
-	
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
 			<fileset dir="${ant-contrib.dir}" includes="*.jar" />
@@ -87,12 +83,11 @@
 	<!-- **                     TARGETS                           ** -->
 	<!-- *********************************************************** -->
 	<target name="splash" unless="nosplash" description="Display the logo">
-		<property name="splash.dir" location="."/>
-		<splash imageurl="file:${metadata.dir}/images/openmrs-logo-small.gif" showduration="0"/>
+		<!-- do nothing -->
 	</target>
 	
 	<target name="nosplash">
-        <property name="nosplash" value="true" />
+		<!-- do nothing -->
     </target>
 	
 	<target name="init" depends="splash" description="initialization">
@@ -201,7 +196,10 @@
 			<manifest>
 				<attribute name="Class-Path" value="${openmrs.api.name}" />
 			</manifest>
-			<fileset dir="${build.dir}/api" includes="**/*" />
+			<fileset dir="${build.dir}/api">
+				<include name="**/*"/>
+				<exclude name="**/*.java" />
+			</fileset>
 		</jar>
 	</target>
 
@@ -274,18 +272,12 @@
 		</copy>
 	</target>
 
-	
-    <target name="deploy" depends="package-web" if="tomcat.home"
-        description="unwar into the servlet container's deployment directory">
-<!--
-        <unwar src="${dist.dir}/${webapp.name}.war"
-            dest="${tomcat.home}/webapps/${webapp.name}"/>
--->
+    <target name="deploy" depends="package-web" if="tomcat.home" description="unwar into the servlet container's deployment directory">
+		<!-- <unwar src="${dist.dir}/${webapp.name}.war" dest="${tomcat.home}/webapps/${webapp.name}"/> -->
 		<copy todir="${tomcat.home}/webapps">
 			<fileset file="${dist.dir}/${webapp.name}.war" />
 		</copy>
     </target>
-
 	
 	<target name="deploy-web" description="standalone copy web target">
 		<copy todir="${dist.dir}/web">
@@ -351,8 +343,10 @@
 	
 	<target name="package-web" depends="package-web-init" description="create webapp war file">
 		<war destfile="${dist.dir}/${webapp.name}.war" basedir="${dist.dir}/web" excludes="**/web.xml" webxml="${dist.dir}/web/WEB-INF/web.xml" duplicate="add">
-			<!--<metainf dir="${dist.dir}" includes="context.xml"/>		-->
-			<classes dir="${build.dir}/web" />
+			<classes dir="${build.dir}/web">
+				<include name="**/*"/>
+				<exclude name="**/*.java" />
+			</classes>
 			<lib file="${dist.dir}/${openmrs.api.name}" />
 			<lib dir="${antlr.dir}" includes="*.jar" />
 			<lib dir="${asm.dir}" includes="*.jar" />

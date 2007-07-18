@@ -339,8 +339,7 @@ public final class Listener extends ContextLoaderListener {
 
 			// Look for environment variable {WEBAPP.NAME}_RUNTIME_PROPERTIES_FILE
 			String webapp = WebConstants.OPENMRS_WEBAPP_NAME;
-			webapp = webapp.toUpperCase();
-			String env = webapp + "_RUNTIME_PROPERTIES_FILE";
+			String env = webapp.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
 			
 			String filepath = System.getenv(env);
 

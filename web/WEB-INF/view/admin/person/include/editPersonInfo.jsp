@@ -14,7 +14,7 @@
 <tr>
 	<td>
 		<spring:message code="Person.birthdate"/><br/>
-		<i style="font-weight: normal; font-size: .8em;">(<spring:message code="general.format"/>: ${datePattern})</i>
+		<i style="font-weight: normal; font-size: .8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i>
 	</td>
 	<td colspan="3">
 		<script type="text/javascript">
@@ -145,7 +145,7 @@
 			<input type="text" name="deathDate" size="10" 
 				   value="${status.value}" onClick="showCalendar(this)" 
 				   id="deathDate" />
-			<i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: ${datePattern})</i>
+			<i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i>
 			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 		</spring:bind>
 		&nbsp; &nbsp; 

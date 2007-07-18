@@ -30,23 +30,6 @@
 
 <script type="text/javascript">
 
-	function hotkeys(event) {
-		var k = event.keyCode;
-		if (event.cntrlKey == true) {
-			if (k == 69) { // e
-				document.location = document.getElementById('editConcept').href;
-			}
-		}
-		if (k == 37) { // left key
-			document.location = document.getElementById('previousConcept').href;
-		}
-		else if (k == 39) { //right key
-			document.location = document.getElementById('nextConcept').href;
-		}
-	}
-	
-	document.onkeypress = hotkeys;
-
 	function selectTab(tab) {
 		var displays = new Array();
 		
@@ -98,10 +81,10 @@
 <c:if test="${concept.conceptId != null}">
 	<form class="inlineForm" id="jumpForm" action="" method="post">
 		<input type="hidden" name="jumpAction" id="jumpAction" value="previous"/>
-		<a href="#previousConcept" id="previousConcept" valign="middle" onclick="return jumpToConcept('previous')"><spring:message code="general.previous"/></a> |
-		<openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form?conceptId=${concept.conceptId}" id="editConcept" valign="middle"></openmrs:hasPrivilege><spring:message code="general.edit"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege> |
-		<a href="conceptStats.form?conceptId=${concept.conceptId}" id="conceptStats" valign="middle"><spring:message code="Concept.stats"/></a> |
-		<a href="#nextConcept" id="nextConcept" valign="middle" onclick="return jumpToConcept('next')"><spring:message code="general.next"/></a> |
+		<a href="#previousConcept" id="previousConcept" valign="middle" accesskey="," onclick="return jumpToConcept('previous')"><spring:message code="general.previous"/></a> |
+		<openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form?conceptId=${concept.conceptId}" id="editConcept" accesskey="e" valign="middle"></openmrs:hasPrivilege><spring:message code="general.edit"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege> |
+		<a href="conceptStats.form?conceptId=${concept.conceptId}" accesskey="s" id="conceptStats" valign="middle"><spring:message code="Concept.stats"/></a> |
+		<a href="#nextConcept" id="nextConcept" valign="middle" accesskey="." onclick="return jumpToConcept('next')"><spring:message code="general.next"/></a> |
 	</form>
 </c:if>
 

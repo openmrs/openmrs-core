@@ -25,6 +25,7 @@ public class ConceptTag extends BodyTagSupport {
 	private String var;
 	private String nameVar;
 	private String numericVar;
+    private String setMemberVar;
 	private String locale;
 
 	public int doStartTag() throws JspException {
@@ -55,6 +56,11 @@ public class ConceptTag extends BodyTagSupport {
 		log.debug("Retrieved name " + cName.getName() + ", set to variable: " + nameVar);
 		
 		pageContext.setAttribute(numericVar, cs.getConceptNumeric(conceptId));
+        
+        // If the Concept is a Set, get members of that Set
+        if (c.isSet() && setMemberVar != null) {
+            pageContext.setAttribute(setMemberVar, Context.getConceptService().getConceptsInSet(c));
+        }
 
 		return EVAL_BODY_BUFFERED;
 	}
@@ -130,4 +136,18 @@ public class ConceptTag extends BodyTagSupport {
 	public void setNumericVar(String numericVar) {
 		this.numericVar = numericVar;
 	}
+
+    /**
+     * @return the SetMemberVar
+     */
+    public String getSetMemberVar() {
+        return setMemberVar;
+    }
+
+    /**
+     * @param SetMemberVar the SetMemberVar to set
+     */
+    public void setSetMemberVar(String setMemberVar) {
+        this.setMemberVar = setMemberVar;
+    }
 }

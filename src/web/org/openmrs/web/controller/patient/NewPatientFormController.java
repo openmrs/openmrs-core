@@ -1,7 +1,6 @@
 package org.openmrs.web.controller.patient;
 
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,7 +41,6 @@ import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.user.UserFormController;
@@ -66,8 +64,6 @@ public class NewPatientFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
-    SimpleDateFormat dateFormat;
-    
     // identifiers submitted with the form.  Stored here so that they can
     // be redisplayed for the user after an error
     Set<PatientIdentifier> newIdentifiers = new HashSet<PatientIdentifier>();
@@ -83,13 +79,11 @@ public class NewPatientFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
-		
         NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(dateFormat, true, 10));
+        		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
         binder.registerCustomEditor(Tribe.class, new TribeEditor());
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
@@ -574,11 +568,11 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		ShortPatientModel patient = new ShortPatientModel(p);
 		
-		String name = request.getParameter("name");
+		String name = request.getParameter("addName");
 		if (p == null && name != null) {
-			String gender = request.getParameter("gndr");
-			String date = request.getParameter("birthyear");
-			String age = request.getParameter("age");
+			String gender = request.getParameter("addGender");
+			String date = request.getParameter("addBirthdate");
+			String age = request.getParameter("addAge");
 			
 			p = new Patient();
 			UserFormController.getMiniPerson(p, name, gender, date, age);
@@ -643,8 +637,6 @@ public class NewPatientFormController extends SimpleFormController {
 	    		}
 	    	}
 		}
-		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
-		
 		
 		/* The identifiers are added in the onSubmit method.  This is duplicative - bwolfe
 			// give them both the just-entered identifiers and the patient's current identifiers

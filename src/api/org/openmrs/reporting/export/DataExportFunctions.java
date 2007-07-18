@@ -36,7 +36,6 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSet;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 public class DataExportFunctions {
@@ -116,10 +115,7 @@ public class DataExportFunctions {
 		
 		locale = Context.getLocale();
 		dateFormatLong = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		String format = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase());
-		if (format == null)
-			format = "dd-MM-yyyy";
-		dateFormatShort = new SimpleDateFormat(format, locale);
+		dateFormatShort = OpenmrsUtil.getDateFormat();
 		dateFormatYmd = new SimpleDateFormat("yyyy-MM-dd", locale);
 	}
 	

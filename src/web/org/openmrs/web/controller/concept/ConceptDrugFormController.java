@@ -1,6 +1,5 @@
 package org.openmrs.web.controller.concept;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +28,6 @@ public class ConceptDrugFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
-    SimpleDateFormat dateFormat;
-    
 	/**
 	 * 
 	 * Allows for Integers to be used as values in input tags.
@@ -40,8 +37,6 @@ public class ConceptDrugFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
 		
         //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
         binder.registerCustomEditor(java.lang.Integer.class,
@@ -112,7 +107,6 @@ public class ConceptDrugFormController extends SimpleFormController {
 				map.put("conceptName", drug.getConcept().getName(request.getLocale()));
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
-		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		

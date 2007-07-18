@@ -96,7 +96,7 @@
 								<td>
 									<spring:bind path="preferred">
 										<input type="hidden" name="_${status.expression}">
-										<input type="checkbox" name="${status.expression}" onclick="if (preferredBoxClick) preferredBoxClick(this)" alt="personAddress" <c:if test="${status.value == true}">checked</c:if> />
+										<input type="checkbox" name="${status.expression}" onclick="if (preferredBoxClick) preferredBoxClick(this)" value="true" alt="personAddress" <c:if test="${status.value == true}">checked</c:if> />
 										<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 									</spring:bind>
 								</td>

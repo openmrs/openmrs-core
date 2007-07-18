@@ -1,6 +1,5 @@
 package org.openmrs.web.controller.maintenance;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -15,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.DataEntryStatistic;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.DataTable;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.validation.BindException;
@@ -74,13 +72,11 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		}
 	}
 	
-    SimpleDateFormat dateFormat;
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(dateFormat, true, 10));
+        		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
 	}
 
 	

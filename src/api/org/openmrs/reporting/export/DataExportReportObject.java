@@ -141,7 +141,8 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		else
 			log.warn("Report has column size less than 1");
 		
-		sb.append("\n#end\n\n");
+		// Removed a newline at the end of the string -- the second newline was causing a problem with BIRT 
+		sb.append("\n#end\n");
 		
 		return sb.toString();
 	}

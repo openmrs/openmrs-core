@@ -24,6 +24,9 @@ public class PersonAddress implements java.io.Serializable, Cloneable {
 	private String cityVillage;
 	private String neighborhoodCell;
 	private String countyDistrict;
+	private String townshipDivision;
+	private String region;
+	private String subregion;
 	private String stateProvince;
 	private String country;
 	private String postalCode;
@@ -382,5 +385,47 @@ public class PersonAddress implements java.io.Serializable, Cloneable {
 			getCountry() == null && getCountyDistrict() == null && 
 			getNeighborhoodCell() == null && getPostalCode() == null && 
 			getLatitude() == null && getLongitude() == null ;
+	}
+
+	/**
+	 * @return the region
+	 */
+	public String getRegion() {
+		return region;
+	}
+
+	/**
+	 * @param region the region to set
+	 */
+	public void setRegion(String region) {
+		this.region = region;
+	}
+
+	/**
+	 * @return the subregion
+	 */
+	public String getSubregion() {
+		return subregion;
+	}
+
+	/**
+	 * @param subregion the subregion to set
+	 */
+	public void setSubregion(String subregion) {
+		this.subregion = subregion;
+	}
+
+	/**
+	 * @return the townshipDivision
+	 */
+	public String getTownshipDivision() {
+		return townshipDivision;
+	}
+
+	/**
+	 * @param townshipDivision the townshipDivision to set
+	 */
+	public void setTownshipDivision(String townshipDivision) {
+		this.townshipDivision = townshipDivision;
 	}
 }

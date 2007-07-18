@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -168,7 +169,6 @@ public class PersonFormController extends SimpleFormController {
 		}
 		
 		map.put("causeOfDeathOther", causeOfDeathOther);
-		map.put("datePattern", Context.getDateFormat().toLocalizedPattern().toLowerCase());
 		
 		return map;
     }
@@ -192,8 +192,20 @@ public class PersonFormController extends SimpleFormController {
 		boolean birthdateEstimated = false;
 		if (date != null && !date.equals("")) {
 			try {
-				birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + date);
-				birthdateEstimated = true;
+				// only a year was passed as parameter
+				if (date.length() < 5) {
+					Calendar c = new GregorianCalendar();
+					c.set(Calendar.YEAR, Integer.valueOf(date));
+					c.set(Calendar.MONTH, 0);
+					c.set(Calendar.DATE, 1);
+					birthdate = c.getTime();
+					birthdateEstimated = true;
+				}
+				// a full birthdate was passed as a parameter
+				else {
+					birthdate = Context.getDateFormat().parse(date);
+					birthdateEstimated = false;
+				}
 			} catch (ParseException e) { log.debug("Error getting date from birthdate", e); }
 		}
 		else if (age != null && !age.equals("")) {

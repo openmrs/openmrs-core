@@ -94,7 +94,7 @@ public class Context implements ApplicationContextAware {
 	 * @param   context   the spring application context 
 	 */
 	public void setApplicationContext(ApplicationContext context) {
-		log.info("Setting application context");
+		log.debug("Setting application context");
 		applicationContext = context;
 	}
 
@@ -131,7 +131,7 @@ public class Context implements ApplicationContextAware {
 	 * @param userContext
 	 */
 	public static void setUserContext(UserContext ctx) { 
-		log.info("Setting user context " + ctx);
+		log.debug("Setting user context " + ctx);
 		Object[] arr = new Object[] {ctx};
 		ctx.setContextDAO(getContextDAO());
 		userContextHolder.set(arr);
@@ -141,7 +141,7 @@ public class Context implements ApplicationContextAware {
 	 * Clears the user context.
 	 */
 	public static void clearUserContext() {
-		log.info("Clearing user context " + userContextHolder.get());
+		log.debug("Clearing user context " + userContextHolder.get());
 		//userContextHolder.set(null);
 		userContextHolder.remove();
 	}
@@ -155,8 +155,8 @@ public class Context implements ApplicationContextAware {
 	public static UserContext getUserContext() {
 		Object[] arr = userContextHolder.get();
 		
-		if (log.isInfoEnabled())
-			log.info("Getting user context " + arr + " from userContextHolder " + userContextHolder);
+		if (log.isDebugEnabled())
+			log.debug("Getting user context " + arr + " from userContextHolder " + userContextHolder);
 		
 		if (arr == null) {
 			log.debug("userContext is null. Creating new userContext");
@@ -508,7 +508,7 @@ public class Context implements ApplicationContextAware {
 	 * @see #authenticate
 	 */
 	public static void logout() {
-		log.info("Logging out : " + getAuthenticatedUser());
+		log.debug("Logging out : " + getAuthenticatedUser());
 		getUserContext().logout();
 		clearUserContext();
 	}
@@ -561,7 +561,7 @@ public class Context implements ApplicationContextAware {
 	 * openSession and closeSession calls.  
 	 */
 	public static void openSession() {
-		log.info("opening session");
+		log.debug("opening session");
 		getContextDAO().openSession();
 	}
 
@@ -570,7 +570,7 @@ public class Context implements ApplicationContextAware {
 	 * openSession and closeSession calls.  
 	 */
 	public static void closeSession() {
-		log.info("closing session");
+		log.debug("closing session");
 		getContextDAO().closeSession();
 	}
 	
@@ -578,7 +578,7 @@ public class Context implements ApplicationContextAware {
 	 * Used to clear cached objects out of a session in the middle of a unit of work.
 	 */
 	public static void clearSession() {
-		log.info("clearing session");
+		log.debug("clearing session");
 		getContextDAO().clearSession();
 	}
 	

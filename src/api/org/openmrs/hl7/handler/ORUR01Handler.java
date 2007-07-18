@@ -223,7 +223,7 @@ public class ORUR01Handler implements Application {
 		// call EncounterService.createEncounter().  For now, making obs groups
 		// requires that one obs be created (in the database) before others can
 		// be linked to it, forcing us to save the encounter prematurely.
-		log.error("Current thread: " + Thread.currentThread());
+		log.debug("Current thread: " + Thread.currentThread());
 		hl7Service.encounterCreated(encounter);
 		
 		return oru;

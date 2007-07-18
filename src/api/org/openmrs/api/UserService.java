@@ -128,7 +128,7 @@ public interface UserService {
 	 */
 	@Authorized({"Delete Users"})
 	public void deleteUser(User user) throws APIException;
-
+	
 	/**
 	 * Returns all privileges currently possible for any User
 	 * @return Global list of privileges

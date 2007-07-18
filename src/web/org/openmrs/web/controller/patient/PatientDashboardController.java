@@ -153,7 +153,6 @@ public class PatientDashboardController extends SimpleFormController {
 		map.put("emptyName", new PersonName());
 		map.put("emptyAddress", new PersonAddress());
 		map.put("encounters", encounters);
-		map.put("datePattern", Context.getDateFormat().toLocalizedPattern().toLowerCase());
 		map.put("causeOfDeathOther", causeOfDeathOther);
 		
 		return map;

@@ -135,16 +135,18 @@
 	<br/>
 	
 	<input type="submit" id="saveButton" name="action" value="<spring:message code="User.save"/>" />
-
-	<openmrs:hasPrivilege privilege="Become User (Actually you need to be a superuser)">
-		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="action" value="<spring:message code="User.assumeIdentity" />" onClick="return confirm('<spring:message code="User.assumeIdentity.confirm"/>');" />
-	</openmrs:hasPrivilege>
 	
-	<openmrs:hasPrivilege privilege="Delete User">
-		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="action" value="<spring:message code="User.delete" />" onClick="return confirm('<spring:message code="User.delete.confirm"/>');" />
-	</openmrs:hasPrivilege>
+	<c:if test="${user.userId != null}">
+		<openmrs:hasPrivilege privilege="Become User (Actually you need to be a superuser)">
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="submit" name="action" value="<spring:message code="User.assumeIdentity" />" onClick="return confirm('<spring:message code="User.assumeIdentity.confirm"/>');" />
+		</openmrs:hasPrivilege>
+		
+		<openmrs:hasPrivilege privilege="Delete User">
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="submit" name="action" value="<spring:message code="User.delete" />" onClick="return confirm('<spring:message code="User.delete.confirm"/>');" />
+		</openmrs:hasPrivilege>
+	</c:if>
 </form>
 
 <script type="text/javascript">

@@ -1,7 +1,6 @@
 package org.openmrs.web.controller.patient;
 
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,8 +61,6 @@ public class PatientFormController extends PersonFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
 
-    SimpleDateFormat dateFormat;
-    
 	/**
 	 * 
 	 * Allows for other Objects to be used as values in input tags.
@@ -74,13 +71,11 @@ public class PatientFormController extends PersonFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		dateFormat = Context.getDateFormat();
-		
         NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(dateFormat, true, 10));
+        		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
         binder.registerCustomEditor(Tribe.class, new TribeEditor());
         binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
         binder.registerCustomEditor(Location.class, new LocationEditor());
@@ -116,6 +111,7 @@ public class PatientFormController extends PersonFormController {
 					String[] ids = request.getParameterValues("identifier");
 					String[] idTypes = request.getParameterValues("identifierType");
 					String[] locs = request.getParameterValues("location");
+					String[] idPrefStatus = ServletRequestUtils.getStringParameters(request, "preferred");
 					
 					if (ids != null) {
 						for (int i = 0; i < ids.length; i++) {
@@ -125,6 +121,8 @@ public class PatientFormController extends PersonFormController {
 								pi.setIdentifier(id);
 								pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
 								pi.setLocation(es.getLocation(Integer.valueOf(locs[i])));
+								if (idPrefStatus != null && idPrefStatus.length > i)
+									pi.setPreferred(new Boolean(idPrefStatus[i]));
 								patient.addIdentifier(pi);
 							}
 						}
@@ -142,6 +140,7 @@ public class PatientFormController extends PersonFormController {
 					String [] pCodes = ServletRequestUtils.getStringParameters(request, "postalCode");
 					String [] counties = ServletRequestUtils.getStringParameters(request, "countyDistrict");
 					String [] cells = ServletRequestUtils.getStringParameters(request, "neighborhoodCell");
+					String [] addPrefStatus = ServletRequestUtils.getStringParameters(request, "preferred");
 					
 					if (add1s != null || add2s != null || cities != null || states != null || countries != null
 							|| lats != null || longs != null || pCodes != null || counties != null || cells != null ) {
@@ -187,6 +186,8 @@ public class PatientFormController extends PersonFormController {
 									pa.setCountyDistrict(counties[i]);
 								if (cells.length >= i+1)
 									pa.setNeighborhoodCell(cells[i]);
+								if (addPrefStatus != null && addPrefStatus.length > i)
+									pa.setPreferred(new Boolean(addPrefStatus[i]));
 								patient.addAddress(pa);
 								//}
 						}
@@ -208,12 +209,14 @@ public class PatientFormController extends PersonFormController {
 					String[] fName2s = ServletRequestUtils.getStringParameters(request, "familyName2");
 					String[] fNameSuffixes = ServletRequestUtils.getStringParameters(request, "familyNameSuffix");
 					String[] degrees = ServletRequestUtils.getStringParameters(request, "degree");
+					String[] namePrefStatus = ServletRequestUtils.getStringParameters(request, "preferred");
 					
 					if (gNames != null) {
 						for (int i = 0; i < gNames.length; i++) {
 							if (gNames[i] != "") { //skips invalid and blank address data box
 								PersonName pn = new PersonName();
-								pn.setPreferred(false);
+								if (namePrefStatus != null && namePrefStatus.length > i)
+									pn.setPreferred(new Boolean(namePrefStatus[i]));
 								if (gNames.length >= i+1)
 									pn.setGivenName(gNames[i]);
 								if (mNames.length >= i+1)
@@ -509,11 +512,11 @@ public class PatientFormController extends PersonFormController {
 		if (patient == null) {
 			patient = new Patient();
 			
-			String name = request.getParameter("name");
+			String name = request.getParameter("addName");
 			if (name != null) {
-				String gender = request.getParameter("gndr");
-				String date = request.getParameter("birthyear");
-				String age = request.getParameter("age");
+				String gender = request.getParameter("addGender");
+				String date = request.getParameter("addBirthdate");
+				String age = request.getParameter("addAge");
 				
 				getMiniPerson(patient, name, gender, date, age);
 			}

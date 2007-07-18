@@ -1,5 +1,6 @@
 package org.openmrs.reporting;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +13,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
-public class PatientSet {
+public class PatientSet implements Serializable {
 
 	private Integer patientSetId;
 	private String name;

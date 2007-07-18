@@ -294,7 +294,10 @@ public class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES = "patient.viewingAttributeTypes";
 	public static final String GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES    = "user.listingAttributeTypes";
 	public static final String GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES    = "user.viewingAttributeTypes";
-	
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX   = "patient.identifierRegex";
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX   = "patient.identifierPrefix";
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX   = "patient.identifierSuffix";
+
 	// These properties (and default values) are set if not found in the database on startup
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
 		List<GlobalProperty> props = new Vector<GlobalProperty>();
@@ -349,6 +352,9 @@ public class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for users in _lists_"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for users when _viewing individually_"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "^0*@SEARCH@([A-Z]+-[0-9])?$", "A MySQL regular expression for the patient identifier search strings.  The @SEARCH@ string is replaced at runtime with the user's search string.  An empty regex will cause a simply 'like' sql search to be used"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "", "This property is only used if " + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "%", "This property is only used if " + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
@@ -381,6 +387,9 @@ public class OpenmrsConstants {
 	// @SEARCH@ is needs to be replaced with the searched string
 	public static final String PATIENT_IDENTIFIER_REGEX = "^0*@SEARCH@([A-Z]+-[0-9])?$";
 
+	public static Locale spanish_language = new Locale("es");
+	public static Locale portuguese_language = new Locale("pt");
+
 	
 	/**
 	 * @return Collection of locales available to openmrs
@@ -391,6 +400,8 @@ public class OpenmrsConstants {
 		languages.add(Locale.US);
 		languages.add(Locale.UK);
 		languages.add(Locale.FRENCH);
+		languages.add(spanish_language);
+		languages.add(portuguese_language);
 		
 		return languages;
 	}
@@ -405,9 +416,13 @@ public class OpenmrsConstants {
 		
 		languages.add(Locale.ENGLISH);
 		languages.add(Locale.FRENCH);
+		languages.add(spanish_language);
+		languages.add(portuguese_language);
 		
 		return languages;
 	}
+
+	private static Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS = null;
 	
 	/**
 	 * This method is necessary until SimpleDateFormat(java.util.locale) returns a 
@@ -417,14 +432,20 @@ public class OpenmrsConstants {
 	 * @return Mapping of Locales to locale specific date pattern
 	 */
 	public static final Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS() {
-		Map<String, String> patterns = new HashMap<String, String>();
+		if (OPENMRS_LOCALE_DATE_PATTERNS == null) {
+			Map<String, String> patterns = new HashMap<String, String>();
+			
+			patterns.put(Locale.US.toString().toLowerCase(), "MM/dd/yyyy");
+			patterns.put(Locale.UK.toString().toLowerCase(), "dd/MM/yyyy");
+			patterns.put(Locale.FRENCH.toString().toLowerCase(), "dd/MM/yyyy");
+			patterns.put(Locale.GERMAN.toString().toLowerCase(), "MM.dd.yyyy");
+			patterns.put(spanish_language.toString().toLowerCase(), "dd/MM/yyyy");
+			patterns.put(portuguese_language.toString().toLowerCase(), "dd/MM/yyyy");
+			
+			OPENMRS_LOCALE_DATE_PATTERNS = patterns;
+		}
 		
-		patterns.put(Locale.US.toString().toLowerCase(), "MM/dd/yyyy");
-		patterns.put(Locale.UK.toString().toLowerCase(), "dd/MM/yyyy");
-		patterns.put(Locale.FRENCH.toString().toLowerCase(), "dd/MM/yyyy");
-		patterns.put(Locale.GERMAN.toString().toLowerCase(), "MM.dd.yyyy");
-		
-		return patterns;
+		return OPENMRS_LOCALE_DATE_PATTERNS;
 	}
 	
 	/*

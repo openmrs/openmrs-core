@@ -232,6 +232,7 @@ function containsError(element) {
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
 			</spring:bind>
+			<spring:message code="User.confirm.description" />
 		</td>
 	</tr>
 	<tr><td colspan="2"><br/></td></tr>

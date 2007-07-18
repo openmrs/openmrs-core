@@ -1,3 +1,5 @@
+<%@ include file="/WEB-INF/template/include.jsp" %>
+
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
 	All Rights Reserved.
@@ -251,8 +253,7 @@ dojo.widget.defineWidget(
 					//   delete key pressed or
 					//   hyphen key pressed or
 					//   mouse event)"
-					if (!this.text.match(/\d/) || this.allowAutoListWithNumber()) {
-						
+					if (this.text.length > 0 && (!this.text.match(/\d/) || this.allowAutoListWithNumber())) {
 						// force enter key for strings like 1,2,5,11
 						if (this.text.match(/^\s*\d+\s*(,\d+\s*)+$/))
 							return false;
@@ -291,7 +292,9 @@ dojo.widget.defineWidget(
 		// user hit enter on empty box
 		
 		try {
-			if (this.inputNode.value == "" && 
+			// if the mouse wasn't clicked and our search box is empty, then
+			// they just hit enter on an empty field, return
+			if (!mouseclicked && this.inputNode.value == "" &&
 				this.event && this.event.type == "keyup")
 					return false;
 		} catch (Exception) {
@@ -301,6 +304,11 @@ dojo.widget.defineWidget(
 		dojo.debug('Enter key pressed, search: ' + this.text);
 		dojo.debug('lastPhraseSearched: ' + this.lastPhraseSearched);
 		this.hideHighlight();
+		
+		// get out of here if the text is empty. nothing to do
+		if (this.text == null)
+			return false;
+			
 		// if the user hit the enter key then check for sequence of numbers
 		if (this.text.match(/^\s*\d+\s*(,\d+\s*)*$/)) {
 			dojo.debug('text matched set of numbers');
@@ -478,20 +486,36 @@ dojo.widget.defineWidget(
 	getDateString: function(d) {
 		var str = '';
 		if (d != null) {
+			
+			// get the month, day, year values
+			var month = "";
+			var day = "";
+			var year = "";
 			var date = d.getDate();
+			
 			if (date < 10)
-				str += "0";
-			str += date;
-			str += '-';
-			var month = d.getMonth() + 1;
-			if (month < 10)
-				str += "0";
-			str += month;
-			str += '-';
+				day += "0";
+			day += date;
+			var m = d.getMonth() + 1;
+			if (m < 10)
+				month += "0";
+			month += m;
 			if (d.getYear() < 1900)
-				str += (d.getYear() + 1900);
+				year = (d.getYear() + 1900);
 			else
-				str += d.getYear();
+				year = d.getYear();
+		
+			var datePattern = '<openmrs:datePattern />';
+			var sep = datePattern.substr(2,1);
+			var datePatternStart = datePattern.substr(0,1).toLowerCase();
+			
+			if (datePatternStart == 'm') /* M-D-Y */
+				str = month + sep + day + sep + year
+			else if (datePatternStart == 'y') /* Y-M-D */
+				str = year + sep + month + sep + day
+			else /* (datePatternStart == 'd') D-M-Y */
+				str = day + sep + month + sep + year
+			
 		}
 		return str;
 	},

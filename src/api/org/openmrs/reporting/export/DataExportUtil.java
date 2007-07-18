@@ -35,6 +35,34 @@ public class DataExportUtil {
 		}
 		
 	}
+
+	
+	/**
+	 * Generates a data export file given a data export (columns) and patient set (rows).  
+	 * 
+	 * @param dataExport
+	 * @param patientSet
+	 * @param separator
+	 * @throws Exception
+	 */
+	public static void generateExport(DataExportReportObject dataExport, PatientSet patientSet, String separator) throws Exception {
+		// Set up functions used in the report ( $!{fn:...} )
+		DataExportFunctions functions = new DataExportFunctions();
+		functions.setSeparator(separator);
+		generateExport(dataExport, patientSet, functions);
+	}
+	
+	/**
+	 * 
+	 * @param dataExport
+	 * @param patientSet
+	 * @throws Exception
+	 */
+	public static void generateExport(DataExportReportObject dataExport, PatientSet patientSet) throws Exception {
+		// Set up functions used in the report ( $!{fn:...} )
+		DataExportFunctions functions = new DataExportFunctions();
+		generateExport(dataExport, patientSet, functions);
+	}
 	
 	/**
 	 * 
@@ -42,7 +70,7 @@ public class DataExportUtil {
 	 * @param patientSet (nullable)
 	 * @throws Exception
 	 */
-	public static void generateExport(DataExportReportObject dataExport, PatientSet patientSet) throws Exception {
+	public static void generateExport(DataExportReportObject dataExport, PatientSet patientSet, DataExportFunctions functions) throws Exception {
 		
 		// defining log file here to attempt to reduce memory consumption
 		Log log = LogFactory.getLog(DataExportUtil.class);
@@ -62,10 +90,7 @@ public class DataExportUtil {
 		
 		// Set up velocity utils
 		Locale locale = Context.getLocale();
-		velocityContext.put("locale", locale);
-		
-		// Set up functions used in the report ( $!{fn:...} )
-		DataExportFunctions functions = new DataExportFunctions();
+		velocityContext.put("locale", locale);		
 		velocityContext.put("fn", functions);
 		
 		// Set up list of patients if one wasn't passed into this method

@@ -6,40 +6,55 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * An extension is a small snippet of code that is run at certain
- * "extension points" throughout the user interface
+ * An extension is a small snippet of code that is run at certain "extension
+ * points" throughout the user interface
  * 
- * An extension is not necessarily tied to only one certain point.  If 
- * all of the need return values are defined it can be used to extend 
- * any point.
+ * An extension is not necessarily tied to only one certain point. If all of the
+ * need return values are defined it can be used to extend any point.
  * 
  * A module can contain many extensions for many different points.
  * 
- * @author Ben Wolfe
  */
 
 public abstract class Extension {
 
 	private Log log = LogFactory.getLog(this.getClass());
-	
-	// point which this extension is extending 
+
+	// point which this extension is extending
 	private String pointId;
-	
+
 	// id of the module implementing this point
 	private String moduleId;
-	
+
 	// parameters given at the extension point
 	private Map<String, String> parameterMap;
-	
-	public enum MEDIA_TYPE { html }
-	
+
+	/**
+	 * String separating the pointId and media type in an extension id
+	 * 
+	 * @see toExtensionId
+	 */
+	public static final String extensionIdSeparator = "|";
+
+	/**
+	 * All media types allowed by the module extension system. If an extension
+	 * specifies 'html' as its media type, it is assumed to mainly work just
+	 * within html rendering environments. If an extension has a null media
+	 * type, it should work for any visual/text rendering environment
+	 */
+	public enum MEDIA_TYPE {
+		html
+	}
+
 	/**
 	 * default constructor
 	 */
-	public Extension() { }
-	
+	public Extension() {
+	}
+
 	/**
-	 * Called before being displayed each time 
+	 * Called before being displayed each time
+	 * 
 	 * @param parameterMap
 	 */
 	public void initialize(Map<String, String> parameterMap) {
@@ -48,66 +63,114 @@ public abstract class Extension {
 		this.setParameterMap(parameterMap);
 	}
 
+	/**
+	 * Get the point id
+	 * 
+	 * @return
+	 */
 	public String getPointId() {
 		return pointId;
 	}
-	
+
+	/**
+	 * Set the point id
+	 * 
+	 * @param pointId
+	 */
 	public void setPointId(String pointId) {
 		this.pointId = pointId;
 	}
 
+	/**
+	 * Get all of the parameters given to this extension point
+	 * 
+	 * @return key-value parameter map
+	 */
 	public Map<String, String> getParameterMap() {
 		return parameterMap;
 	}
 
+	/**
+	 * Parameters given at the extension point This method is usually called
+	 * only during extension initialization
+	 * 
+	 * @param parameterMap key-value parameter map
+	 */
 	public void setParameterMap(Map<String, String> parameterMap) {
 		this.parameterMap = parameterMap;
 	}
-	
+
 	/**
-	 * Sets the content type of this extension.  If null is returned 
-	 * this extension should work across all medium types
+	 * Sets the content type of this extension. If null is returned this
+	 * extension should work across all medium types
 	 * 
 	 * @return type of the medium that this extension works for
 	 */
 	public abstract Extension.MEDIA_TYPE getMediaType();
-	
-	public String getExtensionId() {
-		if (getMediaType() != null && getMediaType() != null)
-			return getPointId() + "|" + getMediaType();
-		else
-			return getPointId();
-	}
-	
+
 	/**
-	 * If this method returns a non-null value then the return value
-	 * will be used as the default content for this extension at this 
-	 * extension point 
+	 * Get the extension point id
+	 * 
+	 * @return
+	 */
+	public String getExtensionId() {
+		return toExtensionId(getPointId(), getMediaType());
+	}
+
+	/**
+	 * If this method returns a non-null value then the return value will be
+	 * used as the default content for this extension at this extension point
 	 * 
 	 * @return override content
 	 */
 	public String getOverrideContent(String bodyContent) {
 		return null;
 	}
-	
+
 	/**
 	 * Get this extension's module id
+	 * 
 	 * @return
 	 */
 	public final String getModuleId() {
 		return moduleId;
 	}
-	
+
 	/**
 	 * Set the module id of this extension
+	 * 
 	 * @param moduleId
 	 */
 	public final void setModuleId(String moduleId) {
 		this.moduleId = moduleId;
 	}
-	
-	
+
+	/**
+	 * Get the string representation of this extension
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	public final String toString() {
 		return "Extension: " + this.getExtensionId();
+	}
+
+	/**
+	 * Convert the given pointId and mediaType to an extensionId. The extension
+	 * id is usually pointid|mediaType
+	 * 
+	 * if mediatype is null, extension id is just point id
+	 * 
+	 * @param pointId
+	 * @param mediaType
+	 * @return string extension id
+	 */
+	public static final String toExtensionId(String pointId,
+	        MEDIA_TYPE mediaType) {
+		if (mediaType != null)
+			return new StringBuffer(pointId).append(
+			        Extension.extensionIdSeparator).append(mediaType)
+			        .toString();
+		else
+			return pointId;
 	}
 }

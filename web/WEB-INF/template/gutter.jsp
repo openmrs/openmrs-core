@@ -32,16 +32,13 @@
 		</li>
 	</openmrs:hasPrivilege>
 	
-	<openmrs:extensionCount pointId="org.openmrs.gutter.tools" var="howManyTools"/>
-	<c:if test="${howManyTools > 0}">
-			<openmrs:extensionPoint pointId="org.openmrs.gutter.tools" type="html">
-				<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-					<li>
-					<a href="${pageContext.request.contextPath}/${extension.url}"><spring:message code="${extension.label}"/></a>
-					</li>
-				</openmrs:hasPrivilege>
-			</openmrs:extensionPoint>
-	</c:if>
+	<openmrs:extensionPoint pointId="org.openmrs.gutter.tools" type="html">
+		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+			<li>
+			<a href="${pageContext.request.contextPath}/${extension.url}"><spring:message code="${extension.label}"/></a>
+			</li>
+		</openmrs:hasPrivilege>
+	</openmrs:extensionPoint>
 
 	<li>
 		<a href="${pageContext.request.contextPath}/options.form"><spring:message code="Navigation.options"/></a>

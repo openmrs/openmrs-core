@@ -351,8 +351,7 @@
 		} else
 			DWRProgramWorkflowService.getWorkflowsByProgram(program, function(wfs) {
 					DWRUtil.removeAllOptions('workflow');
-					if (wfs.length > 1)
-						DWRUtil.addOptions('workflow', [" "]);
+					DWRUtil.addOptions('workflow', [" "]);
 					DWRUtil.addOptions('workflow', wfs, 'id', 'name');
 					if (wfs.length > 0)
 						showDiv('workflow');
@@ -1116,23 +1115,22 @@
 			<a href="#" onClick="javascript:toggleLayer('_linkMenu')" style="border: 1px black solid"><spring:message code="Analysis.linkButton"/></a>
 		</c:if>
 		
-		<openmrs:extensionCount pointId="org.openmrs.cohortbuilder.links" var="howManyLinks"/>
-		<c:if test="${howManyLinks > 0}">
-			<br/>
-			<b>Module Links:</b>
-			<ul>
-			<openmrs:extensionPoint pointId="org.openmrs.cohortbuilder.links" type="html">
-				<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-					<form method="post" action="${pageContext.request.contextPath}/${extension.url}">
-						<input type="hidden" name="patientIds" value=""/>
-						<li>
-							<a href="#" onClick="javascript:submitLink(this)"><spring:message code="${extension.label}"/></a>
-						</li>
-					</form>
-				</openmrs:hasPrivilege>
-			</openmrs:extensionPoint>
-			</ul>
-		</c:if>
+		<openmrs:extensionPoint pointId="org.openmrs.cohortbuilder.links" type="html" varStatus="extStatus">
+			<c:if test="${extStatus.first}">
+				<br/>
+				<b>Module Links:</b>
+				<ul>
+			</c:if>
+			<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+				<form method="post" action="${pageContext.request.contextPath}/${extension.url}">
+					<input type="hidden" name="patientIds" value=""/>
+					<li>
+						<a href="#" onClick="javascript:submitLink(this)"><spring:message code="${extension.label}"/></a>
+					</li>
+				</form>
+			</openmrs:hasPrivilege>
+			<c:if test="${extStatus.last}"></ul></c:if>
+		</openmrs:extensionPoint>
 
 	</div>
 

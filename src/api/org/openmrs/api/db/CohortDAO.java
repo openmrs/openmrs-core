@@ -1,7 +1,6 @@
 package org.openmrs.api.db;
 
 import java.util.List;
-
 import org.openmrs.Cohort;
 
 public interface CohortDAO {

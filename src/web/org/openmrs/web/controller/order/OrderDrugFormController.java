@@ -79,9 +79,6 @@ public class OrderDrugFormController extends SimpleFormController {
 		String emptyOrderTypeList = this.getMessageSourceAccessor().getMessage("OrderType.list.empty");
 		refData.put("emptyOrderTypeList", emptyOrderTypeList);
 		
-		// put the default dateformat for the locale
-		refData.put("datePattern", OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()));
-		
 		return refData;
 	}
 
