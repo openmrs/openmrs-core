@@ -57,5 +57,8 @@
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-dev.jar" sourcepath="/openmrs-source/velocity-1.5.zip"/>
 	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5.jar"/>
 	<classpathentry kind="lib" path="lib/xstream/xstream-1.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/simple/simple-xml-1.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/stax/stax-1.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/stax/stax-api-1.0.1.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

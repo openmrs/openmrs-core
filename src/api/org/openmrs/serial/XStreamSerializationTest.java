@@ -1,5 +1,6 @@
 package org.openmrs.serial;
 
+import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -11,6 +12,9 @@ import org.openmrs.User;
 import org.openmrs.serial.converter.julie.JulieConverter;
 import org.openmrs.serial.converter.xstream.PersonAddressConverter;
 import org.openmrs.serial.converter.xstream.UserConverter;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.graph.CycleStrategy;
+import org.simpleframework.xml.load.Persister;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -32,6 +36,9 @@ public class XStreamSerializationTest {
         
         System.out.println("*** Julie's solution ***");
         System.out.println(test.serializeUsingJuliesCode(object));
+
+        System.out.println("*** Simple's solution ***");
+        System.out.println(test.serializeWithSimple(object));
     }
 
     private Object createObjectStructure() {
@@ -118,5 +125,17 @@ public class XStreamSerializationTest {
         ((JulieConverter)object).save(record, top);
         
         return record.toString();
+    }
+    
+    // Simple.sf.net
+    private String serializeWithSimple(Object object) throws Exception {
+        // CycleStrategy needed to handle cyclic references. Inserts id/refs all 
+        // over the place. Without it we'll run out of heapspace.
+        Serializer serializer = new Persister(new CycleStrategy());
+        
+        StringWriter writer = new StringWriter();
+        serializer.write(object, writer);
+        
+        return writer.toString();
     }
 }

@@ -15,6 +15,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.serial.Item;
 import org.openmrs.serial.Record;
 import org.openmrs.serial.converter.julie.JulieConverter;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.ElementList;
 
 /**
  * User in the system.  Both Patient and User inherit the methods of this class
@@ -30,6 +32,7 @@ public class Person implements java.io.Serializable, JulieConverter {
 
 	protected Integer personId;
 	
+	@ElementList
 	private Set<PersonAddress> addresses = null;
 	private Set<PersonName> names = null;
 	private Set<PersonAttribute> attributes = null;
@@ -37,6 +40,7 @@ public class Person implements java.io.Serializable, JulieConverter {
 	private String gender;
 	private Date birthdate;
 	private Boolean birthdateEstimated = false;
+	@Attribute
 	private Boolean dead = false;
 	private Date deathDate;
 	private Concept causeOfDeath;
@@ -45,6 +49,7 @@ public class Person implements java.io.Serializable, JulieConverter {
 	private Date dateCreated;
 	private User changedBy;
 	private Date dateChanged;
+	@Attribute(name="personvoided")
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;

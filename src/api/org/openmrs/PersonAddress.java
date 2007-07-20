@@ -5,6 +5,9 @@ import java.util.Date;
 import org.openmrs.serial.Item;
 import org.openmrs.serial.Record;
 import org.openmrs.serial.converter.julie.JulieConverter;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * PersonAddress 
@@ -12,6 +15,7 @@ import org.openmrs.serial.converter.julie.JulieConverter;
  * @author Ben Wolfe
  * @version 2.0
  */
+@Root
 public class PersonAddress implements java.io.Serializable, Cloneable, JulieConverter {
 
 	public static final long serialVersionUID = 343333L;
@@ -21,10 +25,14 @@ public class PersonAddress implements java.io.Serializable, Cloneable, JulieConv
 	private Integer personAddressId;
 	
 	private Person person;
+	@Attribute
 	private Boolean preferred = false;
 
+	@Element
 	private String address1;
+	@Element
 	private String address2;
+	@Element
 	private String cityVillage;
 	private String neighborhoodCell;
 	private String countyDistrict;
@@ -32,6 +40,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, JulieConv
 	private String region;
 	private String subregion;
 	private String stateProvince;
+	@Element
 	private String country;
 	private String postalCode;
 	
@@ -39,7 +48,9 @@ public class PersonAddress implements java.io.Serializable, Cloneable, JulieConv
 	private String longitude;
 	
 	private User creator;
+	@Attribute
 	private Date dateCreated;
+	@Attribute
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;

@@ -13,6 +13,9 @@ import org.openmrs.serial.Item;
 import org.openmrs.serial.Record;
 import org.openmrs.serial.converter.julie.JulieConverter;
 import org.openmrs.util.OpenmrsConstants;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * Defines a User in the system.  A user is simply an extension
@@ -24,6 +27,7 @@ import org.openmrs.util.OpenmrsConstants;
  * @author Ben Wolfe
  * @version 2.0
  */
+@Root
 public class User extends Person implements java.io.Serializable {
 
 	public static final long serialVersionUID = 4489L;
@@ -34,6 +38,7 @@ public class User extends Person implements java.io.Serializable {
 	private Integer userId;
 	
 	private String systemId;
+	@Element
 	private String username;
 	private String secretQuestion;
 	private Set<Role> roles;
@@ -42,9 +47,11 @@ public class User extends Person implements java.io.Serializable {
 	private User creator;
 	private Date dateCreated;
 	
+	@Element
 	private User changedBy;
 	private Date dateChanged;
 	
+	@Attribute
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;

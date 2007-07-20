@@ -57,7 +57,9 @@
 		<fileset dir="${log4j.dir}" includes="*.jar" />
 		<fileset dir="${mail.dir}" includes="*.jar" />
 		<!--<fileset dir="${quartz.dir}" includes="*.jar" />-->
+		<fileset dir="${simple.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
+		<fileset dir="${stax.dir}" includes="*.jar" />
 		<fileset dir="${velocity.dir}" includes="*.jar" />
     	<fileset dir="${xerces.dir}" includes="*.jar" />
     	<fileset dir="${xstream.dir}" includes="*.jar" />
@@ -84,7 +86,9 @@
     	<fileset dir="${jfreechart.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
 		<fileset dir="${neal-reporting.dir}" includes="*.jar" />
+		<fileset dir="${simple.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
+		<fileset dir="${stax.dir}" includes="*.jar" />
 		<fileset dir="${taglibs.dir}" includes="*.jar" />
 		<fileset dir="${tomcat.dir}" includes="*.jar" />
 		<fileset dir="${velocity.dir}" includes="*.jar" />

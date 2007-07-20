@@ -377,7 +377,9 @@
 			<lib dir="${neal-reporting.dir}" includes="*.jar" />
 			<!--<lib dir="${quartz.dir}" includes="*.jar" />-->
 			<lib dir="${saxon.dir}" includes="*.jar" />
+			<lib dir="${simple.dir}" includes="*.jar" />
 			<lib dir="${spring.dir}" includes="*.jar" />
+			<lib dir="${stax.dir}" includes="*.jar" />
 			<!--<lib dir="${struts.dir}" includes="*.jar" /> -->
 			<lib dir="${taglibs.dir}" includes="*.jar" />
 			<lib dir="${velocity.dir}" includes="*.jar" />
@@ -436,7 +438,9 @@
 			<zipfileset dir="${neal-reporting.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${quartz.dir}" includes="*.jar" />-->
 			<zipfileset dir="${saxon.dir}" includes="*.jar" />
+			<zipfileset dir="${simple.dir}" includes="*.jar" />
 			<zipfileset dir="${spring.dir}" includes="*.jar" />
+			<zipfileset dir="${stax.dir}" includes="*.jar" />
 			<!--<zipfileset dir="${struts.dir}" includes="*.jar" /> -->
 			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
