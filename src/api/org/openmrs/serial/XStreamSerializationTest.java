@@ -12,7 +12,6 @@ import org.openmrs.serial.converter.julie.JulieConverter;
 import org.openmrs.serial.converter.xstream.PersonAddressConverter;
 import org.openmrs.serial.converter.xstream.UserConverter;
 
-import com.ibatis.common.logging.Log;
 import com.thoughtworks.xstream.XStream;
 
 public class XStreamSerializationTest {

@@ -1,8 +1,11 @@
 package org.openmrs.serial;
 
-import java.util.HashMap;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Iterator;
-import java.io.*;
+import java.util.Map;
 
 /**
 * Represents a set of serialized objects with a disposition
@@ -29,10 +32,10 @@ public class FilePackage extends Package
             p.mkdirs();
         }
 
-		Iterator it = m_records.entrySet().iterator();
+		Iterator<Map.Entry<String, Record>> it = m_records.entrySet().iterator();
         while (it!=null && it.hasNext())
         {
-            java.util.Map.Entry me = (java.util.Map.Entry)it.next();
+            Map.Entry<String, Record> me = it.next();
             Record r = (Record)me.getValue();
 
             byte bits[] = r.toString().getBytes();

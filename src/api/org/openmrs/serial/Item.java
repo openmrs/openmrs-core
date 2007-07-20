@@ -1,16 +1,9 @@
 package org.openmrs.serial;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-import javax.xml.parsers.*;
-
-import org.xml.sax.*;
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 /* An container class to hide XML details
  * from the user

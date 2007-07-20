@@ -1,8 +1,6 @@
 package org.openmrs.serial;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.io.*;
 
 /**
 * Represents a set of serialized objects with a disposition
