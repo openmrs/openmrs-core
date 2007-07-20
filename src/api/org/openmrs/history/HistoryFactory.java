@@ -29,33 +29,34 @@ public class HistoryFactory
      */
     public static IHistory createHistory(Object theObject)
     {
-        Class theClass, theHistoryClass;
+        return createHistory(theObject, theObject.getClass());
+    }
+
+    /** Create a history object for theObject using the class provided
+     * as template 
+     */
+    public static IHistory createHistory(Object theObject, Class theClass)
+    {
+        Class theHistoryClass;
         String theName, theHistoryName;
         IHistory theHistory = null;
 
         // history objects follow a well known convention
         // which mirrors the db table naming
-        theName = theObject.getClass().getName();
+        theName = theClass.getName();
         theHistoryName = theName + _className;
 
         try {
-            theClass = Class.forName(theName);
             theHistoryClass = Class.forName(theHistoryName);
 
             // we expect an empty constructor
             theHistory = (IHistory)theHistoryClass.newInstance();
 
-            // for all the members of theObject, copy the values
-            // into the IHistory object (which is supposed
-            // to be a superset of theObject)
-            Field[] fields = theClass.getDeclaredFields();
-            for (int i = 0;  i < fields.length; i++)
+            for (Class aClass = theClass; aClass!=null; aClass = aClass.getSuperclass())
             {
-                // this works correctly ONLY when all the fields needed
-                // from theObject to properly create an IHistory object have get/set methods;
-                // local computed variables that require a other than get/set to be 
-                // populate will FAIL this 'clone' attempt
-                copyProperty(fields[i].getName(), (Object)theObject, (Object)theHistory);
+                log.debug("Fields from class " + aClass.getName());
+                System.out.println("Fields from class " + aClass.getName());
+                copyClassFields(aClass, theObject, theHistory);
             }
         } 
         catch (ClassNotFoundException ex) {
@@ -68,6 +69,23 @@ public class HistoryFactory
         }
 
         return theHistory;
+    }
+
+    // get the fields defined by theClass, copy from src->dest
+    private static void copyClassFields(Class theClass, Object src, Object dest)
+    {
+        // for all the members of theObject, copy the values
+        // into the IHistory object (which is supposed
+        // to be a superset of theObject)
+        Field[] fields = theClass.getDeclaredFields();
+        for (int i = 0;  i < fields.length; i++)
+        {
+            // this works correctly ONLY when all the fields needed
+            // from theObject to properly create an IHistory object have get/set methods;
+            // local computed variables that require a other than get/set to be 
+            // populate will FAIL this 'clone' attempt
+            copyProperty(fields[i].getName(), src, dest);
+        }
     }
         
     /** Use reflection to copy the value from the src object
@@ -99,6 +117,7 @@ public class HistoryFactory
                 method.invoke(dest, result);
 
                 log.debug("Copied property " + name);
+                System.out.println("Executed " + method.getName() + " data " + result);
             }
             // no setter is more disturbing than no getter
             catch (Exception e){

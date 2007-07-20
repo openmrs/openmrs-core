@@ -5,7 +5,10 @@ package org.openmrs.history;
 */
 public interface IHistory
 {
-    // test methods - this class is still just a stub!
-    public String getSomething();
-    public void setSomething(String s); 
+	public Integer getHistoryId();
+	public void setHistoryId(Integer id);
+    
+    // need methods to represent specific history
+    // data and also a way to deal with converting primary
+    // keys
 }

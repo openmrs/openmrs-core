@@ -22,15 +22,15 @@ class Original
 
 class OriginalHistory extends Original implements IHistory
 {
-    String something;
+	private Integer historyId = new Integer((int)System.currentTimeMillis());
 
-    public void setSomething(String s) {something=s;}
-    public String getSomething() {return something;}
+    public Integer getHistoryId() {return historyId;}
+    public void setHistoryId(Integer id) {historyId = id;}
 
     public String toString()
     {
         return ("OriginalHistory! says '" + getName() + " is " + getAge() 
-                + " and " + getSomething() + "'");
+                + " and " + getHistoryId() + "'");
     }
 }
 
@@ -45,7 +45,6 @@ public class test
 
         // IHistory
         OriginalHistory history = (OriginalHistory)HistoryFactory.createHistory(org);
-        history.setSomething("this is a test");
 
         System.out.println("Simple history created is " + history);
     }
