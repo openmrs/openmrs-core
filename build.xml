@@ -382,6 +382,7 @@
 			<lib dir="${taglibs.dir}" includes="*.jar" />
 			<lib dir="${velocity.dir}" includes="*.jar" />
 			<lib dir="${xerces.dir}" includes="*.jar" />
+			<lib dir="${xstream.dir}" includes="*.jar" />
 		</war>
 	</target>
 	
@@ -439,7 +440,8 @@
 			<!--<zipfileset dir="${struts.dir}" includes="*.jar" /> -->
 			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
-			<zipefileset dir="${xerces.dir}" includes="*.jar" />
+			<zipfileset dir="${xerces.dir}" includes="*.jar" />
+			<zipfileset dir="${xstream.dir}" includes="*.jar" />
 		</zip>
 	</target>
 	
