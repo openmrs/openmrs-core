@@ -56,5 +56,6 @@
 	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.1.jar" sourcepath="/openmrs-source/c3p0-0.9.1-pre9.zip"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-dev.jar" sourcepath="/openmrs-source/velocity-1.5.zip"/>
 	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5.jar"/>
+	<classpathentry kind="lib" path="lib/xstream/xstream-1.2.2.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

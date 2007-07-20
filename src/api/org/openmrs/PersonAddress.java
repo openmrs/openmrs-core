@@ -2,13 +2,17 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.serial.Item;
+import org.openmrs.serial.Record;
+import org.openmrs.serial.converter.julie.JulieConverter;
+
 /**
  * PersonAddress 
  * 
  * @author Ben Wolfe
  * @version 2.0
  */
-public class PersonAddress implements java.io.Serializable, Cloneable {
+public class PersonAddress implements java.io.Serializable, Cloneable, JulieConverter {
 
 	public static final long serialVersionUID = 343333L;
 
@@ -428,4 +432,29 @@ public class PersonAddress implements java.io.Serializable, Cloneable {
 	public void setTownshipDivision(String townshipDivision) {
 		this.townshipDivision = townshipDivision;
 	}
+
+    /**
+     * @see org.openmrs.serial.converter.julie.JulieConverter#load(org.openmrs.serial.Record, org.openmrs.serial.Item)
+     */
+    public void load(Record xml, Item me) throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /**
+     * @see org.openmrs.serial.converter.julie.JulieConverter#save(org.openmrs.serial.Record, org.openmrs.serial.Item)
+     */
+    public Item save(Record xml, Item parent) throws Exception {
+        Item me = xml.createItem(parent, "personaddress");
+        me.setAttribute("preferred", Boolean.toString(getPreferred()));
+        me.setAttribute("datecreated", getDateCreated().toString());
+        me.setAttribute("voided", Boolean.toString(getVoided()));
+        
+        xml.createText(xml.createItem(me, "address1"), getAddress1());
+        xml.createText(xml.createItem(me, "address2"), getAddress2());
+        xml.createText(xml.createItem(me, "cityvillage"), getCityVillage());
+        xml.createText(xml.createItem(me, "country"), getCountry());
+        
+        return me;
+    }
 }

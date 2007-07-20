@@ -12,6 +12,9 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.serial.Item;
+import org.openmrs.serial.Record;
+import org.openmrs.serial.converter.julie.JulieConverter;
 
 /**
  * User in the system.  Both Patient and User inherit the methods of this class
@@ -19,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Ben Wolfe
  * @version 2.0
  */
-public class Person implements java.io.Serializable {
+public class Person implements java.io.Serializable, JulieConverter {
 
 	public static final Log log = LogFactory.getLog(Person.class);
 	
@@ -656,5 +659,32 @@ public class Person implements java.io.Serializable {
 	public String toString() {
 		return "Person(personId=" + personId + ")";
 	}
+
+    /**
+     * @see org.openmrs.serial.converter.julie.JulieConverter#load(org.openmrs.serial.Record, org.openmrs.serial.Item)
+     */
+    public void load(Record xml, Item me) throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /**
+     * @see org.openmrs.serial.converter.julie.JulieConverter#save(org.openmrs.serial.Record, org.openmrs.serial.Item)
+     */
+    public Item save(Record xml, Item parent) throws Exception {
+        Item me = xml.createItem(parent, "person");
+        me.setAttribute("personvoided", Boolean.toString(getVoided()));
+        me.setAttribute("dead", Boolean.toString(getDead()));
+        
+        // could be moved to parent in stead
+        Item birthdateItem = xml.createItem(me, "birthdate");
+        xml.createText(birthdateItem, getBirthdate().toString());
+        birthdateItem.setAttribute("birthdateestimated", Boolean.toString(getBirthdateEstimated()));
+        
+        // Doesn't handle circular references
+        //getChangedBy().save(xml, me);
+        
+        return me;
+    }
 
 }

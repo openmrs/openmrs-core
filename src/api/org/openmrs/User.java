@@ -9,6 +9,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.serial.Item;
+import org.openmrs.serial.Record;
+import org.openmrs.serial.converter.julie.JulieConverter;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -505,4 +508,29 @@ public class User extends Person implements java.io.Serializable {
 	public String getLastName() {
 		return getFamilyName();
 	}
+
+    /**
+     * @see org.openmrs.serial.converter.julie.JulieConverter#load(org.openmrs.serial.Record, org.openmrs.serial.Item)
+     */
+    public void load(Record xml, Item me) throws Exception {
+        // TODO Auto-generated method stub
+    }
+
+    /**
+     * @see org.openmrs.serial.converter.julie.JulieConverter#save(org.openmrs.serial.Record, org.openmrs.serial.Item)
+     */
+    public Item save(Record xml, Item parent) throws Exception {
+        Item me = super.save(xml, parent);
+        me.setAttribute("uservoided", Boolean.toString(getVoided()));
+        xml.createText(xml.createItem(me, "username"), getUsername());
+        
+        // loop through addresses
+        Item address = xml.createItem(me, "addresses");
+        Iterator addressIterator = getAddresses().iterator();
+        while (addressIterator.hasNext()) {
+            ((JulieConverter)addressIterator.next()).save(xml, address);
+        }
+        
+        return me;
+    }
 }
