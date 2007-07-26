@@ -50,6 +50,12 @@ public class PersonAddressConverter implements Converter {
     @SuppressWarnings("unchecked")
     public boolean canConvert(Class clazz) {
         return clazz.equals(PersonAddress.class);
+//        clazz.asSubclass(clazz);
+//        clazz.getDeclaringClass();
+//        clazz.getEnclosingClass();
+//        clazz.getGenericSuperclass();
+//        clazz.getSuperclass();
+//        clazz.isAssignableFrom(cls);
     }
 
 }

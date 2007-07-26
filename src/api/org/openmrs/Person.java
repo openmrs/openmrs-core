@@ -682,9 +682,11 @@ public class Person implements java.io.Serializable, JulieConverter {
         me.setAttribute("dead", Boolean.toString(getDead()));
         
         // could be moved to parent in stead
-        Item birthdateItem = xml.createItem(me, "birthdate");
-        xml.createText(birthdateItem, getBirthdate().toString());
-        birthdateItem.setAttribute("birthdateestimated", Boolean.toString(getBirthdateEstimated()));
+        if (getBirthdate() != null) {
+            Item birthdateItem = xml.createItem(me, "birthdate");
+            xml.createText(birthdateItem, getBirthdate().toString());
+            birthdateItem.setAttribute("birthdateestimated", Boolean.toString(getBirthdateEstimated()));
+        }
         
         // Doesn't handle circular references
         //getChangedBy().save(xml, me);

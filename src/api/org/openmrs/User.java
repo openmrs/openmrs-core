@@ -47,7 +47,7 @@ public class User extends Person implements java.io.Serializable {
 	private User creator;
 	private Date dateCreated;
 	
-	@Element
+	@Element(required=false)
 	private User changedBy;
 	private Date dateChanged;
 	
@@ -107,8 +107,8 @@ public class User extends Person implements java.io.Serializable {
 		
 		Role role;
 		
-		for (Iterator i = tmproles.iterator(); i.hasNext();) {
-			role = (Role) i.next();
+		for (Iterator<Role> i = tmproles.iterator(); i.hasNext();) {
+			role = i.next();
 		
 			if (role.hasPrivilege(privilege))
 				return true;
@@ -147,8 +147,8 @@ public class User extends Person implements java.io.Serializable {
 		Set<Role> tmproles = getAllRoles();
 
 		Role role;
-		for (Iterator i = tmproles.iterator(); i.hasNext();) {
-			role = (Role) i.next();
+		for (Iterator<Role> i = tmproles.iterator(); i.hasNext();) {
+			role = i.next();
 			Collection<Privilege> privs = role.getPrivileges();
 			if (privs != null)
 				privileges.addAll(privs);
@@ -528,12 +528,12 @@ public class User extends Person implements java.io.Serializable {
      */
     public Item save(Record xml, Item parent) throws Exception {
         Item me = super.save(xml, parent);
-        me.setAttribute("uservoided", Boolean.toString(getVoided()));
-        xml.createText(xml.createItem(me, "username"), getUsername());
+        parent.setAttribute("uservoided", Boolean.toString(getVoided()));
+        xml.createText(xml.createItem(parent, "username"), getUsername());
         
         // loop through addresses
         Item address = xml.createItem(me, "addresses");
-        Iterator addressIterator = getAddresses().iterator();
+        Iterator<PersonAddress> addressIterator = getAddresses().iterator();
         while (addressIterator.hasNext()) {
             ((JulieConverter)addressIterator.next()).save(xml, address);
         }

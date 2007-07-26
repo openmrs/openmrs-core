@@ -1,5 +1,8 @@
 package org.openmrs.serial.converter.xstream;
 
+import java.util.Iterator;
+
+import org.openmrs.PersonAddress;
 import org.openmrs.User;
 
 import com.thoughtworks.xstream.converters.Converter;
@@ -19,25 +22,40 @@ public class UserConverter implements Converter {
         // NOTE: User has one voided, it's "parent class" Person has another with 
         // the same name that can't be reached without reflection. They might differ 
         // since a Person can be voided and/or a User (same goes for Patient)
-        writer.addAttribute("voided", Boolean.toString(user.getVoided()));
-        writer.addAttribute("dead", Boolean.toString(user.getDead()));
+        if (user.getVoided() != null)
+            writer.addAttribute("voided", Boolean.toString(user.getVoided()));
+        
+        if (user.getDead() != null)
+            writer.addAttribute("dead", Boolean.toString(user.getDead()));
         
         writer.startNode("username");
         writer.setValue(user.getUsername());
         writer.endNode();
         
-        writer.startNode("changedby");
-        context.convertAnother(user.getChangedBy());
-        writer.endNode();
+        if (user.getChangedBy() != null) {
+            writer.startNode("changedby");
+            context.convertAnother(user.getChangedBy());
+            writer.endNode();
+        }
         
-        writer.startNode("addresses");
-        context.convertAnother(user.getAddresses());
-        writer.endNode();
+        if (user.getAddresses() != null) {
+            writer.startNode("addresses");
+            Iterator<PersonAddress> addresses = user.getAddresses().iterator();
+            while (addresses.hasNext()) {
+                writer.startNode("personaddress");
+                context.convertAnother(addresses.next());
+                writer.endNode();
+            }
+            writer.endNode();
+        }
         
-        writer.startNode("birthdate");
-        writer.addAttribute("estimated", Boolean.toString(user.getBirthdateEstimated()));
-        writer.setValue(user.getBirthdate().toString());
-        writer.endNode();
+        if (user.getBirthdate() != null) {
+            writer.startNode("birthdate");
+            if (user.getBirthdateEstimated() != null)
+                writer.addAttribute("estimated", Boolean.toString(user.getBirthdateEstimated()));
+            writer.setValue(user.getBirthdate().toString());
+            writer.endNode();
+        }
     }
 
     /**
