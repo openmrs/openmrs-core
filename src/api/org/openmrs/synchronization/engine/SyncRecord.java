@@ -22,11 +22,11 @@ public interface SyncRecord {
     //sync state:
     //PENDING-SEND - sync record is being sent to target sync source however it's
     // transmission to the target sync source has not been confirmed
-    //SENT - the record has been successful trasmitted to the target source, note it may not
+    //SENT - the record has been successful transmitted to the target source, note it may not
     //yet be committed
     //SEND_FAILED: attempted send failed
     //PENDING_COMMIT: record is being committed at parent; outcome not yet known
-    //COMMITTED: the record was successfuly committed at target source
+    //COMMITTED: the record was successfully committed at target source
     //COMMIT_FAILED: attempted commit of the record failed
     //FAILED: the record reached the final failed state: no more retries will be attempted
     public enum SyncRecordState {
@@ -48,7 +48,7 @@ public interface SyncRecord {
     
     //retry count
     public int getRetryCount();
-   public void setState(int retry);        
+    public void setState(int retry);        
         
     //state
     public SyncRecordState getState();

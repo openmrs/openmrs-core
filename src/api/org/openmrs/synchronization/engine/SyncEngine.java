@@ -40,7 +40,7 @@ public class SyncEngine {
      * 1. retrieve local changes since 'p'; note 'p' must be a SyncPoint in terms of the 
      * local sequencing scheme 
      * 2. Add results of above to the pending records queue
-     * 3. return all records in the pending recrods queue
+     * 3. return all records in the pending records queue
      * 
      * usage: used by parent: needed for 'pull' from parent since child stores last_sync_remote -- 
      * the last time the child sync-ed from parent; see SyncSource.getLastSyncRemote().
@@ -49,14 +49,13 @@ public class SyncEngine {
      * 
      * @return
      */
-    public List<SyncRecord> getLocalChangesSince(SyncPoint p) {
+    public List<SyncRecord> getLocalChangesSince(SyncPoint<?> p) {
         List<SyncRecord> records = new ArrayList<SyncRecord> ();
         
         //TODO
         
         return records;
     }
-    
     
     /**
      * 

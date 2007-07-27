@@ -13,7 +13,6 @@ public class SyncItemImpl implements Serializable, SyncItem {
     
     public static final long serialVersionUID = 0L;
     public Log log = LogFactory.getLog(this.getClass());
-    
 
     // Fields
     protected SyncItemKey key = null;
@@ -28,38 +27,43 @@ public class SyncItemImpl implements Serializable, SyncItem {
     public SyncItemKey getKey() {
         return this.key;
     }
+    
     public void setKey(SyncItemKey newKey) {
         this.key = newKey;
     }
+    
     public SyncItemState getState(){
         return state;
     }
+    
     public void setState(SyncItemState newState){
         this.state = newState;
     }
+    
     public String getContent(){
         return content;
     }
+    
     public void setContent(String newContent){
         this.content = newContent;
     }
+    
     public byte[] getByteContent(){
         return byteContent;
     }
+    
     public void setByteContent(byte[] newContent){
         this.byteContent = newContent;
     }
-
   
-   public boolean equals(Object o) {
-       if (!(o instanceof SyncItem)) return false;
+    public boolean equals(Object o) {
+        if (!(o instanceof SyncItem))
+            return false;
 
-       return ((SyncItem)o).getKey().equals(key);
-   }
+        return ((SyncItem) o).getKey().equals(key);
+    }
 
-
-   public int hashCode() {
-       return getKey().hashCode();
-   }
-
+    public int hashCode() {
+        return getKey().hashCode();
+    }
 }

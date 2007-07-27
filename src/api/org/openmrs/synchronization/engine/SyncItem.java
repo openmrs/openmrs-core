@@ -11,7 +11,6 @@ public interface SyncItem {
     public SyncItemKey getKey();
     public void setKey(SyncItemKey key);
 
-
     public SyncItemState getState();
     public void setState(SyncItemState state);
  

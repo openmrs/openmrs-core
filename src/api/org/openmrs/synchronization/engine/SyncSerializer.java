@@ -9,7 +9,6 @@ import java.io.IOException;
 
 /**
  * Stub to be replaced by real serializer.
-
  */
 public class SyncSerializer {
 

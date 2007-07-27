@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
  * This class represents a unique identifier of a <i>SyncItem</i> item in a repository.
  *
  */
-public class SyncItemKey implements Comparable , Serializable {
+public class SyncItemKey implements Comparable<SyncItemKey>, Serializable {
     
     public static final long serialVersionUID = 0L;
     public Log log = LogFactory.getLog(this.getClass());
@@ -27,11 +27,11 @@ public class SyncItemKey implements Comparable , Serializable {
     public Object getKeyValue(){
         return keyValue;
     }
+    
     public void setKeyValue(Object keyValue){
         assert (keyValue != null);
         this.keyValue = keyValue;
     }
-
 
     // Methods
     public String getKeyAsString() {
@@ -43,16 +43,11 @@ public class SyncItemKey implements Comparable , Serializable {
         return ((SyncItemKey)o).getKeyAsString().equals(getKeyAsString());
     }
 
-    public int compareTo(Object o) {
-
-        if (!(o instanceof SyncItemKey)) {
-            throw new ClassCastException("A SyncItemKey object expected.");
-        }
-        SyncItemKey otherKey = (SyncItemKey)o;
-
+    public int compareTo(SyncItemKey otherKey) {
         if (keyValue != null && otherKey.getKeyValue() != null) {
             return keyValue.toString().compareTo(otherKey.getKeyValue().toString());
         }
+        
         if (keyValue == null && otherKey.getKeyValue() == null) {
             return 0;
         }
