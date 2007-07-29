@@ -79,7 +79,7 @@ public class SyncRecord implements Serializable {
         return retryCount;
     }
     
-    public void setState(int retryCount) {
+    public void setRetryCount(int retryCount) {
         this.retryCount = retryCount;        
     }
         
