@@ -1,24 +1,70 @@
 package org.openmrs.synchronization.engine;
 
+import java.io.Serializable;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Atomic unit of the sync process.
  *
  */
-public interface SyncItem {
+public class SyncItem implements Serializable {
 
-    public enum SyncItemState {NEW, UPDATED, DELETED, SYNCHRONIZED, UNKNOWN, CONFLICT};
+    public static final long serialVersionUID = 0L;
+    public Log log = LogFactory.getLog(this.getClass());
+
+    public enum SyncItemState {
+        NEW, 
+        UPDATED, 
+        DELETED, 
+        SYNCHRONIZED, 
+        UNKNOWN, 
+        CONFLICT
+    };
  
-    public SyncItemKey getKey();
-    public void setKey(SyncItemKey key);
+    // Fields
+    private SyncItemKey key = null;
+    private SyncItemState state = SyncItemState.UNKNOWN;
+    private String content = null;
+    
+    // Properties
+    public SyncItemKey getKey() {
+        return key;
+    }
+    
+    public void setKey(SyncItemKey key) {
+        this.key = key;
+    }
 
-    public SyncItemState getState();
-    public void setState(SyncItemState state);
+    public SyncItemState getState() {
+        return state;
+    }
+    
+    public void setState(SyncItemState state) {
+        this.state = state;
+    }
  
-    public String getContent();
-    public void setContent(String content);
+    public String getContent() {
+        return content;
+    }
+    
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-    //temp - get rid of this when we have real serializer
-    public byte[] getByteContent();
-    public void setByteContent(byte[] content);
+    // Methods
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof SyncItem))
+            return false;
+
+        return ((SyncItem) o).getKey().equals(key);
+    }
+
+    @Override
+    public int hashCode() {
+        return getKey().hashCode();
+    }
 
 }

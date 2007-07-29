@@ -15,7 +15,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.AdministrationService; 
 
 /**
- * SyncSource to sync openmrs tables based on last_changed_local.
+ * SyncSource to sync OpenMRS tables based on last_changed_local.
  */
 public class NoHistorySyncSource implements SyncSource {
 
@@ -51,7 +51,7 @@ public class NoHistorySyncSource implements SyncSource {
         return;
     }
     
-    //gets the 'next' syncpoint: in case of sequence implementation, just call: getnextval();
+    //gets the 'next' SyncPoint: in case of sequence implementation, just call: getnextval();
     //for timestamp, just do get current()
     public SyncPoint<Long> moveSyncPoint() {
         
@@ -91,9 +91,9 @@ public class NoHistorySyncSource implements SyncSource {
             
             //serialize into syncItems
             for(Patient p: patients) {
-                SyncItem item = new SyncItemImpl();
+                SyncItem item = new SyncItem();
                 item.setKey(new SyncItemKey(p.getGuid()));
-                item.setByteContent(SyncSerializer.Serialize(p));
+                //item.setByteContent(SyncSerializer.Serialize(p)); //FIXME: item.setContent("");
                 item.setState(SyncItem.SyncItemState.UPDATED);
                 changed.add(item);
             }
