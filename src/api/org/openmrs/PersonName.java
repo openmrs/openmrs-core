@@ -39,6 +39,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	private String voidReason;
 	private User changedBy;
 	private Date dateChanged;
+    private String guid;
 
 	// Constructors
 
@@ -460,4 +461,13 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNameSuffix(), other.getFamilyNameSuffix());
 		return ret;
 	}
+    
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String value) {
+        this.guid = value;
+    }
+    
 }

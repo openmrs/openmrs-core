@@ -25,6 +25,7 @@ public class PatientIdentifier implements java.io.Serializable {
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
+    private String guid;
 
 	/** default constructor */
 	public PatientIdentifier() {
@@ -254,4 +255,13 @@ public class PatientIdentifier implements java.io.Serializable {
 	public Boolean isPreferred() {
 		return preferred;
 	}
+    
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String value) {
+        this.guid = value;
+    }
+    
 }

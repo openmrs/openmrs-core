@@ -22,6 +22,8 @@ public class PersonAttributeType implements java.io.Serializable {
 	
 	private User changedBy;
 	private Date dateChanged;
+    
+    private String guid;
 
 	/** default constructor */
 	public PersonAttributeType() {}
@@ -203,5 +205,13 @@ public class PersonAttributeType implements java.io.Serializable {
 	public String toString() {
 		return this.name;
 	}
-	
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String value) {
+        this.guid = value;
+    }
+    
 }

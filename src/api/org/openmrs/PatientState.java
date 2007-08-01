@@ -22,6 +22,7 @@ public class PatientState {
 	private User voidedBy;
 	private Date dateVoided; 
 	private String voidReason;
+    private String guid;
 	
 	public PatientState() { }
 
@@ -138,5 +139,13 @@ public class PatientState {
 			onDate = new Date();
 		return (startDate == null || OpenmrsUtil.compare(startDate, onDate) <= 0) && (endDate == null || OpenmrsUtil.compare(endDate, onDate) > 0);
 	}
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String value) {
+        this.guid = value;
+    }
 	
 }

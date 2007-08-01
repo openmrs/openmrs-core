@@ -55,6 +55,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, JulieConv
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
+    private String guid;
 	
 	// Constructors
 
@@ -468,4 +469,13 @@ public class PersonAddress implements java.io.Serializable, Cloneable, JulieConv
         
         return me;
     }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String value) {
+        this.guid = value;
+    }
+    
 }

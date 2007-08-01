@@ -28,6 +28,7 @@ public class PatientProgram {
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
+    private String guid;
 	
 	public PatientProgram() {
 		states = new HashSet<PatientState>();
@@ -193,5 +194,13 @@ public class PatientProgram {
 			});
 		return ret;
 	}
-	
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String value) {
+        this.guid = value;
+    }
+    
 }

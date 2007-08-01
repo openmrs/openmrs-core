@@ -20,6 +20,7 @@ public class PatientIdentifierType implements java.io.Serializable {
 	private String description;
 	private Date dateCreated;
 	private User creator;
+    private String guid;
 
 	/** default constructor */
 	public PatientIdentifierType() {
@@ -188,5 +189,13 @@ public class PatientIdentifierType implements java.io.Serializable {
 	public void setCheckDigit(Boolean checkDigit) {
 		this.checkDigit = checkDigit;
 	}
-	
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String value) {
+        this.guid = value;
+    }
+       
 }

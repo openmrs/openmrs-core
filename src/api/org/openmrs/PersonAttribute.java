@@ -35,6 +35,7 @@ public class PersonAttribute implements java.io.Serializable {
 	private Boolean voided = false;
 	private Date dateVoided;
 	private String voidReason;
+    private String guid;
 
 	/** default constructor */
 	public PersonAttribute() {
@@ -291,4 +292,13 @@ public class PersonAttribute implements java.io.Serializable {
 		setVoidedBy(Context.getAuthenticatedUser());
 		setVoidReason(reason);
 	}
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String value) {
+        this.guid = value;
+    }
+    
 }

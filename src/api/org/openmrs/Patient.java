@@ -39,6 +39,7 @@ public class Patient extends Person implements java.io.Serializable {
 	private User voidedBy;
 	private Date dateVoided; 
 	private String voidReason;
+    private String guid;
 	
 
 	// Constructors
@@ -331,4 +332,13 @@ public class Patient extends Person implements java.io.Serializable {
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String value) {
+        this.guid = value;
+    }
+
 }

@@ -54,6 +54,7 @@ public class Person implements java.io.Serializable, JulieConverter {
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
+    private String guid;
 	
 	// convenience map
 	Map<String, PersonAttribute> attributeMap = null;
@@ -692,6 +693,14 @@ public class Person implements java.io.Serializable, JulieConverter {
         //getChangedBy().save(xml, me);
         
         return me;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String value) {
+        this.guid = value;
     }
 
 }
