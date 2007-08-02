@@ -69,10 +69,9 @@ CREATE PROCEDURE add_guids ()
 //
 
 delimiter ;
-
+call add_guids();
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------
-
-#DROP PROCEDURE IF EXISTS add_guids;
+DROP PROCEDURE IF EXISTS add_guids;
