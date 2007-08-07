@@ -47,7 +47,7 @@ CREATE PROCEDURE add_guids ()
 				DEALLOCATE PREPARE stmt;
 				
 				#prepare stmt to populate added column
-				select concat('Populating  ',table_name) from dual;
+				select concat('Populating ',table_name) from dual;
 				SET @sql_text := concat('UPDATE `',table_name,'` SET guid = UUID() WHERE guid is null;');
 				PREPARE stmt from @sql_text;
 				EXECUTE stmt;
