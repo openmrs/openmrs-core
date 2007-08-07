@@ -30,6 +30,11 @@ import org.simpleframework.xml.Root;
 @Root
 public class User extends Person implements java.io.Serializable {
 
+    private String guid;
+
+    public String getGUID() {return guid;}
+    public void setGUID(String s){guid=s;}
+
 	public static final long serialVersionUID = 4489L;
 	public Log log = LogFactory.getLog(getClass());
 

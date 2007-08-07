@@ -114,9 +114,7 @@ public class HibernateContextDAO implements ContextDAO {
 			user = candidateUser;
 
 		if (user == null) {
-			log
-					.info("Failed login attempt (login=" + login + ") - "
-							+ errorMsg);
+			log.info("Failed login attempt (login=" + login + ") - " + errorMsg);
 			throw new ContextAuthenticationException(errorMsg);
 		}
 

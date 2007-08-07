@@ -8,6 +8,11 @@ package org.openmrs;
  */
 public class Tribe implements java.io.Serializable {
 
+    private String guid;
+
+    public String getGuid() {return guid;}
+    public void setGuid(String s){guid=s;}
+
 	public static final long serialVersionUID = 113232L;
 
 	// Fields

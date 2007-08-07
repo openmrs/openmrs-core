@@ -12,6 +12,9 @@
 		<property name="patientId" type="int" not-null="true"
 			column="patient_id" update="false" insert="false" />
 
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
 		<many-to-one name="tribe" class="Tribe" />
 
 		<many-to-one name="creator" class="User" lazy="no-proxy" />

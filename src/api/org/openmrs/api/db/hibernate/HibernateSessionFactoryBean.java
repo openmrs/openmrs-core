@@ -20,8 +20,9 @@ import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
-public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
-	
+
+public class HibernateSessionFactoryBean extends LocalSessionFactoryBean 
+{	
 	private static Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
 	
 	protected Set<String> tmpMappingResources = new HashSet<String>(); 
@@ -43,7 +44,8 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		
 		// load in the default hibernate properties
 		try {
-			InputStream propertyStream = ConfigHelper.getResourceAsStream("/hibernate.default.properties");
+			InputStream propertyStream = 
+                ConfigHelper.getResourceAsStream("/hibernate.default.properties");
 			Properties props = new Properties();
 			props.load(propertyStream);
 			propertyStream.close();
@@ -62,9 +64,14 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		String password = config.getProperty("hibernate.connection.password");
 		String url = config.getProperty("hibernate.connection.url");
 		int check = checkDatabaseConnection(driver, username, password, url);
+
+        HibernateInterceptor intercept = new HibernateInterceptor();
+        config.setInterceptor(intercept);
 		
 		if (check == 0)
+        {
 			return config.buildSessionFactory();
+        }
 		else
 			throw new APIException("Error connecting to database. See error log for details.");
 		

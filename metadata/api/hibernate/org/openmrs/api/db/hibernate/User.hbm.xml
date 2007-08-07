@@ -9,6 +9,9 @@
 
 		<key column="user_id" not-null="true" on-delete="cascade" />
 		
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
 		<property name="userId" type="int" not-null="true" access="field"
 			column="user_id" update="false" insert="false" />
 		
