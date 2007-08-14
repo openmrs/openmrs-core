@@ -1,11 +1,9 @@
 #--------------------------------------
-# USE:
-# part of synchronization branch model updates: add table for Synchronization records
+# Anders Gjendem 14 Aug 2007 9:00PM
+# Add table for Synchronization Journal
 #--------------------------------------
 
-#--------------------------------------
-# Anders Gjendem 14 Aug 2007 10:00AM
-#--------------------------------------
+DROP TABLE IF EXISTS synchronization_journal;
 
 CREATE TABLE `synchronization_journal` (
   `guid` char(36) NOT NULL,
@@ -14,9 +12,4 @@ CREATE TABLE `synchronization_journal` (
   `state` varchar(20) default NULL,
   `payload` longtext,
   PRIMARY KEY  (`guid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8
-
-#-----------------------------------
-# Clean up - Keep this section at the very bottom of diff script
-#-----------------------------------
-DROP TABLE IF EXISTS synchronization;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8

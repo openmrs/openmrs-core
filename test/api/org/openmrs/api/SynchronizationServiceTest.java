@@ -124,8 +124,6 @@ public class SynchronizationServiceTest extends BaseTest {
         }
 
         // Clean up
-        // FIXME: delete does NOT work correctly in the unit tests, but seems to
-        // work in real use. Why?
         syncService.deleteSyncRecord(syncService.getSyncRecord(guid));
 
         // Check that it's gone
