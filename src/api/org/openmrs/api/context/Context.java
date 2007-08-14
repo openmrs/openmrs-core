@@ -28,6 +28,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.arden.ArdenService;
@@ -264,6 +265,13 @@ public class Context implements ApplicationContextAware {
 	 */
 	public static PersonService getPersonService() {
 		return getServiceContext().getPersonService();
+	}
+	
+	/**
+	 * @return Synchronization related services
+	 */
+	public static SynchronizationService getSynchronizationService() {
+	    return getServiceContext().getSynchronizationService();
 	}
 	
 	/**

@@ -58,6 +58,7 @@
         <property name="hl7Service"><ref bean="hL7Service"/></property>
         <property name="ardenService"><ref bean="ardenService"/></property>
         <property name="logicService"><ref bean="logicService"/></property>
+        <property name="synchronizationService"><ref bean="synchronizationService"/></property>
 	</bean>	
 	
 	<bean id="context" class="org.openmrs.api.context.Context">
@@ -113,7 +114,9 @@
 	<bean id="cohortDAO" class="org.openmrs.api.db.hibernate.HibernateCohortDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
-	
+	<bean id="synchronizationDAO" class="org.openmrs.api.db.hibernate.HibernateSynchronizationDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+	</bean>	
 	
 	<bean id="schedulerDAO" class="org.openmrs.scheduler.db.hibernate.HibernateSchedulerDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
@@ -171,6 +174,9 @@
 	</bean>
 	<bean id="cohortServiceTarget" class="org.openmrs.api.impl.CohortServiceImpl">
 		<property name="cohortDAO"><ref bean="cohortDAO"/></property>
+	</bean>
+	<bean id="synchronizationServiceTarget" class="org.openmrs.api.impl.SynchronizationServiceImpl">
+		<property name="synchronizationDAO"><ref bean="synchronizationDAO"/></property>
 	</bean>
 	
 	<bean id="schedulerServiceTarget" class="org.openmrs.scheduler.timer.TimerSchedulerService">
@@ -353,7 +359,18 @@
 			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
 		</property>
 	</bean>
-	
+	<bean id="synchronizationService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="synchronizationServiceTarget"/></property>
+		<property name="preInterceptors">
+			<list>
+				<ref local="authorizationInterceptor"/>
+			</list>
+		</property>
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		</property>
+	</bean>
 	
 	<bean id="schedulerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>

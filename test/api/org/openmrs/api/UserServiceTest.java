@@ -59,7 +59,7 @@ public class UserServiceTest extends BaseTest {
 		role2.setDescription("testing2");
 		role2.setRole("test2");
 		Privilege p2 = us.getPrivileges().get(1);
-		Set privileges2 = new HashSet();
+		Set<Privilege> privileges2 = new HashSet<Privilege>();
 		privileges2.add(p2);
 		role2.setPrivileges(privileges2);
 		

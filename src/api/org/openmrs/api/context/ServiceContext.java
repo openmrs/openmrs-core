@@ -19,6 +19,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.UserService;
 import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
@@ -370,6 +371,20 @@ public class ServiceContext {
 	 */
 	public void setUserService(UserService userService) {
 		setService(UserService.class, userService);
+	}
+	
+	/**
+	 * @return synchronization related services 
+	 */
+	public SynchronizationService getSynchronizationService() {
+	    return (SynchronizationService)getService(SynchronizationService.class);
+	}
+	
+	/**
+	 * @param synchronizationService the synchronizationService to set
+	 */
+	public void setSynchronizationService(SynchronizationService synchronizationService) {
+	    setService(SynchronizationService.class, synchronizationService);
 	}
 	
 	/**

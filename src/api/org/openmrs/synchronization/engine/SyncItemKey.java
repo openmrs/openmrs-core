@@ -39,7 +39,7 @@ public class SyncItemKey<T> implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof SyncItemKey)) return false;
-        return ((SyncItemKey)o).getKeyValue().equals(getKeyValue());
+        return ((SyncItemKey<?>)o).getKeyValue().equals(getKeyValue());
     }
     
     @Override
