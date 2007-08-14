@@ -5,9 +5,10 @@
 
 <hibernate-mapping package="org.openmrs.synchronization.engine">
 
-	<class name="SyncRecord" table="synchronization">
+	<class name="SyncRecord" table="synchronization_journal">
 
-    <id name="guid" type="java.lang.String" column="guid">
+    <id name="guid" type="java.lang.String" 
+      column="guid" length="36">
       <generator class="assigned" />
     </id>
     
