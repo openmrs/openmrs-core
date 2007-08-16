@@ -68,15 +68,14 @@ public class SynchronizationServiceImpl implements SynchronizationService {
      * @see org.openmrs.api.SynchronizationService#deleteSyncRecord(org.openmrs.synchronization.engine.SyncRecord)
      */
     public void deleteSyncRecord(SyncRecord record) throws APIException {
-        System.out.println("*** Calling Service impl: delete: " + record.getGuid());
         getSynchronizationDAO().deleteSyncRecord(record);
     }
 
     /**
      * @see org.openmrs.api.SynchronizationService#getSyncRecordsSince(java.util.Date)
      */
-    public List<SyncRecord> getSyncRecordsSince(Date timestamp) throws APIException {
-        return getSynchronizationDAO().getSyncRecordsSince(timestamp);
+    public List<SyncRecord> getSyncRecordsSince(Date from) throws APIException {
+        return getSynchronizationDAO().getSyncRecordsSince(from);
     }
 
     /**

@@ -55,7 +55,6 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
      * @see org.openmrs.api.db.SynchronizationDAO#deleteSyncRecord(org.openmrs.synchronization.engine.SyncRecord)
      */
     public void deleteSyncRecord(SyncRecord record) throws DAOException {
-        System.out.println("*** Calling Dao impl: delete: " + record.getGuid());
         sessionFactory.getCurrentSession().delete(record);
     }
     
@@ -110,10 +109,10 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
      * @see org.openmrs.api.db.SynchronizationDAO#getSyncRecordsSince(java.util.Date)
      */
     @SuppressWarnings("unchecked")
-    public List<SyncRecord> getSyncRecordsSince(Date timestamp) throws DAOException {
+    public List<SyncRecord> getSyncRecordsSince(Date from) throws DAOException {
         return sessionFactory.getCurrentSession()
             .createCriteria(SyncRecord.class)
-            .add(Restrictions.gt("timestamp", timestamp))
+            .add(Restrictions.gt("timestamp", from)) // greater than
             .list();
     }
 
