@@ -17,7 +17,7 @@ import org.openmrs.synchronization.engine.SyncItem.SyncItemState;
 
 public class SynchronizationServiceTest extends BaseTest {
 
-    protected SynchronizationService syncService = Context.getSynchronizationService();
+    protected SynchronizationService syncService = null;
 
     @Override
     protected void onSetUpBeforeTransaction() throws Exception {
@@ -28,6 +28,7 @@ public class SynchronizationServiceTest extends BaseTest {
     public void testSynchronizationService() throws Exception {
         assertTrue(Context.isAuthenticated());
 
+        syncService = Context.getSynchronizationService();
         int numberOfSyncRecords = syncService.getSyncRecords().size();
 
         Calendar calendar = new GregorianCalendar();
@@ -133,6 +134,7 @@ public class SynchronizationServiceTest extends BaseTest {
     public void testSynchronizationGetFirstAndBetween() throws Exception {
         assertTrue(Context.isAuthenticated());
 
+        syncService = Context.getSynchronizationService();
         Calendar calendar = new GregorianCalendar();
 
         // Create records
