@@ -186,6 +186,10 @@ public class SynchronizationServiceTest extends BaseTest {
         record5.setState(SyncRecordState.COMMITTED);
         record5.setTimestamp(calendar.getTime());
 
+        // fetch some counts before we add new junit test data
+        int numberOfRecordsMatchingBeforeTest = syncService.getSyncRecordsSince(record1.getTimestamp()).size();
+        int numberOfRecordsBetweenBeforeTest = syncService.getSyncRecordsBetween(record1.getTimestamp(), record4.getTimestamp()).size();
+
         // Persist records
         syncService.createSyncRecord(record0);
         syncService.createSyncRecord(record1);
@@ -198,7 +202,7 @@ public class SynchronizationServiceTest extends BaseTest {
         List<SyncRecord> recordsSinceTimestamp = syncService
                 .getSyncRecordsSince(record1.getTimestamp());
         assertEquals("Number of records after timestamp didn't match",
-                recordsSinceTimestamp.size(), 4);
+                recordsSinceTimestamp.size(), (numberOfRecordsMatchingBeforeTest + 4));
 
         Iterator<SyncRecord> iterator = recordsSinceTimestamp.iterator();
         while (iterator.hasNext()) {
@@ -212,7 +216,7 @@ public class SynchronizationServiceTest extends BaseTest {
                 .getSyncRecordsBetween(record1.getTimestamp(), record4
                         .getTimestamp());
         assertEquals("Number of records between timestamps didn't match",
-                recordsBetweenTimestamps.size(), 3);
+                recordsBetweenTimestamps.size(), (numberOfRecordsBetweenBeforeTest + 3));
 
         iterator = recordsBetweenTimestamps.iterator();
         while (iterator.hasNext()) {
