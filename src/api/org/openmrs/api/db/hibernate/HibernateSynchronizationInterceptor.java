@@ -1,19 +1,33 @@
 package org.openmrs.api.db.hibernate;
 
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.io.Serializable;
-import java.io.*;
-import java.util.*;
-import java.lang.reflect.*;
-
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.Transaction;
-import org.hibernate.SessionFactory;
 import org.hibernate.type.Type;
-
-import org.openmrs.serial.*;
+import org.openmrs.api.SynchronizationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.serial.FilePackage;
+import org.openmrs.serial.Item;
+import org.openmrs.serial.Record;
+import org.openmrs.synchronization.engine.SyncItem;
+import org.openmrs.synchronization.engine.SyncItemKey;
+import org.openmrs.synchronization.engine.SyncRecord;
+import org.openmrs.synchronization.engine.SyncRecordState;
+import org.openmrs.synchronization.engine.SyncItem.SyncItemState;
+import org.openmrs.util.OpenmrsUtil;
 
 // these private classes will be repackaged; this packing is temporary!
 abstract class normalizer
@@ -81,11 +95,20 @@ class propertyClassValue
     }
 }
 
-public class HibernateInterceptor extends EmptyInterceptor 
+public class HibernateSynchronizationInterceptor extends EmptyInterceptor 
 {
+    /**
+     * From Spring docs: There might be a single instance of Interceptor for a
+     * SessionFactory, or a new instance might be specified for each Session.
+     * Whichever approach is used, the interceptor must be serializable if the
+     * Session is to be serializable. This means that SessionFactory-scoped
+     * interceptors should implement readResolve().
+     */
     public static final long serialVersionUID = 0L;
-    protected final Log log = LogFactory.getLog(HibernateInterceptor.class);
+    protected final Log log = LogFactory.getLog(HibernateSynchronizationInterceptor.class);
 
+    protected SynchronizationService synchronizationService = null;
+    
     static defaultNormalizer defN = new defaultNormalizer();
     static timestampNormalizer tsN = new timestampNormalizer();
 
@@ -99,23 +122,16 @@ public class HibernateInterceptor extends EmptyInterceptor
         safetypes.put("integer", defN);
     }
 
-	private SessionFactory sessionFactory;
+    public HibernateSynchronizationInterceptor(){}
 
-    public HibernateInterceptor(){}
-
-    protected void setSessionFactory(SessionFactory sessionFactory)
-    {
-		this.sessionFactory = sessionFactory;
-    }
-    
     public void afterTransactionBegin(Transaction tx) 
     {
-        log.debug("afterTransactionBegin: " + tx.toString());
+        log.debug("afterTransactionBegin: " + tx);
     }    
 
     public void afterTransactionCompletion(Transaction tx) 
     {
-        log.debug("afterTransactionCompletion: " + tx.toString());
+        log.debug("afterTransactionCompletion: " + tx);
     }
 
     public boolean onSave(Object entity,
@@ -146,11 +162,12 @@ public class HibernateInterceptor extends EmptyInterceptor
         
         log.debug("onFlushDirty: " + entity.getClass().getName());
 
-        packageObject(entity, currentState, propertyNames, types);
+        packageObject(entity, currentState, propertyNames, types, SyncItemState.UPDATED);
 
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     public void postFlush(java.util.Iterator entities)
     {
         while (false && entities.hasNext())
@@ -161,62 +178,63 @@ public class HibernateInterceptor extends EmptyInterceptor
     }
 
     private String packageObject(Object entity, Object[] currentState,
-                               String[] propertyNames, Type[] types)
+                               String[] propertyNames, Type[] types, SyncItemState state)
     {
-        HashMap <String,propertyClassValue> values = 
-            new HashMap <String,propertyClassValue> ();
+        HashMap <String, propertyClassValue> values = 
+            new HashMap <String, propertyClassValue> ();
 
         try {
             // testing name generator
-            java.util.GregorianCalendar gc = new java.util.GregorianCalendar();
-            String fname = gc.get(gc.YEAR) + sp + gc.get(gc.MONTH) + sp + gc.get(gc.DATE)
-                + sp + gc.get(gc.HOUR) + sp + gc.get(gc.MINUTE) + sp 
-                + gc.get(gc.MILLISECOND);
+            Calendar calendar = new GregorianCalendar();
+            String filename = calendar.get(Calendar.YEAR) + sp
+                    + calendar.get(Calendar.MONTH) + sp
+                    + calendar.get(Calendar.DATE) + sp
+                    + calendar.get(Calendar.HOUR) + sp
+                    + calendar.get(Calendar.MINUTE) + sp
+                    + calendar.get(Calendar.MILLISECOND);
             
             // use Package when you don't want files on disk
-            //Package pkg = new Package();
-            FilePackage pkg = new FilePackage();
+            //org.openmrs.serial.Package pkg = new org.openmrs.serial.Package();
+            org.openmrs.serial.Package pkg = new FilePackage();
             Record xml = pkg.createRecordForWrite(entity.getClass().getName());
             Item entityItem = xml.getRootItem();
           
             // properties/values put in a hash for dupe removeal
             for (int i = 0; i < types.length; i++)
             {
-                String tName = types[i].getName();
-                Object tObj = currentState[i];
+                String typeName = types[i].getName();
+                Object object = currentState[i];
 
-                log.debug("Field " + propertyNames[i] + " type " + tName);
+                log.debug("Type: " + typeName + " Field: " + propertyNames[i]);
 
-                if (tObj!=null)
+                if (object!=null)
                 {
                     normalizer n;
-                    if ((n=safetypes.get(tName)) !=null)
+                    if ((n=safetypes.get(typeName)) != null)
                     {
-                        values.put(propertyNames[i], 
-                                   new propertyClassValue(tName, n.toString(tObj)));
+                        values.put(propertyNames[i], new propertyClassValue(typeName, n.toString(object)));
                     }
                     // maybe has guid
-                    else if (tName.indexOf("org.openmrs") > -1)
+                    else if (typeName.indexOf("org.openmrs") > -1)
                     {
-                        values.put(propertyNames[i], new propertyClassValue(tName, getGuid(tObj)));
+                        values.put(propertyNames[i], new propertyClassValue(typeName, getGuid(object)));
                     }
                     else
                     {
-                        log.warn(tName + " is not safe and has no guid!!!!\n");
+                        log.warn("Type: " + typeName + " is not safe and has no GUID!");
                     }
                 }
                 else
                 {
-                    log.warn(tName + " is null\n");
+                    log.warn("Type: " + typeName + " is null");
                 }
             }
 
             // serialize from hashmap
-            Iterator its = values.entrySet().iterator();
+            Iterator<Map.Entry<String, propertyClassValue>> its = values.entrySet().iterator();
             while(its.hasNext())
             {
-                Map.Entry <String,propertyClassValue> me = 
-                    (Map.Entry <String,propertyClassValue>) its.next();
+                Map.Entry<String, propertyClassValue> me = its.next();
                 String property = me.getKey();
                 propertyClassValue pcv = me.getValue();
 
@@ -225,14 +243,35 @@ public class HibernateInterceptor extends EmptyInterceptor
 
             // look up, see how this was created
             if (pkg instanceof FilePackage) {
-                pkg.savePackage(org.openmrs.util.OpenmrsUtil.getApplicationDataDirectory() 
-                               + "/journal/" + fname);
+                pkg.savePackage(OpenmrsUtil.getApplicationDataDirectory() + "/journal/" + filename);
             }
-
 
             //nice to gc
             values.clear();
 
+            // Store change in sync table:
+            SyncItem syncItem = new SyncItem();
+            //FIXME: need to fetch GUID from object, just for testing.
+            syncItem.setKey(new SyncItemKey<String>(UUID.randomUUID().toString())); 
+            syncItem.setState(state);
+            syncItem.setContent(pkg.toString());
+            
+            List<SyncItem> items = new ArrayList<SyncItem>();
+            items.add(syncItem);
+            
+            SyncRecord record = new SyncRecord();
+            record.setGuid(UUID.randomUUID().toString());
+            record.setState(SyncRecordState.NEW);
+            record.setTimestamp(new Date());
+            record.setRetryCount(0);
+            record.setItems(items);
+            
+            // Save SyncRecord
+            if (synchronizationService == null) {
+                synchronizationService = Context.getSynchronizationService();
+            }
+            synchronizationService.createSyncRecord(record);
+            
             // why?
             return pkg.toString();
         }
@@ -254,15 +293,15 @@ public class HibernateInterceptor extends EmptyInterceptor
         }
     }
                 
-    private String getGuid(Object obj)
+    private String getGuid(Object object)
     {
-        String mname = "getGuid";
-        Class[] types = new Class[] {};
+        String methodName = "getGuid";
 
         Method method;
         try {
-            method = obj.getClass().getMethod(mname, types);
-            String result = (String)method.invoke(obj, new Object[0]);            
+            method = object.getClass().getMethod(methodName, new Class[] {});
+            
+            String result = (String)method.invoke(object, new Object[0]);            
             if (result!=null && result.length() < 1)
             { 
                 result = null;

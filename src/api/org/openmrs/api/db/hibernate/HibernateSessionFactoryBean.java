@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
+import org.hibernate.Interceptor;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.util.ConfigHelper;
@@ -27,6 +28,14 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean
 	
 	protected Set<String> tmpMappingResources = new HashSet<String>(); 
 	
+	protected Interceptor globalSessionInterceptor = null;
+	
+	public void setGlobalSessionInterceptor(Interceptor globalSessionInterceptor) {
+        log.debug("Spring setter for global Hibernate Session Interceptor for SessionFactory called with interceptor: " + globalSessionInterceptor);
+	    this.globalSessionInterceptor = globalSessionInterceptor;
+	}
+	
+	@Override
 	public SessionFactory newSessionFactory(Configuration config) throws HibernateException {
 		log.debug("Configuring hibernate sessionFactory properties");
 		
@@ -65,8 +74,15 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean
 		String url = config.getProperty("hibernate.connection.url");
 		int check = checkDatabaseConnection(driver, username, password, url);
 
-        HibernateInterceptor intercept = new HibernateInterceptor();
-        config.setInterceptor(intercept);
+		// If there's an interceptor, set it for all sessions:
+		if (globalSessionInterceptor != null) {
+		    log.debug("Setting global Hibernate Session Interceptor for SessionFactory, Interceptor: " + globalSessionInterceptor);
+		    config.setInterceptor(globalSessionInterceptor);
+		} 
+		else {
+		    log.debug("No global Hibernate Session Interceptor for SessionFactory set in builder");
+		    log.debug("Is there a global pre-set interceptor already for SessionFactory?: " + config.getInterceptor());
+		}
 		
 		if (check == 0)
         {
@@ -165,5 +181,4 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean
 			// see net.sf.ehcache.CacheManager#removeShutdownHook()
 		}
 	}
-	
 }

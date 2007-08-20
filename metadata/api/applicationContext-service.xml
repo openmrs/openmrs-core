@@ -476,6 +476,9 @@
 				<value>classpath:hibernate.cfg.xml</value>
 			</list>
 		</property>
+		<property name="globalSessionInterceptor">
+			<bean id="synchronizationInterceptor" class="org.openmrs.api.db.hibernate.HibernateSynchronizationInterceptor"/>
+		</property>
 		<!-- <property name="mappingResources">
 			<list>
 				<value>______.hbm.xml</value>

@@ -223,10 +223,8 @@ public class SynchronizationServiceTest extends BaseTest {
             SyncRecord r = iterator.next();
             assertTrue("Timestamp in list was not after specified timestamp", r
                     .getTimestamp().after(record1.getTimestamp()));
-            assertTrue(
-                    "Timestamp in list was not before or equal to specified timestamp",
-                    (r.getTimestamp().before(record4.getTimestamp()))
-                            || r.getTimestamp().equals(record4.getTimestamp()));
+            assertTrue("Timestamp in list was not before or equal to specified timestamp",
+                    (r.getTimestamp().compareTo(record4.getTimestamp()) <= 0));
         }
 
         // Retrieve first record in queue - record1 is the earliest with state
