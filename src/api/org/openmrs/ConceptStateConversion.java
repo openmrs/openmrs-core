@@ -11,6 +11,15 @@ public class ConceptStateConversion {
 	private Concept concept;
 	private ProgramWorkflow programWorkflow;
 	private ProgramWorkflowState programWorkflowState;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 	
 	public ConceptStateConversion() { }
 

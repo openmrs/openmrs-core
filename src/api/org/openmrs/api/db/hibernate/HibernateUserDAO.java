@@ -18,6 +18,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.openmrs.Drug;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -546,4 +547,25 @@ public class HibernateUserDAO implements
 		}
 		return users;
 	}
+
+	/**
+     * @see org.openmrs.api.db.UserDAO#getPrivilegeByGuid(java.lang.String)
+     */
+    public Privilege getPrivilegeByGuid(String guid) {
+		return (Privilege) sessionFactory.getCurrentSession().createQuery("from Privilege p where p.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.UserDAO#getRoleByGuid(java.lang.String)
+     */
+    public Role getRoleByGuid(String guid) {
+		return (Role) sessionFactory.getCurrentSession().createQuery("from Role r where r.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.UserDAO#getUserByGuid(java.lang.String)
+     */
+    public User getUserByGuid(String guid) {
+		return (User) sessionFactory.getCurrentSession().createQuery("from User u where u.guid = :guid").setString("guid", guid).uniqueResult();
+    }
 }

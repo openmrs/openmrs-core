@@ -52,6 +52,15 @@ public class Obs implements java.io.Serializable {
 	protected User voidedBy;
 	protected Date dateVoided;
 	protected String voidReason;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

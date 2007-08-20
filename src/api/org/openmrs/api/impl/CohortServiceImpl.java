@@ -39,4 +39,11 @@ public class CohortServiceImpl implements CohortService {
 		return getCohortDAO().getCohorts();
 	}
 
+	/**
+     * @see org.openmrs.api.CohortService#getCohortByGuid(java.lang.String)
+     */
+    public Cohort getCohortByGuid(String guid) {
+		return getCohortDAO().getCohortByGuid(guid); 
+    }
+
 }

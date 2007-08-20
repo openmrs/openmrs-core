@@ -363,7 +363,7 @@ public class Patient extends Person
     }
 
     public void setGuid(String value) {
-        this.guid = value;
+        this.guid = guid;
     }
 
 }

@@ -627,4 +627,39 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		return ret;
 	}
 
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#getConceptStateConversionByGuid(java.lang.String)
+     */
+    public ConceptStateConversion getConceptStateConversionByGuid(String guid) {
+		return getProgramWorkflowDAO().getConceptStateConversionByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#getPatientProgramByGuid(java.lang.String)
+     */
+    public PatientProgram getPatientProgramByGuid(String guid) {
+		return getProgramWorkflowDAO().getPatientProgramByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#getProgramByGuid(java.lang.String)
+     */
+    public Program getProgramByGuid(String guid) {
+		return getProgramWorkflowDAO().getProgramByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#getStateByGuid(java.lang.String)
+     */
+    public ProgramWorkflowState getStateByGuid(String guid) {
+		return getProgramWorkflowDAO().getStateByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#getWorkflowByGuid(java.lang.String)
+     */
+    public ProgramWorkflow getWorkflowByGuid(String guid) {
+		return getProgramWorkflowDAO().getWorkflowByGuid(guid);
+    }
+
 }

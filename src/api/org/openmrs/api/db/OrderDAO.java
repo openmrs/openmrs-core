@@ -170,4 +170,20 @@ public interface OrderDAO {
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws DAOException;
 
 	public Map<ConceptSet, List<DrugOrder>> getConceptSetsByDrugOrders(List<DrugOrder> drugOrders) throws DAOException;
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Order getOrderByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public OrderType getOrderTypeByGuid(String guid);
 }

@@ -38,6 +38,15 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	private Collection<ConceptAnswer> answers;
 	private Collection<ConceptSynonym> synonyms;
 	private Collection<ConceptSet> conceptSets;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

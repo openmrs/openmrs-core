@@ -11,4 +11,12 @@ public interface CohortDAO {
 	
 	public List<Cohort> getCohorts() throws DAOException;
 
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Cohort getCohortByGuid(String guid);
+
 }

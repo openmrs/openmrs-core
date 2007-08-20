@@ -44,6 +44,9 @@ public interface ConceptService {
 	@Authorized({"View Concepts"})
 	public Concept getConcept(Integer conceptId);
 
+	@Transactional(readOnly=true)
+	public Concept getConceptByGuid(String guid);
+
 	/**
 	 * Return a list of concepts sorted on sortBy in dir direction (asc/desc)
 	 * 
@@ -141,6 +144,9 @@ public interface ConceptService {
 	@Authorized({"View Concepts"})
 	public Drug getDrug(Integer drugId);
 
+	@Transactional(readOnly=true)
+	public Drug getDrugByGuid(String guid);
+
 	/**
 	 * Return the drug object corresponding to the given name
 	 * 
@@ -205,6 +211,9 @@ public interface ConceptService {
 	@Authorized({"View Concepts"})
 	public ConceptClass getConceptClass(Integer i);
 
+	@Transactional(readOnly=true)
+	public ConceptClass getConceptClassByGuid(String guid);
+
 	/**
 	 * Return a Concept class matching the given name
 	 * 
@@ -232,7 +241,10 @@ public interface ConceptService {
 	@Transactional(readOnly=true)
 	@Authorized({"View Concepts"})
 	public ConceptDatatype getConceptDatatype(Integer i);
-	
+
+	@Transactional(readOnly=true)
+	public ConceptDatatype getConceptDatatypeByGuid(String guid);
+
 	/**
 	 * Return a Concept datatype matching the given name
 	 * 
@@ -282,6 +294,9 @@ public interface ConceptService {
 	@Transactional(readOnly=true)
 	@Authorized({"View Concepts"})
 	public ConceptNumeric getConceptNumeric(Integer conceptId);
+
+	@Transactional(readOnly=true)
+	public ConceptNumeric getConceptNumericByGuid(String guid);
 
 	/**
 	 * Searches on given phrase via the concept word table
@@ -387,6 +402,9 @@ public interface ConceptService {
 	@Transactional(readOnly=true)
 	@Authorized({"View Concepts"})
 	public ConceptProposal getConceptProposal(Integer conceptProposalId);
+
+	@Transactional(readOnly=true)
+	public ConceptProposal getConceptProposalByGuid(String guid);
 
 	@Transactional(readOnly=true)
 	@Authorized({"View Concepts"})

@@ -31,6 +31,9 @@ public interface UserService {
 	@Authorized({"View Users"})
 	public User getUser(Integer userId) throws APIException;
 
+	@Transactional(readOnly=true)
+	public User getUserByGuid(String guid) throws APIException;
+
 	/**
 	 * Get user by username (user's login identifier)
 	 * @param username user's identifier used for authentication
@@ -170,6 +173,9 @@ public interface UserService {
 	@Transactional(readOnly=true)
 	public Role getRole(String r) throws APIException;
 
+	@Transactional(readOnly=true)
+	public Role getRoleByGuid(String guid) throws APIException;
+
 	/**
 	 * Returns Privilege in the system with given String privilege
 	 * @return Privilege
@@ -177,6 +183,9 @@ public interface UserService {
 	 */
 	@Transactional(readOnly=true)
 	public Privilege getPrivilege(String p) throws APIException;
+
+	@Transactional(readOnly=true)
+	public Privilege getPrivilegeByGuid(String guid) throws APIException;
 
 	/**
 	 * Changes the <code>user<code>'s password

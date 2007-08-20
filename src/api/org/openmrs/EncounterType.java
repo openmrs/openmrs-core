@@ -19,6 +19,15 @@ public class EncounterType implements java.io.Serializable {
 	private String description;
 	private Date dateCreated;
 	private User creator;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

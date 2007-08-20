@@ -19,4 +19,7 @@ public interface CohortService {
 	@Transactional(readOnly=true)
 	public List<Cohort> getCohorts();
 
+	@Transactional(readOnly=true)
+	public Cohort getCohortByGuid(String guid);
+
 }

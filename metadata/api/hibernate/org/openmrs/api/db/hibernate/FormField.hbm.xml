@@ -11,6 +11,9 @@
 			<generator class="native" />
 		</id>
 
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
 		<many-to-one name="parent" class="FormField" cascade="save-update,merge,evict">
 			<column name="parent_form_field" />
 		</many-to-one>

@@ -14,6 +14,9 @@
 				class="Concept" />
 		</composite-id>
 
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
 		<!-- Associations -->
 		<!-- derived association(s) for compound key -->
 		<!-- bi-directional many-to-one association to Concept -->

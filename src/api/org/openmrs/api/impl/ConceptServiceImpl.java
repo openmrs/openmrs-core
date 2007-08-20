@@ -726,4 +726,46 @@ public class ConceptServiceImpl implements ConceptService {
 		return getConceptDAO().getConceptsWithDrugsInFormulary();
 	}
 
+	/**
+     * @see org.openmrs.api.ConceptService#getConceptByGuid(java.lang.String)
+     */
+    public Concept getConceptByGuid(String guid) {
+		return getConceptDAO().getConceptByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.ConceptService#getConceptClassByGuid(java.lang.String)
+     */
+    public ConceptClass getConceptClassByGuid(String guid) {
+		return getConceptDAO().getConceptClassByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.ConceptService#getConceptDatatypeByGuid(java.lang.String)
+     */
+    public ConceptDatatype getConceptDatatypeByGuid(String guid) {
+		return getConceptDAO().getConceptDatatypeByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.ConceptService#getConceptNumericByGuid(java.lang.String)
+     */
+    public ConceptNumeric getConceptNumericByGuid(String guid) {
+		return getConceptDAO().getConceptNumericByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.ConceptService#getConceptProposalByGuid(java.lang.String)
+     */
+    public ConceptProposal getConceptProposalByGuid(String guid) {
+		return getConceptDAO().getConceptProposalByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.ConceptService#getDrugByGuid(java.lang.String)
+     */
+    public Drug getDrugByGuid(String guid) {
+		return getConceptDAO().getDrugByGuid(guid);
+    }
+
 }

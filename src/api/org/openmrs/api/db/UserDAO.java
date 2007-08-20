@@ -151,4 +151,28 @@ public interface UserDAO {
 	 */
 	public Integer generateSystemId() throws DAOException;
 
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Privilege getPrivilegeByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Role getRoleByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public User getUserByGuid(String guid);
+
 }

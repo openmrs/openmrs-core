@@ -12,6 +12,9 @@
 			<generator class="native" />
 		</id>
 
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
 		<property name="patientId" type="java.lang.Integer" length="11" 
 			column="patient_id" not-null="true" insert="false" update="false" />
 		<property name="encounterDatetime" type="java.util.Date"

@@ -713,4 +713,46 @@ public class HibernateConceptDAO implements
 		Query query = sessionFactory.getCurrentSession().createQuery("select distinct concept from Drug where voided = false");
 		return query.list();
 	}
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptByGuid(java.lang.String)
+     */
+    public Concept getConceptByGuid(String guid) {
+		return (Concept) sessionFactory.getCurrentSession().createQuery("from Concept c where c.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptClassByGuid(java.lang.String)
+     */
+    public ConceptClass getConceptClassByGuid(String guid) {
+		return (ConceptClass) sessionFactory.getCurrentSession().createQuery("from ConceptClass cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptDatatypeByGuid(java.lang.String)
+     */
+    public ConceptDatatype getConceptDatatypeByGuid(String guid) {
+		return (ConceptDatatype) sessionFactory.getCurrentSession().createQuery("from ConceptDatatype cd where cd.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptNumericByGuid(java.lang.String)
+     */
+    public ConceptNumeric getConceptNumericByGuid(String guid) {
+		return (ConceptNumeric) sessionFactory.getCurrentSession().createQuery("from ConceptNumeric cn where cn.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptProposalByGuid(java.lang.String)
+     */
+    public ConceptProposal getConceptProposalByGuid(String guid) {
+		return (ConceptProposal) sessionFactory.getCurrentSession().createQuery("from ConceptProposal cp where cp.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getDrugByGuid(java.lang.String)
+     */
+    public Drug getDrugByGuid(String guid) {
+		return (Drug) sessionFactory.getCurrentSession().createQuery("from Drug d where d.guid = :guid").setString("guid", guid).uniqueResult();
+    }
 }

@@ -13,6 +13,15 @@ public class DrugIngredient implements java.io.Serializable {
 
 	private Concept drug;
 	private Concept ingredient;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

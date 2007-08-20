@@ -38,6 +38,15 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	
 	private User creator;
 	private Date dateCreated;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

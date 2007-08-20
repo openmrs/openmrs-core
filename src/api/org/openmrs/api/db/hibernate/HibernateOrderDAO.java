@@ -12,6 +12,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSet;
+import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -273,5 +274,19 @@ public class HibernateOrderDAO implements
 		*/
 		return null;
 	}
+
+	/**
+     * @see org.openmrs.api.db.OrderDAO#getOrderByGuid(java.lang.String)
+     */
+    public Order getOrderByGuid(String guid) {
+		return (Order) sessionFactory.getCurrentSession().createQuery("from Order o where o.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.OrderDAO#getOrderTypeByGuid(java.lang.String)
+     */
+    public OrderType getOrderTypeByGuid(String guid) {
+		return (OrderType) sessionFactory.getCurrentSession().createQuery("from OrderType ot where ot.guid = :guid").setString("guid", guid).uniqueResult();
+    }
 
 }

@@ -15,6 +15,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
+import org.openmrs.Drug;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
@@ -192,5 +193,40 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		}
 		
 		return csc;
-	}	
+	}
+
+	/**
+     * @see org.openmrs.api.db.ProgramWorkflowDAO#getConceptStateConversionByGuid(java.lang.String)
+     */
+    public ConceptStateConversion getConceptStateConversionByGuid(String guid) {
+		return (ConceptStateConversion) sessionFactory.getCurrentSession().createQuery("from ConceptStateConversion csc where csc.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ProgramWorkflowDAO#getPatientProgramByGuid(java.lang.String)
+     */
+    public PatientProgram getPatientProgramByGuid(String guid) {
+		return (PatientProgram) sessionFactory.getCurrentSession().createQuery("from PatientProgram where pp.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ProgramWorkflowDAO#getProgramByGuid(java.lang.String)
+     */
+    public Program getProgramByGuid(String guid) {
+		return (Program) sessionFactory.getCurrentSession().createQuery("from Program p where p.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ProgramWorkflowDAO#getStateByGuid(java.lang.String)
+     */
+    public ProgramWorkflowState getStateByGuid(String guid) {
+		return (ProgramWorkflowState) sessionFactory.getCurrentSession().createQuery("from ProgramWorkflowState pws where pws.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ProgramWorkflowDAO#getWorkflowByGuid(java.lang.String)
+     */
+    public ProgramWorkflow getWorkflowByGuid(String guid) {
+		return (ProgramWorkflow) sessionFactory.getCurrentSession().createQuery("from ProgramWorkflow pw where pw.guid = :guid").setString("guid", guid).uniqueResult();
+    }	
 }

@@ -20,6 +20,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.Drug;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -471,5 +472,26 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		return patients;
 	}
+
+	/**
+     * @see org.openmrs.api.db.PatientDAO#getPatientByGuid(java.lang.String)
+     */
+    public Patient getPatientByGuid(String guid) {
+		return (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierTypeByGuid(java.lang.String)
+     */
+    public PatientIdentifierType getPatientIdentifierTypeByGuid(String guid) {
+		return (PatientIdentifierType) sessionFactory.getCurrentSession().createQuery("from PatientIdentifierType pit where pit.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.PatientDAO#getTribeByGuid(java.lang.String)
+     */
+    public Tribe getTribeByGuid(String guid) {
+		return (Tribe) sessionFactory.getCurrentSession().createQuery("from Tribe t where t.guid = :guid").setString("guid", guid).uniqueResult();
+    }
 	
 }

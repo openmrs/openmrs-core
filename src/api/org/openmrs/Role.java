@@ -24,6 +24,15 @@ public class Role implements java.io.Serializable {
 	private String description;
 	private Set<Privilege> privileges;
 	private Set<Role> inheritedRoles;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

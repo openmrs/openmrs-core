@@ -23,6 +23,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
@@ -620,4 +621,18 @@ public class HibernateObsDAO implements ObsDAO {
 		}
 		return result;
 	}
+
+	/**
+     * @see org.openmrs.api.db.ObsDAO#getMimeTypeByGuid(java.lang.String)
+     */
+    public MimeType getMimeTypeByGuid(String guid) {
+		return (MimeType) sessionFactory.getCurrentSession().createQuery("from MimeType mt where mt.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ObsDAO#getObsByGuid(java.lang.String)
+     */
+    public Obs getObsByGuid(String guid) {
+		return (Obs) sessionFactory.getCurrentSession().createQuery("from Obs o where o.guid = :guid").setString("guid", guid).uniqueResult();
+    }
 }

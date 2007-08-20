@@ -190,5 +190,37 @@ public interface FormDAO {
 	 * @throws DAOException
 	 */
 	public void deleteFormField(FormField formField) throws DAOException;
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Field getFieldByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public FieldType getFieldTypeByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Form getFormByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public FormField getFormFieldByGuid(String guid);
 	
 }

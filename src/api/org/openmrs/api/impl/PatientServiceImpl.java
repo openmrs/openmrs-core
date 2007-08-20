@@ -951,4 +951,25 @@ public class PatientServiceImpl implements PatientService {
 		}
 	}
 
+	/**
+     * @see org.openmrs.api.PatientService#getPatientByGuid(java.lang.String)
+     */
+    public Patient getPatientByGuid(String guid) throws APIException {
+		return getPatientDAO().getPatientByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.PatientService#getPatientIdentifierTypeByGuid(java.lang.String)
+     */
+    public PatientIdentifierType getPatientIdentifierTypeByGuid(String guid) throws APIException {
+		return getPatientDAO().getPatientIdentifierTypeByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.PatientService#getTribeByGuid(java.lang.String)
+     */
+    public Tribe getTribeByGuid(String guid) throws APIException {
+		return getPatientDAO().getTribeByGuid(guid);
+    }
+
 }

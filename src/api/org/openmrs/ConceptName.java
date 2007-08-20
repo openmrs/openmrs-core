@@ -21,6 +21,15 @@ public class ConceptName implements java.io.Serializable {
 	private String locale;
 	private User creator;
 	private Date dateCreated;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

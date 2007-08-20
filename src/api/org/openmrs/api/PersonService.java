@@ -106,7 +106,10 @@ public interface PersonService {
 	 */
 	@Transactional(readOnly=true)
 	public PersonAttributeType getPersonAttributeType(Integer typeId);
-	
+
+	@Transactional(readOnly=true)
+	public PersonAttributeType getPersonAttributeTypeByGuid(String guid);
+
 	/**
 	 * Get the PersonAttributeType given the type's name
 	 * @param typeName
@@ -123,8 +126,10 @@ public interface PersonService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	public Relationship getRelationship(Integer relationshipId)
-			throws APIException;
+	public Relationship getRelationship(Integer relationshipId) throws APIException;
+
+	@Transactional(readOnly=true)
+	public Relationship getRelationshipByGuid(String guid) throws APIException;
 
 	/**
 	 * Get list of relationships that are not retired
@@ -181,8 +186,10 @@ public interface PersonService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	public RelationshipType getRelationshipType(Integer relationshipTypeId)
-			throws APIException;
+	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws APIException;
+
+	@Transactional(readOnly=true)
+	public RelationshipType getRelationshipTypeByGuid(String guid) throws APIException;
 
 	/**
 	 * Find relationshipType by name
@@ -268,7 +275,10 @@ public interface PersonService {
 	@Transactional(readOnly=true)
 	@Authorized({"View People"})
 	public Person getPerson(Integer personId) throws APIException;
-	
+
+	@Transactional(readOnly=true)
+	public Person getPersonByGuid(String guid) throws APIException;
+
 	/**
 	 * Get the person object given the patient object
 	 * @param pat

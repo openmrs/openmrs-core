@@ -37,6 +37,15 @@ public class Form implements java.io.Serializable {
 	private Date dateRetired;
 	private String retiredReason;
 	private Set<FormField> formFields;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

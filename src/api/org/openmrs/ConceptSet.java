@@ -16,6 +16,15 @@ public class ConceptSet implements java.io.Serializable {
 	private Double sortWeight;
 	private User creator;
 	private Date dateCreated;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

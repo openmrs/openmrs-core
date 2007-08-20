@@ -12,6 +12,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
@@ -250,5 +251,33 @@ public class HibernateFormDAO implements
 	public void deleteFormField(FormField formField) throws DAOException {
 		sessionFactory.getCurrentSession().delete(formField);
 	}
+
+	/**
+     * @see org.openmrs.api.db.FormDAO#getFieldByGuid(java.lang.String)
+     */
+    public Field getFieldByGuid(String guid) {
+		return (Field) sessionFactory.getCurrentSession().createQuery("from Field f where f.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.FormDAO#getFieldTypeByGuid(java.lang.String)
+     */
+    public FieldType getFieldTypeByGuid(String guid) {
+		return (FieldType) sessionFactory.getCurrentSession().createQuery("from FieldType ft where ft.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.FormDAO#getFormByGuid(java.lang.String)
+     */
+    public Form getFormByGuid(String guid) {
+		return (Form) sessionFactory.getCurrentSession().createQuery("from Form f where f.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.FormDAO#getFormFieldByGuid(java.lang.String)
+     */
+    public FormField getFormFieldByGuid(String guid) {
+		return (FormField) sessionFactory.getCurrentSession().createQuery("from FormField ff where ff.guid = :guid").setString("guid", guid).uniqueResult();
+    }
 	
 }

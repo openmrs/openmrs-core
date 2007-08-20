@@ -261,7 +261,7 @@ public class PatientIdentifier implements java.io.Serializable {
     }
 
     public void setGuid(String value) {
-        this.guid = value;
+        this.guid = guid;
     }
     
 }

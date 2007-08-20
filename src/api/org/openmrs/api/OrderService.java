@@ -107,6 +107,9 @@ public interface OrderService {
 	@Transactional(readOnly=true)
 	public Order getOrder(Integer orderId) throws APIException;
 
+	@Transactional(readOnly=true)
+	public Order getOrderByGuid(String guid) throws APIException;
+
 	/**
 	 * Get all orders
 	 * 
@@ -179,6 +182,9 @@ public interface OrderService {
 	 */
 	@Transactional(readOnly=true)
 	public OrderType getOrderType(Integer orderTypeId) throws APIException;
+
+	@Transactional(readOnly=true)
+	public OrderType getOrderTypeByGuid(String guid) throws APIException;
 
 	/**
 	 * Get all orders by Patient

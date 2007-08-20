@@ -511,5 +511,19 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 	}
+
+	/**
+     * @see org.openmrs.api.OrderService#getOrderByGuid(java.lang.String)
+     */
+    public Order getOrderByGuid(String guid) throws APIException {
+		return getOrderDAO().getOrderByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.OrderService#getOrderTypeByGuid(java.lang.String)
+     */
+    public OrderType getOrderTypeByGuid(String guid) throws APIException {
+		return getOrderDAO().getOrderTypeByGuid(guid);
+    }
 }
 

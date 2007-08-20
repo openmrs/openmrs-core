@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
 import org.openmrs.Cohort;
+import org.openmrs.Drug;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.api.db.DAOException;
 
@@ -32,5 +33,12 @@ public class HibernateCohortDAO implements CohortDAO {
 	public List<Cohort> getCohorts() throws DAOException {
 		return (List<Cohort>) sessionFactory.getCurrentSession().createQuery("from Cohort order by name").list();
 	}
+
+	/**
+     * @see org.openmrs.api.db.CohortDAO#getCohortByGuid(java.lang.String)
+     */
+    public Cohort getCohortByGuid(String guid) {
+		return (Cohort) sessionFactory.getCurrentSession().createQuery("from Cohort c where c.guid = :guid").setString("guid", guid).uniqueResult();
+    }
 
 }

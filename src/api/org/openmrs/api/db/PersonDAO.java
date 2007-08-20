@@ -165,7 +165,39 @@ public interface PersonDAO {
 	 * @param RelationshipType to delete
 	 * @throws DAOException
 	 */
-	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException;	
+	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException;
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public PersonAttributeType getPersonAttributeTypeByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Person getPersonByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Relationship getRelationshipByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public RelationshipType getRelationshipTypeByGuid(String guid);	
 
 	
 }

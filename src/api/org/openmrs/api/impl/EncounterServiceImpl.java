@@ -389,4 +389,25 @@ public class EncounterServiceImpl implements EncounterService {
 		
 		return getEncounterDAO().getEncounters(loc, fromDate, toDate);
     }
+
+	/**
+     * @see org.openmrs.api.EncounterService#getEncounterByGuid(java.lang.String)
+     */
+    public Encounter getEncounterByGuid(String guid) throws APIException {
+		return getEncounterDAO().getEncounterByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.EncounterService#getEncounterTypeByGuid(java.lang.String)
+     */
+    public EncounterType getEncounterTypeByGuid(String guid) throws APIException {
+		return getEncounterDAO().getEncounterTypeByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.EncounterService#getLocationByGuid(java.lang.String)
+     */
+    public Location getLocationByGuid(String guid) throws APIException {
+		return getEncounterDAO().getLocationByGuid(guid);
+    }
 }

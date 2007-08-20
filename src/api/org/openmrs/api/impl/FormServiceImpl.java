@@ -430,5 +430,33 @@ public class FormServiceImpl implements FormService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_FORMS);
 		getFormDAO().deleteFormField(formField);
 	}
+
+	/**
+     * @see org.openmrs.api.FormService#getFieldByGuid(java.lang.String)
+     */
+    public Field getFieldByGuid(String guid) throws APIException {
+		return getFormDAO().getFieldByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.FormService#getFieldTypeByGuid(java.lang.String)
+     */
+    public FieldType getFieldTypeByGuid(String guid) throws APIException {
+		return getFormDAO().getFieldTypeByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.FormService#getFormByGuid(java.lang.String)
+     */
+    public Form getFormByGuid(String guid) throws APIException {
+		return getFormDAO().getFormByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.FormService#getFormFieldByGuid(java.lang.String)
+     */
+    public FormField getFormFieldByGuid(String guid) throws APIException {
+		return getFormDAO().getFormFieldByGuid(guid);
+    }
 	
 }

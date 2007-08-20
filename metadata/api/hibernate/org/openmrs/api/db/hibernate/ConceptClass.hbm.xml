@@ -19,6 +19,10 @@
         <generator class="native" />
     </id>
 
+		
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
     <property
         name="name"
         type="java.lang.String"

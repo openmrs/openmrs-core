@@ -284,4 +284,18 @@ public class ObsServiceImpl implements ObsService {
 		return getObsDAO().getObservations(who, aggregation, question, constraint);
 	}
 
+	/**
+     * @see org.openmrs.api.ObsService#getMimeTypeByGuid(java.lang.String)
+     */
+    public MimeType getMimeTypeByGuid(String guid) throws APIException {
+		return getObsDAO().getMimeTypeByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.ObsService#getObsByGuid(java.lang.String)
+     */
+    public Obs getObsByGuid(String guid) throws APIException {
+		return getObsDAO().getObsByGuid(guid);
+    }
+
 }

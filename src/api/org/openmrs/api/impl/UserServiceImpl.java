@@ -418,4 +418,25 @@ public class UserServiceImpl implements UserService {
 		user.setChangedBy(Context.getAuthenticatedUser());
 		user.setDateChanged(new Date());
 	}
+
+	/**
+     * @see org.openmrs.api.UserService#getPrivilegeByGuid(java.lang.String)
+     */
+    public Privilege getPrivilegeByGuid(String guid) throws APIException {
+		return getUserDAO().getPrivilegeByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.UserService#getRoleByGuid(java.lang.String)
+     */
+    public Role getRoleByGuid(String guid) throws APIException {
+		return getUserDAO().getRoleByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.UserService#getUserByGuid(java.lang.String)
+     */
+    public User getUserByGuid(String guid) throws APIException {
+		return getUserDAO().getUserByGuid(guid);
+    }
 }

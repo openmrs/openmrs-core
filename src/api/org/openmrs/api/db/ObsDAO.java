@@ -122,4 +122,20 @@ public interface ObsDAO {
 	public List<Obs> getObservations(Person who, Aggregation aggregation,
 			Concept question, Constraint constraint);
 
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public MimeType getMimeTypeByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Obs getObsByGuid(String guid);
+
 }

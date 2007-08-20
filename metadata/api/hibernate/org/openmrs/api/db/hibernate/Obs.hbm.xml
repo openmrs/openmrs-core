@@ -11,6 +11,9 @@
 			<generator class="native" />
 		</id>
 
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
 		<property name="personId" type="java.lang.Integer" length="11" 
 			column="person_id" not-null="true" insert="false" update="false" />
 			

@@ -56,4 +56,44 @@ public interface ProgramWorkflowDAO {
 	public List<ConceptStateConversion> getAllConversions();
 
 	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public ConceptStateConversion getConceptStateConversionByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public PatientProgram getPatientProgramByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Program getProgramByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public ProgramWorkflowState getStateByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public ProgramWorkflow getWorkflowByGuid(String guid);
 }

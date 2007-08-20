@@ -21,6 +21,9 @@
         <key-many-to-one name="field" class="org.openmrs.Field" column="field_id" />
     </composite-id>    
 
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
     <property 
         name="dateCreated" 
         column="date_created" 

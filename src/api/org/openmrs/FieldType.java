@@ -17,6 +17,15 @@ public class FieldType implements java.io.Serializable {
 	private Boolean isSet = false;
 	private Date dateCreated;
 	private User creator;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

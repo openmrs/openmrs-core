@@ -175,5 +175,29 @@ public interface PatientDAO {
 	 * @return list of patients that match other patients
 	 */
 	public List<Patient> findDuplicatePatients(Set<String> attributes);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Patient getPatientByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public PatientIdentifierType getPatientIdentifierTypeByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Tribe getTribeByGuid(String guid);
 	
 }

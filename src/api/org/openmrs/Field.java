@@ -32,6 +32,15 @@ public class Field implements java.io.Serializable {
 	private Date dateChanged;
 	private Set<FieldAnswer> fieldAnswers;
 	private Set<Form> forms;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

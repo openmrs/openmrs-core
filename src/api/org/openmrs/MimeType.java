@@ -12,6 +12,15 @@ public class MimeType implements java.io.Serializable {
 	private Integer mimeTypeId;
 	private String mimeType;
 	private String description;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

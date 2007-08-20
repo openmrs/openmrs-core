@@ -700,7 +700,7 @@ public class Person implements java.io.Serializable, JulieConverter {
     }
 
     public void setGuid(String value) {
-        this.guid = value;
+        this.guid = guid;
     }
 
 }

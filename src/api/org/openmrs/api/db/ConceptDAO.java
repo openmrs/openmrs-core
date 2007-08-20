@@ -268,5 +268,53 @@ public interface ConceptDAO {
 	public List<Concept> getConceptsByClass(ConceptClass cc);
 	
 	public List<Concept> getConceptsWithDrugsInFormulary();
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Concept getConceptByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public ConceptClass getConceptClassByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public ConceptDatatype getConceptDatatypeByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public ConceptNumeric getConceptNumericByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public ConceptProposal getConceptProposalByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Drug getDrugByGuid(String guid);
 	
 }

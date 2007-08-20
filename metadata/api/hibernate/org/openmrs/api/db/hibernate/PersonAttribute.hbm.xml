@@ -13,6 +13,9 @@
 			<generator class="native" />
 		</id>
 		
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
 		<many-to-one name="person" class="Person">
 			<column name="person_id" />
 		</many-to-one>

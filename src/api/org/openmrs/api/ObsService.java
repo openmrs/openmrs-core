@@ -53,6 +53,9 @@ public interface ObsService {
 	@Transactional(readOnly = true)
 	public Obs getObs(Integer obsId) throws APIException;
 
+	@Transactional(readOnly = true)
+	public Obs getObsByGuid(String guid) throws APIException;
+
 	/**
 	 * Save changes to observation
 	 * 
@@ -108,6 +111,9 @@ public interface ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public MimeType getMimeType(Integer mimeTypeId) throws APIException;
+
+	@Transactional(readOnly = true)
+	public MimeType getMimeTypeByGuid(String guid) throws APIException;
 
 	/**
 	 * Get all Observations for a person

@@ -30,6 +30,9 @@ public interface ProgramWorkflowService {
 	public Program getProgram(Integer id);
 
 	@Transactional(readOnly=true)
+	public Program getProgramByGuid(String guid);
+
+	@Transactional(readOnly=true)
 	public Program getProgram(String name);
 
 	public void retireProgram(Program p);
@@ -40,14 +43,22 @@ public interface ProgramWorkflowService {
 	public ProgramWorkflow getWorkflow(Integer id);
 
 	@Transactional(readOnly=true)
+	public ProgramWorkflow getWorkflowByGuid(String guid);
+
+	@Transactional(readOnly=true)
 	public ProgramWorkflow getWorkflow(Program program, String name);
 
 	public void updateWorkflow(ProgramWorkflow w);
 
 	public void voidWorkflow(ProgramWorkflow w, String reason);
 
+	@Transactional(readOnly=true)
 	public ProgramWorkflowState getState(Integer id);
 
+	@Transactional(readOnly=true)
+	public ProgramWorkflowState getStateByGuid(String guid);
+
+	@Transactional(readOnly=true)
 	public ProgramWorkflowState getState(ProgramWorkflow wf, String name);
 
 	public void createPatientProgram(PatientProgram p);
@@ -56,6 +67,9 @@ public interface ProgramWorkflowService {
 
 	@Transactional(readOnly=true)
 	public PatientProgram getPatientProgram(Integer id);
+
+	@Transactional(readOnly=true)
+	public PatientProgram getPatientProgramByGuid(String guid);
 
 	@Transactional(readOnly=true)
 	public Collection<PatientProgram> getPatientPrograms(Patient patient);
@@ -117,6 +131,9 @@ public interface ProgramWorkflowService {
 
 	@Transactional(readOnly=true)
 	public ConceptStateConversion getConceptStateConversion(Integer id);
+
+	@Transactional(readOnly=true)
+	public ConceptStateConversion getConceptStateConversionByGuid(String guid);
 
 	@Transactional(readOnly=true)
 	public List<ConceptStateConversion> getAllConversions();

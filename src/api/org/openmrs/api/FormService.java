@@ -31,6 +31,9 @@ public interface FormService {
 	 */
 	@Transactional(readOnly=true)
 	public Form getForm(Integer formId) throws APIException;
+
+	@Transactional(readOnly=true)
+	public Form getFormByGuid(String guid) throws APIException;
 	
 	/**
 	 * Get all forms.  If publishedOnly is true, a form must be marked as
@@ -131,6 +134,9 @@ public interface FormService {
 	@Transactional(readOnly=true)
 	public FieldType getFieldType(Integer fieldTypeId) throws APIException;
 
+	@Transactional(readOnly=true)
+	public FieldType getFieldTypeByGuid(String guid) throws APIException;
+
 	/**
 	 * 
 	 * @return list of forms in the db
@@ -188,6 +194,9 @@ public interface FormService {
 	@Transactional(readOnly=true)
 	public Field getField(Integer fieldId) throws APIException;
 
+	@Transactional(readOnly=true)
+	public Field getFieldByGuid(String guid) throws APIException;
+
 	/**
 	 * 
 	 * @param field
@@ -217,6 +226,9 @@ public interface FormService {
 	 */
 	@Transactional(readOnly=true)
 	public FormField getFormField(Integer formFieldId) throws APIException;
+
+	@Transactional(readOnly=true)
+	public FormField getFormFieldByGuid(String guid) throws APIException;
 
 	/**
 	 * Finds the FormField defined for this form/concept combination 

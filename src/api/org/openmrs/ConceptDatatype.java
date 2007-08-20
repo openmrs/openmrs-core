@@ -28,6 +28,15 @@ public class ConceptDatatype implements java.io.Serializable {
 	private String hl7Abbreviation;
 	private Date dateCreated;
 	private User creator;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

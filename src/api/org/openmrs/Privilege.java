@@ -15,6 +15,15 @@ public class Privilege implements java.io.Serializable {
 
 	private String privilege;
 	private String description;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

@@ -24,6 +24,15 @@ public class Cohort implements Serializable {
 	private Date dateVoided;
 	private String voidReason;
 	private Set<Integer> memberIds;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	public Cohort() {
 		memberIds = new HashSet<Integer>();

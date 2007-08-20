@@ -19,6 +19,15 @@ public class FieldAnswer implements java.io.Serializable {
 	private User creator;
 	private Field field;
 	private boolean dirty;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

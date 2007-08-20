@@ -200,7 +200,7 @@ public class PatientProgram {
     }
 
     public void setGuid(String value) {
-        this.guid = value;
+        this.guid = guid;
     }
     
 }

@@ -39,6 +39,9 @@ public interface PatientService {
 	@Transactional(readOnly=true)
 	public Patient getPatient(Integer patientId) throws APIException;
 
+	@Transactional(readOnly=true)
+	public Patient getPatientByGuid(String guid) throws APIException;
+
 	/**
 	 * Update patient 
 	 * 
@@ -170,8 +173,10 @@ public interface PatientService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	public PatientIdentifierType getPatientIdentifierType(
-			Integer patientIdentifierTypeId) throws APIException;
+	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException;
+
+	@Transactional(readOnly=true)
+	public PatientIdentifierType getPatientIdentifierTypeByGuid(String guid) throws APIException;
 
 	/**
 	 * Get patientIdentifierType by name
@@ -197,6 +202,9 @@ public interface PatientService {
 	 */
 	@Transactional(readOnly=true)
 	public Tribe getTribe(Integer tribeId) throws APIException;
+
+	@Transactional(readOnly=true)
+	public Tribe getTribeByGuid(String guid) throws APIException;
 
 	/**
 	 * Get list of tribes that are not retired

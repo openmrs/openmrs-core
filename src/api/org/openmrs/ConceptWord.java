@@ -26,6 +26,15 @@ public class ConceptWord implements java.io.Serializable,
 	private String locale;
 
 	private Double weight = 0.0;
+	private String guid;
+	
+  public String getGuid() {
+      return guid;
+  }
+
+  public void setGuid(String guid) {
+      this.guid = guid;
+  }
 
 	// Constructors
 

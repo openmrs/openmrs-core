@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.openmrs.Drug;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -426,4 +427,32 @@ public class HibernatePersonDAO implements PersonDAO {
 		// finally, just tell hibernate to delete our object
 		sessionFactory.getCurrentSession().delete(person);
 	}
+
+	/**
+     * @see org.openmrs.api.db.PersonDAO#getPersonAttributeTypeByGuid(java.lang.String)
+     */
+    public PersonAttributeType getPersonAttributeTypeByGuid(String guid) {
+		return (PersonAttributeType) sessionFactory.getCurrentSession().createQuery("from PersonAttributeType where pat.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.PersonDAO#getPersonByGuid(java.lang.String)
+     */
+    public Person getPersonByGuid(String guid) {
+		return (Person) sessionFactory.getCurrentSession().createQuery("from Person p where p.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.PersonDAO#getRelationshipByGuid(java.lang.String)
+     */
+    public Relationship getRelationshipByGuid(String guid) {
+		return (Relationship) sessionFactory.getCurrentSession().createQuery("from Relationship r where r.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.PersonDAO#getRelationshipTypeByGuid(java.lang.String)
+     */
+    public RelationshipType getRelationshipTypeByGuid(String guid) {
+		return (RelationshipType) sessionFactory.getCurrentSession().createQuery("from RelationshipType rt where rt.guid = :guid").setString("guid", guid).uniqueResult();
+    }
 }

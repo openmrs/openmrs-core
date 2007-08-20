@@ -11,6 +11,9 @@
 			<generator class="native" />
 		</id>
 		
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
 		<many-to-one name="concept" class="Concept" column="concept_id" not-null="true" />
 
 		<many-to-one name="programWorkflow" class="ProgramWorkflow" column="program_workflow_id" not-null="true" />

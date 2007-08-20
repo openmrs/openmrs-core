@@ -40,7 +40,10 @@ public interface EncounterService {
 	 */
 	@Transactional(readOnly=true)
 	public Encounter getEncounter(Integer encounterId) throws APIException;
-	
+
+	@Transactional(readOnly=true)
+	public Encounter getEncounterByGuid(String guid) throws APIException;
+
 	/**
 	 * 
 	 * @param identifier
@@ -79,7 +82,10 @@ public interface EncounterService {
 	 */
 	@Transactional(readOnly=true)
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException;
-	
+
+	@Transactional(readOnly=true)
+	public EncounterType getEncounterTypeByGuid(String guid) throws APIException;
+
 	/**
 	 * Get encounterType by name
 	 * 
@@ -108,6 +114,9 @@ public interface EncounterService {
 	 */
 	@Transactional(readOnly=true)
 	public Location getLocation(Integer locationId) throws APIException;
+
+	@Transactional(readOnly=true)
+	public Location getLocationByGuid(String guid) throws APIException;
 
 	/**
 	 * Get location by name

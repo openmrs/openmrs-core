@@ -164,5 +164,29 @@ public interface EncounterDAO {
      * @return
      */
     public Collection<Encounter> getEncounters(Location loc, Date fromDate, Date toDate);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Encounter getEncounterByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public EncounterType getEncounterTypeByGuid(String guid);
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
+    public Location getLocationByGuid(String guid);
 	
 }

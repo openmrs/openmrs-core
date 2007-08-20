@@ -13,6 +13,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
@@ -241,6 +242,27 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				.addOrder(Order.asc("encounterDatetime"));
 
 		return crit.list();
+    }
+
+	/**
+     * @see org.openmrs.api.db.EncounterDAO#getEncounterByGuid(java.lang.String)
+     */
+    public Encounter getEncounterByGuid(String guid) {
+		return (Encounter) sessionFactory.getCurrentSession().createQuery("from Encounter e where e.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.EncounterDAO#getEncounterTypeByGuid(java.lang.String)
+     */
+    public EncounterType getEncounterTypeByGuid(String guid) {
+		return (EncounterType) sessionFactory.getCurrentSession().createQuery("from EncounterType et where et.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.EncounterDAO#getLocationByGuid(java.lang.String)
+     */
+    public Location getLocationByGuid(String guid) {
+		return (Location) sessionFactory.getCurrentSession().createQuery("from Location l where l.guid = :guid").setString("guid", guid).uniqueResult();
     }
 	
 }

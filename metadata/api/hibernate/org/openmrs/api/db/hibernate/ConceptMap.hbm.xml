@@ -11,7 +11,9 @@
 			column="concept_map_id" unsaved-value="0">
 			<generator class="native" />
 		</id>
-
+		
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
 
 		<property name="sourceId" type="java.lang.Integer"
 			column="source_id" length="11" />
