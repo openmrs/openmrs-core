@@ -214,12 +214,12 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
                     }
                     else
                     {
-                        log.warn("Type: " + typeName + " is not safe and has no GUID!");
+                        log.warn("Type: " + typeName  + " Field: " + propertyNames[i] + " is not safe and has no GUID!");
                     }
                 }
                 else
                 {
-                    log.warn("Type: " + typeName + " is null");
+                    log.warn("Type: " + typeName  + " Field: " + propertyNames[i] + " is null");
                 }
             }
 
