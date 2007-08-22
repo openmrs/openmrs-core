@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Interceptor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
@@ -24,6 +25,8 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
      */
     private SessionFactory sessionFactory;
     
+    private Interceptor nonSynchronizingInterceptor = new HibernateNonSynchronizingInterceptor();
+    
     public HibernateSynchronizationDAO() { }
     
     /**
@@ -36,8 +39,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
     }
     
     private Session getNonSynchronizingSession() {
-        Session session = SessionFactoryUtils.getNewSession(sessionFactory);
-        return session;
+        return SessionFactoryUtils.getNewSession(sessionFactory, nonSynchronizingInterceptor);
     }
     
     /**

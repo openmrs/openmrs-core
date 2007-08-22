@@ -141,7 +141,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
                           Type[] types) 
     {
         log.debug("onSave: " + state.toString());
-        return true;
+        return false;
     }
 
     public void onDelete(Object entity,
@@ -164,7 +164,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 
         packageObject(entity, currentState, propertyNames, types, SyncItemState.UPDATED);
 
-        return true;
+        return false;
     }
 
     @SuppressWarnings("unchecked")
