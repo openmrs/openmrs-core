@@ -466,7 +466,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
         return guid;
     }
 
-    public void setGuid(String value) {
+    public void setGuid(String guid) {
         this.guid = guid;
     }
     

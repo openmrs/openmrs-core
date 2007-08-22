@@ -434,7 +434,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable {
         return guid;
     }
 
-    public void setGuid(String value) {
+    public void setGuid(String guid) {
         this.guid = guid;
     }
     

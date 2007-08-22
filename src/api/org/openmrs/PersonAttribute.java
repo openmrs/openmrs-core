@@ -297,7 +297,7 @@ public class PersonAttribute implements java.io.Serializable {
         return guid;
     }
 
-    public void setGuid(String value) {
+    public void setGuid(String guid) {
         this.guid = guid;
     }
     

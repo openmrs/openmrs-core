@@ -144,7 +144,7 @@ public class PatientState {
         return guid;
     }
 
-    public void setGuid(String value) {
+    public void setGuid(String guid) {
         this.guid = guid;
     }
 	
