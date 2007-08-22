@@ -141,6 +141,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
                           Type[] types) 
     {
         log.debug("onSave: " + state.toString());
+        
+        packageObject(entity, state, propertyNames, types, SyncItemState.NEW);
+        
         return false;
     }
 
@@ -177,7 +180,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
         }
     }
 
-    private String packageObject(Object entity, Object[] currentState,
+    private void packageObject(Object entity, Object[] currentState,
                                String[] propertyNames, Type[] types, SyncItemState state)
     {
         HashMap <String, propertyClassValue> values = 
@@ -254,7 +257,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
             //FIXME: need to fetch GUID from object, just for testing.
             syncItem.setKey(new SyncItemKey<String>(UUID.randomUUID().toString())); 
             syncItem.setState(state);
-            syncItem.setContent(pkg.toString());
+            syncItem.setContent(xml.toString());
             
             List<SyncItem> items = new ArrayList<SyncItem>();
             items.add(syncItem);
@@ -271,14 +274,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
                 synchronizationService = Context.getSynchronizationService();
             }
             synchronizationService.createSyncRecord(record);
-            
-            // why?
-            return pkg.toString();
         }
         catch (Exception e) {
-            log.error("Journal error\n");
-            e.printStackTrace();
-            return null;
+            log.error("Journal error\n", e);
         }
     }
         
