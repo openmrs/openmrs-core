@@ -2,21 +2,13 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.openmrs.serial.Item;
-import org.openmrs.serial.Record;
-import org.openmrs.serial.converter.julie.JulieConverter;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
-
 /**
  * PersonAddress 
  * 
  * @author Ben Wolfe
  * @version 2.0
  */
-@Root
-public class PersonAddress implements java.io.Serializable, Cloneable, JulieConverter {
+public class PersonAddress implements java.io.Serializable, Cloneable {
 
 	public static final long serialVersionUID = 343333L;
 
@@ -25,14 +17,10 @@ public class PersonAddress implements java.io.Serializable, Cloneable, JulieConv
 	private Integer personAddressId;
 	
 	private Person person;
-	@Attribute
 	private Boolean preferred = false;
 
-	@Element
 	private String address1;
-	@Element
 	private String address2;
-	@Element
 	private String cityVillage;
 	private String neighborhoodCell;
 	private String countyDistrict;
@@ -40,7 +28,6 @@ public class PersonAddress implements java.io.Serializable, Cloneable, JulieConv
 	private String region;
 	private String subregion;
 	private String stateProvince;
-	@Element
 	private String country;
 	private String postalCode;
 	
@@ -48,9 +35,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, JulieConv
 	private String longitude;
 	
 	private User creator;
-	@Attribute
 	private Date dateCreated;
-	@Attribute
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
@@ -444,31 +429,6 @@ public class PersonAddress implements java.io.Serializable, Cloneable, JulieConv
 	public void setTownshipDivision(String townshipDivision) {
 		this.townshipDivision = townshipDivision;
 	}
-
-    /**
-     * @see org.openmrs.serial.converter.julie.JulieConverter#load(org.openmrs.serial.Record, org.openmrs.serial.Item)
-     */
-    public void load(Record xml, Item me) throws Exception {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /**
-     * @see org.openmrs.serial.converter.julie.JulieConverter#save(org.openmrs.serial.Record, org.openmrs.serial.Item)
-     */
-    public Item save(Record xml, Item parent) throws Exception {
-        Item me = xml.createItem(parent, "personaddress");
-        me.setAttribute("preferred", Boolean.toString(getPreferred()));
-        me.setAttribute("datecreated", getDateCreated().toString());
-        me.setAttribute("voided", Boolean.toString(getVoided()));
-        
-        xml.createText(xml.createItem(me, "address1"), getAddress1());
-        xml.createText(xml.createItem(me, "address2"), getAddress2());
-        xml.createText(xml.createItem(me, "cityvillage"), getCityVillage());
-        xml.createText(xml.createItem(me, "country"), getCountry());
-        
-        return me;
-    }
 
     public String getGuid() {
         return guid;

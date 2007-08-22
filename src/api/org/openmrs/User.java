@@ -9,13 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.serial.Item;
-import org.openmrs.serial.Record;
-import org.openmrs.serial.converter.julie.JulieConverter;
 import org.openmrs.util.OpenmrsConstants;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
 
 /**
  * Defines a User in the system.  A user is simply an extension
@@ -27,7 +21,6 @@ import org.simpleframework.xml.Root;
  * @author Ben Wolfe
  * @version 2.0
  */
-@Root
 public class User extends Person implements java.io.Serializable {
 
     private String guid;
@@ -43,7 +36,6 @@ public class User extends Person implements java.io.Serializable {
 	private Integer userId;
 	
 	private String systemId;
-	@Element
 	private String username;
 	private String secretQuestion;
 	private Set<Role> roles;
@@ -52,11 +44,9 @@ public class User extends Person implements java.io.Serializable {
 	private User creator;
 	private Date dateCreated;
 	
-	@Element(required=false)
 	private User changedBy;
 	private Date dateChanged;
 	
-	@Attribute
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
@@ -520,29 +510,4 @@ public class User extends Person implements java.io.Serializable {
 	public String getLastName() {
 		return getFamilyName();
 	}
-
-    /**
-     * @see org.openmrs.serial.converter.julie.JulieConverter#load(org.openmrs.serial.Record, org.openmrs.serial.Item)
-     */
-    public void load(Record xml, Item me) throws Exception {
-        // TODO Auto-generated method stub
-    }
-
-    /**
-     * @see org.openmrs.serial.converter.julie.JulieConverter#save(org.openmrs.serial.Record, org.openmrs.serial.Item)
-     */
-    public Item save(Record xml, Item parent) throws Exception {
-        Item me = super.save(xml, parent);
-        parent.setAttribute("uservoided", Boolean.toString(getVoided()));
-        xml.createText(xml.createItem(parent, "username"), getUsername());
-        
-        // loop through addresses
-        Item address = xml.createItem(me, "addresses");
-        Iterator<PersonAddress> addressIterator = getAddresses().iterator();
-        while (addressIterator.hasNext()) {
-            ((JulieConverter)addressIterator.next()).save(xml, address);
-        }
-        
-        return me;
-    }
 }

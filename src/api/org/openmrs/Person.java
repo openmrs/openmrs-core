@@ -12,11 +12,6 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.serial.Item;
-import org.openmrs.serial.Record;
-import org.openmrs.serial.converter.julie.JulieConverter;
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.ElementList;
 
 /**
  * User in the system.  Both Patient and User inherit the methods of this class
@@ -24,7 +19,7 @@ import org.simpleframework.xml.ElementList;
  * @author Ben Wolfe
  * @version 2.0
  */
-public class Person implements java.io.Serializable, JulieConverter {
+public class Person implements java.io.Serializable {
 
 	public static final Log log = LogFactory.getLog(Person.class);
 	
@@ -32,7 +27,6 @@ public class Person implements java.io.Serializable, JulieConverter {
 
 	protected Integer personId;
 	
-	@ElementList
 	private Set<PersonAddress> addresses = null;
 	private Set<PersonName> names = null;
 	private Set<PersonAttribute> attributes = null;
@@ -40,7 +34,6 @@ public class Person implements java.io.Serializable, JulieConverter {
 	private String gender;
 	private Date birthdate;
 	private Boolean birthdateEstimated = false;
-	@Attribute
 	private Boolean dead = false;
 	private Date deathDate;
 	private Concept causeOfDeath;
@@ -49,7 +42,6 @@ public class Person implements java.io.Serializable, JulieConverter {
 	private Date dateCreated;
 	private User changedBy;
 	private Date dateChanged;
-	@Attribute(name="personvoided")
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
@@ -665,35 +657,6 @@ public class Person implements java.io.Serializable, JulieConverter {
 	public String toString() {
 		return "Person(personId=" + personId + ")";
 	}
-
-    /**
-     * @see org.openmrs.serial.converter.julie.JulieConverter#load(org.openmrs.serial.Record, org.openmrs.serial.Item)
-     */
-    public void load(Record xml, Item me) throws Exception {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /**
-     * @see org.openmrs.serial.converter.julie.JulieConverter#save(org.openmrs.serial.Record, org.openmrs.serial.Item)
-     */
-    public Item save(Record xml, Item parent) throws Exception {
-        Item me = xml.createItem(parent, "person");
-        me.setAttribute("personvoided", Boolean.toString(getVoided()));
-        me.setAttribute("dead", Boolean.toString(getDead()));
-        
-        // could be moved to parent in stead
-        if (getBirthdate() != null) {
-            Item birthdateItem = xml.createItem(me, "birthdate");
-            xml.createText(birthdateItem, getBirthdate().toString());
-            birthdateItem.setAttribute("birthdateestimated", Boolean.toString(getBirthdateEstimated()));
-        }
-        
-        // Doesn't handle circular references
-        //getChangedBy().save(xml, me);
-        
-        return me;
-    }
 
     public String getGuid() {
         return guid;

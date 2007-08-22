@@ -10,8 +10,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.openmrs.serial.*;
-
 /**
  * Defines a Patient in the system.  A patient is simply an extension
  * of a person and all that that implies.
@@ -23,28 +21,6 @@ import org.openmrs.serial.*;
 public class Patient extends Person 
     implements java.io.Serializable
 {
-    public Item save(Record xml, Item parent) throws Exception
-    {
-		Item me = xml.createItem(parent, getClass().getName());
-        xml.setAttribute(me, "patient_id", Integer.toString(patientId));
-
-        xml.setAttribute(me, "tribe_id", Integer.toString(tribe.getTribeId()));
-
-        java.util.Iterator it = identifiers.iterator();
-        while (it!=null && it.hasNext())
-        {
-            PatientIdentifier pi = (PatientIdentifier)it.next();
-            //pi.save(xml, me);
-        }
-
-        //creator.save(xml, me);
-        return me;
-    }
-
-    public void load(Record xml, Item me) throws Exception
-    {
-    }
-
 	public static final long serialVersionUID = 93123L;
 	protected static final Log log = LogFactory.getLog(Patient.class);
 
