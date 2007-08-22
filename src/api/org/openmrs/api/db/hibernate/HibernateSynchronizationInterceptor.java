@@ -257,7 +257,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
             //FIXME: need to fetch GUID from object, just for testing.
             syncItem.setKey(new SyncItemKey<String>(UUID.randomUUID().toString())); 
             syncItem.setState(state);
-            syncItem.setContent(xml.toString());
+            //syncItem.setContent(xml.toString());
+            syncItem.setContent(xml.toStringAsDocumentFragement());
             
             List<SyncItem> items = new ArrayList<SyncItem>();
             items.add(syncItem);

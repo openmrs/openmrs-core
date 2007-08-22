@@ -16,6 +16,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
+import org.w3c.dom.ls.LSOutput;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -122,8 +127,8 @@ public class Record
         transformer.setOutputProperty(OutputKeys.ENCODING, UTF8);
         transformer.setOutputProperty(OutputKeys.STANDALONE, YESSTR);
         transformer.transform(source, res);
-	}
-
+	}    
+    
 	/** Create an item and stitch it in
 	* @param parent Item
 	* @param item name
@@ -185,6 +190,28 @@ public class Record
 			return null;
 		}
 	}
+    
+    public String toStringAsDocumentFragement() {
+        try {
+            //setup
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();           
+            DOMImplementation impl = builder.getDOMImplementation();
+            DOMImplementationLS implLS = (DOMImplementationLS)impl;
+
+            //serialize
+            LSSerializer lsSerializer = implLS.createLSSerializer();
+            lsSerializer.getDomConfig().setParameter("xml-declaration", false);
+            LSOutput lsOut = implLS.createLSOutput();
+            lsOut.setEncoding(UTF8);            
+            return lsSerializer.writeToString(m_doc.getDocumentElement());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        
+    }
 
 	/** Convert the response for transmit
 	*/
