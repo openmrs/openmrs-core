@@ -23,17 +23,13 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class User extends Person implements java.io.Serializable {
 
-    private String guid;
-
-    public String getGUID() {return guid;}
-    public void setGUID(String s){guid=s;}
-
 	public static final long serialVersionUID = 4489L;
 	public Log log = LogFactory.getLog(getClass());
 
 	// Fields
 	
 	private Integer userId;
+    private String guid;
 	
 	private String systemId;
 	private String username;
@@ -510,4 +506,12 @@ public class User extends Person implements java.io.Serializable {
 	public String getLastName() {
 		return getFamilyName();
 	}
+	
+	public String getGuid() {
+	    return guid;
+	}
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
 }
