@@ -2,10 +2,15 @@ package org.openmrs.synchronization.engine;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.openmrs.serial.Item;
+import org.openmrs.serial.IItem;
+import org.openmrs.serial.Record;
 
 /**
  * SyncRecord is a collection of sync items that represents a smallest transactional unit.
@@ -21,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
  * source A to source B.
  * 
  */
-public class SyncRecord implements Serializable {
+public class SyncRecord implements Serializable, IItem {
 
     public static final long serialVersionUID = 0L;
 
@@ -85,4 +90,29 @@ public class SyncRecord implements Serializable {
         this.items = items;
     }
 
+    public Item save(Record xml, Item parent) throws Exception {
+        Item me = xml.createItem(parent, this.getClass().getName());
+        
+        //serialize primitives
+        xml.setAttribute(me, "guid", guid);
+        xml.setAttribute(me, "retryCount", Integer.toString(retryCount));
+        xml.setAttribute(me, "state", state.toString());
+        //TODO: xml.setAttribute(me, "timestamp", timestamp.);
+        
+        //serialize IItem children
+        Item itemsCollection = xml.createItem(me,"items");
+        if (items != null)
+        {
+            Iterator<SyncItem> iterator = items.iterator();
+            while (iterator.hasNext()) {
+                iterator.next().save(xml,itemsCollection);
+            }
+        };
+
+        return me;
+    }
+
+    public void load(Record xml, Item me) throws Exception {
+        // TODO
+    }
 }

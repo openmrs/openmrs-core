@@ -1,9 +1,13 @@
 package org.openmrs.synchronization.engine;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.serial.Item;
+import org.openmrs.serial.IItem;
+import org.openmrs.serial.Record;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -12,7 +16,7 @@ import org.simpleframework.xml.Root;
  *
  */
 @Root
-public class SyncItem implements Serializable {
+public class SyncItem implements Serializable, IItem {
 
     public static final long serialVersionUID = 0L;
     public Log log = LogFactory.getLog(this.getClass());
@@ -77,4 +81,22 @@ public class SyncItem implements Serializable {
         }
     }
 
+    public Item save(Record xml, Item parent) throws Exception {
+        Item me = xml.createItem(parent, this.getClass().getName());
+
+        //serialize primitives
+        xml.setAttribute(me, "state", state.toString());
+        Item keyItem = xml.createItem(me, "key");
+        if (key != null) {
+            key.save(xml,keyItem);
+        }
+        Item keyContent = xml.createItem(me, "content");
+        if (content != null) xml.createText(keyContent,content);
+                
+        return me;
+    }
+
+    public void load(Record xml, Item me) throws Exception {
+        // TODO
+    }
 }
