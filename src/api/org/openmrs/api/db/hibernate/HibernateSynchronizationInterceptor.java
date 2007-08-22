@@ -113,9 +113,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
     static timestampNormalizer tsN = new timestampNormalizer();
 
     static final String sp = "_";
-    static final java.util.HashMap <String,normalizer> safetypes;
+    static final Map<String,normalizer> safetypes;
     static {
-        safetypes = new java.util.HashMap<String,normalizer>();
+        safetypes = new HashMap<String,normalizer>();
         safetypes.put("string", defN);
         safetypes.put("timestamp", tsN);
         safetypes.put("boolean", defN);
@@ -162,7 +162,6 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
                                 String[] propertyNames,
                                 Type[] types) 
     {
-        
         log.debug("onFlushDirty: " + entity.getClass().getName());
 
         packageObject(entity, currentState, propertyNames, types, SyncItemState.UPDATED);
@@ -171,7 +170,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
     }
 
     @SuppressWarnings("unchecked")
-    public void postFlush(java.util.Iterator entities)
+    public void postFlush(Iterator entities)
     {
         while (false && entities.hasNext())
         {
@@ -187,15 +186,6 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
             new HashMap <String, propertyClassValue> ();
 
         try {
-            // testing name generator
-            Calendar calendar = new GregorianCalendar();
-            String filename = calendar.get(Calendar.YEAR) + sp
-                    + calendar.get(Calendar.MONTH) + sp
-                    + calendar.get(Calendar.DATE) + sp
-                    + calendar.get(Calendar.HOUR) + sp
-                    + calendar.get(Calendar.MINUTE) + sp
-                    + calendar.get(Calendar.MILLISECOND);
-            
             // use Package when you don't want files on disk
             //org.openmrs.serial.Package pkg = new org.openmrs.serial.Package();
             org.openmrs.serial.Package pkg = new FilePackage();
@@ -246,6 +236,15 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 
             // look up, see how this was created
             if (pkg instanceof FilePackage) {
+                // testing name generator
+                Calendar calendar = new GregorianCalendar();
+                String filename = calendar.get(Calendar.YEAR) + sp
+                        + calendar.get(Calendar.MONTH) + sp
+                        + calendar.get(Calendar.DATE) + sp
+                        + calendar.get(Calendar.HOUR) + sp
+                        + calendar.get(Calendar.MINUTE) + sp
+                        + calendar.get(Calendar.MILLISECOND);
+                
                 pkg.savePackage(OpenmrsUtil.getApplicationDataDirectory() + "/journal/" + filename);
             }
 
@@ -291,7 +290,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
             xml.createText(item, data);
         }
     }
-                
+
     private String getGuid(Object object)
     {
         String methodName = "getGuid";
