@@ -67,9 +67,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
     static TimestampNormalizer tsN = new TimestampNormalizer();
 
     static final String sp = "_";
-    static final Map<String,Normalizer> safetypes;
+    static final Map<String, Normalizer> safetypes;
     static {
-        safetypes = new HashMap<String,Normalizer>();
+        safetypes = new HashMap<String, Normalizer>();
         safetypes.put("string", defN);
         safetypes.put("timestamp", tsN);
         safetypes.put("boolean", defN);

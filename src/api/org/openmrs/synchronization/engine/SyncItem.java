@@ -1,13 +1,11 @@
 package org.openmrs.synchronization.engine;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.serial.Item;
 import org.openmrs.serial.IItem;
+import org.openmrs.serial.Item;
 import org.openmrs.serial.Record;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -87,30 +85,36 @@ public class SyncItem implements Serializable, IItem {
 
         //serialize primitives
         xml.setAttribute(me, "state", state.toString());
+        
         Item itemKey = xml.createItem(me, "key");
         if (key != null) {
-            key.save(xml,itemKey);
+            key.save(xml, itemKey);
         }
+        
         Item itemContent = xml.createItem(me, "content");
-        if (content != null) xml.createTextAsCDATA(itemContent,content);
-                
+        if (content != null) {
+            xml.createTextAsCDATA(itemContent, content);
+        }
+        
         return me;
     }
 
     public void load(Record xml, Item me) throws Exception {
-
         state = SyncItem.SyncItemState.valueOf(me.getAttribute("state"));
         Item itemKey = xml.getItem(me, "key");
         
-        if (itemKey.isEmpty())
+        if (itemKey.isEmpty()) {
             key = null;
-        else
-        {
+        } else {
             key = new SyncItemKey();
-            key.load(xml,itemKey);
+            key.load(xml, itemKey);
         }
         
         Item itemContent = xml.getItem(me, "content");
-        content = itemContent.isEmpty()? null : itemContent.getText();
+        if (itemContent.isEmpty()) {
+            content = null;
+        } else {
+            content = itemContent.getText();
+        }
     }
 }

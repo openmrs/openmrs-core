@@ -7,11 +7,16 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
 * Represents a set of serialized objects with a disposition
 */
 public class FilePackage extends Package
 {
+    private static Log log = LogFactory.getLog(FilePackage.class);
+    
     public FilePackage()
     {
     }
@@ -58,8 +63,7 @@ public class FilePackage extends Package
 			dos.write(bits, 0, len);
 		}
 		catch (Exception e) {
-			System.out.println("writeFile exception " + e.getMessage()
-									+ " on file " + fname);
+			log.error("Could not write file: " + fname, e);
 			return false;
 		}
 		finally {

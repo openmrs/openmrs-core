@@ -99,15 +99,19 @@ public class SyncRecord implements Serializable, IItem {
         xml.setAttribute(me, "guid", guid);
         xml.setAttribute(me, "retryCount", Integer.toString(retryCount));
         xml.setAttribute(me, "state", state.toString());
-        xml.setAttribute(me, "timestamp", (timestamp == null) ? "" : new TimestampNormalizer().toString(timestamp));
+        
+        if (timestamp == null) {
+        	xml.setAttribute(me, "timestamp", "");
+        } else {
+        	xml.setAttribute(me, "timestamp", new TimestampNormalizer().toString(timestamp));
+        }
         
         //serialize IItem children
-        Item itemsCollection = xml.createItem(me,"items");
-        if (items != null)
-        {
+        Item itemsCollection = xml.createItem(me, "items");
+        if (items != null) {
             Iterator<SyncItem> iterator = items.iterator();
             while (iterator.hasNext()) {
-                iterator.next().save(xml,itemsCollection);
+                iterator.next().save(xml, itemsCollection);
             }
         };
 
@@ -124,17 +128,16 @@ public class SyncRecord implements Serializable, IItem {
         //now get items
         Item itemsCollection = xml.getItem(me, "items");
         
-        if (itemsCollection.isEmpty())
+        if (itemsCollection.isEmpty()) {
             items = null;
-        else {
+        } else {
             items = new ArrayList<SyncItem>();
             List<Item> serItems = xml.getItems(itemsCollection);
-            for (int i = 0; i < serItems.size(); i++)
-            {
+            for (int i = 0; i < serItems.size(); i++) {
                 Item serItem = serItems.get(i);
                 SyncItem syncItem = new SyncItem();
                 syncItem.load(xml, serItem);
-                items.add(syncItem);        
+                items.add(syncItem);
             }
         }
     }

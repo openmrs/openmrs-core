@@ -1,7 +1,6 @@
 package org.openmrs.api.db.hibernate.usertype;
 
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,17 +12,10 @@ import java.util.List;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
-import org.openmrs.synchronization.engine.SyncItem;
-import org.openmrs.serial.FilePackage;
 import org.openmrs.serial.Item;
-import org.openmrs.serial.IItem;
 import org.openmrs.serial.Package;
 import org.openmrs.serial.Record;
-
-import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.load.Persister;
+import org.openmrs.synchronization.engine.SyncItem;
 
 public class SyncItemListSerializingUserType implements UserType {
 
@@ -89,7 +81,7 @@ public class SyncItemListSerializingUserType implements UserType {
                 //FIXME: length conversion from long to int might be a problem in theory. UTF8 as well. Better off with the Reader?
                 String content = clob.getSubString(1, (int)clob.length());
              
-                SyncItemList list = new SyncItemList();
+                //SyncItemList list = new SyncItemList();
                 
                 /* SIMPLE code
                 Serializer serializer = new Persister();
@@ -101,11 +93,12 @@ public class SyncItemListSerializingUserType implements UserType {
                 }
                 */
                 
-                if (list != null) {
+                /*if (list != null) {
                     return list.getItems();
                 } else {
                     return null;
-                }
+                }*/
+                return null;
             }
         }
     }
@@ -119,29 +112,23 @@ public class SyncItemListSerializingUserType implements UserType {
         if (value == null) {
             ps.setNull(index, Types.CLOB);
         } else {
-            SyncItemList items = new SyncItemList((List<SyncItem>) value);
-                     
-            /* Simple code 
-            Serializer serializer = new Persister();
-            StringWriter writer = new StringWriter();
-            try {
-                serializer.write(items, writer);
-            } catch (Exception e) {
-                throw new HibernateException("Failed to serialize object for storage", e);
-            }
-            */
+            List<SyncItem> items = (List<SyncItem>) value;
 
-            try {                
-                FilePackage pkg = new FilePackage();
-                Record record = pkg.createRecordForWrite("SyncItemList");
-                Item top = record.getRootItem();
-                ((IItem)items).save(record, top);
+            org.openmrs.serial.Package pkg = new Package();
+            Record record;
+            try {
+                record = pkg.createRecordForWrite("items");
+                Item root = record.getRootItem();
                 
-                ps.setClob(index, Hibernate.createClob(record.toStringAsDocumentFragement()));
+                Iterator<SyncItem> iterator = items.iterator();
+                while(iterator.hasNext()) {
+                    iterator.next().save(record, root);
+                }
+            } catch (Exception e) {
+                throw new HibernateException("Could not serialize SyncItems", e);
             }
-            catch(Exception e) {
-                throw new HibernateException("Failed to serialize object for storage", e);
-            }
+            
+            ps.setClob(index, Hibernate.createClob(record.toStringAsDocumentFragement()));
         }
     }
 
@@ -166,43 +153,5 @@ public class SyncItemListSerializingUserType implements UserType {
      */
     public int[] sqlTypes() {
         return SQL_TYPES;
-    }
-
-    // Workaround for missing access to SyncRecord so that Simple can serialize the list
-    @Root(name="SyncItems")
-    private class SyncItemList implements IItem {
-        @SuppressWarnings("unused")
-        @ElementList(inline=true)
-        private List<SyncItem> items = null;
-        
-        public SyncItemList() { }
-        
-        public SyncItemList(List<SyncItem> items) {
-            this.items = items;
-        }
-        
-        public List<SyncItem> getItems() {
-            return items;
-        }
-
-        public Item save(Record xml, Item parent) throws Exception {
-                        
-            //serialize the collection - write directly to parent
-            Item itemsCollection = xml.createItem(parent,"items");
-            if (items != null)
-            {
-                Iterator<SyncItem> iterator = items.iterator();
-                while (iterator.hasNext()) {
-                    iterator.next().save(xml,itemsCollection);
-                }
-            };
-
-            return parent;
-        }
-
-        public void load(Record xml, Item me) throws Exception {
-            // TODO
-        }
-        
     }
 }

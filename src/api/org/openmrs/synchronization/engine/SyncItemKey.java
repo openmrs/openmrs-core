@@ -41,6 +41,7 @@ public class SyncItemKey<T> implements Serializable, IItem {
     public T getKeyValue(){
         return keyValue;
     } 
+    
     public void setKeyValue (T keyValue){
         assert (keyValue != null);
         this.keyValue = keyValue;
@@ -76,10 +77,14 @@ public class SyncItemKey<T> implements Serializable, IItem {
     
     public Item save(Record xml, Item parent) throws Exception {
         Item me = xml.createItem(parent, this.getClass().getName());
-        if (genericType != null)
-            me.setAttribute("type",this.genericType.getName() );
-        else
-            me.setAttribute("type","" );
+        
+        if (genericType != null) {
+            me.setAttribute("type", this.genericType.getName() );
+        }
+        else {
+            me.setAttribute("type", "");
+        }
+        
         me.setAttribute("value", getKeyValue().toString() );
         
         return me;
