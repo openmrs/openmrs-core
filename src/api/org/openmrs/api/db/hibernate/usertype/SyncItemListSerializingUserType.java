@@ -7,12 +7,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 import org.openmrs.synchronization.engine.SyncItem;
+import org.openmrs.serial.FilePackage;
+import org.openmrs.serial.Item;
+import org.openmrs.serial.IItem;
+import org.openmrs.serial.Package;
+import org.openmrs.serial.Record;
+
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Serializer;
@@ -81,7 +88,10 @@ public class SyncItemListSerializingUserType implements UserType {
             } else {
                 //FIXME: length conversion from long to int might be a problem in theory. UTF8 as well. Better off with the Reader?
                 String content = clob.getSubString(1, (int)clob.length());
+             
+                SyncItemList list = new SyncItemList();
                 
+                /* SIMPLE code
                 Serializer serializer = new Persister();
                 SyncItemList list = new SyncItemList();
                 try {
@@ -89,6 +99,7 @@ public class SyncItemListSerializingUserType implements UserType {
                 } catch (Exception e) {
                     throw new HibernateException("Could not deserialize object from storage", e);
                 }
+                */
                 
                 if (list != null) {
                     return list.getItems();
@@ -109,9 +120,8 @@ public class SyncItemListSerializingUserType implements UserType {
             ps.setNull(index, Types.CLOB);
         } else {
             SyncItemList items = new SyncItemList((List<SyncItem>) value);
-            
-            //FIXME: Use something like Julies solution for SyncItem, SyncItemKey classes
-            // For now I'll stick with Simple 
+                     
+            /* Simple code 
             Serializer serializer = new Persister();
             StringWriter writer = new StringWriter();
             try {
@@ -119,8 +129,19 @@ public class SyncItemListSerializingUserType implements UserType {
             } catch (Exception e) {
                 throw new HibernateException("Failed to serialize object for storage", e);
             }
+            */
 
-            ps.setClob(index, Hibernate.createClob(writer.toString()));
+            try {                
+                FilePackage pkg = new FilePackage();
+                Record record = pkg.createRecordForWrite("SyncItemList");
+                Item top = record.getRootItem();
+                ((IItem)items).save(record, top);
+                
+                ps.setClob(index, Hibernate.createClob(record.toStringAsDocumentFragement()));
+            }
+            catch(Exception e) {
+                throw new HibernateException("Failed to serialize object for storage", e);
+            }
         }
     }
 
@@ -149,7 +170,7 @@ public class SyncItemListSerializingUserType implements UserType {
 
     // Workaround for missing access to SyncRecord so that Simple can serialize the list
     @Root(name="SyncItems")
-    private class SyncItemList {
+    private class SyncItemList implements IItem {
         @SuppressWarnings("unused")
         @ElementList(inline=true)
         private List<SyncItem> items = null;
@@ -163,5 +184,25 @@ public class SyncItemListSerializingUserType implements UserType {
         public List<SyncItem> getItems() {
             return items;
         }
+
+        public Item save(Record xml, Item parent) throws Exception {
+                        
+            //serialize the collection - write directly to parent
+            Item itemsCollection = xml.createItem(parent,"items");
+            if (items != null)
+            {
+                Iterator<SyncItem> iterator = items.iterator();
+                while (iterator.hasNext()) {
+                    iterator.next().save(xml,itemsCollection);
+                }
+            };
+
+            return parent;
+        }
+
+        public void load(Record xml, Item me) throws Exception {
+            // TODO
+        }
+        
     }
 }

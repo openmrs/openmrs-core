@@ -4,6 +4,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.w3c.dom.CDATASection;
 
 /* An container class to hide XML details
  * from the user
@@ -32,9 +33,15 @@ public class Item
 	{
 		getElement().removeAttribute(sName);
 	}
+    
+    public boolean isEmpty()
+    {
+        return (!m_node.hasChildNodes() && !m_node.hasAttributes()) ;
+    }
 
     /** Retrieve the content of an item created via
-     * xml_serializer.createText(Item parent, String data)
+     * xml_serializer.createText(Item parent, String data) *or* 
+     * xml_serializer.createTextAsCDATA(Item parent, String data) 
      */
 	public String getText()
 	{
@@ -61,9 +68,9 @@ public class Item
 		for (int j = 0; j < sz; j++)
 		{
 			Node node = cdata.item(j);
-			if (node.getNodeType() == Node.TEXT_NODE)
+			if (node.getNodeType() == Node.TEXT_NODE || node.getNodeType() == Node.CDATA_SECTION_NODE)
 			{
-				Text sec = (Text)node;
+				Text sec = (Text)node; //note: CDATASection is derived from Text
 				sec.normalize();
 				data.append(sec.getData().trim());
 			}

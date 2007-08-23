@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.w3c.dom.CDATASection;
 
 /** An XML serialization object using a DOM tree which represents
 * itself as a parent-child structure of nodes with attributes to 
@@ -322,6 +323,28 @@ public class Record
 
 		return new Item(element);
 	}
+
+    /** Create a text item child that is CDATA section
+     * @param parent item
+     * @param text
+     * @return the new item
+     */
+    public Item createTextAsCDATA(Item parent, String data) throws Exception
+    {
+        Element who = parent.getElement();
+        CDATASection element = m_doc.createCDATASection(data);
+
+        if (who==null)
+        {
+            m_doc.appendChild(element);
+        }
+        else
+        {
+            who.appendChild(element);
+        }
+
+        return new Item(element);
+    }
 
     /** Grab the contents of a text-only item
      */

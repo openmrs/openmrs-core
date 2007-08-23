@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.serial.Item;
 import org.openmrs.serial.IItem;
 import org.openmrs.serial.Record;
+import org.openmrs.serial.TimestampNormalizer;
 
 /**
  * SyncRecord is a collection of sync items that represents a smallest transactional unit.
@@ -97,7 +99,7 @@ public class SyncRecord implements Serializable, IItem {
         xml.setAttribute(me, "guid", guid);
         xml.setAttribute(me, "retryCount", Integer.toString(retryCount));
         xml.setAttribute(me, "state", state.toString());
-        //TODO: xml.setAttribute(me, "timestamp", timestamp.);
+        xml.setAttribute(me, "timestamp", (timestamp == null) ? "" : new TimestampNormalizer().toString(timestamp));
         
         //serialize IItem children
         Item itemsCollection = xml.createItem(me,"items");
@@ -113,6 +115,27 @@ public class SyncRecord implements Serializable, IItem {
     }
 
     public void load(Record xml, Item me) throws Exception {
-        // TODO
+
+        // !! WORK IN PROGRESS !!
+        
+        //deserialize primitives
+        //TODO
+
+        //now get items
+        Item itemsCollection = xml.getItem(me, "items");
+        
+        if (itemsCollection.isEmpty())
+            items = null;
+        else {
+            items = new ArrayList<SyncItem>();
+            List<Item> serItems = xml.getItems(itemsCollection);
+            for (int i = 0; i < serItems.size(); i++)
+            {
+                Item serItem = serItems.get(i);
+                SyncItem syncItem = new SyncItem();
+                syncItem.load(xml, serItem);
+                items.add(syncItem);        
+            }
+        }
     }
 }

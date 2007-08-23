@@ -1,6 +1,7 @@
 package org.openmrs.synchronization.engine;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
@@ -86,17 +87,30 @@ public class SyncItem implements Serializable, IItem {
 
         //serialize primitives
         xml.setAttribute(me, "state", state.toString());
-        Item keyItem = xml.createItem(me, "key");
+        Item itemKey = xml.createItem(me, "key");
         if (key != null) {
-            key.save(xml,keyItem);
+            key.save(xml,itemKey);
         }
-        Item keyContent = xml.createItem(me, "content");
-        if (content != null) xml.createText(keyContent,content);
+        Item itemContent = xml.createItem(me, "content");
+        if (content != null) xml.createTextAsCDATA(itemContent,content);
                 
         return me;
     }
 
     public void load(Record xml, Item me) throws Exception {
-        // TODO
+
+        state = SyncItem.SyncItemState.valueOf(me.getAttribute("state"));
+        Item itemKey = xml.getItem(me, "key");
+        
+        if (itemKey.isEmpty())
+            key = null;
+        else
+        {
+            key = new SyncItemKey();
+            key.load(xml,itemKey);
+        }
+        
+        Item itemContent = xml.getItem(me, "content");
+        content = itemContent.isEmpty()? null : itemContent.getText();
     }
 }
