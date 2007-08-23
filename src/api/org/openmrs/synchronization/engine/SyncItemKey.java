@@ -22,12 +22,6 @@ public class SyncItemKey<T> implements Serializable, IItem {
     private Class<T> genericType = null; 
 
     // Constructors
-    public SyncItemKey() {} //REMOVE
-    public SyncItemKey(T keyValue) { //REMOVE
-        assert (keyValue != null);
-        this.keyValue = keyValue;
-    }
-
     public SyncItemKey(Class<T> genericTypeValue) {
         genericType = genericTypeValue;
     }
@@ -79,7 +73,7 @@ public class SyncItemKey<T> implements Serializable, IItem {
         Item me = xml.createItem(parent, this.getClass().getName());
         
         if (genericType != null) {
-            me.setAttribute("type", this.genericType.getName() );
+            me.setAttribute("type", genericType.getName() );
         }
         else {
             me.setAttribute("type", "");
@@ -90,6 +84,7 @@ public class SyncItemKey<T> implements Serializable, IItem {
         return me;
     }
 
+    @SuppressWarnings("unchecked")
     public void load(Record xml, Item me) throws Exception {
         //TODO: is this adequate for type safety?
         if (this.genericType.getName().equals(me.getAttribute("type"))) 

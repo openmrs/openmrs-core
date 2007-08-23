@@ -61,7 +61,7 @@ public class SynchronizationStatusListController extends SimpleFormController {
 		//default empty Object
 		List<SyncRecord> recordList = new ArrayList<SyncRecord>();
 		
-		//only fill the Object is the user has authenticated properly
+		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 		    SynchronizationService ss = Context.getSynchronizationService();
 		    recordList.addAll(ss.getSyncRecords());

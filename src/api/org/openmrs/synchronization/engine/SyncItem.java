@@ -7,14 +7,11 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.serial.IItem;
 import org.openmrs.serial.Item;
 import org.openmrs.serial.Record;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
 
 /**
  * Atomic unit of the sync process.
  *
  */
-@Root
 public class SyncItem implements Serializable, IItem {
 
     public static final long serialVersionUID = 0L;
@@ -30,17 +27,16 @@ public class SyncItem implements Serializable, IItem {
     };
  
     // Fields
-    private SyncItemKey key = null;
+    private SyncItemKey<?> key = null;
     private SyncItemState state = SyncItemState.UNKNOWN;
-    @Element(data=true)
     private String content = null;
     
     // Properties
-    public SyncItemKey getKey() {
+    public SyncItemKey<?> getKey() {
         return key;
     }
     
-    public void setKey(SyncItemKey key) {
+    public void setKey(SyncItemKey<?> key) {
         this.key = key;
     }
 
@@ -116,9 +112,9 @@ public class SyncItem implements Serializable, IItem {
             if (keyType.equals("java.lang.String")) {
                 key = new SyncItemKey<String>(String.class);
                 key.load(xml, xml.getFirstItem(itemKey));
-            }
-            else
+            } else {
                 throw new SyncException("Failed to deserialize SyncItem, could not create sync key of type: " + keyType);
+            }
         }
         
         Item itemContent = xml.getItem(me, "content");

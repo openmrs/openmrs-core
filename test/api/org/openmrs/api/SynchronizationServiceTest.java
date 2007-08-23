@@ -44,12 +44,12 @@ public class SynchronizationServiceTest extends BaseTest {
         SyncItem item1 = new SyncItem();
         item1.setContent("<Person><Name>Some Person</Name></Person>");
         item1.setState(SyncItemState.NEW);
-        item1.setKey(new SyncItemKey<String>(UUID.randomUUID().toString()));
+        item1.setKey(new SyncItemKey<String>(UUID.randomUUID().toString(), String.class));
 
         SyncItem item2 = new SyncItem();
         item2.setContent("<PersonAddress><Street>Some Street</Street></PersonAddress>");
         item2.setState(SyncItemState.UPDATED);
-        item2.setKey(new SyncItemKey<String>(UUID.randomUUID().toString()));
+        item2.setKey(new SyncItemKey<String>(UUID.randomUUID().toString(), String.class));
 
         // Add them to the list
         List<SyncItem> items = new ArrayList<SyncItem>();

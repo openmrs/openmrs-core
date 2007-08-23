@@ -208,9 +208,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
             // Store change in sync table:
             SyncItem syncItem = new SyncItem();
             //FIXME: need to fetch GUID from object, just for testing.
-            syncItem.setKey(new SyncItemKey<String>(UUID.randomUUID().toString())); 
+            syncItem.setKey(new SyncItemKey<String>(UUID.randomUUID().toString(), String.class)); 
             syncItem.setState(state);
-            //syncItem.setContent(xml.toString());
             syncItem.setContent(xml.toStringAsDocumentFragement());
             
             List<SyncItem> items = new ArrayList<SyncItem>();

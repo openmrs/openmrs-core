@@ -106,6 +106,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
     public List<SyncRecord> getSyncRecords() throws DAOException {
         return getNonSynchronizingSession()
             .createCriteria(SyncRecord.class)
+            .addOrder(Order.asc("timestamp"))
             .list();
     }
 
@@ -117,6 +118,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
         return getNonSynchronizingSession()
             .createCriteria(SyncRecord.class)
             .add(Restrictions.eq("state", state))
+            .addOrder(Order.asc("timestamp"))
             .list();
     }
     
@@ -128,6 +130,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
         return getNonSynchronizingSession()
             .createCriteria(SyncRecord.class)
             .add(Restrictions.gt("timestamp", from)) // greater than
+            .addOrder(Order.asc("timestamp"))
             .list();
     }
 
@@ -141,6 +144,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             .createCriteria(SyncRecord.class)
             .add(Restrictions.gt("timestamp", from)) // greater than
             .add(Restrictions.le("timestamp", to)) // less-than or equal
+            .addOrder(Order.asc("timestamp"))
             .list();
     }
 }

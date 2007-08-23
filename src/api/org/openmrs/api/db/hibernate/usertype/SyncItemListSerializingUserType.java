@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -81,24 +82,27 @@ public class SyncItemListSerializingUserType implements UserType {
                 //FIXME: length conversion from long to int might be a problem in theory. UTF8 as well. Better off with the Reader?
                 String content = clob.getSubString(1, (int)clob.length());
              
-                //SyncItemList list = new SyncItemList();
+                List<SyncItem> items = new ArrayList<SyncItem>();
                 
-                /* SIMPLE code
-                Serializer serializer = new Persister();
-                SyncItemList list = new SyncItemList();
+                Package pkg = new Package();
                 try {
-                    list = serializer.read(list, content);
+                    Record record = pkg.createRecordFromString(content);
+                    Item root = record.getRootItem();
+                    List<Item> itemsToDeSerialize = record.getItems(root);
+                    
+                    Iterator<Item> iterator = itemsToDeSerialize.iterator();
+                    while(iterator.hasNext()) {
+                        SyncItem item = new SyncItem();
+                        item.load(record, iterator.next());
+                        
+                        // Add de-serialized item to list
+                        items.add(item);
+                    }
                 } catch (Exception e) {
                     throw new HibernateException("Could not deserialize object from storage", e);
                 }
-                */
                 
-                /*if (list != null) {
-                    return list.getItems();
-                } else {
-                    return null;
-                }*/
-                return null;
+                return items;
             }
         }
     }
