@@ -66,7 +66,12 @@ public class SyncItem implements Serializable, IItem {
         if (!(o instanceof SyncItem))
             return false;
 
-        return ((SyncItem) o).getKey().equals(key);
+        SyncItem oSync = (SyncItem) o;
+        boolean same = oSync.getKey().equals(this.getKey()) 
+            && oSync.getContent().equals(this.getContent())
+            && oSync.getState().equals(this.getState());
+        
+        return same;
     }
 
     @Override
@@ -88,6 +93,7 @@ public class SyncItem implements Serializable, IItem {
         
         Item itemKey = xml.createItem(me, "key");
         if (key != null) {
+            xml.setAttribute(itemKey,"key-type",key.getKeyValue().getClass().getName());
             key.save(xml, itemKey);
         }
         
@@ -106,8 +112,13 @@ public class SyncItem implements Serializable, IItem {
         if (itemKey.isEmpty()) {
             key = null;
         } else {
-            key = new SyncItemKey();
-            key.load(xml, itemKey);
+            String keyType = itemKey.getAttribute("key-type");
+            if (keyType.equals("java.lang.String")) {
+                key = new SyncItemKey<String>(String.class);
+                key.load(xml, xml.getFirstItem(itemKey));
+            }
+            else
+                throw new SyncException("Failed to deserialize SyncItem, could not create sync key of type: " + keyType);
         }
         
         Item itemContent = xml.getItem(me, "content");

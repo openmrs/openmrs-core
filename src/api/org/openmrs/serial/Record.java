@@ -398,6 +398,7 @@ public class Record
 		return getItemFromNode(m_doc, nname);
 	}
 
+    
 	/** Find a named element, child of
 	* @param parent
 	* @param name
@@ -408,6 +409,26 @@ public class Record
 		return getItemFromNode(parent.getNode(), nname);
     }
 
+    /** Find first element, child of
+    * @param parent
+    * @return item or null if none found
+    */
+    public final Item getFirstItem(Item parent)
+    {
+        Node node = null;
+        NodeList nodes = parent.getNode().getChildNodes();
+
+        int sz = nodes.getLength();
+        for (int index = 0; index < sz; index++) {
+            node = nodes.item(index);
+            if (node.getNodeType() == Node.ELEMENT_NODE)
+                    return new Item((Element)node);
+        }
+
+        return null;        // gack
+    }
+    
+    
     private final Item getItemFromNode(Node node, String nname)
     {
 		NodeList nodes = node.getChildNodes();

@@ -8,5 +8,5 @@ public abstract class Normalizer
     protected final Log log = LogFactory.getLog(Normalizer.class);
 
     public abstract String toString(Object o);
-    public abstract void fromString(Object o, String s);
+    public abstract Object fromString(Class clazz, String s);
 }

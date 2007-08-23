@@ -1,6 +1,9 @@
 package org.openmrs.serial;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class TimestampNormalizer extends Normalizer
 {
@@ -20,10 +23,8 @@ public class TimestampNormalizer extends Normalizer
             result = d.toString() + ' ' + t.toString();
         }
         else if (o instanceof java.util.Date){
-            time = ((java.util.Date)o).getTime();
-            d = new java.sql.Date(time);
-            t = new java.sql.Time(time);
-            result = d.toString() + ' ' + t.toString();
+            DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:S");
+            result = dfm.format((Date)o);;
         }
         else if (o instanceof java.util.Calendar){
             time = ((java.util.Calendar)o).getTime().getTime();
@@ -38,5 +39,28 @@ public class TimestampNormalizer extends Normalizer
 
         return result;
     }
-    public void fromString(Object o, String s) {}
+    
+    @Override
+    public Object fromString(Class clazz, String s) {
+        //TODO - this needs work
+
+        java.sql.Date d;
+        java.sql.Time t;
+        long time;
+
+        if (clazz.getName() == "java.util.Date") {
+            //result = d.toString() + ' ' + t.toString();
+            Date result = null;
+            DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:S");
+            try {
+                result = dfm.parse(s);
+            }
+            catch(Exception e) {
+                //TODO
+            }
+            return result;
+        }
+        
+        return null;
+    }
 }

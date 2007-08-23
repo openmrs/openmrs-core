@@ -91,7 +91,11 @@ public class SyncItemKey<T> implements Serializable, IItem {
     }
 
     public void load(Record xml, Item me) throws Exception {
-        // TODO
+        //TODO: is this adequate for type safety?
+        if (this.genericType.getName().equals(me.getAttribute("type"))) 
+            this.keyValue = (T)me.getAttribute("value");
+        else
+            throw new SyncException("Failed to deserialize SyncItemKey, type mismatch. Expected type: " + this.genericType.getName() + " found: " + me.getAttribute("type"));
     }
     
 }

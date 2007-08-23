@@ -91,6 +91,25 @@ public class SyncRecord implements Serializable, IItem {
     public void setItems(List<SyncItem> items) {
         this.items = items;
     }
+    
+    // Methods
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof SyncRecord))
+            return false;
+
+        SyncRecord oSync = (SyncRecord) o;
+
+        //TODO - add null handling
+        
+        boolean same = oSync.getGuid().equals(this.getGuid()) 
+            && oSync.getRetryCount() == this.getRetryCount()
+            && oSync.getState().equals(this.getState())
+            && oSync.getTimestamp().equals(this.getTimestamp())
+            && oSync.getItems().equals(this.getItems());
+        return same;
+    }
+
 
     public Item save(Record xml, Item parent) throws Exception {
         Item me = xml.createItem(parent, this.getClass().getName());
@@ -100,9 +119,7 @@ public class SyncRecord implements Serializable, IItem {
         xml.setAttribute(me, "retryCount", Integer.toString(retryCount));
         xml.setAttribute(me, "state", state.toString());
         
-        if (timestamp == null) {
-        	xml.setAttribute(me, "timestamp", "");
-        } else {
+        if (timestamp != null) {
         	xml.setAttribute(me, "timestamp", new TimestampNormalizer().toString(timestamp));
         }
         
@@ -119,12 +136,18 @@ public class SyncRecord implements Serializable, IItem {
     }
 
     public void load(Record xml, Item me) throws Exception {
-
-        // !! WORK IN PROGRESS !!
         
         //deserialize primitives
-        //TODO
-
+        this.guid = me.getAttribute("guid");
+        this.retryCount = Integer.parseInt(me.getAttribute("retryCount"));
+        this.state = SyncRecordState.valueOf(me.getAttribute("state"));
+        
+        if (me.getAttribute("timestamp") == null)
+            this.timestamp = null;
+        else {
+            this.timestamp = (Date)new TimestampNormalizer().fromString(Date.class,me.getAttribute("timestamp"));
+        }
+        
         //now get items
         Item itemsCollection = xml.getItem(me, "items");
         
