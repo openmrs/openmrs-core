@@ -16,9 +16,9 @@ public class SyncBaseTest extends BaseTest {
     }
 
     //uncomment and put in your test user credentials here
-    @Override
-    public synchronized String[] getUsernameAndPassword(String message) {
-        return (new String[] {"admin","Nos1212"});
-    }
+    //@Override
+    //public synchronized String[] getUsernameAndPassword(String message) {
+    //    return (new String[] {"admin","<put your pwd here>"});
+    //}
     
 }
