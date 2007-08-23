@@ -69,6 +69,9 @@ public class SyncRecordTest extends SyncBaseTest {
         
         ((IItem)syncRecord1).save(record, top);
         ((IItem)syncRecord2).save(record, top);
+        List<SyncRecord> originals = new ArrayList<SyncRecord>();
+        originals.add(syncRecord1);
+        originals.add(syncRecord2);
         
         System.out.println("*** serialized state ***");
         try {
@@ -89,13 +92,15 @@ public class SyncRecordTest extends SyncBaseTest {
         //get items list that holds serialized sync records
         List<Item> itemsDes = recordDes.getItems(topDes);
         
+        assertTrue(itemsDes.size() == originals.size());
+        
         SyncRecord syncRecordDesc = null;
         Iterator<Item> iterator = itemsDes.iterator();
+        Iterator<SyncRecord> iteratorOrig = originals.iterator();
         while (iterator.hasNext()) {
             syncRecordDesc = new SyncRecord();
-            syncRecordDesc.load(recordDes, iterator.next());
-            
-            //TODO assert we got the same two records
+            syncRecordDesc.load(recordDes, iterator.next());            
+            assertEquals(syncRecordDesc, iteratorOrig.next());
         }        
                         
         return;
