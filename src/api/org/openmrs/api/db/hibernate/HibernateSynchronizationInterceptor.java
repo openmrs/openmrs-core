@@ -17,40 +17,22 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
-
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsUtil;
-
+import org.openmrs.serial.DefaultNormalizer;
 import org.openmrs.serial.FilePackage;
 import org.openmrs.serial.Item;
-import org.openmrs.serial.Record;
 import org.openmrs.serial.Normalizer;
-import org.openmrs.serial.DefaultNormalizer;
+import org.openmrs.serial.Record;
 import org.openmrs.serial.TimestampNormalizer;
-
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncRecordState;
 import org.openmrs.synchronization.engine.SyncItem.SyncItemState;
+import org.openmrs.util.OpenmrsUtil;
 
-class propertyClassValue 
-{
-    String clazz, value;
-
-    public String getClazz(){return clazz;}
-    public String getValue(){return value;}
-
-    public propertyClassValue(String clazz, String value)
-    {
-        this.clazz=clazz;
-        this.value=value;
-    }
-}
-
-public class HibernateSynchronizationInterceptor extends EmptyInterceptor 
-{
+public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
     /**
      * From Spring docs: There might be a single instance of Interceptor for a
      * SessionFactory, or a new instance might be specified for each Session.
@@ -76,15 +58,14 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
         safetypes.put("integer", defN);
     }
 
-    public HibernateSynchronizationInterceptor(){}
+    public HibernateSynchronizationInterceptor() {
+    }
 
-    public void afterTransactionBegin(Transaction tx) 
-    {
+    public void afterTransactionBegin(Transaction tx) {
         log.debug("afterTransactionBegin: " + tx);
-    }    
+    }
 
-    public void afterTransactionCompletion(Transaction tx) 
-    {
+    public void afterTransactionCompletion(Transaction tx) {
         log.debug("afterTransactionCompletion: " + tx);
     }
 
@@ -96,9 +77,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
     {
         log.debug("onSave: " + state.toString());
         
-        packageObject(entity, state, propertyNames, types, SyncItemState.NEW);
-        
-        return false;
+        return packageObject(entity, state, propertyNames, types, SyncItemState.NEW);
     }
 
     public void onDelete(Object entity,
@@ -118,26 +97,23 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
     {
         log.debug("onFlushDirty: " + entity.getClass().getName());
 
-        packageObject(entity, currentState, propertyNames, types, SyncItemState.UPDATED);
-
-        return false;
+        return packageObject(entity, currentState, propertyNames, types, SyncItemState.UPDATED);
     }
 
-    @SuppressWarnings("unchecked")
-    public void postFlush(Iterator entities)
-    {
-        while (false && entities.hasNext())
-        {
-            Object entity = entities.next();
-            log.debug("postFlush: " + entity.getClass().getName());
-        }
-    }
-
-    private void packageObject(Object entity, Object[] currentState,
-                               String[] propertyNames, Type[] types, SyncItemState state)
-    {
-        HashMap <String, propertyClassValue> values = 
-            new HashMap <String, propertyClassValue> ();
+    /**
+     * 
+     * Serializes and packages an intercepted change in object state
+     * 
+     * @param entity
+     * @param currentState
+     * @param propertyNames
+     * @param types
+     * @param state
+     * @return True if data was altered, false otherwise.
+     */
+    protected boolean packageObject(Object entity, Object[] currentState, String[] propertyNames, Type[] types, SyncItemState state) {
+        boolean dataChanged = false;
+        HashMap<String, propertyClassValue> values = new HashMap<String, propertyClassValue> ();
 
         try {
             // use Package when you don't want files on disk
@@ -147,40 +123,47 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
             Item entityItem = xml.getRootItem();
           
             // properties/values put in a hash for dupe removeal
-            for (int i = 0; i < types.length; i++)
-            {
+            for (int i = 0; i < types.length; i++) {
                 String typeName = types[i].getName();
-                Object object = currentState[i];
 
-                log.debug("Type: " + typeName + " Field: " + propertyNames[i]);
+                log.debug("Processing, type: " + typeName + " Field: " + propertyNames[i]);
 
-                if (object!=null)
-                {
+                // If this field is a String Guid, and it's null or "" we generate a new GUID before processing it.
+                if (typeName.equals("string") && propertyNames[i].equals("guid") && (currentState[i] == null || currentState[i].equals(""))) {
+                    currentState[i] = UUID.randomUUID().toString();
+                    dataChanged = true;
+                    log.info("Issued randomly generated GUID " + currentState[i] + " to Type: " + typeName + " Field: " + propertyNames[i]);
+                }
+                
+                if (currentState[i] != null) {
                     Normalizer n;
-                    if ((n=safetypes.get(typeName)) != null)
-                    {
-                        values.put(propertyNames[i], new propertyClassValue(typeName, n.toString(object)));
+                    if ((n = safetypes.get(typeName)) != null) {
+                        values.put(propertyNames[i], new propertyClassValue(typeName, n.toString(currentState[i])));
                     }
                     // maybe has guid
-                    else if (typeName.indexOf("org.openmrs") > -1)
-                    {
-                        values.put(propertyNames[i], new propertyClassValue(typeName, getGuid(object)));
+                    else if (typeName.indexOf("org.openmrs") > -1) {
+                        try {
+                            String guid = getGuid(currentState[i]);
+                            
+                            if (guid != null) {
+                                values.put(propertyNames[i], new propertyClassValue(typeName, guid));
+                            } else {
+                                log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null");
+                            }
+                        } catch (NoSuchMethodException e) {
+                            log.error("Type: " + typeName + " Field: " + propertyNames[i] + " did not have a GUID method!");
+                        }
+                    } else {
+                        log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is not safe and has no GUID!");
                     }
-                    else
-                    {
-                        log.warn("Type: " + typeName  + " Field: " + propertyNames[i] + " is not safe and has no GUID!");
-                    }
-                }
-                else
-                {
-                    log.warn("Type: " + typeName  + " Field: " + propertyNames[i] + " is null");
+                } else {
+                    log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null");
                 }
             }
 
             // serialize from hashmap
             Iterator<Map.Entry<String, propertyClassValue>> its = values.entrySet().iterator();
-            while(its.hasNext())
-            {
+            while (its.hasNext()) {
                 Map.Entry<String, propertyClassValue> me = its.next();
                 String property = me.getKey();
                 propertyClassValue pcv = me.getValue();
@@ -227,43 +210,70 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
                 synchronizationService = Context.getSynchronizationService();
             }
             synchronizationService.createSyncRecord(record);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Journal error\n", e);
         }
+        
+        return dataChanged;
     }
         
-    private void appendAttribute(Record xml, Item parent, String attribute, String classname,
-                                 String data) throws Exception
-    {
-        if (data!=null && data.length()>0)
-        {
+    protected void appendAttribute(Record xml, Item parent, String attribute, String classname, String data) throws Exception {
+        if (data != null && data.length() > 0) {
             Item item = xml.createItem(parent, attribute);
             item.setAttribute("type", classname);
             xml.createText(item, data);
         }
     }
 
-    private String getGuid(Object object)
-    {
+    /**
+     * Get the GUID of an object if it has a String getGuid()-method
+     * 
+     * @param object The object to get the GUID from.
+     * @return the GUID as String, or null if it has a GUID, but it's null/empty String
+     * @throws NoSuchMethodException If this object doesn't have a getGuid()-method
+     */
+    protected String getGuid(Object object) throws NoSuchMethodException {
         String methodName = "getGuid";
 
         Method method;
         try {
             method = object.getClass().getMethod(methodName, new Class[] {});
+        } catch (NoSuchMethodException e) {
+            log.debug("The method " + methodName + " did not exist with no parameters for object " + object.getClass().getName(), e);
+            // Indicate that this object doesn't have a Guid.
+            throw e;
+        }
             
-            String result = (String)method.invoke(object, new Object[0]);            
-            if (result!=null && result.length() < 1)
-            { 
-                result = null;
-            }
-            return result;
+        String guid = null;
+        try {
+            guid = (String)method.invoke(object, new Object[0]);
+        } catch (Exception e) {
+            log.error("Invocation of method " + methodName + " on object failed", e);
         }
-        catch (Exception e) {
-            //log.warn("No method/error on '" + mname + "' in " + obj.getClass().getName());
-            return null;
+
+        // Check if it's an empty string, indicate that this isn't a GUID by setting it to null
+        if (guid != null && guid.length() == 0) {
+            guid = null;
         }
+        
+        return guid;
     }
 
+    protected class propertyClassValue {
+        String clazz, value;
+
+        public String getClazz() {
+            return clazz;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public propertyClassValue(String clazz, String value) {
+            this.clazz = clazz;
+            this.value = value;
+        }
+    }
 }
 
