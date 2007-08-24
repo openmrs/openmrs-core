@@ -3,6 +3,7 @@ package org.openmrs.api.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.db.SynchronizationDAO;
@@ -84,5 +85,20 @@ public class SynchronizationServiceImpl implements SynchronizationService {
     public List<SyncRecord> getSyncRecordsBetween(Date from, Date to)
             throws APIException {
         return getSynchronizationDAO().getSyncRecordsBetween(from, to);
+    }
+
+    /**
+     * @see org.openmrs.api.SynchronizationService#getGlobalProperty(java.lang.String)
+     */
+    public String getGlobalProperty(String propertyName) throws APIException {
+        return getSynchronizationDAO().getGlobalProperty(propertyName);
+    }
+    
+    /**
+     * @see org.openmrs.api.SynchronizationService#setGlobalProperty(String propertyName, String propertyValue)
+     */
+    public void setGlobalProperty(String propertyName, String propertyValue) 
+        throws APIException {
+        getSynchronizationDAO().setGlobalProperty(propertyName, propertyValue);
     }
 }

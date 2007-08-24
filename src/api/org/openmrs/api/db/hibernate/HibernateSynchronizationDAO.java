@@ -10,8 +10,10 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.SynchronizationDAO;
+import org.openmrs.GlobalProperty;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncRecordState;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
@@ -147,4 +149,40 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             .addOrder(Order.asc("timestamp"))
             .list();
     }
+
+    
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#getGlobalProperty(String propertyName)
+     */
+    @SuppressWarnings("unchecked")
+    public String getGlobalProperty(String propertyName) 
+        throws DAOException {
+        
+        if (propertyName == null)
+            throw new DAOException("Cannot retrieve property with null property name.");
+
+        GlobalProperty gp = (GlobalProperty)this.getNonSynchronizingSession().get(GlobalProperty.class, propertyName);
+        
+        if (gp == null)
+            return null;
+
+        return gp.getPropertyValue();    
+        
+    }
+    
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#setGlobalProperty(String propertyName, String propertyValue)
+     */
+    @SuppressWarnings("unchecked")
+    public void setGlobalProperty(String propertyName, String propertyValue) 
+        throws DAOException {
+        
+        if (propertyName == null)
+            throw new DAOException("Cannot set property with null property name.");
+
+        Session session = getNonSynchronizingSession();
+        session.merge(new GlobalProperty(propertyName,propertyValue));
+        session.flush();
+    }
+
 }

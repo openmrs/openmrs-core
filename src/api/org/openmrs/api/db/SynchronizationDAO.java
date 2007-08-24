@@ -3,6 +3,8 @@ package org.openmrs.api.db;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.annotation.Authorized;
+import org.openmrs.api.APIException;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncRecordState;
 
@@ -78,4 +80,21 @@ public interface SynchronizationDAO {
      * @throws DAOException
      */
     public List<SyncRecord> getSyncRecordsBetween(Date from, Date to) throws DAOException;
+
+    /**
+     * 
+     * Retrieve value of given global property using synchronization data access meachnisms.
+     * 
+     * @param propertyName
+     * @return
+     */
+    public String getGlobalProperty(String propertyName);
+    
+    /**
+     * Set global property related to synchronization; notably bypasses any changeset recording mechanisms.
+     * @param propertyName String specifying property name which value is to be set.
+     * @param propertyValue String specifying property value to be set.
+     * @throws APIException
+     */
+    public void setGlobalProperty(String propertyName, String propertyValue) throws APIException;    
 }

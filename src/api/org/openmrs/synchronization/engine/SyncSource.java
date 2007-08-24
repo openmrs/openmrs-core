@@ -14,10 +14,6 @@ import org.openmrs.synchronization.engine.SyncItemKey;
  */
 public interface SyncSource {
 
-    //setup methods
-    public void beginSync() throws SyncException;
-    public void endSync() throws SyncException;
-
     //sync point helpers
     public SyncPoint<?> getLastSyncLocal();
     public void setLastSyncLocal(SyncPoint<?> p);
@@ -26,12 +22,17 @@ public interface SyncSource {
     public SyncPoint<?> moveSyncPoint();
     
     //change set methods
-    public List<SyncItem> getDeleted(SyncPoint<?> from , SyncPoint<?> to) throws SyncException ;
-    public List<SyncItem> getChanged(SyncPoint<?> from , SyncPoint<?> to) throws SyncException ; //note this has new items also
+    public List<SyncRecord> getDeleted(SyncPoint<?> from , SyncPoint<?> to) throws SyncException ;
+    public List<SyncRecord> getChanged(SyncPoint<?> from , SyncPoint<?> to) throws SyncException ; //note this has new items also
     
     //Methods used to apply changes
-    public SyncItem addSyncItem(SyncItem syncInstance) throws SyncException ;
-    public SyncItem updateSyncItem(SyncItem syncInstance) throws SyncException;
-    public void removeSyncItem(SyncItemKey itemKey) throws SyncException;
-    public void commitSync() throws SyncException;
+    public void applyDeleted(List<SyncRecord> records) throws SyncException ;
+    public void applyChanged(List<SyncRecord> records) throws SyncException ;
+    
+    // hard-coded strings
+    public class Constants {
+        public static final String LAST_SYNC_LOCAL = "synchronization.last_sync_local";
+        public static final String LAST_SYNC_REMOTE = "synchronization.last_sync_remote";
+        public static final String DATETIME_MASK = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    }
 }

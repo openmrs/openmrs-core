@@ -3,6 +3,7 @@ package org.openmrs.api;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.GlobalProperty;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncRecordState;
@@ -93,4 +94,25 @@ public interface SynchronizationService {
     @Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public List<SyncRecord> getSyncRecordsBetween(Date from, Date to) throws APIException;
+
+    
+    /**
+     * 
+     * Retrieve value of given global property using synchronization data access meachnisms.
+     * 
+     * @param propertyName
+     * @return
+     */
+    @Authorized({"View Synchronization Records"})
+    @Transactional(readOnly=true)    
+    public String getGlobalProperty(String propertyName) throws APIException;
+    
+    /**
+     * Set global property related to synchronization; notably bypasses any changeset recording mechanisms.
+     * @param propertyName String specifying property name which value is to be set.
+     * @param propertyValue String specifying property value to be set.
+     * @throws APIException
+     */
+    @Authorized({"Manage Synchronization Records"})
+    public void setGlobalProperty(String propertyName, String propertyValue) throws APIException;
 }
