@@ -59,13 +59,13 @@ public class SyncItem implements Serializable, IItem {
     // Methods
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof SyncItem))
+        if (!(o instanceof SyncItem) || o == null)
             return false;
 
         SyncItem oSync = (SyncItem) o;
-        boolean same = oSync.getKey().equals(this.getKey()) 
-            && oSync.getContent().equals(this.getContent())
-            && oSync.getState().equals(this.getState());
+        boolean same = ((oSync.getKey() == null) ? (this.getKey() == null) : oSync.getKey().equals(this.getKey()))
+                && ((oSync.getContent() == null) ? (this.getContent() == null) : oSync.getContent().equals(this.getContent()))
+                && ((oSync.getState() == null) ? (this.getState() == null) : oSync.getState().equals(this.getState()));
         
         return same;
     }

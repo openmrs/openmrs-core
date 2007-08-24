@@ -95,18 +95,15 @@ public class SyncRecord implements Serializable, IItem {
     // Methods
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof SyncRecord))
+        if (!(o instanceof SyncRecord) || o == null)
             return false;
 
         SyncRecord oSync = (SyncRecord) o;
-
-        //TODO - add null handling
-        
-        boolean same = oSync.getGuid().equals(this.getGuid()) 
-            && oSync.getRetryCount() == this.getRetryCount()
-            && oSync.getState().equals(this.getState())
-            && oSync.getTimestamp().equals(this.getTimestamp())
-            && oSync.getItems().equals(this.getItems());
+        boolean same = ((oSync.getTimestamp() == null) ? (this.getTimestamp() == null) : oSync.getTimestamp().equals(this.getTimestamp()))
+                && ((oSync.getGuid() == null) ? (this.getGuid() == null) : oSync.getGuid().equals(this.getGuid()))
+                && ((oSync.getState() == null) ? (this.getState() == null) : oSync.getState().equals(this.getState()))
+                && ((oSync.getItems() == null) ? (this.getItems() == null) : oSync.getItems().equals(this.getItems()))
+                && (oSync.getRetryCount() == this.getRetryCount());
         return same;
     }
 

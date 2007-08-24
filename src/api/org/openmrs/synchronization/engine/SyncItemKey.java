@@ -46,8 +46,12 @@ public class SyncItemKey<T> implements Serializable, IItem {
     //equality is determined based on T.equals()
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof SyncItemKey)) return false;
-        return ((SyncItemKey<?>)o).getKeyValue().equals(getKeyValue());
+        if (!(o instanceof SyncItemKey) || o == null) return false;
+        if ( ((SyncItemKey)o).genericType.getName() != this.genericType.getName())
+            return false;
+        else
+            return (((SyncItemKey<?>)o).getKeyValue() == null) ?
+                (this.getKeyValue() == null) : ((SyncItemKey<?>)o).getKeyValue().equals(this.getKeyValue());
     }
     
     @Override
@@ -60,7 +64,7 @@ public class SyncItemKey<T> implements Serializable, IItem {
         StringBuffer sb = new StringBuffer();
 
         sb.append( " { keyType: "  );
-        sb.append( this.getClass().getTypeParameters()[0].getName());
+        sb.append( this.genericType.getName());
         sb.append( " } "            );
         sb.append( " { keyValue: "  );
         sb.append( getKeyValue() );
