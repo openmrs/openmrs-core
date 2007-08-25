@@ -13,6 +13,7 @@ import org.openmrs.Privilege;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.scheduler.SchedulerConstants;
+import org.openmrs.synchronization.engine.SyncConstants;
 
 public class OpenmrsConstants {
 	
@@ -355,7 +356,10 @@ public class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "^0*@SEARCH@([A-Z]+-[0-9])?$", "A MySQL regular expression for the patient identifier search strings.  The @SEARCH@ string is replaced at runtime with the user's search string.  An empty regex will cause a simply 'like' sql search to be used"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "", "This property is only used if " + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "%", "This property is only used if " + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
-		
+
+        props.add(new GlobalProperty(SyncConstants.LAST_SYNC_LOCAL, "", "Timestamp of the last sucessful sync push from child to parent."));
+        props.add(new GlobalProperty(SyncConstants.LAST_SYNC_REMOTE, "%", "Timestamp of the last sucessful sync pull from parent."));
+        
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}

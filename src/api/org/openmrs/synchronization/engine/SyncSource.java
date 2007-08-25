@@ -28,11 +28,4 @@ public interface SyncSource {
     //Methods used to apply changes
     public void applyDeleted(List<SyncRecord> records) throws SyncException ;
     public void applyChanged(List<SyncRecord> records) throws SyncException ;
-    
-    // hard-coded strings
-    public class Constants {
-        public static final String LAST_SYNC_LOCAL = "synchronization.last_sync_local";
-        public static final String LAST_SYNC_REMOTE = "synchronization.last_sync_remote";
-        public static final String DATETIME_MASK = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-    }
 }

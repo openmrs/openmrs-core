@@ -13,7 +13,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.SynchronizationService;
-
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.serial.TimestampNormalizer;
 /**
  * SyncSource to sync OpenMRS tables based on last_changed_local.
  */
@@ -38,9 +39,9 @@ public class SyncSourceJournal implements SyncSource {
     public SyncPoint<Date> getLastSyncLocal() {
         Date val = null;
         String sVal = Context.getSynchronizationService().getGlobalProperty(
-                SyncSource.Constants.LAST_SYNC_LOCAL);
+                SyncConstants.LAST_SYNC_LOCAL);
         try {
-            val = (sVal == null) ? null : new SimpleDateFormat(SyncSource.Constants.DATETIME_MASK)
+            val = (sVal == null || "".equals(sVal)) ? null : new SimpleDateFormat(TimestampNormalizer.DATETIME_MASK)
                     .parse(sVal);
         } catch (ParseException e) {
             log.error("Error DateFormat parsing " + sVal, e);
@@ -51,11 +52,11 @@ public class SyncSourceJournal implements SyncSource {
     public void setLastSyncLocal(SyncPoint p) {
         String sVal = null;
 
-        sVal = (p.getValue() == null) ? null : new SimpleDateFormat(SyncSourceJournal.Constants.DATETIME_MASK)
+        sVal = (p.getValue() == null || "".equals(sVal)) ? null : new SimpleDateFormat(TimestampNormalizer.DATETIME_MASK)
                 .format(p.getValue());
         // use getSynchronizationService to avoid logging this changes to the journal
         Context.getSynchronizationService().setGlobalProperty(
-                SyncSource.Constants.LAST_SYNC_LOCAL, sVal);
+                SyncConstants.LAST_SYNC_LOCAL, sVal);
 
         return;
     }
@@ -67,10 +68,10 @@ public class SyncSourceJournal implements SyncSource {
         Date val = null;
 
         String sVal = Context.getSynchronizationService().getGlobalProperty(
-                SyncSource.Constants.LAST_SYNC_REMOTE);
+                SyncConstants.LAST_SYNC_REMOTE);
         try {
 
-            val = (sVal == null) ? null : new SimpleDateFormat(SyncSource.Constants.DATETIME_MASK)
+            val = (sVal == null || "".equals(sVal)) ? null : new SimpleDateFormat(TimestampNormalizer.DATETIME_MASK)
                     .parse(sVal);
         } catch (ParseException e) {
             log.error("error DateFormat parsing " + sVal, e);
@@ -80,11 +81,11 @@ public class SyncSourceJournal implements SyncSource {
     public void setLastSyncRemote(SyncPoint p) {
         String sVal = null;
 
-        sVal = (p.getValue() == null) ? null : new SimpleDateFormat(SyncSource.Constants.DATETIME_MASK)
+        sVal = (p.getValue() == null || "".equals(sVal)) ? null : new SimpleDateFormat(TimestampNormalizer.DATETIME_MASK)
                 .format(p.getValue());
         // use getSynchronizationService to avoid logging this changes to the journal
         Context.getSynchronizationService().setGlobalProperty( 
-                SyncSource.Constants.LAST_SYNC_REMOTE, sVal);
+                SyncConstants.LAST_SYNC_REMOTE, sVal);
 
         return;
     }
@@ -113,6 +114,10 @@ public class SyncSourceJournal implements SyncSource {
 
             Date fromDate = (Date) from.getValue();
             Date toDate = (Date) to.getValue();
+            
+            //handle nulls
+            if (fromDate == null) fromDate = new Date(0L);
+            if (toDate == null) toDate = new Date(0L);
             
             SynchronizationService syncService = Context.getSynchronizationService();           
             changed = syncService.getSyncRecordsBetween(fromDate, toDate);

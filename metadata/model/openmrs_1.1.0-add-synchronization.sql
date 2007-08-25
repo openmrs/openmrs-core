@@ -26,17 +26,6 @@ CREATE PROCEDURE sync_setup_procedure()
 	  PRIMARY KEY  (`guid`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-	#--------------------------------------
-	#Add synchronization.last_sync_local and synchronization.last_sync_remote
-	#--------------------------------------
-	IF ( SELECT count(*) = 0 FROM global_property WHERE lower(property) = 'synchronization.last_sync_local' ) THEN
-		INSERT INTO global_property (property,property_value,description,guid)
-			values ('synchronization.last_sync_local',null, 'Timestamp of last sucessful push from child',uuid());
-	END IF;
-	IF ( SELECT count(*) = 0 FROM global_property WHERE lower(property) = 'synchronization.last_sync_local' ) THEN
-		INSERT INTO global_property (property,property_value,description,guid) 
-			values ('synchronization.last_sync_local',null, 'Timestamp of last sucessful push from child',uuid());
-	END IF;
  END;
 //
 delimiter ;
