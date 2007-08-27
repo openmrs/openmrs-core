@@ -8,6 +8,13 @@
 
 <h2><spring:message code="SynchronizationStatus.title"/></h2>
 
+<form id="syncCreateTx" action="synchronizationStatus.list" method="post">
+	<input type="submit" value='<spring:message code="SynchronizationStatus.createTx"/>'/>
+	<input type="hidden" name="action" value="createTx"/>
+</form>
+
+<br/>
+
 <table>
 	<thead>
 		<tr>
