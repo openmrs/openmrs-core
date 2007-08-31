@@ -23,7 +23,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
-import org.openmrs.web.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.ConceptEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -187,7 +187,7 @@ public class UserFormController extends PersonFormController {
 			else {
 				us.updateUser(user);
 
-				if (Context.getAuthenticatedUser().isSuperUser() && !password.equals("")) {
+				if (!password.equals("") && user.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS)) {
 					log.debug("calling changePassword");
 					us.changePassword(user, password);
 				}

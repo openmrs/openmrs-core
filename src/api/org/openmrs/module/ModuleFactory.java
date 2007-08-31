@@ -149,7 +149,7 @@ public class ModuleFactory {
 						} catch (Exception e) {
 							log.error("Error while starting module: "
 							        + mod.getName(), e);
-							mod.setStartupErrorMessage(e.getMessage());
+							mod.setStartupErrorMessage("Error while starting module: " + e.getMessage());
 						}
 					else
 						leftoverModules.add(mod);
@@ -423,7 +423,7 @@ public class ModuleFactory {
 			} catch (Exception e) {
 				log.warn("Error while trying to start module: "
 				        + module.getModuleId(), e);
-				module.setStartupErrorMessage(e.getMessage());
+				module.setStartupErrorMessage("Error while trying to start module: " + e.getMessage());
 
 				// undo all of the actions in startup
 				try {

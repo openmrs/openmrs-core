@@ -23,7 +23,7 @@ import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.propertyeditor.EncounterTypeEditor;
+import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;

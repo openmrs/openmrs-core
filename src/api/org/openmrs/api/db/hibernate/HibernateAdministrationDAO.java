@@ -607,11 +607,11 @@ public class HibernateAdministrationDAO implements
 	}
 
 	public void createReportObject(AbstractReportObject ro) throws DAOException {
-		ro.setCreator(Context.getAuthenticatedUser());
-		ro.setDateCreated(new Date());
-		ro.setVoided(new Boolean(false));
-		
+
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
+		wrappedReportObject.setCreator(Context.getAuthenticatedUser());
+		wrappedReportObject.setDateCreated(new Date());
+		wrappedReportObject.setVoided(false);
 
 		sessionFactory.getCurrentSession().save(wrappedReportObject);
 	}
@@ -622,6 +622,8 @@ public class HibernateAdministrationDAO implements
 		else {
 			sessionFactory.getCurrentSession().clear();
 			ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
+			wrappedReportObject.setChangedBy(Context.getAuthenticatedUser());
+			wrappedReportObject.setDateChanged(new Date());
 			sessionFactory.getCurrentSession().saveOrUpdate(wrappedReportObject);
 		}
 	}	

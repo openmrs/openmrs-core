@@ -35,6 +35,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientFilter;
+import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -252,6 +253,10 @@ public class DataExportFunctions {
 		return getCohortHelper("F." + filterId) ? valueIfTrue : valueIfFalse;
 	}
 	
+	public String getPatientSearchMembership(Integer searchId, String valueIfTrue, String valueIfFalse) {
+		return getCohortHelper("S." + searchId) ? valueIfTrue : valueIfFalse;
+	}
+	
 	protected Boolean getCohortHelper(String key) {
 		if (cohortMap.containsKey(key))
 			return cohortMap.get(key).contains(getPatientId());
@@ -263,6 +268,10 @@ public class DataExportFunctions {
 			ps = c.toPatientSet();
 		} else if (key.startsWith("F.")) {
 			PatientFilter pf = Context.getReportService().getPatientFilterById(Integer.valueOf(key.substring(2)));
+			ps = pf.filter(getPatientSet());
+		} else if (key.startsWith("S.")) {
+			PatientSearchReportObject ro = (PatientSearchReportObject) Context.getReportService().getReportObject(Integer.valueOf(key.substring(2)));
+			PatientFilter pf = OpenmrsUtil.toPatientFilter(ro.getPatientSearch(), null);
 			ps = pf.filter(getPatientSet());
 		} else {
 			log.error("key = " + key);
@@ -813,6 +822,9 @@ public class DataExportFunctions {
 	 * @throws Exception
 	 */
 	public List<Object> getFirstObsWithValues(Concept concept, List<String> attrs) throws Exception {
+		// add a null first column for the actual obs value
+		attrs.add(0, null);
+		
 		List<List<Object>> obs = getObsWithValues(concept, attrs);
 		
 		if (obs == null) {

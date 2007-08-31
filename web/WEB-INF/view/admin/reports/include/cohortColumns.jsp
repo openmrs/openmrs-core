@@ -2,11 +2,19 @@
 <table>
 	<tr>
 		<td colspan="2">
+			<spring:message code="PatientSearch.title"/>:
+			<select name="patientSearchIdValue" onChange="updateCohortColumn(this)">
+				<option value=""></option>
+				<openmrs:forEachRecord name="reportObject" reportObjectType="Patient Search">
+					<option value="${record.reportObjectId}">${record.name}</option>
+				</openmrs:forEachRecord>
+			</select>			
+			<i><spring:message code="general.or"/></i>
 			<spring:message code="Cohort.title.endUser"/>:
 			<select name="cohortIdValue" onChange="updateCohortColumn(this)">
 				<option value=""></option>
 				<openmrs:forEachRecord name="cohort">
-					<option value="C.${record.cohortId}">${record.name}</option>
+					<option value="${record.cohortId}">${record.name}</option>
 				</openmrs:forEachRecord>
 			</select>
 			<i><spring:message code="general.or"/></i>
@@ -14,7 +22,7 @@
 			<select name="filterIdValue" onChange="updateCohortColumn(this)">
 				<option value=""></option>
 				<openmrs:forEachRecord name="reportObject" reportObjectType="Patient Filter">
-					<option value="F.${record.reportObjectId}">${record.name}</option>
+					<option value="${record.reportObjectId}">${record.name}</option>
 				</openmrs:forEachRecord>
 			</select>			
 		</td>

@@ -12,8 +12,10 @@ public class PatientProgramsPortletController extends PortletController {
 
 	@SuppressWarnings("unchecked")
 	protected void populateModel(HttpServletRequest request, Map model) {
-		List<Program> programs = Context.getProgramWorkflowService().getPrograms();
-		model.put("programs", programs);
+		if ( !model.containsKey("programs")) {
+			List<Program> programs = Context.getProgramWorkflowService().getPrograms();
+			model.put("programs", programs);
+		}
 	}
 
 }

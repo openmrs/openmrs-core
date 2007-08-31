@@ -250,6 +250,15 @@
 	function linkSubmitHelper(idPrefix) {
 		if (currentPatientSet != null) {
 			document.getElementById(idPrefix + "_ptIds").value = currentPatientSet.commaSeparatedPatientIds;
+			var fromDate = document.getElementById("nrFromDate");
+			var toDate = document.getElementById("nrToDate");
+			var fDate = "";
+			var tDate = "";
+			if ( fromDate )
+				document.getElementById(idPrefix + "_fDate").value = fromDate.value;
+			if ( toDate )
+				document.getElementById(idPrefix + "_tDate").value = toDate.value;
+			
 			document.getElementById(idPrefix + "_form").submit();
 			hideLayer('_linkMenu');
 		} else {
@@ -286,20 +295,20 @@
 	
 	function handleSavedFilterMenuButton() {
 		if ($('saved_filters').style.display == 'none') {
-			$('saved_cohort_definitions').innerHTML = '<li><spring:message code="general.loading"/></li>';
+			$('saved_searches').innerHTML = '<li><spring:message code="general.loading"/></li>';
 			$('saved_cohorts').innerHTML = '<li><spring:message code="general.loading"/></li>';
 			showLayer('saved_filters');
-			DWRCohortBuilderService.getSavedFilters(function(filters) {
+			DWRCohortBuilderService.getSavedSearches(function(searches) {
 					var str = '<ul>';
-					if (filters.length == 0)
+					if (searches.length == 0)
 						str = '<spring:message code="general.none"/>';
 					else {
-						for (var i = 0; i < filters.length; ++i) {
-							str += '<li><a href="cohortBuilder.form?method=addFilter&filter_id=' + filters[i].id + '">' + filters[i].name + ' <small>(' + filters[i].description + ')</small></a></li>';
+						for (var i = 0; i < searches.length; ++i) {
+							str += '<li><a href="cohortBuilder.form?method=addFilter&search_id=' + searches[i].id + '">' + searches[i].name + ' <small>(' + searches[i].description + ')</small></a></li>';
 						}
 						str += '</ul>';
 					}
-					$('saved_cohort_definitions').innerHTML = str;
+					$('saved_searches').innerHTML = str;
 				});
 			DWRCohortBuilderService.getSavedCohorts(function(cohorts) {
 					var str = '<ul>';
@@ -308,10 +317,8 @@
 					else {
 						for (var i = 0; i < cohorts.length; ++i) {
 							str += '<form id="load_cohort_' + cohorts[i].id + '" method="post" action="cohortBuilder.form">';
-							str += '<input type="hidden" name="method" value="addDynamicFilter"/>';
-							str += '<input type="hidden" name="filterClass" value="org.openmrs.reporting.CohortFilter" />';
-							str += '<input type="hidden" name="vars" value="cohort#org.openmrs.Cohort" />';
-							str += '<input type="hidden" name="cohort" value="' + cohorts[i].id + '"/>';
+							str += '<input type="hidden" name="method" value="addFilter"/>';
+							str += '<input type="hidden" name="cohort_id" value="' + cohorts[i].id + '"/>';
 							str += '<li><a href="javascript:document.getElementById(\'load_cohort_' + cohorts[i].id + '\').submit()">' + cohorts[i].name + '</a> <small>' + cohorts[i].description + '</small></li>';
 							str += '</form>';
 						}
@@ -473,10 +480,10 @@
 	<span style="padding: 3px; margin: 0px 3px; background-color: #ffffdd; border: 1px black solid">
 		<a href="javascript:handleSavedFilterMenuButton()"><spring:message code="CohortBuilder.savedFilterMenu"/></a>
 	</span>
-	<div id="saved_filters" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffffdd; display: none">
-		<h4>Saved Cohort Definitions</h4>
-		<ul id="saved_cohort_definitions"></ul>
-		<h4>Saved Cohorts</h4>
+	<div id="saved_filters" style="position: absolute; z-index: 1; border: 1px black solid; background-color: #ffffdd; display: none; padding: 4px">
+		<h4><spring:message code="CohortBuilder.savedSearches" /></h4>
+		<ul id="saved_searches"></ul>
+		<h4><spring:message code="CohortBuilder.savedCohorts" /></h4>
 		<ul id="saved_cohorts"></ul>
 		<br/>
 		&nbsp; <input type="button" value="<spring:message code="general.cancel"/>" onclick="handleSavedFilterMenuButton()"/>
@@ -621,51 +628,88 @@
 				<form method="post" action="cohortBuilder.form">
 					<input type="hidden" name="method" value="addDynamicFilter"/>
 					<input type="hidden" name="filterClass" value="org.openmrs.reporting.EncounterPatientFilter" />
-					<input type="hidden" name="vars" value="encounterType#org.openmrs.EncounterType,location#org.openmrs.Location,form#org.openmrs.Form,atLeastCount#java.lang.Integer,atMostCount#java.lang.Integer,withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date" />
+					<input type="hidden" name="vars" value="encounterTypeList#*org.openmrs.EncounterType,location#org.openmrs.Location,form#org.openmrs.Form,atLeastCount#java.lang.Integer,atMostCount#java.lang.Integer,withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date" />
 					Patients having encounters
-					<br/><span style="margin-left: 40px">
-							<spring:message code="CohortBuilder.optionalPrefix" /> of type
-								<select name="encounterType">
-									<option value=""><spring:message code="general.allOptions"/></option>
+					<table style="margin-left: 40px">
+						<tr valign="top">
+							<td>
+								<spring:message code="CohortBuilder.optionalPrefix" />
+							</td>
+							<td>
+								of type
+							</td>
+							<td>
+								(Leave blank for All Encounter Types)
+								<br/>
+								<select name="encounterTypeList" multiple="true" size="10">
 									<c:forEach var="encType" items="${model.encounterTypes}">
 										<option value="${encType.encounterTypeId}">${encType.name}</option>
 									</c:forEach>
 								</select>
-						</span>
-					<br/><span style="margin-left: 40px">
-							<spring:message code="CohortBuilder.optionalPrefix" /> at location
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<spring:message code="CohortBuilder.optionalPrefix" />
+							</td>
+							<td>
+								at location
+							</td>
+							<td>
 								<select name="location">
 									<option value=""><spring:message code="general.allOptions"/></option>
 									<c:forEach var="location" items="${model.locations}">
 										<option value="${location.locationId}">${location.name}</option>
 									</c:forEach>
 								</select>
-						</span>
-					<br/><span style="margin-left: 40px">
-							<spring:message code="CohortBuilder.optionalPrefix" /> from form
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<spring:message code="CohortBuilder.optionalPrefix" />
+							</td>
+							<td>
+								from form
+							</td>
+							<td>
 								<select name="form">
 									<option value=""><spring:message code="general.allOptions"/></option>
 									<c:forEach var="form" items="${model.forms}">
 										<option value="${form.formId}">${form.name}</option>
 									</c:forEach>
 								</select>
-						</span>
-					<br/><span style="margin-left: 40px">
-						<spring:message code="CohortBuilder.optionalPrefix" />
-							at least this many <input type="text" size="3" name="atLeastCount" />
-							and up to this many <input type="text" size="3" name="atMostCount" />
-						</span>
-					<br/><span style="margin-left: 40px">
-						<spring:message code="CohortBuilder.optionalPrefix" />
-							within the last <input type="text" size="3" name="withinLastMonths" />months
-							and <input type="text" size="3" name="withinLastDays" />days
-						</span>
-					<br/><span style="margin-left: 40px">
-						<spring:message code="CohortBuilder.optionalPrefix" />
-							since <input type="text" size="10" name="sinceDate" onClick="showCalendar(this)" />
-							until <input type="text" size="10" name="untilDate" onClick="showCalendar(this)" />
-						</span>
-					<br/>
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<spring:message code="CohortBuilder.optionalPrefix" />
+							</td>
+							<td colspan="2">
+								at least this many
+								<input type="text" size="3" name="atLeastCount" />
+								and up to this many
+								<input type="text" size="3" name="atMostCount" />
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<spring:message code="CohortBuilder.optionalPrefix" />
+							</td>
+							<td colspan="2">
+								within the last <input type="text" size="3" name="withinLastMonths" />months
+								and <input type="text" size="3" name="withinLastDays" />days
+							</td>
+						</tr>
+						<tr valign="top">
+							<td>
+								<spring:message code="CohortBuilder.optionalPrefix" />
+							</td>
+							<td colspan="2">
+								since <input type="text" size="10" name="sinceDate" onClick="showCalendar(this)" />
+								until <input type="text" size="10" name="untilDate" onClick="showCalendar(this)" />
+							</td>
+						</tr>
+					</table>
 					<input type="submit" value="<spring:message code="general.search" />"/>
 				</form>
 				</li></ul>
@@ -747,7 +791,7 @@
 			</div>
 		</div>
 		
-		<div id="searchTab_drugOrder_content" >
+		<div id="searchTab_drugOrder_content" style="display: none">
 			<spring:message code="CohortBuilder.addDrugOrderFilter"/>
 			<div style="background: #f6f6f6; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">
 				<form method="post" action="cohortBuilder.form" onSubmit="removeHiddenDivs()">
@@ -970,7 +1014,10 @@
 			</div>
 		</c:if>
 		
-		<table style="margin: 1px 4px; width: 100%; border: 1px black solid; background-color: #e0ffe0">
+		<table style="margin: 1px 4px; width: 100%; border: 1px black solid;
+			<c:if test="${item.saved}"> background-color: #c0d0ff </c:if>
+			<c:if test="${!item.saved}"> background-color: #e0ffe0 </c:if>
+		">
 			<tr>
 				<td width="25">
 					<c:set var="temp" value="${iter.index}"/>
@@ -982,9 +1029,9 @@
 					</a>
 				</td>
 				<td>
-					${item.filter.name}
-					<c:if test="${not empty item.filter.description}">
-						<small>${item.filter.description}</small>
+					${item.name}
+					<c:if test="${not empty item.description}">
+						<small>${item.description}</small>
 					</c:if>
 				</td>
 				<td align="right">
@@ -1000,7 +1047,12 @@
 					<c:if test="${item.cachedResult != null}">
 						<small>(cached)</small>
 					</c:if>
-					<a href="#" onclick="showSaveFilterDialog(${iter.index}, '${item.filter.name}'); return false;" title='<spring:message code="CohortBuilder.saveFilterDefinition.help"/>'><img src="${pageContext.request.contextPath}/images/save.gif" style="border: 0px;" /></a>
+					<c:if test="${item.saved}">
+						<small>(<spring:message code="general.saved" />)</small>
+					</c:if>
+					<c:if test="${!item.saved}">
+						<a href="#" onclick="showSaveFilterDialog(${iter.index}, '${item.name}'); return false;" title='<spring:message code="CohortBuilder.saveFilterDefinition.help"/>'><img src="${pageContext.request.contextPath}/images/save.gif" style="border: 0px;" /></a>
+					</c:if>
 					<a href="cohortBuilder.form?method=removeFilter&index=${iter.index}" title='<spring:message code="CohortBuilder.removeFilter.help"/>'><img src="${pageContext.request.contextPath}/images/delete.gif" style="border: 0px;"/></a>
 				</td>
 				<c:if test="${item.cachedResult == null}">
@@ -1042,7 +1094,7 @@
 	</div>
 
 	<div style="border: 1px gray solid; padding: 0.5em; margin: 0.5em">
-		<openmrs:portlet url="cohort"/>
+		<openmrs:portlet url="cohort" parameters="linkUrl=patientDashboard.form" />
 	</div>
 
 	<div id="cohort_builder_actions" style="position: relative; border: 1px black solid">

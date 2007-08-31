@@ -471,6 +471,7 @@ public class HibernateUserDAO implements
 		
 		List returnList = new Vector();
 		if (roles != null && roles.size() > 0) {
+			log.debug("looping through to find matching roles");
 			for (Object o : criteria.list()) {
 				User u = (User)o;
 				for (String r : roles)
@@ -480,8 +481,10 @@ public class HibernateUserDAO implements
 					}
 			}
 		}
-		else
+		else {
+			log.debug("not looping because there appears to be no roles");
 			returnList = criteria.list();
+		}
 		
 		return returnList;
 	}

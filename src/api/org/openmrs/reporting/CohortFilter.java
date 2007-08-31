@@ -6,6 +6,12 @@ public class CohortFilter extends AbstractPatientFilter implements PatientFilter
 
 	private Cohort cohort;
 	
+	public CohortFilter() { }
+	
+	public CohortFilter(Cohort cohort) {
+		this.cohort = cohort;
+	}
+	
 	public String getName() {
 		if (getCohort() != null)
 			return getCohort().getName();
@@ -24,7 +30,7 @@ public class CohortFilter extends AbstractPatientFilter implements PatientFilter
 		PatientSet temp = new PatientSet();
 		if (getCohort() != null)
 			temp.copyPatientIds(getCohort().getMemberIds());
-		return input.intersect(temp);
+		return input == null ? temp : input.intersect(temp);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

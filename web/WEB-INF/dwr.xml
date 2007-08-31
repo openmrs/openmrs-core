@@ -51,6 +51,7 @@
 			<param name="class" value="org.openmrs.web.dwr.DWRPersonService" />
 			<include method="getSimilarPeople"/>
 			<include method="findPeople"/>
+			<include method="findPeopleByRoles"/>
 			<include method="getPerson"/>
 		</create>
 	
@@ -90,6 +91,7 @@
 			<include method="findObs"/>
 			<include method="getObservations"/>
 			<include method="createObs"/>
+			<include method="createNewObs"/>
 			<include method="getObsByPatientConceptEncounter"/>
 			<include method="getObs"/>
 		</create>
@@ -102,6 +104,7 @@
 			<include method="getForms"/>
 			<include method="getJSTree"/>
 			<include method="findFields"/>
+			<include method="findForms"/>
 			<include method="findFieldsAndConcepts"/>
 			<include method="saveFormField"/>
 			<include method="deleteFormField"/>
@@ -181,6 +184,14 @@
 			<include method="getWorkflowsByProgram"/>
 			<include method="getStatesByWorkflow"/>
 		</create>
+
+		<create creator="new" javascript="DWRCohortService">
+			<param name="class" value="org.openmrs.web.dwr.DWRCohortService" />
+			<include method="addPatientToCohort"/>
+			<include method="removePatientFromCohort"/>
+			<include method="getCohorts"/>
+			<include method="getCohortsContainingPatient"/>
+		</create>
 		
 		<create creator="new" javascript="DWRCohortBuilderService">
 			<param name="class" value="org.openmrs.web.dwr.DWRCohortBuilderService" />
@@ -191,6 +202,7 @@
 			<include method="getResultCombineWithOr"/>
 			<include method="getLastResult"/>
 			<include method="getSavedFilters"/>
+			<include method="getSavedSearches"/>
 			<include method="getSavedCohorts"/>
 			<include method="getFilterResultAsCommaSeparatedIds"/>
 			<include method="getCohortAsCommaSeparatedIds"/>

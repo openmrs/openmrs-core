@@ -35,4 +35,6 @@ public class WebConstants {
 	public static final String OPENMRS_DYNAMIC_FORM_KEEPALIVE = "__openmrs_dynamic_form_keepalive";
 	
 	public static final String OPENMRS_HEADER_USE_MINIMAL = "__openmrs_use_minimal_header";
+	
+	public static final String OPENMRS_PORTLET_MODEL_NAME = "model";
 }

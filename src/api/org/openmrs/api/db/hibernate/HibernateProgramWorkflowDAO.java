@@ -12,12 +12,15 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Drug;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -94,6 +97,11 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		return (PatientProgram) sessionFactory.getCurrentSession().get(PatientProgram.class, id);
 	}
 
+	
+	public PatientState getPatientState(Integer id) throws DAOException {
+		return (PatientState)sessionFactory.getCurrentSession().get(PatientState.class, id);
+	}
+
 	@SuppressWarnings("unchecked")
 	public Collection<PatientProgram> getPatientPrograms(Patient patient) {
 		List<PatientProgram> patientPrograms = new ArrayList<PatientProgram>();
@@ -117,6 +125,15 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	
 	public void updateWorkflow(ProgramWorkflow w) {
 		sessionFactory.getCurrentSession().update(w);	
+	}
+	
+	public List<ProgramWorkflowState> getStates(boolean includeVoided) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ProgramWorkflowState.class);
+		if (!includeVoided)
+			crit.add(Expression.eq("voided", false));
+		crit.addOrder(Order.asc("programWorkflow.programWorkflowId"));
+		crit.addOrder(Order.asc("programWorkflowStateId"));
+		return crit.list();
 	}
 
 	public ProgramWorkflowState getState(Integer id) {
@@ -172,7 +189,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		log.debug("In getAllconversions");
 		
 		List<ConceptStateConversion> conversions = new ArrayList<ConceptStateConversion>();
-		conversions.addAll(sessionFactory.getCurrentSession().createQuery("from ConceptStateConversion").list());
+		conversions.addAll(sessionFactory.getCurrentSession().createCriteria(ConceptStateConversion.class).list());
 		
 		if ( conversions == null ) log.debug("Conversions are null");
 		else log.debug("conversions is size " + conversions.size());

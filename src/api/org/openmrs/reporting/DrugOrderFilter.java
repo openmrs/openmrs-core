@@ -31,29 +31,45 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 	public String getDescription() {
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
 		StringBuffer ret = new StringBuffer();
-		ret.append("Patients taking ");
+		boolean currentlyCase = getWithinLastDays() != null && getWithinLastDays() == 0 && (getWithinLastMonths() == null || getWithinLastMonths() == 0);
+		if (currentlyCase)
+			ret.append("Patients currently ");
+		else
+			ret.append("Patients ");
 		if (getDrugList() == null || getDrugList().size() == 0) {
 			if (getAnyOrAll() == GroupMethod.NONE)
-				ret.append("no drugs");
+				ret.append(currentlyCase ? "taking no drugs" : "who never took any drugs");
 			else
-				ret.append("any drugs");
+				ret.append(currentlyCase ? "taking any drugs" : "ever taking any drugs");
 		} else {
-			ret.append(getAnyOrAll() + " of [");
-			for (Iterator<Drug> i = getDrugList().iterator(); i.hasNext(); ) {
-				ret.append(i.next().getName());
-				if (i.hasNext())
-					ret.append(" , ");
+			if (getDrugList().size() == 1) {
+				if (getAnyOrAll() == GroupMethod.NONE)
+					ret.append("not taking ");
+				else
+					ret.append("taking ");
+				ret.append(getDrugList().get(0).getName());
+			} else {
+				ret.append("taking " + getAnyOrAll() + " of [");
+				for (Iterator<Drug> i = getDrugList().iterator(); i.hasNext(); ) {
+					ret.append(i.next().getName());
+					if (i.hasNext())
+						ret.append(" , ");
+				}
+				ret.append("]");
 			}
-			ret.append("]");
 		}
-		if (getWithinLastDays() != null)
-			ret.append(" WithinLastDays = " + getWithinLastDays());
-		if (getWithinLastMonths() != null)
-			ret.append(" WithinLastMonths = " + getWithinLastMonths());
+		if (!currentlyCase)
+			if (getWithinLastDays() != null || getWithinLastMonths() != null) {
+				ret.append(" withing the last");
+				if (getWithinLastMonths() != null)
+					ret.append(" " + getWithinLastMonths() + " months");
+				if (getWithinLastDays() != null)
+					ret.append(" " + getWithinLastDays() + " days");
+			}
 		if (getSinceDate() != null)
-			ret.append(" SinceDate = " + df.format(getSinceDate()));
+			ret.append(" since " + df.format(getSinceDate()));
 		if (getUntilDate() != null)
-			ret.append(" UntilDate = " + df.format(getUntilDate()));
+			ret.append(" until " + df.format(getUntilDate()));
 		return ret.toString();
 	}
 	
@@ -72,7 +88,7 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 					getUntilDaysAgo(), getUntilMonthsAgo(),
 					getSinceDate(), getUntilDate()));
 		
-		return input.intersect(ps);
+		return input == null ? ps : input.intersect(ps);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

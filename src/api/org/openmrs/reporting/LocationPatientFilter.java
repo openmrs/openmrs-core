@@ -24,7 +24,7 @@ public class LocationPatientFilter extends AbstractPatientFilter implements
 	
 	public PatientSet filter(PatientSet input) {
 		PatientSet ps = Context.getPatientSetService().getPatientsHavingLocation(getLocation(), getCalculationMethod());
-		return input.intersect(ps);
+		return input == null ? ps : input.intersect(ps);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

@@ -683,13 +683,18 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 *   * patients with at least minCount of the given encounters
 	 *   * patients with up to maxCount of the given encounters
 	 */
-	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
-		Integer encTypeId = encounterType == null ? null : encounterType.getEncounterTypeId();
+	public PatientSet getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
+		List<Integer> encTypeIds = null;
+		if (encounterTypeList != null) {
+			encTypeIds = new ArrayList<Integer>();
+			for (EncounterType t : encounterTypeList)
+				encTypeIds.add(t.getEncounterTypeId());
+		}
 		Integer locationId = location == null ? null : location.getLocationId();
 		Integer formId = form == null ? null : form.getFormId();
 		List<String> whereClauses = new ArrayList<String>();
-		if (encTypeId != null)
-			whereClauses.add("e.encounter_type = :encTypeId");
+		if (encTypeIds != null)
+			whereClauses.add("e.encounter_type in (:encTypeIds)");
 		if (locationId != null)
 			whereClauses.add("e.location_id = :locationId");
 		if (formId != null)
@@ -717,8 +722,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		log.debug("query: " + sb);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
-		if (encTypeId != null)
-			query.setInteger("encTypeId", encTypeId);
+		if (encTypeIds != null)
+			query.setParameterList("encTypeIds", encTypeIds);
 		if (locationId != null)
 			query.setInteger("locationId", locationId);
 		if (formId != null)

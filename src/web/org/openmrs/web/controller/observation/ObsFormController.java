@@ -20,7 +20,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.LocationEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;

@@ -98,6 +98,7 @@
 				<prop key="admin/reports/dataExport.form">dataExportForm</prop>
 				<prop key="admin/reports/reportObject.list">reportObjectList</prop>
 				<prop key="admin/reports/reportObject.form">reportObjectForm</prop>
+				<prop key="admin/reports/cohorts.list">cohortList</prop>
 
 				<prop key="analysis.list">otfaController</prop>
 				<prop key="analysis.form">otfaActionController</prop>
@@ -123,6 +124,8 @@
 
 				<prop key="admin/scheduler/scheduler.list">schedulerListController</prop>
 				<prop key="admin/scheduler/scheduler.form">schedulerFormController</prop>
+
+				<prop key="remotecommunication/postHl7.form">postHl7FormController</prop>
 
 				<prop key="admin/programs/program.list">programList</prop>
 				<prop key="admin/programs/program.form">programForm</prop>
@@ -173,6 +176,8 @@
 	<bean id="nameLayoutPortletController" class="org.openmrs.web.controller.layout.NameLayoutPortletController" />
 	<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
 	<bean id="springController" class="org.openmrs.web.controller.SpringController" />
+	
+	<bean id="requireNameValidator" class="org.openmrs.web.controller.RequireNameValidator"/>
 
 	<!-- =============================== -->
 	<!-- =====      Scheduler      ===== -->
@@ -802,11 +807,19 @@
 	<bean id="dataExportForm"
 		class="org.openmrs.web.controller.report.export.DataExportFormController">
 		<property name="sessionForm"><value>true</value></property>
+		<property name="validator"><ref bean="requireNameValidator" /></property>
 		<property name="commandName"><value>dataExport</value></property>
 		<property name="formView"><value>/admin/reports/dataExportForm</value></property>
 		<property name="successView"><value>dataExport.list</value></property>
 	</bean>
 	<!-- ** /DataExport ** -->
+	<bean id="cohortList"
+		class="org.openmrs.web.controller.report.CohortListController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>cohortList</value></property>
+		<property name="formView"><value>/admin/reports/cohortList</value></property>
+		<property name="successView"><value>cohorts.list</value></property>
+	</bean>
 	<!-- ============================ -->
 
 	<!-- ============================ -->

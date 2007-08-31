@@ -220,7 +220,7 @@ public class WebModuleUtil {
 				}
 			}
 			catch (FileNotFoundException e) {
-				throw new ModuleException("/WEB-INF/dwr-modules.xml file doesn't exist.", e);
+				throw new ModuleException(realPath + "/WEB-INF/dwr-modules.xml file doesn't exist.", e);
 			}
 			finally  {
 				if (inputStream != null) {
@@ -527,7 +527,8 @@ public class WebModuleUtil {
 							Node attr = attrs.getNamedItem("moduleId");
 							if (attr != null && moduleId.equals(attr.getNodeValue())) {
 								outputRoot.removeChild(current);
-							}
+							} else
+								i++;
 					}
 					else
 						i++;
@@ -538,7 +539,7 @@ public class WebModuleUtil {
 			}
 		}
 		catch (FileNotFoundException e) {
-			throw new ModuleException("/WEB-INF/dwr-modules.xml file doesn't exist.", e);
+			throw new ModuleException(realPath + "/WEB-INF/dwr-modules.xml file doesn't exist.", e);
 		}
 		finally  {
 			if (inputStream != null) {

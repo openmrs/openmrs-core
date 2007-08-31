@@ -84,9 +84,12 @@
 					<td><spring:message code="Program.enrolled"/>:</td>
 					<th><openmrs:formatDate date="${p.dateEnrolled}" type="medium" /></th>
 					<td>|</td>
-					<td><spring:message code="Program.group"/>:</td>
-					<th><openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="1377" locale="${model.locale}" /></th>
-					<td>|</td>
+
+					<c:forEach items="${p.currentStates}" var="patientState" varStatus="s">
+						<td>${patientState.state.programWorkflow.concept.name}:</td>
+						<th>${patientState.state.concept.name}</th>
+						<td>|</td>
+					</c:forEach>
 					<td><spring:message code="Program.agent"/>:</td>
 					<th>
 						<c:forEach items="${model.patientRelationships}" var="r" varStatus="s">

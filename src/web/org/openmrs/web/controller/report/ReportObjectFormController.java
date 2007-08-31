@@ -3,6 +3,7 @@ package org.openmrs.web.controller.report;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,9 +26,9 @@ import org.openmrs.reporting.EmptyReportObject;
 import org.openmrs.reporting.ReportObjectFactory;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.propertyeditor.ConceptEditor;
-import org.openmrs.web.propertyeditor.LocationEditor;
-import org.openmrs.web.propertyeditor.UserEditor;
+import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.UserEditor;
 import org.openmrs.web.taglib.HtmlIncludeTag;
 import org.springframework.beans.propertyeditors.CharacterEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -36,8 +37,8 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -194,13 +195,24 @@ public class ReportObjectFormController extends SimpleFormController {
 		}
 		
 		Map extendedObjectInfo = new HashMap();
+		Map transientObjects = new HashMap();
 		for ( Field field : obj.getClass().getDeclaredFields() ) {
 			String fieldName = field.getName();
-			Method m = obj.getClass().getMethod("get" + fieldName.substring(0,1).toUpperCase() + fieldName.substring(1), (Class[])null);
-			Object fieldObj = m.invoke(obj, (Object[])null);
-			extendedObjectInfo.put(fieldName, fieldObj);
+			int modifiers = field.getModifiers();
+			if ( (modifiers & (0x0 | Modifier.TRANSIENT)) == (0x0 | Modifier.TRANSIENT) ) {
+				log.debug("OBJECT IS TRANSIENT, SO NOT TRYING TO EDIT");
+				transientObjects.put(fieldName, "true");
+			} else {
+				Method m = obj.getClass().getMethod("get" + fieldName.substring(0,1).toUpperCase() + fieldName.substring(1), (Class[])null);
+				Object fieldObj = m.invoke(obj, (Object[])null);
+				extendedObjectInfo.put(fieldName, fieldObj);
+			}
+
 		}
 		addedData.put("extendedObjectInfo", extendedObjectInfo);
+		addedData.put("transientObjects", transientObjects);
+	
+		
 		
 		return addedData;
 	}

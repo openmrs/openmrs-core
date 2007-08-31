@@ -111,6 +111,16 @@ public interface OrderService {
 	public Order getOrderByGuid(String guid) throws APIException;
 
 	/**
+	 * Get drugOrder by internal identifier
+	 * 
+	 * @param orderId internal order identifier
+	 * @return order with given internal identifier
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	public DrugOrder getDrugOrder(Integer drugOrderId) throws APIException;
+
+	/**
 	 * Get all orders
 	 * 
 	 * @return orders list

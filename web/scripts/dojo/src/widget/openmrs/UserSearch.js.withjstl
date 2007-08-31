@@ -23,6 +23,8 @@ dojo.widget.defineWidget(
 		
 		showRoles: false,
 		
+		showUsername: true,
+		
 		postCreate: function(){
 			dojo.debug("postCreate in UserSearch");
 			
@@ -58,7 +60,8 @@ dojo.widget.defineWidget(
 			var arr = new Array();
 			arr.push(this.simpleClosure(this, "getNumber"));
 			arr.push(this.getSystemId);
-			arr.push(this.getUsername);
+			if (this.showUsername)
+				arr.push(this.getUsername);
 			arr.push(this.simpleClosure(this, "getGiven"));
 			arr.push(this.simpleClosure(this, "getMiddle"));
 			arr.push(this.simpleClosure(this, "getFamily"));
@@ -76,7 +79,8 @@ dojo.widget.defineWidget(
 			var arr = new Array();
 			arr.push('');
 			arr.push('<spring:message code="User.systemId" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="User.username" javaScriptEscape="true"/>');
+			if (this.showUsername)
+				arr.push('<spring:message code="User.username" javaScriptEscape="true"/>');
 			arr.push('<spring:message code="PersonName.givenName" javaScriptEscape="true"/>');
 			arr.push('<spring:message code="PersonName.middleName" javaScriptEscape="true"/>');
 			arr.push('<spring:message code="PersonName.familyName" javaScriptEscape="true"/>');

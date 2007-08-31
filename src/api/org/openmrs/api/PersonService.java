@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
@@ -44,7 +45,15 @@ public interface PersonService {
 	@Transactional(readOnly=true)
 	@Authorized({"View People"})
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided);
-	
+
+	@Transactional(readOnly=true)
+	@Authorized({"View People"})
+	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, String roles);
+
+	@Transactional(readOnly=true)
+	@Authorized({"View People"})
+	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, List<String> roles);
+
 	/**
 	 * Create the person attribute type in the database
 	 * @param type
@@ -109,6 +118,9 @@ public interface PersonService {
 
 	@Transactional(readOnly=true)
 	public PersonAttributeType getPersonAttributeTypeByGuid(String guid);
+
+	@Transactional(readOnly=true)
+	public PersonAttribute getPersonAttribute(Integer id);
 
 	/**
 	 * Get the PersonAttributeType given the type's name

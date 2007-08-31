@@ -204,7 +204,11 @@ public class HibernatePersonDAO implements PersonDAO {
 	public PersonAttributeType getPersonAttributeType(Integer typeId) {
 		return (PersonAttributeType) sessionFactory.getCurrentSession().get(PersonAttributeType.class, typeId);
 	}
-	
+
+	public PersonAttribute getPersonAttribute(Integer id) {
+		return (PersonAttribute)sessionFactory.getCurrentSession().get(PersonAttribute.class, id);
+	}
+
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getPersonAttributeType(java.lang.String)
 	 */

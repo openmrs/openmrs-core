@@ -61,6 +61,8 @@ public interface OrderDAO {
 	 */
 	public Order getOrder(Integer orderId) throws DAOException;
 
+	public DrugOrder getDrugOrder(Integer drugOrderId) throws DAOException;
+
 	/**
 	 * Get all orders
 	 * 

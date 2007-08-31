@@ -216,9 +216,11 @@
 			<td style="width: 200px;"><spring:message code="Program.state"/></td>
 			<td style="width: 70px;"><!-- edit column -->&nbsp;</td>
 		</tr>
+		<c:set var="bgColor" value="whitesmoke" />
 		<c:forEach var="program" items="${model.patientPrograms}">
 			<c:if test="${!program.voided}">
-				<tr>
+				<c:choose><c:when test="${bgColor == 'white'}"><c:set var="bgColor" value="whitesmoke" /></c:when><c:otherwise><c:set var="bgColor" value="white" /></c:otherwise></c:choose>
+				<tr style="background-color: ${bgColor}">
 					<td>
 						<c:if test="${program.dateCompleted != null}">
 							<small><i>[<spring:message code="Program.completed"/>]</i></small>

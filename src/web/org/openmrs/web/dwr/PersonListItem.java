@@ -60,7 +60,9 @@ public class PersonListItem {
 			
 			// add in the person attributes
 			for (PersonAttribute attribute : person.getActiveAttributes()) {
-				attributes.put(attribute.getAttributeType().getName(), attribute.getValue());
+				Object object = attribute.getHydratedObject();
+				if (object != null)
+					attributes.put(attribute.getAttributeType().getName(), object.toString());
 			}
 			
 		}

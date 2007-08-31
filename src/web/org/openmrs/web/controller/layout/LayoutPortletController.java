@@ -25,7 +25,7 @@ public abstract class LayoutPortletController extends PortletController {
 			log.debug("Could not get default LayoutTemplate from " + layoutSupport.getClass());
 		}
 		
-		String templateName = (String)model.get("layoutTemplate");
+		String templateName = (String)model.get("layoutTemplateName");
 		if ( templateName != null ) {
 			if ( layoutSupport.getLayoutTemplateByName(templateName) != null ) {
 				layoutTemplate = layoutSupport.getLayoutTemplateByName(templateName);

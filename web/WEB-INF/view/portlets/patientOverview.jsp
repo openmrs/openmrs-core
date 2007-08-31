@@ -157,3 +157,4 @@
 <div class="box${model.patientVariation}">
 	<openmrs:portlet url="patientRelationships" size="normal" patientId="${patient.patientId}" />
 </div>
+

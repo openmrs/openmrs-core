@@ -106,6 +106,12 @@ public class HibernateOrderDAO implements
 		return (Order)sessionFactory.getCurrentSession().get(Order.class, orderId);
 	}
 
+	public DrugOrder getDrugOrder(Integer drugOrderId) throws DAOException {
+		log.debug("getting order #" + drugOrderId);
+		
+		return (DrugOrder)sessionFactory.getCurrentSession().get(DrugOrder.class, drugOrderId);
+	}
+
 	/**
 	 * @see org.openmrs.api.db.OrderService#getOrderTypes()
 	 */

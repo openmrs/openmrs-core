@@ -37,9 +37,13 @@ public class HibernateReportObjectDAO implements
 	}
 	
 	public List<AbstractReportObject> getAllReportObjects() {
+
+
+		
 		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
-		List<ReportObjectWrapper> wrappedObjects = new Vector<ReportObjectWrapper>();
-		wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper order by date_created, name").list());
+		//List<ReportObjectWrapper> wrappedObjects = new Vector<ReportObjectWrapper>();
+		//wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper order by date_created, name").list());
+		List<ReportObjectWrapper> wrappedObjects = sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper order by date_created, name").list();
 		for ( ReportObjectWrapper wrappedObject : wrappedObjects ) {
 			AbstractReportObject reportObject = (AbstractReportObject)wrappedObject.getReportObject();
 			if ( reportObject.getReportObjectId() == null ) {
@@ -51,9 +55,8 @@ public class HibernateReportObjectDAO implements
 	}
 
 	public AbstractReportObject getReportObject(Integer reportObjId) throws DAOException {
-		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper();
-		wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObjId);
-		
+		ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObjId);
+
 		if (wrappedReportObject == null)
 			return null;
 		
@@ -65,11 +68,11 @@ public class HibernateReportObjectDAO implements
 	}
 
 	public Integer createReportObject(AbstractReportObject reportObj) throws DAOException {
-		reportObj.setCreator(Context.getAuthenticatedUser());
-		reportObj.setDateCreated(new Date());
 		log.debug("Saving: " + reportObj);
 		
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);
+		wrappedReportObject.setCreator(Context.getAuthenticatedUser());
+		wrappedReportObject.setDateCreated(new Date());
 		sessionFactory.getCurrentSession().save(wrappedReportObject);
 		return wrappedReportObject.getReportObjectId();
 	}
@@ -84,7 +87,12 @@ public class HibernateReportObjectDAO implements
 		if (reportObj.getReportObjectId() == null)
 			createReportObject(reportObj);
 		else {
-			ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);		
+			log.debug("ATTEMPTING TO SAVE reportObj: " + reportObj);
+			//ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);		
+			ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObj.getReportObjectId());
+			wrappedReportObject.setReportObject(reportObj);
+			wrappedReportObject.setChangedBy(Context.getAuthenticatedUser());
+			wrappedReportObject.setDateChanged(new Date());
 
 			//wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().merge(wrappedReportObject);
 			sessionFactory.getCurrentSession().update(wrappedReportObject);
@@ -93,12 +101,12 @@ public class HibernateReportObjectDAO implements
 
 	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException {
 		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
-		List<ReportObjectWrapper> wrappedObjects = new Vector<ReportObjectWrapper>();
+
 		Query query = sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper ro where ro.type=:type order by date_created, name");
 		query.setString("type", reportObjectType);
-		wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)query.list());
+		List<ReportObjectWrapper> wrappedObjects = query.list();
 		for ( ReportObjectWrapper wrappedObject : wrappedObjects ) {
-			AbstractReportObject reportObject = (AbstractReportObject)wrappedObject.getReportObject();
+			AbstractReportObject reportObject = wrappedObject.getReportObject();
 			if ( reportObject.getReportObjectId() == null ) {
 				reportObject.setReportObjectId(wrappedObject.getReportObjectId());
 			}

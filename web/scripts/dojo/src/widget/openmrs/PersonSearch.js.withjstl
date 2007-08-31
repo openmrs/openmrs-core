@@ -18,6 +18,7 @@ dojo.widget.defineWidget(
 	dojo.widget.openmrs.OpenmrsSearch,
 	{
 		personId: "",
+		roles: "",
 		
 		initializer: function(){
 			dojo.debug("initializing personsearch");
@@ -36,7 +37,7 @@ dojo.widget.defineWidget(
 		doFindObjects: function(text) {
 
 			var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
-			DWRPersonService.findPeople(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedVoided);
+			DWRPersonService.findPeopleByRoles(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedVoided, this.roles);
 			
 			return false;
 		},
@@ -87,7 +88,7 @@ dojo.widget.defineWidget(
 				return td;
 		},
 		
-		getAttribute: function(p, attrName) {
+		getAttribute: function(p, arg2, attrName) {
 			if (typeof p == 'string') return this.noCell();
 			return p.attributes[attrName];
 		},

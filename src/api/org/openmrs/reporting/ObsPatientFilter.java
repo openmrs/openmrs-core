@@ -72,9 +72,10 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 	
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value,
+		PatientSet ps = service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value,
 				OpenmrsUtil.fromDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()),
-				OpenmrsUtil.toDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()) ));
+				OpenmrsUtil.toDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()) );
+		return input == null ? ps : input.intersect(ps);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

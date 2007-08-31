@@ -53,6 +53,12 @@ public interface ProgramWorkflowService {
 	public void voidWorkflow(ProgramWorkflow w, String reason);
 
 	@Transactional(readOnly=true)
+	public List<ProgramWorkflowState> getStates();
+	
+	@Transactional(readOnly=true)
+	public List<ProgramWorkflowState> getStates(boolean includeVoided);
+	
+	@Transactional(readOnly=true)
 	public ProgramWorkflowState getState(Integer id);
 
 	@Transactional(readOnly=true)
@@ -82,6 +88,7 @@ public interface ProgramWorkflowService {
 	/**
 	 * @return patientIds of all patients who are enrolled in _program_ between _fromDate_ and _toDate_ 
 	 */
+	@Transactional(readOnly=true)
 	public Collection<Integer> patientsInProgram(Program program,
 			Date fromDate, Date toDate);
 

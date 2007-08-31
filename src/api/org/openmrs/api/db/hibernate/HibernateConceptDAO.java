@@ -102,6 +102,13 @@ public class HibernateConceptDAO implements
 	}
 
 	/**
+	 * @see org.openmrs.api.db.ConceptService#getConcept(java.lang.Integer)
+	 */
+	public ConceptAnswer getConceptAnswer(Integer conceptAnswerId) throws APIException {
+		return (ConceptAnswer)sessionFactory.getCurrentSession().get(ConceptAnswer.class, conceptAnswerId);
+	}
+
+	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConcepts(java.lang.String, java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")

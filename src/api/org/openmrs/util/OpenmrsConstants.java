@@ -468,6 +468,7 @@ public class OpenmrsConstants {
 	 * Report object properties
 	 */
 	public static final String REPORT_OBJECT_TYPE_PATIENTFILTER 		= "Patient Filter";
+	public static final String REPORT_OBJECT_TYPE_PATIENTSEARCH			= "Patient Search";
 	public static final String REPORT_OBJECT_TYPE_PATIENTDATAPRODUCER 	= "Patient Data Producer";
 	
 	// Used for differences between windows/linux upload capabilities)

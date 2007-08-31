@@ -185,7 +185,7 @@ public class HibernateFormDAO implements
 			crit.add(Expression.eq("retired", false));
 		
 		crit.addOrder(Order.asc("name"));
-		crit.addOrder(Order.asc("formId"));
+		crit.addOrder(Order.desc("formId"));
 		
 		return crit.list();
 	}
@@ -278,6 +278,26 @@ public class HibernateFormDAO implements
      */
     public FormField getFormFieldByGuid(String guid) {
 		return (FormField) sessionFactory.getCurrentSession().createQuery("from FormField ff where ff.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.FormDAO#findForms(java.lang.String, boolean, boolean)
+     */
+    public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
+    	Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
+		
+		if (includeUnpublished == false)
+			crit.add(Expression.eq("published", true));
+		
+		if (!includeRetired)
+			crit.add(Expression.eq("retired", false));
+		
+		crit.add(Expression.like("name", text, MatchMode.ANYWHERE));
+		
+		crit.addOrder(Order.asc("name"));
+		crit.addOrder(Order.desc("formId"));
+		
+		return crit.list();
     }
 	
 }

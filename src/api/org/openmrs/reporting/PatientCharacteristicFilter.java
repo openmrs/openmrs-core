@@ -195,7 +195,8 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly));
+		PatientSet ps = service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly);
+		return input == null ? ps : input.intersect(ps);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

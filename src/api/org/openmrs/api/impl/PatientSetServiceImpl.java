@@ -2,6 +2,7 @@ package org.openmrs.api.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +108,12 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
-		return getPatientSetDAO().getPatientsHavingEncounters(encounterType, location, form, fromDate, toDate, minCount, maxCount);
+		List<EncounterType> list = Collections.singletonList(encounterType);
+		return getPatientSetDAO().getPatientsHavingEncounters(list, location, form, fromDate, toDate, minCount, maxCount);
+	}
+
+	public PatientSet getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
+		return getPatientSetDAO().getPatientsHavingEncounters(encounterTypeList, location, form, fromDate, toDate, minCount, maxCount);
 	}
 	
 	public PatientSet getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate) {

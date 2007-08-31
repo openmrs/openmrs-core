@@ -231,7 +231,7 @@ public class HibernateContextDAO implements ContextDAO {
 
 			psSelect = conn
 					.prepareStatement("SELECT * FROM role WHERE UPPER(role) = UPPER(?)");
-			psInsert = conn.prepareStatement("INSERT INTO role VALUES (?, ?)");
+			psInsert = conn.prepareStatement("INSERT INTO role (role, description) VALUES (?, ?)");
 
 			map = OpenmrsConstants.CORE_ROLES();
 			for (String role : map.keySet()) {
@@ -256,7 +256,7 @@ public class HibernateContextDAO implements ContextDAO {
 			psSelect = conn
 					.prepareStatement("SELECT * FROM privilege WHERE UPPER(privilege) = UPPER(?)");
 			psInsert = conn
-					.prepareStatement("INSERT INTO privilege VALUES (?, ?)");
+					.prepareStatement("INSERT INTO privilege (privilege, description) VALUES (?, ?)");
 
 			map = OpenmrsConstants.CORE_PRIVILEGES();
 			for (String priv : map.keySet()) {
@@ -281,7 +281,7 @@ public class HibernateContextDAO implements ContextDAO {
 			psSelect = conn
 					.prepareStatement("SELECT * FROM global_property WHERE UPPER(property) = UPPER(?)");
 			psInsert = conn
-					.prepareStatement("INSERT INTO global_property VALUES (?, ?, ?)");
+					.prepareStatement("INSERT INTO global_property (property, property_value, description) VALUES (?, ?, ?)");
 			// this update should only be temporary until everyone has the new global property description code 
 			psUpdate = conn
 					.prepareStatement("UPDATE global_property SET description = ? WHERE UPPER(property) = UPPER(?) AND description IS null");

@@ -14,12 +14,14 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.layout.address.AddressSupport;
+import org.openmrs.layout.address.AddressTemplate;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.reporting.export.ExportColumn;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.LocationEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
@@ -132,18 +134,23 @@ public class DataExportFormController extends SimpleFormController {
 									// cohort column
 									String cohortIdValue = request.getParameter("cohortIdValue_" + columnId);
 									String filterIdValue = request.getParameter("filterIdValue_" + columnId);
+									String searchIdValue = request.getParameter("patientSearchIdValue_" + columnId);
 									String valueIfTrue = request.getParameter("cohortIfTrue_" + columnId);
 									String valueIfFalse = request.getParameter("cohortIfFalse_" + columnId);
 									Integer cohortId = null;
 									Integer filterId = null;
+									Integer searchId = null;
 									try {
 										cohortId = Integer.valueOf(cohortIdValue);
 									} catch (Exception ex) { }
 									try {
 										filterId = Integer.valueOf(filterIdValue);
 									} catch (Exception ex) { }
-									if (cohortId != null || filterId != null)
-										report.addCohortColumn(columnName, cohortId, filterId, valueIfTrue, valueIfFalse);
+									try {
+										searchId = Integer.valueOf(searchIdValue);
+									} catch (Exception ex) { }
+									if (cohortId != null || filterId != null || searchId != null)
+										report.addCohortColumn(columnName, cohortId, filterId, searchId, valueIfTrue, valueIfFalse);
 								} else
 									log.warn("Cannot determine column type for column: " + columnId);
 							}
@@ -201,8 +208,12 @@ public class DataExportFormController extends SimpleFormController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";
 		
+		
 		if (Context.isAuthenticated()) {
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			AddressSupport support = AddressSupport.getInstance();
+			AddressTemplate template = support.getDefaultLayoutTemplate();
+			map.put("addressTemplate", template);
 		}
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		

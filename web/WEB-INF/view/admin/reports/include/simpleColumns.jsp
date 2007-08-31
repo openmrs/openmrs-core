@@ -25,12 +25,22 @@
 				<option value="$!{fn.getPatientAttr('PersonName', 'familyName')}">&nbsp; <spring:message code="PersonName.familyName" /></option>
 				<option value="$!{fn.getPatientAttr('PersonName', 'degree')}">&nbsp; <spring:message code="PersonName.degree" /></option>
 				<option disabled> </option>
+				<c:forEach items="${addressTemplate.lines}" var="line">
+					<c:forEach items="${line}" var="token">
+						<c:if test="${token.isToken == addressTemplate.layoutToken}">
+							<option value="$!{fn.getPatientAttr('PersonAddress', '${token.codeName}')}">&nbsp; <spring:message code="${token.displayText}" /></option>
+						</c:if>
+					</c:forEach>
+				</c:forEach>	
+
+<%--
 				<option value="$!{fn.getPatientAttr('PersonAddress', 'address1')}">&nbsp; <spring:message code="PersonAddress.address1" /></option>
 				<option value="$!{fn.getPatientAttr('PersonAddress', 'address2')}">&nbsp; <spring:message code="PersonAddress.address2" /></option>
 				<option value="$!{fn.getPatientAttr('PersonAddress', 'cityVillage')}">&nbsp; <spring:message code="PersonAddress.cityVillage" /></option>
 				<option value="$!{fn.getPatientAttr('PersonAddress', 'stateProvince')}">&nbsp; <spring:message code="PersonAddress.stateProvince" /></option>
 				<option value="$!{fn.getPatientAttr('PersonAddress', 'country')}">&nbsp; <spring:message code="PersonAddress.country" /></option>
 				<option value="$!{fn.getPatientAttr('PersonAddress', 'postalCode')}">&nbsp; <spring:message code="PersonAddress.postalCode" /></option>
+--%>
 				<option disabled> </option>
 				<option value="$!{fn.getPatientAttr('PatientIdentifier', 'identifier')}">&nbsp; <spring:message code="PatientIdentifier.identifier" /></option>
 				<option value="$!{fn.getPatientAttr('PatientIdentifier', 'identifierType').getName()}">&nbsp; <spring:message code="PatientIdentifier.identifierType" /></option>
@@ -61,8 +71,8 @@
 				<option value="$!{fn.getFirstEncounter('').getProvider().getFirstName()} $!{fn.getFirstEncounter('').getProvider().getLastName()}">&nbsp; <spring:message code="Encounter.provider" /></option>
 				<option value=""> </option>
 				<option value="$!{fn.getRelationshipNames('')}">&nbsp; <spring:message code="All Relationships" /></option>
-				<option value="$!{fn.getRelationshipNames('Accompagnateur')}">&nbsp; <spring:message code="Accompagnateur" /></option>
-				<option value="$!{fn.getRelationshipIds('Accompagnateur')}">&nbsp; <spring:message code="Accompagnateur ID" /></option>
+				<option value="$!{fn.getRelationshipNames('Accompagnateur')}">&nbsp; <spring:message code="provider.chw.names" /></option>
+				<option value="$!{fn.getRelationshipIds('Accompagnateur')}">&nbsp; <spring:message code="provider.chw.id" /></option>
 				<option value="$!{fn.getRelationshipIdentifiers('Mother')}">&nbsp; <spring:message code="RelationshipType.mother" /></option>
 				<option value=""> </option>
 				<option value="$!{fn.formatDate('ymd', $fn.getProgram('HIV PROGRAM').getDateEnrolled())}">&nbsp; <spring:message code="HIV Program enrollment date" /></option>

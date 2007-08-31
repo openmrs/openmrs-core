@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openmrs.Concept;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -56,7 +55,11 @@ public class ProgramStatePatientFilter extends AbstractPatientFilter implements
 			for (Map.Entry<ProgramWorkflow, Set<ProgramWorkflowState>> e : map.entrySet()) {
 				ret.append(first ? "with " : "or ");
 				first = false;
-				ret.append(e.getKey().getConcept().getName().getName());
+				try {
+					ret.append(e.getKey().getConcept().getName().getName());
+				} catch (NullPointerException ex) {
+					ret.append("CONCEPT?");
+				}
 				if (e.getValue().size() == 1)
 					ret.append(" of " + e.getValue().iterator().next().getConcept().getName().getName());
 				else {
@@ -88,7 +91,8 @@ public class ProgramStatePatientFilter extends AbstractPatientFilter implements
 	
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsByProgramAndState(program, stateList, fromDateHelper(), toDateHelper()));
+		PatientSet ps = service.getPatientsByProgramAndState(program, stateList, fromDateHelper(), toDateHelper());
+		return input == null ? ps : input.intersect(ps);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

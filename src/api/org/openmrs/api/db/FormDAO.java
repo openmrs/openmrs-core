@@ -222,5 +222,10 @@ public interface FormDAO {
      * @return
      */
     public FormField getFormFieldByGuid(String guid);
+
+	/**
+     * @see org.openmrs.api.FormService#findForms(java.lang.String, boolean, boolean)
+     */
+    public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired);
 	
 }

@@ -152,9 +152,11 @@ public class NealReportController implements Controller {
 
 		List<Concept> conceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> namesForReportMaker = new HashMap<Concept, String>();
-		conceptHelper(cs, conceptsToGet, namesForReportMaker, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
-		conceptHelper(cs, conceptsToGet, namesForReportMaker, "TUBERCULOSIS TREATMENT GROUP", TB.TB_GROUP);
+		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
+		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "TUBERCULOSIS TREATMENT GROUP", TB.TB_GROUP);
 		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "CURRENT WHO HIV STAGE", Hiv.WHO_STAGE);
+		
+		// TODO: replace static concepts for current groups
 		
 		List<Concept> dynamicConceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> obsTypesForDynamicConcepts = new HashMap<Concept, String>();
@@ -162,14 +164,16 @@ public class NealReportController implements Controller {
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "HEIGHT (CM)", "height");
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CD4 COUNT", Hiv.CD4COUNT);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CD4%", Hiv.CD4PERCENT);
-		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
-		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TUBERCULOSIS TREATMENT GROUP", TB.TB_GROUP);
+		//dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
+		//dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TUBERCULOSIS TREATMENT GROUP", TB.TB_GROUP);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CURRENT WHO HIV STAGE", Hiv.WHO_STAGE);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "REASON FOR EXITING CARE", General.OUTCOME);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "PATIENT RECEIVED FOOD PACKAGE", General.RECEIVE_FOOD);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TIME OF DAILY ACCOMPAGNATEUR VISIT", Hiv.TIME_OF_ACCOMP_VISIT);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TRANSFER IN FROM", General.TRANSFERRED_IN_FROM);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TRANSFER IN DATE", General.TRANSFERRED_IN_DATE);
+		
+		// TODO: replace dynamic concepts for current groups
 		
 		long l = System.currentTimeMillis();
 		
@@ -298,6 +302,31 @@ public class NealReportController implements Controller {
 			} else {
 				log.debug("states is null, can't proceed");
 			}
+			
+			wf = Context.getProgramWorkflowService().getWorkflow(hivProgram, "ANTIRETROVIRAL TREATMENT GROUP");
+			log.debug("worlflow is " + wf + " and patientSet is " + ps);
+			states = pss.getCurrentStates(ps, wf);
+			if ( states != null ) {
+				log.debug("about to loop through [" + states.size() + "] statuses");
+				for (Map.Entry<Integer, PatientState> e : states.entrySet()) {
+					patientDataHolder.get(e.getKey()).put(Hiv.TREATMENT_GROUP, e.getValue().getState().getConcept().getName(locale, false).getName());
+					log.debug("Just put state [" + e.getValue().getState().getConcept().getName(locale).getName() + "] in for patient [" + e.getKey() + "]");
+					
+					// also want to add dynamically
+					PatientState state = e.getValue();
+					Map<String, String> holder = new HashMap<String, String>();
+					holder.put(General.ID, e.getKey().toString());
+					holder.put(Hiv.OBS_TYPE, Hiv.TREATMENT_GROUP);
+					holder.put(Hiv.OBS_DATE, formatDate(state.getStartDate()));
+					holder.put("stop_date", formatDate(state.getEndDate()));
+					holder.put(Hiv.RESULT, state.getState().getConcept().getName(locale).getName());
+					maker.addDynamic(holder);
+
+				}
+				
+			} else {
+				log.debug("states is null, can't proceed");
+			}
 		} else {
 			log.debug("Couldn't find HIV PROGRAM");
 		}
@@ -323,6 +352,30 @@ public class NealReportController implements Controller {
 					Map<String, String> holder = new HashMap<String, String>();
 					holder.put(General.ID, e.getKey().toString());
 					holder.put(Hiv.OBS_TYPE, TB.TB_TREATMENT_STATUS);
+					holder.put(Hiv.OBS_DATE, formatDate(state.getStartDate()));
+					holder.put("stop_date", formatDate(state.getEndDate()));
+					holder.put(Hiv.RESULT, state.getState().getConcept().getName(locale).getName());
+					maker.addDynamic(holder);
+
+				}
+				
+			} else {
+				log.debug("states is null, can't proceed");
+			}
+			wf = Context.getProgramWorkflowService().getWorkflow(tbProgram, "TUBERCULOSIS TREATMENT GROUP");
+			log.debug("worlflow is " + wf + " and patientSet is " + ps);
+			states = pss.getCurrentStates(ps, wf);
+			if ( states != null ) {
+				log.debug("about to loop through [" + states.size() + "] statuses");
+				for (Map.Entry<Integer, PatientState> e : states.entrySet()) {
+					patientDataHolder.get(e.getKey()).put(TB.TB_GROUP, e.getValue().getState().getConcept().getName(locale, false).getName());
+					log.debug("Just put state [" + e.getValue().getState().getConcept().getName(locale).getName() + "] in for patient [" + e.getKey() + "]");
+					
+					// also want to add dynamically
+					PatientState state = e.getValue();
+					Map<String, String> holder = new HashMap<String, String>();
+					holder.put(General.ID, e.getKey().toString());
+					holder.put(Hiv.OBS_TYPE, TB.TB_GROUP);
 					holder.put(Hiv.OBS_DATE, formatDate(state.getStartDate()));
 					holder.put("stop_date", formatDate(state.getEndDate()));
 					holder.put(Hiv.RESULT, state.getState().getConcept().getName(locale).getName());

@@ -15,10 +15,11 @@ public class CohortColumn implements ExportColumn, Serializable {
 	private String valueIfFalse = "No";
 	private Integer cohortId;
 	private Integer filterId;
+	private Integer patientSearchId;
 
 	public CohortColumn() {	}
 	
-	public CohortColumn(String columnName, Integer cohortId, Integer filterId, String valueIfTrue, String valueIfFalse) {
+	public CohortColumn(String columnName, Integer cohortId, Integer filterId, Integer patientSearchId, String valueIfTrue, String valueIfFalse) {
 		this.columnName = columnName;
 		this.valueIfTrue = valueIfTrue;
 		this.valueIfFalse = StringUtils.hasText(valueIfFalse) ? valueIfFalse : "";
@@ -28,12 +29,18 @@ public class CohortColumn implements ExportColumn, Serializable {
 				this.columnName = Context.getCohortService().getCohort(cohortId).getName();
 			if (!StringUtils.hasText(valueIfTrue))
 				this.valueIfTrue = Context.getCohortService().getCohort(cohortId).getName();
-		} else {
+		} else if (filterId != null) {
 			this.filterId = filterId;
 			if (!StringUtils.hasText(columnName))
 				this.columnName = Context.getReportService().getPatientFilterById(filterId).getName();
 			if (!StringUtils.hasText(valueIfTrue))
-				this.valueIfTrue = Context.getCohortService().getCohort(cohortId).getName();
+				this.valueIfTrue = Context.getReportService().getPatientFilterById(filterId).getName();
+		} else { // assert patientSearchId != null
+			this.patientSearchId = patientSearchId;
+			if (!StringUtils.hasText(columnName))
+				this.columnName = Context.getReportService().getReportObject(patientSearchId).getName();
+			if (!StringUtils.hasText(valueIfTrue))
+				this.valueIfTrue = Context.getReportService().getReportObject(patientSearchId).getName();
 		}
 	}
 	
@@ -52,8 +59,10 @@ public class CohortColumn implements ExportColumn, Serializable {
 	public String toTemplateString() {
 		if (cohortId != null)
 			return "$!{fn.getCohortMembership(" + cohortId + ", '" + valueIfTrue + "', '" + valueIfFalse + "')}";
-		else
+		else if (filterId != null)
 			return "$!{fn.getCohortDefinitionMembership(" + filterId + ", '" + valueIfTrue + "', '" + valueIfFalse + "')}";
+		else
+			return "$!{fn.getPatientSearchMembership(" + patientSearchId + ", '" + valueIfTrue + "', '" + valueIfFalse + "')}";
 	}
 	
 	public Integer getCohortId() {
@@ -71,6 +80,14 @@ public class CohortColumn implements ExportColumn, Serializable {
 	public void setFilterId(Integer filterId) {
 		this.filterId = filterId;
 	}
+
+	public Integer getPatientSearchId() {
+    	return patientSearchId;
+    }
+
+	public void setPatientSearchId(Integer patientSearchId) {
+    	this.patientSearchId = patientSearchId;
+    }
 
 	public String getColumnType() {
 		return columnType;

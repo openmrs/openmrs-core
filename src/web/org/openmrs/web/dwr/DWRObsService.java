@@ -54,6 +54,10 @@ public class DWRObsService {
 	
 	
 	public void createObs(Integer personId, Integer encounterId, Integer conceptId, String valueText, String obsDateStr) { 
+		createNewObs(personId, encounterId, null, conceptId, valueText, obsDateStr);
+	}
+	
+	public void createNewObs(Integer personId, Integer encounterId, Integer locationId, Integer conceptId, String valueText, String obsDateStr) { 
 		
 		log.info("Create new observation ");
 	
@@ -81,10 +85,13 @@ public class DWRObsService {
 			obs.setEncounter(encounter);
 			obs.setLocation(encounter.getLocation());
 		} else {
-			Location unknown = Context.getEncounterService().getLocationByName("Unknown Location");
-			if (unknown == null)
-				unknown = Context.getEncounterService().getLocationByName("Unknown");
-			obs.setLocation(unknown);
+			Location location = Context.getEncounterService().getLocation(locationId);
+			if ( location == null ) {
+				location = Context.getEncounterService().getLocationByName("Unknown Location");
+				if (location == null)
+					location = Context.getEncounterService().getLocationByName("Unknown");
+			}
+			obs.setLocation(location);
 		}
 		obs.setCreator(Context.getAuthenticatedUser());
 		obs.setDateCreated(new Date());
@@ -102,9 +109,7 @@ public class DWRObsService {
 		Context.getObsService().createObs(obs);
 
 	}
-	
-	
-	
+		
 	public Vector findObs(String phrase, boolean includeVoided) {
 		
 		// List to return

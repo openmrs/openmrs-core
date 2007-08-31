@@ -15,12 +15,13 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ProgramWorkflowState;
+import org.openmrs.Role;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.ReportObject;
 import org.openmrs.util.OpenmrsConstants;
 
 
@@ -90,6 +91,14 @@ public class ForEachRecordTag extends BodyTagSupport {
 			records = opts.entrySet().iterator();
 			if (select != null)
 				select = select.toString() + "=" + opts.get(select);
+		}
+		else if (name.equals("workflowStatus")) {
+			List<ProgramWorkflowState> ret = Context.getProgramWorkflowService().getStates();
+			records = ret.iterator();
+		}
+		else if (name.equals("role")) {
+			List<Role> ret = Context.getUserService().getRoles();
+			records = ret.iterator();
 		}
 		else {
 			log.error(name + " not found in ForEachRecord list");

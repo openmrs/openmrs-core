@@ -1172,3 +1172,9 @@ table td#summaryHeaderPatientGender {
 #cohortSearchTabs a:hover {
 	text-decoration: underline;
 }
+
+.inline ul, .inline li {
+	display: inline;
+	list-style-type: none;
+	padding: 0px;
+}

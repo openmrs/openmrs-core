@@ -560,7 +560,7 @@ public class Obs implements java.io.Serializable {
 					return getValueCoded().getName(locale).getName();
 			}
 			else if (abbrev.equals("NM") || abbrev.equals("SN"))
-				return getValueNumeric().toString();
+				return getValueNumeric() == null ? "" : getValueNumeric().toString();
 			else if (abbrev.equals("DT"))
 				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.DATE));
 			else if (abbrev.equals("TM") )

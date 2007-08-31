@@ -75,7 +75,39 @@
 			oldTextarea = getChildByName(column, "calculatedValue_" + id);
 			newTextarea.value = oldTextarea.value;
 			
+			id = newSibling.id.substr(newSibling.id.indexOf("_")+1, 3);
+			var newSelect = getChildByName(newSibling, "cohortIdValue_" + id);
+			id = sibling.id.substr(sibling.id.indexOf("_")+1, 3);
+			var oldSelect = getChildByName(sibling, "cohortIdValue_" + id);
+			newSelect.value = oldSelect.value;
+			id = newColumn.id.substr(newColumn.id.indexOf("_")+1, 3);
+			newSelect = getChildByName(newColumn, "cohortIdValue_" + id);
+			id = column.id.substr(column.id.indexOf("_")+1, 3);
+			oldSelect = getChildByName(column, "cohortIdValue_" + id);
+			newSelect.value = oldSelect.value;
 			
+			id = newSibling.id.substr(newSibling.id.indexOf("_")+1, 3);
+			var newSelect = getChildByName(newSibling, "filterIdValue_" + id);
+			id = sibling.id.substr(sibling.id.indexOf("_")+1, 3);
+			var oldSelect = getChildByName(sibling, "filterIdValue_" + id);
+			newSelect.value = oldSelect.value;
+			id = newColumn.id.substr(newColumn.id.indexOf("_")+1, 3);
+			newSelect = getChildByName(newColumn, "filterIdValue_" + id);
+			id = column.id.substr(column.id.indexOf("_")+1, 3);
+			oldSelect = getChildByName(column, "filterIdValue_" + id);
+			newSelect.value = oldSelect.value;
+			
+			id = newSibling.id.substr(newSibling.id.indexOf("_")+1, 3);
+			var newSelect = getChildByName(newSibling, "patientSearchIdValue_" + id);
+			id = sibling.id.substr(sibling.id.indexOf("_")+1, 3);
+			var oldSelect = getChildByName(sibling, "patientSearchIdValue_" + id);
+			newSelect.value = oldSelect.value;
+			id = newColumn.id.substr(newColumn.id.indexOf("_")+1, 3);
+			newSelect = getChildByName(newColumn, "patientSearchIdValue_" + id);
+			id = column.id.substr(column.id.indexOf("_")+1, 3);
+			oldSelect = getChildByName(column, "patientSearchIdValue_" + id);
+			newSelect.value = oldSelect.value;
+
 			parent.replaceChild(newColumn, sibling);
 			parent.replaceChild(newSibling, column);
 			updateColumnClasses(newColumn);
@@ -131,9 +163,15 @@
 			if (temp[0] == 'C') {
 				setValueHelper(getChildByName(tbl, "cohortIdValue_" + count), val);
 				setValueHelper(getChildByName(tbl, "filterIdValue_" + count), '');
+				setValueHelper(getChildByName(tbl, "patientSearchIdValue_" + count), '');
 			} else if (temp[0] == 'F') {
 				setValueHelper(getChildByName(tbl, "cohortIdValue_" + count), '');
 				setValueHelper(getChildByName(tbl, "filterIdValue_" + count), val);
+				setValueHelper(getChildByName(tbl, "patientSearchIdValue_" + count), '');
+			} else if (temp[0] == 'S') {
+				setValueHelper(getChildByName(tbl, "cohortIdValue_" + count), '');
+				setValueHelper(getChildByName(tbl, "filterIdValue_" + count), '');
+				setValueHelper(getChildByName(tbl, "patientSearchIdValue_" + count), val);
 			}
 		}
 	}
@@ -299,6 +337,7 @@
 		getChildByName(obj, "cohortName").name += suffix;
 		getChildByName(obj, "cohortIdValue").name += suffix;
 		getChildByName(obj, "filterIdValue").name += suffix;
+		getChildByName(obj, "patientSearchIdValue").name += suffix;
 		getChildByName(obj, "cohortIfTrue").name += suffix;
 		getChildByName(obj, "cohortIfFalse").name += suffix;
 	}
@@ -379,6 +418,15 @@
 		}
 	}
 	
+	function ensureName() {
+		var name = DWRUtil.getValue('dataExportName');
+		if (name == null || name == '') {
+			window.alert('<spring:message code="error.name" />');
+			return false;
+		}
+		return true;
+	}
+	
 </script>
 
 <style>
@@ -449,13 +497,13 @@
 	<br/>
 </spring:hasBindErrors>
 
-<form method="post" onSubmit="removeHiddenDivs()">
+<form method="post" onSubmit="removeHiddenDivs(); return ensureName()">
 <table>
 	<tr>
 		<th><spring:message code="general.name"/></th>
 		<td colspan="5">
 			<spring:bind path="dataExport.name">
-				<input type="text" name="name" value="${status.value}" size="35" />
+				<input type="text" id="dataExportName" name="name" value="${status.value}" size="35" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -469,6 +517,7 @@
 			</spring:bind>
 		</td>
 	</tr>
+	<%--
 	<c:if test="${!(dataExport.creator == null)}">
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>
@@ -478,6 +527,7 @@
 			</td>
 		</tr>
 	</c:if>
+	--%>
 </table>
 <br />
 
@@ -493,6 +543,22 @@
 		<table>
 			<tr>
 				<th colspan="2"><spring:message code="DataExport.cohortMatch"/></th>
+			</tr>
+			<tr>
+				<td><spring:message code="CohortBuilder.savedSearches"/></td>
+				<td>
+					<spring:bind path="dataExport.patientSearchId">
+						<select name="patientSearchId">
+							<option value=""></option>
+							<openmrs:forEachRecord name="reportObject" reportObjectType="Patient Search">
+								<option value="${record.reportObjectId}" <c:if test="${status.value == record.reportObjectId}">selected</c:if>>${record.name}</option>
+							</openmrs:forEachRecord>
+						</select>
+					</spring:bind>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center"><spring:message code="general.andOr"/></td>
 			</tr>
 			<tr>
 				<td><spring:message code="Cohort.title"/></td>
@@ -664,6 +730,7 @@
 					getChildByName(obj, "cohortName_" + count).value = "${column.columnName}";
 					getChildByName(obj, "cohortIdValue_" + count).value = "${column.cohortId}";
 					getChildByName(obj, "filterIdValue_" + count).value = "${column.filterId}";
+					getChildByName(obj, "patientSearchIdValue_" + count).value = "${column.patientSearchId}";
 					getChildByName(obj, "cohortIfTrue_" + count).value = "${column.valueIfTrue}";
 					getChildByName(obj, "cohortIfFalse_" + count).value = "${column.valueIfFalse}";
 				</c:if>

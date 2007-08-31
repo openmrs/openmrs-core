@@ -263,4 +263,14 @@ public interface FormService {
 	 */
 	public void deleteFormField(FormField formField) throws APIException;
 
+	/**
+     * Search for forms with the given text in their name
+     * 
+     * @param text text in form name to search for
+     * @param includeUnpublished
+     * @param includeRetired
+     * @return forms list
+     */
+    public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired);
+
 }

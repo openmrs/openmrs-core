@@ -81,10 +81,14 @@ public class DWRPersonService {
 	 * @return
 	 */
 	public List<?> findPeople(String searchPhrase, boolean includeVoided) {
+		return findPeopleByRoles(searchPhrase, includeVoided, null);
+	}
+	
+	public List<?> findPeopleByRoles(String searchPhrase, boolean includeVoided, String roles) {
 		Vector<Object> personList = new Vector<Object>();
 		PersonService ps = Context.getPersonService();
 		
-		for (Person p : ps.findPeople(searchPhrase, includeVoided)) {
+		for (Person p : ps.findPeople(searchPhrase, includeVoided, roles)) {
 			personList.add(new PersonListItem(p));
 		}
 		

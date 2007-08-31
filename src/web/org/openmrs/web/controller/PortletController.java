@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +25,6 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
-import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.reporting.PatientSet;

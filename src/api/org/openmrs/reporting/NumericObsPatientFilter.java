@@ -102,7 +102,8 @@ public class NumericObsPatientFilter extends AbstractPatientFilter implements Pa
 
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsHavingNumericObs(concept.getConceptId(), timeModifier, modifier, value, fromDateHelper(), null));
+		PatientSet ps = service.getPatientsHavingNumericObs(concept.getConceptId(), timeModifier, modifier, value, fromDateHelper(), null);
+		return input == null ? ps : input.intersect(ps);
 	}
 	
 	public PatientSet filterInverse(PatientSet input) {

@@ -64,6 +64,15 @@ public class ConceptName implements java.io.Serializable {
 		hash = hash + 31 * this.getLocale().hashCode();
 		return hash;
 	}
+	
+	public String getShortestName() {
+		String ret = getShortName();
+		if (ret == null)
+			ret = getName();
+		if (ret == null)
+			ret = getDescription();
+		return ret;
+	}
 
 	// Property accessors
 

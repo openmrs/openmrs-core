@@ -459,4 +459,11 @@ public class FormServiceImpl implements FormService {
 		return getFormDAO().getFormFieldByGuid(guid);
     }
 	
+	/**
+     * @see org.openmrs.api.FormService#findForms(java.lang.String, boolean, boolean)
+     */
+    public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
+	   return getFormDAO().findForms(text, includeUnpublished, includeRetired);
+    }
+    
 }

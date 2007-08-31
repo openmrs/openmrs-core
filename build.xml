@@ -29,8 +29,10 @@
 	
 	<!-- Base definitions (cannot be overwritten by user property file) -->
 	<property file="build.properties" />
+
 	
 	<!-- Taskdefs -->
+	
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
 			<fileset dir="${ant-contrib.dir}" includes="*.jar" />
@@ -82,15 +84,7 @@
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
 	<!-- *********************************************************** -->
-	<target name="splash" unless="nosplash" description="Display the logo">
-		<!-- do nothing -->
-	</target>
-	
-	<target name="nosplash">
-		<!-- do nothing -->
-    </target>
-	
-	<target name="init" depends="splash" description="initialization">
+	<target name="init" description="initialization">
 
 		<!-- This file needs to be sure to have the latest variables -->
 		<touch file="${metadata.dir}/api/applicationContext-service.xml"/>
@@ -572,8 +566,7 @@
 		</java>
 	</target>
 	
-	<target name="junit-report" depends="nosplash, junit" description="Run tests and create JUnit report (requires driver.jar property)">
-		<property name="nosplash" value="true" />
+	<target name="junit-report" depends="junit" description="Run tests and create JUnit report (requires driver.jar property)">
         <delete dir="${junit-reports.dir}" failonerror="false" />
         <mkdir dir="${junit-reports.dir}" />
         <junitreport todir="${junit-reports.dir}">

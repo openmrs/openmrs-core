@@ -213,6 +213,10 @@ public class OrderServiceImpl implements OrderService {
 		return getOrderDAO().getOrder(orderId);
 	}
 
+	public DrugOrder getDrugOrder(Integer drugOrderId) throws APIException {
+		return getOrderDAO().getDrugOrder(drugOrderId);
+	}
+
 	/**
 	 * Get all orders
 	 * 

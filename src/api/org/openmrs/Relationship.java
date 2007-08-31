@@ -172,7 +172,7 @@ public class Relationship implements java.io.Serializable {
 	 * @see isVoided()
 	 * @return Returns the voided.
 	 */
-	protected Boolean getVoided() {
+	public Boolean getVoided() {
 		return isVoided();
 	}
 	

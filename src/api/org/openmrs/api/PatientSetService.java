@@ -71,6 +71,9 @@ public interface PatientSetService {
 	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount);
 	
 	@Transactional(readOnly=true)
+	public PatientSet getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount);
+	
+	@Transactional(readOnly=true)
 	public PatientSet getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate);
 
 	@Transactional(readOnly=true)

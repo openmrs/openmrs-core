@@ -44,7 +44,7 @@ public interface PatientSetDAO {
 	
 	public PatientSet getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, PatientSetService.Modifier modifier, Object value, Date fromDate, Date toDate) throws DAOException;
 	
-	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) throws DAOException;
+	public PatientSet getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) throws DAOException;
 	
 	public PatientSet getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate) throws DAOException;
 	

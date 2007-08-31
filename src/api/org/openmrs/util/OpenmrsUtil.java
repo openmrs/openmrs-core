@@ -1,5 +1,7 @@
 package org.openmrs.util;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -13,12 +15,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -31,7 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -45,12 +51,36 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.Drug;
+import org.openmrs.EncounterType;
+import org.openmrs.Form;
+import org.openmrs.Location;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
+import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.module.ModuleException;
+import org.openmrs.propertyeditor.CohortEditor;
+import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.DrugEditor;
+import org.openmrs.propertyeditor.EncounterTypeEditor;
+import org.openmrs.propertyeditor.FormEditor;
+import org.openmrs.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
+import org.openmrs.propertyeditor.ProgramEditor;
+import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
+import org.openmrs.reporting.CohortFilter;
+import org.openmrs.reporting.PatientFilter;
+import org.openmrs.reporting.PatientSearch;
+import org.openmrs.reporting.PatientSearchReportObject;
+import org.openmrs.reporting.SearchArgument;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 
@@ -936,5 +966,169 @@ public class OpenmrsUtil {
     	
     	return new SimpleDateFormat(pattern, Context.getLocale());
     }
-
+    
+    /**
+     * Uses reflection to translate a PatientSearch into a PatientFilter  
+     */
+    public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history) {
+    	if (search.isSavedSearchReference()) {
+    		PatientSearch ps = ((PatientSearchReportObject) Context.getReportService().getReportObject(search.getSavedSearchId())).getPatientSearch();
+    		return toPatientFilter(ps, history);
+    	} else if (search.isSavedFilterReference()) {
+    		return Context.getReportService().getPatientFilterById(search.getSavedFilterId());
+    	} else if (search.isSavedCohortReference()) {
+    		return new CohortFilter(Context.getCohortService().getCohort(search.getSavedCohortId()));
+    	} else if (search.isComposition()) {
+    		if (history == null && search.requiresHistory())
+    			throw new IllegalArgumentException("You can't evaluate this search without a history");
+    		else
+    			return search.cloneCompositionAsFilter(history);
+    	} else {
+	    	Class clz = search.getFilterClass(); 
+	    	if (clz == null)
+	    		throw new IllegalArgumentException("search must be saved, composition, or must have a class specified");
+	    	log.debug("About to instantiate " + clz);
+	    	PatientFilter pf = null;
+	    	try {
+		        pf = (PatientFilter) clz.newInstance();
+	        } catch (Exception ex) {
+		        log.error("Couldn't instantiate a " + search.getFilterClass(), ex);
+		        return null;
+	        }
+	        Class[] stringSingleton = { String.class };
+	        if (search.getArguments() != null) {
+	        	for (SearchArgument sa : search.getArguments()) {
+		        	PropertyDescriptor pd = null;
+		        	try {
+			        	pd = new PropertyDescriptor(sa.getName(), clz);
+		        	} catch (IntrospectionException ex) {
+		        		log.error("Error while examining property " + sa.getName(), ex);
+		        		continue;
+		        	}
+		        	Class<?> realPropertyType = pd.getPropertyType();
+		
+		        	// instantiate the value of the search argument
+		        	String valueAsString = sa.getValue();
+		        	Object value = null;
+		        	Class<?> valueClass = sa.getPropertyClass();
+		        	try {
+		        		// If there's a valueOf(String) method, just use that (will cover at least String, Integer, Double, Boolean) 
+		        		Method valueOfMethod = null;
+		        		try {
+		        			valueOfMethod = valueClass.getMethod("valueOf", stringSingleton);
+		        		} catch (NoSuchMethodException ex) { }
+		        		if (valueOfMethod != null) {
+		        			Object[] holder = { valueAsString };
+		        			value = valueOfMethod.invoke(pf, holder);
+		        		} else if (realPropertyType.isEnum()) { 
+		            		// Special-case for enum types
+		            		List<Enum> constants = Arrays.asList((Enum[]) realPropertyType.getEnumConstants());
+		    				for (Enum e : constants) {
+		    					if (e.toString().equals(valueAsString)) {
+		    						value = e;
+		    						break;
+		    					}
+		    				}
+		        		} else if (String.class.equals(valueClass)) {
+			        		value = valueAsString;
+		        		} else if (Location.class.equals(valueClass)) {
+			        		LocationEditor ed = new LocationEditor();
+			        		ed.setAsText(valueAsString);
+			        		value = ed.getValue();
+			        	} else if (Concept.class.equals(valueClass)) {
+			        		ConceptEditor ed = new ConceptEditor();
+			        		ed.setAsText(valueAsString);
+			        		value = ed.getValue();
+			        	} else if (Program.class.equals(valueClass)) {
+			        		ProgramEditor ed = new ProgramEditor();
+			        		ed.setAsText(valueAsString);
+			        		value = ed.getValue();
+			        	} else if (ProgramWorkflowState.class.equals(valueClass)) {
+			        		ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
+			        		ed.setAsText(valueAsString);
+			        		value = ed.getValue();
+						} else if (EncounterType.class.equals(valueClass)) {
+							EncounterTypeEditor ed = new EncounterTypeEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+						} else if (Form.class.equals(valueClass)) {
+							FormEditor ed = new FormEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+						} else if (Drug.class.equals(valueClass)) {
+							DrugEditor ed = new DrugEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+						} else if (PersonAttributeType.class.equals(valueClass)) {
+							PersonAttributeTypeEditor ed = new PersonAttributeTypeEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+						} else if (Cohort.class.equals(valueClass)) {
+							CohortEditor ed = new CohortEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+			        	} else if (Date.class.equals(valueClass)) {
+			        		// TODO: this uses the date format from the current session, which could cause problems if the user changes it after searching. 
+			        		DateFormat df = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+							CustomDateEditor ed = new CustomDateEditor(df, true, 10);
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+			        	} else {
+			        		// TODO: Decide whether this is a hack. Currently setting Object arguments with a String
+		        			value = valueAsString;
+			        	}
+		        	} catch (Exception ex) {
+		        		log.error("error converting \"" + valueAsString + "\" to " + valueClass, ex);
+		        		continue;
+		        	}
+		
+		        	if (value != null) {
+		        	
+		        		if (realPropertyType.isAssignableFrom(valueClass)) {
+		        			log.debug("setting value to " + value);
+		        			try {
+		        				pd.getWriteMethod().invoke(pf, value);
+		        			} catch (Exception ex) {
+		        				log.error("Error setting value of " + sa.getName() + " to " + sa.getValue() + " -> " + value, ex);
+		        				continue;
+		        			}
+		        		} else if (Collection.class.isAssignableFrom(realPropertyType)) {
+		        			log.debug(sa.getName() + " is a Collection property");
+		        			// if realPropertyType is a collection, add this value to it (possibly after instantiating)
+		        			try {
+			        			Collection collection = (Collection) pd.getReadMethod().invoke(pf, (Object[]) null);
+			        			if (collection == null) {
+			        				// we need to instantiate this collection. I'm going with the following rules, which should be rethought:
+			        				//	 SortedSet -> TreeSet
+			        				//	 Set -> HashSet
+			        				//   Otherwise -> ArrayList
+			        				if (SortedSet.class.isAssignableFrom(realPropertyType)) {
+			        					collection = new TreeSet();
+			        					log.debug("instantiated a TreeSet");
+			        					pd.getWriteMethod().invoke(pf, collection);
+			        				} else if (Set.class.isAssignableFrom(realPropertyType)) {
+			        					collection = new HashSet();
+			        					log.debug("instantiated a HashSet");
+			        					pd.getWriteMethod().invoke(pf, collection);
+			        				} else {
+			        					collection = new ArrayList();
+			        					log.debug("instantiated an ArrayList");
+			        					pd.getWriteMethod().invoke(pf, collection);
+			        				}
+			        			}
+			        			collection.add(value);
+		        			} catch (Exception ex) {
+		        				log.error("Error instantiating collection for property " + sa.getName() + " whose class is " + realPropertyType, ex);
+		    					continue;
+		        			}
+		        		} else {
+		        			log.error(pf.getClass() + " . " + sa.getName() + " should be " + realPropertyType + " but is given as " + valueClass); 
+		        		}
+		        	}
+		        }
+	        }
+	        log.debug("Returning " + pf);
+	    	return pf;
+        }
+    }    
 }

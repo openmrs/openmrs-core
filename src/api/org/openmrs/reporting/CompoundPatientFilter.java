@@ -12,7 +12,7 @@ import org.openmrs.api.PatientSetService.BooleanOperator;
 public class CompoundPatientFilter extends AbstractPatientFilter implements
 		PatientFilter {
 
-	protected final Log log = LogFactory.getLog(getClass());
+	protected transient final Log log = LogFactory.getLog(getClass());
 	
 	private BooleanOperator operator;
 	private List<PatientFilter> filters;
