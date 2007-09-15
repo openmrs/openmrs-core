@@ -1,10 +1,14 @@
 package org.openmrs;
 
-public class GlobalProperty {
+import org.openmrs.synchronization.ISynchronizable;
+
+public class GlobalProperty implements ISynchronizable {
 	private String property = "";
 	private String propertyValue = "";
 	private String description = "";
+	private String guid;
 	
+
 	/**
 	 * Default empty constructor
 	 *
@@ -26,6 +30,15 @@ public class GlobalProperty {
 		this.propertyValue = value;
 		this.description = description;
 	}
+
+	public String getGuid() {
+    	return guid;
+    }
+
+	public void setGuid(String guid) {
+    	this.guid = guid;
+    }
+
 	/**
 	 * @return Returns the property.
 	 */

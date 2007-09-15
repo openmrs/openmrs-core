@@ -2,10 +2,12 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * PatientIdentifierType 
  */
-public class PatientIdentifierType implements java.io.Serializable {
+public class PatientIdentifierType implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 211231L;
 

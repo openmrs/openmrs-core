@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * Form
  * 
@@ -13,7 +15,7 @@ import java.util.Set;
  * @author Burke Mamlin
  * @version 1.0
  */
-public class Form implements java.io.Serializable {
+public class Form implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 845634L;
 

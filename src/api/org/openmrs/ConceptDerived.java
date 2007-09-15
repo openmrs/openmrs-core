@@ -2,13 +2,15 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * Represent a concept derived from multiple observations or non-observational data
  * 
  * @author Burke Mamlin
  * @version 1.0
  */
-public class ConceptDerived extends Concept implements java.io.Serializable {
+public class ConceptDerived extends Concept implements java.io.Serializable, ISynchronizable {
 
 	private static final long serialVersionUID = 6892891255251824009L;
 
@@ -16,6 +18,15 @@ public class ConceptDerived extends Concept implements java.io.Serializable {
 	private Date compileDate;
 	private String compileStatus;
 	private String className;
+	private String guid;
+
+	public String getGuid() {
+    	return guid;
+    }
+
+	public void setGuid(String guid) {
+    	this.guid = guid;
+    }
 
 	/**
 	 * Returns the rule for the derived concept

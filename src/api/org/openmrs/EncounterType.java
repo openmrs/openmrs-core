@@ -2,13 +2,15 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * EncounterType 
  * 
  * @author Ben Wolfe
  * @version 1.0
  */
-public class EncounterType implements java.io.Serializable {
+public class EncounterType implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 789L;
 

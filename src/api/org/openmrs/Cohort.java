@@ -8,8 +8,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.synchronization.ISynchronizable;
 
-public class Cohort implements Serializable {
+public class Cohort implements Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 0L;
 	public Log log = LogFactory.getLog(this.getClass());

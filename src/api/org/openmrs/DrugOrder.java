@@ -1,12 +1,14 @@
 package org.openmrs;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * DrugOrder 
  * 
  * @author Ben Wolfe
  * @version 1.0
  */
-public class DrugOrder extends Order implements java.io.Serializable {
+public class DrugOrder extends Order implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 72232L;
 

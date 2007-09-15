@@ -8,9 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.synchronization.ISynchronizable;
 import org.openmrs.util.OpenmrsUtil;
 
-public class PatientProgram {
+public class PatientProgram implements ISynchronizable {
 
 	private Integer patientProgramId;
 	private Patient patient;

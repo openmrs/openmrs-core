@@ -2,6 +2,8 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * FormField
  * 
@@ -9,7 +11,7 @@ import java.util.Date;
  * @author Burke Mamlin
  * @version 1.0
  */
-public class FormField implements java.io.Serializable, Comparable {
+public class FormField implements java.io.Serializable, Comparable, ISynchronizable {
 
 	public static final long serialVersionUID = 3456L;
 

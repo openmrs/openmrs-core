@@ -2,10 +2,12 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * ConceptDatatype
  */
-public class ConceptDatatype implements java.io.Serializable {
+public class ConceptDatatype implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 473L;
 

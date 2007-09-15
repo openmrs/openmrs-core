@@ -2,13 +2,15 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * PersonAddress 
  * 
  * @author Ben Wolfe
  * @version 2.0
  */
-public class PersonAddress implements java.io.Serializable, Cloneable {
+public class PersonAddress implements java.io.Serializable, Cloneable, ISynchronizable {
 
 	public static final long serialVersionUID = 343333L;
 

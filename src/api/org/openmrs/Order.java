@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.synchronization.ISynchronizable;
 
 /**
  * Order 
@@ -11,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Ben Wolfe
  * @version 1.0
  */
-public class Order implements java.io.Serializable {
+public class Order implements java.io.Serializable, ISynchronizable {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	public static final long serialVersionUID = 4334343L;

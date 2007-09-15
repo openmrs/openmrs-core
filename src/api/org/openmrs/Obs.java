@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.synchronization.ISynchronizable;
 import org.openmrs.util.Format;
 import org.openmrs.util.Format.FORMAT_TYPE;
 
@@ -19,7 +20,7 @@ import org.openmrs.util.Format.FORMAT_TYPE;
  * @author Ben Wolfe
  * @version 1.0
  */
-public class Obs implements java.io.Serializable {
+public class Obs implements java.io.Serializable, ISynchronizable {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	public static final long serialVersionUID = 112342333L;

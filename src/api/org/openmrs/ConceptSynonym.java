@@ -5,11 +5,12 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.synchronization.ISynchronizable;
 
 /**
  * ConceptSynonym 
  */
-public class ConceptSynonym implements java.io.Serializable {
+public class ConceptSynonym implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 3785L;
 	

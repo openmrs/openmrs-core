@@ -1,9 +1,11 @@
 package org.openmrs;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * MimeType 
  */
-public class MimeType implements java.io.Serializable {
+public class MimeType implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 8765L;
 

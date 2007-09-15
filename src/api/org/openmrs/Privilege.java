@@ -1,5 +1,7 @@
 package org.openmrs;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 
 /**
  * Privilege 
@@ -7,7 +9,7 @@ package org.openmrs;
  * @author Burke Mamlin
  * @version 1.0
  */
-public class Privilege implements java.io.Serializable {
+public class Privilege implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 312L;
 

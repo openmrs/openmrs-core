@@ -1,10 +1,12 @@
 package org.openmrs;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 
 /**
  * ConceptSetDerived 
  */
-public class ConceptSetDerived implements java.io.Serializable {
+public class ConceptSetDerived implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 3788L;
 

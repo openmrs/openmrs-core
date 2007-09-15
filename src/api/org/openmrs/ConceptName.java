@@ -3,12 +3,14 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Locale;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * ConceptName
  * 
  * @author Burke Mamlin
  */
-public class ConceptName implements java.io.Serializable {
+public class ConceptName implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 33226787L;
 

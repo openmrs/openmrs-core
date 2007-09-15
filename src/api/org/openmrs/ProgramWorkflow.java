@@ -6,8 +6,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.openmrs.api.context.Context;
+import org.openmrs.synchronization.ISynchronizable;
 
-public class ProgramWorkflow {
+public class ProgramWorkflow implements ISynchronizable {
 
 	private Integer programWorkflowId;
 	private Program program;

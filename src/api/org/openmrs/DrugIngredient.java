@@ -1,11 +1,13 @@
 package org.openmrs;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * DrugIngredient
  * 
  * @author Burke Mamlin
  */
-public class DrugIngredient implements java.io.Serializable {
+public class DrugIngredient implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 94023L;
 

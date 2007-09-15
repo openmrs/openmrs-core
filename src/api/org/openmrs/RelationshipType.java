@@ -2,10 +2,12 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * RelationshipType 
  */
-public class RelationshipType implements java.io.Serializable {
+public class RelationshipType implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 4223L;
 

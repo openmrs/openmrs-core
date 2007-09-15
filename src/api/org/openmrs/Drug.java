@@ -3,13 +3,15 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Locale;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * Drug 
  * 
  * @author Ben Wolfe
  * @version 1.0
  */
-public class Drug implements java.io.Serializable {
+public class Drug implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 285L;
 

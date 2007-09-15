@@ -2,10 +2,12 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * PersonAttributeType 
  */
-public class PersonAttributeType implements java.io.Serializable {
+public class PersonAttributeType implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 2112313431211L;
 

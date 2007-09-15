@@ -3,7 +3,9 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Set;
 
-public class Program implements java.io.Serializable {
+import org.openmrs.synchronization.ISynchronizable;
+
+public class Program implements java.io.Serializable, ISynchronizable {
 	
 	private static final long serialVersionUID = 0L;
 

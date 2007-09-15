@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.synchronization.ISynchronizable;
 
 /**
  * Defines a Patient in the system.  A patient is simply an extension
@@ -19,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
  * @version 2.0
  */
 public class Patient extends Person 
-    implements java.io.Serializable
+    implements java.io.Serializable, ISynchronizable
 {
 	public static final long serialVersionUID = 93123L;
 	protected static final Log log = LogFactory.getLog(Patient.class);

@@ -1,12 +1,14 @@
 package org.openmrs;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * Tribe
  * 
  * @author Ben Wolfe
  * @version 1.0
  */
-public class Tribe implements java.io.Serializable {
+public class Tribe implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 113232L;
 

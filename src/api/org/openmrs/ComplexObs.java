@@ -1,12 +1,14 @@
 package org.openmrs;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * ComplexObs 
  * 
  * @author Ben Wolfe
  * @version 1.0
  */
-public class ComplexObs extends Obs implements java.io.Serializable{
+public class ComplexObs extends Obs implements java.io.Serializable, ISynchronizable {
 	
 	public static final long serialVersionUID = 345734087L;
 

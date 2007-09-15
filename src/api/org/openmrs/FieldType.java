@@ -2,10 +2,12 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.synchronization.ISynchronizable;
+
 /**
  * FieldType 
  */
-public class FieldType implements java.io.Serializable {
+public class FieldType implements java.io.Serializable, ISynchronizable {
 
 	public static final long serialVersionUID = 35467L;
 
