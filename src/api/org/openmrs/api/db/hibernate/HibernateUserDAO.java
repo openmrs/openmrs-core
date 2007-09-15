@@ -76,6 +76,12 @@ public class HibernateUserDAO implements
 		return user;
 	}
 
+	public User createUser(User user) {
+		sessionFactory.getCurrentSession().save(user);
+			
+		return user;
+	}
+
 	/**
 	 * @see org.openmrs.api.db.UserService#getUserByUsername(java.lang.String)
 	 */

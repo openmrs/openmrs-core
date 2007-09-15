@@ -26,6 +26,18 @@ public interface PersonDAO {
 	
 	public void createPersonAttributeType(PersonAttributeType type);
 
+	public void createPersonAddress(PersonAddress p);
+
+	public void createPersonAttribute(PersonAttribute p);
+	
+	public void createPersonName(PersonName p);
+
+	public void updatePersonAddress(PersonAddress p);
+
+	public void updatePersonAttribute(PersonAttribute p);
+	
+	public void updatePersonName(PersonName p);
+
 	public void deletePersonAttributeType(PersonAttributeType type);
 
 	public void updatePersonAttributeType(PersonAttributeType type);

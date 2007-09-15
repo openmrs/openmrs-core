@@ -42,6 +42,14 @@ public interface ProgramWorkflowService {
 
 	public void createWorkflow(ProgramWorkflow w);
 
+	public void createState(ProgramWorkflowState s);
+
+	public void createPatientState(PatientState s);
+
+	public void updateState(ProgramWorkflowState s);
+
+	public void updatePatientState(PatientState s);
+
 	@Transactional(readOnly=true)
 	public ProgramWorkflow getWorkflow(Integer id);
 

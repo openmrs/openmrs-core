@@ -28,6 +28,10 @@ public interface PatientService {
 	@Authorized({"Add Patients"})
 	public Patient createPatient(Patient patient) throws APIException;
 
+	public Patient createPatientNoChecks(Patient patient) throws APIException;
+
+	public PatientIdentifier createPatientIdentifier(PatientIdentifier patientIdentifier) throws APIException;
+
 	/**
 	 * Get patient by internal identifier
 	 * 

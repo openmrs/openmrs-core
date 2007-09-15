@@ -68,6 +68,12 @@ public class HibernatePatientDAO implements PatientDAO {
 		return patient;
 	}
 
+	public PatientIdentifier createPatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(patientIdentifier);
+		
+		return patientIdentifier;
+	}
+
 
 	public Patient updatePatient(Patient patient) throws DAOException {
 		if (patient.getPatientId() == null)

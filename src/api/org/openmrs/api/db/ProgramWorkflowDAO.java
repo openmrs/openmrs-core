@@ -41,7 +41,15 @@ public interface ProgramWorkflowDAO {
 	public ProgramWorkflow getWorkflow(Integer id);
 	
 	public void createWorkflow(ProgramWorkflow w);
-	
+
+	public void createState(ProgramWorkflowState s);
+
+	public void createPatientState(PatientState s);
+
+	public void updateState(ProgramWorkflowState s);
+
+	public void updatePatientState(PatientState s);
+
 	public void updateWorkflow(ProgramWorkflow w);
 
 	public List<ProgramWorkflowState> getStates(boolean includeVoided);

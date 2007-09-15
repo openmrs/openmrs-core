@@ -175,6 +175,30 @@ public class HibernatePersonDAO implements PersonDAO {
 		sessionFactory.getCurrentSession().save(type);
 	}
 
+	public void createPersonAddress(PersonAddress p) {
+		sessionFactory.getCurrentSession().save(p);
+	}
+
+	public void createPersonAttribute(PersonAttribute p) {
+		sessionFactory.getCurrentSession().save(p);
+	}
+
+	public void createPersonName(PersonName p) {
+		sessionFactory.getCurrentSession().save(p);
+	}
+
+	public void updatePersonAddress(PersonAddress p) {
+		sessionFactory.getCurrentSession().update(p);
+	}
+
+	public void updatePersonAttribute(PersonAttribute p) {
+		sessionFactory.getCurrentSession().update(p);
+	}
+
+	public void updatePersonName(PersonName p) {
+		sessionFactory.getCurrentSession().update(p);
+	}
+
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#deletePersonAttributeType(org.openmrs.PersonAttributeType)
 	 */

@@ -106,6 +106,31 @@ public class PersonServiceImpl implements PersonService {
 		getPersonDAO().createPersonAttributeType(type);
 	}
 
+	public void createPersonAddress(PersonAddress p) {
+		getPersonDAO().createPersonAddress(p);
+	}
+
+	public void createPersonAttribute(PersonAttribute p) {
+		getPersonDAO().createPersonAttribute(p);
+	}
+	
+	public void createPersonName(PersonName p) {
+		getPersonDAO().createPersonName(p);
+	}
+
+	public void updatePersonAddress(PersonAddress p) {
+		getPersonDAO().updatePersonAddress(p);
+	}
+
+	public void updatePersonAttribute(PersonAttribute p) {
+		getPersonDAO().updatePersonAttribute(p);
+	}
+	
+	public void updatePersonName(PersonName p) {
+		getPersonDAO().updatePersonName(p);
+	}
+
+	
 	/**
 	 * @see org.openmrs.api.PersonService#deletePersonAttributeType(java.lang.Integer)
 	 */

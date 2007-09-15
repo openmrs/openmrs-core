@@ -158,7 +158,39 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		
 		getProgramWorkflowDAO().createWorkflow(w);
 	}
-	
+
+	public void createState(ProgramWorkflowState s) {
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
+		
+		getProgramWorkflowDAO().createState(s);
+	}
+
+	public void createPatientState(PatientState s) {
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
+		
+		getProgramWorkflowDAO().createPatientState(s);
+	}
+
+	public void updateState(ProgramWorkflowState s) {
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
+		
+		getProgramWorkflowDAO().updateState(s);
+	}
+
+	public void updatePatientState(PatientState s) {
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: "
+					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
+		
+		getProgramWorkflowDAO().updatePatientState(s);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.openmrs.api.impl.ProgramWorkflowService#getWorkflow(java.lang.Integer)
 	 */

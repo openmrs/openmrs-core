@@ -21,6 +21,8 @@ public interface UserService {
 	@Authorized({"Add Users"})
 	public User createUser(User user, String password) throws APIException;
 
+	public User createUser(User user) throws APIException;
+
 	/**
 	 * Get user by internal user identifier
 	 * @param userId internal identifier

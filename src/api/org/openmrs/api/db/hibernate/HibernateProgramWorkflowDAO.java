@@ -122,7 +122,23 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	public void createWorkflow(ProgramWorkflow w) {
 		sessionFactory.getCurrentSession().save(w);
 	}
-	
+
+	public void createState(ProgramWorkflowState s) {
+		sessionFactory.getCurrentSession().saveOrUpdate(s);
+	}
+
+	public void createPatientState(PatientState s) {
+		sessionFactory.getCurrentSession().saveOrUpdate(s);
+	}
+
+	public void updateState(ProgramWorkflowState s) {
+		sessionFactory.getCurrentSession().update(s);
+	}
+
+	public void updatePatientState(PatientState s) {
+		sessionFactory.getCurrentSession().update(s);
+	}
+
 	public void updateWorkflow(ProgramWorkflow w) {
 		sessionFactory.getCurrentSession().update(w);	
 	}

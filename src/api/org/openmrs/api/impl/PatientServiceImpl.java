@@ -80,6 +80,14 @@ public class PatientServiceImpl implements PatientService {
 		return getPatientDAO().createPatient(patient);
 	}
 
+	public Patient createPatientNoChecks(Patient patient) throws APIException {
+		return getPatientDAO().createPatient(patient);
+	}
+
+	public PatientIdentifier createPatientIdentifier(PatientIdentifier patientIdentifier) throws APIException {
+		return getPatientDAO().createPatientIdentifier(patientIdentifier);
+	}
+
 	/**
 	 * Get patient by internal identifier
 	 * 

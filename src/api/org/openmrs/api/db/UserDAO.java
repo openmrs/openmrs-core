@@ -24,6 +24,8 @@ public interface UserDAO {
 	 */
 	public User createUser(User user, String password) throws DAOException;
 
+	public User createUser(User user) throws DAOException;
+
 	/**
 	 * Get user by internal user identifier
 	 * @param userId internal identifier

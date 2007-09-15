@@ -55,6 +55,10 @@ public class UserServiceImpl implements UserService {
 		return getUserDAO().createUser(user, password);
 	}
 
+	public User createUser(User user) throws APIException {
+		return getUserDAO().createUser(user);
+	}
+
 	/**
 	 * Get user by internal user identifier
 	 * @param userId internal identifier

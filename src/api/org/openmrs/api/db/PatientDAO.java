@@ -27,6 +27,8 @@ public interface PatientDAO {
 	 */
 	public Patient createPatient(Patient patient) throws DAOException;
 
+	public PatientIdentifier createPatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException;
+
 	/**
 	 * Get patient by internal identifier
 	 * 
