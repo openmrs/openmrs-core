@@ -326,6 +326,8 @@ public interface AdministrationDAO {
 	
 	public String getGlobalProperty(String propertyName) throws DAOException;
 
+	public String getGlobalPropertyByGuid(String guid) throws DAOException;
+
 	public List<GlobalProperty> getGlobalProperties() throws DAOException;
 
 	public void setGlobalProperties(List<GlobalProperty> props) throws DAOException;

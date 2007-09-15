@@ -446,7 +446,19 @@ public class HibernatePersonDAO implements PersonDAO {
 		return (Person) sessionFactory.getCurrentSession().createQuery("from Person p where p.guid = :guid").setString("guid", guid).uniqueResult();
     }
 
-	/**
+    public PersonAddress getPersonAddressByGuid(String guid) {
+		return (PersonAddress) sessionFactory.getCurrentSession().createQuery("from PersonAddress p where p.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    public PersonAttribute getPersonAttributeByGuid(String guid) {
+		return (PersonAttribute) sessionFactory.getCurrentSession().createQuery("from PersonAttribute p where p.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    public PersonName getPersonNameByGuid(String guid) {
+		return (PersonName) sessionFactory.getCurrentSession().createQuery("from PersonName p where p.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    /**
      * @see org.openmrs.api.db.PersonDAO#getRelationshipByGuid(java.lang.String)
      */
     public Relationship getRelationshipByGuid(String guid) {

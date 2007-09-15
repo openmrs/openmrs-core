@@ -31,13 +31,13 @@ public class SyncTransmission implements IItem {
     private String guid = null;
 
     // constructor(s)
-    SyncTransmission() {
+    public SyncTransmission() {
     }
 
     /* 
      * Take passed in records and create a new sync_tx file
      */
-    SyncTransmission(List<SyncRecord> valRecords) {
+    public SyncTransmission(List<SyncRecord> valRecords) {
 
         guid = UUID.randomUUID().toString();        
         fileName = "sync_tx_" + sdf.format(new Date());

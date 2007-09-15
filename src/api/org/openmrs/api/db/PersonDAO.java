@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 
@@ -185,6 +187,12 @@ public interface PersonDAO {
      * @return
      */
     public Person getPersonByGuid(String guid);
+
+    public PersonAddress getPersonAddressByGuid(String guid);
+
+    public PersonAttribute getPersonAttributeByGuid(String guid);
+
+    public PersonName getPersonNameByGuid(String guid);
 
 	/**
      * Auto generated method comment

@@ -958,6 +958,10 @@ public class PatientServiceImpl implements PatientService {
 		return getPatientDAO().getPatientByGuid(guid);
     }
 
+    public PatientIdentifier getPatientIdentifierByGuid(String guid) throws APIException {
+		return getPatientDAO().getPatientIdentifierByGuid(guid);
+    }
+
 	/**
      * @see org.openmrs.api.PatientService#getPatientIdentifierTypeByGuid(java.lang.String)
      */

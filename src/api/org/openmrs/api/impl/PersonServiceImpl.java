@@ -642,6 +642,18 @@ public class PersonServiceImpl implements PersonService {
 		return getPersonDAO().getPersonByGuid(guid);
     }
 
+    public PersonAddress getPersonAddressByGuid(String guid) throws APIException {
+		return getPersonDAO().getPersonAddressByGuid(guid);
+    }
+
+    public PersonAttribute getPersonAttributeByGuid(String guid) throws APIException {
+		return getPersonDAO().getPersonAttributeByGuid(guid);
+    }
+
+    public PersonName getPersonNameByGuid(String guid) throws APIException {
+		return getPersonDAO().getPersonNameByGuid(guid);
+    }
+
 	/**
      * @see org.openmrs.api.PersonService#getRelationshipByGuid(java.lang.String)
      */

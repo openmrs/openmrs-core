@@ -42,6 +42,9 @@ public interface PatientService {
 	@Transactional(readOnly=true)
 	public Patient getPatientByGuid(String guid) throws APIException;
 
+	@Transactional(readOnly=true)
+	public PatientIdentifier getPatientIdentifierByGuid(String guid) throws APIException;
+
 	/**
 	 * Update patient 
 	 * 

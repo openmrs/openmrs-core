@@ -3,6 +3,7 @@ package org.openmrs.api;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.ComplexObs;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -55,6 +56,9 @@ public interface ObsService {
 
 	@Transactional(readOnly = true)
 	public Obs getObsByGuid(String guid) throws APIException;
+
+	@Transactional(readOnly = true)
+	public ComplexObs getComplexObsByGuid(String guid) throws APIException;
 
 	/**
 	 * Save changes to observation

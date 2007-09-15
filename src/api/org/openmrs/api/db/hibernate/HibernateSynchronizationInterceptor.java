@@ -166,9 +166,16 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
             while (its.hasNext()) {
                 Map.Entry<String, propertyClassValue> me = its.next();
                 String property = me.getKey();
-                propertyClassValue pcv = me.getValue();
+                
+                log.debug("About to grab value for " + property);
+                
+                try {
+                    propertyClassValue pcv = me.getValue();
 
-                appendAttribute(xml, entityItem, property, pcv.getClazz(), pcv.getValue());
+                    appendAttribute(xml, entityItem, property, pcv.getClazz(), pcv.getValue());
+                } catch (Exception e) {
+                	log.error(e);
+                }
             }
 
             // look up, see how this was created

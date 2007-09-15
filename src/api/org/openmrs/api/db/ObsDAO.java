@@ -3,6 +3,7 @@ package org.openmrs.api.db;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.ComplexObs;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -137,5 +138,7 @@ public interface ObsDAO {
      * @return
      */
     public Obs getObsByGuid(String guid);
+
+    public ComplexObs getComplexObsByGuid(String guid);
 
 }

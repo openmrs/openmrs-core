@@ -94,6 +94,8 @@ public interface ProgramWorkflowDAO {
      */
     public ProgramWorkflowState getStateByGuid(String guid);
 
+    public PatientState getPatientStateByGuid(String guid);
+
 	/**
      * Auto generated method comment
      * 

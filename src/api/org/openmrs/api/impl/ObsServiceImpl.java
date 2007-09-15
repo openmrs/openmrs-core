@@ -11,6 +11,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ComplexObs;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -298,4 +299,7 @@ public class ObsServiceImpl implements ObsService {
 		return getObsDAO().getObsByGuid(guid);
     }
 
+    public ComplexObs getComplexObsByGuid(String guid) throws APIException {
+		return getObsDAO().getComplexObsByGuid(guid);
+    }
 }

@@ -184,6 +184,8 @@ public interface PatientDAO {
      */
     public Patient getPatientByGuid(String guid);
 
+    public PatientIdentifier getPatientIdentifierByGuid(String guid);
+
 	/**
      * Auto generated method comment
      * 

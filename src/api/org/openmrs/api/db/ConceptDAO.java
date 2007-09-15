@@ -7,11 +7,17 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptDerived;
+import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
+import org.openmrs.ConceptSetDerived;
+import org.openmrs.ConceptSource;
+import org.openmrs.ConceptSynonym;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.api.APIException;
 
 /**
@@ -293,6 +299,22 @@ public interface ConceptDAO {
      */
     public ConceptClass getConceptClassByGuid(String guid);
 
+    public ConceptAnswer getConceptAnswerByGuid(String guid);
+
+    public ConceptDerived getConceptDerivedByGuid(String guid);
+
+    public ConceptName getConceptNameByGuid(String guid);
+
+    public ConceptSet getConceptSetByGuid(String guid);
+
+    public ConceptSetDerived getConceptSetDerivedByGuid(String guid);
+
+    public ConceptSource getConceptSourceByGuid(String guid);
+
+    public ConceptSynonym getConceptSynonymByGuid(String guid);
+
+    public ConceptWord getConceptWordByGuid(String guid);
+
 	/**
      * Auto generated method comment
      * 
@@ -324,5 +346,6 @@ public interface ConceptDAO {
      * @return
      */
     public Drug getDrugByGuid(String guid);
-	
+
+    public DrugIngredient getDrugIngredientByGuid(String guid);
 }

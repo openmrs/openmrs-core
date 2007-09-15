@@ -770,7 +770,11 @@ public class AdministrationServiceImpl implements AdministrationService {
 		// uses direct access to the dao object to bypass isAuthenticated() check
 		return dao.getGlobalProperty(propertyName);
 	}
-	
+
+	public String getGlobalPropertyByGuid(String guid) {
+		return dao.getGlobalPropertyByGuid(guid);
+	}
+
 	public String getGlobalProperty(String propertyName, String defaultValue) { 
 		String s = getGlobalProperty(propertyName);
 		if (s == null)

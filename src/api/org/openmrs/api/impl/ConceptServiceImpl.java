@@ -18,12 +18,17 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
+import org.openmrs.ConceptSetDerived;
+import org.openmrs.ConceptSource;
+import org.openmrs.ConceptSynonym;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
@@ -751,6 +756,38 @@ public class ConceptServiceImpl implements ConceptService {
 		return getConceptDAO().getConceptClassByGuid(guid);
     }
 
+    public ConceptAnswer getConceptAnswerByGuid(String guid) {
+		return getConceptDAO().getConceptAnswerByGuid(guid);
+    }
+
+    public ConceptDerived getConceptDerivedByGuid(String guid) {
+		return getConceptDAO().getConceptDerivedByGuid(guid);
+    }
+
+    public ConceptName getConceptNameByGuid(String guid) {
+		return getConceptDAO().getConceptNameByGuid(guid);
+    }
+
+    public ConceptSet getConceptSetByGuid(String guid) {
+		return getConceptDAO().getConceptSetByGuid(guid);
+    }
+
+    public ConceptSetDerived getConceptSetDerivedByGuid(String guid) {
+		return getConceptDAO().getConceptSetDerivedByGuid(guid);
+    }
+
+    public ConceptSource getConceptSourceByGuid(String guid) {
+		return getConceptDAO().getConceptSourceByGuid(guid);
+    }
+
+    public ConceptSynonym getConceptSynonymByGuid(String guid) {
+		return getConceptDAO().getConceptSynonymByGuid(guid);
+    }
+
+    public ConceptWord getConceptWordByGuid(String guid) {
+		return getConceptDAO().getConceptWordByGuid(guid);
+    }
+
 	/**
      * @see org.openmrs.api.ConceptService#getConceptDatatypeByGuid(java.lang.String)
      */
@@ -777,6 +814,10 @@ public class ConceptServiceImpl implements ConceptService {
      */
     public Drug getDrugByGuid(String guid) {
 		return getConceptDAO().getDrugByGuid(guid);
+    }
+
+    public DrugIngredient getDrugIngredientByGuid(String guid) {
+		return getConceptDAO().getDrugIngredientByGuid(guid);
     }
 
 }

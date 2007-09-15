@@ -670,6 +670,10 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		return getProgramWorkflowDAO().getStateByGuid(guid);
     }
 
+    public PatientState getPatientStateByGuid(String guid) {
+		return getProgramWorkflowDAO().getPatientStateByGuid(guid);
+    }
+
 	/**
      * @see org.openmrs.api.ProgramWorkflowService#getWorkflowByGuid(java.lang.String)
      */

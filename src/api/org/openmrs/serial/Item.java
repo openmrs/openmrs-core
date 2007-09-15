@@ -88,10 +88,10 @@ public class Item
     }
 
 
-    protected Item() {}
-    protected Item(Element e) {m_node = (Node)e;}
-    protected Item(Node n) {m_node = n;}
-    protected final void setElement(Element e) {m_node = (Node)e;}
-    protected final Element getElement() {return (Element)m_node;}
-    protected final Node getNode() {return m_node;}
+    public Item() {}
+    public Item(Element e) {m_node = (Node)e;}
+    public Item(Node n) {m_node = n;}
+    public final void setElement(Element e) {m_node = (Node)e;}
+    public final Element getElement() {return (Element)m_node;}
+    public final Node getNode() {return m_node;}
 }

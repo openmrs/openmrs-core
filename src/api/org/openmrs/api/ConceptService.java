@@ -7,11 +7,17 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptDerived;
+import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
+import org.openmrs.ConceptSetDerived;
+import org.openmrs.ConceptSource;
+import org.openmrs.ConceptSynonym;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +53,9 @@ public interface ConceptService {
 
 	@Transactional(readOnly=true)
 	public Concept getConceptByGuid(String guid);
+
+	@Transactional(readOnly=true)
+	public DrugIngredient getDrugIngredientByGuid(String guid);
 
 	/**
 	 * Gets the conceptAnswer with the given internal identifier
@@ -224,6 +233,30 @@ public interface ConceptService {
 
 	@Transactional(readOnly=true)
 	public ConceptClass getConceptClassByGuid(String guid);
+
+	@Transactional(readOnly=true)
+	public ConceptAnswer getConceptAnswerByGuid(String guid);
+
+	@Transactional(readOnly=true)
+	public ConceptDerived getConceptDerivedByGuid(String guid);
+
+	@Transactional(readOnly=true)
+	public ConceptName getConceptNameByGuid(String guid);
+
+	@Transactional(readOnly=true)
+	public ConceptSet getConceptSetByGuid(String guid);
+
+	@Transactional(readOnly=true)
+	public ConceptSetDerived getConceptSetDerivedByGuid(String guid);
+
+	@Transactional(readOnly=true)
+	public ConceptSource getConceptSourceByGuid(String guid);
+
+	@Transactional(readOnly=true)
+	public ConceptSynonym getConceptSynonymByGuid(String guid);
+
+	@Transactional(readOnly=true)
+	public ConceptWord getConceptWordByGuid(String guid);
 
 	/**
 	 * Return a Concept class matching the given name

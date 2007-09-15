@@ -480,6 +480,10 @@ public class HibernatePatientDAO implements PatientDAO {
 		return (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.guid = :guid").setString("guid", guid).uniqueResult();
     }
 
+    public PatientIdentifier getPatientIdentifierByGuid(String guid) {
+		return (PatientIdentifier) sessionFactory.getCurrentSession().createQuery("from PatientIdentifier p where p.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
 	/**
      * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierTypeByGuid(java.lang.String)
      */

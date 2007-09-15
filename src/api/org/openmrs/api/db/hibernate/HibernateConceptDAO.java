@@ -26,13 +26,17 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
+import org.openmrs.ConceptSetDerived;
+import org.openmrs.ConceptSource;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -735,6 +739,38 @@ public class HibernateConceptDAO implements
 		return (ConceptClass) sessionFactory.getCurrentSession().createQuery("from ConceptClass cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
     }
 
+    public ConceptAnswer getConceptAnswerByGuid(String guid) {
+		return (ConceptAnswer) sessionFactory.getCurrentSession().createQuery("from ConceptAnswer cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    public ConceptDerived getConceptDerivedByGuid(String guid) {
+		return (ConceptDerived) sessionFactory.getCurrentSession().createQuery("from ConceptDerived cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    public ConceptName getConceptNameByGuid(String guid) {
+		return (ConceptName) sessionFactory.getCurrentSession().createQuery("from ConceptName cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    public ConceptSet getConceptSetByGuid(String guid) {
+		return (ConceptSet) sessionFactory.getCurrentSession().createQuery("from ConceptSet cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    public ConceptSetDerived getConceptSetDerivedByGuid(String guid) {
+		return (ConceptSetDerived) sessionFactory.getCurrentSession().createQuery("from ConceptSetDerived cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    public ConceptSource getConceptSourceByGuid(String guid) {
+		return (ConceptSource) sessionFactory.getCurrentSession().createQuery("from ConceptSource cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    public ConceptSynonym getConceptSynonymByGuid(String guid) {
+		return (ConceptSynonym) sessionFactory.getCurrentSession().createQuery("from ConceptSynonym cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    public ConceptWord getConceptWordByGuid(String guid) {
+		return (ConceptWord) sessionFactory.getCurrentSession().createQuery("from ConceptWord cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
 	/**
      * @see org.openmrs.api.db.ConceptDAO#getConceptDatatypeByGuid(java.lang.String)
      */
@@ -762,4 +798,9 @@ public class HibernateConceptDAO implements
     public Drug getDrugByGuid(String guid) {
 		return (Drug) sessionFactory.getCurrentSession().createQuery("from Drug d where d.guid = :guid").setString("guid", guid).uniqueResult();
     }
+
+    public DrugIngredient getDrugIngredientByGuid(String guid) {
+		return (DrugIngredient) sessionFactory.getCurrentSession().createQuery("from DrugIngredient d where d.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
 }

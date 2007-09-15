@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
@@ -290,6 +291,15 @@ public interface PersonService {
 
 	@Transactional(readOnly=true)
 	public Person getPersonByGuid(String guid) throws APIException;
+
+	@Transactional(readOnly=true)
+	public PersonAddress getPersonAddressByGuid(String guid) throws APIException;
+
+	@Transactional(readOnly=true)
+	public PersonAttribute getPersonAttributeByGuid(String guid) throws APIException;
+
+	@Transactional(readOnly=true)
+	public PersonName getPersonNameByGuid(String guid) throws APIException;
 
 	/**
 	 * Get the person object given the patient object

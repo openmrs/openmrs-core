@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.Field;
+import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
@@ -196,6 +197,9 @@ public interface FormService {
 
 	@Transactional(readOnly=true)
 	public Field getFieldByGuid(String guid) throws APIException;
+
+	@Transactional(readOnly=true)
+	public FieldAnswer getFieldAnswerByGuid(String guid) throws APIException;
 
 	/**
 	 * 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openmrs.Concept;
 import org.openmrs.Field;
+import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
@@ -198,6 +199,8 @@ public interface FormDAO {
      * @return
      */
     public Field getFieldByGuid(String guid);
+
+    public FieldAnswer getFieldAnswerByGuid(String guid);
 
 	/**
      * Auto generated method comment

@@ -33,6 +33,9 @@ public interface ProgramWorkflowService {
 	public Program getProgramByGuid(String guid);
 
 	@Transactional(readOnly=true)
+	public PatientState getPatientStateByGuid(String guid);
+
+	@Transactional(readOnly=true)
 	public Program getProgram(String name);
 
 	public void retireProgram(Program p);

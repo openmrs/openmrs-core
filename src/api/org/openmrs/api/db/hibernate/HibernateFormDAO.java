@@ -12,8 +12,8 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
-import org.openmrs.Drug;
 import org.openmrs.Field;
+import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
@@ -257,6 +257,10 @@ public class HibernateFormDAO implements
      */
     public Field getFieldByGuid(String guid) {
 		return (Field) sessionFactory.getCurrentSession().createQuery("from Field f where f.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    public FieldAnswer getFieldAnswerByGuid(String guid) {
+		return (FieldAnswer) sessionFactory.getCurrentSession().createQuery("from FieldAnswer f where f.guid = :guid").setString("guid", guid).uniqueResult();
     }
 
 	/**

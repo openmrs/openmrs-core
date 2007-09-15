@@ -22,8 +22,8 @@ import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.ComplexObs;
 import org.openmrs.Concept;
-import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
@@ -634,5 +634,9 @@ public class HibernateObsDAO implements ObsDAO {
      */
     public Obs getObsByGuid(String guid) {
 		return (Obs) sessionFactory.getCurrentSession().createQuery("from Obs o where o.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+    public ComplexObs getComplexObsByGuid(String guid) {
+		return (ComplexObs) sessionFactory.getCurrentSession().createQuery("from ComplexObs o where o.guid = :guid").setString("guid", guid).uniqueResult();
     }
 }

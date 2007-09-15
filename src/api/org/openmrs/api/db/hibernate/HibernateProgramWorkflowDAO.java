@@ -240,6 +240,10 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		return (ProgramWorkflowState) sessionFactory.getCurrentSession().createQuery("from ProgramWorkflowState pws where pws.guid = :guid").setString("guid", guid).uniqueResult();
     }
 
+    public PatientState getPatientStateByGuid(String guid) {
+		return (PatientState) sessionFactory.getCurrentSession().createQuery("from PatientState pws where pws.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
 	/**
      * @see org.openmrs.api.db.ProgramWorkflowDAO#getWorkflowByGuid(java.lang.String)
      */

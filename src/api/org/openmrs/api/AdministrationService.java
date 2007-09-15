@@ -356,6 +356,9 @@ public interface AdministrationService {
 	public String getGlobalProperty(String propertyName);
 
 	@Transactional(readOnly=true)
+	public String getGlobalPropertyByGuid(String guid);
+
+	@Transactional(readOnly=true)
 	public String getGlobalProperty(String propertyName, String defaultValue);
 
 	@Transactional(readOnly=true)
