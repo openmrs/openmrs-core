@@ -84,6 +84,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             .createCriteria(SyncRecord.class)
             .add(Restrictions.in("state", new SyncRecordState[]{SyncRecordState.NEW, SyncRecordState.PENDING_SEND}))
             .addOrder(Order.asc("timestamp"))
+            .addOrder(Order.asc("recordId"))
             .setFetchSize(1)
             .list();
         
@@ -109,6 +110,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
         return getNonSynchronizingSession()
             .createCriteria(SyncRecord.class)
             .addOrder(Order.asc("timestamp"))
+            .addOrder(Order.asc("recordId"))
             .list();
     }
 
@@ -121,6 +123,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             .createCriteria(SyncRecord.class)
             .add(Restrictions.eq("state", state))
             .addOrder(Order.asc("timestamp"))
+            .addOrder(Order.asc("recordId"))
             .list();
     }
     
@@ -133,6 +136,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             .createCriteria(SyncRecord.class)
             .add(Restrictions.gt("timestamp", from)) // greater than
             .addOrder(Order.asc("timestamp"))
+            .addOrder(Order.asc("recordId"))
             .list();
     }
 
@@ -147,6 +151,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             .add(Restrictions.gt("timestamp", from)) // greater than
             .add(Restrictions.le("timestamp", to)) // less-than or equal
             .addOrder(Order.asc("timestamp"))
+            .addOrder(Order.asc("recordId"))
             .list();
     }
 

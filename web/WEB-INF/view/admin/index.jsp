@@ -119,6 +119,13 @@
 				</div>
 			</openmrs:hasPrivilege>
 
+			<openmrs:hasPrivilege privilege="Edit Patients,Audit,View Patients">
+				<div class="adminMenuList">
+					<h4><spring:message code="Synchronization.header"/></h4>
+						<%@ include file="synchronization/localHeader.jsp" %>
+				</div>
+			</openmrs:hasPrivilege>
+
   		</td>
 		<td valign="top" width="30%">
 			

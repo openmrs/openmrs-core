@@ -575,6 +575,13 @@ public class HibernateUserDAO implements
      * @see org.openmrs.api.db.UserDAO#getUserByGuid(java.lang.String)
      */
     public User getUserByGuid(String guid) {
-		return (User) sessionFactory.getCurrentSession().createQuery("from User u where u.guid = :guid").setString("guid", guid).uniqueResult();
+    	User ret = null;
+    	
+    	if ( guid != null ) {
+        	guid = guid.trim();
+        	ret = (User)sessionFactory.getCurrentSession().createQuery("from User u where u.guid = :guid").setString("guid", guid).uniqueResult();
+    	}
+
+    	return ret;
     }
 }

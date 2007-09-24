@@ -33,7 +33,8 @@ import org.openmrs.synchronization.engine.SyncItem.SyncItemState;
 import org.openmrs.util.OpenmrsUtil;
 
 public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
-    /**
+
+	/**
      * From Spring docs: There might be a single instance of Interceptor for a
      * SessionFactory, or a new instance might be specified for each Session.
      * Whichever approach is used, the interceptor must be serializable if the

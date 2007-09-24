@@ -460,7 +460,7 @@ public class HibernatePersonDAO implements PersonDAO {
      * @see org.openmrs.api.db.PersonDAO#getPersonAttributeTypeByGuid(java.lang.String)
      */
     public PersonAttributeType getPersonAttributeTypeByGuid(String guid) {
-		return (PersonAttributeType) sessionFactory.getCurrentSession().createQuery("from PersonAttributeType where pat.guid = :guid").setString("guid", guid).uniqueResult();
+		return (PersonAttributeType) sessionFactory.getCurrentSession().createQuery("from PersonAttributeType pat where pat.guid = :guid").setString("guid", guid).uniqueResult();
     }
 
 	/**

@@ -71,7 +71,7 @@ public class SyncTransmission implements IItem {
 
         try {            
             FilePackage pkg = new FilePackage();
-            Record xml = pkg.createRecordForWrite("SyncTransmission");
+            Record xml = pkg.createRecordForWrite(this.getClass().getName());
             Item root = xml.getRootItem();
 
             //serialize
@@ -93,8 +93,8 @@ public class SyncTransmission implements IItem {
     /** IItem.save() implementation
      * 
      */
-    public Item save(Record xml, Item parent) throws Exception {
-        Item me = xml.createItem(parent, this.getClass().getName());
+    public Item save(Record xml, Item me) throws Exception {
+        //Item me = xml.createItem(parent, this.getClass().getName());
         
         //serialize primitives
         if (guid != null) xml.setAttribute(me, "guid", guid);

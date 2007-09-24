@@ -7,14 +7,16 @@
 
 	<class name="SyncRecord" table="synchronization_journal">
 
-    <id name="guid" type="java.lang.String" 
-      column="guid" length="36">
-      <generator class="assigned" />
-    </id>
-    
+		<id name="recordId" type="int" column="record_id">
+			<generator class="native" />
+		</id>
+
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
 		<property name="timestamp" type="java.util.Date"
 			column="timestamp" length="19" />
-			
+
 		<property name="retryCount" type="int" 
 			column="retry_count" length="11" />
 		

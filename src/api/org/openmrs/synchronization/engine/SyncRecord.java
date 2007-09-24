@@ -35,6 +35,7 @@ public class SyncRecord implements Serializable, IItem {
     public Log log = LogFactory.getLog(this.getClass());
 
     // Fields
+    private Integer recordId;
     private String guid = null;
     private Date timestamp = null;
     private int retryCount;
@@ -46,7 +47,15 @@ public class SyncRecord implements Serializable, IItem {
     public SyncRecord() {
     }
 
-    // Properties
+    public Integer getRecordId() {
+    	return recordId;
+    }
+
+	public void setRecordId(Integer recordId) {
+    	this.recordId = recordId;
+    }
+
+	// Properties
     // globally unique id of the record
     public String getGuid() {
         return guid;

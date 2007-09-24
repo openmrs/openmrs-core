@@ -20,8 +20,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.Interceptor;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
@@ -50,6 +52,7 @@ import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
 public class HibernateAdministrationDAO implements
 		AdministrationDAO {
@@ -60,6 +63,14 @@ public class HibernateAdministrationDAO implements
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
+
+	// for global properties, which should not be synchronized
+    private Interceptor nonSynchronizingInterceptor = new HibernateNonSynchronizingInterceptor();
+
+    private Session getNonSynchronizingSession() {
+        return SessionFactoryUtils.getNewSession(sessionFactory, nonSynchronizingInterceptor);
+    }
+
 	
 	public HibernateAdministrationDAO() { }
 	
@@ -675,7 +686,8 @@ public class HibernateAdministrationDAO implements
 		for (GlobalProperty prop : props) {
 			if (prop.getProperty() != null && prop.getProperty().length() > 0) {
 				try {
-					sessionFactory.getCurrentSession().saveOrUpdate(prop);
+					this.getNonSynchronizingSession().saveOrUpdate(prop);
+					//sessionFactory.getCurrentSession().saveOrUpdate(prop);
 				}
 				catch (HibernateException e) {
 					sessionFactory.getCurrentSession().merge(prop);
@@ -685,21 +697,25 @@ public class HibernateAdministrationDAO implements
 		
 	}
 
-	public void deleteGlobalProperty(String propertyName) throws DAOException { 
-		sessionFactory.getCurrentSession().createQuery("delete from GlobalProperty where property = :p")
+	public void deleteGlobalProperty(String propertyName) throws DAOException {
+		
+		//sessionFactory.getCurrentSession().createQuery("delete from GlobalProperty where property = :p")
+		this.getNonSynchronizingSession().createQuery("delete from GlobalProperty where property = :p")
 					.setParameter("p", propertyName)
 					.executeUpdate();
 	}
 	
 	public void setGlobalProperty(GlobalProperty gp) throws DAOException {
 		if (gp.getProperty() != null) {
-			sessionFactory.getCurrentSession().merge(gp);
+			//sessionFactory.getCurrentSession().merge(gp);
+			this.getNonSynchronizingSession().merge(gp);
 		}
 	}
 
 	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException {
 		GlobalProperty prop = new GlobalProperty(propertyName, propertyValue);
-		sessionFactory.getCurrentSession().save(prop);
+		//sessionFactory.getCurrentSession().save(prop);
+		this.getNonSynchronizingSession().save(prop);
 	}
 
 	@SuppressWarnings("unchecked")

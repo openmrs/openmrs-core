@@ -44,13 +44,6 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="View Synchronization Status">
-		<li <c:if test="<%= request.getRequestURI().contains("synchronizationStatus") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/maintenance/synchronizationStatus.list">
-				<spring:message code="SynchronizationStatus.title"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.maintenance.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >

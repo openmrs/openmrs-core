@@ -139,7 +139,7 @@
 				<prop key="admin/maintenance/globalProps.form">globalPropertyController</prop>
 				<!--<prop key="**/calendar.list">calendarController</prop>-->
 				<prop key="admin/maintenance/dataEntryStats.list">dataEntryStatsController</prop>
-        <prop key="admin/maintenance/synchronizationStatus.list">synchronizationStatusListController</prop>
+				<prop key="admin/synchronization/synchronizationStatus.list">synchronizationStatusListController</prop>
 				<prop key="admin/modules/module.list">moduleListController</prop>
 				<prop key="admin/modules/moduleProperties.form">modulePropertiesFormController</prop>
 
@@ -1130,7 +1130,7 @@
 	<bean id="synchronizationStatusListController" 
     class="org.openmrs.web.controller.maintenance.SynchronizationStatusListController">
 		<property name="commandName"><value>synchronizationStatusList</value></property>
-		<property name="formView"><value>/admin/maintenance/synchronizationStatusList</value></property>
+		<property name="formView"><value>/admin/synchronization/synchronizationStatusList</value></property>
 		<property name="successView"><value>synchronizationStatus.list</value></property>
 	</bean>
   

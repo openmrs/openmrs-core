@@ -280,6 +280,11 @@ table td#patientHeaderPatientGender {
 	width: 25px;
 }
 
+table td#syncChangesTable {
+	padding: 5px;
+	text-align: left;
+}
+
 table#patientActions,table#outcomeFormTable{
 	width: 100%;
 }
