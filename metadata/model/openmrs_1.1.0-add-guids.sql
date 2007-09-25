@@ -65,6 +65,9 @@ CREATE PROCEDURE add_guids ()
 
   CLOSE cur_tabs;
 		
+  ALTER TABLE `patient` DROP COLUMN `guid`;
+  ALTER TABLE `users` DROP COLUMN `guid`;
+		
  END;
 //
 

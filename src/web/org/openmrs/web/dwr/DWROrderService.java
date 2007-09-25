@@ -37,10 +37,11 @@ public class DWROrderService {
 		DrugOrder drugOrder = new DrugOrder();
 		Patient patient = Context.getPatientService().getPatient(patientId);
 		Drug drug = Context.getConceptService().getDrugByNameOrId(drugId);
+		OrderType orderType = Context.getOrderService().getOrderType(OpenmrsConstants.ORDERTYPE_DRUG);
 		drugOrder.setDrug(drug);
 		Concept concept = drug.getConcept();
 		drugOrder.setConcept(concept);
-		drugOrder.setOrderType(new OrderType(new Integer(OpenmrsConstants.ORDERTYPE_DRUG)));
+		drugOrder.setOrderType(orderType);
 		drugOrder.setPatient(patient);
 		drugOrder.setDose(dose);
 		drugOrder.setUnits(units);

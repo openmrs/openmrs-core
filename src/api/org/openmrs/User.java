@@ -30,7 +30,7 @@ public class User extends Person implements java.io.Serializable, ISynchronizabl
 	// Fields
 	
 	private Integer userId;
-    private String guid;
+    //private String guid;
 	
 	private String systemId;
 	private String username;
@@ -508,6 +508,8 @@ public class User extends Person implements java.io.Serializable, ISynchronizabl
 		return getFamilyName();
 	}
 	
+	/*
+	 * We shouldn't need this because Person has guid
 	public String getGuid() {
 	    return guid;
 	}
@@ -515,4 +517,5 @@ public class User extends Person implements java.io.Serializable, ISynchronizabl
     public void setGuid(String guid) {
         this.guid = guid;
     }
+    */
 }

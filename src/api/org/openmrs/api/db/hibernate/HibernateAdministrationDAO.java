@@ -690,7 +690,7 @@ public class HibernateAdministrationDAO implements
 					//sessionFactory.getCurrentSession().saveOrUpdate(prop);
 				}
 				catch (HibernateException e) {
-					sessionFactory.getCurrentSession().merge(prop);
+					this.getNonSynchronizingSession().merge(prop);
 				}
 			}
 		}

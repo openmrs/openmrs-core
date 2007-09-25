@@ -3,10 +3,10 @@ package org.openmrs.api.db;
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncRecordState;
+import org.openmrs.synchronization.ingest.SyncImportRecord;
 
 /**
  * Synchronization related database functions 
@@ -41,7 +41,36 @@ public interface SynchronizationDAO {
      * @throws DAOException
      */
     public SyncRecord getSyncRecord(String guid) throws DAOException;
+
+    /**
+     * Create a new SyncImportRecord
+     * @param SyncImportRecord The SyncImportRecord to create
+     * @throws DAOException
+     */
+    public void createSyncImportRecord(SyncImportRecord record) throws DAOException;
     
+    /**
+     * Update a SyncImportRecord
+     * @param SyncImportRecord The SyncImportRecord to update
+     * @throws DAOException
+     */
+    public void updateSyncImportRecord(SyncImportRecord record) throws DAOException;
+    
+    /**
+     * Delete a SyncImportRecord
+     * @param SyncImportRecord The SyncImportRecord to delete
+     * @throws DAOException
+     */
+    public void deleteSyncImportRecord(SyncImportRecord record) throws DAOException;
+    
+    /**
+     * 
+     * @param guid of the SyncImportRecord to retrieve
+     * @return SyncImportRecord The SyncImportRecord or null if not found
+     * @throws DAOException
+     */
+    public SyncImportRecord getSyncImportRecord(String guid) throws DAOException;
+
     /**
      * Returns the first SyncRecord in either the PENDING SEND or the NEW state
      * @return SyncRecord The first SyncRecord matching the criteria, or null if none matches
@@ -63,7 +92,15 @@ public interface SynchronizationDAO {
      * @throws DAOException
      */
     public List<SyncRecord> getSyncRecords(SyncRecordState state) throws DAOException;
-    
+
+    /**
+     * Get all SyncRecords in specific SyncRecordStates
+     * @param state SyncRecordStates for the SyncRecords to be returned
+     * @return SyncRecord A list containing all SyncRecords with the given states
+     * @throws DAOException
+     */
+    public List<SyncRecord> getSyncRecords(SyncRecordState[] states) throws DAOException;
+
     /**
      * Get all SyncRecords since a timestamp
      * @param from Timestamp specifying lower bound, not included.

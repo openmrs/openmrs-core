@@ -45,6 +45,31 @@ public class SyncStrategyFile {
         return syncTx;
     }
 
+    public SyncTransmission createStateBasedSyncTransmission(SyncSource source) {
+
+        SyncTransmission tx = new SyncTransmission();
+        
+        List<SyncRecord> changeset = null;
+        
+        //retrieve value of the last sync timestamps
+        SyncPoint lastSyncLocal = source.getLastSyncLocal();
+        
+        //establish the 'new' sync point; this will be new sync local after transmission was 'exported'
+        SyncPoint lastSyncLocalNew = source.moveSyncPoint();
+
+        //get changeset for sourceA
+        changeset = this.getStateBasedChangeset(source);
+        
+        //pack it into transmission
+        SyncTransmission syncTx = new SyncTransmission(changeset);
+        syncTx.CreateFile();
+        
+        //set new SyncPoint
+        source.setLastSyncLocal(lastSyncLocalNew);
+        
+        return syncTx;
+    }
+
     /** 
      * Update status of a given sync transmission
      */
@@ -88,6 +113,22 @@ public class SyncStrategyFile {
         //get all local deletes, inserts and updates
         deleted = source.getDeleted(from,to);
         changed = source.getChanged(from,to);
+        
+        //merge
+        changeset = deleted;
+        changeset.addAll(changed);
+ 
+        return changeset;
+    }
+
+    private List<SyncRecord> getStateBasedChangeset(SyncSource source) {
+        List<SyncRecord> deleted = null;
+        List<SyncRecord> changed = null;
+        List<SyncRecord> changeset = null;
+                
+        //get all local deletes, inserts and updates
+        deleted = source.getDeleted();
+        changed = source.getChanged();
         
         //merge
         changeset = deleted;

@@ -16,8 +16,18 @@ CREATE PROCEDURE sync_setup_procedure()
 	# Add table for Synchronization Journal
 	#--------------------------------------
 	DROP TABLE IF EXISTS synchronization_journal;
-
 	CREATE TABLE `synchronization_journal` (
+	  `record_id` int(11) NOT NULL auto_increment,
+	  `guid` char(36) NOT NULL,
+	  `timestamp` datetime default NULL,
+	  `retry_count` int(11) default NULL,
+	  `state` varchar(20) default NULL,
+	  `payload` longtext,
+	  PRIMARY KEY  (`record_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+	DROP TABLE IF EXISTS synchronization_import;
+	CREATE TABLE `synchronization_import` (
 	  `record_id` int(11) NOT NULL auto_increment,
 	  `guid` char(36) NOT NULL,
 	  `timestamp` datetime default NULL,

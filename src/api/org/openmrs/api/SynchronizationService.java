@@ -3,10 +3,10 @@ package org.openmrs.api;
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.GlobalProperty;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncRecordState;
+import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -35,7 +35,7 @@ public interface SynchronizationService {
      */
     @Authorized({"Manage Synchronization Records"})
     public void deleteSyncRecord(SyncRecord record) throws APIException;
-    
+
     /**
      * 
      * @param guid of the SyncRecord to retrieve
@@ -45,6 +45,40 @@ public interface SynchronizationService {
     @Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public SyncRecord getSyncRecord(String guid) throws APIException;
+    
+    /**
+     * Create a new SyncImportRecord
+     * @param SyncImportRecord The SyncImportRecord to create
+     * @throws APIException
+     */
+    @Authorized({"Manage Synchronization Records"})
+    public void createSyncImportRecord(SyncImportRecord record) throws APIException;
+    
+    /**
+     * Update a SyncImportRecord
+     * @param SyncImportRecord The SyncImportRecord to update
+     * @throws APIException
+     */
+    @Authorized({"Manage Synchronization Records"})
+    public void updateSyncImportRecord(SyncImportRecord record) throws APIException;
+    
+    /**
+     * Delete a SyncImportRecord
+     * @param SyncImportRecord The SyncImportRecord to delete
+     * @throws APIException
+     */
+    @Authorized({"Manage Synchronization Records"})
+    public void deleteSyncImportRecord(SyncImportRecord record) throws APIException;
+
+    /**
+     * 
+     * @param guid of the SyncImportRecord to retrieve
+     * @return SyncRecord The SyncImportRecord or null if not found
+     * @throws APIException
+     */
+    @Authorized({"View Synchronization Records"})
+    @Transactional(readOnly=true)
+    public SyncImportRecord getSyncImportRecord(String guid) throws APIException;
     
     /**
      * Returns the first SyncRecord in either the PENDING SEND or the NEW state
@@ -73,7 +107,17 @@ public interface SynchronizationService {
     @Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public List<SyncRecord> getSyncRecords(SyncRecordState state) throws APIException;
-    
+
+    /**
+     * Get all SyncRecords in a specific SyncRecordStates
+     * @param states SyncRecordStates for the SyncRecords to be returned
+     * @return SyncRecord A list containing all SyncRecords with the given states
+     * @throws APIException
+     */
+    @Authorized({"View Synchronization Records"})
+    @Transactional(readOnly=true)
+    public List<SyncRecord> getSyncRecords(SyncRecordState[] states) throws APIException;
+
     /**
      * Get all SyncRecords after a given timestamp
      * @param from Timestamp specifying lower bound, not included.

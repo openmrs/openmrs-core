@@ -335,6 +335,8 @@ public class Patient extends Person
 		this.voidReason = voidReason;
 	}
 
+	/*
+	 * We shouldn't need this because Person has it	
     public String getGuid() {
         return guid;
     }
@@ -342,5 +344,6 @@ public class Patient extends Person
     public void setGuid(String guid) {
         this.guid = guid;
     }
+	 */
 
 }

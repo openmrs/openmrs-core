@@ -58,6 +58,8 @@ public interface PatientService {
 	 */
 	public Patient updatePatient(Patient patient) throws APIException;
 
+	public Patient updatePatientNoChecks(Patient patient) throws APIException;
+
 	@Transactional(readOnly=true)
 	public Patient identifierInUse(String identifier,
 			PatientIdentifierType type, Patient ignorePatient);

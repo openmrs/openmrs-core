@@ -1,19 +1,18 @@
 package org.openmrs.synchronization.engine;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.Date;
-import java.text.SimpleDateFormat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.serial.FilePackage;
-import org.openmrs.serial.Item;
 import org.openmrs.serial.IItem;
+import org.openmrs.serial.Item;
 import org.openmrs.serial.Record;
-import org.openmrs.serial.TimestampNormalizer;
 
 /**
  * SyncTransmission a collection of sync records to be sent to the parent.
@@ -29,8 +28,9 @@ public class SyncTransmission implements IItem {
     private String fileName = null;
     private List<SyncRecord> syncRecords = null;
     private String guid = null;
+    private String fileOutput = "";
 
-    // constructor(s)
+	// constructor(s)
     public SyncTransmission() {
     }
 
@@ -45,6 +45,10 @@ public class SyncTransmission implements IItem {
     }
 
     // methods
+    public String getFileOutput() {
+    	return fileOutput;
+    }
+
     public String getFileName() {
         return fileName;
     }
@@ -57,6 +61,7 @@ public class SyncTransmission implements IItem {
     public void setGuid(String value) {
         guid = value;
     }
+    
     public List<SyncRecord> getSyncRecords() {
         return syncRecords;
     }
@@ -78,9 +83,9 @@ public class SyncTransmission implements IItem {
             this.save(xml,root);
 
             //now dump to file
-            pkg.savePackage(org.openmrs.util.OpenmrsUtil
+            fileOutput = pkg.savePackage(org.openmrs.util.OpenmrsUtil
                     .getApplicationDataDirectory()
-                    + "/journal/" + fileName);
+                    + "/journal/" + fileName, true);
 
         } catch (Exception e) {
             log.error("Cannot create sync transmission.");

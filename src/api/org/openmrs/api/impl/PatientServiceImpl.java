@@ -116,7 +116,14 @@ public class PatientServiceImpl implements PatientService {
 		
 		return getPatientDAO().updatePatient(patient);
 	}
-	
+
+	public Patient updatePatientNoChecks(Patient patient) throws APIException {
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
+		
+		return getPatientDAO().updatePatient(patient);
+	}
+
 	/**
 	 * Throws an API Exception if one of the patient's identifier already exists 
 	 * in the system. Also throws an Exception if a patient has zero identifiers

@@ -3,12 +3,12 @@ package org.openmrs.api.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.db.SynchronizationDAO;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncRecordState;
+import org.openmrs.synchronization.ingest.SyncImportRecord;
 
 public class SynchronizationServiceImpl implements SynchronizationService {
 
@@ -30,6 +30,13 @@ public class SynchronizationServiceImpl implements SynchronizationService {
     }
 
     /**
+     * @see org.openmrs.api.SynchronizationService#createSyncRecord(org.openmrs.synchronization.engine.SyncRecord)
+     */
+    public void createSyncImportRecord(SyncImportRecord record) throws APIException {
+        getSynchronizationDAO().createSyncImportRecord(record);
+    }
+
+    /**
      * @see org.openmrs.api.SynchronizationService#getNextSyncRecord()
      */
     public SyncRecord getFirstSyncRecordInQueue() throws APIException {
@@ -41,6 +48,13 @@ public class SynchronizationServiceImpl implements SynchronizationService {
      */
     public SyncRecord getSyncRecord(String guid) throws APIException {
         return getSynchronizationDAO().getSyncRecord(guid);
+    }
+
+    /**
+     * @see org.openmrs.api.SynchronizationService#getSyncRecord(java.lang.String)
+     */
+    public SyncImportRecord getSyncImportRecord(String guid) throws APIException {
+        return getSynchronizationDAO().getSyncImportRecord(guid);
     }
 
     /**
@@ -59,6 +73,14 @@ public class SynchronizationServiceImpl implements SynchronizationService {
     }
 
     /**
+     * @see org.openmrs.api.SynchronizationService#getSyncRecords(org.openmrs.synchronization.engine.SyncRecordState)
+     */
+    public List<SyncRecord> getSyncRecords(SyncRecordState[] states)
+            throws APIException {
+        return getSynchronizationDAO().getSyncRecords(states);
+    }
+
+    /**
      * @see org.openmrs.api.SynchronizationService#updateSyncRecord(org.openmrs.synchronization.engine.SyncRecord)
      */
     public void updateSyncRecord(SyncRecord record) throws APIException {
@@ -70,6 +92,20 @@ public class SynchronizationServiceImpl implements SynchronizationService {
      */
     public void deleteSyncRecord(SyncRecord record) throws APIException {
         getSynchronizationDAO().deleteSyncRecord(record);
+    }
+
+    /**
+     * @see org.openmrs.api.SynchronizationService#updateSyncRecord(org.openmrs.synchronization.engine.SyncRecord)
+     */
+    public void updateSyncImportRecord(SyncImportRecord record) throws APIException {
+        getSynchronizationDAO().updateSyncImportRecord(record);
+    }
+
+    /**
+     * @see org.openmrs.api.SynchronizationService#deleteSyncRecord(org.openmrs.synchronization.engine.SyncRecord)
+     */
+    public void deleteSyncImportRecord(SyncImportRecord record) throws APIException {
+        getSynchronizationDAO().deleteSyncImportRecord(record);
     }
 
     /**

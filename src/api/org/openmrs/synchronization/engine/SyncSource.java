@@ -24,7 +24,11 @@ public interface SyncSource {
     //change set methods
     public List<SyncRecord> getDeleted(SyncPoint<?> from , SyncPoint<?> to) throws SyncException ;
     public List<SyncRecord> getChanged(SyncPoint<?> from , SyncPoint<?> to) throws SyncException ; //note this has new items also
-    
+
+    //state-based changeset methods
+    public List<SyncRecord> getDeleted() throws SyncException ;
+    public List<SyncRecord> getChanged() throws SyncException ; //note this has new items also
+
     //Methods used to apply changes
     public void applyDeleted(List<SyncRecord> records) throws SyncException ;
     public void applyChanged(List<SyncRecord> records) throws SyncException ;

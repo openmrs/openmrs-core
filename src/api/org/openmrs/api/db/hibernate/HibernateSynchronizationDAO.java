@@ -10,12 +10,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.openmrs.api.APIException;
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.SynchronizationDAO;
-import org.openmrs.GlobalProperty;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncRecordState;
+import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
 public class HibernateSynchronizationDAO implements SynchronizationDAO {
@@ -74,7 +74,38 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
         session.delete(record);
         session.flush();
     }
-    
+
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#createSyncImportRecord(org.openmrs.synchronization.engine.SyncImportRecord)
+     */
+    public void createSyncImportRecord(SyncImportRecord record) throws DAOException {
+        if (record.getGuid() == null) {
+            //TODO: Create Guid if missing?
+            throw new DAOException("SyncImportRecord must have a GUID");
+        }
+        Session session = getNonSynchronizingSession();
+        session.save(record);
+        session.flush();
+    }
+
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#updateSyncImportRecord(org.openmrs.synchronization.engine.SyncImportRecord)
+     */
+    public void updateSyncImportRecord(SyncImportRecord record) throws DAOException {
+        Session session = getNonSynchronizingSession();
+        session.saveOrUpdate(record);
+        session.flush();
+    }
+
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#deleteSyncImportRecord(org.openmrs.synchronization.engine.SyncImportRecord)
+     */
+    public void deleteSyncImportRecord(SyncImportRecord record) throws DAOException {
+        Session session = getNonSynchronizingSession();
+        session.delete(record);
+        session.flush();
+    }
+
     /**
      * @see org.openmrs.api.db.SynchronizationDAO#getNextSyncRecord()
      */
@@ -103,6 +134,13 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
     }
 
     /**
+     * @see org.openmrs.api.db.SynchronizationDAO#getSyncImportRecord(java.lang.String)
+     */
+    public SyncImportRecord getSyncImportRecord(String guid) throws DAOException {
+        return (SyncImportRecord) getNonSynchronizingSession().get(SyncImportRecord.class, guid);
+    }
+
+    /**
      * @see org.openmrs.api.db.SynchronizationDAO#getSyncRecords()
      */
     @SuppressWarnings("unchecked")
@@ -126,7 +164,20 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             .addOrder(Order.asc("recordId"))
             .list();
     }
-    
+
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#getSyncRecords(org.openmrs.synchronization.engine.SyncRecordState)
+     */
+    @SuppressWarnings("unchecked")
+    public List<SyncRecord> getSyncRecords(SyncRecordState[] states) throws DAOException {
+        return getNonSynchronizingSession()
+            .createCriteria(SyncRecord.class)
+            .add(Restrictions.in("state", states))
+            .addOrder(Order.asc("timestamp"))
+            .addOrder(Order.asc("recordId"))
+            .list();
+    }
+
     /**
      * @see org.openmrs.api.db.SynchronizationDAO#getSyncRecordsSince(java.util.Date)
      */

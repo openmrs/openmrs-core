@@ -1,5 +1,8 @@
 package org.openmrs.web.controller.maintenance;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
@@ -19,6 +23,7 @@ import org.openmrs.serial.Item;
 import org.openmrs.serial.Record;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncRecord;
+import org.openmrs.synchronization.engine.SyncRecordState;
 import org.openmrs.synchronization.engine.SyncSource;
 import org.openmrs.synchronization.engine.SyncSourceJournal;
 import org.openmrs.synchronization.engine.SyncStrategyFile;
@@ -60,6 +65,8 @@ public class SynchronizationStatusListController extends SimpleFormController {
      */
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 
+    	ModelAndView result = new ModelAndView(new RedirectView(getSuccessView()));
+    	
         // TODO - replace with privilage check
         if (!Context.isAuthenticated())
             throw new APIAuthenticationException("Not authenticated!");
@@ -77,9 +84,31 @@ public class SynchronizationStatusListController extends SimpleFormController {
             if ("createTx".equals(action)) {
                 SyncSource source = new SyncSourceJournal();
                 SyncStrategyFile strategy = new SyncStrategyFile();
-                SyncTransmission tx = strategy.createSyncTransmission(source);
-                Object[] args = new Object[] {tx.getFileName()};
-                success = msa.getMessage("SynchronizationStatus.createTx.success", args);
+                //SyncTransmission tx = strategy.createSyncTransmission(source);
+                SyncTransmission tx = strategy.createStateBasedSyncTransmission(source);
+                //Object[] args = new Object[] {tx.getFileName()};
+                
+                // Write sync transmission to response
+                InputStream in = new ByteArrayInputStream(tx.getFileOutput().getBytes());
+                response.setContentType("text/xml; charset=utf-8");
+                response.setHeader("Content-Disposition", "attachment; filename=" + tx.getFileName() + ".xml");
+                OutputStream out = response.getOutputStream();
+                IOUtils.copy(in, out);
+                //response.flushBuffer();
+                out.flush();
+                out.close();
+                
+                // let's update SyncRecords to reflect the fact that we now have tried to sync them
+                for ( SyncRecord record : tx.getSyncRecords() ) {
+                	record.setRetryCount(record.getRetryCount() + 1);
+                	record.setState(SyncRecordState.SENT);
+                	Context.getSynchronizationService().updateSyncRecord(record);
+                }
+                                
+                // don't return a model/view
+                result = null;
+                
+                //success = msa.getMessage("SynchronizationStatus.createTx.success", args);
             }
         }
         catch(Exception e) {
@@ -87,16 +116,13 @@ public class SynchronizationStatusListController extends SimpleFormController {
             error = msa.getMessage("SynchronizationStatus.createTx.error",args);  
         }
         		
-        
-        view = getSuccessView();
-
         if (!success.equals(""))
             httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
         
         if (!error.equals(""))
             httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		
-		return new ModelAndView(new RedirectView(view));
+		return result;
 	}
 
     /**
@@ -126,16 +152,23 @@ public class SynchronizationStatusListController extends SimpleFormController {
 		
 		Map<String,String> recordTypes = new HashMap<String,String>();
 		Map<String,String> itemGuids = new HashMap<String,String>();
+		Map<String,String> itemInfo = new HashMap<String,String>();
+		Map<String,String> itemInfoKeys = new HashMap<String,String>();
         List<SyncRecord> recordList = (ArrayList<SyncRecord>)obj;
 
+        //itemInfoKeys.put("Patient", "gender,birthdate");
+        itemInfoKeys.put("PersonName", "name");
+        itemInfoKeys.put("User", "username");
+        
         // warning: right now we are assuming there is only 1 item per record
         for ( SyncRecord record : recordList ) {
 			for ( SyncItem item : record.getItems() ) {
 				String syncItem = item.getContent();
 				Record xml = Record.create(syncItem);
 				Item root = xml.getRootItem();
-				String className = root.getNode().getNodeName();
-				recordTypes.put(record.getGuid(), className.substring("org.openmrs.".length()));
+				String className = root.getNode().getNodeName().substring("org.openmrs.".length());
+				recordTypes.put(record.getGuid(), className);
+				String itemInfoKey = itemInfoKeys.get(className);
 				
 				// now we have to go through the item nodes to find the real GUID that we want
 				NodeList nodes = root.getNode().getChildNodes();
@@ -144,6 +177,9 @@ public class SynchronizationStatusListController extends SimpleFormController {
 					String propName = n.getNodeName();
 					if ( propName.equalsIgnoreCase("guid") ) {
 						itemGuids.put(record.getGuid(), n.getTextContent());
+					}
+					if ( propName.equalsIgnoreCase(itemInfoKey) ) {
+						itemInfo.put(record.getGuid(), n.getTextContent());
 					}
 				}
 			}

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.synchronization.ingest">
+
+	<class name="SyncImportRecord" table="synchronization_import">
+
+		<id name="recordId" type="int" column="record_id">
+			<generator class="native" />
+		</id>
+
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
+		<property name="timestamp" type="java.util.Date"
+			column="timestamp" length="19" />
+
+		<property name="retryCount" type="int" 
+			column="retry_count" length="11" />
+		
+		<property name="state">
+	      <type name="org.openmrs.api.db.hibernate.usertype.GenericEnumUserType">
+	        <param name="enumClassName">org.openmrs.synchronization.engine.SyncRecordState</param>
+	      </type>
+	    </property>
+
+	    <property name="items" type="org.openmrs.api.db.hibernate.usertype.SyncItemListSerializingUserType"
+	      column="payload" />
+    
+	</class>
+</hibernate-mapping>

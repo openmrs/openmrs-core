@@ -104,6 +104,15 @@ public class SyncSourceJournal implements SyncSource {
         return deleted;
     }
 
+    // state-based version
+    // no op: journal has delete records; get 'changed' returns deleted also
+    public List<SyncRecord> getDeleted()
+            throws SyncException {
+        List<SyncRecord> deleted = new ArrayList<SyncRecord>();
+
+        return deleted;
+    }
+
     // retrieve journal records > 'from' && <= 'to' && record status = 'new' or
     // 'failed'
     public List<SyncRecord> getChanged(SyncPoint from, SyncPoint to)
@@ -121,6 +130,30 @@ public class SyncSourceJournal implements SyncSource {
             
             SynchronizationService syncService = Context.getSynchronizationService();           
             changed = syncService.getSyncRecordsBetween(fromDate, toDate);
+
+        } catch (Exception e) {
+            // TODO
+            log.error("error in getChanged ", e);
+        }
+
+        return changed;
+    }
+
+    // state-based version
+    // retrieve journal records > 'from' && <= 'to' && record status = 'new' or
+    // 'failed'
+    public List<SyncRecord> getChanged() throws SyncException {
+        List<SyncRecord> changed = new ArrayList<SyncRecord>();
+
+        try {
+            SyncRecordState[] states = {
+            	SyncRecordState.NEW,	
+            	SyncRecordState.PENDING_SEND,
+            	SyncRecordState.SEND_FAILED,
+            	SyncRecordState.SENT
+            };
+            SynchronizationService syncService = Context.getSynchronizationService();           
+            changed = syncService.getSyncRecords(states);
 
         } catch (Exception e) {
             // TODO

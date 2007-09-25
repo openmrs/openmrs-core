@@ -50,6 +50,33 @@ public class FilePackage extends Package
         return result;
     }
 
+    public String savePackage(String path, boolean writeFileToo) throws IOException, Exception
+    {
+        String result = null;
+
+        File f = new File(path);
+        if (!f.isDirectory())
+        {
+            File p = new File(path);
+            p.mkdirs();
+        }
+
+		Iterator<Map.Entry<String, Record>> it = m_records.entrySet().iterator();
+        while (it!=null && it.hasNext())
+        {
+            Map.Entry<String, Record> me = it.next();
+            Record r = (Record)me.getValue();
+
+            result = r.toString();
+            if ( writeFileToo ) {
+                byte bits[] = result.getBytes();
+                writeFile(path + "/" + r.getName() + ".xml", bits, bits.length);
+            }
+        }
+
+        return result;
+    }
+
 	private boolean writeFile(String fname, byte bits[], int len)
 	{
 		FileOutputStream fos = null;
