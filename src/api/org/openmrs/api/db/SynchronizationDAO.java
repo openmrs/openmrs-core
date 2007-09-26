@@ -43,6 +43,13 @@ public interface SynchronizationDAO {
     public SyncRecord getSyncRecord(String guid) throws DAOException;
 
     /**
+     * 
+     * @return SyncRecord The latest SyncRecord or null if not found
+     * @throws DAOException
+     */
+    public SyncRecord getLatestRecord() throws DAOException;
+
+    /**
      * Create a new SyncImportRecord
      * @param SyncImportRecord The SyncImportRecord to create
      * @throws DAOException

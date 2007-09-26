@@ -19,10 +19,27 @@
 	-->
 </script>
 
-<form id="syncCreateTx" action="synchronizationStatus.list" method="post" onSubmit="return doSubmit();">
-	<input type="submit" value='<spring:message code="SynchronizationStatus.createTx"/>'/>
-	<input type="hidden" name="action" value="createTx"/>
-</form>
+<table>
+	<tr>
+		<td>
+			<form id="syncCreateTx" action="synchronizationStatus.list" method="post" onSubmit="return doSubmit();">
+				<input type="submit" value='<spring:message code="SynchronizationStatus.createTx"/>'/>
+				<input type="hidden" name="action" value="createTx"/>
+			</form>
+		</td>
+		<td>
+			&nbsp;|&nbsp;
+		</td>
+		<td>
+			<form method="post" enctype="multipart/form-data">
+				<spring:message code="SynchronizationStatus.responsePrompt" />
+				<input type="file" name="syncResponseFile" value="" />
+				<input type="hidden" name="action" value="uploadResponse" />
+				<input type="submit" value="<spring:message code="SynchronizationStatus.uploadResponse" />" id="submitButton" />
+			</form>
+		</td>
+	</tr>
+</table>
 
 <br/>
 

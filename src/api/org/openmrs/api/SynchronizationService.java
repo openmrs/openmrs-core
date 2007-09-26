@@ -45,7 +45,16 @@ public interface SynchronizationService {
     @Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public SyncRecord getSyncRecord(String guid) throws APIException;
-    
+
+    /**
+     * 
+     * @return SyncRecord The lastest SyncRecord or null if not found
+     * @throws APIException
+     */
+    @Authorized({"View Synchronization Records"})
+    @Transactional(readOnly=true)
+    public SyncRecord getLatestRecord() throws APIException;
+
     /**
      * Create a new SyncImportRecord
      * @param SyncImportRecord The SyncImportRecord to create

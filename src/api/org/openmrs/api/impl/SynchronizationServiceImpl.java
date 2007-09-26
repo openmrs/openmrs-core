@@ -51,6 +51,13 @@ public class SynchronizationServiceImpl implements SynchronizationService {
     }
 
     /**
+     * @see org.openmrs.api.SynchronizationService#getLatestRecord()
+     */
+    public SyncRecord getLatestRecord() throws APIException {
+        return getSynchronizationDAO().getLatestRecord();
+    }
+
+    /**
      * @see org.openmrs.api.SynchronizationService#getSyncRecord(java.lang.String)
      */
     public SyncImportRecord getSyncImportRecord(String guid) throws APIException {

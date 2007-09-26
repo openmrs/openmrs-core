@@ -127,17 +127,42 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
     }
 
     /**
+     * @see org.openmrs.api.db.SynchronizationDAO#getNextSyncRecord()
+     */
+    @SuppressWarnings("unchecked")
+    public SyncRecord getLatestRecord() throws DAOException {
+        List<SyncRecord> result = getNonSynchronizingSession()
+            .createCriteria(SyncRecord.class)
+            .addOrder(Order.desc("timestamp"))
+            .addOrder(Order.desc("recordId"))
+            .setFetchSize(1)
+            .list();
+        
+        if (result.size() < 1) {
+            return null;
+        } else {
+            return result.get(0);
+        }
+    }
+
+    /**
      * @see org.openmrs.api.db.SynchronizationDAO#getSyncRecord(java.lang.String)
      */
     public SyncRecord getSyncRecord(String guid) throws DAOException {
-        return (SyncRecord) getNonSynchronizingSession().get(SyncRecord.class, guid);
+        return (SyncRecord)getNonSynchronizingSession()
+        		.createCriteria(SyncRecord.class)
+        		.add(Restrictions.eq("guid", guid))
+        		.uniqueResult();
     }
 
     /**
      * @see org.openmrs.api.db.SynchronizationDAO#getSyncImportRecord(java.lang.String)
      */
     public SyncImportRecord getSyncImportRecord(String guid) throws DAOException {
-        return (SyncImportRecord) getNonSynchronizingSession().get(SyncImportRecord.class, guid);
+        return (SyncImportRecord)getNonSynchronizingSession()
+        		.createCriteria(SyncImportRecord.class)
+        		.add(Restrictions.eq("guid", guid))
+        		.uniqueResult();
     }
 
     /**

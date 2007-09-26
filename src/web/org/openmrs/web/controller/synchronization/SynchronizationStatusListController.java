@@ -1,7 +1,11 @@
-package org.openmrs.web.controller.maintenance;
+package org.openmrs.web.controller.synchronization;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,12 +32,19 @@ import org.openmrs.synchronization.engine.SyncSource;
 import org.openmrs.synchronization.engine.SyncSourceJournal;
 import org.openmrs.synchronization.engine.SyncStrategyFile;
 import org.openmrs.synchronization.engine.SyncTransmission;
+import org.openmrs.synchronization.ingest.SyncDeserializer;
+import org.openmrs.synchronization.ingest.SyncImportRecord;
+import org.openmrs.synchronization.ingest.SyncRecordIngest;
+import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.WebUtil;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -109,6 +120,50 @@ public class SynchronizationStatusListController extends SimpleFormController {
                 result = null;
                 
                 //success = msa.getMessage("SynchronizationStatus.createTx.success", args);
+            } else if ( "uploadResponse".equals(action) && request instanceof MultipartHttpServletRequest) {
+
+            	String contents = "";
+            	
+    			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+    			MultipartFile multipartSyncFile = multipartRequest.getFile("syncResponseFile");
+    			if (multipartSyncFile != null && !multipartSyncFile.isEmpty()) {
+    				InputStream inputStream = null;
+
+    				try {
+    					inputStream = multipartSyncFile.getInputStream();
+    					BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+    					String line = "";
+    					while ((line = in.readLine()) != null) {
+    						contents += line;
+    					}
+    				} catch (Exception e) {
+    					log.warn("Unable to read in sync data file", e);
+    					error = e.getMessage();
+    				} finally {
+    					try {
+    						if (inputStream != null)
+    							inputStream.close();
+    					}
+    					catch (IOException io) {
+    						log.warn("Unable to close temporary input stream", io);
+    					}
+    				}
+    			}
+        		
+        		if ( contents.length() > 0 ) {
+        			SyncTransmissionResponse str = SyncDeserializer.xmlToSyncTransmissionResponse(contents);
+        			
+        			if ( str == null ) log.debug("st is null");
+        			else {
+        				// process each incoming syncImportRecord
+        				for ( SyncImportRecord importRecord : str.getSyncImportRecords() ) {
+        					SyncRecord record = Context.getSynchronizationService().getSyncRecord(importRecord.getGuid());
+        					record.setState(importRecord.getState());
+        					Context.getSynchronizationService().updateSyncRecord(record);
+        				}
+        			}
+        		}
+
             }
         }
         catch(Exception e) {
@@ -188,6 +243,7 @@ public class SynchronizationStatusListController extends SimpleFormController {
         
         ret.put("recordTypes", recordTypes);
         ret.put("itemGuids", itemGuids);
+        ret.put("itemInfo", itemInfo);
         
 	    return ret;
     }

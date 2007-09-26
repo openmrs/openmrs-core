@@ -1,10 +1,7 @@
 package org.openmrs.synchronization.ingest;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,7 +9,6 @@ import org.openmrs.serial.IItem;
 import org.openmrs.serial.Item;
 import org.openmrs.serial.Record;
 import org.openmrs.serial.TimestampNormalizer;
-import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncRecordState;
 
@@ -42,14 +38,43 @@ public class SyncImportRecord implements Serializable, IItem {
     private Date timestamp = null;
     private int retryCount;
     private SyncRecordState state = SyncRecordState.NEW;
-    private List<SyncItem> items = null;
+    private String itemContent;
+    private String errorMessage;
+    private String resultingRecordGuid;
 
-    // Constructors
+	// Constructors
     /** default constructor */
     public SyncImportRecord() {
     }
 
-    public Integer getRecordId() {
+    public SyncImportRecord(SyncRecord record) {
+    	if ( record != null ) {
+    		this.guid = record.getGuid();
+    		this.timestamp = record.getTimestamp();
+    		this.retryCount = record.getRetryCount();
+    		this.state = record.getState();
+    		this.itemContent = null;
+    		this.resultingRecordGuid = null;
+    	}
+    }
+
+    public String getResultingRecordGuid() {
+    	return resultingRecordGuid;
+    }
+
+	public void setResultingRecordGuid(String resultingRecordGuid) {
+    	this.resultingRecordGuid = resultingRecordGuid;
+    }
+
+    public String getItemContent() {
+    	return itemContent;
+    }
+
+	public void setItemContent(String itemContent) {
+    	this.itemContent = itemContent;
+    }
+
+	public Integer getRecordId() {
     	return recordId;
     }
 
@@ -94,27 +119,18 @@ public class SyncImportRecord implements Serializable, IItem {
         this.state = state;
     }
 
-    //list of sync items
-    public List<SyncItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<SyncItem> items) {
-        this.items = items;
-    }
-    
-    // Methods
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof SyncRecord) || o == null)
+        if (!(o instanceof SyncImportRecord) || o == null)
             return false;
 
-        SyncRecord oSync = (SyncRecord) o;
+        SyncImportRecord oSync = (SyncImportRecord) o;
         boolean same = ((oSync.getTimestamp() == null) ? (this.getTimestamp() == null) : oSync.getTimestamp().equals(this.getTimestamp()))
                 && ((oSync.getGuid() == null) ? (this.getGuid() == null) : oSync.getGuid().equals(this.getGuid()))
                 && ((oSync.getState() == null) ? (this.getState() == null) : oSync.getState().equals(this.getState()))
-                && ((oSync.getItems() == null) ? (this.getItems() == null) : oSync.getItems().equals(this.getItems()))
-                && (oSync.getRetryCount() == this.getRetryCount());
+                && ((oSync.getItemContent() == null) ? (this.getItemContent() == null) : oSync.getItemContent().equals(this.getItemContent()))
+                && (oSync.getRetryCount() == this.getRetryCount())
+                && ((oSync.getResultingRecordGuid() == null) ? (this.getResultingRecordGuid() == null) : oSync.getResultingRecordGuid().equals(this.getResultingRecordGuid()));
         return same;
     }
 
@@ -123,22 +139,18 @@ public class SyncImportRecord implements Serializable, IItem {
         Item me = xml.createItem(parent, this.getClass().getName());
         
         //serialize primitives
-        xml.setAttribute(me, "guid", guid);
-        xml.setAttribute(me, "retryCount", Integer.toString(retryCount));
-        xml.setAttribute(me, "state", state.toString());
-        
+        xml.setAttribute(me, "guid", this.guid);
+        xml.setAttribute(me, "retryCount", Integer.toString(this.retryCount));
+        xml.setAttribute(me, "state", this.state.toString());
+        xml.setAttribute(me, "resultingRecordGuid", this.resultingRecordGuid);
         if (timestamp != null) {
         	xml.setAttribute(me, "timestamp", new TimestampNormalizer().toString(timestamp));
         }
         
-        //serialize IItem children
-        Item itemsCollection = xml.createItem(me, "items");
-        if (items != null) {
-            Iterator<SyncItem> iterator = items.iterator();
-            while (iterator.hasNext()) {
-                iterator.next().save(xml, itemsCollection);
-            }
-        };
+        Item content = xml.createItem(me, "itemContent");
+        if (this.itemContent != null) {
+            xml.createTextAsCDATA(content, this.itemContent);
+        }
 
         return me;
     }
@@ -156,20 +168,20 @@ public class SyncImportRecord implements Serializable, IItem {
             this.timestamp = (Date)new TimestampNormalizer().fromString(Date.class,me.getAttribute("timestamp"));
         }
         
-        //now get items
-        Item itemsCollection = xml.getItem(me, "items");
-        
-        if (itemsCollection.isEmpty()) {
-            items = null;
+        //now get items content
+        Item content = xml.getItem(me, "itemContent");
+        if (content.isEmpty()) {
+            this.itemContent = null;
         } else {
-            items = new ArrayList<SyncItem>();
-            List<Item> serItems = xml.getItems(itemsCollection);
-            for (int i = 0; i < serItems.size(); i++) {
-                Item serItem = serItems.get(i);
-                SyncItem syncItem = new SyncItem();
-                syncItem.load(xml, serItem);
-                items.add(syncItem);
-            }
+        	this.itemContent = content.getText();
         }
+    }
+
+	public String getErrorMessage() {
+    	return errorMessage;
+    }
+
+	public void setErrorMessage(String errorMessage) {
+    	this.errorMessage = errorMessage;
     }
 }

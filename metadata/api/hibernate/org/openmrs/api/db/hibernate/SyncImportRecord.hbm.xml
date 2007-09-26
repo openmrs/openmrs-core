@@ -26,8 +26,14 @@
 	      </type>
 	    </property>
 
-	    <property name="items" type="org.openmrs.api.db.hibernate.usertype.SyncItemListSerializingUserType"
+	    <property name="itemContent" type="java.lang.String"
 	      column="payload" />
+    
+		<property name="errorMessage" type="java.lang.String"
+			column="error_message" length="255" />
+
+		<property name="resultingRecordGuid" type="java.lang.String"
+			column="resulting_record_guid" length="36" />
     
 	</class>
 </hibernate-mapping>

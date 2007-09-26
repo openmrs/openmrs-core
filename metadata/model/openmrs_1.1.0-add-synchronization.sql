@@ -34,6 +34,8 @@ CREATE PROCEDURE sync_setup_procedure()
 	  `retry_count` int(11) default NULL,
 	  `state` varchar(20) default NULL,
 	  `payload` longtext,
+	  `error_message` varchar(255) default NULL,
+	  `resulting_record_guid` char(36) default NULL,
 	  PRIMARY KEY  (`record_id`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
