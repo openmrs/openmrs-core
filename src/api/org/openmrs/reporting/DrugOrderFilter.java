@@ -3,9 +3,14 @@ package org.openmrs.reporting;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.GroupMethod;
@@ -14,7 +19,10 @@ import org.openmrs.util.OpenmrsUtil;
 
 public class DrugOrderFilter extends AbstractPatientFilter implements PatientFilter {
 
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	private List<Drug> drugList;
+	private List<Concept> drugSets;
 	private PatientSetService.GroupMethod anyOrAll;
 	private Integer withinLastDays;
 	private Integer withinLastMonths;
@@ -36,21 +44,21 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 			ret.append("Patients currently ");
 		else
 			ret.append("Patients ");
-		if (getDrugList() == null || getDrugList().size() == 0) {
+		if (getDrugListToUse() == null || getDrugListToUse().size() == 0) {
 			if (getAnyOrAll() == GroupMethod.NONE)
 				ret.append(currentlyCase ? "taking no drugs" : "who never took any drugs");
 			else
 				ret.append(currentlyCase ? "taking any drugs" : "ever taking any drugs");
 		} else {
-			if (getDrugList().size() == 1) {
+			if (getDrugListToUse().size() == 1) {
 				if (getAnyOrAll() == GroupMethod.NONE)
 					ret.append("not taking ");
 				else
 					ret.append("taking ");
-				ret.append(getDrugList().get(0).getName());
+				ret.append(getDrugListToUse().get(0).getName());
 			} else {
 				ret.append("taking " + getAnyOrAll() + " of [");
-				for (Iterator<Drug> i = getDrugList().iterator(); i.hasNext(); ) {
+				for (Iterator<Drug> i = getDrugListToUse().iterator(); i.hasNext(); ) {
 					ret.append(i.next().getName());
 					if (i.hasNext())
 						ret.append(" , ");
@@ -75,9 +83,10 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 	
 	public PatientSet filter(PatientSet input) {
 		List<Integer> drugIds = new ArrayList<Integer>();
-		if (getDrugList() != null)
-			for (Drug d : getDrugList())
+		if (getDrugListToUse() != null)
+			for (Drug d : getDrugListToUse())
 				drugIds.add(d.getDrugId());
+		log.debug("filtering with these ids " + drugIds);
 		PatientSet ps = Context.getPatientSetService().getPatientsHavingDrugOrder(input.getPatientIds(), drugIds, getAnyOrAll(),  
 				OpenmrsUtil.fromDateHelper(null,
 					getWithinLastDays(), getWithinLastMonths(),
@@ -93,7 +102,7 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 
 	public PatientSet filterInverse(PatientSet input) {
 		List<Integer> drugIds = new ArrayList<Integer>();
-		for (Drug d : drugList)
+		for (Drug d : getDrugListToUse())
 			drugIds.add(d.getDrugId());
 		PatientSet ps = Context.getPatientSetService().getPatientsHavingDrugOrder(input.getPatientIds(), drugIds, getAnyOrAll(),  
 				OpenmrsUtil.fromDateHelper(null,
@@ -110,6 +119,27 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 
 	public boolean isReadyToRun() {
 		return true;
+	}
+	
+	public List<Drug> getDrugListToUse() {
+		List<Drug> drugList = getDrugList();
+		List<Concept> drugSets = getDrugSets();
+		if (drugList == null && drugSets == null)
+			return null;
+		List<Drug> ret = new ArrayList<Drug>();
+		if (drugList != null)
+			ret.addAll(drugList);
+		if (drugSets != null) {
+			Set<Concept> generics = new HashSet<Concept>();
+			for (Concept drugSet : drugSets) {
+				List<Concept> list = Context.getConceptService().getConceptsInSet(drugSet);
+				generics.addAll(list);
+			}
+			for (Concept generic : generics) {
+				ret.addAll(Context.getConceptService().getDrugs(generic));
+			}
+		}
+		return ret;
 	}
 	
 	// getters and setters
@@ -177,5 +207,13 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 	public void setWithinLastMonths(Integer withinLastMonths) {
 		this.withinLastMonths = withinLastMonths;
 	}
+
+	public List<Concept> getDrugSets() {
+    	return drugSets;
+    }
+
+	public void setDrugSets(List<Concept> drugSets) {
+    	this.drugSets = drugSets;
+    }
 
 }

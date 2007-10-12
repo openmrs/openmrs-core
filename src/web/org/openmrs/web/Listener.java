@@ -59,7 +59,10 @@ public final class Listener extends ContextLoaderListener {
 	public void contextInitialized(ServletContextEvent event) {
 		log.debug("Initializing OpenMRS");
 		ServletContext servletContext = event.getServletContext();
-		String realPath = event.getServletContext().getRealPath("");
+		String realPath = servletContext.getRealPath("");
+		
+		// pulled from web.xml.
+		loadConstants(servletContext);
 		
 		/** 
 		 * Get the runtime properties and set it to the context
@@ -126,14 +129,14 @@ public final class Listener extends ContextLoaderListener {
 		/**
 		 * Load the core modules from the webapp coreModules folder
 		 */
-		loadCoreModules(event.getServletContext());
+		loadCoreModules(servletContext);
 		
 		/**
 		 * Copy the module messages over into the webapp and perform web portion of startup
 		 */
 		for (Module mod : ModuleFactory.getStartedModules()) {
 			try {
-				WebModuleUtil.startModule(mod, event.getServletContext());
+				WebModuleUtil.startModule(mod, servletContext);
 			} catch (Throwable t) {
 				mod.setStartupErrorMessage(t.getMessage());
 			}
@@ -193,6 +196,42 @@ public final class Listener extends ContextLoaderListener {
 		}
 		
 	}
+
+	/**
+     * Load the openmrs constants with values from web.xml init parameters 
+     * 
+     * @param servletContext startup context (web.xml)
+     */
+    private void loadConstants(ServletContext servletContext) {
+		WebConstants.BUILD_TIMESTAMP = servletContext.getInitParameter("build.timestamp");
+		WebConstants.WEBAPP_NAME = getContextPath(servletContext);
+    }
+
+	/**
+     * Hacky way to get the current contextPath.  This will usually be "openmrs".
+     * 
+     * This method will be obsolete when servlet api ~2.6 comes out...at which point
+     * a call like servletContext.getContextRoot() would be sufficient
+     * 
+     * @return current contextPath of this webapp without initial slash
+     */
+    private String getContextPath(ServletContext servletContext) {
+		// Get the context path without the request.
+		String contextPath = "";
+		try {
+			String path = servletContext.getResource("/").getPath();
+			contextPath = path.substring(0, path.lastIndexOf("/"));
+			contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		// trim off initial slash if it exists
+		if (contextPath.indexOf("/") != -1)
+			contextPath = contextPath.substring(1);
+		
+		return contextPath;
+    }
 
 	/**
 	 * Copies file pointed to by <code>fromPath</code> to <code>toPath</code>
@@ -338,7 +377,7 @@ public final class Listener extends ContextLoaderListener {
 			FileInputStream propertyStream = null;
 
 			// Look for environment variable {WEBAPP.NAME}_RUNTIME_PROPERTIES_FILE
-			String webapp = WebConstants.OPENMRS_WEBAPP_NAME;
+			String webapp = WebConstants.WEBAPP_NAME;
 			String env = webapp.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
 			
 			String filepath = System.getenv(env);

@@ -1,13 +1,13 @@
 package org.openmrs;
 
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.SynchronizableInstance;
 
-public class GlobalProperty implements ISynchronizable {
+public class GlobalProperty implements SynchronizableInstance {
 	private String property = "";
 	private String propertyValue = "";
 	private String description = "";
 	private String guid;
-	
+    private boolean isSynchronizable = true;
 
 	/**
 	 * Default empty constructor
@@ -31,6 +31,14 @@ public class GlobalProperty implements ISynchronizable {
 		this.description = description;
 	}
 
+    public boolean getIsSynchronizable() {
+        return this.isSynchronizable;
+    }
+
+    public void setIsSynchronizable(boolean value) {
+        this.isSynchronizable = value;
+    }
+    
 	public String getGuid() {
     	return guid;
     }

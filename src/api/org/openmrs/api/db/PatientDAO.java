@@ -29,6 +29,8 @@ public interface PatientDAO {
 
 	public PatientIdentifier createPatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException;
 
+	public PatientIdentifier createPatientIdentifierSync(PatientIdentifier patientIdentifier) throws DAOException;
+
 	/**
 	 * Get patient by internal identifier
 	 * 
@@ -115,7 +117,9 @@ public interface PatientDAO {
 	 * @throws APIException
 	 */
 	public void updatePatientIdentifier(PatientIdentifier pi) throws APIException;
-	
+
+	public void updatePatientIdentifierSync(PatientIdentifier pi) throws APIException;
+
 	
 	/**
 	 * Get all patientIdentifier types

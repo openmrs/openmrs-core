@@ -88,19 +88,21 @@ public class DataExportUtil {
 		
 		VelocityContext velocityContext = new VelocityContext();
 		
-		// Set up velocity utils
-		Locale locale = Context.getLocale();
-		velocityContext.put("locale", locale);		
-		velocityContext.put("fn", functions);
-		
 		// Set up list of patients if one wasn't passed into this method
-		if (patientSet == null)
+		if (patientSet == null) {
 			patientSet = dataExport.generatePatientSet();
+			functions.setAllPatients(dataExport.isAllPatients());
+		}
 		
 		// add the error handler
 		EventCartridge ec = new EventCartridge();
 		ec.addEventHandler(new VelocityExceptionHandler());
 		velocityContext.attachEventCartridge(ec);
+		
+		// Set up velocity utils
+		Locale locale = Context.getLocale();
+		velocityContext.put("locale", locale);		
+		velocityContext.put("fn", functions);
 		
 		velocityContext.put("patientSet", patientSet);
 		

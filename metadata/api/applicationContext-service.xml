@@ -59,6 +59,7 @@
         <property name="ardenService"><ref bean="ardenService"/></property>
         <property name="logicService"><ref bean="logicService"/></property>
         <property name="synchronizationService"><ref bean="synchronizationService"/></property>
+        <property name="synchronizationIngestService"><ref bean="synchronizationIngestService"/></property>
 	</bean>	
 	
 	<bean id="context" class="org.openmrs.api.context.Context">
@@ -98,6 +99,7 @@
 	</bean>
 	<bean id="adminDAO" class="org.openmrs.api.db.hibernate.HibernateAdministrationDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+		<property name="synchronizationInterceptor"><ref bean="synchronizationInterceptor"/></property>	
 	</bean>
 	<bean id="noteDAO" class="org.openmrs.api.db.hibernate.HibernateNoteDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
@@ -115,7 +117,8 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="synchronizationDAO" class="org.openmrs.api.db.hibernate.HibernateSynchronizationDAO">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="synchronizationInterceptor"><ref bean="synchronizationInterceptor"/></property>	
 	</bean>	
 	
 	<bean id="schedulerDAO" class="org.openmrs.scheduler.db.hibernate.HibernateSchedulerDAO">
@@ -178,7 +181,8 @@
 	<bean id="synchronizationServiceTarget" class="org.openmrs.api.impl.SynchronizationServiceImpl">
 		<property name="synchronizationDAO"><ref bean="synchronizationDAO"/></property>
 	</bean>
-	
+	<bean id="synchronizationIngestServiceTarget" class="org.openmrs.api.impl.SynchronizationIngestServiceImpl">
+	</bean>	
 	<bean id="schedulerServiceTarget" class="org.openmrs.scheduler.timer.TimerSchedulerService">
 		<property name="schedulerDAO"><ref bean="schedulerDAO"/></property>	
 	</bean>
@@ -371,7 +375,18 @@
 			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
 		</property>
 	</bean>
-	
+	<bean id="synchronizationIngestService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="synchronizationIngestServiceTarget"/></property>
+		<property name="preInterceptors">
+			<list>
+				<ref local="authorizationInterceptor"/>
+			</list>
+		</property>
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		</property>
+	</bean>	
 	<bean id="schedulerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="schedulerServiceTarget"/></property>
@@ -476,9 +491,7 @@
 				<value>classpath:hibernate.cfg.xml</value>
 			</list>
 		</property>
-		<property name="globalSessionInterceptor">
-			<bean id="synchronizationInterceptor" class="org.openmrs.api.db.hibernate.HibernateSynchronizationInterceptor"/>
-		</property>
+		<property name="globalSessionInterceptor" ref="synchronizationInterceptor"/>
 		<!-- <property name="mappingResources">
 			<list>
 				<value>______.hbm.xml</value>
@@ -487,6 +500,8 @@
 		-->
 		<!--  default properties must be set in the hibernate.default.properties -->
 	</bean>
+
+  <bean id="synchronizationInterceptor" class="org.openmrs.api.db.hibernate.HibernateSynchronizationInterceptor"/>
 
 	<!--  **************************  TRANSACTION MANAGER CONFIGURATION  *************************  -->
 

@@ -2,8 +2,8 @@ package org.openmrs.web.controller.layout;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.layout.LayoutSupport;
-import org.openmrs.layout.address.AddressSupport;
+import org.openmrs.layout.web.LayoutSupport;
+import org.openmrs.layout.web.address.AddressSupport;
 
 public class AddressLayoutPortletController extends LayoutPortletController {
 	

@@ -2,6 +2,7 @@
 
 <openmrs:require privilege="View Administration Functions" otherwise="/login.htm" redirect="/admin/index.htm" />
 
+<spring:message var="pageTitle" code="index.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <style>

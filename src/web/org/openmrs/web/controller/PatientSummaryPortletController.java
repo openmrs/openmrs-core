@@ -4,7 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.openmrs.summary.PatientSummarySpecification;
+import org.openmrs.summary.web.PatientSummarySpecification;
 
 public class PatientSummaryPortletController extends PortletController {
 

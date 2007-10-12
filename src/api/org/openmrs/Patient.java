@@ -9,7 +9,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Defines a Patient in the system.  A patient is simply an extension
@@ -20,7 +20,7 @@ import org.openmrs.synchronization.ISynchronizable;
  * @version 2.0
  */
 public class Patient extends Person 
-    implements java.io.Serializable, ISynchronizable
+    implements java.io.Serializable, Synchronizable
 {
 	public static final long serialVersionUID = 93123L;
 	protected static final Log log = LogFactory.getLog(Patient.class);
@@ -178,14 +178,14 @@ public class Patient extends Person
 	 */
 	public void addIdentifier(PatientIdentifier patientIdentifier) {
 		patientIdentifier.setPatient(this);
-		if (identifiers == null)
+		if (getIdentifiers() == null)
 			identifiers = new HashSet<PatientIdentifier>();
 		if (patientIdentifier != null && !identifiers.contains(patientIdentifier))
 			identifiers.add(patientIdentifier);
 	}
 
 	public void removeIdentifier(PatientIdentifier patientIdentifier) {
-		if (identifiers != null)
+		if (getIdentifiers() != null)
 			identifiers.remove(patientIdentifier);
 	}
 
@@ -196,7 +196,7 @@ public class Patient extends Person
 	 * @return Returns the "preferred" patient identifier.
 	 */
 	public PatientIdentifier getPatientIdentifier() {
-		if (identifiers != null && identifiers.size() > 0) {
+		if (getIdentifiers() != null && identifiers.size() > 0) {
 			return (PatientIdentifier) identifiers.toArray()[0];
 		} else {
 			return null;
@@ -210,7 +210,7 @@ public class Patient extends Person
 	 * @return preferred patient identifier
 	 */
 	public PatientIdentifier getPatientIdentifier(Integer identifierTypeId) {
-		if (identifiers != null && identifiers.size() > 0) {
+		if (getIdentifiers() != null && identifiers.size() > 0) {
 			PatientIdentifier found = null;
 			for (PatientIdentifier id : identifiers) {
 				if (id.getIdentifierType().getPatientIdentifierTypeId().equals(identifierTypeId)) {
@@ -232,7 +232,7 @@ public class Patient extends Person
 	 * @return preferred patient identifier
 	 */
 	public PatientIdentifier getPatientIdentifier(String identifierTypeName) {
-		if (identifiers != null && identifiers.size() > 0) {
+		if (getIdentifiers() != null && identifiers.size() > 0) {
 			PatientIdentifier found = null;
 			for (PatientIdentifier id : identifiers) {
 				if (id.getIdentifierType().getName().equals(identifierTypeName)) {
@@ -254,7 +254,7 @@ public class Patient extends Person
 	 */
 	public List<PatientIdentifier> getActiveIdentifiers() {
 		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
-		if (identifiers != null) {
+		if (getIdentifiers() != null) {
 			for (PatientIdentifier pi : identifiers) {
 				if (pi.isVoided() == false)
 					ids.add(pi);

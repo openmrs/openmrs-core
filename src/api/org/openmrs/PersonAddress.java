@@ -2,7 +2,7 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
 /**
  * PersonAddress 
@@ -10,7 +10,7 @@ import org.openmrs.synchronization.ISynchronizable;
  * @author Ben Wolfe
  * @version 2.0
  */
-public class PersonAddress implements java.io.Serializable, Cloneable, ISynchronizable {
+public class PersonAddress implements java.io.Serializable, Cloneable, Synchronizable {
 
 	public static final long serialVersionUID = 343333L;
 

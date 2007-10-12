@@ -417,7 +417,7 @@
 			<td>
 				<b><spring:message code="Concept.forms" /></b><br />
 					<c:forEach items="${formsInUse}" var="form">
-						${form} <br>
+						${form} <br/>
 					</c:forEach>
 				<br/>
 			</td>

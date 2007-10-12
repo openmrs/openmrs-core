@@ -61,6 +61,7 @@ import org.openmrs.Location;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
@@ -280,6 +281,13 @@ public class OpenmrsUtil {
 				.getLowAbsolute());
 	}
 
+	/**
+	 * Return a string representation of the given file
+	 * 
+	 * @param file
+	 * @return String file contents
+	 * @throws IOException
+	 */
 	public static String getFileAsString(File file) throws IOException {
 		StringBuffer fileData = new StringBuffer(1000);
 		BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -292,6 +300,28 @@ public class OpenmrsUtil {
 		}
 		reader.close();
 		return fileData.toString();
+	}
+	
+	/**
+	 * Return a byte array representation of the given file
+	 * 
+	 * @param file
+	 * @return byte[] file contents
+	 * @throws IOException
+	 */
+	public static byte[] getFileAsBytes(File file) throws IOException {
+		try {
+			FileInputStream fileInputStream = new FileInputStream (file);
+			byte[] b = new byte[fileInputStream.available ()];
+			fileInputStream.read(b);
+			fileInputStream.close ();
+			return b;
+		}
+		catch (Exception e) {
+			log.error("Unable to get file as byte array", e);
+		}
+		
+		return null;
 	}
 
 	/**
@@ -805,6 +835,35 @@ public class OpenmrsUtil {
     }
         
     /**
+     * Find the given folderName in the application data directory.  Or, treat
+     * folderName like an absolute url to a directory 
+     * 
+     * @param folderName
+     * @return folder capable of storing information
+     */
+    public static File getDirectoryInApplicationDataDirectory(String folderName) throws APIException {
+    	//  try to load the repository folder straight away.
+		File folder = new File(folderName);
+		
+		// if the property wasn't a full path already, assume it was intended to be a folder in the 
+		// application directory
+		if (!folder.isAbsolute()) {
+			folder = new File(OpenmrsUtil.getApplicationDataDirectory(), folderName);
+		}
+		
+		// now create the directory folder if it doesn't exist
+		if (!folder.exists()) {
+			log.warn("'" + folder.getAbsolutePath() + "' doesn't exist.  Creating directories now.");
+			folder.mkdirs();
+		}
+	
+		if (!folder.isDirectory())
+			throw new APIException("'" + folder.getAbsolutePath() + "' should be a directory but it is not");
+	
+		return folder;
+    }
+    
+    /**
      * Save the given xml document to the given outfile
      * @param doc Document to be saved
      * @param outFile file pointer to the location the xml file is to be saved to
@@ -1085,7 +1144,7 @@ public class OpenmrsUtil {
 		        	if (value != null) {
 		        	
 		        		if (realPropertyType.isAssignableFrom(valueClass)) {
-		        			log.debug("setting value to " + value);
+		        			log.debug("setting value of " + sa.getName() + " to " + value);
 		        			try {
 		        				pd.getWriteMethod().invoke(pf, value);
 		        			} catch (Exception ex) {

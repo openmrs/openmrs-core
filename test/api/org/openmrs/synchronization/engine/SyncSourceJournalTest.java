@@ -17,8 +17,8 @@ import org.openmrs.synchronization.engine.SyncSourceJournal;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.engine.SyncRecordState;
-import org.openmrs.synchronization.engine.SyncItem.SyncItemState;
+import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.SyncItemState;
 
 public class SyncSourceJournalTest extends SyncBaseTest {
 

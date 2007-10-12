@@ -25,6 +25,10 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.DrugSetItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientProgramItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientStateItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.SyncConnectionTestItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.SyncTransmissionResponseItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.SyncImportRecordItem"/>
+		<convert converter="bean" match="org.openmrs.web.dwr.SyncImportItemItem"/>
 		<convert converter="bean" match="org.openmrs.PatientAddress"/>
 		<convert converter="bean" match="org.openmrs.Tribe"/>
 		<convert converter="bean" match="org.openmrs.notification.web.dwr.AlertListItem"/>
@@ -77,6 +81,7 @@
 			<include method="getEncounter"/>
 			<include method="findLocations"/>
 			<include method="getLocations"/>
+			<include method="getLocation"/>
 		</create>
 		
 		<create creator="new" javascript="DWRUserService">
@@ -191,6 +196,12 @@
 			<include method="removePatientFromCohort"/>
 			<include method="getCohorts"/>
 			<include method="getCohortsContainingPatient"/>
+		</create>
+
+		<create creator="new" javascript="DWRSynchronizationService">
+			<param name="class" value="org.openmrs.web.dwr.DWRSynchronizationService" />
+			<include method="testConnection"/>
+			<include method="syncToParent"/>
 		</create>
 		
 		<create creator="new" javascript="DWRCohortBuilderService">

@@ -1,6 +1,6 @@
 package org.openmrs;
 
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
 
 /**
@@ -10,7 +10,7 @@ import org.openmrs.synchronization.ISynchronizable;
  * @author Ben Wolfe
  * @version 1.0
  */
-public class ConceptNumeric extends Concept implements java.io.Serializable, ISynchronizable {
+public class ConceptNumeric extends Concept implements java.io.Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 47323L;
 

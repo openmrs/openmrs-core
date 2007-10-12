@@ -55,12 +55,12 @@ public class StateConversionListController extends SimpleFormController {
 				for (String id : conversionIdList) {
 					try {
 						pws.deleteConceptStateConversion(pws.getConceptStateConversion(Integer.valueOf(id)));
-						if (!success.equals("")) success += "<br>";
+						if (!success.equals("")) success += "<br/>";
 						success += textConversion + " " + id + " " + deleted;
 						numDeleted++;
 					} catch (APIException e) {
 						log.warn("Error deleting concept state conversion", e);
-						if (!error.equals("")) error += "<br>";
+						if (!error.equals("")) error += "<br/>";
 						error += textConversion + " " + id + " " + notDeleted;
 					}
 				}

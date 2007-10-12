@@ -1,12 +1,26 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.db;
 
 import java.util.Date;
 import java.util.List;
 
 import org.openmrs.api.APIException;
+import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.engine.SyncRecordState;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
+import org.openmrs.synchronization.server.RemoteServer;
 
 /**
  * Synchronization related database functions 
@@ -106,7 +120,7 @@ public interface SynchronizationDAO {
      * @return SyncRecord A list containing all SyncRecords with the given states
      * @throws DAOException
      */
-    public List<SyncRecord> getSyncRecords(SyncRecordState[] states) throws DAOException;
+    public List<SyncRecord> getSyncRecords(SyncRecordState[] states, boolean inverse) throws DAOException;
 
     /**
      * Get all SyncRecords since a timestamp
@@ -141,4 +155,50 @@ public interface SynchronizationDAO {
      * @throws APIException
      */
     public void setGlobalProperty(String propertyName, String propertyValue) throws APIException;    
+
+    /**
+     * Create a new RemoteServer
+     * @param RemoteServer The RemoteServer to create
+     * @throws DAOException
+     */
+    public void createRemoteServer(RemoteServer server) throws DAOException;
+    
+    /**
+     * Update a RemoteServer
+     * @param RemoteServer The RemoteServer to update
+     * @throws DAOException
+     */
+    public void updateRemoteServer(RemoteServer server) throws DAOException;
+    
+    /**
+     * Delete a RemoteServer
+     * @param RemoteServer The RemoteServer to delete
+     * @throws DAOException
+     */
+    public void deleteRemoteServer(RemoteServer server) throws DAOException;
+    
+    /**
+     * 
+     * @param guid of the RemoteServer to retrieve
+     * @return RemoteServer The RemoteServer or null if not found
+     * @throws DAOException
+     */
+    public RemoteServer getRemoteServer(Integer serverId) throws DAOException;
+
+    /**
+     * 
+     * @param guid of the RemoteServer to retrieve
+     * @return RemoteServer The RemoteServer or null if not found
+     * @throws DAOException
+     */
+    public List<RemoteServer> getRemoteServers() throws DAOException;
+
+    /**
+     * 
+     * @param guid of the RemoteServer to retrieve
+     * @return RemoteServer The RemoteServer or null if not found
+     * @throws DAOException
+     */
+    public RemoteServer getParentServer() throws DAOException;
+
 }

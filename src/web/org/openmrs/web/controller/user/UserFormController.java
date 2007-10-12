@@ -187,8 +187,9 @@ public class UserFormController extends PersonFormController {
 			else {
 				us.updateUser(user);
 
-				if (!password.equals("") && user.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS)) {
-					log.debug("calling changePassword");
+				if (!password.equals("") && Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS)) {
+					if (log.isDebugEnabled())
+						log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
 					us.changePassword(user, password);
 				}
 				

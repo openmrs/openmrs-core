@@ -43,6 +43,7 @@ public class HibernateFormDAO implements
 	}
 	
 	/**
+	 * Returns the form object originally passed in, which will have been persisted.
 	 * @see org.openmrs.api.db.FormService#createForm(org.openmrs.Form)
 	 */
 	public Form createForm(Form form) throws DAOException {

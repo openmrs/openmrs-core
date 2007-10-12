@@ -1,0 +1,132 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
+package org.openmrs.synchronization.server;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.synchronization.SyncConstants;
+
+/**
+ *
+ */
+public class ServerConnection {
+
+    private static final Log log = LogFactory.getLog(ServerConnection.class);
+
+	public static ConnectionResponse test(String address, String username, String password) {
+		return sendExportedData(address, username, password, SyncConstants.TEST_MESSAGE); 
+	}
+
+	public static ConnectionResponse sendExportedData(RemoteServer server, String message) {
+		return sendExportedData(server.getAddress(), server.getUsername(), server.getPassword(), message);
+	}
+
+	public static ConnectionResponse sendExportedData(String address, String username, String password, String message) {
+
+		ConnectionResponse cr = null;
+
+		try {
+            cr = sendExportedData(address + SyncConstants.DATA_IMPORT_SERVLET,
+            		"username=" + URLEncoder.encode(username, SyncConstants.UTF8) 
+            		+ "&password=" + URLEncoder.encode(password, SyncConstants.UTF8)
+            		+ "&syncData=" + URLEncoder.encode(message, SyncConstants.UTF8));
+        } catch (UnsupportedEncodingException e) {
+            log.error("Unable to encode synchronization data as UTF-8 before sending to parent server", e);
+            e.printStackTrace();
+        }
+
+        return cr;
+	}
+	
+	public static ConnectionResponse sendExportedData(String postUrl, String formData) {
+		
+		ConnectionResponse connResponse = new ConnectionResponse();
+		connResponse.setErrorMessage("");
+		connResponse.setResponsePayload("");
+		connResponse.setState(ServerConnectionState.CONNECTION_FAILED);
+		
+		//System.setProperty("java.protocol.handler.pkgs", "javax.net.ssl");
+		//System.setProperty("javax.net.ssl.keyStore", WebConstants.OPENMRS_KEYSTORE);
+		//System.setProperty("javax.net.ssl.keyStorePassword", WebConstants.OPENMRS_KEYSTORE_PASSWORD);
+		//System.setProperty("javax.net.ssl.trustStore", WebConstants.OPENMRS_KEYSTORE);
+		//System.setProperty("javax.net.ssl.truststorePassword", WebConstants.OPENMRS_KEYSTORE_PASSWORD);
+		
+		// Make sure URL is verified through SSL...
+		HostnameVerifier hv = new HostnameVerifier() {
+		    public boolean verify(String urlHostName, SSLSession session) {
+		        System.out.println("Warning: URL Host: "+ urlHostName+ " vs. " + session.getPeerHost());
+		        return true;
+		    }
+		};
+		 
+		HttpsURLConnection.setDefaultHostnameVerifier(hv);
+		
+		StringBuffer buffer = new StringBuffer("");
+
+		System.out.println("SENDING POSTDATA: " + formData);
+		
+		try {
+			URL url = new URL(postUrl);
+			
+			HttpURLConnection urlcon = null;
+			if (url.getProtocol() == "https") {
+		         urlcon = (HttpsURLConnection)url.openConnection();
+			} else {
+		         urlcon = (HttpURLConnection)url.openConnection();
+			}
+			
+			urlcon.setRequestMethod(SyncConstants.POST_METHOD);
+			urlcon.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
+			urlcon.setDoOutput(true);
+			urlcon.setDoInput(true);
+			PrintWriter pout = new PrintWriter(new OutputStreamWriter(urlcon.getOutputStream(), SyncConstants.UTF8), true);
+			pout.print(formData);
+			pout.flush();
+			
+			InputStream in = urlcon.getInputStream();
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String line = "";
+			while ((line = br.readLine()) != null) {
+				buffer.append(line);
+			}
+	        connResponse.setResponsePayload(buffer.toString());
+	        connResponse.setState(ServerConnectionState.OK);		
+        } catch (MalformedURLException mue) {
+        	log.error("URL", mue);
+        	mue.printStackTrace();
+	        connResponse.setState(ServerConnectionState.MALFORMED_URL);		
+        } catch (Exception e) {
+        	// all other exceptions really just mean that the connection was bad
+	        log.error("Error while trying to connect to remote server at " + postUrl, e);
+	        e.printStackTrace();
+        }
+		        
+		return connResponse;
+	}
+}

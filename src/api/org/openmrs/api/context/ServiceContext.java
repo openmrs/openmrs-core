@@ -20,6 +20,7 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.SynchronizationService;
+import org.openmrs.api.SynchronizationIngestService;
 import org.openmrs.api.UserService;
 import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
@@ -386,7 +387,21 @@ public class ServiceContext {
 	public void setSynchronizationService(SynchronizationService synchronizationService) {
 	    setService(SynchronizationService.class, synchronizationService);
 	}
-	
+
+    /**
+     * @return synchronization ingest related services 
+     */
+    public SynchronizationIngestService getSynchronizationIngestService() {
+        return (SynchronizationIngestService)getService(SynchronizationIngestService.class);
+    }
+    
+    /**
+     * @param synchronizationIngestService the SynchronizationIngestService to set
+     */
+    public void setSynchronizationIngestService(SynchronizationIngestService synchronizationIngestService) {
+        setService(SynchronizationIngestService.class, synchronizationIngestService);
+    }    
+    
 	/**
 	 * Get the proxy factory object for the given Class
 	 * @param cls
@@ -559,6 +574,19 @@ public class ServiceContext {
 			refreshingContext.notifyAll();
 			refreshingContext = false;
 		}
+	}
+	
+	/**
+	 * Returns true/false whether startRefreshingContext() has been called
+	 * without a subsequent call to doneRefreshingContext() yet.  All methods
+	 * involved in starting/stopping a module should call this if a service
+	 * method is needed -- otherwise a deadlock will occur.
+	 * 
+	 * @return true/false whether the services are currently blocking waiting 
+	 * 			for a call to doneRefreshingContext() 
+	 */
+	public boolean isRefreshingContext() {
+		return refreshingContext.booleanValue();
 	}
 	
 }

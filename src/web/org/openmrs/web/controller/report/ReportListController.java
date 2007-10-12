@@ -73,12 +73,12 @@ public class ReportListController extends SimpleFormController {
 					//TODO convenience method deleteReport(Integer) ??
 					try {
 						as.deleteReport(rs.getReport(Integer.valueOf(p)));
-						if (!success.equals("")) success += "<br>";
+						if (!success.equals("")) success += "<br/>";
 						success += textReport + " " + p + " " + deleted;
 					}
 					catch (APIException e) {
 						log.warn("Error deleting report", e);
-						if (!error.equals("")) error += "<br>";
+						if (!error.equals("")) error += "<br/>";
 						error += textReport + " " + p + " " + notDeleted;
 					}
 				}

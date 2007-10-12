@@ -14,6 +14,8 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Person;
@@ -295,6 +297,16 @@ public interface PatientSetService {
 	@Transactional(readOnly=true)
 	public Map<Integer, Map<String, Object>> getCharacteristics(
 			PatientSet patients);
+
+	/**
+	 * Gets a map of patient identifiers by identifier type, indexed by patient primary key.
+	 * @param patients
+	 * @param type
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(PatientSet patients, PatientIdentifierType type);
+
 
 	/**
 	 * 

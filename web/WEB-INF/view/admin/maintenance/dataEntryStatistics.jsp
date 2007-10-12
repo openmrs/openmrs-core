@@ -2,13 +2,12 @@
 
 <openmrs:require privilege="View Data Entry Statistics" otherwise="/login.htm" redirect="/admin/maintenance/dataEntryStats.list" />
 
-<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
-<openmrs:htmlInclude file="/scripts/validation.js" />
-
-
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <%@ include file="localHeader.jsp" %>
+
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/validation.js" />
 
 <h2><spring:message code="DataEntryStatistics.title"/></h2>
 
@@ -42,7 +41,7 @@
 	<tr>
 		<td><spring:message code="DataEntryStatistics.groupBy"/>:</td>
 		<td>
-			<spring:bind path="command.groupBy">			
+			<spring:bind path="command.groupBy">
 				<select name="${status.expression}" width="10">
 					<option value="" <c:if test="${command.groupBy==''}">selected</c:if>></option>
 					<option value="location" <c:if test="${command.groupBy=='location'}">selected</c:if>><spring:message code="Encounter.location"/></option>
@@ -54,7 +53,7 @@
 	<tr>
 		<td><spring:message code="general.fromDate"/>:</td>
 		<td>
-			<spring:bind path="command.fromDate">			
+			<spring:bind path="command.fromDate">
 				<input type="text" name="${status.expression}" size="10" 
 					   value="${status.value}" onClick="showCalendar(this)" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
@@ -64,9 +63,19 @@
 	<tr>
 		<td><spring:message code="general.toDate"/>:</td>
 		<td>
-			<spring:bind path="command.toDate">			
+			<spring:bind path="command.toDate">
 				<input type="text" name="${status.expression}" size="10" 
 					   value="${status.value}" onClick="showCalendar(this)" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="DataEntryStatistics.hideAverageObs"/>:</td>
+		<td>
+			<spring:bind path="command.hideAverageObs">
+				<input type="hidden" name="_${status.expression}" />
+				<input type="checkbox" name="${status.expression}" <c:if test="${status.value}">checked</c:if> />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
 		</td>

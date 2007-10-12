@@ -90,12 +90,12 @@ public class DataExportListController extends SimpleFormController {
 						try {
 							report = (DataExportReportObject)rs.getReportObject(Integer.valueOf(id));
 							DataExportUtil.generateExport(report, null);
-							if (!success.equals("")) success += "<br>";
+							if (!success.equals("")) success += "<br/>";
 							success += textDataExport + " '" + report.getName() + "' " + generated;
 						}
 						catch (Exception e) {
 							log.warn("Error generating report object", e);
-							if (!error.equals("")) error += "<br>";
+							if (!error.equals("")) error += "<br/>";
 							if (report == null)
 								error += textDataExport + " #" + id + " " + notGenerated;
 							else
@@ -111,12 +111,12 @@ public class DataExportListController extends SimpleFormController {
 						//TODO convenience method deleteDataExport(Integer) ??
 						try {
 							as.deleteReportObject(Integer.valueOf(p));
-							if (!success.equals("")) success += "<br>";
+							if (!success.equals("")) success += "<br/>";
 							success += textDataExport + " " + p + " " + deleted;
 						}
 						catch (APIException e) {
 							log.warn("Error deleting report object", e);
-							if (!error.equals("")) error += "<br>";
+							if (!error.equals("")) error += "<br/>";
 							error += textDataExport + " " + p + " " + notDeleted;
 						}
 					}

@@ -13,14 +13,32 @@
 	session.removeAttribute(WebConstants.OPENMRS_ERROR_ARGS);
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
 		<openmrs:htmlInclude file="/openmrs.js" />
+		
+		<script type="text/javascript">
+			/* variable used in js to know the context path */
+			var openmrsContextPath = '${pageContext.request.contextPath}';
+		</script>
+		
+		<!--  Page Title : '${pageTitle}' 
+			OpenMRS Title: <spring:message code="openmrs.title"/>
+		-->
+		<c:choose>
+			<c:when test="${!empty pageTitle}">
+				<title>${pageTitle}</title>
+			</c:when>
+			<c:otherwise>
+				<title><spring:message code="openmrs.title"/></title>
+			</c:otherwise>
+		</c:choose>		
+		
 	</head>
 
-<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<body>
 	<div id="pageBody">
 		<div id="contentMinimal">
 			<c:if test="${msg != null}">

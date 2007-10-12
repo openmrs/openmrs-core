@@ -10,6 +10,17 @@
 
 <script language="JavaScript">
 	<!--
+
+		function showHideDiv(id) {
+			var div = document.getElementById(id);
+			if ( div ) {
+				if ( div.style.display != "none" ) {
+					div.style.display = "none";
+				} else { 
+					div.style.display = "";
+				}
+			}
+		}
 	
 		function doSubmit() {
 			document.getElementById("submitButton").disabled = true;
@@ -20,15 +31,54 @@
 	-->
 </script>
 
-<form method="post" enctype="multipart/form-data" onSubmit="return doSubmit();">
+<b class="boxHeader"><spring:message code="SynchronizationImport.import.from.file"/></b>
+<div class="box">
+	<table>
+		<tr>
+			<td>
+				<form method="post" enctype="multipart/form-data" onSubmit="return doSubmit();">
+				
+					<spring:message code="SynchronizationImport.filePrompt" />
+					
+					<input type="file" name="syncDataFile" value="" />
+					<input type="hidden" name="upload" value="true" />
+					<input type="submit" value="<spring:message code="SynchronizationImport.importData" />" id="submitButton" />
+				
+					<span id="infoText" style="display:none;"><spring:message code="SynchronizationImport.generatingResponse" /></span>
+				</form>
+			</td>
+		</tr>
+	</table>
+</div>
 
-	<spring:message code="SychronizationImport.filePrompt" />
+<br>
+&nbsp;&nbsp;<a href="javascript://" onclick="showHideDiv('pasteImport');">Import via copy/paste</a>
+
+<div id="pasteImport" style="display:none;">
+	<br>
+	<br>
 	
-	<input type="file" name="syncDataFile" value="" />
-	<input type="hidden" name="upload" value="true" />
-	<input type="submit" value="<spring:message code="SychronizationImport.importData" />" id="submitButton" />
-
-	<span id="infoText" style="display:none;"><spring:message code="SychronizationImport.generatingResponse" /></span>
-</form>
+	<b class="boxHeader"><spring:message code="SynchronizationImport.paste.data"/></b>
+	<div class="box">
+		<form method="post" action="synchronizationImport.list">
+			<table>
+				<tr>
+					<td align="right" valign="top">
+						<b><spring:message code="SynchronizationImport.paste.here" /></b>
+					</td>
+					<td align="left" valign="top">
+						<textarea name="syncData" rows="16" cols="80"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<input type="submit" value="<spring:message code="SynchronizationImport.importData" />" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

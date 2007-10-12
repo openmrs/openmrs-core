@@ -1,18 +1,29 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.synchronization.engine;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.openmrs.serial.Item;
-import org.openmrs.serial.IItem;
-import org.openmrs.serial.Record;
-import org.openmrs.serial.TimestampNormalizer;
+import org.openmrs.serialization.IItem;
+import org.openmrs.serialization.Item;
+import org.openmrs.serialization.Record;
+import org.openmrs.serialization.TimestampNormalizer;
+import org.openmrs.synchronization.SyncRecordState;
 
 /**
  * SyncRecord is a collection of sync items that represents a smallest transactional unit.
@@ -32,11 +43,11 @@ public class SyncRecord implements Serializable, IItem {
 
     public static final long serialVersionUID = 0L;
 
-    public Log log = LogFactory.getLog(this.getClass());
-
     // Fields
     private Integer recordId;
     private String guid = null;
+    private String creator = null;
+    private String databaseVersion = null;
     private Date timestamp = null;
     private int retryCount;
     private SyncRecordState state = SyncRecordState.NEW;
@@ -65,6 +76,24 @@ public class SyncRecord implements Serializable, IItem {
         this.guid = guid;
     }
 
+    // The guid of the creator of the record
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+    
+    // The database version used when creating this record
+    public String getDatabaseVersion() {
+        return databaseVersion;
+    }
+
+    public void setDatabaseVersion(String databaseVersion) {
+        this.databaseVersion = databaseVersion;
+    }
+    
     // timestamp of last operation
     public Date getTimestamp() {
         return timestamp;
@@ -97,6 +126,14 @@ public class SyncRecord implements Serializable, IItem {
         return items;
     }
 
+    public void addItem(SyncItem syncItem) {
+        if (items == null) {
+            items = new LinkedList<SyncItem>();
+        }
+        
+        items.add(syncItem);
+    }
+    
     public void setItems(List<SyncItem> items) {
         this.items = items;
     }
@@ -160,7 +197,7 @@ public class SyncRecord implements Serializable, IItem {
         if (itemsCollection.isEmpty()) {
             items = null;
         } else {
-            items = new ArrayList<SyncItem>();
+            items = new LinkedList<SyncItem>();
             List<Item> serItems = xml.getItems(itemsCollection);
             for (int i = 0; i < serItems.size(); i++) {
                 Item serItem = serItems.get(i);

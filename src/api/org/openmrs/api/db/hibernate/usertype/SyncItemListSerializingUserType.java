@@ -1,21 +1,36 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.db.hibernate.usertype;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
-import org.openmrs.serial.Item;
-import org.openmrs.serial.Package;
-import org.openmrs.serial.Record;
+import org.openmrs.serialization.Item;
+import org.openmrs.serialization.Package;
+import org.openmrs.serialization.Record;
 import org.openmrs.synchronization.engine.SyncItem;
 
 public class SyncItemListSerializingUserType implements UserType {
@@ -80,13 +95,30 @@ public class SyncItemListSerializingUserType implements UserType {
                 return null;
             } else {
                 //FIXME: length conversion from long to int might be a problem in theory. UTF8 as well. Better off with the Reader?
-                String content = clob.getSubString(1, (int)clob.length());
-             
-                List<SyncItem> items = new ArrayList<SyncItem>();
+
+            	// 2 Sep 2007 - Christian Allen - callen@pih.org
+            	// We need a workaround because clob.getSubString() and clob.length() throw an exception when used within the creating session
+                //String content = clob.getSubString(1, (int)clob.length());
+            	
+            	// Here's the workaround:
+            	StringBuilder content = new StringBuilder();
+            	String line;
+
+                BufferedReader br = new BufferedReader( rs.getCharacterStream( names[0] ) );
+                try {
+                	while( (line = br.readLine()) != null ) {
+                		content.append(line);
+                	}
+                } catch (IOException e) {
+                	throw new SQLException( e.toString() );
+                }
+                // End workaround
+                
+                List<SyncItem> items = new LinkedList<SyncItem>();
                 
                 Package pkg = new Package();
                 try {
-                    Record record = pkg.createRecordFromString(content);
+                    Record record = pkg.createRecordFromString(content.toString());
                     Item root = record.getRootItem();
                     List<Item> itemsToDeSerialize = record.getItems(root);
                     
@@ -118,7 +150,7 @@ public class SyncItemListSerializingUserType implements UserType {
         } else {
             List<SyncItem> items = (List<SyncItem>) value;
 
-            org.openmrs.serial.Package pkg = new Package();
+            org.openmrs.serialization.Package pkg = new Package();
             Record record;
             try {
                 record = pkg.createRecordForWrite("items");

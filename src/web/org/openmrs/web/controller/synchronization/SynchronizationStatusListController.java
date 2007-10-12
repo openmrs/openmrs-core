@@ -1,8 +1,20 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.web.controller.synchronization;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,23 +33,24 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
-import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.serial.Item;
-import org.openmrs.serial.Record;
+import org.openmrs.serialization.Item;
+import org.openmrs.serialization.Record;
+import org.openmrs.serialization.TimestampNormalizer;
+import org.openmrs.synchronization.SyncConstants;
+import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.SyncTransmissionState;
+import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.engine.SyncRecordState;
 import org.openmrs.synchronization.engine.SyncSource;
 import org.openmrs.synchronization.engine.SyncSourceJournal;
-import org.openmrs.synchronization.engine.SyncStrategyFile;
 import org.openmrs.synchronization.engine.SyncTransmission;
 import org.openmrs.synchronization.ingest.SyncDeserializer;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.openmrs.synchronization.ingest.SyncRecordIngest;
 import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.WebUtil;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -78,53 +91,44 @@ public class SynchronizationStatusListController extends SimpleFormController {
 
     	ModelAndView result = new ModelAndView(new RedirectView(getSuccessView()));
     	
-        // TODO - replace with privilage check
-        if (!Context.isAuthenticated())
-            throw new APIAuthenticationException("Not authenticated!");
+        // TODO - replace with privilege check
+        if (!Context.isAuthenticated()) throw new APIAuthenticationException("Not authenticated!");
         
         HttpSession httpSession = request.getSession();
-        String view = getFormView();
         String success = "";
         String error = "";
         MessageSourceAccessor msa = getMessageSourceAccessor();
         
         String action = ServletRequestUtils.getStringParameter(request, "action", "");
         
-        try {
-            // handle transmission generation
-            if ("createTx".equals(action)) {
-                SyncSource source = new SyncSourceJournal();
-                SyncStrategyFile strategy = new SyncStrategyFile();
-                //SyncTransmission tx = strategy.createSyncTransmission(source);
-                SyncTransmission tx = strategy.createStateBasedSyncTransmission(source);
-                //Object[] args = new Object[] {tx.getFileName()};
-                
+        // handle transmission generation
+        if ("createTx".equals(action)) {            	
+            try {
+            	// we are creating a sync-transmission, so start by generating a SyncTransmission object
+            	SyncTransmission tx = SyncUtil.createSyncTransmission();
+                String toTransmit = tx.getFileOutput();
+
                 // Write sync transmission to response
-                InputStream in = new ByteArrayInputStream(tx.getFileOutput().getBytes());
+                InputStream in = new ByteArrayInputStream(toTransmit.getBytes());
                 response.setContentType("text/xml; charset=utf-8");
                 response.setHeader("Content-Disposition", "attachment; filename=" + tx.getFileName() + ".xml");
                 OutputStream out = response.getOutputStream();
                 IOUtils.copy(in, out);
-                //response.flushBuffer();
                 out.flush();
                 out.close();
-                
-                // let's update SyncRecords to reflect the fact that we now have tried to sync them
-                for ( SyncRecord record : tx.getSyncRecords() ) {
-                	record.setRetryCount(record.getRetryCount() + 1);
-                	record.setState(SyncRecordState.SENT);
-                	Context.getSynchronizationService().updateSyncRecord(record);
-                }
-                                
-                // don't return a model/view
-                result = null;
-                
-                //success = msa.getMessage("SynchronizationStatus.createTx.success", args);
-            } else if ( "uploadResponse".equals(action) && request instanceof MultipartHttpServletRequest) {
 
+                // don't return a model/view - we'll need to return a file instead.
+                result = null;
+            } catch(Exception e) {
+                error = msa.getMessage("SynchronizationStatus.createTx.error");  
+            }
+        } else if ( "uploadResponse".equals(action) && request instanceof MultipartHttpServletRequest) {
+
+        	try {
             	String contents = "";
-            	
-    			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+
+            	// first, get contents of file that is being uploaded.  it is clear we are uploading a response from parent at this point
+            	MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
     			MultipartFile multipartSyncFile = multipartRequest.getFile("syncResponseFile");
     			if (multipartSyncFile != null && !multipartSyncFile.isEmpty()) {
     				InputStream inputStream = null;
@@ -149,26 +153,44 @@ public class SynchronizationStatusListController extends SimpleFormController {
     					}
     				}
     			}
-        		
-        		if ( contents.length() > 0 ) {
+
+                if ( contents.length() > 0 ) {
         			SyncTransmissionResponse str = SyncDeserializer.xmlToSyncTransmissionResponse(contents);
         			
-        			if ( str == null ) log.debug("st is null");
+        			int numCommitted = 0;
+        			int numAlreadyCommitted = 0;
+        			int numFailed = 0;
+        			int numOther = 0;
+        			
+        			if ( str.getSyncImportRecords() == null ) log.debug("No records to process in response");
         			else {
         				// process each incoming syncImportRecord
         				for ( SyncImportRecord importRecord : str.getSyncImportRecords() ) {
-        					SyncRecord record = Context.getSynchronizationService().getSyncRecord(importRecord.getGuid());
-        					record.setState(importRecord.getState());
-        					Context.getSynchronizationService().updateSyncRecord(record);
+        					SyncRecordIngest.processSyncImportRecord(importRecord);
+        					if ( importRecord.getState().equals(SyncRecordState.COMMITTED )) numCommitted++;
+        					else if ( importRecord.getState().equals(SyncRecordState.ALREADY_COMMITTED )) numAlreadyCommitted++;
+        					else if ( importRecord.getState().equals(SyncRecordState.FAILED )) numFailed++;
+        					else numOther++;
         				}
         			}
+        			
+        			try {
+        				// store this file on filesystem too
+        				str.CreateFile(true, SyncConstants.DIR_JOURNAL);
+        			} catch ( Exception e ) {
+        				log.error("Unable to create file to store SyncTransmissionResponse: " + str.getFileName());
+        				e.printStackTrace();
+        			}
+        			
+        			Object[] args = {numCommitted,numFailed,numAlreadyCommitted,numOther};
+        				
+        			success = msa.getMessage("SynchronizationStatus.uploadResponse.success", args);
+        		} else {
+        			error = msa.getMessage("SynchronizationStatus.uploadResponse.fileEmpty");
         		}
-
+            } catch(Exception e) {
+                error = msa.getMessage("SynchronizationStatus.uploadResponse.error");  
             }
-        }
-        catch(Exception e) {
-            Object[] args = new Object[] {e.getStackTrace()};
-            error = msa.getMessage("SynchronizationStatus.createTx.error",args);  
         }
         		
         if (!success.equals(""))
@@ -194,8 +216,11 @@ public class SynchronizationStatusListController extends SimpleFormController {
 
         // only fill the Object if the user has authenticated properly
         if (Context.isAuthenticated()) {
-            SynchronizationService ss = Context.getSynchronizationService();
-            recordList.addAll(ss.getSyncRecords());
+            SyncSource source = new SyncSourceJournal();
+            recordList = source.getChanged();
+        	
+        	//SynchronizationService ss = Context.getSynchronizationService();
+            //recordList.addAll(ss.getSyncRecords());
         }
 
         return recordList;
@@ -206,14 +231,15 @@ public class SynchronizationStatusListController extends SimpleFormController {
 		Map<String,Object> ret = new HashMap<String,Object>();
 		
 		Map<String,String> recordTypes = new HashMap<String,String>();
-		Map<String,String> itemGuids = new HashMap<String,String>();
-		Map<String,String> itemInfo = new HashMap<String,String>();
-		Map<String,String> itemInfoKeys = new HashMap<String,String>();
+		Map<Object,String> itemTypes = new HashMap<Object,String>();
+		Map<Object,String> itemGuids = new HashMap<Object,String>();
+		//Map<String,String> itemInfo = new HashMap<String,String>();
+		//Map<String,String> itemInfoKeys = new HashMap<String,String>();
         List<SyncRecord> recordList = (ArrayList<SyncRecord>)obj;
 
         //itemInfoKeys.put("Patient", "gender,birthdate");
-        itemInfoKeys.put("PersonName", "name");
-        itemInfoKeys.put("User", "username");
+        //itemInfoKeys.put("PersonName", "name");
+        //itemInfoKeys.put("User", "username");
         
         // warning: right now we are assuming there is only 1 item per record
         for ( SyncRecord record : recordList ) {
@@ -222,28 +248,49 @@ public class SynchronizationStatusListController extends SimpleFormController {
 				Record xml = Record.create(syncItem);
 				Item root = xml.getRootItem();
 				String className = root.getNode().getNodeName().substring("org.openmrs.".length());
-				recordTypes.put(record.getGuid(), className);
-				String itemInfoKey = itemInfoKeys.get(className);
+				itemTypes.put(item.getKey().getKeyValue(), className);
+				if ( recordTypes.get(record.getGuid()) == null ) recordTypes.put(record.getGuid(), className);
+				//String itemInfoKey = itemInfoKeys.get(className);
 				
-				// now we have to go through the item nodes to find the real GUID that we want
+				// now we have to go through the item child nodes to find the real GUID that we want
 				NodeList nodes = root.getNode().getChildNodes();
 				for ( int i = 0; i < nodes.getLength(); i++ ) {
 					Node n = nodes.item(i);
 					String propName = n.getNodeName();
 					if ( propName.equalsIgnoreCase("guid") ) {
-						itemGuids.put(record.getGuid(), n.getTextContent());
+						itemGuids.put(item.getKey().getKeyValue(), n.getTextContent());
 					}
+					/*
 					if ( propName.equalsIgnoreCase(itemInfoKey) ) {
 						itemInfo.put(record.getGuid(), n.getTextContent());
 					}
+					*/
 				}
 			}
         	
         }
+ 
+        // syncViaWeb error messages
+        MessageSourceAccessor msa = getMessageSourceAccessor();
+        Map<String,String> state = new HashMap<String,String>();
+        state.put(SyncTransmissionState.AUTH_FAILED.toString(), msa.getMessage("SynchronizationStatus.transmission.noAuthError"));
+        state.put(SyncTransmissionState.CERTIFICATE_FAILED.toString(), msa.getMessage("SynchronizationStatus.transmission.noCertError"));
+        state.put(SyncTransmissionState.CONNECTION_FAILED.toString(), msa.getMessage("SynchronizationStatus.transmission.noConnectionError"));
+        state.put(SyncTransmissionState.MALFORMED_URL.toString(), msa.getMessage("SynchronizationStatus.transmission.badUrl"));
+        state.put(SyncTransmissionState.NO_PARENT_DEFINED.toString(), msa.getMessage("SynchronizationStatus.transmission.noParentError"));
+        state.put(SyncTransmissionState.RESPONSE_NOT_UNDERSTOOD.toString(), msa.getMessage("SynchronizationStatus.transmission.corruptResponseError"));
+        state.put(SyncTransmissionState.SEND_FAILED.toString(), msa.getMessage("SynchronizationStatus.transmission.sendError"));
+        state.put(SyncTransmissionState.TRANSMISSION_CREATION_FAILED.toString(), msa.getMessage("SynchronizationStatus.transmission.createError"));
+        state.put(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD.toString(), msa.getMessage("SynchronizationStatus.transmission.corruptTxError"));
+        state.put(SyncTransmissionState.OK_NOTHING_TO_DO.toString(), msa.getMessage("SynchronizationStatus.transmission.okNoSyncNeeded"));
         
+        ret.put("transmissionState", state.entrySet());
         ret.put("recordTypes", recordTypes);
+        ret.put("itemTypes", itemTypes);
         ret.put("itemGuids", itemGuids);
-        ret.put("itemInfo", itemInfo);
+        //ret.put("itemInfo", itemInfo);
+        ret.put("parent", Context.getSynchronizationService().getParentServer());
+        ret.put("syncDateDisplayFormat", TimestampNormalizer.DATETIME_DISPLAY_FORMAT);
         
 	    return ret;
     }

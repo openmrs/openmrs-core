@@ -32,6 +32,8 @@ public interface PatientService {
 
 	public PatientIdentifier createPatientIdentifier(PatientIdentifier patientIdentifier) throws APIException;
 
+	public PatientIdentifier createPatientIdentifierSync(PatientIdentifier patientIdentifier) throws APIException;
+
 	/**
 	 * Get patient by internal identifier
 	 * 
@@ -162,6 +164,9 @@ public interface PatientService {
 	 * @throws APIException
 	 */
 	public void updatePatientIdentifier(PatientIdentifier pi)
+			throws APIException;
+
+	public void updatePatientIdentifierSync(PatientIdentifier pi)
 			throws APIException;
 
 	/**

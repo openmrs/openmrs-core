@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.synchronization.engine;
 
 import java.util.List;
@@ -23,7 +36,6 @@ public class SyncStrategyFile {
     public SyncTransmission createSyncTransmission(SyncSource source) {
 
         SyncTransmission tx = new SyncTransmission();
-        
         List<SyncRecord> changeset = null;
         
         //retrieve value of the last sync timestamps
@@ -35,9 +47,11 @@ public class SyncStrategyFile {
         //get changeset for sourceA
         changeset = this.getChangeset(source, lastSyncLocal,lastSyncLocalNew);
         
+        String sourceGuid = source.getSyncSourceGuid();
+        
         //pack it into transmission
-        SyncTransmission syncTx = new SyncTransmission(changeset);
-        syncTx.CreateFile();
+        SyncTransmission syncTx = new SyncTransmission(sourceGuid,changeset);
+        syncTx.createFile();
         
         //set new SyncPoint
         source.setLastSyncLocal(lastSyncLocalNew);
@@ -45,28 +59,21 @@ public class SyncStrategyFile {
         return syncTx;
     }
 
-    public SyncTransmission createStateBasedSyncTransmission(SyncSource source) {
+    public SyncTransmission createStateBasedSyncTransmission(SyncSource source, boolean writeFileToo) {
 
         SyncTransmission tx = new SyncTransmission();
         
         List<SyncRecord> changeset = null;
         
-        //retrieve value of the last sync timestamps
-        SyncPoint lastSyncLocal = source.getLastSyncLocal();
-        
-        //establish the 'new' sync point; this will be new sync local after transmission was 'exported'
-        SyncPoint lastSyncLocalNew = source.moveSyncPoint();
-
         //get changeset for sourceA
         changeset = this.getStateBasedChangeset(source);
         
+        String sourceGuid = source.getSyncSourceGuid();
+        
         //pack it into transmission
-        SyncTransmission syncTx = new SyncTransmission(changeset);
-        syncTx.CreateFile();
-        
-        //set new SyncPoint
-        source.setLastSyncLocal(lastSyncLocalNew);
-        
+        SyncTransmission syncTx = new SyncTransmission(sourceGuid,changeset);
+        syncTx.createFile(writeFileToo);
+                
         return syncTx;
     }
 

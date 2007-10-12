@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 /**
  * PersonName
  */
-public class PersonName implements java.io.Serializable, Cloneable, Comparable<PersonName>, ISynchronizable {
+public class PersonName implements java.io.Serializable, Cloneable, Comparable<PersonName>, Synchronizable {
 
 	public static final long serialVersionUID = 4353L;
 

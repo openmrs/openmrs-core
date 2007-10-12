@@ -23,6 +23,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 
 public class ForEachRecordTag extends BodyTagSupport {
@@ -34,6 +35,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 	private String name;
 	private Object select;
 	private String reportObjectType;
+	private String conceptSet;
 	private Iterator records;
 
 	public int doStartTag() {
@@ -49,6 +51,10 @@ public class ForEachRecordTag extends BodyTagSupport {
 		else if (name.equals("relationshipType")) {
 			PersonService ps = Context.getPersonService();
 			records = ps.getRelationshipTypes().iterator();
+		}
+		else if (name.equals("encounterType")) {
+			EncounterService es = Context.getEncounterService();
+			records = es.getEncounterTypes().iterator();
 		}
 		else if (name.equals("location")) {
 			EncounterService es = Context.getEncounterService();
@@ -96,9 +102,22 @@ public class ForEachRecordTag extends BodyTagSupport {
 			List<ProgramWorkflowState> ret = Context.getProgramWorkflowService().getStates();
 			records = ret.iterator();
 		}
+		else if (name.equals("workflowProgram")) {
+			List<org.openmrs.Program> ret = Context.getProgramWorkflowService().getPrograms();
+			records = ret.iterator();
+		}
 		else if (name.equals("role")) {
 			List<Role> ret = Context.getUserService().getRoles();
 			records = ret.iterator();
+		}
+		else if (name.equals("conceptSet")) {
+			if (conceptSet == null)
+				throw new IllegalArgumentException("Must specify conceptSet");
+			Concept c = OpenmrsUtil.getConceptByIdOrName(conceptSet);
+			if (c == null)
+				throw new IllegalArgumentException("Can't find conceptSet " + conceptSet);
+			List<Concept> list = Context.getConceptService().getConceptsInSet(c);
+			records = list.iterator();
 		}
 		else {
 			log.error(name + " not found in ForEachRecord list");
@@ -202,5 +221,13 @@ public class ForEachRecordTag extends BodyTagSupport {
 	public void setReportObjectType(String reportObjectType) {
 		this.reportObjectType = reportObjectType;
 	}
+
+	public String getConceptSet() {
+    	return conceptSet;
+    }
+
+	public void setConceptSet(String conceptSet) {
+    	this.conceptSet = conceptSet;
+    }
 	
 }

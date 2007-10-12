@@ -32,6 +32,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		private String encUserColumn;
 		private String orderUserColumn;
 		private String groupBy;
+		private Boolean hideAverageObs;
 		
 		public StatisticsCommand() { }
 		public Date getFromDate() {
@@ -70,6 +71,12 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		public void setGroupBy(String groupBy) {
 			this.groupBy = groupBy;
 		}
+		public Boolean getHideAverageObs() {
+        	return hideAverageObs;
+        }
+		public void setHideAverageObs(Boolean hideAverageObs) {
+        	this.hideAverageObs = hideAverageObs;
+        }
 	}
 	
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
@@ -93,7 +100,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		String encUserColumn = ret.getEncUserColumn();
 		String orderUserColumn = ret.getOrderUserColumn();
 		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(ret.getFromDate(), toDateToUse, encUserColumn, orderUserColumn, ret.getGroupBy());
-		DataTable table = DataEntryStatistic.tableByUserAndType(stats);
+		DataTable table = DataEntryStatistic.tableByUserAndType(stats, ret.getHideAverageObs());
 		ret.setTable(table);
 		
 		return ret;
@@ -105,7 +112,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		String encUserColumn = command.getEncUserColumn();
 		String orderUserColumn = command.getOrderUserColumn();
 		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(command.getFromDate(), toDateToUse, encUserColumn, orderUserColumn, command.getGroupBy());
-		DataTable table = DataEntryStatistic.tableByUserAndType(stats);
+		DataTable table = DataEntryStatistic.tableByUserAndType(stats, command.getHideAverageObs());
 		command.setTable(table);
 		return showForm(request, response, errors);
 	}

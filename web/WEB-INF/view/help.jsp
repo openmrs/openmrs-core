@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<spring:message var="pageTitle" code="help.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <h2><spring:message code="help.title"/></h2>

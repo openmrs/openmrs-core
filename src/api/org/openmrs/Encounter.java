@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Encounter 
@@ -12,7 +12,7 @@ import org.openmrs.synchronization.ISynchronizable;
  * @author Ben Wolfe
  * @version 1.0
  */
-public class Encounter implements java.io.Serializable, ISynchronizable {
+public class Encounter implements java.io.Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 7844L;
 

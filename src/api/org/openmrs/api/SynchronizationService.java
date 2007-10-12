@@ -1,12 +1,26 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api;
 
 import java.util.Date;
 import java.util.List;
 
 import org.openmrs.annotation.Authorized;
+import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.engine.SyncRecordState;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
+import org.openmrs.synchronization.server.RemoteServer;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -17,7 +31,7 @@ public interface SynchronizationService {
      * @param SyncRecord The SyncRecord to create
      * @throws APIException
      */
-    @Authorized({"Manage Synchronization Records"})
+    //@Authorized({"Manage Synchronization Records"})
     public void createSyncRecord(SyncRecord record) throws APIException;
     
     /**
@@ -25,7 +39,7 @@ public interface SynchronizationService {
      * @param SyncRecord The SyncRecord to update
      * @throws APIException
      */
-    @Authorized({"Manage Synchronization Records"})
+    //@Authorized({"Manage Synchronization Records"})
     public void updateSyncRecord(SyncRecord record) throws APIException;
     
     /**
@@ -33,7 +47,7 @@ public interface SynchronizationService {
      * @param SyncRecord The SyncRecord to delete
      * @throws APIException
      */
-    @Authorized({"Manage Synchronization Records"})
+    //@Authorized({"Manage Synchronization Records"})
     public void deleteSyncRecord(SyncRecord record) throws APIException;
 
     /**
@@ -42,13 +56,13 @@ public interface SynchronizationService {
      * @return SyncRecord The SyncRecord or null if not found
      * @throws APIException
      */
-    @Authorized({"View Synchronization Records"})
+    //@Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public SyncRecord getSyncRecord(String guid) throws APIException;
 
     /**
      * 
-     * @return SyncRecord The lastest SyncRecord or null if not found
+     * @return SyncRecord The latest SyncRecord or null if not found
      * @throws APIException
      */
     @Authorized({"View Synchronization Records"})
@@ -94,7 +108,7 @@ public interface SynchronizationService {
      * @return SyncRecord The first SyncRecord matching the criteria, or null if none matches
      * @throws APIException
      */
-    @Authorized({"View Synchronization Records"})
+    //@Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public SyncRecord getFirstSyncRecordInQueue() throws APIException;
     
@@ -103,7 +117,7 @@ public interface SynchronizationService {
      * @return SyncRecord A list containing all SyncRecords
      * @throws APIException
      */
-    @Authorized({"View Synchronization Records"})
+    //@Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public List<SyncRecord> getSyncRecords() throws APIException;
     
@@ -113,7 +127,7 @@ public interface SynchronizationService {
      * @return SyncRecord A list containing all SyncRecords with the given state
      * @throws APIException
      */
-    @Authorized({"View Synchronization Records"})
+    //@Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public List<SyncRecord> getSyncRecords(SyncRecordState state) throws APIException;
 
@@ -128,12 +142,22 @@ public interface SynchronizationService {
     public List<SyncRecord> getSyncRecords(SyncRecordState[] states) throws APIException;
 
     /**
+     * Get all SyncRecords in a specific SyncRecordStates
+     * @param states SyncRecordStates for the SyncRecords to be returned
+     * @return SyncRecord A list containing all SyncRecords with the given states
+     * @throws APIException
+     */
+    @Authorized({"View Synchronization Records"})
+    @Transactional(readOnly=true)
+    public List<SyncRecord> getSyncRecords(SyncRecordState[] states, boolean inverse) throws APIException;
+
+    /**
      * Get all SyncRecords after a given timestamp
      * @param from Timestamp specifying lower bound, not included.
      * @return SyncRecord A list containing all SyncRecords with a timestamp after the given timestamp
      * @throws APIException
      */
-    @Authorized({"View Synchronization Records"})
+    //Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public List<SyncRecord> getSyncRecordsSince(Date from) throws APIException;
     
@@ -144,19 +168,19 @@ public interface SynchronizationService {
      * @return SyncRecord A list containing all SyncRecords with a timestamp between the from timestamp and up to and including the to timestamp
      * @throws APIException
      */
-    @Authorized({"View Synchronization Records"})
+    //@Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public List<SyncRecord> getSyncRecordsBetween(Date from, Date to) throws APIException;
 
     
     /**
      * 
-     * Retrieve value of given global property using synchronization data access meachnisms.
+     * Retrieve value of given global property using synchronization data access mechanisms.
      * 
      * @param propertyName
      * @return
      */
-    @Authorized({"View Synchronization Records"})
+    //@Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)    
     public String getGlobalProperty(String propertyName) throws APIException;
     
@@ -166,6 +190,61 @@ public interface SynchronizationService {
      * @param propertyValue String specifying property value to be set.
      * @throws APIException
      */
-    @Authorized({"Manage Synchronization Records"})
+    //@Authorized({"Manage Synchronization Records"})
     public void setGlobalProperty(String propertyName, String propertyValue) throws APIException;
+
+
+    /**
+     * Create a new SyncRecord
+     * @param SyncRecord The SyncRecord to create
+     * @throws APIException
+     */
+    @Authorized({"Manage Synchronization Servers"})
+    public void createRemoteServer(RemoteServer server) throws APIException;
+    
+    /**
+     * Update a SyncRecord
+     * @param SyncRecord The SyncRecord to update
+     * @throws APIException
+     */
+    @Authorized({"Manage Synchronization Servers"})
+    public void updateRemoteServer(RemoteServer server) throws APIException;
+    
+    /**
+     * Delete a SyncRecord
+     * @param SyncRecord The SyncRecord to delete
+     * @throws APIException
+     */
+    @Authorized({"Manage Synchronization Servers"})
+    public void deleteRemoteServer(RemoteServer server) throws APIException;
+
+    /**
+     * 
+     * @param guid of the SyncRecord to retrieve
+     * @return SyncRecord The SyncRecord or null if not found
+     * @throws APIException
+     */
+    @Authorized({"View Synchronization Servers"})
+    @Transactional(readOnly=true)
+    public RemoteServer getRemoteServer(Integer serverId) throws APIException;
+
+    /**
+     * 
+     * @param guid of the SyncRecord to retrieve
+     * @return SyncRecord The SyncRecord or null if not found
+     * @throws APIException
+     */
+    @Authorized({"View Synchronization Servers"})
+    @Transactional(readOnly=true)
+    public List<RemoteServer> getRemoteServers() throws APIException;
+
+    /**
+     * 
+     * @param guid of the SyncRecord to retrieve
+     * @return SyncRecord The SyncRecord or null if not found
+     * @throws APIException
+     */
+    @Authorized({"View Synchronization Servers"})
+    @Transactional(readOnly=true)
+    public RemoteServer getParentServer() throws APIException;
 }

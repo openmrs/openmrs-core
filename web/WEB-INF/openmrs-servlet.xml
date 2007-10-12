@@ -141,6 +141,9 @@
 				<prop key="admin/maintenance/dataEntryStats.list">dataEntryStatsController</prop>
 				<prop key="admin/synchronization/synchronizationStatus.list">synchronizationStatusListController</prop>
 				<prop key="admin/synchronization/synchronizationImport.list">synchronizationImportListController</prop>
+				<prop key="admin/synchronization/synchronizationHistory.list">synchronizationHistoryListController</prop>
+				<prop key="admin/synchronization/synchronizationConfig.list">synchronizationConfigListController</prop>
+				<prop key="admin/synchronization/synchronizationHelp.list">synchronizationHelpListController</prop>
 				<prop key="admin/modules/module.list">moduleListController</prop>
 				<prop key="admin/modules/moduleProperties.form">modulePropertiesFormController</prop>
 
@@ -210,7 +213,7 @@
 	<bean id="obsForm" class="org.openmrs.web.controller.observation.ObsFormController">
 		<property name="commandName"><value>obs</value></property>
 		<property name="formView"><value>/admin/observations/obsForm</value></property>
-		<property name="successView"><value>/@WEBAPP.NAME@/admin/encounters/encounter.form</value></property>
+		<property name="successView"><value>../encounters/encounter.form</value></property>
 	</bean>
 
 	<!--this is the optional method of declaring values in the constructor -->
@@ -349,7 +352,7 @@
 		<property name="commandName"><value>patient</value></property>
 		<property name="commandClass"><value>org.openmrs.web.controller.patient.ShortPatientModel</value></property>
 		<property name="formView"><value>/admin/patients/newPatientForm</value></property>
-		<property name="successView"><value>/@WEBAPP.NAME@/patientDashboard.form</value></property>
+		<property name="successView"><value>../../patientDashboard.form</value></property>
 	</bean>
 	<!-- ** /New Patient ** -->
 
@@ -1140,6 +1143,24 @@
 		<property name="formView"><value>/admin/synchronization/synchronizationImportList</value></property>
 		<property name="successView"><value>synchronizationImport.list</value></property>
 	</bean>
+
+	<bean id="synchronizationHistoryListController"  class="org.openmrs.web.controller.synchronization.SynchronizationHistoryListController">
+		<property name="commandName"><value>synchronizationHistoryList</value></property>
+		<property name="formView"><value>/admin/synchronization/synchronizationHistoryList</value></property>
+		<property name="successView"><value>synchronizationHistory.list</value></property>
+	</bean>
+
+	<bean id="synchronizationConfigListController"  class="org.openmrs.web.controller.synchronization.SynchronizationConfigListController">
+		<property name="commandName"><value>synchronizationConfigList</value></property>
+		<property name="formView"><value>/admin/synchronization/synchronizationConfigList</value></property>
+		<property name="successView"><value>synchronizationConfig.list</value></property>
+	</bean>
+
+	<bean id="synchronizationHelpListController"  class="org.openmrs.web.controller.synchronization.SynchronizationHelpListController">
+		<property name="commandName"><value>synchronizationHelpList</value></property>
+		<property name="formView"><value>/admin/synchronization/synchronizationHelpList</value></property>
+		<property name="successView"><value>synchronizationHelp.list</value></property>
+	</bean>
   
 	<!-- ======================================== -->
 
@@ -1460,8 +1481,8 @@
 
 	<!-- ADDRESS LAYOUT SUPPORT -->
 
-	<bean id="addressSupport" class="org.openmrs.layout.address.AddressSupport">
-		<property name="defaultLayoutFormat"><value>@ADDRESS.FORMAT@</value></property>
+	<bean id="addressSupport" class="org.openmrs.layout.web.address.AddressSupport">
+		<property name="defaultLayoutFormat"><value>US</value></property>
 		<property name="layoutTemplates">
 			<list>
 				<ref bean="addressTemplateRwanda" />
@@ -1490,7 +1511,7 @@
 		</property>
 	</bean>
 
-	<bean id="addressTemplateRwanda" class="org.openmrs.layout.address.AddressTemplate">
+	<bean id="addressTemplateRwanda" class="org.openmrs.layout.web.address.AddressTemplate">
 		<property name="displayName"><value>Rwandan Address Format</value></property>
 		<property name="codeName"><value>rw</value></property>
 		<property name="country"><value>Rwanda</value></property>
@@ -1528,7 +1549,7 @@
 		</property>
 	</bean>
 
-	<bean id="addressTemplateUS" class="org.openmrs.layout.address.AddressTemplate">
+	<bean id="addressTemplateUS" class="org.openmrs.layout.web.address.AddressTemplate">
 		<property name="displayName"><value>US Address Format</value></property>
 		<property name="codeName"><value>us</value></property>
 		<property name="country"><value>USA</value></property>
@@ -1564,7 +1585,7 @@
 		</property>
 	</bean>
 
-	<bean id="addressTemplateGeneral" class="org.openmrs.layout.address.AddressTemplate">
+	<bean id="addressTemplateGeneral" class="org.openmrs.layout.web.address.AddressTemplate">
 		<property name="displayName"><value>General Address Format</value></property>
 		<property name="codeName"><value>general</value></property>
 		<property name="country"><value></value></property>
@@ -1602,7 +1623,7 @@
 		</property>
 	</bean>
 
-	<bean id="addressTemplateKenya" class="org.openmrs.layout.address.AddressTemplate">
+	<bean id="addressTemplateKenya" class="org.openmrs.layout.web.address.AddressTemplate">
 		<property name="displayName"><value>Kenyan Address Format</value></property>
 		<property name="codeName"><value>ka</value></property>
 		<property name="country"><value>Kenya</value></property>
@@ -1665,7 +1686,7 @@
 		</property>
 	</bean>
 
-	<bean id="addressTemplateLesotho" class="org.openmrs.layout.address.AddressTemplate">
+	<bean id="addressTemplateLesotho" class="org.openmrs.layout.web.address.AddressTemplate">
 		<property name="displayName"><value>Lesotho Address Format</value></property>
 		<property name="codeName"><value>ls</value></property>
 		<property name="country"><value>Lesotho</value></property>
@@ -1696,8 +1717,8 @@
 
 	<!-- NAME LAYOUT SUPPORT -->
 
-	<bean id="nameSupport" class="org.openmrs.layout.name.NameSupport">
-		<property name="defaultLayoutFormat"><value>@NAME.FORMAT@</value></property>
+	<bean id="nameSupport" class="org.openmrs.layout.web.name.NameSupport">
+		<property name="defaultLayoutFormat"><value>short</value></property>
 		<property name="layoutTemplates">
 			<list>
 				<ref bean="nameTemplateShort" />
@@ -1718,7 +1739,7 @@
 		</property>
 	</bean>
 
-	<bean id="nameTemplateShort" class="org.openmrs.layout.name.NameTemplate">
+	<bean id="nameTemplateShort" class="org.openmrs.layout.web.name.NameTemplate">
 		<property name="displayName"><value>Short Name Format</value></property>
 		<property name="codeName"><value>short</value></property>
 		<property name="nameMappings">
@@ -1744,7 +1765,7 @@
 		</property>
 	</bean>
 	
-	<bean id="nameTemplateLong" class="org.openmrs.layout.name.NameTemplate">
+	<bean id="nameTemplateLong" class="org.openmrs.layout.web.name.NameTemplate">
 		<property name="displayName"><value>Short Name Format</value></property>
 		<property name="codeName"><value>long</value></property>
 		<property name="nameMappings">
@@ -1785,7 +1806,7 @@
 
 	<!-- SUMMARY SPEC -->
 	<bean id="patientSummarySpecification"
-		class="org.openmrs.summary.PatientSummarySpecification">
+		class="org.openmrs.summary.web.PatientSummarySpecification">
 		<property name="specification">
 			<list>
 				<props>

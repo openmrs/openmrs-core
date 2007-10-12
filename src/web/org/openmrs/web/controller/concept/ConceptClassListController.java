@@ -69,12 +69,12 @@ public class ConceptClassListController extends SimpleFormController {
 			for (String cc : conceptClassList) {
 				try {
 					as.deleteConceptClass(cs.getConceptClass(Integer.valueOf(cc)));
-					if (!success.equals("")) success += "<br>";
+					if (!success.equals("")) success += "<br/>";
 					success += cc + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting concept class", e);
-					if (!error.equals("")) error += "<br>";
+					if (!error.equals("")) error += "<br/>";
 					error += cc + " " + notDeleted;
 				}
 			}

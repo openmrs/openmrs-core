@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Location 
@@ -13,7 +13,7 @@ import org.openmrs.synchronization.ISynchronizable;
  * @author Ben Wolfe
  * @version 1.0
  */
-public class Location implements java.io.Serializable, Attributable<Location>, ISynchronizable {
+public class Location implements java.io.Serializable, Attributable<Location>, Synchronizable {
 
 	public static final long serialVersionUID = 455634L;
 	public static final int LOCATION_UNKNOWN = 1;

@@ -13,17 +13,28 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 
+/**
+ * This class tests methods in the PatientService class
+ */
 public class PatientServiceTest extends BaseTest {
 	
-	protected PatientService ps = Context.getPatientService();
-	protected AdministrationService adminService = Context.getAdministrationService();
-	protected EncounterService encounterService = Context.getEncounterService();
+	protected PatientService ps = null; 
+	protected AdministrationService adminService = null;
+	protected EncounterService encounterService = null;
+	
 	protected Patient createdPatient;
 	
 	@Override
 	protected void onSetUpBeforeTransaction() throws Exception {
 		super.onSetUpBeforeTransaction();
 		authenticate();
+		
+		if (ps == null) {
+			ps = Context.getPatientService();
+			adminService = Context.getAdministrationService();
+			encounterService = Context.getEncounterService();
+		}
+		
 	}
 
 	public void testGetPatient() throws Exception {
@@ -119,6 +130,28 @@ public class PatientServiceTest extends BaseTest {
 		
 		Patient createdPatientById = ps.getPatient(createdPatient.getPatientId());
 		assertNotNull(createdPatientById);
+		
+	}
+	
+	/**
+	 * Gets the first patient, then sees if it can get that patient by its identifier as well
+	 * 
+	 * @throws Exception
+	 */
+	public void testGetPatientsByIdentifier() throws Exception {
+		
+		// get the first patient
+		Set<Patient> johnPatients = ps.getPatientsByName("John");
+		assertNotNull("There should be a patient named 'John'", johnPatients);
+		assertFalse("There should be a patient named 'John'", johnPatients.isEmpty());
+		
+		Patient firstJohnPatient = johnPatients.iterator().next();
+		
+		// get a list of patients with this identifier, make sure the john patient is actually there
+		String identifier = firstJohnPatient.getPatientIdentifier().getIdentifier();
+		assertNotNull("Uh oh, the patient doesn't have an identifier", identifier);
+		Set<Patient> patients = ps.getPatientsByIdentifier(identifier, true);
+		assertTrue("Odd. The firstJohnPatient isn't in the list of patients for this identifier", patients.contains(firstJohnPatient));
 		
 	}
 	

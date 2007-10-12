@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -14,7 +14,7 @@ import org.openmrs.util.OpenmrsConstants;
  *  @author Burke Mamlin
  *  @version 1.0
  */
-public class Role implements java.io.Serializable, ISynchronizable {
+public class Role implements java.io.Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 1234233L;
 	private static Log log = LogFactory.getLog(Role.class);

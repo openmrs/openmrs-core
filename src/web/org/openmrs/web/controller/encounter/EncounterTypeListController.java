@@ -69,12 +69,12 @@ public class EncounterTypeListController extends SimpleFormController {
 				//TODO convenience method deleteEncounterType(Integer) ??
 				try {
 					as.deleteEncounterType(os.getEncounterType(Integer.valueOf(p)));
-					if (!success.equals("")) success += "<br>";
+					if (!success.equals("")) success += "<br/>";
 					success += p + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting encounter type", e);
-					if (!error.equals("")) error += "<br>";
+					if (!error.equals("")) error += "<br/>";
 					error += p + " " + notDeleted;
 				}
 			}

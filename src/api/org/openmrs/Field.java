@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Field
@@ -13,7 +13,7 @@ import org.openmrs.synchronization.ISynchronizable;
  * @author Burke Mamlin
  * @version 1.0
  */
-public class Field implements java.io.Serializable, ISynchronizable {
+public class Field implements java.io.Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 4454L;
 

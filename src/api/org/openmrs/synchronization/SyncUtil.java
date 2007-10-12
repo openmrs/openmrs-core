@@ -62,8 +62,22 @@ import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.serial.TimestampNormalizer;
+import org.openmrs.serialization.Item;
+import org.openmrs.serialization.Record;
+import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.engine.SyncRecord;
+import org.openmrs.synchronization.engine.SyncSource;
+import org.openmrs.synchronization.engine.SyncSourceJournal;
+import org.openmrs.synchronization.engine.SyncStrategyFile;
+import org.openmrs.synchronization.engine.SyncTransmission;
+import org.openmrs.synchronization.ingest.SyncImportRecord;
+import org.openmrs.synchronization.ingest.SyncRecordIngest;
+import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
+import org.openmrs.synchronization.server.ConnectionResponse;
+import org.openmrs.synchronization.server.RemoteServer;
+import org.openmrs.synchronization.server.ServerConnection;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -71,6 +85,220 @@ import org.openmrs.synchronization.engine.SyncRecord;
 public class SyncUtil {
 
 	private static Log log = LogFactory.getLog(SyncUtil.class);
+		
+	public static SyncTransmission createSyncTransmission() {
+		SyncTransmission tx = null;
+
+		try {
+            SyncSource source = new SyncSourceJournal();
+            SyncStrategyFile strategy = new SyncStrategyFile();
+
+            try {
+	            tx = strategy.createStateBasedSyncTransmission(source, true);
+            } catch (Exception e) {
+            	e.printStackTrace();
+
+            	// difference is that this time we'll do this without trying to create a file (just getting the output)
+            	// if it works, that probably means that there was a problem writing file to disk
+   	            tx = strategy.createStateBasedSyncTransmission(source, false);
+            } finally {
+            	if ( tx != null ) {
+                    // let's update SyncRecords to reflect the fact that we now have tried to sync them, by setting state to SENT or SENT_AGAIN
+            		if ( tx.getSyncRecords() != null ) {
+                        for ( SyncRecord record : tx.getSyncRecords() ) {
+                        	record.setRetryCount(record.getRetryCount() + 1);
+                        	if ( record.getState().equals(SyncRecordState.NEW ) ) record.setState(SyncRecordState.SENT);
+                        	else record.setState(SyncRecordState.SENT_AGAIN);
+                        	Context.getSynchronizationService().updateSyncRecord(record);
+                        }
+            		}
+            	}
+            }
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			tx = null;
+		}
+
+		return tx;
+	}
+	
+	public static SyncTransmissionResponse sendSyncTranssmission() {
+		// sends to parent server (by default)
+		SyncTransmissionResponse response = new SyncTransmissionResponse();
+    	response.setErrorMessage(SyncConstants.ERROR_NO_PARENT_DEFINED.toString());
+    	response.setFileName(SyncConstants.FILENAME_NO_PARENT_DEFINED);
+    	response.setGuid(SyncConstants.GUID_UNKNOWN);
+		response.setState(SyncTransmissionState.NO_PARENT_DEFINED);
+		
+		RemoteServer parent = Context.getSynchronizationService().getParentServer();
+		
+		if ( parent != null ) {
+			response = SyncUtil.sendSyncTranssmission(); 
+		}
+				
+		return response;
+	}
+
+	public static SyncTransmissionResponse sendSyncTranssmission(RemoteServer server) {
+
+		SyncTransmissionResponse response = new SyncTransmissionResponse();
+    	response.setErrorMessage(SyncConstants.ERROR_TRANSMISSION_CREATION.toString());
+    	response.setFileName(SyncConstants.FILENAME_NOT_CREATED);
+    	response.setGuid(SyncConstants.GUID_UNKNOWN);
+    	response.setState(SyncTransmissionState.TRANSMISSION_CREATION_FAILED);
+		
+		try {
+			if ( server != null ) {
+				SyncTransmission tx = SyncUtil.createSyncTransmission();
+				
+	            if ( tx != null ) {
+	            	response = SyncUtil.sendSyncTranssmission(server, tx); 
+	            } // no need to handling else - the correct error messages, etc have been written already
+	    	} else {
+	        	response.setErrorMessage(SyncConstants.ERROR_INVALID_SERVER.toString());
+	        	response.setFileName(SyncConstants.FILENAME_INVALID_SERVER);
+	        	response.setGuid(SyncConstants.GUID_UNKNOWN);
+	        	response.setState(SyncTransmissionState.INVALID_SERVER);	    		
+	    	}
+		} catch ( Exception e ) {
+			e.printStackTrace();
+		}
+		
+		return response;
+	}
+
+	public static SyncTransmissionResponse sendSyncTranssmission(RemoteServer server, SyncTransmission transmission) {
+		SyncTransmissionResponse response = new SyncTransmissionResponse();
+    	response.setErrorMessage(SyncConstants.ERROR_SEND_FAILED.toString());
+    	response.setFileName(SyncConstants.FILENAME_SEND_FAILED);
+    	response.setGuid(SyncConstants.GUID_UNKNOWN);
+    	response.setState(SyncTransmissionState.SEND_FAILED);
+		
+    	try {
+    		if ( transmission != null && server != null ) {
+    			String toTransmit = transmission.getFileOutput();
+    			
+                if ( toTransmit != null && toTransmit.length() > 0 ) {
+                	if ( transmission.getSyncRecords() != null && transmission.getSyncRecords().size() == 0 ) {
+                    	response.setState(SyncTransmissionState.OK_NOTHING_TO_DO);
+                    	response.setErrorMessage("");
+                    	response.setFileName(transmission.getFileName() + SyncConstants.RESPONSE_SUFFIX);
+                    	response.setGuid(transmission.getGuid());
+                    	response.setTimestamp(transmission.getTimestamp());
+                	} else {
+                    	ConnectionResponse connResponse = null;
+
+                    	try {
+                    		connResponse = ServerConnection.sendExportedData(server, toTransmit);
+                    	} catch ( Exception e ) {
+                    		e.printStackTrace();
+                    		// no need to change state or error message - it's already set properly
+                    	}
+
+                    	if ( connResponse != null ) {
+                       		// constructor for SyncTransmissionResponse is null-safe
+                        	response = new SyncTransmissionResponse(connResponse);
+                       		
+                			if ( response.getSyncImportRecords() == null ) {
+                				log.debug("No records to process in response");
+                			} else {
+                				// process each incoming syncImportRecord
+                				for ( SyncImportRecord importRecord : response.getSyncImportRecords() ) {
+                					SyncRecordIngest.processSyncImportRecord(importRecord);
+                				}
+                			}
+                    	}
+                	}
+                } else {
+                	response.setErrorMessage(SyncConstants.ERROR_TRANSMISSION_CREATION.toString());
+                	response.setFileName(SyncConstants.FILENAME_NOT_CREATED);
+                	response.setGuid(SyncConstants.GUID_UNKNOWN);
+                	response.setState(SyncTransmissionState.TRANSMISSION_CREATION_FAILED);
+                }
+    		} else {
+    			if ( server == null ) {
+    	        	response.setErrorMessage(SyncConstants.ERROR_INVALID_SERVER.toString());
+    	        	response.setFileName(SyncConstants.FILENAME_INVALID_SERVER);
+    	        	response.setGuid(SyncConstants.GUID_UNKNOWN);
+    	        	response.setState(SyncTransmissionState.INVALID_SERVER);	    		
+    			} else if ( transmission == null ) {
+    		    	response.setErrorMessage(SyncConstants.ERROR_TRANSMISSION_CREATION.toString());
+    		    	response.setFileName(SyncConstants.FILENAME_NOT_CREATED);
+    		    	response.setGuid(SyncConstants.GUID_UNKNOWN);
+    		    	response.setState(SyncTransmissionState.TRANSMISSION_CREATION_FAILED);
+    			}
+    		}
+    	} catch (Exception e) {
+    		
+    	}
+		
+		return response;
+	}
+	
+	public static Object getRootObject(String incoming)
+			throws Exception {
+		
+		Object o = null;
+		
+		if ( incoming != null ) {
+			Record xml = Record.create(incoming);
+			Item root = xml.getRootItem();
+			String className = root.getNode().getNodeName();
+			o = SyncUtil.newObject(className);
+		}
+		
+		return o;
+	}
+
+	public static NodeList getChildNodes(String incoming)
+			throws Exception {
+		NodeList nodes = null;
+		
+		if ( incoming != null ) {
+			Record xml = Record.create(incoming);
+			Item root = xml.getRootItem();
+			nodes = root.getNode().getChildNodes();
+		}
+		
+		return nodes;
+	}
+
+	public static void setProperty(Object o, Node n, ArrayList<Field> allFields ) 
+			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		String propName = n.getNodeName();
+		Object propVal = null;
+		propVal = SyncUtil.valForField(propName, n.getTextContent(), allFields);
+		
+		if ( propVal !=  null ) {
+			SyncUtil.setProperty(o, propName, propVal);
+			log.debug("Successfully called set" + SyncUtil.propCase(propName) + "(" + propVal + ")" );
+		}
+	}
+
+	public static void setProperty(Object o, String propName, Object propVal)
+			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+		Object[] setterParams = new Object[1];
+		setterParams[0] = propVal;
+		Method m = SyncUtil.getSetterMethod(o.getClass(), propName, propVal.getClass());
+
+        Object voidObj = m.invoke(o, setterParams);
+	}
+	
+	public static String getAttribute(NodeList nodes, String attName, ArrayList<Field> allFields ) {
+		String ret = null;
+		if ( nodes != null && attName != null ) {
+			for ( int i = 0; i < nodes.getLength(); i++ ) {
+				Node n = nodes.item(i);
+				String propName = n.getNodeName();
+				if ( attName.equals(propName) ) {
+					Object obj = SyncUtil.valForField(propName, n.getTextContent(), allFields);
+					if ( obj != null ) ret = obj.toString();
+				}
+			}
+		}
+
+		return ret;
+	}
 	
 	public static String propCase(String text) {
 		if ( text != null ) {
@@ -122,7 +350,9 @@ public class SyncUtil {
 			Class superClazz = clazz.getSuperclass();
 			while ( superClazz != null && !(superClazz.equals(Object.class)) ) {
 				// loop through to make sure we get ALL relevant superclasses and their fields
-				log.debug("Now inspecting superclass: " + superClazz.getName());
+                if (log.isDebugEnabled())
+                    log.debug("Now inspecting superclass: " + superClazz.getName());
+                
 				superFields = superClazz.getDeclaredFields();
 				if ( superFields != null ) {
 					for ( Field f : superFields ) {
@@ -203,14 +433,18 @@ public class SyncUtil {
 			isMethod = false;
 		}
 		
-		if ( o == null ) {
-			if ( isMethod ) log.debug("Unable to get an object of type " + className + " with guid " + guid + "; object doesn't exist yet");
-			else log.debug("NO GUID-GETTING method for type " + className + " found"); 
-			log.debug("Creating new " + className + "..." );
-			o = newObject(className);
-		}			
-		else log.debug("Found " + className + " in db with GUID " + guid);
-		
+        if (log.isDebugEnabled()) {
+    		if ( o == null ) {
+    			if ( isMethod ) 
+                    log.debug("Unable to get an object of type " + className + " with guid " + guid + "; object doesn't exist yet");
+    			else 
+                    log.debug("NO GUID-GETTING method for type " + className + " found"); 
+    			// not sure this is ever a good idea.  by default should return null
+    			//o = newObject(className);
+    		}			
+    		else 
+                log.debug("Found " + className + " in db with GUID " + guid);
+        }
 		return o;
 	}
 	
@@ -263,7 +497,14 @@ public class SyncUtil {
 						d = sdf.parse(fieldVal);
 						o = (Object)(d);
 					} catch (ParseException e) {
-						log.debug("DateParsingException trying to turn " + fieldVal + " into a date");
+						log.debug("DateParsingException trying to turn " + fieldVal + " into a date, so retrying with backup mask");
+						try {
+							SimpleDateFormat sdfBackup = new SimpleDateFormat(TimestampNormalizer.DATETIME_MASK_BACKUP);
+							d = sdfBackup.parse(fieldVal);
+							o = (Object)(d);
+						} catch (ParseException pee) {
+							log.debug("Still getting DateParsingException trying to turn " + fieldVal + " into a date, so retrying with backup mask");
+						}
 					}
 				}
 			}
@@ -417,8 +658,8 @@ public class SyncUtil {
 				if ( !knownToExist ) Context.getAdministrationService().createPatientIdentifierType((PatientIdentifierType)o);
 				else Context.getAdministrationService().updatePatientIdentifierType((PatientIdentifierType)o);
 			} else if ( "org.openmrs.PatientIdentifier".equals(className) ) {
-				if ( !knownToExist ) Context.getPatientService().createPatientIdentifier((PatientIdentifier)o);
-				else Context.getPatientService().updatePatientIdentifier((PatientIdentifier)o);
+				if ( !knownToExist ) Context.getPatientService().createPatientIdentifierSync((PatientIdentifier)o);
+				else Context.getPatientService().updatePatientIdentifierSync((PatientIdentifier)o);
 			} else if ( "org.openmrs.PatientProgram".equals(className) ) {
 				if ( !knownToExist ) Context.getProgramWorkflowService().createPatientProgram((PatientProgram)o);
 				else Context.getProgramWorkflowService().updatePatientProgram((PatientProgram)o);

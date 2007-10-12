@@ -276,10 +276,10 @@
 <c:if test="${model.allowEdits == 'true' && fn:length(model.programs) > 0}">
 	<openmrs:hasPrivilege privilege="Manage Patient Programs">
 		<div id="newProgramEnroll">
-		<form method="post" action="/@WEBAPP.NAME@/admin/programs/patientProgram.form">
+		<form method="post" action="${pageContext.request.contextPath}/admin/programs/patientProgram.form">
 			<input type="hidden" name="method" value="enroll"/>
 			<input type="hidden" name="patientId" value="${model.patientId}"/>
-			<input type="hidden" name="returnPage" value="/@WEBAPP.NAME@/patientDashboard.form?patientId=${model.patientId}"/>
+			<input type="hidden" name="returnPage" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${model.patientId}"/>
 			
 			<spring:message code="Program.enrollIn"/>
 			<select name="programId" onChange="document.getElementById('enrollSubmitButton').disabled = (this.selectedIndex == 0)">

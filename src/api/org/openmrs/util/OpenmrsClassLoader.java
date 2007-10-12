@@ -150,7 +150,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		// OpenmrsService so this can be generalized
 		try {
 			String key = SchedulerService.class.getName();
-			mementos.put(key, Context.getSchedulerService().saveToMemento());
+			if (!Context.isRefreshingContext())
+				mementos.put(key, Context.getSchedulerService().saveToMemento());
 		}
 		catch (APIException e) {
 			// pass

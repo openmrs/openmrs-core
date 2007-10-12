@@ -39,11 +39,11 @@ a:hover {
 }
 
 #openmrs_msg {
-	background: url(/@WEBAPP.NAME@/images/info.gif) no-repeat center left;
+	background: url(images/info.gif) no-repeat center left;
 }
 
 #openmrs_error {
-	background: url(/@WEBAPP.NAME@/images/error.gif) no-repeat center left;
+	background: url(images/error.gif) no-repeat center left;
 }
 
 #openmrs_msg, #openmrs_error { 
@@ -1182,4 +1182,24 @@ table td#summaryHeaderPatientGender {
 	display: inline;
 	list-style-type: none;
 	padding: 0px;
+}
+
+.syncCOMMITTED, .syncSYNCHRONIZED, .syncSUCCESS {
+	color: #33aa33;
+	font-weight: bold;
+}
+
+.syncFAILED, .syncCONFLICT, .syncSEND_FAILED, .syncABORTED {
+	color: #dd0022;
+	font-weight: bold;
+}
+
+.syncALREADY_COMMITTED, .syncNEUTRAL {
+	color: #bbaa11;
+	font-weight: bold;
+}
+
+.syncUNKNOWN, .syncNEW, .syncUPDATED, .syncDELETED, .syncPENDING_SEND, .syncSENT, .syncPENDING_COMMIT, .syncSENT_AGAIN {
+	color: #444444;
+	font-weight: bold;
 }

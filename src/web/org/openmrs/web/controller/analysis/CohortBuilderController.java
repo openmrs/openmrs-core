@@ -112,6 +112,19 @@ public class CohortBuilderController implements Controller {
 					}
 				});
 			
+			List<Concept> drugSets = new ArrayList<Concept>();
+			{
+				String temp = Context.getAdministrationService().getGlobalProperty("cohortBuilder.drugSets");
+				if (StringUtils.hasText(temp)) {
+					String[] drugSetNames = temp.split(",");
+					for (String setName : drugSetNames) {
+						Concept c = Context.getConceptService().getConceptByIdOrName(setName);
+						if (c != null)
+							drugSets.add(c);
+					}
+				}
+			}
+			
 			model.put("searchHistory", history);
 			model.put("links", linkHelper());
 			model.put("programs", Context.getProgramWorkflowService().getPrograms());
@@ -120,6 +133,7 @@ public class CohortBuilderController implements Controller {
 			model.put("forms", Context.getFormService().getForms());
 			model.put("drugs", Context.getConceptService().getDrugs());
 			model.put("drugConcepts", genericDrugs);
+			model.put("drugSets", drugSets);
 			model.put("orderStopReasons", orderStopReasons);
 			model.put("personAttributeTypes", Context.getPersonService().getPersonAttributeTypes());
 			model.put("shortcuts", shortcuts);

@@ -74,6 +74,11 @@ public class HibernatePatientDAO implements PatientDAO {
 		return patientIdentifier;
 	}
 
+	public PatientIdentifier createPatientIdentifierSync(PatientIdentifier patientIdentifier) throws DAOException {
+		sessionFactory.getCurrentSession().save(patientIdentifier);
+		
+		return patientIdentifier;
+	}
 
 	public Patient updatePatient(Patient patient) throws DAOException {
 		if (patient.getPatientId() == null)
@@ -123,7 +128,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws DAOException {
 		Query query;
 		
-		String sql = "select patient from Patient patient, PersonName name where patient.identifiers.identifier = :id and patient.patientId = name.person.personId";
+		String sql = "select patient from Patient patient, PersonName name join patient.identifiers ids where ids.identifier = :id and patient.patientId = name.person.personId";
 		String order = " order by name.givenName asc, name.middleName asc, name.familyName asc";
 		
 		if (includeVoided) {
@@ -269,7 +274,13 @@ public class HibernatePatientDAO implements PatientDAO {
 			.setParameter("loc", pi.getLocation())
 			.executeUpdate();
 	}
-	
+
+	public void updatePatientIdentifierSync(PatientIdentifier pi) throws DAOException {
+		log.debug("type: " + pi.getIdentifierType().getName());
+
+		sessionFactory.getCurrentSession().merge(pi);
+	}
+
 	/**
 	 * @see org.openmrs.api.db.PatientService#getPatientIdentifierType(java.lang.Integer)
 	 */

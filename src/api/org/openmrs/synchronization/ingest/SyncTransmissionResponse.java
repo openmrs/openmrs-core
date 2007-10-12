@@ -1,21 +1,35 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.synchronization.ingest;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.serial.FilePackage;
-import org.openmrs.serial.IItem;
-import org.openmrs.serial.Item;
-import org.openmrs.serial.Record;
+import org.openmrs.serialization.FilePackage;
+import org.openmrs.serialization.IItem;
+import org.openmrs.serialization.Item;
+import org.openmrs.serialization.Record;
+import org.openmrs.serialization.TimestampNormalizer;
+import org.openmrs.synchronization.SyncConstants;
+import org.openmrs.synchronization.SyncTransmissionState;
 import org.openmrs.synchronization.engine.SyncException;
-import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncTransmission;
+import org.openmrs.synchronization.server.ConnectionResponse;
+import org.openmrs.synchronization.server.ServerConnectionState;
 
 /**
  * SyncTransmission a collection of sync records to be sent to the parent.
@@ -26,15 +40,20 @@ public class SyncTransmissionResponse implements IItem {
 
     // fields
     private final Log log = LogFactory.getLog(getClass());
-    
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_S"); //used to format file names 
+     
     private String fileName = null;
+    private Date timestamp = null;
     private List<SyncImportRecord> syncImportRecords = null;
     private String guid = null;
     private String fileOutput = "";
+    private SyncTransmissionState state;
+    private String errorMessage;
+    private String syncSourceGuid = null; //GUID of the node (child) where the Tx came from
+    private String syncParentGuid = null; //GUID of the node (parent) where Tx is being applied to
 
 	// constructor(s)
     public SyncTransmissionResponse() {
+    	
     }
 
     /* 
@@ -42,14 +61,76 @@ public class SyncTransmissionResponse implements IItem {
      */
     
     public SyncTransmissionResponse(SyncTransmission transmission) {
-    	this.guid = transmission.getGuid();
-    	fileName = transmission.getFileName();
-    	int idx = fileName.lastIndexOf(".");
-    	if ( idx > -1 ) fileName = fileName.substring(0, idx) + "_response" + fileName.substring(idx);
-    	else fileName = fileName + "_response";
+    	// needs to be null-safe
+    	if ( transmission != null ) {
+        	this.guid = transmission.getGuid();
+            this.syncSourceGuid = transmission.getSyncSourceGuid();
+            this.syncParentGuid = SyncConstants.GUID_UNKNOWN;
+        	fileName = transmission.getFileName();
+        	int idx = fileName.lastIndexOf(".");
+        	if ( idx > -1 ) fileName = fileName.substring(0, idx) + SyncConstants.RESPONSE_SUFFIX + fileName.substring(idx);
+        	else fileName = fileName + SyncConstants.RESPONSE_SUFFIX;
+        	this.state = SyncTransmissionState.OK;  // even though we really mean "OK so far" - it'll get overwritten later if there's a prob
+    	} else {
+    		this.guid = SyncConstants.GUID_UNKNOWN;
+            this.syncSourceGuid = SyncConstants.GUID_UNKNOWN;
+            this.syncParentGuid = SyncConstants.GUID_UNKNOWN;
+    		this.errorMessage = SyncConstants.ERROR_TX_NOT_UNDERSTOOD;
+    		this.fileName = SyncConstants.FILENAME_TX_NOT_UNDERSTOOD;
+    		this.state = SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD;
+    	}
     }
 
-    public List<SyncImportRecord> getSyncImportRecords() {
+    /**
+     * @param connResponse
+     */
+    public SyncTransmissionResponse(ConnectionResponse connResponse) {
+	    // this needs to be bulletproof
+    	if ( connResponse != null ) {
+    		
+    		System.out.println("RESPONSE PAYLOAD IS: " + connResponse.getResponsePayload());
+    		
+    		if ( connResponse.getState().equals(ServerConnectionState.OK) ) {
+    			try {
+    				// this method is null safe
+    				SyncTransmissionResponse str = SyncDeserializer.xmlToSyncTransmissionResponse(connResponse.getResponsePayload());
+    				this.errorMessage = str.getErrorMessage();
+    				this.fileName = str.getFileName();
+    				this.guid = str.getGuid();
+                    this.syncSourceGuid = str.getSyncSourceGuid();
+                    this.syncParentGuid = str.getSyncParentGuid();
+    				this.state = str.getState();
+    				this.syncImportRecords = str.getSyncImportRecords();
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    	    		this.errorMessage = SyncConstants.ERROR_RESPONSE_NOT_UNDERSTOOD.toString();
+    	        	this.fileName = SyncConstants.FILENAME_RESPONSE_NOT_UNDERSTOOD;
+    	        	this.guid = SyncConstants.GUID_UNKNOWN;
+                    this.syncSourceGuid = SyncConstants.GUID_UNKNOWN;
+                    this.syncParentGuid = SyncConstants.GUID_UNKNOWN;
+    	        	this.state = SyncTransmissionState.RESPONSE_NOT_UNDERSTOOD;
+    			} 
+    		} else {
+        		this.errorMessage = SyncConstants.ERROR_SEND_FAILED.toString();
+            	this.fileName = SyncConstants.FILENAME_SEND_FAILED;
+            	this.guid = SyncConstants.GUID_UNKNOWN;
+                this.syncSourceGuid = SyncConstants.GUID_UNKNOWN;
+                this.syncParentGuid = SyncConstants.GUID_UNKNOWN;
+            	this.state = SyncTransmissionState.SEND_FAILED;
+            	if ( connResponse.getState().equals(ServerConnectionState.MALFORMED_URL)) this.state = SyncTransmissionState.MALFORMED_URL;
+            	if ( connResponse.getState().equals(ServerConnectionState.CERTIFICATE_FAILED)) this.state = SyncTransmissionState.CERTIFICATE_FAILED;
+    		}
+    	} else {
+    		this.errorMessage = SyncConstants.ERROR_SEND_FAILED.toString();
+        	this.fileName = SyncConstants.FILENAME_SEND_FAILED;
+        	this.guid = SyncConstants.GUID_UNKNOWN;
+            this.syncSourceGuid = SyncConstants.GUID_UNKNOWN;
+            this.syncParentGuid = SyncConstants.GUID_UNKNOWN;
+        	this.state = SyncTransmissionState.SEND_FAILED;
+    	}
+    }
+
+	public List<SyncImportRecord> getSyncImportRecords() {
     	return syncImportRecords;
     }
 
@@ -57,6 +138,30 @@ public class SyncTransmissionResponse implements IItem {
     	this.syncImportRecords = syncImportRecords;
     }
 
+	public String getErrorMessage() {
+    	return errorMessage;
+    }
+
+	public void setErrorMessage(String errorMessage) {
+    	this.errorMessage = errorMessage;
+    }
+
+    public String getSyncSourceGuid() {
+        return syncSourceGuid;
+    }
+
+    public void setSyncSourceGuid(String value) {
+        this.syncSourceGuid = value;
+    }
+
+    public String getSyncParentGuid() {
+        return syncParentGuid;
+    }
+
+    public void setSyncParentGuid(String value) {
+        this.syncParentGuid = value;
+    }    
+    
 	// methods
     public String getFileOutput() {
     	return fileOutput;
@@ -74,13 +179,31 @@ public class SyncTransmissionResponse implements IItem {
     public void setGuid(String value) {
         guid = value;
     }
+    public Date getTimestamp() {
+        return timestamp;
+    }
+    public void setTimestamp(Date value) {
+        timestamp = value;
+    }
     
     /** Create a new transmission from records: use org.openmrs.serial to make a file
-     * 
+     *  also, give option to write to a file or not 
      */
-    public void CreateFile() {
+    public void CreateFile(boolean writeFileToo) {
+    	CreateFile(writeFileToo, SyncConstants.DIR_IMPORT);
+    }
+    	
+    /** Create a new transmission from records: use org.openmrs.serial to make a file
+     *  also, give option to write to a file or not 
+     */
+    public void CreateFile(boolean writeFileToo, String path) {
 
+    	if ( path == null ) path = SyncConstants.DIR_IMPORT;
+    	if ( path.length() == 0 ) path = SyncConstants.DIR_IMPORT;
+    	
         try {            
+            if (timestamp == null) this.timestamp = new Date(); //set timestamp of this export, if not already set
+            
             FilePackage pkg = new FilePackage();
             Record xml = pkg.createRecordForWrite(this.getClass().getName());
             Item root = xml.getRootItem();
@@ -91,7 +214,7 @@ public class SyncTransmissionResponse implements IItem {
             //now dump to file
             fileOutput = pkg.savePackage(org.openmrs.util.OpenmrsUtil
                     .getApplicationDataDirectory()
-                    + "/import/" + fileName, true);
+                    + "/import/" + fileName, writeFileToo);
 
         } catch (Exception e) {
             log.error("Cannot create sync transmission.");
@@ -110,6 +233,11 @@ public class SyncTransmissionResponse implements IItem {
         //serialize primitives
         if (guid != null) xml.setAttribute(me, "guid", guid);
         if (fileName != null) xml.setAttribute(me, "fileName", fileName);
+        if (state != null) xml.setAttribute(me, "state", state.toString());
+        if (errorMessage != null ) xml.setAttribute(me, "errorMessage", errorMessage);
+        if (syncSourceGuid != null)  xml.setAttribute(me, "syncSourceGuid", syncSourceGuid);
+        if (syncParentGuid != null)  xml.setAttribute(me, "syncParentGuid", syncParentGuid);
+        if (timestamp != null) xml.setAttribute(me, "timestamp", new TimestampNormalizer().toString(timestamp));
         
         //serialize Records list
         Item itemsCollection = xml.createItem(me, "records");
@@ -135,9 +263,24 @@ public class SyncTransmissionResponse implements IItem {
      * 
      */
     public void load(Record xml, Item me) throws Exception {
-        
+
         this.guid = me.getAttribute("guid");
         this.fileName = me.getAttribute("fileName");
+        this.syncSourceGuid = me.getAttribute("syncSourceGuid");
+        this.syncParentGuid = me.getAttribute("syncParentGuid");
+
+        if (me.getAttribute("timestamp") == null)
+            this.timestamp = null;
+        else
+            this.timestamp = (Date)new TimestampNormalizer().fromString(Date.class,me.getAttribute("timestamp"));
+        
+        try {
+        	this.state = SyncTransmissionState.valueOf(me.getAttribute("state"));
+        } catch ( Exception e ) {
+        	System.out.println("STATE IS [" + me.getAttribute("state") + "]");
+        	this.state = SyncTransmissionState.RESPONSE_NOT_UNDERSTOOD;
+        }
+        this.errorMessage = me.getAttribute("errorMessage");
         
         //now get items
         Item itemsCollection = xml.getItem(me, "records");
@@ -155,5 +298,13 @@ public class SyncTransmissionResponse implements IItem {
             }
         }
 
+    }
+
+	public SyncTransmissionState getState() {
+    	return state;
+    }
+
+	public void setState(SyncTransmissionState state) {
+    	this.state = state;
     }
 }

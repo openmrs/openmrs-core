@@ -239,7 +239,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
      * @see org.openmrs.api.db.ProgramWorkflowDAO#getPatientProgramByGuid(java.lang.String)
      */
     public PatientProgram getPatientProgramByGuid(String guid) {
-		return (PatientProgram) sessionFactory.getCurrentSession().createQuery("from PatientProgram where pp.guid = :guid").setString("guid", guid).uniqueResult();
+		return (PatientProgram) sessionFactory.getCurrentSession().createQuery("from PatientProgram pp where pp.guid = :guid").setString("guid", guid).uniqueResult();
     }
 
 	/**

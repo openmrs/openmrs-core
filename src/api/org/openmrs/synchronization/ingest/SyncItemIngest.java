@@ -1,95 +1,95 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.synchronization.ingest;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.serial.Item;
-import org.openmrs.serial.Record;
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
+import org.openmrs.synchronization.SyncConstants;
+import org.openmrs.synchronization.SyncItemState;
 import org.openmrs.synchronization.SyncUtil;
-import org.openmrs.synchronization.engine.SyncTransmission;
-import org.openmrs.synchronization.engine.SyncItem.SyncItemState;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+@Deprecated
 public class SyncItemIngest {
 
 	private static Log log = LogFactory.getLog(SyncItemIngest.class);
 
 	public static final String UTF8 = "UTF-8";
 
-	public static SyncTransmission xmlToSyncTransmission(String incoming) {
+	public static SyncImportItem processSyncItem(String incoming) {
 
-		SyncTransmission st = null;
-		
-		try {
-			Record xml = Record.create(incoming);
-			Item root = xml.getRootItem();
-			st = new SyncTransmission();
-			st.load(xml, root);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return st;
-	}
-			
-	public static String processSyncItem(String incoming, SyncItemState state) throws SyncItemIngestException {
+		SyncImportItem ret = new SyncImportItem();
+		ret.setContent(incoming);
+		ret.setState(SyncItemState.UNKNOWN);
 
-		String ret = null;
-		
 		try {
-			Record xml = Record.create(incoming);
-			Item root = xml.getRootItem();
-			String className = root.getNode().getNodeName();
+			Object o = null;
+			String className = null;
+			boolean isUpdateNotCreate = false;
+			ArrayList<Field> allFields = null;
+			NodeList nodes = null;
 			
-			log.debug("Trying to process SyncItem with the name " + className + ", and state of " + state + "...");
-			Object o = SyncUtil.newObject(className);
-			
-			if ( o != null ) {
-				// get fields, both in class and superclass - we'll need to know what type each field is
-				ArrayList<Field> allFields = SyncUtil.getAllFields(o);
-				
-				NodeList nodes = root.getNode().getChildNodes();
+			try {
+                if (log.isDebugEnabled())
+                    log.debug("STARTING TO PROCESS: " + incoming);
+                
+				o = SyncUtil.getRootObject(incoming);
+				className = o.getClass().getName();
+				allFields = SyncUtil.getAllFields(o);  // get fields, both in class and superclass - we'll need to know what type each field is
+				nodes = SyncUtil.getChildNodes(incoming);  // get all child nodes of the root object
+			} catch (Exception e) {
+				throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_ROOT, null, incoming);
+			}
+
+			if ( o != null && className != null && allFields != null && nodes != null ) {
+				String guid = SyncUtil.getAttribute(nodes, "guid", allFields);
+				Object objOld = SyncUtil.getOpenmrsObj(className, guid);
+				if ( objOld != null ) {
+					o = objOld;
+					isUpdateNotCreate = true;
+				}
 				
 				for ( int i = 0; i < nodes.getLength(); i++ ) {
-					Node n = nodes.item(i);
-					String propName = n.getNodeName();
-					Object propVal = SyncUtil.valForField(propName, n.getTextContent(), allFields);
-
-					// invoke setter method on this object
-					String methodName = "set" + SyncUtil.propCase(propName);
-					Object[] setterParams = new Object[1];
-					setterParams[0] = propVal;
-					Method m = SyncUtil.getSetterMethod(o.getClass(), propName, propVal.getClass());
-
-					if ( m != null ) {
-						Object voidObj = m.invoke(o, setterParams);
-						log.debug("Successfully called set" + SyncUtil.propCase(propName) + "(" + propVal + ")" );
-						log.debug(" - object is type " + propVal.getClass().getName());
-					} else {
-						throw new NoSuchMethodException("There was no " + methodName + "() method in object of class " + className);
+					try {
+						SyncUtil.setProperty(o, nodes.item(i), allFields);
+					} catch ( Exception e ) {
+						throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_UNSET_PROPERTY, nodes.item(i).getNodeName() + "," + className, incoming);
 					}
 				}
-
-				String guid = ((ISynchronizable)o).getGuid();
-				
-				log.debug("We now have an object " + o.getClass().getName() + " to INSERT with possible GUID of " + guid);
-
-				boolean isUpdateNotCreate = !state.equals(SyncItemState.NEW);
-				
-				ret = SyncUtil.updateOpenmrsObject(o, guid, isUpdateNotCreate);
-				
+				// now try to commit this fully inflated object
+				try {
+					SyncUtil.updateOpenmrsObject(o, guid, isUpdateNotCreate);
+					ret.setState(SyncItemState.SYNCHRONIZED);
+				} catch ( Exception e ) {
+					throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, className, incoming);
+				}
+                
+                if (log.isDebugEnabled())
+                    log.debug("We now have an object " + o.getClass().getName() + " to INSERT with possible GUID of " + ((Synchronizable)o).getGuid());
+                
 			} else {
-				throw new NullPointerException("Object of classname " + className + " could not be created while processing SyncItem");
+				throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOCLASS, className, incoming);
 			}
-			
+		} catch (SyncItemIngestException siie) {
+			ret.setErrorMessage(siie.getItemError());
+			ret.setErrorMessageArgs(siie.getItemErrorArgs());
+			ret.setState(SyncItemState.CONFLICT);
 		} catch (Exception e) {
-			throw new SyncItemIngestException(e, incoming);
+			ret.setErrorMessage(SyncConstants.ERROR_ITEM_NOT_PROCESSED);
 		}		
 		
 		return ret;

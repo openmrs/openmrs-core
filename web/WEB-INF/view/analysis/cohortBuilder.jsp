@@ -797,7 +797,7 @@
 				<form method="post" action="cohortBuilder.form" onSubmit="removeHiddenDivs()">
 					<input type="hidden" name="method" value="addDynamicFilter"/>
 					<input type="hidden" name="filterClass" value="org.openmrs.reporting.DrugOrderFilter" />
-					<input type="hidden" name="vars" value="withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date,anyOrAll#org.openmrs.api.PatientSetService$GroupMethod,drugList#*org.openmrs.Drug" />
+					<input type="hidden" name="vars" value="withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date,anyOrAll#org.openmrs.api.PatientSetService$GroupMethod,drugList#*org.openmrs.Drug,drugSets#*org.openmrs.Concept" />
 					<b>Patients taking specific drugs</b>
 					<br/><br/>
 					<select name="anyOrAll">
@@ -805,15 +805,36 @@
 						<option value="ANY">Any</option>
 						<option value="NONE">None</option>
 					</select>
-					of the following drugs:
+					of the following:
 					(hold down CTRL if you want to select more than one, or leave blank if you don't care which drugs)
 					<br/><br/>
+					<table style="margin-left: 40px">
+						<tr>
+							<td>
+								Drugs:
+								<br/>
+								<select name="drugList" multiple="true" size="10">
+									<c:forEach var="drug" items="${model.drugs}">
+										<option value="${drug.drugId}"/>${drug.name}</option>
+									</c:forEach>
+								</select>			
+							</td>
+							<td>
+								<c:if test="${fn:length(model.drugSets) > 0}">
+									Drug Sets:
+									<br/>
+									<select name="drugSets" multiple="true" size="10">
+										<c:forEach var="drugSet" items="${model.drugSets}">
+											<option value="${drugSet.conceptId}">${drugSet.name}</option>
+										</c:forEach>
+									</select>
+								</c:if>
+								<c:forEach var="drugSet" items="${drugSets}">
+								</c:forEach>
+							</td>
+						</tr>
+					</table>
 					<span style="margin-left: 40px">
-						<select name="drugList" multiple="true" size="10">
-						<c:forEach var="drug" items="${model.drugs}">
-							<option value="${drug.drugId}"/>${drug.name}</option>
-						</c:forEach>
-						</select>
 					</span>
 					<br/>
 					<br/>

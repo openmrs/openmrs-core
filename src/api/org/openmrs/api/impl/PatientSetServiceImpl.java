@@ -21,6 +21,8 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Person;
@@ -320,9 +322,14 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getFirstEncountersByType(patients, types);
 	}
 	
-	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) {
+	
+	/**
+     * @see org.openmrs.api.PatientSetService#getPatientAttributes(org.openmrs.reporting.PatientSet, java.lang.String, java.lang.String[], boolean)
+     */
+    public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) {
 		return getPatientSetDAO().getPatientAttributes(patients, className, property, returnAll);
-	}
+    }
+	
 	
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String classNameDotProperty, boolean returnAll) {
 		String[] temp = classNameDotProperty.split("\\.");
@@ -331,6 +338,13 @@ public class PatientSetServiceImpl implements PatientSetService {
 		}
 		return getPatientAttributes(patients, temp[0], temp[1], returnAll);
 	}
+	
+	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(PatientSet patients, PatientIdentifierType type) {
+		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
+		if (type != null)
+			types.add(type);
+		return getPatientSetDAO().getPatientIdentifierByType(patients, types);
+	}	
 	
 	/**
 	 * @see org.openmrs.api.PatientSetService#getPersonAttributes(org.openmrs.reporting.PatientSet, java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean)
@@ -456,5 +470,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 		}
 		return analysis;
 	}
+
+
 	
 }

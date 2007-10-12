@@ -14,6 +14,8 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Person;
@@ -69,6 +71,8 @@ public interface PatientSetDAO {
 	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, List<EncounterType> encType);
 	
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll);
+	
+	public Map<Integer, PatientIdentifier> getPatientIdentifierByType(PatientSet patients, List<PatientIdentifierType> types);
 	
 	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) throws DAOException;
 

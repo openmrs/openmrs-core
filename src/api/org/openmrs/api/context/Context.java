@@ -29,6 +29,7 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.SynchronizationService;
+import org.openmrs.api.SynchronizationIngestService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.arden.ArdenService;
@@ -132,7 +133,9 @@ public class Context implements ApplicationContextAware {
 	 * @param userContext
 	 */
 	public static void setUserContext(UserContext ctx) { 
-		log.debug("Setting user context " + ctx);
+		if (log.isDebugEnabled())
+			log.debug("Setting user context " + ctx);
+		
 		Object[] arr = new Object[] {ctx};
 		ctx.setContextDAO(getContextDAO());
 		userContextHolder.set(arr);
@@ -142,8 +145,9 @@ public class Context implements ApplicationContextAware {
 	 * Clears the user context.
 	 */
 	public static void clearUserContext() {
-		log.debug("Clearing user context " + userContextHolder.get());
-		//userContextHolder.set(null);
+		if (log.isDebugEnabled())
+			log.debug("Clearing user context " + userContextHolder.get());
+		
 		userContextHolder.remove();
 	}
 	
@@ -176,7 +180,10 @@ public class Context implements ApplicationContextAware {
 			log.error("serviceContext is null.  Creating new ServiceContext()");
 			serviceContext = ServiceContext.getInstance();
 		}
-		log.debug("serviceContext: " + serviceContext);
+		
+		if (log.isDebugEnabled())
+			log.debug("serviceContext: " + serviceContext);
+		
 		return ServiceContext.getInstance();
 	}
 	
@@ -199,7 +206,9 @@ public class Context implements ApplicationContextAware {
 	 * @throws ContextAuthenticationException
 	 */
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
-		log.debug("username: " + username);
+		if (log.isDebugEnabled())
+			log.debug("username: " + username);
+		
 		getUserContext().authenticate(username, password);
 	}
 	
@@ -209,12 +218,15 @@ public class Context implements ApplicationContextAware {
 	 * @throws ContextAuthenticationException
 	 */
 	public static void becomeUser(String systemId) throws ContextAuthenticationException {
-		log.debug("systemId: " + systemId);
+		if (log.isDebugEnabled())
+			log.debug("systemId: " + systemId);
+		
 		getUserContext().becomeUser(systemId);
 	}
 	
 	public static Properties getRuntimeProperties() {
-		log.debug("getting runtime properties. size: " + runtimeProperties.size());
+		if (log.isDebugEnabled())
+			log.debug("getting runtime properties. size: " + runtimeProperties.size());
 		
 		Properties props = new Properties();
 		for (Map.Entry entry : runtimeProperties.entrySet()) {
@@ -273,7 +285,14 @@ public class Context implements ApplicationContextAware {
 	public static SynchronizationService getSynchronizationService() {
 	    return getServiceContext().getSynchronizationService();
 	}
-	
+
+    /**
+     * @return Synchronization Ingest related services
+     */
+    public static SynchronizationIngestService getSynchronizationIngestService() {
+        return getServiceContext().getSynchronizationIngestService();
+    }
+    
 	/**
 	 * @return Returns the hl7Service.
 	 */
@@ -409,7 +428,7 @@ public class Context implements ApplicationContextAware {
 				ms.setMessagePreparator(preparator);
 				
 			} catch (Exception e) { 
-				log.error("Unable to create message service due to : " + e.getMessage(), e);
+				log.error("Unable to create message service due", e);
 			}
 		}
 		return ms;
@@ -516,7 +535,9 @@ public class Context implements ApplicationContextAware {
 	 * @see #authenticate
 	 */
 	public static void logout() {
-		log.debug("Logging out : " + getAuthenticatedUser());
+		if (log.isDebugEnabled())
+			log.debug("Logging out : " + getAuthenticatedUser());
+		
 		getUserContext().logout();
 		clearUserContext();
 	}
@@ -646,7 +667,7 @@ public class Context implements ApplicationContextAware {
 			log.warn("Error while shutting down scheduler service", e);
 		}
 		
-		log.debug("Shutting down the modeules");
+		log.debug("Shutting down the modules");
 		try {
 			ModuleUtil.shutdown();
 		}
@@ -773,5 +794,13 @@ public class Context implements ApplicationContextAware {
 		return new SimpleDateFormat(
 					OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(getLocale().toString().toLowerCase()), 
 					getLocale());
+	}
+	
+	/**
+	 * @return true/false whether the service context is currently being refreshed
+	 * @see org.openmrs.api.context.ServiceContext#isRefreshingContext()
+	 */
+	public static boolean isRefreshingContext() {
+		return getServiceContext().isRefreshingContext();
 	}
 }

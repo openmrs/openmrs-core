@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.synchronization.server">
+
+	<class name="RemoteServer" table="synchronization_server">
+
+		<id name="serverId" type="int" column="server_id">
+			<generator class="native" />
+		</id>
+
+		<property name="nickname" type="java.lang.String"
+			column="nickname" length="255" />
+
+		<property name="address" type="java.lang.String"
+			column="address" length="255" not-null="true" />
+
+		<property name="serverType" column="server_type">
+	      <type name="org.openmrs.api.db.hibernate.usertype.GenericEnumUserType">
+	        <param name="enumClassName">org.openmrs.synchronization.server.RemoteServerType</param>
+	      </type>
+	    </property>
+
+		<property name="username" type="java.lang.String"
+			column="username" length="255" />
+
+		<property name="password" type="java.lang.String"
+			column="password" length="255" />
+
+	</class>
+</hibernate-mapping>

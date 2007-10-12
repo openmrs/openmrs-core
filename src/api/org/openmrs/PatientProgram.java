@@ -8,10 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.util.OpenmrsUtil;
 
-public class PatientProgram implements ISynchronizable {
+public class PatientProgram implements java.io.Serializable, Synchronizable {
+	
+	public static final long serialVersionUID = 0L;
 
 	private Integer patientProgramId;
 	private Patient patient;

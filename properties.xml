@@ -21,9 +21,6 @@
     <property name="doc.header" value="&lt;a href=&quot;http://www.openmrs.org&quot; target=_top&gt;&lt;img src=&quot;./openmrs-logo-small.gif&quot; border=0/&gt;&lt;/a&gt;" />
     <property name="doc.footer" value="&lt;a href=&quot;http://www.openmrs.org&quot; target=_top&gt;${ant.project.name}&lt;/a&gt;" />
         
-    <!-- Address settings -->
-	<property name="address.format" value="Kenya" /> 
-        
     <!-- =================================================================== -->
     <!-- Classpaths                                                          -->
     <!-- =================================================================== -->

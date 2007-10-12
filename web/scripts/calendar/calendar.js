@@ -27,7 +27,7 @@ function makeCalendar(obj) {
 		iframe.height=189;
 		iframe.name=id;	// also defined in ipopeng.jsp as an IE hack.
 		iframe.id = id;
-		iframe.src= '/@WEBAPP.NAME@/scripts/calendar/ipopeng.htm';
+		iframe.src= openmrsContextPath + '/scripts/calendar/ipopeng.htm';
 		iframe.scrolling='no';
 		iframe.frameBorder='0';
 		iframe.style.visibility = 'visible';

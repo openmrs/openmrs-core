@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
  * ConceptWord
  */
-public class ConceptWord implements java.io.Serializable, ISynchronizable,
+public class ConceptWord implements java.io.Serializable, Synchronizable,
 		Comparable<ConceptWord> {
 
 	public static final long serialVersionUID = 888677L;

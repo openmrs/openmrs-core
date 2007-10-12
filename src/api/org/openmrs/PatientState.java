@@ -2,10 +2,10 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.util.OpenmrsUtil;
 
-public class PatientState implements ISynchronizable {
+public class PatientState implements Synchronizable {
 
 	private Integer patientStateId;
 	// private Program program;

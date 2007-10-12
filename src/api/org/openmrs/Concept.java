@@ -13,12 +13,12 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Concept 
  */
-public class Concept implements java.io.Serializable, Attributable<Concept>, ISynchronizable {
+public class Concept implements java.io.Serializable, Attributable<Concept>, Synchronizable {
 
 	public static final long serialVersionUID = 5733L;
 	public Log log = LogFactory.getLog(this.getClass());

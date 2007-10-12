@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.db.hibernate;
 
 import java.sql.Connection;
@@ -20,7 +33,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
-import org.hibernate.Interceptor;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -52,7 +64,6 @@ import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
 public class HibernateAdministrationDAO implements
 		AdministrationDAO {
@@ -65,13 +76,8 @@ public class HibernateAdministrationDAO implements
 	private SessionFactory sessionFactory;
 
 	// for global properties, which should not be synchronized
-    private Interceptor nonSynchronizingInterceptor = new HibernateNonSynchronizingInterceptor();
-
-    private Session getNonSynchronizingSession() {
-        return SessionFactoryUtils.getNewSession(sessionFactory, nonSynchronizingInterceptor);
-    }
-
-	
+    private HibernateSynchronizationInterceptor synchronizationInterceptor;
+    	
 	public HibernateAdministrationDAO() { }
 	
 	/**
@@ -82,6 +88,15 @@ public class HibernateAdministrationDAO implements
 	public void setSessionFactory(SessionFactory sessionFactory) { 
 		this.sessionFactory = sessionFactory;
 	}
+
+    /**
+     * Set synchronization interceptor
+     * 
+     * @param sessionFactory
+     */
+    public void setSynchronizationInterceptor(HibernateSynchronizationInterceptor synchronizationInterceptor) { 
+        this.synchronizationInterceptor = synchronizationInterceptor;
+    }
 
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createEncounterType(org.openmrs.EncounterType)
@@ -685,12 +700,14 @@ public class HibernateAdministrationDAO implements
 		// add all of the new properties
 		for (GlobalProperty prop : props) {
 			if (prop.getProperty() != null && prop.getProperty().length() > 0) {
+				Session session = sessionFactory.getCurrentSession();
 				try {
-					this.getNonSynchronizingSession().saveOrUpdate(prop);
-					//sessionFactory.getCurrentSession().saveOrUpdate(prop);
+					session.saveOrUpdate(prop);
+			        session.flush();
 				}
 				catch (HibernateException e) {
-					this.getNonSynchronizingSession().merge(prop);
+					session.merge(prop);
+			        session.flush();
 				}
 			}
 		}
@@ -698,24 +715,34 @@ public class HibernateAdministrationDAO implements
 	}
 
 	public void deleteGlobalProperty(String propertyName) throws DAOException {
-		
 		//sessionFactory.getCurrentSession().createQuery("delete from GlobalProperty where property = :p")
-		this.getNonSynchronizingSession().createQuery("delete from GlobalProperty where property = :p")
-					.setParameter("p", propertyName)
-					.executeUpdate();
+        Session session = sessionFactory.getCurrentSession();
+        try {
+        synchronizationInterceptor.deactivateTransactionSerialization();                    
+		session.createQuery("delete from GlobalProperty where property = :p")
+                .setParameter("p", propertyName)
+                .executeUpdate();
+        }
+        finally {
+            synchronizationInterceptor.activateTransactionSerialization();
+        }
 	}
 	
 	public void setGlobalProperty(GlobalProperty gp) throws DAOException {
 		if (gp.getProperty() != null) {
 			//sessionFactory.getCurrentSession().merge(gp);
-			this.getNonSynchronizingSession().merge(gp);
+            Session session = sessionFactory.getCurrentSession();
+            gp.setIsSynchronizable(false);                    
+			session.merge(gp);
 		}
 	}
 
 	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException {
 		GlobalProperty prop = new GlobalProperty(propertyName, propertyValue);
 		//sessionFactory.getCurrentSession().save(prop);
-		this.getNonSynchronizingSession().save(prop);
+        Session session = sessionFactory.getCurrentSession();
+        prop.setIsSynchronizable(false); //by default: do *not* record global changes
+		session.save(prop);
 	}
 
 	@SuppressWarnings("unchecked")

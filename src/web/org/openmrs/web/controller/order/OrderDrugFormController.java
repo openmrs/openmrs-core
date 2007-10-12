@@ -99,13 +99,17 @@ public class OrderDrugFormController extends SimpleFormController {
 			DrugOrder order = (DrugOrder)obj;
 			
 			// TODO: for now, orderType will have to be hard-coded?
-			order.setOrderType(new OrderType(new Integer(2)));
+			if ( order.getOrderType() == null ) {
+				order.setOrderType(Context.getOrderService().getOrderType(OpenmrsConstants.ORDERTYPE_DRUG));
+			}
 
 			Patient thisPatient = null;
 			if ( order.getEncounter() == null ) {
-				Integer patientId = ServletRequestUtils.getIntParameter(request, "patientId");
-				if ( patientId != null ) {
-					thisPatient = Context.getPatientService().getPatient(patientId);
+				if ( order.getPatient() == null ) {
+					Integer patientId = ServletRequestUtils.getIntParameter(request, "patientId");
+					if ( patientId != null ) {
+						thisPatient = Context.getPatientService().getPatient(patientId);
+					}
 				}
 			}
 

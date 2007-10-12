@@ -47,7 +47,7 @@
 	}
 </style>
 
-<script language="JavaScript">
+<script type="text/javascript">
 	var menuNames = [ "_linkMenu", "_viewMenu" ];
 	function menuHelper(idClicked) {
 		for (var i = 0; i < menuNames.length; ++i) {
@@ -63,7 +63,7 @@
 
 <openmrs:portlet url="activeFilters" id="filterBox" parameterMap="${model.filterPortletParams}" parameters="titleCode=Analysis.pickSet|viewMethod=${model.viewMethod}" />
 
-<script language="JavaScript">
+<script type="text/javascript">
 	var patientIds = null; // a comma-separated list of patientIds, set from the included portlet once it's loaded
 	function submitHelper(idPrefix) {
 	
@@ -96,7 +96,7 @@
 <div id="contentBox">
 
 <c:if test="${fn:length(model.links) > 0}">
-	<span style="position: relative" onMouseOver="javascript:showLayer('_linkMenu')">
+	<span style="position: relative" onmouseover="javascript:showLayer('_linkMenu')">
 		<a class="analysisShortcutBarButton"><spring:message code="Analysis.linkButton"/></a>
 		<div id="_linkMenu" class="analysisShortcutMenu" style="display: none">
 			<br />
@@ -134,7 +134,7 @@
 	</span>
 </c:if>
 
-<span style="position: relative" onMouseOver="javascript:showLayer('_viewMenu')" onMouseOut="javascript:hideLayer('_viewMenu')">
+<span style="position: relative" onmouseover="javascript:showLayer('_viewMenu')" onMouseOut="javascript:hideLayer('_viewMenu')">
 		<a class="analysisShortcutBarButton"><spring:message code="Analysis.viewButton"/></a>
 		<div id="_viewMenu" class="analysisShortcutMenu" style="display: none">
 			<ul>
@@ -176,7 +176,7 @@
 <c:choose>
 	<c:when test="${model.viewMethod == 'overview'}">
 		<div id="analysisContentPane"></div>
-		<script ype="text/javascript">
+		<script type="text/javascript">
 			loadInto("Loading...", "cohortSummary.list", "analysisContentPane");
 		</script>
 	</c:when>

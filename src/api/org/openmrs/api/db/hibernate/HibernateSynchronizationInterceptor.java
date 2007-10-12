@@ -1,14 +1,23 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.db.hibernate;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,31 +26,34 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
+import org.openmrs.User;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.serial.DefaultNormalizer;
-import org.openmrs.serial.FilePackage;
-import org.openmrs.serial.Item;
-import org.openmrs.serial.Normalizer;
-import org.openmrs.serial.Record;
-import org.openmrs.serial.TimestampNormalizer;
+import org.openmrs.serialization.DefaultNormalizer;
+import org.openmrs.serialization.Item;
+import org.openmrs.serialization.Normalizer;
+import org.openmrs.serialization.Package;
+import org.openmrs.serialization.Record;
+import org.openmrs.serialization.TimestampNormalizer;
+import org.openmrs.synchronization.SyncItemState;
+import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.Synchronizable;
+import org.openmrs.synchronization.SynchronizableInstance;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.engine.SyncRecordState;
-import org.openmrs.synchronization.engine.SyncItem.SyncItemState;
-import org.openmrs.util.OpenmrsUtil;
 
 public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
 
-	/**
+    /**
      * From Spring docs: There might be a single instance of Interceptor for a
      * SessionFactory, or a new instance might be specified for each Session.
      * Whichever approach is used, the interceptor must be serializable if the
      * Session is to be serializable. This means that SessionFactory-scoped
      * interceptors should implement readResolve().
      */
-    public static final long serialVersionUID = 0L;
+    private static final long serialVersionUID = -4905755656754047400L;
+
     protected final Log log = LogFactory.getLog(HibernateSynchronizationInterceptor.class);
 
     protected SynchronizationService synchronizationService = null;
@@ -58,18 +70,126 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
         safetypes.put("boolean", defN);
         safetypes.put("integer", defN);
     }
-
+    
+    private ThreadLocal<SyncRecord> syncRecordHolder = new ThreadLocal<SyncRecord>();
+    private ThreadLocal<Boolean> deactivated = new ThreadLocal<Boolean>();
+    private ThreadLocal<HashSet<Object>> pendingFlushHolder = new ThreadLocal<HashSet<Object>>();
+    
     public HibernateSynchronizationInterceptor() {
     }
 
+    /**
+     * Deactivate synchronization. Will be reset on transaction completion or manually.
+     */
+    public void deactivateTransactionSerialization() {
+        deactivated.set(true);
+    }
+
+    /**
+     * Re-activate synchronization.
+     */
+    public void activateTransactionSerialization() {
+        deactivated.remove();
+    }
+
+    /**
+     * Intercept the start of a transaction. A new SyncRecord is created for this transaction/
+     * thread to keep track of changes done during the transaction. Kept ThreadLocal.
+     * 
+     * @see org.hibernate.EmptyInterceptor#afterTransactionBegin(org.hibernate.Transaction)
+     */
+    @Override
     public void afterTransactionBegin(Transaction tx) {
-        log.debug("afterTransactionBegin: " + tx);
+        log.warn("afterTransactionBegin: " + tx + " deactivated: " + deactivated.get());
+        
+        if(syncRecordHolder.get() != null ) {
+            log.warn("Replacing existing SyncRecord in SyncRecord holder");
+        }
+        
+        syncRecordHolder.set(new SyncRecord());
     }
 
+    /**
+     * Intercepts right before a commit is done. Not called in case of a rollback pr. Hibernate
+     * documentation. If synchronization is not disabled for this transaction/thread the
+     * SyncRecord kept ThreadLocal will be saved to the database, if it contains changes (SyncItems).
+     * 
+     * @see org.hibernate.EmptyInterceptor#beforeTransactionCompletion(org.hibernate.Transaction)
+     */
+    @Override
+    public void beforeTransactionCompletion(Transaction tx) {
+        log.warn("beforeTransactionCompletion: " + tx + " deactivated: " + deactivated.get());
+        
+        // If synchronization is NOT deactivated
+        if (deactivated.get() == null) {
+            SyncRecord record = syncRecordHolder.get();
+            syncRecordHolder.remove();
+
+            // Does this transaction contain any serialized changes?
+            if (record.getItems() != null) {
+                log.warn(record.getItems().size() + " SyncItems in SyncRecord, saving!");
+                
+                // Grab user if we have one, and use the GUID of the user as creator of this SyncRecord
+                User user = Context.getAuthenticatedUser();
+                if (user != null) {
+                    record.setCreator(user.getGuid());
+                }
+                
+                // Grab database version
+                record.setDatabaseVersion(Context.getAdministrationService().getGlobalProperty("database_version"));
+                
+                // Complete the record
+                record.setGuid(UUID.randomUUID().toString());
+                record.setState(SyncRecordState.NEW);
+                record.setTimestamp(new Date());
+                record.setRetryCount(0);
+    
+                // Save SyncRecord
+                if (synchronizationService == null) {
+                    synchronizationService = Context.getSynchronizationService();
+                }
+    
+                synchronizationService.createSyncRecord(record);
+            }
+            else {
+                log.warn("No SyncItems in SyncRecord, save discarded!");
+            }
+        }
+    }
+    
+    /**
+     * Intercepts after the transaction is completed, also called on rollback.
+     * Clean up any remaining ThreadLocal objects/reset.
+     * 
+     * @see org.hibernate.EmptyInterceptor#afterTransactionCompletion(org.hibernate.Transaction)
+     */
+    @Override
     public void afterTransactionCompletion(Transaction tx) {
-        log.debug("afterTransactionCompletion: " + tx);
+        if (log.isWarnEnabled()) {
+            log.warn("afterTransactionCompletion: " + tx + " committed: " + tx.wasCommitted()+ " rolledback: " + tx.wasRolledBack() + " deactivated: " + deactivated.get());
+        }
+        
+        // clean out SyncRecord in case of rollback:
+        syncRecordHolder.remove();
+        
+        // reactivate the interceptor
+        deactivated.remove();
     }
 
+    /**
+     * Called before an object is saved. Triggers in our case for new objects
+     * (inserts)
+     * 
+     * Package up the changes and set state to NEW.
+     * 
+     * @return false if data is unmodified by this interceptor, true if
+     *         modified. Adding GUIDs to new objects that lack them.
+     * 
+     * @see org.hibernate.EmptyInterceptor#onSave(java.lang.Object,
+     *      java.io.Serializable, java.lang.Object[], java.lang.String[],
+     *      org.hibernate.type.Type[])
+     */
+    @Override
     public boolean onSave(Object entity,
                           Serializable id,
                           Object[] state,
@@ -77,18 +197,34 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
                           Type[] types) 
     {
         log.debug("onSave: " + state.toString());
+
+        //first see if entity should be written to the journal at all
+        if (!this.shouldSynchornize(entity))
+            return false;
         
-        return packageObject(entity, state, propertyNames, types, SyncItemState.NEW);
+        //create new flush holder if needed
+        if (pendingFlushHolder.get() == null) 
+            pendingFlushHolder.set(new HashSet<Object>());
+
+        if (!pendingFlushHolder.get().contains(entity)) {
+            pendingFlushHolder.get().add(entity);
+            return packageObject(entity, state, propertyNames, types, SyncItemState.NEW);
+        }
+        
+        return false;
     }
 
-    public void onDelete(Object entity,
-            Serializable id,
-            Object[] state,
-            String[] propertyNames,
-            Type[] types) 
-    {
-    } 
-
+    /**
+     * Called before an object is updated in the database.
+     * 
+     * Package up the changes and set state to NEW for any objects we care about synchronizing.
+     * 
+     * @return false if data is unmodified by this interceptor, true if
+     *         modified. Adding GUIDs to new objects that lack them.
+     * 
+     * @see org.hibernate.EmptyInterceptor#onFlushDirty(java.lang.Object, java.io.Serializable, java.lang.Object[], java.lang.Object[], java.lang.String[], org.hibernate.type.Type[])
+     */
+    @Override
     public boolean onFlushDirty(Object entity,
                                 Serializable id,
                                 Object[] currentState,
@@ -98,71 +234,132 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
     {
         log.debug("onFlushDirty: " + entity.getClass().getName());
 
-        return packageObject(entity, currentState, propertyNames, types, SyncItemState.UPDATED);
+        //first see if entity should be written to the journal at all
+        if (!this.shouldSynchornize(entity))
+            return false;
+
+        /* NOTE: Accomodate Hibernate auto-flush semantics (as best as we understand them):
+         * In case of sync ingest: When processing SyncRecord with >1 sync item via ProcessSyncRecord() on parent, calls to get object/update
+         * object by guid may cause auto-flush of pending updates; this would result in redundant sync items
+         * within a sync record. Use threadLocal HashSet to only keep one instance of dirty object for single
+         * hibernate flush. Note that this is (i.e. incurring autoflush() is not normally observed in rest of openmrs service
+         * layer since most of the data change calls are encapsulated in single transactions.  
+         */
+        
+        //create new holder if needed
+        if (pendingFlushHolder.get() == null) 
+            pendingFlushHolder.set(new HashSet<Object>());
+
+        if (!pendingFlushHolder.get().contains(entity)) {
+            pendingFlushHolder.get().add(entity);
+            return packageObject(entity, currentState, propertyNames, types, SyncItemState.UPDATED);
+        }
+        
+        return false;
+    }
+    
+    @Override
+    public void postFlush(Iterator entities) {
+        
+        if(log.isDebugEnabled())
+            log.debug("postFlush called.");
+        
+        //clear the holder
+        pendingFlushHolder.remove();
+    }
+    
+    @Override
+    public String onPrepareStatement(String sql) {
+
+        if(log.isDebugEnabled())
+            log.debug("onPrepareStatement. sql: " + sql);
+
+        //TODO: handle prepared stmts
+
+        return sql;
     }
 
     /**
-     * 
      * Serializes and packages an intercepted change in object state
      * 
-     * @param entity
-     * @param currentState
-     * @param propertyNames
-     * @param types
-     * @param state
+     * @param entity The object changed.
+     * @param currentState Array containing data for each field in the object as they will be saved.
+     * @param propertyNames Array containing name for each field in the object, corresponding to currentState.
+     * @param types Array containing Type of the field in the object, corresponding to currentState.
+     * @param state SyncItemState, e.g. NEW, UPDATED, DELETED 
      * @return True if data was altered, false otherwise.
      */
     protected boolean packageObject(Object entity, Object[] currentState, String[] propertyNames, Type[] types, SyncItemState state) {
         boolean dataChanged = false;
+                
+        /*
+         * Get the GUID of this object if it has one, used as SyncItemKey.
+         */
+        String objectGuid = null;
+        if (entity instanceof Synchronizable) {
+            objectGuid = ((Synchronizable) entity).getGuid();
+        }
+
         HashMap<String, propertyClassValue> values = new HashMap<String, propertyClassValue> ();
 
         try {
-            // use Package when you don't want files on disk
-            //org.openmrs.serial.Package pkg = new org.openmrs.serial.Package();
-            org.openmrs.serial.Package pkg = new FilePackage();
+            Package pkg = new Package();
             Record xml = pkg.createRecordForWrite(entity.getClass().getName());
             Item entityItem = xml.getRootItem();
           
-            // properties/values put in a hash for dupe removeal
+            /*
+             * Loop through all the properties/values and put in a hash for duplicate removal
+             */
             for (int i = 0; i < types.length; i++) {
                 String typeName = types[i].getName();
+                
+                if (log.isDebugEnabled())
+                    log.debug("Processing, type: " + typeName + " Field: " + propertyNames[i]);
 
-                log.debug("Processing, type: " + typeName + " Field: " + propertyNames[i]);
-
-                // If this field is a String Guid, and it's null or "" we generate a new GUID before processing it.
+                /*
+                 * If this field is a String GUID, and it's null or "" we generate a new GUID before processing it.
+                 */
                 if (typeName.equals("string") && propertyNames[i].equals("guid") && (currentState[i] == null || currentState[i].equals(""))) {
-                    currentState[i] = UUID.randomUUID().toString();
+                    objectGuid = UUID.randomUUID().toString();
+                    currentState[i] = objectGuid;
                     dataChanged = true;
-                    log.info("Issued randomly generated GUID " + currentState[i] + " to Type: " + typeName + " Field: " + propertyNames[i]);
+                    if (log.isInfoEnabled())
+                        log.info("Issued randomly generated GUID " + currentState[i] + " to Type: " + typeName + " Field: " + propertyNames[i]);
                 }
                 
                 if (currentState[i] != null) {
+                    
+                    /*
+                     * Handle safe types like boolean/String/integer/timestamp:
+                     */
                     Normalizer n;
                     if ((n = safetypes.get(typeName)) != null) {
                         values.put(propertyNames[i], new propertyClassValue(typeName, n.toString(currentState[i])));
                     }
-                    // maybe has guid
-                    else if (typeName.indexOf("org.openmrs") > -1) {
-                        try {
-                            String guid = getGuid(currentState[i]);
-                            
-                            if (guid != null) {
-                                values.put(propertyNames[i], new propertyClassValue(typeName, guid));
-                            } else {
-                                log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null");
-                            }
-                        } catch (NoSuchMethodException e) {
-                            log.error("Type: " + typeName + " Field: " + propertyNames[i] + " did not have a GUID method!");
+                    
+                    /*
+                     * Not a safe type, check if the object implements the Synchronizable interface
+                     */
+                    else if (currentState[i] instanceof Synchronizable) {
+                        Synchronizable childObject = (Synchronizable)currentState[i];
+                        String childGuid = childObject.getGuid();
+                        
+                        if (childGuid != null) {
+                            values.put(propertyNames[i], new propertyClassValue(typeName, childGuid));
+                        } else {
+                            log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null");
                         }
                     } else {
-                        log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is not safe and has no GUID!");
+                        log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is not safe and has no GUID, skipped!");
                     }
                 } else {
-                    log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null");
+                    log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null, skipped");
                 }
             }
 
-            // serialize from hashmap
+            /*
+             * Serialize the data identified and put in the value-map
+             */
             Iterator<Map.Entry<String, propertyClassValue>> its = values.entrySet().iterator();
             while (its.hasNext()) {
                 Map.Entry<String, propertyClassValue> me = its.next();
@@ -175,96 +372,40 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
 
                     appendAttribute(xml, entityItem, property, pcv.getClazz(), pcv.getValue());
                 } catch (Exception e) {
-                	log.error(e);
+                	log.error("Error while appending attribute", e);
                 }
             }
 
-            // look up, see how this was created
-            if (pkg instanceof FilePackage) {
-                // testing name generator
-                Calendar calendar = new GregorianCalendar();
-                String filename = calendar.get(Calendar.YEAR) + sp
-                        + calendar.get(Calendar.MONTH) + sp
-                        + calendar.get(Calendar.DATE) + sp
-                        + calendar.get(Calendar.HOUR) + sp
-                        + calendar.get(Calendar.MINUTE) + sp
-                        + calendar.get(Calendar.MILLISECOND);
-                
-                pkg.savePackage(OpenmrsUtil.getApplicationDataDirectory() + "/journal/" + filename);
-            }
-
-            //nice to gc
+            // Be nice to GC
             values.clear();
 
-            // Store change in sync table:
+            /*
+             * Create SyncItem and store change in SyncRecord kept in ThreadLocal:
+             */
             SyncItem syncItem = new SyncItem();
-            //FIXME: need to fetch GUID from object, just for testing.
-            syncItem.setKey(new SyncItemKey<String>(UUID.randomUUID().toString(), String.class)); 
+            syncItem.setKey(new SyncItemKey<String>(objectGuid, String.class)); 
             syncItem.setState(state);
             syncItem.setContent(xml.toStringAsDocumentFragement());
             
-            List<SyncItem> items = new ArrayList<SyncItem>();
-            items.add(syncItem);
-            
-            SyncRecord record = new SyncRecord();
-            record.setGuid(UUID.randomUUID().toString());
-            record.setState(SyncRecordState.NEW);
-            record.setTimestamp(new Date());
-            record.setRetryCount(0);
-            record.setItems(items);
-            
-            // Save SyncRecord
-            if (synchronizationService == null) {
-                synchronizationService = Context.getSynchronizationService();
+            if (log.isWarnEnabled()) {
+                log.warn("Adding SyncItem to SyncRecord");
             }
-            synchronizationService.createSyncRecord(record);
+            syncRecordHolder.get().addItem(syncItem);
         } catch (Exception e) {
             log.error("Journal error\n", e);
         }
         
         return dataChanged;
     }
-        
+    
     protected void appendAttribute(Record xml, Item parent, String attribute, String classname, String data) throws Exception {
-        if (data != null && data.length() > 0) {
+        //if (data != null && data.length() > 0) {
+    	// this will break if we don't allow data.length==0 - some string values are required NOT NULL, but can be blank
+    	if (data != null) {
             Item item = xml.createItem(parent, attribute);
             item.setAttribute("type", classname);
             xml.createText(item, data);
         }
-    }
-
-    /**
-     * Get the GUID of an object if it has a String getGuid()-method
-     * 
-     * @param object The object to get the GUID from.
-     * @return the GUID as String, or null if it has a GUID, but it's null/empty String
-     * @throws NoSuchMethodException If this object doesn't have a getGuid()-method
-     */
-    protected String getGuid(Object object) throws NoSuchMethodException {
-        String methodName = "getGuid";
-
-        Method method;
-        try {
-            method = object.getClass().getMethod(methodName, new Class[] {});
-        } catch (NoSuchMethodException e) {
-            log.debug("The method " + methodName + " did not exist with no parameters for object " + object.getClass().getName(), e);
-            // Indicate that this object doesn't have a Guid.
-            throw e;
-        }
-            
-        String guid = null;
-        try {
-            guid = (String)method.invoke(object, new Object[0]);
-        } catch (Exception e) {
-            log.error("Invocation of method " + methodName + " on object failed", e);
-        }
-
-        // Check if it's an empty string, indicate that this isn't a GUID by setting it to null
-        if (guid != null && guid.length() == 0) {
-            guid = null;
-        }
-        
-        return guid;
     }
 
     protected class propertyClassValue {
@@ -282,6 +423,39 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
             this.clazz = clazz;
             this.value = value;
         }
+    }
+    
+    /**
+     * 
+     * Returns true if entity is to be 'synchronized', that is objects implementing 
+     * Synchronizable or SynchronizableInstance.
+     * 
+     * @param entity
+     * @return
+     */
+    protected boolean shouldSynchornize(Object entity) {
+        
+        //Synchronizable *only*.
+        if (!(entity instanceof Synchronizable)) {
+            if (log.isDebugEnabled())
+                log.debug("Do nothing. Flush with type that does not implement Synchronizable, type is:" + entity.getClass().getName());            
+            return false;
+        } 
+        
+        //if it implements SynchronizableInstance, make sure it is set to synchronize
+        if (entity instanceof SynchronizableInstance) {
+            if (!((SynchronizableInstance)entity).getIsSynchronizable()) {
+                if (log.isDebugEnabled())
+                    log.debug("Do nothing. Flush with SynchronizableInstance set to false, type is:" + entity.getClass().getName());            
+                return false;
+            }
+        }
+     
+        //finally, if 'deactivated' bit was set manually, return accordingly
+        if (deactivated.get() == null)
+            return true;
+        else
+            return false;
     }
 }
 

@@ -26,6 +26,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.aop.Advisor;
+import org.springframework.util.StringUtils;
 
 /**
  * Methods for starting, stopping, and storing OpenMRS modules
@@ -151,8 +152,10 @@ public class ModuleFactory {
 							        + mod.getName(), e);
 							mod.setStartupErrorMessage("Error while starting module: " + e.getMessage());
 						}
-					else
+					else {
+						log.debug("cannot start because required modules are not started: " + mod.getModuleId());
 						leftoverModules.add(mod);
+					}
 				}
 			}
 			Context.removeProxyPrivilege("");
@@ -161,10 +164,12 @@ public class ModuleFactory {
 			// anymore or we've loaded them all
 			boolean atLeastOneModuleLoaded = true;
 			while (leftoverModules.size() > 0 && atLeastOneModuleLoaded) {
+				log.debug("Trying to start leftover modules: " + leftoverModules);
 				atLeastOneModuleLoaded = false;
 				List<Module> modulesJustLoaded = new Vector<Module>();
 				for (Module leftoverModule : leftoverModules) {
 					if (requiredModulesStarted(leftoverModule)) {
+						log.debug("starting leftover module: " + leftoverModule.getModuleId());
 						try {
 							// don't need to check globalproperty here because
 							// it would only
@@ -177,6 +182,8 @@ public class ModuleFactory {
 							log.error("Error while starting leftover module: "
 							        + leftoverModule.getName(), e);
 						}
+					} else {
+						log.debug("cannot start leftover module because required modules are not started: " + leftoverModule.getModuleId());
 					}
 				}
 				leftoverModules.removeAll(modulesJustLoaded);
@@ -371,7 +378,8 @@ public class ModuleFactory {
 				        .getSqlDiffs(module);
 				for (String version : diffs.keySet()) {
 					String sql = diffs.get(version);
-					runDiff(module, version, sql);
+					if (StringUtils.hasText(sql))
+						runDiff(module, version, sql);
 				}
 
 				// effectively mark this module as started successfully
@@ -564,7 +572,7 @@ public class ModuleFactory {
 
 			getStartedModulesMap().remove(moduleId);
 
-			if (isShuttingDown == false) {
+			if (isShuttingDown == false && !Context.isRefreshingContext()) {
 				Context.addProxyPrivilege("");
 				AdministrationService as = Context.getAdministrationService();
 				GlobalProperty gp = new GlobalProperty(moduleId + ".started",

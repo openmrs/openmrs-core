@@ -5,7 +5,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.util.OpenmrsClassLoader;
 
 /**
@@ -14,7 +14,7 @@ import org.openmrs.util.OpenmrsClassLoader;
  * @author Ben Wolfe
  * @version 1.0
  */
-public class PersonAttribute implements java.io.Serializable, ISynchronizable {
+public class PersonAttribute implements java.io.Serializable, Synchronizable {
 	
 	private Log log = LogFactory.getLog(getClass());
 	public static final long serialVersionUID = 11231211232111L;

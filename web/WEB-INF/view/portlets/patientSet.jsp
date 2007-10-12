@@ -14,7 +14,7 @@
 	</c:otherwise>
 </c:choose>
 
-<script language="JavaScript">
+<script type="text/javascript">
 	var localList = null;
 
 	if (${model.patientSet != null}) {
@@ -175,7 +175,7 @@
 </script>
 
 <c:if test="${model.size != 'full'}">
-	<div id="patientSetTray" onMouseOver="javascript:showLayer('patientSetBox')">
+	<div id="patientSetTray" onmouseover="javascript:showLayer('patientSetBox')">
 		<div id="patientSetBox">
 			<div style="text-align: right">
 				<a href="javascript:hideLayer('patientSetBox')">[<spring:message code="general.hide"/>]</a>
@@ -251,7 +251,7 @@
 		<div class="popupTrayTitle">
 			<spring:message code="PatientSet.yours" />
 			<c:if test="${model.droppable}">
-				&nbsp<br/>
+				&nbsp;<br/>
 				<a href="javascript:clearThis()" style="color: red">
 					[<spring:message code="PatientSet.drop" />]
 				</a>

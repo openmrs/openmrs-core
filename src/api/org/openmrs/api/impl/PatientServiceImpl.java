@@ -70,7 +70,7 @@ public class PatientServiceImpl implements PatientService {
 			if (patient.getIdentifiers() != null)
 				s += "|" + patient.getIdentifiers();
 			
-			log.debug(s);
+			log.debug("Creating patient: " + s);
 		}
 		
 		setCollectionProperties(patient);
@@ -86,6 +86,10 @@ public class PatientServiceImpl implements PatientService {
 
 	public PatientIdentifier createPatientIdentifier(PatientIdentifier patientIdentifier) throws APIException {
 		return getPatientDAO().createPatientIdentifier(patientIdentifier);
+	}
+
+	public PatientIdentifier createPatientIdentifierSync(PatientIdentifier patientIdentifier) throws APIException {
+		return getPatientDAO().createPatientIdentifierSync(patientIdentifier);
 	}
 
 	/**
@@ -414,6 +418,13 @@ public class PatientServiceImpl implements PatientService {
 		
 		this.updatePatient(p);
 		//getPatientDAO().updatePatientIdentifier(pi);
+	}
+
+	public void updatePatientIdentifierSync(PatientIdentifier pi) throws APIException {
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
+		
+		getPatientDAO().updatePatientIdentifierSync(pi);
 	}
 	
 	/**

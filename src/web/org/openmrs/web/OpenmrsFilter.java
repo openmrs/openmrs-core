@@ -41,9 +41,9 @@ public class OpenmrsFilter implements Filter {
         initialRequest = ( val == null );
         
         log.debug("initial Request? " + initialRequest);
-        log.debug("requestURI" + httpRequest.getRequestURI());
-        log.debug("requestURL" + httpRequest.getRequestURL());
-        log.debug("request path info" + httpRequest.getPathInfo());
+        log.debug("requestURI " + httpRequest.getRequestURI());
+        log.debug("requestURL " + httpRequest.getRequestURL());
+        log.debug("request path info " + httpRequest.getPathInfo());
         
         //set/forward the request init attribute
         if (initialRequest)

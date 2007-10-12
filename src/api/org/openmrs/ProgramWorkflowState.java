@@ -4,9 +4,9 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
-public class ProgramWorkflowState implements ISynchronizable {
+public class ProgramWorkflowState implements Synchronizable {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	

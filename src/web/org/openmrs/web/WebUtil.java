@@ -48,7 +48,7 @@ public class WebUtil {
 	}
 	
 	/**
-	 * Potentially strips out the path from a string
+	 * Strips out the path from a string
 	 * if "C:\documents\file.doc", will return "file.doc"
 	 * if "file.doc", will return "file.doc"
 	 * if "/home/file.doc" will return "file.doc"
@@ -57,13 +57,21 @@ public class WebUtil {
 	 * @return filename stripped down
 	 */
 	public static String stripFilename(String filename) {
-		if (filename.indexOf("/") != -1) {
-			filename = filename.substring(filename.lastIndexOf("/"));
-		}
-	
-		if (filename.indexOf("\\") != -1) {
-			filename = filename.substring(filename.lastIndexOf("\\"));
-		}
+		if (log.isDebugEnabled())
+			log.debug("Stripping filename from: " + filename);
+		
+		// for unix based filesystems
+		int index = filename.lastIndexOf("/");
+		if (index != -1)
+			filename = filename.substring(index + 1);
+		
+		// for windows based filesystems
+		index = filename.lastIndexOf("\\");
+		if (index != -1)
+			filename = filename.substring(index + 1);
+		
+		if (log.isDebugEnabled())
+			log.debug("Returning stripped down filename: " + filename);
 		
 		return filename;
 	}

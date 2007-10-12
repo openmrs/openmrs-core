@@ -14,6 +14,12 @@
 		<property name="guid" type="java.lang.String"
 			column="guid" length="36" />
 
+		<property name="creator" type="java.lang.String"
+			column="creator" length="36" />
+
+		<property name="databaseVersion" type="java.lang.String"
+			column="database_version" length="8" />
+			
 		<property name="timestamp" type="java.util.Date"
 			column="timestamp" length="19" />
 
@@ -21,14 +27,11 @@
 			column="retry_count" length="11" />
 		
 		<property name="state">
-	      <type name="org.openmrs.api.db.hibernate.usertype.GenericEnumUserType">
-	        <param name="enumClassName">org.openmrs.synchronization.engine.SyncRecordState</param>
-	      </type>
-	    </property>
+			<type name="org.openmrs.api.db.hibernate.usertype.GenericEnumUserType">
+				<param name="enumClassName">org.openmrs.synchronization.SyncRecordState</param>
+			</type>
+		</property>
 
-	    <property name="itemContent" type="java.lang.String"
-	      column="payload" />
-    
 		<property name="errorMessage" type="java.lang.String"
 			column="error_message" length="255" />
 

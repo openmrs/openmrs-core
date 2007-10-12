@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -22,7 +22,7 @@ import org.openmrs.util.OpenmrsConstants;
  * @author Ben Wolfe
  * @version 2.0
  */
-public class User extends Person implements java.io.Serializable, ISynchronizable {
+public class User extends Person implements java.io.Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 4489L;
 	public Log log = LogFactory.getLog(getClass());

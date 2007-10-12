@@ -12,8 +12,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.engine.SyncRecordState;
-import org.openmrs.synchronization.engine.SyncItem.SyncItemState;
+import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.SyncItemState;
 
 public class SynchronizationServiceTest extends BaseTest {
 

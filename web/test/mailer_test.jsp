@@ -53,7 +53,7 @@ This JSP tests the mail capabilities of the application to make sure that the ma
 mail server have been configured correctly.
 </p>
 <br/>
-<%= ( errorMessage != null ) ? errorMessage : "" %><br>
+<%= ( errorMessage != null ) ? errorMessage : "" %><br/>
 
 <form method="post">
 <table>

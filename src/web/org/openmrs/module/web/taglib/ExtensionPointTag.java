@@ -188,7 +188,8 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	public int doEndTag() throws JspException {
 		try {
 			if (getBodyContent() != null) {
-				log.debug("Ending tag: " + bodyContent.getString());
+				if (log.isDebugEnabled())
+					log.debug("Ending tag: " + bodyContent.getString());
 				if (extensions != null)
 					getBodyContent().writeOut(bodyContent.getEnclosingWriter());
 				bodyContent.clearBody();

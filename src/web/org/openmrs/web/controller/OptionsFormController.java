@@ -55,15 +55,13 @@ public class OptionsFormController extends SimpleFormController {
 				errors.rejectValue("confirmPassword", "error.password.match");
 			}
 		}
-
+		
 		if (!opts.getSecretQuestionPassword().equals("")) {
 			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
 				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
 				errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
 			}
 		}
-		
-		// TODO catch errors
 		
 		return super.processFormSubmission(request, response, object, errors); 
 	}
@@ -121,15 +119,27 @@ public class OptionsFormController extends SimpleFormController {
 					errors.rejectValue("oldPassword", "error.password.match");
 				}
 			}
-			
-			if (!opts.getSecretQuestionPassword().equals("") && !errors.hasErrors()) {
-				try {
-					user.setSecretQuestion(opts.getSecretQuestionNew());
-					us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(), opts.getSecretAnswerNew());
+			else {
+				// if they left the old password blank but filled in new password
+				if (!opts.getNewPassword().equals("")) {
+					errors.rejectValue("oldPassword", "error.password.incorrect");
 				}
-				catch (APIException e) {
-					errors.rejectValue("secretQuestionPassword", "error.password.match");
+			}
+
+			if (!opts.getSecretQuestionPassword().equals("")) {
+				if  (!errors.hasErrors()) {
+					try {
+						user.setSecretQuestion(opts.getSecretQuestionNew());
+						us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(), opts.getSecretAnswerNew());
+					}
+					catch (APIException e) {
+						errors.rejectValue("secretQuestionPassword", "error.password.match");
+					}
 				}
+			}
+			else if (!opts.getSecretAnswerNew().equals("")) {
+				// if they left the old password blank but filled in new password
+				errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
 			}
 			
 			if (opts.getUsername().length() > 0 && !errors.hasErrors()) {

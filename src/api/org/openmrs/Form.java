@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Form
@@ -15,7 +15,7 @@ import org.openmrs.synchronization.ISynchronizable;
  * @author Burke Mamlin
  * @version 1.0
  */
-public class Form implements java.io.Serializable, ISynchronizable {
+public class Form implements java.io.Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 845634L;
 
@@ -403,8 +403,10 @@ public class Form implements java.io.Serializable, ISynchronizable {
 	public void addFormField(FormField formField) {
 		if (formFields == null)
 			formFields = new HashSet<FormField>();
-		if (!formFields.contains(formField) && formField != null)
+		if (!formFields.contains(formField) && formField != null) {
+			formField.setForm(this);
 			this.formFields.add(formField);
+		}
 	}
 
 	/**

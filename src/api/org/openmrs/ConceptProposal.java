@@ -4,12 +4,12 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
 /**
  * ConceptProposal 
  */
-public class ConceptProposal implements java.io.Serializable, ISynchronizable {
+public class ConceptProposal implements java.io.Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 57344L;
 	private Log log = LogFactory.getLog(this.getClass());

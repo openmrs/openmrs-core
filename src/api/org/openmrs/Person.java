@@ -12,7 +12,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
 /**
  * User in the system.  Both Patient and User inherit the methods of this class
@@ -20,7 +20,7 @@ import org.openmrs.synchronization.ISynchronizable;
  * @author Ben Wolfe
  * @version 2.0
  */
-public class Person implements java.io.Serializable, ISynchronizable {
+public class Person implements java.io.Serializable, Synchronizable {
 
 	public static final Log log = LogFactory.getLog(Person.class);
 	

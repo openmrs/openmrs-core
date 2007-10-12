@@ -7,13 +7,16 @@ import java.util.List;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.api.SynchronizationService;
+import org.openmrs.serialization.FilePackage;
+import org.openmrs.serialization.Item;
+import org.openmrs.serialization.Record;
 import org.openmrs.synchronization.engine.SyncStrategyFile;
 
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.engine.SyncRecordState;
-import org.openmrs.synchronization.engine.SyncItem.SyncItemState;
+import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.SyncItemState;
 
 public class SyncStrategyFileTest extends SyncBaseTest {
 
@@ -51,7 +54,12 @@ public class SyncStrategyFileTest extends SyncBaseTest {
         System.out.println("*** Created sync Transmission file: "
                 + tx.getFileName());
 
-        // TODO - assert contents of the file
+        //read it back from file: TODO - fix this
+        SyncTransmission txFromFile = new SyncTransmission();
+        //txFromFile.ReadFromFile(tx.getFileName());
+        
+        //assert equality
+        assertEquals(tx, txFromFile);
 
         // Cleanup the journal
         SyncSourceJournalTest.cleanupRecords(service, changed);

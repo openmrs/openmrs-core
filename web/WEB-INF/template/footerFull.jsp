@@ -28,11 +28,11 @@
 					%>
 					<c:if test="${status.index != 0}">| </c:if>
 					<c:if test="${fn:toLowerCase(locale) == fn:toLowerCase(loc)}">${locDisplayName}</c:if>
-					<c:if test="${fn:toLowerCase(locale) != fn:toLowerCase(loc)}"><a href="?${qs}&lang=${loc}">${locDisplayName}</a></c:if> 
+					<c:if test="${fn:toLowerCase(locale) != fn:toLowerCase(loc)}"><a href="?${qs}&amp;lang=${loc}">${locDisplayName}</a></c:if> 
 				</c:forEach>
 			</span>	
 	
-			<span id="buildDate">Last Build: @TIMESTAMP@</span>
+			<span id="buildDate">Last Build: <%= org.openmrs.web.WebConstants.BUILD_TIMESTAMP %></span>
 			
 			<span id="codeVersion">Version: ${openmrsVersion}</span>
 	

@@ -2,9 +2,9 @@ package org.openmrs;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.synchronization.ISynchronizable;
+import org.openmrs.synchronization.Synchronizable;
 
-public class ConceptStateConversion implements ISynchronizable {
+public class ConceptStateConversion implements Synchronizable {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	

@@ -10,18 +10,16 @@ import java.util.Date;
 
 import org.openmrs.BaseTest;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.SynchronizationService;
-import org.openmrs.serial.FilePackage;
-import org.openmrs.serial.Item;
-import org.openmrs.serial.IItem;
-import org.openmrs.serial.Package;
-import org.openmrs.serial.Record;
+import org.openmrs.serialization.FilePackage;
+import org.openmrs.serialization.IItem;
+import org.openmrs.serialization.Item;
+import org.openmrs.serialization.Package;
+import org.openmrs.serialization.Record;
 
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.engine.SyncRecordState;
-import org.openmrs.synchronization.engine.SyncItem.SyncItemState;
+import org.openmrs.synchronization.SyncItemState;
 
 public class SyncRecordTest extends SyncBaseTest {
 

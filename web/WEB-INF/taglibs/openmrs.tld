@@ -82,6 +82,12 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
+		<description>if you set name to conceptSet, you must specify which set (by name or id)</description>
+		<name>conceptSet</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
 		<description>if you set name to reportObject, you can limit them to a specific type</description>
 		<name>reportObjectType</name>
 		<required>false</required>
@@ -680,6 +686,12 @@
 	</attribute>
 	<attribute>
 		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<description>If specified, then the property will be returned as a List of Strings. This property should be given as a Java regular expression, as would be passed to String.split(String)</description>
+		<name>listSeparator</name>
 		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>

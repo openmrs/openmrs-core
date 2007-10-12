@@ -289,7 +289,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Concept> getConceptsByName(String name) {
-		Query query = sessionFactory.getCurrentSession().createQuery("select concept from Concept concept where concept.names.name like '%' || ? || '%'");
+		Query query = sessionFactory.getCurrentSession().createQuery("select c from Concept c join c.names names where names.name like '%' || ? || '%'");
 		query.setString(0, name);
 		List<Concept> concepts = query.list();
 		
@@ -301,7 +301,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public Concept getConceptByName(String name) {
-		Query query = sessionFactory.getCurrentSession().createQuery("select concept from Concept concept where concept.names.name = ?");
+		Query query = sessionFactory.getCurrentSession().createQuery("from Concept c join c.names names where names.name = ?");
 		query.setString(0, name);
 		List<Concept> concepts = query.list();
 		
