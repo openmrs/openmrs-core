@@ -421,7 +421,8 @@ public class SyncUtilTransmission {
                 log.warn("STILL UNABLE TO GET ORIGIN WITH username " + username + " and sourceguid " + sourceGuid);
             }
         } else {
-            log.warn("ORIGIN SERVER IS " + origin.getNickname());
+            if ( origin != null ) log.warn("ORIGIN SERVER IS " + origin.getNickname());
+            else log.warn("ORIGIN SERVER IS STILL NULL");
         }
         
         List<SyncImportRecord> importRecords = new ArrayList<SyncImportRecord>();

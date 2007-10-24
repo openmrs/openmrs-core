@@ -102,10 +102,13 @@ public class ServerConnection {
 
 		System.out.println("SENDING POSTDATA: " + formData);
 		
+        HttpURLConnection urlcon = null;
+        PrintWriter pout = null;
+        InputStream in = null;
+        
 		try {
 			URL url = new URL(postUrl);
 			
-			HttpURLConnection urlcon = null;
 			if (url.getProtocol() == "https") {
 		         urlcon = (HttpsURLConnection)url.openConnection();
 			} else {
@@ -116,11 +119,11 @@ public class ServerConnection {
 			urlcon.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
 			urlcon.setDoOutput(true);
 			urlcon.setDoInput(true);
-			PrintWriter pout = new PrintWriter(new OutputStreamWriter(urlcon.getOutputStream(), SyncConstants.UTF8), true);
+			pout = new PrintWriter(new OutputStreamWriter(urlcon.getOutputStream(), SyncConstants.UTF8), true);
 			pout.print(formData);
 			pout.flush();
 			
-			InputStream in = urlcon.getInputStream();
+			in = urlcon.getInputStream();
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String line = "";
 			while ((line = br.readLine()) != null) {
@@ -136,6 +139,15 @@ public class ServerConnection {
         	// all other exceptions really just mean that the connection was bad
 	        log.error("Error while trying to connect to remote server at " + postUrl, e);
 	        e.printStackTrace();
+        } finally {
+            try {
+                if ( in != null ) in.close();
+                if ( pout != null ) pout.close();
+                if ( urlcon != null ) urlcon.disconnect();
+                log.warn("Disconnecting from server...");
+            } catch ( Exception e ) {
+                log.error("Error while trying to disconnect from server");
+            }
         }
 		        
 		return connResponse;

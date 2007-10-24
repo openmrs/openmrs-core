@@ -158,6 +158,7 @@ public class SynchronizationImportListController extends SimpleFormController {
                     SyncTransmission st = null;
 
                     if ( isResponse ) {
+                        log.warn("UNDERSTOOD THAT THIS IS A RESPONSE");
                         SyncTransmissionResponse priorResponse = null;
                         
                         try {
@@ -166,12 +167,17 @@ public class SynchronizationImportListController extends SimpleFormController {
                             log.error("Unable to deserialize the following: " + contents);
                             e.printStackTrace();
                         }
+
+                        log.warn("WE SEEM TO HAVE GOTTEN THE PRIOR RESPONSE: " + priorResponse.getGuid());
                         
                         //figure out where this came from
                         //for responses, the target ID contains the server that generated the response
                         String sourceGuid = str.getSyncTargetGuid();
+                        log.warn("Getting sourceGuid of " + sourceGuid);
                         RemoteServer origin = Context.getSynchronizationService().getRemoteServer(sourceGuid);
-
+                        if ( origin == null ) log.warn("NOT ABLE TO GET ORIGIN SERVER BY SOURCEGUID");
+                        else log.warn("EASILY ABLE TO GET ORIGIN SERVER BY SOURCEGUID: " + sourceGuid + " = " + origin.getNickname());
+                        
                         // if that didn't do it, we should be able to get by serverId, if this is a file-based upload
                         if ( origin == null && serverId > 0 ) {
                             // make a last-ditch effort to try to figure out what server this is coming from, so we can behave appropriately.
@@ -185,7 +191,8 @@ public class SynchronizationImportListController extends SimpleFormController {
                                 log.warn("STILL UNABLE TO GET ORIGIN WITH username " + username + " and sourceguid " + sourceGuid);
                             }
                         } else {
-                            log.warn("ORIGIN SERVER IS " + origin.getNickname());
+                            if ( origin == null ) log.warn("ORIGIN SERVER IS STILL NULL AFTER 2 ATTEMPTS");
+                            else log.warn("ORIGIN SERVER IS " + origin.getNickname());
                         }
 
                         if ( origin == null ) {

@@ -50,7 +50,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
     public void processSyncImportRecord(SyncImportRecord importRecord, RemoteServer server) throws APIException {
         if ( importRecord != null ) {
             if ( importRecord.getGuid() != null && importRecord.getState() != null ) {
-                SyncRecord record = Context.getSynchronizationService().getSyncRecord(importRecord.getGuid());
+                SyncRecord record = Context.getSynchronizationService().getSyncRecordByOriginalGuid(importRecord.getGuid());
                 if ( server.getServerType().equals(RemoteServerType.PARENT) ) {
                     // with parents, we set the actual state of the record
                     if ( importRecord.getState().equals(SyncRecordState.ALREADY_COMMITTED) ) record.setState(SyncRecordState.COMMITTED);
@@ -91,14 +91,18 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 //log.warn("\nINGESTING ALL CLASSES: " + recordClasses + " BECAUSE SERVER IS READY TO ACCEPT ALL");
                 // second, let's see if this SyncRecord has already been imported
                 // use the original record id to locate import_record copy
+                log.warn("AT THIS POINT, ORIGINALGUID FOR RECORD IS " + record.getOriginalGuid());
                 importRecord = Context.getSynchronizationService().getSyncImportRecord(record.getOriginalGuid());
                 boolean isUpdateNeeded = false;
                 
                 if ( importRecord == null ) {
                     isUpdateNeeded = true;
                     importRecord = new SyncImportRecord(record);
+                    importRecord.setGuid(record.getOriginalGuid());
                     Context.getSynchronizationService().createSyncImportRecord(importRecord);
+                    log.warn("ImportRecord was just created");
                 } else {
+                    log.warn("ImportRecord already exists and has state: " + importRecord.getState());
                     SyncRecordState state = importRecord.getState();
                     if ( state.equals(SyncRecordState.COMMITTED) ) {
                         // apparently, the remote/child server exporting to this server doesn't realize it's
@@ -216,6 +220,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 }
                 // now try to commit this fully inflated object
                 try {
+                    log.warn("setting lastRecordGuid to " + originalGuid);
                     ((Synchronizable)o).setLastRecordGuid(originalGuid);
                     SyncUtil.updateOpenmrsObject(o, guid, isUpdateNotCreate);
                     ret.setState(SyncItemState.SYNCHRONIZED);
