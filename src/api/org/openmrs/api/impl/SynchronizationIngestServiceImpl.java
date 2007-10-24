@@ -31,6 +31,9 @@ import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.ingest.SyncImportItem;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.openmrs.synchronization.ingest.SyncItemIngestException;
+import org.openmrs.synchronization.server.RemoteServer;
+import org.openmrs.synchronization.server.RemoteServerType;
+import org.openmrs.synchronization.server.SyncServerRecord;
 import org.w3c.dom.NodeList;
 
 public class SynchronizationIngestServiceImpl implements SynchronizationIngestService {
@@ -44,12 +47,22 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
      * @param importRecord
      * @throws APIException
      */
-    public void processSyncImportRecord(SyncImportRecord importRecord) throws APIException {
+    public void processSyncImportRecord(SyncImportRecord importRecord, RemoteServer server) throws APIException {
         if ( importRecord != null ) {
             if ( importRecord.getGuid() != null && importRecord.getState() != null ) {
                 SyncRecord record = Context.getSynchronizationService().getSyncRecord(importRecord.getGuid());
-                if ( importRecord.getState().equals(SyncRecordState.ALREADY_COMMITTED) ) record.setState(SyncRecordState.COMMITTED);
-                else record.setState(importRecord.getState());
+                if ( server.getServerType().equals(RemoteServerType.PARENT) ) {
+                    // with parents, we set the actual state of the record
+                    if ( importRecord.getState().equals(SyncRecordState.ALREADY_COMMITTED) ) record.setState(SyncRecordState.COMMITTED);
+                    else if ( importRecord.getState().equals(SyncRecordState.NOT_SUPPOSED_TO_SYNC) ) record.setState(SyncRecordState.REJECTED);
+                    else record.setState(importRecord.getState());
+                } else {
+                    // with non-parents we set state in the server-record
+                    SyncServerRecord serverRecord = record.getServerRecord(server);
+                    if ( importRecord.getState().equals(SyncRecordState.ALREADY_COMMITTED) ) serverRecord.setState(SyncRecordState.COMMITTED);
+                    else if ( importRecord.getState().equals(SyncRecordState.NOT_SUPPOSED_TO_SYNC) ) serverRecord.setState(SyncRecordState.REJECTED);
+                    else serverRecord.setState(importRecord.getState());
+                }
                 
                 Context.getSynchronizationService().updateSyncRecord(record);
             }
@@ -63,67 +76,103 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
      * @param record
      * @return
      */
-    public SyncImportRecord ProcessSyncRecord(SyncRecord record) throws APIException {
+    public SyncImportRecord processSyncRecord(SyncRecord record, RemoteServer server) throws APIException {
         SyncImportRecord importRecord = new SyncImportRecord();
         importRecord.setState(SyncRecordState.FAILED);  // by default, until we know otherwise
         importRecord.setRetryCount(record.getRetryCount());
         importRecord.setTimestamp(record.getTimestamp());
         
         try {
-            // first, let's see if this SyncRecord has already been imported
-            importRecord = Context.getSynchronizationService().getSyncImportRecord(record.getGuid());
-            boolean isUpdateNeeded = false;
-            
-            if ( importRecord == null ) {
-                isUpdateNeeded = true;
-                importRecord = new SyncImportRecord(record);
-                Context.getSynchronizationService().createSyncImportRecord(importRecord);
+            // first, let's see if this server even accepts this kind of syncRecord
+            if ( !server.getClassesReceived().containsAll(record.getContainedClassSet())) {
+                importRecord.setState(SyncRecordState.NOT_SUPPOSED_TO_SYNC);
+                log.warn("\nNOT INGESTING RECORD with " + record.getContainedClasses() + " BECAUSE SERVER IS NOT READY TO ACCEPT ALL CONTAINED OBJECTS\n");
             } else {
-                SyncRecordState state = importRecord.getState();
-                if ( state != SyncRecordState.COMMITTED ) {
+                //log.warn("\nINGESTING ALL CLASSES: " + recordClasses + " BECAUSE SERVER IS READY TO ACCEPT ALL");
+                // second, let's see if this SyncRecord has already been imported
+                // use the original record id to locate import_record copy
+                importRecord = Context.getSynchronizationService().getSyncImportRecord(record.getOriginalGuid());
+                boolean isUpdateNeeded = false;
+                
+                if ( importRecord == null ) {
                     isUpdateNeeded = true;
+                    importRecord = new SyncImportRecord(record);
+                    Context.getSynchronizationService().createSyncImportRecord(importRecord);
                 } else {
-                    // apparently, the remote/child server exporting to this server doesn't realize it's
-                    // committed, so let's remind by sending back this import record with already_committed
-                    importRecord.setState(SyncRecordState.ALREADY_COMMITTED);
+                    SyncRecordState state = importRecord.getState();
+                    if ( state.equals(SyncRecordState.COMMITTED) ) {
+                        // apparently, the remote/child server exporting to this server doesn't realize it's
+                        // committed, so let's remind by sending back this import record with already_committed
+                        importRecord.setState(SyncRecordState.ALREADY_COMMITTED);
+                    } else if (state.equals(SyncRecordState.FAILED)) {
+                        // apparently, this record was already sent and full-failed - let's not attempt again
+                        // TODO: eventually we should allow you to override this with a -force option
+                    }else {
+                        isUpdateNeeded = true;
+                    }
                 }
-            }
-            
-            if ( isUpdateNeeded ) {
                 
-                boolean isError = false;
-                
-                // set transaction boundaries
-                //Context.openSession();
-    
-                // for each sync item, process it and insert/update the database
-                for ( SyncItem item : record.getItems() ) {
-                    // this could be done differently - just passing actual item to processSyncItem
-                    String syncItem = item.getContent();
-                    SyncImportItem importedItem = this.processSyncItem(syncItem);
-                    importedItem.setKey(item.getKey());
-                    importRecord.addItem(importedItem);
-                    if ( !importedItem.getState().equals(SyncItemState.SYNCHRONIZED)) isError = true;
-                    //importRecord.setResultingRecordGuid(resultingRecordGuid);
+                if ( isUpdateNeeded ) {
+                    
+                    boolean isError = false;
+                    
+                    // set transaction boundaries
+                    //Context.openSession();
+        
+                    // for each sync item, process it and insert/update the database
+                    for ( SyncItem item : record.getItems() ) {
+                        // this could be done differently - just passing actual item to processSyncItem
+                        String syncItem = item.getContent();
+                        SyncImportItem importedItem = this.processSyncItem(syncItem, record.getOriginalGuid() + "|" + server.getGuid());
+                        importedItem.setKey(item.getKey());
+                        importRecord.addItem(importedItem);
+                        if ( !importedItem.getState().equals(SyncItemState.SYNCHRONIZED)) isError = true;
+                        //importRecord.setResultingRecordGuid(resultingRecordGuid);
+                    }
+                    if ( !isError ) {
+                        importRecord.setState(SyncRecordState.COMMITTED);
+                        
+                        // now that we know there's no error, we have to prevent this change from being sent back to the originating server
+                        /*
+                         * This actually can't be done here, since hibernate may not yet commit the record - instead we have to get hacky
+                        SyncRecord newRecord = Context.getSynchronizationService().getSyncRecord(record.getOriginalGuid());
+                        if ( newRecord != null ) {
+                            if ( server.getServerType().equals(RemoteServerType.PARENT)) {
+                                newRecord.setState(SyncRecordState.COMMITTED);
+                            } else {
+                                SyncServerRecord serverRecord = newRecord.getServerRecord(server);
+                                if ( serverRecord != null ) {
+                                    serverRecord.setState(SyncRecordState.COMMITTED);
+                                    
+                                } else {
+                                    log.warn("No server record was created for server " + server.getNickname() + " and record " + record.getOriginalGuid());
+                                }
+                            }
+                            Context.getSynchronizationService().updateSyncRecord(newRecord);
+
+                        } else {
+                            log.warn("Can't find newly created record on system by originalGuid" + record.getOriginalGuid());
+                        }
+                        */
+                    } else {
+                        // rollback!!
+                        // also, set to failure.  if we've come this far and record failed to commit, it will likely never commit
+                        importRecord.setState(SyncRecordState.FAILED);
+                    }
+                    // finish the transaction
+                    //Context.closeSession();
+                    
+                    Context.getSynchronizationService().updateSyncImportRecord(importRecord);
                 }
-                if ( !isError ) {
-                    importRecord.setState(SyncRecordState.COMMITTED);
-                } else {
-                    // rollback!!
-                }
-                // finish the transaction
-                //Context.closeSession();
-                
-                Context.getSynchronizationService().updateSyncImportRecord(importRecord);
             }
         } catch (Exception e ) {
-            
+            e.printStackTrace();
         }
 
         return importRecord;
     }
     
-    public SyncImportItem processSyncItem(String incoming)  throws APIException {
+    public SyncImportItem processSyncItem(String incoming, String originalGuid)  throws APIException {
         SyncImportItem ret = new SyncImportItem();
         ret.setContent(incoming);
         ret.setState(SyncItemState.UNKNOWN);
@@ -144,6 +193,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 allFields = SyncUtil.getAllFields(o);  // get fields, both in class and superclass - we'll need to know what type each field is
                 nodes = SyncUtil.getChildNodes(incoming);  // get all child nodes of the root object
             } catch (Exception e) {
+            	e.printStackTrace();
                 throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_ROOT, null, incoming);
             }
 
@@ -159,14 +209,18 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                     try {
                         SyncUtil.setProperty(o, nodes.item(i), allFields);
                     } catch ( Exception e ) {
+                    	log.error("Error when trying to set " + nodes.item(i).getNodeName() + ", which is a " + className);
+                    	e.printStackTrace();
                         throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_UNSET_PROPERTY, nodes.item(i).getNodeName() + "," + className, incoming);
                     }
                 }
                 // now try to commit this fully inflated object
                 try {
+                    ((Synchronizable)o).setLastRecordGuid(originalGuid);
                     SyncUtil.updateOpenmrsObject(o, guid, isUpdateNotCreate);
                     ret.setState(SyncItemState.SYNCHRONIZED);
                 } catch ( Exception e ) {
+                	e.printStackTrace();
                     throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, className, incoming);
                 }
                 

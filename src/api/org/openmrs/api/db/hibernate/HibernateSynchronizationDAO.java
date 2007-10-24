@@ -27,6 +27,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.SynchronizationDAO;
 import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.engine.SyncRecord;
+import org.openmrs.synchronization.filter.SyncClass;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.openmrs.synchronization.server.RemoteServer;
 import org.openmrs.synchronization.server.RemoteServerType;
@@ -118,7 +119,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
         Session session = sessionFactory.getCurrentSession();
         session.delete(record);
     }
-
+    
     /**
      * @see org.openmrs.api.db.SynchronizationDAO#getNextSyncRecord()
      */
@@ -164,8 +165,15 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
     public SyncRecord getSyncRecord(String guid) throws DAOException {
         return (SyncRecord) sessionFactory.getCurrentSession()
         		.createCriteria(SyncRecord.class)
-        		.add(Restrictions.eq("guid", guid))
+        		.add(Restrictions.eq("guid", guid)) 
         		.uniqueResult();
+    }
+
+    public SyncRecord getSyncRecordByOriginalGuid(String originalGuid) throws DAOException {
+        return (SyncRecord) sessionFactory.getCurrentSession()
+                .createCriteria(SyncRecord.class)
+                .add(Restrictions.eq("originalGuid", originalGuid)) 
+                .uniqueResult();
     }
 
     /**
@@ -223,6 +231,29 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             .addOrder(Order.asc("recordId"))
             .list();
     	}
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<SyncRecord> getSyncRecords(SyncRecordState[] states, boolean inverse, RemoteServer server) throws DAOException {
+        if ( inverse ) {
+            return sessionFactory.getCurrentSession()
+            .createCriteria(SyncRecord.class, "s")
+            .createCriteria("serverRecords", "sr")
+            .add(Restrictions.not(Restrictions.in("sr.state", states)))
+            .add(Restrictions.eq("sr.syncServer", server))
+            .addOrder(Order.asc("s.timestamp"))
+            .addOrder(Order.asc("s.recordId"))
+            .list();
+        } else {
+            return sessionFactory.getCurrentSession()
+            .createCriteria(SyncRecord.class, "s")
+            .createCriteria("serverRecords", "sr")
+            .add(Restrictions.in("sr.state", states))
+            .add(Restrictions.eq("sr.syncServer", server))
+            .addOrder(Order.asc("s.timestamp"))
+            .addOrder(Order.asc("s.recordId"))
+            .list();
+        }
     }
 
     /**
@@ -325,6 +356,28 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
      * @see org.openmrs.api.db.SynchronizationDAO#getGlobalProperty(String propertyName)
      */
     @SuppressWarnings("unchecked")
+    public RemoteServer getRemoteServer(String guid) throws DAOException {        
+        return (RemoteServer)sessionFactory.getCurrentSession()
+        .createCriteria(RemoteServer.class)
+        .add(Restrictions.eq("guid", guid))
+        .uniqueResult();
+    }
+
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#getGlobalProperty(String propertyName)
+     */
+    @SuppressWarnings("unchecked")
+    public RemoteServer getRemoteServerByUsername(String username) throws DAOException {        
+        return (RemoteServer)sessionFactory.getCurrentSession()
+        .createCriteria(RemoteServer.class)
+        .add(Restrictions.eq("childUsername", username))
+        .uniqueResult();
+    }
+
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#getGlobalProperty(String propertyName)
+     */
+    @SuppressWarnings("unchecked")
     public List<RemoteServer> getRemoteServers() throws DAOException {        
         return (List<RemoteServer>)sessionFactory.getCurrentSession().createCriteria(RemoteServer.class).list();
     }
@@ -338,6 +391,59 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
         		.createCriteria(RemoteServer.class)
         		.add(Restrictions.eq("serverType", RemoteServerType.PARENT))
         		.uniqueResult();
+    }
+
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#createSyncClass(org.openmrs.synchronization.engine.SyncClass)
+     */
+    public void createSyncClass(SyncClass syncClass) throws DAOException {
+        Session session = sessionFactory.getCurrentSession();
+        session.save(syncClass);
+    }
+
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#updateSyncClass(org.openmrs.synchronization.engine.SyncClass)
+     */
+    public void updateSyncClass(SyncClass syncClass) throws DAOException {
+        Session session = sessionFactory.getCurrentSession();
+        session.saveOrUpdate(syncClass);
+    }
+
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#deleteSyncClass(org.openmrs.synchronization.engine.SyncClass)
+     */
+    public void deleteSyncClass(SyncClass syncClass) throws DAOException {
+        Session session = sessionFactory.getCurrentSession();
+        session.delete(syncClass);
+    }
+
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#getGlobalProperty(String propertyName)
+     */
+    @SuppressWarnings("unchecked")
+    public SyncClass getSyncClass(Integer syncClassId) throws DAOException {        
+        return (SyncClass)sessionFactory.getCurrentSession().get(SyncClass.class, syncClassId);
+    }
+
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#getGlobalProperty(String propertyName)
+     */
+    @SuppressWarnings("unchecked")
+    public List<SyncClass> getSyncClasses() throws DAOException {        
+        
+        List<SyncClass> classes = (List<SyncClass>)sessionFactory.getCurrentSession()
+                .createCriteria(SyncClass.class)
+                .addOrder(Order.asc("type"))
+                .addOrder(Order.asc("name"))
+                .list();
+        
+        if ( classes == null ) {
+            log.warn("IN DAO, SYNCCLASSES IS NULL");
+        } else {
+            log.warn("IN DAO, SYNCCLASSES IS SIZE " + classes.size());
+        }
+        
+        return classes;
     }
 
 }

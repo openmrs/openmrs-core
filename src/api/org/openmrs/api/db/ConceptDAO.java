@@ -348,4 +348,70 @@ public interface ConceptDAO {
     public Drug getDrugByGuid(String guid);
 
     public DrugIngredient getDrugIngredientByGuid(String guid);
+
+	/**
+	 * @param ConceptAnswer to be created
+	 */
+	public void createConceptAnswer(ConceptAnswer conceptAnswer);
+	
+	/**
+	 * Update the given conceptAnswer
+	 * @param conceptAnswer to be updated
+	 */
+	public void updateConceptAnswer(ConceptAnswer conceptAnswer);
+
+	/**
+	 * @param ConceptName to be created
+	 */
+	public void createConceptName(ConceptName conceptName);
+	
+	/**
+	 * Update the given conceptName
+	 * @param conceptName to be updated
+	 */
+	public void updateConceptName(ConceptName conceptName);
+
+	/**
+	 * @param ConceptSet to be created
+	 */
+	public void createConceptSet(ConceptSet conceptSet);
+	
+	/**
+	 * Update the given conceptSet
+	 * @param conceptSet to be updated
+	 */
+	public void updateConceptSet(ConceptSet conceptSet);
+
+	/**
+	 * @param ConceptSource to be created
+	 */
+	public void createConceptSource(ConceptSource conceptSource);
+	
+	/**
+	 * Update the given conceptSource
+	 * @param conceptSource to be updated
+	 */
+	public void updateConceptSource(ConceptSource conceptSource);
+
+	/**
+	 * @param ConceptSynonym to be created
+	 */
+	public void createConceptSynonym(ConceptSynonym conceptSynonym);
+	
+	/**
+	 * Update the given conceptSynonym
+	 * @param conceptSynonym to be updated
+	 */
+	public void updateConceptSynonym(ConceptSynonym conceptSynonym);
+
+	/**
+	 * @param ConceptWord to be created
+	 */
+	public void createConceptWord(ConceptWord conceptWord);
+	
+	/**
+	 * Update the given conceptWord
+	 * @param conceptWord to be updated
+	 */
+	public void updateConceptWord(ConceptWord conceptWord);
 }

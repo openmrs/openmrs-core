@@ -52,9 +52,9 @@
 		}
 		
 		function processRecord(record) {
-			var state = "<span class='syncFAILED'><b>FAILED</b></span>";
-			if ( record.state == "COMMITTED" ) state = "<span class='syncCOMMITTED'><b>COMMITTED</b></span>";
-			else if ( record.state !=  "FAILED" ) state = "<span class='syncNEUTRAL'><b>" + record.state + "</b></span>";
+			var state = "<span class='syncFAILED'><b><spring:message code="Synchronization.record.state_FAILED" /></b></span>";
+			if ( record.state == "COMMITTED" ) state = "<span class='syncCOMMITTED'><b><spring:message code="Synchronization.record.state_COMMITTED" /></b></span>";
+			else if ( record.state !=  "FAILED" ) state = "<span class='syncNEUTRAL'><b>" + getMessage(record.state) + "</b></span>";
 			var items = record.syncImportItems;
 			if ( items && items.length > 0 ) {
 				for ( var i = 0; i < items.length; i++ ) {
@@ -106,66 +106,67 @@
 <b class="boxHeader"><spring:message code="SynchronizationStatus.export.changes"/></b>
 <div class="box">
 	<table cellpadding="4">
-		<tr>
-			<td colspan="4">
-				<img src="${pageContext.request.contextPath}/images/save.gif" border="0" style="margin-bottom: -3px;">
-				<spring:message code="SynchronizationStatus.export.viaFile" />
-			</td>
-		</tr>
-		<tr>
-			<td>
-				&nbsp;&nbsp;
-			</td>
-			<td valign="top">
-				<form method="post" onSubmit="return doSubmitFileExport();">
-					<input type="submit" id="fileExportSubmit" value='<spring:message code="SynchronizationStatus.createTx"/>'/>
-					<input type="hidden" name="action" value="createTx"/>
-				</form>
-			</td>
-			<td valign="top">
-				|
-			</td>
-			<td valign="top">
-				<form method="post" enctype="multipart/form-data" onSubmit="return doSubmitUploadResponse();">
-					<spring:message code="SynchronizationStatus.responsePrompt" />
-					<input type="file" name="syncResponseFile" value="" />
-					<input type="hidden" name="action" value="uploadResponse" />
-					<input type="submit" id="uploadResponseSubmit" value="<spring:message code="SynchronizationStatus.uploadResponse" />" id="submitButton" />
-					<br>
-					<span style="color: #bbbbbb; position: relative; top: 3px;"><i><spring:message code="SynchronizationStatus.export.viaDisk.instructions" /></i></span>
-				</form>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="4">
-				<hr />
-			</td>
-		</tr>
-		<tr>
-			<td colspan="4">
-				<img src="${pageContext.request.contextPath}/images/lookup.gif" border="0" style="margin-bottom: -3px;">
-				<spring:message code="SynchronizationStatus.export.viaWeb" />
-			</td>
-		</tr>
-		<tr>
-			<td>
-				&nbsp;&nbsp;
-			</td>
-			<td valign="top">
-				<form method="post">
-					<input type="button" onClick="syncToParent();" id="webExportButton" value='<spring:message code="SynchronizationStatus.createWebTx"/>'
-					<c:if test="${empty parent}">disabled</c:if> />
-					<input type="hidden" name="action" value="createWebTx"/>
-				</form>
-			</td>
-			<td></td>
-			<td valign="top">
-				<c:if test="${empty parent}">
-					<span class="error"><i><spring:message code="SynchronizationStatus.export.viaWeb.enable" /></i></span>
-				</c:if>
-				<span id="syncInfo"></span><br><span id="syncDetails" style="display:none;"></span>
-			</td>
-		</tr>
+		<c:choose>
+			<c:when test="${mode == 'SEND_WEB'}">
+				<tr>
+					<td colspan="4">
+						<img src="${pageContext.request.contextPath}/images/lookup.gif" border="0" style="margin-bottom: -3px;">
+						<spring:message code="SynchronizationStatus.export.viaWeb" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						&nbsp;&nbsp;
+					</td>
+					<td valign="top">
+						<form method="post">
+							<input type="button" onClick="syncToParent();" id="webExportButton" value='<spring:message code="SynchronizationStatus.createWebTx"/>'
+							<c:if test="${empty parent}">disabled</c:if> />
+							<input type="hidden" name="action" value="createWebTx"/>
+						</form>
+					</td>
+					<td></td>
+					<td valign="top">
+						<c:if test="${empty parent}">
+							<span class="error"><i><spring:message code="SynchronizationStatus.export.viaWeb.enable" /></i></span>
+						</c:if>
+						<span id="syncInfo"></span><br><span id="syncDetails" style="display:none;"></span>
+					</td>
+				</tr>
+			</c:when>
+			<c:otherwise>
+				<tr>
+					<td colspan="4">
+						<img src="${pageContext.request.contextPath}/images/save.gif" border="0" style="margin-bottom: -3px;">
+						<spring:message code="SynchronizationStatus.export.viaFile" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						&nbsp;&nbsp;
+					</td>
+					<td valign="top">
+						<form method="post" onSubmit="return doSubmitFileExport();">
+							<input type="submit" id="fileExportSubmit" value='<spring:message code="SynchronizationStatus.createTx"/>'/>
+							<input type="hidden" name="action" value="createTx"/>
+						</form>
+					</td>
+					<td valign="top">
+						|
+					</td>
+					<td valign="top">
+						<form method="post" enctype="multipart/form-data" onSubmit="return doSubmitUploadResponse();">
+							<spring:message code="SynchronizationStatus.responsePrompt" />
+							<input type="file" name="syncResponseFile" value="" />
+							<input type="hidden" name="action" value="uploadResponse" />
+							<input type="submit" id="uploadResponseSubmit" value="<spring:message code="SynchronizationStatus.uploadResponse" />" id="submitButton" />
+							<br>
+							<span style="color: #bbbbbb; position: relative; top: 3px;"><i><spring:message code="SynchronizationStatus.export.viaDisk.instructions" /></i></span>
+						</form>
+					</td>
+				</tr>
+			</c:otherwise>
+		</c:choose>
 	</table>
 </div>
 
@@ -173,7 +174,7 @@
 
 <b class="boxHeader"><spring:message code="Synchronization.changes.recent"/></b>
 <div class="box">
-	<table id="syncChangesTable" cellpadding="4">
+	<table id="syncChangesTable" cellpadding="4" cellspacing="0">
 		<thead>
 			<tr>
 				<th><spring:message code="SynchronizationStatus.itemTypeAndGuid" /></th>

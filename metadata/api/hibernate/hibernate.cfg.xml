@@ -55,7 +55,10 @@
 		<mapping resource="org/openmrs/api/db/hibernate/PatientState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Cohort.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/SyncServer.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/SyncClass.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/SyncRecord.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/SyncServerClass.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/SyncServerRecord.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/SyncImportRecord.hbm.xml" />
 
 		<!-- HL7 -->

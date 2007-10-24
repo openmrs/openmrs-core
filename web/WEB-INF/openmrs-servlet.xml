@@ -143,6 +143,7 @@
 				<prop key="admin/synchronization/synchronizationImport.list">synchronizationImportListController</prop>
 				<prop key="admin/synchronization/synchronizationHistory.list">synchronizationHistoryListController</prop>
 				<prop key="admin/synchronization/synchronizationConfig.list">synchronizationConfigListController</prop>
+				<prop key="admin/synchronization/synchronizationConfigServer.form">synchronizationServerFormController</prop>
 				<prop key="admin/synchronization/synchronizationHelp.list">synchronizationHelpListController</prop>
 				<prop key="admin/modules/module.list">moduleListController</prop>
 				<prop key="admin/modules/moduleProperties.form">modulePropertiesFormController</prop>
@@ -1160,6 +1161,12 @@
 		<property name="commandName"><value>synchronizationHelpList</value></property>
 		<property name="formView"><value>/admin/synchronization/synchronizationHelpList</value></property>
 		<property name="successView"><value>synchronizationHelp.list</value></property>
+	</bean>
+
+	<bean id="synchronizationServerFormController"  class="org.openmrs.web.controller.synchronization.SynchronizationServerFormController">
+		<property name="commandName"><value>server</value></property>
+		<property name="formView"><value>/admin/synchronization/synchronizationServerForm</value></property>
+		<property name="successView"><value>synchronizationConfig.list</value></property>
 	</bean>
   
 	<!-- ======================================== -->

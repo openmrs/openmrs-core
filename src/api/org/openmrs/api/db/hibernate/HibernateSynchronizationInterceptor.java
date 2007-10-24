@@ -14,17 +14,23 @@
 package org.openmrs.api.db.hibernate;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.EmptyInterceptor;
+import org.hibernate.LazyInitializationException;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 import org.openmrs.User;
 import org.openmrs.api.SynchronizationService;
@@ -42,8 +48,11 @@ import org.openmrs.synchronization.SynchronizableInstance;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 import org.openmrs.synchronization.engine.SyncRecord;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
-public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
+public class HibernateSynchronizationInterceptor extends EmptyInterceptor implements ApplicationContextAware {
 
     /**
      * From Spring docs: There might be a single instance of Interceptor for a
@@ -57,18 +66,42 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
     protected final Log log = LogFactory.getLog(HibernateSynchronizationInterceptor.class);
 
     protected SynchronizationService synchronizationService = null;
+
+    private ApplicationContext context;
     
     static DefaultNormalizer defN = new DefaultNormalizer();
     static TimestampNormalizer tsN = new TimestampNormalizer();
 
     static final String sp = "_";
+    
+    //safetypes are *hibernate* types that we know how to serialize with help of Normalizers
     static final Map<String, Normalizer> safetypes;
     static {
         safetypes = new HashMap<String, Normalizer>();
-        safetypes.put("string", defN);
-        safetypes.put("timestamp", tsN);
+        //safetypes.put("binary", defN);
+        //blob
         safetypes.put("boolean", defN);
+        //safetypes.put("big_integer", defN);
+        //safetypes.put("big_decimal", defN);
+        //safetypes.put("byte", defN);
+        //celendar
+        //calendar_date
+        //character
+        //clob
+        //currency
+        //date
+        //dbtimestamp
+        safetypes.put("double", defN);
+        safetypes.put("float", defN);
         safetypes.put("integer", defN);
+        //locale
+        safetypes.put("long", defN);
+        safetypes.put("short", defN);
+        safetypes.put("string", defN);
+        safetypes.put("text", defN);
+        safetypes.put("timestamp", tsN);
+        //time
+        //timezone
     }
     
     private ThreadLocal<SyncRecord> syncRecordHolder = new ThreadLocal<SyncRecord>();
@@ -140,6 +173,12 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
                 
                 // Complete the record
                 record.setGuid(UUID.randomUUID().toString());
+                if ( record.getOriginalGuid() == null ) {
+                    log.warn("OriginalGuid is null, so assigning a new GUID");
+                    record.setOriginalGuid(record.getGuid());
+                } else {
+                    log.warn("OriginalGuid is " + record.getOriginalGuid() + "!!!!");
+                }
                 record.setState(SyncRecordState.NEW);
                 record.setTimestamp(new Date());
                 record.setRetryCount(0);
@@ -149,7 +188,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
                     synchronizationService = Context.getSynchronizationService();
                 }
     
-                synchronizationService.createSyncRecord(record);
+                synchronizationService.createSyncRecord(record, record.getOriginalGuid());
             }
             else {
                 log.warn("No SyncItems in SyncRecord, save discarded!");
@@ -296,17 +335,35 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
          * Get the GUID of this object if it has one, used as SyncItemKey.
          */
         String objectGuid = null;
+        String originalRecordGuid = null;
         if (entity instanceof Synchronizable) {
             objectGuid = ((Synchronizable) entity).getGuid();
+            originalRecordGuid = ((Synchronizable)entity).getLastRecordGuid();
+            log.warn("In PackageObject, originalGuid is " + originalRecordGuid);
         }
 
+        Set<String> transientProps = new HashSet<String>();
+        for ( Field f : entity.getClass().getDeclaredFields() ) {
+        	if ( Modifier.isTransient(f.getModifiers()) ) {
+        		transientProps.add(f.getName());
+        		log.warn("The field " + f.getName() + " is transient - so we won't serialize it");
+        	}
+        }
+        
         HashMap<String, propertyClassValue> values = new HashMap<String, propertyClassValue> ();
 
         try {
             Package pkg = new Package();
-            Record xml = pkg.createRecordForWrite(entity.getClass().getName());
+            String className = entity.getClass().getName();
+            Record xml = pkg.createRecordForWrite(className);
             Item entityItem = xml.getRootItem();
-          
+
+            // metadata for this type
+            SessionFactory factory = (SessionFactory)this.context.getBean("sessionFactory");
+            ClassMetadata data = factory.getClassMetadata(entity.getClass());
+            String idProperty = data.getIdentifierPropertyName();
+            log.warn("Id for this class: " + idProperty);
+            
             /*
              * Loop through all the properties/values and put in a hash for duplicate removal
              */
@@ -326,32 +383,56 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
                     if (log.isInfoEnabled())
                         log.info("Issued randomly generated GUID " + currentState[i] + " to Type: " + typeName + " Field: " + propertyNames[i]);
                 }
-                
+
                 if (currentState[i] != null) {
-                    
-                    /*
-                     * Handle safe types like boolean/String/integer/timestamp:
-                     */
-                    Normalizer n;
-                    if ((n = safetypes.get(typeName)) != null) {
-                        values.put(propertyNames[i], new propertyClassValue(typeName, n.toString(currentState[i])));
-                    }
-                    
-                    /*
-                     * Not a safe type, check if the object implements the Synchronizable interface
-                     */
-                    else if (currentState[i] instanceof Synchronizable) {
-                        Synchronizable childObject = (Synchronizable)currentState[i];
-                        String childGuid = childObject.getGuid();
-                        
-                        if (childGuid != null) {
-                            values.put(propertyNames[i], new propertyClassValue(typeName, childGuid));
-                        } else {
-                            log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null");
+                    // is this the primary key? if so, we don't want to serialize
+                	if ( propertyNames[i].equals(idProperty) 
+                			|| ("personId".equals(idProperty) && "patientId".equals(propertyNames[i])) 
+                			|| ("personId".equals(idProperty) && "userId".equals(propertyNames[i]))
+                			|| transientProps.contains(propertyNames[i])
+                			//|| isPropertyTransient(currentState[i])
+                			//|| ("org.openmrs.Obs".equals(className) && "personId".equals(propertyNames[i]))
+                			) {
+                		log.warn("Skipping property (" + propertyNames[i] + ") because it's either the primary key or it's transient.");
+                	} else {
+                        /*
+                         * Handle safe types like boolean/String/integer/timestamp:
+                         */
+                        Normalizer n;
+                        if ((n = safetypes.get(typeName)) != null) {
+                            values.put(propertyNames[i], new propertyClassValue(typeName, n.toString(currentState[i])));
                         }
-                    } else {
-                        log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is not safe and has no GUID, skipped!");
-                    }
+                        
+                        /*
+                         * Not a safe type, check if the object implements the Synchronizable interface
+                         */
+                        else if (currentState[i] instanceof Synchronizable) {
+                            Synchronizable childObject = (Synchronizable)currentState[i];
+                            // child objects are not always loaded if not needed, so let's surround this with try/catch, package only if need to
+                            String childGuid = null;
+                            try {
+    	                        childGuid = childObject.getGuid();
+                            } catch (LazyInitializationException e) {
+    	                        log.warn("Attempted to package/serialize child object, but child object was not yet initialized (and thus was null)");
+    	                        if ( types[i].getReturnedClass().equals(User.class) ) {
+    	                        	log.warn("SUBSTITUTED AUTHENTICATED USER FOR ACTUAL USER");
+    	                        	childGuid = Context.getAuthenticatedUser().getGuid();
+    	                        } else {
+    	                        	log.warn("COULD NOT SUBSTITUTE AUTHENTICATED USER FOR ACTUAL USER");
+    	                        }
+                            } catch (Exception e) {
+                            	log.error("Could not find child object - object is null, therefore guid is null");
+                            }
+                            
+                            if (childGuid != null) {
+                                values.put(propertyNames[i], new propertyClassValue(typeName, childGuid));
+                            } else {
+                                log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null");
+                            }
+                        } else {
+                            log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is not safe and has no GUID, skipped!");
+                        }
+                	}
                 } else {
                     log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null, skipped");
                 }
@@ -391,6 +472,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
                 log.warn("Adding SyncItem to SyncRecord");
             }
             syncRecordHolder.get().addItem(syncItem);
+            syncRecordHolder.get().addContainedClass(entity.getClass().getSimpleName());
+            syncRecordHolder.get().setOriginalGuid(originalRecordGuid);
         } catch (Exception e) {
             log.error("Journal error\n", e);
         }
@@ -398,7 +481,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
         return dataChanged;
     }
     
-    protected void appendAttribute(Record xml, Item parent, String attribute, String classname, String data) throws Exception {
+	protected void appendAttribute(Record xml, Item parent, String attribute, String classname, String data) throws Exception {
         //if (data != null && data.length() > 0) {
     	// this will break if we don't allow data.length==0 - some string values are required NOT NULL, but can be blank
     	if (data != null) {
@@ -456,6 +539,13 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor {
             return true;
         else
             return false;
+    }
+
+	/**
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+    	this.context = context;
     }
 }
 

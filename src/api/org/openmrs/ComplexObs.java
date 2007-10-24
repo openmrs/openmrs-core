@@ -17,6 +17,9 @@ public class ComplexObs extends Obs implements java.io.Serializable, Synchroniza
 	private MimeType mimeType;
 	private String urn;
 	private String complexValue; 
+    private transient String lastRecordGuid;
+    
+
 
 	// Constructors
 
@@ -28,7 +31,15 @@ public class ComplexObs extends Obs implements java.io.Serializable, Synchroniza
 	public ComplexObs(Integer obsId) {
 		this.obsId = obsId;
 	}
-	
+
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
+
 	/** 
 	 * Compares two ComplexObs objects for similarity
 	 * 

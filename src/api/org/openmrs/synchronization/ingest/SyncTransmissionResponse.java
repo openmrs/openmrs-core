@@ -48,12 +48,21 @@ public class SyncTransmissionResponse implements IItem {
     private String fileOutput = "";
     private SyncTransmissionState state;
     private String errorMessage;
-    private String syncSourceGuid = null; //GUID of the node (child) where the Tx came from
-    private String syncParentGuid = null; //GUID of the node (parent) where Tx is being applied to
+    private String syncSourceGuid = null; //GUID of the node where the Tx came from
+    private String syncTargetGuid = null; //GUID of the node where Tx is being applied to, and who is now sending a response
+    private SyncTransmission syncTransmission = null;
 
-	// constructor(s)
+    // constructor(s)
     public SyncTransmissionResponse() {
     	
+    }
+
+    public SyncTransmission getSyncTransmission() {
+        return syncTransmission;
+    }
+
+    public void setSyncTransmission(SyncTransmission syncTransmission) {
+        this.syncTransmission = syncTransmission;
     }
 
     /* 
@@ -65,7 +74,7 @@ public class SyncTransmissionResponse implements IItem {
     	if ( transmission != null ) {
         	this.guid = transmission.getGuid();
             this.syncSourceGuid = transmission.getSyncSourceGuid();
-            this.syncParentGuid = SyncConstants.GUID_UNKNOWN;
+            this.syncTargetGuid = SyncConstants.GUID_UNKNOWN;
         	fileName = transmission.getFileName();
         	int idx = fileName.lastIndexOf(".");
         	if ( idx > -1 ) fileName = fileName.substring(0, idx) + SyncConstants.RESPONSE_SUFFIX + fileName.substring(idx);
@@ -74,7 +83,7 @@ public class SyncTransmissionResponse implements IItem {
     	} else {
     		this.guid = SyncConstants.GUID_UNKNOWN;
             this.syncSourceGuid = SyncConstants.GUID_UNKNOWN;
-            this.syncParentGuid = SyncConstants.GUID_UNKNOWN;
+            this.syncTargetGuid = SyncConstants.GUID_UNKNOWN;
     		this.errorMessage = SyncConstants.ERROR_TX_NOT_UNDERSTOOD;
     		this.fileName = SyncConstants.FILENAME_TX_NOT_UNDERSTOOD;
     		this.state = SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD;
@@ -98,16 +107,17 @@ public class SyncTransmissionResponse implements IItem {
     				this.fileName = str.getFileName();
     				this.guid = str.getGuid();
                     this.syncSourceGuid = str.getSyncSourceGuid();
-                    this.syncParentGuid = str.getSyncParentGuid();
+                    this.syncTargetGuid = str.getSyncTargetGuid();
     				this.state = str.getState();
     				this.syncImportRecords = str.getSyncImportRecords();
+                    this.syncTransmission = str.getSyncTransmission();
     			} catch (Exception e) {
     				e.printStackTrace();
     	    		this.errorMessage = SyncConstants.ERROR_RESPONSE_NOT_UNDERSTOOD.toString();
     	        	this.fileName = SyncConstants.FILENAME_RESPONSE_NOT_UNDERSTOOD;
     	        	this.guid = SyncConstants.GUID_UNKNOWN;
                     this.syncSourceGuid = SyncConstants.GUID_UNKNOWN;
-                    this.syncParentGuid = SyncConstants.GUID_UNKNOWN;
+                    this.syncTargetGuid = SyncConstants.GUID_UNKNOWN;
     	        	this.state = SyncTransmissionState.RESPONSE_NOT_UNDERSTOOD;
     			} 
     		} else {
@@ -115,7 +125,7 @@ public class SyncTransmissionResponse implements IItem {
             	this.fileName = SyncConstants.FILENAME_SEND_FAILED;
             	this.guid = SyncConstants.GUID_UNKNOWN;
                 this.syncSourceGuid = SyncConstants.GUID_UNKNOWN;
-                this.syncParentGuid = SyncConstants.GUID_UNKNOWN;
+                this.syncTargetGuid = SyncConstants.GUID_UNKNOWN;
             	this.state = SyncTransmissionState.SEND_FAILED;
             	if ( connResponse.getState().equals(ServerConnectionState.MALFORMED_URL)) this.state = SyncTransmissionState.MALFORMED_URL;
             	if ( connResponse.getState().equals(ServerConnectionState.CERTIFICATE_FAILED)) this.state = SyncTransmissionState.CERTIFICATE_FAILED;
@@ -125,7 +135,7 @@ public class SyncTransmissionResponse implements IItem {
         	this.fileName = SyncConstants.FILENAME_SEND_FAILED;
         	this.guid = SyncConstants.GUID_UNKNOWN;
             this.syncSourceGuid = SyncConstants.GUID_UNKNOWN;
-            this.syncParentGuid = SyncConstants.GUID_UNKNOWN;
+            this.syncTargetGuid = SyncConstants.GUID_UNKNOWN;
         	this.state = SyncTransmissionState.SEND_FAILED;
     	}
     }
@@ -154,12 +164,12 @@ public class SyncTransmissionResponse implements IItem {
         this.syncSourceGuid = value;
     }
 
-    public String getSyncParentGuid() {
-        return syncParentGuid;
+    public String getSyncTargetGuid() {
+        return syncTargetGuid;
     }
 
-    public void setSyncParentGuid(String value) {
-        this.syncParentGuid = value;
+    public void setSyncTargetGuid(String value) {
+        this.syncTargetGuid = value;
     }    
     
 	// methods
@@ -236,7 +246,7 @@ public class SyncTransmissionResponse implements IItem {
         if (state != null) xml.setAttribute(me, "state", state.toString());
         if (errorMessage != null ) xml.setAttribute(me, "errorMessage", errorMessage);
         if (syncSourceGuid != null)  xml.setAttribute(me, "syncSourceGuid", syncSourceGuid);
-        if (syncParentGuid != null)  xml.setAttribute(me, "syncParentGuid", syncParentGuid);
+        if (syncTargetGuid != null)  xml.setAttribute(me, "syncTargetGuid", syncTargetGuid);
         if (timestamp != null) xml.setAttribute(me, "timestamp", new TimestampNormalizer().toString(timestamp));
         
         //serialize Records list
@@ -247,13 +257,12 @@ public class SyncTransmissionResponse implements IItem {
             for ( SyncImportRecord importRecord : syncImportRecords ) {
             	importRecord.save(xml, itemsCollection);
             }
-            /*
-             * replaced by 5.0 shorthand
-            Iterator<SyncImportRecord> iterator = syncImportRecords.iterator();
-            while (iterator.hasNext()) {
-                iterator.next().save(xml, itemsCollection);
-            }
-            */
+        }
+
+        Item syncTx = xml.createItem(me, "syncTransmission");
+        
+        if (syncTransmission != null) {
+            syncTransmission.save(xml, syncTx);
         }
 
         return me;
@@ -267,7 +276,7 @@ public class SyncTransmissionResponse implements IItem {
         this.guid = me.getAttribute("guid");
         this.fileName = me.getAttribute("fileName");
         this.syncSourceGuid = me.getAttribute("syncSourceGuid");
-        this.syncParentGuid = me.getAttribute("syncParentGuid");
+        this.syncTargetGuid = me.getAttribute("syncTargetGuid");
 
         if (me.getAttribute("timestamp") == null)
             this.timestamp = null;
@@ -298,6 +307,13 @@ public class SyncTransmissionResponse implements IItem {
             }
         }
 
+        Item syncTx = xml.getItem(me, "syncTransmission");
+        if ( syncTx.isEmpty() ) {
+            this.syncTransmission = null;
+        } else {
+            this.syncTransmission = new SyncTransmission();
+            this.syncTransmission.load(xml, syncTx);
+        }
     }
 
 	public SyncTransmissionState getState() {

@@ -479,4 +479,101 @@ public interface ConceptService {
 	@Transactional(readOnly=true)
 	@Authorized({"View Concepts"})
 	public List<Concept> getConceptsWithDrugsInFormulary();
+
+	/**
+	 * @param answer
+	 *            to be created
+	 */
+	@Authorized({"Add Concepts"})
+	public void createConceptAnswer(ConceptAnswer answer);
+
+	/**
+	 * Update the given ConceptAnswer
+	 * 
+	 * @param answer
+	 *            to be updated
+	 */
+	@Authorized({"Edit Concepts"})
+	public void updateConceptAnswer(ConceptAnswer answer);
+
+	/**
+	 * @param name
+	 *            to be created
+	 */
+	@Authorized({"Add Concepts"})
+	public void createConceptName(ConceptName name);
+
+	/**
+	 * Update the given ConceptName
+	 * 
+	 * @param name
+	 *            to be updated
+	 */
+	@Authorized({"Edit Concepts"})
+	public void updateConceptName(ConceptName name);
+
+	/**
+	 * @param set
+	 *            to be created
+	 */
+	@Authorized({"Add Concepts"})
+	public void createConceptSet(ConceptSet set);
+
+	/**
+	 * Update the given ConceptSet
+	 * 
+	 * @param set
+	 *            to be updated
+	 */
+	@Authorized({"Edit Concepts"})
+	public void updateConceptSet(ConceptSet set);
+
+	/**
+	 * @param conceptSource
+	 *            to be created
+	 */
+	@Authorized({"Add Concepts"})
+	public void createConceptSource(ConceptSource conceptSource);
+
+	/**
+	 * Update the given ConceptSource
+	 * 
+	 * @param conceptSource
+	 *            to be updated
+	 */
+	@Authorized({"Edit Concepts"})
+	public void updateConceptSource(ConceptSource conceptSource);
+
+	/**
+	 * @param conceptSynonym
+	 *            to be created
+	 */
+	@Authorized({"Add Concepts"})
+	public void createConceptSynonym(ConceptSynonym conceptSynonym);
+
+	/**
+	 * Update the given ConceptSynonym
+	 * 
+	 * @param conceptSynonym
+	 *            to be updated
+	 */
+	@Authorized({"Edit Concepts"})
+	public void updateConceptSynonym(ConceptSynonym conceptSynonym);
+
+	/**
+	 * @param conceptWord
+	 *            to be created
+	 */
+	@Authorized({"Add Concepts"})
+	public void createConceptWord(ConceptWord conceptWord);
+
+	/**
+	 * Update the given ConceptWord
+	 * 
+	 * @param conceptWord
+	 *            to be updated
+	 */
+	@Authorized({"Edit Concepts"})
+	public void updateConceptWord(ConceptWord conceptWord);
+
 }

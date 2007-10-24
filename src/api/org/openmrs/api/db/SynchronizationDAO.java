@@ -19,6 +19,7 @@ import java.util.List;
 import org.openmrs.api.APIException;
 import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.engine.SyncRecord;
+import org.openmrs.synchronization.filter.SyncClass;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.openmrs.synchronization.server.RemoteServer;
 
@@ -55,6 +56,8 @@ public interface SynchronizationDAO {
      * @throws DAOException
      */
     public SyncRecord getSyncRecord(String guid) throws DAOException;
+
+    public SyncRecord getSyncRecordByOriginalGuid(String originalGuid) throws DAOException;
 
     /**
      * 
@@ -122,6 +125,9 @@ public interface SynchronizationDAO {
      */
     public List<SyncRecord> getSyncRecords(SyncRecordState[] states, boolean inverse) throws DAOException;
 
+    public List<SyncRecord> getSyncRecords(SyncRecordState[] states, boolean inverse, RemoteServer server) throws DAOException;
+
+    
     /**
      * Get all SyncRecords since a timestamp
      * @param from Timestamp specifying lower bound, not included.
@@ -191,6 +197,22 @@ public interface SynchronizationDAO {
      * @return RemoteServer The RemoteServer or null if not found
      * @throws DAOException
      */
+    public RemoteServer getRemoteServer(String guid) throws DAOException;
+
+    /**
+     * 
+     * @param childUsername of the RemoteServer to retrieve
+     * @return RemoteServer The RemoteServer or null if not found
+     * @throws DAOException
+     */
+    public RemoteServer getRemoteServerByUsername(String username) throws DAOException;
+
+    /**
+     * 
+     * @param guid of the RemoteServer to retrieve
+     * @return RemoteServer The RemoteServer or null if not found
+     * @throws DAOException
+     */
     public List<RemoteServer> getRemoteServers() throws DAOException;
 
     /**
@@ -200,5 +222,41 @@ public interface SynchronizationDAO {
      * @throws DAOException
      */
     public RemoteServer getParentServer() throws DAOException;
+
+    /**
+     * Create a new SyncClass
+     * @param SyncClass The SyncClass to create
+     * @throws DAOException
+     */
+    public void createSyncClass(SyncClass record) throws DAOException;
+    
+    /**
+     * Update a SyncClass
+     * @param SyncClass The SyncClass to update
+     * @throws DAOException
+     */
+    public void updateSyncClass(SyncClass record) throws DAOException;
+    
+    /**
+     * Delete a SyncClass
+     * @param SyncClass The SyncClass to delete
+     * @throws DAOException
+     */
+    public void deleteSyncClass(SyncClass record) throws DAOException;
+    
+    /**
+     * 
+     * @param guid of the SyncClass to retrieve
+     * @return SyncClass The SyncClass or null if not found
+     * @throws DAOException
+     */
+    public SyncClass getSyncClass(Integer syncClassId) throws DAOException;
+
+    /**
+     * 
+     * @return SyncClass The latest SyncClass or null if not found
+     * @throws DAOException
+     */
+    public List<SyncClass> getSyncClasses() throws DAOException;
 
 }

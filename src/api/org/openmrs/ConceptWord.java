@@ -19,15 +19,20 @@ public class ConceptWord implements java.io.Serializable, Synchronizable,
 	// Fields
 
 	private Concept concept;
-
 	private String word;
-
 	private String synonym;
-
 	private String locale;
-
 	private Double weight = 0.0;
 	private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 	
   public String getGuid() {
       return guid;

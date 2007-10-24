@@ -68,7 +68,7 @@ public class ConceptServiceImpl implements ConceptService {
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
 
-		log.info(authUserId + "|" + concept.getConceptId().toString());
+		log.info(authUserId + "|" + concept.getConceptId());
 
 		getConceptDAO().createConcept(concept);
 	}
@@ -83,8 +83,7 @@ public class ConceptServiceImpl implements ConceptService {
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
 
-		log.info(authUserId + "|" + concept.getConceptId().toString()
-				+ "|numeric");
+		log.info(authUserId + "|" + concept.getConceptId()+ "|numeric");
 
 		getConceptDAO().createConcept(concept);
 	}
@@ -819,5 +818,215 @@ public class ConceptServiceImpl implements ConceptService {
     public DrugIngredient getDrugIngredientByGuid(String guid) {
 		return getConceptDAO().getDrugIngredientByGuid(guid);
     }
+
+	/**
+	 * @param conceptAnswer
+	 *            to be created
+	 */
+	public void createConceptAnswer(ConceptAnswer conceptAnswer) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		log.info("creating conceptAnswer - " + authUserId + "|"
+				+ conceptAnswer.getConcept().toString());
+
+		getConceptDAO().createConceptAnswer(conceptAnswer);
+	}
+
+	/**
+	 * Update the given conceptAnswer
+	 * 
+	 * @param conceptAnswer
+	 *            to be updated
+	 */
+	public void updateConceptAnswer(ConceptAnswer conceptAnswer) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		if (conceptAnswer.getConcept() != null)
+			log.info("updating conceptAnswer - " + authUserId + "|"
+					+ conceptAnswer.getConcept().toString());
+
+		getConceptDAO().updateConceptAnswer(conceptAnswer);
+	}
+
+	/**
+	 * @param conceptName
+	 *            to be created
+	 */
+	public void createConceptName(ConceptName conceptName) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		log.info("creating conceptName - " + authUserId + "|"
+				+ conceptName.getConcept().toString());
+
+		getConceptDAO().createConceptName(conceptName);
+	}
+
+	/**
+	 * Update the given conceptName
+	 * 
+	 * @param conceptName
+	 *            to be updated
+	 */
+	public void updateConceptName(ConceptName conceptName) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		if (conceptName.getConcept() != null)
+			log.info("updating conceptName - " + authUserId + "|"
+					+ conceptName.getConcept().toString());
+
+		getConceptDAO().updateConceptName(conceptName);
+	}
+
+	/**
+	 * @param conceptSet
+	 *            to be created
+	 */
+	public void createConceptSet(ConceptSet conceptSet) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		log.info("creating conceptSet - " + authUserId + "|"
+				+ conceptSet.getConcept().toString());
+
+		getConceptDAO().createConceptSet(conceptSet);
+	}
+
+	/**
+	 * Update the given conceptSet
+	 * 
+	 * @param conceptSet
+	 *            to be updated
+	 */
+	public void updateConceptSet(ConceptSet conceptSet) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		if (conceptSet.getConcept() != null)
+			log.info("updating conceptSet - " + authUserId + "|"
+					+ conceptSet.getConcept().toString());
+
+		getConceptDAO().updateConceptSet(conceptSet);
+	}
+
+	/**
+	 * @param conceptSource
+	 *            to be created
+	 */
+	public void createConceptSource(ConceptSource conceptSource) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		log.info("creating conceptSource - " + authUserId + "|"
+				+ conceptSource.toString());
+
+		getConceptDAO().createConceptSource(conceptSource);
+	}
+
+	/**
+	 * Update the given conceptSource
+	 * 
+	 * @param conceptSource
+	 *            to be updated
+	 */
+	public void updateConceptSource(ConceptSource conceptSource) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		if (conceptSource != null)
+			log.info("updating conceptSource - " + authUserId + "|"
+					+ conceptSource.toString());
+
+		getConceptDAO().updateConceptSource(conceptSource);
+	}
+
+	/**
+	 * @param conceptSynonym
+	 *            to be created
+	 */
+	public void createConceptSynonym(ConceptSynonym conceptSynonym) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		log.info("creating conceptSynonym - " + authUserId + "|"
+				+ conceptSynonym.toString());
+
+		getConceptDAO().createConceptSynonym(conceptSynonym);
+	}
+
+	/**
+	 * Update the given conceptSynonym
+	 * 
+	 * @param conceptSynonym
+	 *            to be updated
+	 */
+	public void updateConceptSynonym(ConceptSynonym conceptSynonym) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		if (conceptSynonym != null)
+			log.info("updating conceptSynonym - " + authUserId + "|"
+					+ conceptSynonym.toString());
+
+		getConceptDAO().updateConceptSynonym(conceptSynonym);
+	}
+	
+	/**
+	 * @param conceptWord
+	 *            to be created
+	 */
+	public void createConceptWord(ConceptWord conceptWord) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		log.info("creating conceptWord - " + authUserId + "|"
+				+ conceptWord.toString());
+
+		getConceptDAO().createConceptWord(conceptWord);
+	}
+
+	/**
+	 * Update the given conceptWord
+	 * 
+	 * @param conceptWord
+	 *            to be updated
+	 */
+	public void updateConceptWord(ConceptWord conceptWord) {
+		checkIfLocked();
+		
+		String authUserId = Context.getAuthenticatedUser().getUserId()
+				.toString();
+
+		if (conceptWord != null)
+			log.info("updating conceptWord - " + authUserId + "|"
+					+ conceptWord.toString());
+
+		getConceptDAO().updateConceptWord(conceptWord);
+	}
 
 }

@@ -43,19 +43,30 @@ public class ServerConnection {
 		return sendExportedData(address, username, password, SyncConstants.TEST_MESSAGE); 
 	}
 
-	public static ConnectionResponse sendExportedData(RemoteServer server, String message) {
-		return sendExportedData(server.getAddress(), server.getUsername(), server.getPassword(), message);
+    public static ConnectionResponse sendExportedData(RemoteServer server, String message) {
+        return sendExportedData(server.getAddress(), server.getUsername(), server.getPassword(), message, false);
+    }
+
+    public static ConnectionResponse sendExportedData(RemoteServer server, String message, boolean isResponse) {
+		return sendExportedData(server.getAddress(), server.getUsername(), server.getPassword(), message, isResponse);
 	}
 
-	public static ConnectionResponse sendExportedData(String address, String username, String password, String message) {
+    public static ConnectionResponse sendExportedData(String address, String username, String password, String message) {
+        return sendExportedData(address, username, password, message, false);
+    }
+
+	public static ConnectionResponse sendExportedData(String address, String username, String password, String message, boolean isResponse) {
 
 		ConnectionResponse cr = null;
 
+        String dataParamName = "syncData";
+        if ( isResponse ) dataParamName = "syncDataResponse";
+        
 		try {
             cr = sendExportedData(address + SyncConstants.DATA_IMPORT_SERVLET,
             		"username=" + URLEncoder.encode(username, SyncConstants.UTF8) 
             		+ "&password=" + URLEncoder.encode(password, SyncConstants.UTF8)
-            		+ "&syncData=" + URLEncoder.encode(message, SyncConstants.UTF8));
+            		+ "&" + dataParamName + "=" + URLEncoder.encode(message, SyncConstants.UTF8));
         } catch (UnsupportedEncodingException e) {
             log.error("Unable to encode synchronization data as UTF-8 before sending to parent server", e);
             e.printStackTrace();

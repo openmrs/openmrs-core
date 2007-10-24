@@ -31,7 +31,6 @@ public class SyncImportRecordItem {
     private Integer retryCount;
     private String state;
     private String errorMessage;
-    private String resultingRecordGuid;
     private Vector<SyncImportItemItem> syncImportItems;
 
 	public SyncImportRecordItem() {}
@@ -53,7 +52,6 @@ public class SyncImportRecordItem {
     		else this.state = SyncRecordState.FAILED.toString();
     		
     		this.errorMessage = importRecord.getErrorMessage();
-    		this.resultingRecordGuid = importRecord.getResultingRecordGuid();
     		
     		if ( importRecord.getItems() != null ) {
     			this.syncImportItems = new Vector<SyncImportItemItem>();
@@ -88,14 +86,6 @@ public class SyncImportRecordItem {
 	
     public void setGuid(String guid) {
     	this.guid = guid;
-    }
-	
-    public String getResultingRecordGuid() {
-    	return resultingRecordGuid;
-    }
-	
-    public void setResultingRecordGuid(String resultingRecordGuid) {
-    	this.resultingRecordGuid = resultingRecordGuid;
     }
 	
     public Integer getRetryCount() {

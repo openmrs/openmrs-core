@@ -44,9 +44,22 @@ public class SyncTransmission implements IItem {
     private String guid = null;
     private String fileOutput = "";
     private String syncSourceGuid = null; //this is GUID of a server where Tx is coming from
+    private String syncTargetGuid = null; //this is GUID of server where Tx is headed TO
+    private Boolean isRequestingTransmission = false;
 
-	// constructor(s)
+    // constructor(s)
     public SyncTransmission() {
+    }
+
+    /* 
+     * Create new SyncTransmission as a SyncTxRequest
+     */
+    public SyncTransmission(String sourceGuid, boolean isRequestingTransmission) {
+
+        guid = UUID.randomUUID().toString();        
+        fileName = "sync_tx_" + SyncConstants.SYNC_FILENAME_MASK.format(new Date()) + "_request";
+        this.syncSourceGuid  = sourceGuid;
+        this.isRequestingTransmission = isRequestingTransmission;
     }
 
     /* 
@@ -61,10 +74,18 @@ public class SyncTransmission implements IItem {
     }
 
     // methods
+    public Boolean getIsRequestingTransmission() {
+        return isRequestingTransmission;
+    }
+
+    public void setIsRequestingTransmission(Boolean isRequestingTransmission) {
+        this.isRequestingTransmission = isRequestingTransmission;
+    }
+
     public String getSyncSourceGuid() {
         return syncSourceGuid;
     }
-    public void SetSyncSourceGuid(String value) {
+    public void setSyncSourceGuid(String value) {
         syncSourceGuid = value;
     }
     public String getFileOutput() {
@@ -166,6 +187,10 @@ public class SyncTransmission implements IItem {
         if (fileName != null) xml.setAttribute(me, "fileName", fileName);
         if (syncSourceGuid != null) xml.setAttribute(me, "syncSourceGuid", syncSourceGuid);
         if (timestamp != null) xml.setAttribute(me, "timestamp", new TimestampNormalizer().toString(timestamp));
+        if (this.isRequestingTransmission != null) xml.setAttribute(me, "isRequestingTransmission", this.isRequestingTransmission.toString());
+
+        if (syncTargetGuid != null) xml.setAttribute(me, "syncTargetGuid", syncTargetGuid);
+        else xml.setAttribute(me, "syncTargetGuid", SyncConstants.GUID_UNKNOWN);
         
         //serialize Records list
         Item itemsCollection = xml.createItem(me, "records");
@@ -189,6 +214,8 @@ public class SyncTransmission implements IItem {
         this.guid = me.getAttribute("guid");
         this.fileName = me.getAttribute("fileName");
         this.syncSourceGuid = me.getAttribute("syncSourceGuid");
+        this.syncTargetGuid = me.getAttribute("syncTargetGuid");
+        this.isRequestingTransmission = Boolean.valueOf(me.getAttribute("isRequestingTransmission"));
 
         if (me.getAttribute("timestamp") == null)
             this.timestamp = null;
@@ -232,6 +259,14 @@ public class SyncTransmission implements IItem {
                 && ((oSync.getSyncRecords() == null) ? (this.getSyncRecords() == null) : oSync.getSyncRecords().equals(this.getSyncRecords()));
         
         return same;
+    }
+
+    public String getSyncTargetGuid() {
+        return syncTargetGuid;
+    }
+
+    public void setSyncTargetGuid(String syncTargetGuid) {
+        this.syncTargetGuid = syncTargetGuid;
     }
     
 }

@@ -13,11 +13,17 @@
  */
 package org.openmrs.synchronization.engine;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
+import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.server.RemoteServer;
+import org.openmrs.synchronization.server.RemoteServerType;
+import org.openmrs.synchronization.server.SyncServerRecord;
 
 /**
  * sync strategy that implements sync-ing via disconnected push/pull.
@@ -61,18 +67,58 @@ public class SyncStrategyFile {
 
     public SyncTransmission createStateBasedSyncTransmission(SyncSource source, boolean writeFileToo) {
 
-        SyncTransmission tx = new SyncTransmission();
+        SyncTransmission ret =  null;
+        RemoteServer parent = Context.getSynchronizationService().getParentServer();
         
-        List<SyncRecord> changeset = null;
+        if ( parent != null ) {
+            ret = createStateBasedSyncTransmission(source, writeFileToo, parent);
+        }
         
-        //get changeset for sourceA
-        changeset = this.getStateBasedChangeset(source);
+        return ret;
+    }
+
+    public SyncTransmission createStateBasedSyncTransmission(SyncSource source, boolean writeFileToo, RemoteServer server) {
+
+        SyncTransmission syncTx = null;
         
-        String sourceGuid = source.getSyncSourceGuid();
-        
-        //pack it into transmission
-        SyncTransmission syncTx = new SyncTransmission(sourceGuid,changeset);
-        syncTx.createFile(writeFileToo);
+        if ( server != null ) {
+            List<SyncRecord> changeset = null;
+            List<SyncRecord> filteredChangeset = null;
+            
+            //get changeset for sourceA
+            changeset = this.getStateBasedChangeset(source, server);
+            
+            // need to check each SyncRecord to see if it's eligible for sync'ing
+            if ( changeset != null ) {
+                for ( SyncRecord record : changeset ) {
+                    Set<String> containedClasses = record.getContainedClassSet();
+                    if ( server.getClassesSent().containsAll(containedClasses) ) {
+                        log.warn("ADDING RECORD TO TRANSMISSION BECAUSE SERVER IS SET TO SEND ALL " + containedClasses + " TO SERVER " + server.getNickname() + " with SENT: " + server.getClassesSent());
+                        if ( filteredChangeset == null ) filteredChangeset = new ArrayList<SyncRecord>();
+                        filteredChangeset.add(record);
+                    } else {
+                        if ( server.getServerType().equals(RemoteServerType.PARENT)) {
+                            record.setState(SyncRecordState.NOT_SUPPOSED_TO_SYNC);
+                            Context.getSynchronizationService().updateSyncRecord(record);
+                        } else {
+                            SyncServerRecord serverRecord = record.getServerRecord(server);
+                            if ( serverRecord != null ) {
+                                serverRecord.setState(SyncRecordState.NOT_SUPPOSED_TO_SYNC);
+                                Context.getSynchronizationService().updateSyncRecord(record);
+                            }
+                        }
+                        log.warn("NOT ADDING RECORD TO TRANSMISSION, SERVER IS NOT SET TO SEND ALL " + containedClasses + " TO SERVER " + server.getNickname() + " with SENT: " + server.getClassesSent());
+                    }
+                }
+            }
+            
+            String sourceGuid = source.getSyncSourceGuid();
+            
+            //pack it into transmission
+            syncTx = new SyncTransmission(sourceGuid,filteredChangeset);
+            syncTx.createFile(writeFileToo);
+            syncTx.setSyncTargetGuid(server.getGuid());
+        }
                 
         return syncTx;
     }
@@ -136,6 +182,22 @@ public class SyncStrategyFile {
         //get all local deletes, inserts and updates
         deleted = source.getDeleted();
         changed = source.getChanged();
+        
+        //merge
+        changeset = deleted;
+        changeset.addAll(changed);
+ 
+        return changeset;
+    }
+
+    private List<SyncRecord> getStateBasedChangeset(SyncSource source, RemoteServer server) {
+        List<SyncRecord> deleted = null;
+        List<SyncRecord> changed = null;
+        List<SyncRecord> changeset = null;
+                
+        //get all local deletes, inserts and updates
+        deleted = source.getDeleted();
+        changed = source.getChanged(server);
         
         //merge
         changeset = deleted;

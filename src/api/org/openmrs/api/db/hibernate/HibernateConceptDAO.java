@@ -803,4 +803,143 @@ public class HibernateConceptDAO implements
 		return (DrugIngredient) sessionFactory.getCurrentSession().createQuery("from DrugIngredient d where d.guid = :guid").setString("guid", guid).uniqueResult();
     }
 
+	/**
+	 * @see org.openmrs.api.db.ConceptAnswerService#createConceptAnswer(org.openmrs.ConceptAnswer)
+	 */
+	public void createConceptAnswer(ConceptAnswer conceptAnswer) throws DAOException {
+		if (conceptAnswer.getCreator() == null)
+			conceptAnswer.setCreator(Context.getAuthenticatedUser());
+		if (conceptAnswer.getDateCreated() == null)
+			conceptAnswer.setDateCreated(new Date());
+		
+		sessionFactory.getCurrentSession().save(conceptAnswer);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptAnswerService#updateConceptAnswer(org.openmrs.ConceptAnswer)
+	 */
+	public void updateConceptAnswer(ConceptAnswer conceptAnswer) throws DAOException {
+		if (conceptAnswer.getConceptAnswerId() == null)
+			createConceptAnswer(conceptAnswer);
+		else {
+			if (conceptAnswer.getCreator() == null)
+				conceptAnswer.setCreator(Context.getAuthenticatedUser());
+			if (conceptAnswer.getDateCreated() == null)
+				conceptAnswer.setDateCreated(new Date());
+			
+			sessionFactory.getCurrentSession().update(conceptAnswer);
+		}	
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptNameService#createConceptName(org.openmrs.ConceptName)
+	 */
+	public void createConceptName(ConceptName conceptName) throws DAOException {
+		if (conceptName.getCreator() == null)
+			conceptName.setCreator(Context.getAuthenticatedUser());
+		if (conceptName.getDateCreated() == null)
+			conceptName.setDateCreated(new Date());
+		
+		sessionFactory.getCurrentSession().save(conceptName);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptNameService#updateConceptName(org.openmrs.ConceptName)
+	 */
+	public void updateConceptName(ConceptName conceptName) throws DAOException {
+		if (conceptName.getCreator() == null)
+			conceptName.setCreator(Context.getAuthenticatedUser());
+		if (conceptName.getDateCreated() == null)
+			conceptName.setDateCreated(new Date());
+		
+		sessionFactory.getCurrentSession().update(conceptName);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptSetService#createConceptSet(org.openmrs.ConceptSet)
+	 */
+	public void createConceptSet(ConceptSet conceptSet) throws DAOException {
+		if (conceptSet.getCreator() == null)
+			conceptSet.setCreator(Context.getAuthenticatedUser());
+		if (conceptSet.getDateCreated() == null)
+			conceptSet.setDateCreated(new Date());
+		
+		sessionFactory.getCurrentSession().save(conceptSet);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptSetService#updateConceptSet(org.openmrs.ConceptSet)
+	 */
+	public void updateConceptSet(ConceptSet conceptSet) throws DAOException {
+		if (conceptSet.getCreator() == null)
+			conceptSet.setCreator(Context.getAuthenticatedUser());
+		if (conceptSet.getDateCreated() == null)
+			conceptSet.setDateCreated(new Date());
+		
+		sessionFactory.getCurrentSession().update(conceptSet);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptSourceService#createConceptSource(org.openmrs.ConceptSource)
+	 */
+	public void createConceptSource(ConceptSource conceptSource) throws DAOException {
+		if (conceptSource.getCreator() == null)
+			conceptSource.setCreator(Context.getAuthenticatedUser());
+		if (conceptSource.getDateCreated() == null)
+			conceptSource.setDateCreated(new Date());
+		
+		sessionFactory.getCurrentSession().save(conceptSource);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptSourceService#updateConceptSource(org.openmrs.ConceptSource)
+	 */
+	public void updateConceptSource(ConceptSource conceptSource) throws DAOException {
+		if (conceptSource.getCreator() == null)
+			conceptSource.setCreator(Context.getAuthenticatedUser());
+		if (conceptSource.getDateCreated() == null)
+			conceptSource.setDateCreated(new Date());
+		
+		sessionFactory.getCurrentSession().update(conceptSource);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptSynonymService#createConceptSynonym(org.openmrs.ConceptSynonym)
+	 */
+	public void createConceptSynonym(ConceptSynonym conceptSynonym) throws DAOException {
+		if (conceptSynonym.getCreator() == null)
+			conceptSynonym.setCreator(Context.getAuthenticatedUser());
+		if (conceptSynonym.getDateCreated() == null)
+			conceptSynonym.setDateCreated(new Date());
+		
+		sessionFactory.getCurrentSession().save(conceptSynonym);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptSynonymService#updateConceptSynonym(org.openmrs.ConceptSynonym)
+	 */
+	public void updateConceptSynonym(ConceptSynonym conceptSynonym) throws DAOException {
+		if (conceptSynonym.getCreator() == null)
+			conceptSynonym.setCreator(Context.getAuthenticatedUser());
+		if (conceptSynonym.getDateCreated() == null)
+			conceptSynonym.setDateCreated(new Date());
+		
+		sessionFactory.getCurrentSession().update(conceptSynonym);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptWordService#createConceptWord(org.openmrs.ConceptWord)
+	 */
+	public void createConceptWord(ConceptWord conceptWord) throws DAOException {
+		
+		sessionFactory.getCurrentSession().save(conceptWord);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptWordService#updateConceptWord(org.openmrs.ConceptWord)
+	 */
+	public void updateConceptWord(ConceptWord conceptWord) throws DAOException {
+		
+		sessionFactory.getCurrentSession().update(conceptWord);
+	}
 }

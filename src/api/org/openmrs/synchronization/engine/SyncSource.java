@@ -15,6 +15,8 @@ package org.openmrs.synchronization.engine;
 
 import java.util.List;
 
+import org.openmrs.synchronization.server.RemoteServer;
+
 
 /**
  * Represents a source of sync items; can be either 'child' or 'parent'.
@@ -44,6 +46,7 @@ public interface SyncSource {
     //state-based changeset methods
     public List<SyncRecord> getDeleted() throws SyncException ;
     public List<SyncRecord> getChanged() throws SyncException ; //note this has new items also
+    public List<SyncRecord> getChanged(RemoteServer server) throws SyncException ; //note this has new items also
 
     //Methods used to apply changes
     public void applyDeleted(List<SyncRecord> records) throws SyncException ;

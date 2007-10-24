@@ -48,6 +48,15 @@ public class Person implements java.io.Serializable, Synchronizable {
 	private Date dateVoided;
 	private String voidReason;
     private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 	
 	// convenience map
 	Map<String, PersonAttribute> attributeMap = null;

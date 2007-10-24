@@ -16,6 +16,7 @@
 		<property name="name" 
 				type="java.lang.String" 
 				column="name" 
+				not-null="true"
 				length="50" />
 		
 		<property name="description" 
@@ -30,10 +31,12 @@
 		
 		<property name="repeatInterval" 
 				type="java.lang.Long" 
+				not-null="true"
 				column="repeat_interval" />
 		
 		<property name="startTime" 
-				type="java.util.Date" 
+				type="java.util.Date"
+				not-null="true" 
 				column="start_time" />
 
 		<property name="startTimePattern" 
@@ -51,7 +54,7 @@
 				type="java.lang.Boolean" 
 				column="started" 
 				length="1" 
-				not-null="false"/>						
+				not-null="true"/>						
 		
 		<!-- Schedules : this relationship has been removed -->
 	<!--

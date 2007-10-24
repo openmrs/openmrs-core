@@ -12,7 +12,10 @@
 		</id>
 
 		<property name="guid" type="java.lang.String"
-			column="guid" length="36" />
+			column="guid" length="36" not-null="true" />
+
+		<property name="originalGuid" type="java.lang.String"
+			column="original_guid" length="36" not-null="true" />
 
 		<property name="creator" type="java.lang.String"
 			column="creator" length="36" />
@@ -34,6 +37,16 @@
 
 		<property name="items" type="org.openmrs.api.db.hibernate.usertype.SyncItemListSerializingUserType"
 			column="payload" />
+
+		<property name="containedClasses" type="java.lang.String"
+			column="contained_classes" length="1000" />
+
+		<set name="serverRecords" lazy="true" inverse="true" cascade="all-delete-orphan">
+			<key>
+				<column name="record_id" />
+			</key>
+			<one-to-many class="org.openmrs.synchronization.server.SyncServerRecord" />
+		</set>
     
 	</class>
 </hibernate-mapping>

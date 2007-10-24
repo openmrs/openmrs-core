@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="View Synchronization Status" otherwise="/login.htm" redirect="/admin/synchronization/synchronizationStatus.list" />
+<openmrs:require privilege="View Synchronization Status" otherwise="/login.htm" redirect="/admin/synchronization/synchronizationHistory.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
@@ -30,43 +30,80 @@
 
 <b class="boxHeader"><spring:message code="Synchronization.changes.all"/></b>
 <div class="box">
-	<table id="syncChangesTable" cellpadding="5" cellspacing="0">
+	<table id="syncChangesTable" cellpadding="7" cellspacing="0">
 		<thead>
 			<tr>
 				<th><spring:message code="SynchronizationStatus.itemTypeAndGuid" /></th>
+				<%--
 				<th colspan="2" style="text-align: center;"><spring:message code="SynchronizationStatus.timestamp" /></th>
-				<%--<th nowrap style="text-align: center;"><spring:message code="SynchronizationStatus.itemState" /></th>--%>
+				<th nowrap style="text-align: center;"><spring:message code="SynchronizationStatus.itemState" /></th>
 				<th nowrap style="text-align: center;"><spring:message code="SynchronizationStatus.recordState" /></th>
 				<th nowrap style="text-align: center;"><spring:message code="SynchronizationStatus.retryCount" /></th>
+				--%>
+				<c:if test="${not empty servers}">
+					<c:forEach items="${servers}" var="server">
+						<th style="text-align: center; <c:if test="${server.serverType == 'PARENT'}">background-color: #eef;</c:if>">
+							${server.nickname}
+							<c:if test="${server.serverType == 'PARENT'}">(<spring:message code="${server.serverType}" />)</c:if>
+						</th>
+					</c:forEach>
+				</c:if>
+				<c:if test="${empty servers}">
+					<th style="font-weight: normal;"><i><spring:message code="SynchronizationStatus.servers.none" /></i></th>
+				</c:if>
 			</tr>
 		</thead>
 		<tbody id="globalPropsList">
 			<c:if test="${not empty synchronizationHistoryList}">
 				<c:set var="bgStyle" value="eee" />
+				<c:set var="bgStyleParent" value="dde" />
 				<c:forEach var="syncRecord" items="${synchronizationHistoryList}" varStatus="status">
-					<c:forEach var="syncItem" items="${syncRecord.items}" varStatus="itemStatus">
+					<%--<c:forEach var="syncItem" items="${syncRecord.items}" varStatus="itemStatus">--%>
 						<tr>
 							<td valign="middle" nowrap style="background-color: #${bgStyle};">
-								<b>${itemTypes[syncItem.key.keyValue]}</b>
-								<%--<c:if test="${not empty itemInfo[syncItem.key.keyValue]}">(${itemInfo[syncItem.key.keyValue]})</c:if></b>--%>
+								<b>${recordTypes[syncRecord.guid]}</b>
+								(${recordText[syncRecord.guid]})
 								<br>
-								(${itemGuids[syncItem.key.keyValue]})
+								<span style="color: #bbb">
+									<spring:message code="Synchronization.item.state_${recordChangeType[syncRecord.guid]}" /> -
+									<openmrs:formatDate date="${syncRecord.timestamp}" format="${syncDateDisplayFormat}" />	
+									<%--<c:if test="${not empty itemInfo[syncItem.key.keyValue]}">(${itemInfo[syncItem.key.keyValue]})</c:if></b>--%>
+								</span>
 							</td>
-							<td valign="middle" nowrap style="background-color: #${bgStyle};" align="right">
-								<spring:message code="Synchronization.item.state_${syncItem.state}" /> -</td>
-							<td valign="middle" nowrap style="background-color: #${bgStyle};" align="left"><openmrs:formatDate date="${syncRecord.timestamp}" format="${syncDateDisplayFormat}" /></td>
-							<td valign="middle" nowrap style="background-color: #${bgStyle};" align="center">
-								<span class="sync${syncRecord.state}"><spring:message code="Synchronization.record.state_${syncRecord.state}" /></span></td>
-							<td valign="middle" nowrap style="background-color: #${bgStyle};" align="center">${syncRecord.retryCount}</td>
-							<td valign="middle" style="background-color: #${bgStyle};"><span id="message_${syncItem.key.keyValue}"></span></td>
+							<c:if test="${not empty servers}">
+								<c:forEach items="${servers}" var="server">
+									<td valign="middle" nowrap style="background-color: #<c:if test="${server.serverType == 'PARENT'}">${bgStyleParent}</c:if><c:if test="${server.serverType != 'PARENT'}">${bgStyle}</c:if>;" align="center">
+										<c:choose>
+											<c:when test="${server.serverType == 'PARENT'}">
+												<span class="sync${syncRecord.state}"><spring:message code="Synchronization.record.state_${syncRecord.state}" /></span>
+											</c:when>
+											<c:otherwise>
+												<c:if test="${not empty syncRecord.remoteRecords[server]}">
+													<span class="sync${syncRecord.remoteRecords[server].state}"><spring:message code="Synchronization.record.state_${syncRecord.remoteRecords[server].state}" /></span>
+												</c:if>
+												<c:if test="${empty syncRecord.remoteRecords[server]}">
+													<span style="color: #bbb"><i><spring:message code="Synchronization.record.server.didNotExist" /></i></span>
+												</c:if>
+											</c:otherwise>
+										</c:choose>
+									</td>
+								</c:forEach>
+							</c:if>
+							<c:if test="${empty servers}">
+								<td></td>
+							</c:if>
 						</tr>
 						<c:choose>
-	
-							<c:when test="${bgStyle == 'eee'}"><c:set var="bgStyle" value="fff" /></c:when>
-							<c:otherwise><c:set var="bgStyle" value="eee" /></c:otherwise>
-	
+							<c:when test="${bgStyle == 'eee'}">
+								<c:set var="bgStyle" value="fff" />
+								<c:set var="bgStyleParent" value="eef" />
+							</c:when>
+							<c:otherwise>
+								<c:set var="bgStyle" value="eee" />
+								<c:set var="bgStyleParent" value="dde" />
+							</c:otherwise>
 						</c:choose>
-					</c:forEach>
+					<%--</c:forEach>--%>
 				</c:forEach>
 			</c:if>
 			<c:if test="${empty synchronizationHistoryList}">

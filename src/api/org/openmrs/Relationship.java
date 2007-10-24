@@ -24,6 +24,15 @@ public class Relationship implements java.io.Serializable, Synchronizable {
 	private Date dateVoided;
 	private String voidReason;
 	private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 	
   public String getGuid() {
       return guid;

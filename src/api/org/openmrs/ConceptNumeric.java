@@ -24,6 +24,15 @@ public class ConceptNumeric extends Concept implements java.io.Serializable, Syn
 	private Double lowNormal;
 	private String units;
 	private Boolean precise = false;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 
 	// Constructors
 

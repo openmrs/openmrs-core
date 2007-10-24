@@ -19,6 +19,7 @@ import java.util.List;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.engine.SyncRecord;
+import org.openmrs.synchronization.filter.SyncClass;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.openmrs.synchronization.server.RemoteServer;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,15 @@ public interface SynchronizationService {
      */
     //@Authorized({"Manage Synchronization Records"})
     public void createSyncRecord(SyncRecord record) throws APIException;
-    
+
+    /**
+     * Auto generated method comment
+     * 
+     * @param record
+     * @param originalGuid
+     */
+    public void createSyncRecord(SyncRecord record, String originalGuid);
+
     /**
      * Update a SyncRecord
      * @param SyncRecord The SyncRecord to update
@@ -59,6 +68,9 @@ public interface SynchronizationService {
     //@Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public SyncRecord getSyncRecord(String guid) throws APIException;
+
+    @Transactional(readOnly=true)
+    public SyncRecord getSyncRecordByOriginalGuid(String originalGuid) throws APIException;
 
     /**
      * 
@@ -141,6 +153,18 @@ public interface SynchronizationService {
     @Transactional(readOnly=true)
     public List<SyncRecord> getSyncRecords(SyncRecordState[] states) throws APIException;
 
+    /**
+     * Get all SyncRecords in a specific SyncRecordStates, that the server allows sending for (per-server basis)
+     * @param states SyncRecordStates for the SyncRecords to be returned
+     * @param server Server these records will be sent to, so we can filter on Class
+     * @return SyncRecord A list containing all SyncRecords with the given states
+     * @throws APIException
+     */
+    @Authorized({"View Synchronization Records"})
+    @Transactional(readOnly=true)
+    public List<SyncRecord> getSyncRecords(SyncRecordState[] states, RemoteServer server) throws APIException;
+
+    
     /**
      * Get all SyncRecords in a specific SyncRecordStates
      * @param states SyncRecordStates for the SyncRecords to be returned
@@ -236,6 +260,26 @@ public interface SynchronizationService {
      */
     @Authorized({"View Synchronization Servers"})
     @Transactional(readOnly=true)
+    public RemoteServer getRemoteServer(String guid) throws APIException;
+
+    /**
+     * 
+     * @param username child_username of the RemoteServer to retrieve
+     * @return SyncRecord The SyncRecord or null if not found
+     * @throws APIException
+     */
+    @Authorized({"View Synchronization Servers"})
+    @Transactional(readOnly=true)
+    public RemoteServer getRemoteServerByUsername(String username) throws APIException;
+
+    /**
+     * 
+     * @param guid of the SyncRecord to retrieve
+     * @return SyncRecord The SyncRecord or null if not found
+     * @throws APIException
+     */
+    @Authorized({"View Synchronization Servers"})
+    @Transactional(readOnly=true)
     public List<RemoteServer> getRemoteServers() throws APIException;
 
     /**
@@ -247,4 +291,58 @@ public interface SynchronizationService {
     @Authorized({"View Synchronization Servers"})
     @Transactional(readOnly=true)
     public RemoteServer getParentServer() throws APIException;
+    
+    /**
+     *  Retrieve globally unique id of the server.
+     * @return guid of the server.
+     * @throws APIException
+     */
+    @Authorized({"View Synchronization Servers"})
+    @Transactional(readOnly=true)
+    public String getServerGuid() throws APIException;
+
+    /**
+     * Create a new SyncClass
+     * @param SyncClass The SyncClass to create
+     * @throws APIException
+     */
+    //@Authorized({"Manage Synchronization"})
+    public void createSyncClass(SyncClass syncClass) throws APIException;
+    
+    /**
+     * Update a SyncClass
+     * @param SyncClass The SyncClass to update
+     * @throws APIException
+     */
+    //@Authorized({"Manage Synchronization"})
+    public void updateSyncClass(SyncClass syncClass) throws APIException;
+    
+    /**
+     * Delete a SyncClass
+     * @param SyncClass The SyncClass to delete
+     * @throws APIException
+     */
+    //@Authorized({"Manage Synchronization"})
+    public void deleteSyncClass(SyncClass syncClass) throws APIException;
+
+    /**
+     * 
+     * @param guid of the SyncClass to retrieve
+     * @return SyncClass The SyncClass or null if not found
+     * @throws APIException
+     */
+    //@Authorized({"Manage Synchronization"})
+    @Transactional(readOnly=true)
+    public SyncClass getSyncClass(Integer syncClassId) throws APIException;
+
+    /**
+     * 
+     * @return SyncClass The latest SyncClass or null if not found
+     * @throws APIException
+     */
+    //@Authorized({"Manage Synchronization"})
+    @Transactional(readOnly=true)
+    public List<SyncClass> getSyncClasses() throws APIException;
+
+
 }

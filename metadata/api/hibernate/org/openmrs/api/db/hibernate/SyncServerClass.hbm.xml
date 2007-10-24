@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.synchronization.filter">
+
+	<class name="SyncServerClass" table="synchronization_server_class">
+
+		<id name="serverClassId" type="int" column="server_class_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<many-to-one name="syncServer" class="org.openmrs.synchronization.server.RemoteServer" not-null="true">
+			<column name="server_id" />
+		</many-to-one>
+
+		<many-to-one name="syncClass" class="SyncClass" not-null="true">
+			<column name="class_id" />
+		</many-to-one>
+
+		<property name="sendTo" type="boolean" 
+			column="send_to" length="1" not-null="true"/>
+
+		<property name="receiveFrom" type="boolean" 
+			column="receive_from" length="1" not-null="true"/>
+		
+	</class>
+</hibernate-mapping>

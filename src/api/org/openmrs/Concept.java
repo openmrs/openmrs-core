@@ -40,7 +40,16 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 	private Collection<ConceptSynonym> synonyms;
 	private Collection<ConceptSet> conceptSets;
 	private String guid;
-	
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
+
   public String getGuid() {
       return guid;
   }

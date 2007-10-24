@@ -16,6 +16,15 @@ public class DrugIngredient implements java.io.Serializable, Synchronizable {
 	private Concept drug;
 	private Concept ingredient;
 	private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 	
   public String getGuid() {
       return guid;

@@ -21,16 +21,24 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptDerived;
+import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptSet;
+import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStateConversion;
+import org.openmrs.ConceptSynonym;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -66,16 +74,7 @@ import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
 import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.engine.SyncSource;
-import org.openmrs.synchronization.engine.SyncSourceJournal;
-import org.openmrs.synchronization.engine.SyncStrategyFile;
-import org.openmrs.synchronization.engine.SyncTransmission;
-import org.openmrs.synchronization.ingest.SyncImportRecord;
-import org.openmrs.synchronization.ingest.SyncRecordIngest;
-import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
-import org.openmrs.synchronization.server.ConnectionResponse;
-import org.openmrs.synchronization.server.RemoteServer;
-import org.openmrs.synchronization.server.ServerConnection;
+import org.openmrs.synchronization.filter.SyncServerClass;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -84,157 +83,8 @@ import org.w3c.dom.NodeList;
  */
 public class SyncUtil {
 
-	private static Log log = LogFactory.getLog(SyncUtil.class);
-		
-	public static SyncTransmission createSyncTransmission() {
-		SyncTransmission tx = null;
-
-		try {
-            SyncSource source = new SyncSourceJournal();
-            SyncStrategyFile strategy = new SyncStrategyFile();
-
-            try {
-	            tx = strategy.createStateBasedSyncTransmission(source, true);
-            } catch (Exception e) {
-            	e.printStackTrace();
-
-            	// difference is that this time we'll do this without trying to create a file (just getting the output)
-            	// if it works, that probably means that there was a problem writing file to disk
-   	            tx = strategy.createStateBasedSyncTransmission(source, false);
-            } finally {
-            	if ( tx != null ) {
-                    // let's update SyncRecords to reflect the fact that we now have tried to sync them, by setting state to SENT or SENT_AGAIN
-            		if ( tx.getSyncRecords() != null ) {
-                        for ( SyncRecord record : tx.getSyncRecords() ) {
-                        	record.setRetryCount(record.getRetryCount() + 1);
-                        	if ( record.getState().equals(SyncRecordState.NEW ) ) record.setState(SyncRecordState.SENT);
-                        	else record.setState(SyncRecordState.SENT_AGAIN);
-                        	Context.getSynchronizationService().updateSyncRecord(record);
-                        }
-            		}
-            	}
-            }
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			tx = null;
-		}
-
-		return tx;
-	}
-	
-	public static SyncTransmissionResponse sendSyncTranssmission() {
-		// sends to parent server (by default)
-		SyncTransmissionResponse response = new SyncTransmissionResponse();
-    	response.setErrorMessage(SyncConstants.ERROR_NO_PARENT_DEFINED.toString());
-    	response.setFileName(SyncConstants.FILENAME_NO_PARENT_DEFINED);
-    	response.setGuid(SyncConstants.GUID_UNKNOWN);
-		response.setState(SyncTransmissionState.NO_PARENT_DEFINED);
-		
-		RemoteServer parent = Context.getSynchronizationService().getParentServer();
-		
-		if ( parent != null ) {
-			response = SyncUtil.sendSyncTranssmission(); 
-		}
-				
-		return response;
-	}
-
-	public static SyncTransmissionResponse sendSyncTranssmission(RemoteServer server) {
-
-		SyncTransmissionResponse response = new SyncTransmissionResponse();
-    	response.setErrorMessage(SyncConstants.ERROR_TRANSMISSION_CREATION.toString());
-    	response.setFileName(SyncConstants.FILENAME_NOT_CREATED);
-    	response.setGuid(SyncConstants.GUID_UNKNOWN);
-    	response.setState(SyncTransmissionState.TRANSMISSION_CREATION_FAILED);
-		
-		try {
-			if ( server != null ) {
-				SyncTransmission tx = SyncUtil.createSyncTransmission();
-				
-	            if ( tx != null ) {
-	            	response = SyncUtil.sendSyncTranssmission(server, tx); 
-	            } // no need to handling else - the correct error messages, etc have been written already
-	    	} else {
-	        	response.setErrorMessage(SyncConstants.ERROR_INVALID_SERVER.toString());
-	        	response.setFileName(SyncConstants.FILENAME_INVALID_SERVER);
-	        	response.setGuid(SyncConstants.GUID_UNKNOWN);
-	        	response.setState(SyncTransmissionState.INVALID_SERVER);	    		
-	    	}
-		} catch ( Exception e ) {
-			e.printStackTrace();
-		}
-		
-		return response;
-	}
-
-	public static SyncTransmissionResponse sendSyncTranssmission(RemoteServer server, SyncTransmission transmission) {
-		SyncTransmissionResponse response = new SyncTransmissionResponse();
-    	response.setErrorMessage(SyncConstants.ERROR_SEND_FAILED.toString());
-    	response.setFileName(SyncConstants.FILENAME_SEND_FAILED);
-    	response.setGuid(SyncConstants.GUID_UNKNOWN);
-    	response.setState(SyncTransmissionState.SEND_FAILED);
-		
-    	try {
-    		if ( transmission != null && server != null ) {
-    			String toTransmit = transmission.getFileOutput();
-    			
-                if ( toTransmit != null && toTransmit.length() > 0 ) {
-                	if ( transmission.getSyncRecords() != null && transmission.getSyncRecords().size() == 0 ) {
-                    	response.setState(SyncTransmissionState.OK_NOTHING_TO_DO);
-                    	response.setErrorMessage("");
-                    	response.setFileName(transmission.getFileName() + SyncConstants.RESPONSE_SUFFIX);
-                    	response.setGuid(transmission.getGuid());
-                    	response.setTimestamp(transmission.getTimestamp());
-                	} else {
-                    	ConnectionResponse connResponse = null;
-
-                    	try {
-                    		connResponse = ServerConnection.sendExportedData(server, toTransmit);
-                    	} catch ( Exception e ) {
-                    		e.printStackTrace();
-                    		// no need to change state or error message - it's already set properly
-                    	}
-
-                    	if ( connResponse != null ) {
-                       		// constructor for SyncTransmissionResponse is null-safe
-                        	response = new SyncTransmissionResponse(connResponse);
-                       		
-                			if ( response.getSyncImportRecords() == null ) {
-                				log.debug("No records to process in response");
-                			} else {
-                				// process each incoming syncImportRecord
-                				for ( SyncImportRecord importRecord : response.getSyncImportRecords() ) {
-                					SyncRecordIngest.processSyncImportRecord(importRecord);
-                				}
-                			}
-                    	}
-                	}
-                } else {
-                	response.setErrorMessage(SyncConstants.ERROR_TRANSMISSION_CREATION.toString());
-                	response.setFileName(SyncConstants.FILENAME_NOT_CREATED);
-                	response.setGuid(SyncConstants.GUID_UNKNOWN);
-                	response.setState(SyncTransmissionState.TRANSMISSION_CREATION_FAILED);
-                }
-    		} else {
-    			if ( server == null ) {
-    	        	response.setErrorMessage(SyncConstants.ERROR_INVALID_SERVER.toString());
-    	        	response.setFileName(SyncConstants.FILENAME_INVALID_SERVER);
-    	        	response.setGuid(SyncConstants.GUID_UNKNOWN);
-    	        	response.setState(SyncTransmissionState.INVALID_SERVER);	    		
-    			} else if ( transmission == null ) {
-    		    	response.setErrorMessage(SyncConstants.ERROR_TRANSMISSION_CREATION.toString());
-    		    	response.setFileName(SyncConstants.FILENAME_NOT_CREATED);
-    		    	response.setGuid(SyncConstants.GUID_UNKNOWN);
-    		    	response.setState(SyncTransmissionState.TRANSMISSION_CREATION_FAILED);
-    			}
-    		}
-    	} catch (Exception e) {
-    		
-    	}
-		
-		return response;
-	}
-	
+	private static Log log = LogFactory.getLog(SyncUtil.class);		
+	    
 	public static Object getRootObject(String incoming)
 			throws Exception {
 		
@@ -464,6 +314,12 @@ public class SyncUtil {
 					o = getOpenmrsObj(className, fieldVal);
 				} else if ( "java.lang.String".equals(className) ) {
 					o = (Object)(new String(fieldVal));
+                } else if ( "java.lang.Short".equals(className) ) {
+                    try {
+                        o = (Object)(Short.valueOf(fieldVal));
+                    } catch (NumberFormatException nfe) {
+                        log.debug("NumberFormatException trying to turn " + fieldVal + " into a Short");
+                    }
 				} else if ( "java.lang.Integer".equals(className) ) {
 					try {
 						o = (Object)(Integer.valueOf(fieldVal));
@@ -556,17 +412,21 @@ public class SyncUtil {
 			boolean isUpdated = true;
 			
 			if ( "org.openmrs.Cohort".equals(className) ) { 
-				if ( !knownToExist ) Context.getCohortService().updateCohort((Cohort)o);
-				else Context.getCohortService().createCohort((Cohort)o);
+				if ( !knownToExist ) Context.getCohortService().createCohort((Cohort)o);
+				else Context.getCohortService().updateCohort((Cohort)o);
 			} else if ( "org.openmrs.ComplexObs".equals(className) ) {
 				log.debug("UNABLE TO CREATE/UPDATE ComplexObs in Synchronization process - no service method exists");
 				isUpdated = false;
 			} else if ( "org.openmrs.Concept".equals(className) ) { 
-				if ( !knownToExist ) Context.getConceptService().updateConcept((Concept)o);
-				else Context.getConceptService().createConcept((Concept)o);
+				if ( !knownToExist ) {
+					Integer id = Context.getConceptService().getNextAvailableId();
+					((Concept)o).setConceptId(id);
+					Context.getConceptService().createConcept((Concept)o);
+				}
+				else Context.getConceptService().updateConcept((Concept)o);
 			} else if ( "org.openmrs.ConceptAnswer".equals(className) ) {
-				log.debug("UNABLE TO CREATE/UPDATE ConceptAnswer in Synchronization process - no service method exists");
-				isUpdated = false;
+				if ( !knownToExist ) Context.getConceptService().createConceptAnswer((ConceptAnswer)o);
+				else Context.getConceptService().updateConceptAnswer((ConceptAnswer)o);
 			} else if ( "org.openmrs.ConceptClass".equals(className) ) {
 				if ( !knownToExist ) Context.getAdministrationService().createConceptClass((ConceptClass)o);
 				else Context.getAdministrationService().createConceptClass((ConceptClass)o);
@@ -574,11 +434,11 @@ public class SyncUtil {
 				if ( !knownToExist ) Context.getAdministrationService().createConceptDatatype((ConceptDatatype)o);
 				else Context.getAdministrationService().updateConceptDatatype((ConceptDatatype)o);
 			} else if ( "org.openmrs.ConceptDerived".equals(className) ) {
-				log.debug("UNABLE TO CREATE/UPDATE ConceptDerived in Synchronization process - no service method exists");
-				isUpdated = false;
+				if ( !knownToExist ) Context.getConceptService().createConcept((ConceptDerived)o);
+				else Context.getConceptService().updateConcept((ConceptDerived)o);
 			} else if ( "org.openmrs.ConceptName".equals(className) ) {
-				log.debug("UNABLE TO CREATE/UPDATE ConceptName in Synchronization process - no service method exists");
-				isUpdated = false;
+				if ( !knownToExist ) Context.getConceptService().createConceptName((ConceptName)o);
+				else Context.getConceptService().updateConceptName((ConceptName)o);
 			} else if ( "org.openmrs.ConceptNumeric".equals(className) ) {
 				if ( !knownToExist ) Context.getConceptService().createConcept((ConceptNumeric)o);
 				else Context.getConceptService().updateConcept((ConceptNumeric)o);
@@ -586,20 +446,20 @@ public class SyncUtil {
 				if ( !knownToExist ) Context.getAdministrationService().createConceptProposal((ConceptProposal)o);
 				else Context.getAdministrationService().updateConceptProposal((ConceptProposal)o);
 			} else if ( "org.openmrs.ConceptSet".equals(className) ) {
-				log.debug("UNABLE TO CREATE/UPDATE ConceptSet in Synchronization process - no service method exists");
-				isUpdated = false;
+				if ( !knownToExist ) Context.getConceptService().createConceptSet((ConceptSet)o);
+				else Context.getConceptService().updateConceptSet((ConceptSet)o);
 			} else if ( "org.openmrs.ConceptSetDerived".equals(className) ) {
 				log.debug("UNABLE TO CREATE/UPDATE ConceptSetDerived in Synchronization process - no service method exists");
 				isUpdated = false;
 			} else if ( "org.openmrs.ConceptSource".equals(className) ) {
-				log.debug("UNABLE TO CREATE/UPDATE ConceptSource in Synchronization process - no service method exists");
-				isUpdated = false;
+				if ( !knownToExist ) Context.getConceptService().createConceptSource((ConceptSource)o);
+				else Context.getConceptService().updateConceptSource((ConceptSource)o);
 			} else if ( "org.openmrs.ConceptStateConversion".equals(className) ) {
 				if ( !knownToExist ) Context.getProgramWorkflowService().createConceptStateConversion((ConceptStateConversion)o);
 				else Context.getProgramWorkflowService().updateConceptStateConversion((ConceptStateConversion)o);
 			} else if ( "org.openmrs.ConceptSynonym".equals(className) ) {
-				log.debug("UNABLE TO CREATE/UPDATE ConceptSynonym in Synchronization process - no service method exists");
-				isUpdated = false;
+				if ( !knownToExist ) Context.getConceptService().createConceptSynonym((ConceptSynonym)o);
+				else Context.getConceptService().updateConceptSynonym((ConceptSynonym)o);
 			} else if ( "org.openmrs.ConceptWord".equals(className) ) {
 				log.debug("UNABLE TO CREATE/UPDATE ConceptWord in Synchronization process - no service method exists");
 				isUpdated = false;
@@ -722,6 +582,5 @@ public class SyncUtil {
 		}
 		return ret;
 	}
-
 	
 }

@@ -30,15 +30,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncTransmissionState;
+import org.openmrs.synchronization.SyncUtilTransmission;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncTransmission;
 import org.openmrs.synchronization.ingest.SyncDeserializer;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
-import org.openmrs.synchronization.ingest.SyncRecordIngest;
 import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
+import org.openmrs.synchronization.server.RemoteServer;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -73,7 +75,14 @@ public class SynchronizationImportListController extends SimpleFormController {
 		// none of these result in user-friendly - so no comfy, user-friendly stuff needed here
 		
 		boolean isUpload = ServletRequestUtils.getBooleanParameter(request, "upload", false);
-		String contents = ServletRequestUtils.getStringParameter(request, "syncData", "");
+        boolean isResponse = false;
+		String contents = ServletRequestUtils.getStringParameter(request, "syncDataResponse", "");
+        if ( contents.length() == 0 ) {
+            contents = ServletRequestUtils.getStringParameter(request, "syncData", "");
+        } else {
+            isResponse = true;
+        }
+        Integer serverId = ServletRequestUtils.getIntParameter(request, "serverId", 0);
 
 		if (isUpload && request instanceof MultipartHttpServletRequest) {
 			log.debug("Seems we actually have a file object");
@@ -113,7 +122,7 @@ public class SynchronizationImportListController extends SimpleFormController {
     	str.setFileName(SyncConstants.FILENAME_TX_NOT_UNDERSTOOD);
     	str.setGuid(SyncConstants.GUID_UNKNOWN);
         str.setSyncSourceGuid(SyncConstants.GUID_UNKNOWN);
-        str.setSyncParentGuid(SyncConstants.GUID_UNKNOWN);
+        str.setSyncTargetGuid(SyncConstants.GUID_UNKNOWN);
     	str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);
         
         str.setTimestamp(new Date()); //set the timestamp of the response
@@ -122,11 +131,11 @@ public class SynchronizationImportListController extends SimpleFormController {
     	
 		if ( contents.length() > 0 ) {
 			
+            String username = ServletRequestUtils.getStringParameter(request, "username", "");
+            String password = ServletRequestUtils.getStringParameter(request, "password", "");
+            
 			// if this is option 3 (posting from remote server), we need to authenticate
 			if ( !Context.isAuthenticated() ) {
-				String username = ServletRequestUtils.getStringParameter(request, "username", "");
-				String password = ServletRequestUtils.getStringParameter(request, "password", "");
-				
 				try {
 					Context.authenticate(username, password);
 				} catch ( Exception e ) {
@@ -135,43 +144,102 @@ public class SynchronizationImportListController extends SimpleFormController {
 			}
 
 			if ( Context.isAuthenticated() ) {
-			    
-                //fill-in the server guid for the response first
-                str.setSyncParentGuid(SyncRecordIngest.getSyncParentGuid());
-                
-				if ( SyncConstants.TEST_MESSAGE.equals(contents) ) {
+
+                //fill-in the server guid for the response
+                str.setSyncTargetGuid(Context.getSynchronizationService().getServerGuid());
+
+                if ( SyncConstants.TEST_MESSAGE.equals(contents) ) {
 					str.setErrorMessage("");
 					str.setState(SyncTransmissionState.OK);
 					str.setGuid("");
 			    	str.setFileName(SyncConstants.FILENAME_TEST);
-				} else {
-					SyncTransmission st = null;
-					
-					try {
-						st = SyncDeserializer.xmlToSyncTransmission(contents);
-					} catch ( Exception e ) {
-						log.error("Unable to deserialize the following: " + contents);
-						e.printStackTrace();
-					}
-					
-					if ( st != null ) {
-						// the constructor for SyncTransmissionResponse is null-safe
-						str = new SyncTransmissionResponse(st);
-						
-						List<SyncImportRecord> importRecords = new ArrayList<SyncImportRecord>();
-						
-						if ( st.getSyncRecords() != null ) {
-							for ( SyncRecord record : st.getSyncRecords() ) {
-								//SyncImportRecord importRecord = SyncRecordIngest.processSyncRecord(record);
-                                SyncImportRecord importRecord = Context.getSynchronizationIngestService().ProcessSyncRecord(record);
-								importRecords.add(importRecord);
-							}
-						}
-						if ( importRecords.size() > 0 ) str.setSyncImportRecords(importRecords);
 
-					} else {
-						// don't need to do anything because the default Error values capture it all
-					}
+				} else {
+                    SyncTransmission st = null;
+
+                    if ( isResponse ) {
+                        SyncTransmissionResponse priorResponse = null;
+                        
+                        try {
+                            priorResponse = SyncDeserializer.xmlToSyncTransmissionResponse(contents);
+                        } catch ( Exception e ) {
+                            log.error("Unable to deserialize the following: " + contents);
+                            e.printStackTrace();
+                        }
+                        
+                        //figure out where this came from
+                        //for responses, the target ID contains the server that generated the response
+                        String sourceGuid = str.getSyncTargetGuid();
+                        RemoteServer origin = Context.getSynchronizationService().getRemoteServer(sourceGuid);
+
+                        // if that didn't do it, we should be able to get by serverId, if this is a file-based upload
+                        if ( origin == null && serverId > 0 ) {
+                            // make a last-ditch effort to try to figure out what server this is coming from, so we can behave appropriately.
+                            log.warn("CANNOT GET ORIGIN SERVER FOR THIS REQUEST, get by serverId " +  serverId);
+                            origin = Context.getSynchronizationService().getRemoteServer(serverId);
+                            if ( origin != null && sourceGuid != null && sourceGuid.length() > 0 ) {
+                                // take this opportunity to save the guid, now we've identified which server this is
+                                origin.setGuid(sourceGuid);
+                                Context.getSynchronizationService().updateRemoteServer(origin);
+                            } else {
+                                log.warn("STILL UNABLE TO GET ORIGIN WITH username " + username + " and sourceguid " + sourceGuid);
+                            }
+                        } else {
+                            log.warn("ORIGIN SERVER IS " + origin.getNickname());
+                        }
+
+                        if ( origin == null ) {
+                            // make a last-ditch effort to try to figure out what server this is coming from, so we can behave appropriately.
+                            User authenticatedUser = Context.getAuthenticatedUser();
+                            if ( authenticatedUser != null ) {
+                                username = authenticatedUser.getUsername();
+                                log.warn("CANNOT GET ORIGIN SERVER FOR THIS REQUEST, get by username " + username + " instead");
+                                origin = Context.getSynchronizationService().getRemoteServerByUsername(username);
+                                if ( origin != null && sourceGuid != null && sourceGuid.length() > 0 ) {
+                                    // take this opportunity to save the guid, now we've identified which server this is
+                                    origin.setGuid(sourceGuid);
+                                    Context.getSynchronizationService().updateRemoteServer(origin);
+                                } else {
+                                    log.warn("STILL UNABLE TO GET ORIGIN WITH username " + username + " and sourceguid " + sourceGuid);
+                                }
+                            }
+                        } else {
+                            log.warn("ORIGIN SERVER IS " + origin.getNickname());
+                        }
+
+                        
+                        if ( priorResponse != null ) {
+                            // process response
+                            if ( priorResponse.getSyncImportRecords() == null ) {
+                                log.debug("No records to process in response");
+                            } else {
+                                // process each incoming syncImportRecord
+                                for ( SyncImportRecord importRecord : priorResponse.getSyncImportRecords() ) {
+                                    Context.getSynchronizationIngestService().processSyncImportRecord(importRecord, origin);
+                                }
+                            }
+                            
+                            // now set the syncTransmission
+                            st = priorResponse.getSyncTransmission();
+                        } else {
+                            // don't need to do anything because the default Error values capture it all
+                        }
+
+                    } else {
+                        try {
+                            st = SyncDeserializer.xmlToSyncTransmission(contents);
+                        } catch ( Exception e ) {
+                            log.error("Unable to deserialize the following: " + contents);
+                            e.printStackTrace();
+                        }
+                    }
+
+                    // now process the syncTransmission                    
+                    if ( st != null ) {
+                        str = SyncUtilTransmission.processSyncTransmission(st);
+                    } else {
+                        // don't need to do anything because the default Error values capture it all
+                    }
 				}
 
 			} else {
@@ -211,7 +279,7 @@ public class SynchronizationImportListController extends SimpleFormController {
         out.flush();
         out.close();
 
-        // never a situation where we want to actually use the model/view - either file download or XML
+        // never a situation where we want to actually use the model/view - either file download or http request
         return null;
 	}
 

@@ -25,6 +25,7 @@ public class SyncConnectionTestItem {
 	private String connectionState;
 	private String errorMessage;
 	private String responsePayload;
+    private String syncTargetGuid;
 
 	public SyncConnectionTestItem() {}
 
@@ -34,6 +35,11 @@ public class SyncConnectionTestItem {
 			if ( str.getState().equals(SyncTransmissionState.AUTH_FAILED) ) this.connectionState = ServerConnectionState.AUTHORIZATION_FAILED.toString();
 			else if ( str.getState().equals(SyncTransmissionState.OK) ) this.connectionState = ServerConnectionState.OK.toString();
 			else this.connectionState = ServerConnectionState.CONNECTION_FAILED.toString();
+            
+            String targetGuid = str.getSyncTargetGuid();
+            if ( targetGuid != null ) {
+                this.syncTargetGuid = targetGuid;
+            }
 		} else {
 			this.connectionState = ServerConnectionState.CONNECTION_FAILED.toString();
 		}
@@ -61,6 +67,14 @@ public class SyncConnectionTestItem {
 	
 	public void setResponsePayload(String responsePayload) {
     	this.responsePayload = responsePayload;
+    }
+
+    public String getSyncTargetGuid() {
+        return syncTargetGuid;
+    }
+
+    public void setSyncTargetGuid(String syncTargetGuid) {
+        this.syncTargetGuid = syncTargetGuid;
     }
 
 	

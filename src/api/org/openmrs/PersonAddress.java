@@ -43,6 +43,15 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Synchroni
 	private Date dateVoided;
 	private String voidReason;
     private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 	
 	// Constructors
 

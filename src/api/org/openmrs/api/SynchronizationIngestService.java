@@ -16,6 +16,7 @@ package org.openmrs.api;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.ingest.SyncImportItem;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
+import org.openmrs.synchronization.server.RemoteServer;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -27,7 +28,7 @@ public interface SynchronizationIngestService {
      * @throws APIException
      */
     //@Authorized({"Manage Synchronization Records"})
-    public SyncImportRecord ProcessSyncRecord(SyncRecord record) throws APIException;
+    public SyncImportRecord processSyncRecord(SyncRecord record, RemoteServer server) throws APIException;
     
     /**
      * Process SyncImportRecord.
@@ -35,7 +36,7 @@ public interface SynchronizationIngestService {
      * @throws APIException
      */
     //@Authorized({"Manage Synchronization Records"})
-    public void processSyncImportRecord(SyncImportRecord importRecord) throws APIException;
+    public void processSyncImportRecord(SyncImportRecord importRecord, RemoteServer server) throws APIException;
     
     /**
      * 
@@ -45,5 +46,5 @@ public interface SynchronizationIngestService {
      * @throws APIException
      */
     //@Authorized({"Manage Synchronization Records"})
-    public SyncImportItem processSyncItem(String incoming)  throws APIException;
+    public SyncImportItem processSyncItem(String incoming, String originalGuid)  throws APIException;
 }

@@ -33,6 +33,15 @@ public class FormField implements java.io.Serializable, Comparable, Synchronizab
 	private User changedBy;
 	private Date dateChanged;
 	private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 	
   public String getGuid() {
       return guid;

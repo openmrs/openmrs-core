@@ -23,6 +23,15 @@ public class PatientIdentifierType implements java.io.Serializable, Synchronizab
 	private Date dateCreated;
 	private User creator;
     private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 
 	/** default constructor */
 	public PatientIdentifierType() {

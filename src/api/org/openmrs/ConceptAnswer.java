@@ -1,5 +1,6 @@
 package org.openmrs;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
@@ -9,7 +10,7 @@ import org.openmrs.synchronization.Synchronizable;
 /**
  * ConceptAnswer 
  */
-public class ConceptAnswer implements java.io.Serializable, Synchronizable {
+public class ConceptAnswer implements Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 3744L;
 	public Log log = LogFactory.getLog(this.getClass());
@@ -22,14 +23,23 @@ public class ConceptAnswer implements java.io.Serializable, Synchronizable {
 	private User creator;
 	private Date dateCreated;
 	private String guid;
-	
-  public String getGuid() {
-      return guid;
-  }
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
 
-  public void setGuid(String guid) {
-      this.guid = guid;
-  }
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
+	
+	public String getGuid() {
+		return guid;
+	}
+
+	public void setGuid(String guid) {
+		this.guid = guid;
+	}
 
 	// Constructors
 

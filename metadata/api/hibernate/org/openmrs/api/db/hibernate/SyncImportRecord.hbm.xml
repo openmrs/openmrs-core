@@ -35,8 +35,5 @@
 		<property name="errorMessage" type="java.lang.String"
 			column="error_message" length="255" />
 
-		<property name="resultingRecordGuid" type="java.lang.String"
-			column="resulting_record_guid" length="36" />
-    
 	</class>
 </hibernate-mapping>

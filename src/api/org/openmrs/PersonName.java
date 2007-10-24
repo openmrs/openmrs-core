@@ -41,6 +41,15 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	private User changedBy;
 	private Date dateChanged;
     private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 
 	// Constructors
 

@@ -20,7 +20,16 @@ public class FieldType implements java.io.Serializable, Synchronizable {
 	private Date dateCreated;
 	private User creator;
 	private String guid;
-	
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
+
   public String getGuid() {
       return guid;
   }

@@ -16,6 +16,15 @@ public class ConceptSetDerived implements java.io.Serializable, Synchronizable {
 	private Concept conceptSet;
 	private Double sortWeight;
 	private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 	
   public String getGuid() {
       return guid;

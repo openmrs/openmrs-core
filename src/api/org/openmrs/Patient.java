@@ -41,9 +41,7 @@ public class Patient extends Person
 	private User voidedBy;
 	private Date dateVoided; 
 	private String voidReason;
-    private String guid;
 	
-
 	// Constructors
 	/** default constructor */
 	public Patient() {

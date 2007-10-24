@@ -15,15 +15,22 @@ package org.openmrs.synchronization.engine;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.openmrs.serialization.IItem;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
 import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.server.RemoteServer;
+import org.openmrs.synchronization.server.RemoteServerType;
+import org.openmrs.synchronization.server.SyncServerRecord;
 
 /**
  * SyncRecord is a collection of sync items that represents a smallest transactional unit.
@@ -52,10 +59,37 @@ public class SyncRecord implements Serializable, IItem {
     private int retryCount;
     private SyncRecordState state = SyncRecordState.NEW;
     private List<SyncItem> items = null;
+    private String containedClasses = "";
+    private Set<SyncServerRecord> serverRecords = null;
+    private RemoteServer forServer = null;
+    private String originalGuid = null;
+
+    public String getOriginalGuid() {
+        return originalGuid;
+    }
+
+    public void setOriginalGuid(String originalGuid) {
+        this.originalGuid = originalGuid;
+    }
 
     // Constructors
     /** default constructor */
     public SyncRecord() {
+    }
+
+    public String getContainedClasses() {
+        return containedClasses;
+    }
+
+    public void setContainedClasses(String containedClasses) {
+        if ( containedClasses != null ) {
+            String[] splits = containedClasses.split(",");
+            for ( String split : splits ) {
+                this.addContainedClass(split);
+            }
+        } else {
+            this.containedClasses = containedClasses;
+        }
     }
 
     public Integer getRecordId() {
@@ -160,7 +194,26 @@ public class SyncRecord implements Serializable, IItem {
         //serialize primitives
         xml.setAttribute(me, "guid", guid);
         xml.setAttribute(me, "retryCount", Integer.toString(retryCount));
-        xml.setAttribute(me, "state", state.toString());
+        xml.setAttribute(me, "containedClasses", this.containedClasses);
+        if ( this.originalGuid != null ) {
+            xml.setAttribute(me, "originalGuid", originalGuid);
+        }
+        xml.setAttribute(me, "guid", guid);
+
+        if ( this.getForServer() != null ) {
+            if ( !this.getForServer().getServerType().equals(RemoteServerType.PARENT)) {
+                SyncServerRecord serverRecord = this.getServerRecord(this.getForServer());
+                xml.setAttribute(me, "state", serverRecord.getState().toString());
+                xml.setAttribute(me, "retryCount", Integer.toString(serverRecord.getRetryCount()));
+            } else {
+                xml.setAttribute(me, "state", state.toString());
+                xml.setAttribute(me, "retryCount", Integer.toString(retryCount));
+            }
+        } else {
+            xml.setAttribute(me, "state", state.toString());
+            xml.setAttribute(me, "retryCount", Integer.toString(retryCount));
+        }
+
         
         if (timestamp != null) {
         	xml.setAttribute(me, "timestamp", new TimestampNormalizer().toString(timestamp));
@@ -184,13 +237,20 @@ public class SyncRecord implements Serializable, IItem {
         this.guid = me.getAttribute("guid");
         this.retryCount = Integer.parseInt(me.getAttribute("retryCount"));
         this.state = SyncRecordState.valueOf(me.getAttribute("state"));
+        this.containedClasses = me.getAttribute("containedClasses");
         
         if (me.getAttribute("timestamp") == null)
             this.timestamp = null;
         else {
             this.timestamp = (Date)new TimestampNormalizer().fromString(Date.class,me.getAttribute("timestamp"));
         }
-        
+
+        if (me.getAttribute("originalGuid") == null)
+            this.originalGuid = null;
+        else {
+            this.originalGuid = me.getAttribute("originalGuid");
+        }
+
         //now get items
         Item itemsCollection = xml.getItem(me, "items");
         
@@ -206,5 +266,87 @@ public class SyncRecord implements Serializable, IItem {
                 items.add(syncItem);
             }
         }
+    }
+
+    public Set<String> getContainedClassSet() {
+        Set<String> ret = new HashSet<String>();
+        
+        if ( this.containedClasses != null ) {
+            String[] classes = this.containedClasses.split(",");
+            for ( String clazz : classes ) {
+                if ( !ret.contains(clazz) ) ret.add(clazz);
+            }
+        }
+        
+        return ret;
+    }
+    
+    public void setContainedClassSet(Set<String> classes) {
+        if ( classes != null ) {
+            this.containedClasses = "";
+            for ( String clazz : classes ) {
+                clazz = clazz.trim();
+                if ( clazz.length() > 0 ) {
+                    if ( this.containedClasses.length() == 0 ) this.containedClasses = clazz;
+                    else this.containedClasses += "," + clazz;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Auto generated method comment
+     * 
+     * @param simpleName
+     */
+    public void addContainedClass(String simpleName) {
+        if ( simpleName != null && simpleName.length() > 0 ) {
+            Set<String> classes = this.getContainedClassSet();
+            if ( classes == null ) classes = new HashSet<String>();
+            if ( !classes.contains(simpleName) ) classes.add(simpleName);
+            this.setContainedClassSet(classes);
+        }
+    }
+
+    public Set<SyncServerRecord> getServerRecords() {
+        return serverRecords;
+    }
+
+    public void setServerRecords(Set<SyncServerRecord> serverRecords) {
+        this.serverRecords = serverRecords;
+    }
+
+    public SyncServerRecord getServerRecord(RemoteServer server) {
+        SyncServerRecord ret = null;
+        
+        if ( server != null && this.serverRecords != null ) {
+            for ( SyncServerRecord record : this.serverRecords ) {
+                if ( record.getSyncServer().equals(server)) {
+                    ret = record;
+                }
+            }
+        }
+        
+        return ret;
+    }
+    
+    public RemoteServer getForServer() {
+        return forServer;
+    }
+
+    public void setForServer(RemoteServer forServer) {
+        this.forServer = forServer;
+    }
+    
+    public Map<RemoteServer, SyncServerRecord> getRemoteRecords() {
+    	Map<RemoteServer, SyncServerRecord> ret = new HashMap<RemoteServer, SyncServerRecord>();
+    	
+    	if ( this.serverRecords != null ) {
+    		for ( SyncServerRecord serverRecord : this.serverRecords ) {
+    			ret.put(serverRecord.getSyncServer(), serverRecord);
+    		}
+    	}
+    	
+    	return ret;
     }
 }

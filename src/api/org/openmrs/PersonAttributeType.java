@@ -16,16 +16,21 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	private String format;
 	private Integer foreignKey;
 	private String description;
-	
 	private Boolean searchable;
-	
 	private User creator;
 	private Date dateCreated;
-	
 	private User changedBy;
 	private Date dateChanged;
-    
     private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 
 	/** default constructor */
 	public PersonAttributeType() {}

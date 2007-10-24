@@ -19,6 +19,15 @@ public class ConceptDerived extends Concept implements java.io.Serializable, Syn
 	private String compileStatus;
 	private String className;
 	private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 
 	public String getGuid() {
     	return guid;

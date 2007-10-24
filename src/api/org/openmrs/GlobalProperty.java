@@ -8,6 +8,15 @@ public class GlobalProperty implements SynchronizableInstance {
 	private String description = "";
 	private String guid;
     private boolean isSynchronizable = true;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 
 	/**
 	 * Default empty constructor

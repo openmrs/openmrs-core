@@ -26,14 +26,23 @@ public class Cohort implements Serializable, Synchronizable {
 	private String voidReason;
 	private Set<Integer> memberIds;
 	private String guid;
+    private transient String lastRecordGuid;
 	
-  public String getGuid() {
-      return guid;
-  }
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
 
-  public void setGuid(String guid) {
-      this.guid = guid;
-  }
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
 
 	public Cohort() {
 		memberIds = new HashSet<Integer>();

@@ -1194,7 +1194,7 @@ table td#summaryHeaderPatientGender {
 	font-weight: bold;
 }
 
-.syncALREADY_COMMITTED, .syncNEUTRAL {
+.syncALREADY_COMMITTED, .syncNEUTRAL, .syncNOT_SUPPOSED_TO_SYNC {
 	color: #bbaa11;
 	font-weight: bold;
 }

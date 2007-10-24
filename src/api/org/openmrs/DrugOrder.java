@@ -22,6 +22,15 @@ public class DrugOrder extends Order implements java.io.Serializable, Synchroniz
 	private Boolean complex = false;
 	private Integer quantity;
 	private Drug drug;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 	
 	// Constructors
 

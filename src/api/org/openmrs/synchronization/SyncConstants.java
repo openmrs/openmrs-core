@@ -75,9 +75,12 @@ public class SyncConstants {
 	public static final String DIR_IMPORT = "import";
 	public static final String DIR_JOURNAL = "journal";
 
-	public static final String SCHEDULED_TASK_CLASS = SynchronizationTask.class.toString();
+	public static final String SCHEDULED_TASK_CLASS = SynchronizationTask.class.getName();
 	public static final String SCHEDULED_TASK_PROPERTY_SERVER_ID = "serverId";
 
 	public static final String DEFAULT_PARENT_SCHEDULE_NAME = "SynchronizationStatus.parent.schedule.default.name";
 	public static final String DEFAULT_PARENT_SCHEDULE_DESCRIPTION = "SynchronizationStatus.parent.schedule.default.description";
+
+    public static final String DEFAULT_CHILD_SERVER_USER_GENDER = "M";
+    public static final String DEFAULT_CHILD_SERVER_USER_NAME = "SynchronizationConfig.child.user.name";
 }

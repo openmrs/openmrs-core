@@ -40,7 +40,7 @@ public class Obs implements java.io.Serializable, Synchronizable {
 	protected String valueModifier;
 	protected String valueText;
 	protected String comment;
-	protected Integer personId;
+	protected transient Integer personId;
 	protected Person person;
 	protected Order order;
 	protected Location location;
@@ -53,7 +53,16 @@ public class Obs implements java.io.Serializable, Synchronizable {
 	protected User voidedBy;
 	protected Date dateVoided;
 	protected String voidReason;
-	private String guid;
+	protected String guid;
+    protected transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 	
   public String getGuid() {
       return guid;

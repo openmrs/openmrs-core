@@ -18,6 +18,15 @@ public class Tribe implements java.io.Serializable, Synchronizable {
 	private Boolean retired = false;
 	private String name;
 	private String guid;
+    private transient String lastRecordGuid;
+    
+    public String getLastRecordGuid() {
+        return lastRecordGuid;
+    }
+
+    public void setLastRecordGuid(String lastRecordGuid) {
+        this.lastRecordGuid = lastRecordGuid;
+    }
 	
   public String getGuid() {
       return guid;

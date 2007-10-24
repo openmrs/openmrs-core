@@ -9,7 +9,7 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.scheduler.Schedulable;
 import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.synchronization.SyncConstants;
-import org.openmrs.synchronization.SyncUtil;
+import org.openmrs.synchronization.SyncUtilTransmission;
 import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
 import org.openmrs.synchronization.server.RemoteServer;
 
@@ -42,7 +42,7 @@ public class SynchronizationTask implements Schedulable {
 				authenticate();
 			RemoteServer server = Context.getSynchronizationService().getRemoteServer(serverId);
 			if ( server != null ) {
-				SyncTransmissionResponse response = SyncUtil.sendSyncTranssmission(server);
+				SyncTransmissionResponse response = SyncUtilTransmission.doFullSynchronize(server);
 				try {
 					response.CreateFile(true, SyncConstants.DIR_JOURNAL);
 				} catch ( Exception e ) {

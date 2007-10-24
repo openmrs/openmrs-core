@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.SyncTransmissionState;
-import org.openmrs.synchronization.SyncUtil;
+import org.openmrs.synchronization.SyncUtilTransmission;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncSource;
@@ -48,8 +49,8 @@ import org.openmrs.synchronization.engine.SyncSourceJournal;
 import org.openmrs.synchronization.engine.SyncTransmission;
 import org.openmrs.synchronization.ingest.SyncDeserializer;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
-import org.openmrs.synchronization.ingest.SyncRecordIngest;
 import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
+import org.openmrs.synchronization.server.RemoteServer;
 import org.openmrs.web.WebConstants;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
@@ -105,9 +106,14 @@ public class SynchronizationStatusListController extends SimpleFormController {
         if ("createTx".equals(action)) {            	
             try {
             	// we are creating a sync-transmission, so start by generating a SyncTransmission object
-            	SyncTransmission tx = SyncUtil.createSyncTransmission();
+            	SyncTransmission tx = SyncUtilTransmission.createSyncTransmission();
                 String toTransmit = tx.getFileOutput();
 
+                // Record last attempt
+                RemoteServer parent = Context.getSynchronizationService().getParentServer();
+                parent.setLastSync(new Date());
+                Context.getSynchronizationService().updateRemoteServer(parent);
+                
                 // Write sync transmission to response
                 InputStream in = new ByteArrayInputStream(toTransmit.getBytes());
                 response.setContentType("text/xml; charset=utf-8");
@@ -120,12 +126,14 @@ public class SynchronizationStatusListController extends SimpleFormController {
                 // don't return a model/view - we'll need to return a file instead.
                 result = null;
             } catch(Exception e) {
+                e.printStackTrace();
                 error = msa.getMessage("SynchronizationStatus.createTx.error");  
             }
         } else if ( "uploadResponse".equals(action) && request instanceof MultipartHttpServletRequest) {
 
         	try {
             	String contents = "";
+                RemoteServer parent = Context.getSynchronizationService().getParentServer();
 
             	// first, get contents of file that is being uploaded.  it is clear we are uploading a response from parent at this point
             	MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
@@ -141,6 +149,7 @@ public class SynchronizationStatusListController extends SimpleFormController {
     						contents += line;
     					}
     				} catch (Exception e) {
+                        e.printStackTrace();
     					log.warn("Unable to read in sync data file", e);
     					error = e.getMessage();
     				} finally {
@@ -166,7 +175,8 @@ public class SynchronizationStatusListController extends SimpleFormController {
         			else {
         				// process each incoming syncImportRecord
         				for ( SyncImportRecord importRecord : str.getSyncImportRecords() ) {
-        					SyncRecordIngest.processSyncImportRecord(importRecord);
+        					Context.getSynchronizationIngestService().processSyncImportRecord(importRecord, parent);
+                            // get some numbers to show user the results
         					if ( importRecord.getState().equals(SyncRecordState.COMMITTED )) numCommitted++;
         					else if ( importRecord.getState().equals(SyncRecordState.ALREADY_COMMITTED )) numAlreadyCommitted++;
         					else if ( importRecord.getState().equals(SyncRecordState.FAILED )) numFailed++;
@@ -189,6 +199,7 @@ public class SynchronizationStatusListController extends SimpleFormController {
         			error = msa.getMessage("SynchronizationStatus.uploadResponse.fileEmpty");
         		}
             } catch(Exception e) {
+                e.printStackTrace();
                 error = msa.getMessage("SynchronizationStatus.uploadResponse.error");  
             }
         }
@@ -216,8 +227,11 @@ public class SynchronizationStatusListController extends SimpleFormController {
 
         // only fill the Object if the user has authenticated properly
         if (Context.isAuthenticated()) {
-            SyncSource source = new SyncSourceJournal();
-            recordList = source.getChanged();
+            RemoteServer parent = Context.getSynchronizationService().getParentServer();
+            if ( parent != null ) {
+                SyncSource source = new SyncSourceJournal();
+                recordList = source.getChanged(parent);
+            }
         	
         	//SynchronizationService ss = Context.getSynchronizationService();
             //recordList.addAll(ss.getSyncRecords());
@@ -283,7 +297,18 @@ public class SynchronizationStatusListController extends SimpleFormController {
         state.put(SyncTransmissionState.TRANSMISSION_CREATION_FAILED.toString(), msa.getMessage("SynchronizationStatus.transmission.createError"));
         state.put(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD.toString(), msa.getMessage("SynchronizationStatus.transmission.corruptTxError"));
         state.put(SyncTransmissionState.OK_NOTHING_TO_DO.toString(), msa.getMessage("SynchronizationStatus.transmission.okNoSyncNeeded"));
+        state.put(SyncRecordState.ABORTED.toString(), msa.getMessage("Synchronization.record.state_FAILED"));
+        state.put(SyncRecordState.ALREADY_COMMITTED.toString(), msa.getMessage("Synchronization.record.state_ALREADY_COMMITTED"));
+        state.put(SyncRecordState.COMMITTED.toString(), msa.getMessage("Synchronization.record.state_COMMITTED"));
+        state.put(SyncRecordState.FAILED.toString(), msa.getMessage("Synchronization.record.state_FAILED"));
+        state.put(SyncRecordState.NEW.toString(), msa.getMessage("Synchronization.record.state_SENT"));
+        state.put(SyncRecordState.PENDING_COMMIT.toString(), msa.getMessage("Synchronization.record.state_SENT"));
+        state.put(SyncRecordState.PENDING_SEND.toString(), msa.getMessage("Synchronization.record.state_SENT"));
+        state.put(SyncRecordState.SEND_FAILED.toString(), msa.getMessage("Synchronization.record.state_FAILED"));
+        state.put(SyncRecordState.SENT.toString(), msa.getMessage("Synchronization.record.state_SENT"));
+        state.put(SyncRecordState.SENT_AGAIN.toString(), msa.getMessage("Synchronization.record.state_SENT"));
         
+        ret.put("mode", ServletRequestUtils.getStringParameter(request, "mode", "SEND_FILE"));
         ret.put("transmissionState", state.entrySet());
         ret.put("recordTypes", recordTypes);
         ret.put("itemTypes", itemTypes);

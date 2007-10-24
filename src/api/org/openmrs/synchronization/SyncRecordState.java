@@ -33,5 +33,11 @@ public enum SyncRecordState {
     SENT_AGAIN, 
     
     /** this record has already been committed */
-    ALREADY_COMMITTED 
+    ALREADY_COMMITTED,
+    
+    /** this record is set not to sync with the referenced server */
+    NOT_SUPPOSED_TO_SYNC, 
+    
+    /** record was sent to server, but server does not accept this type of record for sync'ing */
+    REJECTED
 };

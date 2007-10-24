@@ -23,11 +23,30 @@
 	      </type>
 	    </property>
 
+		<property name="guid" type="java.lang.String"
+			column="guid" length="36" />
+
 		<property name="username" type="java.lang.String"
 			column="username" length="255" />
 
 		<property name="password" type="java.lang.String"
 			column="password" length="255" />
+
+		<property name="lastSync" type="java.util.Date"
+			column="last_sync" length="19" />
+
+		<set name="serverClasses" lazy="true" inverse="true" cascade="all-delete-orphan">
+			<key>
+				<column name="server_id" />
+			</key>
+			<one-to-many class="org.openmrs.synchronization.filter.SyncServerClass" />
+		</set>
+
+	    <property name="disabled" type="java.lang.Boolean" column="disabled"
+	        length="1" not-null="true" />
+
+		<property name="childUsername" type="java.lang.String"
+			column="child_username" length="255" />
 
 	</class>
 </hibernate-mapping>

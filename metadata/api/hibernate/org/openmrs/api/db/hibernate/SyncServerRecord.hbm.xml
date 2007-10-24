@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.synchronization.server">
+
+	<class name="SyncServerRecord" table="synchronization_server_record">
+
+		<id name="serverRecordId" type="int" column="server_record_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<many-to-one name="syncServer" class="RemoteServer" not-null="true">
+			<column name="server_id" />
+		</many-to-one>
+
+		<many-to-one name="syncRecord" class="org.openmrs.synchronization.engine.SyncRecord" not-null="true">
+			<column name="record_id" />
+		</many-to-one>
+
+		<property name="retryCount" type="int" 
+			column="retry_count" length="11" />
+		
+		<property name="state">
+			<type name="org.openmrs.api.db.hibernate.usertype.GenericEnumUserType">
+				<param name="enumClassName">org.openmrs.synchronization.SyncRecordState</param>
+			</type>
+		</property>
+		
+	</class>
+</hibernate-mapping>

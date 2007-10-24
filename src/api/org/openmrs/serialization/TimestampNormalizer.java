@@ -20,7 +20,7 @@ public class TimestampNormalizer extends Normalizer
 {
     public static final String DATETIME_MASK = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final String DATETIME_MASK_BACKUP = "yyyy-MM-dd HH:mm:ss.S";  // because we are converting to strings in more than one way, so need a way to convert back
-	public static final String DATETIME_DISPLAY_FORMAT = "dd-MMM-yyyy HH:mm:ss";
+	public static final String DATETIME_DISPLAY_FORMAT = "dd MMM yyyy HH:mm:ss";
     
     public String toString(Object o) {
         

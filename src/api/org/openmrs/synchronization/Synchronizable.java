@@ -19,4 +19,6 @@ package org.openmrs.synchronization;
 public interface Synchronizable {
 	String getGuid();
 	void setGuid(String guid);
+    String getLastRecordGuid();
+    void setLastRecordGuid(String guid);
 }

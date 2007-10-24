@@ -52,7 +52,6 @@ public class SyncImportRecord implements Serializable, IItem {
     private int retryCount;
     private SyncRecordState state = SyncRecordState.NEW;
     private String errorMessage;
-    private String resultingRecordGuid;
     private List<SyncImportItem> items = null;
 
 	// Constructors
@@ -62,22 +61,14 @@ public class SyncImportRecord implements Serializable, IItem {
 
     public SyncImportRecord(SyncRecord record) {
     	if ( record != null ) {
-    		this.guid = record.getGuid();
+            // the guid should be set to original guid - this way all subsequent attempts to execute this change are matched to this import
+    		this.guid = record.getOriginalGuid();
     		this.creator = record.getCreator();
     		this.databaseVersion = record.getDatabaseVersion();
     		this.timestamp = record.getTimestamp();
     		this.retryCount = record.getRetryCount();
     		this.state = record.getState();
-    		this.resultingRecordGuid = null;
     	}
-    }
-
-    public String getResultingRecordGuid() {
-    	return resultingRecordGuid;
-    }
-
-	public void setResultingRecordGuid(String resultingRecordGuid) {
-    	this.resultingRecordGuid = resultingRecordGuid;
     }
 
 	public Integer getRecordId() {
@@ -152,8 +143,7 @@ public class SyncImportRecord implements Serializable, IItem {
         boolean same = ((oSync.getTimestamp() == null) ? (this.getTimestamp() == null) : oSync.getTimestamp().equals(this.getTimestamp()))
                 && ((oSync.getGuid() == null) ? (this.getGuid() == null) : oSync.getGuid().equals(this.getGuid()))
                 && ((oSync.getState() == null) ? (this.getState() == null) : oSync.getState().equals(this.getState()))
-                && (oSync.getRetryCount() == this.getRetryCount())
-                && ((oSync.getResultingRecordGuid() == null) ? (this.getResultingRecordGuid() == null) : oSync.getResultingRecordGuid().equals(this.getResultingRecordGuid()));
+                && (oSync.getRetryCount() == this.getRetryCount());
         return same;
     }
 
@@ -165,7 +155,6 @@ public class SyncImportRecord implements Serializable, IItem {
         xml.setAttribute(me, "guid", this.guid);
         xml.setAttribute(me, "retryCount", Integer.toString(this.retryCount));
         xml.setAttribute(me, "state", this.state.toString());
-        xml.setAttribute(me, "resultingRecordGuid", this.resultingRecordGuid);
         if (timestamp != null) {
         	xml.setAttribute(me, "timestamp", new TimestampNormalizer().toString(timestamp));
         }

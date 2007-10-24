@@ -25,6 +25,7 @@ import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.SyncConstants;
+import org.openmrs.synchronization.server.RemoteServer;
 /**
  * SyncSource to sync OpenMRS tables based on last_changed_local.
  */
@@ -169,6 +170,22 @@ public class SyncSourceJournal implements SyncSource {
         return changed;
     }
     
+    // state-based version that takes into consideration what should/shouldn't be sent to a given server
+    public List<SyncRecord> getChanged(RemoteServer server) throws SyncException {
+        List<SyncRecord> changed = new ArrayList<SyncRecord>();
+
+        try {
+            SynchronizationService syncService = Context.getSynchronizationService();           
+            changed = syncService.getSyncRecords(SyncConstants.SYNC_TO_PARENT_STATES, server);
+
+        } catch (Exception e) {
+            // TODO
+            log.error("error in getChanged ", e);
+        }
+
+        return changed;
+    }
+
     /*
      * no-op for journal sync -- all changes (deletes, inserts, updates are received in transactional order
      * via applyChanged

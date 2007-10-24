@@ -71,6 +71,8 @@ CREATE PROCEDURE add_guids ()
   ALTER TABLE `concept_numeric` DROP COLUMN `guid`;
   ALTER TABLE `concept_derived` DROP COLUMN `guid`;
   ALTER TABLE `complex_obs` DROP COLUMN `guid`;
+  
+  update global_property set property_value=UUID() where property = 'synchronization.server_guid';
 		
  END;
 //

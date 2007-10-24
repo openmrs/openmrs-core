@@ -15,9 +15,9 @@ package org.openmrs.web.dwr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.synchronization.SyncUtilTransmission;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncTransmissionState;
-import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
 import org.openmrs.synchronization.server.ConnectionResponse;
 import org.openmrs.synchronization.server.ServerConnection;
@@ -54,7 +54,7 @@ public class DWRSynchronizationService {
     	transmissionResponse.setGuid(SyncConstants.GUID_UNKNOWN);
     	transmissionResponse.setTransmissionState(SyncTransmissionState.SEND_FAILED.toString());
 
-    	SyncTransmissionResponse response = SyncUtil.sendSyncTranssmission();
+    	SyncTransmissionResponse response = SyncUtilTransmission.doFullSynchronize();
     	
     	if ( response != null ) {
     		transmissionResponse = new SyncTransmissionResponseItem(response);

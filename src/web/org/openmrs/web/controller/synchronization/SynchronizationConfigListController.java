@@ -13,28 +13,39 @@
  */
 package org.openmrs.web.controller.synchronization;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.SyncConstants;
+import org.openmrs.synchronization.SyncUtilTransmission;
 import org.openmrs.synchronization.engine.SyncSource;
 import org.openmrs.synchronization.engine.SyncSourceJournal;
+import org.openmrs.synchronization.engine.SyncTransmission;
+import org.openmrs.synchronization.filter.SyncClass;
 import org.openmrs.synchronization.server.RemoteServer;
 import org.openmrs.synchronization.server.RemoteServerType;
 import org.openmrs.synchronization.server.ServerConnectionState;
@@ -63,7 +74,7 @@ public class SynchronizationConfigListController extends SimpleFormController {
     }
     
 	@Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 
 		log.debug("in processFormSubmission");
 		
@@ -88,6 +99,7 @@ public class SynchronizationConfigListController extends SimpleFormController {
         	String nickname = ServletRequestUtils.getStringParameter(request, "nickname", "");
         	String username = ServletRequestUtils.getStringParameter(request, "username", "");
         	String password = ServletRequestUtils.getStringParameter(request, "password", "");
+            String guid = ServletRequestUtils.getStringParameter(request, "parentGuid", "");
     		String[] startedParams = request.getParameterValues("started");
     		boolean started = false;
     		if ( startedParams != null ) {
@@ -109,10 +121,12 @@ public class SynchronizationConfigListController extends SimpleFormController {
             		parent = new RemoteServer();
             	}
         		parent.setAddress(address);
-        		parent.setNickname(nickname);
+                // this is special for parent - will always be "Parent"
+        		parent.setNickname(RemoteServerType.PARENT.toString());
         		parent.setUsername(username);
         		parent.setPassword(password);
         		parent.setServerType(RemoteServerType.PARENT);
+                if ( guid.length() > 0 ) parent.setGuid(guid);
 
         		if ( parent.getServerId() == null ) {
             		Context.getSynchronizationService().createRemoteServer(parent);
@@ -138,26 +152,89 @@ public class SynchronizationConfigListController extends SimpleFormController {
     	        	Map<String,String> props = new HashMap<String,String>();
     	        	props.put(SyncConstants.SCHEDULED_TASK_PROPERTY_SERVER_ID, serverId);
     	        	if ( parentSchedule != null ) {
+    	        		Context.getSchedulerService().stopTask(parentSchedule);
     	        		parentSchedule.setStarted(started);
     	        		parentSchedule.setRepeatInterval((long)repeatInterval);
     	        		parentSchedule.setStartOnStartup(started);
     	        		parentSchedule.setProperties(props);
+    	        		if ( started ) {
+    	        			parentSchedule.setStartTime(new Date());
+    	        		}
     	        		Context.getSchedulerService().updateTask(parentSchedule);
+    	        		if ( started ) {
+    	        			Context.getSchedulerService().scheduleTask(parentSchedule);
+    	        		}
     	        	} else {
-    	        		parentSchedule = new TaskConfig();
-    	        		parentSchedule.setName(msa.getMessage(SyncConstants.DEFAULT_PARENT_SCHEDULE_NAME));
-    	        		parentSchedule.setDescription(msa.getMessage(SyncConstants.DEFAULT_PARENT_SCHEDULE_DESCRIPTION));
-    	        		parentSchedule.setRepeatInterval((long)repeatInterval);
-    	        		parentSchedule.setSchedulableClass(SyncConstants.SCHEDULED_TASK_CLASS);
-    	        		parentSchedule.setStarted(started);
-    	        		parentSchedule.setStartOnStartup(started);
-    	        		parentSchedule.setProperties(props);
-    	        		Context.getSchedulerService().createTask(parentSchedule);
+    	        		if ( started ) {
+        	        		parentSchedule = new TaskConfig();
+        	        		parentSchedule.setName(msa.getMessage(SyncConstants.DEFAULT_PARENT_SCHEDULE_NAME));
+        	        		parentSchedule.setDescription(msa.getMessage(SyncConstants.DEFAULT_PARENT_SCHEDULE_DESCRIPTION));
+        	        		parentSchedule.setRepeatInterval((long)repeatInterval);
+        	        		parentSchedule.setStartTime(new Date());
+        	        		parentSchedule.setSchedulableClass(SyncConstants.SCHEDULED_TASK_CLASS);
+        	        		parentSchedule.setStarted(started);
+        	        		parentSchedule.setStartOnStartup(started);
+        	        		parentSchedule.setProperties(props);
+        	        		Context.getSchedulerService().createTask(parentSchedule);
+       	        			Context.getSchedulerService().scheduleTask(parentSchedule);
+    	        		}
     	        	}
     	        }
         		
         		success = msa.getMessage("SynchronizationConfig.parent.saved");        		
         	}
+        } else if ( "saveClasses".equals(action) ) {
+            String[] classIdsTo = ServletRequestUtils.getRequiredStringParameters(request, "toDefault");
+            String[] classIdsFrom = ServletRequestUtils.getRequiredStringParameters(request, "fromDefault");
+            Set<String> idsTo = new HashSet<String>();
+            Set<String> idsFrom = new HashSet<String>();
+            if ( classIdsTo != null ) idsTo.addAll(Arrays.asList(classIdsTo));
+            if ( classIdsFrom != null ) idsFrom.addAll(Arrays.asList(classIdsFrom));
+            
+            List<SyncClass> syncClasses = Context.getSynchronizationService().getSyncClasses();
+            if ( syncClasses != null ) {
+                //log.warn("SYNCCLASSES IS SIZE: " + syncClasses.size());
+                for ( SyncClass syncClass : syncClasses ) {
+                    if ( idsTo.contains(syncClass.getSyncClassId().toString()) ) syncClass.setDefaultTo(true);
+                    else syncClass.setDefaultTo(false);
+                    if ( idsFrom.contains(syncClass.getSyncClassId().toString()) ) syncClass.setDefaultFrom(true);
+                    else syncClass.setDefaultFrom(false);
+                    Context.getSynchronizationService().updateSyncClass(syncClass);
+                }
+            }
+
+            success = msa.getMessage("SynchronizationConfig.classes.saved");             
+        } else if ( "manualTx".equals(action ) ) {
+            try {
+                Integer serverId = ServletRequestUtils.getIntParameter(request, "serverId", 0);
+                RemoteServer server = Context.getSynchronizationService().getRemoteServer(serverId);
+                
+                log.warn("IN MANUAL-TX WITH SERVERID: " + serverId);
+                
+                // we are creating a sync-transmission, so start by generating a SyncTransmission object
+                SyncTransmission tx = SyncUtilTransmission.createSyncTransmission(server);
+                String toTransmit = tx.getFileOutput();
+
+                // Record last attempt
+                server.setLastSync(new Date());
+                Context.getSynchronizationService().updateRemoteServer(server);
+                
+                // Write sync transmission to response
+                InputStream in = new ByteArrayInputStream(toTransmit.getBytes());
+                response.setContentType("text/xml; charset=utf-8");
+                response.setHeader("Content-Disposition", "attachment; filename=" + tx.getFileName() + ".xml");
+                OutputStream out = response.getOutputStream();
+                IOUtils.copy(in, out);
+                out.flush();
+                out.close();
+
+                // don't return a model/view - we'll need to return a file instead.
+                result = null;
+            } catch(Exception e) {
+                error = msa.getMessage("SynchronizationStatus.createTx.error");  
+                e.printStackTrace();
+            }
+
         }
         
         if (!success.equals(""))
@@ -243,12 +320,70 @@ public class SynchronizationConfigListController extends SimpleFormController {
 	            	}
 	        	}
 	        }
+            
+            Map<String,List<SyncClass>> syncClassGroups = new HashMap<String,List<SyncClass>>();
+            Map<String,List<SyncClass>> syncClassGroupsLeft = new HashMap<String,List<SyncClass>>();
+            Map<String,List<SyncClass>> syncClassGroupsRight = new HashMap<String,List<SyncClass>>();
+            Map<String,Boolean> syncClassGroupTo = new HashMap<String,Boolean>();
+            Map<String,Boolean> syncClassGroupFrom = new HashMap<String,Boolean>();
+
+            List<SyncClass> syncClasses = Context.getSynchronizationService().getSyncClasses();
+            if ( syncClasses != null ) {
+                //log.warn("SYNCCLASSES IS SIZE: " + syncClasses.size());
+                for ( SyncClass syncClass : syncClasses ) {
+                    String type = syncClass.getType().toString();
+                    List<SyncClass> currList = syncClassGroups.get(type);
+                    if ( currList == null ) {
+                        currList = new ArrayList<SyncClass>();
+                        syncClassGroupTo.put(type, false);
+                        syncClassGroupFrom.put(type, false);
+                    }
+                    currList.add(syncClass);
+                    syncClassGroups.put(type, currList);
+                    if ( syncClass.getDefaultTo() ) syncClassGroupTo.put(type, true); 
+                    if ( syncClass.getDefaultFrom() ) syncClassGroupFrom.put(type, true); 
+                    //log.warn("Added type " + type + " to list, size is now " + currList.size());
+                }
+
+                /*
+                 * This algorithm is nicer in theory
+                int countLeft = 0;
+                int countRight = 0;
+                for ( Iterator<Map.Entry<String, List<SyncClass>>> it = syncClassGroups.entrySet().iterator(); it.hasNext(); ) {
+                    Map.Entry<String, List<SyncClass>> entry = it.next();
+                    if ( countLeft > countRight ) {
+                        syncClassGroupsRight.put(entry.getKey(), entry.getValue());
+                        countRight += entry.getValue().size();
+                    } else {
+                        syncClassGroupsLeft.put(entry.getKey(), entry.getValue());
+                        countLeft += entry.getValue().size();
+                    }
+                }
+                */
+                // but this one simply is a better end-product
+                for ( Iterator<Map.Entry<String, List<SyncClass>>> it = syncClassGroups.entrySet().iterator(); it.hasNext(); ) {
+                    Map.Entry<String, List<SyncClass>> entry = it.next();
+                    if ( entry.getKey().equals("REQUIRED") || entry.getKey().equals("PATIENT") ) {
+                        syncClassGroupsLeft.put(entry.getKey(), entry.getValue());
+                    } else {
+                        syncClassGroupsRight.put(entry.getKey(), entry.getValue());
+                    }
+                }
+
+            } else {
+                //log.warn("SYNCCLASSES CAME BACK NULL");
+            }
 	        
+            ret.put("syncClassGroups", syncClassGroups);
+            ret.put("syncClassGroupsLeft", syncClassGroupsLeft);
+            ret.put("syncClassGroupsRight", syncClassGroupsRight);
+            ret.put("syncClassGroupTo", syncClassGroupTo);
+            ret.put("syncClassGroupFrom", syncClassGroupFrom);
 	        ret.put("connectionState", connectionState.entrySet());
 			ret.put("parent", parent);
 	        ret.put("parentSchedule", parentSchedule);
 	        ret.put("repeatInterval", repeatInterval);
-	        
+            ret.put("syncDateDisplayFormat", TimestampNormalizer.DATETIME_DISPLAY_FORMAT);
 	        ret.put("localStatus", ref.get("localStatus"));
 	        ret.put("localServerGuid", ref.get("localServerGuid"));
 		}

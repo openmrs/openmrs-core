@@ -23,6 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
+import org.openmrs.Obs;
+import org.openmrs.Person;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.serialization.Item;
@@ -79,7 +84,8 @@ public class SynchronizationHistoryListController extends SimpleFormController {
 		Map<String,String> recordTypes = new HashMap<String,String>();
 		Map<Object,String> itemTypes = new HashMap<Object,String>();
 		Map<Object,String> itemGuids = new HashMap<Object,String>();
-		//Map<String,String> itemInfo = new HashMap<String,String>();
+		Map<String,String> recordText = new HashMap<String,String>();
+        Map<String,String> recordChangeType = new HashMap<String,String>();
 		//Map<String,String> itemInfoKeys = new HashMap<String,String>();
         List<SyncRecord> recordList = (ArrayList<SyncRecord>)obj;
 
@@ -89,13 +95,20 @@ public class SynchronizationHistoryListController extends SimpleFormController {
         
         // warning: right now we are assuming there is only 1 item per record
         for ( SyncRecord record : recordList ) {
+            
+            String mainClassName = null;
+            String mainGuid = null;
+            String mainState = null;
+            
 			for ( SyncItem item : record.getItems() ) {
 				String syncItem = item.getContent();
+                mainState = item.getState().toString();
 				Record xml = Record.create(syncItem);
 				Item root = xml.getRootItem();
 				String className = root.getNode().getNodeName().substring("org.openmrs.".length());
 				itemTypes.put(item.getKey().getKeyValue(), className);
-				if ( recordTypes.get(record.getGuid()) == null ) recordTypes.put(record.getGuid(), className);
+				if ( mainClassName == null ) mainClassName = className;
+                
 				//String itemInfoKey = itemInfoKeys.get(className);
 				
 				// now we have to go through the item child nodes to find the real GUID that we want
@@ -104,23 +117,50 @@ public class SynchronizationHistoryListController extends SimpleFormController {
 					Node n = nodes.item(i);
 					String propName = n.getNodeName();
 					if ( propName.equalsIgnoreCase("guid") ) {
-						itemGuids.put(item.getKey().getKeyValue(), n.getTextContent());
-					}
-					/*
-					if ( propName.equalsIgnoreCase(itemInfoKey) ) {
-						itemInfo.put(record.getGuid(), n.getTextContent());
-					}
-					*/
+                        String guid = n.getTextContent();
+						itemGuids.put(item.getKey().getKeyValue(), guid);
+                        if ( mainGuid == null ) mainGuid = guid;
+                    }
 				}
 			}
-        	
+
+            recordTypes.put(record.getGuid(), mainClassName);
+            recordChangeType.put(record.getGuid(), mainState);
+            
+            // get more identifying info about this object so it's more user-friendly
+            if ( mainClassName.equals("Person") || mainClassName.equals("User") || mainClassName.equals("Patient") ) {
+                Person person = Context.getPersonService().getPersonByGuid(mainGuid);
+                if ( person != null ) recordText.put(record.getGuid(), person.getPersonName().toString());
+            }
+            if ( mainClassName.equals("Encounter") ) {
+                Encounter encounter = Context.getEncounterService().getEncounterByGuid(mainGuid);
+                if ( encounter != null ) {
+                    recordText.put(record.getGuid(), encounter.getEncounterType().getName() 
+                                   + (encounter.getForm() == null ? "" : " (" + encounter.getForm().getName() + ")"));
+                }
+            }
+            if ( mainClassName.equals("Concept") ) {
+                Concept concept = Context.getConceptService().getConceptByGuid(mainGuid);
+                if ( concept != null ) recordText.put(record.getGuid(), concept.getName(Context.getLocale()).getName());
+            }
+            if ( mainClassName.equals("Obs") ) {
+                Obs obs = Context.getObsService().getObsByGuid(mainGuid);
+                if ( obs != null ) recordText.put(record.getGuid(), obs.getConcept().getName(Context.getLocale()).getName());
+            }
+            if ( mainClassName.equals("DrugOrder") ) {
+                DrugOrder drugOrder = (DrugOrder)Context.getOrderService().getOrderByGuid(mainGuid);
+                if ( drugOrder != null ) recordText.put(record.getGuid(), drugOrder.getDrug().getConcept().getName(Context.getLocale()).getName());
+            }
         }
- 
+        
         ret.put("recordTypes", recordTypes);
         ret.put("itemTypes", itemTypes);
         ret.put("itemGuids", itemGuids);
         //ret.put("itemInfo", itemInfo);
+        ret.put("recordText", recordText);
+        ret.put("recordChangeType", recordChangeType);
         ret.put("parent", Context.getSynchronizationService().getParentServer());
+        ret.put("servers", Context.getSynchronizationService().getRemoteServers());
         ret.put("syncDateDisplayFormat", TimestampNormalizer.DATETIME_DISPLAY_FORMAT);
         
 	    return ret;
