@@ -58,7 +58,7 @@
 
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
-				value="%C{1}.%M|%d{ISO8601}|%m%n" />
+				value="%p - %C{1}.%M|%d{ISO8601}|%m%n" />
 		</layout>
 	</appender>
 
@@ -106,13 +106,21 @@
 		<appender-ref ref="DWR_FILE" />
 	</logger>
 
-	<logger name="org.openmrs.synchronization">
-		<level value="INFO" />
+	<!-- Sync-related logging setup -->
+	<logger name="org.openmrs.api.SynchronizationIngestService">
+		<level value="WARN" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
-
+	<logger name="org.openmrs.api.SynchronizationService">
+		<level value="WARN" />
+		<appender-ref ref="SYNCHRONIZATION_FILE" />
+	</logger>
+	<logger name="org.openmrs.synchronization">
+		<level value="WARN" />
+		<appender-ref ref="SYNCHRONIZATION_FILE" />
+	</logger>
 	<logger name="org.openmrs.api.db.hibernate.HibernateSynchronizationInterceptor">
-		<level value="INFO" />
+		<level value="WARN" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
 

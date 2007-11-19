@@ -58,6 +58,25 @@ CREATE PROCEDURE sync_setup_procedure()
 	  `guid` char(36) default '',
 	  PRIMARY KEY  (`server_id`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ 
+	 # Create/fill-in server guid global property
+	 if (SELECT count(*) FROM global_property where property = 'synchronization.server_guid') > 0  then
+	    if (SELECT count(*) FROM global_property
+	               where property = 'synchronization.server_guid'
+	               and (property_value is null or property_value = '') ) = 0  then
+	       #already there do nothing
+	       select 'server guid already assigned, no change made' from dual;
+	    else
+	       #row there but empty, assign new
+	       update global_property set property_value = uuid() where property = 'synchronization.server_guid';
+	    end if;
+	 else
+	    insert into global_property (property, property_value, description, guid)
+	    values ('synchronization.server_guid',
+	           uuid(),
+	           'Globally unique server id used to identify a given data source in synchronization.',
+	           uuid());
+	 end if;
 
 	ALTER TABLE `synchronization_server` ADD COLUMN `last_sync` datetime default NULL;
 

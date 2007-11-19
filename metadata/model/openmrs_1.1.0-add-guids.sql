@@ -40,14 +40,14 @@ CREATE PROCEDURE add_guids ()
     FETCH cur_tabs INTO table_name;
     IF NOT done THEN
 				# prepare stmt to alter table
-				select concat('Altering ',table_name) from dual;
+				select concat('Altering ',table_name) as 'Action:' from dual;
 				SET @sql_text := concat('ALTER TABLE `',table_name,'` ADD COLUMN `guid` CHAR(36) DEFAULT NULL;');
 				PREPARE stmt from @sql_text;
 				EXECUTE stmt;
 				DEALLOCATE PREPARE stmt;
 				
 				#prepare stmt to populate added column
-				select concat('Populating ',table_name) from dual;
+				select concat('Populating ',table_name) as 'Action:' from dual;
 				SET @sql_text := concat('UPDATE `',table_name,'` SET guid = UUID() WHERE guid is null;');
 				PREPARE stmt from @sql_text;
 				EXECUTE stmt;

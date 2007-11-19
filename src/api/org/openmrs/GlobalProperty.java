@@ -7,7 +7,7 @@ public class GlobalProperty implements SynchronizableInstance {
 	private String propertyValue = "";
 	private String description = "";
 	private String guid;
-    private boolean isSynchronizable = true;
+    private boolean isSynchronizable = false;
     private transient String lastRecordGuid;
     
     public String getLastRecordGuid() {

@@ -14,7 +14,7 @@
 package org.openmrs.synchronization;
 
 /**
- *
+ * Indicates that the implementing type supports data synchronization.
  */
 public interface Synchronizable {
 	String getGuid();

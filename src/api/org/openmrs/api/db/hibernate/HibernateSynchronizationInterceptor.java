@@ -52,7 +52,37 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+/**
+ * Implements 'change interception' for data synchronization feature using Hibernate interceptor mechanism. 
+ * Intercepted changes are recorded into the synchronization journal table in DB.
+ * TODO - add more content here.
+ * 
+ * @see org.hibernate.EmptyInterceptor
+ */
 public class HibernateSynchronizationInterceptor extends EmptyInterceptor implements ApplicationContextAware {
+
+    /**
+     * Helper container class to store type/value tuple for a given object property. Utilized during 
+     * serializtion of intercepted entity changes.
+     *
+     * @see HibernateSynchronizationInterceptor#packageObject(Synchronizable, Object[], String[], Type[], SyncItemState)
+     */
+    protected class PropertyClassValue {
+        String clazz, value;
+
+        public String getClazz() {
+            return clazz;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public PropertyClassValue(String clazz, String value) {
+            this.clazz = clazz;
+            this.value = value;
+        }
+    }    
 
     /**
      * From Spring docs: There might be a single instance of Interceptor for a
@@ -67,6 +97,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 
     protected SynchronizationService synchronizationService = null;
 
+    /* App context. This is needed to retrieve an instance of current Spring SessionFactory. There should be 
+     * a better way to do this but we collectively couldn't find one.
+    */
     private ApplicationContext context;
     
     static DefaultNormalizer defN = new DefaultNormalizer();
@@ -112,29 +145,30 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     }
 
     /**
-     * Deactivate synchronization. Will be reset on transaction completion or manually.
+     * Deactivates synchronization. Will be reset on transaction completion or manually.
      */
     public void deactivateTransactionSerialization() {
         deactivated.set(true);
     }
 
     /**
-     * Re-activate synchronization.
+     * Re-activates synchronization.
      */
     public void activateTransactionSerialization() {
         deactivated.remove();
     }
 
     /**
-     * Intercept the start of a transaction. A new SyncRecord is created for this transaction/
+     * Intercepts the start of a transaction. A new SyncRecord is created for this transaction/
      * thread to keep track of changes done during the transaction. Kept ThreadLocal.
      * 
      * @see org.hibernate.EmptyInterceptor#afterTransactionBegin(org.hibernate.Transaction)
      */
     @Override
     public void afterTransactionBegin(Transaction tx) {
-        log.warn("afterTransactionBegin: " + tx + " deactivated: " + deactivated.get());
-        
+       if(log.isDebugEnabled())
+            log.debug("afterTransactionBegin: " + tx + " deactivated: " + deactivated.get());
+         
         if(syncRecordHolder.get() != null ) {
             log.warn("Replacing existing SyncRecord in SyncRecord holder");
         }
@@ -151,7 +185,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
      */
     @Override
     public void beforeTransactionCompletion(Transaction tx) {
-        log.warn("beforeTransactionCompletion: " + tx + " deactivated: " + deactivated.get());
+        if(log.isDebugEnabled())
+            log.debug("beforeTransactionCompletion: " + tx + " deactivated: " + deactivated.get());
         
         // If synchronization is NOT deactivated
         if (deactivated.get() == null) {
@@ -160,7 +195,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 
             // Does this transaction contain any serialized changes?
             if (record.getItems() != null) {
-                log.warn(record.getItems().size() + " SyncItems in SyncRecord, saving!");
+            
+                if(log.isDebugEnabled())
+                    log.debug(record.getItems().size() + " SyncItems in SyncRecord, saving!");
                 
                 // Grab user if we have one, and use the GUID of the user as creator of this SyncRecord
                 User user = Context.getAuthenticatedUser();
@@ -191,7 +228,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                 synchronizationService.createSyncRecord(record, record.getOriginalGuid());
             }
             else {
-                log.warn("No SyncItems in SyncRecord, save discarded!");
+            	//note: this will happen all the time with read-only transactions
+                if(log.isDebugEnabled())
+                    log.debug("No SyncItems in SyncRecord, save discarded!");
             }
         }
     }
@@ -204,9 +243,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
      */
     @Override
     public void afterTransactionCompletion(Transaction tx) {
-        if (log.isWarnEnabled()) {
-            log.warn("afterTransactionCompletion: " + tx + " committed: " + tx.wasCommitted()+ " rolledback: " + tx.wasRolledBack() + " deactivated: " + deactivated.get());
-        }
+        if (log.isDebugEnabled())
+            log.debug("afterTransactionCompletion: " + tx + " committed: " + tx.wasCommitted()+ " rolledback: " + tx.wasRolledBack() + " deactivated: " + deactivated.get());
         
         // clean out SyncRecord in case of rollback:
         syncRecordHolder.remove();
@@ -219,7 +257,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
      * Called before an object is saved. Triggers in our case for new objects
      * (inserts)
      * 
-     * Package up the changes and set state to NEW.
+     * Packages up the changes and sets item state to NEW.
      * 
      * @return false if data is unmodified by this interceptor, true if
      *         modified. Adding GUIDs to new objects that lack them.
@@ -235,11 +273,15 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                           String[] propertyNames,
                           Type[] types) 
     {
-        log.debug("onSave: " + state.toString());
+	    if (log.isDebugEnabled())
+    	    log.debug("onSave: " + state.toString());
 
         //first see if entity should be written to the journal at all
-        if (!this.shouldSynchornize(entity))
+        if (!this.shouldSynchronize(entity)){
+            if (log.isDebugEnabled())
+                log.debug("Determined entity not to be journaled, exiting onSave.");        
             return false;
+		}
         
         //create new flush holder if needed
         if (pendingFlushHolder.get() == null) 
@@ -247,7 +289,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 
         if (!pendingFlushHolder.get().contains(entity)) {
             pendingFlushHolder.get().add(entity);
-            return packageObject(entity, state, propertyNames, types, SyncItemState.NEW);
+            return packageObject((Synchronizable)entity, state, propertyNames, types, SyncItemState.NEW);
         }
         
         return false;
@@ -256,7 +298,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     /**
      * Called before an object is updated in the database.
      * 
-     * Package up the changes and set state to NEW for any objects we care about synchronizing.
+     * Packages up the changes and sets sync state to NEW for any objects we care about synchronizing.
      * 
      * @return false if data is unmodified by this interceptor, true if
      *         modified. Adding GUIDs to new objects that lack them.
@@ -271,17 +313,22 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                                 String[] propertyNames,
                                 Type[] types) 
     {
-        log.debug("onFlushDirty: " + entity.getClass().getName());
+	    if (log.isDebugEnabled())
+    	    log.debug("onFlushDirty: " + entity.getClass().getName());
 
         //first see if entity should be written to the journal at all
-        if (!this.shouldSynchornize(entity))
+        if (!this.shouldSynchronize(entity)){
+            if (log.isDebugEnabled())
+                log.debug("Determined entity not to be journaled, exiting onSave.");        
             return false;
+		}
 
         /* NOTE: Accomodate Hibernate auto-flush semantics (as best as we understand them):
-         * In case of sync ingest: When processing SyncRecord with >1 sync item via ProcessSyncRecord() on parent, calls to get object/update
-         * object by guid may cause auto-flush of pending updates; this would result in redundant sync items
-         * within a sync record. Use threadLocal HashSet to only keep one instance of dirty object for single
-         * hibernate flush. Note that this is (i.e. incurring autoflush() is not normally observed in rest of openmrs service
+         * In case of sync ingest: When processing SyncRecord with >1 sync item via ProcessSyncRecord() on parent, 
+         * calls to get object/update object by guid may cause auto-flush of pending updates; 
+         * this would result in redundant sync items within a sync record. 
+         * Use threadLocal HashSet to only keep one instance of dirty object for single
+         * hibernate flush. Note that this is (i.e. incurring autoflush()) is not normally observed in rest of openmrs service
          * layer since most of the data change calls are encapsulated in single transactions.  
          */
         
@@ -291,7 +338,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 
         if (!pendingFlushHolder.get().contains(entity)) {
             pendingFlushHolder.get().add(entity);
-            return packageObject(entity, currentState, propertyNames, types, SyncItemState.UPDATED);
+            return packageObject((Synchronizable)entity, currentState, propertyNames, types, SyncItemState.UPDATED);
         }
         
         return false;
@@ -307,19 +354,39 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         pendingFlushHolder.remove();
     }
     
+    /**
+     * Intercept prepared stmts for logging purposes only.
+     * NOTE: At this point, we are ignoring any prepared statements. This method gets called on
+     * any prepared stmt; meaning selects also which makes handling this reliably difficult. Fundamentally,
+     * short of replaying sql as is on parent, it is diffucult to imagine safe and complete implementation.
+     * <p>
+     * Preferred approach is to weed out all dynamic SQL from openMRS DB layer and if absolutely necessary, 
+     * create a hook for DB layer code to explicitely specify what SQL should be passed to the parent during
+     * synchronization. 
+     * 
+     * @see org.hibernate.EmptyInterceptor#onPrepareStatement(java.lang.String)
+     */    
     @Override
     public String onPrepareStatement(String sql) {
-
         if(log.isDebugEnabled())
             log.debug("onPrepareStatement. sql: " + sql);
-
-        //TODO: handle prepared stmts
 
         return sql;
     }
 
     /**
-     * Serializes and packages an intercepted change in object state
+     * Serializes and packages an intercepted change in object state.
+     * <p>
+     * IMPORTANT serialization notes:
+     * <p>
+     * Transient Properties. Transients are not serialized/journaled. Marking an object property as transient is the
+     * supported way of designating it as something not to be recorded into the journal.
+     * <p>
+     * Hibernate Identity property. A property designated in Hibernate as identity (i.e. primary key) *is* not serialized.
+     * This is because sync does not enforce global uniqueness of database primary keys. Instead, custom guid property is used.
+     * This allows us to continue to use native types for 'traditional' entity relationships.   
+     * <p>
+     * Guid property.
      * 
      * @param entity The object changed.
      * @param currentState Array containing data for each field in the object as they will be saved.
@@ -328,55 +395,58 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
      * @param state SyncItemState, e.g. NEW, UPDATED, DELETED 
      * @return True if data was altered, false otherwise.
      */
-    protected boolean packageObject(Object entity, Object[] currentState, String[] propertyNames, Type[] types, SyncItemState state) {
+    protected boolean packageObject(Synchronizable entity, Object[] currentState, String[] propertyNames, Type[] types, SyncItemState state) {
         boolean dataChanged = false;
                 
-        /*
-         * Get the GUID of this object if it has one, used as SyncItemKey.
-         */
         String objectGuid = null;
         String originalRecordGuid = null;
-        if (entity instanceof Synchronizable) {
-            objectGuid = ((Synchronizable) entity).getGuid();
-            originalRecordGuid = ((Synchronizable)entity).getLastRecordGuid();
-            log.warn("In PackageObject, originalGuid is " + originalRecordGuid);
-        }
-
-        Set<String> transientProps = new HashSet<String>();
-        for ( Field f : entity.getClass().getDeclaredFields() ) {
-        	if ( Modifier.isTransient(f.getModifiers()) ) {
-        		transientProps.add(f.getName());
-        		log.warn("The field " + f.getName() + " is transient - so we won't serialize it");
-        	}
-        }
+        Set<String> transientProps = null;
         
-        HashMap<String, propertyClassValue> values = new HashMap<String, propertyClassValue> ();
+        //The container of values to be serialized:
+        //Holds tuples of <property-name> -> {<property-type-name>, <property-value as string>}        
+        HashMap<String, PropertyClassValue> values = new HashMap<String, PropertyClassValue> ();
 
         try {
-            Package pkg = new Package();
-            String className = entity.getClass().getName();
-            Record xml = pkg.createRecordForWrite(className);
-            Item entityItem = xml.getRootItem();
+            // Get the GUID of this object if it has one, used as SyncItemKey.
+            objectGuid = entity.getGuid();
+            originalRecordGuid = entity.getLastRecordGuid();
+            if(log.isDebugEnabled())
+                log.debug("In PackageObject, originalGuid is " + originalRecordGuid);
 
-            // metadata for this type
+    		// Transient properties are not serialized.
+            transientProps = new HashSet<String>();
+            for ( Field f : entity.getClass().getDeclaredFields() ) {
+            	if ( Modifier.isTransient(f.getModifiers()) ) {
+            		transientProps.add(f.getName());
+            		log.info("The field " + f.getName() + " is transient - so we won't serialize it");
+            	}
+            }
+
+            /* Retrieve metadata for this type; we need to determine what is the PK field for this type.
+             * We need to know this since PK values are *not* journaled; values of primary keys are assigned
+             * where physical DB records are created. This is so to avoid issues with id collisions.
+             */
             SessionFactory factory = (SessionFactory)this.context.getBean("sessionFactory");
             ClassMetadata data = factory.getClassMetadata(entity.getClass());
             String idProperty = data.getIdentifierPropertyName();
-            log.warn("Id for this class: " + idProperty);
+           if (log.isInfoEnabled())
+                log.info("Id for this class: " + idProperty);
             
             /*
              * Loop through all the properties/values and put in a hash for duplicate removal
              */
             for (int i = 0; i < types.length; i++) {
-                String typeName = types[i].getName();
-                
+                String typeName = types[i].getName();                
                 if (log.isDebugEnabled())
                     log.debug("Processing, type: " + typeName + " Field: " + propertyNames[i]);
-
                 /*
-                 * If this field is a String GUID, and it's null or "" we generate a new GUID before processing it.
+                 * If this field is a String GUID, and it's null or "", we need to assign a new GUID before 
+                 * processing it. Note: dataChanged is also set to true to let Hibernate know we are changing
+                 * a record right underneath of it. 
                  */
-                if (typeName.equals("string") && propertyNames[i].equals("guid") && (currentState[i] == null || currentState[i].equals(""))) {
+                if (typeName.equals("string") 
+                		&& propertyNames[i].equals("guid") 
+                		&& (currentState[i] == null || currentState[i].equals(""))) {
                     objectGuid = UUID.randomUUID().toString();
                     currentState[i] = objectGuid;
                     dataChanged = true;
@@ -385,22 +455,21 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                 }
 
                 if (currentState[i] != null) {
-                    // is this the primary key? if so, we don't want to serialize
+                    // is this the primary key or transient? if so, we don't want to serialize
                 	if ( propertyNames[i].equals(idProperty) 
                 			|| ("personId".equals(idProperty) && "patientId".equals(propertyNames[i])) 
                 			|| ("personId".equals(idProperty) && "userId".equals(propertyNames[i]))
                 			|| transientProps.contains(propertyNames[i])
-                			//|| isPropertyTransient(currentState[i])
-                			//|| ("org.openmrs.Obs".equals(className) && "personId".equals(propertyNames[i]))
                 			) {
-                		log.warn("Skipping property (" + propertyNames[i] + ") because it's either the primary key or it's transient.");
+                        if (log.isInfoEnabled())
+                            log.info("Skipping property (" + propertyNames[i] + ") because it's either the primary key or it's transient.");
+
                 	} else {
-                        /*
-                         * Handle safe types like boolean/String/integer/timestamp:
-                         */
+
                         Normalizer n;
                         if ((n = safetypes.get(typeName)) != null) {
-                            values.put(propertyNames[i], new propertyClassValue(typeName, n.toString(currentState[i])));
+	                        // Handle safe types like boolean/String/integer/timestamp via Normalizers
+                            values.put(propertyNames[i], new PropertyClassValue(typeName, n.toString(currentState[i])));
                         }
                         
                         /*
@@ -421,47 +490,56 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     	                        	log.warn("COULD NOT SUBSTITUTE AUTHENTICATED USER FOR ACTUAL USER");
     	                        }
                             } catch (Exception e) {
+                            	//TODO - throw exception here??!
                             	log.error("Could not find child object - object is null, therefore guid is null");
                             }
                             
                             if (childGuid != null) {
-                                values.put(propertyNames[i], new propertyClassValue(typeName, childGuid));
+                                values.put(propertyNames[i], new PropertyClassValue(typeName, childGuid));
                             } else {
                                 log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null");
                             }
                         } else {
-                            log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is not safe and has no GUID, skipped!");
+                        	//TODO - throw exception here??!
+                            log.error("Type: " + typeName + " Field: " + propertyNames[i] + " is not safe and has no GUID, skipped!");
                         }
                 	}
                 } else {
-                    log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null, skipped");
+                	if(log.isDebugEnabled())
+                    	log.debug("Type: " + typeName + " Field: " + propertyNames[i] + " is null, skipped");
                 }
             }
 
+
             /*
-             * Serialize the data identified and put in the value-map
+             * Now serialize the data identified and put in the value-map
              */
-            Iterator<Map.Entry<String, propertyClassValue>> its = values.entrySet().iterator();
-            while (its.hasNext()) {
-                Map.Entry<String, propertyClassValue> me = its.next();
+            // Setup the serialization data structures to hold the state            
+            Package pkg = new Package();
+            String className = entity.getClass().getName();
+            Record xml = pkg.createRecordForWrite(className);
+            Item entityItem = xml.getRootItem();
+
+			//loop throgh the map of the properties that need to be serialized
+			for ( Map.Entry<String, PropertyClassValue> me : values.entrySet() ) {
                 String property = me.getKey();
                 
-                log.debug("About to grab value for " + property);
+                if (log.isDebugEnabled())
+	                log.debug("About to grab value for: " + property);
                 
                 try {
-                    propertyClassValue pcv = me.getValue();
-
+                    PropertyClassValue pcv = me.getValue();
                     appendAttribute(xml, entityItem, property, pcv.getClazz(), pcv.getValue());
                 } catch (Exception e) {
+                	//TODO - throw?
                 	log.error("Error while appending attribute", e);
                 }
             }
-
-            // Be nice to GC
-            values.clear();
+            
+            values.clear(); // Be nice to GC
 
             /*
-             * Create SyncItem and store change in SyncRecord kept in ThreadLocal:
+             * Create SyncItem and store change in SyncRecord kept in ThreadLocal.
              */
             SyncItem syncItem = new SyncItem();
             syncItem.setKey(new SyncItemKey<String>(objectGuid, String.class)); 
@@ -475,12 +553,23 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             syncRecordHolder.get().addContainedClass(entity.getClass().getSimpleName());
             syncRecordHolder.get().setOriginalGuid(originalRecordGuid);
         } catch (Exception e) {
+        	//TODO: throw here for sure!
             log.error("Journal error\n", e);
         }
         
         return dataChanged;
     }
     
+    /**
+     * Auto generated method comment
+     * 
+     * @param xml
+     * @param parent
+     * @param attribute
+     * @param classname
+     * @param data
+     * @throws Exception
+     */    
 	protected void appendAttribute(Record xml, Item parent, String attribute, String classname, String data) throws Exception {
         //if (data != null && data.length() > 0) {
     	// this will break if we don't allow data.length==0 - some string values are required NOT NULL, but can be blank
@@ -490,33 +579,25 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             xml.createText(item, data);
         }
     }
-
-    protected class propertyClassValue {
-        String clazz, value;
-
-        public String getClazz() {
-            return clazz;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public propertyClassValue(String clazz, String value) {
-            this.clazz = clazz;
-            this.value = value;
-        }
-    }
     
     /**
-     * 
-     * Returns true if entity is to be 'synchronized', that is objects implementing 
-     * Synchronizable or SynchronizableInstance.
-     * 
-     * @param entity
-     * @return
+     * Determines if entity is to be 'synchronized'. There are three ways this can happen:
+     * <p>
+     * 1. Entity implements Synchronizable interface.
+     * <p>
+     * 2. Entity implements SynchronizableInstance and IsSynchronizable is set to true
+     * <p>
+     * 3. Finally, interceptor supports manual override to suspend synchronization by setting the deactivated bit 
+     * (see {@link #deactivateTransactionSerialization()}).
+     * This option is provided only for rare occasions when previous methods are not sufficient (i.e 
+     * suspending interception in case of inline sql).
+     *  
+     * @param entity Object to examine.
+     * @return true if entity should be synchronized, else false.
+     * @see org.openmrs.synchronization.Synchronizable
+     * @see org.openmrs.synchronization.SynchronizableInstance
      */
-    protected boolean shouldSynchornize(Object entity) {
+    protected boolean shouldSynchronize(Object entity) {
         
         //Synchronizable *only*.
         if (!(entity instanceof Synchronizable)) {
