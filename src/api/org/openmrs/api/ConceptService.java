@@ -2,6 +2,7 @@ package org.openmrs.api;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -575,5 +576,12 @@ public interface ConceptService {
 	 */
 	@Authorized({"Edit Concepts"})
 	public void updateConceptWord(ConceptWord conceptWord);
+    
+    /**
+     * @return a Map<conceptId, guid> of all concepts in the system
+     */
+    @Transactional(readOnly=true)
+    @Authorized({"View Concepts"})
+    public Map<Integer, String> getConceptGuids();
 
 }

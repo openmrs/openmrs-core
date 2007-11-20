@@ -3,6 +3,7 @@ package org.openmrs.hl7.handler;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -108,6 +109,12 @@ public class ORUR01Handler implements Application {
 		// validate message
 		validate(oru);
 
+        // For performance we will be creating concept stubs rather than pulling from the database.
+        // The hl7 message will contain the local ids of those concepts, but we also need to know
+        // the guids in order for synchronization to work, so we fetch those here as a batch.
+        // TODO: Maybe it would be better to skim the message once to get the relevant concept ids rather than all concepts in the database.
+        Map<Integer, String> idToGuidMap = Context.getConceptService().getConceptGuids();
+        
 		// extract segments for convenient use below
 		MSH msh = getMSH(oru);
 		PID pid = getPID(oru);
@@ -159,7 +166,7 @@ public class ORUR01Handler implements Application {
 				try {
 					if (log.isDebugEnabled())
 						log.debug("Parsing observation");
-					Obs obs = parseObs(encounter, obx);
+					Obs obs = parseObs(encounter, obx, idToGuidMap);
 					if (obs != null) {
 						if (log.isDebugEnabled())
 							log.debug("Obs is not null");
@@ -303,7 +310,7 @@ public class ORUR01Handler implements Application {
 		return encounter;
 	}
 
-	private Obs parseObs(Encounter encounter, OBX obx) throws HL7Exception {
+	private Obs parseObs(Encounter encounter, OBX obx, Map<Integer, String> idToGuidMap) throws HL7Exception {
 		if (log.isDebugEnabled())
 			log.debug("parsing observation: " + obx);
 		Varies[] values = obx.getObservationValue();
@@ -312,7 +319,7 @@ public class ORUR01Handler implements Application {
 		String hl7Datatype = values[0].getName();
 		if (log.isDebugEnabled())
 			log.debug("  datatype = " + hl7Datatype);
-		Concept concept = getConcept(obx);
+		Concept concept = getConcept(obx, idToGuidMap);
 		if (log.isDebugEnabled())
 			log.debug("  concept = " + concept.getConceptId());
 		Date datetime = getDatetime(obx);
@@ -348,7 +355,9 @@ public class ORUR01Handler implements Application {
 				log.debug("    not proposal");
 				try {
 					Concept valueConcept = new Concept();
-					valueConcept.setConceptId(new Integer(valueIdentifier));
+                    Integer id = new Integer(valueIdentifier);
+					valueConcept.setConceptId(id);
+                    valueConcept.setGuid(idToGuidMap.get(id));
 					obs.setValueCoded(valueConcept);
 					if ("99RX".equals(value.getNameOfAlternateCodingSystem()
 							.getValue())) {
@@ -373,8 +382,10 @@ public class ORUR01Handler implements Application {
 				proposeConcept(encounter, concept, valueName);
 			else {
 				try {
+                    Integer id = new Integer(valueIdentifier);
 					Concept valueCoded = new Concept();
-					valueCoded.setConceptId(new Integer(valueIdentifier));
+					valueCoded.setConceptId(id);
+                    valueCoded.setGuid(idToGuidMap.get(id));
 					obs.setValueCoded(valueCoded);
 				} catch (NumberFormatException e) {
 					throw new HL7Exception("Invalid concept ID '"
@@ -423,7 +434,7 @@ public class ORUR01Handler implements Application {
 		return cal.getTime();
 	}
 
-	private Concept getConcept(OBX obx) throws HL7Exception {
+	private Concept getConcept(OBX obx, Map<Integer, String> idToGuidMap) throws HL7Exception {
 		// TODO: don't assume that all concepts are local
 		String hl7ConceptId = obx.getObservationIdentifier().getIdentifier()
 				.getValue();
@@ -431,6 +442,7 @@ public class ORUR01Handler implements Application {
 			Integer conceptId = new Integer(hl7ConceptId);
 			Concept concept = new Concept();
 			concept.setConceptId(conceptId);
+            concept.setGuid(idToGuidMap.get(conceptId));
 			return concept;
 		} catch (NumberFormatException e) {
 			throw new HL7Exception("Invalid concept ID '" + hl7ConceptId + "'");
@@ -460,18 +472,14 @@ public class ORUR01Handler implements Application {
 		Integer providerId = Context.getHL7Service().resolveUserId(hl7Provider);
 		if (providerId == null)
 			throw new HL7Exception("Could not resolve provider");
-		User provider = new User();
-		provider.setUserId(providerId);
-		return provider;
+		return Context.getUserService().getUser(providerId);
 	}
 
 	private Patient getPatient(PID pid) throws HL7Exception {
 		Integer patientId = Context.getHL7Service().resolvePatientId(pid);
 		if (patientId == null)
 			throw new HL7Exception("Could not resolve patient");
-		Patient patient = new Patient();
-		patient.setPatientId(patientId);
-		return patient;
+        return Context.getPatientService().getPatient(patientId);
 	}
 
 	private Location getLocation(PV1 pv1) throws HL7Exception {
@@ -480,9 +488,7 @@ public class ORUR01Handler implements Application {
 				hl7Location);
 		if (locationId == null)
 			throw new HL7Exception("Could not resolve location");
-		Location location = new Location();
-		location.setLocationId(locationId);
-		return location;
+		return Context.getEncounterService().getLocation(locationId);
 	}
 
 	private Form getForm(MSH msh) throws HL7Exception {
@@ -515,9 +521,7 @@ public class ORUR01Handler implements Application {
 		Integer entererId = Context.getHL7Service().resolveUserId(hl7Enterer);
 		if (entererId == null)
 			throw new HL7Exception("Could not resolve enterer");
-		User enterer = new User();
-		enterer.setUserId(entererId);
-		return enterer;
+        return Context.getUserService().getUser(entererId);
 	}
 
 	private Date getDateEntered(ORC orc) throws HL7Exception {

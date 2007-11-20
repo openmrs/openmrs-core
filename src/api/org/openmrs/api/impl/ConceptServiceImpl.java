@@ -1029,4 +1029,11 @@ public class ConceptServiceImpl implements ConceptService {
 		getConceptDAO().updateConceptWord(conceptWord);
 	}
 
+    /**
+     * @see org.openmrs.api.ConceptService#getConceptGuids()
+     */
+    public Map<Integer, String> getConceptGuids() {
+        return getConceptDAO().getConceptGuids();
+    }
+
 }

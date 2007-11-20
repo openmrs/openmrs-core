@@ -2,9 +2,11 @@ package org.openmrs.api.db.hibernate;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -942,4 +944,16 @@ public class HibernateConceptDAO implements
 		
 		sessionFactory.getCurrentSession().update(conceptWord);
 	}
+
+    /**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptGuids()
+     */
+    public Map<Integer, String> getConceptGuids() {
+        Map<Integer, String> ret = new HashMap<Integer, String>();
+        Query q = sessionFactory.getCurrentSession().createQuery("select conceptId, guid from Concept");
+        List<Object[]> list = q.list();
+        for (Object[] o : list)
+            ret.put((Integer) o[0], (String) o[1]);
+        return ret;
+    }
 }

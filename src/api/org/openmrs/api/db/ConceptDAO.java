@@ -2,6 +2,7 @@ package org.openmrs.api.db;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -414,4 +415,9 @@ public interface ConceptDAO {
 	 * @param conceptWord to be updated
 	 */
 	public void updateConceptWord(ConceptWord conceptWord);
+    
+    /**
+     * @see org.openmrs.api.ConceptService#getConceptGuids() 
+     */
+    public Map<Integer, String> getConceptGuids(); 
 }
