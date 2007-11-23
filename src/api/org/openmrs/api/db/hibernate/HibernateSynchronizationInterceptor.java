@@ -15,6 +15,7 @@ package org.openmrs.api.db.hibernate;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import org.openmrs.serialization.Record;
 import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.SyncItemState;
 import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.synchronization.SynchronizableInstance;
 import org.openmrs.synchronization.engine.SyncItem;
@@ -356,6 +358,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     
     /**
      * Intercept prepared stmts for logging purposes only.
+     * <p>
      * NOTE: At this point, we are ignoring any prepared statements. This method gets called on
      * any prepared stmt; meaning selects also which makes handling this reliably difficult. Fundamentally,
      * short of replaying sql as is on parent, it is diffucult to imagine safe and complete implementation.
@@ -401,6 +404,10 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         String objectGuid = null;
         String originalRecordGuid = null;
         Set<String> transientProps = null;
+        String infoMsg = null;
+        SessionFactory factory = null;
+        ClassMetadata data = null;
+        String idProperty = null;
         
         //The container of values to be serialized:
         //Holds tuples of <property-name> -> {<property-type-name>, <property-value as string>}        
@@ -410,8 +417,17 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             // Get the GUID of this object if it has one, used as SyncItemKey.
             objectGuid = entity.getGuid();
             originalRecordGuid = entity.getLastRecordGuid();
+            
+            //build up a starting msg for all logging
+            StringBuilder sb = new StringBuilder();
+            sb.append("In PackageObject, entity type:");
+            sb.append(entity.getClass().getName());
+            sb.append(", entity guid:");
+            sb.append(objectGuid);
+            infoMsg = sb.toString();
+            
             if(log.isDebugEnabled())
-                log.debug("In PackageObject, originalGuid is " + originalRecordGuid);
+                log.debug(infoMsg + ", originalGuid is " + originalRecordGuid);
 
     		// Transient properties are not serialized.
             transientProps = new HashSet<String>();
@@ -426,11 +442,11 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
              * We need to know this since PK values are *not* journaled; values of primary keys are assigned
              * where physical DB records are created. This is so to avoid issues with id collisions.
              */
-            SessionFactory factory = (SessionFactory)this.context.getBean("sessionFactory");
-            ClassMetadata data = factory.getClassMetadata(entity.getClass());
-            String idProperty = data.getIdentifierPropertyName();
+            factory = (SessionFactory)this.context.getBean("sessionFactory");
+            data = factory.getClassMetadata(entity.getClass());
+            idProperty = data.getIdentifierPropertyName();
            if (log.isInfoEnabled())
-                log.info("Id for this class: " + idProperty);
+                log.info(infoMsg + ", Id for this class: " + idProperty);
             
             /*
              * Loop through all the properties/values and put in a hash for duplicate removal
@@ -482,6 +498,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                             try {
     	                        childGuid = childObject.getGuid();
                             } catch (LazyInitializationException e) {
+                                //is this reliable?
     	                        log.warn("Attempted to package/serialize child object, but child object was not yet initialized (and thus was null)");
     	                        if ( types[i].getReturnedClass().equals(User.class) ) {
     	                        	log.warn("SUBSTITUTED AUTHENTICATED USER FOR ACTUAL USER");
@@ -491,17 +508,30 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     	                        }
                             } catch (Exception e) {
                             	//TODO - throw exception here??!
-                            	log.error("Could not find child object - object is null, therefore guid is null");
+                            	log.error(infoMsg + ", Could not find child object - object is null, therefore guid is null");
+                            }
+                            
+                            /* child object is Synchronizable but its guid is null, final attempt: load via PK if PK value available
+                             * common scenario: this can happen when people are saving object graphs that are (at least partially) 
+                             * manually constructed (i.e. setting concept on obs just by filling in conceptid
+                             * without first fetching the full concept state from DB for perf. reasons */
+                            if (childGuid == null) {
+                                childGuid = fetchGuid(childObject);
+                                if(log.isDebugEnabled()) {
+                                    log.debug(infoMsg + "childGuid was null, attempted to fetch guid with the following results");
+                                    log.debug("childObject type:" + childObject.getClass().getName() + ",guid:" + childGuid);
+                                }
                             }
                             
                             if (childGuid != null) {
                                 values.put(propertyNames[i], new PropertyClassValue(typeName, childGuid));
-                            } else {
-                                log.warn("Type: " + typeName + " Field: " + propertyNames[i] + " is null");
+                            } else {                                
+                                log.error(infoMsg + ", Packaging Type: " + typeName + " Field: " + propertyNames[i] + " is null");
+                                //TODO - throw here?!
                             }
                         } else {
                         	//TODO - throw exception here??!
-                            log.error("Type: " + typeName + " Field: " + propertyNames[i] + " is not safe and has no GUID, skipped!");
+                            log.error(infoMsg + ", Type: " + typeName + " Field: " + propertyNames[i] + " is not safe and has no GUID, skipped!");
                         }
                 	}
                 } else {
@@ -627,6 +657,46 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
      */
     public void setApplicationContext(ApplicationContext context) throws BeansException {
     	this.context = context;
+    }
+    
+    /**
+     * 
+     * Retrieves guid of Synchronizable instance from the storage based on indentity value (i.e. PK).
+     * 
+     * @param obj Instance of Synchronizable for which to retrieve guid for.
+     * @return guid from storage if obj identity value is set, else null. 
+     */
+    protected String fetchGuid(Synchronizable obj) {
+        String guid = null;
+        
+        // what are you doing to me?!
+        if (obj == null) return null;
+        if (obj.getGuid() != null) return obj.getGuid(); 
+        
+        try {
+            SessionFactory factory = (SessionFactory)this.context.getBean("sessionFactory");
+            ClassMetadata data = factory.getClassMetadata(obj.getClass());
+            String idPropertyName = data.getIdentifierPropertyName();
+            
+            if (idPropertyName != null) {
+                Method m = null;
+                Object idPropertyValue = null;
+                
+                m = SyncUtil.getGetterMethod(obj.getClass(),idPropertyName);
+                if (m != null) {
+                    idPropertyValue = m.invoke(obj, (Object[])null);
+                    Synchronizable fetchedInstance = (Synchronizable)factory.getCurrentSession().get(obj.getClass(), (Serializable)idPropertyValue);
+                    guid = fetchedInstance.getGuid();
+                }
+            }
+        }
+        catch(Exception ex) {
+            //something went wrong - no matter just return null
+            guid = null;
+            log.warn("Error in fetchGuid: returning null", ex);
+        }
+        
+        return guid;
     }
 }
 

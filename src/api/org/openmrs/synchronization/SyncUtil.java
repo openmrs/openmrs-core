@@ -371,36 +371,89 @@ public class SyncUtil {
 		return o;
 	}
 
-	public static Method getSetterMethod(Class objClass, String propName, Class propValClass) {
-		// need to try to get setter, both in this object, and 
+    /**
+     * 
+     * Finds property 'get' accessor based on target type and property name.
+     * 
+     * @return Method object matching name and param, else null
+     * 
+     * @see getPropertyAccessor(Class objType, String methodName, Class propValType)
+     */
+    public static Method getGetterMethod(Class objType, String propName) {
+        String methodName = "get" + propCase(propName);
+        return SyncUtil.getPropertyAccessor(objType, methodName, null);
+    }
+
+    /**
+     * 
+     * Finds property 'set' accessor based on target type, property name, and set method parameter type.
+     * 
+     * @return Method object matching name and param, else null
+     * 
+     * @see getPropertyAccessor(Class objType, String methodName, Class propValType)
+     */
+    public static Method getSetterMethod(Class objType, String propName, Class propValType) {
+        String methodName = "set" + propCase(propName);
+        return SyncUtil.getPropertyAccessor(objType, methodName, propValType);
+    }
+    
+    /**
+     * 
+     * Constructs a Method object for invocation on instances of objType class 
+     * based on methodName and the method parameter type. Handles only propery accessors - thus takes
+     * Class propValType and not Class[] propValTypes.
+     * <p>
+     * If necessary, this implementation traverses both objType and  propValTypes type hierarchies in search for the 
+     * method signature match.
+     * 
+     * @param objType Type to examine.
+     * @param methodName Method name.
+     * @param propValType Type of the parameter that method takes. If none (i.e. getter), pass null.
+     * @return Method object matching name and param, else null
+     */
+    private static Method getPropertyAccessor(Class objType, String methodName, Class propValType) {
+		// need to try to get setter, both in this object, and its parent class 
 		Method m = null;
-		String methodName = "set" + propCase(propName);
+        boolean continueLoop = true;
+        boolean isValueClassNull = (propValType == null) ? true : false;
 
-		while ( m == null && propValClass != null && !propValClass.equals(Object.class)) {
-			Class[] setterParamClasses = new Class[1];
-			setterParamClasses[0] = propValClass;
-			Class clazz = objClass;
-			//String methodDisplay = "set" + propCase(propName) + "(" + propValClass + ")";
-
-			// it could be that the method is called with a superclass of propValClass, so loop through supers
-			while ( m == null && clazz != null && !clazz.equals(Object.class) ) {
-				// it could also be that the setter method itself is in a superclass of objectClass/clazz, so loop through those, too
-				//log.debug("Trying to find method " + methodDisplay + " in " + clazz.getName());
-				try {
-					m = clazz.getMethod(methodName, setterParamClasses);
-					//log.debug("Found method " + methodDisplay + " in " + clazz.getName());
-				} catch (SecurityException e) {
-					m = null;
-					//log.debug("SecurityException on " + methodDisplay + " in " + clazz.getName());
-					clazz = clazz.getSuperclass();
-				} catch (NoSuchMethodException e) {
-					m = null;
-					//log.debug("NoSuchMethod " + methodDisplay + " in " + clazz.getName());
-					clazz = clazz.getSuperclass();
-				}
-			}
-			propValClass = propValClass.getSuperclass();
-		}
+        try {
+            // it could be that the method is called with a superclass of propValClass, so loop through supers
+    		while (continueLoop) {
+    			Class[] setterParamClasses = null;
+                if (propValType != null) {
+                    setterParamClasses = new Class[1];
+                    setterParamClasses[0] = propValType;
+                }
+    			Class clazz = objType;
+    
+                // it could also be that the setter method itself is in a superclass of objectClass/clazz, so loop through those, too
+    			while ( m == null && clazz != null && !clazz.equals(Object.class) ) {
+    				try {
+    					m = clazz.getMethod(methodName, setterParamClasses);
+    				} catch (SecurityException e) {
+    					m = null;
+    					clazz = clazz.getSuperclass();
+    				} catch (NoSuchMethodException e) {
+    					m = null;
+    					clazz = clazz.getSuperclass();
+    				}
+    			}
+                if (m != null)
+                    continueLoop = false;
+                if (!isValueClassNull) {
+                    propValType = propValType.getSuperclass();
+                    if (propValType == null)
+                        continueLoop = false; //Reached the top of type inheritance for propValClass - time to give up
+                }
+    		}
+        }
+        catch(Exception ex) {
+            //whatever happened, we didn't find the method - return null
+            m = null;
+            if(log.isDebugEnabled())
+                log.debug("Unexpected exception while looking for a Method object, returning null",ex);
+        }
 				
 		return m;
 	}
