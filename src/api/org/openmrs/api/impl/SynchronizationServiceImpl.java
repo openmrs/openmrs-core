@@ -14,6 +14,7 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -372,4 +373,10 @@ public class SynchronizationServiceImpl implements SynchronizationService {
         return getSynchronizationDAO().getSyncClasses();
     }
 
+    /**
+     * @see org.openmrs.api.SynchronizationService#createDatabaseForChild(java.lang.String, java.io.Writer)
+     */
+    public void createDatabaseForChild(String guidForChild, OutputStream out) throws APIException {
+       getSynchronizationDAO().createDatabaseForChild(guidForChild, out); 
+    }
 }

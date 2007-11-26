@@ -68,6 +68,7 @@ public class SyncConstants {
 	public static final String POST_METHOD = "POST";
     
     public static final String SERVER_GUID = "synchronization.server_guid";
+    public static final String PARENT_GUID = "synchronization.parent_guid";
     public static final String SYNC_ENABLED = "synchronization.sync_enabled"; //boolean
 
 	public static final String RESPONSE_SUFFIX = "_response";

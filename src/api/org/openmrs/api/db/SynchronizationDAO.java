@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db;
 
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -259,4 +260,14 @@ public interface SynchronizationDAO {
      */
     public List<SyncClass> getSyncClasses() throws DAOException;
 
+    /**
+     * Dumps the entire database, much like what you'd get from the mysqldump command, and
+     * adds a few lines to set the child's GUID, and delete sync history 
+     * 
+     * @param guidForChild if not null, use this as the guid for the child server, otherwise autogenerate one 
+     * @param out write the sql here
+     * @throws DAOException
+     */
+    public void createDatabaseForChild(String guidForChild, OutputStream out) throws DAOException;
+    
 }

@@ -174,6 +174,8 @@ public final class OpenmrsConstants {
 	public static final String PRIV_EDIT_PERSONS   = "Edit People";
 	public static final String PRIV_DELETE_PERSONS = "Delete People";
 	public static final String PRIV_VIEW_PERSONS   = "View People";
+    
+    public static final String PRIV_BACKUP_ENTIRE_DATABASE = "Backup Entire Database";
 	
 	private static Map<String, String> CORE_PRIVILEGES = null;
 	public static final Map<String, String> CORE_PRIVILEGES() {
@@ -269,6 +271,8 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_ADD_PERSONS, "Able to add person objects");
 			CORE_PRIVILEGES.put(PRIV_EDIT_PERSONS, "Able to edit person objects");
 			CORE_PRIVILEGES.put(PRIV_DELETE_PERSONS, "Able to delete objects");
+            
+            CORE_PRIVILEGES.put(PRIV_BACKUP_ENTIRE_DATABASE, "Able to backup/export the entire database");
 		}
 		
 		// always add the module core privileges back on
@@ -377,6 +381,7 @@ public final class OpenmrsConstants {
         props.add(new GlobalProperty(SyncConstants.LAST_SYNC_LOCAL, "", "Timestamp of the last sucessful sync push from child to parent."));
         props.add(new GlobalProperty(SyncConstants.LAST_SYNC_REMOTE, "", "Timestamp of the last sucessful sync pull from parent."));
         props.add(new GlobalProperty(SyncConstants.SERVER_GUID, "", "Globally unique server id used to identify a given data source in synchronization."));
+        props.add(new GlobalProperty(SyncConstants.PARENT_GUID, "", "Globally unique id of this server's parent."));
         props.add(new GlobalProperty(SyncConstants.SYNC_ENABLED, "false", "On/off switch for data synchronization."));
         
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
