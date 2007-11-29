@@ -13,12 +13,9 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.Reader;
 import java.sql.Blob;
-import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -39,7 +36,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.type.Type;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.SynchronizationDAO;
@@ -458,11 +454,8 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
                 .addOrder(Order.asc("name"))
                 .list();
         
-        if ( classes == null ) {
-            log.warn("IN DAO, SYNCCLASSES IS NULL");
-        } else {
-            log.warn("IN DAO, SYNCCLASSES IS SIZE " + classes.size());
-        }
+        if ( classes == null && log.isWarnEnabled() )
+            log.warn("getSyncClasses is null.");
         
         return classes;
     }

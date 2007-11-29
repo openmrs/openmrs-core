@@ -42,6 +42,7 @@ import org.openmrs.serialization.Normalizer;
 import org.openmrs.serialization.Package;
 import org.openmrs.serialization.Record;
 import org.openmrs.serialization.TimestampNormalizer;
+import org.openmrs.synchronization.SyncStatusState;
 import org.openmrs.synchronization.SyncItemState;
 import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.SyncUtil;
@@ -50,6 +51,7 @@ import org.openmrs.synchronization.SynchronizableInstance;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 import org.openmrs.synchronization.engine.SyncRecord;
+import org.openmrs.synchronization.SyncException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -57,7 +59,8 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * Implements 'change interception' for data synchronization feature using Hibernate interceptor mechanism. 
  * Intercepted changes are recorded into the synchronization journal table in DB.
- * TODO - add more content here.
+ * <p>
+ * For detailed technical discussion see feature technical documentation on openmrs.org.
  * 
  * @see org.hibernate.EmptyInterceptor
  */
@@ -170,7 +173,10 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     public void afterTransactionBegin(Transaction tx) {
        if(log.isDebugEnabled())
             log.debug("afterTransactionBegin: " + tx + " deactivated: " + deactivated.get());
-         
+
+       //explicitely bailout if sync is disabled
+       if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
+
         if(syncRecordHolder.get() != null ) {
             log.warn("Replacing existing SyncRecord in SyncRecord holder");
         }
@@ -189,6 +195,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     public void beforeTransactionCompletion(Transaction tx) {
         if(log.isDebugEnabled())
             log.debug("beforeTransactionCompletion: " + tx + " deactivated: " + deactivated.get());
+        
+        //explicitely bailout if sync is disabled
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
         
         // If synchronization is NOT deactivated
         if (deactivated.get() == null) {
@@ -247,6 +256,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     public void afterTransactionCompletion(Transaction tx) {
         if (log.isDebugEnabled())
             log.debug("afterTransactionCompletion: " + tx + " committed: " + tx.wasCommitted()+ " rolledback: " + tx.wasRolledBack() + " deactivated: " + deactivated.get());
+
+        //explicitely bailout if sync is disabled
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
         
         // clean out SyncRecord in case of rollback:
         syncRecordHolder.remove();
@@ -277,6 +289,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     {
 	    if (log.isDebugEnabled())
     	    log.debug("onSave: " + state.toString());
+        
+        //explicitely bailout if sync is disabled
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return false;
 
         //first see if entity should be written to the journal at all
         if (!this.shouldSynchronize(entity)){
@@ -313,11 +328,14 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                                 Object[] currentState,
                                 Object[] previousState,
                                 String[] propertyNames,
-                                Type[] types) 
+                                Type[] types)
     {
 	    if (log.isDebugEnabled())
     	    log.debug("onFlushDirty: " + entity.getClass().getName());
 
+        //explicitely bailout if sync is disabled
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return false;
+        
         //first see if entity should be written to the journal at all
         if (!this.shouldSynchronize(entity)){
             if (log.isDebugEnabled())
@@ -351,7 +369,10 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         
         if(log.isDebugEnabled())
             log.debug("postFlush called.");
-        
+
+        //explicitely bailout if sync is disabled
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
+
         //clear the holder
         pendingFlushHolder.remove();
     }
@@ -374,6 +395,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         if(log.isDebugEnabled())
             log.debug("onPrepareStatement. sql: " + sql);
 
+        //explicitely bailout if sync is disabled
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return sql;
+        
         return sql;
     }
 
@@ -398,7 +422,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
      * @param state SyncItemState, e.g. NEW, UPDATED, DELETED 
      * @return True if data was altered, false otherwise.
      */
-    protected boolean packageObject(Synchronizable entity, Object[] currentState, String[] propertyNames, Type[] types, SyncItemState state) {
+    protected boolean packageObject(Synchronizable entity, Object[] currentState, String[] propertyNames, Type[] types, SyncItemState state)
+        throws SyncException {
         boolean dataChanged = false;
                 
         String objectGuid = null;
@@ -486,8 +511,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                         if ((n = safetypes.get(typeName)) != null) {
 	                        // Handle safe types like boolean/String/integer/timestamp via Normalizers
                             values.put(propertyNames[i], new PropertyClassValue(typeName, n.toString(currentState[i])));
-                        }
-                        
+                        }                        
                         /*
                          * Not a safe type, check if the object implements the Synchronizable interface
                          */
@@ -498,17 +522,20 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                             try {
     	                        childGuid = childObject.getGuid();
                             } catch (LazyInitializationException e) {
-                                //is this reliable?
-    	                        log.warn("Attempted to package/serialize child object, but child object was not yet initialized (and thus was null)");
+                                if(log.isWarnEnabled())
+                                    log.warn("Attempted to package/serialize child object, but child object was not yet initialized (and thus was null)");
     	                        if ( types[i].getReturnedClass().equals(User.class) ) {
+                                    //IS THIS RELIABLE??!?
     	                        	log.warn("SUBSTITUTED AUTHENTICATED USER FOR ACTUAL USER");
     	                        	childGuid = Context.getAuthenticatedUser().getGuid();
     	                        } else {
-    	                        	log.warn("COULD NOT SUBSTITUTE AUTHENTICATED USER FOR ACTUAL USER");
+                                    //TODO: abort here also?
+    	                        	log.error("COULD NOT SUBSTITUTE AUTHENTICATED USER FOR ACTUAL USER");
     	                        }
                             } catch (Exception e) {
-                            	//TODO - throw exception here??!
-                            	log.error(infoMsg + ", Could not find child object - object is null, therefore guid is null");
+                                log.error(infoMsg + ", Could not find child object - object is null, therefore guid is null");
+                            	if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
+                                    throw(e);
                             }
                             
                             /* child object is Synchronizable but its guid is null, final attempt: load via PK if PK value available
@@ -518,25 +545,29 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                             if (childGuid == null) {
                                 childGuid = fetchGuid(childObject);
                                 if(log.isDebugEnabled()) {
-                                    log.debug(infoMsg + "childGuid was null, attempted to fetch guid with the following results");
-                                    log.debug("childObject type:" + childObject.getClass().getName() + ",guid:" + childGuid);
+                                    log.debug(infoMsg + "Field was null, attempted to fetch guid with the following results");
+                                    log.debug("Field type:" + childObject.getClass().getName() + ",guid:" + childGuid);
                                 }
                             }
                             
                             if (childGuid != null) {
                                 values.put(propertyNames[i], new PropertyClassValue(typeName, childGuid));
-                            } else {                                
-                                log.error(infoMsg + ", Packaging Type: " + typeName + " Field: " + propertyNames[i] + " is null");
-                                //TODO - throw here?!
+                            } else {
+                                String msg = infoMsg + ", Field value should be synchronized, but guid is null.  Field Type: " + typeName + " Field Name: " + propertyNames[i];
+                                log.error(msg);
+                                if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
+                                    throw(new SyncException(msg));
                             }
                         } else {
-                        	//TODO - throw exception here??!
-                            log.error(infoMsg + ", Type: " + typeName + " Field: " + propertyNames[i] + " is not safe and has no GUID, skipped!");
+                            //state != null but it is not safetype or implements Synchronizable: do not package and log as info
+                            if(log.isInfoEnabled())
+                                log.info(infoMsg + ", Field Type: " + typeName + " Field Name: " + propertyNames[i] + " is not safe or Synchronizable, skipped!");
                         }
                 	}
                 } else {
+                    //current state null -- skip
                 	if(log.isDebugEnabled())
-                    	log.debug("Type: " + typeName + " Field: " + propertyNames[i] + " is null, skipped");
+                    	log.debug("Field Type: " + typeName + " Field Name: " + propertyNames[i] + " is null, skipped");
                 }
             }
 
@@ -559,10 +590,12 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                 
                 try {
                     PropertyClassValue pcv = me.getValue();
-                    appendAttribute(xml, entityItem, property, pcv.getClazz(), pcv.getValue());
+                    appendRecord(xml, entityItem, property, pcv.getClazz(), pcv.getValue());
                 } catch (Exception e) {
-                	//TODO - throw?
-                	log.error("Error while appending attribute", e);
+                    String msg = "Could not append attribute. Error while processing property: " + property;
+                    log.error(msg,e);
+                    if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
+                        throw(new SyncException(msg));
                 }
             }
             
@@ -576,35 +609,44 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             syncItem.setState(state);
             syncItem.setContent(xml.toStringAsDocumentFragement());
             
-            if (log.isWarnEnabled()) {
-                log.warn("Adding SyncItem to SyncRecord");
-            }
+            if (log.isDebugEnabled())
+                log.debug("Adding SyncItem to SyncRecord");
+            
             syncRecordHolder.get().addItem(syncItem);
             syncRecordHolder.get().addContainedClass(entity.getClass().getSimpleName());
             syncRecordHolder.get().setOriginalGuid(originalRecordGuid);
-        } catch (Exception e) {
-        	//TODO: throw here for sure!
+        } catch (SyncException ex) {
+            log.error("Journal error\n", ex);
+            if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
+                throw(ex);
+        }
+        catch (Exception e) {
             log.error("Journal error\n", e);
+            if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
+                throw(new SyncException("Error in interceptor, see log messages and callstack.", e));
         }
         
         return dataChanged;
     }
     
     /**
-     * Auto generated method comment
+     * Adds a property value to the existing serialization record as a string.
+     * <p>
+     * If data is null or empty string it will be skipped, no empty serialization items are written. In case of
+     * xml serialization, the data will be serialized as: &lt;property type='classname'&gt;data&lt;/property&gt;
      * 
-     * @param xml
-     * @param parent
-     * @param attribute
-     * @param classname
-     * @param data
+     * @param xml record node to append to
+     * @param parent the pointer to the root parent node
+     * @param property new item name (in case of xml serialization this will be child element name)
+     * @param classname type of the property, will be recorded as attribute named 'type' on the child item
+     * @param data String content, in case of xml serialized as text node (i.e. not CDATA)
      * @throws Exception
      */    
-	protected void appendAttribute(Record xml, Item parent, String attribute, String classname, String data) throws Exception {
+	protected void appendRecord(Record xml, Item parent, String property, String classname, String data) throws Exception {
         //if (data != null && data.length() > 0) {
     	// this will break if we don't allow data.length==0 - some string values are required NOT NULL, but can be blank
     	if (data != null) {
-            Item item = xml.createItem(parent, attribute);
+            Item item = xml.createItem(parent, property);
             item.setAttribute("type", classname);
             xml.createText(item, data);
         }
@@ -613,11 +655,13 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     /**
      * Determines if entity is to be 'synchronized'. There are three ways this can happen:
      * <p>
-     * 1. Entity implements Synchronizable interface.
+     * 1. Sync status is globally set to disabled.
      * <p>
-     * 2. Entity implements SynchronizableInstance and IsSynchronizable is set to true
+     * 2. Entity implements Synchronizable interface.
      * <p>
-     * 3. Finally, interceptor supports manual override to suspend synchronization by setting the deactivated bit 
+     * 3. Entity implements SynchronizableInstance and IsSynchronizable is set to true
+     * <p>
+     * 4. Finally, interceptor supports manual override to suspend synchronization by setting the deactivated bit 
      * (see {@link #deactivateTransactionSerialization()}).
      * This option is provided only for rare occasions when previous methods are not sufficient (i.e 
      * suspending interception in case of inline sql).
@@ -628,6 +672,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
      * @see org.openmrs.synchronization.SynchronizableInstance
      */
     protected boolean shouldSynchronize(Object entity) {
+        
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return false;
         
         //Synchronizable *only*.
         if (!(entity instanceof Synchronizable)) {

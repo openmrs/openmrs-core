@@ -38,8 +38,11 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ModuleConstants;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.serialization.TimestampNormalizer;
+import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncUtilTransmission;
 import org.openmrs.synchronization.engine.SyncSource;
@@ -266,7 +269,7 @@ public class SynchronizationConfigListController extends SimpleFormController {
             
             SyncSource source = new SyncSourceJournal();
             obj.put("localServerGuid",source.getSyncSourceGuid());
-            obj.put("localStatus", source.getSyncStatus());
+            obj.put("localServerSyncStatus", source.getSyncStatus());
         }
 
         return obj;
@@ -384,8 +387,13 @@ public class SynchronizationConfigListController extends SimpleFormController {
 	        ret.put("parentSchedule", parentSchedule);
 	        ret.put("repeatInterval", repeatInterval);
             ret.put("syncDateDisplayFormat", TimestampNormalizer.DATETIME_DISPLAY_FORMAT);
-	        ret.put("localStatus", ref.get("localStatus"));
-	        ret.put("localServerGuid", ref.get("localServerGuid"));
+            
+            //sync status staff
+            ret.put("localServerSyncStatusValue",SyncUtil.getSyncStatus());
+	        ret.put("localServerSyncStatusText", msa.getMessage("SynchronizationConfig.syncStatus.status." + ref.get("localServerSyncStatus").toString()));
+            ret.put("localServerSyncStatusMsg", msa.getMessage("SynchronizationConfig.syncStatus.status." + ref.get("localServerSyncStatus").toString() + ".info" , new String[] {SyncConstants.RUNTIMEPROPERTY_SYNC_STATUS}));
+	        ret.put("localServerGuid", ref.get("localServerGuid"));           
+            ret.put("localServerGuidMsg", msa.getMessage("SynchronizationConfig.syncStatus.guid.info", new String[] {SyncConstants.SERVER_GUID}));
 		}
         
 	    return ret;

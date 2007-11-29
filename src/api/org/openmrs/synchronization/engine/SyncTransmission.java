@@ -27,6 +27,7 @@ import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
 import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.SyncConstants;
+import org.openmrs.synchronization.SyncException;
 
 /**
  * SyncTransmission a collection of sync records to be sent to the parent.

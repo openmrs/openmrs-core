@@ -21,8 +21,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -74,8 +73,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
 import org.openmrs.serialization.TimestampNormalizer;
+import org.openmrs.synchronization.SyncStatusState;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.filter.SyncServerClass;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -636,6 +635,25 @@ public class SyncUtil {
 		}
 		return ret;
 	}
+    
+    /**
+     * @return  SyncStatusState runtime property defining sync status
+     */
+    public static SyncStatusState getSyncStatus() {
+        
+        SyncStatusState state = SyncStatusState.DISABLED; //default to disabled
+        Properties properties = Context.getRuntimeProperties();
+        String prop = properties.getProperty(SyncConstants.RUNTIMEPROPERTY_SYNC_STATUS, null);
+        if (prop != null) {
+            try {
+                state = SyncStatusState.valueOf(prop);
+                
+            } catch(Exception e) {
+                log.warn("Failed to parse RUNTIMEPROPERTY_SYNC_STATUS property, defaulting to disabled. Value read: " + prop,e);
+            }
+        }
+        return state;
+    }    
 	
     public static String generateGuid() {
         return UUID.randomUUID().toString();

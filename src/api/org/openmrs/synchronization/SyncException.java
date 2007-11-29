@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.synchronization.engine;
+package org.openmrs.synchronization;
 
 public class SyncException extends RuntimeException {
 

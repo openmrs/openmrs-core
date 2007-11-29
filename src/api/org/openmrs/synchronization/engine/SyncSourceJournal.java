@@ -24,6 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.serialization.TimestampNormalizer;
+import org.openmrs.synchronization.SyncUtil;
+import org.openmrs.synchronization.SyncException;
+import org.openmrs.synchronization.SyncStatusState;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.server.RemoteServer;
 /**
@@ -211,12 +214,7 @@ public class SyncSourceJournal implements SyncSource {
         
         return;   
     }
-    public boolean getSyncStatus() {
-        String val = Context.getSynchronizationService().getGlobalProperty(SyncConstants.SYNC_ENABLED);
-        return (Boolean.toString(true).equalsIgnoreCase(val));
+    public SyncStatusState getSyncStatus() {
+        return SyncUtil.getSyncStatus();
     }
-    public void setSyncStatus(boolean status) {
-        Context.getSynchronizationService().setGlobalProperty(SyncConstants.SYNC_ENABLED, Boolean.toString(status));
-    }
-
 }

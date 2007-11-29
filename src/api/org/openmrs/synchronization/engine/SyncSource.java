@@ -15,6 +15,8 @@ package org.openmrs.synchronization.engine;
 
 import java.util.List;
 
+import org.openmrs.synchronization.SyncException;
+import org.openmrs.synchronization.SyncStatusState;
 import org.openmrs.synchronization.server.RemoteServer;
 
 
@@ -35,9 +37,8 @@ public interface SyncSource {
     public String getSyncSourceGuid();
     public void setSyncSourceGuid(String guid);
     
-    //sync status: true - sync is enabled, false - disabled
-    public boolean getSyncStatus();
-    public void setSyncStatus(boolean status);
+    //sync status: see SyncStatusState for valid states; runtime prop *only* -- thus no setter 
+    public SyncStatusState getSyncStatus();
     
     //change set methods
     public List<SyncRecord> getDeleted(SyncPoint<?> from , SyncPoint<?> to) throws SyncException ;

@@ -382,7 +382,6 @@ public final class OpenmrsConstants {
         props.add(new GlobalProperty(SyncConstants.LAST_SYNC_REMOTE, "", "Timestamp of the last sucessful sync pull from parent."));
         props.add(new GlobalProperty(SyncConstants.SERVER_GUID, "", "Globally unique server id used to identify a given data source in synchronization."));
         props.add(new GlobalProperty(SyncConstants.PARENT_GUID, "", "Globally unique id of this server's parent."));
-        props.add(new GlobalProperty(SyncConstants.SYNC_ENABLED, "false", "On/off switch for data synchronization."));
         
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

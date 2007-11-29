@@ -17,8 +17,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
+import org.openmrs.synchronization.SyncException;
 import org.openmrs.synchronization.SyncItemState;
-import org.openmrs.synchronization.engine.SyncException;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 

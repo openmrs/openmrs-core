@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.serialization.IItem;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
+import org.openmrs.synchronization.SyncException;
 import org.openmrs.synchronization.SyncItemState;
 
 /**
