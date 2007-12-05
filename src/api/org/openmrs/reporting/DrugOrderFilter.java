@@ -87,7 +87,7 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 			for (Drug d : getDrugListToUse())
 				drugIds.add(d.getDrugId());
 		log.debug("filtering with these ids " + drugIds);
-		PatientSet ps = Context.getPatientSetService().getPatientsHavingDrugOrder(input.getPatientIds(), drugIds, getAnyOrAll(),  
+		PatientSet ps = Context.getPatientSetService().getPatientsHavingDrugOrder(input == null ? null : input.getPatientIds(), drugIds, getAnyOrAll(),  
 				OpenmrsUtil.fromDateHelper(null,
 					getWithinLastDays(), getWithinLastMonths(),
 					getUntilDaysAgo(), getUntilMonthsAgo(),

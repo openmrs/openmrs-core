@@ -1,5 +1,6 @@
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -88,11 +89,11 @@ public interface PatientService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	public Set<Patient> getPatientsByIdentifierPattern(String identifier,
+	public Collection<Patient> getPatientsByIdentifierPattern(String identifier,
 			boolean includeVoided) throws APIException;
 
 	@Transactional(readOnly=true)
-	public Set<Patient> getPatientsByName(String name) throws APIException;
+	public Collection<Patient> getPatientsByName(String name) throws APIException;
 
 	/**
 	 * Find patients by name
@@ -102,7 +103,7 @@ public interface PatientService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	public Set<Patient> getPatientsByName(String name, boolean includeVoided)
+	public Collection<Patient> getPatientsByName(String name, boolean includeVoided)
 			throws APIException;
 
 	/**
@@ -239,7 +240,7 @@ public interface PatientService {
 	public List<Tribe> findTribes(String search) throws APIException;
 
 	@Transactional(readOnly=true)
-	public List<Patient> findPatients(String query, boolean includeVoided);
+	public Collection<Patient> findPatients(String query, boolean includeVoided);
 
 	/**
 	 * This method tries to find a patient in the database given the attributes

@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Date;
 
-import org.openmrs.BaseTest;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.synchronization.engine.SyncSource;
@@ -17,7 +14,6 @@ import org.openmrs.synchronization.engine.SyncSourceJournal;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.SyncItemState;
 
 public class SyncSourceJournalTest extends SyncBaseTest {

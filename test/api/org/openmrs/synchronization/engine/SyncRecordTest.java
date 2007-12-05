@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Date;
 
-import org.openmrs.BaseTest;
 import org.openmrs.api.context.Context;
 import org.openmrs.serialization.FilePackage;
 import org.openmrs.serialization.IItem;

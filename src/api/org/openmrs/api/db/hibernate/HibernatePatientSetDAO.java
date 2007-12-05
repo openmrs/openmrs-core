@@ -659,7 +659,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (fromDate != null)
 			query.setDate("fromDate", fromDate);
 		if (toDate != null)
-			query.setDate("toDate", fromDate);
+			query.setDate("toDate", toDate);
 
 		PatientSet ret;
 		if (doInvert) {
@@ -695,6 +695,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Integer locationId = location == null ? null : location.getLocationId();
 		Integer formId = form == null ? null : form.getFormId();
 		List<String> whereClauses = new ArrayList<String>();
+		whereClauses.add("e.voided = false");
 		if (encTypeIds != null)
 			whereClauses.add("e.encounter_type in (:encTypeIds)");
 		if (locationId != null)
@@ -1444,7 +1445,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			queryString.append("and attr.person.personId in (:ids) ");
 		
 		queryString.append("and t.name = :typeName ");
-		queryString.append("order by attr.voided desc, attr.dateCreated desc");
+		queryString.append("order by attr.voided asc, attr.dateCreated desc");
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(queryString.toString());
 		
@@ -1531,7 +1532,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	//TODO: don't return voided patients
+	//TODO: the encounter variants may return voided patients
 	@SuppressWarnings("unchecked")
 	public PatientSet getPatientsHavingLocation(Integer locationId, PatientSetService.PatientLocationMethod method) throws DAOException {
 		
@@ -1569,6 +1570,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" and type.person_attribute_type_id = attr.person_attribute_type_id ");
 			sb.append(" and attr.value = :location_id ");
 			sb.append(" and attr.person_id = p.patient_id ");
+			sb.append(" and attr.voided = false ");
+			sb.append(" and p.voided = false ");
 		}
 		log.debug("query: " + sb);
 		

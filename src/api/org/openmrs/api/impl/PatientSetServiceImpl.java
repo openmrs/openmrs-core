@@ -256,6 +256,8 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) {
+		if (patients == null || patients.size() == 0)
+			return new HashMap<Integer, List<Obs>>();
 		return getPatientSetDAO().getObservations(patients, concept, null, null);
 	}
 	
@@ -263,6 +265,8 @@ public class PatientSetServiceImpl implements PatientSetService {
 	 * Date range is inclusive of both endpoints 
 	 */
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept, Date fromDate, Date toDate) {
+		if (patients == null || patients.size() == 0)
+			return new HashMap<Integer, List<Obs>>();
 		return getPatientSetDAO().getObservations(patients, concept, fromDate, toDate);
 	}
 	
@@ -442,7 +446,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 
 	/**
-	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's null) 
+	 * @return all drug orders whose drug concept is in the given set (or all drugs if that's null) 
 	 */
 	public Map<Integer, List<DrugOrder>> getDrugOrders(PatientSet ps, Concept drugSet) {
 		List<Concept> drugConcepts = null;

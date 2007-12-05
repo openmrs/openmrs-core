@@ -326,7 +326,10 @@ dojo.widget.defineWidget(
 			}
 			if (objectsReturned.length > 0) {
 				this.select({objs: objectsReturned});
-				this.inputNode.value = this.lastPhraseSearched; //save the search (for the back button)
+				if (this.lastPhraseSearched == null)
+					this.inputNode.value = "";
+				else
+					this.inputNode.value = this.lastPhraseSearched; //save the search (for the back button)
 				return false;
 			}
 		}

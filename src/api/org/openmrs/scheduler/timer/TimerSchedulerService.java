@@ -127,6 +127,11 @@ public class TimerSchedulerService implements SchedulerService {
 	public void scheduleTask(TaskConfig task) throws SchedulerException {
 		// Create wrapper for the task 
 		Schedulable schedulable = SchedulableFactory.getInstance().createInstance( task );
+		
+		// if we were unable to get a class, just quit
+		if (schedulable == null)
+			return;
+		
 		TimerTaskWrapper wrapper = new TimerTaskWrapper( schedulable );
 			
 		// See if there's already a timer and cancel it 

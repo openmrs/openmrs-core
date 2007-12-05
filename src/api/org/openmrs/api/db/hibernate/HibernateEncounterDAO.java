@@ -13,9 +13,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -245,6 +245,34 @@ public class HibernateEncounterDAO implements EncounterDAO {
     }
 
 	/**
+     * @see org.openmrs.api.db.EncounterDAO#getEncounters(org.openmrs.Patient, org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection, java.util.Collection, boolean)
+     */
+    @SuppressWarnings("unchecked")
+    public Collection<Encounter> getEncounters(Patient who,
+                                               Location loc,
+                                               Date fromDate,
+                                               Date toDate,
+                                               Collection<Form> enteredViaForms,
+                                               Collection<EncounterType> encounterTypes,
+                                               boolean includeVoided) {
+    	Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+    	if (who != null)
+    		crit.add(Expression.eq("patient", who));
+    	if (fromDate != null)
+    		crit.add(Expression.ge("encounterDatetime", fromDate));
+    	if (toDate != null)
+    		crit.add(Expression.le("encounterDatetime", toDate));
+    	if (enteredViaForms != null && enteredViaForms.size() > 0)
+    		crit.add(Expression.in("form", enteredViaForms));
+    	if (encounterTypes != null && encounterTypes.size() > 0)
+    		crit.add(Expression.in("encounterType", encounterTypes));
+    	if (!includeVoided)
+    		crit.add(Expression.eq("voided", false));
+    	crit.addOrder(Order.asc("encounterDatetime"));
+    	return crit.list();
+    }    
+
+	/**
      * @see org.openmrs.api.db.EncounterDAO#getEncounterByGuid(java.lang.String)
      */
     public Encounter getEncounterByGuid(String guid) {
@@ -263,6 +291,5 @@ public class HibernateEncounterDAO implements EncounterDAO {
      */
     public Location getLocationByGuid(String guid) {
 		return (Location) sessionFactory.getCurrentSession().createQuery("from Location l where l.guid = :guid").setString("guid", guid).uniqueResult();
-    }
-	
+    }	
 }

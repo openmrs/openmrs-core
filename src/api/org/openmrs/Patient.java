@@ -2,13 +2,14 @@ package org.openmrs;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.synchronization.Synchronizable;
 
 /**
@@ -42,6 +43,7 @@ public class Patient extends Person
 	private Date dateVoided; 
 	private String voidReason;
 	
+
 	// Constructors
 	/** default constructor */
 	public Patient() {
@@ -142,7 +144,7 @@ public class Patient extends Person
 	 */
 	public Set<PatientIdentifier> getIdentifiers() {
 		if (identifiers == null)
-			identifiers = new HashSet<PatientIdentifier>();
+			identifiers = new TreeSet<PatientIdentifier>();
 		return this.identifiers;
 	}
 
@@ -177,8 +179,8 @@ public class Patient extends Person
 	public void addIdentifier(PatientIdentifier patientIdentifier) {
 		patientIdentifier.setPatient(this);
 		if (getIdentifiers() == null)
-			identifiers = new HashSet<PatientIdentifier>();
-		if (patientIdentifier != null && !identifiers.contains(patientIdentifier))
+			identifiers = new TreeSet<PatientIdentifier>();
+		if (patientIdentifier != null && !OpenmrsUtil.collectionContains(identifiers, patientIdentifier))
 			identifiers.add(patientIdentifier);
 	}
 
@@ -332,16 +334,4 @@ public class Patient extends Person
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
-
-	/*
-	 * We shouldn't need this because Person has it	
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
-    }
-	 */
-
 }

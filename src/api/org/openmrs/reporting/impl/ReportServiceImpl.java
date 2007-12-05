@@ -10,6 +10,8 @@ import org.openmrs.api.APIException;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientFilter;
+import org.openmrs.reporting.PatientSearch;
+import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportObjectFactory;
 import org.openmrs.reporting.ReportService;
@@ -78,6 +80,32 @@ public class ReportServiceImpl implements ReportService {
 	
 	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws APIException {
 		return getReportObjectDAO().getReportObjectsByType(reportObjectType);
+	}
+	
+	public PatientSearch getPatientSearch(Integer searchId) throws APIException {
+		return ((PatientSearchReportObject) getReportObject(searchId)).getPatientSearch();
+	}
+	
+	public List<PatientSearch> getAllPatientSearches() throws APIException {
+		List<PatientSearch> allSearches = new ArrayList<PatientSearch>();
+		List<AbstractReportObject> allMatchingObjects = getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
+		if ( allMatchingObjects != null ) {
+			for ( AbstractReportObject aro : allMatchingObjects ) {
+				allSearches.add( ((PatientSearchReportObject) aro).getPatientSearch() );
+			}
+		}
+		return allSearches;
+	}
+	
+	public PatientSearch getPatientSearch(String name) throws APIException {
+		List<AbstractReportObject> allMatchingObjects = getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
+		if ( allMatchingObjects != null ) {
+			for ( AbstractReportObject aro : allMatchingObjects ) {
+				if (aro.getName().equals(name))
+					return ((PatientSearchReportObject) aro).getPatientSearch();
+			}
+		}
+		return null;
 	}
 
 	public PatientFilter getPatientFilterById(Integer filterId) throws APIException {

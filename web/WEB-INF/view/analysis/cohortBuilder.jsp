@@ -247,6 +247,15 @@
 		DWRCohortBuilderService.loadSearchHistory(id, function() { refreshPage(); });
 	}
 	
+	function getCurrentPatientIds() {
+		if (currentPatientSet != null) {
+			return currentPatientSet.commaSeparatedPatientIds;
+		} else {
+			window.alert("<spring:message code="PatientSet.stillLoading"/>");
+			return null;
+		}
+	}
+	
 	function linkSubmitHelper(idPrefix) {
 		if (currentPatientSet != null) {
 			document.getElementById(idPrefix + "_ptIds").value = currentPatientSet.commaSeparatedPatientIds;
@@ -801,8 +810,8 @@
 					<b>Patients taking specific drugs</b>
 					<br/><br/>
 					<select name="anyOrAll">
-						<option value="ALL">All</option>
 						<option value="ANY">Any</option>
+						<option value="ALL">All</option>
 						<option value="NONE">None</option>
 					</select>
 					of the following:
@@ -1145,7 +1154,7 @@
 		<c:if test="${fn:length(model.links) > 0}">
 			<div id="_linkMenu" style="	border: 1px solid black; background-color: #f0f0a0; position: absolute; bottom: 0px; padding-right: 1.2em; z-index: 1; display: none">
 				<br />
-				&nbsp;&nbsp;&nbsp;<span style="width: 200px; text-align: right;"><a href="javascript:hideLayer('_linkMenu');" >[Close]</a></span>
+				&nbsp;&nbsp;&nbsp;<span style="width: 200px; text-align: right;"><a href="javascript:hideLayer('_linkMenu');" >[<spring:message code="general.close" />]</a></span>
 				<ul>
 					<c:forEach var="item" items="${model.links}" varStatus="loopStatus">
 						<li>
@@ -1179,6 +1188,13 @@
 		</c:if>
 
 		<b><spring:message code="CohortBuilder.actionsMenu"/></b>
+		
+		<openmrs:extensionPopupMenu
+			pointId="org.openmrs.quickWebReports"
+			popupDivId="webReportPopupMenu"
+			label="CohortBuilder.reportsPopupButton"
+			position="above"
+			parameters="patientIds=javascript:getCurrentPatientIds()" />
 
 		<a href="#" title='<spring:message code="CohortBuilder.saveCohort.help" />' onClick="toggleLayer('saveCohortDiv'); document.getElementById('saveCohortName').focus(); return false;">
 			<img src="${pageContext.request.contextPath}/images/save.gif" style="border: 0px" />
@@ -1187,23 +1203,6 @@
 		<c:if test="${fn:length(model.links) > 0}">
 			<a href="#" onClick="javascript:toggleLayer('_linkMenu')" style="border: 1px black solid"><spring:message code="Analysis.linkButton"/></a>
 		</c:if>
-		
-		<openmrs:extensionPoint pointId="org.openmrs.cohortbuilder.links" type="html" varStatus="extStatus">
-			<c:if test="${extStatus.first}">
-				<br/>
-				<b>Module Links:</b>
-				<ul>
-			</c:if>
-			<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-				<form method="post" action="${pageContext.request.contextPath}/${extension.url}">
-					<input type="hidden" name="patientIds" value=""/>
-					<li>
-						<a href="#" onClick="javascript:submitLink(this)"><spring:message code="${extension.label}"/></a>
-					</li>
-				</form>
-			</openmrs:hasPrivilege>
-			<c:if test="${extStatus.last}"></ul></c:if>
-		</openmrs:extensionPoint>
 
 	</div>
 

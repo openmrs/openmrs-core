@@ -13,7 +13,9 @@
 	<table id="patientActions">
 		<tr>
 			<td id="patientActionsPatientSummary">
-				<a href="javascript:window.open('patientSummary.htm?patientId=${model.patientId}', 'summaryWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes').focus()">Show Patient Summary</a>
+				<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.patientSummary">
+					<a href="javascript:window.open('${extension.url}?patientId=${model.patient.patientId}', 'summaryWindow', 'toolbar=no,width=660,height=600,resizable=yes,scrollbars=yes').focus()">${extension.label}</a>
+				</openmrs:extensionPoint>
 			</td>
 		</tr>
 	</table>

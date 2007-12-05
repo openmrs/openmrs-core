@@ -416,7 +416,6 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * Used by deletePerson, deletePatient, and deleteUser to remove all 
 	 * properties of a person before deleting them.
-	 * Auto generated method comment
 	 * 
 	 * @param sessionFactory the session factory from which to pull the current session
 	 * @param person the person to delete

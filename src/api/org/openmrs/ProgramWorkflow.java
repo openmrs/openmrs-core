@@ -8,8 +8,10 @@ import java.util.TreeSet;
 import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.Synchronizable;
 
-public class ProgramWorkflow implements Synchronizable {
+public class ProgramWorkflow implements java.io.Serializable, Synchronizable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private Integer programWorkflowId;
 	private Program program;
 	private Concept concept;

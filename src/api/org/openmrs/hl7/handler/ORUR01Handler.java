@@ -453,6 +453,10 @@ public class ORUR01Handler implements Application {
 		Date datetime = null;
 		TS ts = obx.getDateTimeOfTheObservation();
 		DTM value = ts.getTime();
+
+		if (value.getYear() == 0 || value.getValue() == null)
+			return null;
+
 		try {
 			datetime = getDate(value.getYear(), value.getMonth(), value
 					.getDay(), value.getHour(), value.getMinute(), value
@@ -528,6 +532,7 @@ public class ORUR01Handler implements Application {
 		return tsToDate(orc.getDateTimeOfTransaction());
 	}
 
+	//TODO: Debug (and use) methods in HL7Util instead
 	private Date tsToDate(TS ts) throws HL7Exception {
 		// need to handle timezone
 		String dtm = ts.getTime().getValue();

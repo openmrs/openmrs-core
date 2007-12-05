@@ -1,6 +1,7 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -76,6 +77,11 @@ public class PatientServiceImpl implements PatientService {
 		setCollectionProperties(patient);
 		
 		checkPatientIdentifiers(patient);
+		
+		if (patient.getDateCreated() == null)
+			patient.setDateCreated(new Date());
+		if (patient.getCreator() == null)
+			patient.setCreator(Context.getAuthenticatedUser());
 		
 		return getPatientDAO().createPatient(patient);
 	}
@@ -187,57 +193,74 @@ public class PatientServiceImpl implements PatientService {
 		}
 	}
 
+	/**
+	 * @see org.openmrs.api.PatientService#checkPatientIdentifier(org.openmrs.PatientIdentifier)
+	 */
 	public void checkPatientIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
 		
 		// skip and remove invalid/empty identifiers
 		if (pi == null) throw new BlankIdentifierException("Identifier cannot be null or blank", pi);
 		else if (pi.getIdentifier() == null ) throw new BlankIdentifierException("Identifier cannot be null or blank", pi);
 		else if ( pi.getIdentifier().length() == 0 ) throw new BlankIdentifierException("Identifier cannot be null or blank", pi);
-
-		// check is already in use by another patient
-		Patient p = identifierInUse(pi);
-		if (p != null) {
-			throw new IdentifierNotUniqueException("Identifier " + pi.getIdentifier() + " already in use by patient #" + p.getPatientId(), pi);
-		}
-
-		// also validate regular expression - if it exists
-		PatientIdentifierType pit = pi.getIdentifierType();
-		String identifier = pi.getIdentifier();
-
-		String regExp = pit.getFormat();
-		if ( regExp != null ) {
-			if ( regExp.length() > 0 ) {
-				// if this ID has a valid corresponding regular expression, check against it
-				log.debug("Trying to match " + identifier + " and " + regExp);
-				if ( !identifier.matches(regExp) ) {
-					log.debug("The two DO NOT match");
-					if ( pit.getFormatDescription() != null ) {
-						if ( pit.getFormatDescription().length() > 0 ) throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormatDescription(), pi);
-						else throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormat(), pi);
+		
+		// do not do any more checks if this identifeir is voided
+		if (pi.isVoided() == false) {
+			
+			// check is already in use by another patient
+			Patient p = identifierInUse(pi);
+			if (p != null) {
+				throw new IdentifierNotUniqueException("Identifier " + pi.getIdentifier() + " already in use by patient #" + p.getPatientId(), pi);
+			}
+	
+			// also validate regular expression - if it exists
+			PatientIdentifierType pit = pi.getIdentifierType();
+			String identifier = pi.getIdentifier();
+	
+			String regExp = pit.getFormat();
+			if ( regExp != null ) {
+				if ( regExp.length() > 0 ) {
+					// if this ID has a valid corresponding regular expression, check against it
+					log.debug("Trying to match " + identifier + " and " + regExp);
+					if ( !identifier.matches(regExp) ) {
+						log.debug("The two DO NOT match");
+						if ( pit.getFormatDescription() != null ) {
+							if ( pit.getFormatDescription().length() > 0 ) throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormatDescription(), pi);
+							else throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormat(), pi);
+						} else {
+							throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormat(), pi);
+						}
 					} else {
-						throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormat(), pi);
+						log.debug("The two match!!");
 					}
-				} else {
-					log.debug("The two match!!");
 				}
 			}
-		}
-
-		// validate checkdigit
-		try {
-			if (pit.hasCheckDigit()) if (!OpenmrsUtil.isValidCheckDigit(identifier)) {
-				log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifier);
+	
+			// validate checkdigit
+			try {
+				if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifier)) {
+					log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifier);
+					throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, pi);
+				}
+			} catch (Exception e) {
+				log.warn("Got exception while validating check digit for identifier: " + identifier, e);
 				throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, pi);
 			}
-		} catch (Exception e) {
-			throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, pi);
-		}	
+		}
 	}
 	
+	/**
+	 * checks if the given PatientIdentifer is in use by any other patient
+	 * 
+	 * @param pi PatientIdentifier
+	 * @return true/false whether or not this PatientIdentifier is in use
+	 */
 	public Patient identifierInUse(PatientIdentifier pi) {
 		return identifierInUse(pi.getIdentifier(), pi.getIdentifierType(), pi.getPatient());
 	}
 	
+	/**
+	 * @see org.openmrs.api.PatientService#identifierInUse(java.lang.String, org.openmrs.PatientIdentifierType, org.openmrs.Patient)
+	 */
 	public Patient identifierInUse(String identifier, PatientIdentifierType type, Patient ignorePatient) {
 		List<PatientIdentifier> ids = getPatientIdentifiers(identifier, type);
 		for (PatientIdentifier id : ids) {
@@ -273,14 +296,14 @@ public class PatientServiceImpl implements PatientService {
 	 * @return set of patients matching identifier
 	 * @throws APIException
 	 */
-	public Set<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
+	public Collection<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return getPatientDAO().getPatientsByIdentifierPattern(identifier, includeVoided);
 	}
 	
 	
-	public Set<Patient> getPatientsByName(String name) throws APIException {
+	public Collection<Patient> getPatientsByName(String name) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return getPatientsByName(name, false);
@@ -292,7 +315,7 @@ public class PatientServiceImpl implements PatientService {
 	 * @return set of patients matching name
 	 * @throws APIException
 	 */
-	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
+	public Collection<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		return getPatientDAO().getPatientsByName(name, includeVoided);
@@ -528,7 +551,7 @@ public class PatientServiceImpl implements PatientService {
 		return getPatientDAO().findTribes(search);
 	}
 		
-	public List<Patient> findPatients(String query, boolean includeVoided) {
+	public Collection<Patient> findPatients(String query, boolean includeVoided) {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		
@@ -542,13 +565,12 @@ public class PatientServiceImpl implements PatientService {
 		// if there is a number in the query string
 		if (query.matches(".*\\d+.*")) {
 			log.debug("[Identifier search] Query: " + query);
-			patients.addAll(dao.getPatientsByIdentifierPattern(query, includeVoided));
+			return dao.getPatientsByIdentifierPattern(query, includeVoided);
 		}
 		else {
 			//there is no number in the string, search on name
-			patients.addAll(dao.getPatientsByName(query, includeVoided));
+			return dao.getPatientsByName(query, includeVoided);
 		}
-		return patients;
 	}
 	
 	/**
@@ -745,22 +767,28 @@ public class PatientServiceImpl implements PatientService {
 		Context.getPersonService().setCollectionProperties(patient);
 		
 		// patient creator/changer
-		if (patient.getCreator() == null) {
+		if (patient.getCreator() == null)
 			patient.setCreator(Context.getAuthenticatedUser());
+		if (patient.getDateCreated() == null)
 			patient.setDateCreated(new Date());
+		
+		// TODO: Is this the right way to determine whether this is called from create() or update()?
+		if (patient.getPatientId() != null) {
+			patient.setChangedBy(Context.getAuthenticatedUser());
+			patient.setDateChanged(new Date());
 		}
-		patient.setChangedBy(Context.getAuthenticatedUser());
-		patient.setDateChanged(new Date());
 		
 		// identifier collection
-		if (patient.getIdentifiers() != null)
+		if (patient.getIdentifiers() != null) {
 			for (PatientIdentifier pIdentifier : patient.getIdentifiers()) {
-				if (pIdentifier.getDateCreated() == null) {
+				if (pIdentifier.getDateCreated() == null)
 					pIdentifier.setDateCreated(new Date());
+				if (pIdentifier.getCreator() == null)
 					pIdentifier.setCreator(Context.getAuthenticatedUser());
+				if (pIdentifier.getPatient() == null)
 					pIdentifier.setPatient(patient);
-				}
 			}
+		}
 	}
 
 	/**

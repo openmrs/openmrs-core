@@ -1,10 +1,10 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<spring:message var="pageTitle" code="optionsForm.title" scope="page"/>
-<%@ include file="/WEB-INF/template/header.jsp"%>
-
 <openmrs:require privilege="" otherwise="/login.htm"
 	redirect="/options.form" />
+	
+<spring:message var="pageTitle" code="optionsForm.title" scope="page"/>
+<%@ include file="/WEB-INF/template/header.jsp"%>
 
 <script type="text/javascript">
 

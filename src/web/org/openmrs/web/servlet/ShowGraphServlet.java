@@ -104,16 +104,15 @@ public class ShowGraphServlet extends HttpServlet {
 			// Add series to dataset
 			dataset.addSeries(series);
 
-			// Create graph
-			JFreeChart chart = ChartFactory.createTimeSeriesChart(
-				chartTitle,
-				domainAxisTitle,
-				rangeAxisTitle,
-				dataset,
-				true, 
-				true, 
-				false
-			);
+	        JFreeChart chart = ChartFactory.createTimeSeriesChart(
+               chartTitle,
+               null,
+               null,
+               dataset,
+               false, 
+               false, 
+               false
+	        );
 			
 			// Customize title font
 			Font font = new Font("Arial", Font.BOLD, 12);

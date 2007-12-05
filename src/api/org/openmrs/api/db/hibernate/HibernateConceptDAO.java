@@ -336,7 +336,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Drug> getDrugs() {
-		return sessionFactory.getCurrentSession().createQuery("from Drug").list();
+		return sessionFactory.getCurrentSession().createQuery("from Drug order by name").list();
 	}
 	
 	

@@ -9,6 +9,7 @@
 
 	<!-- Properties for running unit tests and webapp [un]deploy with tomcat -->
     <property name="tomcat.home" value="C:/Program Files/Apache Software Foundation/Tomcat 5.5"/>
+    <property name="catalina.home" value="C:/Program Files/Apache Software Foundation/Tomcat 5.5"/>
     <property name="tomcat.server" value="localhost" />
 	<property name="tomcat.port" value="8080" />
     <property name="tomcat.manager.url" value="http://${tomcat.server}:${tomcat.port}/manager" />
@@ -48,7 +49,6 @@
 		<fileset dir="${dom4j.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
     	<fileset dir="${hl7api.dir}" includes="*.jar" />
-		<fileset dir="${ibatis.dir}" includes="*.jar" />
     	<fileset dir="${jfreechart.dir}" includes="*.jar" />
 		<fileset dir="${junit.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />

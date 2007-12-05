@@ -195,7 +195,7 @@ function toggleRowVisibilityForClass(elementId, className, hasDescriptionRow) {
 			for (var i=1; i<rows.length; i++) {
 				if (rows[i].style.display == "") {
 					var c = "";
-					if (rows[i].className.substr(0, 6) == className)
+					if (rows[i].className.substr(0, className.length) == className)
 						c = className + " ";
 					if (oddRow)
 						c = c + "oddRow";

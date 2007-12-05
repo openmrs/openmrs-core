@@ -47,6 +47,14 @@ public class HibernateFormDAO implements
 	 * @see org.openmrs.api.db.FormService#createForm(org.openmrs.Form)
 	 */
 	public Form createForm(Form form) throws DAOException {
+		sessionFactory.getCurrentSession().save(form);
+		return form;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormService#duplicateForm(org.openmrs.Form)
+	 */
+	public Form duplicateForm(Form form) throws DAOException {
 		return (Form) sessionFactory.getCurrentSession().merge(form);
 	}
 

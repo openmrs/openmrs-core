@@ -1,8 +1,21 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api;
 
 import java.util.Date;
 
-import org.openmrs.BaseTest;
+import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.ComplexObs;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -13,40 +26,47 @@ import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 
-public class ObsServiceTest extends BaseTest {
+/**
+ * TODO clean up and add tests for all methods in ObsService
+ */
+public class ObsServiceTest extends BaseContextSensitiveTest {
 	
-	protected EncounterService es = Context.getEncounterService();
-	protected PatientService ps = Context.getPatientService();
-	protected UserService us = Context.getUserService();
-	protected ObsService obsService = Context.getObsService();
-	protected OrderService orderService = Context.getOrderService();
-	protected ConceptService conceptService = Context.getConceptService();
-
+	protected static final String INITIAL_OBS_XML = "org/openmrs/include/ObsServiceTest-initial.xml";
+	
 	@Override
-	protected void onSetUpBeforeTransaction() throws Exception {
-		super.onSetUpBeforeTransaction();
+	protected void onSetUpInTransaction() throws Exception {
+		initializeInMemoryDatabase();
 		authenticate();
 	}
 
+	/**
+	 * Creates then updates an obs
+	 * 
+	 * @throws Exception
+	 */
 	public void testObsCreateUpdateDelete() throws Exception {
 		
+		executeDataSet(INITIAL_OBS_XML);
+		
+		EncounterService es = Context.getEncounterService();
+		ObsService obsService = Context.getObsService();
+		ConceptService conceptService = Context.getConceptService();
+
 		Obs o = new Obs();
 		
 		//testing creation
 		
 		Order order1 = null;
 		Concept concept1 = conceptService.getConcept(1);
-		Patient patient1 = (Patient)ps.getPatientsByIdentifier("%", true).toArray()[1];
-		System.out.println(ps.getPatientsByIdentifier("%", true));
-		System.out.println("patient1: " + patient1.getPatientId());
+		Patient patient1 = new Patient(2);  // TODO need to create an actual mock patient
 		Encounter encounter1 = (Encounter)es.getEncounter(1);
 		Date datetime1 = new Date();
-		Location location1 = es.getLocation(3);
+		Location location1 = es.getLocation(1);
 		Integer groupId1 = new Integer(1);
 		Integer valueGroupId1 = new Integer(5);
 		//boolean valueBoolean1 = true;
 		Date valueDatetime1 = new Date();
-		Concept valueCoded1 = conceptService.getConcept(11);
+		Concept valueCoded1 = conceptService.getConcept(2);
 		Double valueNumeric1 = 1.0;
 		String valueModifier1 = "a1";
 		String valueText1 = "value text1";
@@ -75,16 +95,16 @@ public class ObsServiceTest extends BaseTest {
 		
 		Order order2 = null;
 		Concept concept2 = conceptService.getConcept(2);
-		Patient patient2 = (Patient)ps.getPatientsByIdentifier("%", true).toArray()[4];
+		Patient patient2 = new Patient(1); // TODO need to create an actual mock patient 2
 		System.out.println("patient2: " + patient2.getPatientId());
 		Encounter encounter2 = (Encounter)es.getEncounter(2);
 		Date datetime2 = new Date();
-		Location location2 = es.getLocation(2);
+		Location location2 = es.getLocation(1);
 		Integer groupId2 = new Integer(2);
 		Integer valueGroupId2 = new Integer(3);
 		//boolean valueBoolean2 = false;
 		Date valueDatetime2 = new Date();
-		Concept valueCoded2 = conceptService.getConcept(22);
+		Concept valueCoded2 = conceptService.getConcept(2);
 		Double valueNumeric2 = 2.0;
 		String valueModifier2 = "cc";
 		String valueText2 = "value text2";
@@ -131,7 +151,6 @@ public class ObsServiceTest extends BaseTest {
 		assertTrue(o3.getValueModifier().equals(valueModifier2));
 		assertTrue(o3.getValueText().equals(valueText2));
 		
-		System.out.println(o3.getPerson().getCreator().getUsername());
 		obsService.voidObs(o, "testing void function");
 		
 		Obs o4 = obsService.getObs(o.getObsId());
@@ -148,7 +167,25 @@ public class ObsServiceTest extends BaseTest {
 		
 	}	
 	
+	/**
+	 * Creates then updates a complex obs
+	 * 
+	 * @throws Exception
+	 */
 	public void testComplexObsCreateUpdateDelete() throws Exception {
+		
+		executeDataSet(INITIAL_OBS_XML);
+		
+		EncounterService es = Context.getEncounterService();
+		ObsService obsService = Context.getObsService();
+		ConceptService conceptService = Context.getConceptService();
+		AdministrationService as = Context.getAdministrationService();
+		
+		// create the mock mime type;
+		MimeType mimetype1 = new MimeType();
+		mimetype1.setDescription("desc");
+		mimetype1.setMimeType("mimetype1");
+		as.createMimeType(mimetype1);
 		
 		ComplexObs o = new ComplexObs();
 		
@@ -156,20 +193,19 @@ public class ObsServiceTest extends BaseTest {
 		
 		Order order1 = null;
 		Concept concept1 = conceptService.getConcept(1);
-		Patient patient1 = (Patient)ps.getPatientsByIdentifier("%", true).toArray()[1];
+		Patient patient1 = new Patient(2); // TODO need to create an actual mock patient
 		Encounter encounter1 = (Encounter)es.getEncounter(1);
 		Date datetime1 = new Date();
-		Location location1 = es.getLocation(3);
+		Location location1 = es.getLocation(2);
 		Integer groupId1 = new Integer(1);
 		Integer valueGroupId1 = new Integer(5);
 		//boolean valueBoolean1 = true;
 		Date valueDatetime1 = new Date();
-		Concept valueCoded1 = conceptService.getConcept(13);
+		Concept valueCoded1 = conceptService.getConcept(2);
 		Double valueNumeric1 = 1.0;
 		String valueModifier1 = "a1";
 		String valueText1 = "value text1";
 		String comment1 = "commenting1";
-		MimeType mimetype1 = obsService.getMimeTypes().get(0);
 		String urn1 = "urn1";
 		String complexValue1 = "complex value1";
 		
@@ -199,7 +235,7 @@ public class ObsServiceTest extends BaseTest {
 		
 		Order order2 = null;
 		Concept concept2 = conceptService.getConcept(2);
-		Patient patient2 = (Patient)ps.getPatientsByIdentifier("%", true).toArray()[4];
+		Patient patient2 = new Patient(2);  // TODO need to create an actual mock patient
 		Encounter encounter2 = (Encounter)es.getEncounter(2);
 		Date datetime2 = new Date();
 		Location location2 = es.getLocation(2);
@@ -207,12 +243,12 @@ public class ObsServiceTest extends BaseTest {
 		Integer valueGroupId2 = new Integer(3);
 		//boolean valueBoolean2 = false;
 		Date valueDatetime2 = new Date();
-		Concept valueCoded2 = conceptService.getConcept(25);
+		Concept valueCoded2 = conceptService.getConcept(1);
 		Double valueNumeric2 = 2.0;
 		String valueModifier2 = "cc";
 		String valueText2 = "value text2";
 		String comment2 = "commenting2";
-		MimeType mimetype2 = obsService.getMimeTypes().get(1);
+		MimeType mimetype2 = mimetype1;
 		String urn2 = "urn2";
 		String complexValue2 = "complex value2";
 		
@@ -264,7 +300,6 @@ public class ObsServiceTest extends BaseTest {
 		assertTrue(o3.getUrn().equals(urn2));
 		assertTrue(o3.getComplexValue().equals(complexValue2));
 		
-		System.out.println(o3.getPerson().getCreator().getUsername());
 		obsService.voidObs(o, "testing void function");
 		
 		Obs o4 = obsService.getObs(o.getObsId());

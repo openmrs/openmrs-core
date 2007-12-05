@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import org.openmrs.BaseTest;
+import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
@@ -15,7 +15,7 @@ import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.SyncItemState;
 
-public class SynchronizationServiceTest extends BaseTest {
+public class SynchronizationServiceTest extends BaseContextSensitiveTest {
 
     protected SynchronizationService syncService = null;
 

@@ -1,11 +1,25 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
-import org.openmrs.BaseTest;
+import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -15,18 +29,21 @@ import org.openmrs.api.context.Context;
 
 /**
  * This class tests methods in the PatientService class
+ * 
+ * TODO Add methods to test all methods in PatientService class
  */
-public class PatientServiceTest extends BaseTest {
+public class PatientServiceTest extends BaseContextSensitiveTest {
+	
+	protected static final String CREATE_PATIENT_XML = "org/openmrs/include/PatientServiceTest-createPatient.xml";
+	protected static final String JOHN_PATIENTS_XML = "org/openmrs/include/PatientServiceTest-lotsOfJohns.xml";
 	
 	protected PatientService ps = null; 
 	protected AdministrationService adminService = null;
 	protected EncounterService encounterService = null;
 	
-	protected Patient createdPatient;
-	
 	@Override
-	protected void onSetUpBeforeTransaction() throws Exception {
-		super.onSetUpBeforeTransaction();
+	protected void onSetUpInTransaction() throws Exception {
+		initializeInMemoryDatabase();
 		authenticate();
 		
 		if (ps == null) {
@@ -34,48 +51,49 @@ public class PatientServiceTest extends BaseTest {
 			adminService = Context.getAdministrationService();
 			encounterService = Context.getEncounterService();
 		}
-		
 	}
 
+	/**
+	 * Tests creation of a patient and then subsequent fetching of that
+	 * patient by internal id
+	 * 
+	 * @throws Exception
+	 */
 	public void testGetPatient() throws Exception {
-
-		this.createPatient();
 		
-		Set patientList;
+		executeDataSet(CREATE_PATIENT_XML);
 		
-		patientList = ps.getPatientsByIdentifier("???", true);
-		assertNotNull(patientList);
-		assertTrue(patientList.size() == 0);
+		Set<Patient> patientList = ps.getPatientsByIdentifier("???", true);
+		assertNotNull("an empty list should be returned instead of a null object", patientList);
+		assertTrue("There shouldn't be any patients with this weird identifier", patientList.size() == 0);
 		
-		patientList = ps.getPatientsByIdentifier("", true);
-		assertNotNull(patientList);
-		assertTrue(patientList.size() > 0);
+		patientList = ps.getPatientsByIdentifier("1234", true);
+		assertTrue("There should be at least one patient found with this identifier", patientList.size() > 0);
 		
-		Patient patient;
+		// get a patient by id
+		Patient patient = ps.getPatient(-1);
+		assertNull("There should be no patients with a patient_id of negative 1", patient);
 		
-		patient = ps.getPatient(-1);
-		assertNull(patient);
-
-		patient = (Patient)ps.getPatient(createdPatient.getPatientId());
-		assertNotNull(patient);
-
-		patient.setGender("female");
+		patient = ps.getPatient(2);
+		assertNotNull("There should be a patient with patient_id of 2", patient);
 		
+		
+		patient.setGender("F");
 		ps.updatePatient(patient);
-		
 		Patient patient2 = ps.getPatient(patient.getPatientId());
+		assertTrue("The updated patient and the orig patient should still be equal", patient.equals(patient2));
 		
-		assertTrue(patient.equals(patient2));
-		
-		PersonAddress pAddress = patient.getAddresses().iterator().next();
-		patient.removeAddress(pAddress);
-		PersonName pName = patient.getNames().iterator().next();
-		patient.removeName(pName);
-		
-		
+		assertTrue("The gender should be new", patient2.getGender().equals("F"));	
 	}
 	
-	public void createPatient() throws Exception {
+	/**
+	 * 
+	 * Tests creating a patient 
+	 * 
+	 * @throws Exception
+	 */
+	public void testCreatePatient() throws Exception {
+		executeDataSet(CREATE_PATIENT_XML);
 		
 		Patient patient = new Patient();
 		
@@ -96,34 +114,26 @@ public class PatientServiceTest extends BaseTest {
 		patient.addAddress(pAddress);
 		//patient.removeAddress(pAddress);
 		
-		patient.setTribe(ps.getTribes().get(0));
-		//patient.setCitizenship("citizen");
-		//TODO make an optional pointer to the actual mother obj?
-		//patient.setMothersName("Mom's name");
-		//patient.setCivilStatus(1);
 		patient.setDeathDate(new Date());
 		//patient.setCauseOfDeath("air");
-		//patient.setHealthDistrict("health dist");
-		//patient.setHealthCenter(null);
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
-		//patient.setBirthplace("Little town outside of nowhere");
 		patient.setGender("male");
 		
 		List<PatientIdentifierType> patientIdTypes = ps.getPatientIdentifierTypes();
 		assertNotNull(patientIdTypes);
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
-		patientIdentifier.setIdentifier("ident");
+		patientIdentifier.setIdentifier("123-0");
 		patientIdentifier.setIdentifierType(patientIdTypes.get(0));
 		patientIdentifier.setLocation(encounterService.getLocations().get(0));
 		
-		Set<PatientIdentifier> patientIdentifiers = new HashSet<PatientIdentifier>();
+		Set<PatientIdentifier> patientIdentifiers = new TreeSet<PatientIdentifier>();
 		patientIdentifiers.add(patientIdentifier);
 		
 		patient.setIdentifiers(patientIdentifiers);
 		
 		ps.createPatient(patient);
-		createdPatient = ps.getPatient(patient.getPatientId());
+		Patient createdPatient = ps.getPatient(patient.getPatientId());
 		assertNotNull(createdPatient);
 		
 		assertNotNull(createdPatient.getPatientId());
@@ -140,8 +150,10 @@ public class PatientServiceTest extends BaseTest {
 	 */
 	public void testGetPatientsByIdentifier() throws Exception {
 		
+		executeDataSet(CREATE_PATIENT_XML);
+		
 		// get the first patient
-		Set<Patient> johnPatients = ps.getPatientsByName("John");
+		Collection<Patient> johnPatients = ps.getPatientsByName("John");
 		assertNotNull("There should be a patient named 'John'", johnPatients);
 		assertFalse("There should be a patient named 'John'", johnPatients.isEmpty());
 		
@@ -153,6 +165,62 @@ public class PatientServiceTest extends BaseTest {
 		Set<Patient> patients = ps.getPatientsByIdentifier(identifier, true);
 		assertTrue("Odd. The firstJohnPatient isn't in the list of patients for this identifier", patients.contains(firstJohnPatient));
 		
+	}
+	
+//	/**
+//	 * This method should be uncommented when you want to examine the actual hibernate
+//	 * sql calls being made.  The calls that should be limiting the number of returned
+//	 * patients should show a "top" or "limit" in the sql -- this proves hibernate's
+//	 * use of a native sql limit as opposed to a java-only limit.  
+//	 * 
+//	 * Note: if enabled, this test will be considerably slower
+//     * 
+//     * @see org.openmrs.BaseContextSensitiveTest#getRuntimeProperties()
+//     */
+//    @Override
+//    public Properties getRuntimeProperties() {
+//	    Properties props = super.getRuntimeProperties();
+//	    props.setProperty("hibernate.show_sql", "true");
+//	    
+//    	return props;
+//    }
+
+	/**
+	 * Check that the patient list is kept under the max for getPatientsByName
+	 * 
+	 * @throws Exception
+	 */
+	public void testGetPatientsByNameShouldLimitSize() throws Exception {
+		executeDataSet(JOHN_PATIENTS_XML);
+		
+		Collection<Patient> patients = ps.getPatientsByName("John");
+		
+		assertTrue("The patient list size should be restricted to under the max (1000). its " + patients.size(), patients.size() == 1000);
+		
+		/* Temporary code to create lots of johns file
+		 * 
+		File file = new File("test/api/" + JOHN_PATIENTS_XML);
+		PrintWriter writer = new PrintWriter(file);
+
+		int x = 3;
+		while (x < 1010) {
+			String line = "<person person_id=\"2\" dead=\"false\" creator=\"1\" date_created=\"1999-01-01 00:00:00.0\" voided=\"false\" gender=\"M\" />";
+			writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
+
+			line = "<person_name person_id=\"2\" person_name_id=\"2\" preferred=\"1\" creator=\"1\" date_created=\"1999-01-01 00:00:00.0\" voided=\"false\" given_name=\"John2\" middle_name=\" \" family_name=\"Patient\" />";
+			writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
+			
+			line = "<patient patient_id=\"2\" creator=\"1\" date_created=\"1999-03-01 00:00:00.0\" voided=\"false\" />";
+			writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
+			
+			line = "<patient_identifier patient_id=\"2\" creator=\"1\" date_created=\"1999-03-01 00:00:00.0\" identifier=\"2\" identifier_type=\"1\" preferred=\"1\" voided=\"false\" location_id=\"1\" />";
+			writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
+
+			x = x + 1;
+		}
+
+		writer.close();
+		*/
 	}
 	
 }

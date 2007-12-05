@@ -57,13 +57,13 @@ public class FormServiceImpl implements FormService {
 	 * @param form
 	 * @throws APIException
 	 */
-	public void createForm(Form form) throws APIException {
+	public Form createForm(Form form) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_FORMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_FORMS);
 		
 		updateFormProperties(form);
 		
-		getFormDAO().createForm(form);
+		return getFormDAO().createForm(form);
 	}
 
 	/**
@@ -121,8 +121,16 @@ public class FormServiceImpl implements FormService {
 			form.setCreator(Context.getAuthenticatedUser());
 			form.setDateCreated(new Date());
 		}
-		form.setChangedBy(Context.getAuthenticatedUser());
-		form.setDateChanged(new Date());
+		else {
+			form.setChangedBy(Context.getAuthenticatedUser());
+			form.setDateChanged(new Date());
+		}
+		
+		if (form.getFormFields() != null) {
+			for (FormField formField : form.getFormFields()) {
+				updateFormFieldProperties(formField);
+			}
+		}
 	}
 	
 	/**
@@ -152,7 +160,7 @@ public class FormServiceImpl implements FormService {
 		
 		Context.clearSession();
 		
-		Form newForm = getFormDAO().createForm(form);
+		Form newForm = getFormDAO().duplicateForm(form);
 		
 		return newForm;
 	}
@@ -338,8 +346,10 @@ public class FormServiceImpl implements FormService {
 			field.setCreator(Context.getAuthenticatedUser());
 			field.setDateCreated(new Date());
 		}
-		field.setChangedBy(Context.getAuthenticatedUser());
-		field.setDateChanged(new Date());
+		else {
+			field.setChangedBy(Context.getAuthenticatedUser());
+			field.setDateChanged(new Date());
+		}
 	}
 	
 	/**
@@ -404,29 +414,31 @@ public class FormServiceImpl implements FormService {
 	}
 	
 	/**
-	 * Set the change time and (conditionally) creation time attributes
-	 * @param form
+	 * Set the change time and (conditionally) creation time attributes for all
+	 * of this form's formfields and for fields of those formfields
+	 * @param form Form to update FormFields for
 	 */
 	private void updateFormFieldProperties(FormField formField) {
 		if (formField.getCreator() == null) {
 			formField.setCreator(Context.getAuthenticatedUser());
 			formField.setDateCreated(new Date());
 		}
-		
-		if (formField.getField().getCreator() == null) {
-			Field field = formField.getField();
-			field.setCreator(Context.getAuthenticatedUser());
-			field.setDateCreated(new Date());
+		else {
+			formField.setChangedBy(Context.getAuthenticatedUser());
+			formField.setDateChanged(new Date());
 		}
 		
-		formField.setChangedBy(Context.getAuthenticatedUser());
-		formField.setDateChanged(new Date());
+		Field field = formField.getField();
+		if (field.getCreator() == null) {
+			field.setCreator(Context.getAuthenticatedUser());
+			field.setDateCreated(new Date());
+			// don't change the changed by and date changed for 
+			// form field updates
+		}		
 	}
 	
 	/**
-	 * 
-	 * @param formField
-	 * @throws APIException
+	 * @see org.openmrs.api.FormService#deleteFormField(org.openmrs.FormField)
 	 */
 	public void deleteFormField(FormField formField) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))

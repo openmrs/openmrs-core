@@ -1496,6 +1496,7 @@
 				<ref bean="addressTemplateUS" />
 				<ref bean="addressTemplateKenya" />
 				<ref bean="addressTemplateLesotho" />
+				<ref bean="addressTemplateMalawi" />
 				<ref bean="addressTemplateGeneral" />
 			</list>
 		</property>
@@ -1718,6 +1719,44 @@
 			<list>
 				<value>countyDistrict</value>
 				<value>cityVillage</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="addressTemplateMalawi" class="org.openmrs.layout.web.address.AddressTemplate">
+		<property name="displayName"><value>Malawi Address Format</value></property>
+		<property name="codeName"><value>mw</value></property>
+		<property name="country"><value>Malawi</value></property>
+		<property name="nameMappings">
+			<props>
+				<prop key="stateProvince">Location.district</prop>
+				<prop key="countyDistrict">Location.traditionalAuthority</prop>
+				<prop key="cityVillage">Location.village</prop>
+				<prop key="neighborhoodCell">Location.neighborhood</prop>
+				<prop key="address1">Location.address1</prop>
+			</props>
+		</property>
+		<property name="sizeMappings">
+			<props>
+				<prop key="stateProvince">20</prop>
+				<prop key="countyDistrict">20</prop>
+				<prop key="cityVillage">20</prop>
+				<prop key="neighborhoodCell">20</prop>
+				<prop key="address1">40</prop>
+			</props>
+		</property>
+		<property name="elementDefaults">
+			<props>
+				<prop key="country">Malawi</prop>
+			</props>
+		</property>
+		<property name="lineByLineFormat">
+			<list>
+				<value>address1</value>
+				<value>neighborhoodCell</value>
+				<value>cityVillage</value>
+				<value>countyDistrict</value>
+				<value>stateProvince</value>
 			</list>
 		</property>
 	</bean>

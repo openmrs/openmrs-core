@@ -240,7 +240,7 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * Remove the given obervation from the list of orders for this Encounter
+	 * Remove the given observation from the list of orders for this Encounter
 	 * @param order
 	 */
 	public void removeOrder(Order order) {

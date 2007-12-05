@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.context;
 
 import java.text.SimpleDateFormat;
@@ -41,7 +54,6 @@ import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessagePreparator;
 import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
-import org.openmrs.notification.impl.MessageServiceImpl;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportService;
@@ -50,8 +62,6 @@ import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.aop.Advisor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -60,19 +70,20 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * authenticate to the database and obtain services in order to interact with
  * the system.
  * 
- * Only one <code>User</code> may be authenticated within a context at any
- * given time.
+ * The Context is split into a UserContext and ServiceContext.  The UserContext is 
+ * lightweight and there is an instance for every user logged into the system.  The 
+ * ServiceContext is heavier and contains each service class.  This is more static 
+ * and there is only one ServiceContext per OpenMRS instance.
  * 
- * @author Burke Mamlin
- * @version 1.0
+ * @see org.openmrs.api.context.UserContext
+ * @see org.openmrs.api.context.ServiceContext
  */
-public class Context implements ApplicationContextAware {
+public class Context {
 
 	private static final Log log = LogFactory.getLog(Context.class);
 	
 	// Global resources 
 	private static ContextDAO contextDAO;
-	private static ApplicationContext applicationContext;
 	private static Session mailSession;
 	
 	// Using "wrapper" (Object array) around UserContext to avoid ThreadLocal bug in Java 1.5
@@ -80,8 +91,8 @@ public class Context implements ApplicationContextAware {
 	private static ServiceContext serviceContext;
 	private static Properties runtimeProperties = new Properties();
 	
-	// A place to store data that will persiste longer than a session, but won't persist beyond application restart
-	// TODO: put an optional expiry date on these items
+	// A place to store data that will persist longer than a session, but won't persist beyond application restart
+	// TODO: put an optional expire date on these items
 	private static Map<User, Map<String, Object>> volatileUserData = new HashMap<User, Map<String, Object>>();
 
 	/**
@@ -89,25 +100,11 @@ public class Context implements ApplicationContextAware {
 	 * 
 	 */
 	public Context() { }
-
-	/**
-	 * Set application context.  Callback method defined in ApplicationContextAware interface.
-	 *
-	 * @param   context   the spring application context 
-	 */
-	public void setApplicationContext(ApplicationContext context) {
-		log.debug("Setting application context");
-		applicationContext = context;
-	}
-
-	public Object getBean(String beanName) {
-		return applicationContext.getBean(beanName);
-	}
 	
 	/**
-	 * Gets the context's dao.
+	 * Gets the context's data access object
 	 * 
-	 * @return
+	 * @return ContextDAO
 	 */
 	private static ContextDAO getContextDAO() {
 		if (contextDAO == null) throw new APIException("contextDAO is null");
@@ -127,7 +124,7 @@ public class Context implements ApplicationContextAware {
 	 * Sets the user context on the thread local so that the service layer can 
 	 * perform authentication/authorization checks.
      *
-	 * TODO Make thread-safe because this might be accessed by serveral thread at the same time.
+	 * TODO Make thread-safe because this might be accessed by several thread at the same time.
 	 * Making this thread safe might make this a bottleneck.
 	 * 
 	 * @param userContext
@@ -137,12 +134,11 @@ public class Context implements ApplicationContextAware {
 			log.debug("Setting user context " + ctx);
 		
 		Object[] arr = new Object[] {ctx};
-		ctx.setContextDAO(getContextDAO());
 		userContextHolder.set(arr);
 	}
 	
 	/**
-	 * Clears the user context.
+	 * Clears the user context from the threadlocal.
 	 */
 	public static void clearUserContext() {
 		if (log.isDebugEnabled())
@@ -153,7 +149,7 @@ public class Context implements ApplicationContextAware {
 	
 	/**
 	 * Gets the user context from the thread local.
-	 * This might be accessed by serveral threads at the same time.
+	 * This might be accessed by several threads at the same time.
 	 * 
 	 * @return
 	 */
@@ -207,9 +203,9 @@ public class Context implements ApplicationContextAware {
 	 */
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
 		if (log.isDebugEnabled())
-			log.debug("username: " + username);
+			log.debug("Authenticating with username: " + username);
 		
-		getUserContext().authenticate(username, password);
+		getUserContext().authenticate(username, password, getContextDAO());
 	}
 	
 	/**
@@ -229,7 +225,7 @@ public class Context implements ApplicationContextAware {
 			log.debug("getting runtime properties. size: " + runtimeProperties.size());
 		
 		Properties props = new Properties();
-		for (Map.Entry entry : runtimeProperties.entrySet()) {
+		for (Map.Entry<Object, Object> entry : runtimeProperties.entrySet()) {
 			props.put(entry.getKey(), entry.getValue());
 		}
 		
@@ -348,16 +344,6 @@ public class Context implements ApplicationContextAware {
 	public static AdministrationService getAdministrationService() {
 		return getServiceContext().getAdministrationService();
 	}
-
-	/*
-	 * This doesn't really belong here - it's really in the src/web tree
-	public FieldGenHandlerFactory getFieldGenHandlerFactory() {
-		if (fieldGenHandlerFactory == null) {
-			fieldGenHandlerFactory= (FieldGenHandlerFactory)applicationContext.getBean("fieldGenHandlerFactory");
-		}
-		return fieldGenHandlerFactory;
-	}
-	*/
  	
 	/**
 	 * @return scheduler service
@@ -390,46 +376,20 @@ public class Context implements ApplicationContextAware {
 	/**
 	 * Get the message service.
 	 * 
-	 * There are several ways to deal with the service layer objects.
-	 * 
-	 * (1) Dependency injection (preferred) (2) Instantiate new instance within
-	 * service (current implementation) (3) Use bean factory to get reference to
-	 * bean (4) Use application context to get reference to bean
-	 * 
-	 * NOTE: I prefer method (1) but will not be able to get it to work
-	 * correctly until I can refactor the Context class. The main issue is that
-	 * the Context object is instantiated all over the place instead of being
-	 * defined once in the bean definition file. Therefore, I cannot "inject"
-	 * the message service (or any other service) because the client has control
-	 * over instantiating the object. I don't like method (2) because I don't
-	 * want the context to instantiate as there is a lot of work that goes into
-	 * setting up the message service object. I couldn't figure out to get the
-	 * "openmrs-servlet.xml" resource so I abandoned method (3). Therefore, I
-	 * have decided to go with method (4) for now. It ties us (somewhat loosely)
-	 * to the spring framework as we now have the Context object implement
-	 * ApplicationContextAware. However, my plan is to make Context an interface
-	 * and implements this interface as the SpringContext so that certain Spring
-	 * services can be used (i.e. event publishing).
-	 * 
 	 * @return message service
 	 */
 	public static MessageService getMessageService() {
 		MessageService ms = getServiceContext().getMessageService();
-		
-		if (ms == null) {
-			try { 
-				//messageService = (MessageService) applicationContext.getBean("messageService");
-				// Message service dependencies
-				MessagePreparator preparator = getMessagePreparator();
-				MessageSender sender = getMessageSender();
-				
-				ms = new MessageServiceImpl();
-				ms.setMessageSender(sender);
-				ms.setMessagePreparator(preparator);
-				
-			} catch (Exception e) { 
-				log.error("Unable to create message service due", e);
-			}
+		try {
+			// Message service dependencies
+			if (ms.getMessagePreparator() == null)
+				ms.setMessagePreparator(getMessagePreparator());
+
+			if (ms.getMessageSender() == null)
+				ms.setMessageSender(getMessageSender());
+
+		} catch (Exception e) {
+			log.error("Unable to create message service due", e);
 		}
 		return ms;
 	}
@@ -472,8 +432,7 @@ public class Context implements ApplicationContextAware {
 	 * Convenience method to allow us to change the configuration more easily. 
 	 * 
 	 * TODO Ideally, we would be using Spring's method injection to set the dependencies
-	 * for the message service.  However, we are currently tied to creating Context
-	 * objects for each user and need to assign all dependencies within the code.
+	 * for the message service. 
 	 * @return
 	 */	
 	private static MessageSender getMessageSender() { 
@@ -490,30 +449,6 @@ public class Context implements ApplicationContextAware {
 		return new VelocityMessagePreparator();
 	}
 	
-	/*
-	 * public MessageService getMessageService() { if ( messageService == null ) {
-	 * try { log.info("Instantiating message service"); Resource beanDefinition =
-	 * new ClassPathResource("openmrs-servlet.xml"); XmlBeanFactory beanFactory =
-	 * new XmlBeanFactory( beanDefinition ); messageService =
-	 * (MessageService)beanFactory.getBean("messageService"); log.info("Message
-	 * service = " + messageService); } catch (Exception e) {
-	 * e.printStackTrace(); } } }
-	 */
-
-	/*
-	 * public MessageService getMessageService() { if (messageService == null) {
-	 * try { messageService = new MessageServiceImpl(getDaoContext());
-	 * 
-	 * javax.mail.Session mailSession = (javax.mail.Session) = new
-	 * InitialContext().lookup("java:comp/env/mail/OpenmrsMailSession");
-	 * 
-	 * messageService.setMailSession( mailSession );
-	 * messageService.setMessageSender( new MailMessageSender() );
-	 * messageService.setMessagePreparator( new VelocityMessagePreparator() ); }
-	 * catch (Exception e) { log.error( "Could not instantiate message service: ",
-	 * e ); } } return messageService; }
-	 */
-
 	/**
 	 * @return "active" user who has been authenticated, otherwise
 	 *         <code>null</code>
@@ -698,7 +633,8 @@ public class Context implements ApplicationContextAware {
 	 * @param cls
 	 * @return
 	 */
-	public static Object getService(Class cls) {
+	@SuppressWarnings("unchecked")
+    public static Object getService(Class cls) {
 		return getServiceContext().getService(cls);
 	}
 	
@@ -709,7 +645,8 @@ public class Context implements ApplicationContextAware {
 	 * @param cls
 	 * @param advisor
 	 */
-	public static void addAdvisor(Class cls, Advisor advisor) {
+	@SuppressWarnings("unchecked")
+    public static void addAdvisor(Class cls, Advisor advisor) {
 		getServiceContext().addAdvisor(cls, advisor);
 	}
 	
@@ -720,7 +657,8 @@ public class Context implements ApplicationContextAware {
 	 * @param cls
 	 * @param advice
 	 */
-	public static void addAdvice(Class cls, Advice advice) {
+	@SuppressWarnings("unchecked")
+    public static void addAdvice(Class cls, Advice advice) {
 		getServiceContext().addAdvice(cls, advice);
 	}
 	
@@ -730,7 +668,8 @@ public class Context implements ApplicationContextAware {
 	 * @param cls
 	 * @param advisor
 	 */
-	public static void removeAdvisor(Class cls, Advisor advisor) {
+	@SuppressWarnings("unchecked")
+    public static void removeAdvisor(Class cls, Advisor advisor) {
 		getServiceContext().removeAdvisor(cls, advisor);
 	}
 	
@@ -740,7 +679,8 @@ public class Context implements ApplicationContextAware {
 	 * @param cls
 	 * @param advice
 	 */
-	public static void removeAdvice(Class cls, Advice advice) {
+	@SuppressWarnings("unchecked")
+    public static void removeAdvice(Class cls, Advice advice) {
 		getServiceContext().removeAdvice(cls, advice);
 	}
 	
@@ -763,6 +703,19 @@ public class Context implements ApplicationContextAware {
 		OpenmrsConstants.DATABASE_VERSION = getAdministrationService().getGlobalProperty("database_version");
 	}
 	
+	/**
+	 * Get a piece of information for the currently authenticated user.
+	 * This information is stored only temporarily.  When a new module
+	 * is loaded or the server is restarted, this information will
+	 * disappear.
+	 * 
+	 * If there is not information by this key, null is returned
+	 * 
+	 * TODO: This needs to be refactored/removed
+	 * 
+	 * @param key identifying string for the information
+	 * @return the information stored
+	 */
 	public static Object getVolatileUserData(String key) {
 		User u = getAuthenticatedUser();
 		if (u == null)
@@ -774,6 +727,17 @@ public class Context implements ApplicationContextAware {
 			return myData.get(key);
 	}
 	
+	/**
+	 * Set a piece of information for the currently authenticated user.
+	 * This information is stored only temporarily.  When a new module
+	 * is loaded or the server is restarted, this information will
+	 * disappear
+	 * 
+	 * TODO: This needs to be refactored/removed
+	 * 
+	 * @param key identifying string for this information
+	 * @param value information to be stored
+	 */
 	public static void setVolatileUserData(String key, Object value) {
 		User u = getAuthenticatedUser();
 		if (u == null) // TODO: throw something here
@@ -787,8 +751,13 @@ public class Context implements ApplicationContextAware {
 	}
 	
 	/**
+	 * Gets the simple date format for the current user's locale.
+	 * 
+	 * The format will be similar in size to mm/dd/yyyy
 	 * 
 	 * @return SimpleDateFormat
+	 * 
+	 * @see org.openmrs.util.OpenmrsConstants#OPENMRS_LOCALE_DATE_PATTERNS()
 	 */
 	public static SimpleDateFormat getDateFormat() {
 		return new SimpleDateFormat(

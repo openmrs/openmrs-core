@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.context;
 
 import java.util.HashSet;
@@ -15,79 +28,76 @@ import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * Represents an OpenMRS <code>Context</code>, which may be used to
- * authenticate to the database and obtain services in order to interact with
- * the system.
+ * Represents an OpenMRS <code>User Context</code> which stores the current
+ * user information.
  * 
- * Only one <code>User</code> may be authenticated within a context at any
+ * Only one <code>User</code> may be authenticated within a UserContext at any
  * given time.
  * 
- * @author Justin Miranda
- * @version 1.0
+ * The UserContext should not be accessed directly, but rather used through
+ * the <code>Context</code>.
+ * 
+ * This class should be kept light-weight.  There is one instance of this class
+ * per user that is logged into the system.
+ * 
+ * @see org.openmrs.api.context.Context
  */
 public class UserContext {
-	/*
+	/**
 	 * Logger - shared by entire class
 	 */
 	private static final Log log = LogFactory.getLog(UserContext.class);
 
-	/*
-	 * User details 
+	/**
+	 * User object containing details about the authenticated user 
 	 */
 	private User user = null;
 
-	/* 
-	 * User permission proxies
+	/**
+	 * User's permission proxies
 	 */
 	private List<String> proxies = new Vector<String>();
 
-	/*
-	 * User locale 
+	/**
+	 * User's locale 
 	 */
 	private Locale locale = Locale.US;
 	
-	/*
-	 * contextDAO
+	/**
+	 * Cached Role given to all authenticated users
 	 */
-	private ContextDAO contextDAO;
-	
 	private Role authenticatedRole = null;
+	
+	/**
+	 * Cache Role given to all users
+	 */
 	private Role anonymousRole = null;
 	
 	
 	/**
 	 * Default public constructor
-	 * 
 	 */
 	public UserContext() { }
 
-	
 	/**
-	 * Get the context dao
-	 */
-	private ContextDAO getContextDAO() {
-		return this.contextDAO;
-	}
-	
-	/**
-	 * set the contextDAO 
-	 * @param dao
-	 */
-	public void setContextDAO(ContextDAO dao) {
-		this.contextDAO = dao;
-	}
-	
-	/**
-	 * Authenticate the user to the userContext().
-	 * See Context.authenticate(String,String)
+	 * Authenticate the user to this UserContext.
+	 * @see org.openmrs.api.context.Context#authenticate(String,String)
 	 * 
-	 * @param username
-	 * @param password
-	 * @return
+	 * @param username String login name
+	 * @param password String login password
+	 * @param ContextDAO contextDAO implementation to use for authentication
+	 * @return User that has been authenticated
 	 * @throws ContextAuthenticationException
 	 */
-	public User authenticate(String username, String password) throws ContextAuthenticationException {
-		this.user = getContextDAO().authenticate(username, password);
+	public User authenticate(String username, String password, ContextDAO contextDAO) throws ContextAuthenticationException {
+		if (log.isDebugEnabled())
+			log.debug("Authenticating with username: " + username);
+		
+		this.user = contextDAO.authenticate(username, password);
+		
+		if (log.isDebugEnabled())
+			log.debug("Authenticated as: " + this.user);
+		
 		return this.user;
 	}
 	
@@ -101,22 +111,29 @@ public class UserContext {
 	public User becomeUser(String systemId) throws ContextAuthenticationException {
 		if (!Context.getAuthenticatedUser().isSuperUser())
 			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
-		User u = Context.getUserService().getUserByUsername(systemId);
 		
-		// hydrate the user object
-		if (u.getAllRoles() != null)
-			u.getAllRoles().size();
-		if (u.getUserProperties() != null)
-			u.getUserProperties().size();
-		if (u.getPrivileges() != null)
-			u.getPrivileges().size();
+		if (log.isDebugEnabled())
+			log.debug("Turning the authenticated user into user with systemId: " + systemId);
 		
-		if (u == null)
-			throw new ContextAuthenticationException("SystemId not found: " + systemId);
+		User userToBecome = Context.getUserService().getUserByUsername(systemId);
+		
+		if (userToBecome == null)
+			throw new ContextAuthenticationException("User not found with systemId: " + systemId);
 
-		this.user = u;
+		// hydrate the user object
+		if (userToBecome.getAllRoles() != null)
+			userToBecome.getAllRoles().size();
+		if (userToBecome.getUserProperties() != null)
+			userToBecome.getUserProperties().size();
+		if (userToBecome.getPrivileges() != null)
+			userToBecome.getPrivileges().size();
 		
-		return u;
+		this.user = userToBecome;
+		
+		if (log.isDebugEnabled())
+			log.debug("Becoming user: " + user);
+		
+		return userToBecome;
 	}
 
 	/**
@@ -124,23 +141,23 @@ public class UserContext {
 	 *         <code>null</code>
 	 */
 	public User getAuthenticatedUser() {
-		return user != null ? user : null;
+		return user;
 	}
 
 	/**
-	 * @return true if user has been authenticated in this context
+	 * @return true if user has been authenticated in this UserContext
 	 */
 	public boolean isAuthenticated() {
 		return user != null;
 	}
 
 	/**
-	 * logs out the "active" (authenticated) user within context
+	 * logs out the "active" (authenticated) user within this UserContext
 	 * 
 	 * @see #authenticate
 	 */
 	public void logout() {
-		log.debug("setting user to null");
+		log.debug("setting user to null on logout");
 		user = null;
 	}
 
@@ -160,6 +177,9 @@ public class UserContext {
 	 *            to give to users
 	 */
 	public void addProxyPrivilege(String privilege) {
+		if (log.isDebugEnabled())
+			log.debug("Adding proxy privilege: " + privilege);
+		
 		proxies.add(privilege);
 	}
 
@@ -167,9 +187,12 @@ public class UserContext {
 	 * Will remove one instance of privilege from the privileges that are
 	 * currently proxied
 	 * 
-	 * @param privilege
+	 * @param String privilege
 	 */
 	public void removeProxyPrivilege(String privilege) {
+		if (log.isDebugEnabled())
+			log.debug("Removing proxy privilege: " + privilege);
+		
 		if (proxies.contains(privilege))
 			proxies.remove(privilege);
 	}
@@ -214,7 +237,7 @@ public class UserContext {
 		roles.add(getAnonymousRole());
 		
 		// add the Authenticated role
-		if (getAuthenticatedUser() != null && getAuthenticatedUser().equals(user)) {
+		if (user != null && getAuthenticatedUser() != null && getAuthenticatedUser().equals(user)) {
 			roles.addAll(user.getAllRoles());
 			roles.add(getAuthenticatedRole());
 		}
@@ -241,8 +264,10 @@ public class UserContext {
 			if (getAuthenticatedRole().hasPrivilege(privilege))
 				return true;
 		}
-
-		log.debug("Checking '" + privilege + "' against proxies: " + proxies);
+		
+		if (log.isDebugEnabled())
+			log.debug("Checking '" + privilege + "' against proxies: " + proxies);
+		
 		// check proxied privileges
 		for (String s : proxies)
 			if (s.equals(privilege))
@@ -256,6 +281,12 @@ public class UserContext {
 	}
 
 
+	/**
+	 * Convenience method to get the Role in the system designed to
+	 * be given to all users
+	 * 
+	 * @return Role
+	 */
 	private Role getAnonymousRole() {
 		if (anonymousRole != null)
 			return anonymousRole;
@@ -269,6 +300,12 @@ public class UserContext {
 		return anonymousRole;
 	}
 
+	/**
+	 * Convenience method to get the Role in the system designed to
+	 * be given to all users that have authenticated in some manner
+	 * 
+	 * @return Role
+	 */
 	private Role getAuthenticatedRole() {
 		if (authenticatedRole != null)
 			return authenticatedRole;

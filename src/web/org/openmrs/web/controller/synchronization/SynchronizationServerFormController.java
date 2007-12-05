@@ -263,12 +263,14 @@ public class SynchronizationServerFormController extends SimpleFormController {
                         Map<String,String> props = new HashMap<String,String>();
                         props.put(SyncConstants.SCHEDULED_TASK_PROPERTY_SERVER_ID, serverId.toString());
                         if ( serverSchedule != null ) {
-                            log.warn("Scheduled task exists, and started is " + started + " and interval is " + repeatInterval);
+                            if (log.isInfoEnabled())
+                                log.info("Sync scheduled task exists, and started is " + started + " and interval is " + repeatInterval);
                             try {
                                 Context.getSchedulerService().stopTask(serverSchedule);
                             } catch (Exception e) {
-                                log.warn("Task had run wild, couldn't stop it because it wasn't really running");
-                                // nothign to do - means something was wrong or not yet started
+                                log.warn("Sync task had run wild, couldn't stop it because it wasn't really running",e);
+                                // nothing to do - means something was wrong or not yet started
+                                //TODO: is this right? should we report error here on 'STRICT'?
                             }
                             serverSchedule.setStarted(started);
                             serverSchedule.setRepeatInterval((long)repeatInterval);
@@ -282,11 +284,12 @@ public class SynchronizationServerFormController extends SimpleFormController {
                                 Context.getSchedulerService().scheduleTask(serverSchedule);
                             }
                         } else {
-                            log.warn("Scheduled DOES NOT exists, and started is " + started + " and interval is " + repeatInterval);
+                            if (log.isInfoEnabled())
+                                log.info("Sync scheduled task does not exists, and started is " + started + " and interval is " + repeatInterval);
                             if ( started ) {
                                 serverSchedule = new TaskConfig();
-                                serverSchedule.setName(server.getNickname() + " " + msa.getMessage("SynchronizationConfig.server.export"));
-                                serverSchedule.setDescription(msa.getMessage("SynchronizationConfig.server.export.description"));
+                                serverSchedule.setName(server.getNickname() + " " + msa.getMessage("SynchronizationConfig.server.scheduler"));
+                                serverSchedule.setDescription(msa.getMessage("SynchronizationConfig.server.scheduler.description"));
                                 serverSchedule.setRepeatInterval((long)repeatInterval);
                                 serverSchedule.setStartTime(new Date());
                                 serverSchedule.setSchedulableClass(SyncConstants.SCHEDULED_TASK_CLASS);

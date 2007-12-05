@@ -5,13 +5,13 @@ package org.openmrs.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.BaseTest;
+import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.api.context.Context;
 
 /**
  *
  */
-public class SynchronizationCreateChildTest extends BaseTest {
+public class SynchronizationCreateChildTest extends BaseContextSensitiveTest {
 
     private Log log = LogFactory.getLog(this.getClass());
     

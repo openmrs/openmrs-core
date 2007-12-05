@@ -49,7 +49,6 @@ public final class OpenmrsConstants {
 	
 	public static final String REGEX_LARGE = "[!\"#\\$%&'\\(\\)\\*,+-\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	public static final String REGEX_SMALL = "[!\"#\\$%&'\\(\\)\\*,\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
-	
 	public static final Integer CIVIL_STATUS_CONCEPT_ID = 1054;
 	
 	public static final Collection<String> STOP_WORDS() {
@@ -319,7 +318,9 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX   = "patient.identifierRegex";
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX   = "patient.identifierPrefix";
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX   = "patient.identifierSuffix";
-
+	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS  = "patient.searchMaxResults";
+	public static final String GLOBAL_PROPERTY_GZIP_ENABLED                = "gzip.enabled";
+	
 	// These properties (and default values) are set if not found in the database on startup
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
 		List<GlobalProperty> props = new Vector<GlobalProperty>();
@@ -374,9 +375,13 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for users in _lists_"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for users when _viewing individually_"));
+		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "^0*@SEARCH@([A-Z]+-[0-9])?$", "A MySQL regular expression for the patient identifier search strings.  The @SEARCH@ string is replaced at runtime with the user's search string.  An empty regex will cause a simply 'like' sql search to be used"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "", "This property is only used if " + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "%", "This property is only used if " + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS, "1000", "The maximum number of results returned by patient searches"));
+		
+        props.add(new GlobalProperty(GLOBAL_PROPERTY_GZIP_ENABLED, "false", "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression."));
 
         props.add(new GlobalProperty(SyncConstants.LAST_SYNC_LOCAL, "", "Timestamp of the last sucessful sync push from child to parent."));
         props.add(new GlobalProperty(SyncConstants.LAST_SYNC_REMOTE, "", "Timestamp of the last sucessful sync pull from parent."));
@@ -410,13 +415,9 @@ public final class OpenmrsConstants {
 		return states;
 	}
 	
-	// This regex is used in identifier pattern searches.  
-	// @SEARCH@ is needs to be replaced with the searched string
-	public static final String PATIENT_IDENTIFIER_REGEX = "^0*@SEARCH@([A-Z]+-[0-9])?$";
-
 	public static Locale spanish_language = new Locale("es");
+	
 	public static Locale portuguese_language = new Locale("pt");
-
 	
 	/**
 	 * @return Collection of locales available to openmrs
@@ -448,11 +449,11 @@ public final class OpenmrsConstants {
 		
 		return languages;
 	}
-
+	
 	private static Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS = null;
 	
 	/**
-	 * This method is necessary until SimpleDateFormat(java.util.locale) returns a 
+	 * This method is necessary until SimpleDateFormat(SHORT, java.util.locale) returns a 
 	 *   pattern with a four digit year
 	 *   <locale.toString().toLowerCase(), pattern>
 	 *   

@@ -78,7 +78,7 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	
 	public String getShortestName() {
 		String ret = getShortName();
-		if (ret == null)
+		if (ret == null || ret.length() == 0)
 			ret = getName();
 		if (ret == null)
 			ret = getDescription();

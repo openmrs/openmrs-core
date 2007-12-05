@@ -230,7 +230,8 @@ public class Relationship implements java.io.Serializable, Synchronizable {
 	}
 
 	public String toString() {
-		return personA + " is the " + relationshipType.getaIsToB() + " of " + personB;  
+		String relType = getRelationshipType() == null ? "NULL" : getRelationshipType().getaIsToB();
+		return personA + " is the " + relType + " of " + personB;  
 	}
 
 }

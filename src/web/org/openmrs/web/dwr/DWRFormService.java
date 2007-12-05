@@ -250,6 +250,9 @@ public class DWRFormService {
 			isSet = concept.isSet();
 		}
 		
+		if (log.isDebugEnabled())
+			log.debug("ff.getFormFieldId: " + ff.getFormFieldId());
+		
     	return "addNode(tree, {formFieldId: " + ff.getFormFieldId() + ", " + 
     					"parent: " + parent + ", " + 
     					"fieldId: " + field.getFieldId() + ", " + 

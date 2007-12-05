@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.aop;
 
 import java.lang.reflect.Method;
@@ -94,13 +107,13 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	}
 
 	/**
-	 * Throws an APIAuthorization expection stating why the user failed
+	 * Throws an APIAuthorization exception stating why the user failed
 	 * 
 	 * @param user authenticated user
 	 * @param method acting method
-	 * @param attrs privilege names that the user must have
+	 * @param attrs Collection of String privilege names that the user must have
 	 */
-	private void throwUnauthorized(User user, Method method, Collection attrs) {
+	private void throwUnauthorized(User user, Method method, Collection<String> attrs) {
 		if (log.isDebugEnabled())
 			log.debug("User " + user + " is not authorized to access "
 			        + method.getName());
@@ -108,7 +121,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	}
 	
 	/**
-	 * Throws an APIAuthorization expection stating why the user failed
+	 * Throws an APIAuthorization exception stating why the user failed
 	 * 
 	 * @param user authenticated user
 	 * @param method acting method
@@ -122,7 +135,7 @@ public class AuthorizationAdvice implements MethodBeforeAdvice {
 	}
 	
 	/**
-	 * Throws an APIAuthorization expection stating why the user failed
+	 * Throws an APIAuthorization exception stating why the user failed
 	 * 
 	 * @param user authenticated user
 	 * @param method acting method

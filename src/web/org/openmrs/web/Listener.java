@@ -43,7 +43,6 @@ import org.xml.sax.SAXException;
  *  1) Do the web startup of the modules
  *  2) Copy the custom look/images/messages over into the web layer
  *  
- * @author bwolfe
  */
 public final class Listener extends ContextLoaderListener {
 
@@ -134,13 +133,18 @@ public final class Listener extends ContextLoaderListener {
 		/**
 		 * Copy the module messages over into the webapp and perform web portion of startup
 		 */
+		boolean someModuleNeedsARefresh = false;
 		for (Module mod : ModuleFactory.getStartedModules()) {
 			try {
-				WebModuleUtil.startModule(mod, servletContext);
+				boolean thisModuleCausesRefresh = WebModuleUtil.startModule(mod, servletContext, /* delayContextRefresh */ true); 
+				someModuleNeedsARefresh = someModuleNeedsARefresh || thisModuleCausesRefresh;
 			} catch (Throwable t) {
 				mod.setStartupErrorMessage(t.getMessage());
 			}
 		}
+		
+		if (someModuleNeedsARefresh)
+			WebModuleUtil.refreshWAC(servletContext);
 		
 		/** 
 		 * Copy the customization scripts over into the webapp
@@ -313,10 +317,15 @@ public final class Listener extends ContextLoaderListener {
 	 * the web layers of the modules
 	 */
 	public void contextDestroyed(ServletContextEvent event) {
-
-		Context.shutdown();
 		
-		WebModuleUtil.shutdownModules(event.getServletContext());
+		try {
+			Context.shutdown();
+			
+			WebModuleUtil.shutdownModules(event.getServletContext());
+		}
+		catch (Exception e) {
+			log.warn("Error while shutting down openmrs", e);
+		}
 		
 		super.contextDestroyed(event);
 		

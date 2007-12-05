@@ -167,7 +167,7 @@ public class OpenmrsUtil {
 		}
 		*/
 		
-		if ( id.indexOf("-") < 0 ) {
+		if ( id.indexOf("-") < 1 ) {
 			throw new PatientIdentifierException("Cannot find check-digit in identifier");
 		}
 
@@ -333,8 +333,13 @@ public class OpenmrsUtil {
 	 */
 	public static void copyFile(InputStream inputStream,
 			OutputStream outputStream) throws IOException {
-		if (inputStream == null || outputStream == null)
+		if (inputStream == null || outputStream == null) {
+			if (outputStream != null) {
+				try { outputStream.close(); } catch (Exception e) { /* pass */ }
+			}
+			
 			return;
+		}
 		
 		InputStream in = null;
 		OutputStream out = null; 
@@ -484,6 +489,8 @@ public class OpenmrsUtil {
 	 * Compares two Date/Timestamp objects, treating null as the earliest possible date.
 	 */
 	public static int compareWithNullAsEarliest(Date d1, Date d2) {
+		if (d1 == null && d2 == null)
+			return 0;
 		if (d1 == null)
 			return -1;
 		else if (d2 == null)
@@ -496,6 +503,8 @@ public class OpenmrsUtil {
 	 * Compares two Date/Timestamp objects, treating null as the earliest possible date.
 	 */
 	public static int compareWithNullAsLatest(Date d1, Date d2) {
+		if (d1 == null && d2 == null)
+			return 0;
 		if (d1 == null)
 			return 1;
 		else if (d2 == null)
@@ -505,6 +514,8 @@ public class OpenmrsUtil {
 	}
 	
 	public static <E extends Comparable<E>> int compareWithNullAsLowest(E c1, E c2) {
+		if (c1 == null && c2 == null)
+			return 0;
 		if (c1 == null)
 			return -1;
 		else if (c2 == null)
@@ -514,6 +525,8 @@ public class OpenmrsUtil {
 	}
 	
 	public static <E extends Comparable<E>> int compareWithNullAsGreatest(E c1, E c2) {
+		if (c1 == null && c2 == null)
+			return 0;
 		if (c1 == null)
 			return 1;
 		else if (c2 == null)
@@ -554,7 +567,7 @@ public class OpenmrsUtil {
 		if (c == null) return "";
 		
 		StringBuilder ret = new StringBuilder();
-		for (Iterator i = c.iterator(); i.hasNext(); ) {
+		for (Iterator<E> i = c.iterator(); i.hasNext(); ) {
 			ret.append(i.next());
 			if (i.hasNext())
 				ret.append(separator);
@@ -715,23 +728,44 @@ public class OpenmrsUtil {
 		return new Date(d1.getTime());
 	}
 
+	/**
+	 * Recursively deletes files in the given <code>dir</code> folder
+	 * 
+	 * @param dir File directory to delete
+	 * @return true/false whether the delete was completed successfully
+	 * @throws IOException if <code>dir</code> is not a directory
+	 */
 	public static boolean deleteDirectory(File dir) throws IOException {
 		if (!dir.exists() || !dir.isDirectory())
 			throw new IOException("Could not delete directory '" + dir.getAbsolutePath()
 				+ "' (not a directory)");
-		log.debug("Deleting directory " + dir.getAbsolutePath());
+		
+		if (log.isDebugEnabled())
+			log.debug("Deleting directory " + dir.getAbsolutePath());
+		
 		File[] fileList = dir.listFiles();
 		for (File f : fileList) {
 			if (f.isDirectory())
 				deleteDirectory(f);
 			boolean success = f.delete();
-			log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
+			
+			if (log.isDebugEnabled())
+				log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
+			
+			if (!success)
+				f.deleteOnExit();
 		}
+		
 		boolean success = dir.delete();
-		if (success)
-			log.debug("   ...and directory itself");
-		else
+		
+		if (!success) {
 			log.warn("   ...could not remove directory: " + dir.getAbsolutePath());
+			dir.deleteOnExit();
+		}
+		
+		if (success && log.isDebugEnabled())
+			log.debug("   ...and directory itself");
+		
 		return success;
 	}
 	
@@ -1029,6 +1063,7 @@ public class OpenmrsUtil {
     /**
      * Uses reflection to translate a PatientSearch into a PatientFilter  
      */
+    @SuppressWarnings("unchecked")
     public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history) {
     	if (search.isSavedSearchReference()) {
     		PatientSearch ps = ((PatientSearchReportObject) Context.getReportService().getReportObject(search.getSavedSearchId())).getPatientSearch();
@@ -1189,5 +1224,32 @@ public class OpenmrsUtil {
 	        log.debug("Returning " + pf);
 	    	return pf;
         }
+    }
+
+	/**
+     * Loops over the collection to check to see if the given object is in that
+     * collection.  
+     * 
+     * This method <i>only</i> uses the .equals() method for comparison.  This should
+     * be used in the patient/person objects on their collections.  Their collections
+     * are SortedSets which use the compareTo method for equality as well.  The compareTo
+     * method is currently optimized for sorting, not for equality
+     * 
+     * A null <code>obj</code> will return false
+     * 
+     * @param objects collection to loop over
+     * @param obj Object to look for in the <code>objects</code>
+     * @return true/false whether the given object is found
+     */
+    public static boolean collectionContains(Collection<?> objects, Object obj) {
+    	if (obj == null || objects == null)
+    		return false;
+    	
+    	for (Object o : objects) {
+    		if (o.equals(obj))
+    			return true;
+    	}
+    	
+    	return false;
     }    
 }

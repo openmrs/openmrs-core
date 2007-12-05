@@ -52,6 +52,7 @@ public interface UserService {
 	 * @return boolean
 	 * @throws APIException
 	 */
+	@Transactional(readOnly=true)
 	@Authorized({"View Users"})
 	public boolean hasDuplicateUsername(User user) throws APIException;
 

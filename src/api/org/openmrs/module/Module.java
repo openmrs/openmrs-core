@@ -107,7 +107,7 @@ public final class Module {
 			if (classLoader == null)
 				throw new ModuleException("The classloader is null", getModuleId());
 			
-			Class c = classLoader.loadClass(getActivatorName());
+			Class<?> c = classLoader.loadClass(getActivatorName());
 			setActivator((Activator)c.newInstance());
 		}
 		catch (ClassNotFoundException e) {
@@ -344,7 +344,7 @@ public final class Module {
 				String className = entry.getValue();
 				log.debug("expanding extension names: " + point + " : " + className);
 				try {
-					Class cls = ModuleFactory.getModuleClassLoader(this).loadClass(className);
+					Class<?> cls = ModuleFactory.getModuleClassLoader(this).loadClass(className);
 					Extension ext = (Extension)cls.newInstance();
 					ext.setPointId(point);
 					ext.setModuleId(this.getModuleId());

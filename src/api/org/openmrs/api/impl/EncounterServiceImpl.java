@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
@@ -389,6 +390,22 @@ public class EncounterServiceImpl implements EncounterService {
 		
 		return getEncounterDAO().getEncounters(loc, fromDate, toDate);
     }
+
+	/**
+     * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient, org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection, java.util.Collection, boolean)
+     */
+    public Collection<Encounter> getEncounters(Patient who,
+                                               Location loc,
+                                               Date fromDate,
+                                               Date toDate,
+                                               Collection<Form> enteredViaForms,
+                                               Collection<EncounterType> encounterTypes,
+                                               boolean includeVoided) {
+    	if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
+    	
+	    return getEncounterDAO().getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, includeVoided);
+    }    
 
 	/**
      * @see org.openmrs.api.EncounterService#getEncounterByGuid(java.lang.String)

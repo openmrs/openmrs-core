@@ -82,7 +82,13 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-		<description>if you set name to conceptSet, you must specify which set (by name or id)</description>
+		<description>if you set name to 'answer', you must specify which concept (by name or id)</description>
+		<name>concept</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<description>if you set name to 'conceptSet', you must specify which set (by name or id)</description>
 		<name>conceptSet</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
@@ -948,6 +954,54 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Displays extensions attached to a give extension point in a popup menu.
+		Extensions attached to that point that extend org.openmrs.module.web.extension.LinkProviderExtension will be displayed.
+	</description>
+	<name>extensionPopupMenu</name>
+	<tag-class>org.openmrs.module.web.taglib.ExtensionPopupMenuTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>pointId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>popupDivId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>label</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>showLabelIfNoExtensions</name>
+		<description>Whether to show the popup menu if no extensions attach to it. Defaults to true</description>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>position</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>parameters</name>
+		<description>
+			This should be of the format name1=value1|name2=value2|...
+			Names must be plain strings.
+			Values may either be plain strings or they may be the special form:
+				javascript:someFunctionCall()
+			someFunctionCall() will be called when the user chooses an item out of the menu. If it returns a string, that value will be substituted in as a form variable. If it returns null, then form submission will be cancelled.		
+		</description>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>
 

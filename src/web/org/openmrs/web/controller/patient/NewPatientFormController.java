@@ -154,9 +154,11 @@ public class NewPatientFormController extends SimpleFormController {
 							pi.setPreferred(pref.equals(identifiers[i]+types[i]));
 							newIdentifiers.add(pi);
 							
-							log.debug("Creating patient identifier with identifier: " + identifiers[i]);
-							log.debug("and type: " + types[i]);
-							log.debug("and location: " + locs[i]);
+							if (log.isDebugEnabled()) {
+								log.debug("Creating patient identifier with identifier: " + identifiers[i]);
+								log.debug("and type: " + types[i]);
+								log.debug("and location: " + locs[i]);
+							}
 						
 							try {
 								if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifiers[i])) {
@@ -252,7 +254,10 @@ public class NewPatientFormController extends SimpleFormController {
 				
 			boolean duplicate = false;
 			PersonName newName = shortPatient.getName();
-			log.error("newName: " + newName.toString());
+			
+			if (log.isDebugEnabled())
+				log.debug("Checking new name: " + newName.toString());
+			
 			for (PersonName pn : patient.getNames()) {
 				if (((pn.getGivenName() == null && newName.getGivenName() == null) || OpenmrsUtil.nullSafeEquals(pn.getGivenName(), newName.getGivenName())) &&
 					((pn.getMiddleName() == null && newName.getMiddleName() == null) || OpenmrsUtil.nullSafeEquals(pn.getMiddleName(), newName.getMiddleName())) &&
@@ -272,14 +277,19 @@ public class NewPatientFormController extends SimpleFormController {
 				patient.addName(newName);
 			}
 			
-			log.debug("address: " + shortPatient.getAddress());
+			if (log.isDebugEnabled())
+				log.debug("The address to add/check: " + shortPatient.getAddress());
+			
 			if (shortPatient.getAddress() != null && !shortPatient.getAddress().isBlank()) {
 				duplicate = false;
 				for (PersonAddress pa : patient.getAddresses()) {
 					if (pa.toString().equals(shortPatient.getAddress().toString()))
 						duplicate = true;
 				}
-				log.debug("duplicate:  " + duplicate);
+				
+				if (log.isDebugEnabled())
+					log.debug("The duplicate address:  " + duplicate);
+				
 				if (!duplicate) {
 					PersonAddress newAddress = shortPatient.getAddress();
 					newAddress.setPersonAddressId(null);
@@ -287,7 +297,8 @@ public class NewPatientFormController extends SimpleFormController {
 					patient.addAddress(newAddress);
 				}
 			}
-			log.debug("patient addresses: " + patient.getAddresses());
+			if (log.isDebugEnabled())
+				log.debug("patient addresses: " + patient.getAddresses());
 			
 			// set or unset the preferred bit for the old identifiers if needed
 			if (patient.getIdentifiers() == null)
@@ -512,15 +523,17 @@ public class NewPatientFormController extends SimpleFormController {
 			}
 			
 			if ( isError ) {
-				log.error("REDIRECTING TO " + this.getFormView());
+				log.error("Had an error during processing. Redirecting to " + this.getFormView());
 				
 				return this.showForm(request, response, errors);
 				//return new ModelAndView(new RedirectView(getFormView()));
-			} else {
+			}
+			else {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
 				return new ModelAndView(new RedirectView(view + "?patientId=" + newPatient.getPatientId()));
 			}
-		} else {
+		}
+		else {
 			return new ModelAndView(new RedirectView(getFormView()));
 		}
 	}

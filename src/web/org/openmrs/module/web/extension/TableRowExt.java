@@ -15,11 +15,7 @@ public abstract class TableRowExt extends Extension {
 	 * be attempted to be used as a Spring message.  The map value will be the 
 	 * html to insert into the table cell
 	 * 
-	 * In order to sort the links, you need to create a <code>TreeMap</code>.  A 
-	 * utility method has been added to OpenMRS to save the order of the members 
-	 * of the map: <code>org.openmrs.util.InsertedOrderComparator</code>
-	 * With this comparator, the order of the links will be the order they were 
-	 * inserted into the map.
+	 * In order to sort the links, you should use a <code>LinkedHashMap</code>. 
 	 * 
 	 * @return Map<String, String> of <label for cell, cell content>
 	 */

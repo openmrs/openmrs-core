@@ -2,6 +2,7 @@ package org.openmrs.reporting.export;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -935,6 +936,43 @@ public class DataExportFunctions {
 //		
 //		return returnList;
 //	}
+	
+	
+	/**
+	 * Calculate the years between two dates (age).
+	 * 
+	 * @param	fromDate
+	 * @param	toDate
+	 */
+	public int calculateYearsBetween(Date fromDate, Date toDate) { 
+		
+		if (fromDate == null || toDate == null ) { 
+			return 0;
+		}
+		
+		Calendar from = Calendar.getInstance();
+		from.setTime(fromDate);
+		
+		Calendar to = Calendar.getInstance();
+		to.setTime(toDate);
+		
+		int yearsBetween = to.get(Calendar.YEAR) - from.get(Calendar.YEAR);
+		if (from.get(Calendar.DAY_OF_YEAR) > to.get(Calendar.DAY_OF_YEAR)) { 
+			yearsBetween -= 1;
+		}
+		return yearsBetween;
+	}	
+
+	/**
+	 * 
+	 * 
+	 * @param birthdate
+	 * @return
+	 */
+	public int calculateAge(Date birthdate) { 
+		log.info("Calculating age " + birthdate);
+		return calculateYearsBetween(birthdate, new Date());
+	}
 	
 	/**
 	 * Format the given date according to the type ('short', 'long', 'ymd')

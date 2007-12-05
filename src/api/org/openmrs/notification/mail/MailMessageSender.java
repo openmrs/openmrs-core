@@ -56,6 +56,8 @@ public class MailMessageSender implements MessageSender {
 			Transport.send(mimeMessage);					
 		} 
 		catch (Exception e) {
+			log.error("failed to send message", e);
+
 			// catch mail-specific exception and re-throw it as app-specific exception
 			throw new MessageException(e);
 		}

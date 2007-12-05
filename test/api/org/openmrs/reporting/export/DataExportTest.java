@@ -1,73 +1,58 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.reporting.export;
 
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Locale;
+import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.openmrs.BaseTest;
-import org.openmrs.api.context.Context;
-import org.openmrs.reporting.PatientSet;
-import org.openmrs.reporting.ReportService;
-
-
-public class DataExportTest extends BaseTest {
+/**
+ * Tests the {@link DataExportReportObject} class
+ * 
+ * TODO clean up, finish, add methods to this test class
+ */
+public class DataExportTest extends TestCase {
 	
-	private Log log = LogFactory.getLog(this.getClass());
-	
-	@Override
-	protected void onSetUpBeforeTransaction() throws Exception {
-		super.onSetUpBeforeTransaction();
-		authenticate();
-	}
+	/**
+	 * TODO finish and comment method
+	 * 
+	 * @throws Exception
+	 */
+	public void testCalcuateAge() throws Exception { 
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("TEST_EXPORT");
 
-	public void testDataExport4() throws Exception {
+		SimpleColumn patientId = new SimpleColumn();
+		patientId.setColumnName("PATIENT_ID");
+		patientId.setReturnValue("$!{fn.patientId}");
+		export.getColumns().add(patientId);
 		
-		try {
-			Velocity.init();
-		} catch (Exception e) {
-			log.error("Error initializing Velocity engine", e);
-		}
+		SimpleColumn gender = new SimpleColumn();
+		gender.setColumnName("GENDER");
+		gender.setReturnValue("$!{fn.getPatientAttr('Person', 'gender')}");
+		export.getColumns().add(gender);		
 		
-		ReportService rs = Context.getReportService();
-		DataExportReportObject dataExport = (DataExportReportObject)rs.getReportObject(4);
-		
-		if (dataExport == null)
-			return;
-		
-		VelocityContext velocityContext = new VelocityContext();
-		Writer report = new StringWriter();
-		
-		// Set up velocity utils
-		Locale locale = Context.getLocale();
-		velocityContext.put("locale", locale);
-		
-		// Set up functions used in the report ( $!{fn:...} )
-		DataExportFunctions functions = new DataExportFunctions();
-		velocityContext.put("fn", functions);
-		
-		report.append("Report: " + dataExport.getName() + "\n\n");
-		
-		// Set up list of patients
-		PatientSet patientSet = dataExport.generatePatientSet();
-		velocityContext.put("patientSet", patientSet);
-		
-		String template = dataExport.generateTemplate();
-		
-		try {
-			Velocity.evaluate(velocityContext, report, this.getClass().getName(), template);
-		}
-		catch (Exception e) {
-			log.error("Error evaluating data export " + dataExport.getReportObjectId(), e);
-			report.append("\n\nError: \n" + e.toString());
-			throw e;
-		}
-		
-		report.append("\ntemplate: " + template);
-		log.error("report: " + report);
+		SimpleColumn birthdate = new SimpleColumn();
+		birthdate.setColumnName("BIRTHDATE");
+		birthdate.setReturnValue("$!{fn.formatDate('short', $fn.getPatientAttr('Person', 'birthdate'))}");
+		export.getColumns().add(birthdate);		
+
+		SimpleColumn age = new SimpleColumn();
+		age.setColumnName("AGE");
+		age.setReturnValue("$!{fn.calculateAge($fn.getPatientAttr('Person', 'birthdate'))}");
+		export.getColumns().add(age);		
+
+		// TODO how to test this properly without needing visual confirmation?
 		
 	}
 

@@ -32,7 +32,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		private String encUserColumn;
 		private String orderUserColumn;
 		private String groupBy;
-		private Boolean hideAverageObs;
+		private Boolean hideAverageObs = false;
 		
 		public StatisticsCommand() { }
 		public Date getFromDate() {

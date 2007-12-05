@@ -18,9 +18,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.openmrs.Drug;
-import org.openmrs.Patient;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.HSQLDialect;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -42,7 +41,7 @@ public class HibernateUserDAO implements
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
-	
+
 	public HibernateUserDAO() { }
 
 	/**
@@ -194,7 +193,7 @@ public class HibernateUserDAO implements
 	private void insertUserStub(User user) {
 		Connection connection = sessionFactory.getCurrentSession().connection();
 		try {
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO `users` (user_id, system_id, creator, date_created) VALUES (?, ?, ?, ?)");
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO users (user_id, system_id, creator, date_created) VALUES (?, ?, ?, ?)");
 			
 			ps.setInt(1, user.getUserId());
 			ps.setString(2, user.getSystemId());
@@ -299,7 +298,7 @@ public class HibernateUserDAO implements
 	}
 
 	/**
-	 * We have to change the password manually becuase we don't store the password and salt on
+	 * We have to change the password manually because we don't store the password and salt on
 	 * the user
 	 * 
 	 * @param newPassword
@@ -308,27 +307,59 @@ public class HibernateUserDAO implements
 	 * @param date
 	 * @param userId2
 	 */
-	private void updateUserPassword(String newPassword, String salt, Integer changedBy, Date dateChanged, Integer userIdToChange) {
-		Connection connection = sessionFactory.getCurrentSession().connection();
+    private void updateUserPassword(String newPassword, String salt, Integer changedBy, Date dateChanged, Integer userIdToChange) {
 		try {
-			// TODO can move this ps to a static variable and not calculate on every call
-			PreparedStatement ps = connection.prepareStatement("UPDATE `users` SET `password` = ?, `salt` = ?, `changed_by` = ?, `date_changed` = ? WHERE `user_id` = ?");
+			PreparedStatement ps = getUpdateUserPasswordStatement();
 			
-			ps.setString(1, newPassword);
-			ps.setString(2, salt);
-			ps.setInt(3, changedBy);
-			ps.setDate(4, new java.sql.Date(dateChanged.getTime()));
-			ps.setInt(5, userIdToChange);
-			
-			ps.executeUpdate();
+			if (ps != null) {
+				ps.setString(1, newPassword);
+				ps.setString(2, salt);
+				ps.setInt(3, changedBy);
+				ps.setDate(4, new java.sql.Date(dateChanged.getTime()));
+				ps.setInt(5, userIdToChange);
+				
+				ps.executeUpdate();
+			}
 		}
 		catch (SQLException e) {
-			log.warn("SQL Exception while trying to create a patient stub", e);
+			log.warn("SQL Exception while running user-password-update ", e);
 		}
 		
 		sessionFactory.getCurrentSession().flush();
+	}
+	
+	/**
+	 * Return or create the prepared statement for use when updating a user's password
+	 * 
+	 * Will return null on error
+	 * 
+	 * @return PreparedStatement that can be executed
+	 */
+	@SuppressWarnings("deprecation")
+    private PreparedStatement getUpdateUserPasswordStatement() {
+		// get the straight up jdbc database connection
+		// TODO address this depreciation warning
+		Connection connection = sessionFactory.getCurrentSession().connection();
 		
+		String sql = "UPDATE users SET `password` = ?, `salt` = ?, `changed_by` = ?, `date_changed` = ? WHERE `user_id` = ?";
 		
+		// if we're in a junit test, we're probably using hsql...and hsql
+		// does not like the backtick.  Replace the backtick with the hsql
+		// escape character -- the double quote (or nothing).
+		Dialect dialect = HibernateUtil.getDialect(sessionFactory);
+		if (HSQLDialect.class.getName().equals(dialect.getClass().getName()))
+			sql = sql.replace("`", "");
+		
+		PreparedStatement updateUserPreparedStatement = null;
+		try {
+			// create the prepared statement
+			updateUserPreparedStatement = connection.prepareStatement(sql);
+		}
+		catch (SQLException e) {
+			log.warn("SQL Exception while trying to create the user-password-update statement", e);
+		}
+		
+		return updateUserPreparedStatement;
 	}
 
 	/**
@@ -536,7 +567,17 @@ public class HibernateUserDAO implements
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		
-		Integer id = ((BigInteger)query.uniqueResult()).intValue() + 1;
+		Object object = query.uniqueResult();
+		
+		Integer id = null;
+		if (object instanceof BigInteger) 
+			id = ((BigInteger)query.uniqueResult()).intValue() + 1;
+		else if (object instanceof Integer)
+			id = ((Integer)query.uniqueResult()).intValue() + 1;
+		else {
+			log.warn("What is being returned here? Definitely nothing expected object value: '" + object + "' of class: " + object.getClass());
+			id = 1;
+		}
 		
 		return id;
 	}

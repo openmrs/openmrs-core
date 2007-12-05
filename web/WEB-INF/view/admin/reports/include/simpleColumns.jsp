@@ -47,6 +47,7 @@
 				<option value="$!{fn.getPatientAttr('PatientIdentifier', 'location').getName()}">&nbsp; <spring:message code="PatientIdentifier.location" /></option>
 				<option disabled> </option>
 				<option value="$!{fn.getPatientAttr('Person', 'gender')}">&nbsp; <spring:message code="Patient.gender" /></option>
+				<option value="$!{fn.calculateAge($fn.getPatientAttr('Person', 'birthdate'))}">&nbsp; <spring:message code="Person.age" /></option>
 				<option value="$!{fn.formatDate('short', $fn.getPatientAttr('Person', 'birthdate'))}">&nbsp; <spring:message code="Person.birthdate" /></option>
 				<option value="$!{fn.getPatientAttr('Person', 'birthdateEstimated')}">&nbsp; <spring:message code="Person.birthdateEstimated" /></option>
 				<c:if test="${showHealthCenter == 'true'}">
@@ -56,6 +57,7 @@
 					<option value="$!{fn.getPersonAttribute('Race')}">&nbsp; <spring:message code="PersonAttributeType.Race" /></option>
 					<option value="$!{fn.getPatientAttr('Patient', 'tribe').getName()}">&nbsp; <spring:message code="Tribe.name" /></option>
 				</c:if>
+                <option value="$!{fn.getPatientAttr('Person', 'dead')}">&nbsp; <spring:message code="Person.dead" /></option>
 				<option value="$!{fn.formatDate('short', $fn.getPatientAttr('Person', 'deathDate'))}">&nbsp; <spring:message code="Person.deathDate" /></option>
 				<option value="$!{fn.getPatientAttr('Person', 'causeOfDeath')}">&nbsp; <spring:message code="Person.causeOfDeath" /></option>
 				<option value=""> </option>
@@ -69,6 +71,9 @@
 				<option disabled><spring:message code="DataExport.simpleFirstEncounter"/></option>
 				<option value="$!{fn.getFirstEncounter('').getEncounterType().getName()}">&nbsp; <spring:message code="Encounter.type" /></option>
 				<option value="$!{fn.getFirstEncounter('').getProvider().getFirstName()} $!{fn.getFirstEncounter('').getProvider().getLastName()}">&nbsp; <spring:message code="Encounter.provider" /></option>
+				<option value="$!{fn.getFirstEncounterAttr([''], 'location').getName()}">&nbsp; <spring:message code="Encounter.location" /></option>
+				<option value="$!{fn.getFirstEncounterAttr([''], 'form').getName()}">&nbsp; <spring:message code="Encounter.form" /></option>
+				<option value="$!{fn.formatDate('short', $!{fn.getFirstEncounterAttr([''], 'encounterDatetime')})}">&nbsp; <spring:message code="Encounter.datetime" /></option>
 				<option value=""> </option>
 				<option value="$!{fn.getRelationshipNames('')}">&nbsp; <spring:message code="All Relationships" /></option>
 				<option value="$!{fn.getRelationshipNames('Accompagnateur')}">&nbsp; <spring:message code="provider.chw.names" /></option>
@@ -77,6 +82,8 @@
 				<option value=""> </option>
 				<option value="$!{fn.formatDate('ymd', $fn.getProgram('HIV PROGRAM').getDateEnrolled())}">&nbsp; <spring:message code="HIV Program enrollment date" /></option>
 				<option value="$!{fn.formatDate('ymd', $fn.getProgram('TUBERCULOSIS PROGRAM').getDateEnrolled())}">&nbsp; <spring:message code="TB Program enrollment date" /></option>
+				<option value="$!{fn.getProgram('HIV PROGRAM').getCurrentState($fn.getProgram('HIV PROGRAM').getProgram().getWorkflowByName('ANTIRETROVIRAL TREATMENT GROUP')).getState().getConcept().getName()}">&nbsp; <spring:message code="ARV Treatment Group" /></option>
+				<option value="$!{fn.getProgram('HIV PROGRAM').getCurrentState($fn.getProgram('TB PROGRAM').getProgram().getWorkflowByName('TUBERCULOSIS TREATMENT GROUP')).getState().getConcept().getName()}">&nbsp; <spring:message code="TB Treatment Group" /></option>
 				<option value=""> </option>
 				<option value="$!{fn.getCurrentDrugNames('ANTIRETROVIRAL DRUGS')}">&nbsp; <spring:message code="Current ARVs" /></option>
 				<option value="$!{fn.getCurrentDrugNames('TUBERCULOSIS TREATMENT DRUGS')}">&nbsp; <spring:message code="Current TB meds" /></option>

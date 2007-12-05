@@ -32,11 +32,11 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
+import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
-
-public class HibernateSessionFactoryBean extends LocalSessionFactoryBean 
-{	
+public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
+	
 	private static Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
 	
 	protected Set<String> tmpMappingResources = new HashSet<String>(); 
@@ -48,8 +48,11 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean
 	    this.globalSessionInterceptor = globalSessionInterceptor;
 	}
 	
+	//public SessionFactory newSessionFactory(Configuration config) throws HibernateException {
 	@Override
-	public SessionFactory newSessionFactory(Configuration config) throws HibernateException {
+	public Configuration newConfiguration() throws HibernateException {
+		Configuration config = super.newConfiguration();
+		
 		log.debug("Configuring hibernate sessionFactory properties");
 		
 		Properties properties = Context.getRuntimeProperties();
@@ -66,8 +69,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean
 		
 		// load in the default hibernate properties
 		try {
-			InputStream propertyStream = 
-                ConfigHelper.getResourceAsStream("/hibernate.default.properties");
+			InputStream propertyStream = ConfigHelper.getResourceAsStream("/hibernate.default.properties");
 			Properties props = new Properties();
 			props.load(propertyStream);
 			propertyStream.close();
@@ -80,7 +82,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean
 		}
 		
 		// check database connection before configuring session factory
-		// If not done, Hibernate blocks until a sucessful connection is made
+		// If not done, Hibernate blocks until a successful connection is made
 		String driver = config.getProperty("hibernate.connection.driver_class");
 		String username = config.getProperty("hibernate.connection.username");
 		String password = config.getProperty("hibernate.connection.password");
@@ -98,9 +100,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean
 		}
 		
 		if (check == 0)
-        {
-			return config.buildSessionFactory();
-        }
+			return config;
 		else
 			throw new APIException("Error connecting to database. See error log for details.");
 		
@@ -177,6 +177,8 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean
 		// adding each module's mapping file to the list of mapping resources
 		super.setMappingResources(getModuleMappingResources().toArray(new String[] {}));
 		
+		// just check for testing module's hbm files here?
+		
 		super.afterPropertiesSet();
 			
 	}
@@ -194,4 +196,17 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean
 			// see net.sf.ehcache.CacheManager#removeShutdownHook()
 		}
 	}
+
+	/**
+	 * Used by the module testing framework to set the dependent modules in the 
+	 * hibernate session factory
+	 * 
+     * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#setMappingJarLocations(org.springframework.core.io.Resource[])
+     */
+    @Override
+    public void setMappingJarLocations(Resource[] mappingJarLocations) {
+	    super.setMappingJarLocations(mappingJarLocations);
+    }
+	
+	
 }

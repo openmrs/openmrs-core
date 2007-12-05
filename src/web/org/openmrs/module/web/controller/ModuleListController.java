@@ -114,7 +114,7 @@ public class ModuleListController extends SimpleFormController {
 					// if we didn't have trouble loading the module, start it
 					if (module != null) {
 						ModuleFactory.startModule(module);
-						WebModuleUtil.startModule(module, getServletContext());
+						WebModuleUtil.startModule(module, getServletContext(), false);
 						if (module.isStarted())
 							success = msa.getMessage("Module.loadedAndStarted", new String[] {module.getName()});
 						else
@@ -137,7 +137,7 @@ public class ModuleListController extends SimpleFormController {
 				ModuleFactory.stopModule(mod);
 				WebModuleUtil.stopModule(mod, getServletContext());
 				Module newModule = ModuleFactory.updateModule(mod);
-				WebModuleUtil.startModule(newModule, getServletContext());
+				WebModuleUtil.startModule(newModule, getServletContext(), false);
 			}
 		}
 		else { // moduleId is not empty
@@ -162,7 +162,7 @@ public class ModuleListController extends SimpleFormController {
 					}
 					else if ("start".equals(action)) {
 						ModuleFactory.startModule(mod);
-						WebModuleUtil.startModule(mod, getServletContext());
+						WebModuleUtil.startModule(mod, getServletContext(), false);
 						if (mod.isStarted())
 							success = msa.getMessage("Module.started", args);
 						else

@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
@@ -20,7 +22,6 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.openmrs.Drug;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -33,6 +34,9 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.util.OpenmrsConstants;
 
+/**
+ * Patient related database hibernate specific methods
+ */
 public class HibernatePatientDAO implements PatientDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
@@ -57,10 +61,17 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientService#getPatient(java.lang.Long)
 	 */
 	public Patient getPatient(Integer patientId) {
-		return (Patient) sessionFactory.getCurrentSession().get(Patient.class, patientId);
+		try {
+			return (Patient) sessionFactory.getCurrentSession().get(Patient.class, patientId);
+		} catch (ObjectNotFoundException ex) {
+			return null;
+		}
 	}
 	
 
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#createPatient(org.openmrs.Patient)
+	 */
 	public Patient createPatient(Patient patient) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(patient);
 		//sessionFactory.getCurrentSession().refresh(patient);
@@ -80,6 +91,9 @@ public class HibernatePatientDAO implements PatientDAO {
 		return patientIdentifier;
 	}
 
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#updatePatient(org.openmrs.Patient)
+	 */
 	public Patient updatePatient(Patient patient) throws DAOException {
 		if (patient.getPatientId() == null)
 			// TODO this check/call should be moved up from the DB layer to the API layer
@@ -87,7 +101,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		else {
 			
 			// Check to make sure we have a row in the patient table already.
-			// If we don't have a row, create it so Hibernate doesn't bung things us
+			// If we don't have a row, create it so Hibernate doesn't bung things up
 			Object obj = sessionFactory.getCurrentSession().get(Patient.class, patient.getPatientId());
 			if (!(obj instanceof Patient)) {
 				insertPatientStub(patient);
@@ -109,7 +123,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	private void insertPatientStub(Patient patient) {
 		Connection connection = sessionFactory.getCurrentSession().connection();
 		try {
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO `patient` (patient_id, creator, date_created) VALUES (?, ?, ?)");
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO patient (patient_id, creator, date_created) VALUES (?, ?, ?)");
 			
 			ps.setInt(1, patient.getPatientId());
 			ps.setInt(2, patient.getCreator().getUserId());
@@ -153,7 +167,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see org.openmrs.api.db.PatientDAO#getPatientsByIdentifierPattern(java.lang.String, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException {
+	public Collection<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifier.class);
 		criteria.setProjection(Projections.property("patient"));
@@ -179,26 +193,25 @@ public class HibernatePatientDAO implements PatientDAO {
 			criteria.add(Restrictions.eq("pat.voided", false));
 		}
 		
-		Set<Patient> returnSet = new LinkedHashSet<Patient>();
-		returnSet.addAll(criteria.list());
+		criteria.setFirstResult(0);
+		criteria.setMaxResults(getMaximumSearchResults());
 		
-		return returnSet;
+		return criteria.list();
 	}
 
 	@SuppressWarnings("unchecked")
-	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException {
+	public Collection<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException {
 		//TODO simple name search to start testing, will need to make "real" name search
 		//		i.e. split on whitespace, guess at first/last name, etc
 		// TODO return the matched name instead of the primary name
 		//   possible solution: "select new" org.openmrs.PatientListItem and return a list of those
 		
-		Set<Patient> patients = new LinkedHashSet<Patient>();
-		
 		name = name.replaceAll("  ", " ");
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
-		log.debug("name: " + name);
+		if (log.isDebugEnabled())
+			log.debug("name: " + name);
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class).createAlias("names", "name");
 		for (String n : names) {
@@ -214,16 +227,17 @@ public class HibernatePatientDAO implements PatientDAO {
 			}
 		}
 		
-		if (includeVoided == false) {
+		if (includeVoided == false)
 			criteria.add(Expression.eq("voided", new Boolean(false)));
-		}
 
 		criteria.addOrder(Order.asc("name.givenName"));
 		criteria.addOrder(Order.asc("name.middleName"));
 		criteria.addOrder(Order.asc("name.familyName"));
-		patients.addAll(criteria.list());
 		
-		return patients;
+		criteria.setFirstResult(0);
+		criteria.setMaxResults(getMaximumSearchResults());
+		
+		return criteria.list();
 	}
 
 	/**
@@ -519,4 +533,24 @@ public class HibernatePatientDAO implements PatientDAO {
 		return (Tribe) sessionFactory.getCurrentSession().createQuery("from Tribe t where t.guid = :guid").setString("guid", guid).uniqueResult();
     }
 	
+	/**
+	 * Fetch the max results value from the global properties table
+	 * 
+	 * @return Integer value for the patient search max results global property
+	 */
+	private Integer getMaximumSearchResults() {
+		try {
+			return Integer.valueOf(
+			        Context.getAdministrationService().getGlobalProperty(
+						OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS,
+						"1000")
+					);
+		}
+		catch (Exception e) {
+			log.warn("Unable to convert the global property " + OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS +
+			         "to a valid integer. Returning the default 1000");
+		}
+		
+		return 1000;
+	}
 }

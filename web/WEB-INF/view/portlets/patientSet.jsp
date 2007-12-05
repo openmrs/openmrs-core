@@ -264,14 +264,15 @@
 	function patientSetInit() {
 		refreshList();
 	}
-
-	var oldonload = window.onload;
-	if (typeof window.onload != 'function') {
-		window.onload = patientSetInit;
-	} else {
-		window.onload = function() {
-			oldonload();
-			patientSetInit();
+	<c:if test="${model.myPatientSet.size > 0}">
+		var oldonload = window.onload;
+		if (typeof window.onload != 'function') {
+			window.onload = patientSetInit;
+		} else {
+			window.onload = function() {
+				oldonload();
+				patientSetInit();
+			}
 		}
-	}
+	</c:if>
 </script>

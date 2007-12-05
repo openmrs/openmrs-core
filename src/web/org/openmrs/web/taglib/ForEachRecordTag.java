@@ -1,5 +1,6 @@
 package org.openmrs.web.taglib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.Form;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Role;
 import org.openmrs.api.ConceptService;
@@ -35,6 +37,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 	private String name;
 	private Object select;
 	private String reportObjectType;
+	private String concept;
 	private String conceptSet;
 	private Iterator records;
 
@@ -67,6 +70,10 @@ public class ForEachRecordTag extends BodyTagSupport {
 		else if (name.equals("cohort")) {
 			List<Cohort> cohorts = Context.getCohortService().getCohorts();
 			records = cohorts.iterator();
+		}
+		else if (name.equals("form")) {
+			List<Form> forms = Context.getFormService().getForms();
+			records = forms.iterator();
 		}
 		else if (name.equals("reportObject")) {
 			List ret = null;
@@ -118,6 +125,17 @@ public class ForEachRecordTag extends BodyTagSupport {
 				throw new IllegalArgumentException("Can't find conceptSet " + conceptSet);
 			List<Concept> list = Context.getConceptService().getConceptsInSet(c);
 			records = list.iterator();
+		}
+		else if (name.equals("answer")) {
+			if (concept == null)
+				throw new IllegalArgumentException("Must specify concept");
+			Concept c = OpenmrsUtil.getConceptByIdOrName(concept);
+			if (c == null)
+				throw new IllegalArgumentException("Can't find concept " + concept);
+			if (c.getAnswers() != null)
+				records = c.getAnswers().iterator();
+			else
+				records = new ArrayList<Concept>().iterator();
 		}
 		else {
 			log.error(name + " not found in ForEachRecord list");
@@ -221,6 +239,14 @@ public class ForEachRecordTag extends BodyTagSupport {
 	public void setReportObjectType(String reportObjectType) {
 		this.reportObjectType = reportObjectType;
 	}
+
+	public String getConcept() {
+    	return concept;
+    }
+
+	public void setConcept(String concept) {
+    	this.concept = concept;
+    }
 
 	public String getConceptSet() {
     	return conceptSet;

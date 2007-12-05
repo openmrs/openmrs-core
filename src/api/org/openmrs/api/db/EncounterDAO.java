@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
@@ -165,6 +166,26 @@ public interface EncounterDAO {
      */
     public Collection<Encounter> getEncounters(Location loc, Date fromDate, Date toDate);
 
+    /**
+     * Get all encounters that match a variety of (nullable) criteria
+     * 
+     * @param who
+     * @param loc
+     * @param fromDate
+     * @param toDate
+     * @param enteredViaForms
+     * @param encounterTypes
+     * @param includeVoided
+     * @return
+     */
+    public Collection<Encounter> getEncounters(Patient who,
+                                               Location loc,
+                                               Date fromDate,
+                                               Date toDate,
+                                               Collection<Form> enteredViaForms,
+                                               Collection<EncounterType> encounterTypes,
+                                               boolean includeVoided);
+                                               
 	/**
      * Auto generated method comment
      * 

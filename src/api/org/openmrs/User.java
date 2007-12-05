@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs;
 
 import java.util.Collection;
@@ -15,12 +28,14 @@ import org.openmrs.util.OpenmrsConstants;
 /**
  * Defines a User in the system.  A user is simply an extension
  * of a person and all that that implies.  A user is defined as someone who
- * will be manipulating the system and must log in or is being referred to as
- * a provider, etc 
+ * will be manipulating the system and must log in or is being referred to in
+ * another part of the system (as a provider, creator, etc)
  * 
- * @author Burke Mamlin
- * @author Ben Wolfe
- * @version 2.0
+ * Users are special <code>Person</code>s in that they have login credentials 
+ * (login/password) and can have special user properties.  User properties are
+ * just simple key-value pairs for either quick info or display specific info
+ * that needs to be persisted (like locale preferences, search options, etc)
+ * 
  */
 public class User extends Person implements java.io.Serializable, Synchronizable {
 
@@ -30,7 +45,6 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	// Fields
 	
 	private Integer userId;
-    //private String guid;
 	
 	private String systemId;
 	private String username;
@@ -68,7 +82,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	
 	/**
 	 * Return true if this user has all privileges
-	 * @return
+	 * @return true/false if this user is defined as a super user
 	 */
 	public boolean isSuperUser() {
 		Set<Role> tmproles = getAllRoles();
@@ -82,7 +96,11 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	}
 
 	/**
-	 * return true if this user has the specified privilege
+	 * This method shouldn't be used directly.  Use org.openmrs.api.context.Context#hasPrivilege
+	 * so that anonymous/authenticated/proxy privileges are all included
+	 * 
+	 * Return true if this user has the specified privilege
+	 * 
 	 * @param privilege
 	 * @return true/false
 	 */
@@ -97,15 +115,11 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 		
 		Set<Role> tmproles = getAllRoles();
 		
-		Role role;
-		
+		// loop over the roles and check each for the privilege
 		for (Iterator<Role> i = tmproles.iterator(); i.hasNext();) {
-			role = i.next();
-		
-			if (role.hasPrivilege(privilege))
+			if (i.next().hasPrivilege(privilege))
 				return true;
 		}
-
 		return false;
 	}
 	

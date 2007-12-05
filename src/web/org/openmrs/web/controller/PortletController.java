@@ -44,10 +44,11 @@ public class PortletController implements Controller {
 	 * 	   (always)
 	 * 			(java.util.Date) now
 	 *     		(String) size
+	 *         	(Locale) locale
 	 *     		(other parameters)
 	 *     (if there's currently an authenticated user)
 	 *         	(User) authenticatedUser
-	 *         	(Locale) locale
+	 *          (PatientSet) myPatientSet (the user's selected patient set, PatientSetService.getMyPatientSet())
 	 *     (if the request has a patientId attribute)
 	 *     		(Integer) patientId
 	 *        	(Patient) patient
@@ -118,13 +119,17 @@ public class PortletController implements Controller {
 			model.put("now", new Date());
 			model.put("id", id);
 			model.put("size", size);
+			model.put("locale", Context.getLocale());
 			model.putAll(params);
 			if (moreParams != null) {
 				model.putAll(moreParams);
 			}
-				
-			model.put("authenticatedUser", Context.getAuthenticatedUser());
-			model.put("locale", Context.getLocale());
+
+			// if there's an authenticated user, put them, and their patient set, in the model
+			if (Context.getAuthenticatedUser() != null) {
+				model.put("authenticatedUser", Context.getAuthenticatedUser());
+				model.put("myPatientSet", Context.getPatientSetService().getMyPatientSet());
+			}
 			
 			// if a patient id is available, put "patient" and "patientObs" in the request
 			Object o = request.getAttribute("org.openmrs.portlet.patientId");
