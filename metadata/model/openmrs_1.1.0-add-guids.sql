@@ -4,12 +4,6 @@
 # in the *current* schema
 #--------------------------------------
 
-#--------------------------------------
-# Maros Cunderlik 30 Jul 2007 10:00AM
-# script does the following changes to the DB:
-# TODO: merge into xxxx-latest-mysqldiff.sql.
-#--------------------------------------
-
 DROP PROCEDURE IF EXISTS add_guids;
 
 delimiter //
@@ -17,23 +11,35 @@ delimiter //
 
 CREATE PROCEDURE add_guids ()
  BEGIN
+
   DECLARE table_name varchar(64) default null;
-	
-	DECLARE done INT DEFAULT 0;									
+  DECLARE done INT DEFAULT 0;									
 	
 	#get all the tables in the current schema that do not have a guid column
+	#exceptions:
+	# tables supporting derived classes where parent already has guid: 
+	#  patient, drug_order, concept_derived, concept_numeric, complex_obs, users
   DECLARE cur_tabs CURSOR FOR 
 		SELECT tabs.table_name
 		FROM INFORMATION_SCHEMA.TABLES tabs
 		WHERE tabs.table_schema = schema()
+		 AND tabs.table_name NOT IN ('patient','users','drug_order','concept_numeric','concept_derived','complex_obs')
+		 AND tabs.table_name NOT Like '%synchronization_%'
 		 AND NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS cols
 									WHERE cols.table_schema = schema() 
-										and cols.COLUMN_NAME = 'guid' 
-										and tabs.table_name = cols.table_name);								
+										AND cols.COLUMN_NAME = 'guid' 
+										AND tabs.table_name = cols.table_name);								
+	
+  DECLARE cur_tabs_populate CURSOR FOR 
+		SELECT distinct cols.table_name
+		FROM INFORMATION_SCHEMA.COLUMNS cols
+		WHERE cols.table_schema = schema() AND cols.COLUMN_NAME = 'guid';
 	
 	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
 	
-	
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION BEGIN select 'Error occured in this script, contact an administrator. Exiting.' as 'WARNING' from dual; END;
+  
+  select 'Detecting tables without GUID columns.' as 'Action:' from dual;	
   OPEN cur_tabs;
 
   REPEAT
@@ -62,18 +68,37 @@ CREATE PROCEDURE add_guids ()
 								
     END IF;
   UNTIL done END REPEAT;
-
   CLOSE cur_tabs;
-		
-  ALTER TABLE `patient` DROP COLUMN `guid`;
-  ALTER TABLE `users` DROP COLUMN `guid`;
-  ALTER TABLE `drug_order` DROP COLUMN `guid`;
-  ALTER TABLE `concept_numeric` DROP COLUMN `guid`;
-  ALTER TABLE `concept_derived` DROP COLUMN `guid`;
-  ALTER TABLE `complex_obs` DROP COLUMN `guid`;
+  select 'Schema update for GUIDs complete.' as 'Action:' from dual;
+  		  
+  ###
+  #Now scan tables for empty GUIDs
+  #populate all tables that have GUID columns with null (or empty) values
+  SET done = 0;
+  select 'Detecting tables with empty GUIDs.' as 'Action:' from dual;	
+  OPEN cur_tabs_populate;
+  REPEAT
+    FETCH cur_tabs_populate INTO table_name;
+    IF NOT done THEN
+				#prepare update stmt
+				SET @sql_text := concat('Select count(*) as ''Rows with empty values in ',table_name,':'' FROM `',table_name,'` WHERE guid is null or guid = '''';');
+				PREPARE stmt from @sql_text;
+				EXECUTE stmt;
+				SET @sql_text := concat('UPDATE `',table_name,'` SET guid = UUID() WHERE guid is null or guid = '''';');
+				PREPARE stmt from @sql_text;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;				
+    END IF;
+  UNTIL done END REPEAT;
+  CLOSE cur_tabs_populate;
+  select 'GUID population complete.' as 'Action:' from dual;
   
+  ###
+  #set server guid if not already set
+  select 'Verifying synchronization.server_guid value.' as 'Action:' from dual;		  
   update global_property set property_value=UUID() where property = 'synchronization.server_guid';
-		
+
+  select 'Script complete.' as 'Action:' from dual;		  		
  END;
 //
 
