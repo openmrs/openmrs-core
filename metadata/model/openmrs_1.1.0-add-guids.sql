@@ -35,19 +35,9 @@ CREATE PROCEDURE add_guids ()
 		SELECT distinct cols.table_name
 		FROM INFORMATION_SCHEMA.COLUMNS cols
 		WHERE cols.table_schema = schema() AND cols.COLUMN_NAME = 'guid';
-
-  #Get all tables with column named guid that do not have index on it
-  DECLARE cur_tabs_indx CURSOR FOR 
-		SELECT distinct cols.table_name
-		FROM INFORMATION_SCHEMA.COLUMNS cols
-		WHERE cols.table_schema = schema() AND cols.COLUMN_NAME = 'guid'
-		 AND (cols.table_name) NOT IN (SELECT distinct table_name FROM INFORMATION_SCHEMA.STATISTICS stats
-										WHERE stats.table_schema = schema() 
-										AND stats.COLUMN_NAME = 'guid');		
 	
   DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
-  #DECLARE EXIT HANDLER FOR SQLEXCEPTION BEGIN select 'Error occured in this script, contact an administrator. Exiting.' as 'WARNING' from dual; END;
-  
+    
   select 'Detecting tables without GUID columns.' as 'Action:' from dual;	
   OPEN cur_tabs;
 
@@ -97,12 +87,41 @@ CREATE PROCEDURE add_guids ()
 				SET @sql_text := concat('UPDATE `',table_name,'` SET guid = UUID() WHERE guid is null or guid = '''';');
 				PREPARE stmt from @sql_text;
 				EXECUTE stmt;
-				DEALLOCATE PREPARE stmt;				
+				DEALLOCATE PREPARE stmt;
     END IF;
   UNTIL done END REPEAT;
   CLOSE cur_tabs_populate;
   select 'GUID population complete.' as 'Action:' from dual;
+  
+  ###
+  #set server guid if not already set
+  select 'Verifying synchronization.server_guid value.' as 'Action:' from dual;		  
+  update global_property set property_value=UUID() where property = 'synchronization.server_guid';
 
+  select 'Script complete.' as 'Action:' from dual;		  		
+ END;
+
+//
+
+CREATE PROCEDURE add_guid_indecies ()
+ BEGIN
+
+  DECLARE table_name varchar(64) default null;
+  DECLARE done INT DEFAULT 0;									
+	
+  #Get all tables with column named guid that do not have index on it
+  DECLARE cur_tabs_indx CURSOR FOR 
+	SELECT distinct cols.table_name
+	FROM INFORMATION_SCHEMA.COLUMNS cols left join INFORMATION_SCHEMA.Statistics stats
+		ON (cols.table_schema = stats.table_schema
+		and cols.table_name = stats.table_name
+		and cols.column_name = stats.column_name)
+	WHERE cols.table_schema = schema()
+		AND cols.COLUMN_NAME = 'guid'
+		AND stats.index_name is null;
+	
+  DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+    
   ###
   #Check for missing indecies
   #Create index on every GUID column
@@ -130,12 +149,15 @@ CREATE PROCEDURE add_guids ()
 
   select 'Script complete.' as 'Action:' from dual;		  		
  END;
+
 //
 
 delimiter ;
 call add_guids();
+call add_guid_indecies();
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------
 DROP PROCEDURE IF EXISTS add_guids;
+DROP PROCEDURE IF EXISTS add_guid_indecies;
