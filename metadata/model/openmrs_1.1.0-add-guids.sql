@@ -25,10 +25,11 @@ CREATE PROCEDURE add_guids ()
 		WHERE tabs.table_schema = schema()
 		 AND tabs.table_name NOT IN ('patient','users','drug_order','concept_numeric','concept_derived','complex_obs')
 		 AND tabs.table_name NOT Like '%synchronization_%'
-		 AND (tabs.table_name) NOT IN (SELECT distinct tabs.table_name FROM INFORMATION_SCHEMA.COLUMNS cols
+		 AND NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS cols
 									WHERE cols.table_schema = schema() 
-										AND cols.COLUMN_NAME = 'guid');								
-										
+										AND cols.COLUMN_NAME = 'guid' 
+										AND tabs.table_name = cols.table_name);
+																				
   #Get all tables that have column named guid
   DECLARE cur_tabs_populate CURSOR FOR 
 		SELECT distinct cols.table_name
