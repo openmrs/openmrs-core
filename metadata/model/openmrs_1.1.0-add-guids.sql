@@ -34,10 +34,14 @@ CREATE PROCEDURE add_guids ()
 		SELECT distinct cols.table_name
 		FROM INFORMATION_SCHEMA.COLUMNS cols
 		WHERE cols.table_schema = schema() AND cols.COLUMN_NAME = 'guid';
+
+  DECLARE cur_tabs_indx CURSOR FOR 
+		SELECT distinct cols.table_name
+		FROM INFORMATION_SCHEMA.COLUMNS cols
+		WHERE cols.table_schema = schema() AND cols.COLUMN_NAME = 'guid';
 	
-	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
-	
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION BEGIN select 'Error occured in this script, contact an administrator. Exiting.' as 'WARNING' from dual; END;
+  DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+  #DECLARE EXIT HANDLER FOR SQLEXCEPTION BEGIN select 'Error occured in this script, contact an administrator. Exiting.' as 'WARNING' from dual; END;
   
   select 'Detecting tables without GUID columns.' as 'Action:' from dual;	
   OPEN cur_tabs;
@@ -70,7 +74,8 @@ CREATE PROCEDURE add_guids ()
   UNTIL done END REPEAT;
   CLOSE cur_tabs;
   select 'Schema update for GUIDs complete.' as 'Action:' from dual;
-  		  
+
+ 		  
   ###
   #Now scan tables for empty GUIDs
   #populate all tables that have GUID columns with null (or empty) values
@@ -92,6 +97,26 @@ CREATE PROCEDURE add_guids ()
   UNTIL done END REPEAT;
   CLOSE cur_tabs_populate;
   select 'GUID population complete.' as 'Action:' from dual;
+
+  ###
+  #Check for missing indecies
+  #Create index on every GUID column
+  SET done = 0;
+  select 'Check for missing indecies on GUID columns.' as 'Action:' from dual;	
+  OPEN cur_tabs_indx;
+  REPEAT
+    FETCH cur_tabs_indx INTO table_name;
+    IF NOT done THEN
+				#prepare stmt
+				select concat('Adding index to ',table_name) as 'Action' from dual;
+				SET @sql_text := concat('CREATE INDEX `',table_name,'_guid` USING BTREE ON `',table_name,'` (guid);');
+				PREPARE stmt from @sql_text;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;				
+    END IF;
+  UNTIL done END REPEAT;
+  CLOSE cur_tabs_indx;
+  select 'GUID index update complete.' as 'Action:' from dual;
   
   ###
   #set server guid if not already set
