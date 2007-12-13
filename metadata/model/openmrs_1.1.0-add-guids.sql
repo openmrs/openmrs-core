@@ -15,30 +15,34 @@ CREATE PROCEDURE add_guids ()
   DECLARE table_name varchar(64) default null;
   DECLARE done INT DEFAULT 0;									
 	
-	#get all the tables in the current schema that do not have a guid column
-	#exceptions:
-	# tables supporting derived classes where parent already has guid: 
-	#  patient, drug_order, concept_derived, concept_numeric, complex_obs, users
+  #get all the tables in the current schema that do not have a guid column
+  #exceptions:
+  # tables supporting derived classes where parent already has guid: 
+  #  patient, drug_order, concept_derived, concept_numeric, complex_obs, users
   DECLARE cur_tabs CURSOR FOR 
 		SELECT tabs.table_name
 		FROM INFORMATION_SCHEMA.TABLES tabs
 		WHERE tabs.table_schema = schema()
 		 AND tabs.table_name NOT IN ('patient','users','drug_order','concept_numeric','concept_derived','complex_obs')
 		 AND tabs.table_name NOT Like '%synchronization_%'
-		 AND NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS cols
+		 AND (tabs.table_name) NOT IN (SELECT distinct tabs.table_name FROM INFORMATION_SCHEMA.COLUMNS cols
 									WHERE cols.table_schema = schema() 
-										AND cols.COLUMN_NAME = 'guid' 
-										AND tabs.table_name = cols.table_name);								
-	
+										AND cols.COLUMN_NAME = 'guid');								
+										
+  #Get all tables that have column named guid
   DECLARE cur_tabs_populate CURSOR FOR 
 		SELECT distinct cols.table_name
 		FROM INFORMATION_SCHEMA.COLUMNS cols
 		WHERE cols.table_schema = schema() AND cols.COLUMN_NAME = 'guid';
 
+  #Get all tables with column named guid that do not have index on it
   DECLARE cur_tabs_indx CURSOR FOR 
 		SELECT distinct cols.table_name
 		FROM INFORMATION_SCHEMA.COLUMNS cols
-		WHERE cols.table_schema = schema() AND cols.COLUMN_NAME = 'guid';
+		WHERE cols.table_schema = schema() AND cols.COLUMN_NAME = 'guid'
+		 AND (cols.table_name) NOT IN (SELECT distinct table_name FROM INFORMATION_SCHEMA.STATISTICS stats
+										WHERE stats.table_schema = schema() 
+										AND stats.COLUMN_NAME = 'guid');		
 	
   DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
   #DECLARE EXIT HANDLER FOR SQLEXCEPTION BEGIN select 'Error occured in this script, contact an administrator. Exiting.' as 'WARNING' from dual; END;
