@@ -170,25 +170,24 @@ CREATE PROCEDURE sync_setup_procedure()
 	       update global_property set property_value = uuid() where property = 'synchronization.server_guid';
 	    end if;
 	 else
-	    insert into global_property (property, property_value, description, guid)
+	    insert into global_property (property, property_value, description)
 	    values ('synchronization.server_guid',
 	           uuid(),
-	           'Globally unique server id used to identify a given data source in synchronization.',
-	           uuid());
+	           'Globally unique server id used to identify a given data source in synchronization.');
 	 end if;
 
 	#fill out the default role for sync
 	IF( SELECT count(*) > 0 FROM global_property WHERE property = 'synchronization.default_role' ) THEN
 		UPDATE global_property SET property_value='System Developer' where property='synchronization.default_role';
 	ELSE
-		INSERT INTO global_property (property, property_value, description, guid) values
-		('synchronization.default_role', 'System Developer', '', UUID());	
+		INSERT INTO global_property (property, property_value, description) values
+		('synchronization.default_role', 'System Developer', 'Server role for the synchronization scheduled task login.');	
 	END IF;
 
  END;
 //
 delimiter ;
-select 'Executing sync_static_data_procedure completed..' as ' ';
+select 'Executing sync_setup_procedure..' as ' ';
 call sync_setup_procedure();
 select 'Sync_setup_procedure completed.' as '';
 drop procedure sync_setup_procedure;
