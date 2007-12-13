@@ -103,7 +103,7 @@ CREATE PROCEDURE add_guids ()
 
 //
 
-CREATE PROCEDURE add_guid_indecies ()
+CREATE PROCEDURE add_guid_indices ()
  BEGIN
 
   DECLARE table_name varchar(64) default null;
@@ -123,10 +123,10 @@ CREATE PROCEDURE add_guid_indecies ()
   DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
     
   ###
-  #Check for missing indecies
+  #Check for missing indices
   #Create index on every GUID column
   SET done = 0;
-  select 'Check for missing indecies on GUID columns.' as 'Action:' from dual;	
+  select 'Check for missing indices on GUID columns.' as 'Action:' from dual;	
   OPEN cur_tabs_indx;
   REPEAT
     FETCH cur_tabs_indx INTO table_name;
@@ -154,10 +154,10 @@ CREATE PROCEDURE add_guid_indecies ()
 
 delimiter ;
 call add_guids();
-call add_guid_indecies();
+call add_guid_indices();
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------
 DROP PROCEDURE IF EXISTS add_guids;
-DROP PROCEDURE IF EXISTS add_guid_indecies;
+DROP PROCEDURE IF EXISTS add_guid_indices;
