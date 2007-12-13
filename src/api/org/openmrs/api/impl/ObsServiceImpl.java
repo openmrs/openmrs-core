@@ -25,6 +25,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.logic.Aggregation;
 import org.openmrs.logic.Constraint;
+import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -302,4 +303,26 @@ public class ObsServiceImpl implements ObsService {
     public ComplexObs getComplexObsByGuid(String guid) throws APIException {
 		return getObsDAO().getComplexObsByGuid(guid);
     }
+    
+    	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List<org.openmrs.Concept>, java.util.Date, java.util.Data, boolean)
+	 */
+	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided) {
+		return getObsDAO().getObservations(concepts, fromDate, toDate, includeVoided);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List<org.openmrs.Concept>, java.util.Date, java.util.Data)
+	 */
+	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate) {
+		return this.getObservations(concepts, fromDate, toDate, false);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate)
+	 */
+	public List<Obs> getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate) {
+		return getObsDAO().getObservations(patients, concepts, fromDate, toDate);
+	}
+    
 }

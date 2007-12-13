@@ -29,7 +29,6 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
 /**
  * OpenMRS HL7 API
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public class HL7ServiceImpl implements HL7Service {

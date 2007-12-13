@@ -15,7 +15,6 @@ import ca.uhn.hl7v2.parser.GenericParser;
 /**
  * Main entry point for processing of HL7 streams into OpenMRS
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public class HL7Receiver {

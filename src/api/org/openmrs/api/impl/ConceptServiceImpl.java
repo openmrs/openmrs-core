@@ -37,9 +37,6 @@ import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Concept-related services
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class ConceptServiceImpl implements ConceptService {

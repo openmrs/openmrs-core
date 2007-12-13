@@ -64,7 +64,7 @@ public class DWRObsService {
 		Date obsDate = null;
 		if ( obsDateStr != null ) {
 			// TODO Standardize date input 
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			SimpleDateFormat sdf = Context.getDateFormat();
 			try {
 				obsDate = sdf.parse(obsDateStr);
 			} catch (ParseException e) {
@@ -85,11 +85,15 @@ public class DWRObsService {
 			obs.setEncounter(encounter);
 			obs.setLocation(encounter.getLocation());
 		} else {
-			Location location = Context.getEncounterService().getLocation(locationId);
+			Location location = null;
+			if (locationId != null)
+				Context.getEncounterService().getLocation(locationId);
 			if ( location == null ) {
 				location = Context.getEncounterService().getLocationByName("Unknown Location");
 				if (location == null)
 					location = Context.getEncounterService().getLocationByName("Unknown");
+				if (location == null)
+					location = Context.getEncounterService().getLocation(1);
 			}
 			obs.setLocation(location);
 		}

@@ -68,8 +68,8 @@
 			<equals arg1="${unix.file.exists}" arg2="true" />
 				<then>
 				<!-- Load user overrides from userhome/.OPENMRS-build.properties file -->
-				<echo message="Using build properties in: ${user.home}/.OPENMRS-build.properties" />
-				<property file="${user.home}/.OPENMRS-build.properties"/>
+				<echo message="Using build properties in: ${user.home}/.OpenMRS/OPENMRS-build.properties" />
+				<property file="${user.home}/.OpenMRS/OPENMRS-build.properties"/>
 				</then>
 		</elseif>
 		<else>
@@ -509,6 +509,9 @@
 		
 		<!-- TODO add other execs for different OS's. Switch to osfamily with Ant 1.7 -->
 		<exec os="Windows XP" executable="C:/Program Files/Mozilla Firefox/firefox.exe" spawn="true">
+			<arg value="file:///${junit-reports.dir}/index.html"/>
+		</exec>
+		<exec os="Linux" executable="firefox" spawn="true">
 			<arg value="file:///${junit-reports.dir}/index.html"/>
 		</exec>
 		

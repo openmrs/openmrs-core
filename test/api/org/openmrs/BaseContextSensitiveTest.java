@@ -180,6 +180,11 @@ public abstract class BaseContextSensitiveTest extends
 			runtimeProperties.setProperty(Environment.USER, "sa");
 			runtimeProperties.setProperty(Environment.PASS, "");
 			
+			// these two properties need to be set in case the user has this exact
+			// phrasing in their runtime file.  If 
+			runtimeProperties.setProperty("connection.username", "sa");
+			runtimeProperties.setProperty("connection.password", "");
+			
 			// automatically create the tables defined in the hbm files
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
 		}

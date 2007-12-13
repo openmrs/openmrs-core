@@ -1,15 +1,15 @@
 /**
- * Represents an OpenMRS <code>Context</code>, which may be used to
- * authenticate to the database and obtain services in order to interact with
- * the system.
- * 
- * The Context is split into a UserContext and ServiceContext.  The UserContext is 
- * lightweight and there is an instance for every user logged into the system.  The 
- * ServiceContext is heavier and contains each service class.  This is more static 
- * and there is only one ServiceContext per OpenMRS instance.
- * 
- * @see org.openmrs.api.context.UserContext
- * @see org.openmrs.api.context.ServiceContext
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 package org.openmrs.util;
 

@@ -21,9 +21,6 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Field
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class Field implements java.io.Serializable, Synchronizable {

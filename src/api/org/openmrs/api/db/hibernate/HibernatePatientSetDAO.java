@@ -1206,7 +1206,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		criteria.setCacheMode(CacheMode.IGNORE);
 		
 		// this "where clause" is only necessary if patients were passed in
-		if (patients != null)
+		if (patients != null && patients.size() > 0)
 			criteria.add(Restrictions.in("patient.personId", patients.getPatientIds()));
 		
 		criteria.add(Restrictions.eq("voided", false));

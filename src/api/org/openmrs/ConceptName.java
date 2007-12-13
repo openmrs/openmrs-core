@@ -8,7 +8,6 @@ import org.openmrs.synchronization.Synchronizable;
 /**
  * ConceptName
  * 
- * @author Burke Mamlin
  */
 public class ConceptName implements java.io.Serializable, Synchronizable {
 

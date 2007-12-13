@@ -9,7 +9,7 @@ import javax.servlet.jsp.tagext.TagSupport;
  * Prints the contextPath for the current webapp.
  * Typically you can get this via ${pageContext.request.contextPath}
  * 
- * @author Ben Wolfe
+
  */
 public class ContextPathTag extends TagSupport {
 	

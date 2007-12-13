@@ -5,9 +5,6 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * ConceptNumeric
- * 
- * @author Burke Mamlin
- * @author Ben Wolfe
  * @version 1.0
  */
 public class ConceptNumeric extends Concept implements java.io.Serializable, Synchronizable {

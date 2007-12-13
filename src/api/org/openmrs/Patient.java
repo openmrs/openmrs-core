@@ -15,9 +15,6 @@ import org.openmrs.synchronization.Synchronizable;
 /**
  * Defines a Patient in the system.  A patient is simply an extension
  * of a person and all that that implies.
- * 
- * @author Burke Mamlin
- * @author Ben Wolfe
  * @version 2.0
  */
 public class Patient extends Person 

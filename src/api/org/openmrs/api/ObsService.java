@@ -1,6 +1,8 @@
 package org.openmrs.api;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openmrs.ComplexObs;
@@ -14,6 +16,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.logic.Aggregation;
 import org.openmrs.logic.Constraint;
+import org.openmrs.reporting.PatientSet;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -256,4 +259,40 @@ public interface ObsService {
 	@Authorized( { "View Person" })
 	public List<Obs> getObservations(Person who, Aggregation aggregation,
 			Concept question, Constraint constraint);
+	
+	/**
+	 * Get all Observations for these concepts between these dates.  Ideal for getting things like recent lab results regardless of what patient
+	 * 
+	 * @param concepts get observations for these concepts (leave as null to get all)
+	 * @param fromDate
+	 * @param toDate
+	 * @param includeVoided
+	 * @return list of obs for a location
+	 */
+	@Transactional(readOnly = true)
+	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided);
+
+	/**
+	 * Get all Observations for these concepts between these dates.  Ideal for getting things like recent lab results regardless of what patient
+	 * 
+	 * @param concepts get observations for these concepts (leave as null to get all)
+	 * @param fromDate
+	 * @param toDate
+	 * @return list of obs for a location
+	 */
+	@Transactional(readOnly = true)
+	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate);
+
+	
+	/**
+	 * Get all Observations for this patient set, for these concepts, between these dates.  Ideal for getting things like recent lab results for a set of patients
+	 * 
+	 * @param ps the patientset for which to retrieve data for - null means all patients
+	 * @param concepts list of the concepts for which to retrieve obs - null means all obs
+	 * @param fromDate lower bound for date - null means no lower bound
+	 * @param toDate upper bound for date - null means no upper bound
+	 * @return observations, for this patient set, with concepts in list of concepts passed, between the two dates passed in
+	 */
+	@Transactional(readOnly=true)
+	public List<Obs> getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate);
 }

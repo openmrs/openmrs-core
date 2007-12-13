@@ -15,7 +15,6 @@ import ca.uhn.hl7v2.HL7Exception;
  * messages regarding unknown patients from a non-local HL7 source. (i.e. those
  * messages neither go to the archive or the error table.) 
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 @Transactional

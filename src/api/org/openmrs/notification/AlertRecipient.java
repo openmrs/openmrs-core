@@ -14,8 +14,6 @@ import org.openmrs.User;
  * 
  * @see org.openmrs.notification.Alert
  * 
- * @author Ben Wolfe
- * 
  */
 public class AlertRecipient implements Serializable {
 

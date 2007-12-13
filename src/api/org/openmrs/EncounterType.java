@@ -6,8 +6,6 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * EncounterType 
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class EncounterType implements java.io.Serializable, Synchronizable {

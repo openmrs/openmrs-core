@@ -7,7 +7,7 @@ import java.util.Vector;
 
 /**
  * Generic class used by AddressTemplate and NameTemplate layouts
- * @author Ben Wolfe
+
  */
 public abstract class LayoutTemplate {
 

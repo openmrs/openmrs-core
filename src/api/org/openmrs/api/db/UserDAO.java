@@ -10,7 +10,6 @@ import org.openmrs.api.APIException;
 /**
  * User-related database functions
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public interface UserDAO {

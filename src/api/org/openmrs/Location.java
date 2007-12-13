@@ -9,8 +9,6 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Location 
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class Location implements java.io.Serializable, Attributable<Location>, Synchronizable {

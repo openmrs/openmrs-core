@@ -10,9 +10,6 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Form
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class Form implements java.io.Serializable, Synchronizable {

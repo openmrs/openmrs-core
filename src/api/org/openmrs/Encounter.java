@@ -8,8 +8,7 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Encounter 
- * 
- * @author Ben Wolfe
+ *
  * @version 1.0
  */
 public class Encounter implements java.io.Serializable, Synchronizable {

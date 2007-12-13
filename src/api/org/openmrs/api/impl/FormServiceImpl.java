@@ -20,9 +20,6 @@ import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Form-related services
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class FormServiceImpl implements FormService {

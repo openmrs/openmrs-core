@@ -13,8 +13,6 @@ import org.openmrs.RelationshipType;
 
 /**
  * Person-related database functions
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public interface PersonDAO {

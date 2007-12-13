@@ -28,6 +28,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
@@ -36,6 +37,7 @@ import org.openmrs.api.db.ObsDAO;
 import org.openmrs.logic.Aggregation;
 import org.openmrs.logic.Constraint;
 import org.openmrs.logic.DateConstraint;
+import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -639,4 +641,53 @@ public class HibernateObsDAO implements ObsDAO {
     public ComplexObs getComplexObsByGuid(String guid) {
 		return (ComplexObs) sessionFactory.getCurrentSession().createQuery("from ComplexObs o where o.guid = :guid").setString("guid", guid).uniqueResult();
     }
+    
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List<org.openmrs.Concept>, java.util.Date, java.util.Data, boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided)
+			throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
+		if ( concepts != null ) {
+			criteria.add(Restrictions.in("concept", concepts));
+		}
+		if ( fromDate != null ) {
+			criteria.add(Restrictions.gt("obsDatetime", fromDate));
+		}
+		if ( toDate != null ) {
+			criteria.add(Restrictions.lt("obsDatetime", toDate));
+		}
+		if ( !includeVoided ) {
+			criteria.add(Restrictions.eq("voided", false));
+		}
+		criteria.addOrder(Order.desc("obsDatetime"));
+		return (List<Obs>)criteria.list();
+	}
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List<org.openmrs.Concept>, java.util.Date, java.util.Data, boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Obs> getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate)
+			throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
+		if ( patients != null ) {
+			List<Patient> patientList = patients.getPatients();
+			if ( patientList != null ) {
+				criteria.add(Restrictions.in("person", patientList));
+			}
+		}
+		if ( concepts != null ) {
+			criteria.add(Restrictions.in("concept", concepts));
+		}
+		if ( fromDate != null ) {
+			criteria.add(Restrictions.gt("obsDatetime", fromDate));
+		}
+		if ( toDate != null ) {
+			criteria.add(Restrictions.lt("obsDatetime", toDate));
+		}
+		criteria.addOrder(Order.desc("obsDatetime"));
+		return (List<Obs>)criteria.list();
+	}
 }

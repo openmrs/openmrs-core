@@ -40,8 +40,7 @@ public class TestUtil {
 
 			// Look for environment variable
 			// {WEBAPP.NAME}_RUNTIME_PROPERTIES_FILE
-			String webapp = webappName.toUpperCase();
-			String env = webapp + "_RUNTIME_PROPERTIES_FILE";
+			String env = webappName.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
 
 			String filepath = System.getenv(env);
 
@@ -53,7 +52,7 @@ public class TestUtil {
 			}
 
 			// env is the name of the file to look for in the directories
-			String filename = webapp + "-runtime.properties";
+			String filename = webappName + "-runtime.properties";
 
 			if (propertyStream == null) {
 				filepath = OpenmrsUtil.getApplicationDataDirectory() + filename;

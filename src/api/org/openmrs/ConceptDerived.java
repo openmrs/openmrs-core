@@ -7,7 +7,6 @@ import org.openmrs.synchronization.Synchronizable;
 /**
  * Represent a concept derived from multiple observations or non-observational data
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public class ConceptDerived extends Concept implements java.io.Serializable, Synchronizable {

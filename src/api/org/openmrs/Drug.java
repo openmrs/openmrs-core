@@ -7,8 +7,6 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Drug 
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class Drug implements java.io.Serializable, Synchronizable {

@@ -16,7 +16,6 @@ import org.openmrs.FormField;
 /**
  * OpenMRS form module utilities.
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public class FormUtil {

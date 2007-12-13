@@ -15,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Encounter-related services
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 @Transactional

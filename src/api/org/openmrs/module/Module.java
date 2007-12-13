@@ -16,8 +16,6 @@ import org.w3c.dom.Document;
 
 /**
  * Generic module class that openmrs manipulates
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public final class Module {

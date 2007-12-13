@@ -35,7 +35,13 @@ public class PortletTag extends ImportSupport {
 	}
 	
 	public int doStartTag() throws JspException {
-		if (url == null) url = "";
+
+		log.warn("URL came through as " + this.url);
+
+		if (url == null) {
+			log.warn("URL came through as NULL to PortletTag - this is a big problem");
+			url = "";
+		}
 		if (id == null) id = "";
 		
 		try {

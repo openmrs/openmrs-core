@@ -147,7 +147,7 @@
 
 <openmrs:globalProperty var="conceptIdsToUse" key="dashboard.overview.showConcepts" />
 <c:if test="${not empty conceptIdsToUse}">
-	<div class="boxHeader${model.patientVariation}"><spring:message code="Patient.groups"/></div>
+	<div class="boxHeader${model.patientVariation}"><spring:message code="patientDashboard.mostRecentObs"/></div>
 	<div class="box${model.patientVariation}">
 		<openmrs:portlet url="customMostRecentObs" size="normal" patientId="${patient.patientId}" parameters="conceptIds=${conceptIdsToUse}|allowNew=true" />
 	</div>

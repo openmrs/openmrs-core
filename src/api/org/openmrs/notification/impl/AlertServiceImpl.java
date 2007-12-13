@@ -19,8 +19,6 @@ import org.openmrs.notification.db.AlertDAO;
 /**
  * Service calls for the Alerting notification system
  * 
- * @author Ben Wolfe
- * 
  */
 public class AlertServiceImpl implements Serializable, AlertService {
 

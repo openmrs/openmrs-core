@@ -27,8 +27,6 @@ import org.openmrs.synchronization.Synchronizable;
  * 
  * It is an error to have discontinued be true and have discontinuedDate be after autoExpireDate.
  *    However this is not checked for in the database or the application.
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class Order implements java.io.Serializable, Synchronizable {

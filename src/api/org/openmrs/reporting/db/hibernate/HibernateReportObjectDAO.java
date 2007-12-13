@@ -78,8 +78,11 @@ public class HibernateReportObjectDAO implements
 	}
 
 	public void deleteReportObject(AbstractReportObject reportObj) throws DAOException {
-		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);		
-		
+		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);
+		// TODO - The creator/created date needs to be set here otherwise we get an exception
+		// This doesn't matter really since we're just deleting the report object anyway
+		wrappedReportObject.setCreator(Context.getAuthenticatedUser());
+		wrappedReportObject.setDateCreated(new Date());
 		sessionFactory.getCurrentSession().delete(wrappedReportObject);
 	}
 
@@ -89,7 +92,8 @@ public class HibernateReportObjectDAO implements
 		else {
 			log.debug("ATTEMPTING TO SAVE reportObj: " + reportObj);
 			//ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);		
-			ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObj.getReportObjectId());
+			ReportObjectWrapper wrappedReportObject = 
+				(ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObj.getReportObjectId());
 			wrappedReportObject.setReportObject(reportObj);
 			wrappedReportObject.setChangedBy(Context.getAuthenticatedUser());
 			wrappedReportObject.setDateChanged(new Date());

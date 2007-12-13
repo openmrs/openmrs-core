@@ -4,8 +4,6 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Tribe
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class Tribe implements java.io.Serializable, Synchronizable {

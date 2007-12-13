@@ -5,7 +5,6 @@ import org.openmrs.synchronization.Synchronizable;
 /**
  * DrugIngredient
  * 
- * @author Burke Mamlin
  */
 public class DrugIngredient implements java.io.Serializable, Synchronizable {
 

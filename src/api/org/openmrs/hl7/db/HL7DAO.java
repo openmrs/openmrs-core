@@ -11,7 +11,6 @@ import org.openmrs.hl7.HL7Source;
 /**
  * Database API for HL7-related tables
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public interface HL7DAO {

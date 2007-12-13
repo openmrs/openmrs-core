@@ -32,9 +32,6 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Order-related services
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class OrderServiceImpl implements OrderService {

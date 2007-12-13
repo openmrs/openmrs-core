@@ -20,7 +20,6 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * User-related services
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public class UserServiceImpl implements UserService {

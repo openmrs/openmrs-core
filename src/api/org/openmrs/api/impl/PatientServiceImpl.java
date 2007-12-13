@@ -38,10 +38,7 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Patient-related services
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
- * @vesrion 1.0
+ * rn * @vesrion 1.0
  */
 public class PatientServiceImpl implements PatientService {
 

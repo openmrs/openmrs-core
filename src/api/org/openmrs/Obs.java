@@ -16,8 +16,6 @@ import org.openmrs.util.Format.FORMAT_TYPE;
 
 /**
  * Obs
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class Obs implements java.io.Serializable, Synchronizable {

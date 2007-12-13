@@ -31,8 +31,6 @@ import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Person-related services
- * 
- * @author Ben Wolfe
  * @vesrion 1.0
  */
 public class PersonServiceImpl implements PersonService {

@@ -638,14 +638,18 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 								// that means that there is a conversion to make for this workflow/trigger - let's try to change state
 								log.debug("Found conversion: " + conversion);
 								ProgramWorkflowState resultingState = conversion.getProgramWorkflowState();
+								boolean isTerminal = false;
+								if ( program.getCurrentState(workflow) != null ) {
+									isTerminal = program.getCurrentState(workflow).getState().getTerminal();
+								}
 								
 								// this is the place to add logic about what conditions we'd want to actually convert for
-								if ( program.getActive(dateConverted) || !program.getCurrentState().getState().getTerminal() ) {
+								if ( program.getActive(dateConverted) || !isTerminal ) {
 									log.debug("Changing patient " + patient + " to state " + resultingState + " in workflow " + workflow);
 									this.changeToState(program, workflow, resultingState, dateConverted);									
 								} else {
 									if ( !program.getActive(dateConverted) ) log.debug("was about to change state, but failed because program not active");
-									if ( program.getCurrentState().getState().getTerminal() ) log.debug("was about to change state, but failed because current state is already terminal");
+									if ( isTerminal ) log.debug("was about to change state, but failed because current state is already terminal");
 								}
 							}
 						}

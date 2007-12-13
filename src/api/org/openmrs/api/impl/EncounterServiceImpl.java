@@ -26,8 +26,6 @@ import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Encounter-related services
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class EncounterServiceImpl implements EncounterService {
