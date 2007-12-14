@@ -93,7 +93,7 @@ public class SyncStrategyFile {
                 for ( SyncRecord record : changeset ) {
                     Set<String> containedClasses = record.getContainedClassSet();
                     if ( server.getClassesSent().containsAll(containedClasses) ) {
-                        log.warn("ADDING RECORD TO TRANSMISSION BECAUSE SERVER IS SET TO SEND ALL " + containedClasses + " TO SERVER " + server.getNickname() + " with SENT: " + server.getClassesSent());
+                        //log.warn("ADDING RECORD TO TRANSMISSION BECAUSE SERVER IS SET TO SEND ALL " + containedClasses + " TO SERVER " + server.getNickname() + " with SENT: " + server.getClassesSent());
                         if ( filteredChangeset == null ) filteredChangeset = new ArrayList<SyncRecord>();
                         filteredChangeset.add(record);
                     } else {
@@ -107,7 +107,7 @@ public class SyncStrategyFile {
                                 Context.getSynchronizationService().updateSyncRecord(record);
                             }
                         }
-                        log.warn("NOT ADDING RECORD TO TRANSMISSION, SERVER IS NOT SET TO SEND ALL " + containedClasses + " TO SERVER " + server.getNickname() + " with SENT: " + server.getClassesSent());
+                        log.warn("NOT ADDING RECORD TO TRANSMISSION, SERVER IS NOT SET TO SEND ALL OF " + containedClasses + " TO SERVER " + server.getNickname());
                     }
                 }
             }
