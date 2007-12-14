@@ -1,15 +1,12 @@
-package org.openmrs.synchronization.auto;
+package org.openmrs.synchronization;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.scheduler.Schedulable;
 import org.openmrs.scheduler.TaskConfig;
-import org.openmrs.synchronization.SyncConstants;
-import org.openmrs.synchronization.SyncUtilTransmission;
 import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
 import org.openmrs.synchronization.server.RemoteServer;
 
@@ -51,8 +48,7 @@ public class SynchronizationTask implements Schedulable {
 				}
 			}
 		} catch (Exception e) {
-			log.error("Error while trying to synchronize data", e);
-			throw new APIException("Error while trying to synchronize data", e);
+			log.error("Scheduler error while trying to synchronize data. Will retry per schedule.", e);
 		} finally {
 			Context.closeSession();
 		}
@@ -69,6 +65,7 @@ public class SynchronizationTask implements Schedulable {
 			this.serverId = Integer.valueOf(this.taskConfig.getProperty(SyncConstants.SCHEDULED_TASK_PROPERTY_SERVER_ID));
         } catch (Exception e) {
         	this.serverId = 0;
+        	log.error("Could not find serverId for this sync scheduled task.",e);
         }
 	}
 	

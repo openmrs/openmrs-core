@@ -196,53 +196,61 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         if(log.isDebugEnabled())
             log.debug("beforeTransactionCompletion: " + tx + " deactivated: " + deactivated.get());
         
-        //explicitely bailout if sync is disabled
-        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
-        
-        // If synchronization is NOT deactivated
-        if (deactivated.get() == null) {
-            SyncRecord record = syncRecordHolder.get();
-            syncRecordHolder.remove();
-
-            // Does this transaction contain any serialized changes?
-            if (record.getItems() != null) {
-            
-                if(log.isDebugEnabled())
-                    log.debug(record.getItems().size() + " SyncItems in SyncRecord, saving!");
-                
-                // Grab user if we have one, and use the GUID of the user as creator of this SyncRecord
-                User user = Context.getAuthenticatedUser();
-                if (user != null) {
-                    record.setCreator(user.getGuid());
-                }
-                
-                // Grab database version
-                record.setDatabaseVersion(Context.getAdministrationService().getGlobalProperty("database_version"));
-                
-                // Complete the record
-                record.setGuid(UUID.randomUUID().toString());
-                if ( record.getOriginalGuid() == null ) {
-                    log.warn("OriginalGuid is null, so assigning a new GUID");
-                    record.setOriginalGuid(record.getGuid());
-                } else {
-                    log.warn("OriginalGuid is " + record.getOriginalGuid() + "!!!!");
-                }
-                record.setState(SyncRecordState.NEW);
-                record.setTimestamp(new Date());
-                record.setRetryCount(0);
-    
-                // Save SyncRecord
-                if (synchronizationService == null) {
-                    synchronizationService = Context.getSynchronizationService();
-                }
-    
-                synchronizationService.createSyncRecord(record, record.getOriginalGuid());
-            }
-            else {
-            	//note: this will happen all the time with read-only transactions
-                if(log.isDebugEnabled())
-                    log.debug("No SyncItems in SyncRecord, save discarded!");
-            }
+        try {
+	        //explicitely bailout if sync is disabled
+	        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
+	        
+	        // If synchronization is NOT deactivated
+	        if (deactivated.get() == null) {
+	            SyncRecord record = syncRecordHolder.get();
+	            syncRecordHolder.remove();
+	
+	            // Does this transaction contain any serialized changes?
+	            if (record.getItems() != null) {
+	            	
+	                if(log.isDebugEnabled())
+	                    log.debug(record.getItems().size() + " SyncItems in SyncRecord, saving!");
+	                
+	                // Grab user if we have one, and use the GUID of the user as creator of this SyncRecord
+	                User user = Context.getAuthenticatedUser();
+	                if (user != null) {
+	                    record.setCreator(user.getGuid());
+	                }
+	                
+	                // Grab database version
+	                record.setDatabaseVersion(Context.getAdministrationService().getGlobalProperty("database_version"));
+	                
+	                // Complete the record
+	                record.setGuid(UUID.randomUUID().toString());
+	                if ( record.getOriginalGuid() == null ) {
+	                	if(log.isInfoEnabled())
+	                		log.info("OriginalGuid is null, so assigning a new GUID");
+	                    record.setOriginalGuid(record.getGuid());
+	                } else {
+	                	if(log.isInfoEnabled())
+	                		log.info("OriginalGuid is " + record.getOriginalGuid() + "!!!!");
+	                }
+	                record.setState(SyncRecordState.NEW);
+	                record.setTimestamp(new Date());
+	                record.setRetryCount(0);
+	    
+	                // Save SyncRecord
+	                if (synchronizationService == null) {
+	                    synchronizationService = Context.getSynchronizationService();
+	                }
+	    
+	                synchronizationService.createSyncRecord(record, record.getOriginalGuid());
+	            }
+	            else {
+	            	//note: this will happen all the time with read-only transactions
+	                if(log.isDebugEnabled())
+	                    log.debug("No SyncItems in SyncRecord, save discarded (note: maybe a read-only transaction)!");
+	            }
+	        }
+        } catch(Exception ex) {
+            log.error("Journal error\n", ex);
+            if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
+                throw(new SyncException("Error in interceptor, see log messages and callstack.", ex));        	
         }
     }
     
@@ -439,27 +447,28 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         HashMap<String, PropertyClassValue> values = new HashMap<String, PropertyClassValue> ();
 
         try {
+        	
             // Get the GUID of this object if it has one, used as SyncItemKey.
             objectGuid = entity.getGuid();
             originalRecordGuid = entity.getLastRecordGuid();
             
             //build up a starting msg for all logging
             StringBuilder sb = new StringBuilder();
-            sb.append("In PackageObject, entity type:");
-            sb.append(entity.getClass().getName());
-            sb.append(", entity guid:");
-            sb.append(objectGuid);
+            sb.append("In PackageObject, entity type:"); sb.append(entity.getClass().getName());
+            sb.append(", entity guid:"); sb.append(objectGuid);
+            sb.append(", originalGuid guid:"); sb.append(originalRecordGuid);
             infoMsg = sb.toString();
             
-            if(log.isDebugEnabled())
-                log.debug(infoMsg + ", originalGuid is " + originalRecordGuid);
-
+        	if (log.isInfoEnabled())
+        		log.info(infoMsg);
+        	
     		// Transient properties are not serialized.
             transientProps = new HashSet<String>();
             for ( Field f : entity.getClass().getDeclaredFields() ) {
             	if ( Modifier.isTransient(f.getModifiers()) ) {
             		transientProps.add(f.getName());
-            		log.info("The field " + f.getName() + " is transient - so we won't serialize it");
+            		if (log.isInfoEnabled())
+            			log.info("The field " + f.getName() + " is transient - so we won't serialize it");
             	}
             }
 
@@ -470,8 +479,6 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             factory = (SessionFactory)this.context.getBean("sessionFactory");
             data = factory.getClassMetadata(entity.getClass());
             idProperty = data.getIdentifierPropertyName();
-           if (log.isInfoEnabled())
-                log.info(infoMsg + ", Id for this class: " + idProperty);
             
             /*
              * Loop through all the properties/values and put in a hash for duplicate removal
@@ -480,6 +487,10 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                 String typeName = types[i].getName();                
                 if (log.isDebugEnabled())
                     log.debug("Processing, type: " + typeName + " Field: " + propertyNames[i]);
+
+                if (propertyNames[i].equals(idProperty) && log.isInfoEnabled())
+                    log.info(infoMsg + ", Id for this class: " + idProperty + " , value:" + currentState[i]);
+
                 /*
                  * If this field is a String GUID, and it's null or "", we need to assign a new GUID before 
                  * processing it. Note: dataChanged is also set to true to let Hibernate know we are changing
@@ -491,8 +502,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                     objectGuid = UUID.randomUUID().toString();
                     currentState[i] = objectGuid;
                     dataChanged = true;
+                    infoMsg = infoMsg + ", newly assigned guid:" + sb.append(currentState[i]);
                     if (log.isInfoEnabled())
-                        log.info("Issued randomly generated GUID " + currentState[i] + " to Type: " + typeName + " Field: " + propertyNames[i]);
+                        log.info("Issuing new GUID: " + currentState[i]);
                 }
 
                 if (currentState[i] != null) {

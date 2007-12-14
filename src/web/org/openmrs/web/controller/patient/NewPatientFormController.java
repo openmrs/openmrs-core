@@ -152,6 +152,7 @@ public class NewPatientFormController extends SimpleFormController {
 							
 							PatientIdentifier pi = new PatientIdentifier(identifiers[i], pit, loc);
 							pi.setPreferred(pref.equals(identifiers[i]+types[i]));
+							pi.setGuid(null);
 							newIdentifiers.add(pi);
 							
 							if (log.isDebugEnabled()) {
@@ -274,6 +275,7 @@ public class NewPatientFormController extends SimpleFormController {
 				// add the new name
 				newName.setPersonNameId(null);
 				newName.setPreferred(true);
+				newName.setGuid(null);
 				patient.addName(newName);
 			}
 			
@@ -294,6 +296,7 @@ public class NewPatientFormController extends SimpleFormController {
 					PersonAddress newAddress = shortPatient.getAddress();
 					newAddress.setPersonAddressId(null);
 					newAddress.setPreferred(true);
+					newAddress.setGuid(null);
 					patient.addAddress(newAddress);
 				}
 			}

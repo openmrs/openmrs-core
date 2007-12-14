@@ -109,22 +109,25 @@
 
 	<!-- Sync-related logging setup -->
 	<logger name="org.openmrs.api.SynchronizationIngestService">
-		<level value="WARN" />
+		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
 	<logger name="org.openmrs.api.SynchronizationService">
-		<level value="WARN" />
+		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
 	<logger name="org.openmrs.synchronization">
-		<level value="WARN" />
+		<level value="INFO" />
+		<appender-ref ref="SYNCHRONIZATION_FILE" />
+	</logger>
+	<logger name="org.openmrs.api.db.hibernate.HibernateSynchronizationDAO">
+		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
 	<logger name="org.openmrs.api.db.hibernate.HibernateSynchronizationInterceptor">
-		<level value="WARN" />
+		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
-
 	<root>
 		<level value="WARN" />
 		<appender-ref ref="CONSOLE" />

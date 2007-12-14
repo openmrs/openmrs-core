@@ -2,7 +2,7 @@ package org.openmrs.synchronization;
 
 import java.text.SimpleDateFormat;
 
-import org.openmrs.synchronization.auto.SynchronizationTask;
+import org.openmrs.synchronization.SynchronizationTask;
 
 
 /**
