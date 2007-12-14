@@ -148,12 +148,14 @@ public class FormServiceImpl implements FormService {
 		for (FormField formField : form.getFormFields()) {
 			//formFieldMap.put(formField.getFormFieldId(), formField);
 			formField.setFormFieldId(null);
+			formField.setGuid(null);
 			//formField.setParent(formFieldMap.get(formField.getParent().getFormFieldId()));
 		}
 		// this is required because Hibernate would recognize the original collection
 		form.setFormFields(new HashSet<FormField>(form.getFormFields()));
 
 		form.setFormId(null);
+		form.setGuid(null);
 		
 		Context.clearSession();
 		
