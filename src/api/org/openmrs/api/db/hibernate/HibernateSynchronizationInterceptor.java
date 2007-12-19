@@ -314,7 +314,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 
         if (!pendingFlushHolder.get().contains(entity)) {
             pendingFlushHolder.get().add(entity);
-            return packageObject((Synchronizable)entity, state, propertyNames, types, SyncItemState.NEW);
+            return packageObject((Synchronizable)entity, state, propertyNames, types, id, SyncItemState.NEW);
         }
         
         return false;
@@ -366,7 +366,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 
         if (!pendingFlushHolder.get().contains(entity)) {
             pendingFlushHolder.get().add(entity);
-            return packageObject((Synchronizable)entity, currentState, propertyNames, types, SyncItemState.UPDATED);
+            return packageObject((Synchronizable)entity, currentState, propertyNames, types, id, SyncItemState.UPDATED);
         }
         
         return false;
@@ -427,10 +427,11 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
      * @param currentState Array containing data for each field in the object as they will be saved.
      * @param propertyNames Array containing name for each field in the object, corresponding to currentState.
      * @param types Array containing Type of the field in the object, corresponding to currentState.
-     * @param state SyncItemState, e.g. NEW, UPDATED, DELETED 
+     * @param state SyncItemState, e.g. NEW, UPDATED, DELETED
+     * @param id Value of the identifier for this entity 
      * @return True if data was altered, false otherwise.
      */
-    protected boolean packageObject(Synchronizable entity, Object[] currentState, String[] propertyNames, Type[] types, SyncItemState state)
+    protected boolean packageObject(Synchronizable entity, Object[] currentState, String[] propertyNames, Type[] types, Serializable id, SyncItemState state)
         throws SyncException {
         boolean dataChanged = false;
                 
@@ -439,8 +440,10 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         Set<String> transientProps = null;
         String infoMsg = null;
         SessionFactory factory = null;
+        
         ClassMetadata data = null;
-        String idProperty = null;
+        String idPropertyName = null;
+        org.hibernate.tuple.IdentifierProperty idPropertyObj = null;
         
         //The container of values to be serialized:
         //Holds tuples of <property-name> -> {<property-type-name>, <property-value as string>}        
@@ -475,11 +478,21 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             /* Retrieve metadata for this type; we need to determine what is the PK field for this type.
              * We need to know this since PK values are *not* journaled; values of primary keys are assigned
              * where physical DB records are created. This is so to avoid issues with id collisions.
+             * 
+             * In case of <generator class="assigned" />, the Identifier property is already assigned value and needs to be 
+             * journalled. Also, the prop wil *not* be part of currentState,thus we need to pull it out with reflection/metadata.
              */
             factory = (SessionFactory)this.context.getBean("sessionFactory");
             data = factory.getClassMetadata(entity.getClass());
-            idProperty = data.getIdentifierPropertyName();
-            
+            if (data.hasIdentifierProperty()) {
+            	idPropertyName = data.getIdentifierPropertyName();
+            	idPropertyObj = ((org.hibernate.persister.entity.AbstractEntityPersister)data).getEntityMetamodel().getIdentifierProperty();
+            	if (idPropertyObj.getIdentifierGenerator() != null && idPropertyObj.getIdentifierGenerator() instanceof org.hibernate.id.Assigned) {
+            		// serialize value as string
+                    values.put(idPropertyName, new PropertyClassValue(id.getClass().getName(), id.toString()));
+            	}
+            }
+                        
             /*
              * Loop through all the properties/values and put in a hash for duplicate removal
              */
@@ -488,8 +501,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                 if (log.isDebugEnabled())
                     log.debug("Processing, type: " + typeName + " Field: " + propertyNames[i]);
 
-                if (propertyNames[i].equals(idProperty) && log.isInfoEnabled())
-                    log.info(infoMsg + ", Id for this class: " + idProperty + " , value:" + currentState[i]);
+                if (propertyNames[i].equals(idPropertyName) && log.isInfoEnabled())
+                    log.info(infoMsg + ", Id for this class: " + idPropertyName + " , value:" + currentState[i]);
 
                 /*
                  * If this field is a String GUID, and it's null or "", we need to assign a new GUID before 
@@ -509,9 +522,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 
                 if (currentState[i] != null) {
                     // is this the primary key or transient? if so, we don't want to serialize
-                	if ( propertyNames[i].equals(idProperty) 
-                			|| ("personId".equals(idProperty) && "patientId".equals(propertyNames[i])) 
-                			|| ("personId".equals(idProperty) && "userId".equals(propertyNames[i]))
+                	if ( propertyNames[i].equals(idPropertyName) 
+                			|| ("personId".equals(idPropertyName) && "patientId".equals(propertyNames[i])) 
+                			|| ("personId".equals(idPropertyName) && "userId".equals(propertyNames[i]))
                 			|| transientProps.contains(propertyNames[i])
                 			) {
                         if (log.isInfoEnabled())
