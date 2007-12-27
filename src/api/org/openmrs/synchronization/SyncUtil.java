@@ -458,10 +458,26 @@ public class SyncUtil {
 		return m;
 	}
 	
-	public static synchronized String updateOpenmrsObject(Object o, String guid, boolean knownToExist) {
+    /**
+     * 
+     * Uses openmrs API to commit an update to an instance of an openmrs class.
+     * 
+     * <p>Remarks: This method is used during data synchronization when changes from a server are received and
+     * are to be processed and applied to the local data store. As state is parsed out of SyncRecords this method
+     * provides a mechanism by which the changes are applied to the database. 
+     * 
+     * @param o object to be updated
+     * @param className identifies openmrs type that o instantiates: normally this will be same as 
+     * o.getClass().getName() however in case of dealing with hibernate proxy objects that does not work and we need
+     * explicit openmrs type name 
+     *
+     * @param guid unique id of the object
+     * @param knownToExist if true, update method on openmrs API is called using guid, else create method is used
+     * @return
+     */
+	public static synchronized String updateOpenmrsObject(Object o, String className, String guid, boolean knownToExist) {
 		String ret = null;
 		if ( o != null ) {
-			String className = o.getClass().getName();
 			boolean isUpdated = true;
 			
 			if ( "org.openmrs.Cohort".equals(className) ) { 

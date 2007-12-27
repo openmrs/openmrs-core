@@ -82,6 +82,8 @@ public class SynchronizationImportListController extends SimpleFormController {
         } else {
             isResponse = true;
         }
+        
+        //file-based upload only
         Integer serverId = ServletRequestUtils.getIntParameter(request, "serverId", 0);
 
 		if (isUpload && request instanceof MultipartHttpServletRequest) {
@@ -140,6 +142,7 @@ public class SynchronizationImportListController extends SimpleFormController {
 					Context.authenticate(username, password);
 				} catch ( Exception e ) {
 					// nothing to do - we'll have to respond saying no authentication
+					//TODO - clean this up
 				}
 			}
 
@@ -172,7 +175,7 @@ public class SynchronizationImportListController extends SimpleFormController {
                         
                         //figure out where this came from
                         //for responses, the target ID contains the server that generated the response
-                        String sourceGuid = str.getSyncTargetGuid();
+                        String sourceGuid = priorResponse.getSyncTargetGuid();
                         log.warn("Getting sourceGuid of " + sourceGuid);
                         RemoteServer origin = Context.getSynchronizationService().getRemoteServer(sourceGuid);
                         if ( origin == null ) log.warn("NOT ABLE TO GET ORIGIN SERVER BY SOURCEGUID");
@@ -259,7 +262,7 @@ public class SynchronizationImportListController extends SimpleFormController {
 		}
 
 		try {
-			str.CreateFile(true);
+			str.createFile(true);
 			ret = str.getFileOutput();
 		} catch ( Exception e ) {
 			log.debug("Could not get output while writing file.  In case problem writing file, trying again to just get output.");
@@ -267,7 +270,7 @@ public class SynchronizationImportListController extends SimpleFormController {
 		
 		if ( ret.length() == 0 ) {
 			try {
-				str.CreateFile(false);
+				str.createFile(false);
 				ret = str.getFileOutput();
 			} catch ( Exception e ) {
 				log.error("Could not get output while writing file.  In case problem writing file, trying again to just get output.");

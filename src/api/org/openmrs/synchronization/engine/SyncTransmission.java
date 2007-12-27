@@ -118,11 +118,15 @@ public class SyncTransmission implements IItem {
         this.syncRecords = value;
     }
 
-    /** Create a new transmission from records: use org.openmrs.serial to make a file. Sets the timestamp to the time
-     * Tx was created.
-     * 
+    /** Creates a new transmission from records: use org.openmrs.serial to make a file
+     *  also, give option to write to a file or not.
+     *  <p> When writeFile is true, files are created in 'journal' dir under Application Data 
+     *  (see openmrs documentation for more information about setting Application Data).
+     *  Files are created using the following mask: sync_tx_yyyy_MM_dd_HH_mm_ss_S_request.xml
+     *  
+     *  @param writeFile if true, local file for this transmission will be created.  
      */
-    public void createFile() {
+    public void create(boolean writeFile) {
 
         try {
             
@@ -135,42 +139,13 @@ public class SyncTransmission implements IItem {
             //serialize
             this.save(xml,root);
 
-            //now dump to file
+            //now dump to file if needed
             fileOutput = pkg.savePackage(org.openmrs.util.OpenmrsUtil
                     .getApplicationDataDirectory()
-                    + "/journal/" + fileName, true);
+                    + "/journal/" + fileName, writeFile);
 
         } catch (Exception e) {
-            log.error("Cannot create sync transmission.");
-            throw new SyncException("Cannot create sync transmission", e);
-        }
-        return;
-
-    }
-
-    /** Create a new transmission from records: use org.openmrs.serial to make a file
-     *  also, give option to write to a file or not 
-     */
-    public void createFile(boolean writeFileToo) {
-
-        try {
-            
-            if (timestamp == null) this.timestamp = new Date(); //set timestamp of this export, if not already set
-            
-            FilePackage pkg = new FilePackage();
-            Record xml = pkg.createRecordForWrite(this.getClass().getName());
-            Item root = xml.getRootItem();
-
-            //serialize
-            this.save(xml,root);
-
-            //now dump to file
-            fileOutput = pkg.savePackage(org.openmrs.util.OpenmrsUtil
-                    .getApplicationDataDirectory()
-                    + "/journal/" + fileName, writeFileToo);
-
-        } catch (Exception e) {
-            log.error("Cannot create sync transmission.");
+            log.error("Cannot create sync transmission.",e);
             throw new SyncException("Cannot create sync transmission", e);
         }
         return;

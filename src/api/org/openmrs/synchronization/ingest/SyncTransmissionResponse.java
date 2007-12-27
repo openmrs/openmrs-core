@@ -199,14 +199,14 @@ public class SyncTransmissionResponse implements IItem {
     /** Create a new transmission from records: use org.openmrs.serial to make a file
      *  also, give option to write to a file or not 
      */
-    public void CreateFile(boolean writeFileToo) {
-    	CreateFile(writeFileToo, SyncConstants.DIR_IMPORT);
+    public void createFile(boolean writeFile) {
+    	createFile(writeFile, SyncConstants.DIR_IMPORT);
     }
     	
     /** Create a new transmission from records: use org.openmrs.serial to make a file
      *  also, give option to write to a file or not 
      */
-    public void CreateFile(boolean writeFileToo, String path) {
+    public void createFile(boolean writeFile, String path) {
 
     	if ( path == null ) path = SyncConstants.DIR_IMPORT;
     	if ( path.length() == 0 ) path = SyncConstants.DIR_IMPORT;
@@ -222,12 +222,13 @@ public class SyncTransmissionResponse implements IItem {
             this.save(xml,root);
 
             //now dump to file
+            //TODO: use path!
             fileOutput = pkg.savePackage(org.openmrs.util.OpenmrsUtil
                     .getApplicationDataDirectory()
-                    + "/import/" + fileName, writeFileToo);
+                    + "/import/" + fileName, writeFile);
 
         } catch (Exception e) {
-            log.error("Cannot create sync transmission.");
+            log.error("Cannot create sync transmission.",e);
             throw new SyncException("Cannot create sync transmission", e);
         }
         return;

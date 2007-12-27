@@ -222,7 +222,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 try {
                     log.warn("setting lastRecordGuid to " + originalGuid);
                     ((Synchronizable)o).setLastRecordGuid(originalGuid);
-                    SyncUtil.updateOpenmrsObject(o, guid, isUpdateNotCreate);
+                    SyncUtil.updateOpenmrsObject(o, className, guid, isUpdateNotCreate);
                     ret.setState(SyncItemState.SYNCHRONIZED);
                 } catch ( Exception e ) {
                 	e.printStackTrace();

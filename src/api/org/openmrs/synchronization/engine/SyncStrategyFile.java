@@ -57,7 +57,7 @@ public class SyncStrategyFile {
         
         //pack it into transmission
         SyncTransmission syncTx = new SyncTransmission(sourceGuid,changeset);
-        syncTx.createFile();
+        syncTx.create(true);
         
         //set new SyncPoint
         source.setLastSyncLocal(lastSyncLocalNew);
@@ -116,7 +116,7 @@ public class SyncStrategyFile {
             
             //pack it into transmission
             syncTx = new SyncTransmission(sourceGuid,filteredChangeset);
-            syncTx.createFile(writeFileToo);
+            syncTx.create(writeFileToo);
             syncTx.setSyncTargetGuid(server.getGuid());
         }
                 

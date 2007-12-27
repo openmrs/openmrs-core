@@ -87,7 +87,7 @@ public class SyncUtilTransmission {
             if ( server.getGuid() != null ) {
                 tx.setSyncTargetGuid(server.getGuid());
             }
-            tx.createFile(false);
+            tx.create(false);
         } catch ( Exception e ) {
             e.printStackTrace();
             tx = null;
@@ -288,7 +288,8 @@ public class SyncUtilTransmission {
         return response;
     }    
 
-    public static SyncTransmissionResponse sendSyncTranssmissionRequest(RemoteServer server) {
+    @Deprecated
+    private static SyncTransmissionResponse sendSyncTranssmissionRequest(RemoteServer server) {
 
         SyncTransmissionResponse response = new SyncTransmissionResponse();
         response.setErrorMessage(SyncConstants.ERROR_TRANSMISSION_CREATION.toString());
@@ -330,7 +331,15 @@ public class SyncUtilTransmission {
         return response;
     }
 
-    public static SyncTransmissionResponse doFullSynchronize(RemoteServer server) {
+
+    /**
+     * 
+     * Performs 'full' synchronization (from a child perspective) with parent server identified by parent parameter.
+     *  
+     * @param parent
+     * @return
+     */
+    public static SyncTransmissionResponse doFullSynchronize(RemoteServer parent) {
         SyncTransmissionResponse response = new SyncTransmissionResponse();
         response.setErrorMessage(SyncConstants.ERROR_TRANSMISSION_CREATION.toString());
         response.setFileName(SyncConstants.FILENAME_NOT_CREATED);
@@ -338,23 +347,28 @@ public class SyncUtilTransmission {
         response.setState(SyncTransmissionState.TRANSMISSION_CREATION_FAILED);
         
         try {
-            if ( server != null ) {
-                SyncTransmission tx = SyncUtilTransmission.createSyncTransmissionRequest(server);
+            if ( parent != null ) {
+            	
+            	//this is the initial handshake only; no state sent
+                SyncTransmission tx = SyncUtilTransmission.createSyncTransmissionRequest(parent);
                 
                 if ( tx != null ) {
+                	if (log.isInfoEnabled()) {
+                		log.info("sync tx created was: " + tx.getFileOutput());
+                	}
                     // start by sending request to parent server
-                    log.warn("tx created was: " + tx.getFileOutput());
-                    SyncTransmissionResponse initialResponse = SyncUtilTransmission.sendSyncTranssmission(server, tx);
+                    SyncTransmissionResponse initialResponse = SyncUtilTransmission.sendSyncTranssmission(parent, tx);
                     if ( initialResponse != null ) {
                         // get syncTx from that response, and process it
                         SyncTransmission initialTxFromParent = initialResponse.getSyncTransmission();
                         SyncTransmissionResponse str = null;
                         if ( initialTxFromParent != null ) {
-                            // since we know what server this should be from, let's check to make sure we've got the guid - we'll need it later
+                            // since we know what server this should be from, 
+                        	//let's check to make sure we've got the guid - we'll need it later
                             String remoteGuid = initialTxFromParent.getSyncSourceGuid();
-                            if ( server.getGuid() == null ) {
-                                server.setGuid(remoteGuid);
-                                Context.getSynchronizationService().updateRemoteServer(server);
+                            if ( parent.getGuid() == null ) {
+                            	parent.setGuid(remoteGuid);
+                                Context.getSynchronizationService().updateRemoteServer(parent);
                             }
                             
                             // process syncTx from parent, and generate response
@@ -362,20 +376,20 @@ public class SyncUtilTransmission {
                             str = SyncUtilTransmission.processSyncTransmission(initialTxFromParent);
                         } else {
                             log.warn("initialTxFromParent was null coming back from parent(?)");
-                            initialResponse.CreateFile(true, "requestResponse");
+                            initialResponse.createFile(true, "requestResponse");
                             log.warn("response was: " + initialResponse.getFileOutput());
                         }
 
                         // now get local changes destined for parent, and package those inside
-                        SyncTransmission st = SyncUtilTransmission.createSyncTransmission(server);
+                        SyncTransmission st = SyncUtilTransmission.createSyncTransmission(parent);
                         if ( str != null ) {
                             log.warn("Received updates from parent, so replying and sending updates of our own: " + st.getFileOutput());
                             str.setSyncTransmission(st);
-                            str.CreateFile(true, "/receiveAndSend");
-                            response = SyncUtilTransmission.sendSyncTranssmission(server, null, str);
+                            str.createFile(true, "/receiveAndSend");
+                            response = SyncUtilTransmission.sendSyncTranssmission(parent, null, str);
                         } else {
                             log.warn("No updates from parent, generating our own transmission");
-                            response = SyncUtilTransmission.sendSyncTranssmission(server, st, null);
+                            response = SyncUtilTransmission.sendSyncTranssmission(parent, st, null);
                         }
 
                     } else {
@@ -383,7 +397,7 @@ public class SyncUtilTransmission {
                         log.warn("TX was: " + tx.getFileOutput());
                     }
                 } else {
-                    log.warn("SEEMS WE COULND'T CREATE A NEW SYNC TRANMISSION FOR SERVER: " + server.getNickname());
+                    log.warn("SEEMS WE COULND'T CREATE A NEW SYNC TRANMISSION FOR SERVER: " + parent.getNickname());
                     // no need for handling else - the correct error messages, etc have been written already
                 }
             } else {
@@ -398,6 +412,9 @@ public class SyncUtilTransmission {
         
         return response;
     }
+    
+    
+    
     
     public static SyncTransmissionResponse processSyncTransmission(SyncTransmission st) {
         SyncTransmissionResponse str = new SyncTransmissionResponse(st);
@@ -450,9 +467,11 @@ public class SyncUtilTransmission {
     }
 
     /**
-     * Auto generated method comment
-     * 
+     * Main method to initiate data synchronization from a child to its parent.
+     *
      * @return
+     * 
+     * @see #doFullSynchronize(RemoteServer)
      */
     public static SyncTransmissionResponse doFullSynchronize() {
         // sends to parent server (by default)

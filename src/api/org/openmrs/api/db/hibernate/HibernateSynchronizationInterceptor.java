@@ -228,7 +228,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 	                    record.setOriginalGuid(record.getGuid());
 	                } else {
 	                	if(log.isInfoEnabled())
-	                		log.info("OriginalGuid is " + record.getOriginalGuid() + "!!!!");
+	                		log.info("OriginalGuid is: " + record.getOriginalGuid());
 	                }
 	                record.setState(SyncRecordState.NEW);
 	                record.setTimestamp(new Date());
@@ -367,6 +367,13 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         if (!pendingFlushHolder.get().contains(entity)) {
             pendingFlushHolder.get().add(entity);
             return packageObject((Synchronizable)entity, currentState, propertyNames, types, id, SyncItemState.UPDATED);
+        }
+        else {
+        	//TODO: replace entity in the record?
+        	if (log.isDebugEnabled()) {
+        		log.debug("replacing sync item in the sync record for entity: " + entity.getClass().getName());
+        	}
+        	
         }
         
         return false;
@@ -639,7 +646,13 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             
             syncRecordHolder.get().addItem(syncItem);
             syncRecordHolder.get().addContainedClass(entity.getClass().getSimpleName());
-            syncRecordHolder.get().setOriginalGuid(originalRecordGuid);
+            
+            //set the originating guid for the record: do this once per Tx; else we may end up with empty
+            //string (i.e. depending on exact sequence of auto-flush, it may be that onFlushDirty is called last time
+            //before a call to Synchornizable.setLastRecordGuid() is made
+            if (syncRecordHolder.get().getOriginalGuid() == null || "".equals(syncRecordHolder.get().getOriginalGuid())) { 
+            	syncRecordHolder.get().setOriginalGuid(originalRecordGuid);
+            }
         } catch (SyncException ex) {
             log.error("Journal error\n", ex);
             if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)

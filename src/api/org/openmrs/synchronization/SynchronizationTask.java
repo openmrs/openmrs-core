@@ -10,6 +10,10 @@ import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
 import org.openmrs.synchronization.server.RemoteServer;
 
+/**
+ * Represents scheduled task to perform full data synchronization with a remote server as identified during the task setup.
+ *
+ */
 public class SynchronizationTask implements Schedulable {
 
 	// Logger
@@ -28,22 +32,24 @@ public class SynchronizationTask implements Schedulable {
 	}
 
 	/**
-	 * Process the next form entry in the database and then remove the form
-	 * entry from the database.
+	 * Runs 'full' data synchronization (i.e. both send local changes and receive changes from the remote server as identified 
+	 * in the task setup). 
+	 * <p> NOTE: Any exception (outside of session open/close) is caughted and reported in the error log thus creating retry
+	 * behavior based on the scheduled frequency.
 	 */
 	public void run() {
 		Context.openSession();
 		try {
-			log.debug("Synchronizing data to parent ... ");
+			log.debug("Synchronizing data to a server.");
 			if (Context.isAuthenticated() == false && serverId > 0)
 				authenticate();
 			RemoteServer server = Context.getSynchronizationService().getRemoteServer(serverId);
 			if ( server != null ) {
 				SyncTransmissionResponse response = SyncUtilTransmission.doFullSynchronize(server);
 				try {
-					response.CreateFile(true, SyncConstants.DIR_JOURNAL);
+					response.createFile(true, SyncConstants.DIR_JOURNAL);
 				} catch ( Exception e ) {
-    				log.error("Unable to create file to store SyncTransmissionResponse: " + response.getFileName());
+    				log.error("Unable to create file to store SyncTransmissionResponse: " + response.getFileName(), e);
     				e.printStackTrace();
 				}
 			}
@@ -51,11 +57,15 @@ public class SynchronizationTask implements Schedulable {
 			log.error("Scheduler error while trying to synchronize data. Will retry per schedule.", e);
 		} finally {
 			Context.closeSession();
+			log.debug("Synchronization complete.");
 		}
 	}
 	
 	/**
-	 * Initialize task.
+	 * Initializes task. Note serverId is in most cases an Id (as stored in sync server table) of parent. As such, parent Id
+	 * does not need to be stored separately with the task as it can always be determined from sync server table. 
+	 * serverId is stored here as we envision using this feature to also 'export' data to another server -- esentially 
+	 * 'shadow' copying data to a separate server for other uses such as reporting.   
 	 * 
 	 * @param config
 	 */
