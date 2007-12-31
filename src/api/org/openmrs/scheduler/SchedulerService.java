@@ -84,9 +84,9 @@ public interface SchedulerService {
 	public Collection<TaskConfig> getAvailableTasks();
 
 	/**
-	 * Set scheduled tasks.
+	 * Get scheduled tasks.
 	 *  
-	 * @param	tasks 	the tasks that should be scheduled
+	 * @return	tasks 	the tasks that are be scheduled
 	 */
 	@Authorized({"Manage Scheduler"})
 	@Transactional(readOnly=true)

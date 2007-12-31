@@ -6,8 +6,7 @@ import java.util.Set;
 
 /**
  * Encounter 
- * 
- * @author Ben Wolfe
+ *
  * @version 1.0
  */
 public class Encounter implements java.io.Serializable {
@@ -220,7 +219,7 @@ public class Encounter implements java.io.Serializable {
 	}
 
 	/**
-	 * Remove the given obervation from the list of orders for this Encounter
+	 * Remove the given observation from the list of orders for this Encounter
 	 * @param order
 	 */
 	public void removeOrder(Order order) {

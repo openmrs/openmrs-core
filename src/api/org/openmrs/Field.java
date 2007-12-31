@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs;
 
 import java.util.Date;
@@ -6,9 +19,6 @@ import java.util.Set;
 
 /**
  * Field
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class Field implements java.io.Serializable {
@@ -53,7 +63,7 @@ public class Field implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof Field) || fieldId == null)
 			return false;
-		
+
 		Field field = (Field) obj;
 		return (this.fieldId.equals(field.getFieldId()));
 	}
@@ -74,8 +84,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param fieldId
-	 *            The fieldId to set.
+	 * @param fieldId The fieldId to set.
 	 */
 	public void setFieldId(Integer fieldId) {
 		this.fieldId = fieldId;
@@ -89,8 +98,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param name
-	 *            The name to set.
+	 * @param name The name to set.
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -104,8 +112,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param description
-	 *            The description to set.
+	 * @param description The description to set.
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -119,8 +126,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param fieldType
-	 *            The fieldType to set.
+	 * @param fieldType The fieldType to set.
 	 */
 	public void setFieldType(FieldType fieldType) {
 		this.fieldType = fieldType;
@@ -134,8 +140,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param concept
-	 *            The concept to set.
+	 * @param concept The concept to set.
 	 */
 	public void setConcept(Concept concept) {
 		this.concept = concept;
@@ -149,8 +154,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param tableName
-	 *            The tableName to set.
+	 * @param tableName The tableName to set.
 	 */
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
@@ -164,24 +168,22 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param attributeName
-	 *            The attributeName to set.
+	 * @param attributeName The attributeName to set.
 	 */
 	public void setAttributeName(String attributeName) {
 		// this.dirty = true;
 		this.attributeName = attributeName;
 	}
-	
+
 	/**
 	 * @return Returns the default value.
 	 */
 	public String getDefaultValue() {
 		return defaultValue;
 	}
-	
+
 	/**
-	 * @param defaultValue
-	 * 			The defaultValue to set.
+	 * @param defaultValue The defaultValue to set.
 	 */
 	public void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
@@ -190,6 +192,7 @@ public class Field implements java.io.Serializable {
 	public Boolean isSelectMultiple() {
 		return selectMultiple;
 	}
+
 	/**
 	 * @return Returns the selectMultiple.
 	 */
@@ -198,8 +201,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param selectMultiple
-	 *            The selectMultiple to set.
+	 * @param selectMultiple The selectMultiple to set.
 	 */
 	public void setSelectMultiple(Boolean selectMultiple) {
 		this.selectMultiple = selectMultiple;
@@ -213,8 +215,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
 	public void setCreator(User creator) {
 
@@ -229,8 +230,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param dateCreated
-	 *            The dateCreated to set.
+	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
@@ -244,8 +244,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param changedBy
-	 *            The changedBy to set.
+	 * @param changedBy The changedBy to set.
 	 */
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
@@ -259,8 +258,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param dateChanged
-	 *            The dateChanged to set.
+	 * @param dateChanged The dateChanged to set.
 	 */
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
@@ -274,8 +272,7 @@ public class Field implements java.io.Serializable {
 	}
 
 	/**
-	 * @param fieldAnswers
-	 *            The fieldAnswers to set.
+	 * @param fieldAnswers The fieldAnswers to set.
 	 */
 	public void setAnswers(Set<FieldAnswer> fieldAnswers) {
 		this.fieldAnswers = fieldAnswers;
@@ -284,8 +281,7 @@ public class Field implements java.io.Serializable {
 	/**
 	 * Adds a field answer to the list of field answers
 	 * 
-	 * @param FieldAnswer
-	 *            to be added
+	 * @param FieldAnswer to be added
 	 */
 	public void addAnswer(FieldAnswer fieldAnswer) {
 		if (fieldAnswers == null)
@@ -297,8 +293,7 @@ public class Field implements java.io.Serializable {
 	/**
 	 * Removes a field answer from the list of field answers
 	 * 
-	 * @param FieldAnswer
-	 *            to be removed
+	 * @param FieldAnswer to be removed
 	 */
 	public void removeAnswer(FieldAnswer fieldAnswer) {
 		if (fieldAnswers != null) {

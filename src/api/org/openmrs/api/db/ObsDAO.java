@@ -1,5 +1,6 @@
 package org.openmrs.api.db;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.logic.Aggregation;
 import org.openmrs.logic.Constraint;
+import org.openmrs.reporting.PatientSet;
 
 /**
  * Observation-related database functions
@@ -52,7 +54,7 @@ public interface ObsDAO {
 	/**
 	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person)
 	 */
-	public Set<Obs> getObservations(Person who) throws DAOException;
+	public Set<Obs> getObservations(Person who, boolean includeVoided) throws DAOException;
 
 	/**
 	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept,org.openmrs.Location,java.lang.String,java.lang.Integer)
@@ -63,7 +65,7 @@ public interface ObsDAO {
 	/**
 	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person,org.openmrs.Concept)
 	 */
-	public Set<Obs> getObservations(Person who, Concept question)
+	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided)
 			throws DAOException;
 
 	/**
@@ -122,4 +124,13 @@ public interface ObsDAO {
 	public List<Obs> getObservations(Person who, Aggregation aggregation,
 			Concept question, Constraint constraint);
 
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List<org.openmrs.Concept>, java.util.Date, java.util.Data, boolean)
+	 */
+	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate)
+	 */
+	public List<Obs> getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate);
 }

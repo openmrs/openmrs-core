@@ -15,6 +15,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
@@ -31,9 +32,6 @@ import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Concept-related services
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class ConceptServiceImpl implements ConceptService {
@@ -93,6 +91,16 @@ public class ConceptServiceImpl implements ConceptService {
 		return getConceptDAO().getConcept(conceptId);
 	}
 
+	/**
+	 * Gets the conceptAnswer with the given internal identifier
+	 * 
+	 * @param conceptAnswerId
+	 * @return ConceptAnswer
+	 */
+	public ConceptAnswer getConceptAnswer(Integer conceptAnswerId) {
+		return getConceptDAO().getConceptAnswer(conceptAnswerId);
+	}
+	
 	/**
 	 * Return a list of concepts sorted on sortBy in dir direction (asc/desc)
 	 * 

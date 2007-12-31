@@ -1,50 +1,38 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
+/**
+ * This class tests all methods that are not getter or setters 
+ * in the Obs java object
+ * 
+ * TODO: finish this test class for Obs
+ * 
+ * @see Obs
+ */
+public class ObsTest extends TestCase {
 
+	/**
+	 * Tests the get/setValueAsString methods
+	 * 
+	 * @throws Exception
+	 */
+	public void testValueAsString() throws Exception {
 
-public class ObsTest extends BaseTest {
-	
-	private Log log = LogFactory.getLog(this.getClass());
-
-	public void testClass() throws Exception {
-		
-		startup();
-		
-		Context.authenticate("admin", "test");
-		Locale locale = Context.getLocale();
-		
-		Patient patient = new Patient();
-		Set <Obs> MyObs ;
-		patient.setPatientId(1);
-		
-		List <ConceptWord>  conceptsWords;
-		conceptsWords = Context.getConceptService().findConcepts("CD4 COUNT", locale, false);
-		if (!conceptsWords.isEmpty()) {
-			    ConceptWord conceptWord = conceptsWords.get(0);
-			    Concept c = conceptWord.getConcept(); 
-				MyObs = Context.getObsService().getObservations(patient, c);
-				Iterator iter = MyObs.iterator();
-				while(iter.hasNext())
-			{
-				Obs o =(Obs) iter.next();
-				
-			    log.error(o.getValueAsString(locale));
-			 //   iter.remove();
-			}
-			log.error("Total Obs: " + MyObs.size());
-		}
-		else
-			log.error("Couldn't find a concept named 'CD4 COUNT'");
-		
-		shutdown();
+		// TODO: finish this test method
 	}
 	
 }

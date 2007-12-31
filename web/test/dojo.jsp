@@ -66,12 +66,12 @@
 </style>
 
 <div class="searchBox">
-	<b>Encounter Search</b><br>
+	<b>Encounter Search</b><br/>
 	<div dojoType="EncounterSearch" widgetId="eSearch" showIncludeVoided="true"></div>
 </div>
 
 <div class="searchBox">
-	<b>Concept Search</b><br>
+	<b>Concept Search</b><br/>
 	<div dojoType="ConceptSearch" widgetId="cSearch" showVerboseListing="true" showIncludeRetired="true" tableHeight="270"></div>
 </div>
 

@@ -54,7 +54,7 @@ public class PatientSetPortletController extends PortletController {
 			}
 			model.put("patientSet", patientSet);
 			
-			if (Context.isAuthenticated()) {
+			if (Context.isAuthenticated() && !model.containsKey("batchEntryForms")) {
 				if ("true".equals(model.get("allowBatchEntry"))) {
 					Collection<Form> forms = Context.getFormService().getForms();
 					List<Form> shortForms = new ArrayList<Form>();

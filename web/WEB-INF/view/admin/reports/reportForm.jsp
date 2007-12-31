@@ -11,7 +11,7 @@
 	<spring:message code="fix.error"/>
 	<br />
 </spring:hasBindErrors>
-<form method="post">
+<form method="post" class="box">
 <table>
 	<tr>
 		<td><spring:message code="general.name"/></td>

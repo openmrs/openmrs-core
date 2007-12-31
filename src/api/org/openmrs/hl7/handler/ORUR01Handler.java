@@ -215,7 +215,17 @@ public class ORUR01Handler implements Application {
 		}
 		if (log.isDebugEnabled())
 			log.debug("Finished creating observations");
-
+		
+		// Notify HL7 service that we have created a new encounter, allowing
+		// features/modules to trigger on HL7-generated encounters.
+		// TODO: this can be removed once we have a obs_group table and all
+		// obs can be created in memory as part of the encounter *before* we
+		// call EncounterService.createEncounter().  For now, making obs groups
+		// requires that one obs be created (in the database) before others can
+		// be linked to it, forcing us to save the encounter prematurely.
+		log.debug("Current thread: " + Thread.currentThread());
+		hl7Service.encounterCreated(encounter);
+		
 		return oru;
 
 	}
@@ -431,6 +441,10 @@ public class ORUR01Handler implements Application {
 		Date datetime = null;
 		TS ts = obx.getDateTimeOfTheObservation();
 		DTM value = ts.getTime();
+
+		if (value.getYear() == 0 || value.getValue() == null)
+			return null;
+
 		try {
 			datetime = getDate(value.getYear(), value.getMonth(), value
 					.getDay(), value.getHour(), value.getMinute(), value
@@ -514,6 +528,7 @@ public class ORUR01Handler implements Application {
 		return tsToDate(orc.getDateTimeOfTransaction());
 	}
 
+	//TODO: Debug (and use) methods in HL7Util instead
 	private Date tsToDate(TS ts) throws HL7Exception {
 		// need to handle timezone
 		String dtm = ts.getTime().getValue();

@@ -61,40 +61,47 @@ public class HibernateContextDAO implements ContextDAO {
 	 */
 	public User authenticate(String login, String password)
 			throws ContextAuthenticationException {
-
-		User user = null;
+		
 		String errorMsg = "Invalid username and/or password: " + login;
 		
 		Session session = sessionFactory.getCurrentSession();
-
-		String loginWithoutDash = login;
-		if (login.length() >= 3 && login.charAt(login.length() - 2) == '-')
-			loginWithoutDash = login.substring(0, login.length() - 2)
-					+ login.charAt(login.length() - 1);
-
-		User candidateUser = null;
-		try {
-			candidateUser = (User) session
-					.createQuery(
-							"from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.voided = 0")
-					.setString(0, login).setString(1, login).setString(2,
-							loginWithoutDash).uniqueResult();
-		} catch (HibernateException he) {
-			log.error("Got hibernate exception while logging in: '" + login
-					+ "'", he);
-		} catch (Exception e) {
-			log.error(
-					"Got regular exception while logging in: '" + login + "'",
-					e);
-		}
-
-		if (candidateUser == null) {
-			// TODO: Show the user whether it was username or password that they
-			// entered incorrectly
-			throw new ContextAuthenticationException("User not found: " + login);
-		}
 		
-		log.debug("Candidate user id: " + candidateUser.getUserId());
+		User candidateUser = null;
+		
+		if (login != null) {
+			
+			// loginWithoutDash is used to compare to the system id
+			String loginWithoutDash = login;
+			if (login.length() >= 3 && login.charAt(login.length() - 2) == '-')
+				loginWithoutDash = login.substring(0, login.length() - 2)
+						+ login.charAt(login.length() - 1);
+	
+			try {
+				candidateUser = (User) session
+						.createQuery(
+							"from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.voided = 0")
+						.setString(0, login)
+						.setString(1, login)
+						.setString(2, loginWithoutDash)
+						.uniqueResult();
+			} catch (HibernateException he) {
+				log.error("Got hibernate exception while logging in: '" + login
+						+ "'", he);
+			} catch (Exception e) {
+				log.error(
+						"Got regular exception while logging in: '" + login + "'",
+						e);
+			}
+		}
+
+		if (candidateUser == null)
+			throw new ContextAuthenticationException("User not found: " + login);
+		
+		if (log.isDebugEnabled())
+			log.debug("Candidate user id: " + candidateUser.getUserId());
+		
+		if (password == null)
+			throw new ContextAuthenticationException("Password cannot be null");
 		
 		String passwordOnRecord = (String) session.createSQLQuery(
 				"select password from users where user_id = ?")
@@ -109,14 +116,15 @@ public class HibernateContextDAO implements ContextDAO {
 				.uniqueResult();
 
 		String hashedPassword = Security.encodeString(password + saltOnRecord);
-
+		
+		User user = null;
+		
 		if (hashedPassword != null && hashedPassword.equals(passwordOnRecord))
 			user = candidateUser;
 
 		if (user == null) {
-			log
-					.info("Failed login attempt (login=" + login + ") - "
-							+ errorMsg);
+			log.info("Failed login attempt (login=" + login + ") - "
+						+ errorMsg);
 			throw new ContextAuthenticationException(errorMsg);
 		}
 
@@ -161,14 +169,17 @@ public class HibernateContextDAO implements ContextDAO {
 		if (!participate) {
 			log.debug("Unbinding session from synchronization mangaer ("
 						+ sessionFactory.hashCode() + ")");
-			Object value = TransactionSynchronizationManager.unbindResource(sessionFactory);
-			try {
-				if (value instanceof SessionHolder) {
-					Session session = ((SessionHolder)value).getSession();
-					SessionFactoryUtils.releaseSession(session, sessionFactory);
+
+			if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
+				Object value = TransactionSynchronizationManager.unbindResource(sessionFactory);
+				try {
+					if (value instanceof SessionHolder) {
+						Session session = ((SessionHolder)value).getSession();
+						SessionFactoryUtils.releaseSession(session, sessionFactory);
+					}
+				} catch (RuntimeException e) {
+					log.error("Unexpected exception on closing Hibernate Session", e);
 				}
-			} catch (RuntimeException e) {
-				log.error("Unexpected exception on closing Hibernate Session", e);
 			}
 		} else {
 			log.debug("Participating in existing session, so not releasing session through synchronization manager");

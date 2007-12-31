@@ -1,9 +1,42 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs;
 
 import java.util.Date;
 
 /**
- * RelationshipType 
+ * Defines a type of relationship between two people in the database.
+ * 
+ * A relationship is two-way.  There is a name for the relationship in both
+ * directions.  
+ * 
+ * For example: 
+ * a) physician Joe
+ * b) patient Bob
+ * Joe is the "physician of" Bob <u>and</u> Bob is the patient of Joe.  Once you
+ * can establish one of the two relationships, you automatically know the other.  
+ * 
+ * ALL relationships are two-way and can be defined as such.
+ * 
+ * RelationshipTypes should be defined as <b>gender non-specific</b>
+ * For example:
+ * A mother and her son.  Instead of having a RelationshipType defined as mother-son,
+ * it should be defined as Parent-child.  (This avoids the duplicative types that would
+ * come out like father-son, father-daughter, mother-daughter)
+ * 
+ * In English, we run into a tricky RelationshipType with aunts and uncles.  We have 
+ * chosen to define them as aunt/uncle-niece/nephew.    
  */
 public class RelationshipType implements java.io.Serializable {
 
@@ -32,10 +65,12 @@ public class RelationshipType implements java.io.Serializable {
 	}
 
 	/** 
-	 * Compares two objects for similarity
+	 * Compares two RelationshipTypes for similarity
 	 * 
-	 * @param obj
+	 * @param obj RelationshipType to compare to this object
 	 * @return boolean true/false whether or not they are the same objects
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
 		if (relationshipTypeId != null && obj instanceof RelationshipType) {
@@ -45,6 +80,9 @@ public class RelationshipType implements java.io.Serializable {
 		return false;
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getRelationshipTypeId() == null) return super.hashCode();
 		return this.getRelationshipTypeId().hashCode();
@@ -95,8 +133,8 @@ public class RelationshipType implements java.io.Serializable {
 	}
 
 	/**
-	 * The java bean spec says that if an attribute has the second letter
-	 * capitablized (as the "I" is), the initial "a" is not to be capitalized.
+	 * The java bean specifications says that if an attribute has the second letter
+	 * capitalized (as the "I" is), the initial "a" is not to be capitalized.
 	 * Both Spring and Hibernate use this "getter" definition
 	 *  
 	 * @return the aIsToB
@@ -120,10 +158,11 @@ public class RelationshipType implements java.io.Serializable {
 	}
 
 	/**
-	 * @deprecated use isPreferred()
+	 * @deprecated use isPreferred(). This method is kept around for Spring/Hibernate's use
 	 * @return the preferred status
 	 */
-	private Boolean getPreferred() {
+	@SuppressWarnings("unused")
+    private Boolean getPreferred() {
 		return isPreferred();
 	}
 	
@@ -182,6 +221,9 @@ public class RelationshipType implements java.io.Serializable {
 		this.dateCreated = dateCreated;
 	}
 	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return getaIsToB() + "/" + getbIsToA();
 	}

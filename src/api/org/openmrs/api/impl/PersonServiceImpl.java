@@ -31,8 +31,6 @@ import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Person-related services
- * 
- * @author Ben Wolfe
  * @vesrion 1.0
  */
 public class PersonServiceImpl implements PersonService {
@@ -58,10 +56,33 @@ public class PersonServiceImpl implements PersonService {
 	 * @see org.openmrs.api.PersonService#findPeople(java.lang.String,boolean)
 	 */
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided) {
+		log.debug("starting method");
+		return this.findPeople(searchPhrase, includeVoided, (List)null);
+	}
+
+	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, String roles) {
+		log.debug("starting method, roles is " + roles);
+		List<String> roleList = null;
+		
+		if ( roles != null ) if ( roles.length() > 0 ) {
+			String[] splitRoles = roles.split(",");
+			for ( String role : splitRoles ) {
+				if ( roleList == null ) roleList = new ArrayList<String>();
+				roleList.add(role);
+			}
+		}
+		
+		return this.findPeople(searchPhrase, includeVoided, roleList);
+	}
+
+	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, List<String> roles) {
+		log.debug("starting method, roles are " + roles);
 		Set<Person> people = new HashSet<Person>();
 		
-		people.addAll(Context.getPatientService().findPatients(searchPhrase, includeVoided));
-		people.addAll(Context.getUserService().findUsers(searchPhrase, (List)null, includeVoided));
+		if ( roles == null ) {
+			people.addAll(Context.getPatientService().findPatients(searchPhrase, includeVoided));
+		}
+		people.addAll(Context.getUserService().findUsers(searchPhrase, roles, includeVoided));
 		
 		return people;
 	}
@@ -123,7 +144,11 @@ public class PersonServiceImpl implements PersonService {
 	public PersonAttributeType getPersonAttributeType(Integer typeId) {
 		return getPersonDAO().getPersonAttributeType(typeId);
 	}
-	
+
+	public PersonAttribute getPersonAttribute(Integer id) {
+		return getPersonDAO().getPersonAttribute(id);
+	}
+
 	public PersonAttributeType getPersonAttributeType(String s) {
 		return getPersonDAO().getPersonAttributeType(s);
 	}

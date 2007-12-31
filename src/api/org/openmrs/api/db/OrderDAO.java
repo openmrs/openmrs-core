@@ -13,9 +13,6 @@ import org.openmrs.Patient;
 
 /**
  * Order-related database functions
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public interface OrderDAO {
@@ -60,6 +57,8 @@ public interface OrderDAO {
 	 * @throws DAOException
 	 */
 	public Order getOrder(Integer orderId) throws DAOException;
+
+	public DrugOrder getDrugOrder(Integer drugOrderId) throws DAOException;
 
 	/**
 	 * Get all orders
@@ -162,12 +161,22 @@ public interface OrderDAO {
 	public List<DrugOrder> getDrugOrders() throws DAOException;
 
 	/**
-	 * Get all drug orders for a particular Patient
+	 * Get all drug orders for a particular Patient, excluding voided ones
 	 * 
 	 * @return drug orders list
 	 * @throws DAOException
 	 */
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws DAOException;
+	
+	/**
+	 * Get all drug orders for a particular Patient
+	 *
+	 * @param patient
+	 * @param includeVoided
+	 * @return List of drug orders for a particular patient
+	 * @throws DAOException
+	 */
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided) throws DAOException;
 
 	public Map<ConceptSet, List<DrugOrder>> getConceptSetsByDrugOrders(List<DrugOrder> drugOrders) throws DAOException;
 }

@@ -47,6 +47,7 @@ public interface UserService {
 	 * @return boolean
 	 * @throws APIException
 	 */
+	@Transactional(readOnly=true)
 	@Authorized({"View Users"})
 	public boolean hasDuplicateUsername(User user) throws APIException;
 
@@ -128,7 +129,7 @@ public interface UserService {
 	 */
 	@Authorized({"Delete Users"})
 	public void deleteUser(User user) throws APIException;
-
+	
 	/**
 	 * Returns all privileges currently possible for any User
 	 * @return Global list of privileges

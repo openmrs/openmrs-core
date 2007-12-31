@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
@@ -43,6 +44,16 @@ public interface ConceptService {
 	@Transactional(readOnly=true)
 	@Authorized({"View Concepts"})
 	public Concept getConcept(Integer conceptId);
+
+	/**
+	 * Gets the conceptAnswer with the given internal identifier
+	 * 
+	 * @param conceptAnswerId
+	 * @return ConceptAnswer
+	 */
+	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
+	public ConceptAnswer getConceptAnswer(Integer conceptAnswerId);
 
 	/**
 	 * Return a list of concepts sorted on sortBy in dir direction (asc/desc)

@@ -106,7 +106,7 @@ public class PatientDashboardController extends SimpleFormController {
 			Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
 			
 			if ( conceptCause != null ) {
-				Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause);
+				Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause, false);
 				if ( obssDeath.size() == 1 ) {
 					Obs obsDeath = obssDeath.iterator().next();
 					causeOfDeathOther = obsDeath.getValueText();
@@ -128,7 +128,7 @@ public class PatientDashboardController extends SimpleFormController {
 		
 		Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
 		if ( reasonForExitConcept != null ) {
-			Set<Obs> patientExitObs = Context.getObsService().getObservations(patient, reasonForExitConcept);
+			Set<Obs> patientExitObs = Context.getObsService().getObservations(patient, reasonForExitConcept, false);
 			if ( patientExitObs != null ) {
 				log.debug("Exit obs is size " + patientExitObs.size() );
 				if ( patientExitObs.size() == 1 ) {
@@ -153,7 +153,6 @@ public class PatientDashboardController extends SimpleFormController {
 		map.put("emptyName", new PersonName());
 		map.put("emptyAddress", new PersonAddress());
 		map.put("encounters", encounters);
-		map.put("datePattern", Context.getDateFormat().toLocalizedPattern().toLowerCase());
 		map.put("causeOfDeathOther", causeOfDeathOther);
 		
 		return map;

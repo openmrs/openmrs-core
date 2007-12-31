@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs;
 
 import java.util.HashSet;
@@ -8,10 +21,14 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * Role
+ * A Role is just an aggregater of {@link Privilege}s.  {@link User}s contain
+ * a number of roles (Users DO NOT contain any privileges directly)
  * 
- *  @author Burke Mamlin
- *  @version 1.0
+ * Roles can be grouped by inheriting other roles.  If a user is given Role A
+ * that inherits from Role B, the user has all rights/abilities for both Role A's 
+ * privileges and for Role B's privileges.
+ * 
+ * @see Privilege
  */
 public class Role implements java.io.Serializable {
 
@@ -36,11 +53,17 @@ public class Role implements java.io.Serializable {
 		this.role = role;
 	}
 
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof Role) || role == null) return false;
 		return role.equals(((Role)obj).getRole());
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getRole() == null) return super.hashCode();
 		return this.getRole().hashCode();
@@ -78,7 +101,7 @@ public class Role implements java.io.Serializable {
 
 	/**
 	 * Adds the given Privilege to the list of privileges
-	 * @param privilege
+	 * @param privilege Privilege to add
 	 */
 	public void addPrivilege(Privilege privilege) {
 		if (privileges == null)
@@ -89,7 +112,7 @@ public class Role implements java.io.Serializable {
 	
 	/**
 	 * Removes the given Privilege from the list of privileges
-	 * @param privilege
+	 * @param privilegen Privilege to remove
 	 */
 	public void removePrivilege(Privilege privilege) {
 		if (privileges != null)
@@ -117,14 +140,24 @@ public class Role implements java.io.Serializable {
 		return this.role;
 	}
 	
-	public boolean hasPrivilege(String s) {
+	/**
+	 * Looks for the given <code>privilegeName</code> privilege name in this 
+	 * roles privileges.  This method does not recurse through the 
+	 * inherited roles
+	 * 
+	 * @param privilegeName String name of a privilege
+	 * @return true/false whether this role has the given privilege
+	 */
+	public boolean hasPrivilege(String privilegeName) {
 		
-		if (this.role.equals(OpenmrsConstants.SUPERUSER_ROLE))
+		if (OpenmrsConstants.SUPERUSER_ROLE.equals(this.role))
 			return true;
 		
-		for (Privilege p : privileges) {
-			if (p.getPrivilege().equals(s))
-				return true;
+		if (privileges != null) {
+			for (Privilege p : privileges) {
+				if (p.getPrivilege().equals(privilegeName))
+					return true;
+			}
 		}
 		
 		return false;
@@ -144,6 +177,12 @@ public class Role implements java.io.Serializable {
 		this.inheritedRoles = inheritedRoles;
 	}
 	
+	/**
+	 * Convenience method to test whether or not this role extends/
+	 * inherits from any other roles
+	 * 
+	 * @return true/false whether this role inherits from other roles
+	 */
 	public boolean inheritsRoles() {
 		return (getInheritedRoles() != null && getInheritedRoles().size() > 0); 
 	}
@@ -161,6 +200,13 @@ public class Role implements java.io.Serializable {
 		return parents;
 	}
 	
+	/**
+	 * Returns the full set of roles be looping over inherited roles.
+	 * Duplicate roles are dropped.
+	 * 
+	 * @param children Roles already looped over
+	 * @return Set<Role> Current and inherited roles
+	 */
 	public Set<Role> recurseOverParents(final Set<Role> children) {
 		if (!this.inheritsRoles()) return children;
 		
@@ -177,7 +223,10 @@ public class Role implements java.io.Serializable {
 			if (r.inheritsRoles())
 				allRoles.addAll(r.recurseOverParents(allRoles));
 		}
-		log.debug("Total roles: " + allRoles);
+		
+		if (log.isDebugEnabled())
+			log.debug("Total roles: " + allRoles);
+		
 		return allRoles;
 	}
 

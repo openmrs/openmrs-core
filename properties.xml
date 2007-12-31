@@ -9,6 +9,7 @@
 
 	<!-- Properties for running unit tests and webapp [un]deploy with tomcat -->
     <property name="tomcat.home" value="C:/Program Files/Apache Software Foundation/Tomcat 5.5"/>
+    <property name="catalina.home" value="C:/Program Files/Apache Software Foundation/Tomcat 5.5"/>
     <property name="tomcat.server" value="localhost" />
 	<property name="tomcat.port" value="8080" />
     <property name="tomcat.manager.url" value="http://${tomcat.server}:${tomcat.port}/manager" />
@@ -20,9 +21,6 @@
     <property name="doc.bottom" value="&lt;em&gt;&lt;small&gt;Generated ${timestamp}. NOTE - these libraries are in active development and subject to change&lt;/small&gt;&lt;/em&gt;" />
     <property name="doc.header" value="&lt;a href=&quot;http://www.openmrs.org&quot; target=_top&gt;&lt;img src=&quot;./openmrs-logo-small.gif&quot; border=0/&gt;&lt;/a&gt;" />
     <property name="doc.footer" value="&lt;a href=&quot;http://www.openmrs.org&quot; target=_top&gt;${ant.project.name}&lt;/a&gt;" />
-        
-    <!-- Address settings -->
-	<property name="address.format" value="Kenya" /> 
         
     <!-- =================================================================== -->
     <!-- Classpaths                                                          -->
@@ -51,7 +49,6 @@
 		<fileset dir="${dom4j.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
     	<fileset dir="${hl7api.dir}" includes="*.jar" />
-		<fileset dir="${ibatis.dir}" includes="*.jar" />
     	<fileset dir="${jfreechart.dir}" includes="*.jar" />
 		<fileset dir="${junit.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />

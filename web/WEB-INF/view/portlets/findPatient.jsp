@@ -9,6 +9,126 @@
 				<input type="submit" value="<spring:message code="general.searchButton" />" />
 			</form>
 		</c:when>
+		<c:when test="${model.size == 'slowConnection'}">
+
+			<openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/index.htm" />
+
+			<openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" ></openmrs:htmlInclude>
+			<openmrs:htmlInclude file="/dwr/engine.js" ></openmrs:htmlInclude>
+			<openmrs:htmlInclude file="/dwr/util.js" ></openmrs:htmlInclude>
+			
+			<div id="findPatient">
+				<b class="boxHeader"><spring:message code="Patient.find"/></b>
+				<div class="box">
+					<form>
+						<span style="white-space: nowrap">
+							<span><spring:message code="PatientSearch.searchOnName"/></span>
+							<input type="text" value="" id="pSearch" name="pSearch" autocomplete="off" />
+							<input type="button" id="searchButton" value="Search" />
+						</span>
+						<span class="openmrsSearchDiv">
+							<table class="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%">
+								<thead id="openmrsSearchTableHead">
+									<tr></tr>
+								</thead>
+								<tbody id="objHitsTableBody" style="vertical-align: top">
+									<tr>
+										<td class="searchIndex"></td>
+										<td></td>
+									</tr>
+								</tbody>
+							</table>
+						</span>
+					</form>
+				</div>
+			</div>
+
+			<script>
+			
+				var patient;
+				var autoJump = true;
+				<request:existsParameter name="autoJump">
+					autoJump = <request:parameter name="autoJump"/>;
+				</request:existsParameter>
+				
+				function showSearch() {
+					findPatient.style.display = "";
+					patientListing.style.display = "none";
+					savedText = "";
+					searchBox.focus();
+				}
+				
+				function onSelect(arr) {
+					if (arr[0].patientId != null) {
+						document.location = "${model.postURL}?patientId=" + arr[0].patientId + "&phrase=" + savedText;
+					}
+					else if (arr[0].href != null) {
+						document.location = arr[0].href;
+					}
+				}
+				
+				function findObjects(text) {
+					if (text.length > 2) {
+						savedText = text;
+						DWRPatientService.findPatients(preFillTable, text, includeRetired);
+					}
+					else {
+						var msg = new Array();
+						msg.push("Invalid number of search characters");
+						fillTable(msg, [getNumber, getString]);
+					}
+					patientListing.style.display = "";
+					return false;
+				}
+				
+				function allowAutoJump() {
+					if (autoJump == false) {
+						autoJump = true;
+						return false;
+					}
+					//	only allow the first item to be automatically selected if:
+					//		the entered text is a string or the entered text is a valid identifier
+					return (savedText.match(/\d/) == false || isValidCheckDigit(savedText));	
+				}
+				
+			</script>
+			
+			<script>
+				
+				var patientListing= document.getElementById("patientListing");
+				var findPatient   = document.getElementById("findPatient");
+				var searchBox		= document.getElementById("searchBox");
+				var findPatientForm = document.getElementById("findPatientForm");
+				
+				function init() {
+					DWRUtil.useLoadingMessage();
+				
+					<request:existsParameter name="patientId">
+						<!-- User has 'patientId' in the request params -- selecting that patient -->
+						var pats = new Array();
+						pats.push(new Object());
+						pats[0].patientId = '<request:parameter name="patientId"/>';
+						onSelect(pats);
+					</request:existsParameter>
+					
+					<request:existsParameter name="phrase">
+						<!-- User has 'phrase' in the request params -- searching on that -->
+						searchBox.value = '<request:parameter name="phrase"/>';
+					</request:existsParameter>
+				
+					showSearch();
+			
+					// creates back button functionality
+					if (searchBox.value != "")
+						search(searchBox, null, false, 0);
+						
+					changeClassProperty("description", "display", "none");
+				}
+					
+				window.onload=init;
+			</script>
+
+		</c:when>
 		<c:when test="${model.size == 'full'}">
 			
 			<openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/index.htm" />
@@ -63,7 +183,7 @@
 					}
 				</script>
 			</c:if>
-			
+
 		</c:when>
 		<c:otherwise>
 			ERROR! unknown size '${model.size}' in FindOnePatientWidget

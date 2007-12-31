@@ -82,8 +82,20 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
-		<name>reportObjectType</name>
+		<description>if you set name to 'answer', you must specify which concept (by name or id)</description>
+		<name>concept</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<description>if you set name to 'conceptSet', you must specify which set (by name or id)</description>
+		<name>conceptSet</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
 		<description>if you set name to reportObject, you can limit them to a specific type</description>
+		<name>reportObjectType</name>
 		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
@@ -358,6 +370,12 @@
 	<attribute>
 		<name>numericVar</name>
 		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>setMemberVar</name>
+		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
 	</attribute>
@@ -677,6 +695,12 @@
 		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
+	<attribute>
+		<description>If specified, then the property will be returned as a List of Strings. This property should be given as a Java regular expression, as would be passed to String.split(String)</description>
+		<name>listSeparator</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
 </tag>
 
 <tag>
@@ -704,7 +728,16 @@
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
 </tag>
-	
+
+<tag>
+	<description>
+		Gets the date pattern for the current user's locale
+	</description>
+	<name>datePattern</name>
+	<tag-class>org.openmrs.web.taglib.DatePatternTag</tag-class>
+	<body-content>empty</body-content>
+</tag>
+
 <tag>
 	<description>
 		Makes an html table of obs that belong to specified concepts/concept-sets
@@ -885,26 +918,6 @@
 
 <tag>
 	<description>
-		Counts the number of objects associated with this extension point and sets it as a variable in the page context.
-		If 'var' is not specified, then the count is written to pageContext.out
-	</description>
-	<name>extensionCount</name>
-	<tag-class>org.openmrs.module.web.taglib.ExtensionCountTag</tag-class>
-	<body-content>empty</body-content>
-	<attribute>
-		<name>pointId</name>
-		<required>true</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>var</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-</tag>
-
-<tag>
-	<description>
 		Loops over all the objects associated with this extension point
 		modules assign themselves to a point via the module.xml descriptor file
 	</description>
@@ -930,6 +943,65 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<description>
+			Name of the "varStatus" object that will contain
+			the first/last/index variables during looping. Defaults to
+			'varStatus'
+		</description>
+		<name>varStatus</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
+		Displays extensions attached to a give extension point in a popup menu.
+		Extensions attached to that point that extend org.openmrs.module.web.extension.LinkProviderExtension will be displayed.
+	</description>
+	<name>extensionPopupMenu</name>
+	<tag-class>org.openmrs.module.web.taglib.ExtensionPopupMenuTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>pointId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>popupDivId</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>label</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>showLabelIfNoExtensions</name>
+		<description>Whether to show the popup menu if no extensions attach to it. Defaults to true</description>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>position</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>parameters</name>
+		<description>
+			This should be of the format name1=value1|name2=value2|...
+			Names must be plain strings.
+			Values may either be plain strings or they may be the special form:
+				javascript:someFunctionCall()
+			someFunctionCall() will be called when the user chooses an item out of the menu. If it returns a string, that value will be substituted in as a form variable. If it returns null, then form submission will be cancelled.		
+		</description>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>
 

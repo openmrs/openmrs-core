@@ -1,6 +1,8 @@
 package org.openmrs.api;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openmrs.Concept;
@@ -13,6 +15,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.logic.Aggregation;
 import org.openmrs.logic.Constraint;
+import org.openmrs.reporting.PatientSet;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -113,10 +116,11 @@ public interface ObsService {
 	 * Get all Observations for a person
 	 * 
 	 * @param who
+	 * @param includeVoided
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public Set<Obs> getObservations(Person who);
+	public Set<Obs> getObservations(Person who, boolean includeVoided);
 
 	/**
 	 * Get all Observations for this concept/location Sort is optional
@@ -125,21 +129,22 @@ public interface ObsService {
 	 * @param location
 	 * @param sort
 	 * @param personType
+	 * @param includeVoided
 	 * @return list of obs for a location
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer persontType);
+	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer personType, boolean includeVoided);
 
 	/**
 	 * e.g. get all CD4 counts for a person
 	 * 
 	 * @param who
 	 * @param question
-	 * @param personType
+	 * @param includeVoided
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public Set<Obs> getObservations(Person who, Concept question);
+	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided);
 
 	/**
 	 * e.g. get last 'n' number of observations for a person for given concept
@@ -152,7 +157,7 @@ public interface ObsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Obs> getLastNObservations(Integer n, Person who,
-			Concept question);
+			Concept question, boolean includeVoided);
 
 	/**
 	 * e.g. get all observations referring to RETURN VISIT DATE
@@ -166,7 +171,7 @@ public interface ObsService {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservations(Concept question, String sort, Integer personType);
+	public List<Obs> getObservations(Concept question, String sort, Integer personType, boolean includeVoided);
 
 	/**
 	 * Return all observations that have the given concept as an answer
@@ -177,7 +182,7 @@ public interface ObsService {
 	 * @return list of obs
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType);
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType, boolean includeVoided);
 	
 	/**
 	 * Return all numeric answer values for the given concept ordered by value
@@ -192,7 +197,7 @@ public interface ObsService {
 	 * @return List<Object[]> [0]=<code>obsId</code>, [1]=<code>obsDatetime</code>, [2]=<code>valueNumeric</code>s
 	 */
 	@Transactional(readOnly = true)
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType);
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType, boolean includeVoided);
 	
 	/**
 	 * Get all observations from a specific encounter
@@ -244,4 +249,40 @@ public interface ObsService {
 	@Authorized( { "View Person" })
 	public List<Obs> getObservations(Person who, Aggregation aggregation,
 			Concept question, Constraint constraint);
+	
+	/**
+	 * Get all Observations for these concepts between these dates.  Ideal for getting things like recent lab results regardless of what patient
+	 * 
+	 * @param concepts get observations for these concepts (leave as null to get all)
+	 * @param fromDate
+	 * @param toDate
+	 * @param includeVoided
+	 * @return list of obs for a location
+	 */
+	@Transactional(readOnly = true)
+	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided);
+
+	/**
+	 * Get all Observations for these concepts between these dates.  Ideal for getting things like recent lab results regardless of what patient
+	 * 
+	 * @param concepts get observations for these concepts (leave as null to get all)
+	 * @param fromDate
+	 * @param toDate
+	 * @return list of obs for a location
+	 */
+	@Transactional(readOnly = true)
+	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate);
+
+	
+	/**
+	 * Get all Observations for this patient set, for these concepts, between these dates.  Ideal for getting things like recent lab results for a set of patients
+	 * 
+	 * @param ps the patientset for which to retrieve data for - null means all patients
+	 * @param concepts list of the concepts for which to retrieve obs - null means all obs
+	 * @param fromDate lower bound for date - null means no lower bound
+	 * @param toDate upper bound for date - null means no upper bound
+	 * @return observations, for this patient set, with concepts in list of concepts passed, between the two dates passed in
+	 */
+	@Transactional(readOnly=true)
+	public List<Obs> getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate);
 }

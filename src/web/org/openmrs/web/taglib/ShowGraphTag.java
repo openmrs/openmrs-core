@@ -52,7 +52,7 @@ public class ShowGraphTag extends BodyTagSupport {
 		Concept concept = Context.getConceptService().getConceptByName(conceptName);
 		
 		if (concept != null && concept.isNumeric()) { 
-			Set<Obs> observations = Context.getObsService().getObservations(patient, concept);
+			Set<Obs> observations = Context.getObsService().getObservations(patient, concept, false);
 			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 			for( Obs obs : observations ) { 
 				dataset.addValue(obs.getValueNumeric(), conceptName, obs.getObsDatetime());

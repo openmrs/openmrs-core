@@ -12,9 +12,6 @@ import org.openmrs.api.APIException;
 /**
  * Form-related database functions
  * 
- * @author Ben Wolfe
- * @author Burke Mamlin
- * @version 1.0
  */
 public interface FormDAO {
 	
@@ -26,6 +23,15 @@ public interface FormDAO {
 	 */
 	public Form createForm(Form form) throws DAOException;
 
+	/**
+	 * Creates new form from the given <code>form</code>
+	 * 
+	 * @param form Form to duplicate
+	 * @return newly duplicated Form
+	 * @throws DAOException
+	 */
+	public Form duplicateForm(Form form) throws DAOException;
+	
 	/**
 	 * Get form by internal form identifier
 	 * @param formId internal identifier
@@ -190,5 +196,10 @@ public interface FormDAO {
 	 * @throws DAOException
 	 */
 	public void deleteFormField(FormField formField) throws DAOException;
+
+	/**
+     * @see org.openmrs.api.FormService#findForms(java.lang.String, boolean, boolean)
+     */
+    public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired);
 	
 }

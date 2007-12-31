@@ -44,112 +44,6 @@
 						<b>${model.patient.attributeMap['Health Center'].hydratedObject}</b>
 					</td>
 				</c:if>
-				<td id="patientHeaderPatientSummary">
-					<a class="offColor" href="javascript:window.open('patientSummary.htm?patientId=${model.patientId}', 'summaryWindow', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes').focus()">Summary</a>
-				</td>
-				<c:if test="${empty model.patientReasonForExit}">
-					<td id="patientHeaderOutcome">
-						<div id="patientHeaderOutcomeLink">
-							<a class="offColor" href="javascript:showExitForm();"><spring:message code="Patient.outcome.exitFromCare" /></a>
-						</div>
-						<div id="patientHeaderOutcomeForm" style="display:none;">
-							<form method="post" id="exitForm">
-								<table id="outcomeFormTable">
-									<tr>
-										<td id="patientHeaderOutcomeReason">
-											<span id="patientOutcomeTextReason"><spring:message code="Patient.outcome.exitType" /></span>
-											<openmrs:fieldGen type="org.openmrs.Patient.exitReason" formFieldName="reasonForExit" val="" parameters="optionHeader=[blank]|globalProp=concept.reasonExitedCare|onChange=updateCauseField()" />
-										</td>
-										<td id="patientHeaderOutcomeDate">
-											<span id="patientOutcomeTextReason"><spring:message code="Patient.outcome.exitDate" /></span>
-											<openmrs:fieldGen type="java.util.Date" formFieldName="dateOfExit" val="" parameters="noBind=true" />
-										</td>
-										<td id="patientHeaderCauseOfDeath" style="display:none;">
-											<span id="patientOutcomeTextDeathCause"><spring:message code="Person.deathDate"/></span>
-											<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
-											<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
-											<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="causeOfDeath" val="${status.value}" parameters="showAnswers=${conceptCauseOfDeath}|showOther=${conceptOther}|otherValue=${causeOfDeathOther}" />
-										</td>
-										<td id="patientHeaderOutcomeSave">
-											<input type="button" onClick="javascript:exitFormValidate();" value="<spring:message code="general.save" />" />
-											<input type="button" onClick="javascript:hideExitForm();" value="<spring:message code="general.cancel" />" />
-										</td>
-									</tr>
-								</table>
-							</form>
-						</div>
-						<script>
-							<!--
-								
-								function updateCauseField() {
-									var outcomeType = DWRUtil.getValue("reasonForExit");
-									<openmrs:globalProperty key="concept.patientDied" var="conceptPatientDied" />
-	
-									if ( outcomeType == '${conceptPatientDied}' ) {
-										showDiv("patientHeaderCauseOfDeath");
-									} else {
-										hideDiv("patientHeaderCauseOfDeath");
-									}
-								}
-							
-								function showExitForm() {
-									showDiv("patientHeaderOutcomeForm");
-									hideDiv("patientHeaderOutcomeLink");
-								}
-							
-								function hideExitForm() {
-									showDiv("patientHeaderOutcomeLink");
-									hideDiv("patientHeaderOutcomeForm");
-								}
-							
-								function exitFormValidate() {
-									var outcomeType = DWRUtil.getValue("reasonForExit");
-									var outcomeDate = DWRUtil.getValue("dateOfExit");
-									var outcomeCauseOfDeath = DWRUtil.getValue("causeOfDeath");
-									var outcomeCauseOther = DWRUtil.getValue("causeOfDeath_other");
-									
-									if ( outcomeType == '' ) {
-										alert("<spring:message code="Patient.outcome.error.noType" />");
-										return;
-									}
-	
-									if ( outcomeDate == '' ) {
-										alert("<spring:message code="Patient.outcome.error.noDate" />");
-										return;
-									}
-									
-									if ( outcomeType == '${conceptPatientDied}' && outcomeCauseOfDeath == '' ) {
-										alert("<spring:message code="Patient.outcome.error.noCauseOfDeath" />");
-										return
-									}
-									
-									if ( outcomeType && outcomeDate ) {
-										var exitTypeSelect = document.getElementById("reasonForExit");
-										var exitTypeText = exitTypeSelect[exitTypeSelect.selectedIndex].text;
-										var answer = confirm("<spring:message code="Patient.outcome.readyToSubmit" />" + "\n<spring:message code="Patient.outcome.exitType" />: " + exitTypeText + "\n<spring:message code="Patient.outcome.exitDate" />: " + outcomeDate);
-										if ( answer ) {
-											DWRPatientService.exitPatientFromCare( ${model.patient.patientId}, outcomeType, outcomeDate, outcomeCauseOfDeath, outcomeCauseOther, confirmExit );
-										}
-									}
-								}
-								
-								function confirmExit(message) {
-									if ( message == '' ) {
-										// patient has been exited, let's refresh the page
-										window.location.reload();
-									} else {
-										alert(message);
-									}
-								}
-							-->
-						</script>
-					</td>
-				</c:if>
-				<c:if test="${not empty model.patientReasonForExit}">
-					<td id="patientHeaderOutcome">
-						<span id="reasonForExit"><spring:message code="Patient.outcome.exitType" />: <b>${model.patientReasonForExit} (${model.patientDateOfExit})</b></span>
-					</td>
-				</c:if>
 				<td id="patientDashboardHeaderExtension">
 					<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.Header" type="html" parameters="patientId=${model.patient.patientId}" />
 				</td>
@@ -190,13 +84,16 @@
 					<td><spring:message code="Program.enrolled"/>:</td>
 					<th><openmrs:formatDate date="${p.dateEnrolled}" type="medium" /></th>
 					<td>|</td>
-					<td><spring:message code="Program.group"/>:</td>
-					<th><openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="1377" locale="${model.locale}" /></th>
-					<td>|</td>
+
+					<c:forEach items="${p.currentStates}" var="patientState" varStatus="s">
+						<td>${patientState.state.programWorkflow.concept.name}:</td>
+						<th>${patientState.state.concept.name}</th>
+						<td>|</td>
+					</c:forEach>
 					<td><spring:message code="Program.agent"/>:</td>
 					<th>
 						<c:forEach items="${model.patientRelationships}" var="r" varStatus="s">
-							<c:if test="${r.relationshipType.relationshipTypeId == 1}">
+							<c:if test="${r.relationshipType.relationshipTypeId == 1 && r.personA.personId != model.patientId}">
 								<c:if test="${accompFound}">, </c:if>
 								${r.personA.personName}
 								<c:set var="accompFound" value="true"/>

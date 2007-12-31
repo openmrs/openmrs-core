@@ -1,7 +1,19 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.web.controller.patient;
 
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,10 +54,10 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
-import org.openmrs.web.propertyeditor.ConceptEditor;
-import org.openmrs.web.propertyeditor.LocationEditor;
-import org.openmrs.web.propertyeditor.PatientIdentifierTypeEditor;
-import org.openmrs.web.propertyeditor.TribeEditor;
+import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.PatientIdentifierTypeEditor;
+import org.openmrs.propertyeditor.TribeEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -57,13 +69,17 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * Patient-specific form controller.  Creates the model/view etc for editing
+ * patients.
+ * 
+ * @see org.openmrs.web.controller.person.PersonFormController
+ */
 public class PatientFormController extends PersonFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
 
-    SimpleDateFormat dateFormat;
-    
 	/**
 	 * 
 	 * Allows for other Objects to be used as values in input tags.
@@ -74,13 +90,11 @@ public class PatientFormController extends PersonFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		dateFormat = Context.getDateFormat();
-		
         NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(dateFormat, true, 10));
+        		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
         binder.registerCustomEditor(Tribe.class, new TribeEditor());
         binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
         binder.registerCustomEditor(Location.class, new LocationEditor());
@@ -116,6 +130,7 @@ public class PatientFormController extends PersonFormController {
 					String[] ids = request.getParameterValues("identifier");
 					String[] idTypes = request.getParameterValues("identifierType");
 					String[] locs = request.getParameterValues("location");
+					String[] idPrefStatus = ServletRequestUtils.getStringParameters(request, "preferred");
 					
 					if (ids != null) {
 						for (int i = 0; i < ids.length; i++) {
@@ -125,6 +140,8 @@ public class PatientFormController extends PersonFormController {
 								pi.setIdentifier(id);
 								pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
 								pi.setLocation(es.getLocation(Integer.valueOf(locs[i])));
+								if (idPrefStatus != null && idPrefStatus.length > i)
+									pi.setPreferred(new Boolean(idPrefStatus[i]));
 								patient.addIdentifier(pi);
 							}
 						}
@@ -142,6 +159,7 @@ public class PatientFormController extends PersonFormController {
 					String [] pCodes = ServletRequestUtils.getStringParameters(request, "postalCode");
 					String [] counties = ServletRequestUtils.getStringParameters(request, "countyDistrict");
 					String [] cells = ServletRequestUtils.getStringParameters(request, "neighborhoodCell");
+					String [] addPrefStatus = ServletRequestUtils.getStringParameters(request, "preferred");
 					
 					if (add1s != null || add2s != null || cities != null || states != null || countries != null
 							|| lats != null || longs != null || pCodes != null || counties != null || cells != null ) {
@@ -187,6 +205,8 @@ public class PatientFormController extends PersonFormController {
 									pa.setCountyDistrict(counties[i]);
 								if (cells.length >= i+1)
 									pa.setNeighborhoodCell(cells[i]);
+								if (addPrefStatus != null && addPrefStatus.length > i)
+									pa.setPreferred(new Boolean(addPrefStatus[i]));
 								patient.addAddress(pa);
 								//}
 						}
@@ -208,12 +228,14 @@ public class PatientFormController extends PersonFormController {
 					String[] fName2s = ServletRequestUtils.getStringParameters(request, "familyName2");
 					String[] fNameSuffixes = ServletRequestUtils.getStringParameters(request, "familyNameSuffix");
 					String[] degrees = ServletRequestUtils.getStringParameters(request, "degree");
+					String[] namePrefStatus = ServletRequestUtils.getStringParameters(request, "preferred");
 					
 					if (gNames != null) {
 						for (int i = 0; i < gNames.length; i++) {
 							if (gNames[i] != "") { //skips invalid and blank address data box
 								PersonName pn = new PersonName();
-								pn.setPreferred(false);
+								if (namePrefStatus != null && namePrefStatus.length > i)
+									pn.setPreferred(new Boolean(namePrefStatus[i]));
 								if (gNames.length >= i+1)
 									pn.setGivenName(gNames[i]);
 								if (mNames.length >= i+1)
@@ -380,7 +402,7 @@ public class PatientFormController extends PersonFormController {
 					Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
 
 					if ( causeOfDeath != null ) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath);
+						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath, false);
 						if ( obssDeath != null ) {
 							if ( obssDeath.size() > 1 ) {
 								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
@@ -509,11 +531,11 @@ public class PatientFormController extends PersonFormController {
 		if (patient == null) {
 			patient = new Patient();
 			
-			String name = request.getParameter("name");
+			String name = request.getParameter("addName");
 			if (name != null) {
-				String gender = request.getParameter("gndr");
-				String date = request.getParameter("birthyear");
-				String age = request.getParameter("age");
+				String gender = request.getParameter("addGender");
+				String date = request.getParameter("addBirthdate");
+				String age = request.getParameter("addAge");
 				
 				getMiniPerson(patient, name, gender, date, age);
 			}
@@ -534,7 +556,7 @@ public class PatientFormController extends PersonFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		
 		Patient patient = (Patient)obj;
 		List<Form> forms = new Vector<Form>();
@@ -556,7 +578,7 @@ public class PatientFormController extends PersonFormController {
 		
 		Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
 		if ( reasonForExitConcept != null ) {
-			Set<Obs> patientExitObs = Context.getObsService().getObservations(patient, reasonForExitConcept);
+			Set<Obs> patientExitObs = Context.getObsService().getObservations(patient, reasonForExitConcept, false);
 			if ( patientExitObs != null ) {
 				log.debug("Exit obs is size " + patientExitObs.size() );
 				if ( patientExitObs.size() == 1 ) {

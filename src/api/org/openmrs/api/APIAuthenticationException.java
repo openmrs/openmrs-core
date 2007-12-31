@@ -4,7 +4,7 @@ package org.openmrs.api;
  * Represents often fatal errors that occur within the API
  * infrastructure involving a user's lack of privileges.
  *  
- * @author Ben Wolfe
+
  * @version 1.0
  */
 public class APIAuthenticationException extends APIException {

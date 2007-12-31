@@ -1,7 +1,6 @@
 package org.openmrs.web.controller.user;
 
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -55,7 +54,7 @@ public class PrivilegeListController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 		
-		Locale locale = request.getLocale();
+		//Locale locale = request.getLocale();
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
 			String[] privilegeList = request.getParameterValues("privilegeId");
@@ -71,12 +70,12 @@ public class PrivilegeListController extends SimpleFormController {
 				//TODO convenience method deletePrivilege(String) ??
 				try {
 					as.deletePrivilege(us.getPrivilege(p));
-					if (!success.equals("")) success += "<br>";
+					if (!success.equals("")) success += "<br/>";
 					success += p + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting privielge", e);
-					if (!error.equals("")) error += "<br>";
+					if (!error.equals("")) error += "<br/>";
 					error += p + " " + notDeleted;
 				}
 			}
@@ -100,9 +99,6 @@ public class PrivilegeListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		
-		
 		//map containing the privilege and true/false whether the privilege is core or not
 		Map<Privilege, Boolean> privilegeList = new LinkedHashMap<Privilege, Boolean>();
 		

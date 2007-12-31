@@ -33,7 +33,7 @@ public class AddPersonController extends SimpleFormController {
         
     /** Parameters passed in view request object **/
     private String name = "";
-    private String birthyear = "";
+    private String birthdate = "";
     private String age = "";
     private String gender = "";
     private String personType = "patient";
@@ -102,15 +102,21 @@ public class AddPersonController extends SimpleFormController {
 			
 			getParametersFromRequest(request);
 			
-			log.debug("name: " + name + " birthyear: " + birthyear + " age: " + age + " gender: " + gender);
+			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
-			if (!name.equals("") || !birthyear.equals("") || !age.equals("") || !gender.equals("")) {
+			if (!name.equals("") || !birthdate.equals("") || !age.equals("") || !gender.equals("")) {
 					
-				log.info(userId + "|" + name + "|" + birthyear + "|" + age + "|" + gender);
+				log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
 				
 				Integer d = null;
-				birthyear = birthyear.trim();
+				birthdate = birthdate.trim();
+				
+				String birthyear = "";
+				if (birthdate.length() > 6)
+					birthyear = birthdate.substring(6);  //parse out the year. assuming XX-XX-XXXX
+				
 				age = age.trim();
+				
 				if (birthyear.length() > 3)
 					d = Integer.valueOf(birthyear);
 				else if (age.length() > 0) {
@@ -156,9 +162,9 @@ public class AddPersonController extends SimpleFormController {
     		if (viewType == null)
 				viewType = "edit";
 			
-			log.debug("name: " + name + " birthyear: " + birthyear + " age: " + age + " gender: " + gender);
+			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
-			if (!name.equals("") || !birthyear.equals("") || !age.equals("") || !gender.equals("")) {
+			if (!name.equals("") || !birthdate.equals("") || !age.equals("") || !gender.equals("")) {
 				mav.clear();
 				mav.setView(new RedirectView(getPersonURL("", personType, viewType, request)));
 			}
@@ -200,7 +206,7 @@ public class AddPersonController extends SimpleFormController {
      */
     private String getParametersForURL(String personId, String personType) {
     	if ("".equals(personId))
-			return "?name=" + name + "&birthyear=" + birthyear + "&age=" + age + "&gndr=" + gender;
+			return "?addName=" + name + "&addBirthdate=" + birthdate + "&addAge=" + age + "&addGender=" + gender;
     	else {
     		if ("patient".equals(personType))
     			return "?patientId=" + personId;
@@ -215,10 +221,10 @@ public class AddPersonController extends SimpleFormController {
      * @param request
      */
     private void getParametersFromRequest(HttpServletRequest request) {
-    	name = ServletRequestUtils.getStringParameter(request, "name", "");
-		birthyear = ServletRequestUtils.getStringParameter(request, "birthyear", "");
-		age = ServletRequestUtils.getStringParameter(request, "age", "");
-		gender = ServletRequestUtils.getStringParameter(request, "gndr", "");
+    	name = ServletRequestUtils.getStringParameter(request, "addName", "");
+		birthdate = ServletRequestUtils.getStringParameter(request, "addBirthdate", "");
+		age = ServletRequestUtils.getStringParameter(request, "addAge", "");
+		gender = ServletRequestUtils.getStringParameter(request, "addGender", "");
 		
 		personType = ServletRequestUtils.getStringParameter(request, "personType", "patient");
 		personId = ServletRequestUtils.getStringParameter(request, "personId", "");

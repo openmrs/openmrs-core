@@ -3,9 +3,6 @@ package org.openmrs;
 
 /**
  * ConceptNumeric
- * 
- * @author Burke Mamlin
- * @author Ben Wolfe
  * @version 1.0
  */
 public class ConceptNumeric extends Concept implements java.io.Serializable {

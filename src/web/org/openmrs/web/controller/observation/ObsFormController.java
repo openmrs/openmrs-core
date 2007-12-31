@@ -1,6 +1,5 @@
 package org.openmrs.web.controller.observation;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +18,9 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.LocationEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -37,8 +37,6 @@ public class ObsFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
-    SimpleDateFormat dateFormat;
-    
 	/**
 	 * 
 	 * Allows for Integers to be used as values in input tags.
@@ -49,12 +47,10 @@ public class ObsFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
-		
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(dateFormat, true));
+        		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true));
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(java.lang.Boolean.class,
         		new CustomBooleanEditor(true)); //allow for an empty boolean value
@@ -123,8 +119,9 @@ public class ObsFormController extends SimpleFormController {
 			}
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.saved");
-
-			view = view + "?encounterId=" + obs.getEncounter().getEncounterId() + "&phrase=" + request.getParameter("phrase");
+			
+			if (obs.getEncounter() != null)
+				view = view + "?encounterId=" + obs.getEncounter().getEncounterId() + "&phrase=" + request.getParameter("phrase");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -179,8 +176,6 @@ public class ObsFormController extends SimpleFormController {
 				map.put("conceptName", obs.getConcept().getName(request.getLocale()));
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
-		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
-
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
 		String editReason = request.getParameter("editReason");

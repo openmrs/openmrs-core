@@ -76,14 +76,14 @@
 		<td align="center"><spring:message code="FormField.fieldPart"/></td>
 		<td align="center"><spring:message code="FormField.pageNumber"/></td>
 		<td align="center"><spring:message code="FormField.minOccurs"/></td>
-		<td align="center"><spring:message code="FormField.maxOccurs"/></td>
+		<td align="center"><spring:message code="FormField.maxOccurs"/> <span class="smallMessage">(<spring:message code="FormField.maxOccurs.help"/>)</span> </td>
 	</tr>
 	<tr>
 		<td align="center"><input type="text" size="5" id="fieldNumber"/></td>
 		<td align="center"><input type="text" size="5" id="fieldPart" /></td>
 		<td align="center"><input type="text" size="5" id="pageNumber" /></td>
 		<td align="center"><input type="text" size="5" id="minOccurs" /></td>
-		<td align="center"><input type="text" size="5" id="maxOccurs" /></td>
+		<td align="left"><input type="text" size="5" id="maxOccurs" /></td>
 	</tr>
 	<tr>
 		<td><label for="required"><spring:message code="FormField.required"/></label></td>

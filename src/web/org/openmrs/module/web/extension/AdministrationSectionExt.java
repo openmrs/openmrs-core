@@ -36,11 +36,7 @@ public abstract class AdministrationSectionExt extends Extension {
 	 * admin screen.  Links can be either absolute or relative.  Title of the 
 	 * links can be either plain text or Spring message codes.
 	 * 
-	 * In order to sort the links, you need to create a <code>TreeMap</code>.  A 
-	 * utility method has been added to OpenMRS to save the order of the members 
-	 * of the map: <code>org.openmrs.util.InsertedOrderComparator</code>
-	 * With this comparator, the order of the links will be the order they were 
-	 * inserted into the map.
+	 * In order to sort the links, you should use a <code>LinkedHashMap</code>.
 	 * 
 	 * @return Map<String, String> of <link, title>
 	 */

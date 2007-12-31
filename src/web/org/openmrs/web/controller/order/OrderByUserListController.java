@@ -73,12 +73,12 @@ public class OrderByUserListController extends SimpleFormController {
 			for (String p : orderList) {
 				try {
 					os.deleteOrder(os.getOrder(Integer.valueOf(p)));
-					if (!success.equals("")) success += "<br>";
+					if (!success.equals("")) success += "<br/>";
 					success += ord + " " + p + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting order", e);
-					if (!error.equals("")) error += "<br>";
+					if (!error.equals("")) error += "<br/>";
 					error += ord + " " + p + " " + notDeleted;
 				}
 			}

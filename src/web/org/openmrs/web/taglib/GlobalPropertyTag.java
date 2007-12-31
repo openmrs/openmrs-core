@@ -1,10 +1,14 @@
 package org.openmrs.web.taglib;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.springframework.util.StringUtils;
 
 public class GlobalPropertyTag extends TagSupport {
 
@@ -19,20 +23,30 @@ public class GlobalPropertyTag extends TagSupport {
 	private String key="";
 	private String defaultValue="";
 	private String var=null;
+	private String listSeparator=null;
 	
 	public int doStartTag() {
 
-		String value = defaultValue;
+		Object value;
+		if (StringUtils.hasText(listSeparator))
+			value = Collections.singletonList(defaultValue);
+		else
+			value = defaultValue;
+		
 		// If user is logged in
-		if ( Context.isAuthenticated()) { 
-			value = (String) Context.getAdministrationService().getGlobalProperty(key, defaultValue);
+		if ( Context.isAuthenticated() ) { 
+			if (StringUtils.hasText(listSeparator)) {
+				String stringVal = (String) Context.getAdministrationService().getGlobalProperty(key, defaultValue);
+				value = Arrays.asList(stringVal.split(listSeparator));
+			} else
+				value = (String) Context.getAdministrationService().getGlobalProperty(key, defaultValue);
 		}
 		
 		try {
 			if (var != null)
 				pageContext.setAttribute(var, value);
 			else
-				pageContext.getOut().write(value);
+				pageContext.getOut().write(value.toString());
 
 		} catch (Exception e) { 
 			log.error("error getting global property", e);

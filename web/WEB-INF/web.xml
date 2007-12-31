@@ -10,12 +10,20 @@
 	<context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-        	/WEB-INF/applicationContext-service.xml
+        	classpath:applicationContext-service.xml
         	classpath*:/moduleApplicationContext.xml
-        	/WEB-INF/@WEBAPP.NAME@-servlet.xml
+        	classpath*:/webModuleApplicationContext.xml
+        	/WEB-INF/openmrs-servlet.xml
         </param-value>
     </context-param>
-		    
+    
+    <!-- These init parameter(s) are read in by org.openmrs.web.Listener -->
+    <context-param>
+        <param-name>build.timestamp</param-name>
+        <param-value>@TIMESTAMP@</param-value>
+    </context-param>
+	<!-- // End init parameters -->
+	
 	<servlet>
 		<servlet-name>showGraphServlet</servlet-name>
 		<servlet-class>org.openmrs.web.servlet.ShowGraphServlet</servlet-class>
@@ -73,7 +81,7 @@
 	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
 	<servlet>
 		<servlet-name>hl7InQueueProcessorServlet</servlet-name>
-		<servlet-class>org.openmrs.hl7.HL7InQueueProcessorServlet</servlet-class>
+		<servlet-class>org.openmrs.hl7.web.HL7InQueueProcessorServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>hl7InQueueProcessorServlet</servlet-name>
@@ -205,7 +213,48 @@
 		<filter-name>OpenmrsFilter</filter-name> 
 		<url-pattern>/*</url-pattern> 
 	</filter-mapping>
-	
+
+    <filter>
+        <filter-name>compressionFilter</filter-name>
+        <filter-class>org.openmrs.web.filter.GZIPFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.css</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.js</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.html</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.htm</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.xml</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.dwr</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.xsn</url-pattern>
+    </filter-mapping>
+
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.form</welcome-file>
@@ -246,12 +295,12 @@
 	-->
 	
 		<servlet>
-			<servlet-name>@WEBAPP.NAME@</servlet-name>
+			<servlet-name>openmrs</servlet-name>
 			<servlet-class>org.openmrs.web.DispatcherServlet</servlet-class>
 			<init-param>
 		        <param-name>contextConfigLocation</param-name>
 		        <param-value>
-		        	/WEB-INF/@WEBAPP.NAME@-servlet.xml
+		        	/WEB-INF/openmrs-servlet.xml
         			classpath*:/moduleApplicationContext.xml
 		        </param-value>
 		    </init-param>
@@ -259,7 +308,7 @@
 		</servlet>
 
 		<servlet>
-			<servlet-name>@WEBAPP.NAME@_static_content</servlet-name>
+			<servlet-name>openmrs_static_content</servlet-name>
 			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 			<load-on-startup>3</load-on-startup>
 		</servlet>
@@ -298,32 +347,32 @@
 		</servlet-mapping>
 
 		<servlet-mapping>
-	 		<servlet-name>@WEBAPP.NAME@_static_content</servlet-name>
+	 		<servlet-name>openmrs_static_content</servlet-name>
 	 		<url-pattern>/scripts/*</url-pattern>
 		</servlet-mapping>
 		
 		<servlet-mapping>
-	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
+	 		<servlet-name>openmrs</servlet-name>
 	 		<url-pattern>*.form</url-pattern>
 		</servlet-mapping>
 
 		<servlet-mapping>
-	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
+	 		<servlet-name>openmrs</servlet-name>
 	 		<url-pattern>*.list</url-pattern>
 		</servlet-mapping>
 
 		<servlet-mapping>
-	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
+	 		<servlet-name>openmrs</servlet-name>
 	 		<url-pattern>*.htm</url-pattern>
 		</servlet-mapping>
 		
 		<servlet-mapping>
-	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
+	 		<servlet-name>openmrs</servlet-name>
 	 		<url-pattern>*.portlet</url-pattern>
 		</servlet-mapping>
 			
 		<servlet-mapping>
-	 		<servlet-name>@WEBAPP.NAME@</servlet-name>
+	 		<servlet-name>openmrs</servlet-name>
 	 		<url-pattern>*.field</url-pattern>
 		</servlet-mapping>
 		

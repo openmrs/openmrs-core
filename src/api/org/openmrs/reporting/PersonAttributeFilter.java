@@ -26,7 +26,7 @@ public class PersonAttributeFilter extends AbstractPatientFilter implements Pati
 	
 	public PatientSet filter(PatientSet input) {
 		PatientSet ps = Context.getPatientSetService().getPatientsHavingPersonAttribute(getAttribute(), getValue());
-		return input.intersect(ps);
+		return input == null ? ps : input.intersect(ps);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

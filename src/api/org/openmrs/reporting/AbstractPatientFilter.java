@@ -34,10 +34,16 @@ public abstract class AbstractPatientFilter extends AbstractReportObject {
 		if (concept == null)
 			return "[CONCEPT]";
 		
-		ConceptName conceptName = concept.getName();
-		if (conceptName == null)
-			conceptName = Context.getConceptService().getConcept(concept.getConceptId()).getName();
+		String cName = "";
+		try {
+			ConceptName conceptName = concept.getName();
+			if (conceptName == null)
+				conceptName = Context.getConceptService().getConcept(concept.getConceptId()).getName();
+			cName = conceptName.getName();
+		} catch ( Exception e ) {
+			cName = "";
+		}
 		
-		return conceptName.getName();
+		return cName;
 	}
 }

@@ -18,8 +18,6 @@ import ca.uhn.hl7v2.HL7Exception;
  * NOTE: This class does not need to be StatefulTask as we create the context in
  * the constructor.
  * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.1
  * 
  * 1.1 - made processor static to ensure only one HL7 processor runs

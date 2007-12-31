@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -58,8 +59,12 @@ public class DrugOrderStopFilter extends AbstractPatientFilter implements Patien
 		} else
 			sb.append("any drug");
 		if (getDiscontinuedReasonList() != null && getDiscontinuedReasonList().size() > 0) {
-			if (getDiscontinuedReasonList().size() == 1)
-				sb.append(" because of " + getDiscontinuedReasonList().get(0).getName().getName());
+			if (getDiscontinuedReasonList().size() == 1) {
+				String reason = "[name not defined]";
+				ConceptName cn = getDiscontinuedReasonList().get(0).getName();
+				if ( cn != null ) reason = cn.getName(); 
+				sb.append(" because of " + reason);
+			}
 			else {
 				sb.append(" because of any of [");
 				for (Iterator<Concept> i = getDiscontinuedReasonList().iterator(); i.hasNext(); ) {
@@ -90,7 +95,7 @@ public class DrugOrderStopFilter extends AbstractPatientFilter implements Patien
 				OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
 				OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
 				discontinued, discontinuedReasonList);
-		return input.intersect(ps);
+		return input == null ? ps : input.intersect(ps);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

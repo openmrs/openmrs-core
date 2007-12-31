@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.web.controller;
 
 import java.util.HashMap;
@@ -55,15 +68,13 @@ public class OptionsFormController extends SimpleFormController {
 				errors.rejectValue("confirmPassword", "error.password.match");
 			}
 		}
-
+		
 		if (!opts.getSecretQuestionPassword().equals("")) {
 			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
 				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
 				errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
 			}
 		}
-		
-		// TODO catch errors
 		
 		return super.processFormSubmission(request, response, object, errors); 
 	}
@@ -121,15 +132,27 @@ public class OptionsFormController extends SimpleFormController {
 					errors.rejectValue("oldPassword", "error.password.match");
 				}
 			}
-			
-			if (!opts.getSecretQuestionPassword().equals("") && !errors.hasErrors()) {
-				try {
-					user.setSecretQuestion(opts.getSecretQuestionNew());
-					us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(), opts.getSecretAnswerNew());
+			else {
+				// if they left the old password blank but filled in new password
+				if (!opts.getNewPassword().equals("")) {
+					errors.rejectValue("oldPassword", "error.password.incorrect");
 				}
-				catch (APIException e) {
-					errors.rejectValue("secretQuestionPassword", "error.password.match");
+			}
+
+			if (!opts.getSecretQuestionPassword().equals("")) {
+				if  (!errors.hasErrors()) {
+					try {
+						user.setSecretQuestion(opts.getSecretQuestionNew());
+						us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(), opts.getSecretAnswerNew());
+					}
+					catch (APIException e) {
+						errors.rejectValue("secretQuestionPassword", "error.password.match");
+					}
 				}
+			}
+			else if (!opts.getSecretAnswerNew().equals("")) {
+				// if they left the old password blank but filled in new password
+				errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
 			}
 			
 			if (opts.getUsername().length() > 0 && !errors.hasErrors()) {
@@ -192,7 +215,7 @@ public class OptionsFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Map referenceData(HttpServletRequest request) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		

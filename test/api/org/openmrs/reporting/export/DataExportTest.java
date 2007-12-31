@@ -1,70 +1,312 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.reporting.export;
 
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Locale;
+import java.io.File;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.openmrs.BaseTest;
-import org.openmrs.api.context.Context;
+import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.reporting.PatientSet;
-import org.openmrs.reporting.ReportService;
+import org.openmrs.util.OpenmrsUtil;
 
-
-public class DataExportTest extends BaseTest {
+/**
+ * Tests the {@link DataExportReportObject} class
+ * 
+ * TODO clean up, finish, add methods to this test class
+ */
+public class DataExportTest extends BaseContextSensitiveTest {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	/**
+	 * TODO finish and comment method
+	 * 
+	 * @throws Exception
+	 */
+	public void testCalcuateAge() throws Exception { 
+		
+		initializeInMemoryDatabase();
+		executeDataSet("org/openmrs/include/DataExportTest-patients.xml");
+		authenticate();
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("TEST_EXPORT");
 
-	public void testClass() throws Exception {
+		SimpleColumn patientId = new SimpleColumn();
+		patientId.setColumnName("PATIENT_ID");
+		patientId.setReturnValue("$!{fn.patientId}");
+		export.getColumns().add(patientId);
 		
-		startup();
+		SimpleColumn gender = new SimpleColumn();
+		gender.setColumnName("GENDER");
+		gender.setReturnValue("$!{fn.getPatientAttr('Person', 'gender')}");
+		export.getColumns().add(gender);
 		
-		try {
-			Velocity.init();
-		} catch (Exception e) {
-			log.error("Error initializing Velocity engine", e);
-		}
+		SimpleColumn birthdate = new SimpleColumn();
+		birthdate.setColumnName("BIRTHDATE");
+		birthdate.setReturnValue("$!{fn.formatDate('short', $fn.getPatientAttr('Person', 'birthdate'))}");
+		export.getColumns().add(birthdate);
+
+		SimpleColumn age = new SimpleColumn();
+		age.setColumnName("AGE");
+		age.setReturnValue("$!{fn.calculateAge($fn.getPatientAttr('Person', 'birthdate'))}");
+		export.getColumns().add(age);
 		
-		Context.authenticate("admin", "test");
+		PatientSet patients = new PatientSet();
+		patients.add(2);
 		
-		ReportService rs = Context.getReportService();
-		DataExportReportObject dataExport = (DataExportReportObject)rs.getReportObject(4);
+		DataExportUtil.generateExport(export, patients, "\t");
+		File exportFile = DataExportUtil.getGeneratedFile(export);		
 		
-		VelocityContext velocityContext = new VelocityContext();
-		Writer report = new StringWriter();
+		String expectedOutput = "PATIENT_ID	GENDER	BIRTHDATE	AGE\n2	M	01/01/2000	7\n";
+		String output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
 		
-		// Set up velocity utils
-		Locale locale = Context.getLocale();
-		velocityContext.put("locale", locale);
-		
-		// Set up functions used in the report ( $!{fn:...} )
-		DataExportFunctions functions = new DataExportFunctions();
-		velocityContext.put("fn", functions);
-		
-		report.append("Report: " + dataExport.getName() + "\n\n");
-		
-		// Set up list of patients
-		PatientSet patientSet = dataExport.generatePatientSet();
-		velocityContext.put("patientSet", patientSet);
-		
-		String template = dataExport.generateTemplate();
-		
-		try {
-			Velocity.evaluate(velocityContext, report, this.getClass().getName(), template);
-		}
-		catch (Exception e) {
-			log.error("Error evaluating data export " + dataExport.getReportObjectId(), e);
-			report.append("\n\nError: \n" + e.toString());
-			throw e;
-		}
-		
-		report.append("\ntemplate: " + template);
-		log.error("report: " + report);
-		
-		shutdown();
+		//System.out.println("exportFile: " + output);
+		assertEquals("The output is not right.", expectedOutput, output);
 	}
 	
+	/**
+	 * Tests the getFirstNObsWithValues method in the DataExportFunctions class
+	 * 
+	 * @throws Exception
+	 */
+	public void testFirstNObs() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet("org/openmrs/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/include/DataExportTest-obs.xml");
+		authenticate();
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("FIRST 2 WEIGHTS");
+		
+		SimpleColumn patientId = new SimpleColumn();
+		patientId.setColumnName("PATIENT_ID");
+		patientId.setReturnValue("$!{fn.patientId}");
+		export.getColumns().add(patientId);
+		
+		ConceptColumn firstNObs = new ConceptColumn();
+		firstNObs.setColumnName("WEIGHT");
+		firstNObs.setColumnType("concept");
+		firstNObs.setConceptId(5089);
+		firstNObs.setConceptName("Weight (KG)");
+		firstNObs.setExtras(new String[] {"location"});
+		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
+		firstNObs.setModifierNum(2);
+		export.getColumns().add(firstNObs);
+		
+		PatientSet patients = new PatientSet();
+		patients.add(2);
+		
+		DataExportUtil.generateExport(export, patients, "\t");
+		File exportFile = DataExportUtil.getGeneratedFile(export);
+		
+		//System.out.println("Template String: " + export.generateTemplate());
+		String expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location 	WEIGHT_(1)	WEIGHT_location_(1)\n2	1.0	Test Location	2.0	Test Location\n";
+		String output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("exportFile: \n" + output);
+		assertEquals("The output is not right.", expectedOutput, output);
+		
+		
+		
+		
+		// test 1 as the number of obs to fetch
+		export = new DataExportReportObject();
+		export.setName("FIRST 1 WEIGHTS");
+		
+		export.addSimpleColumn("PATIENT_ID", "$!{fn.patientId}");
+		
+		firstNObs = new ConceptColumn();
+		firstNObs.setColumnName("WEIGHT");
+		firstNObs.setColumnType("concept");
+		firstNObs.setConceptId(5089);
+		firstNObs.setConceptName("Weight (KG)");
+		firstNObs.setExtras(new String[] {"location"});
+		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
+		firstNObs.setModifierNum(1);
+		export.getColumns().add(firstNObs);
+		
+		DataExportUtil.generateExport(export, patients, "\t");
+		exportFile = DataExportUtil.getGeneratedFile(export);
+		
+		//System.out.println("Template String: " + export.generateTemplate());
+		expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location\n2	1.0	Test Location\n";
+		output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("exportFile: " + output);
+		assertEquals("The output is not what was expected", expectedOutput, output);
+		
+		
+		
+		
+		// test -1 as the number of obs to fetch
+		export = new DataExportReportObject();
+		export.setName("FIRST -1 WEIGHTS");
+		
+		export.addSimpleColumn("PATIENT_ID", "$!{fn.patientId}");
+		
+		firstNObs = new ConceptColumn();
+		firstNObs.setColumnName("WEIGHT");
+		firstNObs.setColumnType("concept");
+		firstNObs.setConceptId(5089);
+		firstNObs.setConceptName("Weight (KG)");
+		firstNObs.setExtras(new String[] {"location"});
+		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
+		firstNObs.setModifierNum(-1);
+		export.getColumns().add(firstNObs);
+		
+		DataExportUtil.generateExport(export, patients, "\t");
+		exportFile = DataExportUtil.getGeneratedFile(export);
+		
+		//System.out.println("Template String: \n" + export.generateTemplate());
+		expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location\n2	10.0	Test Location	9.0	Test Location	8.0	Test Location	7.0	Test Location	6.0	Test Location	5.0	Test Location	4.0	Test Location	3.0	Test Location	2.0	Test Location	1.0	Test Location\n";
+		output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("exportFile: " + output);
+		assertEquals("The output is not what was expected", expectedOutput, output);
+		
+	}
+	
+	/**
+	 * test first N function when there are no obs for it.  Make sure that it returns
+	 * blank cells instead of null cells 
+	 * 
+	 * @throws Exception
+	 */
+	public void testFirstNObsWithZeroObsReturned() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet("org/openmrs/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/include/DataExportTest-obs.xml");
+		authenticate();
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("NO CONCEPT, THEN GET WEIGHTS");
+		
+		export.addSimpleColumn("PATIENT_ID", "$!{fn.patientId}");
+		
+		// no obs should be returned for concept "5090"
+		ConceptColumn firstNObs = new ConceptColumn();
+		firstNObs.setColumnName("Other");
+		firstNObs.setColumnType("concept");
+		firstNObs.setConceptId(5090);
+		firstNObs.setConceptName("OTHER CONCEPT");
+		firstNObs.setExtras(new String[] {"obsDatetime"});
+		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
+		firstNObs.setModifierNum(2);
+		export.getColumns().add(firstNObs);
+		
+		ConceptColumn lastNObs = new ConceptColumn();
+		lastNObs.setColumnName("W-last");
+		lastNObs.setColumnType("concept");
+		lastNObs.setConceptId(5089);
+		lastNObs.setConceptName("Weight (KG)");
+		lastNObs.setExtras(new String[] {"obsDatetime"});
+		lastNObs.setModifier(DataExportReportObject.MODIFIER_LAST_NUM);
+		lastNObs.setModifierNum(2);
+		export.getColumns().add(lastNObs);
+		
+		PatientSet patients = new PatientSet();
+		patients.add(2);
+		
+		DataExportUtil.generateExport(export, patients, "\t");
+		File exportFile = DataExportUtil.getGeneratedFile(export);
+		
+		//System.out.println("Template String: \n" + export.generateTemplate());
+		String expectedOutput = "PATIENT_ID	Other	Other_obsDatetime 	Other_(1)	Other_obsDatetime_(1)	W-last	W-last_obsDatetime 	W-last_(1)	W-last_obsDatetime_(1)\n2					10.0	02/18/2006	9.0	02/17/2006\n";
+		String output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("exportFile: \n" + output);
+		assertEquals("The output is not right.", expectedOutput, output);
+		
+	}
+	
+	/**
+	 * Tests the getLastNObsWithValues method in the DataExportFunctions class
+	 * 
+	 * @throws Exception
+	 */
+	public void testLastNObs() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet("org/openmrs/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/include/DataExportTest-obs.xml");
+		authenticate();
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("Last 2 Weights");
+		
+		SimpleColumn patientId = new SimpleColumn();
+		patientId.setColumnName("PATIENT_ID");
+		patientId.setReturnValue("$!{fn.patientId}");
+		export.getColumns().add(patientId);
+		
+		ConceptColumn lastNObs = new ConceptColumn();
+		lastNObs.setColumnName("WEIGHT");
+		lastNObs.setColumnType("concept");
+		lastNObs.setConceptId(5089);
+		lastNObs.setConceptName("Weight (KG)");
+		lastNObs.setExtras(new String[] {"location"});
+		lastNObs.setModifier(DataExportReportObject.MODIFIER_LAST_NUM);
+		lastNObs.setModifierNum(2);
+		export.getColumns().add(lastNObs);
+		
+		PatientSet patients = new PatientSet();
+		patients.add(2);
+		
+		DataExportUtil.generateExport(export, patients, "\t");
+		File exportFile = DataExportUtil.getGeneratedFile(export);		
+		
+		String expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location 	WEIGHT_(1)	WEIGHT_location_(1)\n2	10.0	Test Location	9.0	Test Location\n";
+		String output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("exportFile: " + output);
+		assertEquals("The output is not right.", expectedOutput, output);
+		
+		
+		
+		export = new DataExportReportObject();
+		export.setName("Last 1 weights");
+		
+		patientId = new SimpleColumn();
+		patientId.setColumnName("PATIENT_ID");
+		patientId.setReturnValue("$!{fn.patientId}");
+		export.getColumns().add(patientId);
+		
+		lastNObs = new ConceptColumn();
+		lastNObs.setColumnName("WEIGHT");
+		lastNObs.setColumnType("concept");
+		lastNObs.setConceptId(5089);
+		lastNObs.setConceptName("Weight (KG)");
+		lastNObs.setExtras(new String[] {"location"});
+		lastNObs.setModifier(DataExportReportObject.MODIFIER_LAST_NUM);
+		lastNObs.setModifierNum(1);
+		export.getColumns().add(lastNObs);
+		
+		DataExportUtil.generateExport(export, patients, "\t");
+		exportFile = DataExportUtil.getGeneratedFile(export);		
+		
+		System.out.println("Template String: \n" + export.generateTemplate());
+		expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location\n2	10.0	Test Location\n";
+		output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("xxxxxxxxxxxxxxxxxxexportFile: " + output);
+		assertEquals("The output is not right.", expectedOutput, output);
+	}
+	
+	
+
 }

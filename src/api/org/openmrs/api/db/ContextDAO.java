@@ -8,8 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Defines the functions that the Context needs to access the database
- * 
- * @author Ben Wolfe
  * @version 1.1
  */
 public interface ContextDAO {

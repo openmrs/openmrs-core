@@ -2,8 +2,6 @@ package org.openmrs;
 
 /**
  * ComplexObs 
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class ComplexObs extends Obs implements java.io.Serializable{

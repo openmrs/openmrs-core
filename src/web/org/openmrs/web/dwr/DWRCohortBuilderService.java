@@ -9,11 +9,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
-import org.openmrs.cohort.CohortHistoryCompositionFilter;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientFilter;
+import org.openmrs.reporting.PatientSearch;
+import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.reporting.ReportObject;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -30,38 +32,55 @@ public class DWRCohortBuilderService {
 		return filtered.size();
 	}
 	
+	private CohortSearchHistory getMySearchHistory() {
+		return (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+	}
+	
 	/**
 	 * @param index
 	 * @return the number of patients in the resulting PatientSet
 	 */
 	public Integer getResultCountForSearch(int index) {
-		CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+		CohortSearchHistory history = getMySearchHistory();
 		PatientSet ps = history.getPatientSet(index);
 		return ps.size();
 	}
 	
 	public PatientSet getResultForSearch(int index) {
-		CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+		CohortSearchHistory history = getMySearchHistory();
 		PatientSet ps = history.getPatientSet(index);
 		return ps;
 	}
 	
 	public PatientSet getResultCombineWithAnd() {
-		CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+		CohortSearchHistory history = getMySearchHistory();
 		PatientSet ps = history.getPatientSetCombineWithAnd();
 		return ps;
 	}
 	
 	public PatientSet getResultCombineWithOr() {
-		CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+		CohortSearchHistory history = getMySearchHistory();
 		PatientSet ps = history.getPatientSetCombineWithOr();
 		return ps;
 	}
 	
 	public PatientSet getLastResult() {
-		CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+		CohortSearchHistory history = getMySearchHistory();
 		PatientSet ps = history.getLastPatientSet();
 		return ps;
+	}
+	
+	public List<ListItem> getSavedSearches() {
+		List<ListItem> ret = new ArrayList<ListItem>();
+		List<AbstractReportObject> savedSearches = Context.getReportService().getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
+		for (ReportObject ps : savedSearches) {
+			ListItem li = new ListItem();
+			li.setId(ps.getReportObjectId());
+			li.setName(ps.getName());
+			li.setDescription(ps.getDescription());
+			ret.add(li);
+		}
+		return ret;
 	}
 	
 	public List<ListItem> getSavedFilters() {
@@ -75,6 +94,35 @@ public class DWRCohortBuilderService {
 			ret.add(li);
 		}
 		return ret;
+	}
+	
+	public List<ListItem> getSavedCohorts() {
+		List<ListItem> ret = new ArrayList<ListItem>();
+		List<Cohort> cohorts = Context.getCohortService().getCohorts();
+		for (Cohort c : cohorts) {
+			ListItem li = new ListItem();
+			li.setId(c.getCohortId());
+			li.setName(c.getName());
+			li.setDescription(c.getDescription());
+			ret.add(li);
+		}
+		return ret;
+	}
+
+	public String getFilterResultAsCommaSeparatedIds(Integer filterId) {
+		PatientFilter pf = Context.getReportService().getPatientFilterById(filterId);
+		if (pf == null)
+			return "";
+		else
+			return pf.filter(Context.getPatientSetService().getAllPatients()).toCommaSeparatedPatientIds();
+	}
+	
+	public String getCohortAsCommaSeparatedIds(Integer cohortId) {
+		Cohort c = Context.getCohortService().getCohort(cohortId);
+		if (c == null)
+			return "";
+		else
+			return c.toPatientSet().toCommaSeparatedPatientIds();
 	}
 	
 	public List<ListItem> getSearchHistories() {
@@ -91,7 +139,7 @@ public class DWRCohortBuilderService {
 	}
 	
 	public void saveSearchHistory(String name, String description) {
-		CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+		CohortSearchHistory history = getMySearchHistory();
 		if (history.getReportObjectId() != null)
 			throw new RuntimeException("Re-saving search history Not Yet Implemented");
 		history.setName(name);
@@ -104,27 +152,25 @@ public class DWRCohortBuilderService {
 	}
 	
 	/**
-	 * Saves an element from the search history as a PatientFilter 
+	 * Saves an element from the search history as a PatientSearch 
 	 * @param name The name to give the saved filter
 	 * @param description The description to give the saved filter
 	 * @param indexInHistory The index into the authenticated user's search history
 	 */
 	public Boolean saveHistoryElement(String name, String description, Integer indexInHistory) {
-		CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+		CohortSearchHistory history = getMySearchHistory();
 		try {
-			PatientFilter pf = history.getSearchHistory().get(indexInHistory);
-			if (pf == null)
+			PatientSearch ps = history.getSearchHistory().get(indexInHistory);
+			if (ps == null)
 				return false;
-			// we can't just save a CohortHistoryCompositionFilter because it depends on its history
-			if (pf instanceof CohortHistoryCompositionFilter)
-				pf = ((CohortHistoryCompositionFilter) pf).toCohortDefinition();
-			AbstractReportObject aro = (AbstractReportObject) pf;
-			aro.setName(name);
-			aro.setDescription(description);
-			aro.setReportObjectId(null); // if this is already a saved object, we resave it as a new one
-			aro.setType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTFILTER);
-			aro.setSubType("CohortDefinition");
-			Context.getReportService().createReportObject(aro);
+			// some searches depend on history, so we must detach them
+			ps = ps.copyAndDetachFromHistory(history);
+			PatientSearchReportObject ro = new PatientSearchReportObject();
+			ro.setName(name);
+			ro.setDescription(description);
+			ro.setPatientSearch(ps);
+			Integer newId = Context.getReportService().createReportObject(ro);
+			history.getSearchHistory().set(indexInHistory, PatientSearch.createSavedSearchReference(newId));
 			return true;
 		} catch (Exception ex) {
 			log.error("Exception", ex);
@@ -146,7 +192,7 @@ public class DWRCohortBuilderService {
 	 * I'm leaving it here in case I get to work on it later.
 	 */
 	public CohortSearchHistory getUserSearchHistory() {
-		return (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+		return getMySearchHistory();
 	}
 	
 }

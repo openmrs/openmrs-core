@@ -3,8 +3,6 @@ package org.openmrs.module;
 /**
  * This interface must be implemented by modules and referenced
  * by the Module-Activator property in the module manifest
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public interface Activator {

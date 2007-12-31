@@ -8,9 +8,6 @@ import java.util.Set;
 
 /**
  * Form
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class Form implements java.io.Serializable {
@@ -392,8 +389,10 @@ public class Form implements java.io.Serializable {
 	public void addFormField(FormField formField) {
 		if (formFields == null)
 			formFields = new HashSet<FormField>();
-		if (!formFields.contains(formField) && formField != null)
+		if (!formFields.contains(formField) && formField != null) {
+			formField.setForm(this);
 			this.formFields.add(formField);
+		}
 	}
 
 	/**

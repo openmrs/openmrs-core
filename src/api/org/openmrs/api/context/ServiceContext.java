@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.context;
 
 import java.util.HashMap;
@@ -32,15 +45,21 @@ import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.ProxyFactory;
 
 /**
- * Represents an OpenMRS <code>Context</code>, which may be used to
- * authenticate to the database and obtain services in order to interact with
- * the system.
+ * Represents an OpenMRS <code>Service Context</code>, which returns the 
+ * services represented throughout the system.  
  * 
- * Only one <code>User</code> may be authenticated within a context at any
- * given time.
+ * This class should not be access directly, but rather used through the
+ * <code>Context</code> class.
  * 
- * @author Burke Mamlin
- * @version 1.0
+ * This class is essentially static and only one instance is kept because
+ * this is fairly heavy-weight. Spring takes care of filling in the actual
+ * service implementations via dependency injection.  See the 
+ * /metadata/api/spring/applicationContext-service.xml file.
+ * 
+ * Module services are also accessed through this class.  See 
+ * {@link #getService(Class)} 
+ * 
+ * @see org.openmrs.api.context.Context
  */
 public class ServiceContext {
 
@@ -49,16 +68,38 @@ public class ServiceContext {
 	private static ServiceContext instance;
 	private Boolean refreshingContext = new Boolean(false);
 	
+	/**
+	 * Static variable holding whether or not to use the system classloader.
+	 * By default this is false so the openmrs classloader is used instead
+	 */
+	private boolean useSystemClassLoader = false;
+	
 	// proxy factories used for programatically adding spring AOP  
-	Map<Class, ProxyFactory> proxyFactories = new HashMap<Class, ProxyFactory>();
+	@SuppressWarnings("unchecked")
+    Map<Class, ProxyFactory> proxyFactories = new HashMap<Class, ProxyFactory>();
 
 	/**
-	 * Default constructor
+	 * The default constructor is private so as to keep only one instance 
+	 * per java vm.
+	 * 
+	 * @see ServiceContext#getInstance()
 	 */
 	private ServiceContext() { 
 		log.debug("Instantiating service context");
 	}
 	
+	/**
+	 * There should only be one ServiceContext per openmrs (java virtual machine).
+	 * 
+	 * This method should be used when wanting to fetch the service context
+	 * 
+	 * Note: The ServiceContext shouldn't be used independently.  All calls
+	 * should go through the Context
+	 * 
+	 * @return This VM's current ServiceContext.
+	 * 
+	 * @see org.openmrs.api.context.Context
+	 */
 	public static ServiceContext getInstance() {
 		if (instance == null)
 			instance = new ServiceContext();
@@ -66,19 +107,28 @@ public class ServiceContext {
 		return instance;
 	}
 	
-	public static void destroyInstance() {
-		if (log.isErrorEnabled()) {
-			if (instance != null && instance.proxyFactories != null) {
+	/**
+	 * Null out the current instance of the ServiceContext.  This should be used
+	 * when modules are refreshing (being added/removed) and/or openmrs is shutting down
+	 */
+	@SuppressWarnings("unchecked")
+    public static void destroyInstance() {
+		if (instance != null && instance.proxyFactories != null) {
+			if (log.isDebugEnabled()) {
 				for (Map.Entry<Class, ProxyFactory> entry : instance.proxyFactories.entrySet()) {
 					log.debug("Class:ProxyFactory - " + entry.getKey().getName() + ":" + entry.getValue());
 				}
-				if (instance.proxyFactories != null)
-					instance.proxyFactories.clear();
-				instance.proxyFactories = null;
-				}
+			}
 			
-			log.debug("Destroying ServiceContext instance: " + instance);
+			if (instance.proxyFactories != null)
+				instance.proxyFactories.clear();
+			
+			instance.proxyFactories = null;
 		}
+		
+		if (log.isDebugEnabled())
+			log.debug("Destroying ServiceContext instance: " + instance);
+		
 		instance = null;
 	}
 
@@ -103,10 +153,16 @@ public class ServiceContext {
 		return (PatientSetService)getService(PatientSetService.class);
 	}
 	
+	/**
+	 * @return cohort related service
+	 */
 	public CohortService getCohortService() {
 		return (CohortService) getService(CohortService.class);
 	}
 	
+	/**
+	 * @param cohort related service
+	 */
 	public void setCohortService(CohortService cs) {
 		setService(CohortService.class, cs);
 	}
@@ -214,29 +270,6 @@ public class ServiceContext {
 
 	
 	/**
-	 * Get the message service.
-	 * 
-	 * There are several ways to deal with the service layer objects.
-	 * 
-	 * (1) Dependency injection (preferred) (2) Instantiate new instance within
-	 * service (current implementation) (3) Use bean factory to get reference to
-	 * bean (4) Use application context to get reference to bean
-	 * 
-	 * NOTE: I prefer method (1) but will not be able to get it to work
-	 * correctly until I can refactor the Context class. The main issue is that
-	 * the Context object is instantiated all over the place instead of being
-	 * defined once in the bean definition file. Therefore, I cannot "inject"
-	 * the message service (or any other service) because the client has control
-	 * over instantiating the object. I don't like method (2) because I don't
-	 * want the context to instantiate as there is a lot of work that goes into
-	 * setting up the message service object. I couldn't figure out to get the
-	 * "openmrs-servlet.xml" resource so I abandoned method (3). Therefore, I
-	 * have decided to go with method (4) for now. It ties us (somewhat loosely)
-	 * to the spring framework as we now have the Context object implement
-	 * ApplicationContextAware. However, my plan is to make Context an interface
-	 * and implements this interface as the SpringContext so that certain Spring
-	 * services can be used (i.e. event publishing).
-	 * 
 	 * @return message service
 	 */
 	public MessageService getMessageService() {
@@ -377,7 +410,8 @@ public class ServiceContext {
 	 * @param cls
 	 * @return
 	 */
-	private ProxyFactory getFactory(Class cls) {
+	@SuppressWarnings("unchecked")
+    private ProxyFactory getFactory(Class cls) {
 		ProxyFactory factory = proxyFactories.get(cls);
 		if (factory == null)
 			throw new APIException("A proxy factory for: '" + cls + "' doesn't exist");
@@ -389,7 +423,8 @@ public class ServiceContext {
 	 * @param cls
 	 * @param advisor
 	 */
-	public void addAdvisor(Class cls, Advisor advisor) {
+	@SuppressWarnings("unchecked")
+    public void addAdvisor(Class cls, Advisor advisor) {
 		ProxyFactory factory = getFactory(cls);
 		factory.addAdvisor(advisor);
 	}
@@ -399,7 +434,8 @@ public class ServiceContext {
 	 * @param cls
 	 * @param advice
 	 */
-	public void addAdvice(Class cls, Advice advice) {
+	@SuppressWarnings("unchecked")
+    public void addAdvice(Class cls, Advice advice) {
 		ProxyFactory factory = getFactory(cls);
 		factory.addAdvice(advice);
 	}
@@ -409,7 +445,8 @@ public class ServiceContext {
 	 * @param cls
 	 * @param advisor
 	 */
-	public void removeAdvisor(Class cls, Advisor advisor) {
+	@SuppressWarnings("unchecked")
+    public void removeAdvisor(Class cls, Advisor advisor) {
 		ProxyFactory factory = getFactory(cls);
 		factory.removeAdvisor(advisor);
 	}
@@ -419,7 +456,8 @@ public class ServiceContext {
 	 * @param cls
 	 * @param advice
 	 */
-	public void removeAdvice(Class cls, Advice advice) {
+	@SuppressWarnings("unchecked")
+    public void removeAdvice(Class cls, Advice advice) {
 		ProxyFactory factory = getFactory(cls);
 		factory.removeAdvice(advice);
 	}
@@ -431,15 +469,19 @@ public class ServiceContext {
 	 * @param cls
 	 * @return Object that is a proxy for the <code>cls</code> class 
 	 */
-	public Object getService(Class cls) {
-		log.debug("Getting service: " + cls);
+	@SuppressWarnings("unchecked")
+    public Object getService(Class cls) {
+		if (log.isDebugEnabled())
+			log.debug("Getting service: " + cls);
 		
 		// if the context is refreshing, wait until it is 
 		// done -- otherwise a null service might be returned
 		synchronized (refreshingContext) {
 			if (refreshingContext.booleanValue())
 				try {
+					log.warn("Waiting to get service: " + cls + " while the context is being refreshed");
 					refreshingContext.wait();
+					log.warn("Finished waiting to get service " + cls + " while the context was being refreshed");
 				}
 				catch (InterruptedException e) {
 					log.warn("Refresh lock was interrupted", e);
@@ -459,7 +501,8 @@ public class ServiceContext {
 	 * @param cls Interface to proxy
 	 * @param classInstance the actual instance of the <code>cls</code> interface
 	 */
-	public void setService(Class cls, Object classInstance) {
+	@SuppressWarnings("unchecked")
+    public void setService(Class cls, Object classInstance) {
 		
 		log.debug("Setting service: " + cls);
 		
@@ -488,7 +531,8 @@ public class ServiceContext {
 	 * 
 	 * @param list list of parameters
 	 */
-	public void setModuleService(List<Object> params) {
+	@SuppressWarnings("unchecked")
+    public void setModuleService(List<Object> params) {
 		String classString = (String)params.get(0);
 		Object classInstance = params.get(1);
 		
@@ -498,27 +542,48 @@ public class ServiceContext {
 		
 		Class cls = null;
 		
+		// load the given 'classString' class from either the openmrs class
+		// loader or the system class loader depending on if we're in a testing
+		// environment or not (system == testing, openmrs == normal)
 		try {
-			//ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(moduleId);
-			cls = OpenmrsClassLoader.getInstance().loadClass(classString);
+			if (useSystemClassLoader == false) {
+				cls = OpenmrsClassLoader.getInstance().loadClass(classString);
 			
-			try {
-				if (cls != null)
-					log.error("cls classloader: " + cls.getClass().getClassLoader() + " uid: " + cls.getClass().getClassLoader().hashCode());
+				if (cls != null && log.isDebugEnabled()) {
+					try {
+						log.debug("cls classloader: " + cls.getClass().getClassLoader() + " uid: " + cls.getClass().getClassLoader().hashCode());
+					}
+					catch (Exception e) { /*pass*/ }
+				}
 			}
-			catch (Exception e) { /*pass*/ }
-			try {
-				Class cls2 = Class.forName(classString);
-				log.error("cls2 classloader: " + cls2.getClass().getClassLoader() + " uid: " + cls.getClass().getClassLoader().hashCode());
-				log.error("cls==cls2: " + String.valueOf(cls == cls2));
+			else if (useSystemClassLoader == true) {
+				try {
+					cls = Class.forName(classString);
+					if (log.isDebugEnabled()) {
+						log.debug("cls2 classloader: " + cls.getClass().getClassLoader() + " uid: " + cls.getClass().getClassLoader().hashCode());
+						log.debug("cls==cls2: " + String.valueOf(cls == cls));
+					}
+				}
+				catch (Exception e) { /*pass*/ }
 			}
-			catch (Exception e) { /*pass*/ }
 		}
 		catch (ClassNotFoundException e) {
 			throw new APIException("Unable to set module service: " + classString, e);
 		}
 		
+		// add this module service to the normal list of services
 		setService(cls, classInstance);
+	}
+	
+	/**
+	 * Set this service context to use the system class loader if the 
+	 * <code>useSystemClassLoader</code> is set to true.  If false, the openmrs 
+	 * class loader is used to load module services
+	 * 
+	 * @param useSystemClassLoader true/false whether to use the system class loader
+	 */
+	public void setUseSystemClassLoader(boolean useSystemClassLoader) {
+		this.useSystemClassLoader = useSystemClassLoader;
 	}
 	
 	/**
@@ -544,6 +609,19 @@ public class ServiceContext {
 			refreshingContext.notifyAll();
 			refreshingContext = false;
 		}
+	}
+	
+	/**
+	 * Returns true/false whether startRefreshingContext() has been called
+	 * without a subsequent call to doneRefreshingContext() yet.  All methods
+	 * involved in starting/stopping a module should call this if a service
+	 * method is needed -- otherwise a deadlock will occur.
+	 * 
+	 * @return true/false whether the services are currently blocking waiting 
+	 * 			for a call to doneRefreshingContext() 
+	 */
+	public boolean isRefreshingContext() {
+		return refreshingContext.booleanValue();
 	}
 	
 }

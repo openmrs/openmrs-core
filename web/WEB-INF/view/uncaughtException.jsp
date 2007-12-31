@@ -69,7 +69,7 @@ try {
 				Throwable rootCause = sEx.getRootCause();
 				if (rootCause == null)
 					rootCause = sEx;
-				out.println("<br><br>** Root cause is: "+ rootCause.getMessage());
+				out.println("<br/><br/>** Root cause is: "+ rootCause.getMessage());
 				elements = rootCause.getStackTrace();
 			}
 			else {
@@ -89,11 +89,11 @@ try {
 	} 
 	
 	// Display current version
-	out.println("<br><br>Version: " + OpenmrsConstants.OPENMRS_VERSION);
-	out.println("<br>Database Version: " + OpenmrsConstants.DATABASE_VERSION);
+	out.println("<br/><br/>Version: " + OpenmrsConstants.OPENMRS_VERSION);
+	out.println("<br/>Database Version: " + OpenmrsConstants.DATABASE_VERSION);
 	
 	// Display cookies
-	out.println("<br><br>Cookies:<br>");
+	out.println("<br/><br/>Cookies:<br/>");
 	Cookie[] cookies = request.getCookies();
 	if (cookies != null) {
     	for (int i = 0; i < cookies.length; i++) {

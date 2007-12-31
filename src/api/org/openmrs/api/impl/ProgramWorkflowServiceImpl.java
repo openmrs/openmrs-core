@@ -23,6 +23,7 @@ import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
 
 public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
@@ -225,7 +226,17 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 
 		
 	// --- ProgramWorkflowState ---
-		
+	
+	public List<ProgramWorkflowState> getStates() {
+		return getStates(false);
+	}
+	
+	public List<ProgramWorkflowState> getStates(boolean includeVoided) {
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
+		return getProgramWorkflowDAO().getStates(false);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.openmrs.api.impl.ProgramWorkflowService#getState(java.lang.Integer)
 	 */
@@ -299,7 +310,13 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		return getProgramWorkflowDAO().getPatientProgram(id);
 	}
-	
+
+	public PatientState getPatientState(Integer id) {
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
+		return getProgramWorkflowDAO().getPatientState(id);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.openmrs.api.impl.ProgramWorkflowService#getPatientPrograms(org.openmrs.Patient)
 	 */
@@ -358,19 +375,14 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 	public Collection<PatientProgram> getCurrentPrograms(Patient patient, Date onDate) {
 		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		if (onDate == null) {
+		if (onDate == null)
 			onDate = new Date();
-		}
-		// date enrolled and date completed are actually java.sql.Timestamp, which can't be compared directly to a java.util.Date
-		long atMs = onDate.getTime();
 		
 		Collection<PatientProgram> ret = new HashSet<PatientProgram>();
-		for (PatientProgram pp : getPatientPrograms(patient)) {
-			if ( (pp.getDateEnrolled() == null || pp.getDateEnrolled().getTime() <= atMs)
-					&& (pp.getDateCompleted() == null || pp.getDateCompleted().getTime() >= atMs) ) {
+		for (PatientProgram pp : getPatientPrograms(patient))
+			if ( pp.getActive(onDate) )
 				ret.add(pp);
-			}
-		}
+		
 		return ret;
 	}
 	
@@ -385,7 +397,7 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		PatientState ret = null;
 		// treat null as the earliest date
 		for (PatientState state : patientProgram.getStates()) {
-			if (state.getState().getProgramWorkflow().equals(workflow))
+			if (!state.getVoided() && state.getState().getProgramWorkflow().equals(workflow))
 				if (ret == null || ret.getStartDate() == null || (state.getStartDate() != null && state.getStartDate().compareTo(ret.getStartDate()) > 0))
 					ret = state;
 		}
@@ -400,7 +412,7 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		List<ProgramWorkflowState> ret = new ArrayList<ProgramWorkflowState>();
 		PatientState currentState = getLatestState(patientProgram, workflow);
-		for (ProgramWorkflowState st : workflow.getStates()) {
+		for (ProgramWorkflowState st : workflow.getSortedStates()) {
 			if (isLegalTransition(currentState == null ? null : currentState.getState(), st))
 				ret.add(st);
 		}
@@ -432,6 +444,9 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		}
 		if (lastState != null && lastState.getEndDate() != null) {
 			throw new IllegalArgumentException("You can't change out of a state that has an end date already");
+		}
+		if (lastState != null && lastState.getStartDate() != null && OpenmrsUtil.compare(lastState.getStartDate(), onDate) > 0) {
+			throw new IllegalArgumentException("You can't change out of a state before that state started");
 		}
 		if (lastState != null)
 			lastState.setEndDate(onDate);
@@ -591,14 +606,18 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 								// that means that there is a conversion to make for this workflow/trigger - let's try to change state
 								log.debug("Found conversion: " + conversion);
 								ProgramWorkflowState resultingState = conversion.getProgramWorkflowState();
+								boolean isTerminal = false;
+								if ( program.getCurrentState(workflow) != null ) {
+									isTerminal = program.getCurrentState(workflow).getState().getTerminal();
+								}
 								
 								// this is the place to add logic about what conditions we'd want to actually convert for
-								if ( program.getActive(dateConverted) || !program.getCurrentState().getState().getTerminal() ) {
+								if ( program.getActive(dateConverted) || !isTerminal ) {
 									log.debug("Changing patient " + patient + " to state " + resultingState + " in workflow " + workflow);
 									this.changeToState(program, workflow, resultingState, dateConverted);									
 								} else {
 									if ( !program.getActive(dateConverted) ) log.debug("was about to change state, but failed because program not active");
-									if ( program.getCurrentState().getState().getTerminal() ) log.debug("was about to change state, but failed because current state is already terminal");
+									if ( isTerminal ) log.debug("was about to change state, but failed because current state is already terminal");
 								}
 							}
 						}

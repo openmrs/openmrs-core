@@ -70,12 +70,12 @@ public class MimeTypeListController extends SimpleFormController {
 			for (String m : mimeTypeList) {
 				try {
 					as.deleteMimeType(os.getMimeType(Integer.valueOf(m)));
-					if (!success.equals("")) success += "<br>";
+					if (!success.equals("")) success += "<br/>";
 					success += m + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting mime type", e);
-					if (!error.equals("")) error += "<br>";
+					if (!error.equals("")) error += "<br/>";
 					error += m + " " + notDeleted;
 				}
 			}

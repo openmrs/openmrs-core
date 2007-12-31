@@ -4,14 +4,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 
 /**
  * Person-related database functions
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public interface PersonDAO {
@@ -31,6 +30,8 @@ public interface PersonDAO {
 
 	public PersonAttributeType getPersonAttributeType(Integer typeId);
 	
+	public PersonAttribute getPersonAttribute(Integer id);
+
 	public PersonAttributeType getPersonAttributeType(String s);
 	
 	/**

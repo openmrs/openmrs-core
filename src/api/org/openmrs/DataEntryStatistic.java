@@ -72,7 +72,7 @@ public class DataEntryStatistic {
 
 	// convenience utility methods
 
-	public static DataTable tableByUserAndType(List<DataEntryStatistic> stats) {
+	public static DataTable tableByUserAndType(List<DataEntryStatistic> stats, Boolean hideAverageObs) {
 		Set<User> users = new HashSet<User>();
 		SortedSet<String> types = new TreeSet<String>();
 		Set<Object> groups = new HashSet<Object>();
@@ -102,7 +102,7 @@ public class DataEntryStatistic {
 					if (i == null) i = 0;
 					if (j == null) j = 0;
 					String averageObs = "";
-					if ( i > 0 && j > 0 ) {
+					if (!hideAverageObs && i > 0 && j > 0 ) {
 						DecimalFormat df = new DecimalFormat("###,###.##");
 						float obss = j;
 						float encs = i;

@@ -8,8 +8,6 @@ import org.openmrs.api.context.Context;
 
 /**
  * Location 
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class Location implements java.io.Serializable, Attributable<Location> {
@@ -32,6 +30,10 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	private String longitude;
 	private String countyDistrict;
 	private String neighborhoodCell;
+	private String townshipDivision;
+	private String region;
+	private String subregion;
+	
 	private User creator;
 	private Date dateCreated;
 
@@ -339,6 +341,48 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	 */
 	public String serialize() {
 		return "" + getLocationId();
+	}
+
+	/**
+	 * @return the region
+	 */
+	public String getRegion() {
+		return region;
+	}
+
+	/**
+	 * @param region the region to set
+	 */
+	public void setRegion(String region) {
+		this.region = region;
+	}
+
+	/**
+	 * @return the subregion
+	 */
+	public String getSubregion() {
+		return subregion;
+	}
+
+	/**
+	 * @param subregion the subregion to set
+	 */
+	public void setSubregion(String subregion) {
+		this.subregion = subregion;
+	}
+
+	/**
+	 * @return the townshipDivision
+	 */
+	public String getTownshipDivision() {
+		return townshipDivision;
+	}
+
+	/**
+	 * @param townshipDivision the townshipDivision to set
+	 */
+	public void setTownshipDivision(String townshipDivision) {
+		this.townshipDivision = townshipDivision;
 	}
 
 	

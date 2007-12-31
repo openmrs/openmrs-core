@@ -12,12 +12,12 @@
 	<table>
 		<tr>
 			<td><spring:message code="User.username"/>:</td>
-			<td><input type="text" name="uname" value="<request:parameter name="username"/>" id="username" size="25" maxlength="50"></td>
+			<td><input type="text" name="uname" value="<request:parameter name="username" />" id="username" size="25" maxlength="50"/></td>
 		</tr>
 		<request:existsParameter name="forgotPassword" value="false">
 			<tr>
 				<td><spring:message code="User.password"/>:</td>
-				<td><input type="password" name="pw" value="" id="password" size="25"></td>
+				<td><input type="password" name="pw" value="" id="password" size="25" /></td>
 			</tr>
 			<tr>
 				<td></td>
@@ -41,7 +41,7 @@
 			<td><input type="submit" value="<spring:message code="auth.login"/>" /></td>
 		</tr>
 	</table>
-	<br>
+	<br/>
 	
 	<c:choose>
 		<c:when test="${not empty model.redirect}">

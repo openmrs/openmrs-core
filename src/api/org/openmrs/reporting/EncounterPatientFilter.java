@@ -1,11 +1,15 @@
 package org.openmrs.reporting;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -14,6 +18,8 @@ import org.openmrs.util.OpenmrsUtil;
 public class EncounterPatientFilter extends AbstractPatientFilter implements PatientFilter {
 
 	private EncounterType encounterType;
+	private List<EncounterType> encounterTypeList;
+	private Form form;
 	private Integer atLeastCount;
 	private Integer atMostCount;
 	private Integer withinLastDays;
@@ -38,8 +44,15 @@ public class EncounterPatientFilter extends AbstractPatientFilter implements Pat
 		} else {
 			ret.append("any ");
 		}
-		if (encounterType != null)
-			ret.append(encounterType.getName() + " ");
+		if (encounterTypeList != null) {
+			ret.append("[");
+			for (Iterator<EncounterType> i = encounterTypeList.iterator(); i.hasNext(); ) {
+				ret.append(" " + i.next().getName());
+				if (i.hasNext())
+					ret.append(" ,");
+			}
+			ret.append(" ] ");
+		}
 		ret.append("encounters ");
 		if (location != null) {
 			ret.append("at " + location.getName() + " ");
@@ -56,20 +69,26 @@ public class EncounterPatientFilter extends AbstractPatientFilter implements Pat
 			ret.append("on or after " + sinceDate + " ");
 		if (untilDate != null)
 			ret.append("on or before " + untilDate + " ");
+		if (form != null)
+			ret.append("from the " + form.getName() + " form ");
 		return ret.toString();
 	}
 	
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsHavingEncounters(encounterType, location,
+		PatientSet ps = service.getPatientsHavingEncounters(encounterTypeList, location, form,
 				OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
 				OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
-				atLeastCount, atMostCount));
+				atLeastCount, atMostCount);
+		return input == null ? ps : input.intersect(ps);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.subtract(service.getPatientsHavingEncounters(encounterType, location, fromDateHelper(), toDateHelper(), atLeastCount, atMostCount));
+		return input.subtract(service.getPatientsHavingEncounters(encounterTypeList, location, form,
+				OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
+				OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
+				atLeastCount, atMostCount));
 	}
 
 	public boolean isReadyToRun() {
@@ -107,14 +126,25 @@ public class EncounterPatientFilter extends AbstractPatientFilter implements Pat
 	}
 	
 	// getters and setters
-
+	@Deprecated
 	public EncounterType getEncounterType() {
 		return encounterType;
 	}
-
+	@Deprecated
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
+		if (getEncounterTypeList() == null)
+			setEncounterTypeList(new ArrayList<EncounterType>());
+		getEncounterTypeList().add(encounterType);
 	}
+
+	public List<EncounterType> getEncounterTypeList() {
+    	return encounterTypeList;
+    }
+
+	public void setEncounterTypeList(List<EncounterType> encounterTypeList) {
+    	this.encounterTypeList = encounterTypeList;
+    }
 
 	public Date getSinceDate() {
 		return sinceDate;
@@ -186,6 +216,14 @@ public class EncounterPatientFilter extends AbstractPatientFilter implements Pat
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public Form getForm() {
+		return form;
+	}
+
+	public void setForm(Form form) {
+		this.form = form;
 	}
 
 }

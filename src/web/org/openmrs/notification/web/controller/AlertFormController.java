@@ -1,7 +1,6 @@
 package org.openmrs.notification.web.controller;
 
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -22,6 +21,7 @@ import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.AlertService;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -37,8 +37,6 @@ public class AlertFormController extends SimpleFormController {
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 
-	SimpleDateFormat dateFormat;
-
 	/**
 	 * 
 	 * Allows for Integers to be used as values in input tags. Normally, only
@@ -53,16 +51,12 @@ public class AlertFormController extends SimpleFormController {
 
 		Locale locale = Context.getLocale();
 		NumberFormat nf = NumberFormat.getInstance(locale);
-		dateFormat = new SimpleDateFormat(OpenmrsConstants
-				.OPENMRS_LOCALE_DATE_PATTERNS().get(
-						Context.getLocale().toString().toLowerCase()), Context
-				.getLocale());
 
 		// NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class,
 				new CustomNumberEditor(java.lang.Integer.class, nf, true));
 		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(
-				dateFormat, true, 10));
+				OpenmrsUtil.getDateFormat(), true, 10));
 
 	}
 

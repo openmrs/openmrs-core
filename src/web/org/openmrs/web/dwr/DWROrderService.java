@@ -12,7 +12,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
-import org.openmrs.EncounterType;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
@@ -50,8 +49,7 @@ public class DWROrderService {
 		
 		Date dStartDate = null;
 		if ( startDate != null ) {
-			String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
-			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
 			try {
 				dStartDate = sdf.parse(startDate);
 			} catch (ParseException e) {
@@ -77,8 +75,7 @@ public class DWROrderService {
 	public void discontinueOrder(Integer orderId, String discontinueReason, String discontinueDate) {
 		Date dDiscDate = null;
 		if ( discontinueDate != null ) {
-			String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
-			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
 			try {
 				dDiscDate = sdf.parse(discontinueDate);
 			} catch (ParseException e) {
@@ -269,8 +266,7 @@ public class DWROrderService {
 
 		Date discDate = null;
 		if ( discontinueDate != null ) {
-			String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
-			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
 			try {
 				discDate = sdf.parse(discontinueDate);
 			} catch (ParseException e) {
@@ -310,8 +306,7 @@ public class DWROrderService {
 		
 		Date discDate = null;
 		if ( discontinueDate != null ) {
-			String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
-			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
 			try {
 				discDate = sdf.parse(discontinueDate);
 			} catch (ParseException e) {

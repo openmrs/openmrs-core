@@ -1,22 +1,29 @@
 package org.openmrs.cohort;
 
+import java.io.StreamTokenizer;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
+import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.BooleanOperator;
 import org.openmrs.reporting.AbstractPatientFilter;
 import org.openmrs.reporting.CompoundPatientFilter;
 import org.openmrs.reporting.InversePatientFilter;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.util.OpenmrsUtil;
 
 public class CohortHistoryCompositionFilter extends AbstractPatientFilter
 		implements PatientFilter {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final static Log log = LogFactory.getLog(CohortHistoryCompositionFilter.class);
 	
 	private CohortSearchHistory history;
 	private List<Object> parsedCompositionString;
@@ -62,7 +69,7 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter
 	 * Call this to notify this composition filter that the _i_th element of the search history
 	 * has been removed, and it potentially needs to renumber its constituent parts
 	 * @return whether or not this filter itself should be removed (because it directly references the removed history element
-	 */
+	 *//*
 	public boolean removeFromHistoryNotify(int i) {
 		return removeHelper(parsedCompositionString, i);
 	}
@@ -84,6 +91,7 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter
 		}
 		return ret;
 	}
+	*/
 	
 	private PatientFilter toPatientFilter(List<Object> phrase) {
 		// Recursive step:

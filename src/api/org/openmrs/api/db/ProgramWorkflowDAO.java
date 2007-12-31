@@ -8,6 +8,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -31,6 +32,8 @@ public interface ProgramWorkflowDAO {
 
 	public PatientProgram getPatientProgram(Integer id);
 
+	public PatientState getPatientState(Integer id);
+
 	public Collection<PatientProgram> getPatientPrograms(Patient patient);
 
 	public ProgramWorkflow findWorkflowByProgramAndConcept(Integer programId, Integer conceptId);
@@ -41,6 +44,8 @@ public interface ProgramWorkflowDAO {
 	
 	public void updateWorkflow(ProgramWorkflow w);
 
+	public List<ProgramWorkflowState> getStates(boolean includeVoided);
+	
 	public ProgramWorkflowState getState(Integer id);
 
 	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate);

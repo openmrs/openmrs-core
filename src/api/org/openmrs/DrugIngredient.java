@@ -3,7 +3,6 @@ package org.openmrs;
 /**
  * DrugIngredient
  * 
- * @author Burke Mamlin
  */
 public class DrugIngredient implements java.io.Serializable {
 

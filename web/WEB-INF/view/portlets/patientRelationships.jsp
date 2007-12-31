@@ -26,37 +26,58 @@
 	})
 	
 	function refreshRelationships() {
-		DWRRelationshipService.getRelationships(${model.personId}, null, function(rels) {
-				DWRUtil.removeAllOptions('new_relationships');
-				if (rels.length == 0) {
-					DWRUtil.addOptions('new_relationships', [ '<spring:message code="general.none" javaScriptEscape="true" />' ]);
-				}
-				for (var i = 0; i < rels.length; ++i) {
-					var rel = rels[i];
-					var relId = rel.relationshipId;
-					var str = '';
-					if (rel.personAId == ${model.personId}) {
-						str = rel.bIsToA + ': ';
-						if (rel.personBType == 'Patient')
-							str += '<a href="patientDashboard.form?patientId=' + rel.personBId + '">' + rel.personB + '</a>';
-						else
-							str += rel.personB;
-					} else if (rel.personBId == ${model.personId}) {
-						str = rel.aIsToB + ': ';
-						if (rel.personAType == 'Patient')
-							str += '<a href="patientDashboard.form?patientId=' + rel.personAId + '">' + rel.personA + '</a>';
-						else
-							str += rel.personA;
-					}
-					str += '&nbsp;<a id="del_rel_' + relId + '" href="javascript:showDiv(\'voidRel' + relId + '\'); hideDiv(\'del_rel_' + relId + '\');"><spring:message code="general.deleteLink" javaScriptEscape="true" /></a>';
-					str += ' <span style="display: none; border: 1px black dashed; margin: 2px" id="voidRel' + relId + '">';
-					str += ' <spring:message code="general.voidReasonQuestion" javaScriptEscape="true"/>: <input type="text" id="void_reason_' + relId + '"/>';
-					str += ' <input type="button" value="<spring:message code="general.delete" javaScriptEscape="true"/>" onClick="handleDeleteRelationship(' + relId + ')"/>';
-					str += ' <input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv(\'del_rel_' + relId + '\'); hideDiv(\'voidRel' + relId + '\')"/>';
-					str += '</span>';
-					DWRUtil.addOptions('new_relationships', [ str ]);
-				}
-			});
+		DWRRelationshipService.getRelationships(${model.personId}, null, refreshRelationshipsCallback);
+	}
+	
+	function refreshRelationshipsInitial() {
+		var rels = new Array();
+		var rel;
+		<c:forEach var="rel" items="${model.patientRelationships}">
+			rel = new Object();
+			rel.relationshipId = ${rel.relationshipId};
+			rel.personA = '${fn:replace(rel.personA.personName, "'", "\\'")}';
+			rel.personB = '${fn:replace(rel.personB.personName, "'", "\\'")}';
+			rel.aIsToB = '${fn:replace(rel.relationshipType.aIsToB, "'", "\\'")}';
+			rel.bIsToA = '${fn:replace(rel.relationshipType.bIsToA, "'", "\\'")}';
+			rel.personAId = ${rel.personA.personId};
+			rel.personBId = ${rel.personB.personId};
+			rel.personAIsPatient = ${rel.personA.patient};
+			rel.personBIsPatient = ${rel.personB.patient};
+			rels.push(rel);
+		</c:forEach>
+		refreshRelationshipsCallback(rels);
+	}
+	
+	function refreshRelationshipsCallback(rels) {
+		DWRUtil.removeAllOptions('new_relationships');
+		if (rels.length == 0) {
+			DWRUtil.addOptions('new_relationships', [ '<spring:message code="general.none" javaScriptEscape="true" />' ]);
+		}
+		for (var i = 0; i < rels.length; ++i) {
+			var rel = rels[i];
+			var relId = rel.relationshipId;
+			var str = '';
+			if (rel.personAId == ${model.personId}) {
+				str = rel.bIsToA + ': ';
+				if (rel.personBIsPatient)
+					str += '<a href="patientDashboard.form?patientId=' + rel.personBId + '">' + rel.personB + '</a>';
+				else
+					str += rel.personB;
+			} else if (rel.personBId == ${model.personId}) {
+				str = rel.aIsToB + ': ';
+				if (rel.personAIsPatient)
+					str += '<a href="patientDashboard.form?patientId=' + rel.personAId + '">' + rel.personA + '</a>';
+				else
+					str += rel.personA;
+			}
+			str += '&nbsp;<a id="del_rel_' + relId + '" href="javascript:showDiv(\'voidRel' + relId + '\'); hideDiv(\'del_rel_' + relId + '\');"><spring:message code="general.deleteLink" javaScriptEscape="true" /></a>';
+			str += ' <span style="display: none; border: 1px black dashed; margin: 2px" id="voidRel' + relId + '">';
+			str += ' <spring:message code="general.voidReasonQuestion" javaScriptEscape="true"/>: <input type="text" id="void_reason_' + relId + '"/>';
+			str += ' <input type="button" value="<spring:message code="general.delete" javaScriptEscape="true"/>" onClick="handleDeleteRelationship(' + relId + ')"/>';
+			str += ' <input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv(\'del_rel_' + relId + '\'); hideDiv(\'voidRel' + relId + '\')"/>';
+			str += '</span>';
+			DWRUtil.addOptions('new_relationships', [ str ]);
+		}
 	}
 	
 	function handleAddRelationship() {
@@ -143,5 +164,5 @@
 </div>
 
 <script type="text/javascript">
-	refreshRelationships();
+	refreshRelationshipsInitial();
 </script>

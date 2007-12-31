@@ -23,11 +23,11 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.propertyeditor.ConceptEditor;
-import org.openmrs.web.propertyeditor.DrugEditor;
-import org.openmrs.web.propertyeditor.EncounterEditor;
-import org.openmrs.web.propertyeditor.OrderTypeEditor;
-import org.openmrs.web.propertyeditor.UserEditor;
+import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.DrugEditor;
+import org.openmrs.propertyeditor.EncounterEditor;
+import org.openmrs.propertyeditor.OrderTypeEditor;
+import org.openmrs.propertyeditor.UserEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -78,9 +78,6 @@ public class OrderDrugFormController extends SimpleFormController {
 		// just the text that we need for an empty orderType list
 		String emptyOrderTypeList = this.getMessageSourceAccessor().getMessage("OrderType.list.empty");
 		refData.put("emptyOrderTypeList", emptyOrderTypeList);
-		
-		// put the default dateformat for the locale
-		refData.put("datePattern", OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()));
 		
 		return refData;
 	}

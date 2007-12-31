@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs;
 
 import java.util.Collection;
@@ -14,12 +27,14 @@ import org.openmrs.util.OpenmrsConstants;
 /**
  * Defines a User in the system.  A user is simply an extension
  * of a person and all that that implies.  A user is defined as someone who
- * will be manipulating the system and must log in or is being referred to as
- * a provider, etc 
+ * will be manipulating the system and must log in or is being referred to in
+ * another part of the system (as a provider, creator, etc)
  * 
- * @author Burke Mamlin
- * @author Ben Wolfe
- * @version 2.0
+ * Users are special <code>Person</code>s in that they have login credentials 
+ * (login/password) and can have special user properties.  User properties are
+ * just simple key-value pairs for either quick info or display specific info
+ * that needs to be persisted (like locale preferences, search options, etc)
+ * 
  */
 public class User extends Person implements java.io.Serializable {
 
@@ -66,7 +81,7 @@ public class User extends Person implements java.io.Serializable {
 	
 	/**
 	 * Return true if this user has all privileges
-	 * @return
+	 * @return true/false if this user is defined as a super user
 	 */
 	public boolean isSuperUser() {
 		Set<Role> tmproles = getAllRoles();
@@ -80,7 +95,11 @@ public class User extends Person implements java.io.Serializable {
 	}
 
 	/**
-	 * return true if this user has the specified privilege
+	 * This method shouldn't be used directly.  Use org.openmrs.api.context.Context#hasPrivilege
+	 * so that anonymous/authenticated/proxy privileges are all included
+	 * 
+	 * Return true if this user has the specified privilege
+	 * 
 	 * @param privilege
 	 * @return true/false
 	 */
@@ -95,22 +114,32 @@ public class User extends Person implements java.io.Serializable {
 		
 		Set<Role> tmproles = getAllRoles();
 		
-		Role role;
-		
-		for (Iterator i = tmproles.iterator(); i.hasNext();) {
-			role = (Role) i.next();
-		
-			if (role.hasPrivilege(privilege))
+		// loop over the roles and check each for the privilege
+		for (Iterator<Role> i = tmproles.iterator(); i.hasNext();) {
+			if (i.next().hasPrivilege(privilege))
 				return true;
 		}
 
 		return false;
 	}
 	
+	/**
+	 * Check if this user has the given String role
+	 * 
+	 * @param r String name of a role to check
+	 * @return true/false if this user has the role
+	 */
 	public boolean hasRole(String r) {
 		return hasRole(r, false);
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param r
+	 * @param ignoreSuperUser
+	 * @return
+	 */
 	public boolean hasRole(String r, boolean ignoreSuperUser) {
 		if (ignoreSuperUser == false) {
 			if (isSuperUser())
@@ -122,7 +151,8 @@ public class User extends Person implements java.io.Serializable {
 		
 		Set<Role> tmproles = getAllRoles();
 		
-		log.debug("User #" + userId + " has roles: " + tmproles);
+		if (log.isDebugEnabled())
+			log.debug("User #" + userId + " has roles: " + tmproles);
 		
 		Role role = new Role(r);
 		
@@ -132,13 +162,19 @@ public class User extends Person implements java.io.Serializable {
 		return false;
 	}
 	
+	/**
+	 * Get <i>all</i> privileges this user has.  This delves into all 
+	 * of the roles that a person has, appending unique privileges
+	 * 
+	 * @return Collection of complete Privileges this user has
+	 */
 	public Collection<Privilege> getPrivileges() {
 		Set<Privilege> privileges = new HashSet<Privilege>();
 		Set<Role> tmproles = getAllRoles();
 
 		Role role;
-		for (Iterator i = tmproles.iterator(); i.hasNext();) {
-			role = (Role) i.next();
+		for (Iterator<Role> i = tmproles.iterator(); i.hasNext();) {
+			role = i.next();
 			Collection<Privilege> privs = role.getPrivileges();
 			if (privs != null)
 				privileges.addAll(privs);
@@ -184,13 +220,20 @@ public class User extends Person implements java.io.Serializable {
 	 * @return all roles (inherited from parents and given) for this user
 	 */
 	public Set<Role> getAllRoles() {
+		// the user's immediate roles
 		Set<Role> baseRoles = new HashSet<Role>();
+		
+		// the user's complete list of roles including
+		// the parent roles of their immediate roles
 		Set<Role> totalRoles = new HashSet<Role>();
 		if (getRoles() != null) {
 			baseRoles.addAll(getRoles());
 			totalRoles.addAll(getRoles());
 		}
-		log.debug("User's base roles: " + baseRoles);
+		
+		if (log.isDebugEnabled())
+			log.debug("User's base roles: " + baseRoles);
+		
 		try {
 			for (Role r : baseRoles) {
 				totalRoles.addAll(r.getAllParentRoles());
@@ -234,7 +277,7 @@ public class User extends Person implements java.io.Serializable {
 	}
 
 	/**
-	 * Remove the given obervation from the list of roles for this User
+	 * Remove the given Role from the list of roles for this User
 	 * @param roleservation
 	 */
 	public void removeRole(Role role) {

@@ -102,6 +102,13 @@ public class HibernateConceptDAO implements
 	}
 
 	/**
+	 * @see org.openmrs.api.db.ConceptService#getConcept(java.lang.Integer)
+	 */
+	public ConceptAnswer getConceptAnswer(Integer conceptAnswerId) throws APIException {
+		return (ConceptAnswer)sessionFactory.getCurrentSession().get(ConceptAnswer.class, conceptAnswerId);
+	}
+
+	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConcepts(java.lang.String, java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
@@ -278,7 +285,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Concept> getConceptsByName(String name) {
-		Query query = sessionFactory.getCurrentSession().createQuery("select concept from Concept concept where concept.names.name like '%' || ? || '%'");
+		Query query = sessionFactory.getCurrentSession().createQuery("select c from Concept c join c.names names where names.name like '%' || ? || '%'");
 		query.setString(0, name);
 		List<Concept> concepts = query.list();
 		
@@ -290,7 +297,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public Concept getConceptByName(String name) {
-		Query query = sessionFactory.getCurrentSession().createQuery("select concept from Concept concept where concept.names.name = ?");
+		Query query = sessionFactory.getCurrentSession().createQuery("from Concept c join c.names names where names.name = ?");
 		query.setString(0, name);
 		List<Concept> concepts = query.list();
 		
@@ -323,7 +330,7 @@ public class HibernateConceptDAO implements
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Drug> getDrugs() {
-		return sessionFactory.getCurrentSession().createQuery("from Drug").list();
+		return sessionFactory.getCurrentSession().createQuery("from Drug order by name").list();
 	}
 	
 	

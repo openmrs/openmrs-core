@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false"/>
+  <concept_name concept_id="1" name="Some concept name" locale="en" description="this is a description" creator="1" date_created="2005-01-01 00:00:00.0" />
+  
+  <concept concept_id="2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false"/>
+  <concept_name concept_id="2" name="Some concept name 2" locale="en" description="this is a description 2" creator="1" date_created="2005-01-01 00:00:00.0" />
+  
+  <field_type field_type_id="1" creator="1" date_created="2005-01-01 00:00:00.0" name="some field type" is_set="false" />
+  <field_type field_type_id="2" creator="1" date_created="2005-01-01 00:00:00.0" name="some field type 2" is_set="false" />
+</dataset>

@@ -12,6 +12,12 @@ public class ListItem {
 	private String description;
 	
 	public ListItem() { }
+	
+	public ListItem(Integer id, String name, String description) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+	}
 
 	public String getDescription() {
 		return description;

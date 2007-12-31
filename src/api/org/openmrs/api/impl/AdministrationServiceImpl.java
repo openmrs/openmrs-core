@@ -38,9 +38,6 @@ import org.springframework.util.StringUtils;
 
 /**
  * Admin-related services
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class AdministrationServiceImpl implements AdministrationService {
@@ -346,9 +343,13 @@ public class AdministrationServiceImpl implements AdministrationService {
 	public void deleteRole(Role role) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
-
+		
+		if (role == null || role.getRole() == null)
+			return;
+		
 		if (OpenmrsConstants.CORE_ROLES().keySet().contains(role.getRole()))
 			throw new APIException("Cannot delete a core role");
+		
 		getAdministrationDAO().deleteRole(role);
 	}
 

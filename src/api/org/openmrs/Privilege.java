@@ -4,7 +4,6 @@ package org.openmrs;
 /**
  * Privilege 
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public class Privilege implements java.io.Serializable {

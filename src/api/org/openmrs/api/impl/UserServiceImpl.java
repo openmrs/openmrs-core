@@ -20,7 +20,6 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * User-related services
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public class UserServiceImpl implements UserService {
@@ -82,7 +81,7 @@ public class UserServiceImpl implements UserService {
 	 * @throws APIException
 	 */
 	public boolean hasDuplicateUsername(User user) throws APIException {
-		return getUserDAO().hasDuplicateUsername(user);
+		return getUserDAO().hasDuplicateUsername(user.getUsername(), user.getSystemId(), user.getUserId());
 	}
 	
 	/**
@@ -377,18 +376,29 @@ public class UserServiceImpl implements UserService {
 	 * @return new system id
 	 */
 	public String generateSystemId() {
-		String systemId = getUserDAO().generateSystemId();
-		
+		String systemId;
 		Integer checkDigit;
-		try {
-			checkDigit = OpenmrsUtil.getCheckDigit(systemId);
-		}
-		catch ( Exception e ) {
-			log.error("error getting check digit", e);
-			return systemId;
-		}
+		Integer offset = 0;
+		do {
+			// generate and increment the system id if necessary
+			Integer generatedId = getUserDAO().generateSystemId() + offset++;
 		
-		return systemId + "-" + checkDigit;
+			systemId = generatedId.toString();
+		
+			try {
+				checkDigit = OpenmrsUtil.getCheckDigit(systemId);
+			}
+			catch ( Exception e ) {
+				log.error("error getting check digit", e);
+				return systemId;
+			}
+			
+			systemId = systemId + "-" + checkDigit;
+			
+			// loop until we find a system id that no one has 
+		} while (getUserDAO().hasDuplicateUsername(null, systemId, null));
+		
+		return systemId;
 	}
 	
 	/**

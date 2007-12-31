@@ -1,9 +1,10 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<%@ include file="/WEB-INF/template/header.jsp"%>
-
 <openmrs:require privilege="" otherwise="/login.htm"
 	redirect="/options.form" />
+	
+<spring:message var="pageTitle" code="optionsForm.title" scope="page"/>
+<%@ include file="/WEB-INF/template/header.jsp"%>
 
 <script type="text/javascript">
 
@@ -232,6 +233,7 @@ function containsError(element) {
 					<span class="error">${status.errorMessage}</span>
 				</c:if>
 			</spring:bind>
+			<spring:message code="User.confirm.description" />
 		</td>
 	</tr>
 	<tr><td colspan="2"><br/></td></tr>

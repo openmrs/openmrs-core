@@ -35,6 +35,13 @@
 			column="county_district" length="50" />
 		<property name="neighborhoodCell" type="java.lang.String"
 			column="neighborhood_cell" length="50" />
+		<property name="townshipDivision" type="java.lang.String"
+			column="township_division" length="50" />
+		<property name="region" type="java.lang.String"
+			length="50" />
+		<property name="subregion" type="java.lang.String"
+			length="50" />
+		
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 

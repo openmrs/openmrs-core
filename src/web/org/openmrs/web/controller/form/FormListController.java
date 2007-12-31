@@ -56,12 +56,12 @@ public class FormListController extends SimpleFormController {
 					//TODO convenience method deleteForm(Integer) ??
 					try {
 						fs.deleteForm(fs.getForm(Integer.valueOf(p)));
-						if (!success.equals("")) success += "<br>";
+						if (!success.equals("")) success += "<br/>";
 						success += textForm + " " + p + " " + deleted;
 					}
 					catch (APIException e) {
 						log.warn("Error deleting form", e);
-						if (!error.equals("")) error += "<br>";
+						if (!error.equals("")) error += "<br/>";
 						error += textForm + " " + p + " " + notDeleted;
 					}
 				}

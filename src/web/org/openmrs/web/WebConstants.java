@@ -20,8 +20,6 @@ public class WebConstants {
 
 	public static final String OPENMRS_LANGUAGE_COOKIE_NAME = "__openmrs_language";
 	
-	public static final String OPENMRS_WEBAPP_NAME = "@WEBAPP.NAME@";
-	
 	public static final String OPENMRS_USER_OVERRIDE_PARAM = "__openmrs_user_over_id";
 	
 	public static final String OPENMRS_ANALYSIS_IN_PROGRESS_ATTR = "__openmrs_analysis_in_progress";
@@ -35,4 +33,12 @@ public class WebConstants {
 	public static final String OPENMRS_DYNAMIC_FORM_KEEPALIVE = "__openmrs_dynamic_form_keepalive";
 	
 	public static final String OPENMRS_HEADER_USE_MINIMAL = "__openmrs_use_minimal_header";
+	
+	public static final String OPENMRS_PORTLET_MODEL_NAME = "model";
+	public static final String OPENMRS_PORTLET_LAST_REQ_ID = "__openmrs_portlet_last_req_id";
+	public static final String OPENMRS_PORTLET_CACHED_MODEL = "__openmrs_portlet_cached_model";
+	
+	// these vars filled in by org.openmrs.web.Listener at webapp start time
+	public static String BUILD_TIMESTAMP = "";
+	public static String WEBAPP_NAME = "openmrs";
 }

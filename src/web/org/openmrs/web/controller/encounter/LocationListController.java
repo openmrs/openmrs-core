@@ -69,12 +69,12 @@ public class LocationListController extends SimpleFormController {
 				//TODO convenience method deleteLocation(Integer) ??
 				try {
 					as.deleteLocation(es.getLocation(Integer.valueOf(p)));
-					if (!success.equals("")) success += "<br>";
+					if (!success.equals("")) success += "<br/>";
 					success += p + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting location", e);
-					if (!error.equals("")) error += "<br>";
+					if (!error.equals("")) error += "<br/>";
 					error += p + " " + notDeleted;
 				}
 			}

@@ -77,22 +77,26 @@ public class DWRConceptService {
 				// turn classnames into class objects
 				List<ConceptClass> includeClasses = new Vector<ConceptClass>();
 				for (String name : includeClassNames)
-					includeClasses.add(cs.getConceptClassByName(name));
+					if (!"".equals(name))
+						includeClasses.add(cs.getConceptClassByName(name));
 
 				// turn classnames into class objects
 				List<ConceptClass> excludeClasses = new Vector<ConceptClass>();
 				for (String name : excludeClassNames)
-					excludeClasses.add(cs.getConceptClassByName(name));
+					if (!"".equals(name))
+						excludeClasses.add(cs.getConceptClassByName(name));
 				
 				// turn classnames into class objects
 				List<ConceptDatatype> includeDatatypes = new Vector<ConceptDatatype>();
 				for (String name : includeDatatypeNames)
-					includeDatatypes.add(cs.getConceptDatatypeByName(name));
+					if (!"".equals(name))
+						includeDatatypes.add(cs.getConceptDatatypeByName(name));
 				
 				// turn classnames into class objects
 				List<ConceptDatatype> excludeDatatypes = new Vector<ConceptDatatype>();
 				for (String name : excludeDatatypeNames)
-					excludeDatatypes.add(cs.getConceptDatatypeByName(name));
+					if (!"".equals(name))
+						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
 
 				// perform the search
 				words.addAll(cs.findConcepts(phrase, locale, includeRetired, 

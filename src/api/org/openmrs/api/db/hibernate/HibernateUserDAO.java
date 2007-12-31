@@ -18,6 +18,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.HSQLDialect;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -39,7 +41,7 @@ public class HibernateUserDAO implements
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
-	
+
 	public HibernateUserDAO() { }
 
 	/**
@@ -55,7 +57,7 @@ public class HibernateUserDAO implements
 	 * @see org.openmrs.api.db.UserService#createUser(org.openmrs.User)
 	 */
 	public User createUser(User user, String password) {
-		if (hasDuplicateUsername(user))
+		if (hasDuplicateUsername(user.getUsername(), user.getSystemId(), user.getUserId()))
 			throw new DAOException("Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
 		
 		try {
@@ -95,21 +97,18 @@ public class HibernateUserDAO implements
 
 		return users.get(0);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
-	public boolean hasDuplicateUsername(User user) {
-		String username = user.getUsername();
+	public boolean hasDuplicateUsername(String username, String systemId, Integer userId) {
 		if (username == null || username.length() == 0)
 			username = "-";
-		String systemId = user.getSystemId();
 		if (systemId == null || username.length() == 0)
 			systemId = "-";
 		
-		Integer userid = user.getUserId();
-		if (userid == null)
-			userid = new Integer(-1);
+		if (userId == null)
+			userId = new Integer(-1);
 		
 		String usernameWithCheckDigit = username;
 		try {
@@ -125,7 +124,7 @@ public class HibernateUserDAO implements
 				.setString("sysid1", systemId)
 				.setString("sysid2", systemId)
 				.setString("uname3", usernameWithCheckDigit)
-				.setInteger("uid", userid)
+				.setInteger("uid", userId)
 				.uniqueResult();
 
 		log.debug("# users found: " + count);
@@ -188,7 +187,7 @@ public class HibernateUserDAO implements
 	private void insertUserStub(User user) {
 		Connection connection = sessionFactory.getCurrentSession().connection();
 		try {
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO `users` (user_id, system_id, creator, date_created) VALUES (?, ?, ?, ?)");
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO users (user_id, system_id, creator, date_created) VALUES (?, ?, ?, ?)");
 			
 			ps.setInt(1, user.getUserId());
 			ps.setString(2, user.getSystemId());
@@ -209,7 +208,7 @@ public class HibernateUserDAO implements
 	 * @see org.openmrs.api.db.UserService#deleteUser(org.openmrs.User)
 	 */
 	public void deleteUser(User user) {
-		sessionFactory.getCurrentSession().delete(user);
+		HibernatePersonDAO.deletePersonAndAttributes(sessionFactory, user);
 	}
 
 	/**
@@ -293,7 +292,7 @@ public class HibernateUserDAO implements
 	}
 
 	/**
-	 * We have to change the password manually becuase we don't store the password and salt on
+	 * We have to change the password manually because we don't store the password and salt on
 	 * the user
 	 * 
 	 * @param newPassword
@@ -302,27 +301,59 @@ public class HibernateUserDAO implements
 	 * @param date
 	 * @param userId2
 	 */
-	private void updateUserPassword(String newPassword, String salt, Integer changedBy, Date dateChanged, Integer userIdToChange) {
-		Connection connection = sessionFactory.getCurrentSession().connection();
+    private void updateUserPassword(String newPassword, String salt, Integer changedBy, Date dateChanged, Integer userIdToChange) {
 		try {
-			// TODO can move this ps to a static variable and not calculate on every call
-			PreparedStatement ps = connection.prepareStatement("UPDATE `users` SET `password` = ?, `salt` = ?, `changed_by` = ?, `date_changed` = ? WHERE `user_id` = ?");
+			PreparedStatement ps = getUpdateUserPasswordStatement();
 			
-			ps.setString(1, newPassword);
-			ps.setString(2, salt);
-			ps.setInt(3, changedBy);
-			ps.setDate(4, new java.sql.Date(dateChanged.getTime()));
-			ps.setInt(5, userIdToChange);
-			
-			ps.executeUpdate();
+			if (ps != null) {
+				ps.setString(1, newPassword);
+				ps.setString(2, salt);
+				ps.setInt(3, changedBy);
+				ps.setDate(4, new java.sql.Date(dateChanged.getTime()));
+				ps.setInt(5, userIdToChange);
+				
+				ps.executeUpdate();
+			}
 		}
 		catch (SQLException e) {
-			log.warn("SQL Exception while trying to create a patient stub", e);
+			log.warn("SQL Exception while running user-password-update ", e);
 		}
 		
 		sessionFactory.getCurrentSession().flush();
+	}
+	
+	/**
+	 * Return or create the prepared statement for use when updating a user's password
+	 * 
+	 * Will return null on error
+	 * 
+	 * @return PreparedStatement that can be executed
+	 */
+	@SuppressWarnings("deprecation")
+    private PreparedStatement getUpdateUserPasswordStatement() {
+		// get the straight up jdbc database connection
+		// TODO address this depreciation warning
+		Connection connection = sessionFactory.getCurrentSession().connection();
 		
+		String sql = "UPDATE users SET `password` = ?, `salt` = ?, `changed_by` = ?, `date_changed` = ? WHERE `user_id` = ?";
 		
+		// if we're in a junit test, we're probably using hsql...and hsql
+		// does not like the backtick.  Replace the backtick with the hsql
+		// escape character -- the double quote (or nothing).
+		Dialect dialect = HibernateUtil.getDialect(sessionFactory);
+		if (HSQLDialect.class.getName().equals(dialect.getClass().getName()))
+			sql = sql.replace("`", "");
+		
+		PreparedStatement updateUserPreparedStatement = null;
+		try {
+			// create the prepared statement
+			updateUserPreparedStatement = connection.prepareStatement(sql);
+		}
+		catch (SQLException e) {
+			log.warn("SQL Exception while trying to create the user-password-update statement", e);
+		}
+		
+		return updateUserPreparedStatement;
 	}
 
 	/**
@@ -473,6 +504,7 @@ public class HibernateUserDAO implements
 		
 		List returnList = new Vector();
 		if (roles != null && roles.size() > 0) {
+			log.debug("looping through to find matching roles");
 			for (Object o : criteria.list()) {
 				User u = (User)o;
 				for (String r : roles)
@@ -482,8 +514,10 @@ public class HibernateUserDAO implements
 					}
 			}
 		}
-		else
+		else {
+			log.debug("not looping because there appears to be no roles");
 			returnList = criteria.list();
+		}
 		
 		return returnList;
 	}
@@ -517,11 +551,9 @@ public class HibernateUserDAO implements
 	}
 	
 	/**
-	 * Get/generate/find the next system id to be doled out.  Assume check digit <b>not</b> applied
-	 * in this method (is applied by UserService.generateSystemId()
-	 * @return new system id
+	 * @see org.openmrs.api.db.UserDAO#generateSystemId()
 	 */
-	public String generateSystemId() {
+	public Integer generateSystemId() {
 		
 		// TODO this algorithm will fail if someone deletes a user that is not the last one.
 		
@@ -529,11 +561,24 @@ public class HibernateUserDAO implements
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		
-		Integer id = ((BigInteger)query.uniqueResult()).intValue() + 1;
+		Object object = query.uniqueResult();
 		
-		return id.toString();
+		Integer id = null;
+		if (object instanceof BigInteger) 
+			id = ((BigInteger)query.uniqueResult()).intValue() + 1;
+		else if (object instanceof Integer)
+			id = ((Integer)query.uniqueResult()).intValue() + 1;
+		else {
+			log.warn("What is being returned here? Definitely nothing expected object value: '" + object + "' of class: " + object.getClass());
+			id = 1;
+		}
+		
+		return id;
 	}
 
+	/**
+	 * @see org.openmrs.api.db.UserDAO#findUsers(java.lang.String, java.lang.String, boolean)
+	 */
 	@SuppressWarnings("unchecked")
 	public List<User> findUsers(String givenName, String familyName, boolean includeVoided) {
 		List<User> users = new Vector<User>();

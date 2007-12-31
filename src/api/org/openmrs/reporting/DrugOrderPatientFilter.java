@@ -18,7 +18,7 @@ import org.openmrs.util.OpenmrsUtil;
 
 public class DrugOrderPatientFilter extends AbstractPatientFilter implements PatientFilter, Comparable<DrugOrderPatientFilter> {
 
-	protected final Log log = LogFactory.getLog(getClass());
+	protected transient final Log log = LogFactory.getLog(getClass());
 	
 	private Integer drugId; // replace this with drug
 	private Concept drugConcept;
@@ -92,7 +92,7 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 			}
 		}
 		PatientSetService service = Context.getPatientSetService();
-		return service.getPatientsHavingDrugOrder(input.getPatientIds(), drugIds, onDate);
+		return service.getPatientsHavingDrugOrder(input == null ? null : input.getPatientIds(), drugIds, onDate);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

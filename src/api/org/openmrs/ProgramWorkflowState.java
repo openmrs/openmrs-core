@@ -120,6 +120,7 @@ public class ProgramWorkflowState {
 			ProgramWorkflowState other = (ProgramWorkflowState) o;
 			return getProgramWorkflowStateId() != null && other.getProgramWorkflowStateId() != null && getProgramWorkflowStateId().equals(other.getProgramWorkflowStateId());
 		}
+		log.warn("o: " + o + " is not a ProgramWorkflowState");
 		return false;
 	}
 	

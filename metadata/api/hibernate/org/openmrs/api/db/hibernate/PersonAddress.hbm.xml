@@ -45,7 +45,16 @@
 
 		<property name="neighborhoodCell" type="java.lang.String"
 			column="neighborhood_cell" length="50" />
-
+		
+		<property name="townshipDivision" type="java.lang.String"
+			column="township_division" length="50" />
+		
+		<property name="region" type="java.lang.String"
+			length="50" />
+		
+		<property name="subregion" type="java.lang.String"
+			length="50" />
+		
 		<many-to-one name="creator" class="User" />
 
 		<property name="dateCreated" type="java.util.Date"

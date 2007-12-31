@@ -68,12 +68,12 @@ public class OrderTypeListController extends SimpleFormController {
 			for (String p : orderTypeList) {
 				try {
 					os.deleteOrderType(os.getOrderType(Integer.valueOf(p)));
-					if (!success.equals("")) success += "<br>";
+					if (!success.equals("")) success += "<br/>";
 					success += p + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting order type", e);
-					if (!error.equals("")) error += "<br>";
+					if (!error.equals("")) error += "<br/>";
 					error += p + " " + notDeleted;
 				}
 			}

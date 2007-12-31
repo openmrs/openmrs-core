@@ -79,12 +79,12 @@ public class TribeListController extends SimpleFormController {
 						as.retireTribe(ps.getTribe(Integer.valueOf(t)));
 					if (action.equals("unretire"))
 						as.unretireTribe(ps.getTribe(Integer.valueOf(t)));
-					if (!success.equals("")) success += "<br>";
+					if (!success.equals("")) success += "<br/>";
 					success += t + " " + changed;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting tribe", e);
-					if (!error.equals("")) error += "<br>";
+					if (!error.equals("")) error += "<br/>";
 					error += t + " " + notChanged;
 				}
 			}

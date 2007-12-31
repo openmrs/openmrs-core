@@ -23,6 +23,7 @@ import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -59,7 +60,7 @@ public class RoleListController extends SimpleFormController {
 		Locale locale = request.getLocale();
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			String[] roleList = request.getParameterValues("roleId");
+			String[] roleList = ServletRequestUtils.getStringParameters(request, "roleId");
 			AdministrationService as = Context.getAdministrationService();
 			UserService us = Context.getUserService();
 			
@@ -73,12 +74,12 @@ public class RoleListController extends SimpleFormController {
 				//TODO convenience method deleteRole(String) ??
 				try {
 					as.deleteRole(us.getRole(p));
-					if (!success.equals("")) success += "<br>";
+					if (!success.equals("")) success += "<br/>";
 					success += p + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn(e);
-					if (!error.equals("")) error += "<br>";
+					if (!error.equals("")) error += "<br/>";
 					error += p + " " + notDeleted;
 				}
 			}

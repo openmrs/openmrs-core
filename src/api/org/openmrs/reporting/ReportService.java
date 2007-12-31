@@ -8,6 +8,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.db.ReportDAO;
 import org.openmrs.reporting.db.ReportObjectDAO;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -51,7 +52,7 @@ public interface ReportService {
 	@Transactional(readOnly=true)
 	public ArrayList<PatientFilter> getAllPatientFilters() throws APIException;
 
-	public void createReportObject(AbstractReportObject reportObject)
+	public Integer createReportObject(AbstractReportObject reportObject)
 			throws APIException;
 
 	public void deleteReport(AbstractReportObject reportObject)
@@ -92,4 +93,13 @@ public interface ReportService {
 	@Transactional(readOnly=true)
 	public List<CohortSearchHistory> getSearchHistories();
 
+	@Transactional(readOnly=true)
+	public PatientSearch getPatientSearch(Integer searchId);
+	
+	@Transactional(readOnly=true)
+	public List<PatientSearch> getAllPatientSearches();
+	
+	@Transactional(readOnly=true)
+	public PatientSearch getPatientSearch(String name);
+	
 }

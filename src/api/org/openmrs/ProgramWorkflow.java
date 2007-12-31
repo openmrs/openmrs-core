@@ -1,10 +1,16 @@
 package org.openmrs;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Set;
+import java.util.TreeSet;
 
-public class ProgramWorkflow {
+import org.openmrs.api.context.Context;
 
+public class ProgramWorkflow implements java.io.Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	private Integer programWorkflowId;
 	private Program program;
 	private Concept concept;
@@ -17,6 +23,14 @@ public class ProgramWorkflow {
 	private Set<ProgramWorkflowState> states;
 
 	public ProgramWorkflow() { }
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof ProgramWorkflow) {
+			ProgramWorkflow wf = (ProgramWorkflow)obj;
+			return (this.getProgramWorkflowId().equals(wf.getProgramWorkflowId()));
+		}
+		return false;
+	}
 	
 	/**
 	 * @return A state that has the given name in any locale, or null if none does
@@ -40,6 +54,16 @@ public class ProgramWorkflow {
 		return states;
 	}
 
+	public Set<ProgramWorkflowState> getSortedStates() {
+		TreeSet<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(new StateAlphaComparator());
+		
+		if ( this.getStates() != null ) {
+			sorted.addAll(this.getStates());
+		}
+
+		return sorted;
+	}
+	
 	public void setStates(Set<ProgramWorkflowState> states) {
 		this.states = states;
 	}
@@ -117,4 +141,18 @@ public class ProgramWorkflow {
 		return "Workflow_" + programWorkflowId; 
 	}
 	
+	private class StateAlphaComparator implements Comparator<ProgramWorkflowState> {
+
+		public int compare(ProgramWorkflowState s1, ProgramWorkflowState s2) {
+			if ( s1 != null && s2 != null ) {
+				String name1 = s1.getConcept().getName(Context.getLocale()).getName();
+				String name2 = s2.getConcept().getName(Context.getLocale()).getName();
+				if ( name1 != null && name2 != null ) {
+					return name1.compareTo(name2);
+				}
+			}
+			return 0;
+		}
+		
+	}
 }

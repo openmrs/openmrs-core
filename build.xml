@@ -10,7 +10,7 @@
 <project name="OpenMRS Trunk" default="dist">
 
 	<tstamp>
-		<format property="timestamp" pattern="MM/dd/yyyy hh:mm aa" />
+		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" />
 	</tstamp>
 	
 	<!-- Environment properties -->
@@ -20,16 +20,18 @@
 	<!-- Library versions and JARs -->
     <property name="lib.dir" location="lib" />
     <property file="${lib.dir}/lib.properties" />
-    
+	<fileset id="lib.files" dir="${lib.dir}">
+        <include name="**/*.jar" />
+    </fileset>
+	<path id="lib.path">
+        <fileset refid="lib.files" />
+	</path>
+	
 	<!-- Base definitions (cannot be overwritten by user property file) -->
 	<property file="build.properties" />
+
 	
 	<!-- Taskdefs -->
-	<taskdef name="splash" classname="org.apache.tools.ant.taskdefs.optional.splash.SplashTask">
-        <classpath>
-			<fileset dir="${lib.dir}" includes="**/*.jar" />
-		</classpath>
-    </taskdef>
 	
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
@@ -66,8 +68,8 @@
 			<equals arg1="${unix.file.exists}" arg2="true" />
 				<then>
 				<!-- Load user overrides from userhome/.OPENMRS-build.properties file -->
-				<echo message="Using build properties in: ${user.home}/.OPENMRS-build.properties" />
-				<property file="${user.home}/.OPENMRS-build.properties"/>
+				<echo message="Using build properties in: ${user.home}/.OpenMRS/OPENMRS-build.properties" />
+				<property file="${user.home}/.OpenMRS/OPENMRS-build.properties"/>
 				</then>
 		</elseif>
 		<else>
@@ -82,16 +84,7 @@
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
 	<!-- *********************************************************** -->
-	<target name="splash" unless="nosplash" description="Display the logo">
-		<property name="splash.dir" location="."/>
-		<splash imageurl="file:${metadata.dir}/images/openmrs-logo-small.gif" showduration="0"/>
-	</target>
-	
-	<target name="init" depends="splash" description="initialization">
-
-		<!-- This file needs to be sure to have the latest variables -->
-		<touch file="${metadata.dir}/api/applicationContext-service.xml"/>
-		<touch file="${src.dir}/api/org/openmrs/util/OpenmrsConstants.java"/>
+	<target name="init" description="initialization">
 		
 		<!-- Discover code and database versions via regular expressions -->
 		<loadfile srcfile="${openmrs.database.version.expected.filename}" property="diffFileInput" />
@@ -138,60 +131,34 @@
 			name="openmrs.api.name" 
 			value="openmrs-api-${openmrs.version.short}.jar"/>
 		
-		
-		<!-- These variables are replaced in the code prior to compilation -->
-		<filterset id="variables.to.replace">
-			<filter token="WEBAPP.NAME" value="${webapp.name}" />
+		<!-- These variables are replaced in the web.xml file during compilation 
+			  and then read in by org.openmrs.web.Listener at openmrs startup -->
+		<filterset id="web.xml.variables.to.replace">
 			<filter token="WEBAPP.DISPLAY.NAME" value="${webapp.display.name}" />
 			<filter token="WEBAPP.DESCRIPTION" value="${webapp.description}" />
-			<filter token="WEBAPP.LOG" value="${webapp.log}" />
 			<filter token="TIMESTAMP" value="${timestamp}" />
-			<filter token="OPENMRS.VERSION.SHORT" value="${openmrs.version.short}" />
-			<filter token="OPENMRS.VERSION.LONG" value="${openmrs.version.long}" />
-			<filter token="DATABASE.VERSION.EXPECTED" value="${openmrs.database.version.expected}" />
-			<filter token="API.NAME" value="${openmrs.api.name}" />
-			<filter token="MAPPING.JAR.LOCATIONS" value="WEB-INF/lib/${openmrs.api.name}" />
-			<!-- Address properties -->
-			<filter token="ADDRESS.FORMAT" value="${address.format}" />
-			<filter token="NAME.FORMAT" value="${name.format}" />
 		</filterset>
-
-	</target>
-
-	<target name="props" unless="properties.isUpToDate">
-		<touch file="${metadata.dir}/api/hibernate/hibernate.cfg.xml" />
-		<echo message="properties.isUpToDate: ${properties.isUpToDate}" />
+		<!-- Other variables are put in the jar manifest file to be read in 
+			 during object construction -->
 	</target>
 
 	<target name="clean" description="Delete build and dist directories">
 		<delete dir="${build.dir}" />
 		<delete dir="${dist.dir}" />
+		<delete dir="${doc.dir}" />
 	</target>
 
 	<target name="compile-api" depends="init" description="compile api">
-		<mkdir dir="${build.dir}/api" />
-		<!-- Copy hibernate metadata -->
-		<copy todir="${build.dir}/api">
+		<mkdir dir="${build.dir}" />
+		<!-- Copy hibernate metadata and logging settings to build directory -->
+		<copy todir="${build.dir}">
 			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
-			<fileset dir="${src.dir}/api">
-				<include name="**/*" />
-				<exclude name="**/ibatis/*" />
-				<exclude name="**/Ibatis*" />
-			</fileset>
-			<filterset refid="variables.to.replace" />
+			<fileset dir="${metadata.dir}/api/spring" includes="applicationContext-service.xml" />
+			<fileset dir="${metadata.dir}/api/log4j" includes="log4j.*" />
 		</copy>
-		<!--
-		<copy todir="${build.dir}/api">
-			<fileset dir="${metadata.dir}/api" includes="*.xml" />
-			<filterset>
-				<filter token="MAPPING.JAR.LOCATIONS" value="classpath:${openmrs.api.name}" />
-			</filterset>
-		</copy>
-		-->
-		<javac destdir="${build.dir}/api" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.compile.classpath">
+		<javac destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.compile.classpath">
 			<compilerarg line="${compile.arguments}" />
-			<src path="${build.dir}/api" />
-			<include name="**/*.java" />
+			<src path="${src.dir}/api" />
 		</javac>
 	</target>
 
@@ -200,8 +167,28 @@
 		<jar destfile="${dist.dir}/${openmrs.api.name}">
 			<manifest>
 				<attribute name="Class-Path" value="${openmrs.api.name}" />
+				<attribute name="Build-Timestamp" value="${timestamp}" />
+				
+				<!-- Build properties for OpenmrsConstants to pick up -->
+				<section name="org/openmrs/util/">
+					<attribute name="Package-Title" value="org.openmrs.util"/>
+					
+					<attribute name="Specification-Title" value="OpenMRS Build Version and Short Version"/>
+					<attribute name="Specification-Vendor" value="${openmrs.version.long}"/>
+					<attribute name="Specification-Version" value="${openmrs.version.short}"/>
+					
+					<attribute name="Implementation-Title" value="OpenMRS Expected Database Version"/>
+					<attribute name="Implementation-Version" value="${openmrs.database.version.expected}"/>
+				</section>
 			</manifest>
-			<fileset dir="${build.dir}/api" includes="**/*" />
+			<fileset dir="${build.dir}">
+				<include name="**/*"/>
+				<exclude name="**/web/**" />
+				<exclude name="**/test/**" />
+				<exclude name="**/*Test*" />
+				<exclude name="**/TestingApplicationContext.xml" />
+				<exclude name="log4j.xml" />
+			</fileset>
 		</jar>
 	</target>
 
@@ -224,19 +211,14 @@
 	</target>
 
 	<target name="compile-api-tests" depends="package-api" description="compile api tests">
-		<mkdir dir="${build.dir}/test/api" />
-		<touch file="${metadata.dir}/api/applicationContext-service.xml"/>
-		<copy todir="${build.dir}/test/api">
-			<fileset dir="${metadata.dir}/api" includes="*.xml" />
-			<fileset dir="${metadata.dir}/api/hibernate" includes="*.*" />
-			<filterset>
-				<filter token="MAPPING.JAR.LOCATIONS" value="file:dist/${openmrs.api.name}" />
-			</filterset>
-		</copy>
-		
-		<javac srcdir="${test.dir}/api" destdir="${build.dir}/test/api" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.test.classpath">
+		<mkdir dir="${build.dir}" />
+		<javac srcdir="${test.dir}/api" destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.test.classpath">
 			<compilerarg line="${compile.arguments}" />
 		</javac>
+		<copy todir="${build.dir}">
+			<fileset dir="${test.dir}/api/org/openmrs" includes="TestingApplicationContext.xml" />
+			<fileset dir="${test.dir}/api/org/openmrs/include" includes="initialInMemoryTestDataSet.xml" />
+		</copy>
 	</target>
 
 	<target name="package-api-tests" depends="compile-api-tests" description="create api-tests jar">
@@ -245,53 +227,35 @@
 			<manifest>
 				<attribute name="Class-Path" value="tests-${openmrs.api.name}" />
 			</manifest>
-			<fileset dir="${build.dir}/test/api" />
+			<fileset dir="${build.dir}">
+				<include name="**/*Test*.class" />
+				<include name="TestingApplicationContext.xml" />
+				<include name="**/initialInMemoryTestDataSet.xml" />
+			</fileset>
 		</jar>
 	</target>
 
 	<target name="compile-web" depends="package-api" description="compile webapp">
-		<mkdir dir="${build.dir}/web" />
-		<copy todir="${build.dir}/web">
-			<fileset dir="${src.dir}/web" includes="**/*.java" />
-			<filterset refid="variables.to.replace" />
-		</copy>
-		<javac srcdir="${build.dir}/web" destdir="${build.dir}/web" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}">
+		<mkdir dir="${build.dir}" />
+		<javac srcdir="${src.dir}/web" destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" 
+			deprecation="${compile.deprecation}" optimize="${compile.optimize}">
 			<compilerarg line="${compile.arguments}" />
 			<classpath>
 				<path refid="web.compile.classpath" />
 				<path location="${dist.dir}/${openmrs.api.name}" />
 			</classpath>
 		</javac>
-		<copy todir="${build.dir}/web">
-			<fileset dir="web/WEB-INF">
-				<include name="log4j.xml" />
-				<include name="messages*" />
-				<exclude name="**/lib/**" />
-				<exclude name="**/classes/**" />
-			</fileset>
-			<filterset refid="variables.to.replace" />
-		</copy>
 	</target>
 
+    <target name="deploy" depends="package-web" if="tomcat.home" description="Move war into the tomcat's webapps directory">
+		<copy todir="${tomcat.home}/webapps">
+			<fileset file="${dist.dir}/${webapp.name}.war" />
+		</copy>
+    </target>
 	
 	<target name="deploy-web" description="standalone copy web target">
-		<copy todir="${dist.dir}/web">
-			<fileset dir="web">
-				<exclude name="**/images/**/*" />
-				<exclude name="**/*.xsn" />
-				<exclude name="**/*.omod" />
-				<exclude name="**/lib/**" />
-				<exclude name="**/classes/**" />
-			</fileset>
-			<filterset refid="variables.to.replace" />
-		</copy>
-		<copy todir="${dist.dir}/web">
-			<fileset dir="web">
-				<include name="**/images/**/*" />
-			</fileset>
-		</copy>
 		<copy todir="${tomcat.home}/webapps/${webapp.name}">
-			<fileset dir="${dist.dir}/web">
+			<fileset dir="web">
 				<include name="**/*.jsp"/>
 				<include name="**/*.tag"/>
 				<include name="**/*.css"/>
@@ -305,150 +269,117 @@
 	</target>
 	
 	<target name="package-web-init" depends="compile-web" description="start creation of webapp. Use package-web for complete">
-		<mkdir dir="${dist.dir}" />
-
-		<!-- copy the entire web directory to the dist folder (for variable replacement) -->
+		<mkdir dir="${dist.dir}/web" />
+		
+		<!-- copy the web.xml file to the dist folder (for variable replacement) -->
 		<copy todir="${dist.dir}/web" preservelastmodified="true" overwrite="true">
-			<fileset dir="web" >
-				<exclude name="**/images/**/*" />
-				<exclude name="**/*.xsn" />
-				<exclude name="**/*.omod" />
-				<exclude name="**/lib/**" />
-				<exclude name="**/classes/**" />
-			</fileset>
-			<filterset refid="variables.to.replace" />
+			<fileset file="web/WEB-INF/web.xml" />
+			<filterset refid="web.xml.variables.to.replace" />
 		</copy>
-		<copy todir="${dist.dir}/web" preservelastmodified="true" overwrite="true">
-			<fileset dir="web">
-				<include name="**/images/**/*" />
-				<include name="**/*.xsn" />
-				<include name="**/*.omod" />
-			</fileset>
-		</copy>
-		<copy todir="${dist.dir}/web/WEB-INF" preservelastmodified="true" overwrite="true">
-			<fileset dir="${metadata.dir}/api" includes="*.xml" />
-			<filterset refid="variables.to.replace" />
-		</copy>
-		<!-- Rename spring servlet(s) to name of webapp -->
-		<move file="${dist.dir}/web/WEB-INF/openmrs-servlet.xml" tofile="${dist.dir}/web/WEB-INF/${webapp.name}-servlet.xml" preservelastmodified="true" overwrite="true" />
-		<move file="${dist.dir}/web/WEB-INF/openmrs_static_content-servlet.xml" tofile="${dist.dir}/web/WEB-INF/${webapp.name}_static_content-servlet.xml" preservelastmodified="true" overwrite="true" />
-	</target>
-	
-	<target name="package-web" depends="package-web-init" description="create webapp war file">
-		<war destfile="${dist.dir}/${webapp.name}.war" basedir="${dist.dir}/web" excludes="**/web.xml" webxml="${dist.dir}/web/WEB-INF/web.xml" duplicate="add">
-			<classes dir="${build.dir}/web" />
-			<lib file="${dist.dir}/${openmrs.api.name}" />
-			<lib dir="${antlr.dir}" includes="*.jar" />
-			<lib dir="${asm.dir}" includes="*.jar" />
-			<lib dir="${c3p0.dir}" includes="*.jar" />
-			<lib dir="${cglib.dir}" includes="*.jar" />
-			<lib dir="${commons-beanutils.dir}" includes="*.jar" />
-			<lib dir="${commons-collections.dir}" includes="*.jar" />
-			<!--<lib dir="${commons-dbcp.dir}" includes="*.jar" />-->
-			<!--<lib dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
-			<lib dir="${commons-fileupload.dir}" includes="*.jar" />
-			<lib dir="${commons-io.dir}" includes="*.jar" />
-			<lib dir="${commons-lang.dir}" includes="*.jar" />
-			<lib dir="${commons-logging.dir}" includes="*.jar" />
-			<!--<lib dir="${commons-pool.dir}" includes="*.jar" />-->
-			<lib dir="${database.dir}" includes="*.jar" />
-			<lib dir="${dom4j.dir}" includes="*.jar" />
-			<lib dir="${dwr.dir}" includes="*.jar" />
-			<lib dir="${ehcache.dir}" includes="*.jar" />
-			<lib dir="${hibernate.dir}" includes="*.jar" />
-			<lib dir="${hl7api.dir}" includes="*.jar" />
-			<!--<lib dir="${ibatis.dir}" includes="*.jar" />-->
-			<lib dir="${jfreechart.dir}" includes="*.jar" />
-			<lib dir="${jstl.dir}" includes="*.jar" />
-			<lib dir="${jta.dir}" includes="*.jar" />
-			<lib dir="${junit.dir}" includes="*.jar" />
-			<lib dir="${log4j.dir}" includes="*.jar" />
-			<lib dir="${mail.dir}" includes="*.jar" />
-			<lib dir="${neal-reporting.dir}" includes="*.jar" />
-			<!--<lib dir="${quartz.dir}" includes="*.jar" />-->
-			<lib dir="${saxon.dir}" includes="*.jar" />
-			<lib dir="${spring.dir}" includes="*.jar" />
-			<!--<lib dir="${struts.dir}" includes="*.jar" /> -->
-			<lib dir="${taglibs.dir}" includes="*.jar" />
-			<lib dir="${velocity.dir}" includes="*.jar" />
-			<lib dir="${xerces.dir}" includes="*.jar" />
-		</war>
-	</target>
-	
-	<target name="package-web-src" depends="compile-web" description="Create jar file containing web java src">
-		<mkdir dir="${build.dir}/web" />
-		<javac destdir="${build.dir}/web" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="web.compile.classpath">
-			<compilerarg line="${compile.arguments}" />
-			<src path="${build.dir}/web" />
-			<include name="**/*.java" />
-		</javac>
-		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/web-${openmrs.api.name}">
-			<fileset dir="${build.dir}/web" includes="**/*" />
-		</jar>
-	</target>
-	
-	<target name="package-web-without-libs" depends="package-web-init" description="create webapp war file without libs">
-		<war destfile="${dist.dir}/${webapp.name}.war" basedir="${dist.dir}/web" excludes="**/web.xml" webxml="${dist.dir}/web/WEB-INF/web.xml" duplicate="add">
-			<classes dir="${build.dir}/web" />
-			<lib file="${dist.dir}/${openmrs.api.name}" />
-		</war>
-	</target>
-
-	<target name="package-web-libs-only" description="create zip file of webapp libraries">
-		<zip destfile="${dist.dir}/libs-${webapp.version}.zip">
+		
+		<property name="libs-zipped-temp" value="${dist.dir}/web/temp-war-libs-zipped.zip" />
+		<zip destfile="${libs-zipped-temp}">
+			
+			<!-- NOTE: You must do an ant "clean" after changing these libraries -->
+			
 			<zipfileset dir="${antlr.dir}" includes="*.jar" />
 			<zipfileset dir="${asm.dir}" includes="*.jar" />
 			<zipfileset dir="${c3p0.dir}" includes="*.jar" />
 			<zipfileset dir="${cglib.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-beanutils.dir}" includes="*.jar" />
-			<zipfileset dir="${commons-collections.dir}" includes="*.jar" />
-			<!--<zipfileset dir="${commons-dbcp.dir}" includes="*.jar" />-->
-			<!--<zipfileset dir="${commons-digester.dir}" includes="*.jar" />  (for struts) -->
+			<zipfileset dir="${commons-collections.dir}" includes="*.jar" excludes="*test*.jar" />
 			<zipfileset dir="${commons-fileupload.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-io.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-lang.dir}" includes="*.jar" />
-			<zipfileset dir="${commons-logging.dir}" includes="*.jar" />
-			<!--<zipfileset dir="${commons-pool.dir}" includes="*.jar" />-->
+			<zipfileset dir="${commons-logging.dir}" includes="*.jar" excludes="*api*.jar" />
 			<zipfileset dir="${database.dir}" includes="*.jar" />
 			<zipfileset dir="${dom4j.dir}" includes="*.jar" />
 			<zipfileset dir="${dwr.dir}" includes="*.jar" />
 			<zipfileset dir="${ehcache.dir}" includes="*.jar" />
+			<zipfileset dir="${hl7api.dir}" includes="*.jar" />
 			<zipfileset dir="${hibernate.dir}" includes="*.jar" />
-			<!--<zipfileset dir="${ibatis.dir}" includes="*.jar" />-->
 			<zipfileset dir="${jfreechart.dir}" includes="*.jar" />
 			<zipfileset dir="${jstl.dir}" includes="*.jar" />
 			<zipfileset dir="${jta.dir}" includes="*.jar" />
-			<zipfileset dir="${junit.dir}" includes="*.jar" />
 			<zipfileset dir="${log4j.dir}" includes="*.jar" />
 			<zipfileset dir="${mail.dir}" includes="*.jar" />
 			<zipfileset dir="${neal-reporting.dir}" includes="*.jar" />
-			<!--<zipfileset dir="${quartz.dir}" includes="*.jar" />-->
 			<zipfileset dir="${saxon.dir}" includes="*.jar" />
-			<zipfileset dir="${spring.dir}" includes="*.jar" />
-			<!--<zipfileset dir="${struts.dir}" includes="*.jar" /> -->
+			<zipfileset dir="${spring.dir}" includes="*.jar" excludes="*Mock*.jar"/>
 			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
-			<zipefileset dir="${xerces.dir}" includes="*.jar" />
+			<zipfileset dir="${xerces.dir}" includes="*.jar" excludes="*Samples*.jar" />
+		</zip>
+		
+	</target>
+	
+	<target name="package-web" depends="package-web-init" description="create webapp war file">
+		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml" webxml="${dist.dir}/web/web.xml" duplicate="add">
+			<classes dir="${build.dir}">
+				<include name="**/web/**/*.class" />
+				<include name="log4j.xml" />
+			</classes>
+			<classes dir="web/WEB-INF">
+				<include name="messages*.properties" />
+			</classes>
+			<lib file="${dist.dir}/${openmrs.api.name}" />
+			<lib src="${libs-zipped-temp}" />
+		</war>
+	</target>
+	
+	<target name="package-web-src" depends="compile-web" description="Create jar file containing web java src">
+		<mkdir dir="${build.dir}" />
+		<javac destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="web.compile.classpath">
+			<compilerarg line="${compile.arguments}" />
+			<src path="${src.dir}/web" />
+			<include name="**/*.java" />
+		</javac>
+		
+		<mkdir dir="${dist.dir}" />
+		<jar destfile="${dist.dir}/web-${openmrs.api.name}">
+			<fileset dir="${build.dir}" includes="**/web/**/*" />
+		</jar>
+	</target>
+	
+	<target name="package-web-without-libs" depends="package-web-init" description="create webapp war file without libs">
+		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml" webxml="${dist.dir}/web/web.xml" duplicate="add">
+			<classes dir="${build.dir}" >
+				<include name="**/web/**/*.class" />
+				<include name="log4j.xml" />
+			</classes>
+			<classes dir="web/WEB-INF">
+				<include name="messages*.properties" />
+			</classes>
+		</war>
+	</target>
+
+	<target name="package-web-libs-only" depends="package-web-init" description="create zip file of webapp libraries">
+		<zip destfile="${dist.dir}/libs-${openmrs.version.short}.zip">
+			<zipfileset file="${dist.dir}/${openmrs.api.name}" />
+			<zipfileset src="${libs-zipped-temp}" />
 		</zip>
 	</target>
 	
+	<!-- 
 	<target name="compile-web-tests" description="compile webapp tests">
-		<mkdir dir="${build.dir}/test/web" />
-		<javac srcdir="${test.dir}/web" destdir="${build.dir}/test/web" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="web.test.classpath">
+		<mkdir dir="${build.dir}" />
+		<javac srcdir="${test.dir}/web" destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="web.test.classpath">
 			<compilerarg line="${compile.arguments}" />
 		</javac>
 	</target>
-
+	
 	<target name="package-web-tests" depends="compile-web-tests" description="create webapp tests jar">
 		<mkdir dir="${dist.dir}" />
 		<jar destfile="${dist.dir}/${webapp.name}-web-tests-${webapp.version}.jar">
 			<manifest>
 				<attribute name="Class-Path" value="${webapp.name}-web-tests-${webapp.version}.jar" />
 			</manifest>
-			<fileset dir="${build.dir}/test/web" />
+			<fileset dir="${build.dir}" >
+				<include name="**/web/**/*Test.class" />
+			</fileset>
 		</jar>
 	</target>
+	-->
 
 	<target name="dist" depends="package-web" description="create distribution packages" />
 
@@ -464,8 +395,15 @@
 		<antcall target="remove" />
 		<sleep seconds="2" />
 		<antcall target="install" />
+		<antcall target="growl" />
 	</target>
-
+	
+	<target name="growl">
+		<exec executable="/usr/local/bin/growlnotify" os="Mac OS X" logError="true">
+			<arg line="-m 'OpenMRS is ready' Build completed -a Eclipse" />
+		</exec>
+	</target>
+				
 	<target name="reload" depends="package-web" description="Explode war and reload application in Tomcat">
 		<mkdir dir="${tomcat.home}/webapps/${webapp.name}" />
 		<unzip src="${dist.dir}/${webapp.name}.war" dest="${tomcat.home}/webapps/${webapp.name}" overwrite="true" />
@@ -506,9 +444,9 @@
 		</schemaexport>
 	</target>
 	
-	<target name="cleanGrammar">
+	<target name="arden-clean-grammar">
 		<delete>
-			<fileset dir="${build.dir}/api/org/openmrs/arden">
+			<fileset dir="${build.dir}/org/openmrs/arden">
 			    <include name="**/*.class"/>
 			    <include name="**/*.java"/>
 			</fileset>
@@ -516,7 +454,7 @@
 			    <include name="**/*.class"/>
 			    <include name="**/*.java"/>
 			</fileset>-->
-			<fileset dir="${src.dir}/api/org/openmrs/arden">
+			<fileset dir="${src.dir}/org/openmrs/arden">
 			    <include name="**/ArdenBase*.java"/>
 			    <include name="**/*.txt"/>
 			    <include name="**/*.smap"/>
@@ -526,15 +464,15 @@
 		</delete>
 	</target>
 	
-	<target name="makeantlr" depends="cleanGrammar" >
+	<target name="arden-make-antlr" depends="arden-clean-grammar" >
 		<antlr target="${src.dir}/api/org/openmrs/arden/ArdenRecognizer.g">
 			<classpath path="lib/antlr/antlr_2.7.6.jar" />
 		</antlr>
 	</target>
 	
-	<target name="Arden Tests">
+	<target name="arden-tests">
 		<java 
-			classpath=".;build/api;lib/antlr/antlrdebug_1.0.0.jar;lib/antlr/antlr_2.7.6.jar" 
+			classpath=".;build;lib/antlr/antlrdebug_1.0.0.jar;lib/antlr/antlr_2.7.6.jar" 
 			classname="org.openmrs.arden.ArdenBaseParser">
 			<arg value="${src.dir}/api/org/openmrs/arden/test"/>
 		</java>
@@ -555,5 +493,50 @@
 			</classpath>
 		</java>
 	</target>
+	
+	<target name="junit-report" depends="junit" description="Run tests and create JUnit report (requires driver.jar property)">
+        <delete dir="${junit-reports.dir}" failonerror="false" />
+        <mkdir dir="${junit-reports.dir}" />
+        <junitreport todir="${junit-reports.dir}">
+			<fileset dir="${junit-tests.dir}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report format="frames" todir="${junit-reports.dir}"/>
+		</junitreport>
+		
+		<!-- TODO add other execs for different OS's. Switch to osfamily with Ant 1.7 -->
+		<exec os="Windows XP" executable="C:/Program Files/Mozilla Firefox/firefox.exe" spawn="true">
+			<arg value="file:///${junit-reports.dir}/index.html"/>
+		</exec>
+		<exec os="Linux" executable="firefox" spawn="true">
+			<arg value="file:///${junit-reports.dir}/index.html"/>
+		</exec>
+		
+	</target>
 
+    <target name="junit" depends="compile-api-tests" description="Run the test suite (requires driver.jar property)">
+		<delete dir="${junit-tests.dir}" failonerror="false"/>
+		<mkdir dir="${junit-tests.dir}" />
+		
+	    <path id="junit-path">
+			<fileset refid="lib.files" />
+		    <pathelement path="${build.dir}"/>
+			<pathelement location="${dist.dir}/${openmrs.api.name}"/>
+		</path>
+		
+        <junit printsummary="yes" dir="${junit-tests.dir}" maxmemory="256M" fork="yes" forkmode="perBatch">
+			<classpath refid="junit-path"/>
+			<formatter type="plain"/>
+			<formatter type="xml"/>
+            <batchtest todir="${junit-tests.dir}" haltonfailure="no">
+				<fileset dir="${build.dir}">
+					<include name="**/*Test.class" />
+					<exclude name="org/openmrs/BaseContextSensitiveTest.class" />
+					<exclude name="org/openmrs/BaseModuleContextSensitiveTest.class" />
+					<exclude name="org/openmrs/web/taglib/SummaryTest.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+	
 </project>

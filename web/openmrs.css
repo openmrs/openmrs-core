@@ -39,11 +39,11 @@ a:hover {
 }
 
 #openmrs_msg {
-	background: url(/@WEBAPP.NAME@/images/info.gif) no-repeat center left;
+	background: url(images/info.gif) no-repeat center left;
 }
 
 #openmrs_error {
-	background: url(/@WEBAPP.NAME@/images/error.gif) no-repeat center left;
+	background: url(images/error.gif) no-repeat center left;
 }
 
 #openmrs_msg, #openmrs_error { 
@@ -280,7 +280,14 @@ table td#patientHeaderPatientGender {
 	width: 25px;
 }
 
-#patientHeaderPatientAge, #patientHeaderPatientTribe, #patientHeaderHealthCenter, #patientHeaderPatientSummary, #patientHeaderOutcome, #patientHeaderShowMoreIdentifiers, #patientDashboardHeaderExtension {
+table#patientActions,table#outcomeFormTable{
+	width: 100%;
+}
+table td#patientActionsOutcomeReason,table td#patientActionsOutcomeDate {
+	width: 35%;
+}
+
+#patientHeaderPatientAge, #patientHeaderPatientTribe, #patientHeaderHealthCenter, #patientHeaderShowMoreIdentifiers, #patientDashboardHeaderExtension {
 	width: 1%;
 	white-space: nowrap;
 	line-height: 25px;
@@ -330,7 +337,7 @@ tr td#patientHeaderObsReturnVisit {
 	color: #ffffff;
 }
 
-#patientHeaderCauseOfDeath a, #patientHeaderCauseOfDeath a:link, #patientHeaderCauseOfDeath a:active, #patientHeaderCauseOfDeath a:visited, #patientHeaderCauseOfDeath a:hover {
+#patientActionsCauseOfDeath a, #patientActionsCauseOfDeath a:link, #patientActionsCauseOfDeath a:active, #patientActionsCauseOfDeath a:visited, #patientActionsCauseOfDeath a:hover {
 	color: #003366;	
 }
 
@@ -505,6 +512,18 @@ table.patientTreatmentPrograms td {
 
 #content .boxHeader a:link {
 	color: white;
+}
+
+.boxHeader .oddRow {
+  background-color: #8FABC7;
+}
+
+.boxHeader .evenRow {
+  background-color: #BBCCF7;
+}
+
+.boxHeader .popupSearchForm {
+  background-color: #8FABC7;
 }
 	
 #selectFormForm {
@@ -1152,4 +1171,10 @@ table td#summaryHeaderPatientGender {
 }
 #cohortSearchTabs a:hover {
 	text-decoration: underline;
+}
+
+.inline ul, .inline li {
+	display: inline;
+	list-style-type: none;
+	padding: 0px;
 }

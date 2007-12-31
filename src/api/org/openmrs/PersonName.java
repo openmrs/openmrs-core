@@ -1,19 +1,38 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
 
 /**
- * PersonName
+ * A Person can have zero to n PersonName(s).
  */
 public class PersonName implements java.io.Serializable, Cloneable, Comparable<PersonName> {
 
 	public static final long serialVersionUID = 4353L;
+
+	private static Log log = LogFactory.getLog(PersonName.class);
 
 	// Fields
 
@@ -52,10 +71,11 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	}
 	
 	/**
-	 * Constructor with the basic requirements
-	 * @param givenName
-	 * @param middleName
-	 * @param familyName
+	 * Convenience constructor with the basic requirements
+	 * 
+	 * @param givenName String this person's first name
+	 * @param middleName String this person's middle name
+	 * @param familyName String this person's last name
 	 */
 	public PersonName(String givenName, String middleName, String familyName) {
 		this.givenName  = givenName;
@@ -66,8 +86,10 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/** 
 	 * Compares two objects for similarity
 	 * 
-	 * @param obj
+	 * @param obj PersonName to compare to
 	 * @return boolean true/false whether or not they are the same objects
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof PersonName) {
@@ -85,9 +107,57 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 		return false;
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getPersonNameId() == null) return super.hashCode();
 		return this.getPersonNameId().hashCode();
+	}
+	
+	/**
+	 * Compares this PersonName object to the given otherName. This method
+	 * differs from {@link #equals(Object)} in that this method compares the
+	 * inner fields of each name for equality.
+	 * 
+	 * Note: Null/empty fields on <code>otherName</code> /will not/ cause a
+	 * false value to be returned
+	 * 
+	 * @param otherName PersonName with which to compare
+	 * @return boolean true/false whether or not they are the same names
+	 */
+	@SuppressWarnings("unchecked")
+    public boolean equalsContent(PersonName otherName) {
+		boolean returnValue = true;
+
+		// these are the methods to compare. All are expected to be Strings
+		String[] methods = { "getGivenName", "getMiddleName", "getFamilyName" };
+
+		Class nameClass = this.getClass();
+
+		// loop over all of the selected methods and compare this and other
+		for (String methodName : methods) {
+			try {
+				Method method = nameClass.getMethod(methodName,
+				                                       new Class[] {});
+
+				String thisValue = (String) method.invoke(this);
+				String otherValue = (String) method.invoke(otherName);
+
+				if (otherValue != null && otherValue.length() > 0)
+					returnValue &= otherValue.equals(thisValue);
+
+			} catch (NoSuchMethodException e) {
+				log.warn("No such method for comparison " + methodName, e);
+			} catch (IllegalAccessException e) {
+				log.error("Error while comparing names", e);
+			} catch (InvocationTargetException e) {
+				log.error("Error while comparing names", e);
+			}
+
+		}
+
+		return returnValue;
 	}
 	
 	/**
@@ -362,6 +432,9 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 		return voided;
 	}
 	
+	/**
+	 * @see #isVoided()
+	 */
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -429,6 +502,9 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 		this.dateChanged = dateChanged;
 	}
 	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		List<String> temp = new ArrayList<String>();
 		if (getPrefix() != null) temp.add(getPrefix());
@@ -445,9 +521,19 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 		return nameString.trim();
 	}
 	
-	// TODO: the behavior of this method needs to be controlled by some sort of global property 
+	/**
+	 * TODO: the behavior of this method needs to be controlled by some sort of 
+	 * 		 global property because an implementation can define how they want
+	 * 		 their names to look (which fields to show/hide) 
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	public int compareTo(PersonName other) {
-		int ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName(), other.getFamilyName());
+		int ret = isVoided().compareTo(other.isVoided());
+		if (ret == 0)
+    		ret = other.isPreferred().compareTo(isPreferred());
+		if (ret == 0)
+			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName(), other.getFamilyName());
 		if (ret == 0)
 			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyName2(), other.getFamilyName2());
 		if (ret == 0)
@@ -458,6 +544,15 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNamePrefix(), other.getFamilyNamePrefix());
 		if (ret == 0)
 			ret = OpenmrsUtil.compareWithNullAsGreatest(getFamilyNameSuffix(), other.getFamilyNameSuffix());
+		if (ret == 0 && getDateCreated() != null)
+    		ret = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
+		
+		// if we've gotten this far, just check all name values.  If they are
+    	// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1 
+    	// and return that (they are not equal).
+    	if (ret == 0 && !equalsContent(other))
+    		ret = 1;
+		
 		return ret;
 	}
 }

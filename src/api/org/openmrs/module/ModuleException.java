@@ -2,9 +2,7 @@ package org.openmrs.module;
 
 /**
  * Represents often fatal errors that occur within the module package
- * 
- * @author Ben Wolfe
- * @version 1.0
+ * \r\n * @version 1.0
  */
 public class ModuleException extends RuntimeException {
 	public static final long serialVersionUID = 236472665L;

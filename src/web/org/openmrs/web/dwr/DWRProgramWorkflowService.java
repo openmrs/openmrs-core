@@ -58,7 +58,7 @@ public class DWRProgramWorkflowService {
 		
 		ProgramWorkflow workflow = Context.getProgramWorkflowService().getWorkflow(programWorkflowId);
 		if ( workflow != null ) {
-			Set<ProgramWorkflowState> states = workflow.getStates();
+			Set<ProgramWorkflowState> states = workflow.getSortedStates();
 			
 			if ( states != null ) {
 				log.debug("Got states of size " + states.size());

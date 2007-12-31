@@ -230,6 +230,8 @@ public class ReportObjectWrapper {
 		this.setDescription(obj.getDescription());
 		this.setType(obj.getType());
 		this.setSubType(obj.getSubType());
+
+		/*
 		this.setCreator(obj.getCreator());
 		this.setDateCreated(obj.getDateCreated());
 		this.setChangedBy(obj.getChangedBy());
@@ -238,6 +240,7 @@ public class ReportObjectWrapper {
 		this.setVoidedBy(obj.getVoidedBy());
 		this.setDateVoided(obj.getDateVoided());
 		this.setVoidReason(obj.getVoidReason());
+		*/
 		
 		ReportObjectXMLEncoder roxe = new ReportObjectXMLEncoder(obj);
 		this.xml = roxe.toXmlString();

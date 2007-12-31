@@ -2,6 +2,7 @@ package org.openmrs.hl7;
 
 import java.util.Collection;
 
+import org.openmrs.Encounter;
 import org.openmrs.hl7.db.HL7DAO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,9 @@ public interface HL7Service {
 
 	@Transactional(readOnly=true)
 	public HL7Source getHL7Source(Integer hl7SourceId);
+	
+	@Transactional(readOnly=true)
+	public HL7Source getHL7Source(String name);
 
 	@Transactional(readOnly=true)
 	public Collection<HL7Source> getHL7Sources();
@@ -93,5 +97,13 @@ public interface HL7Service {
 	public Integer resolvePatientId(PID pid) throws HL7Exception;
 
 	public void garbageCollect();
+
+	/**
+	 * This method is called after an encounter and its obs are created.  This method can be removed
+	 * once we have obs groups being created correctly
+	 * 
+	 * @param encounter
+	 */
+	public void encounterCreated(Encounter encounter);
 
 }

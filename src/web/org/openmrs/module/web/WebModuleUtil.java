@@ -27,11 +27,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.ServiceContext;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
-import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.DispatcherServlet;
 import org.openmrs.web.dwr.OpenmrsDWRServlet;
@@ -59,15 +58,25 @@ public class WebModuleUtil {
 	/**
 	 * Performs the webapp specific startup needs for modules
 	 * 
-	 * Normal startup is done in ModuleFactory.startModule(org.openmrs.module.Module)
+	 * Normal startup is done in {@link ModuleFactory#startModule(Module)}
 	 * 
-	 * @param mod
-	 * @param ServletContext 
+	 * If delayContextRefresh is true, the spring context is not rerun.  This will
+	 * save a lot of time, but it also means that the calling method is responsible
+	 * for restarting the context if necessary.  If delayContextRefresh is true and 
+	 * this module should have caused a context refresh, a true value is returned.
+	 * Otherwise, false is returned
+	 * 
+	 * @param mod Module to start
+	 * @param ServletContext the current ServletContext
+	 * @param delayContextRefresh true/false whether or not to do the context refresh
+	 * 
+	 * @return boolean whether or not the spring context need to be refreshed
 	 */
-	public static void startModule(Module mod, ServletContext servletContext) {
+	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
+		if (log.isDebugEnabled())
+			log.debug("trying to start module " + mod);
 		
 		// only try and start this module if the api started it without a problem.
-		log.debug("trying to start " + mod);
 		if (ModuleFactory.isModuleStarted(mod) && !mod.hasStartupError()) {
 			
 			String realPath = servletContext.getRealPath("");
@@ -76,7 +85,8 @@ public class WebModuleUtil {
 			String path = "/WEB-INF/module_messages@LANG@.properties";
 			
 			for (Entry<String, Properties> entry : mod.getMessages().entrySet()) {
-				log.debug("Copying message property file: " + entry.getKey());
+				if (log.isDebugEnabled())
+					log.debug("Copying message property file: " + entry.getKey());
 				
 				String lang = "_" + entry.getKey();
 				if (lang.equals("_en") || lang.equals("_"))
@@ -114,14 +124,7 @@ public class WebModuleUtil {
 					log.error("Unable to load in lang: '" + entry.getKey() + "' properties for mod: " + mod.getName(), e);
 				}
 				finally {
-					if (outStream != null) {
-						try {
-							outStream.close();
-						}
-						catch (IOException e) {
-							log.warn("Couldn't close outStream", e);
-						}
-					}
+					try { outStream.close(); } catch (Exception e) { /* pass */ }
 				}
 				
 			}
@@ -129,7 +132,7 @@ public class WebModuleUtil {
 			
 			// flag to tell whether we added any xml/dwr/etc changes that necessitate a refresh
 			// of the web application context
-			boolean refreshContext = false;
+			boolean moduleNeedsContextRefresh = false;
 			
 			// copy the html files into the webapp (from /web/module/ in the module)
 			// also looks for a spring context file. If found, schedules spring to be restarted
@@ -165,8 +168,8 @@ public class WebModuleUtil {
 							outStream.close();
 						}
 					}
-					else if (name.equals("moduleApplicationContext.xml")) {
-						refreshContext = true;
+					else if (name.equals("moduleApplicationContext.xml") || name.equals("webModuleApplicationContext.xml")) {
+						moduleNeedsContextRefresh = true;
 					}
 					else if (name.equals(mod.getModuleId() + "Context.xml")) {
 						String msg = "DEPRECATED: '" + name + "' should be named 'moduleApplicationContext.xml' now. Please update/upgrade. ";
@@ -214,14 +217,14 @@ public class WebModuleUtil {
 						current = current.getNextSibling();
 					}
 					
-					refreshContext = true;
+					moduleNeedsContextRefresh = true;
 					
 					// save the dwr-modules.xml file.
 					OpenmrsUtil.saveDocument(dwrmodulexml, f);
 				}
 			}
 			catch (FileNotFoundException e) {
-				throw new ModuleException("/WEB-INF/dwr-modules.xml file doesn't exist.", e);
+				throw new ModuleException(realPath + "/WEB-INF/dwr-modules.xml file doesn't exist.", e);
 			}
 			finally  {
 				if (inputStream != null) {
@@ -234,27 +237,28 @@ public class WebModuleUtil {
 				}
 			}
 			
+			// mark to delete the entire module web directory on exit 
+			// this will usually only be used when an improper shutdown has occurred.
+			String folderPath = realPath + "/WEB-INF/view/module/" + mod.getModuleId();
+			File outFile = new File(folderPath.replace("/", File.separator));
+			outFile.deleteOnExit();
+			
 			// refresh the spring web context to get the just-created xml 
 			// files into it (if we copied an xml file)
-			if (refreshContext) {
+			if (moduleNeedsContextRefresh && delayContextRefresh == false) {
+				if (log.isDebugEnabled())
+					log.debug("Refreshing context for module" + mod);
+				
 				try {
-					
-					// must "refresh" the spring dispatcherservlet as well to add in 
-					//the new handlerMappings
-					if (dispatcherServlet != null)
-						dispatcherServlet.reInitFrameworkServlet();
-						
 					refreshWAC(servletContext);
 					log.debug("Done Refreshing WAC");
-					
-					if (dwrServlet != null)
-						dwrServlet.reInitServlet();
-					
 				}
 				catch (Exception e) {
 					String msg = "Unable to refresh the WebApplicationContext"; 
-					log.warn(msg + " for module: " + mod.getModuleId(), e);
 					mod.setStartupErrorMessage(msg + " : " + e.getMessage());
+					
+					if (log.isWarnEnabled())
+						log.warn(msg + " for module: " + mod.getModuleId(), e);
 					
 					try {
 						ModuleFactory.stopModule(mod); //remove jar from classloader play 
@@ -262,7 +266,8 @@ public class WebModuleUtil {
 					}
 					catch (Exception e2) {
 						// exception expected with most modules here
-						log.warn("Error while stopping a module that had an error on refreshWAC", e2);
+						if (log.isWarnEnabled())
+							log.warn("Error while stopping a module that had an error on refreshWAC", e2);
 					}
 					System.gc();
 					
@@ -270,25 +275,19 @@ public class WebModuleUtil {
 					refreshWAC(servletContext);
 				}
 				
-				// reload the advice points that were lost when refreshing Spring
-				log.debug("Reloading advice for all started modules: " + ModuleFactory.getStartedModules().size());
-				for (Module module : ModuleFactory.getStartedModules()) {
-					ModuleFactory.loadAdvice(module);
-				}
+				// find and cache the module's servlets
+				loadServlets(mod);
 				
-				return;
+				return false;
 			}
 			
-			// mark to delete the entire module web directory on exit 
-			// this will usually only be used when an improper shutdown has occurred.
-			String folderPath = realPath + "/WEB-INF/view/module/" + mod.getModuleId();
-			File outFile = new File(folderPath.replace("/", File.separator));
-			outFile.deleteOnExit();
-			
-			// find and cache the module's servlets
-			loadServlets(mod);
+			// return true if the module needs a context refresh and we didn't do it here
+			return (moduleNeedsContextRefresh && delayContextRefresh == true);
+				
 		}
 		
+		// we aren't processing this module, so a context refresh is not necessary
+		return false;
 	}
 	
 	/**
@@ -441,10 +440,19 @@ public class WebModuleUtil {
 	 */
 	private static void stopModule(Module mod, ServletContext servletContext, boolean skipRefresh) {
 		
+		String moduleId = mod.getModuleId();
+		String modulePackage = mod.getPackageName();
+		
+		// stop all dependent modules
+		for (Module dependentModule : ModuleFactory.getStartedModules()) {
+			if (!dependentModule.equals(mod) && dependentModule.getRequiredModules().contains(modulePackage))
+				stopModule(dependentModule, servletContext, skipRefresh);
+		}
+		
 		String realPath = servletContext.getRealPath("");
 		
 		// delete the web files from the webapp
-		String absPath = realPath + "/WEB-INF/view/module/" + mod.getModuleId();
+		String absPath = realPath + "/WEB-INF/view/module/" + moduleId;
 		File moduleWebFolder = new File(absPath.replace("/", File.separator));
 		if (moduleWebFolder.exists()) {
 			try {
@@ -480,7 +488,7 @@ public class WebModuleUtil {
 			}
 		}
 		catch (IOException io) {
-			log.warn("Unable to delete files from module " + mod.getModuleId() + " in the web layer", io);
+			log.warn("Unable to delete files from module " + moduleId + " in the web layer", io);
 		}
 		finally {
 			if (jarFile != null) {
@@ -523,9 +531,10 @@ public class WebModuleUtil {
 						"signatures".equals(current.getNodeName())) {
 							NamedNodeMap attrs = current.getAttributes();
 							Node attr = attrs.getNamedItem("moduleId");
-							if (attr != null && mod.getModuleId().equals(attr.getNodeValue())) {
+							if (attr != null && moduleId.equals(attr.getNodeValue())) {
 								outputRoot.removeChild(current);
-							}
+							} else
+								i++;
 					}
 					else
 						i++;
@@ -536,7 +545,7 @@ public class WebModuleUtil {
 			}
 		}
 		catch (FileNotFoundException e) {
-			throw new ModuleException("/WEB-INF/dwr-modules.xml file doesn't exist.", e);
+			throw new ModuleException(realPath + "/WEB-INF/dwr-modules.xml file doesn't exist.", e);
 		}
 		finally  {
 			if (inputStream != null) {
@@ -549,18 +558,19 @@ public class WebModuleUtil {
 			}
 		}
 		
-		try {
-			if (dispatcherServlet != null)
-				dispatcherServlet.reInitFrameworkServlet();
-			if (dwrServlet != null)
-				dwrServlet.reInitServlet();
-		}
-		catch (ServletException se) {
-			log.warn("Unable to reinitialize webapplicationcontext for dispatcherservlet for module: " + mod.getName(), se);
-		}
+		if (skipRefresh == false) {
+			try {
+				if (dispatcherServlet != null)
+					dispatcherServlet.reInitFrameworkServlet();
+				if (dwrServlet != null)
+					dwrServlet.reInitServlet();
+			}
+			catch (ServletException se) {
+				log.warn("Unable to reinitialize webapplicationcontext for dispatcherservlet for module: " + mod.getName(), se);
+			}
 		
-		if (!skipRefresh)
 			refreshWAC(servletContext);
+		}
 		
 	}
 	
@@ -572,38 +582,30 @@ public class WebModuleUtil {
 	 */
 	public static XmlWebApplicationContext refreshWAC(ServletContext servletContext) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext)WebApplicationContextUtils.getWebApplicationContext(servletContext);
-		log.debug("WAC class: " + wac.getClass().getName());
+		if (log.isDebugEnabled())
+			log.debug("Refreshing web applciation Context of class: " + wac.getClass().getName());
 		
-		// save state and destroy classloader instance
-		OpenmrsClassLoader.saveState();
-		ServiceContext.destroyInstance();
+		XmlWebApplicationContext newAppContext = (XmlWebApplicationContext)ModuleUtil.refreshApplicationContext(wac);
+		
 		try {
-			wac.stop();
-			wac.close();
+			// must "refresh" the spring dispatcherservlet as well to add in 
+			//the new handlerMappings
+			if (dispatcherServlet != null)
+				dispatcherServlet.reInitFrameworkServlet();
 		}
-		catch (Exception e) {
-			// Spring seems to be trying to refresh the context instead of /just/ stopping
-			// pass
+		catch (ServletException se) {
+			log.warn("Caught a servlet exception while refreshing the dispatcher servlet", se);
 		}
-		OpenmrsClassLoader.destroyInstance();
 		
-		// save the new classloader instance
-		wac.setClassLoader(OpenmrsClassLoader.getInstance());
-		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		try {
+			if (dwrServlet != null)
+				dwrServlet.reInitServlet();
+		}
+		catch (ServletException se) {
+			log.warn("Cause a servlet exception while refreshing the dwr servlet", se);
+		}
 		
-		// do the restart
-		ServiceContext.getInstance().startRefreshingContext();
-		wac.refresh();
-		ServiceContext.getInstance().doneRefreshingContext();
-		
-		// save the new classloader instance
-		wac.setClassLoader(OpenmrsClassLoader.getInstance());
-		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		
-		// restore the state
-		OpenmrsClassLoader.restoreState();
-		
-		return wac;
+		return newAppContext;
 	}
 	
 	/**

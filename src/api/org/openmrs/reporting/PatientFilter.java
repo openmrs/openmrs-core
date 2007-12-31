@@ -4,7 +4,8 @@ package org.openmrs.reporting;
 public interface PatientFilter extends ReportObject {
 
 	/**
-	 * Determine all patients in _input_ who also match some criteria
+	 * Determine all patients in _input_ who also match some criteria.
+	 * If input is null, then this should return all patients who match.
 	 * @param context
 	 * @param input
 	 * @return

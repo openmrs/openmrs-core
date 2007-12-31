@@ -69,12 +69,12 @@ public class ConceptDatatypeListController extends SimpleFormController {
 			for (String cd : cdList) {
 				try {
 					as.deleteConceptDatatype(cs.getConceptDatatype(Integer.valueOf(cd)));
-					if (!success.equals("")) success += "<br>";
+					if (!success.equals("")) success += "<br/>";
 					success += cd + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting concept datatype", e);
-					if (!error.equals("")) error += "<br>";
+					if (!error.equals("")) error += "<br/>";
 					error += cd + " " + notDeleted;
 				}
 			}

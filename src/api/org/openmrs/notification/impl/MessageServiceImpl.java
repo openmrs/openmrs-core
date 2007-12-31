@@ -52,6 +52,10 @@ public class MessageServiceImpl implements MessageService {
 		this.messagePreparator = messagePreparator;
 	}
 
+	public MessagePreparator getMessagePreparator() { 
+		return this.messagePreparator;
+	}
+	
 	/**
 	 *  Set the message sender.
 	 *  
@@ -61,6 +65,9 @@ public class MessageServiceImpl implements MessageService {
 		this.messageSender = messageSender;
 	}
 
+	public MessageSender getMessageSender() { 
+		return this.messageSender;
+	}
 	
 	/**
 	 *  Send the message.  All send calls go through this method.
