@@ -81,6 +81,13 @@
 			]);
 	}
 
+	function maybeShowVoidInfo(selectInput) {
+		if (selectInput.options[selectInput.selectedIndex].value == 'true') {
+			showDiv('voidInfoBox');
+		} else {
+			hideDiv('voidInfoBox');
+		}
+	}
 </script>
 
 <h2><spring:message code="Program.manage.title"/></h2>
@@ -108,13 +115,14 @@
 		</td>
 	</tr>
 	<tr>
-		<td colspan="2" align="right"><spring:message code="Program.conceptHint"/></td>
+		<td></td>
+		<td><spring:message code="Program.conceptHint"/></td>
 	</tr>
 	<tr>
 		<th valign="top"><spring:message code="general.voided"/>?</th>
 		<td valign="top">
 			<spring:bind path="program.voided">
-				<select name="${status.expression}">
+				<select name="${status.expression}" onChange="maybeShowVoidInfo(this)">
 					<option value="false" <c:if test="${status.value == false}">selected</c:if>><spring:message code="general.no"/></option>
 					<option value="true" <c:if test="${status.value == true}">selected</c:if>><spring:message code="general.yes"/></option>
 				</select>
@@ -124,7 +132,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
+	<tr id="voidInfoBox" <c:if test="${!program.voided}">style="display: none"</c:if>/>
 		<th valign="top"><spring:message code="general.voidReason"/></th>
 		<td valign="top">
 			<spring:bind path="program.voidReason">
@@ -136,7 +144,7 @@
 		</td>
 	</tr>
 	<tr id="workflowSetRow">
-		<th valign="top"><spring:message code="Program.workflows" text="Workflows"/></th>
+		<th valign="top"><spring:message code="Program.workflows" /></th>
 		<td valign="top">
 			<spring:bind path="program.workflows">
 				<input type="hidden" name="${status.expression}" id="workflowsValue" value="${status.value}" />

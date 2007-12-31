@@ -1,18 +1,21 @@
 package org.openmrs.reporting;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
-public class PatientSet {
+public class PatientSet implements Serializable {
 
 	private Integer patientSetId;
 	private String name;
@@ -93,7 +96,9 @@ public class PatientSet {
 			patientIds.add(patient.getPatientId());
 		}
 	}
-	
+
+	// TODO: This allows you to end up with duplicate patient ids, since patientIds is a List. Fix it! Also its naming
+	// is inconsistent wrt the subtract(PatientSet) and intersect(PatientSet) methods
 	public void add(PatientSet patientSet) {
 		this.patientIds.addAll(patientSet.getPatientIds());
 	}
@@ -131,6 +136,18 @@ public class PatientSet {
 	public PatientSet intersect(PatientSet other) {
 		PatientSet ret = copy();
 		ret.patientIds.retainAll(other.patientIds);
+		return ret;
+	}
+
+	/**
+	 * Does not change this PatientSet object
+	 * @return the union between this and other 
+	 */
+	public PatientSet union(PatientSet other) {
+		PatientSet ret = new PatientSet();
+		Set<Integer> set = new HashSet<Integer>(this.patientIds);
+		set.addAll(other.patientIds);
+		ret.copyPatientIds(set);
 		return ret;
 	}
 

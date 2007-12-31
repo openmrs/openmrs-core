@@ -1,23 +1,42 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
- * User in the system.  Both Patient and User inherit the methods of this class
+ * A Person in the system. This can be either a small person stub, or 
+ * indicative of an actual Patient or User in the system as well.
  * 
- * @author Ben Wolfe
- * @version 2.0
+ * This class holds the generic person things that both users and patients
+ * share.  Things like birthdate, names, addresses, and attributes are all 
+ * generified into the person table (and hence this super class)
+ * 
+ * @see org.openmrs.Patient
+ * @see org.openmrs.User
  */
 public class Person implements java.io.Serializable {
 
@@ -47,13 +66,29 @@ public class Person implements java.io.Serializable {
 	private Date dateVoided;
 	private String voidReason;
 	
-	// convenience map
+	private boolean isPatient;
+	private boolean isUser;
+	
+	/** 
+	 * Convenience map from PersonAttributeType.name to PersonAttribute
+	 * This is "cached" for each user upon first load.  When an 
+	 * attribute is changed, the cache is cleared and rebuilt on next
+	 * access. 
+	 */
 	Map<String, PersonAttribute> attributeMap = null;
 	
-	// default constructor
+	/**
+	 * default empty constructor
+	 */
 	public Person() {
 	}
 	
+	/**
+	 * This constructor is used to build a person object from another
+	 * person object (usually a patient or a user subobject).
+	 * 
+	 * @param person Person to create this person object from
+	 */
 	public Person(Person person) {
 		if (person == null)
 			return;
@@ -87,7 +122,7 @@ public class Person implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof Person) {
 			Person u = (Person) obj;
-			return (getPersonId().equals(u.getPersonId()));
+			return (personId != null && personId.equals(u.getPersonId()));
 		}
 		return false;
 	}
@@ -224,7 +259,7 @@ public class Person implements java.io.Serializable {
 	 */
 	public Set<PersonAddress> getAddresses() {
 		if (addresses == null)
-			addresses = new HashSet<PersonAddress>();
+			addresses = new TreeSet<PersonAddress>();
 		return this.addresses;
 	}
 
@@ -243,7 +278,7 @@ public class Person implements java.io.Serializable {
 	 */
 	public Set<PersonName> getNames() {
 		if (names == null)
-			names = new HashSet<PersonName>();
+			names = new TreeSet<PersonName>();
 		return this.names;
 	}
 
@@ -262,7 +297,7 @@ public class Person implements java.io.Serializable {
 	 */
 	public Set<PersonAttribute> getAttributes() {
 		if (attributes == null)
-			attributes = new HashSet<PersonAttribute>();
+			attributes = new TreeSet<PersonAttribute>();
 		return this.attributes;
 	}
 
@@ -312,16 +347,20 @@ public class Person implements java.io.Serializable {
 					// this person already has this attribute
 					return;
 				
-				// if we have the same type, different value, and the old one isn't voided already
-				if (currentAttribute.getCreator() != null)
-					currentAttribute.voidAttribute("New value: " + newAttribute.getValue());
-				else
-					// remove the attribute if it was just temporary (didn't have a creator attached to it yet)
-					removeAttribute(currentAttribute);
+				// if the to-be-added attribute isn't already voided itself
+				// and if we have the same type, different value
+				if (newAttribute.isVoided() == false) {
+					if (currentAttribute.getCreator() != null)
+						currentAttribute.voidAttribute("New value: " + newAttribute.getValue());
+					else
+						// remove the attribute if it was just temporary (didn't have a creator attached to it yet)
+						removeAttribute(currentAttribute);
+				}
 			}
 		}
 		attributeMap = null;
-		attributes.add(newAttribute);
+		if (!OpenmrsUtil.collectionContains(attributes, newAttribute))
+			attributes.add(newAttribute);
 	}
 
 	/**
@@ -442,11 +481,13 @@ public class Person implements java.io.Serializable {
 	 * @param name
 	 */
 	public void addName(PersonName name) {
-		name.setPerson(this);
-		if (names == null)
-			names = new HashSet<PersonName>();
-		if (!names.contains(name) && name != null)
-			names.add(name);
+		if (name != null) {
+			name.setPerson(this);
+			if (names == null)
+				names = new TreeSet<PersonName>();
+			if (!OpenmrsUtil.collectionContains(names, name))
+				names.add(name);
+		}
 	}
 
 	/**
@@ -465,11 +506,13 @@ public class Person implements java.io.Serializable {
 	 * @param address
 	 */
 	public void addAddress(PersonAddress address) {
-		address.setPerson(this);
-		if (addresses == null)
-			addresses = new HashSet<PersonAddress>();
-		if (!addresses.contains(address) && address != null)
-			addresses.add(address);
+		if (address != null) {
+			address.setPerson(this);
+			if (addresses == null)
+				addresses = new TreeSet<PersonAddress>();
+			if (!OpenmrsUtil.collectionContains(addresses, address))
+				addresses.add(address);
+		}
 	}
 
 	/**
@@ -561,11 +604,22 @@ public class Person implements java.io.Serializable {
 	 * @return integer age
 	 */
 	public Integer getAge() {
-		
+		return getAge(null);
+	}
+	
+	/**
+	 * Convenience method: calculates the person's age on a given date based on the birthdate
+	 * 
+	 * @param onDate (null defaults to today)
+	 * @return
+	 */
+	public Integer getAge(Date onDate) {
 		if (birthdate == null)
 			return null;
 		
 		Calendar today = Calendar.getInstance();
+		if (onDate != null)
+			today.setTime(onDate);
 		
 		Calendar bday = new GregorianCalendar();
 		bday.setTime(birthdate);
@@ -576,14 +630,11 @@ public class Person implements java.io.Serializable {
 		// set birthday calendar to this year
 		// if the current date is less that the new 'birthday', subtract a year
 		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
-		if (today.before(bday)) {
-				age = age -1;
-		}
+		if (today.before(bday))
+			age = age -1;
 		
 		return age;
 	}
-	
-	
 	
 	public User getChangedBy() {
 		return changedBy;
@@ -652,7 +703,47 @@ public class Person implements java.io.Serializable {
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
+	
+	/**
+     * @return true/false whether this person is a patient or not
+     */
+    public boolean isPatient() {
+    	return isPatient;
+    }
 
+	/**
+	 * This should only be set by the database layer by looking
+	 * at whether a row exists in the patient table
+	 * 
+     * @param isPatient whether this person is a patient or not
+     */
+    @SuppressWarnings("unused")
+    private void setPatient(boolean isPatient) {
+    	this.isPatient = isPatient;
+    }
+    
+    /**
+     * @return true/false whether this person is a user or not
+     */
+    public boolean isUser() {
+    	return isUser;
+    }
+
+	/**
+	 * This should only be set by the database layer by looking
+	 * at whether a row exists in the user table
+	 * 
+     * @param isUser whether this person is a user or not
+     */
+    @SuppressWarnings("unused")
+    private void setUser(boolean isUser) {
+    	this.isUser = isUser;
+    }
+    
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return "Person(personId=" + personId + ")";
 	}

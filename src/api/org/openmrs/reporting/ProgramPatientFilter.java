@@ -33,7 +33,7 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 			matches = service.getPatientsInProgram(program, onDate, onDate);
 		else
 			matches = service.getPatientsInProgram(program, fromDate, toDate);
-		return input.intersect(matches);
+		return input == null ? matches : input.intersect(matches);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

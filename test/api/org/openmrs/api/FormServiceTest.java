@@ -1,39 +1,48 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import junit.framework.Test;
-import org.openmrs.BaseTest;
-import junit.framework.TestSuite;
-
+import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.Concept;
 import org.openmrs.Field;
-import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.FormService;
-import org.openmrs.api.ObsService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 
-public class FormServiceTest extends BaseTest {
+/**
+ * TODO clean up and finish this test for all methods in FormService
+ */
+public class FormServiceTest extends BaseContextSensitiveTest {
 	
-	protected EncounterService es = Context.getEncounterService();
-	protected PatientService ps = Context.getPatientService();
-	protected UserService us = Context.getUserService();
-	protected ObsService obsService = Context.getObsService();
-	protected FormService formService = Context.getFormService();
-	protected ConceptService conceptService = Context.getConceptService();
+	protected static final String INITIAL_FIELDS_XML = "org/openmrs/include/FormServiceTest-initialFieldTypes.xml";
 	
+	@Override
+	protected void onSetUpInTransaction() throws Exception {
+		initializeInMemoryDatabase();
+		authenticate();
+	}
+	
+	/**
+	 * Creates then updates a form
+	 * 
+	 * @throws Exception
+	 */
 	public void testFormCreateUpdateDelete() throws Exception {
-		
-		Context.authenticate("USER-1", "test");
+		FormService formService = Context.getFormService();
 		
 		//testing Form creation
 		
@@ -89,9 +98,15 @@ public class FormServiceTest extends BaseTest {
 		//formService.deleteForm(form1); //deleting a deleted form
 	}
 	
+	/**
+	 * Creates then updates a form field
+	 * 
+	 * TODO fix and activate this test method
+	 * 
+	 * @throws Exception
+	 */
 	public void xtestFormFieldCreateUpdateDelete() throws Exception {
-		
-		Context.authenticate("USER-1", "test");
+		FormService formService = Context.getFormService();
 		
 		//testing creation
 		
@@ -127,7 +142,7 @@ public class FormServiceTest extends BaseTest {
 		
 		//formService.createFormField(formField1);
 		
-		//testing updation
+		//testing update
 		
 		FormField formField2 = null; //formService.getFormField(formField1.getFormFieldId());
 		
@@ -153,7 +168,7 @@ public class FormServiceTest extends BaseTest {
 		
 		//formService.updateFormField(formField2);
 		
-		//testing correct updation
+		//testing correct update
 		
 		FormField formField3 = null; //formService.getFormField(formField2.getFormFieldId());
 		
@@ -177,22 +192,27 @@ public class FormServiceTest extends BaseTest {
 		
 	}
 	
+	/**
+	 * Test create then update a field
+	 * 
+	 * @throws Exception
+	 */
 	public void testFieldCreateModifyDelete() throws Exception {
+		
+		executeDataSet(INITIAL_FIELDS_XML);
+		
+		FormService formService = Context.getFormService();
+		ConceptService conceptService = Context.getConceptService();
 		
 		//testing creation
 		
 		Concept concept1  = conceptService.getConcept(1);
 		String  name1     = "name1";
 		String  descript1 = "descript1";
-		FieldType fieldtype1 = formService.getFieldTypes().get(1);
+		FieldType fieldtype1 = formService.getFieldTypes().get(0);
 		String table1 = "table1";
 		String attr1 = "attr1";
 		Boolean multi1 = true;
-		
-		Set<FieldAnswer> answers1 = new HashSet<FieldAnswer>();
-		FieldAnswer answer1 = new FieldAnswer();
-		answer1.setConcept(conceptService.getConcept(10));
-		answers1.add(answer1);
 		
 		Field field1 = new Field();
 		
@@ -203,21 +223,17 @@ public class FormServiceTest extends BaseTest {
 		field1.setTableName(table1);
 		field1.setAttributeName(attr1);
 		field1.setSelectMultiple(multi1);
-		field1.addAnswer(answer1); //adding to an empty list test
-		field1.setAnswers(answers1); //overwriting previous addition
-		field1.removeAnswer(answer1); //removing only answer in list
-		field1.addAnswer(answer1);   //readding the only answer
 		
 		formService.updateField(field1);
 		
-		//testing updation
+		//testing update
 		
 		Field field2 = formService.getField(field1.getFieldId());
 		
 		Concept concept2  = conceptService.getConcept(2);
 		String  name2     = "name2";
 		String  descript2 = "descript2";
-		FieldType fieldtype2 = formService.getFieldTypes().get(0);
+		FieldType fieldtype2 = formService.getFieldTypes().get(1);
 		String table2 = "table2";
 		String attr2 = "attr2";
 		Boolean multi2 = false;
@@ -229,13 +245,6 @@ public class FormServiceTest extends BaseTest {
 		field2.setTableName(table2);
 		field2.setAttributeName(attr2);
 		field2.setSelectMultiple(multi2);
-		
-		assertTrue(field1.getAnswers().equals(field2.getAnswers()));
-		
-		FieldAnswer answer2 = new FieldAnswer();
-		answer2.setConcept(conceptService.getConcept(22));
-		field2.addAnswer(answer2);
-		field2.removeAnswer(answer1);
 		
 		formService.updateField(field2);
 		
@@ -252,7 +261,6 @@ public class FormServiceTest extends BaseTest {
 		assertTrue(field1.getTableName().equals(table2));
 		assertTrue(field1.getAttributeName().equals(attr2));
 		assertTrue(field1.getSelectMultiple().equals(multi2));
-		assertTrue(field1.getAnswers().equals(field3.getAnswers()));
 		
 		//testing deletion
 		
@@ -262,8 +270,4 @@ public class FormServiceTest extends BaseTest {
 		assertNull(formService.getField(field3.getFieldId()));
 	}
 	
-	public static Test suite() {
-		return new TestSuite(FormServiceTest.class, "Basic Form Service functionality");
-	}
-
 }

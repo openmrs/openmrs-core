@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.CohortDAO;
@@ -32,5 +33,15 @@ public class HibernateCohortDAO implements CohortDAO {
 	public List<Cohort> getCohorts() throws DAOException {
 		return (List<Cohort>) sessionFactory.getCurrentSession().createQuery("from Cohort order by name").list();
 	}
+	
+	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException {
+		Query query = sessionFactory.getCurrentSession().createQuery("from Cohort c where :patientId in elements(c.memberIds)");
+		query.setInteger("patientId", patientId);
+		return (List<Cohort>) query.list();
+	}
+
+    public void updateCohort(Cohort cohort) throws DAOException {
+    	sessionFactory.getCurrentSession().update(cohort);
+    }
 
 }

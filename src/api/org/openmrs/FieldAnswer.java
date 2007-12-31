@@ -4,8 +4,6 @@ import java.util.Date;
 
 /**
  * FieldAnswer 
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class FieldAnswer implements java.io.Serializable {

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" output="build/api" path="src/api"/>
-	<classpathentry kind="src" output="build/web" path="src/web"/>
-	<classpathentry kind="src" output="build/test/api" path="test/api"/>
-	<classpathentry kind="src" output="build/test/web" path="test/web"/>
+	<classpathentry kind="src" path="src/api"/>
+	<classpathentry kind="src" path="src/web"/>
+	<classpathentry kind="src" path="test/api"/>
+	<classpathentry kind="src" path="test/web"/>
 	<classpathentry kind="lib" path="lib/ant-contrib/ant-contrib-1.0b2.jar"/>
 	<classpathentry kind="lib" path="lib/antlr/antlr_2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/cglib/cglib-2.1_3.jar"/>
@@ -15,46 +15,46 @@
 	<classpathentry kind="lib" path="lib/commons-logging/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pool/commons-pool-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/ehcache/ehcache-1.2.4.jar"/>
+	<classpathentry kind="lib" path="lib/ehcache/ehcache-1.2.4.jar" sourcepath="/openmrs-source/ehcache-1.2.4-src.zip"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-page-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jstl/jstl-1.1.jar" sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/apache-tomcat-5.5.20-src.zip"/>
+	<classpathentry kind="lib" path="lib/jstl/jstl-1.1.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="lib" path="lib/jta/jta.jar"/>
 	<classpathentry kind="lib" path="lib/junit/junit-3.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/junit/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/junit/dbunit-2.2.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java/mysql-connector-java-3.1.10-bin.jar"/>
 	<classpathentry kind="lib" path="lib/asm/asm-attrs.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-bean-collections-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-core-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections/commons-collections-testframework-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging/commons-logging-api-1.0.4.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate/hibernate3.jar" sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/hibernate-3.2.1.ga.zip"/>
+	<classpathentry kind="lib" path="lib/hibernate/hibernate325.jar" sourcepath="/openmrs-source/hibernate-3.2.5ga-lite.zip"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-request-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-response-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-standard-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/asm/asm.jar"/>
-	<classpathentry kind="lib" path="web/WEB-INF"/>
-	<classpathentry kind="lib" path="lib/ibatis/ibatis-common-2.jar"/>
-	<classpathentry kind="lib" path="lib/ibatis/ibatis-dao-2.jar"/>
-	<classpathentry kind="lib" path="lib/ibatis/ibatis-sqlmap-2.jar"/>
-	<classpathentry kind="lib" path="lib/tomcat/jsp-api.jar" sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/apache-tomcat-5.5.20-src.zip"/>
-	<classpathentry kind="lib" path="lib/tomcat/servlet-api.jar" sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/apache-tomcat-5.5.20-src.zip"/>
-	<classpathentry kind="lib" path="lib/tomcat/catalina.jar" sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/apache-tomcat-5.5.20-src.zip"/>
-	<classpathentry kind="lib" path="lib/tomcat/naming-resources.jar" sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/apache-tomcat-5.5.20-src.zip"/>
+	<classpathentry kind="lib" path="lib/tomcat/jsp-api.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
+	<classpathentry kind="lib" path="lib/tomcat/servlet-api.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
+	<classpathentry kind="lib" path="lib/tomcat/catalina.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
+	<classpathentry kind="lib" path="lib/tomcat/naming-resources.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="lib" path="lib/dwr/dwr-1.1.3mod.jar"/>
-	<classpathentry kind="lib" path="lib/spring-framework/spring-2.0.jar" sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/spring-framework-2.0/spring-framework-2.0/dist/spring-src.zip"/>
-	<classpathentry kind="lib" path="lib/spring-framework/spring-mock.jar"/>
+	<classpathentry kind="lib" path="lib/spring-framework/spring-2.0.jar" sourcepath="/openmrs-source/spring-2.0-src.zip"/>
+	<classpathentry kind="lib" path="lib/spring-framework/spring-mock.jar" sourcepath="/openmrs-source/spring-2.0-src.zip"/>
 	<classpathentry kind="lib" path="lib/commons-io/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/mail/activation.jar"/>
 	<classpathentry kind="lib" path="lib/mail/mail.jar"/>
-	<classpathentry kind="lib" path="lib/saxon/saxon8.jar" sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/saxon8-resources/source.zip"/>
+	<classpathentry kind="lib" path="lib/saxon/saxon8.jar" sourcepath="/openmrs-source/saxon8.zip"/>
 	<classpathentry kind="lib" path="lib/saxon/saxon8-dom.jar"/>
 	<classpathentry kind="lib" path="lib/xerces/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xerces/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/neal-reporting/reports.jar"/>
-	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.1.jar" sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/jfreechart-1.0.3.zip"/>
+	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.1.jar" sourcepath="/openmrs-source/jfreechart-1.0.3-src.zip"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.13.jar"/>
-	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.1.jar"/>
-	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-dev.jar" sourcepath="C:/Documents and Settings/bwolfe/My Documents/Downloads/velocity-1.5.zip"/>
+	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.1.jar" sourcepath="/openmrs-source/c3p0-0.9.1-pre9.zip"/>
+	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-dev.jar" sourcepath="/openmrs-source/velocity-1.5.zip"/>
 	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5.jar"/>
+	<classpathentry kind="lib" path="metadata/api/spring"/>
+	<classpathentry kind="lib" path="metadata/api/hibernate"/>
+	<classpathentry kind="lib" path="metadata/api/log4j"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

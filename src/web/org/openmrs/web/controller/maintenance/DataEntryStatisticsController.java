@@ -1,6 +1,5 @@
 package org.openmrs.web.controller.maintenance;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -15,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.DataEntryStatistic;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.DataTable;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.validation.BindException;
@@ -34,6 +32,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		private String encUserColumn;
 		private String orderUserColumn;
 		private String groupBy;
+		private Boolean hideAverageObs = false;
 		
 		public StatisticsCommand() { }
 		public Date getFromDate() {
@@ -72,15 +71,19 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		public void setGroupBy(String groupBy) {
 			this.groupBy = groupBy;
 		}
+		public Boolean getHideAverageObs() {
+        	return hideAverageObs;
+        }
+		public void setHideAverageObs(Boolean hideAverageObs) {
+        	this.hideAverageObs = hideAverageObs;
+        }
 	}
 	
-    SimpleDateFormat dateFormat;
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(dateFormat, true, 10));
+        		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
 	}
 
 	
@@ -97,7 +100,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		String encUserColumn = ret.getEncUserColumn();
 		String orderUserColumn = ret.getOrderUserColumn();
 		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(ret.getFromDate(), toDateToUse, encUserColumn, orderUserColumn, ret.getGroupBy());
-		DataTable table = DataEntryStatistic.tableByUserAndType(stats);
+		DataTable table = DataEntryStatistic.tableByUserAndType(stats, ret.getHideAverageObs());
 		ret.setTable(table);
 		
 		return ret;
@@ -109,7 +112,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 		String encUserColumn = command.getEncUserColumn();
 		String orderUserColumn = command.getOrderUserColumn();
 		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(command.getFromDate(), toDateToUse, encUserColumn, orderUserColumn, command.getGroupBy());
-		DataTable table = DataEntryStatistic.tableByUserAndType(stats);
+		DataTable table = DataEntryStatistic.tableByUserAndType(stats, command.getHideAverageObs());
 		command.setTable(table);
 		return showForm(request, response, errors);
 	}

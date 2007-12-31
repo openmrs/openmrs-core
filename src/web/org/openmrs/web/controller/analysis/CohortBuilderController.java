@@ -1,14 +1,9 @@
 package org.openmrs.web.controller.analysis;
 
-import java.beans.PropertyDescriptor;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,30 +15,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
-import org.openmrs.Drug;
-import org.openmrs.EncounterType;
-import org.openmrs.Location;
-import org.openmrs.PersonAttributeType;
-import org.openmrs.Program;
-import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortSearchHistory;
-import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientFilter;
-import org.openmrs.reporting.ReportObjectXMLDecoder;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.reporting.PatientSearch;
+import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.propertyeditor.ConceptEditor;
-import org.openmrs.web.propertyeditor.DrugEditor;
-import org.openmrs.web.propertyeditor.EncounterTypeEditor;
-import org.openmrs.web.propertyeditor.LocationEditor;
-import org.openmrs.web.propertyeditor.PersonAttributeTypeEditor;
-import org.openmrs.web.propertyeditor.ProgramEditor;
-import org.openmrs.web.propertyeditor.ProgramWorkflowStateEditor;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
@@ -81,17 +63,22 @@ public class CohortBuilderController implements Controller {
 	public void setLinks(List<String> links) {
 		this.links = links;
 	}
+	
+	private void setMySearchHistory(HttpServletRequest request, CohortSearchHistory history) {
+		Context.setVolatileUserData("CohortBuilderSearchHistory", history);
+	}
+	
+	private CohortSearchHistory getMySearchHistory(HttpServletRequest request) {
+		return (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+	}
 
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
-			List<PatientFilter> savedFilters = Context.getReportService().getAllPatientFilters();
-			if (savedFilters == null)
-				savedFilters = new ArrayList<PatientFilter>();
-			CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+			CohortSearchHistory history = getMySearchHistory(request);
 			if (history == null) {
 				history = new CohortSearchHistory();
-				Context.setVolatileUserData("CohortBuilderSearchHistory", history);
+				setMySearchHistory(request, history);
 			}
 			List<Shortcut> shortcuts = new ArrayList<Shortcut>();
 			String shortcutProperty = Context.getAdministrationService().getGlobalProperty("cohort.cohortBuilder.shortcuts");
@@ -118,36 +105,35 @@ public class CohortBuilderController implements Controller {
 						orderStopReasons.add(ca.getAnswerConcept());
 			}
 			
-			List<Concept> genericDrugs = new ArrayList<Concept>();
-			/*
-			{
-				ConceptClass drugClass = Context.getConceptService().getConceptClassByName("Drug");
-				if (drugClass != null) {
-					genericDrugs = Context.getConceptService().getConceptsByClass(drugClass);
-					Collections.sort(genericDrugs, new Comparator<Concept>() {
-							public int compare(Concept left, Concept right) {
-								return left.getName().getName().compareTo(right.getName().getName());
-							}
-						});
-				} else
-					log.warn("Cannot find ConceptClass named 'Drug'.");
-			}
-			*/
-			genericDrugs = Context.getConceptService().getConceptsWithDrugsInFormulary();
+			List<Concept> genericDrugs = Context.getConceptService().getConceptsWithDrugsInFormulary();
 			Collections.sort(genericDrugs, new Comparator<Concept>() {
 					public int compare(Concept left, Concept right) {
 						return left.getName().getName().compareTo(right.getName().getName());
 					}
 				});
 			
-			model.put("savedFilters", savedFilters);
+			List<Concept> drugSets = new ArrayList<Concept>();
+			{
+				String temp = Context.getAdministrationService().getGlobalProperty("cohortBuilder.drugSets");
+				if (StringUtils.hasText(temp)) {
+					String[] drugSetNames = temp.split(",");
+					for (String setName : drugSetNames) {
+						Concept c = Context.getConceptService().getConceptByIdOrName(setName);
+						if (c != null)
+							drugSets.add(c);
+					}
+				}
+			}
+			
 			model.put("searchHistory", history);
 			model.put("links", linkHelper());
 			model.put("programs", Context.getProgramWorkflowService().getPrograms());
 			model.put("encounterTypes", Context.getEncounterService().getEncounterTypes());
 			model.put("locations", Context.getEncounterService().getLocations());
+			model.put("forms", Context.getFormService().getForms());
 			model.put("drugs", Context.getConceptService().getDrugs());
 			model.put("drugConcepts", genericDrugs);
+			model.put("drugSets", drugSets);
 			model.put("orderStopReasons", orderStopReasons);
 			model.put("personAttributeTypes", Context.getPersonService().getPersonAttributeTypes());
 			model.put("shortcuts", shortcuts);
@@ -284,40 +270,46 @@ public class CohortBuilderController implements Controller {
 	
 	public ModelAndView clearHistory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (Context.isAuthenticated()) {
-			Context.setVolatileUserData("CohortBuilderSearchHistory", null);
+			setMySearchHistory(request, null);
 		}
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 	
 	public ModelAndView addFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (Context.isAuthenticated()) {
-			CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+			CohortSearchHistory history = getMySearchHistory(request);
 			String temp = request.getParameter("filter_id");
 			if (temp != null) {
 				Integer filterId = new Integer(temp);
 				PatientFilter pf = Context.getReportService().getPatientFilterById(filterId);
 				if (pf != null)
-					history.addSearchItem(pf);
+					history.addSearchItem(PatientSearch.createSavedFilterReference(filterId));
 				else
 					log.warn("addFilter(id) didn't find " + filterId);
 			}
-			temp = request.getParameter("filter_name");
-			if (temp != null)
-				history.addSearchItem(Context.getReportService().getPatientFilterByName(temp));
-			temp = request.getParameter("filter_xml");
+			temp = request.getParameter("search_id");
 			if (temp != null) {
-				AbstractReportObject ro = (new ReportObjectXMLDecoder(temp)).toAbstractReportObject();
-				if (ro instanceof PatientFilter) {
-					history.addSearchItem((PatientFilter) ro);
-				} else {
-					log.warn("addFilter(xml) found a report object that wasn't a PatientFilter: " + ro.getClass());
-				}
+				Integer searchId = new Integer(temp);
+				PatientSearchReportObject ro = (PatientSearchReportObject) Context.getReportService().getReportObject(searchId);
+				if (ro != null)
+					history.addSearchItem(PatientSearch.createSavedSearchReference(searchId));
+				else
+					log.warn("addSearch(id) didn't find " + searchId);
+			}
+			temp = request.getParameter("cohort_id");
+			if (temp != null) {
+				Integer cohortId = new Integer(temp);
+				Cohort c = Context.getCohortService().getCohort(cohortId);
+				if (c != null)
+					history.addSearchItem(PatientSearch.createSavedCohortReference(cohortId));
+				else
+					log.warn("addCohort(id) didn't find " + cohortId);
 			}
 			temp = request.getParameter("composition");
 			if (temp != null) {
-				PatientFilter pf = history.createCompositionFilter(temp);
-				if (pf != null)
-					history.addSearchItem(pf);
+				PatientSearch ps = history.createCompositionFilter(temp);
+				if (ps != null)
+					history.addSearchItem(ps);
 				else
 					request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Error building composition filter");
 			}
@@ -327,7 +319,7 @@ public class CohortBuilderController implements Controller {
 	
 	public ModelAndView removeFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (Context.isAuthenticated()) {
-			CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+			CohortSearchHistory history = getMySearchHistory(request);
 			String temp = request.getParameter("index");
 			if (temp != null) {
 				Integer index = new Integer(temp);
@@ -377,7 +369,7 @@ public class CohortBuilderController implements Controller {
 		return checkFor.equals(checkFirst) || ((checkFirst.equals(Object.class) || checkFirst.equals(List.class) )&& checkFor.equals(checkNext));
 	}
 	
-	public ModelAndView addDynamicFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public ModelAndView addDynamicFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ClassNotFoundException {
 		if (Context.isAuthenticated()) {
 			String filterClassName = request.getParameter("filterClass");
 			String temp = request.getParameter("vars");
@@ -415,141 +407,41 @@ public class CohortBuilderController implements Controller {
 			}
 			
 			log.debug("argValues has size " + argValues.size());
-
-			PatientFilter filterInstance = null;
-			try {
-				Class filterClass = Class.forName(filterClassName);
-				log.debug("about to call newInstance on " + filterClass);
-				filterInstance = (PatientFilter) filterClass.newInstance();
-				log.debug("result is " + filterInstance);
-				for (ArgHolder arg : argValues) {
-					log.debug("looking at " + arg);
-					try {
-						PropertyDescriptor pd = new PropertyDescriptor(arg.getArgName(), filterClass);
-						// TODO: fix this hack
-						Object argVal = null;
-						if (arg.hasValue()) {
-							String[] toLookAt = null;
-							List<Object> vals = new ArrayList<Object>();
-							boolean isList = false;
-							if (arg.getArgValue() instanceof String[]) {
-								isList = true;
-								toLookAt = (String[]) arg.getArgValue();
-							} else {
-								toLookAt = new String[1];
-								toLookAt[0] = (String) arg.getArgValue();
-							}
-							for (String val : toLookAt) {
-								Object thisVal = null;
-								if (checkClassHelper(Location.class, pd.getPropertyType(), arg.getArgClass())) {
-									LocationEditor le = new LocationEditor();
-									le.setAsText(val);
-									thisVal = le.getValue();
-								} else if (checkClassHelper(String.class, pd.getPropertyType(), arg.getArgClass())) {
-									thisVal = val;
-								} else if (checkClassHelper(Integer.class, pd.getPropertyType(), arg.getArgClass())) {
-									try {
-										thisVal = Integer.valueOf(val);
-									} catch (Exception ex) { }
-								} else if (checkClassHelper(Boolean.class, pd.getPropertyType(), arg.getArgClass())) {
-									try {
-										thisVal = Boolean.valueOf(val);
-									} catch (Exception ex) { }
-								} else if (checkClassHelper(Double.class, pd.getPropertyType(), arg.getArgClass())) {
-									try {
-										thisVal = Double.valueOf(val);
-									} catch (Exception ex) { }
-								} else if (checkClassHelper(Concept.class, pd.getPropertyType(), arg.getArgClass())) {
-									ConceptEditor ce = new ConceptEditor();
-									ce.setAsText(val);
-									Concept concept = (Concept) ce.getValue();
-									// force a lazy-load of this concept's name
-									if (concept != null)
-										concept.getName(Context.getLocale());
-									thisVal = concept;
-								} else if (checkClassHelper(Program.class, pd.getPropertyType(), arg.getArgClass())) {
-									ProgramEditor pe = new ProgramEditor();
-									pe.setAsText(val);
-									Program program = (Program) pe.getValue();
-									// force a lazy-load of the name
-									if (program != null)
-										program.getConcept().getName();
-									thisVal = program;
-								} else if (checkClassHelper(ProgramWorkflowState.class, pd.getPropertyType(), arg.getArgClass())) {
-									ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
-									ed.setAsText(val);
-									ProgramWorkflowState state = (ProgramWorkflowState) ed.getValue();
-									// force a lazy-load of the name
-									if (state != null)
-										state.getConcept().getName();
-									thisVal = state;
-								} else if (checkClassHelper(EncounterType.class, pd.getPropertyType(), arg.getArgClass())) {
-									EncounterTypeEditor ed = new EncounterTypeEditor();
-									ed.setAsText(val);
-									thisVal = ed.getValue();
-								} else if (checkClassHelper(Drug.class, pd.getPropertyType(), arg.getArgClass())) {
-									DrugEditor ed = new DrugEditor();
-									ed.setAsText(val);
-									thisVal = ed.getValue();
-								} else if (checkClassHelper(Date.class, pd.getPropertyType(), arg.getArgClass())) {
-									DateFormat df = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
-									CustomDateEditor ed = new CustomDateEditor(df, true, 10);
-									ed.setAsText(val);
-									thisVal = ed.getValue();
-								} else if (checkClassHelper(PersonAttributeType.class, pd.getPropertyType(), arg.getArgClass())) {
-									PersonAttributeTypeEditor ed = new PersonAttributeTypeEditor();
-									ed.setAsText(val);
-									thisVal = ed.getValue();
-								} else if (pd.getPropertyType().isEnum()) {
-									List<Enum> constants = Arrays.asList((Enum[]) pd.getPropertyType().getEnumConstants());
-									for (Enum e : constants) {
-										if (e.toString().equals(val)) {
-											thisVal = e;
-											break;
-										}
-									}
-								} else if (pd.getPropertyType().equals(Object.class)) {
-									log.debug("fell through to plain object, treated as string");
-									thisVal = val;
-								}
-								if (thisVal != null)
-									vals.add(thisVal);
-							}
-							if (isList && vals.size() > 0)
-								argVal = vals;
-							else if (vals.size() > 0)
-								argVal = vals.get(0);
-						}
-						if (argVal != null) {
-							log.debug("about to set " + arg.getArgName() + " to " + argVal);
-							pd.getWriteMethod().invoke(filterInstance, argVal);
-						}
-					} catch (Exception ex) {
-						log.error("Couldn't set " + arg.getArgName() + " (" + arg.getArgClass() + ") to " + arg.getArgValue(), ex);
-					}
+			
+			// Refactoring to create a PatientSearch instead of a PatientFilter
+			PatientSearch search = new PatientSearch();
+            search.setFilterClass(Class.forName(filterClassName));
+			for (ArgHolder arg : argValues) {
+				Object val = arg.getArgValue();
+				if (val instanceof String[]) {
+					String[] valArray = (String[]) val;
+					for (int i = 0; i < valArray.length; ++i)
+						if (StringUtils.hasText(valArray[i]))
+							search.addArgument(arg.getArgName(), valArray[i], arg.getArgClass());
+				} else {
+					if (StringUtils.hasText((String) val))
+						search.addArgument(arg.getArgName(), (String) val, arg.getArgClass());
 				}
-			} catch (Exception ex) {
-				log.error("Couldn't instantiate class " + filterClassName, ex);
 			}
-			
-			log.debug("final filter is " + filterInstance);
-			
-			if (filterInstance != null) {
-				CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
-				history.addSearchItem(filterInstance);
+			log.debug("Created PatientSearch: " + search);
+
+			if (search != null) {
+				CohortSearchHistory history = getMySearchHistory(request);
+				history.addSearchItem(search);
 			}
 		}
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 	
 	public ModelAndView saveHistory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO: fix this!
 		if (Context.isAuthenticated()) {
 			String name = request.getParameter("name");
 			String description = request.getParameter("description");
 			if ( (name == null || "".equals(name)) && (description == null || "".equals(description)) ) {
 				throw new RuntimeException("Name and Description are required");
 			}
-			CohortSearchHistory history = (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
+			CohortSearchHistory history = getMySearchHistory(request);
 			if (history.getReportObjectId() != null)
 				throw new RuntimeException("Re-saving histories is not yet implemented");
 			history.setName(name);

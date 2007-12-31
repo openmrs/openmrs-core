@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.web.controller.user;
 
 import java.util.HashMap;
@@ -23,7 +36,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
-import org.openmrs.web.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.ConceptEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -34,13 +47,18 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * User-specific form controller.  Creates the model/view etc for editing
+ * users.
+ * 
+ * @see org.openmrs.web.controller.person.PersonFormController
+ */
 public class UserFormController extends PersonFormController {
 	
     /** Logger for this class and subclasses */
     protected static final Log log = LogFactory.getLog(UserFormController.class);
     
     /**
-	 * 
 	 * Allows for other Objects to be used as values in input tags.
 	 *   Normally, only strings and lists are expected 
 	 * 
@@ -143,7 +161,6 @@ public class UserFormController extends PersonFormController {
 	
 
 	/**
-	 * 
 	 * The onSubmit function receives the form/command object that was modified
 	 *   by the input form and saves it to the db
 	 * 
@@ -187,8 +204,9 @@ public class UserFormController extends PersonFormController {
 			else {
 				us.updateUser(user);
 
-				if (Context.getAuthenticatedUser().isSuperUser() && !password.equals("")) {
-					log.debug("calling changePassword");
+				if (!password.equals("") && Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS)) {
+					if (log.isDebugEnabled())
+						log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
 					us.changePassword(user, password);
 				}
 				
@@ -202,7 +220,6 @@ public class UserFormController extends PersonFormController {
 	}
 
 	/**
-	 * 
 	 * This is called prior to displaying a form for the first time.  It tells Spring
 	 *   the form/command object to load into the request
 	 * 
@@ -240,11 +257,11 @@ public class UserFormController extends PersonFormController {
 		if (user == null) {
 			user = new User();
 			
-			String name = request.getParameter("name");
+			String name = request.getParameter("addName");
 			if (name != null) {
-				String gender = request.getParameter("gndr");
-				String date = request.getParameter("birthyear");
-				String age = request.getParameter("age");
+				String gender = request.getParameter("addGender");
+				String date = request.getParameter("addBirthdate");
+				String age = request.getParameter("addAge");
 				
 				getMiniPerson(user, name, gender, date, age);
 			}
@@ -255,7 +272,10 @@ public class UserFormController extends PersonFormController {
 		return user;
     }
     
-    protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+    /**
+     * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+     */
+    protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
@@ -287,10 +307,12 @@ public class UserFormController extends PersonFormController {
     }
     
     /** 
-     * Uperficially determines if this form is being filled out for a new user
+     * Superficially determines if this form is being filled out for a new user
+     * 
+     * (basically just looks for a primary key (user_id)
      * 
      * @param user
-     * @return
+     * @return true/false if this user is new
      */
     private Boolean isNewUser(User user) {
     	return user == null ? true : user.getUserId() == null;

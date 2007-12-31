@@ -1,8 +1,6 @@
 package org.openmrs.web.servlet;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -23,6 +21,7 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 public class SampleFlowsheetServlet extends HttpServlet {
@@ -63,7 +62,7 @@ public class SampleFlowsheetServlet extends HttpServlet {
 
 		Integer patientId = Integer.parseInt(pid);
 		Patient patient = Context.getPatientService().getPatient(patientId);
-		Set<Obs> obsList = Context.getObsService().getObservations(patient);
+		Set<Obs> obsList = Context.getObsService().getObservations(patient, true);
 
 		if (obsList == null || obsList.size() < 1) {
 			out.print("No observations found");
@@ -87,7 +86,7 @@ public class SampleFlowsheetServlet extends HttpServlet {
 			if (Math.abs(obsDate.getTimeInMillis() - date.getTimeInMillis()) > 86400000) {
 				date = obsDate;
 				out.println("<tr><td class=header colspan=2>"
-						+ dateFormat.format(date.getTime()) + "</td></tr>");
+						+ OpenmrsUtil.getDateFormat().format(date.getTime()) + "</td></tr>");
 			}
 			StringBuffer s = new StringBuffer("<tr><td class=label>");
 			s.append(getName(obs, locale));
@@ -108,14 +107,6 @@ public class SampleFlowsheetServlet extends HttpServlet {
 		if (name.getShortName() != null && name.getShortName().length() > 0)
 			return name.getShortName();
 		return name.getName();
-	}
-
-	private static final DateFormat dateFormat = new SimpleDateFormat(
-			"MM/dd/yyyy");
-	private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm");
-
-	private String getDate(Obs obs) {
-		return dateFormat.format(obs.getObsDatetime());
 	}
 
 	private String getValue(Obs obs, Locale locale) {

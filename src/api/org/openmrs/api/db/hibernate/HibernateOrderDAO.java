@@ -105,6 +105,12 @@ public class HibernateOrderDAO implements
 		return (Order)sessionFactory.getCurrentSession().get(Order.class, orderId);
 	}
 
+	public DrugOrder getDrugOrder(Integer drugOrderId) throws DAOException {
+		log.debug("getting order #" + drugOrderId);
+		
+		return (DrugOrder)sessionFactory.getCurrentSession().get(DrugOrder.class, drugOrderId);
+	}
+
 	/**
 	 * @see org.openmrs.api.db.OrderService#getOrderTypes()
 	 */
@@ -233,7 +239,7 @@ public class HibernateOrderDAO implements
 	}
 
 	public List<DrugOrder> getDrugOrders() throws DAOException {
-		return getDrugOrders(true);
+		return getDrugOrders(false);
 	}
 
 	
@@ -245,15 +251,17 @@ public class HibernateOrderDAO implements
 			log.debug("getting all orders by patient " + patient.getPatientId());
 			
 			Criteria c = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
-			Criteria c1 = c.add(Expression.eq("patient", patient));
-			orders = c1.list();
+			c = c.add(Expression.eq("patient", patient));
+			if (!showVoided)
+				c = c.add(Expression.eq("voided", false));
+			orders = c.list();
 		}
 		
 		return orders;
 	}
 
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws DAOException {
-		return getDrugOrdersByPatient(patient, true);
+		return getDrugOrdersByPatient(patient, false);
 	}
 
 	public Map<ConceptSet, List<DrugOrder>> getConceptSetsByDrugOrders(List<DrugOrder> drugOrders) throws DAOException {

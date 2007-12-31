@@ -36,7 +36,8 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		if (extras == null)
 			extras = new String[] {};
 		
-		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
+		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier) || 
+			DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier)) {
 			Integer num = modifierNum == null ? 1 : modifierNum;
 			
 			s += "#set($arr = [";
@@ -47,7 +48,10 @@ public class ConceptColumn implements ExportColumn, Serializable {
 				}
 				s += "])";
 			
-			s += "#set($obsValues = $fn.getLastNObsWithValues(" + num + ", '" + getConceptIdOrName() + "', $arr))";
+			if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier))
+				s += "#set($obsValues = $fn.getLastNObsWithValues(" + num + ", '" + getConceptIdOrName() + "', $arr))";
+			else if (DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier))
+				s += "#set($obsValues = $fn.getFirstNObsWithValues(" + num + ", '" + getConceptIdOrName() + "', $arr))";
 			s += "#foreach($vals in $obsValues)";
 			s += "#if($velocityCount > 1)";
 			s += "$!{fn.getSeparator()}";
@@ -117,9 +121,13 @@ public class ConceptColumn implements ExportColumn, Serializable {
 		String s = columnName;
 		s += getExtrasTemplateColumnNames(false);
 		
-		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier)) {
-			Integer num = modifierNum == null ? 1 : modifierNum;
-			s += "#foreach($o in [1.." + (num - 1) +"]) ";
+		if (DataExportReportObject.MODIFIER_LAST_NUM.equals(modifier) || 
+			DataExportReportObject.MODIFIER_FIRST_NUM.equals(modifier)) {
+			
+			if (modifierNum == null || modifierNum < 2)
+				s += "#foreach($o in []) ";
+			else
+				s += "#foreach($o in [1.." + (modifierNum - 1) +"]) ";
 			s += "$!{fn.getSeparator()}";
 			s += columnName + "_($velocityCount)";
 			s += getExtrasTemplateColumnNames(true);

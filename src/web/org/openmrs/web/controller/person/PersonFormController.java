@@ -1,9 +1,23 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.web.controller.person;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,14 +25,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.ConceptEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -27,6 +40,13 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+/**
+ * This class controls the generic person properties (address, name, attributes).  
+ * The Patient and User form controllers extend this class.
+ * 
+ * @see org.openmrs.web.controller.user.UserFormController
+ * @see org.openmrs.web.controller.patient.PatientFormController
+ */
 public class PersonFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
@@ -73,6 +93,10 @@ public class PersonFormController extends SimpleFormController {
 			// look for person attributes in the request and save to person
 				for (PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes("", "all")) {
 					String value = request.getParameter(type.getPersonAttributeTypeId().toString());
+					
+					// if there is an error displaying the attribute, the value will be null
+					if (value == null)
+						value = "";
 					
 					person.addAttribute(new PersonAttribute(type, value));
 				}
@@ -142,8 +166,9 @@ public class PersonFormController extends SimpleFormController {
 		String causeOfDeathOther = "";
 		
 		if (Context.isAuthenticated()) {
-			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-			Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
+			
+			//String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+			//Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
 			
 			/*
 			if ( conceptCause != null ) {
@@ -168,7 +193,6 @@ public class PersonFormController extends SimpleFormController {
 		}
 		
 		map.put("causeOfDeathOther", causeOfDeathOther);
-		map.put("datePattern", Context.getDateFormat().toLocalizedPattern().toLowerCase());
 		
 		return map;
     }
@@ -192,8 +216,20 @@ public class PersonFormController extends SimpleFormController {
 		boolean birthdateEstimated = false;
 		if (date != null && !date.equals("")) {
 			try {
-				birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + date);
-				birthdateEstimated = true;
+				// only a year was passed as parameter
+				if (date.length() < 5) {
+					Calendar c = new GregorianCalendar();
+					c.set(Calendar.YEAR, Integer.valueOf(date));
+					c.set(Calendar.MONTH, 0);
+					c.set(Calendar.DATE, 1);
+					birthdate = c.getTime();
+					birthdateEstimated = true;
+				}
+				// a full birthdate was passed as a parameter
+				else {
+					birthdate = Context.getDateFormat().parse(date);
+					birthdateEstimated = false;
+				}
 			} catch (ParseException e) { log.debug("Error getting date from birthdate", e); }
 		}
 		else if (age != null && !age.equals("")) {

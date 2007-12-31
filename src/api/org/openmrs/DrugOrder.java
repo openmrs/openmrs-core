@@ -2,8 +2,6 @@ package org.openmrs;
 
 /**
  * DrugOrder 
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class DrugOrder extends Order implements java.io.Serializable {

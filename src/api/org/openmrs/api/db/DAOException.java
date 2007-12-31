@@ -6,7 +6,6 @@ import org.openmrs.api.APIException;
  * Represents often fatal errors that occur within the database
  * layer.
  *  
- * @author Burke Mamlin
  * @version 1.0
  */
 public class DAOException extends APIException {

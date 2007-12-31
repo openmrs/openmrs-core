@@ -4,12 +4,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -31,6 +29,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 public class QuickReportServlet extends HttpServlet {
@@ -89,9 +88,8 @@ public class QuickReportServlet extends HttpServlet {
 		ObsService os = Context.getObsService();
 		EncounterService es = Context.getEncounterService();
 		ConceptService cs = Context.getConceptService();
-		Locale locale = Context.getLocale();
 		
-		DateFormat dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase()), locale);
+		DateFormat dateFormat = OpenmrsUtil.getDateFormat();
 		velocityContext.put("date", dateFormat);
 		
 		Concept c = cs.getConcept(new Integer("5096")); // RETURN VISIT DATE
@@ -139,10 +137,10 @@ public class QuickReportServlet extends HttpServlet {
 		List<Obs> allObs = null;
 		
 		if (location == null || location.equals(""))
-			allObs = os.getObservations(c, "location_id asc, value_datetime asc", ObsService.PATIENT);
+			allObs = os.getObservations(c, "locationId asc, valueDatetime asc", ObsService.PATIENT, true);
 		else {
 			Location locationObj = es.getLocation(Integer.valueOf(location));
-			allObs = os.getObservations(c, locationObj, "location_id asc, value_datetime asc", ObsService.PATIENT);
+			allObs = os.getObservations(c, locationObj, "locationId asc, valueDatetime asc", ObsService.PATIENT, true);
 		}
 		
 		List<Obs> obs = new Vector<Obs>();
@@ -164,9 +162,8 @@ public class QuickReportServlet extends HttpServlet {
 	
 	private void doAttendedClinic(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
 		EncounterService es = Context.getEncounterService();
-		Locale locale = Context.getLocale();
 		
-		DateFormat dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase()), locale);
+		DateFormat dateFormat = OpenmrsUtil.getDateFormat();
 		velocityContext.put("date", dateFormat);
 		
 		Calendar cal = Calendar.getInstance();
@@ -229,11 +226,9 @@ public class QuickReportServlet extends HttpServlet {
 	
 	private void doVoidedObs(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
 		ObsService os = Context.getObsService();
-		Locale locale = Context.getLocale();
 		
-		DateFormat dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase()), locale);
-		velocityContext.put("date", dateFormat);
-		velocityContext.put("locale", locale);
+		velocityContext.put("date", OpenmrsUtil.getDateFormat());
+		velocityContext.put("locale", Context.getLocale());
 		List<Obs> obs = os.getVoidedObservations();
 		
 		if (obs != null) {

@@ -25,6 +25,17 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 
 	public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
 
+		HttpSession session = (HttpSession)request.getSession();
+		
+		// if a user clicks on the locale change links 
+		// AND their current default locale is different (so the msg isn't repeated)
+		if (request.getParameter("lang") != null) {
+			if (Context.isAuthenticated() && !Context.getLocale().equals(locale)) {
+				session.setAttribute(WebConstants.OPENMRS_MSG_ARGS, request.getContextPath());
+				session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.localeChangeHint");
+			}
+		}
+		
 		Context.setLocale(locale);
 		
 		response.setLocale(locale);
@@ -32,12 +43,6 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 		//still set the cookie for later possible use.
 		super.setLocale(request, response, locale);
 		
-		HttpSession session = (HttpSession)request.getSession();
-		
-		// if a user clicks on the locale change links and their current default locale is null
-		if (request.getParameter("lang") != null)
-			if (Context.isAuthenticated())
-				session.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.localeChangeHint");
 	}
 
 	public String getCookieName() {

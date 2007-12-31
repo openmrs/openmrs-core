@@ -14,27 +14,40 @@ import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.scheduler.SchedulerConstants;
 
-public class OpenmrsConstants {
+/**
+ * Constants used in openmrs. Contents built from build properties (version, 
+ * version_short, and expected_database).  Some are set at runtime (database,
+ * database version).
+ * 
+ *  This file should contain all privilege names and global property names.
+ *  
+ *  Those strings added to the static CORE_* methods will  
+ */
+public final class OpenmrsConstants {
+	//private static Log log = LogFactory.getLog(OpenmrsConstants.class);
 	
 	public static final int ORDERTYPE_DRUG = 2;
 	public static final int CONCEPT_CLASS_DRUG = 3;
 	
-	public static final String OPENMRS_VERSION = "@OPENMRS.VERSION.LONG@";
-	public static final String OPENMRS_VERSION_SHORT = "@OPENMRS.VERSION.SHORT@";
-	public static final String DATABASE_VERSION_EXPECTED = "@DATABASE.VERSION.EXPECTED@";
-	public static String DATABASE_VERSION = "";	// loaded from (Hibernate)Util.checkDatabaseVersion
+	// the jar manifest file is loaded with these values at build time
+	// and loaded here by the constructor
+	private static final Package THIS_PACKAGE = OpenmrsConstants.class.getPackage();
+	public static final String OPENMRS_VERSION = THIS_PACKAGE.getSpecificationVendor();
+	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion();
+	public static final String DATABASE_VERSION_EXPECTED = THIS_PACKAGE.getImplementationVersion();
 	public static String DATABASE_NAME = "openmrs";
 	public static String DATABASE_BUSINESS_NAME = "openmrs";
-
+	// loaded from (Hibernate)Util.checkDatabaseVersion
+	public static String DATABASE_VERSION = "";	
+	
 	// Set true from runtime configuration to obscure patients for system demonstrations 
 	public static boolean OBSCURE_PATIENTS = false;
 	public static String OBSCURE_PATIENTS_GIVEN_NAME = "Demo";
 	public static String OBSCURE_PATIENTS_MIDDLE_NAME = null;
 	public static String OBSCURE_PATIENTS_FAMILY_NAME = "Person";
-
+	
 	public static final String REGEX_LARGE = "[!\"#\\$%&'\\(\\)\\*,+-\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	public static final String REGEX_SMALL = "[!\"#\\$%&'\\(\\)\\*,\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
-	
 	public static final Integer CIVIL_STATUS_CONCEPT_ID = 1054;
 	
 	public static final Collection<String> STOP_WORDS() {
@@ -160,105 +173,108 @@ public class OpenmrsConstants {
 	public static final String PRIV_DELETE_PERSONS = "Delete People";
 	public static final String PRIV_VIEW_PERSONS   = "View People";
 	
-	
+	private static Map<String, String> CORE_PRIVILEGES = null;
 	public static final Map<String, String> CORE_PRIVILEGES() {
-		Map<String, String> privs = new HashMap<String, String>();
 		
-		privs.put(PRIV_VIEW_PROGRAMS, "Able to view patient programs");
-		privs.put(PRIV_MANAGE_PROGRAMS, "Able to add/view/delete patient programs");
-		privs.put(PRIV_EDIT_PATIENT_PROGRAMS, "Able to edit patient programs");
+		if (CORE_PRIVILEGES == null) {
+			CORE_PRIVILEGES = new HashMap<String, String>();
 		
-		privs.put(PRIV_VIEW_UNPUBLISHED_FORMS, "Able to view and fill out unpublished forms");
-		
-		privs.put(PRIV_VIEW_CONCEPTS, "Able to view concept entries");
-		privs.put(PRIV_ADD_CONCEPTS, "Able to add concepts to the dictionary");
-		privs.put(PRIV_EDIT_CONCEPTS, "Able to edit concepts in the dictionary");
-		privs.put(PRIV_DELETE_CONCEPTS, "Able to delete concepts from the dictionary");
-		
-		privs.put(PRIV_ADD_CONCEPT_PROPOSAL, "Able to add concept proposals to the system");
-		privs.put(PRIV_EDIT_CONCEPT_PROPOSAL, "Able to edit concept proposals in the system");
-		
-		privs.put(PRIV_VIEW_USERS, "Able to view users in OpenMRS");
-		privs.put(PRIV_ADD_USERS, "Able to add users to OpenMRS");
-		privs.put(PRIV_EDIT_USERS, "Able to edit users in OpenMRS");
-		privs.put(PRIV_DELETE_USERS, "Able to delete users in OpenMRS");
-		privs.put(PRIV_EDIT_USER_PASSWORDS, "Able to change the passwords of users in OpenMRS");
-		
-		privs.put(PRIV_VIEW_ENCOUNTERS, "Able to view patient encounters");
-		privs.put(PRIV_ADD_ENCOUNTERS, "Able to add patient encounters");
-		privs.put(PRIV_EDIT_ENCOUNTERS, "Able to edit patient encounters");
-		privs.put(PRIV_DELETE_ENCOUNTERS, "Able to delete patient encounters");
-		
-		privs.put(PRIV_VIEW_OBS, "Able to view patient observations");
-		privs.put(PRIV_ADD_OBS, "Able to add patient observations");
-		privs.put(PRIV_EDIT_OBS, "Able to edit patient observations");
-		privs.put(PRIV_DELETE_OBS, "Able to delete patient observations");
-		
-		privs.put(PRIV_VIEW_PATIENTS, "Able to view patients");
-		privs.put(PRIV_ADD_PATIENTS, "Able to add patients");
-		privs.put(PRIV_EDIT_PATIENTS, "Able to edit patients");
-		privs.put(PRIV_DELETE_PATIENTS, "Able to delete patients");
-		
-		privs.put(PRIV_VIEW_PATIENT_COHORTS, "Able to view patient cohorts");
-		
-		privs.put(PRIV_VIEW_ORDERS, "Able to view orders");
-		privs.put(PRIV_ADD_ORDERS, "Able to add orders");
-		privs.put(PRIV_EDIT_ORDERS, "Able to edit orders");
-		privs.put(PRIV_DELETE_ORDERS, "Able to delete orders");
-		
-		privs.put(PRIV_VIEW_FORMS, "Able to view forms");
-		privs.put(PRIV_ADD_FORMS, "Able to add forms");
-		privs.put(PRIV_EDIT_FORMS, "Able to edit forms");
-		privs.put(PRIV_DELETE_FORMS, "Able to delete forms");
-		
-		privs.put(PRIV_VIEW_REPORTS, "Able to view reports");
-		privs.put(PRIV_ADD_REPORTS, "Able to add reports");
-		privs.put(PRIV_EDIT_REPORTS, "Able to edit reports");
-		privs.put(PRIV_DELETE_REPORTS, "Able to delete reports");
-		
-		privs.put(PRIV_MANAGE_TRIBES, "Able to add/edit/delete tribes");
-		privs.put(PRIV_MANAGE_RELATIONSHIPS, "Able to add/edit/delete relationships");
-		privs.put(PRIV_MANAGE_IDENTIFIER_TYPES, "Able to add/edit/delete patient identifier types");
-		privs.put(PRIV_MANAGE_LOCATIONS, "Able to add/edit/delete locations");
-		privs.put(PRIV_MANAGE_MIME_TYPES, "Able to add/edit/delete obs mime types");
-		privs.put(PRIV_MANAGE_CONCEPT_CLASSES, "Able to add/edit/delete concept classes");
-		privs.put(PRIV_MANAGE_CONCEPT_DATATYPES, "Able to add/edit/delete concept datatypes");
-		privs.put(PRIV_MANAGE_ENCOUNTER_TYPES, "Able to add/edit/delete encounter types");
-		privs.put(PRIV_MANAGE_PRIVILEGES, "Able to add/edit/delete privileges");
-		privs.put(PRIV_MANAGE_FIELD_TYPES, "Able to add/edit/delete field types");
-		privs.put(PRIV_MANAGE_ORDER_TYPES, "Able to add/edit/delete order types");
-		privs.put(PRIV_MANAGE_RELATIONSHIP_TYPES, "Able to add/edit/delete relationship types");
-		privs.put(PRIV_MANAGE_ALERTS, "Able to add/edit/delete user alerts");
-		
-		privs.put(PRIV_VIEW_NAVIGATION_MENU, "Able to view the navigation menu (Home, View Patients, Dictionary, Administration, My Profile)");
-		privs.put(PRIV_VIEW_ADMIN_FUNCTIONS, "Able to view the 'Administration' link in the navigation bar");
-		
-		privs.put(PRIV_DASHBOARD_OVERVIEW, "Able to view the 'Overview' tab on the patient dashboard");
-		privs.put(PRIV_DASHBOARD_REGIMEN, "Able to view the 'Regimen' tab on the patient dashboard");
-		privs.put(PRIV_DASHBOARD_ENCOUNTERS, "Able to view the 'Encounters' tab on the patient dashboard");
-		privs.put(PRIV_DASHBOARD_DEMOGRAPHICS, "Able to view the 'Demographics' tab on the patient dashboard");
-		privs.put(PRIV_DASHBOARD_GRAPHS, "Able to view the 'Graphs' tab on the patient dashboard");
-		privs.put(PRIV_DASHBOARD_FORMS, "Able to view the 'Forms' tab on the patient dashboard");
-		privs.put(PRIV_DASHBOARD_SUMMARY, "Able to view the 'Summary' tab on the patient dashboard");
-		
-		privs.put(PRIV_MANAGE_GLOBAL_PROPERTIES, "Able to add/edit/delete global properties");
-		privs.put(PRIV_MANAGE_MODULES, "Able to add/remove modules to the system");
-		
-		privs.put(PRIV_MANAGE_SCHEDULER, "Able to add/edit/remove scheduled tasks");
-		
-		privs.put(PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES, "Able to add/edit/delete person attribute tyeps");
-		
-		privs.put(PRIV_VIEW_PERSONS, "Able to view person objects");
-		privs.put(PRIV_ADD_PERSONS, "Able to add person objects");
-		privs.put(PRIV_EDIT_PERSONS, "Able to edit person objects");
-		privs.put(PRIV_DELETE_PERSONS, "Able to delete objects");
-		
-		
-		for (Privilege privilege : ModuleFactory.getPrivileges()) {
-			privs.put(privilege.getPrivilege(), privilege.getDescription());
+			CORE_PRIVILEGES.put(PRIV_VIEW_PROGRAMS, "Able to view patient programs");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_PROGRAMS, "Able to add/view/delete patient programs");
+			CORE_PRIVILEGES.put(PRIV_EDIT_PATIENT_PROGRAMS, "Able to edit patient programs");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_UNPUBLISHED_FORMS, "Able to view and fill out unpublished forms");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPTS, "Able to view concept entries");
+			CORE_PRIVILEGES.put(PRIV_ADD_CONCEPTS, "Able to add concepts to the dictionary");
+			CORE_PRIVILEGES.put(PRIV_EDIT_CONCEPTS, "Able to edit concepts in the dictionary");
+			CORE_PRIVILEGES.put(PRIV_DELETE_CONCEPTS, "Able to delete concepts from the dictionary");
+			
+			CORE_PRIVILEGES.put(PRIV_ADD_CONCEPT_PROPOSAL, "Able to add concept proposals to the system");
+			CORE_PRIVILEGES.put(PRIV_EDIT_CONCEPT_PROPOSAL, "Able to edit concept proposals in the system");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_USERS, "Able to view users in OpenMRS");
+			CORE_PRIVILEGES.put(PRIV_ADD_USERS, "Able to add users to OpenMRS");
+			CORE_PRIVILEGES.put(PRIV_EDIT_USERS, "Able to edit users in OpenMRS");
+			CORE_PRIVILEGES.put(PRIV_DELETE_USERS, "Able to delete users in OpenMRS");
+			CORE_PRIVILEGES.put(PRIV_EDIT_USER_PASSWORDS, "Able to change the passwords of users in OpenMRS");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_ENCOUNTERS, "Able to view patient encounters");
+			CORE_PRIVILEGES.put(PRIV_ADD_ENCOUNTERS, "Able to add patient encounters");
+			CORE_PRIVILEGES.put(PRIV_EDIT_ENCOUNTERS, "Able to edit patient encounters");
+			CORE_PRIVILEGES.put(PRIV_DELETE_ENCOUNTERS, "Able to delete patient encounters");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_OBS, "Able to view patient observations");
+			CORE_PRIVILEGES.put(PRIV_ADD_OBS, "Able to add patient observations");
+			CORE_PRIVILEGES.put(PRIV_EDIT_OBS, "Able to edit patient observations");
+			CORE_PRIVILEGES.put(PRIV_DELETE_OBS, "Able to delete patient observations");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_PATIENTS, "Able to view patients");
+			CORE_PRIVILEGES.put(PRIV_ADD_PATIENTS, "Able to add patients");
+			CORE_PRIVILEGES.put(PRIV_EDIT_PATIENTS, "Able to edit patients");
+			CORE_PRIVILEGES.put(PRIV_DELETE_PATIENTS, "Able to delete patients");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_PATIENT_COHORTS, "Able to view patient cohorts");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_ORDERS, "Able to view orders");
+			CORE_PRIVILEGES.put(PRIV_ADD_ORDERS, "Able to add orders");
+			CORE_PRIVILEGES.put(PRIV_EDIT_ORDERS, "Able to edit orders");
+			CORE_PRIVILEGES.put(PRIV_DELETE_ORDERS, "Able to delete orders");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_FORMS, "Able to view forms");
+			CORE_PRIVILEGES.put(PRIV_ADD_FORMS, "Able to add forms");
+			CORE_PRIVILEGES.put(PRIV_EDIT_FORMS, "Able to edit forms");
+			CORE_PRIVILEGES.put(PRIV_DELETE_FORMS, "Able to delete forms");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_REPORTS, "Able to view reports");
+			CORE_PRIVILEGES.put(PRIV_ADD_REPORTS, "Able to add reports");
+			CORE_PRIVILEGES.put(PRIV_EDIT_REPORTS, "Able to edit reports");
+			CORE_PRIVILEGES.put(PRIV_DELETE_REPORTS, "Able to delete reports");
+			
+			CORE_PRIVILEGES.put(PRIV_MANAGE_TRIBES, "Able to add/edit/delete tribes");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_RELATIONSHIPS, "Able to add/edit/delete relationships");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_IDENTIFIER_TYPES, "Able to add/edit/delete patient identifier types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_LOCATIONS, "Able to add/edit/delete locations");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_MIME_TYPES, "Able to add/edit/delete obs mime types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_CLASSES, "Able to add/edit/delete concept classes");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_DATATYPES, "Able to add/edit/delete concept datatypes");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_ENCOUNTER_TYPES, "Able to add/edit/delete encounter types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_PRIVILEGES, "Able to add/edit/delete privileges");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_FIELD_TYPES, "Able to add/edit/delete field types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_ORDER_TYPES, "Able to add/edit/delete order types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_RELATIONSHIP_TYPES, "Able to add/edit/delete relationship types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_ALERTS, "Able to add/edit/delete user alerts");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_NAVIGATION_MENU, "Able to view the navigation menu (Home, View Patients, Dictionary, Administration, My Profile)");
+			CORE_PRIVILEGES.put(PRIV_VIEW_ADMIN_FUNCTIONS, "Able to view the 'Administration' link in the navigation bar");
+			
+			CORE_PRIVILEGES.put(PRIV_DASHBOARD_OVERVIEW, "Able to view the 'Overview' tab on the patient dashboard");
+			CORE_PRIVILEGES.put(PRIV_DASHBOARD_REGIMEN, "Able to view the 'Regimen' tab on the patient dashboard");
+			CORE_PRIVILEGES.put(PRIV_DASHBOARD_ENCOUNTERS, "Able to view the 'Encounters' tab on the patient dashboard");
+			CORE_PRIVILEGES.put(PRIV_DASHBOARD_DEMOGRAPHICS, "Able to view the 'Demographics' tab on the patient dashboard");
+			CORE_PRIVILEGES.put(PRIV_DASHBOARD_GRAPHS, "Able to view the 'Graphs' tab on the patient dashboard");
+			CORE_PRIVILEGES.put(PRIV_DASHBOARD_FORMS, "Able to view the 'Forms' tab on the patient dashboard");
+			CORE_PRIVILEGES.put(PRIV_DASHBOARD_SUMMARY, "Able to view the 'Summary' tab on the patient dashboard");
+			
+			CORE_PRIVILEGES.put(PRIV_MANAGE_GLOBAL_PROPERTIES, "Able to add/edit/delete global properties");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_MODULES, "Able to add/remove modules to the system");
+			
+			CORE_PRIVILEGES.put(PRIV_MANAGE_SCHEDULER, "Able to add/edit/remove scheduled tasks");
+			
+			CORE_PRIVILEGES.put(PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES, "Able to add/edit/delete person attribute tyeps");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_PERSONS, "Able to view person objects");
+			CORE_PRIVILEGES.put(PRIV_ADD_PERSONS, "Able to add person objects");
+			CORE_PRIVILEGES.put(PRIV_EDIT_PERSONS, "Able to edit person objects");
+			CORE_PRIVILEGES.put(PRIV_DELETE_PERSONS, "Able to delete objects");
 		}
 		
-		return privs;
+		// always add the module core privileges back on
+		for (Privilege privilege : ModuleFactory.getPrivileges()) {
+			CORE_PRIVILEGES.put(privilege.getPrivilege(), privilege.getDescription());
+		}
+		
+		return CORE_PRIVILEGES;
 	}
 	
 	// Baked in Roles:
@@ -294,6 +310,11 @@ public class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES = "patient.viewingAttributeTypes";
 	public static final String GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES    = "user.listingAttributeTypes";
 	public static final String GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES    = "user.viewingAttributeTypes";
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX   = "patient.identifierRegex";
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX   = "patient.identifierPrefix";
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX   = "patient.identifierSuffix";
+	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS  = "patient.searchMaxResults";
+	public static final String GLOBAL_PROPERTY_GZIP_ENABLED                = "gzip.enabled";
 	
 	// These properties (and default values) are set if not found in the database on startup
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
@@ -333,7 +354,7 @@ public class OpenmrsConstants {
 		props.add(new GlobalProperty("mail.password", "test", "Password for the SMTP user (if smtp_auth is enabled)"));
 		props.add(new GlobalProperty("mail.default_content_type", "text/plain", "Content type to append to the mail messages"));
 		
-		props.add(new GlobalProperty(ModuleConstants.PROPERTY_REPOSITORY_FOLDER, ModuleConstants.PROPERTY_REPOSITORY_FOLDER_DEFAULT, "Name of the folder in which to store the modules"));
+		props.add(new GlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY, ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT, "Name of the folder in which to store the modules"));
 		
 		props.add(new GlobalProperty("layout.address.format", "general", "Format in which to display the person addresses.  Valid values are general, kenya, rwanda, usa, and lesotho"));
 		props.add(new GlobalProperty("layout.name.format", "short", "Format in which to display the person names.  Valid values are short, full"));
@@ -349,6 +370,13 @@ public class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for users in _lists_"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for users when _viewing individually_"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "^0*@SEARCH@([A-Z]+-[0-9])?$", "A MySQL regular expression for the patient identifier search strings.  The @SEARCH@ string is replaced at runtime with the user's search string.  An empty regex will cause a simply 'like' sql search to be used"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "", "This property is only used if " + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "%", "This property is only used if " + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS, "1000", "The maximum number of results returned by patient searches"));
+		
+        props.add(new GlobalProperty(GLOBAL_PROPERTY_GZIP_ENABLED, "false", "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
@@ -377,10 +405,11 @@ public class OpenmrsConstants {
 		return states;
 	}
 	
-	// This regex is used in identifier pattern searches.  
-	// @SEARCH@ is needs to be replaced with the searched string
-	public static final String PATIENT_IDENTIFIER_REGEX = "^0*@SEARCH@([A-Z]+-[0-9])?$";
-
+	public static Locale SPANISH_LANGUAGE = new Locale("es");
+	
+	public static Locale PORTUGUESE_LANGUAGE = new Locale("pt");
+	
+	public static Locale ITALIAN_LANGUAGE = new Locale("it");
 	
 	/**
 	 * @return Collection of locales available to openmrs
@@ -391,6 +420,9 @@ public class OpenmrsConstants {
 		languages.add(Locale.US);
 		languages.add(Locale.UK);
 		languages.add(Locale.FRENCH);
+		languages.add(SPANISH_LANGUAGE);
+		languages.add(PORTUGUESE_LANGUAGE);
+		languages.add(ITALIAN_LANGUAGE);
 		
 		return languages;
 	}
@@ -405,26 +437,38 @@ public class OpenmrsConstants {
 		
 		languages.add(Locale.ENGLISH);
 		languages.add(Locale.FRENCH);
+		languages.add(SPANISH_LANGUAGE);
+		languages.add(PORTUGUESE_LANGUAGE);
+		languages.add(ITALIAN_LANGUAGE);
 		
 		return languages;
 	}
 	
+	private static Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS = null;
+	
 	/**
-	 * This method is necessary until SimpleDateFormat(java.util.locale) returns a 
+	 * This method is necessary until SimpleDateFormat(SHORT, java.util.locale) returns a 
 	 *   pattern with a four digit year
 	 *   <locale.toString().toLowerCase(), pattern>
 	 *   
 	 * @return Mapping of Locales to locale specific date pattern
 	 */
 	public static final Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS() {
-		Map<String, String> patterns = new HashMap<String, String>();
+		if (OPENMRS_LOCALE_DATE_PATTERNS == null) {
+			Map<String, String> patterns = new HashMap<String, String>();
+			
+			patterns.put(Locale.US.toString().toLowerCase(), "MM/dd/yyyy");
+			patterns.put(Locale.UK.toString().toLowerCase(), "dd/MM/yyyy");
+			patterns.put(Locale.FRENCH.toString().toLowerCase(), "dd/MM/yyyy");
+			patterns.put(Locale.GERMAN.toString().toLowerCase(), "MM.dd.yyyy");
+			patterns.put(SPANISH_LANGUAGE.toString().toLowerCase(), "dd/MM/yyyy");
+			patterns.put(PORTUGUESE_LANGUAGE.toString().toLowerCase(), "dd/MM/yyyy");
+			patterns.put(ITALIAN_LANGUAGE.toString().toLowerCase(), "dd/MM/yyyy");
+			
+			OPENMRS_LOCALE_DATE_PATTERNS = patterns;
+		}
 		
-		patterns.put(Locale.US.toString().toLowerCase(), "MM/dd/yyyy");
-		patterns.put(Locale.UK.toString().toLowerCase(), "dd/MM/yyyy");
-		patterns.put(Locale.FRENCH.toString().toLowerCase(), "dd/MM/yyyy");
-		patterns.put(Locale.GERMAN.toString().toLowerCase(), "MM.dd.yyyy");
-		
-		return patterns;
+		return OPENMRS_LOCALE_DATE_PATTERNS;
 	}
 	
 	/*
@@ -443,6 +487,7 @@ public class OpenmrsConstants {
 	 * Report object properties
 	 */
 	public static final String REPORT_OBJECT_TYPE_PATIENTFILTER 		= "Patient Filter";
+	public static final String REPORT_OBJECT_TYPE_PATIENTSEARCH			= "Patient Search";
 	public static final String REPORT_OBJECT_TYPE_PATIENTDATAPRODUCER 	= "Patient Data Producer";
 	
 	// Used for differences between windows/linux upload capabilities)
@@ -452,5 +497,5 @@ public class OpenmrsConstants {
 	public static String OPERATING_SYSTEM_WINDOWS_XP = "Windows XP";
 	public static String OPERATING_SYSTEM_LINUX = "Linux";
 	public static String OPERATING_SYSTEM_FREEBSD = "FreeBSD";
-	
+	public static String OPERATING_SYSTEM_OSX = "Mac OS X";
 }

@@ -86,13 +86,13 @@
 <c:if test="${concept.conceptId != null}">
 	<form class="inlineForm" id="jumpForm" action="" method="post">
 		<input type="hidden" name="jumpAction" id="jumpAction" value="previous"/>
-		<a href="#previousConcept" id="previousConcept" valign="middle" onclick="return jumpToConcept('previous')"><spring:message code="general.previous"/></a>
+		<a href="#previousConcept" id="previousConcept" valign="middle" accesskey="," onclick="return jumpToConcept('previous')"><spring:message code="general.previous"/></a>
 			|
-		<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" ><spring:message code="general.view"/></a>
+		<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" accesskey="v"><spring:message code="general.view"/></a>
 			|
-		<a href="conceptStats.form?conceptId=${concept.conceptId}" id="conceptStats" valign="middle"><spring:message code="Concept.stats"/></a>
+		<a href="conceptStats.form?conceptId=${concept.conceptId}" id="conceptStats" accesskey="s" valign="middle"><spring:message code="Concept.stats"/></a>
 			|
-		<a href="#nextConcept" id="nextConcept" valign="middle" onclick="return jumpToConcept('next')"><spring:message code="general.next"/></a>
+		<a href="#nextConcept" id="nextConcept" valign="middle" accesskey="." onclick="return jumpToConcept('next')"><spring:message code="general.next"/></a>
 			|
 	</form>
 </c:if>
@@ -417,7 +417,7 @@
 			<td>
 				<b><spring:message code="Concept.forms" /></b><br />
 					<c:forEach items="${formsInUse}" var="form">
-						${form} <br>
+						${form} <br/>
 					</c:forEach>
 				<br/>
 			</td>

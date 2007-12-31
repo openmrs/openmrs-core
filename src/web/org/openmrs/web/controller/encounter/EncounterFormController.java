@@ -1,6 +1,5 @@
 package org.openmrs.web.controller.encounter;
 
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,10 +25,11 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.propertyeditor.EncounterTypeEditor;
-import org.openmrs.web.propertyeditor.FormEditor;
-import org.openmrs.web.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.EncounterTypeEditor;
+import org.openmrs.propertyeditor.FormEditor;
+import org.openmrs.propertyeditor.LocationEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -45,8 +45,6 @@ public class EncounterFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
-    SimpleDateFormat dateFormat;
-    
 	/**
 	 * 
 	 * Allows for Integers to be used as values in input tags.
@@ -57,12 +55,10 @@ public class EncounterFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
-		
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(dateFormat, true));
+        		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true));
         binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor());
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(Form.class, new FormEditor());
@@ -277,7 +273,6 @@ public class EncounterFormController extends SimpleFormController {
 		log.debug("setting obsMap in page context (size: " + obsMap.size() + ")");
 		map.put("obsMap", obsMap);
 		
-		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
 		map.put("locale", Context.getLocale());
 		map.put("editedObs", editedObs);
 		map.put("obsGroups", obsGroups);

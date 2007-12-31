@@ -59,12 +59,12 @@ public class FieldTypeListController extends SimpleFormController {
 					//TODO convenience method deleteFieldType(Integer) ??
 					try {
 						as.deleteFieldType(rs.getFieldType(Integer.valueOf(p)));
-						if (!success.equals("")) success += "<br>";
+						if (!success.equals("")) success += "<br/>";
 						success += textFieldType + " " + p + " " + deleted;
 					}
 					catch (APIException e) {
 						log.warn("Error deleting field type", e);
-						if (!error.equals("")) error += "<br>";
+						if (!error.equals("")) error += "<br/>";
 						error += textFieldType + " " + p + " " + notDeleted;
 					}
 				}

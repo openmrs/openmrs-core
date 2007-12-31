@@ -42,9 +42,18 @@ public class HibernateFormDAO implements
 	}
 	
 	/**
+	 * Returns the form object originally passed in, which will have been persisted.
 	 * @see org.openmrs.api.db.FormService#createForm(org.openmrs.Form)
 	 */
 	public Form createForm(Form form) throws DAOException {
+		sessionFactory.getCurrentSession().save(form);
+		return form;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormService#duplicateForm(org.openmrs.Form)
+	 */
+	public Form duplicateForm(Form form) throws DAOException {
 		return (Form) sessionFactory.getCurrentSession().merge(form);
 	}
 
@@ -184,7 +193,7 @@ public class HibernateFormDAO implements
 			crit.add(Expression.eq("retired", false));
 		
 		crit.addOrder(Order.asc("name"));
-		crit.addOrder(Order.asc("formId"));
+		crit.addOrder(Order.desc("formId"));
 		
 		return crit.list();
 	}
@@ -250,5 +259,25 @@ public class HibernateFormDAO implements
 	public void deleteFormField(FormField formField) throws DAOException {
 		sessionFactory.getCurrentSession().delete(formField);
 	}
+
+	/**
+     * @see org.openmrs.api.db.FormDAO#findForms(java.lang.String, boolean, boolean)
+     */
+    public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
+    	Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
+		
+		if (includeUnpublished == false)
+			crit.add(Expression.eq("published", true));
+		
+		if (!includeRetired)
+			crit.add(Expression.eq("retired", false));
+		
+		crit.add(Expression.like("name", text, MatchMode.ANYWHERE));
+		
+		crit.addOrder(Order.asc("name"));
+		crit.addOrder(Order.desc("formId"));
+		
+		return crit.list();
+    }
 	
 }

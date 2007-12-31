@@ -5,7 +5,7 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <c:choose>
-	<c:when test="${empty param.name}">
+	<c:when test="${empty param.addName}">
 		
 		<h2><spring:message code="Person.find"/></h2>
 		<openmrs:portlet id="createPerson" url="addPersonForm" parameters="personType=${param.personType}|postURL=addPerson.htm|viewType=${param.viewType}" />
@@ -39,11 +39,11 @@
 					return false;
 				};
 				
-				var personName = "${param.name}";
-				var birthyear = "${param.birthyear}";
-				var age = "${param.age}";
-				var gender = "${param.gndr}";
-				DWRPersonService.getSimilarPeople(searchWidget.simpleClosure(searchWidget, "doObjectsFound"), personName, birthyear, age, gender);
+				var personName = "${param.addName}";
+				var birthdate = "${param.addBirthdate}";
+				var age = "${param.addAge}";
+				var gender = "${param.addGender}";
+				DWRPersonService.getSimilarPeople(searchWidget.simpleClosure(searchWidget, "doObjectsFound"), personName, birthdate, age, gender);
 				
 				searchWidget.allowAutoJump = function() { return false; };
 			});

@@ -4,8 +4,6 @@ import java.util.Date;
 
 /**
  * OrderType
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class OrderType implements java.io.Serializable {

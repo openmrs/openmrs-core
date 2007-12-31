@@ -4,8 +4,6 @@ import java.util.Date;
 
 /**
  * EncounterType 
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class EncounterType implements java.io.Serializable {

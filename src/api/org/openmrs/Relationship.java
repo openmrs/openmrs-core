@@ -163,7 +163,7 @@ public class Relationship implements java.io.Serializable {
 	 * @see isVoided()
 	 * @return Returns the voided.
 	 */
-	protected Boolean getVoided() {
+	public Boolean getVoided() {
 		return isVoided();
 	}
 	
@@ -210,7 +210,8 @@ public class Relationship implements java.io.Serializable {
 	}
 
 	public String toString() {
-		return personA + " is the " + relationshipType.getaIsToB() + " of " + personB;  
+		String relType = getRelationshipType() == null ? "NULL" : getRelationshipType().getaIsToB();
+		return personA + " is the " + relType + " of " + personB;  
 	}
 
 }

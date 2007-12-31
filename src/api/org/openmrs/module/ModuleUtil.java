@@ -1,6 +1,18 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,40 +36,66 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.context.support.AbstractRefreshableApplicationContext;
 
 /**
  * Utility methods for working and manipulating modules
- * 
- * @author Ben Wolfe
- * @version 1.0
  */
 public class ModuleUtil {
 
 	private static Log log = LogFactory.getLog(ModuleUtil.class);
 
 	/**
-	 * Start up the module system
+	 * Start up the module system with the given properties.  
 	 * 
-	 * @param props
+	 * @param props Properties (OpenMRS runtime properties)
 	 */
 	public static void startup(Properties props) {
 		
-		// Attempt to get all of the modules from the modules folder
-		// and store them in the modules list
-		ModuleFactory.loadAndStartModules();
-
-		Collection<Module> modules = ModuleFactory.getStartedModules();
-
-		if (modules == null || modules.size() == 0)
-			log.debug("No modules loaded");
-		else
-			log.debug("Found and loaded " + modules.size() + " module(s)");
-
+		String moduleListString = props.getProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD);
+		
+		if (moduleListString == null || moduleListString.length() == 0) {
+			// Attempt to get all of the modules from the modules folder
+			// and store them in the modules list
+			log.debug("Starting all modules");
+			ModuleFactory.loadModules();
+		}
+		else {
+			// use the list of modules and load only those
+			log.debug("Starting all modules in this list: " + moduleListString);
+			
+			String[] moduleArray = moduleListString.split(" ");
+			List<File> modulesToLoad = new Vector<File>();
+			
+			for (String modulePath : moduleArray) {
+				File file = new File(modulePath);
+				if (file.exists())
+					modulesToLoad.add(file);
+				else
+					log.error("Unable to load module at path: " + modulePath + " because no file exists there. absolute path: " + file.getAbsolutePath());
+			}
+			
+			ModuleFactory.loadModules(modulesToLoad);
+		}
+		
+		// start all of the modules we just loaded
+		ModuleFactory.startModules();
+		
+		if (log.isDebugEnabled()) {
+			Collection<Module> modules = ModuleFactory.getStartedModules();
+			if (modules == null || modules.size() == 0)
+				log.debug("No modules loaded");
+			else
+				log.debug("Found and loaded " + modules.size() + " module(s)");
+		}
 	}
 
 	/**
-	 * Stops the module system
+	 * Stops the module system by calling stopModule for all 
+	 * modules that are currently started 
 	 */
 	public static void shutdown() {
 		
@@ -65,18 +103,22 @@ public class ModuleUtil {
 		modules.addAll(ModuleFactory.getStartedModules());
 		
 		for (Module mod : modules) {
-			log.debug("stopping module: " + mod.getModuleId());
-			ModuleFactory.stopModule(mod, true);
+			if (log.isDebugEnabled())
+				log.debug("stopping module: " + mod.getModuleId());
+			
+			if (mod.isStarted())
+				ModuleFactory.stopModule(mod, true);
 		}
+		
 		log.debug("done shutting down modules");
 
 	}
 
 	/**
-	 * Add the stream as a file in the modules repository
+	 * Add the <code>inputStream</code> as a file in the modules repository
 	 * 
-	 * @param stream
-	 * @return file just loaded
+	 * @param stream InputStream to load 
+	 * @return filename String of the file's name of the stream
 	 */
 	public static File insertModuleFile(InputStream inputStream, String filename) {
 		File folder = getModuleRepository();
@@ -101,13 +143,8 @@ public class ModuleUtil {
 					+ filename, e);
 		}
 		finally {
-			try {
-				inputStream.close();
-				outputStream.close();
-			}
-			catch (Exception e) {
-				// pass
-			}
+			try { inputStream.close(); } catch (Exception e) { /* pass */ }
+			try { outputStream.close();} catch (Exception e) { /* pass */ }
 		}
 
 		return file;
@@ -170,21 +207,22 @@ public class ModuleUtil {
 	public static File getModuleRepository() {
 		
 		AdministrationService as = Context.getAdministrationService();
-		String folderName = as.getGlobalProperty(ModuleConstants.PROPERTY_REPOSITORY_FOLDER, ModuleConstants.PROPERTY_REPOSITORY_FOLDER_DEFAULT);
+		String folderName = as.getGlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY, ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
 		
-		String filepath = OpenmrsUtil.getApplicationDataDirectory() + folderName;
+		// try to load the repository folder straight away.
+		File folder = new File(folderName);
 		
-		File folder = new File(filepath);
-
+		// if the property wasn't a full path already, assume it was intended to be a folder in the 
+		// application directory
 		if (!folder.exists()) {
-			log.warn("Module repository doesn't exist: "
-					+ folder.getAbsolutePath());
+			String filepath = OpenmrsUtil.getApplicationDataDirectory() + folderName;
+			folder = new File(filepath);
+		}
 
-			// create the modules folder if it doesn't exist
-			if (!folder.exists()) {
-				log.warn(folder.getAbsolutePath() + " doesn't exist.  Creating directories now.");
-				folder.mkdirs();
-			}
+		// now create the modules folder if it doesn't exist
+		if (!folder.exists()) {
+			log.warn("Module repository " + folder.getAbsolutePath() + " doesn't exist.  Creating directories now.");
+			folder.mkdirs();
 		}
 
 		if (!folder.isDirectory())
@@ -229,7 +267,8 @@ public class ModuleUtil {
 	 * @param name
 	 * @param keepFullPath
 	 */
-	public static void expandJar(File fileToExpand, File tmpModuleDir,
+	@SuppressWarnings("unchecked")
+    public static void expandJar(File fileToExpand, File tmpModuleDir,
 			String name, boolean keepFullPath) throws IOException {
 		JarFile jarFile = null;
 		InputStream input = null;
@@ -268,56 +307,39 @@ public class ModuleUtil {
 				}
 			}
 			if (!foundName)
-				log.warn("Unable to find: " + name + " in file "
+				log.debug("Unable to find: " + name + " in file "
 						+ fileToExpand.getAbsolutePath());
 
 		} catch (IOException e) {
 			log.warn("Unable to delete tmpModuleFile on error", e);
 			throw e;
 		} finally {
-			if (input != null) {
-				try {
-					input.close();
-				} catch (Throwable t) {
-					;
-				}
-				input = null;
-			}
-			if (jarFile != null) {
-				try {
-					jarFile.close();
-				} catch (Throwable t) {
-					;
-				}
-				jarFile = null;
-			}
+			try { input.close(); } catch (Exception e) { /* pass */ }
+			try { jarFile.close(); } catch (Exception e) { /* pass */ }
 		}
 	}
 
+	/**
+	 * Expand the given file in the given stream to a docBase location
+	 * 
+	 * @param input to read from
+	 * @param docBase location in the doc to copy to 
+	 * @param name file name/path to expand
+	 * @throws IOException if an error occurred while copying
+	 */
 	private static void expand(InputStream input, String docBase, String name)
 			throws IOException {
-		log.debug("expanding: " + name);
+		if (log.isDebugEnabled())
+			log.debug("expanding: " + name);
+		
 		File file = new File(docBase, name);
 		FileOutputStream outStream = null;
-		BufferedOutputStream output = null;
 		try {
 			outStream = new FileOutputStream(file);
 			OpenmrsUtil.copyFile(input, outStream);
 		} finally {
-			try {
-				if (outStream != null)
-					outStream.close();
-			} catch (IOException io) {
-				log.warn("Unable to close output stream", io);
-			}
-			try {
-				if (output != null)
-					output.close();
-			} catch (IOException io) {
-				log.warn("Unable to close output stream", io);
-			}
+			try { outStream.close(); } catch (Exception e) { /* pass */ }
 		}
-
 	}
 	
 	/**
@@ -369,10 +391,8 @@ public class ModuleUtil {
 		} catch (IOException io) {
 			log.warn("io while reading: " + url, io);
 		} finally {
-			try {
-				in.close();
-				out.close();
-			} catch (Exception e) {}
+			try { in.close();  } catch (Exception e) { /* pass */ }
+			try { out.close(); } catch (Exception e) { /* pass */ }
 		}
 
 		return output;
@@ -450,4 +470,42 @@ public class ModuleUtil {
 		return "true".equals(prop);
 	}
 	
+	/**
+	 * Refreshes the given application context 
+	 * @param ctx
+	 */
+	public static AbstractRefreshableApplicationContext refreshApplicationContext(AbstractRefreshableApplicationContext ctx) {
+		OpenmrsClassLoader.saveState();
+		ServiceContext.destroyInstance();
+		
+		try {
+			ctx.stop();
+			ctx.close();
+		}
+		catch (Exception e) {
+			log.warn("Exception while stopping and closing context: ", e);
+			// Spring seems to be trying to refresh the context instead of /just/ stopping
+			// pass
+		}
+		OpenmrsClassLoader.destroyInstance();
+		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		
+		ServiceContext.getInstance().startRefreshingContext();
+		ctx.refresh();
+		ServiceContext.getInstance().doneRefreshingContext();
+		
+		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		
+		OpenmrsClassLoader.restoreState();
+		
+		// reload the advice points that were lost when refreshing Spring
+		log.debug("Reloading advice for all started modules: " + ModuleFactory.getStartedModules().size());
+		for (Module module : ModuleFactory.getStartedModules()) {
+			ModuleFactory.loadAdvice(module);
+		}
+		
+		return ctx;
+	}
 }

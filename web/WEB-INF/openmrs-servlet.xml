@@ -98,11 +98,13 @@
 				<prop key="admin/reports/dataExport.form">dataExportForm</prop>
 				<prop key="admin/reports/reportObject.list">reportObjectList</prop>
 				<prop key="admin/reports/reportObject.form">reportObjectForm</prop>
+				<prop key="admin/reports/cohorts.list">cohortList</prop>
 
 				<prop key="analysis.list">otfaController</prop>
 				<prop key="analysis.form">otfaActionController</prop>
 				<prop key="cohortBuilder.list">cohortBuilderController</prop>
 				<prop key="cohortBuilder.form">cohortBuilderActionController</prop>
+				<prop key="migration.list">migrationController</prop>
 				<prop key="migration.form">migrationActionController</prop>
 				<prop key="nealreport.form">nealReportController</prop>
 				<prop key="options.form">optionsForm</prop>
@@ -123,12 +125,16 @@
 				<prop key="admin/scheduler/scheduler.list">schedulerListController</prop>
 				<prop key="admin/scheduler/scheduler.form">schedulerFormController</prop>
 
+				<prop key="remotecommunication/postHl7.form">postHl7FormController</prop>
+
 				<prop key="admin/programs/program.list">programList</prop>
 				<prop key="admin/programs/program.form">programForm</prop>
 				<prop key="admin/programs/conversion.list">stateConversionList</prop>
 				<prop key="admin/programs/conversion.form">stateConversionForm</prop>
 				<prop key="admin/programs/workflow.form">workflowFormController</prop>
 				<prop key="admin/programs/patientProgram.form">patientProgramFormController</prop>
+				
+				<prop key="remotecommunication/postHl7.form">postHl7FormController</prop>
 
 				<prop key="admin/maintenance/globalProps.form">globalPropertyController</prop>
 				<!--<prop key="**/calendar.list">calendarController</prop>-->
@@ -169,6 +175,8 @@
 	<bean id="nameLayoutPortletController" class="org.openmrs.web.controller.layout.NameLayoutPortletController" />
 	<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
 	<bean id="springController" class="org.openmrs.web.controller.SpringController" />
+	
+	<bean id="requireNameValidator" class="org.openmrs.web.controller.RequireNameValidator"/>
 
 	<!-- =============================== -->
 	<!-- =====      Scheduler      ===== -->
@@ -200,7 +208,7 @@
 	<bean id="obsForm" class="org.openmrs.web.controller.observation.ObsFormController">
 		<property name="commandName"><value>obs</value></property>
 		<property name="formView"><value>/admin/observations/obsForm</value></property>
-		<property name="successView"><value>/@WEBAPP.NAME@/admin/encounters/encounter.form</value></property>
+		<property name="successView"><value>../encounters/encounter.form</value></property>
 	</bean>
 
 	<!--this is the optional method of declaring values in the constructor -->
@@ -339,7 +347,7 @@
 		<property name="commandName"><value>patient</value></property>
 		<property name="commandClass"><value>org.openmrs.web.controller.patient.ShortPatientModel</value></property>
 		<property name="formView"><value>/admin/patients/newPatientForm</value></property>
-		<property name="successView"><value>/@WEBAPP.NAME@/patientDashboard.form</value></property>
+		<property name="successView"><value>../../patientDashboard.form</value></property>
 	</bean>
 	<!-- ** /New Patient ** -->
 
@@ -798,11 +806,19 @@
 	<bean id="dataExportForm"
 		class="org.openmrs.web.controller.report.export.DataExportFormController">
 		<property name="sessionForm"><value>true</value></property>
+		<property name="validator"><ref bean="requireNameValidator" /></property>
 		<property name="commandName"><value>dataExport</value></property>
 		<property name="formView"><value>/admin/reports/dataExportForm</value></property>
 		<property name="successView"><value>dataExport.list</value></property>
 	</bean>
 	<!-- ** /DataExport ** -->
+	<bean id="cohortList"
+		class="org.openmrs.web.controller.report.CohortListController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>cohortList</value></property>
+		<property name="formView"><value>/admin/reports/cohortList</value></property>
+		<property name="successView"><value>cohorts.list</value></property>
+	</bean>
 	<!-- ============================ -->
 
 	<!-- ============================ -->
@@ -1063,6 +1079,9 @@
 	<!-- =========================== -->
 	<!-- =====      Other      ===== -->
 	<!-- =========================== -->
+	<bean id="postHl7FormController" class="org.openmrs.web.controller.remotecommunication.PostHl7Controller">
+		<property name="formView"><value>/remotecommunication/postHl7Form</value></property>
+	</bean>
 	<bean id="optionsForm" class="org.openmrs.web.controller.OptionsFormController">
 		<property name="commandName"><value>opts</value></property>
 		<property name="commandClass"><value>org.openmrs.web.OptionsForm</value></property>
@@ -1427,15 +1446,17 @@
 
 	<!-- ADDRESS LAYOUT SUPPORT -->
 
-	<bean id="addressSupport" class="org.openmrs.layout.address.AddressSupport">
-		<property name="defaultLayoutFormat"><value>@ADDRESS.FORMAT@</value></property>
+	<bean id="addressSupport" class="org.openmrs.layout.web.address.AddressSupport">
+		<property name="defaultLayoutFormat"><value>US</value></property>
 		<property name="layoutTemplates">
 			<list>
 				<ref bean="addressTemplateRwanda" />
 				<ref bean="addressTemplateUS" />
 				<ref bean="addressTemplateKenya" />
 				<ref bean="addressTemplateLesotho" />
+				<ref bean="addressTemplateMalawi" />
 				<ref bean="addressTemplateGeneral" />
+				<ref bean="addressTemplateTanzania" />
 			</list>
 		</property>
 		<property name="specialTokens">
@@ -1450,11 +1471,14 @@
 				<value>longitude</value>
 				<value>countyDistrict</value>
 				<value>neighborhoodCell</value>
+				<value>townshipDivision</value>
+				<value>subregion</value>
+				<value>region</value>
 			</list>
 		</property>
 	</bean>
 
-	<bean id="addressTemplateRwanda" class="org.openmrs.layout.address.AddressTemplate">
+	<bean id="addressTemplateRwanda" class="org.openmrs.layout.web.address.AddressTemplate">
 		<property name="displayName"><value>Rwandan Address Format</value></property>
 		<property name="codeName"><value>rw</value></property>
 		<property name="country"><value>Rwanda</value></property>
@@ -1492,7 +1516,7 @@
 		</property>
 	</bean>
 
-	<bean id="addressTemplateUS" class="org.openmrs.layout.address.AddressTemplate">
+	<bean id="addressTemplateUS" class="org.openmrs.layout.web.address.AddressTemplate">
 		<property name="displayName"><value>US Address Format</value></property>
 		<property name="codeName"><value>us</value></property>
 		<property name="country"><value>USA</value></property>
@@ -1528,7 +1552,7 @@
 		</property>
 	</bean>
 
-	<bean id="addressTemplateGeneral" class="org.openmrs.layout.address.AddressTemplate">
+	<bean id="addressTemplateGeneral" class="org.openmrs.layout.web.address.AddressTemplate">
 		<property name="displayName"><value>General Address Format</value></property>
 		<property name="codeName"><value>general</value></property>
 		<property name="country"><value></value></property>
@@ -1566,25 +1590,50 @@
 		</property>
 	</bean>
 
-	<bean id="addressTemplateKenya" class="org.openmrs.layout.address.AddressTemplate">
+	<bean id="addressTemplateKenya" class="org.openmrs.layout.web.address.AddressTemplate">
 		<property name="displayName"><value>Kenyan Address Format</value></property>
 		<property name="codeName"><value>ka</value></property>
 		<property name="country"><value>Kenya</value></property>
 		<property name="nameMappings">
 			<props>
+				
+				<prop key="address1">Location.address1</prop>
+				
+				<prop key="address2">Location.sectionHomestead</prop>
+				
+				<prop key="neighborhoodCell">Location.estateNearestCentre</prop>
+				<prop key="cityVillage">Location.townVillage</prop>
+				
+				<prop key="subregion">Location.sublocation</prop>
+				<prop key="region">Location.location</prop>
+				
+				<prop key="townshipDivision">Location.division</prop>
+				<prop key="countyDistrict">Location.district</prop>
+				
 				<prop key="stateProvince">Location.province</prop>
-				<prop key="cityVillage">Location.village</prop>
-				<prop key="address1">Location.location</prop>
-				<prop key="address2">Location.sublocation</prop>
+				<prop key="postalCode">Location.postalCode</prop>
 				<prop key="country">Location.country</prop>
 			</props>
 		</property>
 		<property name="sizeMappings">
 			<props>
-				<prop key="cityVillage">16</prop>
-				<prop key="address1">50</prop>
-				<prop key="address2">50</prop>
+				<prop key="address1">55</prop>
+				
+				<prop key="address2">55</prop>
+				
+				<prop key="neighborhoodCell">24</prop>
+				<prop key="cityVillage">24</prop>
+				
+				<prop key="subregion">24</prop>
+				<prop key="region">24</prop>
+				
+				<prop key="townshipDivision">24</prop>
+				<prop key="countyDistrict">24</prop>
+				
+				<prop key="stateProvince">24</prop>
+				<prop key="postalCode">6</prop>
 				<prop key="country">10</prop>
+				
 			</props>
 		</property>
 		<property name="elementDefaults">
@@ -1596,12 +1645,15 @@
 			<list>
 				<value>address1</value>
 				<value>address2</value>
-				<value>cityVillage country</value>
+				<value>neighborhoodCell cityVillage</value>
+				<value>subregion region</value>
+				<value>townshipDivision countyDistrict</value>
+				<value>stateProvince postalCode country</value>
 			</list>
 		</property>
 	</bean>
 
-	<bean id="addressTemplateLesotho" class="org.openmrs.layout.address.AddressTemplate">
+	<bean id="addressTemplateLesotho" class="org.openmrs.layout.web.address.AddressTemplate">
 		<property name="displayName"><value>Lesotho Address Format</value></property>
 		<property name="codeName"><value>ls</value></property>
 		<property name="country"><value>Lesotho</value></property>
@@ -1629,11 +1681,79 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="addressTemplateMalawi" class="org.openmrs.layout.web.address.AddressTemplate">
+		<property name="displayName"><value>Malawi Address Format</value></property>
+		<property name="codeName"><value>mw</value></property>
+		<property name="country"><value>Malawi</value></property>
+		<property name="nameMappings">
+			<props>
+				<prop key="stateProvince">Location.district</prop>
+				<prop key="countyDistrict">Location.traditionalAuthority</prop>
+				<prop key="cityVillage">Location.village</prop>
+				<prop key="neighborhoodCell">Location.neighborhood</prop>
+				<prop key="address1">Location.address1</prop>
+			</props>
+		</property>
+		<property name="sizeMappings">
+			<props>
+				<prop key="stateProvince">20</prop>
+				<prop key="countyDistrict">20</prop>
+				<prop key="cityVillage">20</prop>
+				<prop key="neighborhoodCell">20</prop>
+				<prop key="address1">40</prop>
+			</props>
+		</property>
+		<property name="elementDefaults">
+			<props>
+				<prop key="country">Malawi</prop>
+			</props>
+		</property>
+		<property name="lineByLineFormat">
+			<list>
+				<value>address1</value>
+				<value>neighborhoodCell</value>
+				<value>cityVillage</value>
+				<value>countyDistrict</value>
+				<value>stateProvince</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="addressTemplateTanzania" class="org.openmrs.layout.web.address.AddressTemplate">
+		<property name="displayName"><value>Tanzanian Address Format</value></property>
+		<property name="codeName"><value>tz</value></property>
+		<property name="country"><value>Tanzania</value></property>
+		<property name="nameMappings">
+			<props>
+				<prop key="cityVillage">Location.villageStreet</prop>
+				<prop key="subregion">Location.ward</prop>
+				<prop key="countyDistrict">Location.district</prop>
+				<prop key="region">Location.region</prop>
+			</props>
+		</property>
+		<property name="sizeMappings">
+			<props>
+				<prop key="cityVillage">50</prop>
+				<prop key="subregion">22</prop>
+				<prop key="countyDistrict">17</prop>
+				<prop key="region">14</prop>
+			</props>
+		</property>
+		<property name="lineByLineFormat">
+			<list>
+				<value>cityVillage</value>
+				<value>subregion</value>
+				<value>countyDistrict</value>
+				<value>region</value>
+			</list>
+		</property>
+	</bean>
 
 	<!-- NAME LAYOUT SUPPORT -->
 
-	<bean id="nameSupport" class="org.openmrs.layout.name.NameSupport">
-		<property name="defaultLayoutFormat"><value>@NAME.FORMAT@</value></property>
+	<bean id="nameSupport" class="org.openmrs.layout.web.name.NameSupport">
+		<property name="defaultLayoutFormat"><value>short</value></property>
 		<property name="layoutTemplates">
 			<list>
 				<ref bean="nameTemplateShort" />
@@ -1654,7 +1774,7 @@
 		</property>
 	</bean>
 
-	<bean id="nameTemplateShort" class="org.openmrs.layout.name.NameTemplate">
+	<bean id="nameTemplateShort" class="org.openmrs.layout.web.name.NameTemplate">
 		<property name="displayName"><value>Short Name Format</value></property>
 		<property name="codeName"><value>short</value></property>
 		<property name="nameMappings">
@@ -1680,7 +1800,7 @@
 		</property>
 	</bean>
 	
-	<bean id="nameTemplateLong" class="org.openmrs.layout.name.NameTemplate">
+	<bean id="nameTemplateLong" class="org.openmrs.layout.web.name.NameTemplate">
 		<property name="displayName"><value>Short Name Format</value></property>
 		<property name="codeName"><value>long</value></property>
 		<property name="nameMappings">
@@ -1721,7 +1841,7 @@
 
 	<!-- SUMMARY SPEC -->
 	<bean id="patientSummarySpecification"
-		class="org.openmrs.summary.PatientSummarySpecification">
+		class="org.openmrs.summary.web.PatientSummarySpecification">
 		<property name="specification">
 			<list>
 				<props>

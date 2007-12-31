@@ -1,5 +1,6 @@
 package org.openmrs.web.dwr;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 
 public class DWRPersonService {
 
@@ -23,21 +25,35 @@ public class DWRPersonService {
 	 * @param gender
 	 * @return
 	 */
-	public List<?> getSimilarPeople(String name, String birthyear, String age, String gender) {
+	public List<?> getSimilarPeople(String name, String birthdate, String age, String gender) {
 		Vector<Object> personList = new Vector<Object>();
 
 		Integer userId = Context.getAuthenticatedUser().getUserId();
-		log.info(userId + "|" + name + "|" + birthyear + "|" + age + "|" + gender);
+		log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
 		
 		PersonService ps = Context.getPersonService();
 		List<Person> persons = new Vector<Person>();
 		
 		Integer d = null;
-		birthyear = birthyear.trim();
+		birthdate = birthdate.trim();
 		age = age.trim();
-		if (birthyear.length() > 3)
-			d = Integer.valueOf(birthyear);
+		if (birthdate.length() > 0) {
+			// extract the year from the given birthdate string
+			DateFormat format = OpenmrsUtil.getDateFormat();
+			Date dateObject = null;
+			try {
+				dateObject = format.parse(birthdate);
+			}
+			catch (Exception e) {}
+			
+			if (dateObject != null) {
+				Calendar c = Calendar.getInstance();
+				c.setTime(dateObject);
+				d = c.get(Calendar.YEAR);
+			}
+		}
 		else if (age.length() > 0) {
+			// calculate their birth year from the given age string
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
 			d = c.get(Calendar.YEAR);
@@ -65,10 +81,14 @@ public class DWRPersonService {
 	 * @return
 	 */
 	public List<?> findPeople(String searchPhrase, boolean includeVoided) {
+		return findPeopleByRoles(searchPhrase, includeVoided, null);
+	}
+	
+	public List<?> findPeopleByRoles(String searchPhrase, boolean includeVoided, String roles) {
 		Vector<Object> personList = new Vector<Object>();
 		PersonService ps = Context.getPersonService();
 		
-		for (Person p : ps.findPeople(searchPhrase, includeVoided)) {
+		for (Person p : ps.findPeople(searchPhrase, includeVoided, roles)) {
 			personList.add(new PersonListItem(p));
 		}
 		

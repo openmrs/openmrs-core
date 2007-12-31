@@ -345,12 +345,24 @@
 	<spring:bind path="patient.patientId">
 		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 	</spring:bind>
+	
 	<input type="submit" name="action" id="saveButton" value='<spring:message code="Patient.save"/>' />
 	
 	<c:if test="${patient.patientId != null}">
 	<openmrs:hasPrivilege privilege="Delete Patients">
-		 &nbsp; &nbsp; &nbsp;
-		<input type="submit" name="action" value="<spring:message code="Patient.delete"/>" onclick="return confirm('Are you sure you want to delete this ENTIRE PATIENT?')"/>
+		&nbsp; &nbsp; &nbsp;
+		<span style="position: relative">
+			<input type="button" id="deletePatientButton" value="<spring:message code="Patient.delete"/>" onClick="showDiv('deletePatientDiv'); hideDiv('deletePatientButton')"/>
+			<div id="deletePatientDiv" style="position: absolute; padding: 1em; bottom: 0px; left: 0px; z-index: 9; width: 350px; border: 1px black solid; background-color: #ffff88; display: none">
+				<spring:message code="Patient.delete.warningMessage"/>
+				<br/><br/>
+				<div align="center">
+					<input type="submit" name="action" value="<spring:message code="Patient.delete"/>" onclick="return confirm('<spring:message code="Patient.delete.finalWarning"/>')"/>
+					&nbsp; &nbsp; &nbsp;
+					<input type="button" value="<spring:message code="general.cancel" />" onClick="showDiv('deletePatientButton'); hideDiv('deletePatientDiv')"/>
+				</div>
+			</div>
+		</span>
 	</openmrs:hasPrivilege>
 </c:if>
 	

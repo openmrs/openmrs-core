@@ -124,7 +124,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 					map.put("displayType", "numeric");
 					
 					// Object[obsId, obsDatetime, valueNumeric] 
-					List<Object[]> numericAnswers = obsService.getNumericAnswersForConcept(concept, true, ObsService.PERSON);
+					List<Object[]> numericAnswers = obsService.getNumericAnswersForConcept(concept, true, ObsService.PERSON, false);
 					
 					if (numericAnswers.size() > 0) {
 						Double min = (Double)numericAnswers.get(0)[2];
@@ -268,12 +268,40 @@ public class ConceptStatsFormController extends SimpleFormController {
 					// create bar chart for boolean answers
 					map.put("displayType", "boolean");
 					
+					List<Obs> obs = obsService.getObservations(concept, null, ObsService.PERSON, false);
+					
+					DefaultPieDataset pieDataset = new DefaultPieDataset();
+					
+					// count the number of unique answers
+					Map<String, Integer> counts = new HashMap<String, Integer>();
+					for (Obs o : obs) {
+						Boolean answer = o.getValueAsBoolean();
+						if (answer == null)
+							answer = false;
+						String name = answer.toString();
+						Integer count = counts.get(name);
+						counts.put(name, count == null ? 1 : count + 1);
+					}
+					
+					// put the counts into the dataset
+					for (Map.Entry<String, Integer> entry : counts.entrySet())
+						pieDataset.setValue(entry.getKey(), entry.getValue());
+					
+					JFreeChart pieChart = ChartFactory.createPieChart(
+							concept.getName().getName(),
+							pieDataset,
+							true,
+							true,
+							false
+						);
+					map.put("pieChart", pieChart);
+					
 				}
 				else if (ConceptDatatype.CODED.equals(concept.getDatatype().getHl7Abbreviation())) {
 					// create pie graph for coded answers
 					map.put("displayType", "coded");
 					
-					List<Obs> obs = obsService.getObservations(concept, null, ObsService.PERSON);
+					List<Obs> obs = obsService.getObservations(concept, null, ObsService.PERSON, false);
 					
 					DefaultPieDataset pieDataset = new DefaultPieDataset();
 					
@@ -281,7 +309,11 @@ public class ConceptStatsFormController extends SimpleFormController {
 					Map<String, Integer> counts = new HashMap<String, Integer>();
 					for (Obs o : obs) {
 						Concept value = o.getValueCoded();
-						String name = value.getName().getName();
+						String name;
+						if (value == null)
+							name = "[value_coded is null]";
+						else
+							name = value.getName().getName();
 						Integer count = counts.get(name);
 						counts.put(name, count == null ? 1 : count + 1);
 					}

@@ -1,7 +1,6 @@
 package org.openmrs.web.controller.patient;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -77,19 +76,14 @@ public class PatientListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		
-		
-		//default empty Object
-		Set<Patient> patientList = new HashSet<Patient>();
-		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
-	    	patientList.addAll(ps.getPatientsByName(""));
+	    	return ps.getPatientsByName("");
 		}
     	
-        return patientList;
+		//default empty Object
+		return new HashSet<Patient>();
     }
     
 }

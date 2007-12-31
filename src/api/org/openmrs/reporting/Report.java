@@ -17,7 +17,7 @@ public class Report {
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
-
+	
 	public Report() { }
 	
 	/**

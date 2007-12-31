@@ -10,7 +10,6 @@ import ca.uhn.hl7v2.HL7Exception;
 /**
  * HL7-related utilities
 
- * @author Burke Mamlin
  * @version 1.0
  */
 public class HL7Util {

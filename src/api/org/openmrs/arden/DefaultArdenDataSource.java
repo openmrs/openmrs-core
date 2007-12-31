@@ -16,11 +16,11 @@ public class DefaultArdenDataSource implements ArdenDataSource {
 	 */
 	
 	private Set<Obs> getPatientObsForConcept(Patient patient, Concept concept) {
-		return Context.getObsService().getObservations(patient, concept);
+		return Context.getObsService().getObservations(patient, concept, false);
 	}
 	
 	private List<Obs> getLastPatientObsForConcept(Patient patient, Concept concept, int howMany) {
-		return Context.getObsService().getLastNObservations(howMany, patient, concept);
+		return Context.getObsService().getLastNObservations(howMany, patient, concept, false);
 		
 	}
 	

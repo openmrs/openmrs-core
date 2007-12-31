@@ -6,9 +6,26 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Order 
+ * Dates should be interpreted as follows:
+ *    If startDate is null then the order has been going on "since the beginning of time"
+ *    Otherwise the order starts on startDate
+ *    
+ *    If discontinued is non-null and true, then
+ *       the following fields should be ignored:
+ *          autoExpireDate
+ *       if discontinuedDate is null then the order was discontinued "the instant after it began"
+ *          otherwise it was given from its starting date until discontinuedDate
+ *    
+ *    Otherwise (discontinued is null or false)
+ *       if autoExpireDate is null, the order is set to go forever
+ *          otherwise the order goes until autoExpireDate
+ *       the following fields should be ignored:
+ *          discontinuedBy
+ *          discontinuedDate
+ *          discontinuedReason
  * 
- * @author Ben Wolfe
+ * It is an error to have discontinued be true and have discontinuedDate be after autoExpireDate.
+ *    However this is not checked for in the database or the application.
  * @version 1.0
  */
 public class Order implements java.io.Serializable {
@@ -342,22 +359,29 @@ public class Order implements java.io.Serializable {
 	 * @return boolean indicating whether the order was current on the input date
 	 */
 	public boolean isCurrent(Date checkDate) {
+		if (voided)
+			return false;
+
 		if (checkDate == null) {
 			checkDate = new Date();
 		}
-		if (startDate == null || checkDate.before(startDate)) {
+
+		if (startDate != null && checkDate.before(startDate)) {
 			return false;
 		}
-		if (discontinuedDate != null && discontinuedDate.before(checkDate)) {
-			return false;
+
+		if (discontinued != null && discontinued) {
+			if (discontinuedDate == null)
+				return checkDate.equals(startDate);
+			else
+				return checkDate.before(discontinuedDate);
+				
+		} else {
+			if (autoExpireDate == null)
+				return true;
+			else
+				return checkDate.before(autoExpireDate);
 		}
-		if (autoExpireDate != null && autoExpireDate.before(checkDate)) {
-			return false;
-		}
-		if (this.voided || this.discontinued) {
-			return false;
-		}
-		return true;
 	}
 	
 	public boolean isCurrent() {
@@ -365,18 +389,12 @@ public class Order implements java.io.Serializable {
 	}
 
 	public boolean isFuture(Date checkDate) {
-		log.debug("Check if this is in the future");
-		if ( checkDate == null ) {
+		if (voided)
+			return false;
+		if (checkDate == null)
 			checkDate = new Date();
-		}
-		
-		if ( startDate != null && checkDate.before(startDate) && !voided && !discontinued){
-			log.debug("Looks like this order IS in the future");
-			return true;
-		}
-		
-		log.debug("Looks like this order is not in the future");
-		return false;
+
+		return startDate != null && checkDate.before(startDate);
 	}
 
 	public boolean isFuture() {
@@ -385,26 +403,32 @@ public class Order implements java.io.Serializable {
 
 	
 	/**
-	 * Convenience method to determine if order is discontinued
+	 * Convenience method to determine if order is discontinued at a given time
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was discontinued on the input date
 	 */
 	public boolean isDiscontinued(Date checkDate) {
-		if (checkDate == null) {
+		if (voided)
+			return false;
+		if (checkDate == null)
 			checkDate = new Date();
-		}
-		if (startDate == null || checkDate.before(startDate)) {
+
+		if (discontinued == null || !discontinued)
 			return false;
+		
+		if (startDate == null || checkDate.before(startDate)) { 
+			return false; 
+		} 
+		if (discontinuedDate != null && discontinuedDate.after(checkDate)) { 
+			return false; 
 		}
-		if (discontinuedDate != null && discontinuedDate.after(checkDate)) {
-			return false;
-		}
-		if (discontinuedDate == null) {
-			return false;
-		}
-		if (this.voided || !this.discontinued) {
-			return false;
-		}
+		
+		// guess we can't assume this has been filled correctly?
+		/*
+		if (discontinuedDate == null) { 
+			return false; 
+		} 
+		*/
 		return true;
 	}
 	
@@ -419,4 +443,9 @@ public class Order implements java.io.Serializable {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
+	
+	public Integer getId() {
+		return this.orderId;
+	}
+
 }

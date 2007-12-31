@@ -4,7 +4,6 @@ package org.openmrs.api;
  * Represents often fatal errors that occur within the API
  * infrastructure.
  *  
- * @author Burke Mamlin
  * @version 1.0
  */
 public class APIException extends RuntimeException {

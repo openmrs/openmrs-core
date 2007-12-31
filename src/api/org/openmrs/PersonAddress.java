@@ -1,21 +1,42 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsUtil;
+
 /**
- * PersonAddress 
+ * This class is the representation of a person's address. This class is
+ * many-to-one to the Person class, so a Person/Patient/User can have zero 
+ * to n
  * 
- * @author Ben Wolfe
- * @version 2.0
  */
-public class PersonAddress implements java.io.Serializable, Cloneable {
+public class PersonAddress implements java.io.Serializable, Cloneable, Comparable<PersonAddress> {
+
+	private static Log log = LogFactory.getLog(PersonAddress.class);
 
 	public static final long serialVersionUID = 343333L;
 
 	// Fields
 
 	private Integer personAddressId;
-	
+
 	private Person person;
 	private Boolean preferred = false;
 
@@ -24,20 +45,23 @@ public class PersonAddress implements java.io.Serializable, Cloneable {
 	private String cityVillage;
 	private String neighborhoodCell;
 	private String countyDistrict;
+	private String townshipDivision;
+	private String region;
+	private String subregion;
 	private String stateProvince;
 	private String country;
 	private String postalCode;
-	
+
 	private String latitude;
 	private String longitude;
-	
+
 	private User creator;
 	private Date dateCreated;
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
-	
+
 	// Constructors
 
 	/** default constructor */
@@ -49,53 +73,109 @@ public class PersonAddress implements java.io.Serializable, Cloneable {
 		this.personAddressId = personAddressId;
 	}
 
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
-		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:" +
-			getCityVillage() + ", sp:" + getStateProvince() + ", c:" +
-			getCountry() + ", cd:" + getCountyDistrict() + ", nc:" +
-			getNeighborhoodCell() + ", pc:" + getPostalCode() + ", lat:" +
-			getLatitude() + ", long:" + getLongitude();   
+		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:"
+		        + getCityVillage() + ", sp:" + getStateProvince() + ", c:"
+		        + getCountry() + ", cd:" + getCountyDistrict() + ", nc:"
+		        + getNeighborhoodCell() + ", pc:" + getPostalCode() + ", lat:"
+		        + getLatitude() + ", long:" + getLongitude();
 	}
-	
-	/** 
-	 * Compares two objects for similarity
+
+	/**
+	 * Compares this address to the given object/address for similarity.  Uses 
+	 * the very basic comparison of just the PersonAddress.personAddressId
 	 * 
-	 * @param obj
+	 * @param obj Object (Usually PersonAddress) with which to compare
 	 * @return boolean true/false whether or not they are the same objects
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof PersonAddress) {
-			PersonAddress p = (PersonAddress)obj;
-			if (this.getPersonAddressId() != null && p.getPersonAddressId() != null)
+			PersonAddress p = (PersonAddress) obj;
+			if (this.getPersonAddressId() != null
+			        && p.getPersonAddressId() != null)
 				return (this.getPersonAddressId().equals(p.getPersonAddressId()));
-			/*return (this.getAddress1().matches(p.getAddress1()) &&
-					this.getAddress2().matches(p.getAddress2()) &&
-					this.getCityVillage().matches(p.getCityVillage()) &&
-					this.getStateProvince().equals(p.getStateProvince()) &&
-					this.getCountry().matches(p.getCountry()));*/
 		}
 		return false;
 	}
-	
+
+	/**
+	 * Compares this PersonAddress object to the given otherAddress. This method
+	 * differs from {@link #equals(Object)} in that this method compares the
+	 * inner fields of each address for equality.
+	 * 
+	 * Note: Null/empty fields on <code>otherAddress</code> /will not/ cause a
+	 * false value to be returned
+	 * 
+	 * @param otherAddress PersonAddress with which to compare
+	 * @return boolean true/false whether or not they are the same addresses
+	 */
+	@SuppressWarnings("unchecked")
+    public boolean equalsContent(PersonAddress otherAddress) {
+		boolean returnValue = true;
+
+		// these are the methods to compare. All are expected to be Strings
+		String[] methods = { "getAddress1", "getAddress2", "getCityVillage",
+		        "getNeighborhoodCell", "getCountyDistrict",
+		        "getTownshipDivision", "getRegion", "getSubregion",
+		        "getStateProvince", "getCountry", "getPostalCode",
+		        "getLatitude", "getLongitude" };
+
+		Class addressClass = this.getClass();
+
+		// loop over all of the selected methods and compare this and other
+		for (String methodName : methods) {
+			try {
+				Method method = addressClass.getMethod(methodName,
+				                                       new Class[] {});
+
+				String thisValue = (String) method.invoke(this);
+				String otherValue = (String) method.invoke(otherAddress);
+
+				if (otherValue != null && otherValue.length() > 0)
+					returnValue &= otherValue.equals(thisValue);
+
+			} catch (NoSuchMethodException e) {
+				log.warn("No such method for comparison " + methodName, e);
+			} catch (IllegalAccessException e) {
+				log.error("Error while comparing addresses", e);
+			} catch (InvocationTargetException e) {
+				log.error("Error while comparing addresses", e);
+			}
+
+		}
+
+		return returnValue;
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
-		if (this.getPersonAddressId() == null) return super.hashCode();
+		if (this.getPersonAddressId() == null)
+			return super.hashCode();
 		return this.getPersonAddressId().hashCode();
 	}
-	
+
 	/**
-	 * bitwise copy of the personAddress object.  
-	 * NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT.  The PersonAddress.person object in
-	 * this object AND the cloned object will point at the same person
+	 * bitwise copy of the personAddress object. NOTICE: THIS WILL NOT COPY THE
+	 * PATIENT OBJECT. The PersonAddress.person object in this object AND the
+	 * cloned object will point at the same person
+	 * 
 	 * @return New PersonAddress object
 	 */
 	public Object clone() {
 		try {
-	    	return super.clone(); 
+			return super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new InternalError("PersonAddress should be cloneable");
 		}
 	}
-	
+
 	/**
 	 * @return Returns the address1.
 	 */
@@ -151,7 +231,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable {
 	public void setCountry(String country) {
 		this.country = country;
 	}
-	
+
 	/**
 	 * @return Returns the preferred.
 	 */
@@ -160,7 +240,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable {
 			return new Boolean(false);
 		return preferred;
 	}
-	
+
 	public Boolean getPreferred() {
 		return isPreferred();
 	}
@@ -304,7 +384,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable {
 	public Boolean isVoided() {
 		return voided;
 	}
-	
+
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -373,14 +453,83 @@ public class PersonAddress implements java.io.Serializable, Cloneable {
 	}
 
 	/**
-	 * Convenience method to test whether any of the fields in this address are set
-	 * @return whether any of the address fields (address1, address2, cityVillage, stateProvince, country, countyDistrict, neighborhoodCell, postalCode, latitute, logitude) are non-null
+	 * Convenience method to test whether any of the fields in this address are
+	 * set
+	 * 
+	 * @return whether any of the address fields (address1, address2,
+	 *         cityVillage, stateProvince, country, countyDistrict,
+	 *         neighborhoodCell, postalCode, latitude, longitude) are non-null
 	 */
 	public boolean isBlank() {
-		return getAddress1() == null && getAddress2() == null &&
-			getCityVillage() == null && getStateProvince() == null &&
-			getCountry() == null && getCountyDistrict() == null && 
-			getNeighborhoodCell() == null && getPostalCode() == null && 
-			getLatitude() == null && getLongitude() == null ;
+		return getAddress1() == null && getAddress2() == null
+		        && getCityVillage() == null && getStateProvince() == null
+		        && getCountry() == null && getCountyDistrict() == null
+		        && getNeighborhoodCell() == null && getPostalCode() == null
+		        && getLatitude() == null && getLongitude() == null;
 	}
+
+	/**
+	 * @return the region
+	 */
+	public String getRegion() {
+		return region;
+	}
+
+	/**
+	 * @param region the region to set
+	 */
+	public void setRegion(String region) {
+		this.region = region;
+	}
+
+	/**
+	 * @return the subregion
+	 */
+	public String getSubregion() {
+		return subregion;
+	}
+
+	/**
+	 * @param subregion the subregion to set
+	 */
+	public void setSubregion(String subregion) {
+		this.subregion = subregion;
+	}
+
+	/**
+	 * @return the townshipDivision
+	 */
+	public String getTownshipDivision() {
+		return townshipDivision;
+	}
+
+	/**
+	 * @param townshipDivision the townshipDivision to set
+	 */
+	public void setTownshipDivision(String townshipDivision) {
+		this.townshipDivision = townshipDivision;
+	}
+
+	/**
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(PersonAddress other) {
+    	int retValue = 0;
+	    if (other != null) {
+	    	retValue = isVoided().compareTo(other.isVoided());
+	    	if (retValue == 0)
+	    		retValue = other.isPreferred().compareTo(isPreferred());
+	    	if (retValue == 0 && getDateCreated() != null)
+	    		retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
+	    	if (retValue == 0)
+	    		retValue = OpenmrsUtil.compareWithNullAsGreatest(getPersonAddressId(), other.getPersonAddressId());
+	    	
+	    	// if we've gotten this far, just check all address values.  If they are
+	    	// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1 
+	    	// and return that (they are not equal).
+	    	if (retValue == 0 && !equalsContent(other))
+	    		retValue = 1;
+	    }
+	    return retValue;
+    }
 }

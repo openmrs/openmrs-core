@@ -1,7 +1,6 @@
 package org.openmrs.web.controller.patient;
 
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,13 +41,12 @@ import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.user.UserFormController;
-import org.openmrs.web.propertyeditor.ConceptEditor;
-import org.openmrs.web.propertyeditor.LocationEditor;
-import org.openmrs.web.propertyeditor.TribeEditor;
+import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.TribeEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -66,8 +64,6 @@ public class NewPatientFormController extends SimpleFormController {
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
     
-    SimpleDateFormat dateFormat;
-    
     // identifiers submitted with the form.  Stored here so that they can
     // be redisplayed for the user after an error
     Set<PatientIdentifier> newIdentifiers = new HashSet<PatientIdentifier>();
@@ -83,13 +79,11 @@ public class NewPatientFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
-		
         NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(dateFormat, true, 10));
+        		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
         binder.registerCustomEditor(Tribe.class, new TribeEditor());
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
@@ -160,9 +154,11 @@ public class NewPatientFormController extends SimpleFormController {
 							pi.setPreferred(pref.equals(identifiers[i]+types[i]));
 							newIdentifiers.add(pi);
 							
-							log.debug("Creating patient identifier with identifier: " + identifiers[i]);
-							log.debug("and type: " + types[i]);
-							log.debug("and location: " + locs[i]);
+							if (log.isDebugEnabled()) {
+								log.debug("Creating patient identifier with identifier: " + identifiers[i]);
+								log.debug("and type: " + types[i]);
+								log.debug("and location: " + locs[i]);
+							}
 						
 							try {
 								if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifiers[i])) {
@@ -258,7 +254,10 @@ public class NewPatientFormController extends SimpleFormController {
 				
 			boolean duplicate = false;
 			PersonName newName = shortPatient.getName();
-			log.error("newName: " + newName.toString());
+			
+			if (log.isDebugEnabled())
+				log.debug("Checking new name: " + newName.toString());
+			
 			for (PersonName pn : patient.getNames()) {
 				if (((pn.getGivenName() == null && newName.getGivenName() == null) || OpenmrsUtil.nullSafeEquals(pn.getGivenName(), newName.getGivenName())) &&
 					((pn.getMiddleName() == null && newName.getMiddleName() == null) || OpenmrsUtil.nullSafeEquals(pn.getMiddleName(), newName.getMiddleName())) &&
@@ -278,14 +277,19 @@ public class NewPatientFormController extends SimpleFormController {
 				patient.addName(newName);
 			}
 			
-			log.debug("address: " + shortPatient.getAddress());
+			if (log.isDebugEnabled())
+				log.debug("The address to add/check: " + shortPatient.getAddress());
+			
 			if (shortPatient.getAddress() != null && !shortPatient.getAddress().isBlank()) {
 				duplicate = false;
 				for (PersonAddress pa : patient.getAddresses()) {
 					if (pa.toString().equals(shortPatient.getAddress().toString()))
 						duplicate = true;
 				}
-				log.debug("duplicate:  " + duplicate);
+				
+				if (log.isDebugEnabled())
+					log.debug("The duplicate address:  " + duplicate);
+				
 				if (!duplicate) {
 					PersonAddress newAddress = shortPatient.getAddress();
 					newAddress.setPersonAddressId(null);
@@ -293,7 +297,8 @@ public class NewPatientFormController extends SimpleFormController {
 					patient.addAddress(newAddress);
 				}
 			}
-			log.debug("patient addresses: " + patient.getAddresses());
+			if (log.isDebugEnabled())
+				log.debug("patient addresses: " + patient.getAddresses());
 			
 			// set or unset the preferred bit for the old identifiers if needed
 			if (patient.getIdentifiers() == null)
@@ -442,7 +447,7 @@ public class NewPatientFormController extends SimpleFormController {
 					Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
 	
 					if ( causeOfDeath != null ) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath);
+						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath, false);
 						if ( obssDeath != null ) {
 							if ( obssDeath.size() > 1 ) {
 								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
@@ -518,15 +523,17 @@ public class NewPatientFormController extends SimpleFormController {
 			}
 			
 			if ( isError ) {
-				log.error("REDIRECTING TO " + this.getFormView());
+				log.error("Had an error during processing. Redirecting to " + this.getFormView());
 				
 				return this.showForm(request, response, errors);
 				//return new ModelAndView(new RedirectView(getFormView()));
-			} else {
+			}
+			else {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
 				return new ModelAndView(new RedirectView(view + "?patientId=" + newPatient.getPatientId()));
 			}
-		} else {
+		}
+		else {
 			return new ModelAndView(new RedirectView(getFormView()));
 		}
 	}
@@ -574,11 +581,11 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		ShortPatientModel patient = new ShortPatientModel(p);
 		
-		String name = request.getParameter("name");
+		String name = request.getParameter("addName");
 		if (p == null && name != null) {
-			String gender = request.getParameter("gndr");
-			String date = request.getParameter("birthyear");
-			String age = request.getParameter("age");
+			String gender = request.getParameter("addGender");
+			String date = request.getParameter("addBirthdate");
+			String age = request.getParameter("addAge");
 			
 			p = new Patient();
 			UserFormController.getMiniPerson(p, name, gender, date, age);
@@ -623,7 +630,7 @@ public class NewPatientFormController extends SimpleFormController {
 		    		String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 					Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
 					if ( conceptCause != null ) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause);
+						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause, false);
 						if ( obssDeath.size() == 1 ) {
 							Obs obsDeath = obssDeath.iterator().next();
 							causeOfDeathOther = obsDeath.getValueText();
@@ -643,8 +650,6 @@ public class NewPatientFormController extends SimpleFormController {
 	    		}
 	    	}
 		}
-		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
-		
 		
 		/* The identifiers are added in the onSubmit method.  This is duplicative - bwolfe
 			// give them both the just-entered identifiers and the patient's current identifiers

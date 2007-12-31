@@ -202,7 +202,7 @@ dojo.widget.defineWidget(
 		
 		getProblemImage: function() {
 			var img = document.createElement("img");
-			img.src = "/@WEBAPP.NAME@/images/problem.gif";
+			img.src = openmrsContextPath + "/images/problem.gif";
 			return img;
 		},
 		

@@ -149,7 +149,6 @@ public class MergePatientsFormController extends SimpleFormController {
 		map.put("patient1Encounters", patient1Encounters);
 		map.put("patient2Encounters", patient2Encounters);
 		map.put("patient2", p2);
-		map.put("datePattern", Context.getDateFormat().toLocalizedPattern().toLowerCase());
 		
 		return map;
 	}   

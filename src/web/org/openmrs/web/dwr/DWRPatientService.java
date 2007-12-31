@@ -2,6 +2,7 @@ package org.openmrs.web.dwr;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -27,15 +28,26 @@ import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
+/**
+ * DWR patient methods
+ */
 public class DWRPatientService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Vector findPatients(String searchValue, boolean includeVoided) {
+	/**
+	 * Search on the <code>searchValue</code>.  If a number is in the search
+	 * string, do an identifier search.  Else, do a name search
+	 * 
+	 * @param searchValue string to be looked for 
+	 * @param includeVoided true/false whether or not to included voided patients
+	 * @return Collection<Object> of PatientListItem or String
+	 */
+	public Collection findPatients(String searchValue, boolean includeVoided) {
 		
-		Vector<Object> patientList = new Vector<Object>();
+		Collection<Object> patientList = new Vector<Object>();
 
 		Integer userId = -1;
 		if (Context.isAuthenticated())
@@ -43,7 +55,7 @@ public class DWRPatientService {
 		log.info(userId + "|" + searchValue);
 		
 		PatientService ps = Context.getPatientService();
-		List<Patient> patients;
+		Collection<Patient> patients;
 		
 		patients = ps.findPatients(searchValue, includeVoided);
 		patientList = new Vector<Object>(patients.size());
@@ -62,7 +74,7 @@ public class DWRPatientService {
 			}
 			
 			newSearch = newSearch.trim();
-			List<Patient> newPatients = ps.findPatients(newSearch, includeVoided);
+			Collection<Patient> newPatients = ps.findPatients(newSearch, includeVoided);
 			newPatients.removeAll(patients);
 			if (newPatients.size() > 0) {
 				patientList.add("Minimal patients returned. Results for <b>" + newSearch + "</b>");
@@ -236,8 +248,7 @@ public class DWRPatientService {
 		
 		Date exitDate = null;
 		if ( dateOfExit != null ) {
-			String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
-			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
 			try {
 				exitDate = sdf.parse(dateOfExit);
 			} catch (ParseException e) {

@@ -34,8 +34,8 @@
 	<table border="0" cellspacing="2" cellpadding="2">
 		<tr>
 			<td rowspan="4" align="left" valign="top">
-				<label for="site"><spring:message code="MRNGenerator.select.site"/></label><br>
-				<select name="site" size="17">
+				<label for="site"><spring:message code="MRNGenerator.select.site"/></label><br/>
+				<select name="site" size="24">
 					<optgroup label="Group A sites">
 						<option value="BF">BF - Burnt Forest</option>
 						<option value="MO">MO - Mosoriot</option>
@@ -45,6 +45,7 @@
 					</optgroup>
 					<optgroup label="Group B sites">
 						<option value="AM">AM - Amukura</option>
+						<option value="AN">AN - Anderson</option>
 						<option value="BS">BS - Busia</option>
 						<option value="CH">CH - Chulaimbo</option>
 						<option value="EG">EG - Mt. Elgon Clinic</option>
@@ -57,8 +58,11 @@
 						<option value="TE">TE - Iten</option>
 						<option value="TS">TS - Teso</option>
 						<option value="WB">WB - Webuye</option>
+						<option value="ZW">ZW - Ziwa</option>
 					</optgroup>
 					<optgroup label="Other sites">
+						<option value="HC">HC - Highway Clinic</option>
+						<option value="PM">PM - PMTCT</option>
 						<option value="VC">VC - OVC</option>
 					</optgroup>
 				</select>

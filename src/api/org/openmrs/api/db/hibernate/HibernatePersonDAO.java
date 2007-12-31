@@ -12,7 +12,10 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
@@ -200,7 +203,11 @@ public class HibernatePersonDAO implements PersonDAO {
 	public PersonAttributeType getPersonAttributeType(Integer typeId) {
 		return (PersonAttributeType) sessionFactory.getCurrentSession().get(PersonAttributeType.class, typeId);
 	}
-	
+
+	public PersonAttribute getPersonAttribute(Integer id) {
+		return (PersonAttribute)sessionFactory.getCurrentSession().get(PersonAttribute.class, id);
+	}
+
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getPersonAttributeType(java.lang.String)
 	 */
@@ -322,7 +329,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonDAO#deletePerson(org.openmrs.Person)
 	 */
 	public void deletePerson(Person person) throws DAOException {
-		sessionFactory.getCurrentSession().delete(person);
+		HibernatePersonDAO.deletePersonAndAttributes(sessionFactory, person);
 	}
 
 	/**
@@ -380,5 +387,46 @@ public class HibernatePersonDAO implements PersonDAO {
 		relationship.setVoidReason(null);
 		updateRelationship(relationship);
 	}
-
+	
+	/**
+	 * Used by deletePerson, deletePatient, and deleteUser to remove all 
+	 * properties of a person before deleting them.
+	 * 
+	 * @param sessionFactory the session factory from which to pull the current session
+	 * @param person the person to delete
+	 */
+	public static void deletePersonAndAttributes(SessionFactory sessionFactory, Person person) {
+		// delete properties and fields so hibernate can't complain
+		for (PersonAddress address : person.getAddresses()) {
+			if (address.getDateCreated() == null) {
+				sessionFactory.getCurrentSession().evict(address);
+				address = null;
+			}
+			else
+				sessionFactory.getCurrentSession().delete(address);
+		}
+		sessionFactory.getCurrentSession().evict(person.getAddresses());
+		person.setAddresses(null);
+		
+		for (PersonAttribute attribute : person.getAttributes()) {
+			if (attribute.getDateCreated() == null)
+				sessionFactory.getCurrentSession().evict(attribute);
+			else
+				sessionFactory.getCurrentSession().delete(attribute);
+		}
+		sessionFactory.getCurrentSession().evict(person.getAttributes());
+		person.setAttributes(null);
+		
+		for (PersonName name : person.getNames()) {
+			if (name.getDateCreated() == null)
+				sessionFactory.getCurrentSession().evict(name);
+			else
+				sessionFactory.getCurrentSession().delete(name);
+		}
+		sessionFactory.getCurrentSession().evict(person.getNames());
+		person.setNames(null);
+		
+		// finally, just tell hibernate to delete our object
+		sessionFactory.getCurrentSession().delete(person);
+	}
 }

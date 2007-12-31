@@ -163,7 +163,7 @@ dojo.widget.defineWidget(
 		
 		getProblemImage: function() {
 			var img = document.createElement("img");
-			img.src = "<openmrs:contextPath />/images/problem.gif";
+			img.src = openmrsContextPath + "/images/problem.gif";
 			img.title="<spring:message javaScriptEscape="true" code="error.checkdigits.verbose"/>";
 			return img;
 		},

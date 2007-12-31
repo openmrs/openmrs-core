@@ -54,13 +54,17 @@ public class DWRObsService {
 	
 	
 	public void createObs(Integer personId, Integer encounterId, Integer conceptId, String valueText, String obsDateStr) { 
+		createNewObs(personId, encounterId, null, conceptId, valueText, obsDateStr);
+	}
+	
+	public void createNewObs(Integer personId, Integer encounterId, Integer locationId, Integer conceptId, String valueText, String obsDateStr) { 
 		
 		log.info("Create new observation ");
 	
 		Date obsDate = null;
 		if ( obsDateStr != null ) {
 			// TODO Standardize date input 
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+			SimpleDateFormat sdf = Context.getDateFormat();
 			try {
 				obsDate = sdf.parse(obsDateStr);
 			} catch (ParseException e) {
@@ -81,10 +85,17 @@ public class DWRObsService {
 			obs.setEncounter(encounter);
 			obs.setLocation(encounter.getLocation());
 		} else {
-			Location unknown = Context.getEncounterService().getLocationByName("Unknown Location");
-			if (unknown == null)
-				unknown = Context.getEncounterService().getLocationByName("Unknown");
-			obs.setLocation(unknown);
+			Location location = null;
+			if (locationId != null)
+				Context.getEncounterService().getLocation(locationId);
+			if ( location == null ) {
+				location = Context.getEncounterService().getLocationByName("Unknown Location");
+				if (location == null)
+					location = Context.getEncounterService().getLocationByName("Unknown");
+				if (location == null)
+					location = Context.getEncounterService().getLocation(1);
+			}
+			obs.setLocation(location);
 		}
 		obs.setCreator(Context.getAuthenticatedUser());
 		obs.setDateCreated(new Date());
@@ -102,9 +113,7 @@ public class DWRObsService {
 		Context.getObsService().createObs(obs);
 
 	}
-	
-	
-	
+		
 	public Vector findObs(String phrase, boolean includeVoided) {
 		
 		// List to return
@@ -180,13 +189,13 @@ public class DWRObsService {
 		
 		if ( p != null && c != null ) {
 			log.debug("Getting obss with patient and concept");
-			obss = Context.getObsService().getObservations(p, c);
+			obss = Context.getObsService().getObservations(p, c, true);
 		} else if ( e != null ) {
 			log.debug("Getting obss with encounter");
 			obss = Context.getObsService().getObservations(e);
 		} else if ( p != null ) {
 			log.debug("Getting obss with just patient");
-			obss = Context.getObsService().getObservations(p);
+			obss = Context.getObsService().getObservations(p, true);
 		}
 
 		if ( obss != null ) {

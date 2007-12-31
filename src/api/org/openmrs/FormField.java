@@ -1,15 +1,30 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs;
 
 import java.util.Date;
 
 /**
- * FormField
+ * The FormField object relates/orders the <code>fields</code> on a <code>form</code>
  * 
- * @author Ben Wolfe
- * @author Burke Mamlin
- * @version 1.0
+ * A form can have many 0 to n fields associated with it in a hierarchical manor.  This
+ * FormField object governs what/how that takes place
+ * 
+ * @see org.openmrs.Form
+ * @see org.openmrs.Field
  */
-public class FormField implements java.io.Serializable, Comparable {
+public class FormField implements java.io.Serializable, Comparable<FormField> {
 
 	public static final long serialVersionUID = 3456L;
 
@@ -47,6 +62,8 @@ public class FormField implements java.io.Serializable, Comparable {
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof FormField) {
@@ -62,6 +79,9 @@ public class FormField implements java.io.Serializable, Comparable {
 		return false;
 	}
 
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getFormFieldId() == null)
 			return super.hashCode();
@@ -77,12 +97,10 @@ public class FormField implements java.io.Serializable, Comparable {
 	 * 	3) fieldPart
 	 * 	4) fieldName
 	 * 
-	 * @param obj
-	 * @return
+	 * @param f FormField to compare this object to
+	 * @return -1, 0, or +1 depending on the difference between the FormFields
 	 */
-	public int compareTo(Object obj) {
-		FormField f = (FormField) obj;
-		
+	public int compareTo(FormField f) {
 		if (getSortWeight() != null || f.getSortWeight() != null) {
 			if (getSortWeight() == null)
 				return -1;
@@ -359,6 +377,9 @@ public class FormField implements java.io.Serializable, Comparable {
 		this.dateChanged = dateChanged;
 	}
 	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		if (formFieldId == null)
 			return "null";

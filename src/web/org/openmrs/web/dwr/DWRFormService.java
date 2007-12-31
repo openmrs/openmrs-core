@@ -29,6 +29,16 @@ public class DWRFormService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	public List<FormListItem> findForms(String text, boolean includeUnpublished) {
+		List<FormListItem> forms = new Vector<FormListItem>();
+		
+		for(Form form : Context.getFormService().findForms(text, includeUnpublished, false)) {
+			forms.add(new FormListItem(form));
+		}
+		
+		return forms;
+	}
+	
 	public List<FormListItem> getForms(boolean includeUnpublished) {
 		List<FormListItem> forms = new Vector<FormListItem>();
 		
@@ -239,6 +249,9 @@ public class DWRFormService {
 			conceptName = concept.getName(locale);
 			isSet = concept.isSet();
 		}
+		
+		if (log.isDebugEnabled())
+			log.debug("ff.getFormFieldId: " + ff.getFormFieldId());
 		
     	return "addNode(tree, {formFieldId: " + ff.getFormFieldId() + ", " + 
     					"parent: " + parent + ", " + 

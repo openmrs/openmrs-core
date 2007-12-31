@@ -16,8 +16,6 @@ import org.w3c.dom.Document;
 
 /**
  * Generic module class that openmrs manipulates
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public final class Module {
@@ -107,7 +105,7 @@ public final class Module {
 			if (classLoader == null)
 				throw new ModuleException("The classloader is null", getModuleId());
 			
-			Class c = classLoader.loadClass(getActivatorName());
+			Class<?> c = classLoader.loadClass(getActivatorName());
 			setActivator((Activator)c.newInstance());
 		}
 		catch (ClassNotFoundException e) {
@@ -344,12 +342,15 @@ public final class Module {
 				String className = entry.getValue();
 				log.debug("expanding extension names: " + point + " : " + className);
 				try {
-					Class cls = ModuleFactory.getModuleClassLoader(this).loadClass(className);
+					Class<?> cls = ModuleFactory.getModuleClassLoader(this).loadClass(className);
 					Extension ext = (Extension)cls.newInstance();
 					ext.setPointId(point);
 					ext.setModuleId(this.getModuleId());
 					extensions.add(ext);
 					log.debug("Added extension: " + ext.getExtensionId() + " : " + ext.getClass());
+				}
+				catch (NoClassDefFoundError e) {
+					log.warn("Unable to find class definition for extension: " + point, e);
 				}
 				catch (ClassNotFoundException e) {
 					log.warn("Unable to load class for extension: " + point, e);

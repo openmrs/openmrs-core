@@ -436,12 +436,12 @@ function editClicked(node) {
 		}
 		
 		// formField info
-		tree.formFieldIdInput.value = data["formFieldId"] || "";
-		tree.fieldNumberInput.value = data["fieldNumber"] || "";
-		tree.fieldPartInput.value = data["fieldPart"] || "";
-		tree.pageNumberInput.value = data["pageNumber"] || "";
-		tree.minOccursInput.value = data["minOccurs"] || "";
-		tree.maxOccursInput.value = data["maxOccurs"] || "";
+		tree.formFieldIdInput.value = valueExists(data["formFieldId"], "");
+		tree.fieldNumberInput.value = valueExists(data["fieldNumber"], "");
+		tree.fieldPartInput.value = valueExists(data["fieldPart"], "");
+		tree.pageNumberInput.value = valueExists(data["pageNumber"], "");
+		tree.minOccursInput.value = valueExists(data["minOccurs"], "");
+		tree.maxOccursInput.value = valueExists(data["maxOccurs"], "");
 		tree.isRequiredCheckbox.checked = data["isRequired"];
 		if (data["numForms"] && parseInt(data["numForms"]) > 1)
 			setFieldDisabled(true);
@@ -952,4 +952,16 @@ function copyObject(src)
 	dest[i] = src[i];
 	
 	return dest;
+}
+
+/*
+	Tests whether the given value is not null and 
+	the integer has a value
+*/
+function valueExists(val, defaultValue)
+{
+	if (val != null && val.toString().length > 0)
+		return val;
+		
+	return defaultValue;
 }

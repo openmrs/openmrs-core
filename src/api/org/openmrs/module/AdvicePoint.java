@@ -14,7 +14,7 @@ public class AdvicePoint {
 
 	public AdvicePoint() { }
 	
-	public AdvicePoint(String point, Class clazz) {
+	public AdvicePoint(String point, Class<?> clazz) {
 		this.point = point;
 		try {
 			this.classInstance = clazz.newInstance();
@@ -43,7 +43,7 @@ public class AdvicePoint {
 		
 		Object o = null;
 		try {
-			Class c = ModuleFactory.getModuleClassLoader(getModule()).loadClass(getClassName());
+			Class<?> c = ModuleFactory.getModuleClassLoader(getModule()).loadClass(getClassName());
 			o = c.newInstance();
 		}
 		catch (Exception e) {

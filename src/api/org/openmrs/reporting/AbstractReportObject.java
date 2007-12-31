@@ -4,21 +4,14 @@ import java.util.Date;
 
 import org.openmrs.User;
 
-public abstract class AbstractReportObject {
+// TODO: this should be called BaseReportObject, because it doesn't need to be abstract. I expect Justin to refactor this class out of existence before I get to this though.
+public class AbstractReportObject implements ReportObject {
 
 	private Integer reportObjectId; // database primary key
 	private String name;
 	private String description;
 	private String type;
 	private String subType;
-	private User creator;
-	private Date dateCreated;
-	private User changedBy;
-	private Date dateChanged;
-	private Boolean voided = false;
-	private User voidedBy;
-	private Date dateVoided;
-	private String voidReason;
 
 	public AbstractReportObject()
 	{
@@ -34,14 +27,6 @@ public abstract class AbstractReportObject {
 		this.description = description;
 		this.type = type;
 		this.subType = subType;
-		this.creator = creator;
-		this.dateCreated = dateCreated;
-		this.changedBy = changedBy;
-		this.dateChanged = dateChanged;
-		this.voided = voided;
-		this.voidedBy = voidedBy;
-		this.dateVoided = dateVoided;
-		this.voidReason = voidReason;
 	}
 		
 	/**
@@ -102,104 +87,6 @@ public abstract class AbstractReportObject {
 	public void setType(String type) {
 		this.type = type;
 	}	
-
-	/**
-	 * @return Returns the changedBy.
-	 */
-	public User getChangedBy() {
-		return changedBy;
-	}
-
-	/**
-	 * @param changedBy The changedBy to set.
-	 */
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreator() {
-		return creator;
-	}
-	/**
-	 * @param creator The creator to set.
-	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	/**
-	 * @return Returns the dateChanged.
-	 */
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	/**
-	 * @param dateChanged The dateChanged to set.
-	 */
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	/**
-	 * @return Returns the dateVoided.
-	 */
-	public Date getDateVoided() {
-		return dateVoided;
-	}
-	/**
-	 * @param dateVoided The dateVoided to set.
-	 */
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-	/**
-	 * @return Returns the voided.
-	 */
-	public Boolean getVoided() {
-		return voided;
-	}
-	/**
-	 * @param voided The voided to set.
-	 */
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
-	/**
-	 * @return Returns the voidedBy.
-	 */
-	public User getVoidedBy() {
-		return voidedBy;
-	}
-	/**
-	 * @param voidedBy The voidedBy to set.
-	 */
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
-	}
-	/**
-	 * @return Returns the voidReason.
-	 */
-	public String getVoidReason() {
-		return voidReason;
-	}
-	/**
-	 * @param voidReason The voidReason to set.
-	 */
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
-	}
 	
 	/**
 	 * Helper function that does a null-safe test for equality between two objects. Does not check for type-safety. 

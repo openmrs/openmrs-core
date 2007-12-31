@@ -1,6 +1,5 @@
 package org.openmrs.web.controller.report.export;
 
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -15,18 +14,20 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.layout.web.address.AddressSupport;
+import org.openmrs.layout.web.address.AddressTemplate;
+import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.reporting.export.ExportColumn;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.propertyeditor.LocationEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -35,9 +36,6 @@ public class DataExportFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
-    
-    SimpleDateFormat dateFormat;
-    
     
 	/**
 	 * 
@@ -49,8 +47,6 @@ public class DataExportFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
         
-		
-		dateFormat = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
         binder.registerCustomEditor(org.openmrs.Location.class,
@@ -132,8 +128,32 @@ public class DataExportFormController extends SimpleFormController {
 								String columnValue = request.getParameter("calculatedValue_" + columnId);
 								report.addCalculatedColumn(columnName, columnValue);
 							}
-							else
-								log.warn("Cannot determine column type for column: " + columnId);
+							else {
+								columnName = request.getParameter("cohortName_" + columnId);
+								if (columnName != null) {
+									// cohort column
+									String cohortIdValue = request.getParameter("cohortIdValue_" + columnId);
+									String filterIdValue = request.getParameter("filterIdValue_" + columnId);
+									String searchIdValue = request.getParameter("patientSearchIdValue_" + columnId);
+									String valueIfTrue = request.getParameter("cohortIfTrue_" + columnId);
+									String valueIfFalse = request.getParameter("cohortIfFalse_" + columnId);
+									Integer cohortId = null;
+									Integer filterId = null;
+									Integer searchId = null;
+									try {
+										cohortId = Integer.valueOf(cohortIdValue);
+									} catch (Exception ex) { }
+									try {
+										filterId = Integer.valueOf(filterIdValue);
+									} catch (Exception ex) { }
+									try {
+										searchId = Integer.valueOf(searchIdValue);
+									} catch (Exception ex) { }
+									if (cohortId != null || filterId != null || searchId != null)
+										report.addCohortColumn(columnName, cohortId, filterId, searchId, valueIfTrue, valueIfFalse);
+								} else
+									log.warn("Cannot determine column type for column: " + columnId);
+							}
 						}
 					}
 				}
@@ -188,11 +208,13 @@ public class DataExportFormController extends SimpleFormController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";
 		
+		
 		if (Context.isAuthenticated()) {
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			AddressSupport support = AddressSupport.getInstance();
+			AddressTemplate template = support.getDefaultLayoutTemplate();
+			map.put("addressTemplate", template);
 		}
-		map.put("datePattern", dateFormat.toLocalizedPattern().toLowerCase());
-
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
 		return map;

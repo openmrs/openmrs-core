@@ -11,7 +11,6 @@ import org.openmrs.hl7.HL7Source;
 /**
  * Database API for HL7-related tables
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public interface HL7DAO {
@@ -21,6 +20,8 @@ public interface HL7DAO {
 	public void createHL7Source(HL7Source hl7Source) throws DAOException;
 	
 	public HL7Source getHL7Source(Integer hl7SourceId) throws DAOException;
+	
+	public HL7Source getHL7Source(String name) throws DAOException;
 
 	public Collection<HL7Source> getHL7Sources() throws DAOException;
 

@@ -5,8 +5,6 @@ import java.util.Locale;
 
 /**
  * Drug 
- * 
- * @author Ben Wolfe
  * @version 1.0
  */
 public class Drug implements java.io.Serializable {

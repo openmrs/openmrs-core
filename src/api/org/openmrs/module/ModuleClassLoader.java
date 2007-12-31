@@ -1,6 +1,19 @@
-/*****************************************************************************
- * Adapted from the Java Plug-in Framework (JPF) - LGPL - Copyright (C) 2004-2006 Dmitry Olshansky
- *****************************************************************************/
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * 
+ * Code adapted from the Java Plug-in Framework (JPF) - LGPL - Copyright (C)
+ * 2004-2006 Dmitry Olshansky
+ */
 package org.openmrs.module;
 
 import java.io.BufferedOutputStream;
@@ -41,8 +54,6 @@ public class ModuleClassLoader extends URLClassLoader {
 	private final Module module;
 	
 	private Module[] publicImports;
-	private Module[] privateImports;
-	private Module[] reverseLookups;
 	//private ModuleResourceLoader resourceLoader;
 	//private Map<URL, ResourceFilter> resourceFilters;
 	private Map<URL, File> libraryCache;
@@ -59,7 +70,10 @@ public class ModuleClassLoader extends URLClassLoader {
 	protected ModuleClassLoader(final Module module, final List<URL> urls,
 			final ClassLoader parent, final URLStreamHandlerFactory factory) {
 		super(urls.toArray(new URL[urls.size()]), parent, factory);
-		log.debug("URLs length: " + urls.size());
+		
+		if (log.isDebugEnabled())
+			log.debug("URLs length: " + urls.size());
+		
 		this.module = module;
 		collectImports();
 		//resourceLoader = ModuleResourceLoader.get(module);
@@ -107,24 +121,38 @@ public class ModuleClassLoader extends URLClassLoader {
 		return module;
 	}
 
-	private static URL getClassBaseUrl(final Class cls) {
+	/**
+	 * Get the base class url of the given <code>cls</code>.  Used for checking
+	 * against system class loads vs classloader loads
+	 * 
+	 * @param cls Class name 
+	 * @return URL to the class
+	 */
+	private static URL getClassBaseUrl(final Class<?> cls) {
 		ProtectionDomain pd = cls.getProtectionDomain();
+		
 		if (pd != null) {
 			CodeSource cs = pd.getCodeSource();
 			if (cs != null) {
 				return cs.getLocation();
 			}
+			
 		}
+		
 		return null;
 	}
 
+	/**
+	 * Get all urls for all files in the given <code>module</code>
+	 * 
+	 * @param module Module in which to look
+	 * @return List<URL> of all urls found (and cached) in the module
+	 */
 	private static List<URL> getUrls(final Module module) {
 		List<URL> result = new LinkedList<URL>();
 		
 		File tmpModuleDir = getLibCacheFolderForModule(module);
 		File tmpModuleJar = new File(tmpModuleDir, module.getModuleId() + ".jar");
-		
-		log.debug("Copying module file into: " + tmpModuleDir.getAbsolutePath());
 		
 		if (!tmpModuleJar.exists()) {
 			try {
@@ -138,7 +166,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		// copy the module jar into that temporary folder
 		FileInputStream in = null;
 		FileOutputStream out = null;
-		try {
+			try {
 			in = new FileInputStream(module.getFile());
 			out = new FileOutputStream(tmpModuleJar);
 			OpenmrsUtil.copyFile(in, out);
@@ -147,21 +175,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			log.warn("Unable to copy tmpModuleFile", io);
 		}		
 		finally {
-			try {
-				if (in != null)
-					in.close();
-			}
-			catch (IOException e) {
-				log.error("Error while closing in stream for jar", e);
-			}
-
-			try {
-				if (out != null)
-					out.close();
-			}
-			catch (IOException e) {
-				log.error("Error while closing out stream for jar", e);
-			}
+			try { in.close(); } catch (Exception e) { /* pass */ }
+			try { out.close();} catch (Exception e) { /* pass */ }
 		}
 		
 		// add the module jar as a url in the classpath of the classloader
@@ -176,12 +191,15 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		// add each defined jar in the /lib folder, add as a url in the classpath of the classloader
 		try {
-			log.debug("Expanding /lib folder in module");
+			if (log.isDebugEnabled())
+				log.debug("Expanding /lib folder in module");
+			
 			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
 			File libdir = new File(tmpModuleDir, "lib");
 			if (libdir != null && libdir.exists())
 				for (File file : libdir.listFiles()) {
-					log.debug("Adding file to results: " + file.getAbsolutePath());
+					if (log.isDebugEnabled())
+						log.debug("Adding file to results: " + file.getAbsolutePath());
 					result.add(ModuleUtil.file2url(file));
 				}
 		}
@@ -197,6 +215,16 @@ public class ModuleClassLoader extends URLClassLoader {
 		return result;
 	}
 	
+	
+	
+	/**
+	 * Get the library cache folder for the given module. Each module has a 
+	 * different cache folder to ease cleanup when unloading a module while
+	 * openmrs is running 
+	 * 
+	 * @param module Module which the cache will be used for
+	 * @return File directory where the files will be placed
+	 */
 	public static File getLibCacheFolderForModule(Module module) {
 		File tmpModuleDir = new File(OpenmrsClassLoader.getLibCacheFolder(), module.getModuleId());
 		
@@ -208,6 +236,16 @@ public class ModuleClassLoader extends URLClassLoader {
 		return tmpModuleDir;
 	}
 
+	/**
+	 * Get all urls for the given <code>module</code> that are not already in the
+	 * <code>existingUrls</code>
+	 * 
+	 * @param module Module in which to get urls
+	 * @param existingUrls Array of URLs to skip
+	 * @return List<URL> of new unique urls
+	 * 
+	 * @see #getUrls(Module)
+	 */
 	private static List<URL> getUrls(final Module module, final URL[] existingUrls) {
 		List<URL> urls = Arrays.asList(existingUrls);
 		List<URL> result = new LinkedList<URL>();
@@ -219,45 +257,30 @@ public class ModuleClassLoader extends URLClassLoader {
 		return result;
 	}
 
+	/**
+	 * Get and cache the imports for this module.  The imports should just be
+	 * the modules that set as "required" by this module
+	 */
 	protected void collectImports() {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
-		Map<String, Module> privateImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
-		for (String requiredId : getModule().getRequiredModules()) {
-			Module requiredModule = ModuleFactory.getModuleById(requiredId);
+		
+		for (String requiredPackage : getModule().getRequiredModules()) {
+			Module requiredModule = ModuleFactory.getModuleByPackage(requiredPackage);
 			if (ModuleFactory.isModuleStarted(requiredModule)) {
 				publicImportsMap.put(requiredModule.getModuleId(), requiredModule);
-			} else {
-				privateImportsMap.put(requiredModule.getModuleId(), requiredModule);
 			}
 		}
 		publicImports = (Module[]) publicImportsMap.values().toArray(
 				new Module[publicImportsMap.size()]);
-		privateImports =
-			(Module[]) privateImportsMap.values().toArray(
-				new Module[privateImportsMap.size()]);
-		// collect reverse look up modules (exclude duplicates)
-		Map<String, Module> reverseLookupsMap = new WeakHashMap<String, Module>();
-		for (Module module : ModuleFactory.getLoadedModules()) {
-			if (module.equals(getModule())
-					|| publicImportsMap.containsKey(module.getModuleId())
-					|| privateImportsMap.containsKey(module.getModuleId())) {
-				continue;
-			}
-			for (String requiredModuleId : module.getRequiredModules()) {
-				Module requiredModule = ModuleFactory.getModuleById(requiredModuleId);
-				if (!requiredModule.equals(getModule())) {
-					continue;
-				}
-				reverseLookupsMap.put(module.getModuleId(), module);
-				break;
-			}
-		}
-		reverseLookups =
-			(Module[]) reverseLookupsMap.values().toArray(
-				new Module[reverseLookupsMap.size()]);
+		
 	}
 	
+	/**
+	 * Get and cache the filters for this module 
+	 * 
+	 * (not currently implemented)
+	 */
 	protected void collectFilters() {
 //		if (resourceFilters == null) {
 //			resourceFilters = new WeakHashMap<URL, ResourceFilter>();
@@ -297,30 +320,36 @@ public class ModuleClassLoader extends URLClassLoader {
 		// repopulate resource URLs
 		//resourceLoader = ModuleResourceLoader.get(getModule());
 		collectFilters();
-		for (Iterator it = libraryCache.entrySet().iterator(); it.hasNext();) {
-			if (((Map.Entry) it.next()).getValue() == null) {
+		for (Iterator<Map.Entry<URL, File>> it = libraryCache.entrySet().iterator(); it.hasNext();) {
+			if (it.next().getValue() == null) {
 				it.remove();
 			}
 		}
 	}
 	
 	/**
-	 * @see org.openmrs.module.ModuleClassLoader#dispose()
+	 * @see org.openmrs.module.ModuleFactory#stopModule(Module,boolean)
 	 */
 	public void dispose() {
-		log.debug("Disposing of ModuleClassLoader: " + this);
+		if (log.isDebugEnabled())
+			log.debug("Disposing of ModuleClassLoader: " + this);
 		
-		for (Iterator it = libraryCache.values().iterator(); it.hasNext();) {
-			((File) it.next()).delete();
+		for (Iterator<File> it = libraryCache.values().iterator(); it.hasNext();) {
+			it.next().delete();
 		}
+		
 		libraryCache.clear();
 		//resourceFilters.clear();
-		reverseLookups = null;
-		privateImports = null;
 		publicImports = null;
 		//resourceLoader = null;
 	}
 	
+	/**
+	 * Allow the probe parent loader last variable to be set.  Usually this is set
+	 * to true to allow modules to override and create their own classes
+	 * 
+	 * @param value boolean true/false whether or not to look at the parent classloader last
+	 */
 	protected void setProbeParentLoaderLast(final boolean value) {
 		probeParentLoaderLast = value;
 	}
@@ -330,9 +359,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	protected Class<?> loadClass(final String name, final boolean resolve)
 			throws ClassNotFoundException {
-		/*log.debug("loadClass(String, boolean): name=" + name + ", this="
-				+ this);*/
-		Class result = null;
+		Class<?> result = null;
 		if (probeParentLoaderLast) {
 			try {
 				result = loadClass(name, resolve, this, null);
@@ -354,86 +381,99 @@ public class ModuleClassLoader extends URLClassLoader {
 				result = loadClass(name, resolve, this, null);
 			}
 		}
-		if (result != null) {
+		
+		if (result != null)
 			return result;
-		}
+		
 		throw new ClassNotFoundException(name);
 	}
-	
-	protected Class loadClass(final String name, final boolean resolve,
+
+	/**
+	 * Custom loadClass implementation to allow for loading from a given 
+	 * ModuleClassLoader and skip the modules that have been tried already
+	 * 
+	 * @param name String path and name of the class to load
+	 * @param resolve boolean whether or not to resolve this class before returning
+	 * @param requestor ModuleClassLoader with which to try loading
+	 * @param seenModules Set<String> moduleIds that have been tried already
+	 * @return Class that has been loaded or null if none
+	 * @throws ClassNotFoundException if no class found
+	 */
+	protected Class<?> loadClass(final String name, final boolean resolve,
 			final ModuleClassLoader requestor, Set<String> seenModules)
 			throws ClassNotFoundException {
-		/*log.debug("loadClass(String, boolean, ...): name=" + name + ", this="
-				+ this);*/
+		
 		if ((seenModules != null) && seenModules.contains(getModule().getModuleId())) {
 			return null;
 		}
+		
+		// make sure the module is started
 		if ((this != requestor)
 				&& !ModuleFactory.isModuleStarted(getModule())) {
 			String msg = "can't load class " + name + ", module " 
 				+ getModule() + " is not started yet";
 			log.warn(msg);
+			
 			throw new ClassNotFoundException(msg);
 		}
-		Class result = null;
+		
+		// the class ultimately returned (if found)
+		Class<?> result = null;
+		
 		synchronized (this) {
 			result = findLoadedClass(name);
+
 			if (result != null) {
-				if (log.isDebugEnabled() && name.contains("hello")) {
-					log.debug("loadClass(...): found loaded class, class="
-							+ result + ", this="
-							+ this + ", requestor=" + requestor);
-				}
 				checkClassVisibility(result, requestor);
+				
 				/*if (resolve) {
 					resolveClass(result);
 				}*/
-				return result; // found already loaded class in this module
+				
+				// found an already loaded class in this moduleclassloader
+				return result;
 			}
+			
+			// we didn't find a loaded class
 			try {
 				synchronized (getClass()) {
 					result = findClass(name);
 				}
 			} catch (LinkageError le) {
-				if (log.isDebugEnabled() && name.contains("hello")) {
-					log.debug("loadClass(...): class loading failed,"
-							+ " name=" + name + ", this=" 
-							+ this + ", requestor=" + requestor, le);
-				}
 				throw le;
-			 } catch (ClassNotFoundException cnfe) {
+			} catch (ClassNotFoundException cnfe) {
 				// ignore
 			}
+			
+			// we were able to "find" a class
 			if (result != null) {
-				if (log.isDebugEnabled() && name.contains("hello")) {
-					log.debug("loadClass(...): found class, class="
-							+ result + ", this="
-							+ this + ", requestor=" + requestor);
-				}
 				checkClassVisibility(result, requestor);
+				
 				if (resolve) {
 					resolveClass(result);
 				}
+				
 				return result; // found class in this module
 			}
 		}
-		if (seenModules == null) {
+		
+		// initialize the array if need be
+		if (seenModules == null)
 			seenModules = new HashSet<String>();
-		}
-		if (log.isDebugEnabled() && name.contains("hello")) {
-			log.debug("loadClass(...): class not found, name="
-					+ name + ", this="
-					+ this + ", requestor=" + requestor);
-		}
+		
+		// add this module to the list of modules we've tried already
 		seenModules.add(getModule().getModuleId());
 		
+		// look through this module's imports to see if it the class
+		// can be loaded from them
 		for (Module publicImport : publicImports) {
-			if (seenModules.contains(publicImport.getModuleId())) {
+			if (seenModules.contains(publicImport.getModuleId()))
 				continue;
-			}
-			result = ((ModuleClassLoader) ModuleFactory
-					.getModuleClassLoader(publicImport)).loadClass(
-							name, resolve, requestor, seenModules);
+			
+			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
+			
+			result = mcl.loadClass(name, resolve, requestor, seenModules);
+			
 			if (result != null) {
 				/*if (resolve) {
 					resolveClass(result);
@@ -442,66 +482,38 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 		}
 		
-		if ((this == requestor) && (result == null)) {
-			for (Module privateImport : privateImports) {
-				if (seenModules.contains(privateImport.getModuleId())) {
-					continue;
-				}
-				result = ((ModuleClassLoader) ModuleFactory
-						.getModuleClassLoader(privateImport)).loadClass(
-								name, resolve, requestor, seenModules);
-				if (result != null) {
-					/*if (resolve) {
-						resolveClass(result);
-					}*/
-					break; // found class in privately imported module
-				}
-			}
-		}
-		if ((this == requestor) && (result == null)) {
-			for (Module reverseLookup : reverseLookups) {
-				if (seenModules.contains(reverseLookup.getModuleId())) {
-					continue;
-				}
-				if (!ModuleFactory.isModuleStarted(reverseLookup)) {
-					continue;
-				}
-				result = ((ModuleClassLoader) ModuleFactory
-						.getModuleClassLoader(reverseLookup)).loadClass(
-								name, resolve, requestor, seenModules);
-				if (result != null) {
-					/*if (resolve) {
-						resolveClass(result);
-					}*/
-					break; // found class in module that marks itself as
-						   // allowed reverse look up
-				}
-			}
-		}
 		return result;
 	}
 	
-	protected void checkClassVisibility(final Class cls,
+	/**
+	 * Checking the given class's visibility in this module
+	 * 
+	 * @param cls Class to check
+	 * @param requestor ModuleClassLoader to check against
+	 * @throws ClassNotFoundException
+	 */
+	protected void checkClassVisibility(final Class<?> cls,
 			final ModuleClassLoader requestor)
 			throws ClassNotFoundException {
-		/*log.debug("checkClassVisibility(Class, ModuleClassLoader): class="
-				+ cls.getName() + ", requestor=" + requestor
-				+ ", this=" + this);*/
-		if (this == requestor) {
+		
+		if (this == requestor)
 			return;
-		}
+		
 		URL lib = getClassBaseUrl(cls);
-		if (lib == null) {
+
+		if (lib == null)
 			return; // cls is a system class
-		}
+		
 		ClassLoader loader = cls.getClassLoader();
-		if (!(loader instanceof ModuleClassLoader)) {
+		
+		if (!(loader instanceof ModuleClassLoader))
 			return;
-		}
+		
 		if (loader != this) {
 			((ModuleClassLoader) loader).checkClassVisibility(cls,
 					requestor);
-		} else {
+		} 
+		else {
 //			ResourceFilter filter = (ResourceFilter) resourceFilters.get(lib);
 //			if (filter == null) {
 //				log.warn("class not visible, no class filter found, lib=" + lib
@@ -527,9 +539,9 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see java.lang.ClassLoader#findLibrary(java.lang.String)
 	 */
 	protected String findLibrary(final String name) {
-		if ((name == null) || "".equals(name.trim())) {
+		if ((name == null) || "".equals(name.trim()))
 			return null;
-		}
+		
 		if (log.isDebugEnabled()) {
 			log.debug("findLibrary(String): name=" + name
 					+ ", this=" + this);
@@ -584,53 +596,77 @@ public class ModuleClassLoader extends URLClassLoader {
 					+ ", result=" + result
 					+ ", this=" + this);
 		}
+		
 		return result;
 	}
 
-	protected synchronized File cacheLibrary(final URL libUrl,
+	/**
+	 * Saves the given library in the openmrs cache.  This prevents locking of jars/files by servlet
+	 * container
+	 * 
+	 * @param libUrl URL to the library/jar file
+	 * @param libname name of the 
+	 * @return
+	 */
+	protected File cacheLibrary(final URL libUrl,
 			final String libname) {
 		File cacheFolder = OpenmrsClassLoader.getLibCacheFolder();
 		if (libraryCache.containsKey(libUrl)) {
 			return (File) libraryCache.get(libUrl);
 		}
+		
 		File result = null;
 		try {
 			if (cacheFolder == null) {
 				throw new IOException(
 						"can't initialize libraries cache folder");
 			}
+			
+			// create the directory to hold the jar's files
 			File libCacheModuleFolder = new File(cacheFolder,
 					getModule().getModuleId());
+			
+			// error while creating the file
 			if (!libCacheModuleFolder.exists()
 					&& !libCacheModuleFolder.mkdirs()) {
 				throw new IOException("can't create cache folder "
 						+ libCacheModuleFolder);
 			}
+			
+			// directory within the specific folder within the cache
 			result = new File(libCacheModuleFolder, libname);
+			
+			// copy the file over to the cache
 			InputStream in = OpenmrsUtil.getResourceInputStream(libUrl);
 			try {
-				OutputStream out = new BufferedOutputStream(
-						new FileOutputStream(result));
+				FileOutputStream fileOut = new FileOutputStream(result);
+				OutputStream out = new BufferedOutputStream(fileOut);
 				try {
 					OpenmrsUtil.copyFile(in, out);
 				} finally {
-					out.close();
+					try { out.close(); } catch (Exception e) { /* pass */ }
+					try { fileOut.close(); } catch (Exception e) {  }
 				}
 			} finally {
-				in.close();
+				try { in.close(); } catch (Exception e) { /* pass */ }
 			}
+			
+			// save a link to the cached file
 			libraryCache.put(libUrl, result);
+			
 			if (log.isDebugEnabled()) {
 				log.debug("library " + libname
 						+ " successfully cached from URL " + libUrl
 						+ " and saved to local file " + result);
 			}
+			
 		} catch (IOException ioe) {
 			log.error("can't cache library " + libname
 					+ " from URL " + libUrl, ioe);
 			libraryCache.put(libUrl, null);
 			result = null;
 		}
+		
 		return result;
 	}
 
@@ -661,9 +697,18 @@ public class ModuleClassLoader extends URLClassLoader {
 		return Collections.enumeration(result);
 	}
 
+	/**
+	 * Find a resource (image, file, etc) in the module structure
+	 * 
+	 * @param name String path and name of the file
+	 * @param requestor ModuleClassLoader in which to look
+	 * @param seenModules Set<String> modules that have been checked already
+	 * @return URL to resource
+	 * 
+	 * @see #findResource(String)
+	 */
 	protected URL findResource(final String name,
 			final ModuleClassLoader requestor, Set<String> seenModules) {
-		
 		if (log.isDebugEnabled()) {
 			if (name != null && name.contains("starter")) {
 				if (seenModules != null) log.debug("seenModules.size: " + seenModules.size());
@@ -702,44 +747,17 @@ public class ModuleClassLoader extends URLClassLoader {
 			seenModules = new HashSet<String>();
 		
 		seenModules.add(getModule().getModuleId());
-		for (int i = 0; i < publicImports.length; i++) {
-			if (seenModules.contains(publicImports[i].getModuleId())) {
+		
+		for (Module publicImport : publicImports) {
+			if (seenModules.contains(publicImport.getModuleId()))
 				continue;
-			}
-			result = ((ModuleClassLoader) ModuleFactory
-					.getModuleClassLoader(publicImports[i])).findResource(
-							name, requestor, seenModules);
+			
+			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
+			
+			result = mcl.findResource(name, requestor, seenModules);
+			
 			if (result != null) {
 				break; // found resource in publicly imported module
-			}
-		}
-		
-		if ((this == requestor) && (result == null)) {
-			for (int i = 0; i < privateImports.length; i++) {
-				if (seenModules.contains(privateImports[i].getModuleId())) {
-					continue;
-				}
-				result = ((ModuleClassLoader) ModuleFactory
-						.getModuleClassLoader(privateImports[i])).findResource(
-								name, requestor, seenModules);
-				if (result != null) {
-					break; // found resource in privately imported module
-				}
-			}
-		}
-		
-		if ((this == requestor) && (result == null)) {
-			for (Module reverseLookup : reverseLookups) {
-				if (seenModules.contains(reverseLookup.getModuleId())) {
-					continue;
-				}
-				result = ((ModuleClassLoader) ModuleFactory
-						.getModuleClassLoader(reverseLookup)).findResource(
-								name, requestor, seenModules);
-				if (result != null) {
-					break; // found resource in module that marks itself as
-						   // allowed reverse look up
-				}
 			}
 		}
 		
@@ -747,15 +765,27 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 	}
 
+	/**
+	 * Find all occurrences of a resource (image, file, etc) in the module structure
+	 * 
+	 * @param result URL of the file found
+	 * @param name String path and name of the file to find
+	 * @param requestor ModuleClassLoader in which to start
+	 * @param seenModules Set<String> moduleIds that have been checked already
+	 * @throws IOException
+	 * 
+	 * @see {@link #findResources(String)}
+	 * @see {@link #findResource(String, ModuleClassLoader, Set)}
+	 */
 	protected void findResources(final List<URL> result, final String name,
 			final ModuleClassLoader requestor, Set<String> seenModules)
 			throws IOException {
 		if ((seenModules != null) && seenModules.contains(getModule().getModuleId())) {
 			return;
 		}
-		for (Enumeration enm = super.findResources(name);
+		for (Enumeration<URL> enm = super.findResources(name);
 				enm.hasMoreElements();) {
-			URL url = (URL) enm.nextElement();
+			URL url = enm.nextElement();
 			if (isResourceVisible(name, url, requestor)) {
 				result.add(url);
 			}
@@ -774,33 +804,24 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		seenModules.add(getModule().getModuleId());
 		for (Module publicImport : publicImports) {
-			if (seenModules.contains(publicImport.getModuleId())) {
+			if (seenModules.contains(publicImport.getModuleId()))
 				continue;
-			}
-			((ModuleClassLoader) ModuleFactory.getModuleClassLoader(
-					publicImport)).findResources(result, name,
-							requestor, seenModules);
+			
+			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
+			
+			mcl.findResources(result, name, requestor, seenModules);
 		}
-		if (this == requestor) {
-			for (Module privateImport : privateImports) {
-				if (seenModules.contains(privateImport.getModuleId())) {
-					continue;
-				}
-				((ModuleClassLoader) ModuleFactory.getModuleClassLoader(
-						privateImport)).findResources(result, name,
-								requestor, seenModules);
-			}
-			for (Module reverseLookup : reverseLookups) {
-				if (seenModules.contains(reverseLookup.getModuleId())) {
-					continue;
-				}
-				((ModuleClassLoader) ModuleFactory.getModuleClassLoader(
-						reverseLookup)).findResources(result, name,
-								requestor, seenModules);
-			}
-		}
+		
 	}
 	
+	/**
+	 * Check if the given resource (image, file, etc) is visible by this classloader
+	 * 
+	 * @param name String path and name to check
+	 * @param url URL of the library file
+	 * @param requestor ModuleClassLoader in which to look
+	 * @return true/false whether this resource is visibile by this classloader
+	 */
 	protected boolean isResourceVisible(final String name, final URL url,
 			final ModuleClassLoader requestor) {
 		/*log.debug("isResourceVisible(URL, ModuleClassLoader): URL=" + url
@@ -808,7 +829,8 @@ public class ModuleClassLoader extends URLClassLoader {
 		if (this == requestor) {
 			return true;
 		}
-		URL lib;
+		@SuppressWarnings("unused")
+        URL lib;
 		try {
 			String file = url.getFile();
 			lib = new URL(url.getProtocol(), url.getHost(),
@@ -859,126 +881,4 @@ public class ModuleClassLoader extends URLClassLoader {
 			+ module + "}";
 	}
 	
-//	protected static final class ResourceFilter {
-//		private boolean isPublic;
-//		private Set<String> entries;
-//
-//		protected ResourceFilter(final Library lib) {
-//			entries = new HashSet<String>();
-//			for (Iterator it = lib.getExports().iterator(); it.hasNext();) {
-//				String exportPrefix = (String) it.next();
-//				if ("*".equals(exportPrefix)) {
-//					isPublic = true;
-//					entries.clear();
-//					break;
-//				}
-//				if (!lib.isCodeLibrary()) {
-//					exportPrefix = exportPrefix.replace('\\', '.')
-//						.replace('/', '.');
-//					if (exportPrefix.startsWith(".")) {
-//						exportPrefix = exportPrefix.substring(1);
-//					}
-//				}
-//				entries.add(exportPrefix);
-//			}
-//		}
-//		
-//		protected boolean isClassVisible(final String className) {
-//			if (isPublic) {
-//				return true;
-//			}
-//			if (entries.isEmpty()) {
-//				return false;
-//			}
-//			if (entries.contains(className)) {
-//				return true;
-//			}
-//			int p = className.lastIndexOf('.');
-//			if (p == -1) {
-//				return false;
-//			}
-//			return entries.contains(className.substring(0, p) + ".*");
-//		}
-//
-//		protected boolean isResourceVisible(final String resPath) {
-//			// quick check
-//			if (isPublic) {
-//				return true;
-//			}
-//			if (entries.isEmpty()) {
-//				return false;
-//			}
-//			// translate "path spec" -> "full class name"
-//			String str = resPath.replace('\\', '.').replace('/', '.');
-//			if (str.startsWith(".")) {
-//				str = str.substring(1);
-//			}
-//			if (str.endsWith(".")) {
-//				str = str.substring(0, str.length() - 1);
-//			}
-//			return isClassVisible(str);
-//		}
-//	}
-//
-//	protected static class ModuleResourceLoader extends URLClassLoader {
-//		private static Log log = LogFactory.getLog(ModuleResourceLoader.class);
-//
-//		static ModuleResourceLoader get(final Module module) {
-//			final List<URL> urls = new LinkedList<URL>();
-//			for (Library lib : module.getLibraries()) {
-//				if (lib.isCodeLibrary()) {
-//					continue;
-//				}
-//				//urls.add(ModuleFactory.getPathResolver().resolvePath(lib,
-//				//		lib.getPath()));
-//			}
-//			if (log.isDebugEnabled()) {
-//				StringBuffer buf = new StringBuffer();
-//				buf.append("Resource URL's populated for module " + module
-//						+ ":\r\n");
-//				for (Iterator it = urls.iterator(); it.hasNext();) {
-//					buf.append("\t");
-//					buf.append(it.next());
-//					buf.append("\r\n");
-//				}
-//				log.trace(buf.toString());
-//			}
-//			if (urls.isEmpty()) {
-//				return null;
-//			}
-//			/*return new ModuleResourceLoader((URL[]) urls.toArray(
-//			new URL[urls.size()]));*/
-//			return (ModuleResourceLoader) AccessController.doPrivileged(
-//					new PrivilegedAction<Object>() {
-//				public Object run() {
-//					return new ModuleResourceLoader(urls);
-//				}
-//			});
-//		}
-//
-//		/**
-//		 * Creates loader instance configured to load resources only from given
-//		 * URLs.
-//		 * @param urls array of resource URLs
-//		 */
-//		public ModuleResourceLoader(final List<URL> urls) {
-//			super((URL[])urls.toArray());
-//		}
-//
-//		/**
-//		 * @see java.lang.ClassLoader#findClass(java.lang.String)
-//		 */
-//		protected Class<?> findClass(final String name)
-//				throws ClassNotFoundException {
-//			throw new ClassNotFoundException(name);
-//		}
-//
-//		/**
-//		 * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
-//		 */
-//		protected Class<?> loadClass(final String name, final boolean resolve)
-//				throws ClassNotFoundException {
-//			throw new ClassNotFoundException(name);
-//		}
-//	}
 }

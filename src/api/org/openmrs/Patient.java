@@ -2,20 +2,18 @@ package org.openmrs;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Defines a Patient in the system.  A patient is simply an extension
  * of a person and all that that implies.
- * 
- * @author Burke Mamlin
- * @author Ben Wolfe
  * @version 2.0
  */
 public class Patient extends Person implements java.io.Serializable {
@@ -141,7 +139,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 */
 	public Set<PatientIdentifier> getIdentifiers() {
 		if (identifiers == null)
-			identifiers = new HashSet<PatientIdentifier>();
+			identifiers = new TreeSet<PatientIdentifier>();
 		return this.identifiers;
 	}
 
@@ -175,14 +173,14 @@ public class Patient extends Person implements java.io.Serializable {
 	 */
 	public void addIdentifier(PatientIdentifier patientIdentifier) {
 		patientIdentifier.setPatient(this);
-		if (identifiers == null)
-			identifiers = new HashSet<PatientIdentifier>();
-		if (patientIdentifier != null && !identifiers.contains(patientIdentifier))
+		if (getIdentifiers() == null)
+			identifiers = new TreeSet<PatientIdentifier>();
+		if (patientIdentifier != null && !OpenmrsUtil.collectionContains(identifiers, patientIdentifier))
 			identifiers.add(patientIdentifier);
 	}
 
 	public void removeIdentifier(PatientIdentifier patientIdentifier) {
-		if (identifiers != null)
+		if (getIdentifiers() != null)
 			identifiers.remove(patientIdentifier);
 	}
 
@@ -193,7 +191,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @return Returns the "preferred" patient identifier.
 	 */
 	public PatientIdentifier getPatientIdentifier() {
-		if (identifiers != null && identifiers.size() > 0) {
+		if (getIdentifiers() != null && identifiers.size() > 0) {
 			return (PatientIdentifier) identifiers.toArray()[0];
 		} else {
 			return null;
@@ -207,7 +205,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @return preferred patient identifier
 	 */
 	public PatientIdentifier getPatientIdentifier(Integer identifierTypeId) {
-		if (identifiers != null && identifiers.size() > 0) {
+		if (getIdentifiers() != null && identifiers.size() > 0) {
 			PatientIdentifier found = null;
 			for (PatientIdentifier id : identifiers) {
 				if (id.getIdentifierType().getPatientIdentifierTypeId().equals(identifierTypeId)) {
@@ -229,7 +227,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @return preferred patient identifier
 	 */
 	public PatientIdentifier getPatientIdentifier(String identifierTypeName) {
-		if (identifiers != null && identifiers.size() > 0) {
+		if (getIdentifiers() != null && identifiers.size() > 0) {
 			PatientIdentifier found = null;
 			for (PatientIdentifier id : identifiers) {
 				if (id.getIdentifierType().getName().equals(identifierTypeName)) {
@@ -251,7 +249,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 */
 	public List<PatientIdentifier> getActiveIdentifiers() {
 		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
-		if (identifiers != null) {
+		if (getIdentifiers() != null) {
 			for (PatientIdentifier pi : identifiers) {
 				if (pi.isVoided() == false)
 					ids.add(pi);

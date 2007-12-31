@@ -1,5 +1,7 @@
 package org.openmrs.util;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -13,10 +15,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -29,7 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -43,12 +51,37 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.Drug;
+import org.openmrs.EncounterType;
+import org.openmrs.Form;
+import org.openmrs.Location;
+import org.openmrs.PersonAttributeType;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflowState;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
+import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.module.ModuleException;
+import org.openmrs.propertyeditor.CohortEditor;
+import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.DrugEditor;
+import org.openmrs.propertyeditor.EncounterTypeEditor;
+import org.openmrs.propertyeditor.FormEditor;
+import org.openmrs.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
+import org.openmrs.propertyeditor.ProgramEditor;
+import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
+import org.openmrs.reporting.CohortFilter;
+import org.openmrs.reporting.PatientFilter;
+import org.openmrs.reporting.PatientSearch;
+import org.openmrs.reporting.PatientSearchReportObject;
+import org.openmrs.reporting.SearchArgument;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 
@@ -134,7 +167,7 @@ public class OpenmrsUtil {
 		}
 		*/
 		
-		if ( id.indexOf("-") < 0 ) {
+		if ( id.indexOf("-") < 1 ) {
 			throw new PatientIdentifierException("Cannot find check-digit in identifier");
 		}
 
@@ -248,6 +281,13 @@ public class OpenmrsUtil {
 				.getLowAbsolute());
 	}
 
+	/**
+	 * Return a string representation of the given file
+	 * 
+	 * @param file
+	 * @return String file contents
+	 * @throws IOException
+	 */
 	public static String getFileAsString(File file) throws IOException {
 		StringBuffer fileData = new StringBuffer(1000);
 		BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -261,6 +301,28 @@ public class OpenmrsUtil {
 		reader.close();
 		return fileData.toString();
 	}
+	
+	/**
+	 * Return a byte array representation of the given file
+	 * 
+	 * @param file
+	 * @return byte[] file contents
+	 * @throws IOException
+	 */
+	public static byte[] getFileAsBytes(File file) throws IOException {
+		try {
+			FileInputStream fileInputStream = new FileInputStream (file);
+			byte[] b = new byte[fileInputStream.available ()];
+			fileInputStream.read(b);
+			fileInputStream.close ();
+			return b;
+		}
+		catch (Exception e) {
+			log.error("Unable to get file as byte array", e);
+		}
+		
+		return null;
+	}
 
 	/**
 	 * Copy file from inputStream onto the outputStream
@@ -271,8 +333,13 @@ public class OpenmrsUtil {
 	 */
 	public static void copyFile(InputStream inputStream,
 			OutputStream outputStream) throws IOException {
-		if (inputStream == null || outputStream == null)
+		if (inputStream == null || outputStream == null) {
+			if (outputStream != null) {
+				try { outputStream.close(); } catch (Exception e) { /* pass */ }
+			}
+			
 			return;
+		}
 		
 		InputStream in = null;
 		OutputStream out = null; 
@@ -422,6 +489,8 @@ public class OpenmrsUtil {
 	 * Compares two Date/Timestamp objects, treating null as the earliest possible date.
 	 */
 	public static int compareWithNullAsEarliest(Date d1, Date d2) {
+		if (d1 == null && d2 == null)
+			return 0;
 		if (d1 == null)
 			return -1;
 		else if (d2 == null)
@@ -434,6 +503,8 @@ public class OpenmrsUtil {
 	 * Compares two Date/Timestamp objects, treating null as the earliest possible date.
 	 */
 	public static int compareWithNullAsLatest(Date d1, Date d2) {
+		if (d1 == null && d2 == null)
+			return 0;
 		if (d1 == null)
 			return 1;
 		else if (d2 == null)
@@ -443,6 +514,8 @@ public class OpenmrsUtil {
 	}
 	
 	public static <E extends Comparable<E>> int compareWithNullAsLowest(E c1, E c2) {
+		if (c1 == null && c2 == null)
+			return 0;
 		if (c1 == null)
 			return -1;
 		else if (c2 == null)
@@ -452,6 +525,8 @@ public class OpenmrsUtil {
 	}
 	
 	public static <E extends Comparable<E>> int compareWithNullAsGreatest(E c1, E c2) {
+		if (c1 == null && c2 == null)
+			return 0;
 		if (c1 == null)
 			return 1;
 		else if (c2 == null)
@@ -492,7 +567,7 @@ public class OpenmrsUtil {
 		if (c == null) return "";
 		
 		StringBuilder ret = new StringBuilder();
-		for (Iterator i = c.iterator(); i.hasNext(); ) {
+		for (Iterator<E> i = c.iterator(); i.hasNext(); ) {
 			ret.append(i.next());
 			if (i.hasNext())
 				ret.append(separator);
@@ -653,23 +728,44 @@ public class OpenmrsUtil {
 		return new Date(d1.getTime());
 	}
 
+	/**
+	 * Recursively deletes files in the given <code>dir</code> folder
+	 * 
+	 * @param dir File directory to delete
+	 * @return true/false whether the delete was completed successfully
+	 * @throws IOException if <code>dir</code> is not a directory
+	 */
 	public static boolean deleteDirectory(File dir) throws IOException {
 		if (!dir.exists() || !dir.isDirectory())
 			throw new IOException("Could not delete directory '" + dir.getAbsolutePath()
 				+ "' (not a directory)");
-		log.debug("Deleting directory " + dir.getAbsolutePath());
+		
+		if (log.isDebugEnabled())
+			log.debug("Deleting directory " + dir.getAbsolutePath());
+		
 		File[] fileList = dir.listFiles();
 		for (File f : fileList) {
 			if (f.isDirectory())
 				deleteDirectory(f);
 			boolean success = f.delete();
-			log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
+			
+			if (log.isDebugEnabled())
+				log.debug("   deleting " + f.getName() + " : " + (success ? "ok" : "failed"));
+			
+			if (!success)
+				f.deleteOnExit();
 		}
+		
 		boolean success = dir.delete();
-		if (success)
-			log.debug("   ...and directory itself");
-		else
+		
+		if (!success) {
 			log.warn("   ...could not remove directory: " + dir.getAbsolutePath());
+			dir.deleteOnExit();
+		}
+		
+		if (success && log.isDebugEnabled())
+			log.debug("   ...and directory itself");
+		
 		return success;
 	}
 	
@@ -752,7 +848,9 @@ public class OpenmrsUtil {
     public static String getApplicationDataDirectory() {
     	String filepath;
     	
-    	if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
+        if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
+                OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
+                OpenmrsConstants.OPERATING_SYSTEM_OSX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
 			filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
 		else
 			filepath = System.getProperty("user.home") + File.separator + 
@@ -766,6 +864,35 @@ public class OpenmrsUtil {
 			folder.mkdirs();
 		
 		return filepath;
+    }
+    
+    /**
+     * Find the given folderName in the application data directory.  Or, treat
+     * folderName like an absolute url to a directory 
+     * 
+     * @param folderName
+     * @return folder capable of storing information
+     */
+    public static File getDirectoryInApplicationDataDirectory(String folderName) throws APIException {
+    	//  try to load the repository folder straight away.
+		File folder = new File(folderName);
+		
+		// if the property wasn't a full path already, assume it was intended to be a folder in the 
+		// application directory
+		if (!folder.isAbsolute()) {
+			folder = new File(OpenmrsUtil.getApplicationDataDirectory(), folderName);
+		}
+		
+		// now create the directory folder if it doesn't exist
+		if (!folder.exists()) {
+			log.warn("'" + folder.getAbsolutePath() + "' doesn't exist.  Creating directories now.");
+			folder.mkdirs();
+		}
+	
+		if (!folder.isDirectory())
+			throw new APIException("'" + folder.getAbsolutePath() + "' should be a directory but it is not");
+	
+		return folder;
     }
     
     /**
@@ -890,5 +1017,237 @@ public class OpenmrsUtil {
     	}
     	return false;
     }
+    
+    /**
+     * Allows easy manipulation of a Map<?, Set> 
+     */
+    public static <K, V> void addToSetMap(Map<K, Set<V>> map, K key, V obj) {
+    	Set<V> set = map.get(key);
+    	if (set == null) {
+    		set = new HashSet<V>();
+    		map.put(key, set);
+    	}
+    	set.add(obj);
+    }
+    
+    public static <K, V> void addToListMap(Map<K, List<V>> map, K key, V obj) {
+    	List<V> list = map.get(key);
+    	if (list == null) {
+    		list = new ArrayList<V>();
+    		map.put(key, list);
+    	}
+    	list.add(obj);
+    }
+    
+    /**
+     * Get the current user's date format
+     * Will look similar to "mm-dd-yyyy".  Depends on user's locale.
+     * 
+     * @return a simple date format
+     */
+    public static SimpleDateFormat getDateFormat() {
+    	String localeKey = Context.getLocale().toString().toLowerCase();
+    	
+    	// get the actual pattern from the constants
+    	String pattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(localeKey);
+    	
+    	// default to the "first" locale pattern
+    	if (pattern == null)
+    		pattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(0);
+    	
+    	return new SimpleDateFormat(pattern, Context.getLocale());
+    }
+    
+    /**
+     * Uses reflection to translate a PatientSearch into a PatientFilter  
+     */
+    @SuppressWarnings("unchecked")
+    public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history) {
+    	if (search.isSavedSearchReference()) {
+    		PatientSearch ps = ((PatientSearchReportObject) Context.getReportService().getReportObject(search.getSavedSearchId())).getPatientSearch();
+    		return toPatientFilter(ps, history);
+    	} else if (search.isSavedFilterReference()) {
+    		return Context.getReportService().getPatientFilterById(search.getSavedFilterId());
+    	} else if (search.isSavedCohortReference()) {
+    		return new CohortFilter(Context.getCohortService().getCohort(search.getSavedCohortId()));
+    	} else if (search.isComposition()) {
+    		if (history == null && search.requiresHistory())
+    			throw new IllegalArgumentException("You can't evaluate this search without a history");
+    		else
+    			return search.cloneCompositionAsFilter(history);
+    	} else {
+	    	Class clz = search.getFilterClass(); 
+	    	if (clz == null)
+	    		throw new IllegalArgumentException("search must be saved, composition, or must have a class specified");
+	    	log.debug("About to instantiate " + clz);
+	    	PatientFilter pf = null;
+	    	try {
+		        pf = (PatientFilter) clz.newInstance();
+	        } catch (Exception ex) {
+		        log.error("Couldn't instantiate a " + search.getFilterClass(), ex);
+		        return null;
+	        }
+	        Class[] stringSingleton = { String.class };
+	        if (search.getArguments() != null) {
+	        	for (SearchArgument sa : search.getArguments()) {
+		        	PropertyDescriptor pd = null;
+		        	try {
+			        	pd = new PropertyDescriptor(sa.getName(), clz);
+		        	} catch (IntrospectionException ex) {
+		        		log.error("Error while examining property " + sa.getName(), ex);
+		        		continue;
+		        	}
+		        	Class<?> realPropertyType = pd.getPropertyType();
+		
+		        	// instantiate the value of the search argument
+		        	String valueAsString = sa.getValue();
+		        	Object value = null;
+		        	Class<?> valueClass = sa.getPropertyClass();
+		        	try {
+		        		// If there's a valueOf(String) method, just use that (will cover at least String, Integer, Double, Boolean) 
+		        		Method valueOfMethod = null;
+		        		try {
+		        			valueOfMethod = valueClass.getMethod("valueOf", stringSingleton);
+		        		} catch (NoSuchMethodException ex) { }
+		        		if (valueOfMethod != null) {
+		        			Object[] holder = { valueAsString };
+		        			value = valueOfMethod.invoke(pf, holder);
+		        		} else if (realPropertyType.isEnum()) { 
+		            		// Special-case for enum types
+		            		List<Enum> constants = Arrays.asList((Enum[]) realPropertyType.getEnumConstants());
+		    				for (Enum e : constants) {
+		    					if (e.toString().equals(valueAsString)) {
+		    						value = e;
+		    						break;
+		    					}
+		    				}
+		        		} else if (String.class.equals(valueClass)) {
+			        		value = valueAsString;
+		        		} else if (Location.class.equals(valueClass)) {
+			        		LocationEditor ed = new LocationEditor();
+			        		ed.setAsText(valueAsString);
+			        		value = ed.getValue();
+			        	} else if (Concept.class.equals(valueClass)) {
+			        		ConceptEditor ed = new ConceptEditor();
+			        		ed.setAsText(valueAsString);
+			        		value = ed.getValue();
+			        	} else if (Program.class.equals(valueClass)) {
+			        		ProgramEditor ed = new ProgramEditor();
+			        		ed.setAsText(valueAsString);
+			        		value = ed.getValue();
+			        	} else if (ProgramWorkflowState.class.equals(valueClass)) {
+			        		ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
+			        		ed.setAsText(valueAsString);
+			        		value = ed.getValue();
+						} else if (EncounterType.class.equals(valueClass)) {
+							EncounterTypeEditor ed = new EncounterTypeEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+						} else if (Form.class.equals(valueClass)) {
+							FormEditor ed = new FormEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+						} else if (Drug.class.equals(valueClass)) {
+							DrugEditor ed = new DrugEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+						} else if (PersonAttributeType.class.equals(valueClass)) {
+							PersonAttributeTypeEditor ed = new PersonAttributeTypeEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+						} else if (Cohort.class.equals(valueClass)) {
+							CohortEditor ed = new CohortEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+			        	} else if (Date.class.equals(valueClass)) {
+			        		// TODO: this uses the date format from the current session, which could cause problems if the user changes it after searching. 
+			        		DateFormat df = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+							CustomDateEditor ed = new CustomDateEditor(df, true, 10);
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+			        	} else {
+			        		// TODO: Decide whether this is a hack. Currently setting Object arguments with a String
+		        			value = valueAsString;
+			        	}
+		        	} catch (Exception ex) {
+		        		log.error("error converting \"" + valueAsString + "\" to " + valueClass, ex);
+		        		continue;
+		        	}
+		
+		        	if (value != null) {
+		        	
+		        		if (realPropertyType.isAssignableFrom(valueClass)) {
+		        			log.debug("setting value of " + sa.getName() + " to " + value);
+		        			try {
+		        				pd.getWriteMethod().invoke(pf, value);
+		        			} catch (Exception ex) {
+		        				log.error("Error setting value of " + sa.getName() + " to " + sa.getValue() + " -> " + value, ex);
+		        				continue;
+		        			}
+		        		} else if (Collection.class.isAssignableFrom(realPropertyType)) {
+		        			log.debug(sa.getName() + " is a Collection property");
+		        			// if realPropertyType is a collection, add this value to it (possibly after instantiating)
+		        			try {
+			        			Collection collection = (Collection) pd.getReadMethod().invoke(pf, (Object[]) null);
+			        			if (collection == null) {
+			        				// we need to instantiate this collection. I'm going with the following rules, which should be rethought:
+			        				//	 SortedSet -> TreeSet
+			        				//	 Set -> HashSet
+			        				//   Otherwise -> ArrayList
+			        				if (SortedSet.class.isAssignableFrom(realPropertyType)) {
+			        					collection = new TreeSet();
+			        					log.debug("instantiated a TreeSet");
+			        					pd.getWriteMethod().invoke(pf, collection);
+			        				} else if (Set.class.isAssignableFrom(realPropertyType)) {
+			        					collection = new HashSet();
+			        					log.debug("instantiated a HashSet");
+			        					pd.getWriteMethod().invoke(pf, collection);
+			        				} else {
+			        					collection = new ArrayList();
+			        					log.debug("instantiated an ArrayList");
+			        					pd.getWriteMethod().invoke(pf, collection);
+			        				}
+			        			}
+			        			collection.add(value);
+		        			} catch (Exception ex) {
+		        				log.error("Error instantiating collection for property " + sa.getName() + " whose class is " + realPropertyType, ex);
+		    					continue;
+		        			}
+		        		} else {
+		        			log.error(pf.getClass() + " . " + sa.getName() + " should be " + realPropertyType + " but is given as " + valueClass); 
+		        		}
+		        	}
+		        }
+	        }
+	        log.debug("Returning " + pf);
+	    	return pf;
+        }
+    }
 
+	/**
+     * Loops over the collection to check to see if the given object is in that
+     * collection.  
+     * 
+     * This method <i>only</i> uses the .equals() method for comparison.  This should
+     * be used in the patient/person objects on their collections.  Their collections
+     * are SortedSets which use the compareTo method for equality as well.  The compareTo
+     * method is currently optimized for sorting, not for equality
+     * 
+     * A null <code>obj</code> will return false
+     * 
+     * @param objects collection to loop over
+     * @param obj Object to look for in the <code>objects</code>
+     * @return true/false whether the given object is found
+     */
+    public static boolean collectionContains(Collection<?> objects, Object obj) {
+    	if (obj == null || objects == null)
+    		return false;
+    	
+    	for (Object o : objects) {
+    		if (o.equals(obj))
+    			return true;
+    	}
+    	
+    	return false;
+    }    
 }

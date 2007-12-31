@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -28,7 +29,6 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
 /**
  * OpenMRS HL7 API
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public class HL7ServiceImpl implements HL7Service {
@@ -59,6 +59,13 @@ public class HL7ServiceImpl implements HL7Service {
 			throw new APIAuthenticationException(
 					"Insufficient privilege to view an HL7 source");
 		return getHL7DAO().getHL7Source(hl7SourceId);
+	}
+	
+	public HL7Source getHL7Source(String name) {
+		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_SOURCE))
+			throw new APIAuthenticationException(
+					"Insufficient privilege to view an HL7 source");
+		return getHL7DAO().getHL7Source(name);
 	}
 
 	public Collection<HL7Source> getHL7Sources() {
@@ -383,4 +390,12 @@ public class HL7ServiceImpl implements HL7Service {
 	public void garbageCollect() {
 		getHL7DAO().garbageCollect();
 	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#encounterCreated(org.openmrs.Encounter)
+	 */
+	public void encounterCreated(Encounter encounter) {
+		// nothing is done here in core.  Modules override/hook on this method
+	}
+	
 }

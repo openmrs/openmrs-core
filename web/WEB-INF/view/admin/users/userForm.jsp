@@ -38,6 +38,17 @@
 		<spring:nestedPath path="user.names[0]">
 			<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
 		</spring:nestedPath>
+		<tr>
+			<td><spring:message code="Person.gender"/></td>
+			<td><spring:bind path="user.gender">
+					<openmrs:forEachRecord name="gender">
+						<input type="radio" name="gender" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />
+							<label for="${record.key}"> <spring:message code="Person.gender.${record.value}"/> </label>
+					</openmrs:forEachRecord>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
 		
 		<tr>
 			<td><br/></td><td></td>
@@ -114,6 +125,7 @@
 					<td><input type="password" name="secretAnswer" size="50" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>"/> <i><spring:message code="general.optional"/></i></td>
 				</tr>
 			</c:if>
+			<c:set var="INCLUDE_PERSON_GENDER" value="false"/>
 			<spring:nestedPath path="user">
 				<%@ include file="../person/include/editPersonInfo.jsp" %>
 			</spring:nestedPath>
@@ -123,16 +135,18 @@
 	<br/>
 	
 	<input type="submit" id="saveButton" name="action" value="<spring:message code="User.save"/>" />
-
-	<openmrs:hasPrivilege privilege="Become User (Actually you need to be a superuser)">
-		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="action" value="<spring:message code="User.assumeIdentity" />" onClick="return confirm('<spring:message code="User.assumeIdentity.confirm"/>');" />
-	</openmrs:hasPrivilege>
 	
-	<openmrs:hasPrivilege privilege="Delete User">
-		&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="action" value="<spring:message code="User.delete" />" onClick="return confirm('<spring:message code="User.delete.confirm"/>');" />
-	</openmrs:hasPrivilege>
+	<c:if test="${user.userId != null}">
+		<openmrs:hasPrivilege privilege="Become User (Actually you need to be a superuser)">
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="submit" name="action" value="<spring:message code="User.assumeIdentity" />" onClick="return confirm('<spring:message code="User.assumeIdentity.confirm"/>');" />
+		</openmrs:hasPrivilege>
+		
+		<openmrs:hasPrivilege privilege="Delete User">
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="submit" name="action" value="<spring:message code="User.delete" />" onClick="return confirm('<spring:message code="User.delete.confirm"/>');" />
+		</openmrs:hasPrivilege>
+	</c:if>
 </form>
 
 <script type="text/javascript">

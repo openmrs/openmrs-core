@@ -2,7 +2,6 @@ package org.openmrs.reporting.export;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -13,29 +12,34 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientFilter;
+import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.util.OpenmrsUtil;
 
 public class DataExportReportObject extends AbstractReportObject implements Serializable {
 
-	public final static long serialVersionUID = 1231231343212L;
+	public transient final static long serialVersionUID = 1231231343212L;
 	
-	private static Log log = LogFactory.getLog(DataExportReportObject.class);
+	private transient static Log log = LogFactory.getLog(DataExportReportObject.class);
 	
-	List<Integer> patientIds = new Vector<Integer>();
-	Location location;
+	private List<Integer> patientIds = new Vector<Integer>();
+	private Location location;
 	// cohort and cohortDefinition should really be of type Cohort and PatientFilter, but this is temporary, and I want to avoid the known bug with xml serialization of ReportObjects  
-	Integer cohortId;
-	Integer cohortDefinitionId;
+	private Integer cohortId;
+	private Integer cohortDefinitionId;
+	private Integer patientSearchId;
+	private boolean isAllPatients = false;
 	
 	List<ExportColumn> columns = new Vector<ExportColumn>();
 
-	public final static String TYPE_NAME = "Data Export";
-	public final static String SUB_TYPE_NAME = "";
+	public transient final static String TYPE_NAME = "Data Export";
+	public transient final static String SUB_TYPE_NAME = "Data Export";
 	
-	public final static String MODIFIER_ANY = "any";
-	public final static String MODIFIER_FIRST = "first";
-	public final static String MODIFIER_LAST = "mostRecent";
-	public final static String MODIFIER_LAST_NUM = "mostRecentNum";
+	public transient final static String MODIFIER_ANY = "any";
+	public transient final static String MODIFIER_FIRST = "first";
+	public transient final static String MODIFIER_FIRST_NUM = "firstNum";
+	public transient final static String MODIFIER_LAST = "mostRecent";
+	public transient final static String MODIFIER_LAST_NUM = "mostRecentNum";
 	
 	/**
 	 * Default Constructor
@@ -91,6 +95,16 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	}
 	
 	/**
+	 * Append a cohort column
+	 * @param columnName
+	 * @param cohortId only one of this or filterId should be non-null 
+	 * @param filterId only one of this or cohortId should be non-null
+	 */
+	public void addCohortColumn(String columnName, Integer cohortId, Integer filterId, Integer patientSearchId, String valueIfTrue, String valueIfFalse) {
+		columns.add(new CohortColumn(columnName, cohortId, filterId, patientSearchId, valueIfTrue, valueIfFalse));
+	}
+	
+	/**
 	 * Add a patient to the list to be run on
 	 * @param p
 	 */
@@ -132,7 +146,8 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		else
 			log.warn("Report has column size less than 1");
 		
-		sb.append("\n#end\n\n");
+		// Removed a newline at the end of the string -- the second newline was causing a problem with BIRT 
+		sb.append("\n#end\n");
 		
 		return sb.toString();
 	}
@@ -146,8 +161,10 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		
 		PatientSet patientSet = null;
 		
-		if (getPatientIds() == null || getPatientIds().size() == 0)
+		if (getPatientIds() == null || getPatientIds().size() == 0) {
 			patientSet = Context.getPatientSetService().getAllPatients();
+			setAllPatients(true);
+		}
 		else {
 			patientSet = new PatientSet();
 			for (Integer p : patientIds)
@@ -168,6 +185,11 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 			PatientFilter cohortDefinition = (PatientFilter) Context.getReportService().getReportObject(cohortDefinitionId);
 			if (cohortDefinition != null)
 				patientSet = cohortDefinition.filter(patientSet);
+		}
+		
+		if (patientSearchId != null) {
+			PatientSearchReportObject search = (PatientSearchReportObject) Context.getReportService().getReportObject(patientSearchId);
+			patientSet = OpenmrsUtil.toPatientFilter(search.getPatientSearch(), null).filter(patientSet);
 		}
 		
 		return patientSet;
@@ -218,4 +240,20 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		this.cohortId = cohortId;
 	}
 
+	public Integer getPatientSearchId() {
+    	return patientSearchId;
+    }
+
+	public void setPatientSearchId(Integer patientSearchId) {
+    	this.patientSearchId = patientSearchId;
+    }
+
+	public boolean isAllPatients() {
+    	return isAllPatients;
+    }
+
+	public void setAllPatients(boolean isAllPatients) {
+    	this.isAllPatients = isAllPatients;
+    }
+	
 }

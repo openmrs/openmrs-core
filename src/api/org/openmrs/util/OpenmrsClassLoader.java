@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.util;
 
 import java.io.File;
@@ -21,6 +34,10 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.scheduler.SchedulerService;
 
+/**
+ * This classloader knows about the current ModuleClassLoaders and will 
+ * attempt to load classes from them if needed
+ */
 public class OpenmrsClassLoader extends URLClassLoader {
 	private static Log log = LogFactory.getLog(OpenmrsClassLoader.class);
 	
@@ -39,7 +56,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	public OpenmrsClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
 		instance = this;
-		log.debug("Creating new OpenmrsClassLoader instance with parent: " + parent);
+		
+		if (log.isDebugEnabled())
+			log.debug("Creating new OpenmrsClassLoader instance with parent: " + parent);
 		
 		//disable caching so the jars aren't locked
 		// if performace is effected, this can be disabled in favor of
@@ -50,6 +69,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 	}
 	
+	/**
+	 * Normal constructor.  Sets this class as the parent classloader
+	 */
 	public OpenmrsClassLoader() {
 		this(OpenmrsClassLoader.class.getClassLoader());
 	}
@@ -67,9 +89,13 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		return instance;
 	}
 	
+	/**
+	 * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
+	 */
 	public Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			try {
+				//if (classLoader.isLoadingFromParent() == false)
 				return classLoader.loadClass(name);
 			}
 			catch (ClassNotFoundException e) {
@@ -80,8 +106,12 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		return getParent().loadClass(name);
 	}
 	
+	/**
+	 * @see java.net.URLClassLoader#findResource(java.lang.String)
+	 */
 	public URL findResource(final String name) {
-		log.trace("finding resource: " + name);
+		if (log.isTraceEnabled())
+			log.trace("finding resource: " + name);
 		
 		URL result;
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
@@ -101,6 +131,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		return result;
 	}
 	
+	/**
+	 * @see java.net.URLClassLoader#findResources(java.lang.String)
+	 */
 	public Enumeration<URL> findResources(final String name) throws IOException {
 		Set<URL> results = new HashSet<URL>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
@@ -119,10 +152,12 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		return Collections.enumeration(results);
 	}
 
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return "Openmrs" + super.toString();
 	}
-	
 	
 	/**
 	 * Destroy the current instance of the classloader.  
@@ -149,7 +184,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		// OpenmrsService so this can be generalized
 		try {
 			String key = SchedulerService.class.getName();
-			mementos.put(key, Context.getSchedulerService().saveToMemento());
+			if (!Context.isRefreshingContext())
+				mementos.put(key, Context.getSchedulerService().saveToMemento());
 		}
 		catch (APIException e) {
 			// pass
@@ -207,13 +243,16 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @return
 	 */
 	public static File getLibCacheFolder() {
-		if (libCacheFolder != null) {
+		if (libCacheFolder != null)
 			return libCacheFolderInitialized ? libCacheFolder : null;
-		}
+		
 		synchronized (ModuleClassLoader.class) {
 			libCacheFolder = new File(System.getProperty("java.io.tmpdir"),
 					System.currentTimeMillis() + ".openmrs-lib-cache");
-			log.debug("libraries cache folder is " + libCacheFolder);
+			
+			if (log.isDebugEnabled())
+				log.debug("libraries cache folder is " + libCacheFolder);
+			
 			File lockFile = new File(libCacheFolder, "lock");
 			if (lockFile.exists()) {
 				log.error("can't initialize libraries cache folder "
@@ -253,36 +292,41 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	/**
 	 * Expand the given URL into the given folder
 	 * 
-	 * @param result
-	 * @param folder
-	 * @return
+	 * @param result URL of the file to expand
+	 * @param folder File (directory) to place the expanded file
+	 * @return the URL at the expanded location
 	 */
-	public static URL expandURL(URL result, File folder) {
+    public static URL expandURL(URL result, File folder) {
 		String extForm = result.toExternalForm();
 		// trim out "jar:file:/ and ascii spaces"
 		if (OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
-			OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
+			OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
+            OpenmrsConstants.OPERATING_SYSTEM_OSX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
 			extForm = extForm.replaceFirst("jar:file:", "").replaceAll("%20", " ");
 		else
 			extForm = extForm.replaceFirst("jar:file:/", "").replaceAll("%20", " ");
 		
-		log.debug("url external form: " + extForm);
+		if (log.isDebugEnabled())
+			log.debug("url external form: " + extForm);
 		
 		int i = extForm.indexOf("!");
 		String jarPath = extForm.substring(0, i);
 		String filePath = extForm.substring(i+2); // skip over both the '!' and the '/'
 		
-		log.debug("jarPath: " + jarPath);
-		log.debug("filePath: " + filePath);
+		if (log.isDebugEnabled()) {
+			log.debug("jarPath: " + jarPath);
+			log.debug("filePath: " + filePath);
+		}
 		
 		File file = new File(folder, filePath);
 		
-		log.debug("absolute path: " + file.getAbsolutePath());
+		if (log.isDebugEnabled())
+			log.debug("absolute path: " + file.getAbsolutePath());
 		
 		try {
 			// if the file has been expanded already, return that
 			if (file.exists())
-				return file.toURL();
+				return file.toURI().toURL();
 			else {
 				// expand the url and return a url to the temp file
 				File jarFile = new File(jarPath);
@@ -292,7 +336,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 				}
 				
 				ModuleUtil.expandJar(jarFile, folder, filePath, true);
-				return file.toURL();
+				return file.toURI().toURL();
 			}
 		}
 		catch (IOException io) {
@@ -300,13 +344,11 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * This class exists solely so OpenmrsClassLoader can call the (should be static)
 	 * method <code>URLConnection.setDefaultUseCaches(Boolean)</code>.  This causes jars opened to not be 
-	 * locked (and allows for the webapp to be reloadable.
-	 *  
-	 * @author Ben Wolfe
+	 * locked (and allows for the webapp to be reloadable).
 	 */
 	private class OpenmrsURLConnection extends URLConnection {
 

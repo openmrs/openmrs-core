@@ -74,12 +74,12 @@ public class ReportObjectListController extends SimpleFormController {
 				for (String p : reportObjectList) {
 					try {
 						as.deleteReportObject(Integer.valueOf(p));
-						if (!success.equals("")) success += "<br>";
+						if (!success.equals("")) success += "<br/>";
 						success += textReport + " " + p + " " + deleted;
 						numDeleted++;
 					} catch (APIException e) {
 						log.warn("Error deleting report object", e);
-						if (!error.equals("")) error += "<br>";
+						if (!error.equals("")) error += "<br/>";
 						error += textReport + " " + p + " " + notDeleted;
 					}
 				}

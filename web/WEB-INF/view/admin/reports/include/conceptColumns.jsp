@@ -10,7 +10,8 @@
 			<input type="radio" name="conceptModifier" value="any" checked="checked" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.any"/></span>
 			<input type="radio" name="conceptModifier" value="first" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.first"/></span>
 			<input type="radio" name="conceptModifier" value="mostRecent" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.mostRecent"/></span>
-			<input type="radio" name="conceptModifier" value="mostRecentNum" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.mostRecentNum"/></span>
+			<input type="radio" name="conceptModifier" value="firstNum" onclick="showNum(this)" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.firstNum"/></span>
+			<input type="radio" name="conceptModifier" value="mostRecentNum" onclick="showNum(this)" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.mostRecentNum"/></span>
 			<input type="text" name="conceptModifierNum" size="3" />
 		</td>
 	</tr>

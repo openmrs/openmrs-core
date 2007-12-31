@@ -67,10 +67,7 @@ public class DWREncounterService {
 		
 		return e == null ? null : new EncounterListItem(e);
 	}
-
-	
-	
-	
+ 	
 	@SuppressWarnings("unchecked")
 	public Vector findLocations(String searchValue) {
 		
@@ -120,4 +117,9 @@ public class DWREncounterService {
 		return locationList;
 	}
 	
+	public LocationListItem getLocation(Integer locationId) {
+		EncounterService es = Context.getEncounterService();
+		Location l = es.getLocation(locationId);
+		return l == null ? null : new LocationListItem(l);
+	}
 }

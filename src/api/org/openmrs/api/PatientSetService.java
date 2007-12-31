@@ -10,11 +10,15 @@ import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
+import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
@@ -66,10 +70,13 @@ public interface PatientSetService {
 			Date fromDate, Date toDate);
 	
 	@Transactional(readOnly=true)
-	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Date fromDate, Date toDate, Integer minCount, Integer maxCount);
+	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount);
 	
 	@Transactional(readOnly=true)
-	public PatientSet getPatientsByProgramAndState(Program program, ProgramWorkflowState state, Date fromDate, Date toDate);
+	public PatientSet getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount);
+	
+	@Transactional(readOnly=true)
+	public PatientSet getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate);
 
 	@Transactional(readOnly=true)
 	public PatientSet getPatientsInProgram(Program program, Date fromDate, Date toDate);
@@ -292,6 +299,16 @@ public interface PatientSetService {
 			PatientSet patients);
 
 	/**
+	 * Gets a map of patient identifiers by identifier type, indexed by patient primary key.
+	 * @param patients
+	 * @param type
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(PatientSet patients, PatientIdentifierType type);
+
+
+	/**
 	 * 
 	 * @param identifiers
 	 * @return
@@ -349,6 +366,9 @@ public interface PatientSetService {
 	@Transactional(readOnly=true)
 	public Map<Integer, List<Relationship>> getRelationships(PatientSet ps, RelationshipType relType);
 
+	@Transactional(readOnly=true)
+	public Map<Integer, List<Person>> getRelatives(PatientSet ps, RelationshipType relType, boolean forwards);
+	
 	/**
 	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's null) 
 	 */

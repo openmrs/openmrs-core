@@ -3,6 +3,7 @@ package org.openmrs.hl7;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.hl7.handler.ORUR01Handler;
+import org.openmrs.hl7.handler.ADTA28Handler;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.ApplicationException;
@@ -14,7 +15,6 @@ import ca.uhn.hl7v2.parser.GenericParser;
 /**
  * Main entry point for processing of HL7 streams into OpenMRS
  * 
- * @author Burke Mamlin
  * @version 1.0
  */
 public class HL7Receiver {
@@ -25,10 +25,13 @@ public class HL7Receiver {
 	private MessageTypeRouter router;
 
 	public HL7Receiver() {
+		log.debug("Register handler applications for R01 and A28");
+
 		parser = new GenericParser();
 		// TODO draw registered applications from database or configuration file
 		router = new MessageTypeRouter();
 		router.registerApplication("ORU", "R01", new ORUR01Handler());
+		router.registerApplication("ADT", "A28", new ADTA28Handler());
 	}
 	
 	public Message processMessage(String hl7) throws HL7Exception {

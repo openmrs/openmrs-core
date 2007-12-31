@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
  * /concept to /dictionary/index.htm
  * /concept/** to /dictionary/index.htm?phrase=**
  * 
- * @author Ben Wolfe
+
  *
  */
 public class ConceptRedirectServlet extends HttpServlet {

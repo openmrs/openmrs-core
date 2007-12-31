@@ -1,4 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
+
+<spring:message var="pageTitle" code="feedback.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
 <script type="text/javascript" src='<%= request.getContextPath() %>/dwr/interface/DWRMessageService.js'></script>

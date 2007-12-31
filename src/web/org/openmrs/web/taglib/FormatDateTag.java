@@ -125,6 +125,9 @@ public class FormatDateTag extends TagSupport {
 			log.error(e);
 		}
 		
+		// reset the objects to null because taglibs are reused
+		release();
+		
 		return SKIP_BODY;
 	}
 	

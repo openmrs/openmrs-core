@@ -216,9 +216,11 @@
 			<td style="width: 200px;"><spring:message code="Program.state"/></td>
 			<td style="width: 70px;"><!-- edit column -->&nbsp;</td>
 		</tr>
+		<c:set var="bgColor" value="whitesmoke" />
 		<c:forEach var="program" items="${model.patientPrograms}">
 			<c:if test="${!program.voided}">
-				<tr>
+				<c:choose><c:when test="${bgColor == 'white'}"><c:set var="bgColor" value="whitesmoke" /></c:when><c:otherwise><c:set var="bgColor" value="white" /></c:otherwise></c:choose>
+				<tr style="background-color: ${bgColor}">
 					<td>
 						<c:if test="${program.dateCompleted != null}">
 							<small><i>[<spring:message code="Program.completed"/>]</i></small>
@@ -274,16 +276,18 @@
 <c:if test="${model.allowEdits == 'true' && fn:length(model.programs) > 0}">
 	<openmrs:hasPrivilege privilege="Manage Patient Programs">
 		<div id="newProgramEnroll">
-		<form method="post" action="/@WEBAPP.NAME@/admin/programs/patientProgram.form">
+		<form method="post" action="${pageContext.request.contextPath}/admin/programs/patientProgram.form">
 			<input type="hidden" name="method" value="enroll"/>
 			<input type="hidden" name="patientId" value="${model.patientId}"/>
-			<input type="hidden" name="returnPage" value="/@WEBAPP.NAME@/patientDashboard.form?patientId=${model.patientId}"/>
+			<input type="hidden" name="returnPage" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${model.patientId}"/>
 			
 			<spring:message code="Program.enrollIn"/>
 			<select name="programId" onChange="document.getElementById('enrollSubmitButton').disabled = (this.selectedIndex == 0)">
 				<option value=""><spring:message code="Program.choose"/></option>
 				<c:forEach var="program" items="${model.programs}">
-					<option value="${program.programId}"><openmrs_tag:concept conceptId="${program.concept.conceptId}"/></option>
+					<c:if test="${!program.voided}">
+					  <option value="${program.programId}"><openmrs_tag:concept conceptId="${program.concept.conceptId}"/></option>
+					</c:if>
 				</c:forEach>
 			</select>
 			<spring:message code="general.onDate"/>

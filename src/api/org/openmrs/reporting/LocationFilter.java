@@ -63,7 +63,8 @@ public class LocationFilter extends AbstractPatientFilter implements PatientFilt
 	}
 
 	public PatientSet filter(PatientSet input) {
-		return input.intersect(filterHelper(input));
+		PatientSet ps = filterHelper(input);
+		return input == null ? ps : input.intersect(ps);
 	}
 
 	public PatientSet filterInverse(PatientSet input) {

@@ -1,5 +1,6 @@
 package org.openmrs.api.db;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -11,9 +12,7 @@ import org.openmrs.api.APIException;
 
 /**
  * Patient-related database functions
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
+ *
  * @version 1.0
  */
 public interface PatientDAO {
@@ -65,7 +64,7 @@ public interface PatientDAO {
 	 * @return
 	 * @throws DAOException
 	 */
-	public Set<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException;
+	public Collection<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException;
 	
 	/**
 	 * Find patients by name
@@ -74,7 +73,7 @@ public interface PatientDAO {
 	 * @return set of patients matching name
 	 * @throws DAOException
 	 */
-	public Set<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException;
+	public Collection<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException;
 	
 	/**
 	 * Delete patient from database. This <b>should not be called</b>

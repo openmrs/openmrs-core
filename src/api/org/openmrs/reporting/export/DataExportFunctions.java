@@ -2,16 +2,22 @@ package org.openmrs.reporting.export;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
@@ -19,6 +25,8 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.Relationship;
@@ -30,8 +38,9 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.PatientFilter;
+import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.reporting.PatientSet;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 public class DataExportFunctions {
@@ -41,6 +50,7 @@ public class DataExportFunctions {
 	protected Integer patientId;
 	protected Patient patient;
 	protected PatientSet patientSet;
+	protected boolean isAllPatients = false;
 	private Integer patientCounter = 0; // used for garbage collection (Clean up every x patients)
 	
 	protected String separator = "	";
@@ -53,6 +63,9 @@ public class DataExportFunctions {
 	
 	// Map<EncounterType, Map<patientId, Encounter>>
 	protected Map<String, Map<Integer, ?>> patientEncounterMap = new HashMap<String, Map<Integer, ?>>();
+	
+	// Map<PatientIdentifierType, Map<patientId, PatientIdentifier>>
+	protected Map<String, Map<Integer, PatientIdentifier>> patientIdentifierMap = new HashMap<String, Map<Integer, PatientIdentifier>>();
 	
 	// Map<EncounterType, Map<patientId, Encounter>>
 	protected Map<String, Map<Integer, ?>> patientFirstEncounterMap = new HashMap<String, Map<Integer, ?>>();
@@ -82,7 +95,9 @@ public class DataExportFunctions {
 	
 	// Map<tablename+columnname, Map<personId, columnvalue>>
 	protected Map<String, Map<Integer, Object>> personAttributeMap = new HashMap<String, Map<Integer, Object>>();
-	
+
+	// Map<key, Collection<personId>>, where key is like "Cohort.1" or "Filter.3"
+	protected Map<String, Collection<Integer>> cohortMap = new HashMap<String, Collection<Integer>>();
 	
 	protected PatientSetService patientSetService;
 	protected PatientService patientService;
@@ -109,10 +124,7 @@ public class DataExportFunctions {
 		
 		locale = Context.getLocale();
 		dateFormatLong = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		String format = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(locale.toString().toLowerCase());
-		if (format == null)
-			format = "dd-MM-yyyy";
-		dateFormatShort = new SimpleDateFormat(format, locale);
+		dateFormatShort = OpenmrsUtil.getDateFormat();
 		dateFormatYmd = new SimpleDateFormat("yyyy-MM-dd", locale);
 	}
 	
@@ -121,6 +133,10 @@ public class DataExportFunctions {
 			map.clear();
 		patientEncounterMap.clear();
 		patientEncounterMap = null;
+		for (Map map : patientIdentifierMap.values())
+			map.clear();
+		patientIdentifierMap.clear();
+		patientIdentifierMap = null;		
 		for (Map map : patientFirstEncounterMap.values())
 			map.clear();
 		patientFirstEncounterMap.clear();
@@ -159,7 +175,7 @@ public class DataExportFunctions {
 	 */
 	@Override
 	protected void finalize() throws Throwable {
-		log.error("GC is collecting the data export functions..." + this);
+		log.debug("GC is collecting the data export functions..." + this);
 		super.finalize();
 	}
 
@@ -192,6 +208,8 @@ public class DataExportFunctions {
 			for (Map<Integer, ?> map : patientFirstEncounterMap.values())
 				map.remove(this.patientId);
 			for (Map<Integer, Object> map : patientAttributeMap.values())
+				map.remove(this.patientId);
+			for (Map<Integer, ?> map : patientIdentifierMap.values())
 				map.remove(this.patientId);
 		}
 		
@@ -228,6 +246,20 @@ public class DataExportFunctions {
 	}
 	
 	/**
+     * @return the isAllPatients
+     */
+    public boolean isAllPatients() {
+    	return isAllPatients;
+    }
+
+	/**
+     * @param isAllPatients the isAllPatients to set
+     */
+    public void setAllPatients(boolean isAllPatients) {
+    	this.isAllPatients = isAllPatients;
+    }
+
+	/**
 	 * @return Returns the separator.
 	 */
 	public String getSeparator() {
@@ -239,6 +271,43 @@ public class DataExportFunctions {
 	 */
 	public void setSeparator(String separator) {
 		this.separator = separator;
+	}
+	
+	public String getCohortMembership(Integer cohortId, String valueIfTrue, String valueIfFalse) {
+		return getCohortHelper("C." + cohortId) ? valueIfTrue : valueIfFalse;
+	}
+	
+	public String getCohortDefinitionMembership(Integer filterId, String valueIfTrue, String valueIfFalse) {
+		return getCohortHelper("F." + filterId) ? valueIfTrue : valueIfFalse;
+	}
+	
+	public String getPatientSearchMembership(Integer searchId, String valueIfTrue, String valueIfFalse) {
+		return getCohortHelper("S." + searchId) ? valueIfTrue : valueIfFalse;
+	}
+	
+	protected Boolean getCohortHelper(String key) {
+		if (cohortMap.containsKey(key))
+			return cohortMap.get(key).contains(getPatientId());
+		
+		log.debug("getting cohort/definition for key: " + key);
+		PatientSet ps = null;
+		if (key.startsWith("C.")) {
+			Cohort c = Context.getCohortService().getCohort(Integer.valueOf(key.substring(2)));
+			ps = c.toPatientSet();
+		} else if (key.startsWith("F.")) {
+			PatientFilter pf = Context.getReportService().getPatientFilterById(Integer.valueOf(key.substring(2)));
+			ps = pf.filter(getPatientSet());
+		} else if (key.startsWith("S.")) {
+			PatientSearchReportObject ro = (PatientSearchReportObject) Context.getReportService().getReportObject(Integer.valueOf(key.substring(2)));
+			PatientFilter pf = OpenmrsUtil.toPatientFilter(ro.getPatientSearch(), null);
+			ps = pf.filter(getPatientSet());
+		} else {
+			log.error("key = " + key);
+		}
+		Set<Integer> set = new HashSet<Integer>(ps.getPatientIds());
+		cohortMap.put(key, set);
+		
+		return set.contains(getPatientId());
 	}
 	
 	/**
@@ -255,7 +324,7 @@ public class DataExportFunctions {
 		if (!encounterType.equals(""))
 			type = encounterService.getEncounterType(encounterType);
 		
-		Map<Integer, ?> encounterMap = patientSetService.getEncountersByType(getPatientSet(), type);
+		Map<Integer, ?> encounterMap = patientSetService.getEncountersByType(getPatientSetIfNotAllPatients(), type);
 		
 		patientEncounterMap.put(encounterType, encounterMap);
 		
@@ -296,7 +365,7 @@ public class DataExportFunctions {
 				encounterTypes.add(type);
 		}
 		
-		Map<Integer, Object> encounterMap = patientSetService.getEncounterAttrsByType(getPatientSet(), encounterTypes, attr);
+		Map<Integer, Object> encounterMap = patientSetService.getEncounterAttrsByType(getPatientSetIfNotAllPatients(), encounterTypes, attr);
 		
 		patientEncounterMap.put(key, encounterMap);
 		
@@ -318,7 +387,7 @@ public class DataExportFunctions {
 		if (!encounterType.equals(""))
 			type = encounterService.getEncounterType(encounterType);
 		
-		Map<Integer, Encounter> encounterMap = patientSetService.getFirstEncountersByType(getPatientSet(), type);
+		Map<Integer, Encounter> encounterMap = patientSetService.getFirstEncountersByType(getPatientSetIfNotAllPatients(), type);
 		
 		patientFirstEncounterMap.put(encounterType, encounterMap);
 		
@@ -359,7 +428,7 @@ public class DataExportFunctions {
 				encounterTypes.add(type);
 		}
 		
-		Map<Integer, Object> encounterMap = patientSetService.getFirstEncounterAttrsByType(getPatientSet(), encounterTypes, attr);
+		Map<Integer, Object> encounterMap = patientSetService.getFirstEncounterAttrsByType(getPatientSetIfNotAllPatients(), encounterTypes, attr);
 		
 		patientFirstEncounterMap.put(key, encounterMap);
 		
@@ -419,7 +488,7 @@ public class DataExportFunctions {
 		Map<Integer, List<List<Object>>> patientIdObsMap = conceptAttrObsMap.get(key);
 		if (patientIdObsMap == null) {
 			//log.debug("getting obs list for concept: " + c + " and attr: " + attr);
-			patientIdObsMap = patientSetService.getObservationsValues(getPatientSet(), c, attrs);
+			patientIdObsMap = patientSetService.getObservationsValues(getPatientSetIfNotAllPatients(), c, attrs);
 			conceptAttrObsMap.put(key, patientIdObsMap);
 		}
 		return patientIdObsMap.get(patientId);
@@ -431,7 +500,7 @@ public class DataExportFunctions {
 			patientIdProgramMap = programMap.get(programName);
 		} else {
 			Program program = Context.getProgramWorkflowService().getProgram(programName);
-			patientIdProgramMap = patientSetService.getPatientPrograms(getPatientSet(), program);
+			patientIdProgramMap = patientSetService.getPatientPrograms(getPatientSetIfNotAllPatients(), program);
 			programMap.put(programName, patientIdProgramMap);
 		}
 		return patientIdProgramMap.get(patientId);		
@@ -443,7 +512,7 @@ public class DataExportFunctions {
 			patientIdDrugOrderMap = currentDrugOrderMap.get(drugSetName);
 		} else {
 			Concept drugSet = conceptService.getConceptByName(drugSetName);
-			patientIdDrugOrderMap = patientSetService.getCurrentDrugOrders(getPatientSet(), drugSet);
+			patientIdDrugOrderMap = patientSetService.getCurrentDrugOrders(getPatientSetIfNotAllPatients(), drugSet);
 			currentDrugOrderMap.put(drugSetName, patientIdDrugOrderMap);
 		}
 		return patientIdDrugOrderMap.get(patientId);
@@ -469,7 +538,7 @@ public class DataExportFunctions {
 			patientIdDrugOrderMap = drugOrderMap.get(drugSetName);
 		} else {
 			Concept drugSet = conceptService.getConceptByName(drugSetName);
-			patientIdDrugOrderMap = patientSetService.getCurrentDrugOrders(getPatientSet(), drugSet);
+			patientIdDrugOrderMap = patientSetService.getCurrentDrugOrders(getPatientSetIfNotAllPatients(), drugSet);
 			drugOrderMap.put(drugSetName, patientIdDrugOrderMap);
 		}
 		return patientIdDrugOrderMap.get(patientId);
@@ -494,7 +563,7 @@ public class DataExportFunctions {
 		} else {
 			//log.debug("getting relationship list for type: " + relationshipTypeName);
 			RelationshipType relType = Context.getPersonService().findRelationshipType(relationshipTypeName);
-			patientIdRelationshipMap = patientSetService.getRelationships(getPatientSet(), relType);
+			patientIdRelationshipMap = patientSetService.getRelationships(getPatientSetIfNotAllPatients(), relType);
 			relationshipMap.put(relationshipTypeName, patientIdRelationshipMap);
 		}
 		return patientIdRelationshipMap.get(patientId);
@@ -552,6 +621,7 @@ public class DataExportFunctions {
 		}
 	}
 	
+	
 	/**
 	 * Retrieves properties on the patient like patient.patientName.familyName
 	 * 
@@ -585,9 +655,10 @@ public class DataExportFunctions {
 		}
 		else {
 			//log.debug("getting patient attrs: " + key);
-			patientIdAttrMap = patientSetService.getPatientAttributes(patientSet, className, property, returnAll);
+			patientIdAttrMap = patientSetService.getPatientAttributes(getPatientSetIfNotAllPatients(), className, property, returnAll);
 			patientAttributeMap.put(key, patientIdAttrMap);
 		}
+				
 		return patientIdAttrMap.get(patientId);
 	}
 	
@@ -603,7 +674,7 @@ public class DataExportFunctions {
 		}
 		else {
 			//log.debug("getting patient attrs: " + key);
-			personIdAttrMap = patientSetService.getPersonAttributes(patientSet, attributeName, joinClass, joinProperty, outputColumn, returnAll);
+			personIdAttrMap = patientSetService.getPersonAttributes(getPatientSetIfNotAllPatients(), attributeName, joinClass, joinProperty, outputColumn, returnAll);
 			personAttributeMap.put(key, personIdAttrMap);
 		}
 		return personIdAttrMap.get(patientId);
@@ -752,8 +823,8 @@ public class DataExportFunctions {
 	public Object getFirstObs(Concept concept) throws Exception {
 		List<List<Object>> obs = getObsWithValues(concept, null);
 		
-		for (int x = obs.size() - 1; x >= 0; x--) {
-			List<Object> o = obs.get(x);
+		if (obs.size() > 0) {
+			List<Object> o = obs.get(obs.size() - 1);
 			return o.get(0);
 		}
 		
@@ -775,12 +846,15 @@ public class DataExportFunctions {
 	
 	/**
 	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
-	 * @param e
 	 * @param concept
+	 * @param attrs the List of attributes to fetch
 	 * @return
 	 * @throws Exception
 	 */
 	public List<Object> getFirstObsWithValues(Concept concept, List<String> attrs) throws Exception {
+		// add a null first column for the actual obs value
+		attrs.add(0, null);
+		
 		List<List<Object>> obs = getObsWithValues(concept, attrs);
 		
 		if (obs == null) {
@@ -790,15 +864,89 @@ public class DataExportFunctions {
 			return blankRow;
 		}
 		
-		for (int x = obs.size() - 1; x >= 0; x--) {
-			List<Object> o = obs.get(x);
-			return o;
+		if (obs.size() > 0) {
+			return obs.get(0);
 		}
 		
 		log.info("Could not find an Obs with concept " + concept + " for patient " + patientId);
 		
 		return null;
 	}
+	
+	/**
+	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
+	 * @param concept the Concept of the obs to fetch
+	 * @param n number of obs to get
+	 * @param attrs the Extra obs attributes to get along with this obs value
+	 * @return
+	 * @throws Exception
+	 */
+	public List<List<Object>> getFirstNObsWithValues(Integer n, Concept concept, List<String> attrs) throws Exception {
+		// add a null first column for the actual obs value
+		attrs.add(0, null);
+		
+		List<List<Object>> obs = getObsWithValues(concept, attrs);
+		
+		if (obs == null)
+			obs = new Vector<List<Object>>();
+		
+		if (n.equals(-1))
+			return obs;
+		
+		List<Object> blankRow = new Vector<Object>();
+		for (String attr : attrs)
+			blankRow.add("");
+		while (obs.size() < n)
+			obs.add(0, blankRow);
+		
+		int size = obs.size();
+		List<List<Object>> rList = obs.subList(size-n, size);
+		
+		Collections.reverse(rList);
+		
+		return rList;
+	}
+	
+	/**
+	 * Convenience method for other getFirstNObsWithValues method
+	 * 
+	 * @see #getFirstNObsWithValues(Integer, Concept, List)
+	 */
+	public List<List<Object>> getFirstNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
+		return getFirstNObsWithValues(n, getConcept(conceptId), (List<String>)attrs);
+	}
+	
+	/**
+	 * Retrieves a patient identifier based on the given identifier type.
+	 * 
+	 * @param typeName
+	 * @return
+	 */
+	public Object getPatientIdentifier(String typeName) { 
+		
+		log.debug("Identifier Type: " + typeName);
+		Map<Integer, PatientIdentifier> patientIdentifiers;
+		if (patientIdentifierMap.containsKey(typeName)) {
+			patientIdentifiers = patientIdentifierMap.get(typeName);
+		}
+		else {
+			// Get identifier type by the given name
+			PatientIdentifierType type = 
+				patientService.getPatientIdentifierType(typeName);
+			// Get identifiers by type 
+			patientIdentifiers = 
+				patientSetService.getPatientIdentifiersByType(getPatientSetIfNotAllPatients(), type);
+
+			log.debug("Found identifiers for patient identifier " + type + " = " + patientIdentifiers);
+			
+			
+			patientIdentifierMap.put(typeName, patientIdentifiers);
+		}
+
+		
+		return patientIdentifiers.get(patientId);
+
+	}	
 	
 	/**
 	 * Get all obs for the current patient that match this <code>obs.concept</code>=<code>concept</code>
@@ -831,6 +979,43 @@ public class DataExportFunctions {
 //		
 //		return returnList;
 //	}
+	
+	
+	/**
+	 * Calculate the years between two dates (age).
+	 * 
+	 * @param	fromDate
+	 * @param	toDate
+	 */
+	public int calculateYearsBetween(Date fromDate, Date toDate) { 
+		
+		if (fromDate == null || toDate == null ) { 
+			return 0;
+		}
+		
+		Calendar from = Calendar.getInstance();
+		from.setTime(fromDate);
+		
+		Calendar to = Calendar.getInstance();
+		to.setTime(toDate);
+		
+		int yearsBetween = to.get(Calendar.YEAR) - from.get(Calendar.YEAR);
+		if (from.get(Calendar.DAY_OF_YEAR) > to.get(Calendar.DAY_OF_YEAR)) { 
+			yearsBetween -= 1;
+		}
+		return yearsBetween;
+	}	
+
+	/**
+	 * 
+	 * 
+	 * @param birthdate
+	 * @return
+	 */
+	public int calculateAge(Date birthdate) { 
+		log.info("Calculating age " + birthdate);
+		return calculateYearsBetween(birthdate, new Date());
+	}
 	
 	/**
 	 * Format the given date according to the type ('short', 'long', 'ymd')
@@ -902,6 +1087,18 @@ public class DataExportFunctions {
 			return formatDate(null, (Date)o);
 		else
 			return o.toString();
+	}
+	
+	/**
+	 * Returns the patient set only if it is a subset of all patients.  
+	 * Returns null other wise 
+	 * 
+	 * @return PatientSet object with patients or null if it isn't needed
+	 */
+	public PatientSet getPatientSetIfNotAllPatients() {
+		if (isAllPatients)
+			return null;
+		return getPatientSet();
 	}
 	
 }

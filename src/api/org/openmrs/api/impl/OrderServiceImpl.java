@@ -32,9 +32,6 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Order-related services
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class OrderServiceImpl implements OrderService {
@@ -213,6 +210,10 @@ public class OrderServiceImpl implements OrderService {
 		return getOrderDAO().getOrder(orderId);
 	}
 
+	public DrugOrder getDrugOrder(Integer drugOrderId) throws APIException {
+		return getOrderDAO().getDrugOrder(drugOrderId);
+	}
+
 	/**
 	 * Get all orders
 	 * 
@@ -255,10 +256,14 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow) {
+		return getDrugOrdersByPatient(patient, whatToShow, false);
+	}
+		
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow, boolean includeVoided) {
 		List<DrugOrder> ret = new ArrayList<DrugOrder>();
 		
 		if (patient != null) {
-			List<DrugOrder> drugOrders = getDrugOrdersByPatient(patient);
+			List<DrugOrder> drugOrders = getOrderDAO().getDrugOrdersByPatient(patient, includeVoided);
 			if ( drugOrders != null ) {
 				for (DrugOrder drugOrder : drugOrders) {
 					if ( whatToShow == OrderService.SHOW_COMPLETE && drugOrder.isDiscontinued() ) ret.add(drugOrder);

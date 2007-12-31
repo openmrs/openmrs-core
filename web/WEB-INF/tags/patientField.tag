@@ -17,12 +17,11 @@
 	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	
 	dojo.addOnLoad( function() {
-		patientPopup = dojo.widget.manager.getWidgetById("${formFieldName}_selection");
-		patientSearch = dojo.widget.manager.getWidgetById("${formFieldName}_search");
-
 		dojo.event.topic.subscribe("${formFieldName}_search/select", 
 			function(msg) {
 				if (msg) {
+					var patientPopup = dojo.widget.manager.getWidgetById("${formFieldName}_selection");
+					
 					var patient = msg.objs[0];
 
 					var displayString = patient.personName;

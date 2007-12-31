@@ -21,7 +21,7 @@ public interface FormService {
 	 * @param form
 	 * @throws APIException
 	 */
-	public void createForm(Form form) throws APIException;
+	public Form createForm(Form form) throws APIException;
 
 	/**
 	 * Get form by internal form identifier
@@ -231,24 +231,38 @@ public interface FormService {
 			throws APIException;
 
 	/**
+	 * Create the given form field in the database
 	 * 
-	 * @param formField
+	 * @param formField FormField to create
 	 * @throws APIException
 	 */
 	public void createFormField(FormField formField) throws APIException;
 
 	/**
+	 * Update the given FormField in the database
 	 * 
-	 * @param formField
+	 * @param formField FormField to update
 	 * @throws APIException
 	 */
 	public void updateFormField(FormField formField) throws APIException;
 
 	/**
+	 * Delete the given form field from the database
 	 * 
-	 * @param formField
+	 * @param formField FormField to remove from the database
 	 * @throws APIException
 	 */
 	public void deleteFormField(FormField formField) throws APIException;
+
+	/**
+     * Search for forms with the given text in their name
+     * 
+     * @param text text in form name to search for
+     * @param includeUnpublished
+     * @param includeRetired
+     * @return forms list
+     */
+	@Transactional(readOnly=true)
+	public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired);
 
 }

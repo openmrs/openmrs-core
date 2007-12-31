@@ -285,10 +285,10 @@
 				<tr>
 					<td><spring:message code="Person.gender"/></td>
 					<td><spring:message code="Person.age"/></td>
-					<td><spring:message code="Person.birthdate"/> <i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: ${datePattern})</i></td>
+					<td><spring:message code="Person.birthdate"/> <i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i></td>
 					<c:if test="${showTribe == 'true'}">
 						<td><spring:message code="Patient.tribe"/></td>
-					</c:if>			
+					</c:if>	
 				</tr>
 				<tr>
 					<td style="padding-right: 3em">
@@ -313,27 +313,6 @@
 								}
 								else if (txtbox)
 									txtbox.parentNode.className = "listItemChecked";
-							}
-							
-							function updateAge() {
-								var birthdateBox = document.getElementById('birthdate');
-								var ageBox = document.getElementById('age');
-								try {
-									var birthdate = new Date(birthdateBox.value);
-									var age = getAge(birthdate);
-									if (age > 0)
-										ageBox.innerHTML = age + ' <spring:message code="Person.age.years"/>';
-									else if (age == 1)
-										ageBox.innerHTML = '1 <spring:message code="Person.age.year"/>';
-									else if (age == 0)
-										ageBox.innerHTML = '< 1 <spring:message code="Person.age.year"/>';
-									else
-										ageBox.innerHTML = '?';
-									ageBox.style.display = "";
-								} catch (err) {
-									ageBox.innerHTML = "";
-									ageBox.style.display = "none";
-								}
 							}
 						</script>
 						<spring:bind path="patient.birthdate">			
@@ -436,7 +415,7 @@
 					<input type="text" name="deathDate" size="10" 
 						   value="${status.value}" onClick="showCalendar(this)" 
 						   id="deathDate" />
-					<i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: ${datePattern})</i>
+					<i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 				&nbsp; &nbsp; 

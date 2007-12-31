@@ -12,8 +12,6 @@ import org.openmrs.User;
  * sets the user or role to attribute the alert to. Alerts are not intended to
  * be sent from user to user and a user cannot send a "reply alert"
  * 
- * @author Ben Wolfe
- * 
  */
 public class Alert implements Serializable {
 

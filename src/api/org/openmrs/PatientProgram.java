@@ -10,7 +10,9 @@ import java.util.Set;
 
 import org.openmrs.util.OpenmrsUtil;
 
-public class PatientProgram {
+public class PatientProgram implements java.io.Serializable {
+	
+	public static final long serialVersionUID = 0L;
 
 	private Integer patientProgramId;
 	private Patient patient;
@@ -148,38 +150,50 @@ public class PatientProgram {
 	public boolean getActive(Date onDate) {
 		if (onDate == null)
 			onDate = new Date();
-		return (dateEnrolled == null || OpenmrsUtil.compare(dateEnrolled, onDate) <= 0) && (dateCompleted == null || OpenmrsUtil.compare(dateCompleted, onDate) > 0); 
+		return !getVoided() && (dateEnrolled == null || OpenmrsUtil.compare(dateEnrolled, onDate) <= 0) && (dateCompleted == null || OpenmrsUtil.compare(dateCompleted, onDate) > 0); 
 	}
 	
 	public boolean getActive() {
 		return getActive(null);
 	}
 	
+	public PatientState getCurrentState(ProgramWorkflow wf) {
+		Set<PatientState> states = this.getStates();
+		Date now = new Date();
+		if (states != null) {
+			for (PatientState state : states) {
+				if ( !state.getVoided() &&
+						( wf == null || state.getState().getProgramWorkflow().equals(wf) ) &&
+						state.getActive(now) )
+					return state;
+			}
+		}
+		return null;
+	}
+	
 	public PatientState getCurrentState() {
-		PatientState ret = null;
+		// TODO: this isn't really right - a patient can have many current states (in different workflows)
+		return getCurrentState(null);
+	}
+
+
+	public Set<PatientState> getCurrentStates() {
+		
+		Set<PatientState> ret = null;
 		
 		Set<PatientState> states = this.getStates();
 		if ( states != null ) {
+			Date now = new Date();
 			for ( PatientState state : states ) {
-				Date now = new Date();
-				
-				boolean isEnded = (state.getEndDate() != null);
-				if (isEnded) isEnded = state.getEndDate().before(now); 
-				
-				if ( state.getActive() && !state.getVoided() && state.getStartDate().before(now) && !isEnded ) {
-					ret = state;
+				if (!state.getVoided() && state.getActive(now)) {
+					if ( ret == null ) ret = new HashSet<PatientState>();
+					ret.add(state);
 				}
 			}
 		}
-
 		return ret;
 	}
-	
-	
-//	<c:forEach var="state" items="${program.states}">
-	//<c:if test="${!state.voided && state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active}">
 
-	
 	public List<PatientState> statesInWorkflow(ProgramWorkflow wf, boolean includeVoided) {
 		List<PatientState> ret = new ArrayList<PatientState>();
 		for (PatientState st : getStates()) {

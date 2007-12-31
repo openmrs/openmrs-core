@@ -11,10 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface MessageService { 
 	
-	// Set depenedencies for message services
+	// Set dependencies for message services
 	// TODO Should these be required or do we let the implementations constructor dictate the dependencies?
 	public void setMessageSender(MessageSender sender);
+	public MessageSender getMessageSender();
 	public void setMessagePreparator(MessagePreparator preparator);
+	public MessagePreparator getMessagePreparator();
+	
 	
 	// Send message methods
 	public void send(Message message) throws MessageException;

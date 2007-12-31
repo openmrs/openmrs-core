@@ -2,6 +2,7 @@
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/patientDashboard.form" />
 
 <c:set var="OPENMRS_VIEWING_PATIENT_ID" scope="request" value="${patient.patientId}"/>
+<spring:message var="pageTitle" code="patientDashboard.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <script type="text/javascript">

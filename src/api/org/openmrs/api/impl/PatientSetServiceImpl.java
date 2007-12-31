@@ -2,6 +2,7 @@ package org.openmrs.api.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,11 +17,15 @@ import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
+import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
@@ -104,12 +109,17 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getPatientsHavingObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
 	}
 	
-	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
-		return getPatientSetDAO().getPatientsHavingEncounters(encounterType, location, fromDate, toDate, minCount, maxCount);
+	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
+		List<EncounterType> list = Collections.singletonList(encounterType);
+		return getPatientSetDAO().getPatientsHavingEncounters(list, location, form, fromDate, toDate, minCount, maxCount);
+	}
+
+	public PatientSet getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
+		return getPatientSetDAO().getPatientsHavingEncounters(encounterTypeList, location, form, fromDate, toDate, minCount, maxCount);
 	}
 	
-	public PatientSet getPatientsByProgramAndState(Program program, ProgramWorkflowState state, Date fromDate, Date toDate) {
-		return getPatientSetDAO().getPatientsByProgramAndState(program, state, fromDate, toDate);
+	public PatientSet getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate) {
+		return getPatientSetDAO().getPatientsByProgramAndState(program, stateList, fromDate, toDate);
 	}
 	
 	public PatientSet getPatientsInProgram(Program program, Date fromDate, Date toDate) {
@@ -246,6 +256,8 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) {
+		if (patients == null || patients.size() == 0)
+			return new HashMap<Integer, List<Obs>>();
 		return getPatientSetDAO().getObservations(patients, concept, null, null);
 	}
 	
@@ -253,6 +265,8 @@ public class PatientSetServiceImpl implements PatientSetService {
 	 * Date range is inclusive of both endpoints 
 	 */
 	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept, Date fromDate, Date toDate) {
+		if (patients == null || patients.size() == 0)
+			return new HashMap<Integer, List<Obs>>();
 		return getPatientSetDAO().getObservations(patients, concept, fromDate, toDate);
 	}
 	
@@ -312,9 +326,14 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getFirstEncountersByType(patients, types);
 	}
 	
-	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) {
+	
+	/**
+     * @see org.openmrs.api.PatientSetService#getPatientAttributes(org.openmrs.reporting.PatientSet, java.lang.String, java.lang.String[], boolean)
+     */
+    public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) {
 		return getPatientSetDAO().getPatientAttributes(patients, className, property, returnAll);
-	}
+    }
+	
 	
 	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String classNameDotProperty, boolean returnAll) {
 		String[] temp = classNameDotProperty.split("\\.");
@@ -323,6 +342,13 @@ public class PatientSetServiceImpl implements PatientSetService {
 		}
 		return getPatientAttributes(patients, temp[0], temp[1], returnAll);
 	}
+	
+	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(PatientSet patients, PatientIdentifierType type) {
+		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
+		if (type != null)
+			types.add(type);
+		return getPatientSetDAO().getPatientIdentifierByType(patients, types);
+	}	
 	
 	/**
 	 * @see org.openmrs.api.PatientSetService#getPersonAttributes(org.openmrs.reporting.PatientSet, java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean)
@@ -345,6 +371,10 @@ public class PatientSetServiceImpl implements PatientSetService {
 	
 	public Map<Integer, List<Relationship>> getRelationships(PatientSet ps, RelationshipType relType) {
 		return getPatientSetDAO().getRelationships(ps, relType);
+	}
+	
+	public Map<Integer, List<Person>> getRelatives(PatientSet ps, RelationshipType relType, boolean forwards) {
+		return getPatientSetDAO().getRelatives(ps, relType, forwards);
 	}
 	
 	// these should go elsewhere
@@ -416,7 +446,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 
 	/**
-	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's null) 
+	 * @return all drug orders whose drug concept is in the given set (or all drugs if that's null) 
 	 */
 	public Map<Integer, List<DrugOrder>> getDrugOrders(PatientSet ps, Concept drugSet) {
 		List<Concept> drugConcepts = null;
@@ -444,5 +474,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 		}
 		return analysis;
 	}
+
+
 	
 }

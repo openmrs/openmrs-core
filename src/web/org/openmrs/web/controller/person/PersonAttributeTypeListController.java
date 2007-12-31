@@ -75,12 +75,12 @@ public class PersonAttributeTypeListController extends SimpleFormController {
 				for (String p : attrTypeList) {
 					try {
 						ps.deletePersonAttributeType(Integer.valueOf(p));
-						if (!success.equals("")) success += "<br>";
+						if (!success.equals("")) success += "<br/>";
 						success += type + " #" + p + " " + deleted;
 					}
 					catch (Exception e) {
 						log.warn("Error deleting person attribute type", e);
-						if (!error.equals("")) error += "<br>";
+						if (!error.equals("")) error += "<br/>";
 						error += type + " #" + p + " " + notDeleted;
 					}
 				}

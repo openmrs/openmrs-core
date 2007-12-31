@@ -1,5 +1,6 @@
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -74,11 +75,11 @@ public interface PatientService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	public Set<Patient> getPatientsByIdentifierPattern(String identifier,
+	public Collection<Patient> getPatientsByIdentifierPattern(String identifier,
 			boolean includeVoided) throws APIException;
 
 	@Transactional(readOnly=true)
-	public Set<Patient> getPatientsByName(String name) throws APIException;
+	public Collection<Patient> getPatientsByName(String name) throws APIException;
 
 	/**
 	 * Find patients by name
@@ -88,7 +89,7 @@ public interface PatientService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	public Set<Patient> getPatientsByName(String name, boolean includeVoided)
+	public Collection<Patient> getPatientsByName(String name, boolean includeVoided)
 			throws APIException;
 
 	/**
@@ -217,8 +218,22 @@ public interface PatientService {
 	public List<Tribe> findTribes(String search) throws APIException;
 
 	@Transactional(readOnly=true)
-	public List<Patient> findPatients(String query, boolean includeVoided);
+	public Collection<Patient> findPatients(String query, boolean includeVoided);
 
+	/**
+	 * This method tries to find a patient in the database given the attributes
+	 * on the given <code>patientToMatch</code> object.
+	 * 
+	 * Assumes there could be a PersonAttribute on this Patient with 
+	 * PersonAttributeType.name = "Other Matching Information". This PersonAttribute
+	 * has a "value" that is just key value pairs in the form of key:value;nextkey:nextvalue;
+	 * 
+	 * @param patientToMatch
+	 * @return null if no match found, a fresh patient object from the db if is found
+	 */
+	@Transactional(readOnly=true)
+	public Patient findPatient(Patient patientToMatch);
+	
 	/**
 	 * Search the database for patients that share the given attributes
 	 * attributes similar to: [gender, tribe, givenName, middleName, familyname]

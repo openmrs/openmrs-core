@@ -66,7 +66,8 @@ public class TextObsPatientFilter extends AbstractReportObject implements Patien
 
 	public PatientSet filter(PatientSet input) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.intersect(service.getPatientsHavingTextObs(concept, value, timeModifier));
+		PatientSet ps = service.getPatientsHavingTextObs(concept, value, timeModifier);
+		return input == null ? ps : input.intersect(ps);
 	}
 	
 	public PatientSet filterInverse(PatientSet input) {

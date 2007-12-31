@@ -1,6 +1,8 @@
 package org.openmrs.web.taglib;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,7 +75,7 @@ public class RequireTag extends TagSupport {
 			}
 		}
 		
-		if (session_ip_addr != null && !session_ip_addr.equals(request_ip_addr)) {
+		if (differentIpAddresses(session_ip_addr, request_ip_addr)) {
 			errorOccurred = true;
 			// stops warning message in IE when refreshing repeatedly
 			if ("0.0.0.0".equals(request_ip_addr) == false) {
@@ -107,6 +109,37 @@ public class RequireTag extends TagSupport {
 		
 		return SKIP_BODY;
 	}
+
+	/**
+     * Determines if the given ip addresses are the same.
+     * 
+     * @param session_ip_addr
+     * @param request_ip_addr
+     * @return true/false whether these IPs are different
+     */
+    private boolean differentIpAddresses(String sessionIpAddr, String requestIpAddr) {
+    	if (sessionIpAddr == null || requestIpAddr == null)
+    		return false;
+    	
+    	// IE7 and firefox store "localhost" IP addresses differently.
+    	// To accomodate switching from firefox browing to IE taskpane,
+    	// we assume these addresses to be equivalent
+    	List<String> equivalentAddresses = new ArrayList<String>();
+    	equivalentAddresses.add("127.0.0.1");
+    	equivalentAddresses.add("0.0.0.0");
+    	
+    	// if the addresses are equal, all is well
+    	if (sessionIpAddr.equals(requestIpAddr))
+    		return false;
+    	// if they aren't equal, but we consider them to be, also all is well
+    	else if (equivalentAddresses.contains(sessionIpAddr) && 
+    			equivalentAddresses.contains(requestIpAddr)){
+    		return false;
+    	}
+    	
+    	// the IP addresses were not equal, (don't continue with this user)
+	    return true;
+    }
 
 	public int doEndTag() {
 		if ( errorOccurred )

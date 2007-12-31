@@ -108,6 +108,16 @@ public interface OrderService {
 	public Order getOrder(Integer orderId) throws APIException;
 
 	/**
+	 * Get drugOrder by internal identifier
+	 * 
+	 * @param orderId internal order identifier
+	 * @return order with given internal identifier
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	public DrugOrder getDrugOrder(Integer drugOrderId) throws APIException;
+
+	/**
 	 * Get all orders
 	 * 
 	 * @return orders list
@@ -143,9 +153,28 @@ public interface OrderService {
 	@Transactional(readOnly=true)
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException;
 
+	/**
+	 * Get drug orders for a given patient, not including voided orders
+	 * 
+	 * @param patient
+	 * @param whatToShow
+	 * @return List of drug orders, for the given patient, not including voided orders
+	 */
 	@Transactional(readOnly=true)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient,
 			int whatToShow);
+	
+	/**
+	 * Get drug orders for a given patient
+	 * 
+	 * @param patient
+	 * @param whatToShow
+	 * @param includeVoided
+	 * @return List of drug orders for the given patient
+	 */
+	@Transactional(readOnly=true)
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient,
+			int whatToShow, boolean includeVoided);
 
 	/**
 	 * Undiscontinue order record

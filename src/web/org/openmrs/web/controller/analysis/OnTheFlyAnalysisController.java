@@ -28,8 +28,8 @@ import org.openmrs.reporting.PatientAnalysis;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.ReportService;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.propertyeditor.ConceptEditor;
-import org.openmrs.web.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.LocationEditor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
@@ -160,9 +160,6 @@ public class OnTheFlyAnalysisController implements Controller {
 						}
 						if (temp == 0) {
 							temp = left.getName().compareTo(right.getName());
-						}
-						if (temp == 0) {
-							temp = left.getDateCreated().compareTo(right.getDateCreated());
 						}
 						return temp;
 					}

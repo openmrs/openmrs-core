@@ -11,7 +11,10 @@ import ca.uhn.hl7v2.HL7Exception;
  * Processes message in the HL7 inbound queue. Messages are moved into either
  * the archive or error table depending on success or failure of the processing.
  * 
- * @author Burke Mamlin
+ * You may, however, set a global property that causes the processor to ignore
+ * messages regarding unknown patients from a non-local HL7 source. (i.e. those
+ * messages neither go to the archive or the error table.) 
+ * 
  * @version 1.0
  */
 @Transactional
@@ -63,8 +66,21 @@ public class HL7InQueueProcessor /* implements Runnable */{
 				log.debug("Removing HL7 message from inbound queue");
 			Context.getHL7Service().deleteHL7InQueue(hl7InQueue);
 		} catch (HL7Exception e) {
-			setFatalError(hl7InQueue, "Trouble parsing HL7 message ("
-					+ hl7InQueue.getHL7SourceKey() + ")", e);
+			boolean skipError = false;
+			log.error(e.getCause().getMessage());
+			log.error(e.getCause().getMessage().equals("Could not resolve patient"));
+			log.error(hl7InQueue.getHL7Source().getName());
+			log.error(!hl7InQueue.getHL7Source().getName().equals("local"));
+			log.error(Context.getAdministrationService().getGlobalProperty("hl7_processor.ignore_missing_patient_non_local", "false"));
+			log.error(Context.getAdministrationService().getGlobalProperty("hl7_processor.ignore_missing_patient_non_local", "false").equals("true"));
+			if ( e.getCause().getMessage().equals("Could not resolve patient")
+					&& !hl7InQueue.getHL7Source().getName().equals("local")
+					&& Context.getAdministrationService().getGlobalProperty("hl7_processor.ignore_missing_patient_non_local", "false").equals("true") ) {
+				skipError = true;
+			}
+			if (!skipError)
+				setFatalError(hl7InQueue, "Trouble parsing HL7 message ("
+						+ hl7InQueue.getHL7SourceKey() + ")", e);
 			return;
 		} catch (Exception e) {
 			setFatalError(hl7InQueue,

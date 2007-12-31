@@ -13,7 +13,7 @@
 	session.removeAttribute(WebConstants.OPENMRS_ERROR_ARGS);
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<openmrs:htmlInclude file="/openmrs.js" />
 		<openmrs:htmlInclude file="/openmrs.css" />
@@ -21,10 +21,23 @@
 		<openmrs:htmlInclude file="/dwr/engine.js" />
 		<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
 
-		<title><spring:message code="openmrs.title"/></title>
+		<c:choose>
+			<c:when test="${!empty pageTitle}">
+				<title>${pageTitle}</title>
+			</c:when>
+			<c:otherwise>
+				<title><spring:message code="openmrs.title"/></title>
+			</c:otherwise>
+		</c:choose>
+		
+		
+		<script type="text/javascript">
+			/* variable used in js to know the context path */
+			var openmrsContextPath = '${pageContext.request.contextPath}';
+		</script>
 	</head>
 
-<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<body>
 	<div id="pageBody">
 		<div id="userBar">
 			<openmrs:authentication>
@@ -91,7 +104,7 @@
 				<c:if test="${varStatus.last}">
 					</div>
 					<div id="alertBar">
-						<img src="<%= request.getContextPath() %>/images/alert.gif" align="center"/>
+						<img src="<%= request.getContextPath() %>/images/alert.gif" align="center" alt='<spring:message code="Alert.unreadAlert"/>' title='<spring:message code="Alert.unreadAlert"/>'/>
 						<c:if test="${varStatus.count == 1}"><spring:message code="Alert.unreadAlert"/></c:if>
 						<c:if test="${varStatus.count != 1}"><spring:message code="Alert.unreadAlerts" arguments="${varStatus.count}" /></c:if>
 					</div>

@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.annotation;
 
 import java.lang.annotation.Annotation;
@@ -45,10 +58,9 @@ import org.springframework.metadata.Attributes;
  * <p>These security annotations are similiar to the Commons Attributes
  * approach, however they are using Java 5 language-level metadata support.
  *
- * @author Justin Miranda
- *
  * @see org.openmrs.annotation.Authorized
  */
+@SuppressWarnings("unchecked")
 public class AuthorizedAnnotationAttributes implements Attributes {
 
 	/**
@@ -93,6 +105,63 @@ public class AuthorizedAnnotationAttributes implements Attributes {
 		}
 		return attributes;
 	}
+	
+	/**
+	 * Returns whether or not to require that the user have all
+	 * of the privileges in order to be "authorized" for this class
+	 * 
+	 * @param method
+	 * @return boolean true/false whether to "and" privileges together
+	 * 
+	 * @see org.openmrs.annotation.Authorized#requireAll()
+	 */
+	public boolean getRequireAll(Class target) {
+		for (Annotation annotation : target.getAnnotations()) {
+			// check for Secured annotations
+			if (annotation instanceof Authorized) {
+				Authorized attr = (Authorized) annotation;
+				return attr.requireAll();
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Returns whether or not to require that the user have all
+	 * of the privileges in order to be "authorized" for this method
+	 * 
+	 * @param method
+	 * @return boolean true/false whether to "and" privileges together
+	 * 
+	 * @see org.openmrs.annotation.Authorized#requireAll()
+	 */
+	public boolean getRequireAll(Method method) {
+		for (Annotation annotation : method.getAnnotations()) {
+			// check for Secured annotations
+			if (annotation instanceof Authorized) {
+				Authorized attr = (Authorized) annotation;
+				return attr.requireAll();
+			}
+		}
+		return false;
+	}
+	
+	/**
+     * Determine if this method has the @Authorized annotation even on it
+     * 
+     * @param method
+     * @return boolean true/false whether this method is annotated for OpenMRS
+     */
+    public boolean hasAuthorizedAnnotation(Method method) {
+    	for (Annotation annotation : method.getAnnotations()) {
+			// check for Secured annotations
+			if (annotation instanceof Authorized) {
+				return true;
+			}
+    	}
+    	
+    	return false;
+    }
 
 
 	public Collection getAttributes(Class clazz, Class filter) {

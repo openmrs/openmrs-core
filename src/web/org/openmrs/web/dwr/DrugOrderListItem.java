@@ -5,8 +5,7 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.DrugOrder;
-import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 public class DrugOrderListItem {
 	
@@ -49,8 +48,7 @@ public class DrugOrderListItem {
 		if ( drugOrder.getConcept() != null ) conceptId = drugOrder.getConcept().getConceptId();
 		instructions = drugOrder.getInstructions();
 
-		String datePattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase());
-		SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
 		
 		if ( drugOrder.getStartDate() != null ) startDate = sdf.format(drugOrder.getStartDate());
 		if ( drugOrder.getAutoExpireDate() != null ) autoExpireDate = sdf.format(drugOrder.getAutoExpireDate());
