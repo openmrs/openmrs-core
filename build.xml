@@ -7,7 +7,7 @@
 <!-- ** @author Burke Mamlin                                  ** -->
 <!-- ** @version 1.0                                          ** -->
 <!-- *********************************************************** -->
-<project name="OpenMRS Trunk" default="dist">
+<project name="OpenMRS" default="dist">
 
 	<tstamp>
 		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" />
