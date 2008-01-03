@@ -1,23 +1,27 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.synchronization.engine;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-import org.openmrs.api.context.Context;
 import org.openmrs.api.SynchronizationService;
-import org.openmrs.serialization.FilePackage;
-import org.openmrs.serialization.Item;
-import org.openmrs.serialization.Record;
-import org.openmrs.synchronization.engine.SyncStrategyFile;
+import org.openmrs.api.context.Context;
 
-import org.openmrs.synchronization.engine.SyncItem;
-import org.openmrs.synchronization.engine.SyncItemKey;
-import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.synchronization.SyncRecordState;
-import org.openmrs.synchronization.SyncItemState;
-
+/**
+ * TODO: describe test file
+ */
 public class SyncStrategyFileTest extends SyncBaseTest {
 
     protected SyncSource source = null;
@@ -28,14 +32,9 @@ public class SyncStrategyFileTest extends SyncBaseTest {
 
     protected List<SyncRecord> changed = null;
 
-    @Override
-    protected void onSetUpBeforeTransaction() throws Exception {
-        super.onSetUpBeforeTransaction();
-        authenticate();
-    }
-
     public void testCreateTx() throws Exception {
-        assertTrue(Context.isAuthenticated());
+    	executeInitialDataSet();
+        authenticate();
 
         // setup instances
         source = new SyncSourceJournal();

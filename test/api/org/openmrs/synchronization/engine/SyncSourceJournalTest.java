@@ -1,32 +1,41 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.synchronization.engine;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.Date;
 
-import org.openmrs.api.context.Context;
 import org.openmrs.api.SynchronizationService;
-import org.openmrs.synchronization.engine.SyncSource;
-import org.openmrs.synchronization.engine.SyncSourceJournal;
-
-import org.openmrs.synchronization.engine.SyncItem;
-import org.openmrs.synchronization.engine.SyncItemKey;
-import org.openmrs.synchronization.engine.SyncRecord;
+import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.SyncItemState;
 
+/**
+ * TODO: describe file
+ */
 public class SyncSourceJournalTest extends SyncBaseTest {
 
-    @Override
-    protected void onSetUpBeforeTransaction() throws Exception {
-        super.onSetUpBeforeTransaction();
-        authenticate();
-        
-    }
-
+    /**
+     * Auto generated method comment
+     * 
+     * @throws Exception
+     */
     public void testGlobalProperties() throws Exception {
-        assertTrue(Context.isAuthenticated());
+    	executeInitialDataSet();
+        authenticate();
         
         SyncSource source = null;
         SyncPoint<Date> p = null;
@@ -57,8 +66,14 @@ public class SyncSourceJournalTest extends SyncBaseTest {
 
     }
     
-    public  void testGetChanged() {
-        assertTrue(Context.isAuthenticated());
+    /**
+     * Auto generated method comment
+     * 
+     * @throws Exception
+     */
+    public void testGetChanged() throws Exception {
+    	executeInitialDataSet();
+        authenticate();
 
         //get service
         SynchronizationService service = Context.getSynchronizationService();
@@ -86,7 +101,7 @@ public class SyncSourceJournalTest extends SyncBaseTest {
         return;
     }
     
-    /*
+    /**
      * helper method - can be reused by other sync tests
      */
     public static List<SyncRecord> createRecords(SynchronizationService syncService) {
@@ -141,6 +156,12 @@ public class SyncSourceJournalTest extends SyncBaseTest {
         return records;
     }
     
+    /**
+     * Auto generated method comment
+     * 
+     * @param syncService
+     * @param records
+     */
     public static void cleanupRecords(SynchronizationService syncService,List<SyncRecord> records) {
         Iterator<SyncRecord> iterator = records.iterator();
         while (iterator.hasNext()) {

@@ -1,37 +1,44 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.synchronization.engine;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.Date;
 
-import org.openmrs.api.context.Context;
 import org.openmrs.serialization.FilePackage;
 import org.openmrs.serialization.IItem;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Package;
 import org.openmrs.serialization.Record;
-
-import org.openmrs.synchronization.engine.SyncItem;
-import org.openmrs.synchronization.engine.SyncItemKey;
-import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.SyncItemState;
 
+/**
+ * TODO: Describe test file
+ */
 public class SyncRecordTest extends SyncBaseTest {
 
-    @Override
-    protected void onSetUpBeforeTransaction() throws Exception {
-        super.onSetUpBeforeTransaction();
-        authenticate();
-
-    }
-
-    /*
+    /**
      * test serialization of syncRecord
+     * 
+     * @throws Exception
      */
     public void testSerialization() throws Exception {
-        assertTrue(Context.isAuthenticated());
+    	executeInitialDataSet();
+        authenticate();
 
         // 'normal' state
         String guid1 = UUID.randomUUID().toString();
@@ -103,8 +110,14 @@ public class SyncRecordTest extends SyncBaseTest {
         return;
     }
 
+    /**
+     * Auto generated method comment
+     * 
+     * @throws Exception
+     */
     public void testEquality() throws Exception {
-        assertTrue(Context.isAuthenticated());
+    	executeInitialDataSet();
+        authenticate();
         
         //setup instance 1
         String guid1 = UUID.randomUUID().toString();

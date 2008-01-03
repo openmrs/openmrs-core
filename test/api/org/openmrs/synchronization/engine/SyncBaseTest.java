@@ -9,10 +9,5 @@ import org.openmrs.BaseContextSensitiveTest;
  */
 public class SyncBaseTest extends BaseContextSensitiveTest {
 
-    @Override
-    protected void onSetUpBeforeTransaction() throws Exception {
-        super.onSetUpBeforeTransaction();
-        authenticate();
 
-    }
 }

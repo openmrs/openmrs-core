@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <synchronization_server server_id="1" nickname="Remote Child Server" address="" server_type="CHILD" username="admin" password="test" last_sync="2008-01-01 15:38:35.0" disabled="false" child_username="admin"/>
+</dataset>
