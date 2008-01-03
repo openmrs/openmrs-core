@@ -869,7 +869,7 @@ CREATE TABLE `location` (
 
 /*!40000 ALTER TABLE `location` DISABLE KEYS */;
 LOCK TABLES `location` WRITE;
-INSERT INTO `location` VALUES (1,'Unknown Location',NULL,'','','','','','',NULL,NULL,1,'2005-09-22 00:00:00',NULL,NULL);
+INSERT INTO `location` VALUES (1,'Unknown Location',NULL,'','','','','','',NULL,NULL,1,'2005-09-22 00:00:00',NULL,NULL,NULL,NULL,NULL);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `location` ENABLE KEYS */;
 
