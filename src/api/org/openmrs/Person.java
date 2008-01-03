@@ -616,11 +616,22 @@ public class Person implements java.io.Serializable, Synchronizable {
 	 * @return integer age
 	 */
 	public Integer getAge() {
-		
+		return getAge(null);
+	}
+	
+	/**
+	 * Convenience method: calculates the person's age on a given date based on the birthdate
+	 * 
+	 * @param onDate (null defaults to today)
+	 * @return
+	 */
+	public Integer getAge(Date onDate) {
 		if (birthdate == null)
 			return null;
 		
 		Calendar today = Calendar.getInstance();
+		if (onDate != null)
+			today.setTime(onDate);
 		
 		Calendar bday = new GregorianCalendar();
 		bday.setTime(birthdate);
@@ -631,14 +642,11 @@ public class Person implements java.io.Serializable, Synchronizable {
 		// set birthday calendar to this year
 		// if the current date is less that the new 'birthday', subtract a year
 		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
-		if (today.before(bday)) {
-				age = age -1;
-		}
+		if (today.before(bday))
+			age = age -1;
 		
 		return age;
 	}
-	
-	
 	
 	public User getChangedBy() {
 		return changedBy;

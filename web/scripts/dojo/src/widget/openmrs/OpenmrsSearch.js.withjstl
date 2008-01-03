@@ -826,7 +826,7 @@ dojo.widget.defineWidget(
 
 	exitNumberMode: function() {
 		this.hideHighlight();
-		if (this.inputNode.value == "")
+		if (this.inputNode.value == "" && this.lastPhraseSearched)
 			this.inputNode.value = this.lastPhraseSearched;
 	},
 	

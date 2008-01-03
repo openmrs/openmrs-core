@@ -1,14 +1,10 @@
 OpenMRS
 
-$Date$
-$Rev$
-
-This is the root folder.  We're using Eclipse 3.1.0 (www.eclipse.org).
+This is the root folder.  We're using Eclipse 3.3.0 (www.eclipse.org).
 The project tree is set up as follows:
 
-docs/				documentation 
 lib/				dependencies
-metadata/			configuration files and other stuff
+metadata/			configuration files, sql files and other stuff
 src/				source code
 test/				testing (e.g. JUnit test) code
 web/				web-related code

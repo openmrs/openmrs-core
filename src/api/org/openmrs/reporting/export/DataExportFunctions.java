@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -822,8 +823,8 @@ public class DataExportFunctions {
 	public Object getFirstObs(Concept concept) throws Exception {
 		List<List<Object>> obs = getObsWithValues(concept, null);
 		
-		for (int x = obs.size() - 1; x >= 0; x--) {
-			List<Object> o = obs.get(x);
+		if (obs.size() > 0) {
+			List<Object> o = obs.get(obs.size() - 1);
 			return o.get(0);
 		}
 		
@@ -845,8 +846,8 @@ public class DataExportFunctions {
 	
 	/**
 	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
-	 * @param e
 	 * @param concept
+	 * @param attrs the List of attributes to fetch
 	 * @return
 	 * @throws Exception
 	 */
@@ -863,14 +864,56 @@ public class DataExportFunctions {
 			return blankRow;
 		}
 		
-		for (int x = obs.size() - 1; x >= 0; x--) {
-			List<Object> o = obs.get(x);
-			return o;
+		if (obs.size() > 0) {
+			return obs.get(0);
 		}
 		
 		log.info("Could not find an Obs with concept " + concept + " for patient " + patientId);
 		
 		return null;
+	}
+	
+	/**
+	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
+	 * @param concept the Concept of the obs to fetch
+	 * @param n number of obs to get
+	 * @param attrs the Extra obs attributes to get along with this obs value
+	 * @return
+	 * @throws Exception
+	 */
+	public List<List<Object>> getFirstNObsWithValues(Integer n, Concept concept, List<String> attrs) throws Exception {
+		// add a null first column for the actual obs value
+		attrs.add(0, null);
+		
+		List<List<Object>> obs = getObsWithValues(concept, attrs);
+		
+		if (obs == null)
+			obs = new Vector<List<Object>>();
+		
+		if (n.equals(-1))
+			return obs;
+		
+		List<Object> blankRow = new Vector<Object>();
+		for (String attr : attrs)
+			blankRow.add("");
+		while (obs.size() < n)
+			obs.add(0, blankRow);
+		
+		int size = obs.size();
+		List<List<Object>> rList = obs.subList(size-n, size);
+		
+		Collections.reverse(rList);
+		
+		return rList;
+	}
+	
+	/**
+	 * Convenience method for other getFirstNObsWithValues method
+	 * 
+	 * @see #getFirstNObsWithValues(Integer, Concept, List)
+	 */
+	public List<List<Object>> getFirstNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
+		return getFirstNObsWithValues(n, getConcept(conceptId), (List<String>)attrs);
 	}
 	
 	/**

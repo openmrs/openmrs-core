@@ -123,10 +123,23 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 		return false;
 	}
 	
+	/**
+	 * Check if this user has the given String role
+	 * 
+	 * @param r String name of a role to check
+	 * @return true/false if this user has the role
+	 */
 	public boolean hasRole(String r) {
 		return hasRole(r, false);
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param r
+	 * @param ignoreSuperUser
+	 * @return
+	 */
 	public boolean hasRole(String r, boolean ignoreSuperUser) {
 		if (ignoreSuperUser == false) {
 			if (isSuperUser())
@@ -138,7 +151,8 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 		
 		Set<Role> tmproles = getAllRoles();
 		
-		log.debug("User #" + userId + " has roles: " + tmproles);
+		if (log.isDebugEnabled())
+			log.debug("User #" + userId + " has roles: " + tmproles);
 		
 		Role role = new Role(r);
 		
@@ -148,6 +162,12 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 		return false;
 	}
 	
+	/**
+	 * Get <i>all</i> privileges this user has.  This delves into all 
+	 * of the roles that a person has, appending unique privileges
+	 * 
+	 * @return Collection of complete Privileges this user has
+	 */
 	public Collection<Privilege> getPrivileges() {
 		Set<Privilege> privileges = new HashSet<Privilege>();
 		Set<Role> tmproles = getAllRoles();
@@ -200,13 +220,20 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	 * @return all roles (inherited from parents and given) for this user
 	 */
 	public Set<Role> getAllRoles() {
+		// the user's immediate roles
 		Set<Role> baseRoles = new HashSet<Role>();
+		
+		// the user's complete list of roles including
+		// the parent roles of their immediate roles
 		Set<Role> totalRoles = new HashSet<Role>();
 		if (getRoles() != null) {
 			baseRoles.addAll(getRoles());
 			totalRoles.addAll(getRoles());
 		}
-		log.debug("User's base roles: " + baseRoles);
+		
+		if (log.isDebugEnabled())
+			log.debug("User's base roles: " + baseRoles);
+		
 		try {
 			for (Role r : baseRoles) {
 				totalRoles.addAll(r.getAllParentRoles());
@@ -250,7 +277,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	}
 
 	/**
-	 * Remove the given obervation from the list of roles for this User
+	 * Remove the given Role from the list of roles for this User
 	 * @param roleservation
 	 */
 	public void removeRole(Role role) {

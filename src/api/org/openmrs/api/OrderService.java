@@ -154,9 +154,28 @@ public interface OrderService {
 	@Transactional(readOnly=true)
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException;
 
+	/**
+	 * Get drug orders for a given patient, not including voided orders
+	 * 
+	 * @param patient
+	 * @param whatToShow
+	 * @return List of drug orders, for the given patient, not including voided orders
+	 */
 	@Transactional(readOnly=true)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient,
 			int whatToShow);
+	
+	/**
+	 * Get drug orders for a given patient
+	 * 
+	 * @param patient
+	 * @param whatToShow
+	 * @param includeVoided
+	 * @return List of drug orders for the given patient
+	 */
+	@Transactional(readOnly=true)
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient,
+			int whatToShow, boolean includeVoided);
 
 	/**
 	 * Undiscontinue order record

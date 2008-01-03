@@ -33,7 +33,7 @@ public class SyncStrategyFileTest extends SyncBaseTest {
     protected List<SyncRecord> changed = null;
 
     public void testCreateTx() throws Exception {
-    	executeInitialDataSet();
+    	initializeInMemoryDatabase();
         authenticate();
 
         // setup instances

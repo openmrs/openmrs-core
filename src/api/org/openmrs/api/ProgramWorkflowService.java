@@ -86,6 +86,9 @@ public interface ProgramWorkflowService {
 	public PatientProgram getPatientProgram(Integer id);
 
 	@Transactional(readOnly=true)
+	public PatientState getPatientState(Integer id);
+
+	@Transactional(readOnly=true)
 	public PatientProgram getPatientProgramByGuid(String guid);
 
 	@Transactional(readOnly=true)

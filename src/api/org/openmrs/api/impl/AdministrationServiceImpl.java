@@ -38,9 +38,6 @@ import org.springframework.util.StringUtils;
 
 /**
  * Admin-related services
- * 
- * @author Ben Wolfe
- * @author Burke Mamlin
  * @version 1.0
  */
 public class AdministrationServiceImpl implements AdministrationService {
@@ -49,7 +46,7 @@ public class AdministrationServiceImpl implements AdministrationService {
     
     private AdministrationDAO dao;
     
-    public AdministrationServiceImpl() {    }
+    public AdministrationServiceImpl() {	}
     
     private AdministrationDAO getAdministrationDAO() {
         if (!Context.hasPrivilege("") && !Context.isAuthenticated())

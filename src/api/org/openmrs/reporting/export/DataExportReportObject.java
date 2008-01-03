@@ -37,6 +37,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	public transient final static String MODIFIER_ANY = "any";
 	public transient final static String MODIFIER_FIRST = "first";
+	public transient final static String MODIFIER_FIRST_NUM = "firstNum";
 	public transient final static String MODIFIER_LAST = "mostRecent";
 	public transient final static String MODIFIER_LAST_NUM = "mostRecentNum";
 	

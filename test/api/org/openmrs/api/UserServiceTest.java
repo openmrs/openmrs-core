@@ -132,7 +132,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Role role2 = new Role();
 		role2.setDescription("testing2");
 		role2.setRole("test2");
-		Privilege p2 = us.getPrivileges().get(1);
+		Privilege p2 = us.getPrivileges().get(0);
 		Set<Privilege> privileges2 = new HashSet<Privilege>();
 		privileges2.add(p2);
 		role2.setPrivileges(privileges2);

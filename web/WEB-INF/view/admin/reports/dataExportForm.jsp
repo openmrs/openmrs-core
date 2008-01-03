@@ -427,6 +427,30 @@
 		return true;
 	}
 	
+	/** This method is used by the firstNum and mostRecentNum input boxes to show the text input 
+	* for the number directly after the radio button of that which was clicked
+	*/
+	function showNum(thisObj) {
+		parent = thisObj.parentNode;
+		var numInputBox = parent.firstChild;
+		// get the input box we're moving around
+		do {
+			if (numInputBox.name && numInputBox.name.indexOf("conceptModifierNum") == 0)
+				break;
+			numInputBox = numInputBox.nextSibling;
+		} while (numInputBox != null);
+		
+		// get the span tag following the radio box
+		var nextSpanTag = thisObj.nextSibling;
+		if (nextSpanTag.tagName == null || nextSpanTag.tagName.toUpperCase() != "SPAN")
+			nextSpanTag = nextSpanTag.nextSibling;
+		
+		if (numInputBox != null && numInputBox != nextSpanTag) {
+			parent.removeChild(numInputBox);
+			parent.insertBefore(numInputBox, nextSpanTag.nextSibling);
+		}
+	}
+	
 </script>
 
 <style>
@@ -700,8 +724,14 @@
 					</c:forEach>
 					var children = obj.getElementsByTagName("input");
 					for(var i=0; i<children.length; i++) {
-						if (children[i].name == ("conceptModifier_" + count))
-							children[i].checked = (children[i].value == '${column.modifier}');
+						if (children[i].name == ("conceptModifier_" + count)) {
+							if (children[i].value == '${column.modifier}') {
+								children[i].checked = true;
+								children[i].click();
+							}
+							else
+								children[i].checked = false;
+						}
 						if (children[i].name == ("conceptExtra_" + count))
 							children[i].checked = (extras[children[i].value] == 1);
 					}

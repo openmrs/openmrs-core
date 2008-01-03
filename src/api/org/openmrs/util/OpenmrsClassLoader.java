@@ -301,12 +301,11 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		// trim out "jar:file:/ and ascii spaces"
 		if (OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
 			OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
-            OpenmrsConstants.OPERATING_SYSTEM_MAC_OSX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM)) {
+            OpenmrsConstants.OPERATING_SYSTEM_MAC_OSX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
 			extForm = extForm.replaceFirst("jar:file:", "").replaceAll("%20", " ");
-        } else {
+		else
 			extForm = extForm.replaceFirst("jar:file:/", "").replaceAll("%20", " ");
-        }
-
+		
 		if (log.isDebugEnabled())
 			log.debug("url external form: " + extForm);
 		

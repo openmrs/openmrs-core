@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import junit.framework.TestCase;
@@ -242,4 +244,14 @@ public class PersonTest extends TestCase {
 		assertTrue("There shouldn't be any attributes in the person object now", p.getAttributes().size() == 0);
 	}
 	
+	public void testAge() throws Exception {
+		Person p = new Person();
+		assertNull(p.getAge());
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		p.setBirthdate(df.parse("1978-04-11"));
+		assertEquals(p.getAge(df.parse("1978-05-20")).intValue(), 0);
+		assertEquals(p.getAge(df.parse("2007-04-11")).intValue(), 29);
+		assertEquals(p.getAge(df.parse("2007-04-12")).intValue(), 29);
+		assertEquals(p.getAge(df.parse("2007-04-10")).intValue(), 28);
+	}
 }

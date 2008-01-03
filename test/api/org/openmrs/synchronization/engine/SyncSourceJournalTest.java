@@ -34,7 +34,7 @@ public class SyncSourceJournalTest extends SyncBaseTest {
      * @throws Exception
      */
     public void testGlobalProperties() throws Exception {
-    	executeInitialDataSet();
+    	initializeInMemoryDatabase();
         authenticate();
         
         SyncSource source = null;
@@ -72,7 +72,7 @@ public class SyncSourceJournalTest extends SyncBaseTest {
      * @throws Exception
      */
     public void testGetChanged() throws Exception {
-    	executeInitialDataSet();
+    	initializeInMemoryDatabase();
         authenticate();
 
         //get service

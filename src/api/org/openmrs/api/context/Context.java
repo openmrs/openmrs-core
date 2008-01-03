@@ -63,7 +63,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.aop.Advisor;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to
@@ -582,7 +582,7 @@ public class Context {
 		setRuntimeProperties(properties);
 		
 		@SuppressWarnings("unused")
-		AbstractApplicationContext ctx = new FileSystemXmlApplicationContext("/applicationContext-service.xml");
+		AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext-service.xml");
 		
 		startup(properties);
 	}

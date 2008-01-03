@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.Synchronizable;
 
 public class ProgramWorkflow implements java.io.Serializable, Synchronizable {
@@ -164,8 +163,8 @@ public class ProgramWorkflow implements java.io.Serializable, Synchronizable {
 
 		public int compare(ProgramWorkflowState s1, ProgramWorkflowState s2) {
 			if ( s1 != null && s2 != null ) {
-				String name1 = s1.getConcept().getName(Context.getLocale()).getName();
-				String name2 = s2.getConcept().getName(Context.getLocale()).getName();
+				String name1 = s1.getConcept().getName().getName();
+				String name2 = s2.getConcept().getName().getName();
 				if ( name1 != null && name2 != null ) {
 					return name1.compareTo(name2);
 				}

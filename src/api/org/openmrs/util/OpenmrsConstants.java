@@ -415,9 +415,11 @@ public final class OpenmrsConstants {
 		return states;
 	}
 	
-	public static Locale spanish_language = new Locale("es");
+	public static Locale SPANISH_LANGUAGE = new Locale("es");
 	
-	public static Locale portuguese_language = new Locale("pt");
+	public static Locale PORTUGUESE_LANGUAGE = new Locale("pt");
+	
+	public static Locale ITALIAN_LANGUAGE = new Locale("it");
 	
 	/**
 	 * @return Collection of locales available to openmrs
@@ -428,8 +430,9 @@ public final class OpenmrsConstants {
 		languages.add(Locale.US);
 		languages.add(Locale.UK);
 		languages.add(Locale.FRENCH);
-		languages.add(spanish_language);
-		languages.add(portuguese_language);
+		languages.add(SPANISH_LANGUAGE);
+		languages.add(PORTUGUESE_LANGUAGE);
+		languages.add(ITALIAN_LANGUAGE);
 		
 		return languages;
 	}
@@ -444,8 +447,9 @@ public final class OpenmrsConstants {
 		
 		languages.add(Locale.ENGLISH);
 		languages.add(Locale.FRENCH);
-		languages.add(spanish_language);
-		languages.add(portuguese_language);
+		languages.add(SPANISH_LANGUAGE);
+		languages.add(PORTUGUESE_LANGUAGE);
+		languages.add(ITALIAN_LANGUAGE);
 		
 		return languages;
 	}
@@ -467,8 +471,9 @@ public final class OpenmrsConstants {
 			patterns.put(Locale.UK.toString().toLowerCase(), "dd/MM/yyyy");
 			patterns.put(Locale.FRENCH.toString().toLowerCase(), "dd/MM/yyyy");
 			patterns.put(Locale.GERMAN.toString().toLowerCase(), "MM.dd.yyyy");
-			patterns.put(spanish_language.toString().toLowerCase(), "dd/MM/yyyy");
-			patterns.put(portuguese_language.toString().toLowerCase(), "dd/MM/yyyy");
+			patterns.put(SPANISH_LANGUAGE.toString().toLowerCase(), "dd/MM/yyyy");
+			patterns.put(PORTUGUESE_LANGUAGE.toString().toLowerCase(), "dd/MM/yyyy");
+			patterns.put(ITALIAN_LANGUAGE.toString().toLowerCase(), "dd/MM/yyyy");
 			
 			OPENMRS_LOCALE_DATE_PATTERNS = patterns;
 		}

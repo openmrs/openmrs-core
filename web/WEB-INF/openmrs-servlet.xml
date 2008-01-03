@@ -1498,6 +1498,7 @@
 				<ref bean="addressTemplateLesotho" />
 				<ref bean="addressTemplateMalawi" />
 				<ref bean="addressTemplateGeneral" />
+				<ref bean="addressTemplateTanzania" />
 			</list>
 		</property>
 		<property name="specialTokens">
@@ -1757,6 +1758,36 @@
 				<value>cityVillage</value>
 				<value>countyDistrict</value>
 				<value>stateProvince</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="addressTemplateTanzania" class="org.openmrs.layout.web.address.AddressTemplate">
+		<property name="displayName"><value>Tanzanian Address Format</value></property>
+		<property name="codeName"><value>tz</value></property>
+		<property name="country"><value>Tanzania</value></property>
+		<property name="nameMappings">
+			<props>
+				<prop key="cityVillage">Location.villageStreet</prop>
+				<prop key="subregion">Location.ward</prop>
+				<prop key="countyDistrict">Location.district</prop>
+				<prop key="region">Location.region</prop>
+			</props>
+		</property>
+		<property name="sizeMappings">
+			<props>
+				<prop key="cityVillage">50</prop>
+				<prop key="subregion">22</prop>
+				<prop key="countyDistrict">17</prop>
+				<prop key="region">14</prop>
+			</props>
+		</property>
+		<property name="lineByLineFormat">
+			<list>
+				<value>cityVillage</value>
+				<value>subregion</value>
+				<value>countyDistrict</value>
+				<value>region</value>
 			</list>
 		</property>
 	</bean>

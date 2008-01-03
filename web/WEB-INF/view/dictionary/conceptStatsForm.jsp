@@ -137,17 +137,16 @@
 		</table>
 	</c:when>
 	<c:when test="${displayType == 'boolean'}">
-		<i> Not completed yet </i>
+		<spring:message code="Concept.stats.booleanPieChart"/>
+		<br/>
+		<br/>
+		<openmrs:displayChart chart="${pieChart}" width="700" height="700" />
 	</c:when>
 	<c:when test="${displayType == 'coded'}">
-		<table>
-			<tr>
-				<td valign="top"><spring:message code="Concept.stats.codedPieChart"/></td>
-				<td>
-					<openmrs:displayChart chart="${pieChart}" width="700" height="700" />
-				</td>
-			</tr>
-		</table>
+		<spring:message code="Concept.stats.codedPieChart"/>
+		<br/>
+		<br/>
+		<openmrs:displayChart chart="${pieChart}" width="700" height="700" />
 	</c:when>
 	<c:otherwise>
 		<spring:message code="Concept.stats.notDisplayable"/>

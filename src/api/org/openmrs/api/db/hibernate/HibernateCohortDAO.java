@@ -7,7 +7,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.openmrs.Cohort;
-import org.openmrs.Drug;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.api.db.DAOException;
 

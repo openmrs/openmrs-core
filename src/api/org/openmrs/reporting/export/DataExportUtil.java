@@ -137,7 +137,7 @@ public class DataExportUtil {
 			functions = null;
 			template = null;
 			dataExport = null;
-			log.error("Clearing hibernate session");
+			log.debug("Clearing hibernate session");
 			Context.clearSession();
 			
 			// clear out the excess objects

@@ -37,7 +37,7 @@ public class SyncRecordTest extends SyncBaseTest {
      * @throws Exception
      */
     public void testSerialization() throws Exception {
-    	executeInitialDataSet();
+    	initializeInMemoryDatabase();
         authenticate();
 
         // 'normal' state
@@ -116,7 +116,7 @@ public class SyncRecordTest extends SyncBaseTest {
      * @throws Exception
      */
     public void testEquality() throws Exception {
-    	executeInitialDataSet();
+    	initializeInMemoryDatabase();
         authenticate();
         
         //setup instance 1

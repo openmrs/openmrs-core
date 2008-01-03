@@ -47,10 +47,13 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterService#createEncounter(org.openmrs.Encounter)
 	 */
 	public void createEncounter(Encounter encounter) throws DAOException {
-        if ( encounter == null ) log.warn("somehow in create method with encounter is null");
-        else log.warn("CREATING encounter: " + encounter.getEncounterId() + ", " + encounter.getEncounterDatetime() + ", " + encounter.getEncounterType()
+        if ( encounter == null )
+        	log.warn("somehow in create method with encounter is null");
+        else if (log.isDebugEnabled())
+        	log.debug("CREATING encounter: " + encounter.getEncounterId() + ", " + encounter.getEncounterDatetime() + ", " + encounter.getEncounterType()
                 + ", " + encounter.getForm() + ", " + encounter.getLocation() + ", " + encounter.getPatient() + ", " + encounter.getPatientId()
                 + ", " + encounter.getProvider() + ", " + encounter.getCreator());
+                
 		log.debug("Creating encounter: " + encounter.getEncounterId());
 		if (encounter.getCreator() == null)
 			encounter.setCreator(Context.getAuthenticatedUser());
@@ -60,8 +63,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 
 		sessionFactory.getCurrentSession().save(encounter);
         
-        if ( encounter == null ) log.warn("after hibernate save, encoutner is null???");
-        else log.warn("AFTER CREATE, encounter: " + encounter.getEncounterId() + ", " + encounter.getEncounterDatetime() + ", " + encounter.getEncounterType()
+        if ( encounter == null )
+        	log.warn("after hibernate save, encoutner is null???");
+        else if (log.isDebugEnabled())
+        	log.debug("AFTER CREATE, encounter: " + encounter.getEncounterId() + ", " + encounter.getEncounterDatetime() + ", " + encounter.getEncounterType()
                 + ", " + encounter.getForm() + ", " + encounter.getLocation() + ", " + encounter.getPatient() + ", " + encounter.getPatientId()
                 + ", " + encounter.getProvider() + ", " + encounter.getCreator());
 
@@ -171,8 +176,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public void updateEncounter(Encounter encounter) throws DAOException {
 		log.debug("Updating encounter: " + encounter.getEncounterId());
 
-        if ( encounter == null ) log.warn("UPDATE somehow in create method with encounter is null");
-        else log.warn("BEFORE UPDATE encounter: " + encounter.getEncounterId() + ", " + encounter.getEncounterDatetime() + ", " + encounter.getEncounterType()
+        if ( encounter == null ) 
+        	log.warn("UPDATE somehow in create method with encounter is null");
+        else if (log.isDebugEnabled())
+        	log.debug("BEFORE UPDATE encounter: " + encounter.getEncounterId() + ", " + encounter.getEncounterDatetime() + ", " + encounter.getEncounterType()
                 + ", " + encounter.getForm() + ", " + encounter.getLocation() + ", " + encounter.getPatient() + ", " + encounter.getPatientId()
                 + ", " + encounter.getProvider() + ", " + encounter.getCreator());
 
@@ -184,8 +191,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 				sessionFactory.getCurrentSession().saveOrUpdate(encounter);
 		}
         
-        if ( encounter == null ) log.warn("after hibernate save, encoutner is null???");
-        else log.warn("AFTER UPDATE, encounter: " + encounter.getEncounterId() + ", " + encounter.getEncounterDatetime() + ", " + encounter.getEncounterType()
+        if ( encounter == null )
+        	log.warn("after hibernate save, encoutner is null???");
+        else if (log.isDebugEnabled())
+        	log.debug("AFTER UPDATE, encounter: " + encounter.getEncounterId() + ", " + encounter.getEncounterDatetime() + ", " + encounter.getEncounterType()
                 + ", " + encounter.getForm() + ", " + encounter.getLocation() + ", " + encounter.getPatient() + ", " + encounter.getPatientId()
                 + ", " + encounter.getProvider() + ", " + encounter.getCreator());
 
