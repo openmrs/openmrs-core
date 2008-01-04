@@ -414,7 +414,9 @@ public class UserServiceImpl implements UserService {
 			user.setCreator(Context.getAuthenticatedUser());
 			user.setDateCreated(new Date());
 		}
-		user.setChangedBy(Context.getAuthenticatedUser());
-		user.setDateChanged(new Date());
+		else {
+			user.setChangedBy(Context.getAuthenticatedUser());
+			user.setDateChanged(new Date());
+		}
 	}
 }

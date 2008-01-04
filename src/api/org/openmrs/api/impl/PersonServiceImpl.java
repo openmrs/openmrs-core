@@ -97,10 +97,15 @@ public class PersonServiceImpl implements PersonService {
 	public void createPersonAttributeType(PersonAttributeType type) {
 		log.info("Creating person attribute type: " + type);
 		User user = Context.getAuthenticatedUser();
-		type.setChangedBy(user);
-		type.setDateChanged(new Date());
-		type.setCreator(user);
-		type.setDateCreated(new Date());
+		if (type.getCreator() == null) {
+			type.setCreator(user);
+			type.setDateCreated(new Date());
+		}
+		else {
+			type.setChangedBy(user);
+			type.setDateChanged(new Date());
+		}
+		
 		getPersonDAO().createPersonAttributeType(type);
 	}
 
@@ -529,8 +534,10 @@ public class PersonServiceImpl implements PersonService {
 			person.setCreator(Context.getAuthenticatedUser());
 			person.setDateCreated(new Date());
 		}
-		person.setChangedBy(Context.getAuthenticatedUser());
-		person.setDateChanged(new Date());
+		else {
+			person.setChangedBy(Context.getAuthenticatedUser());
+			person.setDateChanged(new Date());
+		}
 		
 		// address collection
 		if (person.getAddresses() != null && person.getAddresses().size() > 0)
