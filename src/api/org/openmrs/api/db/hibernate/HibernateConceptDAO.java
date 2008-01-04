@@ -220,9 +220,10 @@ public class HibernateConceptDAO implements
 			c.setCreator(authUser);
 			c.setDateCreated(timestamp);
 		}
-		
-		c.setChangedBy(authUser);
-		c.setDateChanged(timestamp);
+		else {
+			c.setChangedBy(authUser);
+			c.setDateChanged(timestamp);
+		}
 		
 		if (c.getNames() != null) {
 			for (ConceptName cn : c.getNames()) {
