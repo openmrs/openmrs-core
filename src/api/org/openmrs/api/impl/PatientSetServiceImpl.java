@@ -475,6 +475,16 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return analysis;
 	}
 
+	/**
+	 * Gets a list of encounters associated with the given form, filtered by the given patient set.
+	 * 
+	 * @param	patients	the patients to filter by (null will return all encounters for all patients)
+	 * @param 	forms		the forms to filter by
+	 */
+	public List<Encounter> getEncountersByForm(PatientSet patients, List<Form> forms) {
+		return getPatientSetDAO().getEncountersByForm(patients, forms);
+	}	
+
 
 	
 }

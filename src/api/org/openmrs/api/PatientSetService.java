@@ -214,6 +214,8 @@ public interface PatientSetService {
 	@Transactional(readOnly=true)
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, List<EncounterType> encType);
 
+	
+
 	/**
 	 * 
 	 * @param patients
@@ -388,6 +390,19 @@ public interface PatientSetService {
 	@Transactional(readOnly=true)
 	public PatientAnalysis getMyPatientAnalysis();
 
+	/**
+	 * Gets a list of encounters associated with the given form, filtered by the given patient set.
+	 * 
+	 * @param	patients	the patients to filter by (null will return all encounters for all patients)
+	 * @param 	forms		the forms to filter by
+	 */
+	@Transactional(readOnly=true)
+	public List<Encounter> getEncountersByForm(PatientSet patients, List<Form> form);
+		
+	
+	
+	
+	
 	public enum Modifier {
 		LESS_THAN ("<"),
 		LESS_EQUAL ("<="),

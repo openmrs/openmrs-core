@@ -63,7 +63,7 @@ public interface PatientSetDAO {
 	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c, List<String> attributes);
 	
 	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, List<EncounterType> encType);
-	
+		
 	public Map<Integer, Object> getEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr, Boolean earliestFirst);
 		
 	public Map<Integer, Encounter> getEncounters(PatientSet patients);
@@ -100,4 +100,6 @@ public interface PatientSetDAO {
 	
 	public PatientSet getPatientsHavingDrugOrder(List<Drug> drugList, List<Concept> drugConceptList, Date startDateFrom, Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued, List<Concept> discontinuedReason);
 	
+	public List<Encounter> getEncountersByForm(PatientSet patients, List<Form> forms);
+
 }
