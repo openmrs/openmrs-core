@@ -371,7 +371,7 @@
 	</tr>
 	<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
 		<tr>
-			<th class="headerCell"><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}"/></th>
+			<th class="headerCell"><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></th>
 			<td class="inputCell">
 				<openmrs:fieldGen 
 					type="${attrType.format}" 

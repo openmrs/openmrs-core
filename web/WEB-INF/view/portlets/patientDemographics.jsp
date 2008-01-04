@@ -9,7 +9,7 @@
 			<tr>
 				<th><spring:message code="Person.names"/></th>
 				<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
-					<th><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}"/></th>
+					<th><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></th>
 				</openmrs:forEachDisplayAttributeType>
 			</tr>
 		</thead>
