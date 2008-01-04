@@ -7,7 +7,16 @@
 <c:choose>
 	<c:when test="${empty param.addName}">
 		
-		<h2><spring:message code="Person.find"/></h2>
+		<h2>
+			<c:choose>
+				<c:when test="${param.personType != null}">
+					<spring:message code="Person.add.${param.personType}" />
+				</c:when>
+				<c:otherwise>
+					<spring:message code="Person.add"/>
+				</c:otherwise>
+			</c:choose>
+		</h2>
 		<openmrs:portlet id="createPerson" url="addPersonForm" parameters="personType=${param.personType}|postURL=addPerson.htm|viewType=${param.viewType}" />
 		<script type="text/javascript">
 			document.getElementById("personName").focus();
