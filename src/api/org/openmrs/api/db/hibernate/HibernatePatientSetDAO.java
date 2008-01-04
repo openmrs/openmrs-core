@@ -1229,6 +1229,36 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
+	/**
+	 * Gets a list of encounters associated with the given form, filtered by the given patient set.
+	 * 
+	 * @param	patients	the patients to filter by (null will return all encounters for all patients)
+	 * @param 	forms		the forms to filter by
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Encounter> getEncountersByForm(PatientSet patients, List<Form> forms) {
+		
+		// default query
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+		criteria.setCacheMode(CacheMode.IGNORE);
+		
+		// this "where clause" is only necessary if patients were passed in
+		if (patients != null && patients.size() > 0)
+			criteria.add(Restrictions.in("patient.personId", patients.getPatientIds()));
+		
+		criteria.add(Restrictions.eq("voided", false));
+		
+		if (forms != null && forms.size() > 0)
+			criteria.add(Restrictions.in("form", forms));
+		
+		criteria.addOrder(org.hibernate.criterion.Order.desc("patient.personId"));
+		criteria.addOrder(org.hibernate.criterion.Order.desc("encounterDatetime"));
+		
+		return criteria.list();
+	
+	}	
+	
+	
 	public Map<Integer, Object> getEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr, Boolean earliestFirst) {
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
 		
