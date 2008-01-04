@@ -30,7 +30,7 @@
 	</c:if>
 	<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
 		<tr>
-			<th align="left"><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}"/></th>
+			<th align="left"><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></th>
 			<td>${patient.attributeMap[attrType.name].hydratedObject}</td>
 		</tr>
 	</openmrs:forEachDisplayAttributeType>

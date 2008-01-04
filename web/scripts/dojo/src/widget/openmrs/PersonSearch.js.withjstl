@@ -121,7 +121,7 @@ dojo.widget.defineWidget(
 			arr.push('');
 			arr.push('<spring:message code="Person.birthdate" javaScriptEscape="true"/>');
 			<openmrs:forEachDisplayAttributeType personType="" displayType="listing" var="attrType">
-				arr.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" />');
+				arr.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
 			</openmrs:forEachDisplayAttributeType>
 			
 			return arr;
