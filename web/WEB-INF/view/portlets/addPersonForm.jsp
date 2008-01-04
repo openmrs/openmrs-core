@@ -7,7 +7,16 @@
 	<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 	
 	<div id="createPatient">
-		<b class="boxHeader"><spring:message code="Person.create"/></b>
+		<b class="boxHeader">
+			<c:choose>
+				<c:when test="${model.personType != null && model.personType != ''}">
+					<spring:message code="Person.create.${model.personType}" />
+				</c:when>
+				<c:otherwise>
+					<spring:message code="Person.create"/>
+				</c:otherwise>
+			</c:choose>
+		</b>
 		<div class="box">
 			<spring:message code="Person.search.instructions"/> <br/>
 			
