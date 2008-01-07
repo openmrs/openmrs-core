@@ -29,8 +29,9 @@ public class TimestampNormalizer extends Normalizer
         long time;
         String result = null;
 
-        if (o instanceof java.sql.Timestamp){
-            result = ((java.sql.Timestamp)o).toString();
+        if (o instanceof java.sql.Timestamp){ //this is how hibernate recreates Date objects
+            SimpleDateFormat dfm = new SimpleDateFormat(TimestampNormalizer.DATETIME_MASK);
+            result = dfm.format((Date)o);            
         }
         else if (o instanceof java.sql.Date){
             d = (java.sql.Date)o;
