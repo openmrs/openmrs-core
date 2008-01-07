@@ -97,10 +97,10 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 			if (this.personNameId != null && pname.getPersonNameId() != null)
 				return (this.personNameId.equals(pname.getPersonNameId())); 
 			else {
-				return (person.equals(pname.getPerson()) &&
-						givenName.equals(pname.getGivenName()) &&
-						middleName.equals(pname.getMiddleName()) &&
-						familyName.equals(pname.getFamilyName()));
+				return (OpenmrsUtil.nullSafeEquals(getPerson(), pname.getPerson()) &&
+						OpenmrsUtil.nullSafeEquals(getGivenName(), pname.getGivenName()) &&
+						OpenmrsUtil.nullSafeEquals(getMiddleName(), pname.getMiddleName()) &&
+						OpenmrsUtil.nullSafeEquals(getFamilyName(), pname.getFamilyName()));
 			}
 				
 		}
