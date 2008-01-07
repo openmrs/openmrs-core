@@ -36,6 +36,7 @@ public class SyncItem implements Serializable, IItem {
     private SyncItemKey<?> key = null;
     private SyncItemState state = SyncItemState.UNKNOWN;
     private String content = null;
+    private Class containedType = null;
     
     // Properties
     public SyncItemKey<?> getKey() {
@@ -62,6 +63,14 @@ public class SyncItem implements Serializable, IItem {
         this.content = content;
     }
 
+    public Class getContainedType() {
+        return containedType;
+    }
+    
+    public void setContainedType(Class clazz) {
+        this.containedType = clazz;
+    }
+    
     // Methods
     @Override
     public boolean equals(Object o) {
@@ -71,6 +80,7 @@ public class SyncItem implements Serializable, IItem {
         SyncItem oSync = (SyncItem) o;
         boolean same = ((oSync.getKey() == null) ? (this.getKey() == null) : oSync.getKey().equals(this.getKey()))
                 && ((oSync.getContent() == null) ? (this.getContent() == null) : oSync.getContent().equals(this.getContent()))
+                && ((oSync.getContainedType() == null) ? (this.getContainedType() == null) : oSync.getContainedType().equals(this.getContainedType()))
                 && ((oSync.getState() == null) ? (this.getState() == null) : oSync.getState().equals(this.getState()));
         
         return same;
@@ -92,13 +102,17 @@ public class SyncItem implements Serializable, IItem {
 
         //serialize primitives
         xml.setAttribute(me, "state", state.toString());
-        
+
+        if (containedType != null) {
+        	xml.setAttribute(me, "containedType", containedType.getName());
+        }
+
         Item itemKey = xml.createItem(me, "key");
         if (key != null) {
             xml.setAttribute(itemKey,"key-type",key.getKeyValue().getClass().getName());
             key.save(xml, itemKey);
         }
-        
+
         Item itemContent = xml.createItem(me, "content");
         if (content != null) {
             xml.createTextAsCDATA(itemContent, content);
@@ -109,8 +123,12 @@ public class SyncItem implements Serializable, IItem {
 
     public void load(Record xml, Item me) throws Exception {
         state = SyncItemState.valueOf(me.getAttribute("state"));
-        Item itemKey = xml.getItem(me, "key");
-        
+
+        containedType = null;
+        if ( me.getAttribute("containedType") != null && !"".equals(me.getAttribute("containedType")) ) 
+        	containedType = Class.forName(me.getAttribute("containedType"));
+
+        Item itemKey = xml.getItem(me, "key");        
         if (itemKey.isEmpty()) {
             key = null;
         } else {

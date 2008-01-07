@@ -15,6 +15,7 @@ package org.openmrs.synchronization.engine;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,7 +59,7 @@ public class SyncRecord implements Serializable, IItem {
     private Date timestamp = null;
     private int retryCount;
     private SyncRecordState state = SyncRecordState.NEW;
-    private List<SyncItem> items = null;
+    private HashMap<String, SyncItem> items = null;
     private String containedClasses = "";
     private Set<SyncServerRecord> serverRecords = null;
     private RemoteServer forServer = null;
@@ -156,22 +157,50 @@ public class SyncRecord implements Serializable, IItem {
     }
 
     //list of sync items
-    public List<SyncItem> getItems() {
-        return items;
+    public Collection<SyncItem> getItems() {
+        return ((items == null) ? null : items.values());
     }
 
     public void addItem(SyncItem syncItem) {
         if (items == null) {
-            items = new LinkedList<SyncItem>();
+            items = new HashMap<String,SyncItem>();
+        }
+        items.put(syncItem.getKey().getKeyValue().toString(),syncItem);
+    }
+
+    /**
+     * If there is already an item with same key, replace it with passed in value, else add it.
+     * 
+     * @param syncItem
+     */
+    public void addOrReplaceItem(SyncItem syncItem) {
+        if (items == null) {
+            items = new HashMap<String,SyncItem>();
+        } else {
+        	if (items.containsKey(syncItem.getKey().getKeyValue().toString())) {
+    			items.remove(syncItem.getKey().getKeyValue().toString());
+        	}
         }
         
-        items.add(syncItem);
+        //now add it
+        this.addItem(syncItem);     
     }
-    
-    public void setItems(List<SyncItem> items) {
-        this.items = items;
-    }
-    
+
+    public void setItems(Collection<SyncItem> newItems) {
+    	items = new HashMap<String,SyncItem>();
+    	for(SyncItem newItem : newItems) {
+    		this.addItem(newItem);
+    	}
+   }
+
+    public boolean hasItems() {
+    	if (items == null) return false;
+    	if (items.size() > 0) 
+    		return true;
+    	else
+    		return false;
+   }
+
     // Methods
     @Override
     public boolean equals(Object o) {
@@ -213,7 +242,6 @@ public class SyncRecord implements Serializable, IItem {
             xml.setAttribute(me, "state", state.toString());
             xml.setAttribute(me, "retryCount", Integer.toString(retryCount));
         }
-
         
         if (timestamp != null) {
         	xml.setAttribute(me, "timestamp", new TimestampNormalizer().toString(timestamp));
@@ -222,7 +250,7 @@ public class SyncRecord implements Serializable, IItem {
         //serialize IItem children
         Item itemsCollection = xml.createItem(me, "items");
         if (items != null) {
-            Iterator<SyncItem> iterator = items.iterator();
+            Iterator<SyncItem> iterator = items.values().iterator();
             while (iterator.hasNext()) {
                 iterator.next().save(xml, itemsCollection);
             }
@@ -257,13 +285,13 @@ public class SyncRecord implements Serializable, IItem {
         if (itemsCollection.isEmpty()) {
             items = null;
         } else {
-            items = new LinkedList<SyncItem>();
+            items = new HashMap<String,SyncItem>();
             List<Item> serItems = xml.getItems(itemsCollection);
             for (int i = 0; i < serItems.size(); i++) {
                 Item serItem = serItems.get(i);
                 SyncItem syncItem = new SyncItem();
                 syncItem.load(xml, serItem);
-                items.add(syncItem);
+                items.put(syncItem.getKey().getKeyValue().toString(),syncItem);
             }
         }
     }

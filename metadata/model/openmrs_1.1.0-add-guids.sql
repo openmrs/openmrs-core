@@ -19,11 +19,12 @@ CREATE PROCEDURE add_guids ()
   #exceptions:
   # tables supporting derived classes where parent already has guid: 
   #  patient, drug_order, concept_derived, concept_numeric, complex_obs, users
+  # tables that map many-to-many relationships 
   DECLARE cur_tabs CURSOR FOR 
 		SELECT tabs.table_name
 		FROM INFORMATION_SCHEMA.TABLES tabs
 		WHERE tabs.table_schema = schema()
-		 AND tabs.table_name NOT IN ('patient','users','drug_order','concept_numeric','concept_derived','complex_obs')
+		 AND tabs.table_name NOT IN ('patient','users','drug_order','concept_numeric','concept_derived','complex_obs', 'role_role', 'role_privilege')
 		 AND tabs.table_name NOT Like '%synchronization_%'
 		 AND NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS cols
 									WHERE cols.table_schema = schema() 

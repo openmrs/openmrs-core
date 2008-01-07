@@ -29,10 +29,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.LazyInitializationException;
+import org.hibernate.CallbackException;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+import org.hibernate.mapping.PersistentClass;
 import org.hibernate.Transaction;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
+import org.hibernate.collection.PersistentSet;
 import org.openmrs.User;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
@@ -206,7 +211,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 	            syncRecordHolder.remove();
 	
 	            // Does this transaction contain any serialized changes?
-	            if (record.getItems() != null) {
+	            if (record.hasItems()) {
 	            	
 	                if(log.isDebugEnabled())
 	                    log.debug(record.getItems().size() + " SyncItems in SyncRecord, saving!");
@@ -415,6 +420,65 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         
         return sql;
     }
+   
+   
+    /**
+     *  No-op; this method is here for completeness only. As can be seen in org.hibernate.engine.Collections, 
+     *  hibernate only calls remove when it is about to recreate a collection. Our ingest code
+     *  that processes recreate does remove already so no need to record this event.
+     *   
+     * @see org.hibernate.engine.Collections
+     * @see org.openmrs.api.impl.SynchronizationIngestServiceImpl
+     */
+    @Override
+	public void onCollectionRemove(Object collection, Serializable key) throws CallbackException {
+    	log.debug("COLLECTION remove with key: " + key);
+    	//no-op
+    }
+    
+    /**
+     *  Handles collection recreate. Recreate is triggered by hibernate when collection object is replaced by new/different instance. 
+     *  <p>remarks: See hibernate AbstractFlushingEventListener and org.hibernate.engine.Collections implementation to understand how
+     *  collection updates are hooked up in hibernate. 
+     * 
+     * @see org.hibernate.engine.Collections
+     * @see org.hibernate.event.def.AbstractFlushingEventListener
+     */
+    @Override
+	public void onCollectionRecreate(Object collection, Serializable key) throws CallbackException {
+    	log.info("COLLECTION recreate with key: " + key);
+
+    	if (!(collection instanceof org.hibernate.collection.PersistentSet)) {
+    		log.info("Cannot process collection that is not instance of PersistentSet, collection type was:" + 
+    		          collection.getClass().getName());
+    		return;
+    	}
+    	
+    	this.processPersistentSet((PersistentSet)collection,key, "recreate");
+    	
+    }
+
+    /**
+     *  Handles updates of a collection.
+     *  <p>remarks: See hibernate AbstractFlushingEventListener implementation to understand how
+     *  collection updates are hooked up in hibernate. 
+     * 
+     * @see org.hibernate.engine.Collections
+     * @see org.hibernate.event.def.AbstractFlushingEventListener
+     */
+    @Override
+	public void onCollectionUpdate(Object collection, Serializable key) throws CallbackException {
+    	log.info("COLLECTION update with key: " + key);
+    	
+    	if (!(collection instanceof org.hibernate.collection.PersistentSet)) {
+    		log.info("Cannot process collection that is not instance of PersistentSet, collection type was:" + 
+    		          collection.getClass().getName());
+    		return;
+    	}
+    	
+    	this.processPersistentSet((PersistentSet)collection,key, "update");    	    	    		
+    }
+
 
     /**
      * Serializes and packages an intercepted change in object state.
@@ -781,6 +845,149 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         }
         
         return guid;
+    }
+
+    /**
+     * Processes changes to persistent sets that contains instances of Synchronizable objects.
+     * 
+     * @param set Instance of Hibernate PersistentSet to process.
+     * @param key key of owner for the set.
+     * @param action action being performed on the set: update, recreate, remove
+     */
+    protected 	void processPersistentSet(PersistentSet set, Serializable key, String action){
+    	Synchronizable owner = null;
+    	String originalRecordGuid = null;
+    	SessionFactory factory = null;
+    	
+    	//retrieve owner and original guid if there is one 
+    	if (set.getOwner() instanceof Synchronizable) {
+    		owner = (Synchronizable)set.getOwner();
+    		originalRecordGuid = owner.getLastRecordGuid();
+    	}else {
+    		log.info("Cannot process PersistentSet where owner is not Synchronizable.");
+    		return;
+    	}
+
+        factory = (SessionFactory)this.context.getBean("sessionFactory");
+
+    	/* determine if this set needs to be processed. Process if:
+    	 * 1. it is recreate or
+    	 * 2. is dirty && current state does not equal stored snapshot
+    	 */
+    	boolean process = false;
+    	if ("recreate".equals(action)) {
+    		process = true;
+    	} else {
+    		if (!set.isDirty()) {
+    		log.info("Set marked as not dirty.");
+	    	} else {
+		    	org.hibernate.persister.collection.CollectionPersister persister = ((org.hibernate.engine.SessionFactoryImplementor) factory).getCollectionPersister(set.getRole());
+		    	if (!set.equalsSnapshot(persister)) {
+		    		process = true;
+		    	} else {
+		    		log.info("set current state and snapshots are same, no update needed.");
+		    	}
+	    	}
+    	}
+    	if (!process) return;
+    	
+    	//pull out the property name on owner that corresponds to the collection
+        ClassMetadata data = factory.getClassMetadata(owner.getClass());
+        String[] propNames = data.getPropertyNames();
+        String ownerPropertyName = null; //this is the name of the property on owner object that contains the set
+        for(String propName : propNames) {
+        	Object propertyVal = data.getPropertyValue(owner,propName, org.hibernate.EntityMode.POJO);
+        	if (set.equals(propertyVal)) {
+        		ownerPropertyName = propName;
+        		break;
+        	}
+        }
+        if (ownerPropertyName == null) {
+        	log.error("Could not find the property on owner object that corresponds to the set being processed.");
+        	log.error("owner info: \ntype: " + owner.getClass().getName() + ", \nguid: " + owner.getGuid() + ",\n property name for collection: " + ownerPropertyName);
+            if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
+            	throw new CallbackException("Could not find the property on owner object that corresponds to the set being processed.");
+        }
+        
+        // Setup the serialization data structures to hold the state            
+        Package pkg = new Package();
+        try {
+        	
+	        Record xml = pkg.createRecordForWrite(set.getClass().getName());
+	        Item entityItem = xml.getRootItem();
+	        
+	        //serialize owner info: we will need type, prop name where set goes, and owner guid
+	        Item item = xml.createItem(entityItem, "owner");
+            item.setAttribute("type", owner.getClass().getName());
+            item.setAttribute("properyName", ownerPropertyName);
+            item.setAttribute("action", action);
+            item.setAttribute("guid", owner.getGuid());
+            
+            //now persist new/updated set entries
+	    	for(Object entry : set) {	    		
+	    		if (entry instanceof Synchronizable) {
+	    			Synchronizable obj = (Synchronizable) entry;
+	    	        Item itemUpdate = xml.createItem(entityItem, "entry");
+	    	        itemUpdate.setAttribute("type", obj.getClass().getName());
+	    	        itemUpdate.setAttribute("action", "update");
+	    	        itemUpdate.setAttribute("guid", obj.getGuid());
+	    		}
+	    		else {
+	    			//TODO: more debug info
+	    			log.error("Cannot handle sets where entries are not Synchronizable!");
+	                if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
+	                	throw new CallbackException("Cannot handle sets where entries are not Synchronizable!");
+	    		}
+	    	} 	 	
+	    	
+	    	//add on deletes
+	    	if (!"recreate".equals(action) && set.getRole() != null) {
+		    	org.hibernate.persister.collection.CollectionPersister persister = ((org.hibernate.engine.SessionFactoryImplementor) factory).getCollectionPersister(set.getRole());
+		    	Iterator it = set.getDeletes(persister, false);
+		    	if (it != null) {
+			    	while (it.hasNext()) {
+			    		Object entry = it.next();
+			    		if (entry instanceof Synchronizable) {
+			    			Synchronizable obj = (Synchronizable) entry;
+			    	        Item itemDelete = xml.createItem(entityItem, "entry");
+			    	        itemDelete.setAttribute("type", obj.getClass().getName());
+			    	        itemDelete.setAttribute("action", "delete");
+			    	        itemDelete.setAttribute("guid", obj.getGuid());
+			    		}
+			    		else {
+			    			//TODO: more debug info
+			    			log.error("Cannot handle sets where entries are not Synchronizable!");
+			                if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
+			                	throw new CallbackException("Cannot handle sets where entries are not Synchronizable!");
+			    		}
+			    	}
+		    	}
+	    	}
+	        
+	        /*
+	         * Create SyncItem and store change in SyncRecord kept in ThreadLocal.
+	         * note: when making SyncItemKey, make it a composite string of guid + prop. name to avoid collisions
+	         * with updates to parent object or updates to more than one collection on same owner
+	         */
+	        SyncItem syncItem = new SyncItem();
+	        syncItem.setKey(new SyncItemKey<String>(owner.getGuid() + "|" + ownerPropertyName, String.class));
+	        syncItem.setState(SyncItemState.UPDATED);
+	        syncItem.setContainedType(set.getClass());
+	        syncItem.setContent(xml.toStringAsDocumentFragement());                
+	        syncRecordHolder.get().addOrReplaceItem(syncItem);
+	        syncRecordHolder.get().addContainedClass(owner.getClass().getSimpleName());
+	        
+	        //do the original guid dance, same as in packageObject
+            if (syncRecordHolder.get().getOriginalGuid() == null || "".equals(syncRecordHolder.get().getOriginalGuid())) { 
+            	syncRecordHolder.get().setOriginalGuid(originalRecordGuid);
+            }
+        }
+        catch(Exception ex) {
+        	log.error("Error processing Persistent set, see callstack and inner expection",ex);
+        	ex.printStackTrace();
+            if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
+            	throw new CallbackException("Error processing Persistent set, see callstack and inner expection.",ex);
+        }	
     }
 }
 

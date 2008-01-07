@@ -22,8 +22,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
+import java.util.LinkedList;
 
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
@@ -114,7 +115,7 @@ public class SyncItemListSerializingUserType implements UserType {
                 }
                 // End workaround
                 
-                List<SyncItem> items = new LinkedList<SyncItem>();
+                Collection<SyncItem> items = new LinkedList<SyncItem>();
                 
                 Package pkg = new Package();
                 try {
@@ -122,13 +123,10 @@ public class SyncItemListSerializingUserType implements UserType {
                     Item root = record.getRootItem();
                     List<Item> itemsToDeSerialize = record.getItems(root);
                     
-                    Iterator<Item> iterator = itemsToDeSerialize.iterator();
-                    while(iterator.hasNext()) {
-                        SyncItem item = new SyncItem();
-                        item.load(record, iterator.next());
-                        
-                        // Add de-serialized item to list
-                        items.add(item);
+                    for(Item i : itemsToDeSerialize) {
+                        SyncItem syncItem = new SyncItem();
+                        syncItem.load(record, i);
+                        items.add(syncItem);
                     }
                 } catch (Exception e) {
                     throw new HibernateException("Could not deserialize object from storage", e);
@@ -148,17 +146,16 @@ public class SyncItemListSerializingUserType implements UserType {
         if (value == null) {
             ps.setNull(index, Types.CLOB);
         } else {
-            List<SyncItem> items = (List<SyncItem>) value;
+            Collection<SyncItem> items = (Collection<SyncItem>) value;
 
             org.openmrs.serialization.Package pkg = new Package();
             Record record;
             try {
                 record = pkg.createRecordForWrite("items");
                 Item root = record.getRootItem();
-                
-                Iterator<SyncItem> iterator = items.iterator();
-                while(iterator.hasNext()) {
-                    iterator.next().save(record, root);
+
+                for(SyncItem item : items) {
+                    item.save(record, root);
                 }
             } catch (Exception e) {
                 throw new HibernateException("Could not serialize SyncItems", e);
@@ -181,7 +178,7 @@ public class SyncItemListSerializingUserType implements UserType {
      */
     @SuppressWarnings("unchecked")
     public Class returnedClass() {
-        return List.class;
+        return Collection.class;
     }
 
     /**

@@ -158,35 +158,12 @@ public class SyncUtil {
 		}
 	}
 
-	public static Object newObject(String className) {
+	public static Object newObject(String className) throws Exception {
 		Object o = null;
 		if ( className != null ) {
-			try {
 				Class clazz = Class.forName(className);
 				Constructor ct = clazz.getConstructor();
 				o = ct.newInstance();
-			} catch (ClassNotFoundException e) {
-				log.debug("Could not find class with name " + className);
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				log.debug("Security problem when instantiating new object of type " + className);
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				log.debug("Empty constructor does not exist in " + className);
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				log.debug("Constructor requires arguments in " + className);
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				log.debug("Could not instantiate class of type " + className);
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				log.debug("No access to constructor in " + className);
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				log.debug("InvokationTargetException while trying to create new " + className);
-				e.printStackTrace();
-			}
 		}
 		return o;
 	}
@@ -415,44 +392,51 @@ public class SyncUtil {
 		// need to try to get setter, both in this object, and its parent class 
 		Method m = null;
         boolean continueLoop = true;
-        boolean isValueClassNull = (propValType == null) ? true : false;
 
         try {
-            // it could be that the method is called with a superclass of propValClass, so loop through supers
-    		while (continueLoop) {
-    			Class[] setterParamClasses = null;
-                if (propValType != null) {
-                    setterParamClasses = new Class[1];
-                    setterParamClasses[0] = propValType;
-                }
-    			Class clazz = objType;
+			Class[] setterParamClasses = null;
+            if (propValType != null) { //it is a setter
+                setterParamClasses = new Class[1];
+                setterParamClasses[0] = propValType;
+            }
+			Class clazz = objType;
     
-                // it could also be that the setter method itself is in a superclass of objectClass/clazz, so loop through those, too
-    			while ( m == null && clazz != null && !clazz.equals(Object.class) ) {
-    				try {
-    					m = clazz.getMethod(methodName, setterParamClasses);
-    				} catch (SecurityException e) {
-    					m = null;
-    					clazz = clazz.getSuperclass();
-    				} catch (NoSuchMethodException e) {
-    					m = null;
-    					clazz = clazz.getSuperclass();
-    				}
-    			}
-                if (m != null)
-                    continueLoop = false;
-                if (!isValueClassNull) {
-                    propValType = propValType.getSuperclass();
-                    if (propValType == null)
-                        continueLoop = false; //Reached the top of type inheritance for propValClass - time to give up
-                }
+            // it could be that the setter method itself is in a superclass of objectClass/clazz, so loop through those
+			while ( continueLoop && m == null && clazz != null && !clazz.equals(Object.class) ) {
+				try {
+					m = clazz.getMethod(methodName, setterParamClasses);
+					continueLoop = false;
+					break; //yahoo - we got it using exact type match
+				} catch (SecurityException e) {
+					m = null;
+				} catch (NoSuchMethodException e) {
+					m = null;
+				}
+				
+				//not so lucky: try to find method by name, and then compare params for compatibility 
+				//instead of looking for the exact method sig match 
+                Method[] mes = objType.getMethods();
+                for (Method me : mes) {
+                	if (me.getName().equals(methodName)) {
+                		Class[] meParamTypes = me.getParameterTypes();
+                		if (propValType != null && meParamTypes != null && meParamTypes.length == 1 && meParamTypes[0].isAssignableFrom(propValType)) {
+                			m = me;
+            				continueLoop = false; //aha! found it
+            				break;
+                		}
+                	}
+                }                    
     		}
         }
         catch(Exception ex) {
             //whatever happened, we didn't find the method - return null
             m = null;
-            if(log.isDebugEnabled())
-                log.debug("Unexpected exception while looking for a Method object, returning null",ex);
+            log.warn("Unexpected exception while looking for a Method object, returning null",ex);
+        }
+        
+        if (m == null) {
+	        if (log.isWarnEnabled())
+	            log.warn("Failed to find matching method. type: " + objType.getName() + ", methodName: " + methodName);
         }
 				
 		return m;
