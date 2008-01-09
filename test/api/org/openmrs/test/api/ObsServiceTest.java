@@ -35,7 +35,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class ObsServiceTest extends BaseContextSensitiveTest {
 	
-	protected static final String INITIAL_OBS_XML = "org/openmrs/test/include/ObsServiceTest-initial.xml";
+	protected static final String INITIAL_OBS_XML = "org/openmrs/test/api/include/ObsServiceTest-initial.xml";
 	
 	@Override
 	protected void onSetUpInTransaction() throws Exception {

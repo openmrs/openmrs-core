@@ -38,9 +38,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class PatientServiceTest extends BaseContextSensitiveTest {
 	
-	protected static final String CREATE_PATIENT_XML = "org/openmrs/test/include/PatientServiceTest-createPatient.xml";
-	protected static final String JOHN_PATIENTS_XML = "org/openmrs/test/include/PatientServiceTest-lotsOfJohns.xml";
-	protected static final String USERS_WHO_ARE_PATIENTS_XML = "org/openmrs/test/include/PatientServiceTest-usersWhoArePatients.xml";
+	protected static final String CREATE_PATIENT_XML = "org/openmrs/test/api/include/PatientServiceTest-createPatient.xml";
+	protected static final String JOHN_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-lotsOfJohns.xml";
+	protected static final String USERS_WHO_ARE_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-usersWhoArePatients.xml";
 	
 	protected PatientService ps = null; 
 	protected AdministrationService adminService = null;

@@ -30,7 +30,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class FormServiceTest extends BaseContextSensitiveTest {
 	
-	protected static final String INITIAL_FIELDS_XML = "org/openmrs/test/include/FormServiceTest-initialFieldTypes.xml";
+	protected static final String INITIAL_FIELDS_XML = "org/openmrs/test/api/include/FormServiceTest-initialFieldTypes.xml";
 	
 	@Override
 	protected void onSetUpInTransaction() throws Exception {

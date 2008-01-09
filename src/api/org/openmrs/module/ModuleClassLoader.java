@@ -401,7 +401,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			final ModuleClassLoader requestor, Set<String> seenModules)
 			throws ClassNotFoundException {
 		
-		if (name.endsWith("DssService")) {
+		if (log.isDebugEnabled()) {
 			log.warn("loading " + name + " " + getModule() + " seenModules: " + seenModules + " requestor: " + requestor + " resolve? " + resolve);
 			StringBuilder output = new StringBuilder();
 			for(StackTraceElement element : Thread.currentThread().getStackTrace()) {

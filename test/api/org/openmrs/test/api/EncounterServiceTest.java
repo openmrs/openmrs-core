@@ -36,7 +36,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
-	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/test/include/EncounterServiceTest-initialData.xml";
+	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/test/api/include/EncounterServiceTest-initialData.xml";
 	
 	@Override
 	protected void onSetUpInTransaction() throws Exception {
