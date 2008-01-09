@@ -71,11 +71,41 @@ public class ModuleUtil {
 			List<File> modulesToLoad = new Vector<File>();
 			
 			for (String modulePath : moduleArray) {
-				File file = new File(modulePath);
-				if (file.exists())
-					modulesToLoad.add(file);
-				else
-					log.error("Unable to load module at path: " + modulePath + " because no file exists there. absolute path: " + file.getAbsolutePath());
+				if (modulePath != null && modulePath.length() > 0) {
+					File file = new File(modulePath);
+					if (file.exists())
+						modulesToLoad.add(file);
+					else {
+						// try to load the file from the classpath
+						InputStream stream = ModuleUtil.class.getClassLoader().getResourceAsStream(modulePath);
+						
+						// expand the classpath-found file to a temporary location
+						if (stream != null) {
+							try {
+								// get and make a temp directory if necessary
+								String tmpDir = System.getProperty("java.io.tmpdir");
+								File tmpDirFile = new File(tmpDir, "openmrs-mod-startup");
+								tmpDirFile.mkdirs();
+								
+								// pull the name from the absolute path load attempt
+								File expandedFile = new File(tmpDirFile, file.getName());
+								FileOutputStream outStream = new FileOutputStream(expandedFile, false);
+								
+								// do the actual file copying
+								OpenmrsUtil.copyFile(stream, outStream);
+								
+								// add the freshly expanded file to the list of modules we're going to start up
+								modulesToLoad.add(expandedFile);
+								expandedFile.deleteOnExit();
+							}
+							catch (IOException io) {
+								log.error("Unable to expand classpath found module: " + modulePath, io);
+							}
+						}
+						else
+							log.error("Unable to load module at path: " + modulePath + " because no file exists there and it is not found on the classpath. (absolute path tried: " + file.getAbsolutePath() + ")");
+					}
+				}
 			}
 			
 			ModuleFactory.loadModules(modulesToLoad);
@@ -154,8 +184,11 @@ public class ModuleUtil {
 	 * Compares <code>version</code> to <code>value</code>
 	 * version and value are strings like w.x.y.z
 	 * 
-	 * @param version
-	 * @param value
+	 * Returns <code>0</code> if either <code>version</code> or
+	 * <code>value</code> is null.
+	 * 
+	 * @param version String like w.x.y.z
+	 * @param value String like w.x.y.z
 	 * @return	the value <code>0</code> if <code>version</code> is
      * 		equal to the argument <code>value</code>; a value less than
      * 		<code>0</code> if <code>version</code> is numerically less
@@ -165,6 +198,9 @@ public class ModuleUtil {
 	 */
 	public static int compareVersion(String version, String value) {
 		try {
+			
+			if (version == null || value == null)
+				return 0;
 			
 			List<String> versions = new Vector<String>();
 			List<String> values = new Vector<String>();
@@ -258,14 +294,17 @@ public class ModuleUtil {
 	}
 
 	/**
-	 * Expand the given fileToExpand to the tmpModuleFile (expected to be a
-	 * directory) If <code>name</code> is null, the entire jar is expanded. If
-	 * <code>name</code> is not null, then only that file is expanded.
+	 * Expand the given <code>fileToExpand</code> jar to the
+	 * <code>tmpModuleFile<code> directory 
 	 * 
-	 * @param fileToExpand
-	 * @param tmpModuleDir
-	 * @param name
-	 * @param keepFullPath
+	 * If <code>name</code> is null, the entire jar is expanded. 
+	 * If<code>name</code> is not null, then only that path/file is expanded.
+	 * 
+	 * @param fileToExpand file pointing at a .jar
+	 * @param tmpModuleDir directory in which to place the files
+	 * @param name filename inside of the jar to look for and expand
+	 * @param keepFullPath if true, will recreate entire directory structure in tmpModuleDir 
+	 * 		relating to <code>name</code>.  if false will start directory structure at <code>name</code>
 	 */
 	@SuppressWarnings("unchecked")
     public static void expandJar(File fileToExpand, File tmpModuleDir,
@@ -296,6 +335,7 @@ public class ModuleUtil {
 						log.debug("Creating parent dirs: "
 								+ parent.getAbsolutePath());
 					}
+					// we don't want to "expand" directories or empty names
 					if (entryName.endsWith("/") || entryName.equals("")) {
 						continue;
 					}
@@ -320,19 +360,24 @@ public class ModuleUtil {
 	}
 
 	/**
-	 * Expand the given file in the given stream to a docBase location
+	 * Expand the given file in the given stream to a location (fileDir/name)
 	 * 
-	 * @param input to read from
-	 * @param docBase location in the doc to copy to 
-	 * @param name file name/path to expand
+	 * The <code>input</code> InputStream is not closed in this method
+	 * 
+	 * @param input stream to read from
+	 * @param fileDir directory to copy to 
+	 * @param name file/directory within the <code>fileDir</code> to which we expand <code>input</code>
+	 * 
+	 * @return File the file created by the expansion. 
+	 * 
 	 * @throws IOException if an error occurred while copying
 	 */
-	private static void expand(InputStream input, String docBase, String name)
+	private static File expand(InputStream input, String fileDir, String name)
 			throws IOException {
 		if (log.isDebugEnabled())
 			log.debug("expanding: " + name);
 		
-		File file = new File(docBase, name);
+		File file = new File(fileDir, name);
 		FileOutputStream outStream = null;
 		try {
 			outStream = new FileOutputStream(file);
@@ -340,6 +385,8 @@ public class ModuleUtil {
 		} finally {
 			try { outStream.close(); } catch (Exception e) { /* pass */ }
 		}
+		
+		return file;
 	}
 	
 	/**
@@ -471,8 +518,12 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Refreshes the given application context 
-	 * @param ctx
+	 * Refreshes the given application context "properly" in OpenMRS. Will first shut down 
+	 * the Context and destroy the classloader, then will refresh and set everything
+	 * back up again 
+	 * 
+	 * @param ctx Spring application context that needs refreshing
+	 * @return AbstractRefreshableApplicationContext the newly refreshed application context
 	 */
 	public static AbstractRefreshableApplicationContext refreshApplicationContext(AbstractRefreshableApplicationContext ctx) {
 		OpenmrsClassLoader.saveState();
@@ -501,7 +552,9 @@ public class ModuleUtil {
 		OpenmrsClassLoader.restoreState();
 		
 		// reload the advice points that were lost when refreshing Spring
-		log.debug("Reloading advice for all started modules: " + ModuleFactory.getStartedModules().size());
+		if (log.isDebugEnabled())
+			log.debug("Reloading advice for all started modules: " + ModuleFactory.getStartedModules().size());
+		
 		for (Module module : ModuleFactory.getStartedModules()) {
 			ModuleFactory.loadAdvice(module);
 		}

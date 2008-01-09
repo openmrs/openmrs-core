@@ -53,9 +53,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	private final Module module;
 	
-	private Module[] publicImports;
-	//private ModuleResourceLoader resourceLoader;
-	//private Map<URL, ResourceFilter> resourceFilters;
+	private Module[] requiredModules;
+
 	private Map<URL, File> libraryCache;
 	private boolean probeParentLoaderLast = true;
 	
@@ -75,8 +74,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			log.debug("URLs length: " + urls.size());
 		
 		this.module = module;
-		collectImports();
-		//resourceLoader = ModuleResourceLoader.get(module);
+		collectRequiredModuleImports();
 		collectFilters();
 		libraryCache = new WeakHashMap<URL, File>();
 	}
@@ -261,7 +259,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * Get and cache the imports for this module.  The imports should just be
 	 * the modules that set as "required" by this module
 	 */
-	protected void collectImports() {
+	protected void collectRequiredModuleImports() {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
 		
@@ -271,7 +269,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				publicImportsMap.put(requiredModule.getModuleId(), requiredModule);
 			}
 		}
-		publicImports = (Module[]) publicImportsMap.values().toArray(
+		requiredModules = (Module[]) publicImportsMap.values().toArray(
 				new Module[publicImportsMap.size()]);
 		
 	}
@@ -316,7 +314,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 			log.debug(buf.toString());
 		}
-		collectImports();
+		collectRequiredModuleImports();
 		// repopulate resource URLs
 		//resourceLoader = ModuleResourceLoader.get(getModule());
 		collectFilters();
@@ -340,7 +338,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		libraryCache.clear();
 		//resourceFilters.clear();
-		publicImports = null;
+		requiredModules = null;
 		//resourceLoader = null;
 	}
 	
@@ -403,6 +401,18 @@ public class ModuleClassLoader extends URLClassLoader {
 			final ModuleClassLoader requestor, Set<String> seenModules)
 			throws ClassNotFoundException {
 		
+		if (name.endsWith("DssService")) {
+			log.warn("loading " + name + " " + getModule() + " seenModules: " + seenModules + " requestor: " + requestor + " resolve? " + resolve);
+			StringBuilder output = new StringBuilder();
+			for(StackTraceElement element : Thread.currentThread().getStackTrace()) {
+				if (element.getClassName().contains("openmrs"))
+					output.append("+ ");
+				output.append(element);
+				output.append("\n");
+			}
+			log.warn("stacktrace: " + output.toString());
+		}
+		
 		if ((seenModules != null) && seenModules.contains(getModule().getModuleId())) {
 			return null;
 		}
@@ -434,7 +444,20 @@ public class ModuleClassLoader extends URLClassLoader {
 				return result;
 			}
 			
-			// we didn't find a loaded class
+			// we have to look in the requiredModules list before doing a "findClass" 
+			// so that the class is loaded by the correct ModuleClassLoader
+			for (Module reqMod : requiredModules) {
+				if (name.startsWith(reqMod.getPackageName())) {
+					ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(reqMod);
+					
+					result = mcl.loadClass(name, resolve, requestor, seenModules);
+					if (result != null)
+						return result;
+				}
+			}
+			
+			// we didn't find a loaded class and this isn't a class 
+			// from another module
 			try {
 				synchronized (getClass()) {
 					result = findClass(name);
@@ -466,7 +489,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		// look through this module's imports to see if it the class
 		// can be loaded from them
-		for (Module publicImport : publicImports) {
+		for (Module publicImport : requiredModules) {
 			if (seenModules.contains(publicImport.getModuleId()))
 				continue;
 			
@@ -748,7 +771,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		seenModules.add(getModule().getModuleId());
 		
-		for (Module publicImport : publicImports) {
+		for (Module publicImport : requiredModules) {
 			if (seenModules.contains(publicImport.getModuleId()))
 				continue;
 			
@@ -803,7 +826,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			seenModules = new HashSet<String>();
 		}
 		seenModules.add(getModule().getModuleId());
-		for (Module publicImport : publicImports) {
+		for (Module publicImport : requiredModules) {
 			if (seenModules.contains(publicImport.getModuleId()))
 				continue;
 			

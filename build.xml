@@ -7,7 +7,7 @@
 <!-- ** @author Burke Mamlin                                  ** -->
 <!-- ** @version 1.0                                          ** -->
 <!-- *********************************************************** -->
-<project name="OpenMRS" default="dist">
+<project name="OpenMRS-trunk" default="dist">
 
 	<tstamp>
 		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" />
@@ -185,8 +185,6 @@
 				<include name="**/*"/>
 				<exclude name="**/web/**" />
 				<exclude name="**/test/**" />
-				<exclude name="**/*Test*" />
-				<exclude name="**/TestingApplicationContext.xml" />
 				<exclude name="log4j.xml" />
 			</fileset>
 		</jar>
@@ -228,7 +226,7 @@
 				<attribute name="Class-Path" value="tests-${openmrs.api.name}" />
 			</manifest>
 			<fileset dir="${build.dir}">
-				<include name="**/*Test*.class" />
+				<include name="**/test/*.class" />
 				<include name="TestingApplicationContext.xml" />
 				<include name="**/initialInMemoryTestDataSet.xml" />
 			</fileset>

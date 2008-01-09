@@ -61,7 +61,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			log.debug("Creating new OpenmrsClassLoader instance with parent: " + parent);
 		
 		//disable caching so the jars aren't locked
-		// if performace is effected, this can be disabled in favor of
+		// if performance is effected, this can be disabled in favor of
 		//  copying all opened jars to a temp location 
 		//  (ala org.apache.catalina.loader.WebappClassLoader antijarlocking)
 		URLConnection urlConnection = new OpenmrsURLConnection();
@@ -240,9 +240,10 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	/**
 	 * Get the temporary "work" directory for expanded jar files
 	 * 
-	 * @return
+	 * @return temporary location for storing the libraries
 	 */
 	public static File getLibCacheFolder() {
+		// cache the location for all calls until OpenMRS is restarted
 		if (libCacheFolder != null)
 			return libCacheFolderInitialized ? libCacheFolder : null;
 		
@@ -260,8 +261,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 						+ " is owned by another openmrs instance");
 				return null;
 			}
+			
 			if (libCacheFolder.exists()) {
-				// clean up folder
+				// clean up and empty the folder if it exists (and is not locked)
 				try {
 					OpenmrsUtil.deleteDirectory(libCacheFolder);
 				}
@@ -269,23 +271,32 @@ public class OpenmrsClassLoader extends URLClassLoader {
 					log.warn("Unable to delete: " + libCacheFolder.getName());
 				}
 			} else {
+				// otherwise just create the dir structure
 				libCacheFolder.mkdirs();
 			}
+			
+			// create the lock file in the lib cache folder to prevent other caches
+			// from being created here
 			try {
 				if (!lockFile.createNewFile()) {
-					log.error("can\'t create lock file in JPF libraries cache"
-							+ " folder " + libCacheFolder);
+					log.error("can't create lock file in JPF libraries cache folder"
+					          + libCacheFolder);
 					return null;
 				}
 			} catch (IOException ioe) {
-				log.error("can\'t create lock file in JPF libraries cache"
-						+ " folder " + libCacheFolder, ioe);
+				log.error("can't create lock file in JPF libraries cache folder "
+						+ libCacheFolder, ioe);
 				return null;
 			}
+			
+			// mark the lock and entire library cache to be deleted when the jvm exits
 			lockFile.deleteOnExit();
 			libCacheFolder.deleteOnExit();
+			
+			// mark the lib cache folder as ready
 			libCacheFolderInitialized = true;
 		}
+		
 		return libCacheFolder;
 	}
 	

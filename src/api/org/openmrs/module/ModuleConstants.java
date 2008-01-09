@@ -50,8 +50,10 @@ public class ModuleConstants {
 	
 	/**
 	 * Intended to be used by the testing framework in order to set a list of
-	 * specific files that need to be loaded by the Context.  Should be space separated 
-	 * absolute path and filenames  
+	 * specific files that need to be loaded by the Context.  
+	 * 
+	 * Should be space separated.  Should be either absolute file paths or classpath loadable
+	 * file paths.  
 	 */
 	public static final String RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD = "module.list_to_load";
 	
