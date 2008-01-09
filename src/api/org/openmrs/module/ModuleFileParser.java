@@ -40,7 +40,7 @@ public class ModuleFileParser {
 	private File moduleFile = null;
 
 	/**
-	 * Contructor
+	 * Constructor
 	 * 
 	 * @param moduleFile the module (jar)file that will be parsed
 	 */
@@ -205,7 +205,7 @@ public class ModuleFileParser {
 			try {
 				jarfile.close();
 			} catch (Exception e) {
-				log.warn("Unable to close jarfile: " + jarfile.getName());
+				log.warn("Unable to close jarfile: " + jarfile, e);
 			}
 			if (configStream != null) {
 				try {

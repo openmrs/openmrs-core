@@ -327,9 +327,12 @@ public class OpenmrsUtil {
 	/**
 	 * Copy file from inputStream onto the outputStream
 	 * 
-	 * @param inputStream
-	 * @param outputStream
-	 * @throws IOException
+	 * inputStream is not closed in this method
+	 * outputStream /is/ closed at completion of this method
+	 * 
+	 * @param inputStream Stream to copy from
+	 * @param outputStream Stream/location to copy to
+	 * @throws IOException thrown if an error occurs during read/write
 	 */
 	public static void copyFile(InputStream inputStream,
 			OutputStream outputStream) throws IOException {
@@ -357,9 +360,9 @@ public class OpenmrsUtil {
 		finally {
 			if (in != null)  in.close();
 			if (out != null) out.close();
+			try { outputStream.close(); } catch (Exception e) { /* pass */ }
 		}
 		
-		outputStream.close();
 	}
 	
 	/**

@@ -218,18 +218,26 @@ public class Context {
 		getUserContext().becomeUser(systemId);
 	}
 	
+	/**
+	 * Get the runtime properties that this OpenMRS instance was started with
+	 * 
+	 * @return copy of the runtime properties
+	 */
 	public static Properties getRuntimeProperties() {
 		if (log.isDebugEnabled())
 			log.debug("getting runtime properties. size: " + runtimeProperties.size());
 		
 		Properties props = new Properties();
-		for (Map.Entry<Object, Object> entry : runtimeProperties.entrySet()) {
-			props.put(entry.getKey(), entry.getValue());
-		}
+		props.putAll(runtimeProperties);
 		
 		return props;
 	}
 	
+	/**
+	 * Set the runtime properties to be used by this OpenMRS instance
+	 * 
+	 * @param props runtime properties
+	 */
 	public static void setRuntimeProperties(Properties props) {
 		runtimeProperties = props;
 	}
@@ -533,7 +541,8 @@ public class Context {
 	/**
 	 * Starts the OpenMRS System
 	 * Should be called prior to any kind of activity
-	 * @param Properties
+	 * 
+	 * @param Properties runtime properties to use for startup
 	 */
 	public static void startup(Properties props) {
 		getContextDAO().startup(props);

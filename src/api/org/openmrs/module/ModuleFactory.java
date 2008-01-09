@@ -47,7 +47,7 @@ import org.springframework.util.StringUtils;
  */
 public class ModuleFactory {
 
-	private static Log log = LogFactory.getLog("org.openmrs.module.ModuleFactory");
+	private static Log log = LogFactory.getLog(ModuleFactory.class);
 
 	private static Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
 	private static Map<String, Module> startedModules = new WeakHashMap<String, Module>();
@@ -169,12 +169,16 @@ public class ModuleFactory {
 			List<Module> leftoverModules = new Vector<Module>();
 			for (Module mod : getLoadedModules()) {
 				String key = mod.getModuleId() + ".started";
-				String prop = as.getGlobalProperty(key, "false");
-				if (prop.equals("true")) {
+				String prop = as.getGlobalProperty(key, null);
+				
+				// if a 'moduleid.started' property doesn't exist, start the module anyway
+				// as this is probably the first time they are loading it
+				if (prop == null || prop.equals("true")) {
 					if (requiredModulesStarted(mod))
 						try {
-							log.debug("starting module: " + mod.getModuleId());
-
+							if (log.isDebugEnabled())
+								log.debug("starting module: " + mod.getModuleId());
+							
 							startModule(mod);
 						} catch (Exception e) {
 							log.error("Error while starting module: "
@@ -182,8 +186,10 @@ public class ModuleFactory {
 							mod.setStartupErrorMessage("Error while starting module: " + e.getMessage());
 						}
 					else {
-						log.debug("cannot start because required modules are not started: " + mod.getModuleId());
+						// if not all the modules required by this mod are loaded, save it for later
 						leftoverModules.add(mod);
+						if (log.isDebugEnabled())
+							log.debug("cannot start because required modules are not started: " + mod.getModuleId());
 					}
 				}
 			}
@@ -193,31 +199,44 @@ public class ModuleFactory {
 			// anymore or we've loaded them all
 			boolean atLeastOneModuleLoaded = true;
 			while (leftoverModules.size() > 0 && atLeastOneModuleLoaded) {
-				log.debug("Trying to start leftover modules: " + leftoverModules);
+				if (log.isDebugEnabled())
+					log.debug("Trying to start leftover modules: " + leftoverModules);
+				
 				atLeastOneModuleLoaded = false;
-				List<Module> modulesJustLoaded = new Vector<Module>();
+				List<Module> modulesStartedInThisLoop = new Vector<Module>();
+				
 				for (Module leftoverModule : leftoverModules) {
 					if (requiredModulesStarted(leftoverModule)) {
-						log.debug("starting leftover module: " + leftoverModule.getModuleId());
+						if (log.isDebugEnabled())
+							log.debug("starting leftover module: " + leftoverModule.getModuleId());
+						
 						try {
 							// don't need to check globalproperty here because
-							// it would only
-							// be on the leftovermodules list if it were set to
-							// true
+							// it would only be on the leftover modules list if 
+							// it were set to true already
 							startModule(leftoverModule);
+							
+							// set this boolean flag to true so we keep looping over the modules
 							atLeastOneModuleLoaded = true;
-							modulesJustLoaded.add(leftoverModule);
+							
+							// save the module we just started
+							modulesStartedInThisLoop.add(leftoverModule);
 						} catch (Exception e) {
 							log.error("Error while starting leftover module: "
 							        + leftoverModule.getName(), e);
 						}
 					} else {
-						log.debug("cannot start leftover module because required modules are not started: " + leftoverModule.getModuleId());
+						if (log.isDebugEnabled())
+							log.debug("cannot start leftover module because required modules are not started: " + leftoverModule.getModuleId());
 					}
 				}
-				leftoverModules.removeAll(modulesJustLoaded);
+				
+				// remove the modules we started in this loop from the overall
+				// leftover modules list
+				leftoverModules.removeAll(modulesStartedInThisLoop);
 			}
-
+			
+			// if we failed to start all the modules, error out
 			if (leftoverModules.size() > 0)
 				for (Module leftoverModule : leftoverModules) {
 					String message = "Unable to start module '"

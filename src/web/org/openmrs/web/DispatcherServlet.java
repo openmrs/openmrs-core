@@ -12,12 +12,11 @@ import org.springframework.beans.BeansException;
 
 /**
  * This class is only used to get access to the DispatcherServlet. After
- * creation, this obj is saved to WebUtil for later use.
+ * creation, this objext is saved to WebUtil for later use.
  *  
- * When Spring's webApplicationContext is refreshed, the dispatcherservlet 
+ * When Spring's webApplicationContext is refreshed, the DispatcherServlet 
  * needs to be refreshed too.
  * 
- * @author bwolfe
  */
 public class DispatcherServlet extends
 		org.springframework.web.servlet.DispatcherServlet {
@@ -31,7 +30,7 @@ public class DispatcherServlet extends
 		// refresh the application context to look for module xml config files as well
 		
 		//XmlWebApplicationContext wac = ((XmlWebApplicationContext)getWebApplicationContext());
-		//Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		//wac.refresh();
 		
 		log.debug("Framework being initialized");
@@ -48,6 +47,7 @@ public class DispatcherServlet extends
 	}
 	
 	public void reInitFrameworkServlet() throws ServletException {
+		log.debug("Framework being REinitialized");
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 
 		// reset bean info and framework servlet

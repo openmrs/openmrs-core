@@ -339,7 +339,7 @@ public class HibernateUserDAO implements
 		
 		// if we're in a junit test, we're probably using hsql...and hsql
 		// does not like the backtick.  Replace the backtick with the hsql
-		// escape character -- the double quote (or nothing).
+		// escape character: the double quote (or nothing).
 		Dialect dialect = HibernateUtil.getDialect(sessionFactory);
 		if (HSQLDialect.class.getName().equals(dialect.getClass().getName()))
 			sql = sql.replace("`", "");
