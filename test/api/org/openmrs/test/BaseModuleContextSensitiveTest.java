@@ -13,13 +13,6 @@
  */
 package org.openmrs.test;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Properties;
-
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-
 /**
  * Modules using the unit test framework should use this class instead of
  * {@link BaseContextSensitiveTest}.

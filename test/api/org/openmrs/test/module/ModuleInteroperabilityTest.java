@@ -15,12 +15,10 @@ package org.openmrs.test.module;
 
 import java.util.Properties;
 
-import org.openmrs.module.Module;
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleConstants;
-import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -29,8 +27,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * OpenMRS startup and during normal file usage.
  * 
  */
-public class ModuleInteroperabilityTest extends BaseModuleContextSensitiveTest {
-	
+public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * This class file uses the atd and dss modules to test the compatibility
@@ -62,32 +59,45 @@ public class ModuleInteroperabilityTest extends BaseModuleContextSensitiveTest {
 	    
 		ModuleUtil.startup(runtimeProperties);
 		
+		// reset the boolean flag because we just restarted spring
+		columnsAdded = false;
+		
 	    return appContext;
 	}
 	
 	/**
-	 * Set up the database with the initial dataset before every test method
-	 * in this class.
+	 * This test exists solely to either mark the application context as dirty or
+	 * not for the next test.  If we've run other tests, then the context needs to 
+	 * be recreated for the {@link #testModuleALoadingModuleB()} test.  If we 
+	 * haven't run any other tests, leave the context alone, otherwise 
+	 * {@link #testModuleALoadingModuleB()} won't run correctly
 	 * 
-	 * Require authorization before every test method in this class
-	 * 
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpBeforeTransaction()
+	 * @throws Exception
 	 */
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
-		// create the basic user and give it full rights
-		initializeInMemoryDatabase();
+	public void testShouldOnlyBeUsedByJunitReport() throws Exception {
 		
-		// authenticate to the temp database
-		authenticate();
-	}
+		// the load count will be "1" if this test was run as a stand-alone in an IDE
+		// if we're in a stand-alone, we don't need to reset the application context for the next test
 
+		// the load count will be <> 1 if this test is run in a suite or using
+		//   something like junit report
+		// if we're in a suite, we need to reset he application context for the next test
+		if (getLoadCount() != 1)
+			setDirty();
+	}
+	
 	/**
 	 * Test that module A that requires module B can call a service method on module B
 	 * 
 	 * @throws Exception
 	 */
-	public void testStartAndStopModules() throws Exception {
+	public void testModuleALoadingModuleB() throws Exception {
+		// create the basic user and give it full rights
+		initializeInMemoryDatabase();
+		
+		// authenticate to the temp database
+		authenticate();
+		
 		OpenmrsClassLoader loader = OpenmrsClassLoader.getInstance();
 		Class<?> atdServiceClass = loader.loadClass("org.openmrs.module.atdproducer.service.ATDService");
 		Class<?> dssServiceClass = loader.loadClass("org.openmrs.module.dssmodule.DssService");
@@ -111,9 +121,7 @@ public class ModuleInteroperabilityTest extends BaseModuleContextSensitiveTest {
 		ModuleClassLoader dssServiceClassLoader = (ModuleClassLoader) dssServiceClass2.getClassLoader();
 		assertEquals("dssmodule", dssServiceClassLoader.getModule().getModuleId());
 		
-		Module atdModule = ModuleFactory.getModuleById("atd");
-		ModuleFactory.stopModule(atdModule);
-		
+		setDirty();
 	}
-	
+
 }

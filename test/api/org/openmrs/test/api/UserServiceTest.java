@@ -29,7 +29,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class UserServiceTest extends BaseContextSensitiveTest {
 	
-	protected static final String XML_FILENAME = "org/openmrs/test/include/UserServiceTest.xml";
+	protected static final String XML_FILENAME = "org/openmrs/test/api/include/UserServiceTest.xml";
 	
 	/**
 	 * Set up the database with the initial dataset before every test method

@@ -30,7 +30,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class ConceptServiceTest extends BaseContextSensitiveTest {
 	
 	protected ConceptService conceptService;
-	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/test/include/ConceptServiceTest-initialConcepts.xml";
+	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/test/api/include/ConceptServiceTest-initialConcepts.xml";
 	
 	/**
 	 * Authenticate the user for all of the tests

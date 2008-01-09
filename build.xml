@@ -214,8 +214,8 @@
 			<compilerarg line="${compile.arguments}" />
 		</javac>
 		<copy todir="${build.dir}">
-			<fileset dir="${test.dir}/api/org/openmrs" includes="TestingApplicationContext.xml" />
-			<fileset dir="${test.dir}/api/org/openmrs/include" includes="initialInMemoryTestDataSet.xml" />
+			<fileset dir="${test.dir}/api/org/openmrs/test" includes="TestingApplicationContext.xml" />
+			<fileset dir="${test.dir}/api/org/openmrs/test/include/" includes="initialInMemoryTestDataSet.xml" />
 		</copy>
 	</target>
 
@@ -529,8 +529,8 @@
             <batchtest todir="${junit-tests.dir}" haltonfailure="no">
 				<fileset dir="${build.dir}">
 					<include name="**/*Test.class" />
-					<exclude name="org/openmrs/BaseContextSensitiveTest.class" />
-					<exclude name="org/openmrs/BaseModuleContextSensitiveTest.class" />
+					<exclude name="org/openmrs/test/BaseContextSensitiveTest.class" />
+					<exclude name="org/openmrs/test/BaseModuleContextSensitiveTest.class" />
 					<exclude name="org/openmrs/web/taglib/SummaryTest.class" />
 				</fileset>
 			</batchtest>

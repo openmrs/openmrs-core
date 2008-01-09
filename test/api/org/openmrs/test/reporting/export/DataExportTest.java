@@ -14,6 +14,8 @@
 package org.openmrs.test.reporting.export;
 
 import java.io.File;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.openmrs.reporting.PatientSet;
 import org.openmrs.reporting.export.ConceptColumn;
@@ -38,7 +40,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	public void testCalcuateAge() throws Exception { 
 		
 		initializeInMemoryDatabase();
-		executeDataSet("org/openmrs/test/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
 		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();
@@ -70,7 +72,12 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		DataExportUtil.generateExport(export, patients, "\t");
 		File exportFile = DataExportUtil.getGeneratedFile(export);		
 		
-		String expectedOutput = "PATIENT_ID	GENDER	BIRTHDATE	AGE\n2	M	01/01/2000	7\n";
+		String expectedOutput = "PATIENT_ID	GENDER	BIRTHDATE	AGE\n2	M	01/01/2000	XXX\n";
+		// adjust expected output for every year
+		Calendar cal = new GregorianCalendar();
+		int expectedAge = cal.get(Calendar.YEAR);
+		expectedOutput = expectedOutput.replace("XXX", String.valueOf(expectedAge - 2000));
+		
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
@@ -85,8 +92,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 */
 	public void testFirstNObs() throws Exception {
 		initializeInMemoryDatabase();
-		executeDataSet("org/openmrs/test/include/DataExportTest-patients.xml");
-		executeDataSet("org/openmrs/test/include/DataExportTest-obs.xml");
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-obs.xml");
 		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();
@@ -191,8 +198,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 */
 	public void testFirstNObsWithZeroObsReturned() throws Exception {
 		initializeInMemoryDatabase();
-		executeDataSet("org/openmrs/test/include/DataExportTest-patients.xml");
-		executeDataSet("org/openmrs/test/include/DataExportTest-obs.xml");
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-obs.xml");
 		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();
@@ -244,8 +251,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 */
 	public void testLastNObs() throws Exception {
 		initializeInMemoryDatabase();
-		executeDataSet("org/openmrs/test/include/DataExportTest-patients.xml");
-		executeDataSet("org/openmrs/test/include/DataExportTest-obs.xml");
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-obs.xml");
 		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();

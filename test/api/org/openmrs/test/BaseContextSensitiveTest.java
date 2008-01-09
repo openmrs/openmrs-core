@@ -102,7 +102,7 @@ public abstract class BaseContextSensitiveTest extends
 	 * Private variable defining whether or not the columns have been initialized
 	 * in the hsql database yet (adding password and salt columns)
 	 */
-	private static boolean columnsAdded = false;
+	protected static boolean columnsAdded = false;
 
 	/**
 	 * @see org.springframework.test.AbstractSingleSpringContextTests#getConfigLocations()
@@ -503,4 +503,14 @@ public abstract class BaseContextSensitiveTest extends
 		}
 	}
 	
+	/**
+	 * @see org.springframework.test.AbstractSingleSpringContextTests#setDirty()
+	 */
+	protected void setDirty() {
+		// reset the columns flag because the user has declared they want to rebuild the context
+		// before the next test
+		columnsAdded = false;
+		
+		super.setDirty();
+	}
 }
