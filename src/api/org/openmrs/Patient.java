@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs;
 
 import java.util.Collection;
@@ -134,8 +147,13 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 
 	/**
-	 * @return all known identifiers for patient
+	 * Get all of this patients identifiers -- both voided and non-voided
+	 * ones.  If you want only non-voided identifiers, use {@link #getActiveIdentifiers()}
+	 * 
+	 * @return Set of all known identifiers for this patient
+	 * 
 	 * @see org.openmrs.PatientIdentifier
+	 * @see #getActiveIdentifiers()
 	 */
 	public Set<PatientIdentifier> getIdentifiers() {
 		if (identifiers == null)
@@ -243,9 +261,12 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Returns only the non-voided identifiers for this patient
+	 * Returns only the non-voided identifiers for this patient.
+	 * If you want <u>all</u> identifiers, use {@link #getIdentifiers()}
 	 * 
-	 * @return list identifiers
+	 * @return list of non-voided identifiers for this patient
+	 * 
+	 * @see #getIdentifiers()
 	 */
 	public List<PatientIdentifier> getActiveIdentifiers() {
 		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();

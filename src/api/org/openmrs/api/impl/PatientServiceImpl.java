@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
@@ -38,7 +51,9 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Patient-related services
- * rn * @vesrion 1.0
+ * 
+ * @version 1.0
+ * @see org.openmrs.api.PersonService
  */
 public class PatientServiceImpl implements PatientService {
 
@@ -737,13 +752,13 @@ public class PatientServiceImpl implements PatientService {
 		// set the properties on the collections for the generic person object
 		Context.getPersonService().setCollectionProperties(patient);
 		
-		// patient creator/changer
+		// patient creator
 		if (patient.getCreator() == null)
 			patient.setCreator(Context.getAuthenticatedUser());
 		if (patient.getDateCreated() == null)
 			patient.setDateCreated(new Date());
 		
-		// TODO: Is this the right way to determine whether this is called from create() or update()?
+		// patient changer
 		if (patient.getPatientId() != null) {
 			patient.setChangedBy(Context.getAuthenticatedUser());
 			patient.setDateChanged(new Date());
@@ -752,12 +767,24 @@ public class PatientServiceImpl implements PatientService {
 		// identifier collection
 		if (patient.getIdentifiers() != null) {
 			for (PatientIdentifier pIdentifier : patient.getIdentifiers()) {
+				// set the creator and date created if not set yet
 				if (pIdentifier.getDateCreated() == null)
 					pIdentifier.setDateCreated(new Date());
 				if (pIdentifier.getCreator() == null)
 					pIdentifier.setCreator(Context.getAuthenticatedUser());
+				
+				// make sure the identifier is associated with the current patient
 				if (pIdentifier.getPatient() == null)
 					pIdentifier.setPatient(patient);
+				
+				// if the user has marked this identifier as voided, make sure the
+				// other void attrs are filled in
+				if (pIdentifier.isVoided()) {
+					if (pIdentifier.getVoidedBy() == null)
+						pIdentifier.setVoidedBy(Context.getAuthenticatedUser());
+					if (pIdentifier.getDateVoided() == null)
+						pIdentifier.setDateVoided(new Date());
+				}
 			}
 		}
 	}
