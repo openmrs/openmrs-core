@@ -57,7 +57,7 @@
 			<td><spring:message code="User.systemId"/></td>
 			<td>
 				<c:choose>
-					<c:when test="${user.systemId != null}">
+					<c:when test="${user.systemId != null && user.systemId != ''}">
 						${user.systemId}
 					</c:when>
 					<c:otherwise>
