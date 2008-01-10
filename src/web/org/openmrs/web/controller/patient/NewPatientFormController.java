@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.web.controller.patient;
 
 import java.text.NumberFormat;
@@ -8,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -41,12 +55,12 @@ import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.web.WebConstants;
-import org.openmrs.web.controller.user.UserFormController;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.TribeEditor;
+import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.WebConstants;
+import org.openmrs.web.controller.user.UserFormController;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -59,6 +73,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * This controller is used for the "mini"/"new"/"short" patient form.  Only
+ * key/important attributes for the patient are displayed and allowed to be
+ * edited
+ * 
+ * @see org.openmrs.web.controller.patient.PatientFormController
+ */
 public class NewPatientFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
@@ -302,7 +323,7 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			// set or unset the preferred bit for the old identifiers if needed
 			if (patient.getIdentifiers() == null)
-				patient.setIdentifiers(new HashSet<PatientIdentifier>());
+				patient.setIdentifiers(new TreeSet<PatientIdentifier>());
 			
 			for (PatientIdentifier pi : patient.getIdentifiers()) {
 				pi.setPreferred(pref.equals(pi.getIdentifier()+pi.getIdentifierType().getPatientIdentifierTypeId()));
@@ -312,6 +333,20 @@ public class NewPatientFormController extends SimpleFormController {
 			// add the new identifiers
 			//patient.getIdentifiers().addAll(newIdentifiers);
 			patient.addIdentifiers(newIdentifiers);
+			
+			
+			// find which identifiers they removed and void them
+			// must create a new list so that the updated identifiers in
+			// the newIdentifiers list are hashed correctly
+			List<PatientIdentifier> newIdentifiersList = new Vector<PatientIdentifier>();
+			newIdentifiersList.addAll(newIdentifiers);
+			for (PatientIdentifier identifier : patient.getIdentifiers()) {
+				if (!newIdentifiersList.contains(identifier)) {
+					// mark the "removed" identifiers as voided
+					identifier.setVoided(true);
+				}
+			}
+			
 			
 			// set the other patient attributes
 			patient.setBirthdate(shortPatient.getBirthdate());
@@ -609,11 +644,12 @@ public class NewPatientFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Map referenceData(HttpServletRequest request) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-
-		List<PatientIdentifier> identifiers = new Vector<PatientIdentifier>();
+		
+		// the list of identifiers to display 
+		Set<PatientIdentifier> identifiers = new TreeSet<PatientIdentifier>();
 		
 		Patient patient = null;
 		String causeOfDeathOther = "";
@@ -622,9 +658,13 @@ public class NewPatientFormController extends SimpleFormController {
 			PatientService ps = Context.getPatientService();
 			String patientId = request.getParameter("patientId");
 	    	if (patientId != null && !patientId.equals("")) {
+	    		
+	    		// our current patient
 	    		patient = ps.getPatient(Integer.valueOf(patientId));
+	    		
 	    		if (patient != null) {
-		    		identifiers.addAll(patient.getIdentifiers());
+	    			// only show non-voided identifiers
+		    		identifiers.addAll(patient.getActiveIdentifiers());
 		    		
 		    		// get 'other' cause of death
 		    		String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
@@ -651,10 +691,13 @@ public class NewPatientFormController extends SimpleFormController {
 	    	}
 		}
 		
-		/* The identifiers are added in the onSubmit method.  This is duplicative - bwolfe
-			// give them both the just-entered identifiers and the patient's current identifiers
-			identifiers.addAll(newIdentifiers);
-		*/
+		// give them both the just-entered identifiers and the patient's current identifiers
+		for (PatientIdentifier identifier : newIdentifiers) {
+			// add the patient object to the new identifier list so
+			// that the .equals method works correctly in the next loop
+			identifier.setPatient(patient);
+		}
+		identifiers.addAll(newIdentifiers);
 		
 		if (pref.length() > 0)
 			for (PatientIdentifier pi : identifiers)
