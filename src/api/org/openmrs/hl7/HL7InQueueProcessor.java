@@ -67,13 +67,10 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			Context.getHL7Service().deleteHL7InQueue(hl7InQueue);
 		} catch (HL7Exception e) {
 			boolean skipError = false;
-			log.error(e.getCause().getMessage());
-			log.error(e.getCause().getMessage().equals("Could not resolve patient"));
-			log.error(hl7InQueue.getHL7Source().getName());
-			log.error(!hl7InQueue.getHL7Source().getName().equals("local"));
-			log.error(Context.getAdministrationService().getGlobalProperty("hl7_processor.ignore_missing_patient_non_local", "false"));
-			log.error(Context.getAdministrationService().getGlobalProperty("hl7_processor.ignore_missing_patient_non_local", "false").equals("true"));
-			if ( e.getCause().getMessage().equals("Could not resolve patient")
+			log.error("Unable to process hl7inqueue: " + hl7InQueue.getHL7InQueueId(), e);
+			log.error("Hl7inqueue source: " + hl7InQueue.getHL7Source());
+			log.error("hl7_processor.ignore_missing_patient_non_local? " + Context.getAdministrationService().getGlobalProperty("hl7_processor.ignore_missing_patient_non_local", "false"));
+			if (e.getCause() != null && e.getCause().getMessage().equals("Could not resolve patient")
 					&& !hl7InQueue.getHL7Source().getName().equals("local")
 					&& Context.getAdministrationService().getGlobalProperty("hl7_processor.ignore_missing_patient_non_local", "false").equals("true") ) {
 				skipError = true;
