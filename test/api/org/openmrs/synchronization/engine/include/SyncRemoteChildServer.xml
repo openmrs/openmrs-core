@@ -8,6 +8,11 @@
   <synchronization_class class_id="3" name="PersonName" type="PERSON" default_to="1" default_from="1"/>
   <synchronization_class class_id="4" name="Role" type="MISC" default_to="1" default_from="1"/>
   <synchronization_class class_id="5" name="Privilege" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="6" name="Program" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="7" name="PatientProgram" type="PATIENT" default_to="1" default_from="1"/>
+  <synchronization_class class_id="8" name="ProgramWorkflow" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="9" name="ProgramWorkflowState" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="10" name="PatientState" type="PATIENT" default_to="1" default_from="1"/>
 
   <!-- <synchronization_server_class server_class_id="" server_id="" class_id="" send_to="1" receive_from="1"/> -->
   <synchronization_server_class server_class_id="1" server_id="1" class_id="1" send_to="1" receive_from="1"/>
@@ -15,4 +20,9 @@
   <synchronization_server_class server_class_id="3" server_id="1" class_id="3" send_to="1" receive_from="1"/>
   <synchronization_server_class server_class_id="4" server_id="1" class_id="4" send_to="1" receive_from="1"/>
   <synchronization_server_class server_class_id="5" server_id="1" class_id="5" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="6" server_id="1" class_id="6" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="7" server_id="1" class_id="7" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="8" server_id="1" class_id="8" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="9" server_id="1" class_id="9" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="10" server_id="1" class_id="10" send_to="1" receive_from="1"/>
 </dataset>

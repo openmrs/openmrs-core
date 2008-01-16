@@ -2,6 +2,7 @@ package org.openmrs;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -152,7 +153,9 @@ public class ProgramWorkflow implements java.io.Serializable, Synchronizable {
 	
 	public void addState(ProgramWorkflowState s) {
 		s.setProgramWorkflow(this);
-		states.add(s);
+		if (getStates() == null)
+			setStates(new HashSet<ProgramWorkflowState>());
+		getStates().add(s);
 	}
 	
 	public String toString() {

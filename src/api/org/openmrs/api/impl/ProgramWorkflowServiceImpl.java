@@ -156,6 +156,18 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 			throw new APIAuthenticationException("Privilege required: "
 					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
 		
+		Date now = new Date();
+		if (w.getCreator() == null)
+			w.setCreator(Context.getAuthenticatedUser());
+		if (w.getDateCreated() == null)
+			w.setDateCreated(now);
+		if (w.getStates() != null)
+			for (ProgramWorkflowState s : w.getStates()) {
+				if (s.getCreator() == null)
+					s.setCreator(Context.getAuthenticatedUser());
+				if (s.getDateCreated() == null)
+					s.setDateCreated(now);
+			}
 		getProgramWorkflowDAO().createWorkflow(w);
 	}
 
@@ -302,7 +314,8 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		if (p.getCreator() == null) {
 			p.setCreator(Context.getAuthenticatedUser());
 		}
-		p.setDateCreated(now);
+		if (p.getDateCreated() == null)
+			p.setDateCreated(now);
 		for (PatientState s : p.getStates()) {
 			if (s.getCreator() == null)
 				s.setCreator(Context.getAuthenticatedUser());
@@ -361,7 +374,7 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 	/* (non-Javadoc)
 	 * @see org.openmrs.api.impl.ProgramWorkflowService#enrollPatientInProgram(org.openmrs.Patient, org.openmrs.Program, java.util.Date, java.util.Date)
 	 */
-	public void enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate, Date completionDate) {
+	public PatientProgram enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate, Date completionDate) {
 		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
 		// Should we add a boolean to the program title that says patients can be enrolled there twice simultaneously? 
@@ -372,7 +385,9 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		p.setPatient(patient);
 		p.setProgram(program);
 		p.setDateEnrolled(enrollmentDate);
+		p.setDateCompleted(completionDate);
 		createPatientProgram(p);
+		return p;
 	}
 	
 	/* (non-Javadoc)
