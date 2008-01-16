@@ -648,8 +648,7 @@ public class ModuleFactory {
 			}
 
 			if (getModuleClassLoaderMap().containsKey(mod)) {
-				log
-				        .debug("Mod was in classloader map.  Removing advice and extensions.");
+				log.debug("Mod was in classloader map.  Removing advice and extensions.");
 				// remove all advice by this module
 				try {
 					for (AdvicePoint advice : mod.getAdvicePoints()) {
@@ -671,9 +670,9 @@ public class ModuleFactory {
 							        + advice.getPoint(), e);
 						}
 					}
-				} catch (Exception e) {
+				} catch (Throwable t) {
 					log.warn("Error while getting advicePoints from module: "
-					        + moduleId, e);
+					        + moduleId, t);
 				}
 
 				// remove all extensions by this module
@@ -692,9 +691,9 @@ public class ModuleFactory {
 							        exterror);
 						}
 					}
-				} catch (Exception e) {
+				} catch (Throwable t) {
 					log.warn("Error while getting extensions from module: "
-					        + moduleId, e);
+					        + moduleId, t);
 				}
 			}
 
@@ -706,9 +705,9 @@ public class ModuleFactory {
 				        .debug(
 				                "Exception encountered while calling module's activator.shutdown()",
 				                me);
-			} catch (Exception e) {
+			} catch (Throwable t) {
 				log.warn("Unable to call module's Activator.shutdown() method",
-				        e);
+				        t);
 			}
 
 			ModuleClassLoader cl = removeClassLoader(mod);
