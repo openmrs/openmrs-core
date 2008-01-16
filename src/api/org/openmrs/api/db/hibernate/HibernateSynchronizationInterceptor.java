@@ -38,6 +38,7 @@ import org.hibernate.Transaction;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 import org.hibernate.collection.PersistentSet;
+import org.hibernate.proxy.HibernateProxy;
 import org.openmrs.User;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
@@ -522,9 +523,19 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 
         try {
         	
-            // Get the GUID of this object if it has one, used as SyncItemKey.
-            objectGuid = entity.getGuid();
-            originalRecordGuid = entity.getLastRecordGuid();
+            /* Get the GUID of this object if it has one, used as SyncItemKey.
+             * if this is save event *and* guid is already assigned, clear it out and get a new one:
+             * this can happen is someone does object copy and has incorrect constructor or if object
+             * is disconnected from session and then saved anew; as in obs edit
+             */  
+        	if (state == SyncItemState.NEW && entity.getGuid() != null) {
+        		entity.setGuid(null);
+        	} else {
+        		objectGuid = entity.getGuid();
+        	}
+        	
+        	//pull-out sync-network wide change id, if one was already assigned (i.e. this change is coming from some other server
+        	originalRecordGuid = entity.getLastRecordGuid();
             
             //build up a starting msg for all logging
             StringBuilder sb = new StringBuilder();
@@ -576,13 +587,16 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                     log.info(infoMsg + ", Id for this class: " + idPropertyName + " , value:" + currentState[i]);
 
                 /*
-                 * If this field is a String GUID, and it's null or "", we need to assign a new GUID before 
-                 * processing it. Note: dataChanged is also set to true to let Hibernate know we are changing
+                 * If:
+                 * a) this field is a String GUID, and 
+                 * b) objectGuid is null or "",
+                 * we need to assign a new GUID before processing it. 
+                 * Note: dataChanged is also set to true to let Hibernate know we are changing
                  * a record right underneath of it. 
                  */
-                if (typeName.equals("string") 
-                		&& propertyNames[i].equals("guid") 
-                		&& (currentState[i] == null || currentState[i].equals(""))) {
+                if (typeName.equals("string") && propertyNames[i].equals("guid") 
+                		&& (objectGuid == null || objectGuid.equals(""))
+                	) {
                     objectGuid = UUID.randomUUID().toString();
                     currentState[i] = objectGuid;
                     dataChanged = true;
@@ -808,34 +822,59 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     }
     
     /**
-     * 
      * Retrieves guid of Synchronizable instance from the storage based on indentity value (i.e. PK).
      * 
+     * <p>Remarks: While this method loads the instance into session, for safe measure it promptly evicts it. The only
+     * reason to do so is because not doing it causes an error in hibernate when processing disconnected proxies. Specifically,
+     * during obs edit, several properties are are disconnected as the form controller uses session.clear() 
+     * and then session.merge(). By debugging, it turnes out if we fetch the instance that was disconnected into the current
+     * session here, hibernate will fail the pending edit. For exact call stack run in debug mode, but the 
+     * final stack frames are in ForeignKeys.isNullifiable: us fetching the instance will cause the following li.getImplementation(session)
+     * to return not null which is then followed up by object = li.getImplementation(); -- this will throw an exception. To
+     * avoid this we manually evict fetch instance in this method.
+     * 
      * @param obj Instance of Synchronizable for which to retrieve guid for.
-     * @return guid from storage if obj identity value is set, else null. 
+     * @return guid from storage if obj identity value is set, else null.
+     * @see ForeignKeys 
      */
     protected String fetchGuid(Synchronizable obj) {
         String guid = null;
+        String idPropertyName = null;
+        Object idPropertyValue = null;
+        Method m = null;
         
         // what are you doing to me?!
         if (obj == null) return null;
-        if (obj.getGuid() != null) return obj.getGuid(); 
-        
-        try {
-            SessionFactory factory = (SessionFactory)this.context.getBean("sessionFactory");
-            ClassMetadata data = factory.getClassMetadata(obj.getClass());
-            String idPropertyName = data.getIdentifierPropertyName();
-            
-            if (idPropertyName != null) {
-                Method m = null;
-                Object idPropertyValue = null;
                 
-                m = SyncUtil.getGetterMethod(obj.getClass(),idPropertyName);
-                if (m != null) {
-                    idPropertyValue = m.invoke(obj, (Object[])null);
-                    Synchronizable fetchedInstance = (Synchronizable)factory.getCurrentSession().get(obj.getClass(), (Serializable)idPropertyValue);
-                    guid = fetchedInstance.getGuid();
-                }
+        try {
+        	        	
+            SessionFactory factory = (SessionFactory)this.context.getBean("sessionFactory");
+            Class objTrueType = null;
+            if (obj instanceof HibernateProxy) {
+            	objTrueType = org.hibernate.proxy.HibernateProxyHelper.getClassWithoutInitializingProxy(obj);
+            } else {
+            	objTrueType = obj.getClass();
+            };
+            
+            //ClassMetadata is only available for entities configured in hibernate
+            ClassMetadata data = factory.getClassMetadata(objTrueType);
+            if (data != null) {
+            	idPropertyName = data.getIdentifierPropertyName();            
+            	if (idPropertyName != null) {
+                
+            		m = SyncUtil.getGetterMethod(objTrueType,idPropertyName);
+            		if (m != null) {
+            			idPropertyValue = m.invoke(obj, (Object[])null);
+            		}
+            	}
+            }
+            
+            //finally try to fetch the instance and get its guid
+            if (idPropertyValue != null) {             
+            	Synchronizable fetchedInstance = (Synchronizable)factory.getCurrentSession().get(objTrueType, (Serializable)idPropertyValue);
+            	guid = fetchedInstance.getGuid();
+            	factory.getCurrentSession().evict(fetchedInstance); //to be sure, evict it -- see method remarks for more detail
+            	
             }
         }
         catch(Exception ex) {
@@ -909,6 +948,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             	throw new CallbackException("Could not find the property on owner object that corresponds to the set being processed.");
         }
         
+                
         // Setup the serialization data structures to hold the state            
         Package pkg = new Package();
         try {
@@ -927,10 +967,26 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 	    	for(Object entry : set) {	    		
 	    		if (entry instanceof Synchronizable) {
 	    			Synchronizable obj = (Synchronizable) entry;
+	    			
+	    			//attempt to retrieve entry guid
+	    			String entryGuid = obj.getGuid();
+	    			if (entryGuid == null) {
+	    				entryGuid = fetchGuid(obj);
+                        if(log.isDebugEnabled()) {
+                            log.debug("Entry guid was null, attempted to fetch guid with the following results");
+                            log.debug("Entry type:" + obj.getClass().getName() + ",guid:" + entryGuid);
+                        }
+	    			}
+	    			//well, this is messed up: have an instance of Synchronizable but has no guid
+	    			if (entryGuid == null) {
+		    			log.error("Cannot handle set entries where guid is null.");
+	                	throw new CallbackException("Cannot handle set entries where guid is null.");
+	    			}	
+	    			
 	    	        Item itemUpdate = xml.createItem(entityItem, "entry");
 	    	        itemUpdate.setAttribute("type", obj.getClass().getName());
 	    	        itemUpdate.setAttribute("action", "update");
-	    	        itemUpdate.setAttribute("guid", obj.getGuid());
+	    	        itemUpdate.setAttribute("guid", entryGuid);
 	    		}
 	    		else {
 	    			//TODO: more debug info
@@ -946,13 +1002,28 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 		    	Iterator it = set.getDeletes(persister, false);
 		    	if (it != null) {
 			    	while (it.hasNext()) {
-			    		Object entry = it.next();
-			    		if (entry instanceof Synchronizable) {
-			    			Synchronizable obj = (Synchronizable) entry;
+			    		Object entryDelete = it.next();
+			    		if (entryDelete instanceof Synchronizable) {
+			    			Synchronizable objDelete = (Synchronizable) entryDelete;
+			    			//attempt to retrieve entry guid
+			    			String entryDeleteGuid = objDelete.getGuid();
+			    			if (entryDeleteGuid == null) {
+			    				entryDeleteGuid = fetchGuid(objDelete);
+		                        if(log.isDebugEnabled()) {
+		                            log.debug("Entry guid was null, attempted to fetch guid with the following results");
+		                            log.debug("Entry type:" + entryDeleteGuid.getClass().getName() + ",guid:" + entryDeleteGuid);
+		                        }
+			    			}
+			    			//well, this is messed up: have an instance of Synchronizable but has no guid
+			    			if (entryDeleteGuid == null) {
+				    			log.error("Cannot handle set delete entries where guid is null.");
+			                	throw new CallbackException("Cannot handle set delete entries where guid is null.");
+			    			}	
+			    			
 			    	        Item itemDelete = xml.createItem(entityItem, "entry");
-			    	        itemDelete.setAttribute("type", obj.getClass().getName());
+			    	        itemDelete.setAttribute("type", objDelete.getClass().getName());
 			    	        itemDelete.setAttribute("action", "delete");
-			    	        itemDelete.setAttribute("guid", obj.getGuid());
+			    	        itemDelete.setAttribute("guid", entryDeleteGuid);
 			    		}
 			    		else {
 			    			//TODO: more debug info
