@@ -524,17 +524,18 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         try {
         	
             /* Get the GUID of this object if it has one, used as SyncItemKey.
-             * if this is save event *and* guid is already assigned, clear it out and get a new one:
+             * if this is save event that is 'local' (i.e. getLastRecordGuid not yet assigned)
+             * *and* guid is already assigned, clear it out and get a new one:
              * this can happen is someone does object copy and has incorrect constructor or if object
              * is disconnected from session and then saved anew; as in obs edit
              */  
-        	if (state == SyncItemState.NEW && entity.getGuid() != null) {
+        	if (state == SyncItemState.NEW && entity.getGuid() != null && entity.getLastRecordGuid() == null) {
         		entity.setGuid(null);
         	} else {
         		objectGuid = entity.getGuid();
         	}
         	
-        	//pull-out sync-network wide change id, if one was already assigned (i.e. this change is coming from some other server
+        	//pull-out sync-network wide change id, if one was already assigned (i.e. this change is coming from some other server)
         	originalRecordGuid = entity.getLastRecordGuid();
             
             //build up a starting msg for all logging
