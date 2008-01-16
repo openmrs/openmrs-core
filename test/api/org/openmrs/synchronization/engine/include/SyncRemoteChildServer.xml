@@ -1,4 +1,18 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <synchronization_server server_id="1" nickname="Remote Child Server" address="" server_type="CHILD" username="admin" password="test" last_sync="2008-01-01 15:38:35.0" disabled="false" child_username="admin"/>
+  <synchronization_server server_id="1" nickname="Remote Child Server" address="" server_type="CHILD" username="admin" password="test" last_sync="2008-01-01 15:38:35.0" disabled="false" child_username="admin" guid="46b16ac6-144e-102b-8d9c-e44ed545d86c"/>
+
+  <!-- <synchronization_class class_id="" name="" type="" default_to="1" default_from="1"/> -->
+  <synchronization_class class_id="1" name="Patient" type="PATIENT" default_to="1" default_from="1"/>
+  <synchronization_class class_id="2" name="PatientIdentifier" type="PATIENT" default_to="1" default_from="1"/>
+  <synchronization_class class_id="3" name="PersonName" type="PERSON" default_to="1" default_from="1"/>
+  <synchronization_class class_id="4" name="Role" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="5" name="Privilege" type="MISC" default_to="1" default_from="1"/>
+
+  <!-- <synchronization_server_class server_class_id="" server_id="" class_id="" send_to="1" receive_from="1"/> -->
+  <synchronization_server_class server_class_id="1" server_id="1" class_id="1" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="2" server_id="1" class_id="2" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="3" server_id="1" class_id="3" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="4" server_id="1" class_id="4" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="5" server_id="1" class_id="5" send_to="1" receive_from="1"/>
 </dataset>
