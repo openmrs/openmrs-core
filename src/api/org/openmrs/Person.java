@@ -115,18 +115,36 @@ public class Person implements java.io.Serializable {
 		voidReason=  person.getVoidReason();
 	}
 
+	/**
+	 * Default constructor taking in the primary key personId value
+	 *  
+	 * @param personId Integer internal id for this person
+	 */
 	public Person(Integer personId) {
 		this.personId = personId;
 	}
 
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Person) {
-			Person u = (Person) obj;
-			return (personId != null && personId.equals(u.getPersonId()));
+			Person person = (Person) obj;
+			
+			// if personId is null for either object, for equality the
+			// two objects must be the same
+			if (getPersonId() == null || person.getPersonId() == null)
+				return super.equals(person);
+			
+			// compare the personId values
+			return (personId.equals(person.getPersonId()));
 		}
 		return false;
 	}
 
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getPersonId() == null)
 			return super.hashCode();
