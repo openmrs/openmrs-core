@@ -133,6 +133,16 @@
 						<i><span style="color: #bbbbbb; font-size: 0.9em;"><spring:message code="SynchronizationConfig.server.nickname.hint" /></span></i>
 					</td>
 				</tr>
+				<c:if test="${(server.serverType == 'CHILD' || type == 'CHILD') && not empty server.serverId}">
+					<tr>
+						<td align="right" valign="top">
+							<b><spring:message code="SynchronizationConfig.server.guid" /></b>
+						</td>
+						<td align="left" valign="top">
+							<input type="text" size="35" maxlength="250" id="guid" name="guid" value="${server.guid}" />
+						</td>
+					</tr>
+				</c:if>
 				<c:if test="${(server.serverType == 'CHILD' || type == 'CHILD') && empty server.serverId}">
 					<tr>
 						<td style="border-top: 1px solid #fff;">

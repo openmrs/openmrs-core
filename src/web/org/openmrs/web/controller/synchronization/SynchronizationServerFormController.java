@@ -90,6 +90,7 @@ public class SynchronizationServerFormController extends SimpleFormController {
         if ( "save".equals(action) ) {       
             RemoteServer server = (RemoteServer)obj;
         	String address = ServletRequestUtils.getStringParameter(request, "address", "");
+        	String guid = ServletRequestUtils.getStringParameter(request, "guid", "");
         	String nickname = ServletRequestUtils.getStringParameter(request, "nickname", "");
         	String username = ServletRequestUtils.getStringParameter(request, "username", "");
         	String password = ServletRequestUtils.getStringParameter(request, "password", "");
@@ -175,6 +176,7 @@ public class SynchronizationServerFormController extends SimpleFormController {
                     server.setAddress(address);
                     server.setPassword(password);
                     server.setUsername(username);
+                    if ( guid.length() > 0 ) server.setGuid(guid);
 
                     String[] classIdsTo = ServletRequestUtils.getStringParameters(request, "toDefault");
                     String[] classIdsFrom = ServletRequestUtils.getStringParameters(request, "fromDefault");

@@ -10,11 +10,19 @@
 <%@ include file="localHeader.jsp" %>
 
 <script language="JavaScript">
-//Called to disable content when sync is disabled
-function disableDIVs() {
-	hideDiv('advanced');
-	hideDiv('serverList');
-}
+
+	//Called to disable content when sync is disabled
+	function disableDIVs() {
+		hideDiv('advanced');
+		hideDiv('serverList');
+	}
+
+	function confirmDelete(id) {
+		var isConfirmed = confirm("<spring:message code="Synchronization.config.server.confirmDelete" />");
+		if ( isConfirmed ) {
+			location.href = "synchronizationConfig.list?delete=" + id;
+		}
+	}
 </script>
 
 <table>
@@ -74,6 +82,7 @@ function disableDIVs() {
 							<th></th>
 							<th align="center" colspan="2" style="background-color: #eef3ff; text-align: center; font-weight: normal;"><spring:message code="SynchronizationConfig.server.synchronize.manually" /></th>
 							<th align="center" style="text-align: center; background-color: #fee; font-weight: normal;"><spring:message code="SynchronizationConfig.server.synchronize.automatic" /></th>
+							<th></th>
 						</tr>
 						<tr>
 							<th><spring:message code="SynchronizationConfig.server.name" /></th>
@@ -86,6 +95,7 @@ function disableDIVs() {
 							<th style="background-color: #fee; text-align: center;"><img src="${pageContext.request.contextPath}/images/scheduled_send.gif" border="0" style="margin-bottom: -3px;">
 								<spring:message code="SynchronizationConfig.server.syncAutomatic" />
 								(<spring:message code="general.scheduled" />)
+							<th style="text-align: center;"><spring:message code="SynchronizationConfig.server.delete" /></th>
 						</tr>
 					</thead>
 					<tbody id="globalPropsList">
@@ -172,6 +182,16 @@ function disableDIVs() {
 										</c:otherwise>
 									</c:choose>
 								</td>
+								<td style="background-color: #${bgStyle}; text-align:center;">
+									<c:choose>
+										<c:when test="${server.serverType != 'PARENT'}">
+											<a href="javascript:confirmDelete('${server.serverId}');"><img src="<%= request.getContextPath() %>/images/trash.gif" alt="delete" border="0" /></a>
+										</c:when>
+										<c:otherwise>
+											&nbsp;
+										</c:otherwise>
+									</c:choose>
+								</td>								
 							</tr>
 							<c:choose>
 								<c:when test="${bgStyle == 'eee'}">

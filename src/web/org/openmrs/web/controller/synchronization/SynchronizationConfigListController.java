@@ -264,12 +264,21 @@ public class SynchronizationConfigListController extends SimpleFormController {
         // only fill the Object if the user has authenticated properly
         if (Context.isAuthenticated()) {
             SynchronizationService ss = Context.getSynchronizationService();
+
+            // check to see if the user is trying to delete a server, react accordingly
+            Integer serverId = ServletRequestUtils.getIntParameter(request, "delete", 0);
+            if ( serverId > 0 ) {
+            	ss.deleteRemoteServer(ss.getRemoteServer(serverId));
+            	
+            }
+
             serverList.addAll(ss.getRemoteServers());
             obj.put("serverList", serverList);
             
             SyncSource source = new SyncSourceJournal();
             obj.put("localServerGuid",source.getSyncSourceGuid());
             obj.put("localServerSyncStatus", source.getSyncStatus());
+            
         }
 
         return obj;

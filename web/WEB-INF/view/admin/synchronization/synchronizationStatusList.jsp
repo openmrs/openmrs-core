@@ -55,6 +55,12 @@
 			var state = "<span class='syncFAILED'><b><spring:message code="Synchronization.record.state_FAILED" /></b></span>";
 			if ( record.state == "COMMITTED" ) state = "<span class='syncCOMMITTED'><b><spring:message code="Synchronization.record.state_COMMITTED" /></b></span>";
 			else if ( record.state !=  "FAILED" ) state = "<span class='syncNEUTRAL'><b>" + getMessage(record.state) + "</b></span>";
+			DWRUtil.setValue("state_" + record.guid, state);
+			if ( record.state != "COMMITTED" ) {
+				DWRUtil.setValue("message_" + record.guid, record.errorMessage);
+			}
+			
+			/*
 			var items = record.syncImportItems;
 			if ( items && items.length > 0 ) {
 				for ( var i = 0; i < items.length; i++ ) {
@@ -65,27 +71,28 @@
 					}
 				}	
 			}
+			*/
 		}
 		
 		function displaySyncResults(result) {
 			//alert("guid is " + result.guid + ", state is " + result.transmissionState + ", em is " + result.errorMessage);
-			if ( result.transmissionState == "OK" ) {
-				var success = "<spring:message code="SynchronizationStatus.transmission.ok.allItems" />";
-				//success += " &nbsp;<a href=\"javascript://\" onclick=\"showHideDiv('syncDetails');\">details</a>";
-				var details = "<br>";
-				details += "<spring:message code="SynchronizationStatus.transmission.details" />:";
-				details += "<br><br>";
-				var records = result.syncImportRecords;
-				if ( records && records.length > 0 ) {
-					for ( var i = 0; i < records.length; i++ ) {
-						var record = records[i];
-						processRecord(record);
-						//details += record.guid + " - " + record.state + "<br>";
-					}
-				} else {
-					details += "<spring:message code="SynchronizationStatus.transmission.details.noItems" />:";
+			var success = "<spring:message code="SynchronizationStatus.transmission.ok.allItems" />";
+			//success += " &nbsp;<a href=\"javascript://\" onclick=\"showHideDiv('syncDetails');\">details</a>";
+			//var details = "<br>";
+			//details += "<spring:message code="SynchronizationStatus.transmission.details" />:";
+			//details += "<br><br>";
+			var records = result.syncImportRecords;
+			if ( records && records.length > 0 ) {
+				for ( var i = 0; i < records.length; i++ ) {
+					var record = records[i];
+					processRecord(record);
+					//details += record.guid + " - " + record.state + "<br>";
 				}
-				//DWRUtil.setValue("syncDetails", details);
+			} else {
+				//details += "<spring:message code="SynchronizationStatus.transmission.details.noItems" />:";
+			}
+
+			if ( result.transmissionState == "OK" ) {
 				DWRUtil.setValue("syncInfo", success);			
 			} else {
 				// just show error message
@@ -178,8 +185,6 @@
 		<thead>
 			<tr>
 				<th><spring:message code="SynchronizationStatus.itemTypeAndGuid" /></th>
-				<th colspan="2" style="text-align: center;"><spring:message code="SynchronizationStatus.timestamp" /></th>
-				<%--<th nowrap style="text-align: center;"><spring:message code="SynchronizationStatus.itemState" /></th>--%>
 				<th nowrap style="text-align: center;"><spring:message code="SynchronizationStatus.recordState" /></th>
 				<th nowrap style="text-align: center;"><spring:message code="SynchronizationStatus.retryCount" /></th>
 				<th></th>
@@ -189,27 +194,38 @@
 			<c:if test="${not empty synchronizationStatusList}">
 				<c:set var="bgStyle" value="eee" />
 				<c:forEach var="syncRecord" items="${synchronizationStatusList}" varStatus="status">
-					<c:forEach var="syncItem" items="${syncRecord.items}" varStatus="itemStatus">
+					<%--<c:forEach var="syncItem" items="${syncRecord.items}" varStatus="itemStatus">--%>
 						<tr>
 							<td valign="middle" nowrap style="background-color: #${bgStyle};">
+								<b>${recordTypes[syncRecord.guid]}</b>
+								(${recordText[syncRecord.guid]})
+								<br>
+								<span style="color: #bbb">
+									<spring:message code="Synchronization.item.state_${recordChangeType[syncRecord.guid]}" /> -
+									<openmrs:formatDate date="${syncRecord.timestamp}" format="${syncDateDisplayFormat}" />	
+									<%--<c:if test="${not empty itemInfo[syncItem.key.keyValue]}">(${itemInfo[syncItem.key.keyValue]})</c:if></b>--%>
+								</span>
+							</td>
+							<td valign="middle" nowrap style="background-color: #${bgStyle};" align="center" id="state_${syncRecord.guid}">
+								<span class="sync${syncRecord.state}"><spring:message code="Synchronization.record.state_${syncRecord.state}" /></span>
+							</td>
+							<td valign="middle" nowrap style="background-color: #${bgStyle};" align="center">${syncRecord.retryCount}</td>
+							<td valign="middle" style="background-color: #${bgStyle};"><span id="message_${syncRecord.guid}"></span></td>
+
+							<%--
+							<td valign="middle" nowrap style="background-color: #${bgStyle};">
 								<b>${itemTypes[syncItem.key.keyValue]}</b>
-								<%--<c:if test="${not empty itemInfo[syncItem.key.keyValue]}">(${itemInfo[syncItem.key.keyValue]})</c:if></b>--%>
 								<br>
 								(${itemGuids[syncItem.key.keyValue]})
 							</td>
-							<td valign="middle" nowrap style="background-color: #${bgStyle};" align="right">
-								<spring:message code="Synchronization.item.state_${syncItem.state}" /> -</td>
-							<td valign="middle" nowrap style="background-color: #${bgStyle};" align="left"><openmrs:formatDate date="${syncRecord.timestamp}" format="${syncDateDisplayFormat}" /></td>
-							<td valign="middle" nowrap style="background-color: #${bgStyle};" align="center">
-								<span class="sync${syncRecord.state}" id="state_${syncItem.key.keyValue}"><spring:message code="Synchronization.record.state_${syncRecord.state}" /></span></td>
-							<td valign="middle" nowrap style="background-color: #${bgStyle};" align="center">${syncRecord.retryCount}</td>
-							<td valign="middle" style="background-color: #${bgStyle};"><span id="message_${syncItem.key.keyValue}"></span></td>
+							--%>
+
 						</tr>
 						<c:choose>
 							<c:when test="${bgStyle == 'eee'}"><c:set var="bgStyle" value="fff" /></c:when>
 							<c:otherwise><c:set var="bgStyle" value="eee" /></c:otherwise>
 						</c:choose>
-					</c:forEach>
+					<%--</c:forEach>--%>
 				</c:forEach>
 			</c:if>
 			<c:if test="${empty synchronizationStatusList}">
