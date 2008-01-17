@@ -108,9 +108,10 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 
     protected SynchronizationService synchronizationService = null;
 
-    /* App context. This is needed to retrieve an instance of current Spring SessionFactory. There should be 
+    /* 
+     * App context. This is needed to retrieve an instance of current Spring SessionFactory. There should be 
      * a better way to do this but we collectively couldn't find one.
-    */
+     */
     private ApplicationContext context;
     
     static DefaultNormalizer defN = new DefaultNormalizer();
@@ -1045,7 +1046,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 	        syncItem.setKey(new SyncItemKey<String>(owner.getGuid() + "|" + ownerPropertyName, String.class));
 	        syncItem.setState(SyncItemState.UPDATED);
 	        syncItem.setContainedType(set.getClass());
-	        syncItem.setContent(xml.toStringAsDocumentFragement());                
+	        syncItem.setContent(xml.toStringAsDocumentFragement());   
+	        
 	        syncRecordHolder.get().addOrReplaceItem(syncItem);
 	        syncRecordHolder.get().addContainedClass(owner.getClass().getSimpleName());
 	        
@@ -1056,7 +1058,6 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         }
         catch(Exception ex) {
         	log.error("Error processing Persistent set, see callstack and inner expection",ex);
-        	ex.printStackTrace();
             if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
             	throw new CallbackException("Error processing Persistent set, see callstack and inner expection.",ex);
         }	

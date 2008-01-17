@@ -14,7 +14,7 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	public static final long serialVersionUID = 33226787L;
 
 	// Fields
-
+	private Integer conceptNameId;
 	private Concept concept;
 	private String name;
 	private String shortName;
@@ -86,6 +86,20 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 
 	// Property accessors
 
+	/**
+	 * @return Returns the conceptId.
+	 */
+	public Integer getConceptNameId() {
+		return conceptNameId;
+	}
+
+	/**
+	 * @param conceptNameId The conceptId to set.
+	 */
+	public void setConceptNameId(Integer conceptNameId) {
+		this.conceptNameId = conceptNameId;
+	}	
+	
 	/**
 	 * 
 	 */

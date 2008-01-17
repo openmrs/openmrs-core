@@ -39,28 +39,13 @@
 		<set name="names" lazy="true" cascade="all,delete-orphan,evict" 
 				table="concept_name" order-by="name asc">
 			<key column="concept_id" not-null="true" />
-			<composite-element class="ConceptName">
-				<parent name="concept" />
-				<property name="name" type="java.lang.String" length="255" not-null="true"/>
-				<property name="locale" type="java.lang.String" length="50" not-null="true"/>
-				<property name="shortName" type="java.lang.String" length="255" column="short_name" />
-				<property name="description" type="java.lang.String" length="65535" not-null="true" />
-				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
-				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
-			</composite-element>
+			<one-to-many class="ConceptName"/>
 		</set>
 
 		<set name="answers" lazy="true" cascade="all,evict" 
 				table="concept_answer" order-by="concept_answer_id asc" access="field">
 			<key column="concept_id" not-null="true" />
-			<composite-element class="ConceptAnswer">
-				<parent name="concept"/>
-				<property generated="insert" insert="false" name="conceptAnswerId" type="java.lang.Integer" column="concept_answer_id" />
-				<many-to-one name="answerConcept" class="org.openmrs.Concept" column="answer_concept" not-null="true"/>
-				<many-to-one name="answerDrug" class="org.openmrs.Drug" column="answer_drug" />
-				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
-				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
-			</composite-element>
+			<one-to-many class="ConceptAnswer"/>
 		</set>
 		
 		<!-- Ok, so it seems that Hibernate doesn't care about our multiple
@@ -73,13 +58,7 @@
 			<key not-null="true">
 				<column name="concept_id" />
 			</key>
-			<composite-element class="ConceptSynonym">
-				<parent name="concept" />
-				<property name="synonym" type="java.lang.String" not-null="true" />
-				<property name="locale" type="java.lang.String" not-null="true" />
-				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
-				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
-			</composite-element>
+			<one-to-many class="ConceptSynonym"/>
 		</set>
 		
 		<set name="conceptSets" table="concept_set" lazy="true" 

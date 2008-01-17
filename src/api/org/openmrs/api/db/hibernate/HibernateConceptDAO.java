@@ -302,15 +302,15 @@ public class HibernateConceptDAO implements
 	 * @see org.openmrs.api.db.ConceptService#getConceptByName(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	public Concept getConceptByName(String name) {
-		Query query = sessionFactory.getCurrentSession().createQuery("from Concept c join c.names names where names.name = ?");
+	public Concept getConceptByName(String name) {		
+		Query query = sessionFactory.getCurrentSession().createQuery("select c from Concept c join c.names names where names.name = ?");
 		query.setString(0, name);
 		List<Concept> concepts = query.list();
 		
 		int size = concepts.size(); 
 		if (size > 0){
 			if (size > 1)
-				log.warn("Multiple concepts found for '" + name + "'");
+				log.warn("Multiple concepts found for '" + name + "'");			
 			return concepts.get(0);
 		}
 		

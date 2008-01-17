@@ -17,7 +17,7 @@ public class ConceptSynonym implements java.io.Serializable, Synchronizable {
 	public Log log = LogFactory.getLog(this.getClass());
 
 	// Fields
-
+	private Integer conceptSynonymId;
 	private Concept concept;
 	private String synonym;
 	private String locale;
@@ -86,6 +86,21 @@ public class ConceptSynonym implements java.io.Serializable, Synchronizable {
 
 	// Property accessors
 
+	/**
+	 * @return Returns the conceptId.
+	 */
+	public Integer getConceptSynonymId() {
+		return conceptSynonymId;
+	}
+
+	/**
+	 * @param conceptNameId The conceptId to set.
+	 */
+	public void setConceptSynonymId(Integer conceptSynonymId) {
+		this.conceptSynonymId = conceptSynonymId;
+	}	
+		
+	
 	/**
 	 * 
 	 */

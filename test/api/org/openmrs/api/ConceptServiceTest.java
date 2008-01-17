@@ -13,10 +13,16 @@
  */
 package org.openmrs.api;
 
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptName;
+import org.openmrs.ConceptSynonym;
 import org.openmrs.api.context.Context;
 
 /**
@@ -28,6 +34,7 @@ import org.openmrs.api.context.Context;
  */
 public class ConceptServiceTest extends BaseContextSensitiveTest {
 	
+	protected final Log log = LogFactory.getLog(getClass());
 	protected ConceptService conceptService;
 	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/include/ConceptServiceTest-initialConcepts.xml";
 	
@@ -59,6 +66,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept firstConcept = conceptService.getConcept(1);
 		assertNotNull("There should be a concept with id of 1", firstConcept);
 		
+		log.info("First concept: " + firstConcept.getName());
+		
 		// get the concept by its name
 		String name = firstConcept.getName().getName();
 		Concept firstConceptByName = conceptService.getConceptByName(name);
@@ -69,5 +78,211 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertTrue("You should be able to get the concept by partial name", firstConceptsByPartialNameList.contains(firstConcept));
 		
 	}
+	
+	
+	/**
+	 *	Adds a concept name to an existing concept. 
+	 * 
+	 * @throws Exception
+	 */
+	public void testAddConceptName() throws Exception { 		
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// get the first concept in the dictionary
+		Concept weight = conceptService.getConcept(1);
+		assertNotNull("WEIGHT should not be null", weight);
+		
+		assertTrue("WEIGHT should have 2 names", 
+		           weight.getNames().size() == 2);
+		
+		// Add a new concept name
+		ConceptName conceptName = new ConceptName();
+		conceptName.setConcept(weight);
+		conceptName.setName("New Name");
+		conceptName.setShortName("New Short Name");		
+		conceptName.setDescription("New Description");
+		conceptName.setDateCreated(new Date());
+		conceptName.setLocale("en");
+		weight.getNames().add(conceptName);
+		
+		// Update the concept
+		conceptService.updateConcept(weight);
+	
+		// Get the same concept and check the concept names
+		Concept testConcept = conceptService.getConcept(1);
+		
+		assertTrue("WEIGHT should have 3 names", 
+		           testConcept.getNames().size() == 3);
+		
+	}
 
+	/**
+	 *	Removes a concept name from an existing concept. 
+	 * 
+	 * @throws Exception
+	 */
+	public void testRemoveConceptName() throws Exception { 
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// get the first concept in the dictionary
+		Concept civilStatus = conceptService.getConcept(2);
+		assertNotNull("CIVIL STATUS should not be null", civilStatus);
+
+		assertTrue("CIVIL STATUS should have 1 names", 
+		           civilStatus.getNames().size() == 1);
+
+		// Remove the concepts first name
+		ConceptName conceptName = civilStatus.getNames().iterator().next();		
+		civilStatus.removeName(conceptName);
+		
+		// Update the concept
+		conceptService.updateConcept(civilStatus);
+	
+		// Get the same concept and check the concept names
+		Concept testConcept = conceptService.getConcept(2);
+		
+		assertTrue("CIVIL STATUS should have 0 names", 
+		           testConcept.getNames().size() == 0);
+	}	
+	
+	
+	/**
+	 *	Adds a concept name to an existing concept. 
+	 * 
+	 * @throws Exception
+	 */
+	public void testAddConceptAnswer() throws Exception { 		
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// get the first concept in the dictionary
+		Concept civilStatus = conceptService.getConcept(2);
+		assertNotNull("CIVIL STATUS concept should not be null", civilStatus);
+		
+		Concept unmarried = conceptService.getConcept(6);
+		assertNotNull("UNMARRIED concept should not be null", civilStatus);
+
+		// Make sure the answer does not already exist
+		assertTrue("CIVIL STATUS should have 3 answer", 
+		           civilStatus.getAnswers().size() == 3);		
+		
+		// Create a new concept name
+		ConceptAnswer conceptAnswer = new ConceptAnswer();
+		conceptAnswer.setConcept(civilStatus);
+		conceptAnswer.setAnswerConcept(unmarried);
+		conceptAnswer.setAnswerDrug(null);
+		conceptAnswer.setDateCreated(new Date());
+				
+		// Add answer to concept
+		civilStatus.addAnswer(conceptAnswer);
+		
+		// Update the concept in the database
+		conceptService.updateConcept(civilStatus);		
+
+		// Check to make sure the concept answer was added successfully
+		Concept testConcept = conceptService.getConcept(2);
+
+		assertTrue("CIVIL STATUS should have 4 answers", 
+		           testConcept.getAnswers().size() == 4);
+	}
+
+	/**
+	 * Removes a concept name from an existing concept. 
+	 * 
+	 * @throws Exception
+	 */
+	public void testRemoveConceptAnswer() throws Exception { 
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// get the first concept in the dictionary
+		Concept civilStatus = conceptService.getConcept(2);
+		assertNotNull("CIVIL STATUS should not be null", civilStatus);
+			
+		// Make sure the answer does not already exist
+		assertTrue("CIVIL STATUS should have 3 answers", 
+		           civilStatus.getAnswers().size()==3);
+		
+		// Remove the concepts first name
+		ConceptAnswer conceptAnswer = civilStatus.getAnswers().iterator().next();		
+		
+		// Remove answer from concept
+		civilStatus.removeAnswer(conceptAnswer);
+		
+		// Update the concept in the database
+		conceptService.updateConcept(civilStatus);		
+
+		// Check to make sure the concept answer was added successfully
+		Concept testConcept = conceptService.getConcept(2);
+
+		assertTrue("CIVIL STATUS should have 2 answers", 
+		           testConcept.getAnswers().size() == 2);
+		
+	}	
+	
+
+	/**
+	 *	Adds a concept name to an existing concept. 
+	 * 
+	 * @throws Exception
+	 */
+	public void testAddConceptSynonym() throws Exception { 		
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// get the first concept in the dictionary
+		Concept civilStatus = conceptService.getConcept(2);
+		assertNotNull("There should be a CIVIL STATUS concept", civilStatus);
+		
+		// Check to make sure the concept answer was added successfully
+		assertTrue("CIVIL STATUS should have only 0 synonym", 
+		           civilStatus.getSynonyms().size()==0);		
+		
+		// Add a new concept name
+		ConceptSynonym conceptSynonym = new ConceptSynonym();
+		conceptSynonym.setConcept(civilStatus);
+		conceptSynonym.setLocale("en");
+		conceptSynonym.setSynonym("MARITAL STATUS");
+		conceptSynonym.setDateCreated(new Date());
+		civilStatus.addSynonym(conceptSynonym);
+		
+		// Update the concept
+		conceptService.updateConcept(civilStatus);
+	
+		// Check to make sure the concept answer was added successfully
+		Concept testConcept = conceptService.getConcept(2);
+		
+		assertTrue("CIVIL STATUS should have 1 synonym", 
+		           testConcept.getSynonyms().size()==1);
+		
+	}
+
+	/**
+	 * Removes a concept name from an existing concept. 
+	 * 
+	 * @throws Exception
+	 */
+	public void testRemoveConceptSynonym() throws Exception { 
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// get the fifth concept in the dictionary
+		Concept civilStatusWidowed = conceptService.getConcept(5);
+		assertNotNull("There should be a civil status concept", civilStatusWidowed);
+
+		// Check to make sure the concept answer was added successfully
+		assertTrue("Concept " + civilStatusWidowed.getName() + " should have only 1 synonym", 
+		           civilStatusWidowed.getSynonyms().size()==1);		
+		
+		
+		// Remove the concepts first synonym
+		ConceptSynonym conceptSynonym = civilStatusWidowed.getSynonyms().iterator().next();		
+		civilStatusWidowed.removeSynonym(conceptSynonym);		
+		conceptService.updateConcept(civilStatusWidowed);
+	
+		// Get the same concept and check the concept names
+		Concept testConcept = conceptService.getConcept(2);
+		
+		// Check to make sure the concept answer was added successfully
+		assertTrue("Concept " + testConcept.getName() + " should have 0 synonyms", 
+		           testConcept.getSynonyms().size()==0);		
+	}		
+	
+	
 }

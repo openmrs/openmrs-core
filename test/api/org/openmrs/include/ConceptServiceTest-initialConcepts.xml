@@ -1,5 +1,160 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false"/>
-  <concept_name concept_id="1" name="Some concept name" locale="en" description="this is a description" creator="1" date_created="2005-01-01 00:00:00.0" />
+
+	<!--  WEIGHT -->
+	<concept 
+		concept_id="1" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+		retired="false" 
+		is_set="false"
+	/>
+	<concept 
+		concept_id="2" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+		retired="false" 
+		is_set="false"
+	/>
+	<concept 
+		concept_id="3" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+		retired="false" 
+		is_set="false"
+	/>
+	<concept 
+		concept_id="4" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+		retired="false" 
+		is_set="false"
+	/>
+	<concept 
+		concept_id="5" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+		retired="false" 
+		is_set="false"
+	/>
+	<concept 
+		concept_id="6" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+		retired="false" 
+		is_set="false"
+	/>
+	
+	
+	<concept_name 
+		concept_name_id="1" 
+		concept_id="1" 
+		name="WEIGHT (KG)" 
+		locale="en" 
+		description="English version of weight (measured in kilograms)" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0"
+	/>
+	<concept_name 
+		concept_name_id="2" 
+		concept_id="1" 
+		name="POIDS (KG)" 
+		locale="fr" 
+		description="French version of weight (measured in kilograms)" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+	/>
+	<concept_name 
+		concept_name_id="3" 
+		concept_id="2" 
+		name="CIVIL STATUS" 
+		short_name="CIV_STAT"
+		locale="en" 
+		description="" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+	/>
+	<concept_name 
+		concept_name_id="4" 
+		concept_id="3" 
+		name="MARRIED" 
+		short_name=""
+		locale="en" 
+		description="" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+	/>	
+	<concept_name 
+		concept_name_id="5" 
+		concept_id="4" 
+		name="SEPARATED" 
+		short_name=""
+		locale="en" 
+		description="" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+	/>
+	<concept_name 
+		concept_name_id="6" 
+		concept_id="5" 
+		name="WIDOWED" 
+		short_name=""
+		locale="en" 
+		description="" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+	/>		
+	<concept_name 
+		concept_name_id="7" 
+		concept_id="6" 
+		name="UNMARRIED" 
+		short_name=""
+		locale="en" 
+		description="" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+	/>	
+	
+	
+	<concept_answer
+		concept_answer_id="1" 
+		concept_id="2" 
+		answer_concept="3" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0"
+	/>
+	<concept_answer
+		concept_answer_id="2" 
+		concept_id="2" 
+		answer_concept="4" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0"
+	/>
+	<concept_answer
+		concept_answer_id="3" 
+		concept_id="2" 
+		answer_concept="5" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0"
+	/>
+	<!--  Removed so we can have a concept available to add 
+	<concept_answer
+		concept_answer_id="4" 
+		concept_id="2" 
+		answer_concept="6" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0"
+	/>
+	-->
+	<concept_synonym 
+		concept_synonym_id="1"
+		concept_id="5"
+		synonym="SPOUSE DIED"
+		locale="en"
+		creator="1"
+		date_created="2005-01-01 00:00:00.0"
+	/>
+
 </dataset>
+
+
