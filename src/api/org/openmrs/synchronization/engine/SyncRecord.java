@@ -16,10 +16,9 @@ package org.openmrs.synchronization.engine;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,7 +58,7 @@ public class SyncRecord implements Serializable, IItem {
     private Date timestamp = null;
     private int retryCount;
     private SyncRecordState state = SyncRecordState.NEW;
-    private HashMap<String, SyncItem> items = null;
+    private LinkedHashMap<String, SyncItem> items = null;
     private String containedClasses = "";
     private Set<SyncServerRecord> serverRecords = null;
     private RemoteServer forServer = null;
@@ -163,7 +162,7 @@ public class SyncRecord implements Serializable, IItem {
 
     public void addItem(SyncItem syncItem) {
         if (items == null) {
-            items = new HashMap<String,SyncItem>();
+            items = new LinkedHashMap<String,SyncItem>();
         }
         items.put(syncItem.getKey().getKeyValue().toString(),syncItem);
     }
@@ -175,7 +174,7 @@ public class SyncRecord implements Serializable, IItem {
      */
     public void addOrReplaceItem(SyncItem syncItem) {
         if (items == null) {
-            items = new HashMap<String,SyncItem>();
+            items = new LinkedHashMap<String,SyncItem>();
         } else {
         	if (items.containsKey(syncItem.getKey().getKeyValue().toString())) {
     			items.remove(syncItem.getKey().getKeyValue().toString());
@@ -187,7 +186,7 @@ public class SyncRecord implements Serializable, IItem {
     }
 
     public void setItems(Collection<SyncItem> newItems) {
-    	items = new HashMap<String,SyncItem>();
+    	items = new LinkedHashMap<String,SyncItem>();
     	for(SyncItem newItem : newItems) {
     		this.addItem(newItem);
     	}
@@ -250,10 +249,9 @@ public class SyncRecord implements Serializable, IItem {
         //serialize IItem children
         Item itemsCollection = xml.createItem(me, "items");
         if (items != null) {
-            Iterator<SyncItem> iterator = items.values().iterator();
-            while (iterator.hasNext()) {
-                iterator.next().save(xml, itemsCollection);
-            }
+        	for(SyncItem item : items.values()) {
+        		item.save(xml, itemsCollection);
+        	}
         };
 
         return me;
@@ -285,7 +283,7 @@ public class SyncRecord implements Serializable, IItem {
         if (itemsCollection.isEmpty()) {
             items = null;
         } else {
-            items = new HashMap<String,SyncItem>();
+            items = new LinkedHashMap<String,SyncItem>();
             List<Item> serItems = xml.getItems(itemsCollection);
             for (int i = 0; i < serItems.size(); i++) {
                 Item serItem = serItems.get(i);
@@ -367,7 +365,7 @@ public class SyncRecord implements Serializable, IItem {
     }
     
     public Map<RemoteServer, SyncServerRecord> getRemoteRecords() {
-    	Map<RemoteServer, SyncServerRecord> ret = new HashMap<RemoteServer, SyncServerRecord>();
+    	Map<RemoteServer, SyncServerRecord> ret = new LinkedHashMap<RemoteServer, SyncServerRecord>();
     	
     	if ( this.serverRecords != null ) {
     		for ( SyncServerRecord serverRecord : this.serverRecords ) {
