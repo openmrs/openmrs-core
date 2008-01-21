@@ -222,12 +222,12 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
      * Processes the serializes state of a collection.
      * <p>Remarks: Handles two types of hibernate collections: PersistentSortedSet and PersistenSet.
      * Processing of collections is handled as follows based on the serialized info stored in incoming:
-     * <p>Pull out owner info, and collection action (i.e. update, recreate, remove). Attempt to create instance of the owner using openmrs API and
-     * retrieve the reference to the existing collection that is associated with the owner.
-     * <p>Iterate owner serialized entries and process actions (i.e entry update, delete)
-     * <p>record the original guid using owner
-     * <p>finally, trigger owner update using openmrs api
-     * <p>For algorhitmic details, see code comments as the implementation is extensively commented.
+     * <p>1. Pull out owner info, and collection action (i.e. update, recreate). 
+     * Attempt to create instance of the owner using openmrs API and retrieve the reference 
+     * to the existing collection that is associated with the owner.
+     * <br/>2. Iterate owner serialized entries and process actions (i.e entry update, delete)
+     * <br/>3. Record the original guid using owner finally, trigger owner update using openmrs api
+     * <br/>For algorhitmic details, see code comments as the implementation is extensively commented.
      * 
      * @param type collection type.
      * @param incoming serialized state, interceptor implementation for serialization details
@@ -244,6 +244,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
     	NodeList nodes = null;
     	Set entries = null;
     	int i = 0;
+    	boolean needsRecreate = false;
 
     	//first find out what kid of set we are dealing with:
     	//Hibernate PersistentSortedSet == TreeSet, note this is derived from PersistentSet so we have to test for it first
@@ -280,25 +281,47 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         //if hibernate mapping has cascade deletes, it will orphan existing collection and hibernate will throw error
         //to that effect: "A collection with cascade="all-delete-orphan" was no longer referenced by the owning entity instance"
         //*only* if this is recreate; clear up the existing collection and start over
+        Method m = null;
+        m = SyncUtil.getGetterMethod(owner.getClass(),ownerCollectionPropertyName);
+        if (m == null) {
+        	log.error("Cannot retrieve getter method for ownerCollectionPropertyName:" + ownerCollectionPropertyName);
+    		log.error("Owner info: " +
+      				"\nownerClassName:" + ownerClassName + 
+      				"\nownerCollectionPropertyName:" + ownerCollectionPropertyName +
+      				"\nownerCollectionAction:" + ownerCollectionAction +
+      				"\nownerGuid:" + ownerGuid);	        	
+        	throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming);
+        }
+        entries = (Set)m.invoke(owner, (Object[])null);
+
+        /*Special recreate logic:
+         * if fetched owner instance has nothing attached, then it is safe to just create brand new collection
+         * and assign it to owner without worrying about getting orphaned deletes error
+         * if owner has something attached, then we process recreate as delete/update; 
+         * that is clear out the existing entries and then proceed to add ones received via sync. 
+         * This code essentially mimics hibernate org.hibernate.engine.Collections.prepareCollectionForUpdate()
+         * implementation. 
+         * 
+         * NOTE: The unfortunate bi-product of this approach is that this series of events will not produce 
+         * 'recreate' event in the interceptor: thus parent's sync journal entries will look slightly diferently 
+         * from what child was sending up: child sent up single 'recreate' collection action however
+         * parent will instead have single 'update' with deletes & updates in it. Presumably, this is a distinction
+         * without a difference.
+         */
         if ("recreate".equals(ownerCollectionAction)) {
-        	if (org.hibernate.collection.PersistentSortedSet.class.isAssignableFrom(collectionType)) {    		
-        		entries = new TreeSet();
-        	} else if (org.hibernate.collection.PersistentSet.class.isAssignableFrom(collectionType)) {
-        		entries = new HashSet();
+        	
+        	if (entries == null) {
+	        	if (org.hibernate.collection.PersistentSortedSet.class.isAssignableFrom(collectionType)) {
+	        		needsRecreate = true;
+	        		entries = new TreeSet();
+	        	} else if (org.hibernate.collection.PersistentSet.class.isAssignableFrom(collectionType)) {
+	        		needsRecreate = true;
+	        		entries = new HashSet();
+	        	}
+        	} else {
+        		//clear existing entries before adding new ones:
+        		entries.clear();
         	}
-        } else {
-	        Method m = null;
-	        m = SyncUtil.getGetterMethod(owner.getClass(),ownerCollectionPropertyName);
-	        if (m == null) {
-	        	log.error("Cannot retrieve getter method for ownerCollectionPropertyName:" + ownerCollectionPropertyName);
-	    		log.error("Owner info: " +
-	      				"\nownerClassName:" + ownerClassName + 
-	      				"\nownerCollectionPropertyName:" + ownerCollectionPropertyName +
-	      				"\nownerCollectionAction:" + ownerCollectionAction +
-	      				"\nownerGuid:" + ownerGuid);	        	
-	        	throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming);
-	        }
-	        entries = (Set)m.invoke(owner, (Object[])null);
         }
         
         if (entries == null) {
@@ -363,7 +386,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         ((Synchronizable)owner).setLastRecordGuid(originalGuid);
 
         //assign collection back to the owner if it is recreate
-        if ("recreate".equals(ownerCollectionAction)) {
+        if (needsRecreate) {
         	SyncUtil.setProperty(owner,ownerCollectionPropertyName,entries);
         }
         

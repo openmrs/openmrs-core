@@ -425,30 +425,40 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
    
    
     /**
-     *  No-op; this method is here for completeness only. As can be seen in org.hibernate.engine.Collections, 
-     *  hibernate only calls remove when it is about to recreate a collection. Our ingest code
-     *  that processes recreate does remove already so no need to record this event.
+     *  Handles collection remove event. As can be seen in org.hibernate.engine.Collections, 
+     *  hibernate only calls remove when it is about to recreate a collection.
      *   
-     * @see org.hibernate.engine.Collections
+     * @see org.hibernate.engine.Collections.prepareCollectionForUpdate
      * @see org.openmrs.api.impl.SynchronizationIngestServiceImpl
      */
     @Override
 	public void onCollectionRemove(Object collection, Serializable key) throws CallbackException {
-    	log.debug("COLLECTION remove with key: " + key);
-    	//no-op
+    	if (log.isDebugEnabled()) {
+    		log.debug("COLLECTION remove with key: " + key);
+    	}
+    	
+        //explicitely bailout if sync is disabled
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
+    	
+    	//this.processPersistentSet((PersistentSet)collection,key, "remove");
     }
     
     /**
      *  Handles collection recreate. Recreate is triggered by hibernate when collection object is replaced by new/different instance. 
      *  <p>remarks: See hibernate AbstractFlushingEventListener and org.hibernate.engine.Collections implementation to understand how
-     *  collection updates are hooked up in hibernate. 
+     *  collection updates are hooked up in hibernate, specifically see Collections.prepareCollectionForUpdate().
      * 
      * @see org.hibernate.engine.Collections
      * @see org.hibernate.event.def.AbstractFlushingEventListener
      */
     @Override
 	public void onCollectionRecreate(Object collection, Serializable key) throws CallbackException {
-    	log.info("COLLECTION recreate with key: " + key);
+    	if (log.isDebugEnabled()) {
+    		log.debug("COLLECTION recreate with key: " + key);
+    	}
+
+        //explicitely bailout if sync is disabled
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
 
     	if (!(collection instanceof org.hibernate.collection.PersistentSet)) {
     		log.info("Cannot process collection that is not instance of PersistentSet, collection type was:" + 
@@ -461,7 +471,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     }
 
     /**
-     *  Handles updates of a collection.
+     *  Handles updates of a collection (i.e. added/removed entries).
      *  <p>remarks: See hibernate AbstractFlushingEventListener implementation to understand how
      *  collection updates are hooked up in hibernate. 
      * 
@@ -470,7 +480,12 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
      */
     @Override
 	public void onCollectionUpdate(Object collection, Serializable key) throws CallbackException {
-    	log.info("COLLECTION update with key: " + key);
+    	if (log.isDebugEnabled()) {
+    		log.debug("COLLECTION update with key: " + key);
+    	}
+
+        //explicitely bailout if sync is disabled
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
     	
     	if (!(collection instanceof org.hibernate.collection.PersistentSet)) {
     		log.info("Cannot process collection that is not instance of PersistentSet, collection type was:" + 
@@ -891,14 +906,37 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     /**
      * Processes changes to persistent sets that contains instances of Synchronizable objects.
      * 
+     * <p>Remarks:
+     * <p>Xml 'schema' for the sync item content for the persisted set follows. Note that for persisted sets
+     * syncItemKey is a composite of owner object guid and the property name that contains the collection. 
+     * <br/>&lt;persistent-set&gt; element: wrapper element
+     * <br/>&lt;owner guid='' propertyName='' type='' action='recreate|update' &gt; element: 
+     * this captures the information about the object that holds reference to the collection being processed 
+     * <br/>-guid: owner object guid
+     * <br/>-properyName: names of the property on owner object that holds this collection
+     * <br/>-type: owner class name
+     * <br/>-action: recreate, update -- these are collection events defined by hibernate interceptor
+     * <br/>&lt;entry action='update|delete' guid='' type='' &gt; element: this captures info about individual collection entries:
+     * <br/>-action: what is being done to this item of the collection: 
+     * delete (item was removed from the collection) or update (item was added to the collection)
+     * <br/>-guid: entry's guid
+     * <br/>-type: class name
+     * 
      * @param set Instance of Hibernate PersistentSet to process.
      * @param key key of owner for the set.
-     * @param action action being performed on the set: update, recreate, remove
+     * @param action action being performed on the set: update, recreate
      */
     protected 	void processPersistentSet(PersistentSet set, Serializable key, String action){
     	Synchronizable owner = null;
     	String originalRecordGuid = null;
     	SessionFactory factory = null;
+    	
+    	//we only process recreate and update
+    	if (!"update".equals(action) && "recreate".equals(action)) {
+        	log.error("Unexpected 'action' supplied, valid values: recreate, update. value provided: " + action);
+            if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
+            	throw new CallbackException("Unexpected 'action' supplied while processing a persistent set.");    		
+    	}
     	
     	//retrieve owner and original guid if there is one 
     	if (set.getOwner() instanceof Synchronizable) {
