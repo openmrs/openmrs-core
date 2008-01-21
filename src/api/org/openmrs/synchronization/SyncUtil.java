@@ -658,4 +658,60 @@ public class SyncUtil {
     public static String generateGuid() {
         return UUID.randomUUID().toString();
     }
+    
+    public static String displayName(String className, String guid) {
+
+    	String ret = "";
+    	
+        // get more identifying info about this object so it's more user-friendly
+        if ( className.equals("Person") || className.equals("User") || className.equals("Patient") ) {
+            Person person = Context.getPersonService().getPersonByGuid(guid);
+            if ( person != null ) ret = person.getPersonName().toString();
+        }
+        if ( className.equals("Encounter") ) {
+            Encounter encounter = Context.getEncounterService().getEncounterByGuid(guid);
+            if ( encounter != null ) {
+                ret = encounter.getEncounterType().getName() 
+                               + (encounter.getForm() == null ? "" : " (" + encounter.getForm().getName() + ")");
+            }
+        }
+        if ( className.equals("Concept") ) {
+            Concept concept = Context.getConceptService().getConceptByGuid(guid);
+            if ( concept != null ) ret = concept.getName(Context.getLocale()).getName();
+        }
+        if ( className.equals("Obs") ) {
+            Obs obs = Context.getObsService().getObsByGuid(guid);
+            if ( obs != null ) ret = obs.getConcept().getName(Context.getLocale()).getName();
+        }
+        if ( className.equals("DrugOrder") ) {
+            DrugOrder drugOrder = (DrugOrder)Context.getOrderService().getOrderByGuid(guid);
+            if ( drugOrder != null ) ret = drugOrder.getDrug().getConcept().getName(Context.getLocale()).getName();
+        }
+        if ( className.equals("Program") ) {
+        	Program program = Context.getProgramWorkflowService().getProgramByGuid(guid);
+        	if ( program != null ) ret = program.getConcept().getName(Context.getLocale()).getName();
+        }
+        if ( className.equals("ProgramWorkflow") ) {
+        	ProgramWorkflow workflow = Context.getProgramWorkflowService().getWorkflowByGuid(guid);
+        	if ( workflow != null ) ret = workflow.getConcept().getName(Context.getLocale()).getName();
+        }
+        if ( className.equals("ProgramWorkflowState") ) {
+        	ProgramWorkflowState state = Context.getProgramWorkflowService().getStateByGuid(guid);
+        	if ( state != null ) ret = state.getConcept().getName(Context.getLocale()).getName();
+        }
+        if ( className.equals("PatientProgram") ) {
+        	PatientProgram patientProgram = Context.getProgramWorkflowService().getPatientProgramByGuid(guid);
+        	String pat = patientProgram.getPatient().getPersonName().toString();
+        	String prog = patientProgram.getProgram().getConcept().getName(Context.getLocale()).getName();
+        	if ( pat != null && prog != null ) ret = pat + " - " + prog;
+        }
+        if ( className.equals("PatientState") ) {
+        	PatientState patientState = Context.getProgramWorkflowService().getPatientStateByGuid(guid);
+        	String pat = patientState.getPatientProgram().getPatient().getPersonName().toString();
+        	String st = patientState.getState().getConcept().getName(Context.getLocale()).getName();
+        	if ( pat != null && st != null ) ret = pat + " - " + st;
+        }
+
+        return ret;
+    }
 }

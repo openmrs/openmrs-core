@@ -46,6 +46,7 @@ import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.SyncTransmissionState;
+import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.SyncUtilTransmission;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncRecord;
@@ -295,30 +296,9 @@ public class SynchronizationStatusListController extends SimpleFormController {
             recordTypes.put(record.getGuid(), mainClassName);
             recordChangeType.put(record.getGuid(), mainState);
             
-            // get more identifying info about this object so it's more user-friendly
-            if ( mainClassName.equals("Person") || mainClassName.equals("User") || mainClassName.equals("Patient") ) {
-                Person person = Context.getPersonService().getPersonByGuid(mainGuid);
-                if ( person != null ) recordText.put(record.getGuid(), person.getPersonName().toString());
-            }
-            if ( mainClassName.equals("Encounter") ) {
-                Encounter encounter = Context.getEncounterService().getEncounterByGuid(mainGuid);
-                if ( encounter != null ) {
-                    recordText.put(record.getGuid(), encounter.getEncounterType().getName() 
-                                   + (encounter.getForm() == null ? "" : " (" + encounter.getForm().getName() + ")"));
-                }
-            }
-            if ( mainClassName.equals("Concept") ) {
-                Concept concept = Context.getConceptService().getConceptByGuid(mainGuid);
-                if ( concept != null ) recordText.put(record.getGuid(), concept.getName(Context.getLocale()).getName());
-            }
-            if ( mainClassName.equals("Obs") ) {
-                Obs obs = Context.getObsService().getObsByGuid(mainGuid);
-                if ( obs != null ) recordText.put(record.getGuid(), obs.getConcept().getName(Context.getLocale()).getName());
-            }
-            if ( mainClassName.equals("DrugOrder") ) {
-                DrugOrder drugOrder = (DrugOrder)Context.getOrderService().getOrderByGuid(mainGuid);
-                if ( drugOrder != null ) recordText.put(record.getGuid(), drugOrder.getDrug().getConcept().getName(Context.getLocale()).getName());
-            }
+            // refactored - CA 21 Jan 2008
+            String displayName = SyncUtil.displayName(mainClassName, mainGuid);
+            if ( displayName != null ) if ( displayName.length() > 0 ) recordText.put(record.getGuid(), displayName);
         }
         
         // syncViaWeb error messages

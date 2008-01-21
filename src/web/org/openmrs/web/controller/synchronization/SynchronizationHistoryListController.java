@@ -23,11 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
-import org.openmrs.Obs;
-import org.openmrs.Person;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.serialization.Item;
@@ -40,6 +35,7 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.openmrs.synchronization.SyncUtil;
 
 public class SynchronizationHistoryListController extends SimpleFormController {
 
@@ -124,33 +120,21 @@ public class SynchronizationHistoryListController extends SimpleFormController {
 				}
 			}
 
+			// persistent sets should show something other than their mainClassName (persistedSet)
+			if ( mainClassName.indexOf("Persistent") >= 0 ) mainClassName = record.getContainedClasses();
+			
             recordTypes.put(record.getGuid(), mainClassName);
             recordChangeType.put(record.getGuid(), mainState);
-            
-            // get more identifying info about this object so it's more user-friendly
-            if ( mainClassName.equals("Person") || mainClassName.equals("User") || mainClassName.equals("Patient") ) {
-                Person person = Context.getPersonService().getPersonByGuid(mainGuid);
-                if ( person != null ) recordText.put(record.getGuid(), person.getPersonName().toString());
+
+            // refactored - CA 21 Jan 2008
+            String displayName = "";
+            try {
+                displayName = SyncUtil.displayName(mainClassName, mainGuid);
+            } catch ( Exception e ) {
+            	// some methods like Concept.getName() throw Exception s all the time...
+            	displayName = "";
             }
-            if ( mainClassName.equals("Encounter") ) {
-                Encounter encounter = Context.getEncounterService().getEncounterByGuid(mainGuid);
-                if ( encounter != null ) {
-                    recordText.put(record.getGuid(), encounter.getEncounterType().getName() 
-                                   + (encounter.getForm() == null ? "" : " (" + encounter.getForm().getName() + ")"));
-                }
-            }
-            if ( mainClassName.equals("Concept") ) {
-                Concept concept = Context.getConceptService().getConceptByGuid(mainGuid);
-                if ( concept != null ) recordText.put(record.getGuid(), concept.getName(Context.getLocale()).getName());
-            }
-            if ( mainClassName.equals("Obs") ) {
-                Obs obs = Context.getObsService().getObsByGuid(mainGuid);
-                if ( obs != null ) recordText.put(record.getGuid(), obs.getConcept().getName(Context.getLocale()).getName());
-            }
-            if ( mainClassName.equals("DrugOrder") ) {
-                DrugOrder drugOrder = (DrugOrder)Context.getOrderService().getOrderByGuid(mainGuid);
-                if ( drugOrder != null ) recordText.put(record.getGuid(), drugOrder.getDrug().getConcept().getName(Context.getLocale()).getName());
-            }
+            if ( displayName != null ) if ( displayName.length() > 0 ) recordText.put(record.getGuid(), displayName);
         }
         
         ret.put("recordTypes", recordTypes);

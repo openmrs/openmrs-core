@@ -198,7 +198,9 @@
 						<tr>
 							<td valign="middle" nowrap style="background-color: #${bgStyle};">
 								<b>${recordTypes[syncRecord.guid]}</b>
-								(${recordText[syncRecord.guid]})
+								<c:if test="${not empty recordText[syncRecord.guid]}">
+									(${recordText[syncRecord.guid]})
+								</c:if>
 								<br>
 								<span style="color: #bbb">
 									<spring:message code="Synchronization.item.state_${recordChangeType[syncRecord.guid]}" /> -
