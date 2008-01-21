@@ -932,7 +932,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     	SessionFactory factory = null;
     	
     	//we only process recreate and update
-    	if (!"update".equals(action) && "recreate".equals(action)) {
+    	if (!"update".equals(action) && !"recreate".equals(action)) {
         	log.error("Unexpected 'action' supplied, valid values: recreate, update. value provided: " + action);
             if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT)
             	throw new CallbackException("Unexpected 'action' supplied while processing a persistent set.");    		
