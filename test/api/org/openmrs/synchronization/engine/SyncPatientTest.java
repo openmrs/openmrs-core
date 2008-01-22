@@ -14,11 +14,11 @@
 package org.openmrs.synchronization.engine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -36,138 +36,30 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.synchronization.server.RemoteServer;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Tests creating various pieces of data via synchronization
  */
-public class SyncCreateTest extends BaseContextSensitiveTest {
+public class SyncPatientTest extends SyncBaseTest {
 	
-	protected void setupSyncTestChild() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
-	}
+	@Override
+    public String getInitialDataset() {
+	    return "org/openmrs/synchronization/engine/include/SyncCreateTest.xml";
+    }
 	
-	protected void setupSyncTestParent() throws Exception {
-		deleteAllData();
-		initializeInMemoryDatabase();
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncRemoteChildServer.xml");
-	}
-	
-	public void runSyncTest(SyncTestHelper testMethods) throws Exception {
-		Context.openSession();
-		
-		initializeInMemoryDatabase();
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
-		authenticate();
-
-		testMethods.runOnChild();
-		
-		this.transactionManager.commit(this.transactionStatus);
-		Context.closeSession();
-		Context.openSession();
-
-		List<SyncRecord> syncRecords = Context.getSynchronizationService().getSyncRecords();
-		if (syncRecords == null || syncRecords.size() == 0)
-			assertFalse("No changes found (i.e. sync records size is 0)", true);
-		
-		deleteAllData();
-		initializeInMemoryDatabase();
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncRemoteChildServer.xml");
-		RemoteServer origin = Context.getSynchronizationService().getRemoteServer(1);
-		for (SyncRecord syncRecord : syncRecords) {
-			Context.getSynchronizationIngestService().processSyncRecord(syncRecord, origin);
-		}
-		
-		testMethods.runOnParent();
-		Context.closeSession();
-	}
-	
-	public void testCreateRoleAndPrivilege() throws Exception {
-		long l = System.currentTimeMillis();
-		runSyncTest(new SyncTestHelper() {
-			public void runOnChild() {
-				Privilege priv = new Privilege("Kitchen Use");
-				priv.setDescription("Can step into the kitchen");
-				Context.getAdministrationService().createPrivilege(priv);
-				Role role = new Role("Chef");
-				role.setDescription("One who cooks");
-				role.addPrivilege(priv);
-				Context.getAdministrationService().createRole(role);
-			}
-			public void runOnParent() {
-				Privilege priv = Context.getUserService().getPrivilege("Kitchen Use");
-				assertEquals("Privilege failed", "Can step into the kitchen", priv.getDescription());
-				Role role = Context.getUserService().getRole("Chef");
-				assertEquals("Role failed", "One who cooks", role.getDescription());
-			}
-		});
-		System.out.println("took " + (System.currentTimeMillis() - l) + " ms");
-	}
-	
-	public void testCreateProgram() throws Exception {
-		runSyncTest(new SyncTestHelper() {
-			int numBefore = 0;
-			public void runOnChild() {
-				numBefore = Context.getProgramWorkflowService().getPrograms().size();
-				ConceptService cs = Context.getConceptService();
-				Concept tbProgram = cs.getConceptByName("TB PROGRAM");
-				Concept txStatus = cs.getConceptByName("TREATMENT STATUS");
-				Concept following = cs.getConceptByName("FOLLOWING");
-				Concept cured = cs.getConceptByName("PATIENT CURED");
-
-				Program prog = new Program();
-				prog.setConcept(tbProgram);
-				Context.getProgramWorkflowService().createOrUpdateProgram(prog);
-				
-				ProgramWorkflowState followState = new ProgramWorkflowState();
-				followState.setConcept(following);
-				followState.setInitial(true);
-				followState.setTerminal(false);
-				ProgramWorkflowState cureState = new ProgramWorkflowState();
-				cureState.setConcept(cured);
-				cureState.setInitial(false);
-				cureState.setTerminal(true);
-				ProgramWorkflow wf = new ProgramWorkflow();
-				wf.setConcept(txStatus);
-				wf.addState(followState);
-				wf.addState(cureState);
-				wf.setProgram(prog);
-				Context.getProgramWorkflowService().createWorkflow(wf);
-			}
-			public void runOnParent() {
-				assertEquals("Failed to create program",
-				             numBefore + 1,
-				             Context.getProgramWorkflowService().getPrograms().size());
-				Program p = Context.getProgramWorkflowService().getProgram("TB PROGRAM");
-				assertEquals("Wrong number of workflows", p.getWorkflows().size(), 1);
-
-				ProgramWorkflow wf = p.getWorkflowByName("TREATMENT STATUS");
-				assertNotNull(wf);
-				List<String> names = new ArrayList<String>();
-				for (ProgramWorkflowState s : wf.getStates())
-					names.add(s.getConcept().getName().getName());
-				assertEquals("Wrong number of states", names.size(), 2);
-				names.remove("FOLLOWING");
-				names.remove("PATIENT CURED");
-				assertEquals("States have wrong names", names.size(), 0);
-			}
-		});
-	}
 	
 	public void testEnrollInProgram() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			int numberEnrolledBefore = 0;
-			Date dateEnrolled = new Date();
+			Date dateEnrolled = new Date(System.currentTimeMillis() - 100000);
+			Date dateCompleted = new Date(System.currentTimeMillis() - 10000);
 			Program hivProgram = null;
 			public void runOnChild() {
 				Patient p = Context.getPatientService().getPatient(2);
 				numberEnrolledBefore = Context.getProgramWorkflowService().getPatientPrograms(p).size();
 				hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
-				PatientProgram pp = Context.getProgramWorkflowService().enrollPatientInProgram(p, hivProgram, dateEnrolled, null);
+				PatientProgram pp = Context.getProgramWorkflowService().enrollPatientInProgram(p, hivProgram, dateEnrolled, dateCompleted);
 			}
 			public void runOnParent() {
 				Patient p = Context.getPatientService().getPatient(2);
@@ -177,7 +69,8 @@ public class SyncCreateTest extends BaseContextSensitiveTest {
 				for (PatientProgram pp : Context.getProgramWorkflowService().getPatientPrograms(p)) {
 					if (pp.getProgram().equals(hivProgram)) {
 						assertEquals("Wrong enrollment date", pp.getDateEnrolled(), dateEnrolled);
-						assertEquals("Wrong completion date", pp.getDateCompleted(), null);					}
+						assertEquals("Wrong completion date", pp.getDateCompleted(), dateCompleted);
+					}
 				}
 			}
 		});
@@ -215,10 +108,36 @@ public class SyncCreateTest extends BaseContextSensitiveTest {
 		});
 	}
 	
-	public void testCreateEncounter() throws Exception {
+	public void testChangeState() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			Program hivProgram;
+			ProgramWorkflow txStat;
+			ProgramWorkflowState curedState;
+			public void runOnChild() {
+				hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
+				txStat = hivProgram.getWorkflowByName("TREATMENT STATUS");
+				curedState = txStat.getStateByName("PATIENT CURED");
+
+				Patient p = Context.getPatientService().getPatient(3);
+				Collection<PatientProgram> temp = Context.getProgramWorkflowService().getPatientPrograms(p);
+				assertEquals("Before test, patient record does not have the expected number of program enrollments", temp.size(), 1);
+				PatientProgram pp = temp.iterator().next();
+				assertNotSame("Before test, patient record not in expected state", pp.getCurrentState(txStat), curedState);
+				Context.getProgramWorkflowService().changeToState(pp, txStat, curedState, new Date());
+			}
+			public void runOnParent() {
+				Patient p = Context.getPatientService().getPatient(3);
+				PatientProgram pp = Context.getProgramWorkflowService().getPatientPrograms(p).iterator().next();
+				assertEquals("State not set", pp.getCurrentState(txStat).getState(), curedState);
+			}
+		});
+	}
+	
+	public void testCreateEncounterAndObs() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			int numEncountersSoFar = 0;
 			Date dateOfNewEncounter = new Date();
+			Date anotherDate = new Date(System.currentTimeMillis() - 20000l);
 			Concept weight = null;
 			Concept reason = null;
 			Concept other = null;
@@ -249,6 +168,12 @@ public class SyncCreateTest extends BaseContextSensitiveTest {
 				enc.addObs(o1);
 				enc.addObs(o2);
 				Context.getEncounterService().createEncounter(enc);
+				
+				Obs noEnc = new Obs();
+				noEnc.setConcept(weight);
+				noEnc.setValueNumeric(12.3);
+				noEnc.setObsDatetime(anotherDate);
+				Context.getObsService().createObs(noEnc);
 			}
 			
 			public void runOnParent() {
@@ -273,12 +198,80 @@ public class SyncCreateTest extends BaseContextSensitiveTest {
 						assertEquals("Reason should be OTHER NON-CODED", o.getValueCoded(), other);
 					}
 				}
+				
+				boolean found = false;
+				for (Obs o : Context.getObsService().getObservations(p, false)) {
+					if (o.getObsDatetime().equals(anotherDate) && o.getConcept().equals(weight) && o.getValueNumeric().equals(12.3))
+						found = true;
+				}
+				assertTrue("Cannot find newly created encounter-less obs", found);
+			}
+		});
+	}
+	
+	public void testEditEncounter() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			Date d1 = ymd.parse("1978-01-01");
+			Date d2 = ymd.parse("1978-12-31");
+			public void runOnChild(){
+				Patient p = Context.getPatientService().getPatient(2);
+				Collection<Encounter> encs = Context.getEncounterService().getEncounters(p, d1, d2);
+				assertEquals(encs.size(), 1);
+				Encounter e = encs.iterator().next();
+				e.setEncounterDatetime(d2);
+				Context.getEncounterService().updateEncounter(e);
+			}
+			public void runOnParent() {
+				Patient p = Context.getPatientService().getPatient(2);
+				Collection<Encounter> encs = Context.getEncounterService().getEncounters(p, d1, d2);
+				assertEquals(encs.size(), 1);
+				Encounter e = encs.iterator().next();
+				assertEquals("Failed to change date", e.getEncounterDatetime(), d2);
+			}
+		});
+	}
+	
+	public void testEditObs() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			Date d = ymd.parse("1978-04-11");
+			Concept weight = null;
+			public void runOnChild(){
+				weight = Context.getConceptService().getConceptByName("WEIGHT");
+				Patient p = Context.getPatientService().getPatient(2);
+				Obs obs = null;
+				for (Obs o : Context.getObsService().getObservations(p, weight, false)) {
+					if (OpenmrsUtil.compare(o.getObsDatetime(), d) == 0)
+						obs = o;
+				}
+				assertNotNull("Before test, could not find expected obs", obs);
+				Context.getObsService().voidObs(obs, "Data entry error");
+				
+				Obs newObs = new Obs();
+				newObs.setPerson(obs.getPerson());
+				newObs.setConcept(obs.getConcept());
+				newObs.setObsDatetime(obs.getObsDatetime());
+				newObs.setLocation(obs.getLocation());
+				newObs.setCreator(Context.getAuthenticatedUser());
+				newObs.setDateCreated(new Date());
+				newObs.setValueNumeric(99.9);
+				newObs.setEncounter(obs.getEncounter());
+				Context.getObsService().createObs(newObs);
+			}
+			public void runOnParent() {
+				Patient p = Context.getPatientService().getPatient(2);
+				boolean found = false;
+				for (Obs o : Context.getObsService().getObservations(p, weight, false))
+					if (o.getObsDatetime().equals(d)) {
+						assertEquals(o.getEncounter().getObs().size(), 3);
+						assertEquals(o.getValueNumeric(), 99.9);
+						found = true;
+					}
+				assertTrue(found);
 			}
 		});
 	}
 
 	public void testCreatePatient() throws Exception {
-		long l = System.currentTimeMillis();
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {
 				Location loc = Context.getEncounterService().getLocationByName("Someplace");
@@ -311,11 +304,36 @@ public class SyncCreateTest extends BaseContextSensitiveTest {
 				if (ids.size() != 1)
 					assertFalse("Should only find one patient, not " + ids.size(), true);
 				Patient p = ids.get(0).getPatient();				
-				assertEquals(p.getPersonName(), name);
+				assertEquals(p.getPersonName().toString(), name.toString());
 				assertEquals(p.getIdentifiers().iterator().next(), id);
 			}
 		});
-		System.out.println("took " + (System.currentTimeMillis() - l) + " ms");
+	}
+	
+	public void testEditPatient() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			PatientIdentifierType pit;
+			public void runOnChild() {
+				pit = Context.getPatientService().getPatientIdentifierType(2);
+				Location loc = Context.getEncounterService().getLocationByName("Someplace");
+				Patient p = Context.getPatientService().getPatient(2);
+				p.setGender("F");
+				p.removeName(p.getPersonName());
+				p.addName(new PersonName("Peter", null, "Parker"));
+				p.addIdentifier(new PatientIdentifier("super123", pit, loc));
+				Context.getPatientService().updatePatient(p);
+			}
+			public void runOnParent() {
+				Patient p = Context.getPatientService().getPatient(2);
+				assertEquals("Gender didn't change", p.getGender(), "F");
+				assertEquals("Name should be Peter Parker", p.getPersonName().toString(), "Peter Parker");
+				boolean found = false;
+				for (PatientIdentifier id : p.getIdentifiers())
+					if (id.getIdentifier().equals("super123") && id.getIdentifierType().equals(pit))
+						found = true;
+				assertTrue("Couldn't find new ID", found);
+			}
+		});
 	}
 
 }

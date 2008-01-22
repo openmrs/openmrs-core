@@ -55,6 +55,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public User createUser(User user) throws APIException {
+		log.debug("Creating user");
+		checkPrivileges(user);
+		setCollectionProperties(user);
+		
+		user.setSystemId(generateSystemId());
+
 		return getUserDAO().createUser(user);
 	}
 
@@ -414,12 +420,16 @@ public class UserServiceImpl implements UserService {
 		Context.getPersonService().setCollectionProperties(user);
 		
 		// user creator/changer
-		if (user.getCreator() == null) {
+		if (user.getCreator() == null)
 			user.setCreator(Context.getAuthenticatedUser());
+		
+		if (user.getDateCreated() == null)
 			user.setDateCreated(new Date());
+
+		if (user.getUserId() != null) {
+			user.setChangedBy(Context.getAuthenticatedUser());
+			user.setDateChanged(new Date());
 		}
-		user.setChangedBy(Context.getAuthenticatedUser());
-		user.setDateChanged(new Date());
 	}
 
 	/**

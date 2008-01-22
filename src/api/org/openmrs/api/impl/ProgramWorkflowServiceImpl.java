@@ -176,6 +176,11 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 			throw new APIAuthenticationException("Privilege required: "
 					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
 		
+		if (s.getCreator() == null)
+			s.setCreator(Context.getAuthenticatedUser());
+		if (s.getDateCreated() == null)
+			s.setDateCreated(new Date());
+		
 		getProgramWorkflowDAO().createState(s);
 	}
 
@@ -183,6 +188,11 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
 			throw new APIAuthenticationException("Privilege required: "
 					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
+		
+		if (s.getCreator() == null)
+			s.setCreator(Context.getAuthenticatedUser());
+		if (s.getDateCreated() == null)
+			s.setDateCreated(new Date());
 		
 		getProgramWorkflowDAO().createPatientState(s);
 	}

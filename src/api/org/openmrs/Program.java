@@ -1,6 +1,7 @@
 package org.openmrs;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.openmrs.synchronization.Synchronizable;
@@ -147,6 +148,13 @@ public class Program implements java.io.Serializable, Synchronizable {
 
 	public void setWorkflows(Set<ProgramWorkflow> workflows) {
 		this.workflows = workflows;
+	}
+	
+	public void addWorkflow(ProgramWorkflow wf) {
+		wf.setProgram(this);
+		if (getWorkflows() == null)
+			setWorkflows(new HashSet<ProgramWorkflow>());
+		getWorkflows().add(wf);
 	}
 	
 }
