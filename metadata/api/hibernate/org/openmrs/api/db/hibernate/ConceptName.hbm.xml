@@ -26,7 +26,8 @@
 		
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
 		<many-to-one name="creator" class="User" column="creator" not-null="true"/>
-		
+
+		<property name="guid" type="java.lang.String" column="guid" length="36" />		
 	</class>
 	
 </hibernate-mapping>
