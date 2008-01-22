@@ -49,6 +49,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				cn.setPrecise(true);
 				cn.setLowAbsolute(0d);
 				cn.setHiCritical(100d);
+				cn.setConceptId(cs.getNextAvailableId());
 				cs.createConcept(cn);
 				
 				Concept coded = new Concept();
@@ -59,6 +60,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("OTHER NON-CODED")));
 				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("NONE")));
 				coded.addAnswer(new ConceptAnswer(cn));
+				coded.setConceptId(cs.getNextAvailableId());
 				cs.createConcept(cn);
 				
 				Concept set = new Concept();
@@ -70,6 +72,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				cset.add(new ConceptSet(coded, 1d));
 				cset.add(new ConceptSet(cn, 2d));
 				set.setConceptSets(cset);
+				set.setConceptId(cs.getNextAvailableId());
 				cs.createConcept(set);
 			}
 			public void runOnParent() {
