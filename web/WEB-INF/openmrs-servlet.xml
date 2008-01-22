@@ -19,7 +19,7 @@
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<!-- one of the properties available; the maximum file size in bytes -->
-		<property name="maxUploadSize"><value>20000000</value></property>
+		<property name="maxUploadSize"><value>75000000</value></property>
 	</bean>
 
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
