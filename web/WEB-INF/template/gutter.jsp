@@ -39,9 +39,5 @@
 			</li>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>
-
-	<li>
-		<a href="${pageContext.request.contextPath}/options.form"><spring:message code="Navigation.options"/></a>
-	</li>
 	
 </ul>

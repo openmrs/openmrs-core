@@ -46,7 +46,7 @@
 						<spring:message code="header.logged.in"/> ${authenticatedUser.personName}
 					</span>
 					<span id="userLogout">
-						<a href='<%= request.getContextPath() %>/logout'><spring:message code="header.logout" /></a>
+						<a href='${pageContext.request.contextPath}/logout'><spring:message code="header.logout" /></a>
 					</span>
 				</c:if>
 				<c:if test="${authenticatedUser == null}">
@@ -54,10 +54,14 @@
 						<spring:message code="header.logged.out"/>
 					</span>
 					<span id="userLogIn">
-						<a href='<%= request.getContextPath() %>/login.htm'><spring:message code="header.login"/></a>
+						<a href='${pageContext.request.contextPath}/login.htm'><spring:message code="header.login"/></a>
 					</span>
 				</c:if>
 			</openmrs:authentication>
+			
+			<span>
+				<a href="${pageContext.request.contextPath}/options.form"><spring:message code="Navigation.options"/></a>
+			</span>
 			
 			<span id="userHelp">
 				<a href='<%= request.getContextPath() %>/help.htm'><spring:message code="header.help"/></a>
@@ -97,14 +101,14 @@
 				<c:if test="${varStatus.first}"><div id="alertOuterBox"><div id="alertInnerBox"></c:if>
 					<div class="alert">
 						<a href="#markRead" onClick="return markAlertRead(this, '${alert.alertId}')" HIDEFOCUS class="markAlertRead">
-							<img src="<%= request.getContextPath() %>/images/markRead.gif" alt='<spring:message code="Alert.mark"/>' title='<spring:message code="Alert.mark"/>'/>
+							<img src="${pageContext.request.contextPath}/images/markRead.gif" alt='<spring:message code="Alert.mark"/>' title='<spring:message code="Alert.mark"/>'/>
 						</a>
 						${alert.text} ${alert.dateToExpire} <c:if test="${alert.satisfiedByAny}"><i class="smallMessage">(<spring:message code="Alert.mark.satisfiedByAny"/>)</i></c:if>
 					</div>
 				<c:if test="${varStatus.last}">
 					</div>
 					<div id="alertBar">
-						<img src="<%= request.getContextPath() %>/images/alert.gif" align="center" alt='<spring:message code="Alert.unreadAlert"/>' title='<spring:message code="Alert.unreadAlert"/>'/>
+						<img src="${pageContext.request.contextPath}/images/alert.gif" align="center" alt='<spring:message code="Alert.unreadAlert"/>' title='<spring:message code="Alert.unreadAlert"/>'/>
 						<c:if test="${varStatus.count == 1}"><spring:message code="Alert.unreadAlert"/></c:if>
 						<c:if test="${varStatus.count != 1}"><spring:message code="Alert.unreadAlerts" arguments="${varStatus.count}" /></c:if>
 					</div>
