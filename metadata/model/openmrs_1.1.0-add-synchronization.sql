@@ -118,6 +118,7 @@ CREATE PROCEDURE sync_setup_procedure()
 	('Person', 'REQUIRED', 1, 1),
 	('PersonAddress', 'PATIENT', 1, 1),
 	('PersonAttribute', 'PATIENT', 1, 1),
+	('PersonAttributeType', 'PATIENT', 1, 1),
 	('PersonName', 'PATIENT', 1, 1),
 	('Privilege', 'REQUIRED', 1, 1),
 	('Program', 'PATIENT', 1, 1),

@@ -139,7 +139,7 @@
 							<b><spring:message code="SynchronizationConfig.server.guid" /></b>
 						</td>
 						<td align="left" valign="top">
-							<input type="text" size="35" maxlength="250" id="guid" name="guid" value="${server.guid}" />
+							<input type="text" size="48" maxlength="250" id="guid" name="guid" value="${server.guid}" />
 						</td>
 					</tr>
 				</c:if>

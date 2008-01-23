@@ -119,9 +119,11 @@ public class SyncUtil {
 		Object propVal = null;
 		propVal = SyncUtil.valForField(propName, n.getTextContent(), allFields);
 		
+		log.warn("Trying to set value to " + propVal + " when propName is " + propName + " and context is " + n.getTextContent());
+		
 		if ( propVal !=  null ) {
 			SyncUtil.setProperty(o, propName, propVal);
-			log.debug("Successfully called set" + SyncUtil.propCase(propName) + "(" + propVal + ")" );
+			log.warn("Successfully called set" + SyncUtil.propCase(propName) + "(" + propVal + ")" );
 		}
 	}
 
@@ -129,8 +131,12 @@ public class SyncUtil {
 			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		Object[] setterParams = new Object[1];
 		setterParams[0] = propVal;
+		
+		log.warn("getting setter method");
 		Method m = SyncUtil.getSetterMethod(o.getClass(), propName, propVal.getClass());
 
+		log.warn("about to call " + m.getName());
+		
         Object voidObj = m.invoke(o, setterParams);
 	}
 	
@@ -281,7 +287,7 @@ public class SyncUtil {
 		for ( Field f : allFields ) {
 			//log.debug("field is " + f.getName());
 			if ( f.getName().equals(fieldName) ) {
-				//log.debug("found Field " + fieldName + " with type is " + f.getGenericType());
+				log.warn("found Field " + fieldName + " with type is " + f.getGenericType());
 
 				String className = f.getGenericType().toString();
 				if ( className.startsWith("class ") ) className = className.substring("class ".length());
@@ -392,6 +398,11 @@ public class SyncUtil {
 		// need to try to get setter, both in this object, and its parent class 
 		Method m = null;
         boolean continueLoop = true;
+        
+        // Fix - CA - 22 Jan 2008 - extremely odd Java Bean convention that says getter/setter for fields
+        // where 2nd letter is capitalized (like "aIsToB") first letter stays lower in getter/setter methods
+        // like "getaIsToB()".  Hence we need to try that out too
+        String altMethodName = methodName.substring(0, 3) + methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
 
         try {
 			Class[] setterParamClasses = null;
@@ -417,7 +428,7 @@ public class SyncUtil {
 				//instead of looking for the exact method sig match 
                 Method[] mes = objType.getMethods();
                 for (Method me : mes) {
-                	if (me.getName().equals(methodName)) {
+                	if (me.getName().equals(methodName) || me.getName().equals(altMethodName) ) {
                 		Class[] meParamTypes = me.getParameterTypes();
                 		if (propValType != null && meParamTypes != null && meParamTypes.length == 1 && meParamTypes[0].isAssignableFrom(propValType)) {
                 			m = me;
@@ -425,7 +436,9 @@ public class SyncUtil {
             				break;
                 		}
                 	}
-                }                    
+                }
+                
+                if ( continueLoop ) clazz = clazz.getSuperclass();
     		}
         }
         catch(Exception ex) {

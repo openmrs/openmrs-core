@@ -105,12 +105,13 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 boolean isUpdateNeeded = false;
                 
                 if ( importRecord == null ) {
+                	log.warn("ImportRecord does not exist, so creating new one");
                     isUpdateNeeded = true;
                     importRecord = new SyncImportRecord(record);
                     importRecord.setGuid(record.getOriginalGuid());
                     Context.getSynchronizationService().createSyncImportRecord(importRecord);
                 } else {
-                    log.info("ImportRecord already exists and has state: " + importRecord.getState());
+                    log.warn("ImportRecord already exists and has state: " + importRecord.getState());
                     SyncRecordState state = importRecord.getState();
                     if ( state.equals(SyncRecordState.COMMITTED) ) {
                         // apparently, the remote/child server exporting to this server doesn't realize it's
@@ -125,7 +126,8 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 }
                 
                 if ( isUpdateNeeded ) {
-                    
+                    log.debug("Looks like update is needed");
+                	
                     boolean isError = false;
                             
                     // for each sync item, process it and insert/update the database
@@ -169,6 +171,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                     } else {
                         // rollback!!
                         // also, set to failure.  if we've come this far and record failed to commit, it will likely never commit
+                    	log.warn("Error while processing SyncRecord with original ID " + record.getOriginalGuid() + " (" + record.getContainedClasses() + ")");
                         importRecord.setState(SyncRecordState.FAILED);
                     }
                     
@@ -196,6 +199,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 
                 o = SyncUtil.getRootObject(incoming);
                 if (o instanceof org.hibernate.collection.PersistentCollection) {
+                	log.debug("Processing a persistent collection");
                 	processHibernateCollection(o.getClass(),incoming,originalGuid);
                 } else {
                 	processSynchronizable((Synchronizable)o,incoming,originalGuid);
@@ -212,6 +216,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
             ret.setErrorMessageArgs(siie.getItemErrorArgs());
             ret.setState(SyncItemState.CONFLICT);
         } catch (Exception e) {
+        	e.printStackTrace();
             ret.setErrorMessage(SyncConstants.ERROR_ITEM_NOT_PROCESSED);
         }       
         
@@ -430,6 +435,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         nodes = SyncUtil.getChildNodes(incoming);  // get all child nodes (xml) of the root object
 
 	    if ( o == null || className == null || allFields == null || nodes == null ) {
+	    	log.warn("Item is missing a className or all fields or nodes");
 	    	throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOCLASS, className, incoming);
 	    }
 
@@ -440,9 +446,12 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
             isUpdateNotCreate = true;
         }
 	        
+        log.debug("isUpdate is " + isUpdateNotCreate);
+        
         //process contained properties
         for ( int i = 0; i < nodes.getLength(); i++ ) {
             try {
+            	log.debug("trying to set property: " + nodes.item(i).getNodeName() + " in className " + className);
                 SyncUtil.setProperty(o, nodes.item(i), allFields);
             } catch ( Exception e ) {
             	log.error("Error when trying to set " + nodes.item(i).getNodeName() + ", which is a " + className);
@@ -458,6 +467,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 	        
         // now try to commit this fully inflated object
         try {
+        	log.warn("About to update or create a " + className + " object");
             SyncUtil.updateOpenmrsObject(o, className, guid, isUpdateNotCreate);
         } catch ( Exception e ) {
         	e.printStackTrace();
