@@ -55,12 +55,21 @@ public class ConceptServiceImpl implements ConceptService {
 		this.dao = dao;
 	}
 
+	
 	/**
 	 * @param concept
 	 *            to be created
 	 */
 	public void createConcept(Concept concept) {
-		checkIfLocked();
+		this.createConcept(concept, false);
+	}
+	
+	/**
+	 * @param concept
+	 *            to be created
+	 */
+	public void createConcept(Concept concept, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -75,7 +84,14 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            concept to be created
 	 */
 	public void createConcept(ConceptNumeric concept) {
-		checkIfLocked();
+		this.createConcept(concept, false);
+	}
+	/**
+	 * @param numeric
+	 *            concept to be created
+	 */
+	public void createConcept(ConceptNumeric concept, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -123,7 +139,17 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be updated
 	 */
 	public void updateConcept(Concept concept) {
-		checkIfLocked();
+		this.updateConcept(concept, false);
+	}
+	
+	/**
+	 * Update the given concept
+	 * 
+	 * @param concept
+	 *            to be updated
+	 */
+	public void updateConcept(Concept concept, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -140,7 +166,17 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            concept to be updated
 	 */
 	public void updateConcept(ConceptNumeric concept) {
-		checkIfLocked();
+		this.updateConcept(concept, false);
+	}
+	
+	/**
+	 * Update the given numeric concept
+	 * 
+	 * @param numeric
+	 *            concept to be updated
+	 */
+	public void updateConcept(ConceptNumeric concept, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -160,7 +196,20 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be deleted
 	 */
 	public void deleteConcept(Concept concept) {
-		checkIfLocked();
+		this.deleteConcept(concept, false);
+	}
+		
+	/**
+	 * Delete the given concept
+	 * 
+	 * For super users only. If dereferencing concepts, use
+	 * <code>voidConcept(org.openmrs.Concept)</code>
+	 * 
+	 * @param Concept
+	 *            to be deleted
+	 */
+	public void deleteConcept(Concept concept, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -179,7 +228,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            reason
 	 */
 	public void voidConcept(Concept concept, String reason) {
-		checkIfLocked();
+		this.voidConcept(concept, reason, false);
+	}
+		
+	public void voidConcept(Concept concept, String reason, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -194,7 +247,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be created
 	 */
 	public void createDrug(Drug drug) {
-		checkIfLocked();
+		this.createDrug(drug, false);
+	}
+	
+	public void createDrug(Drug drug, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -212,7 +269,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be updated
 	 */
 	public void updateDrug(Drug drug) {
-		checkIfLocked();
+		this.updateDrug(drug, false);
+	}
+		
+	public void updateDrug(Drug drug, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -821,7 +882,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be created
 	 */
 	public void createConceptAnswer(ConceptAnswer conceptAnswer) {
-		checkIfLocked();
+		this.createConceptAnswer(conceptAnswer, false);
+	}	
+		
+	public void createConceptAnswer(ConceptAnswer conceptAnswer, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -838,8 +903,12 @@ public class ConceptServiceImpl implements ConceptService {
 	 * @param conceptAnswer
 	 *            to be updated
 	 */
-	public void updateConceptAnswer(ConceptAnswer conceptAnswer) {
-		checkIfLocked();
+	public void updateConceptAnswer(ConceptAnswer conceptAnswer) {	
+		this.updateConceptAnswer(conceptAnswer, false);
+	}
+	
+	public void updateConceptAnswer(ConceptAnswer conceptAnswer, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -856,7 +925,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be created
 	 */
 	public void createConceptName(ConceptName conceptName) {
-		checkIfLocked();
+		this.createConceptName(conceptName, false);
+	}
+	
+	public void createConceptName(ConceptName conceptName, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -874,7 +947,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be updated
 	 */
 	public void updateConceptName(ConceptName conceptName) {
-		checkIfLocked();
+		this.updateConceptName(conceptName, false);
+	}
+	
+	public void updateConceptName(ConceptName conceptName, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -891,7 +968,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be created
 	 */
 	public void createConceptSet(ConceptSet conceptSet) {
-		checkIfLocked();
+		this.createConceptSet(conceptSet, false);
+	}
+	
+	public void createConceptSet(ConceptSet conceptSet, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -909,7 +990,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be updated
 	 */
 	public void updateConceptSet(ConceptSet conceptSet) {
-		checkIfLocked();
+		this.updateConceptSet(conceptSet, false);
+	}
+
+	public void updateConceptSet(ConceptSet conceptSet, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -926,7 +1011,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be created
 	 */
 	public void createConceptSource(ConceptSource conceptSource) {
-		checkIfLocked();
+		this.createConceptSource(conceptSource, false);
+	}
+	
+	public void createConceptSource(ConceptSource conceptSource, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -944,7 +1033,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be updated
 	 */
 	public void updateConceptSource(ConceptSource conceptSource) {
-		checkIfLocked();
+		this.updateConceptSource(conceptSource, false);
+	}
+	
+	public void updateConceptSource(ConceptSource conceptSource, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -961,7 +1054,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be created
 	 */
 	public void createConceptSynonym(ConceptSynonym conceptSynonym) {
-		checkIfLocked();
+		this.createConceptSynonym(conceptSynonym, false);
+	}
+	
+	public void createConceptSynonym(ConceptSynonym conceptSynonym,  boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -979,7 +1076,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be updated
 	 */
 	public void updateConceptSynonym(ConceptSynonym conceptSynonym) {
-		checkIfLocked();
+		this.updateConceptSynonym(conceptSynonym, false);
+	}
+
+	public void updateConceptSynonym(ConceptSynonym conceptSynonym, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -996,7 +1097,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be created
 	 */
 	public void createConceptWord(ConceptWord conceptWord) {
-		checkIfLocked();
+		this.createConceptWord(conceptWord, false);
+	}
+	
+	public void createConceptWord(ConceptWord conceptWord, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
@@ -1014,7 +1119,11 @@ public class ConceptServiceImpl implements ConceptService {
 	 *            to be updated
 	 */
 	public void updateConceptWord(ConceptWord conceptWord) {
-		checkIfLocked();
+		this.updateConceptWord(conceptWord, false);
+	}
+	
+	public void updateConceptWord(ConceptWord conceptWord, boolean isForced) {
+		if ( !isForced ) checkIfLocked();
 		
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();

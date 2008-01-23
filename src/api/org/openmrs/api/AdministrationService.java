@@ -225,12 +225,16 @@ public interface AdministrationService {
 	 */
 	public void createConceptClass(ConceptClass cc) throws APIException;
 
+	public void createConceptClass(ConceptClass cc, boolean isForced) throws APIException;
+
 	/**
 	 * Update ConceptClass
 	 * @param ConceptClass to update
 	 * @throws APIException
 	 */
 	public void updateConceptClass(ConceptClass cc) throws APIException;
+
+	public void updateConceptClass(ConceptClass cc, boolean isForced) throws APIException;
 
 	/**
 	 * Delete ConceptClass
@@ -239,12 +243,16 @@ public interface AdministrationService {
 	 */
 	public void deleteConceptClass(ConceptClass cc) throws APIException;
 
+	public void deleteConceptClass(ConceptClass cc, boolean isForced) throws APIException;
+
 	/**
 	 * Create a new ConceptDatatype
 	 * @param ConceptDatatype to create
 	 * @throws APIException
 	 */
 	public void createConceptDatatype(ConceptDatatype cd) throws APIException;
+
+	public void createConceptDatatype(ConceptDatatype cd, boolean isForced) throws APIException;
 
 	/**
 	 * Update ConceptDatatype
@@ -253,12 +261,16 @@ public interface AdministrationService {
 	 */
 	public void updateConceptDatatype(ConceptDatatype cd) throws APIException;
 
+	public void updateConceptDatatype(ConceptDatatype cd, boolean isForced) throws APIException;
+
 	/**
 	 * Delete ConceptDatatype
 	 * @param ConceptDatatype to delete
 	 * @throws APIException
 	 */
 	public void deleteConceptDatatype(ConceptDatatype cd) throws APIException;
+
+	public void deleteConceptDatatype(ConceptDatatype cd, boolean isForced) throws APIException;
 
 	/**
 	 * Create a new Report

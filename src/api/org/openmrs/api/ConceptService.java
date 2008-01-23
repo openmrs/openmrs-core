@@ -35,12 +35,18 @@ public interface ConceptService {
 	@Authorized({"Add Concepts"})
 	public void createConcept(Concept concept);
 
+	@Authorized({"Add Concepts"})
+	public void createConcept(Concept concept, boolean isForced);
+
 	/**
 	 * @param numeric
 	 *            concept to be created
 	 */
 	@Authorized({"Add Concepts"})
 	public void createConcept(ConceptNumeric concept);
+
+	@Authorized({"Add Concepts"})
+	public void createConcept(ConceptNumeric concept, boolean isForced);
 
 	/**
 	 * Gets the concept with the given internal identifier
@@ -88,6 +94,9 @@ public interface ConceptService {
 	@Authorized({"Edit Concepts"})
 	public void updateConcept(Concept concept);
 
+	@Authorized({"Edit Concepts"})
+	public void updateConcept(Concept concept, boolean isForced);
+
 	/**
 	 * Update the given numeric concept
 	 * 
@@ -96,6 +105,9 @@ public interface ConceptService {
 	 */
 	@Authorized({"Edit Concepts"})
 	public void updateConcept(ConceptNumeric concept);
+
+	@Authorized({"Edit Concepts"})
+	public void updateConcept(ConceptNumeric concept, boolean isForced);
 
 	/**
 	 * Delete the given concept
@@ -109,6 +121,9 @@ public interface ConceptService {
 	@Authorized({"Delete Concepts"})
 	public void deleteConcept(Concept concept);
 
+	@Authorized({"Delete Concepts"})
+	public void deleteConcept(Concept concept, boolean isForced);
+
 	/**
 	 * Voiding a concept essentially removes it from circulation
 	 * 
@@ -120,12 +135,18 @@ public interface ConceptService {
 	@Authorized({"Edit Concepts"})
 	public void voidConcept(Concept concept, String reason);
 
+	@Authorized({"Edit Concepts"})
+	public void voidConcept(Concept concept, String reason, boolean isForced);
+
 	/**
 	 * @param drug
 	 *            to be created
 	 */
 	@Authorized({"Add Concepts"})
 	public void createDrug(Drug drug);
+
+	@Authorized({"Add Concepts"})
+	public void createDrug(Drug drug, boolean isForced);
 
 	/**
 	 * Update the given drug
@@ -135,6 +156,9 @@ public interface ConceptService {
 	 */
 	@Authorized({"Edit Concepts"})
 	public void updateDrug(Drug drug);
+
+	@Authorized({"Edit Concepts"})
+	public void updateDrug(Drug drug, boolean isForced);
 
 	/**
 	 * Return a list of concepts matching "name" anywhere in the name
@@ -488,6 +512,9 @@ public interface ConceptService {
 	@Authorized({"Add Concepts"})
 	public void createConceptAnswer(ConceptAnswer answer);
 
+	@Authorized({"Add Concepts"})
+	public void createConceptAnswer(ConceptAnswer answer, boolean isForced);
+
 	/**
 	 * Update the given ConceptAnswer
 	 * 
@@ -497,12 +524,18 @@ public interface ConceptService {
 	@Authorized({"Edit Concepts"})
 	public void updateConceptAnswer(ConceptAnswer answer);
 
+	@Authorized({"Edit Concepts"})
+	public void updateConceptAnswer(ConceptAnswer answer, boolean isForced);
+
 	/**
 	 * @param name
 	 *            to be created
 	 */
 	@Authorized({"Add Concepts"})
 	public void createConceptName(ConceptName name);
+
+	@Authorized({"Add Concepts"})
+	public void createConceptName(ConceptName name, boolean isForced);
 
 	/**
 	 * Update the given ConceptName
@@ -513,12 +546,18 @@ public interface ConceptService {
 	@Authorized({"Edit Concepts"})
 	public void updateConceptName(ConceptName name);
 
+	@Authorized({"Edit Concepts"})
+	public void updateConceptName(ConceptName name, boolean isForced);
+
 	/**
 	 * @param set
 	 *            to be created
 	 */
 	@Authorized({"Add Concepts"})
 	public void createConceptSet(ConceptSet set);
+
+	@Authorized({"Add Concepts"})
+	public void createConceptSet(ConceptSet set, boolean isForced);
 
 	/**
 	 * Update the given ConceptSet
@@ -529,12 +568,18 @@ public interface ConceptService {
 	@Authorized({"Edit Concepts"})
 	public void updateConceptSet(ConceptSet set);
 
+	@Authorized({"Edit Concepts"})
+	public void updateConceptSet(ConceptSet set, boolean isForced);
+
 	/**
 	 * @param conceptSource
 	 *            to be created
 	 */
 	@Authorized({"Add Concepts"})
 	public void createConceptSource(ConceptSource conceptSource);
+
+	@Authorized({"Add Concepts"})
+	public void createConceptSource(ConceptSource conceptSource, boolean isForced);
 
 	/**
 	 * Update the given ConceptSource
@@ -545,12 +590,18 @@ public interface ConceptService {
 	@Authorized({"Edit Concepts"})
 	public void updateConceptSource(ConceptSource conceptSource);
 
+	@Authorized({"Edit Concepts"})
+	public void updateConceptSource(ConceptSource conceptSource, boolean isForced);
+
 	/**
 	 * @param conceptSynonym
 	 *            to be created
 	 */
 	@Authorized({"Add Concepts"})
 	public void createConceptSynonym(ConceptSynonym conceptSynonym);
+
+	@Authorized({"Add Concepts"})
+	public void createConceptSynonym(ConceptSynonym conceptSynonym, boolean isForced);
 
 	/**
 	 * Update the given ConceptSynonym
@@ -561,12 +612,18 @@ public interface ConceptService {
 	@Authorized({"Edit Concepts"})
 	public void updateConceptSynonym(ConceptSynonym conceptSynonym);
 
+	@Authorized({"Edit Concepts"})
+	public void updateConceptSynonym(ConceptSynonym conceptSynonym, boolean isForced);
+
 	/**
 	 * @param conceptWord
 	 *            to be created
 	 */
 	@Authorized({"Add Concepts"})
 	public void createConceptWord(ConceptWord conceptWord);
+
+	@Authorized({"Add Concepts"})
+	public void createConceptWord(ConceptWord conceptWord, boolean isForced);
 
 	/**
 	 * Update the given ConceptWord
@@ -576,7 +633,10 @@ public interface ConceptService {
 	 */
 	@Authorized({"Edit Concepts"})
 	public void updateConceptWord(ConceptWord conceptWord);
-    
+
+	@Authorized({"Edit Concepts"})
+	public void updateConceptWord(ConceptWord conceptWord, boolean isForced);
+
     /**
      * @return a Map<conceptId, guid> of all concepts in the system
      */

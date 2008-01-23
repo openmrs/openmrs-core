@@ -39,6 +39,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.ConceptSynonym;
+import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -73,7 +74,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
 import org.openmrs.serialization.TimestampNormalizer;
-import org.openmrs.synchronization.SyncStatusState;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -487,51 +487,51 @@ public class SyncUtil {
 				if ( !knownToExist ) {
 					Integer id = Context.getConceptService().getNextAvailableId();
 					((Concept)o).setConceptId(id);
-					Context.getConceptService().createConcept((Concept)o);
+					Context.getConceptService().createConcept((Concept)o, true);
 				}
-				else Context.getConceptService().updateConcept((Concept)o);
+				else Context.getConceptService().updateConcept((Concept)o, true);
 			} else if ( "org.openmrs.ConceptAnswer".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConceptAnswer((ConceptAnswer)o);
-				else Context.getConceptService().updateConceptAnswer((ConceptAnswer)o);
+				if ( !knownToExist ) Context.getConceptService().createConceptAnswer((ConceptAnswer)o, true);
+				else Context.getConceptService().updateConceptAnswer((ConceptAnswer)o, true);
 			} else if ( "org.openmrs.ConceptClass".equals(className) ) {
-				if ( !knownToExist ) Context.getAdministrationService().createConceptClass((ConceptClass)o);
-				else Context.getAdministrationService().createConceptClass((ConceptClass)o);
+				if ( !knownToExist ) Context.getAdministrationService().createConceptClass((ConceptClass)o, true);
+				else Context.getAdministrationService().createConceptClass((ConceptClass)o, true);
 			} else if ( "org.openmrs.ConceptDatatype".equals(className) ) {
-				if ( !knownToExist ) Context.getAdministrationService().createConceptDatatype((ConceptDatatype)o);
-				else Context.getAdministrationService().updateConceptDatatype((ConceptDatatype)o);
+				if ( !knownToExist ) Context.getAdministrationService().createConceptDatatype((ConceptDatatype)o, true);
+				else Context.getAdministrationService().updateConceptDatatype((ConceptDatatype)o, true);
 			} else if ( "org.openmrs.ConceptDerived".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConcept((ConceptDerived)o);
-				else Context.getConceptService().updateConcept((ConceptDerived)o);
+				if ( !knownToExist ) Context.getConceptService().createConcept((ConceptDerived)o, true);
+				else Context.getConceptService().updateConcept((ConceptDerived)o, true);
 			} else if ( "org.openmrs.ConceptName".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConceptName((ConceptName)o);
-				else Context.getConceptService().updateConceptName((ConceptName)o);
+				if ( !knownToExist ) Context.getConceptService().createConceptName((ConceptName)o, true);
+				else Context.getConceptService().updateConceptName((ConceptName)o, true);
 			} else if ( "org.openmrs.ConceptNumeric".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConcept((ConceptNumeric)o);
-				else Context.getConceptService().updateConcept((ConceptNumeric)o);
+				if ( !knownToExist ) Context.getConceptService().createConcept((ConceptNumeric)o, true);
+				else Context.getConceptService().updateConcept((ConceptNumeric)o, true);
 			} else if ( "org.openmrs.ConceptProposal".equals(className) ) {
 				if ( !knownToExist ) Context.getAdministrationService().createConceptProposal((ConceptProposal)o);
 				else Context.getAdministrationService().updateConceptProposal((ConceptProposal)o);
 			} else if ( "org.openmrs.ConceptSet".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConceptSet((ConceptSet)o);
-				else Context.getConceptService().updateConceptSet((ConceptSet)o);
+				if ( !knownToExist ) Context.getConceptService().createConceptSet((ConceptSet)o, true);
+				else Context.getConceptService().updateConceptSet((ConceptSet)o, true);
 			} else if ( "org.openmrs.ConceptSetDerived".equals(className) ) {
 				log.debug("UNABLE TO CREATE/UPDATE ConceptSetDerived in Synchronization process - no service method exists");
 				isUpdated = false;
 			} else if ( "org.openmrs.ConceptSource".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConceptSource((ConceptSource)o);
-				else Context.getConceptService().updateConceptSource((ConceptSource)o);
+				if ( !knownToExist ) Context.getConceptService().createConceptSource((ConceptSource)o, true);
+				else Context.getConceptService().updateConceptSource((ConceptSource)o, true);
 			} else if ( "org.openmrs.ConceptStateConversion".equals(className) ) {
 				if ( !knownToExist ) Context.getProgramWorkflowService().createConceptStateConversion((ConceptStateConversion)o);
 				else Context.getProgramWorkflowService().updateConceptStateConversion((ConceptStateConversion)o);
 			} else if ( "org.openmrs.ConceptSynonym".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConceptSynonym((ConceptSynonym)o);
-				else Context.getConceptService().updateConceptSynonym((ConceptSynonym)o);
+				if ( !knownToExist ) Context.getConceptService().createConceptSynonym((ConceptSynonym)o, true);
+				else Context.getConceptService().updateConceptSynonym((ConceptSynonym)o, true);
 			} else if ( "org.openmrs.ConceptWord".equals(className) ) {
-				log.debug("UNABLE TO CREATE/UPDATE ConceptWord in Synchronization process - no service method exists");
-				isUpdated = false;
+				if ( !knownToExist ) Context.getConceptService().createConceptWord((ConceptWord)o, true);
+				else Context.getConceptService().updateConceptWord((ConceptWord)o, true);
 			} else if ( "org.openmrs.Drug".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createDrug((Drug)o);
-				else Context.getConceptService().updateDrug((Drug)o);
+				if ( !knownToExist ) Context.getConceptService().createDrug((Drug)o, true);
+				else Context.getConceptService().updateDrug((Drug)o, true);
 			} else if ( "org.openmrs.DrugIngredient".equals(className) ) {
 				log.debug("UNABLE TO CREATE/UPDATE DrugIngredient in Synchronization process - no service method exists");
 				isUpdated = false;
@@ -691,6 +691,10 @@ public class SyncUtil {
         if ( className.equals("Concept") ) {
             Concept concept = Context.getConceptService().getConceptByGuid(guid);
             if ( concept != null ) ret = concept.getName(Context.getLocale()).getName();
+        }
+        if ( className.equals("Drug") ) {
+            Drug drug = Context.getConceptService().getDrugByGuid(guid);
+            if ( drug != null ) ret = drug.getName();
         }
         if ( className.equals("Obs") ) {
             Obs obs = Context.getObsService().getObsByGuid(guid);

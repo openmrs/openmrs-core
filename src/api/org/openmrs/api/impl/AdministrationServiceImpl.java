@@ -397,10 +397,14 @@ public class AdministrationServiceImpl implements AdministrationService {
      * @throws APIException
      */
     public void createConceptClass(ConceptClass cc) throws APIException {
+    	this.createConceptClass(cc, false);
+    }
+    
+    public void createConceptClass(ConceptClass cc, boolean isForced) throws APIException {
         if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
             throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
         
-        Context.getConceptService().checkIfLocked();
+        if ( !isForced ) Context.getConceptService().checkIfLocked();
         
         getAdministrationDAO().createConceptClass(cc);
     }
@@ -411,10 +415,14 @@ public class AdministrationServiceImpl implements AdministrationService {
      * @throws APIException
      */
     public void updateConceptClass(ConceptClass cc) throws APIException {
+    	this.updateConceptClass(cc, false);
+    }
+    
+    public void updateConceptClass(ConceptClass cc, boolean isForced) throws APIException {
         if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
             throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
 
-        Context.getConceptService().checkIfLocked();
+        if ( !isForced ) Context.getConceptService().checkIfLocked();
         
         getAdministrationDAO().updateConceptClass(cc);
     }
@@ -425,10 +433,14 @@ public class AdministrationServiceImpl implements AdministrationService {
      * @throws APIException
      */
     public void deleteConceptClass(ConceptClass cc) throws APIException {
+    	this.deleteConceptClass(cc, false);
+    }
+    
+    public void deleteConceptClass(ConceptClass cc, boolean isForced) throws APIException {
         if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
             throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
 
-        Context.getConceptService().checkIfLocked();
+        if ( !isForced ) Context.getConceptService().checkIfLocked();
         
         getAdministrationDAO().deleteConceptClass(cc);
     }
@@ -439,10 +451,14 @@ public class AdministrationServiceImpl implements AdministrationService {
      * @throws APIException
      */
     public void createConceptDatatype(ConceptDatatype cd) throws APIException {
+    	this.createConceptDatatype(cd, false);
+    }
+    
+    public void createConceptDatatype(ConceptDatatype cd, boolean isForced) throws APIException {
         if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
             throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
 
-        Context.getConceptService().checkIfLocked();
+        if ( !isForced ) Context.getConceptService().checkIfLocked();
         
         getAdministrationDAO().createConceptDatatype(cd);
     }
@@ -453,10 +469,14 @@ public class AdministrationServiceImpl implements AdministrationService {
      * @throws APIException
      */
     public void updateConceptDatatype(ConceptDatatype cd) throws APIException {
+    	this.updateConceptDatatype(cd, false);
+    }
+    
+    public void updateConceptDatatype(ConceptDatatype cd, boolean isForced) throws APIException {
         if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
             throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
 
-        Context.getConceptService().checkIfLocked();
+        if ( !isForced ) Context.getConceptService().checkIfLocked();
         
         getAdministrationDAO().updateConceptDatatype(cd);
     }
@@ -467,10 +487,14 @@ public class AdministrationServiceImpl implements AdministrationService {
      * @throws APIException
      */
     public void deleteConceptDatatype(ConceptDatatype cd) throws APIException {
+    	this.deleteConceptDatatype(cd, false);
+    }
+    
+    public void deleteConceptDatatype(ConceptDatatype cd, boolean isForced) throws APIException {
         if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
             throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
 
-        Context.getConceptService().checkIfLocked();
+        if ( !isForced ) Context.getConceptService().checkIfLocked();
         
         getAdministrationDAO().deleteConceptDatatype(cd);
     }
