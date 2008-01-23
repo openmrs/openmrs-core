@@ -106,7 +106,7 @@ public class UserFormController extends PersonFormController {
 					errors.rejectValue("username", "error.username.taken");
 				
 			// check if password and password confirm are identical
-				String password = request.getParameter("password");
+				String password = request.getParameter("userFormPassword");
 				if (password == null || password.equals("XXXXXXXXXXXXXXX")) password = "";
 				String confirm = request.getParameter("confirm");
 				if (confirm == null || confirm.equals("XXXXXXXXXXXXXXX")) confirm = "";
@@ -177,7 +177,7 @@ public class UserFormController extends PersonFormController {
 			
 			UserService us = Context.getUserService();
 
-			String password = request.getParameter("password");
+			String password = request.getParameter("userFormPassword");
 			if (password == null || password.equals("XXXXXXXXXXXXXXX")) password = "";
 			
 			Map<String, String> properties = user.getUserProperties();

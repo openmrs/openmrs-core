@@ -14,31 +14,17 @@
 			<td><spring:message code="User.username"/>:</td>
 			<td><input type="text" name="uname" value="<request:parameter name="username" />" id="username" size="25" maxlength="50"/></td>
 		</tr>
-		<request:existsParameter name="forgotPassword" value="false">
-			<tr>
-				<td><spring:message code="User.password"/>:</td>
-				<td><input type="password" name="pw" value="" id="password" size="25" /></td>
-			</tr>
-			<tr>
-				<td></td>
-				<td><input type="checkbox" name="forgotPassword" value="true" id="forgotPassword" /><label for="forgotPassword"><spring:message code="User.password.forgot"/></label></td>
-			</tr>
-		</request:existsParameter>
-		<request:existsParameter name="forgotPassword">
-			<tr>
-				<td colspan="2">
-					<i><spring:message code="User.secretQuestion.prompt"/></i><br/>
-					<b><request:parameter name="secretQuestion"/></b>
-				</td>
-			</tr>
-			<tr>
-				<td align="left"><spring:message code="general.answer"/>:</td>
-				<td align="left"><input type="password" name="secretAnswer" value="" id="secretAnswer" size="25"></td>
-			</tr>
-		</request:existsParameter>
+		<tr>
+			<td><spring:message code="User.password"/>:</td>
+			<td><input type="password" name="pw" value="" id="password" size="25" /></td>
+		</tr>
 		<tr>
 			<td></td>
 			<td><input type="submit" value="<spring:message code="auth.login"/>" /></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td><a class="forgotPasswordLink" href="${pageContext.request.contextPath}/forgotPassword.form"><spring:message code="User.password.forgot"/></a></td>
 		</tr>
 	</table>
 	<br/>

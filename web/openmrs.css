@@ -1178,3 +1178,6 @@ table td#summaryHeaderPatientGender {
 	list-style-type: none;
 	padding: 0px;
 }
+.forgotPasswordLink {
+	font-size: small;
+}

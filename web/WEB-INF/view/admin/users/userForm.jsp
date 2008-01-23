@@ -32,7 +32,7 @@
 	<br />
 </spring:hasBindErrors>
 
-<form id="thisUserForm" method="post">
+<form id="thisUserForm" method="post" autocomplete="off">
 	<table>
 		
 		<spring:nestedPath path="user.names[0]">
@@ -72,22 +72,22 @@
 				<spring:bind path="user.username">
 					<input type="text" 
 							name="${status.expression}" 
-							id="username"
-							value="${status.value}" />
+							value="${status.value}" 
+							autocomplete="off" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
 		<c:if test="${modifyPasswords == true}">
 			<tr>
-				<td><spring:message code="User.password" /></td>
-				<td><input type="password" name="password" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" /> <i><spring:message code="User.password.description"/></i></td>
+				<td><spring:message code="User.usersPassword" /></td>
+				<td><input type="password" name="userFormPassword" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off"/> <i><spring:message code="User.password.description"/></i></td>
 	
 			</tr>
 			<tr>
 				<td><spring:message code="User.confirm" /></td>
 				<td>
-					<input type="password" name="confirm" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" />
+					<input type="password" name="confirm" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off" />
 					<i><spring:message code="User.confirm.description" /></i>
 				</td>
 			</tr>
@@ -122,7 +122,7 @@
 				</tr>
 				<tr>
 					<td><spring:message code="User.secretAnswer" /></td>
-					<td><input type="password" name="secretAnswer" size="50" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>"/> <i><spring:message code="general.optional"/></i></td>
+					<td><input type="password" autocomplete="off" name="secretAnswer" size="50" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>"/> <i><spring:message code="general.optional"/></i></td>
 				</tr>
 			</c:if>
 			<c:set var="INCLUDE_PERSON_GENDER" value="false"/>

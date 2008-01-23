@@ -141,6 +141,8 @@
 				<prop key="admin/maintenance/dataEntryStats.list">dataEntryStatsController</prop>
 				<prop key="admin/modules/module.list">moduleListController</prop>
 				<prop key="admin/modules/moduleProperties.form">modulePropertiesFormController</prop>
+				
+				<prop key="forgotPassword.form">forgotPasswordForm</prop>
 
 				<prop key="**/addressLayout.portlet">addressLayoutPortletController</prop>
 				<prop key="**/nameLayout.portlet">nameLayoutPortletController</prop>
@@ -1126,7 +1128,13 @@
 		<property name="formView"><value>/admin/modules/modulePropertiesForm</value></property>
 		<property name="successView"><value>moduleProperties.form</value></property>
 	</bean>
-
+	
+	<bean id="forgotPasswordForm"
+		class="org.openmrs.web.controller.ForgotPasswordFormController">
+		<property name="commandName"><value>forgotPassword</value></property>
+		<property name="formView"><value>/forgotPasswordForm</value></property>
+		<property name="successView"><value>forgotPassword.form</value></property>
+	</bean>
 	<!-- ======================================== -->
 
 

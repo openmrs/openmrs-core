@@ -303,7 +303,7 @@
 			<zipfileset dir="${mail.dir}" includes="*.jar" />
 			<zipfileset dir="${neal-reporting.dir}" includes="*.jar" />
 			<zipfileset dir="${saxon.dir}" includes="*.jar" />
-			<zipfileset dir="${spring.dir}" includes="*.jar" excludes="*Mock*.jar"/>
+			<zipfileset dir="${spring.dir}" includes="*.jar" excludes="*Test*.jar"/>
 			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
 			<zipfileset dir="${xerces.dir}" includes="*.jar" excludes="*Samples*.jar" />
