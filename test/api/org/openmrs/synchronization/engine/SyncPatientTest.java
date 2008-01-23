@@ -80,15 +80,12 @@ public class SyncPatientTest extends SyncBaseTest {
 		runSyncTest(new SyncTestHelper() {
 			int numberEnrolledBefore = 0;
 			Date dateEnrolled = new Date();
-			Program hivProgram = null;
-			ProgramWorkflow txStat = null;
-			ProgramWorkflowState curedState = null;
+			Program hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
+			ProgramWorkflow txStat = hivProgram.getWorkflowByName("TREATMENT STATUS");
+			ProgramWorkflowState curedState = txStat.getStateByName("PATIENT CURED");
 			public void runOnChild() {
 				Patient p = Context.getPatientService().getPatient(2);
 				numberEnrolledBefore = Context.getProgramWorkflowService().getPatientPrograms(p).size();
-				hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
-				txStat = hivProgram.getWorkflowByName("TREATMENT STATUS");
-				curedState = txStat.getStateByName("PATIENT CURED");
 				PatientProgram pp = Context.getProgramWorkflowService().enrollPatientInProgram(p, hivProgram, dateEnrolled, null);
 				Context.getProgramWorkflowService().changeToState(pp, txStat, curedState, dateEnrolled);
 			}
@@ -138,16 +135,14 @@ public class SyncPatientTest extends SyncBaseTest {
 			int numEncountersSoFar = 0;
 			Date dateOfNewEncounter = new Date();
 			Date anotherDate = new Date(System.currentTimeMillis() - 20000l);
-			Concept weight = null;
-			Concept reason = null;
-			Concept other = null;
-			Location loc = null;
+			
 			public void runOnChild() {
 				ConceptService cs = Context.getConceptService();
-				weight = cs.getConceptByName("WEIGHT");
-				reason = cs.getConceptByName("REASON ORDER STOPPED");
-				other = cs.getConceptByName("OTHER NON-CODED");
-				loc = Context.getEncounterService().getLocationByName("Someplace");
+				Concept weight = cs.getConceptByName("WEIGHT");
+				Concept reason = cs.getConceptByName("REASON ORDER STOPPED");
+				Concept other = cs.getConceptByName("OTHER NON-CODED");
+				Location loc = Context.getEncounterService().getLocationByName("Someplace");
+
 				User u = Context.getUserService().getUser(1);
 				Patient p = Context.getPatientService().getPatient(2);
 				numEncountersSoFar = Context.getEncounterService().getEncounters(p).size();
@@ -173,10 +168,17 @@ public class SyncPatientTest extends SyncBaseTest {
 				noEnc.setConcept(weight);
 				noEnc.setValueNumeric(12.3);
 				noEnc.setObsDatetime(anotherDate);
+				noEnc.setPerson(p);
+				noEnc.setLocation(loc);
 				Context.getObsService().createObs(noEnc);
 			}
 			
 			public void runOnParent() {
+				ConceptService cs = Context.getConceptService();
+				Concept weight = cs.getConceptByName("WEIGHT");
+				Concept reason = cs.getConceptByName("REASON ORDER STOPPED");
+				Concept other = cs.getConceptByName("OTHER NON-CODED");
+				Location loc = Context.getEncounterService().getLocationByName("Someplace");
 				Patient p = Context.getPatientService().getPatient(2);
 				Set<Encounter> encs = Context.getEncounterService().getEncounters(p);
 				assertEquals("Should now have one more encounter than before",

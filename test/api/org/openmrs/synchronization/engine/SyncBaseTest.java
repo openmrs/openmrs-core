@@ -37,8 +37,8 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 	}
 		
 	public void runSyncTest(SyncTestHelper testMethods) throws Exception {
+		deleteAllData();
 		Context.openSession();
-		
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
 		authenticate();

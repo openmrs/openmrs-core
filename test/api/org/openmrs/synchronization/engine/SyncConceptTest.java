@@ -14,7 +14,9 @@
 package org.openmrs.synchronization.engine;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -35,6 +37,25 @@ public class SyncConceptTest extends SyncBaseTest {
 	    return "org/openmrs/synchronization/engine/include/SyncCreateTest.xml";
     }
 
+	public void testAddNameToConcept() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			ConceptService cs = Context.getConceptService();
+			int numNamesBefore;
+			public void runOnChild() {
+				Concept wt = cs.getConceptByName("WEIGHT");
+				numNamesBefore = wt.getNames().size();
+				wt.addName(new ConceptName("POIDS", null, "Weight in french", Locale.FRENCH));
+				cs.updateConcept(wt);
+			}
+			public void runOnParent() {
+				Concept wt = cs.getConceptByName("WEIGHT");
+				assertNotNull(wt);
+				assertEquals("Should be one more name than before", numNamesBefore + 1, wt.getNames().size());
+				assertEquals("Incorrect french name", wt.getName(Locale.FRENCH).getName(), "POIDS");
+			}
+		});
+	}
+	
 	public void testCreateConcepts() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs;
@@ -49,7 +70,6 @@ public class SyncConceptTest extends SyncBaseTest {
 				cn.setPrecise(true);
 				cn.setLowAbsolute(0d);
 				cn.setHiCritical(100d);
-				cn.setConceptId(cs.getNextAvailableId());
 				cs.createConcept(cn);
 				
 				Concept coded = new Concept();
@@ -60,8 +80,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("OTHER NON-CODED")));
 				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("NONE")));
 				coded.addAnswer(new ConceptAnswer(cn));
-				coded.setConceptId(cs.getNextAvailableId());
-				cs.createConcept(cn);
+				cs.createConcept(coded);
 				
 				Concept set = new Concept();
 				set.addName(new ConceptName("A CONCEPT SET", "SET", "A set of concepts", Context.getLocale()));
@@ -72,7 +91,6 @@ public class SyncConceptTest extends SyncBaseTest {
 				cset.add(new ConceptSet(coded, 1d));
 				cset.add(new ConceptSet(cn, 2d));
 				set.setConceptSets(cset);
-				set.setConceptId(cs.getNextAvailableId());
 				cs.createConcept(set);
 			}
 			public void runOnParent() {

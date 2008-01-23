@@ -11,10 +11,12 @@
   <concept concept_id="9" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-01-14 18:08:14.0" version="" guid="27919181-144e-102b-8d9c-e44ed545d86c"/>
   <concept concept_id="10" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2008-01-14 18:08:14.0" version="" guid="9d053f97-159f-102b-8d9c-e44ed545d86c"/>
   <concept concept_id="11" retired="false" datatype_id="4" class_id="16" is_set="false" creator="1" date_created="2008-01-14 18:02:28.0" version="" guid="fafe83ae-15c5-102b-8d9c-e44ed545d86c"/>
-  <concept_answer concept_answer_id="1" concept_id="1" answer_concept="2" creator="1" date_created="2007-05-04 09:59:02.0"/> <!-- guid="27c58de9-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_answer concept_answer_id="2" concept_id="1" answer_concept="3" creator="1" date_created="2007-05-04 09:59:02.0"/> <!-- guid="27c5912d-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_answer concept_answer_id="3" concept_id="4" answer_concept="2" creator="1" date_created="2007-05-04 09:59:03.0"/> <!-- guid="27c59308-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_answer concept_answer_id="4" concept_id="4" answer_concept="3" creator="1" date_created="2007-05-04 09:59:03.0"/> <!-- guid="27c594e0-144e-102b-8d9c-e44ed545d86c" -->
+
+  <concept_answer concept_answer_id="1" concept_id="1" answer_concept="2" creator="1" date_created="2007-05-04 09:59:02.0" guid="27c58de9-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_answer concept_answer_id="2" concept_id="1" answer_concept="3" creator="1" date_created="2007-05-04 09:59:02.0" guid="27c5912d-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_answer concept_answer_id="3" concept_id="4" answer_concept="2" creator="1" date_created="2007-05-04 09:59:03.0" guid="27c59308-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_answer concept_answer_id="4" concept_id="4" answer_concept="3" creator="1" date_created="2007-05-04 09:59:03.0" guid="27c594e0-144e-102b-8d9c-e44ed545d86c"/>
+
   <concept_class concept_class_id="1" name="Test" description="Acq. during patient encounter (vitals, labs, etc.)" creator="1" date_created="2004-02-02 00:00:00.0" guid="27f7230a-144e-102b-8d9c-e44ed545d86c"/>
   <concept_class concept_class_id="2" name="Procedure" description="Describes a clinical procedure" creator="1" date_created="2004-03-02 00:00:00.0" guid="27f72d33-144e-102b-8d9c-e44ed545d86c"/>
   <concept_class concept_class_id="3" name="Drug" description="Drug" creator="1" date_created="2004-02-02 00:00:00.0" guid="27f72f3b-144e-102b-8d9c-e44ed545d86c"/>
@@ -33,6 +35,7 @@
   <concept_class concept_class_id="16" name="Program" description="A treatment program or study" creator="1" date_created="2008-01-14 18:01:12.0" guid="27f74806-144e-102b-8d9c-e44ed545d86c"/>
   <concept_class concept_class_id="17" name="Workflow" description="A workflow within a program" creator="1" date_created="2008-01-14 18:01:33.0" guid="27f749ef-144e-102b-8d9c-e44ed545d86c"/>
   <concept_class concept_class_id="18" name="State" description="A state within a workflow" creator="1" date_created="2008-01-14 18:01:48.0" guid="27f74beb-144e-102b-8d9c-e44ed545d86c"/>
+
   <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float (e.g., creatinine, weight)" creator="1" date_created="2004-02-02 00:00:00.0" guid="28225b03-144e-102b-8d9c-e44ed545d86c"/>
   <concept_datatype concept_datatype_id="2" name="Coded" hl7_abbreviation="CWE" description="Value determined by term dictionary lookup (i.e., term identifier)" creator="1" date_created="2004-02-02 00:00:00.0" guid="28225eb1-144e-102b-8d9c-e44ed545d86c"/>
   <concept_datatype concept_datatype_id="3" name="Text" hl7_abbreviation="ST" description="Free text" creator="1" date_created="2004-02-02 00:00:00.0" guid="282260c1-144e-102b-8d9c-e44ed545d86c"/>
@@ -44,47 +47,67 @@
   <concept_datatype concept_datatype_id="10" name="Boolean" hl7_abbreviation="BIT" description="Boolean value (yes/no, true/false)" creator="1" date_created="2004-08-26 00:00:00.0" guid="2822710b-144e-102b-8d9c-e44ed545d86c"/>
   <concept_datatype concept_datatype_id="11" name="Rule" hl7_abbreviation="ZZ" description="Value derived from other data" creator="1" date_created="2006-09-11 13:22:00.0" guid="28227302-144e-102b-8d9c-e44ed545d86c"/>
   <concept_datatype concept_datatype_id="12" name="Structured Numeric" hl7_abbreviation="SN" description="Complex numeric values possible (ie, &lt;5, 1-10, etc.)" creator="1" date_created="2005-08-06 00:00:00.0" guid="282274fc-144e-102b-8d9c-e44ed545d86c"/>
-  <concept_name concept_name_id="1" concept_id="1" name="CAUSE OF DEATH" short_name="" description="Describes a cause of death for a patient.  Coded answer." locale="en" creator="1" date_created="2007-05-04 09:59:01.0"/> <!-- guid="288e609a-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_name concept_name_id="2" concept_id="2" name="OTHER NON-CODED" short_name="" description="Non-coded answer to a coded question - allows other as a coded answer." locale="en" creator="1" date_created="2007-05-04 09:59:01.0"/> <!-- guid="288e6474-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_name concept_name_id="3" concept_id="3" name="NONE" short_name="" description="Generic descriptive answer." locale="en" creator="1" date_created="2007-05-04 09:59:02.0"/> <!-- guid="288e66b1-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_name concept_name_id="4" concept_id="4" name="REASON ORDER STOPPED" short_name="" description="Describes a reason for stopping an order.  Coded answer." locale="en" creator="1" date_created="2007-05-04 09:59:03.0"/> <!-- guid="288e68da-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_name concept_name_id="5" concept_id="5" name="HIV PROGRAM" short_name="" description="Program for finding/treating HIV" locale="en" creator="1" date_created="2008-01-14 18:02:28.0"/> <!-- guid="288e6b09-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_name concept_name_id="6" concept_id="6" name="TREATMENT STATUS" short_name="" description="Workflow within a program, indicating where the patient is in their course of treatment" locale="en" creator="1" date_created="2008-01-14 18:03:22.0"/> <!-- guid="288e6d26-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_name concept_name_id="7" concept_id="7" name="FOLLOWING" short_name="" description="A treatment status, indicating that the patient is being followed, but is not yet on treatment" locale="en" creator="1" date_created="2008-01-14 18:04:00.0"/> <!-- guid="288e6f42-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_name concept_name_id="8" concept_id="8" name="PATIENT CURED" short_name="" description="Indicates that the patient has been cured of the relevant disease" locale="en" creator="1" date_created="2008-01-14 18:04:55.0"/> <!-- guid="288e7168-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_name concept_name_id="9" concept_id="9" name="IBUPROFEN" short_name="" description="Used by athletes after sporting events" locale="en" creator="1" date_created="2008-01-14 18:08:14.0"/> <!-- guid="288e7391-144e-102b-8d9c-e44ed545d86c" -->
-  <concept_name concept_name_id="10" concept_id="10" name="WEIGHT" short_name="WT" description="Patient's weight in kilograms" locale="en" creator="1" date_created="2008-01-14 18:08:14.0"/> <!-- guid="456a3253-15a0-102b-8d9c-e44ed545d86c" -->
-  <concept_name concept_name_id="11" concept_id="11" name="TB PROGRAM" short_name="" description="Program for finding/treating tuberculosis" locale="en" creator="1" date_created="2008-01-14 18:02:28.0"/> <!-- guid="e449ee63-15c5-102b-8d9c-e44ed545d86c" -->  
+
+  <concept_name concept_name_id="1" concept_id="1" name="CAUSE OF DEATH" short_name="" description="Describes a cause of death for a patient.  Coded answer." locale="en" creator="1" date_created="2007-05-04 09:59:01.0" guid="288e609a-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_name concept_name_id="2" concept_id="2" name="OTHER NON-CODED" short_name="" description="Non-coded answer to a coded question - allows other as a coded answer." locale="en" creator="1" date_created="2007-05-04 09:59:01.0" guid="288e6474-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_name concept_name_id="3" concept_id="3" name="NONE" short_name="" description="Generic descriptive answer." locale="en" creator="1" date_created="2007-05-04 09:59:02.0" guid="288e66b1-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_name concept_name_id="4" concept_id="4" name="REASON ORDER STOPPED" short_name="" description="Describes a reason for stopping an order.  Coded answer." locale="en" creator="1" date_created="2007-05-04 09:59:03.0" guid="288e68da-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_name concept_name_id="5" concept_id="5" name="HIV PROGRAM" short_name="" description="Program for finding/treating HIV" locale="en" creator="1" date_created="2008-01-14 18:02:28.0" guid="288e6b09-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_name concept_name_id="6" concept_id="6" name="TREATMENT STATUS" short_name="" description="Workflow within a program, indicating where the patient is in their course of treatment" locale="en" creator="1" date_created="2008-01-14 18:03:22.0" guid="288e6d26-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_name concept_name_id="7" concept_id="7" name="FOLLOWING" short_name="" description="A treatment status, indicating that the patient is being followed, but is not yet on treatment" locale="en" creator="1" date_created="2008-01-14 18:04:00.0" guid="288e6f42-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_name concept_name_id="8" concept_id="8" name="PATIENT CURED" short_name="" description="Indicates that the patient has been cured of the relevant disease" locale="en" creator="1" date_created="2008-01-14 18:04:55.0" guid="288e7168-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_name concept_name_id="9" concept_id="9" name="IBUPROFEN" short_name="" description="Used by athletes after sporting events" locale="en" creator="1" date_created="2008-01-14 18:08:14.0" guid="288e7391-144e-102b-8d9c-e44ed545d86c"/>
+  <concept_name concept_name_id="10" concept_id="10" name="WEIGHT" short_name="WT" description="Patient's weight in kilograms" locale="en" creator="1" date_created="2008-01-14 18:08:14.0" guid="456a3253-15a0-102b-8d9c-e44ed545d86c"/>
+  <concept_name concept_name_id="11" concept_id="11" name="TB PROGRAM" short_name="" description="Program for finding/treating tuberculosis" locale="en" creator="1" date_created="2008-01-14 18:02:28.0" guid="e449ee63-15c5-102b-8d9c-e44ed545d86c"/>
+
   <concept_numeric concept_id="10" hi_absolute="250" low_absolute="0" units="kg" precise="1"/>
+
   <concept_set/>
+
   <concept_synonym/>
+
   <drug drug_id="1" concept_id="9" name="Advil" combination="false" dose_strength="200.0" maximum_daily_dose="1600.0" minimum_daily_dose="50.0" units="mg" creator="1" date_created="2008-01-14 18:09:57.0" voided="false" guid="29dde6a3-144e-102b-8d9c-e44ed545d86c"/>
+
   <drug_order/>
+
   <encounter encounter_id="1" patient_id="2" provider_id="1" location_id="2" encounter_datetime="1978-06-11 00:00:00.0" creator="1" date_created="2008-01-14 17:56:26.0" voided="0" guid="5afa93e5-19c2-102b-8d9c-e44ed545d86c"/>
+
   <encounter_type encounter_type_id="1" name="ADULTINITIAL" description="Outpatient Adult Initial Visit" creator="1" date_created="2005-02-24 00:00:00.0" guid="2a5cd0d5-144e-102b-8d9c-e44ed545d86c"/>
   <encounter_type encounter_type_id="2" name="ADULTRETURN" description="Outpatient Adult Return Visit" creator="1" date_created="2005-02-24 00:00:00.0" guid="2a5cd42e-144e-102b-8d9c-e44ed545d86c"/>
   <encounter_type encounter_type_id="3" name="PEDSINITIAL" description="Outpatient Pediatric Initial Visit" creator="1" date_created="2005-02-24 00:00:00.0" guid="2a5cd620-144e-102b-8d9c-e44ed545d86c"/>
   <encounter_type encounter_type_id="4" name="PEDSRETURN" description="Outpatient Pediatric Return Visit" creator="1" date_created="2005-02-24 00:00:00.0" guid="2a5cd7ea-144e-102b-8d9c-e44ed545d86c"/>
+
   <location location_id="1" name="Unknown Location" address1="" address2="" city_village="" state_province="" postal_code="" country="" creator="1" date_created="2005-09-22 00:00:00.0" guid="2d865af4-144e-102b-8d9c-e44ed545d86c"/>
   <location location_id="2" name="Someplace" description="Some random location" address1="" address2="" city_village="" state_province="" postal_code="" country="" latitude="" longitude="" creator="1" date_created="2008-01-14 17:54:35.0" guid="2d865f38-144e-102b-8d9c-e44ed545d86c"/>
+
   <obs obs_id="1" person_id="2" concept_id="10" encounter_id="1" obs_datetime="1978-04-11 00:00:00.0" location_id="2" value_numeric="12.3" creator="1" date_created="2008-01-14 17:56:26.0" voided="0" guid="d9dfb690-19c1-102b-8d9c-e44ed545d86c"/>
   <obs obs_id="2" person_id="2" concept_id="10" encounter_id="1" obs_datetime="1978-05-11 00:00:00.0" location_id="2" value_numeric="23.4" creator="1" date_created="2008-01-14 17:56:26.0" voided="0" guid="11ce07ae-19c2-102b-8d9c-e44ed545d86c"/>
   <obs obs_id="3" person_id="2" concept_id="10" encounter_id="1" obs_datetime="1978-06-11 00:00:00.0" location_id="2" value_numeric="34.5" creator="1" date_created="2008-01-14 17:56:26.0" voided="0" guid="1a9c0d7b-19c2-102b-8d9c-e44ed545d86c"/>
+
   <order_type order_type_id="1" name="Drug" description="A drug order" creator="1" date_created="2008-01-14 17:56:26.0" guid="2ef6da52-144e-102b-8d9c-e44ed545d86c"/>
+
   <orders/>
+
   <patient patient_id="2" creator="1" date_created="2008-01-14 17:56:26.0" voided="0"/>
   <patient patient_id="3" creator="1" date_created="2008-01-14 17:56:26.0" voided="0"/>
+
   <patient_identifier patient_id="2" identifier="ID1234" identifier_type="2" preferred="1" location_id="1" creator="1" date_created="2008-01-14 17:56:26.0" voided="0"/>
   <patient_identifier patient_id="3" identifier="ID4381924" identifier_type="2" preferred="1" location_id="1" creator="1" date_created="2008-01-14 17:56:26.0" voided="0"/>
   <patient_identifier_type patient_identifier_type_id="1" name="OpenMRS Identification Number" description="Unique number used in OpenMRS" format="" check_digit="true" creator="1" date_created="2005-09-22 00:00:00.0" required="false" guid="3010e3ee-144e-102b-8d9c-e44ed545d86c"/>
   <patient_identifier_type patient_identifier_type_id="2" name="Old Identification Number" description="Number given out prior to the OpenMRS system (No check digit)" format="" check_digit="false" creator="1" date_created="2005-09-22 00:00:00.0" required="false" guid="3010e86a-144e-102b-8d9c-e44ed545d86c"/>
+
   <patient_program patient_program_id="1" patient_id="3" program_id="1" date_enrolled="2006-04-11 00:00:00.0" creator="1" date_created="2008-01-14 17:56:26.0" voided="0" guid="0bb5846a-168d-102b-8d9c-e44ed545d86c"/>
+
   <patient_state patient_state_id="1" patient_program_id="1" state="1" start_date="2006-04-11 00:00:00.0" creator="1" date_created="2008-01-14 17:56:26.0" voided="0" guid="11d71368-168d-102b-8d9c-e44ed545d86c"/>
+
   <person person_id="1" gender="" dead="0" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" guid="31712910-144e-102b-8d9c-e44ed545d86c"/>
   <person person_id="2" gender="M" dead="0" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" guid="577d58db-15a5-102b-8d9c-e44ed545d86c"/>
   <person person_id="3" gender="F" dead="0" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" guid="196bef28-168c-102b-8d9c-e44ed545d86c"/>
+
   <person_address/>
+
   <person_attribute/>
+
   <person_attribute_type person_attribute_type_id="1" name="Race" description="Group of persons related by common descent or heredity" format="java.lang.String" searchable="0" creator="1" date_created="2007-05-04 09:59:23.0" guid="322aa53b-144e-102b-8d9c-e44ed545d86c"/>
   <person_attribute_type person_attribute_type_id="2" name="Birthplace" description="Location of persons birth" format="java.lang.String" searchable="0" creator="1" date_created="2007-05-04 09:59:23.0" guid="322aa923-144e-102b-8d9c-e44ed545d86c"/>
   <person_attribute_type person_attribute_type_id="3" name="Citizenship" description="Country of which this person is a member" format="java.lang.String" searchable="0" creator="1" date_created="2007-05-04 09:59:23.0" guid="322aab60-144e-102b-8d9c-e44ed545d86c"/>
@@ -92,9 +115,11 @@
   <person_attribute_type person_attribute_type_id="5" name="Civil Status" description="Marriage status of this person" format="org.openmrs.Concept" searchable="0" creator="1" date_created="2007-05-04 09:59:23.0" guid="322aafb8-144e-102b-8d9c-e44ed545d86c"/>
   <person_attribute_type person_attribute_type_id="6" name="Health District" description="District/region in which this patient&apos; home health center resides" format="java.lang.String" searchable="0" creator="1" date_created="2007-05-04 09:59:23.0" guid="322ab1f4-144e-102b-8d9c-e44ed545d86c"/>
   <person_attribute_type person_attribute_type_id="7" name="Health Center" description="Specific Location of this person&apos;s home health center." format="org.openmrs.Location" searchable="0" creator="1" date_created="2007-05-04 09:59:23.0" guid="322ab426-144e-102b-8d9c-e44ed545d86c"/>
+
   <person_name person_name_id="1" preferred="true" person_id="1" given_name="Super" middle_name="" family_name="User" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" guid="3272ce85-144e-102b-8d9c-e44ed545d86c"/>
   <person_name person_name_id="2" preferred="true" person_id="2" given_name="Clark" middle_name="" family_name="Kent" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" guid="5446aa86-15a6-102b-8d9c-e44ed545d86c"/>
   <person_name person_name_id="3" preferred="true" person_id="3" given_name="Lois" middle_name="" family_name="Lane" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" guid="2e1ada24-168c-102b-8d9c-e44ed545d86c"/>
+
   <privilege privilege="Add Concept Proposal" description="Able to add concept proposals to the system" guid="32afbf65-144e-102b-8d9c-e44ed545d86c"/>
   <privilege privilege="Add Concepts" description="Able to add concepts to the dictionary" guid="32afc3a3-144e-102b-8d9c-e44ed545d86c"/>
   <privilege privilege="Add Encounters" description="Able to add patient encounters" guid="32afc607-144e-102b-8d9c-e44ed545d86c"/>
@@ -180,28 +205,40 @@
   <privilege privilege="View Reports" description="Able to view reports" guid="32b0cc8b-144e-102b-8d9c-e44ed545d86c"/>
   <privilege privilege="View Unpublished Forms" description="Able to view and fill out unpublished forms" guid="32b0ce3f-144e-102b-8d9c-e44ed545d86c"/>
   <privilege privilege="View Users" description="Able to view users in OpenMRS" guid="32b0d006-144e-102b-8d9c-e44ed545d86c"/>
+
   <program program_id="1" concept_id="5" creator="1" date_created="2008-01-14 18:06:04.0" voided="false" guid="32eb8899-144e-102b-8d9c-e44ed545d86c"/>
+
   <program_workflow program_workflow_id="1" program_id="1" concept_id="6" creator="1" date_created="2008-01-14 18:06:04.0" voided="false" guid="3342178b-144e-102b-8d9c-e44ed545d86c"/>
+
   <program_workflow_state program_workflow_state_id="1" program_workflow_id="1" concept_id="7" initial="true" terminal="false" creator="1" date_created="2008-01-14 18:06:27.0" voided="false" guid="33807f36-144e-102b-8d9c-e44ed545d86c"/>
   <program_workflow_state program_workflow_state_id="2" program_workflow_id="1" concept_id="8" initial="false" terminal="true" creator="1" date_created="2008-01-14 18:06:27.0" voided="false" guid="33808343-144e-102b-8d9c-e44ed545d86c"/>
+
   <relationship/>
+
   <relationship_type relationship_type_id="1" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-05-04 09:59:22.0" guid="33da8d6d-144e-102b-8d9c-e44ed545d86c"/>
   <relationship_type relationship_type_id="2" a_is_to_b="Sibling" b_is_to_a="Sibling" preferred="0" weight="0" description="Relationship between brother/sister, brother/brother, and sister/sister" creator="1" date_created="2007-05-04 09:59:22.0" guid="33da91ca-144e-102b-8d9c-e44ed545d86c"/>
   <relationship_type relationship_type_id="3" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="Relationship from a mother/father to the child" creator="1" date_created="2007-05-04 09:59:22.0" guid="33da93dd-144e-102b-8d9c-e44ed545d86c"/>
   <relationship_type relationship_type_id="4" a_is_to_b="Aunt/Uncle" b_is_to_a="Niece/Nephew" preferred="0" weight="0" description="" creator="1" date_created="2007-05-04 09:59:22.0" guid="33da95d7-144e-102b-8d9c-e44ed545d86c"/>
+
   <role role="Anonymous" description="Privileges for non-authenticated users." guid="34b48ab4-144e-102b-8d9c-e44ed545d86c"/>
   <role role="Authenticated" description="Privileges gained once authentication has been established." guid="34b48e9c-144e-102b-8d9c-e44ed545d86c"/>
   <role role="Provider" description="All users with the &apos;Provider&apos; role will appear as options in the default Infopath " guid="34b490d6-144e-102b-8d9c-e44ed545d86c"/>
   <role role="System Developer" description="Developers of the OpenMRS .. have additional access to change fundamental structure of the database model." guid="34b49350-144e-102b-8d9c-e44ed545d86c"/>
+
   <role_privilege/>
+
   <role_role/>
+
   <user_role user_id="1" role="System Developer"/> <!-- guid="35a05ac6-144e-102b-8d9c-e44ed545d86c" -->
+
   <users user_id="1" system_id="admin" username="" password="4a1750c8607dfa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>  
+
   <field_type field_type_id="1" name="Concept" description="" is_set="false" creator="2" date_created="2005-02-22 12:43:00.0" guid="a4fb1158-fb9e-102a-b4cd-d5399a5cfee6"/>
   <field_type field_type_id="2" name="Database element" description="" is_set="false" creator="2" date_created="2005-02-22 12:43:00.0" guid="a4fb1503-fb9e-102a-b4cd-d5399a5cfee6"/>
   <field_type field_type_id="3" name="Set of Concepts" description="" is_set="true" creator="2" date_created="2005-02-22 12:43:00.0" guid="a4fb171e-fb9e-102a-b4cd-d5399a5cfee6"/>
   <field_type field_type_id="4" name="Miscellaneous Set" description="" is_set="true" creator="2" date_created="2005-02-22 12:43:00.0" guid="a4fb1920-fb9e-102a-b4cd-d5399a5cfee6"/>
   <field_type field_type_id="5" name="Section" description="" is_set="true" creator="4" date_created="2005-02-22 12:43:00.0" guid="a4fb1b25-fb9e-102a-b4cd-d5399a5cfee6"/>
+
   <form form_id="1" name="BASIC FORM" version="0.1" build="1" published="0" description="This form contains only the common/core elements needed for most forms" encounter_type="1" template="http://schema.pih.org/FormEntry/1" xslt="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 
 
@@ -1225,6 +1262,7 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 
 
 &lt;/xsl:stylesheet&gt;" creator="1" date_created="2006-07-18 11:02:38.0" changed_by="1" date_changed="2006-09-07 11:33:17.0" retired="false" retired_reason="" guid="a5ac33ec-fb9e-102a-b4cd-d5399a5cfee6"/>
+
   <field field_id="2" name="PATIENT" description="Patient section of form" field_type="5" table_name="" attribute_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:04:36.0" guid="a48e7497-fb9e-102a-b4cd-d5399a5cfee6"/>
   <field field_id="3" name="ENCOUNTER" description="Encounter section of form" field_type="5" table_name="" attribute_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:06:52.0" guid="a48e77ae-fb9e-102a-b4cd-d5399a5cfee6"/>
   <field field_id="5" name="OBS" description="Obs section of form" field_type="1" concept_id="1238" table_name="" attribute_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:13:57.0" changed_by="8" date_changed="2006-08-21 22:15:52.0" guid="a490a8f1-fb9e-102a-b4cd-d5399a5cfee6"/>
@@ -1246,6 +1284,7 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
   <field field_id="21" name="PROBLEM LIST" description="List of problems for a given patient visit." field_type="1" concept_id="1284" table_name="" attribute_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-26 05:34:03.0" guid="a490db75-fb9e-102a-b4cd-d5399a5cfee6"/>
   <field field_id="22" name="PROBLEM ADDED" description="Diagnosis or problem noted on a patient encounter." field_type="1" concept_id="6042" table_name="" attribute_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-26 05:34:22.0" guid="a490dd69-fb9e-102a-b4cd-d5399a5cfee6"/>
   <field field_id="23" name="PROBLEM RESOLVED" description="Diagnosis or problem noted on a patient encounter as being resolved." field_type="1" concept_id="6097" table_name="" attribute_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-26 05:34:25.0" guid="a490df4f-fb9e-102a-b4cd-d5399a5cfee6"/>
+
   <form_field form_field_id="1002" form_id="1" field_id="2" field_number="1" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:11:53.0" creator="1" date_created="2006-07-18 11:04:36.0" guid="a6463f57-fb9e-102a-b4cd-d5399a5cfee6"/>
   <form_field form_field_id="1003" form_id="1" field_id="3" field_number="2" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:12:05.0" creator="1" date_created="2006-07-18 11:06:52.0" guid="a646401b-fb9e-102a-b4cd-d5399a5cfee6"/>
   <form_field form_field_id="1005" form_id="1" field_id="5" field_number="3" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:13:59.0" creator="1" date_created="2006-07-18 11:13:57.0" guid="a64640de-fb9e-102a-b4cd-d5399a5cfee6"/>
