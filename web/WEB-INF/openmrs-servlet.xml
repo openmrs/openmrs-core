@@ -29,6 +29,7 @@
 				<!-- <ref bean="openSessionInViewInterceptor"/> -->
 			</list>
 		</property>
+		<property name="order"><value>99</value></property>
 		<property name="mappings">
 			<props>
 				<prop key="/admin/orders/order.list">orderList</prop>

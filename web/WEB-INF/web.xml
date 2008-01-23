@@ -10,9 +10,9 @@
 	<context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-        	classpath:applicationContext-service.xml
         	classpath*:/moduleApplicationContext.xml
         	classpath*:/webModuleApplicationContext.xml
+        	classpath:applicationContext-service.xml
         	/WEB-INF/openmrs-servlet.xml
         </param-value>
     </context-param>
