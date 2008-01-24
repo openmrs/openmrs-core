@@ -15,7 +15,6 @@ package org.openmrs.api;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,13 +100,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		// Add a new concept name
 		ConceptName conceptName = new ConceptName();
-		conceptName.setConcept(weight);
 		conceptName.setName("New Name");
 		conceptName.setShortName("New Short Name");		
 		conceptName.setDescription("New Description");
-		conceptName.setDateCreated(new Date());
 		conceptName.setLocale("en");
-		conceptName.setGuid(UUID.randomUUID().toString());
 		weight.addName(conceptName);
 		
 		// Update the concept
@@ -174,10 +170,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptAnswer conceptAnswer = new ConceptAnswer();
 		conceptAnswer.setConcept(civilStatus);
 		conceptAnswer.setAnswerConcept(unmarried);
-		conceptAnswer.setAnswerDrug(null);
-		conceptAnswer.setDateCreated(new Date());
-		conceptAnswer.setGuid(UUID.randomUUID().toString());	
-		
 		
 		// Add answer to concept
 		civilStatus.addAnswer(conceptAnswer);
@@ -247,9 +239,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptSynonym.setConcept(civilStatus);
 		conceptSynonym.setLocale("en");
 		conceptSynonym.setSynonym("MARITAL STATUS");
-		conceptSynonym.setDateCreated(new Date());
-		conceptSynonym.setGuid(UUID.randomUUID().toString());
-		
 		
 		civilStatus.addSynonym(conceptSynonym);
 		
@@ -323,17 +312,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept newConcept = new Concept();
 		newConcept.setConceptId(5283);
 		newConcept.setDatatype(numericDatatype);
-		newConcept.setAnswers(null);
-		newConcept.setSet(false);
-		newConcept.setGuid("922d768c-11ef-102b-a33e-82966c5b8177");
 		newConcept.setConceptClass(testClass);
 
 		ConceptName newName = new ConceptName();
-		newName.setConceptNameId(3387);
-		newName.setConcept(newConcept);
 		newName.setDescription("Zero to 100 scale commonly used for assessing terminally ill patients.");
 		newName.setName("KARNOFSKY PERFORMANCE SCORE");
-		newName.setGuid("92b1580d-11ef-102b-a33e-82966c5b8177");
 		newName.setLocale("en");
 		newConcept.addName(newName);
 		
@@ -344,7 +327,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptSet set = new ConceptSet();		
 		set.setConcept(newConcept);
 		set.setConceptSet(vitalSigns);
-		set.setGuid("92b1570d-11ef-102b-a33e-82966c5b8177");
 		set.setDateCreated(new Date());
 		set.setSortWeight(1.0);
 
