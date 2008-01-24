@@ -15,9 +15,7 @@
 			name="concept" 
 			column="concept_id" 
 			class="Concept" 
-			not-null="true" 
-			insert="false"
-			update="false"/>
+			not-null="true"/>
 		
 		<property name="synonym" type="java.lang.String" not-null="true" />
 		

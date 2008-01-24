@@ -15,13 +15,17 @@ package org.openmrs.api;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.api.context.Context;
 
@@ -103,7 +107,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptName.setDescription("New Description");
 		conceptName.setDateCreated(new Date());
 		conceptName.setLocale("en");
-		weight.getNames().add(conceptName);
+		conceptName.setGuid(UUID.randomUUID().toString());
+		weight.addName(conceptName);
 		
 		// Update the concept
 		conceptService.updateConcept(weight);
@@ -171,7 +176,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptAnswer.setAnswerConcept(unmarried);
 		conceptAnswer.setAnswerDrug(null);
 		conceptAnswer.setDateCreated(new Date());
-				
+		conceptAnswer.setGuid(UUID.randomUUID().toString());	
+		
+		
 		// Add answer to concept
 		civilStatus.addAnswer(conceptAnswer);
 		
@@ -241,6 +248,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptSynonym.setLocale("en");
 		conceptSynonym.setSynonym("MARITAL STATUS");
 		conceptSynonym.setDateCreated(new Date());
+		conceptSynonym.setGuid(UUID.randomUUID().toString());
+		
+		
 		civilStatus.addSynonym(conceptSynonym);
 		
 		// Update the concept
@@ -284,5 +294,78 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		           testConcept.getSynonyms().size()==0);		
 	}		
 	
+	
+	/**
+	 * Method to test concept set capaabilities.
+	 * 
+	 * @throws Exception
+	 */
+	public void testConceptSet() throws Exception { 
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// get the fifth concept in the dictionary
+		Concept vitalSigns = conceptService.getConcept(1114);
+		assertNotNull("VITAL SIGNS should not be null", vitalSigns);
+		assertTrue("VITAL SIGNS should be a set", vitalSigns.isSet());
+		
+		for (ConceptSet set : vitalSigns.getConceptSets()) { 			
+			log.info("Concept set: " + set.getConcept().getName());
+		}
+		
+		
+		//conceptService.getConceptSetByGuid(guid);
+		//conceptService.getConceptSets(c);
+		//conceptService.getConceptSetDerivedByGuid(guid);
+		
+		ConceptClass testClass = conceptService.getConceptClass(1);
+		ConceptDatatype numericDatatype = conceptService.getConceptDatatype(1);
+		
+		Concept newConcept = new Concept();
+		newConcept.setConceptId(5283);
+		newConcept.setDatatype(numericDatatype);
+		newConcept.setAnswers(null);
+		newConcept.setSet(false);
+		newConcept.setGuid("922d768c-11ef-102b-a33e-82966c5b8177");
+		newConcept.setConceptClass(testClass);
+
+		ConceptName newName = new ConceptName();
+		newName.setConceptNameId(3387);
+		newName.setConcept(newConcept);
+		newName.setDescription("Zero to 100 scale commonly used for assessing terminally ill patients.");
+		newName.setName("KARNOFSKY PERFORMANCE SCORE");
+		newName.setGuid("92b1580d-11ef-102b-a33e-82966c5b8177");
+		newName.setLocale("en");
+		newConcept.addName(newName);
+		
+		
+		conceptService.updateConcept(newConcept);
+		
+		
+		ConceptSet set = new ConceptSet();		
+		set.setConcept(newConcept);
+		set.setConceptSet(vitalSigns);
+		set.setGuid("92b1570d-11ef-102b-a33e-82966c5b8177");
+		set.setDateCreated(new Date());
+		set.setSortWeight(1.0);
+
+		vitalSigns.getConceptSets().add(set);
+		
+		conceptService.createConceptSet(set);
+
+		
+		//conceptService.createConceptSet(set, isForced);
+		
+		conceptService.createConceptSet(set);
+		
+		Concept testConcept = conceptService.getConcept(1114);		
+		for (ConceptSet testSet : testConcept.getConceptSets()) { 			
+			log.info("Concept set: " + testSet.getConcept().getName());
+		}		
+		
+		//	Check to make sure the concept answer was added successfully
+		assertTrue("Concept " + testConcept.getName() + " should have 5 concepts in its set", 
+		           testConcept.getConceptSets().size()==5);			
+		
+	}
 	
 }

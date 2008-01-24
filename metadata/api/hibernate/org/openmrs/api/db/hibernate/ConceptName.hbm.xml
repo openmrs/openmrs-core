@@ -15,9 +15,7 @@
 			name="concept"
 			column="concept_id"
 			class="Concept"
-			not-null="true"
-			insert="false"
-			update="false"/>
+			not-null="true"/>
 
 		<property name="name" type="java.lang.String" length="255" not-null="true" />
 		<property name="locale" type="java.lang.String" length="50" not-null="true"/>

@@ -12,7 +12,7 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	public static final long serialVersionUID = 3787L;
 
 	// Fields
-
+	private Integer conceptSetId;
 	private Concept concept;
 	private Concept conceptSet;
 	private Double sortWeight;
@@ -64,6 +64,26 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 
 	// Property accessors
 
+	
+	/**
+	 * Gets the concept set identifier. 
+	 *
+	 * @return	the concept set identifier
+	 */
+	public Integer getConceptSetId() { 
+		return conceptSetId;
+	}
+	
+	/**
+	 * Sets the concept set identifier.
+	 * 
+	 * @param conceptSetId
+	 * 				The concept set identifier.
+	 */
+	public void setConceptSetId(Integer conceptSetId) { 
+		this.conceptSetId = conceptSetId;
+	}
+	
 	/**
 	 * 
 	 */

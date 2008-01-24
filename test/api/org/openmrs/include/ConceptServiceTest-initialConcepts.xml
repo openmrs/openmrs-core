@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-
 	<!--  WEIGHT -->
 	<concept 
 		concept_id="1" 
@@ -8,6 +7,7 @@
 		date_created="2005-01-01 00:00:00.0" 
 		retired="false" 
 		is_set="false"
+		guid="9217888a-11ef-102b-a33e-82966c5b8177"
 	/>
 	<concept 
 		concept_id="2" 
@@ -15,6 +15,7 @@
 		date_created="2005-01-01 00:00:00.0" 
 		retired="false" 
 		is_set="false"
+		guid="92178c13-11ef-102b-a33e-82966c5b8177"
 	/>
 	<concept 
 		concept_id="3" 
@@ -22,6 +23,7 @@
 		date_created="2005-01-01 00:00:00.0" 
 		retired="false" 
 		is_set="false"
+		guid="9217ad7e-11ef-102b-a33e-82966c5b8177"
 	/>
 	<concept 
 		concept_id="4" 
@@ -29,6 +31,7 @@
 		date_created="2005-01-01 00:00:00.0" 
 		retired="false" 
 		is_set="false"
+		guid="9217aca4-11ef-102b-a33e-82966c5b8177"
 	/>
 	<concept 
 		concept_id="5" 
@@ -36,6 +39,7 @@
 		date_created="2005-01-01 00:00:00.0" 
 		retired="false" 
 		is_set="false"
+		guid="9217abc4-11ef-102b-a33e-82966c5b8177"
 	/>
 	<concept 
 		concept_id="6" 
@@ -43,9 +47,147 @@
 		date_created="2005-01-01 00:00:00.0" 
 		retired="false" 
 		is_set="false"
+		guid="9217a915-11ef-102b-a33e-82966c5b8177"
+	/>
+	<concept 
+		concept_id="1114"
+		retired="0"
+		short_name=""
+		datatype_id="4"
+		class_id="10"
+		is_set="1"
+		creator="2"
+		date_created="2004-08-12 00:00:00"
+		guid="921f6b4d-11ef-102b-a33e-82966c5b8177"
+	/>	
+	<concept 
+		concept_id="5087"
+		retired="0"
+		short_name="HR"
+		datatype_id="1"
+		class_id="1"
+		is_set="0"
+		creator="2"
+		date_created="2004-08-12 00:00:00"
+		guid="922c5aba-11ef-102b-a33e-82966c5b8177"
+	/>
+	<concept 
+		concept_id="5088"
+		retired="0"
+		short_name="TEMP (C)"
+		datatype_id="1"
+		class_id="1"
+		is_set="0"
+		creator="2"
+		date_created="2004-08-12 00:00:00"
+		guid="922c5b9a-11ef-102b-a33e-82966c5b8177"
+	/>
+	<concept 
+		concept_id="5089"
+		retired="0"
+		short_name="WT"
+		datatype_id="1"
+		class_id="1"
+		is_set="0"
+		creator="2"
+		date_created="2004-08-12 00:00:00"
+		guid="922c5d59-11ef-102b-a33e-82966c5b8177"
+	/>
+	<concept 
+		concept_id="5090"
+		retired="0"
+		short_name="HT"
+		datatype_id="1"
+		class_id="1"
+		is_set="0"
+		creator="2"
+		date_created="2004-08-12 00:00:00"
+		guid="922c59d5-11ef-102b-a33e-82966c5b8177"
 	/>
 	
-	
+	<concept_set 
+		concept_set_id="580"
+		concept_id="5087"
+		concept_set="1114"
+		sort_weight="6"
+		creator="2"
+		date_created="2005-12-15 13:26:49"
+		guid="92cc5718-11ef-102b-a33e-82966c5b8177"
+	/>	
+	<concept_set 
+		concept_set_id="582"
+		concept_id="5088"
+		concept_set="1114"
+		sort_weight="9"
+		creator="2"
+		date_created="2005-12-15 13:26:49"
+		guid="92cc5881-11ef-102b-a33e-82966c5b8177"
+	/>	
+	<concept_set 		
+		concept_set_id="584"
+		concept_id="5089"
+		concept_set="1114"
+		sort_weight="10"
+		creator="2"
+		date_created="2005-12-15 13:26:49"
+		guid="92cc6051-11ef-102b-a33e-82966c5b8177"
+	/>	
+	<concept_set 		
+		concept_set_id="586"
+		concept_id="5090"
+		concept_set="1114"
+		sort_weight="4"
+		creator="2"
+		date_created="2005-12-15 13:26:49"
+		guid="92cc61b9-11ef-102b-a33e-82966c5b8177"
+	/>	
+	<concept_name 
+		concept_name_id="8" 
+		concept_id="5087" 
+		name="PULSE" 
+		short_name=""
+		locale="en" 
+		description="" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+		guid="92b00095-11ef-102b-a33e-82966c5b8177"
+	/>	
+	<concept_name 
+		concept_name_id="9" 
+		concept_id="5088" 
+		name="TEMPERATURE (C)" 
+		short_name=""
+		locale="en" 
+		description="" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+		guid="92b00172-11ef-102b-a33e-82966c5b8177"
+	/>	
+	<concept_name 
+		concept_name_id="10" 
+		concept_id="5089" 
+		name="WEIGHT (KG)" 
+		short_name=""
+		locale="en" 
+		description="" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+		guid="92b00254-11ef-102b-a33e-82966c5b8177"
+	/>	
+	<concept_name 
+		concept_name_id="11" 
+		concept_id="5090" 
+		name="HEIGHT (CM)" 
+		short_name=""
+		locale="en" 
+		description="" 
+		creator="1" 
+		date_created="2005-01-01 00:00:00.0" 
+		guid="92b00334-11ef-102b-a33e-82966c5b8177"
+	/>	
+
+
+			
 	<concept_name 
 		concept_name_id="1" 
 		concept_id="1" 
@@ -54,6 +196,7 @@
 		description="English version of weight (measured in kilograms)" 
 		creator="1" 
 		date_created="2005-01-01 00:00:00.0"
+		guid="9217a838-11ef-102b-a33e-82966c5b8177"
 	/>
 	<concept_name 
 		concept_name_id="2" 
@@ -63,6 +206,7 @@
 		description="French version of weight (measured in kilograms)" 
 		creator="1" 
 		date_created="2005-01-01 00:00:00.0" 
+		guid="9217a761-11ef-102b-a33e-82966c5b8177"
 	/>
 	<concept_name 
 		concept_name_id="3" 
@@ -73,6 +217,7 @@
 		description="" 
 		creator="1" 
 		date_created="2005-01-01 00:00:00.0" 
+		guid="9217a687-11ef-102b-a33e-82966c5b8177"
 	/>
 	<concept_name 
 		concept_name_id="4" 
@@ -83,6 +228,7 @@
 		description="" 
 		creator="1" 
 		date_created="2005-01-01 00:00:00.0" 
+		guid="9217a543-11ef-102b-a33e-82966c5b8177"
 	/>	
 	<concept_name 
 		concept_name_id="5" 
@@ -93,6 +239,7 @@
 		description="" 
 		creator="1" 
 		date_created="2005-01-01 00:00:00.0" 
+		guid="92178e21-11ef-102b-a33e-82966c5b8177"
 	/>
 	<concept_name 
 		concept_name_id="6" 
@@ -103,6 +250,7 @@
 		description="" 
 		creator="1" 
 		date_created="2005-01-01 00:00:00.0" 
+		guid="9217906b-11ef-102b-a33e-82966c5b8177"
 	/>		
 	<concept_name 
 		concept_name_id="7" 
@@ -113,15 +261,15 @@
 		description="" 
 		creator="1" 
 		date_created="2005-01-01 00:00:00.0" 
+		guid="9217924f-11ef-102b-a33e-82966c5b8177"
 	/>	
-	
-	
 	<concept_answer
 		concept_answer_id="1" 
 		concept_id="2" 
 		answer_concept="3" 
 		creator="1" 
 		date_created="2005-01-01 00:00:00.0"
+		guid="921794be-11ef-102b-a33e-82966c5b8177"
 	/>
 	<concept_answer
 		concept_answer_id="2" 
@@ -129,6 +277,7 @@
 		answer_concept="4" 
 		creator="1" 
 		date_created="2005-01-01 00:00:00.0"
+		guid="9217969b-11ef-102b-a33e-82966c5b8177"
 	/>
 	<concept_answer
 		concept_answer_id="3" 
@@ -136,6 +285,7 @@
 		answer_concept="5" 
 		creator="1" 
 		date_created="2005-01-01 00:00:00.0"
+		guid="921797fb-11ef-102b-a33e-82966c5b8177"
 	/>
 	<!--  Removed so we can have a concept available to add 
 	<concept_answer
@@ -144,6 +294,7 @@
 		answer_concept="6" 
 		creator="1" 
 		date_created="2005-01-01 00:00:00.0"
+		guid="92179942-11ef-102b-a33e-82966c5b8177"
 	/>
 	-->
 	<concept_synonym 
@@ -153,6 +304,7 @@
 		locale="en"
 		creator="1"
 		date_created="2005-01-01 00:00:00.0"
+		guid="92179a8f-11ef-102b-a33e-82966c5b8177"
 	/>
 
 </dataset>

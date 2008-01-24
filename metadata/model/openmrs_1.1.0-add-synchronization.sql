@@ -194,6 +194,9 @@ CREATE PROCEDURE sync_setup_procedure()
 	ALTER TABLE `concept_synonym` ADD COLUMN `concept_synonym_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT FIRST;
 	ALTER TABLE `concept_synonym` ADD INDEX (`concept_id`);
 	ALTER TABLE `concept_synonym` DROP PRIMARY KEY, ADD PRIMARY KEY (`concept_synonym_id`);
+	ALTER TABLE `concept_set` ADD COLUMN `concept_set_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT FIRST;
+	ALTER TABLE `concept_set` ADD INDEX (`concept_id`);
+	ALTER TABLE `concept_set` DROP PRIMARY KEY, ADD PRIMARY KEY (`concept_set_id`);
 	
  END;
 //
