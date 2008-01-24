@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.serialization.FilePackage;
 import org.openmrs.serialization.IItem;
 import org.openmrs.serialization.Item;
@@ -29,7 +30,7 @@ import org.openmrs.synchronization.SyncItemState;
 /**
  * TODO: Describe test file
  */
-public class SyncRecordTest extends SyncBaseTest {
+public class SyncRecordTest extends BaseContextSensitiveTest  {
 
     /**
      * test serialization of syncRecord
@@ -76,15 +77,7 @@ public class SyncRecordTest extends SyncBaseTest {
         ((IItem) syncRecord2).save(record, top);
         List<SyncRecord> originals = new ArrayList<SyncRecord>();
         originals.add(syncRecord1);
-        originals.add(syncRecord2);
-
-        System.out.println("*** serialized state ***");
-        try {
-            System.out.println(record.toStringAsDocumentFragement());
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-            fail("Serialization failed with an exception: " + e.getMessage());
-        }
+        originals.add(syncRecord2);    
 
         // now Test deserialize - THIS DOES NOT WORK YET
         String textDes = record.toStringAsDocumentFragement();

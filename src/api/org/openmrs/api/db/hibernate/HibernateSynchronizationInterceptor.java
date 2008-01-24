@@ -976,7 +976,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         String ownerPropertyName = null; //this is the name of the property on owner object that contains the set
         for(String propName : propNames) {
         	Object propertyVal = data.getPropertyValue(owner,propName, org.hibernate.EntityMode.POJO);
-        	if (set.equals(propertyVal)) {
+        	//note: test both with equals() and == because PersistentSet.equals()
+        	//actually does not handle equality of two persistent sets well
+        	if (set == propertyVal || set.equals(propertyVal)) {
         		ownerPropertyName = propName;
         		break;
         	}

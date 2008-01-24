@@ -16,13 +16,14 @@ package org.openmrs.synchronization.engine;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
 
 /**
  * TODO: describe test file
  */
-public class SyncStrategyFileTest extends SyncBaseTest {
+public class SyncStrategyFileTest extends BaseContextSensitiveTest {
 
     protected SyncSource source = null;
 

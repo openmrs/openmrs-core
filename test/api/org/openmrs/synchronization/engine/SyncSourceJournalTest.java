@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.SyncItemState;
@@ -26,7 +27,7 @@ import org.openmrs.synchronization.SyncItemState;
 /**
  * TODO: describe file
  */
-public class SyncSourceJournalTest extends SyncBaseTest {
+public class SyncSourceJournalTest extends BaseContextSensitiveTest {
 
     /**
      * Auto generated method comment
