@@ -7,21 +7,18 @@
 
 	<class name="ConceptWord" table="concept_word">
 
-		<composite-id>
-			<key-many-to-one name="concept" column="concept_id"
-				class="Concept" />
-			<key-property name="word" type="java.lang.String" length="255" />
-			<key-property name="synonym" type="java.lang.String" length="255" />
-			<key-property name="locale" type="java.lang.String" length="255" />
-		</composite-id>
+		<id name="conceptWordId" type="java.lang.Integer" column="concept_word_id">
+			<generator class="native" />
+		</id>
+		
+		<property name="word" type="java.lang.String" length="255" />
+		<property name="synonym" type="java.lang.String" length="255" />
+		<property name="locale" type="java.lang.String" length="255" />
+
+		<many-to-one name="concept" column="concept_id" class="Concept" outer-join="true" />
 
 		<property name="guid" type="java.lang.String"
 			column="guid" length="36" />
-
-		<many-to-one name="concept" column="concept_id" class="Concept" 
-					 update="false" insert="false" 
-					 outer-join="true" />
 		
-	</class>
-	
+	</class>	
 </hibernate-mapping>

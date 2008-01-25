@@ -17,7 +17,7 @@ public class ConceptWord implements java.io.Serializable, Synchronizable,
 	public static final long serialVersionUID = 888677L;
 
 	// Fields
-
+	private Integer conceptWordId;
 	private Concept concept;
 	private String word;
 	private String synonym;
@@ -25,6 +25,16 @@ public class ConceptWord implements java.io.Serializable, Synchronizable,
 	private Double weight = 0.0;
 	private String guid;
     private transient String lastRecordGuid;
+    
+    
+    public Integer getConceptWordId(){ 
+    	return conceptWordId;
+    }
+    
+    public void setConceptWordId(Integer conceptWordId) { 
+    	this.conceptWordId = conceptWordId;
+    }
+    
     
     public String getLastRecordGuid() {
         return lastRecordGuid;

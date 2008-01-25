@@ -26,6 +26,7 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
+import org.openmrs.ConceptWord;
 import org.openmrs.api.context.Context;
 
 /**
@@ -349,5 +350,33 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		           testConcept.getConceptSets().size()==5);			
 		
 	}
+	
+	/**
+	 * Method to test concept set capaabilities.
+	 * 
+	 * @throws Exception
+	 */
+	public void testConceptWord() throws Exception { 
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		Concept concept = conceptService.getConcept(1114);
+
+		/*
+		ConceptWord conceptWord = new ConceptWord();
+		conceptWord.setConcept(concept);
+		conceptWord.setGuid("word");
+		conceptWord.setLocale("en");
+		conceptWord.setSynonym("synonym");
+		conceptWord.setWeight(1.0);
+		conceptWord.setWord("word");
+		*/
+		Context.getAdministrationService().updateConceptWord(concept);
+		
+		//conceptService.createConceptWord(conceptWord);
+		
+		
+		ConceptWord testWord = conceptService.getConceptWordByGuid("word");
+		log.info("Concept word: " + testWord);
+	}
+	
 	
 }
