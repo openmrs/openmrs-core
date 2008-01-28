@@ -32,5 +32,14 @@ public enum SyncStatusState {
     /**
      * Sync feature is disabled. No journalling of local changes will be performed.
      */
-    DISABLED,
+    DISABLED_SYNC_AND_HISTORY,
+    /**
+     * Sync feature is disabled. Will still journal local changes, in case we want to turn sync back on again.
+     */
+    DISABLED_SYNC,
+    /**
+     * Sync feature is disabled. Will still journal local changes, in case we want to turn sync back on again.
+     * major difference with prior enum item is that this is automatically triggered by system when there's an error 
+     */
+    DISABLED_SYNC_DUE_TO_ERROR
     }

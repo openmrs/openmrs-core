@@ -43,15 +43,24 @@ public class SynchronizationTask implements Schedulable {
 			log.debug("Synchronizing data to a server.");
 			if (Context.isAuthenticated() == false && serverId > 0)
 				authenticate();
-			RemoteServer server = Context.getSynchronizationService().getRemoteServer(serverId);
-			if ( server != null ) {
-				SyncTransmissionResponse response = SyncUtilTransmission.doFullSynchronize(server);
-				try {
-					response.createFile(true, SyncConstants.DIR_JOURNAL);
-				} catch ( Exception e ) {
-    				log.error("Unable to create file to store SyncTransmissionResponse: " + response.getFileName(), e);
-    				e.printStackTrace();
+			
+			// test to see if sync is enabled before trying to sync
+			SyncStatusState syncStatus = SyncUtil.getSyncStatus();
+			
+			if ( syncStatus.equals(SyncStatusState.ENABLED_CONTINUE_ON_ERROR) || syncStatus.equals(SyncStatusState.ENABLED_STRICT) ) {
+			
+				RemoteServer server = Context.getSynchronizationService().getRemoteServer(serverId);
+				if ( server != null ) {
+					SyncTransmissionResponse response = SyncUtilTransmission.doFullSynchronize(server);
+					try {
+						response.createFile(true, SyncConstants.DIR_JOURNAL);
+					} catch ( Exception e ) {
+	    				log.error("Unable to create file to store SyncTransmissionResponse: " + response.getFileName(), e);
+	    				e.printStackTrace();
+					}
 				}
+			} else {
+				log.info("Not going to sync because Syncing is not ENABLED");
 			}
 		} catch (Exception e) {
 			log.error("Scheduler error while trying to synchronize data. Will retry per schedule.", e);

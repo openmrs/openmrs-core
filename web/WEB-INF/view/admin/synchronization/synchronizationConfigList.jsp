@@ -35,7 +35,7 @@
 			<a href="javascript://" onclick="hideDiv('advanced');showDiv('general');"><spring:message code="Synchronization.config.menu.general" /></a>
 
 			<!-- display advanced only if sync is enabled -->
-			<c:if test="${localServerSyncStatusValue!='DISABLED'}">			
+			<c:if test="${localServerSyncStatusValue == 'ENABLED_STRICT' || localServerSyncStatusValue == 'ENABLED_CONTINUE_ON_ERROR'}">			
 				  | <a href="javascript://" onclick="hideDiv('general');showDiv('advanced');"><spring:message code="Synchronization.config.menu.advanced" /></a>
 			</c:if>
 		</td>
@@ -49,9 +49,9 @@
 		<table id="syncStatus" cellpadding="10" cellspacing="0">
 			<thead>
 				<tr>
-					<th style="background-color: #eef3ff; font-weight: bold;">Property Name</th>
-					<th style="background-color: #eef3ff; font-weight: bold;">Value</th>
-					<th style="background-color: #eef3ff; font-weight: bold;">Additional Information</th>
+					<th style="background-color: #eef3ff; font-weight: bold;"><spring:message code="SynchronizationConfig.property.name"/></th>
+					<th style="background-color: #eef3ff; font-weight: bold;"><spring:message code="SynchronizationConfig.property.value"/></th>
+					<th style="background-color: #eef3ff; font-weight: bold;"><spring:message code="SynchronizationConfig.property.comments"/></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -217,7 +217,7 @@
 					<tr>
 						<td colspan="3">
 							<br>
-							<c:if test="${localServerSyncStatusValue!='DISABLED'}">
+							<c:if test="${localServerSyncStatusValue == 'ENABLED_STRICT' || localServerSyncStatusValue == 'ENABLED_CONTINUE_ON_ERROR'}">			
 								<a href="synchronizationConfigServer.form?type=CHILD"><img src="${pageContext.request.contextPath}/images/add.gif" style="margin-bottom: -3px;" border="0" /></a>
 								<a href="synchronizationConfigServer.form?type=CHILD"><spring:message code="SynchronizationConfig.server.config.child" /></a>
 								<c:if test="${empty parent}">

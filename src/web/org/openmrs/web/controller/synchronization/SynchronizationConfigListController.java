@@ -42,6 +42,7 @@ import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.serialization.TimestampNormalizer;
+import org.openmrs.synchronization.SyncStatusState;
 import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncUtilTransmission;

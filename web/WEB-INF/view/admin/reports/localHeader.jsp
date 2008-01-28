@@ -2,6 +2,7 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
+	<%--
 	<openmrs:hasPrivilege privilege="Add Reports,Edit Reports,Delete Reports,View Reports">
 		<li <c:if test="<%= request.getRequestURI().contains("/reportList") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/reports/report.list">
@@ -16,6 +17,7 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	--%>
 	<openmrs:hasPrivilege privilege="Add Data Exports,Edit Data Exports,Delete Data Exports,View Data Exports">
 		<li <c:if test="<%= request.getRequestURI().contains("dataExport") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/reports/dataExport.list">

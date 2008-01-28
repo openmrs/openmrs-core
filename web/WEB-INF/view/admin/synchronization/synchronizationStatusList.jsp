@@ -128,7 +128,7 @@
 					<td valign="top">
 						<form method="post">
 							<input type="button" onClick="syncToParent();" id="webExportButton" value='<spring:message code="SynchronizationStatus.createWebTx"/>'
-							<c:if test="${empty parent}">disabled</c:if> />
+							<c:if test="${empty parent || syncStatus == 'DISABLED_SYNC_DUE_TO_ERROR' || syncStatus == 'DISABLED_SYNC_AND_HISTORY' || syncStatus == 'DISABLED_SYNC'}">disabled</c:if> />
 							<input type="hidden" name="action" value="createWebTx"/>
 						</form>
 					</td>
@@ -136,6 +136,9 @@
 					<td valign="top">
 						<c:if test="${empty parent}">
 							<span class="error"><i><spring:message code="SynchronizationStatus.export.viaWeb.enable" /></i></span>
+						</c:if>
+						<c:if test="${syncStatus == 'DISABLED_SYNC_AND_HISTORY' || syncStatus == 'DISABLED_SYNC'}">
+							<span class="error"><i><spring:message code="SynchronizationStatus.export.viaWeb.enableSync" /></i></span>
 						</c:if>
 						<span id="syncInfo"></span><br><span id="syncDetails" style="display:none;"></span>
 					</td>
@@ -154,7 +157,8 @@
 					</td>
 					<td valign="top">
 						<form method="post" onSubmit="return doSubmitFileExport();">
-							<input type="submit" id="fileExportSubmit" value='<spring:message code="SynchronizationStatus.createTx"/>'/>
+							<input type="submit" id="fileExportSubmit" value='<spring:message code="SynchronizationStatus.createTx"/>'
+							<c:if test="${syncStatus == 'DISABLED_SYNC_DUE_TO_ERROR' || syncStatus == 'DISABLED_SYNC_AND_HISTORY' || syncStatus == 'DISABLED_SYNC'}">disabled</c:if> />
 							<input type="hidden" name="action" value="createTx"/>
 						</form>
 					</td>
@@ -166,7 +170,8 @@
 							<spring:message code="SynchronizationStatus.responsePrompt" />
 							<input type="file" name="syncResponseFile" value="" />
 							<input type="hidden" name="action" value="uploadResponse" />
-							<input type="submit" id="uploadResponseSubmit" value="<spring:message code="SynchronizationStatus.uploadResponse" />" id="submitButton" />
+							<input type="submit" id="uploadResponseSubmit" value="<spring:message code="SynchronizationStatus.uploadResponse" />" id="submitButton"
+							<c:if test="${syncStatus == 'DISABLED_SYNC_DUE_TO_ERROR' || syncStatus == 'DISABLED_SYNC_AND_HISTORY' || syncStatus == 'DISABLED_SYNC'}">disabled</c:if> />
 							<br>
 							<span style="color: #bbbbbb; position: relative; top: 3px;"><i><spring:message code="SynchronizationStatus.export.viaDisk.instructions" /></i></span>
 						</form>

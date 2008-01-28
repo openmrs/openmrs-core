@@ -323,18 +323,24 @@ public interface AdministrationService {
 	 */
 	public void updateConceptWord(Concept concept) throws APIException;
 
+	public void updateConceptWord(Concept concept, boolean isForced) throws APIException;
+
 	/**
 	 * Iterates over all concepts calling updateConceptWord(concept)
 	 * @throws APIException
 	 */
 	public void updateConceptWords() throws APIException;
-	
+
+	public void updateConceptWords(boolean isForced) throws APIException;
+
 	/**
 	 * Iterates over all concepts with conceptIds between <code>conceptIdStart</code>
 	 * and <code>conceptIdEnd</code> (inclusive) calling updateConceptWord(concept)
 	 * @throws APIException
 	 */
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
+
+	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd, boolean isForced) throws APIException;
 
 	/**
 	 * Updates the concept set derived business table for this concept (bursting the concept sets) 

@@ -76,7 +76,7 @@ public class ConceptServiceImpl implements ConceptService {
 
 		log.info(authUserId + "|" + concept.getConceptId());
 
-		getConceptDAO().createConcept(concept);
+		getConceptDAO().createConcept(concept, isForced);
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class ConceptServiceImpl implements ConceptService {
 
 		log.info(authUserId + "|" + concept.getConceptId()+ "|numeric");
 
-		getConceptDAO().createConcept(concept);
+		getConceptDAO().createConcept(concept, isForced);
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class ConceptServiceImpl implements ConceptService {
 
 		log.info(authUserId + "|" + concept.getConceptId().toString());
 
-		getConceptDAO().updateConcept(concept);
+		getConceptDAO().updateConcept(concept, isForced);
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class ConceptServiceImpl implements ConceptService {
 
 		log.info(authUserId + "|" + concept.getConceptId().toString());
 
-		getConceptDAO().updateConcept(concept);
+		getConceptDAO().updateConcept(concept, isForced);
 	}
 
 	/**
@@ -239,7 +239,7 @@ public class ConceptServiceImpl implements ConceptService {
 
 		log.info(authUserId + "|" + concept.getConceptId().toString());
 
-		getConceptDAO().voidConcept(concept, reason);
+		getConceptDAO().voidConcept(concept, reason, isForced);
 	}
 
 	/**

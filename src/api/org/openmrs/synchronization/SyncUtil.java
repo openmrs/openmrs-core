@@ -654,7 +654,7 @@ public class SyncUtil {
      */
     public static SyncStatusState getSyncStatus() {
         
-        SyncStatusState state = SyncStatusState.DISABLED; //default to disabled
+        SyncStatusState state = SyncStatusState.DISABLED_SYNC; //default to disabled
         Properties properties = Context.getRuntimeProperties();
         String prop = properties.getProperty(SyncConstants.RUNTIMEPROPERTY_SYNC_STATUS, null);
         if (prop != null) {

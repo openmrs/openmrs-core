@@ -31,12 +31,16 @@ public interface ConceptDAO {
 	 * @param Concept to be created
 	 */
 	public void createConcept(Concept concept);
-	
+
+	public void createConcept(Concept concept, boolean isForced);
+
 	/**
 	 * @param Numeric concept to be created
 	 */
 	public void createConcept(ConceptNumeric concept);
-	
+
+	public void createConcept(ConceptNumeric concept, boolean isForced);
+
 	/**
 	 * Gets the concept with the given internal identifier
 	 * @param conceptId
@@ -64,13 +68,17 @@ public interface ConceptDAO {
 	 * @param concept to be updated
 	 */
 	public void updateConcept(Concept concept);
-	
+
+	public void updateConcept(Concept concept, boolean isForced);
+
 	/**
 	 * Update the given numeric concept
 	 * @param numeric concept to be updated
 	 */
 	public void updateConcept(ConceptNumeric concept);
-	
+
+	public void updateConcept(ConceptNumeric concept, boolean isForced);
+
 	/**
 	 * Delete the given concept
 	 * 
@@ -79,25 +87,27 @@ public interface ConceptDAO {
 	 * @param Concept to be deleted
 	 */
 	public void deleteConcept(Concept concept);
-	
+
 	/**
 	 * Voiding a concept essentially removes it from circulation
 	 * @param Concept concept
 	 * @param String reason
 	 */
 	public void voidConcept(Concept concept, String reason);
-	
+
+	public void voidConcept(Concept concept, String reason, boolean isForced);
+
 	/**
 	 * @param Drug to be created
 	 */
 	public void createDrug(Drug drug);
-	
+
 	/**
 	 * Update the given drug
 	 * @param drug to be updated
 	 */
 	public void updateDrug(Drug drug);
-	
+
 	/**
 	 * Return a list of concepts matching "name" anywhere in the name
 	 * @param name
@@ -351,7 +361,7 @@ public interface ConceptDAO {
 	 * @param ConceptAnswer to be created
 	 */
 	public void createConceptAnswer(ConceptAnswer conceptAnswer);
-	
+
 	/**
 	 * Update the given conceptAnswer
 	 * @param conceptAnswer to be updated
@@ -362,7 +372,7 @@ public interface ConceptDAO {
 	 * @param ConceptName to be created
 	 */
 	public void createConceptName(ConceptName conceptName);
-	
+
 	/**
 	 * Update the given conceptName
 	 * @param conceptName to be updated
@@ -373,7 +383,7 @@ public interface ConceptDAO {
 	 * @param ConceptSet to be created
 	 */
 	public void createConceptSet(ConceptSet conceptSet);
-	
+
 	/**
 	 * Update the given conceptSet
 	 * @param conceptSet to be updated
@@ -384,7 +394,7 @@ public interface ConceptDAO {
 	 * @param ConceptSource to be created
 	 */
 	public void createConceptSource(ConceptSource conceptSource);
-	
+
 	/**
 	 * Update the given conceptSource
 	 * @param conceptSource to be updated
@@ -395,7 +405,7 @@ public interface ConceptDAO {
 	 * @param ConceptSynonym to be created
 	 */
 	public void createConceptSynonym(ConceptSynonym conceptSynonym);
-	
+
 	/**
 	 * Update the given conceptSynonym
 	 * @param conceptSynonym to be updated
@@ -406,13 +416,13 @@ public interface ConceptDAO {
 	 * @param ConceptWord to be created
 	 */
 	public void createConceptWord(ConceptWord conceptWord);
-	
+
 	/**
 	 * Update the given conceptWord
 	 * @param conceptWord to be updated
 	 */
 	public void updateConceptWord(ConceptWord conceptWord);
-    
+
     /**
      * @see org.openmrs.api.ConceptService#getConceptGuids() 
      */

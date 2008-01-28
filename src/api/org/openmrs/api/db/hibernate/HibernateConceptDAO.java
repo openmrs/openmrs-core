@@ -71,22 +71,30 @@ public class HibernateConceptDAO implements
 	 * @see org.openmrs.api.db.ConceptService#createConcept(org.openmrs.Concept)
 	 */
 	public void createConcept(Concept concept) throws DAOException {
+		this.createConcept(concept, false);
+	}
+
+	public void createConcept(Concept concept, boolean isForced) throws DAOException {
 		modifyCollections(concept);
 
 		sessionFactory.getCurrentSession().save(concept);
 		
-		Context.getAdministrationService().updateConceptWord(concept);
+		Context.getAdministrationService().updateConceptWord(concept, isForced);
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptService#createConcept(org.openmrs.ConceptNumeric)
 	 */
 	public void createConcept(ConceptNumeric concept) throws DAOException {
+		this.createConcept(concept, false);
+	}
+	
+	public void createConcept(ConceptNumeric concept, boolean isForced) throws DAOException {
 		modifyCollections(concept);
 		
 		sessionFactory.getCurrentSession().save(concept);
 		
-		Context.getAdministrationService().updateConceptWord(concept);
+		Context.getAdministrationService().updateConceptWord(concept, isForced);
 	}
 
 	/**
@@ -149,13 +157,17 @@ public class HibernateConceptDAO implements
 	 * @see org.openmrs.api.db.ConceptService#updateConcept(org.openmrs.Concept)
 	 */
 	public void updateConcept(Concept concept) {
+		this.updateConcept(concept, false);
+	}
+
+	public void updateConcept(Concept concept, boolean isForced) {
 		
 		if (concept.getConceptId() == null)
 			createConcept(concept);
 		else {
 			modifyCollections(concept);
 			sessionFactory.getCurrentSession().merge(concept);
-			Context.getAdministrationService().updateConceptWord(concept);
+			Context.getAdministrationService().updateConceptWord(concept, isForced);
 		}
 	}
 	
@@ -163,6 +175,10 @@ public class HibernateConceptDAO implements
 	 * @see org.openmrs.api.db.ConceptService#updateConcept(org.openmrs.ConceptNumeric)
 	 */
 	public void updateConcept(ConceptNumeric concept) {
+		this.updateConcept(concept, false);
+	}
+	
+	public void updateConcept(ConceptNumeric concept, boolean isForced) {
 		
 		if (concept.getConceptId() == null)
 			createConcept(concept);
@@ -184,7 +200,7 @@ public class HibernateConceptDAO implements
 				log.error("after error after updating concept");
 			}
 			
-			Context.getAdministrationService().updateConceptWord(concept);
+			Context.getAdministrationService().updateConceptWord(concept, isForced);
 		}
 	}
 	
@@ -282,8 +298,12 @@ public class HibernateConceptDAO implements
 	 * @see org.openmrs.api.db.ConceptService#voidConcept(org.openmrs.Concept, java.lang.String)
 	 */
 	public void voidConcept(Concept concept, String reason) {
+		this.voidConcept(concept, reason, false);
+	}
+	
+	public void voidConcept(Concept concept, String reason, boolean isForced) {
 		concept.setRetired(false);
-		updateConcept(concept);
+		updateConcept(concept, isForced);
 	}
 
 	/**

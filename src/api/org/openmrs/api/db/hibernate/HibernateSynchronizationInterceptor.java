@@ -182,7 +182,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             log.debug("afterTransactionBegin: " + tx + " deactivated: " + deactivated.get());
 
        //explicitely bailout if sync is disabled
-       if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
+       if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return;
 
         if(syncRecordHolder.get() != null ) {
             log.warn("Replacing existing SyncRecord in SyncRecord holder");
@@ -205,7 +205,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
         
         try {
 	        //explicitely bailout if sync is disabled
-	        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
+	        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return;
 	        
 	        // If synchronization is NOT deactivated
 	        if (deactivated.get() == null) {
@@ -273,7 +273,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             log.debug("afterTransactionCompletion: " + tx + " committed: " + tx.wasCommitted()+ " rolledback: " + tx.wasRolledBack() + " deactivated: " + deactivated.get());
 
         //explicitely bailout if sync is disabled
-        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return;
         
         // clean out SyncRecord in case of rollback:
         syncRecordHolder.remove();
@@ -306,7 +306,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     	    log.debug("onSave: " + state.toString());
         
         //explicitely bailout if sync is disabled
-        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return false;
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return false;
 
         //first see if entity should be written to the journal at all
         if (!this.shouldSynchronize(entity)){
@@ -349,7 +349,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     	    log.debug("onFlushDirty: " + entity.getClass().getName());
 
         //explicitely bailout if sync is disabled
-        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return false;
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return false;
         
         //first see if entity should be written to the journal at all
         if (!this.shouldSynchronize(entity)){
@@ -393,7 +393,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             log.debug("postFlush called.");
 
         //explicitely bailout if sync is disabled
-        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return;
 
         //clear the holder
         pendingFlushHolder.remove();
@@ -418,7 +418,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             log.debug("onPrepareStatement. sql: " + sql);
 
         //explicitely bailout if sync is disabled
-        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return sql;
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return sql;
         
         return sql;
     }
@@ -438,7 +438,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     	}
     	
         //explicitely bailout if sync is disabled
-        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return;
     	
     	//this.processPersistentSet((PersistentSet)collection,key, "remove");
     }
@@ -458,7 +458,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     	}
 
         //explicitely bailout if sync is disabled
-        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return;
 
     	if (!(collection instanceof org.hibernate.collection.PersistentSet)) {
     		log.info("Cannot process collection that is not instance of PersistentSet, collection type was:" + 
@@ -485,7 +485,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     	}
 
         //explicitely bailout if sync is disabled
-        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return;
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return;
     	
     	if (!(collection instanceof org.hibernate.collection.PersistentSet)) {
     		log.info("Cannot process collection that is not instance of PersistentSet, collection type was:" + 
@@ -591,17 +591,17 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                     values.put(idPropertyName, new PropertyClassValue(id.getClass().getName(), id.toString()));
             	}
             }
-                        
+            
             /*
              * Loop through all the properties/values and put in a hash for duplicate removal
              */
             for (int i = 0; i < types.length; i++) {
                 String typeName = types[i].getName();                
-                if (log.isDebugEnabled())
-                    log.debug("Processing, type: " + typeName + " Field: " + propertyNames[i]);
+                //if (log.isDebugEnabled())
+                    log.warn("Processing, type: " + typeName + " Field: " + propertyNames[i]);
 
                 if (propertyNames[i].equals(idPropertyName) && log.isInfoEnabled())
-                    log.info(infoMsg + ", Id for this class: " + idPropertyName + " , value:" + currentState[i]);
+                    log.warn(infoMsg + ", Id for this class: " + idPropertyName + " , value:" + currentState[i]);
 
                 /*
                  * If:
@@ -629,8 +629,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                 			|| ("personId".equals(idPropertyName) && "userId".equals(propertyNames[i]))
                 			|| transientProps.contains(propertyNames[i])
                 			) {
-                        if (log.isInfoEnabled())
-                            log.info("Skipping property (" + propertyNames[i] + ") because it's either the primary key or it's transient.");
+                        //if (log.isInfoEnabled())
+                            log.warn("Skipping property (" + propertyNames[i] + ") because it's either the primary key or it's transient.");
 
                 	} else {
 
@@ -652,6 +652,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
                                 if(log.isWarnEnabled())
                                     log.warn("Attempted to package/serialize child object, but child object was not yet initialized (and thus was null)");
     	                        if ( types[i].getReturnedClass().equals(User.class) ) {
+    	                        	//Wait - do we still need to do this, now that we have sync bidirectional?
+    	                        	//If User objects are sync'ing, then why can't these just be guids?
                                     //IS THIS RELIABLE??!?
     	                        	log.warn("SUBSTITUTED AUTHENTICATED USER FOR ACTUAL USER");
     	                        	childGuid = Context.getAuthenticatedUser().getGuid();
@@ -806,7 +808,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
      */
     protected boolean shouldSynchronize(Object entity) {
         
-        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED) return false;
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return false;
         
         //Synchronizable *only*.
         if (!(entity instanceof Synchronizable)) {

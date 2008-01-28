@@ -577,10 +577,14 @@ public class AdministrationServiceImpl implements AdministrationService {
      * @throws APIException
      */
     public void updateConceptWord(Concept concept) throws APIException {
+    	this.updateConceptWord(concept, false);
+    }
+    
+    public void updateConceptWord(Concept concept, boolean isForced) throws APIException {
         if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
             throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
 
-        Context.getConceptService().checkIfLocked();
+        if ( !isForced ) Context.getConceptService().checkIfLocked();
         
         getAdministrationDAO().updateConceptWord(concept);
     }
@@ -590,10 +594,14 @@ public class AdministrationServiceImpl implements AdministrationService {
      * @throws APIException
      */
     public void updateConceptWords() throws APIException {
+    	this.updateConceptWords(false);
+    }
+    
+    public void updateConceptWords(boolean isForced) throws APIException {
         if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
             throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
 
-        Context.getConceptService().checkIfLocked();
+        if ( !isForced ) Context.getConceptService().checkIfLocked();
         
         int count = 0;
         for (Concept concept : Context.getConceptService().getConceptsByName("")) {
@@ -612,10 +620,14 @@ public class AdministrationServiceImpl implements AdministrationService {
      * @throws APIException
      */
     public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
+    	this.updateConceptWords(conceptIdStart, conceptIdEnd, false);
+    }
+    
+    public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd, boolean isForced) throws APIException {
         if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
             throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
         
-        Context.getConceptService().checkIfLocked();
+        if ( !isForced ) Context.getConceptService().checkIfLocked();
         
         Integer i = conceptIdStart;
         ConceptService cs = Context.getConceptService();
