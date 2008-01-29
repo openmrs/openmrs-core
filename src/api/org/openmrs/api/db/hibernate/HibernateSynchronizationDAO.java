@@ -13,6 +13,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.sql.Blob;
@@ -509,9 +511,9 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             out.println("/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;");
             out.println("");
         }
-        
         try {
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/" + schema, "test", "test");
+            //Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/" + schema, "test", "test");
+        	Connection conn = sessionFactory.getCurrentSession().connection();
             try {
                 Statement st = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 
@@ -587,9 +589,23 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
                                         out.print(rs.getDouble(i));
                                         break;
                                     case Types.BLOB:
+                                    case Types.VARBINARY:
+                                    case Types.LONGVARBINARY:
                                         Blob blob = rs.getBlob(i);
-                                        throw new RuntimeException("TODO: handle Blobs");
-                                        //break;
+                                        out.print("'");
+                                        InputStream in = blob.getBinaryStream();
+                                        while (true) {
+                                        	int b = in.read();
+                                        	if (b < 0)
+                                        		break;
+                                        	char c = (char) b;
+                                        	if (c == '\'')
+                                        		out.print("\'");
+                                        	else
+                                        		out.print(c);
+                                        }
+                                        out.print("'");
+                                        break;
                                     case Types.CLOB:
                                         //Reader r = rs.getClob(i).getCharacterStream();
                                         out.print("'");
@@ -604,7 +620,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
                                         break;
                                     default:
                                         // when it comes time to look at BLOBs, look here: http://www.wave2.org/svnweb/Wave2%20Repository/view%2Fbinarystor%2Ftrunk%2Fsrc%2Fjava%2Forg%2Fbinarystor%2Fmysql/MySQLDump.java
-                                        throw new RuntimeException("TODO: " + md.getColumnTypeName(i));
+                                        throw new RuntimeException("TODO: handle type code " + md.getColumnType(i) + " (name " + md.getColumnTypeName(i) + ")");
                                     }
                                 }
                                 //out.print("'" + data[i].toString().replaceAll("\n","\\\\n").replaceAll("'","\\\\'") + "'");
@@ -629,6 +645,24 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             out.println("update global_property set property_value = '" + guidForChild + "' where property = '" + SyncConstants.SERVER_GUID + "';");
             out.println("update global_property set property_value = '" + thisServerGuid + "' where property = '" + SyncConstants.PARENT_GUID + "';");
             
+            {
+            	// TODO: Write a footer to undo the following two lines
+                // out.println("/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;");
+                // out.println("/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;");
+            	// Maybe start from this as an example: 
+            	// /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+            	// /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+            	// /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+            	// /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+            	// /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+            	// /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+            	// /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+            	// /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+            }
+            
+        } catch (IOException ex) {
+        	log.error("IOException", ex);
+        	
         } catch (SQLException ex) {
             log.error("SQLException", ex);
         }

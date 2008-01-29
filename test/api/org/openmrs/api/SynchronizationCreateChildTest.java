@@ -20,7 +20,12 @@ public class SynchronizationCreateChildTest extends BaseContextSensitiveTest {
         authenticate();
     }
     
-    public void testCreateDatabaseForChild() throws Exception {
+    @Override
+    public Boolean useInMemoryDatabase() {
+    	return false;
+    }
+
+	public void testCreateDatabaseForChild() throws Exception {
         assertTrue(Context.isAuthenticated());
         SynchronizationService syncService = Context.getSynchronizationService();
         syncService.createDatabaseForChild(null, System.out);
