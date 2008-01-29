@@ -163,7 +163,7 @@ public class SyncPatientTest extends SyncBaseTest {
 				enc.addObs(o1);
 				enc.addObs(o2);
 				Context.getEncounterService().createEncounter(enc);
-				
+	
 				Obs noEnc = new Obs();
 				noEnc.setConcept(weight);
 				noEnc.setValueNumeric(12.3);

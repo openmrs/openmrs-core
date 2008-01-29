@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openmrs.BaseContextSensitiveTest;
+import org.openmrs.LoginCredential;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -103,7 +104,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("There needs to be a user with username 'admin' in the database", u);
 		
 		us.changePassword("test", "test2");
+		LoginCredential lc = us.getLoginCredential(u);
+		assertTrue("Initial password change failed", lc.checkPassword("test2"));
 		us.changePassword("test2", "test");
+		lc = us.getLoginCredential(u);
+		assertTrue("Second password change failed", lc.checkPassword("test"));
 	}
 	
 	/**

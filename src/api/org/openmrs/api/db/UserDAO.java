@@ -177,10 +177,28 @@ public interface UserDAO {
      */
     public User getUserByGuid(String guid);
     
+    /**
+     * @param user
+     * @return The login credentials for a specified user.
+     */
     public LoginCredential getLoginCredential(User user);
     
+    /**
+     * Auto generated method comment
+     * 
+     * @param guid
+     * @return
+     */
     public LoginCredential getLoginCredentialByGuid(String guid);
     
+    /**
+     * Updates a user's login credentials.
+     * 
+     * Note that there is no createLoginCredential(LoginCredential) method.
+     * Login credentials are dependent on a User already existing.
+     * 
+     * @param credential
+     */
     public void updateLoginCredential(LoginCredential credential);
 
 }

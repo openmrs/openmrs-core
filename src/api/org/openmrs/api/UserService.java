@@ -7,6 +7,7 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -198,7 +199,7 @@ public interface UserService {
 	 * @param pw2 new password
 	 * @throws APIException
 	 */
-	@Authorized({"Edit Users"})
+	@Authorized({OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS})
 	public void changePassword(User u, String pw) throws APIException;
 
 	/**

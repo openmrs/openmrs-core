@@ -11,27 +11,22 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.HSQLDialect;
 import org.openmrs.LoginCredential;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
-import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class HibernateUserDAO implements
@@ -306,7 +301,7 @@ public class HibernateUserDAO implements
     private void updateUserPassword(String newHashedPassword, String salt, Integer changedBy, Date dateChanged, Integer userIdToChange) {
     	User changeForUser = getUser(userIdToChange);
     	if (changeForUser == null)
-    		throw new DAOException("Couldn't find user to set password for");
+    		throw new DAOException("Couldn't find user to set password for userId=" + userIdToChange);
     	User changedByUser = getUser(changedBy);
     	LoginCredential credentials = new LoginCredential();
     	credentials.setUserId(userIdToChange);
