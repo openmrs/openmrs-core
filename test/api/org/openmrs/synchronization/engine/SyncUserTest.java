@@ -15,12 +15,14 @@ package org.openmrs.synchronization.engine;
 
 import java.util.Date;
 
+import org.openmrs.LoginCredential;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -50,6 +52,33 @@ public class SyncUserTest extends SyncBaseTest {
 				assertNotNull("User not created", u);
 				assertEquals("Failed to create person name", u.getPersonName().getGivenName(), "Darius");
 				assertEquals("Failed to assign roles", u.getRoles().size(), 2);
+			}
+		});
+	}
+	
+	public void testChangePassword() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			UserService us = Context.getUserService();
+			String newPassword;
+			String newSalt;
+			public void runOnChild() {
+				User u = us.getUser(1);
+				System.out.println("password was " + us.getLoginCredential(u).getHashedPassword());
+				us.changePassword(u, "newPassword");
+				newPassword = us.getLoginCredential(u).getHashedPassword();
+				newSalt= us.getLoginCredential(u).getSalt();
+			}
+			public void runOnParent() {
+				User u = us.getUser(1);
+				LoginCredential newCred = us.getLoginCredential(u);
+				System.out.println("on parent " + us.getLoginCredential(u).getHashedPassword());
+				assertEquals(newPassword, newCred.getHashedPassword());
+				assertEquals(newSalt, newCred.getSalt());
+				try {
+					Context.authenticate(u.getUsername(), "newPassword");
+				} catch (ContextAuthenticationException e) {
+					assertTrue(false);
+				}
 			}
 		});
 	}

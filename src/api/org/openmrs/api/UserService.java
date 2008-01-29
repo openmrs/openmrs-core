@@ -2,6 +2,7 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.openmrs.LoginCredential;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -289,5 +290,18 @@ public interface UserService {
 	 * @return new system id
 	 */
 	String generateSystemId();
+	
+	@Transactional(readOnly=true)
+	@Authorized({"View Login Credentials"})
+	public LoginCredential getLoginCredential(User user);
+
+	@Transactional(readOnly=true)
+	@Authorized({"View Login Credentials"})
+	public LoginCredential getLoginCredentialByGuid(String guid);
+	
+	@Transactional
+	@Authorized({"Edit Login Credentials"})
+	public void updateLoginCredential(LoginCredential credential);
+
 
 }

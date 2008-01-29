@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.LoginCredential;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -452,4 +453,26 @@ public class UserServiceImpl implements UserService {
     public User getUserByGuid(String guid) throws APIException {
 		return getUserDAO().getUserByGuid(guid);
     }
+
+	/**
+     * @see org.openmrs.api.UserService#getLoginCredential(org.openmrs.User)
+     */
+    public LoginCredential getLoginCredential(User user) {
+	    return getUserDAO().getLoginCredential(user);
+    }
+
+	/**
+     * @see org.openmrs.api.UserService#getLoginCredentialByGuid(java.lang.String)
+     */
+    public LoginCredential getLoginCredentialByGuid(String guid) {
+	    return getUserDAO().getLoginCredentialByGuid(guid);
+    }
+
+	/**
+     * @see org.openmrs.api.UserService#updateLoginCredential(org.openmrs.LoginCredential)
+     */
+    public void updateLoginCredential(LoginCredential credential) {
+	    getUserDAO().updateLoginCredential(credential);
+    }
+    
 }

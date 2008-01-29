@@ -260,7 +260,6 @@ public class ConceptFormController extends SimpleFormController {
 				try {
 					if (concept.getConceptId() == null) {
 						isNew = true;
-						concept.setConceptId(cs.getNextAvailableId());
 						if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Numeric")) {
 							ConceptNumeric cn = getConceptNumeric(concept, request);
 							cs.createConcept(cn);

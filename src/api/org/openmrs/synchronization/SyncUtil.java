@@ -48,6 +48,7 @@ import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Location;
+import org.openmrs.LoginCredential;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.OrderType;
@@ -239,6 +240,7 @@ public class SyncUtil {
 		else if ( "org.openmrs.FormField".equals(className) ) o = (Object)(Context.getFormService().getFormFieldByGuid(guid));
 		else if ( "org.openmrs.GlobalProperty".equals(className) ) o = (Object)(Context.getAdministrationService().getGlobalPropertyByGuid(guid));
 		else if ( "org.openmrs.Location".equals(className) ) o = (Object)(Context.getEncounterService().getLocationByGuid(guid));
+		else if ( "org.openmrs.LoginCredential".equals(className) ) o = (Object)(Context.getUserService().getLoginCredentialByGuid(guid));
 		else if ( "org.openmrs.MimeType".equals(className) ) o = (Object)(Context.getObsService().getMimeTypeByGuid(guid));
 		else if ( "org.openmrs.Obs".equals(className) ) o = (Object)(Context.getObsService().getObsByGuid(guid));
 		else if ( "org.openmrs.Order".equals(className) ) o = (Object)(Context.getOrderService().getOrderByGuid(guid));
@@ -483,13 +485,17 @@ public class SyncUtil {
 			} else if ( "org.openmrs.ComplexObs".equals(className) ) {
 				log.debug("UNABLE TO CREATE/UPDATE ComplexObs in Synchronization process - no service method exists");
 				isUpdated = false;
-			} else if ( "org.openmrs.Concept".equals(className) ) { 
+			} else if ( "org.openmrs.Concept".equals(className) ) {
+				/*
 				if ( !knownToExist ) {
 					Integer id = Context.getConceptService().getNextAvailableId();
 					((Concept)o).setConceptId(id);
 					Context.getConceptService().createConcept((Concept)o, true);
 				}
 				else Context.getConceptService().updateConcept((Concept)o, true);
+				*/
+				if ( !knownToExist ) Context.getConceptService().createConcept((Concept) o);
+				else Context.getConceptService().updateConcept((Concept) o);
 			} else if ( "org.openmrs.ConceptAnswer".equals(className) ) {
 				if ( !knownToExist ) Context.getConceptService().createConceptAnswer((ConceptAnswer)o, true);
 				else Context.getConceptService().updateConceptAnswer((ConceptAnswer)o, true);
@@ -565,6 +571,8 @@ public class SyncUtil {
 			} else if ( "org.openmrs.Location".equals(className) ) { 
 				if ( !knownToExist ) Context.getAdministrationService().createLocation((Location)o);
 				else Context.getAdministrationService().updateLocation((Location)o);
+			} else if ( "org.openmrs.LoginCredential".equals(className) ) {
+				Context.getUserService().updateLoginCredential((LoginCredential)o); 
 			} else if ( "org.openmrs.MimeType".equals(className) ) {
 				if ( !knownToExist ) Context.getAdministrationService().createMimeType((MimeType)o);
 				else Context.getAdministrationService().updateMimeType((MimeType)o);

@@ -392,28 +392,9 @@ public abstract class BaseContextSensitiveTest extends
 		if (useInMemoryDatabase() == false) 
 			throw new Exception("You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
 		
-		// we only want to add columns once. Hsql won't roll back "alter table" 
-		// commands
-		if (columnsAdded == false) {
-			Connection connection = getConnection();
-			
-			// add the password and salt columns to the users table
-			// because they are not in the hibernate mapping files
-			String sql = "alter table users add column password varchar(255)";
-			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.execute();
-			ps.close();
-			sql = "alter table users add column salt varchar(255)";
-			ps = connection.prepareStatement(sql);
-			ps.execute();
-			ps.close();
-		   
-	        columnsAdded  = true;
-		}
-		
 		executeInitialDataSet();
 	}
-	
+
 	/**
 	 * Convenience method to run the initial data set
 	 * 

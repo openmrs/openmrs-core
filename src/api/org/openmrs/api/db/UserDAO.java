@@ -2,6 +2,7 @@ package org.openmrs.api.db;
 
 import java.util.List;
 
+import org.openmrs.LoginCredential;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -175,5 +176,11 @@ public interface UserDAO {
      * @return
      */
     public User getUserByGuid(String guid);
+    
+    public LoginCredential getLoginCredential(User user);
+    
+    public LoginCredential getLoginCredentialByGuid(String guid);
+    
+    public void updateLoginCredential(LoginCredential credential);
 
 }

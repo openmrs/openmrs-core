@@ -39,7 +39,6 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 	public void runSyncTest(SyncTestHelper testMethods) throws Exception {
 		deleteAllData();
 		Context.openSession();
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
 		authenticate();
 
@@ -54,7 +53,6 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 			assertFalse("No changes found (i.e. sync records size is 0)", true);
 		
 		deleteAllData();
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
 		executeDataSet("org/openmrs/synchronization/engine/include/SyncRemoteChildServer.xml");
 		RemoteServer origin = Context.getSynchronizationService().getRemoteServer(1);

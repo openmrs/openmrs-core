@@ -488,6 +488,7 @@ public interface ConceptService {
 
 	@Transactional(readOnly=true)
 	@Authorized({"View Concepts"})
+	@Deprecated
 	public Integer getNextAvailableId();
 
 	@Transactional(readOnly=true)

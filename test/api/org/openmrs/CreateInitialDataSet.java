@@ -44,8 +44,12 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
         initialDataSet.addTable("users", "SELECT * FROM users WHERE user_id = 1");
         initialDataSet.addTable("role", "SELECT * FROM role WHERE role = 'System Developer'");
         initialDataSet.addTable("user_role", "SELECT * FROM user_role WHERE user_id = 1");
+        initialDataSet.addTable("form", "SELECT * FROM form WHERE form_id = 1");
+        initialDataSet.addTable("field", "SELECT * FROM field WHERE field_id in (SELECT field_id FROM form_field WHERE form_id = 1)");
+        initialDataSet.addTable("form_field", "SELECT * FROM form_field WHERE form_id = 1");
+        initialDataSet.addTable("field_type", "SELECT * FROM field_type");
         
-        FlatXmlDataSet.write(initialDataSet, new FileOutputStream("test/api/" + INITIAL_XML_DATASET_PACKAGE_PATH));
+        FlatXmlDataSet.write(initialDataSet, new FileOutputStream("test/api/" + INITIAL_XML_DATASET_PACKAGE_PATH + ".dj"));
 
         // full database export
         //IDataSet fullDataSet = connection.createDataSet();

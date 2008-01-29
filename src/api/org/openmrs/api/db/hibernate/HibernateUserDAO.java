@@ -20,6 +20,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
+import org.openmrs.LoginCredential;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -30,6 +31,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
+import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class HibernateUserDAO implements
@@ -68,14 +70,11 @@ public class HibernateUserDAO implements
 			sessionFactory.getCurrentSession().merge(user);
 		}
 		
-		//update the new user with the password
-		String salt = Security.getRandomToken();
-		String hashedPassword = Security.encodeString(password + salt);
-		
-		updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user.getUserId());
-			
+		// update the new user with the password
+		changePassword(user, password);
+
 		return user;
-	}
+	}	
 
 	public User createUser(User user) {
 		sessionFactory.getCurrentSession().save(user);
@@ -291,155 +290,65 @@ public class HibernateUserDAO implements
 		log.debug("updating password");
 		//update the user with the new password
 		String salt = Security.getRandomToken();
-		String newPassword = Security.encodeString(pw + salt);
+		String newHashedPassword = Security.encodeString(pw + salt);
 		
-		updateUserPassword(newPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
+		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
 		
 	}
 
 	/**
-	 * We have to change the password manually because we don't store the password and salt on
-	 * the user
-	 * 
-	 * @param newPassword
+	 * @param newHashedPassword
 	 * @param salt
 	 * @param userId
 	 * @param date
 	 * @param userId2
 	 */
-    private void updateUserPassword(String newPassword, String salt, Integer changedBy, Date dateChanged, Integer userIdToChange) {
-		try {
-			PreparedStatement ps = getUpdateUserPasswordStatement();
-			
-			if (ps != null) {
-				ps.setString(1, newPassword);
-				ps.setString(2, salt);
-				ps.setInt(3, changedBy);
-				ps.setDate(4, new java.sql.Date(dateChanged.getTime()));
-				ps.setInt(5, userIdToChange);
-				
-				ps.executeUpdate();
-			}
-		}
-		catch (SQLException e) {
-			log.warn("SQL Exception while running user-password-update ", e);
-		}
-		
-		sessionFactory.getCurrentSession().flush();
-	}
-	
-	/**
-	 * Return or create the prepared statement for use when updating a user's password
-	 * 
-	 * Will return null on error
-	 * 
-	 * @return PreparedStatement that can be executed
-	 */
-	@SuppressWarnings("deprecation")
-    private PreparedStatement getUpdateUserPasswordStatement() {
-		// get the straight up jdbc database connection
-		// TODO address this depreciation warning
-		Connection connection = sessionFactory.getCurrentSession().connection();
-		
-		String sql = "UPDATE users SET `password` = ?, `salt` = ?, `changed_by` = ?, `date_changed` = ? WHERE `user_id` = ?";
-		
-		// if we're in a junit test, we're probably using hsql...and hsql
-		// does not like the backtick.  Replace the backtick with the hsql
-		// escape character -- the double quote (or nothing).
-		Dialect dialect = HibernateUtil.getDialect(sessionFactory);
-		if (HSQLDialect.class.getName().equals(dialect.getClass().getName()))
-			sql = sql.replace("`", "");
-		
-		PreparedStatement updateUserPreparedStatement = null;
-		try {
-			// create the prepared statement
-			updateUserPreparedStatement = connection.prepareStatement(sql);
-		}
-		catch (SQLException e) {
-			log.warn("SQL Exception while trying to create the user-password-update statement", e);
-		}
-		
-		return updateUserPreparedStatement;
-	}
+    private void updateUserPassword(String newHashedPassword, String salt, Integer changedBy, Date dateChanged, Integer userIdToChange) {
+    	User changeForUser = getUser(userIdToChange);
+    	if (changeForUser == null)
+    		throw new DAOException("Couldn't find user to set password for");
+    	User changedByUser = getUser(changedBy);
+    	LoginCredential credentials = new LoginCredential();
+    	credentials.setUserId(userIdToChange);
+    	credentials.setHashedPassword(newHashedPassword);
+    	credentials.setSalt(salt);
+    	credentials.setChangedBy(changedByUser);
+    	credentials.setDateChanged(dateChanged);
+    	sessionFactory.getCurrentSession().merge(credentials);
+	}	
 
 	/**
 	 * @see org.openmrs.api.db.UserDAO#changePassword(java.lang.String, java.lang.String)
 	 */
 	public void changePassword(String pw, String pw2) throws DAOException {
 		User u = Context.getAuthenticatedUser();
-		
-		String passwordOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-			"select password from users where user_id = ?")
-			.addScalar("password", Hibernate.STRING)
-			.setInteger(0, u.getUserId())
-			.uniqueResult();
-		
-		String saltOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-			"select salt from users where user_id = ?")
-			.addScalar("salt", Hibernate.STRING)
-			.setInteger(0, u.getUserId())
-			.uniqueResult();
-
-		String hashedPassword = Security.encodeString(pw + saltOnRecord);
-		
-		if (!passwordOnRecord.equals(hashedPassword)) {
+		LoginCredential credentials = getLoginCredential(u);
+		if (!credentials.checkPassword(pw)) {
 			log.error("Passwords don't match");
 			throw new DAOException("Passwords don't match");
 		}
-		
-		log.debug("updating password");
+
+		log.info("updating password for " + u.getUsername());
 		
 		//update the user with the new password
 		String salt = Security.getRandomToken();
-		String newPassword = Security.encodeString(pw2 + salt);
-		
-		// do the actual password changing
-		updateUserPassword(newPassword, salt, u.getUserId(), new Date(), u.getUserId());
+		String newHashedPassword = Security.encodeString(pw2 + salt);
+		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
 	}
 	
 	public void changeQuestionAnswer(String pw, String question, String answer) throws DAOException {
 		User u = Context.getAuthenticatedUser();
 
-		String passwordOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-		"select password from users where user_id = ?")
-		.addScalar("password", Hibernate.STRING)
-		.setInteger(0, u.getUserId())
-		.uniqueResult();
-		
-		String saltOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-		"select salt from users where user_id = ?")
-		.addScalar("salt", Hibernate.STRING)
-		.setInteger(0, u.getUserId())
-		.uniqueResult();
-		
-		try {
-			String hashedPassword = Security.encodeString(pw + saltOnRecord);
-			
-			if (!passwordOnRecord.equals(hashedPassword)) {
-				throw new DAOException("Passwords don't match");
-			}
+		LoginCredential credentials = getLoginCredential(u);
+		if (!credentials.checkPassword(pw)) {
+			log.error("Passwords don't match");
+			throw new DAOException("Passwords don't match");
 		}
-		catch (APIException e) {
-			log.error(e);
-			throw new DAOException(e);
-		}
-		
-		Connection connection = sessionFactory.getCurrentSession().connection();
-		try {
-			PreparedStatement ps = connection.prepareStatement("UPDATE `users` SET secret_question = ?, secret_answer = ?, date_changed = ?, changed_by = ? WHERE user_id = ?");
-			
-			ps.setString(1, question);
-			ps.setString(2, answer);
-			ps.setDate(3, new java.sql.Date(new Date().getTime()));
-			ps.setInt(4, u.getUserId());
-			ps.setInt(5, u.getUserId());
-	
-			ps.executeUpdate();
-		}
-		catch (SQLException e) {
-			log.warn("SQL Exception while trying to update a user's password", e);
-		}
-		
+
+		log.info("Updating secret question and answer for " + u.getUsername());
+		credentials.setSecretQuestion(question);
+		credentials.setSecretAnswer(answer);
+		updateLoginCredential(credentials);
 	}
 	
 	public boolean isSecretAnswer(User u, String answer) throws DAOException {
@@ -447,19 +356,7 @@ public class HibernateUserDAO implements
 		if (answer == null || answer.equals(""))
 			return false;
 		
-		String answerOnRecord = "";
-		
-		try {
-			answerOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-			"select secret_answer from users where user_id = ?")
-			.addScalar("secret_answer", Hibernate.STRING)
-			.setInteger(0, u.getUserId())
-			.uniqueResult();
-		}
-		catch (Exception e) {
-			return false;
-		}
-		
+		String answerOnRecord = getLoginCredential(u).getSecretAnswer();	
 		return (answer.equals(answerOnRecord));
 	}
 	
@@ -627,4 +524,29 @@ public class HibernateUserDAO implements
 
     	return ret;
     }
+
+	/**
+     * @see org.openmrs.api.db.UserDAO#getLoginCredential(org.openmrs.User)
+     */
+    public LoginCredential getLoginCredential(User user) {
+	    return (LoginCredential) sessionFactory.getCurrentSession().get(LoginCredential.class, user.getUserId());
+    }
+    
+    /**
+     * @see org.openmrs.api.db.UserDAO#getLoginCredential(org.openmrs.User)
+     */
+    public LoginCredential getLoginCredentialByGuid(String guid) {
+    	if (guid == null)
+    		return null;
+    	else
+    		return (LoginCredential) sessionFactory.getCurrentSession().createQuery("from LoginCredential where guid = :guid").setString("guid", guid.trim()).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.UserDAO#updateLoginCredential(org.openmrs.LoginCredential)
+     */
+    public void updateLoginCredential(LoginCredential credential) {
+	    sessionFactory.getCurrentSession().update(credential);
+    }
+    
 }
