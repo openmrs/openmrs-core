@@ -151,7 +151,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				Concept malaria = cs.getConceptByName("MALARIA");
 				assertNotNull("Implicit create of concept referenced in answer failed", malaria);
 				
-				Concept coded = cs.getConceptByName("CAUZE OF DEATH");
+				Concept coded = cs.getConceptByName("CAUSE OF DEATH");
 				assertEquals("Adding answer failed", numAnswersBefore + 1, coded.getAnswers().size());
 				boolean found = false;
 				for (ConceptSynonym syn : coded.getSynonyms())
