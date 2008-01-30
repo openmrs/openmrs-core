@@ -117,7 +117,7 @@
 		<div class="boxHeader${model.patientVariation}"><spring:message code="DrugOrder.regimens.completed" /></div>
 		<div class="box${model.patientVariation}">
 
-			<openmrs:portlet url="patientRegimenCompleted" id="patientRegimenCompleted" patientId="${patient.patientId}" parameters="displayDrugSetIds=${model.displayDrugSetIds},*" />
+			<openmrs:portlet url="patientRegimenCompleted" id="patientRegimenCompleted" patientId="${patient.patientId}" parameters="displayDrugSetIds=${model.displayDrugSetIds}" />
 		
 		</div>
 	</div>
