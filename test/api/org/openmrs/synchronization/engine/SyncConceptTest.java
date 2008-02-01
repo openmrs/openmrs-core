@@ -106,7 +106,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				assertNotNull("Failed to create coded", c);
 				Set<String> answers = new HashSet<String>();
 				for (ConceptAnswer a : c.getAnswers())
-					answers.add(a.getConcept().getName().getName());
+					answers.add(a.getAnswerConcept().getName().getName());
 				assertEquals(answers.size(), 3);
 				answers.remove("OTHER NON-CODED");
 				answers.remove("NONE");
