@@ -13,81 +13,58 @@
  */
 package org.openmrs.synchronization.engine;
 
-import java.util.List;
-
-import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.SynchronizationIngestService;
-import org.openmrs.api.SynchronizationService;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
-import org.openmrs.synchronization.server.RemoteServer;
 
 /**
  * Testing of delete methods and whether that action is synchronized
  */
-public class SyncOnDeleteTest extends BaseContextSensitiveTest {
+public class SyncOnDeleteTest extends SyncBaseTest {
 
-    /**
-	 * Tests that the deletion of an identifier type cascades through the 
-	 * sync process
-	 * 
-	 * @throws Exception
-	 */
-	public void testDeleteIdentfierType() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-		
-		SynchronizationIngestService syncIngestService = Context.getSynchronizationIngestService();
-		SynchronizationService syncService = Context.getSynchronizationService();
-		PatientService patientService = Context.getPatientService();
-		
-		// set up the initial "child" server and its database 
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncOnDeleteTest-createPatientIdentifierType.xml");
-		
-		// make sure the patient identifier type is there
-		PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
-		assertNotNull("The patient identifier type could not be found in child server!", pit);
-		
-		// do the deleting
-		AdministrationService adminService = Context.getAdministrationService();
-		adminService.deletePatientIdentifierType(pit);
-		
-		pit = patientService.getPatientIdentifierType(1);
-		assertNull("The patient identifier type should have been deleted!", pit);
-		
-		// save the sync records to be "sent" to the remote server
-		List<SyncRecord> syncRecords = syncService.getSyncRecords();
-		
-		//
-		// Now for the "parent server" part
-		//
-		// clear out the server
-		deleteAllData();
-		
-		// set up the database how it was on the child server so as to mimic that
-		// the parent and child contained the same data
-		initializeInMemoryDatabase();
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncOnDeleteTest-createPatientIdentifierType.xml");
-		
-		// this is new to the parent server db. it needs to know about the child server 
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncRemoteChildServer.xml");
-		RemoteServer origin = syncService.getRemoteServer(1);
-		
-		// make sure the type is there
-		pit = patientService.getPatientIdentifierType(1);
-		assertNotNull("The patient identifier type could not be found when in parent server!", pit);
-		
-		// "receive" sync records from the child server
-		for (SyncRecord syncRecord : syncRecords) {
-			syncIngestService.processSyncRecord(syncRecord, origin);
-		}
-		
-		// make sure it was deleted by sync
-		pit = patientService.getPatientIdentifierType(1);
-		assertNull("The patient identifier type should have been deleted!", pit);
-		
-	}
-	
+	@Override
+    public String getInitialDataset() {
+		return "org/openmrs/synchronization/engine/include/SyncCreateTest.xml";
+    }
+
+	public void testDeletePatientIdentfierType() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			public void runOnChild(){				
+				// make sure the patient identifier type is there
+				PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierType(1);
+				assertNotNull("The patient identifier type could not be found in child server!", pit);
+				
+				// do the deleting
+				Context.getAdministrationService().deletePatientIdentifierType(pit);
+				
+				pit = Context.getPatientService().getPatientIdentifierType(1);
+				assertNull("The patient identifier type should have been deleted!", pit);
+			}
+			public void runOnParent() {
+				// make sure it was deleted by sync
+				PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierType(1);
+				assertNull("The patient identifier type should have been deleted!", pit);
+			}
+		});
+	}	
+	public void testDeleteRelationshipType() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			public void runOnChild(){				
+				// make sure the patient identifier type is there
+				RelationshipType rt = Context.getPersonService().getRelationshipType(1);
+				assertNotNull("The relationship type could not be found in child server!", rt);
+				
+				// do the deleting
+				Context.getPersonService().deleteRelationshipType(rt);
+				
+				rt = Context.getPersonService().getRelationshipType(1);
+				assertNull("The relationship type should have been deleted!", rt);
+			}
+			public void runOnParent() {
+				// make sure it was deleted by sync
+				RelationshipType rt = Context.getPersonService().getRelationshipType(1);
+				assertNull("The relationship type should have been deleted!", rt);
+			}
+		});
+	}	
 }

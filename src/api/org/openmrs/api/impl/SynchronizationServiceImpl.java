@@ -28,6 +28,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.SynchronizationDAO;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.filter.SyncClass;
 import org.openmrs.synchronization.filter.SyncServerClass;
@@ -378,5 +379,12 @@ public class SynchronizationServiceImpl implements SynchronizationService {
      */
     public void createDatabaseForChild(String guidForChild, OutputStream out) throws APIException {
        getSynchronizationDAO().createDatabaseForChild(guidForChild, out); 
+    }
+    
+    /**
+     * @see org.openmrs.api.SynchronizationService#deleteSynchronizable(org.openmrs.synchronization.Synchronizable)
+     */
+    public void deleteSynchronizable(Synchronizable o) throws APIException {
+    	getSynchronizationDAO().deleteSynchronizable(o);
     }
 }

@@ -24,6 +24,7 @@ import org.openmrs.synchronization.filter.SyncClass;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.openmrs.synchronization.server.RemoteServer;
 import org.springframework.transaction.annotation.Transactional;
+import org.openmrs.synchronization.Synchronizable;
 
 @Transactional
 public interface SynchronizationService {
@@ -359,4 +360,14 @@ public interface SynchronizationService {
     @Authorized({"Backup Entire Database"})
     @Transactional(readOnly=true)
     public void createDatabaseForChild(String guidForChild, OutputStream out) throws APIException;
+
+    /**
+     * Deletes instance of synchronizable from data storage.
+     * 
+     * @param o instance to delete
+     * @throws APIException
+     */
+    //@Authorized({"Manage Synchronization"})
+    @Transactional(readOnly=true)
+    public void deleteSynchronizable(Synchronizable o) throws APIException;
 }

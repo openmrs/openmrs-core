@@ -28,6 +28,9 @@
   <synchronization_class class_id="23" name="ConceptAnswer" type="MISC" default_to="1" default_from="1"/>
   <synchronization_class class_id="24" name="ConceptSynonym" type="MISC" default_to="1" default_from="1"/>
   <synchronization_class class_id="25" name="ConceptSet" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="26" name="PatientIdentifierType" type="PATIENT" default_to="1" default_from="1"/>
+  <synchronization_class class_id="27" name="RelationshipType" type="PERSON" default_to="1" default_from="1"/>
+  <synchronization_class class_id="28" name="PersonAttributeType" type="PERSON" default_to="1" default_from="1"/>
   
   <!-- <synchronization_server_class server_class_id="" server_id="" class_id="" send_to="1" receive_from="1"/> -->
   <synchronization_server_class server_class_id="1" server_id="1" class_id="1" send_to="1" receive_from="1"/>
@@ -55,4 +58,7 @@
   <synchronization_server_class server_class_id="23" server_id="1" class_id="23" send_to="1" receive_from="1"/>
   <synchronization_server_class server_class_id="24" server_id="1" class_id="24" send_to="1" receive_from="1"/>
   <synchronization_server_class server_class_id="25" server_id="1" class_id="25" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="26" server_id="1" class_id="26" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="27" server_id="1" class_id="27" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="28" server_id="1" class_id="28" send_to="1" receive_from="1"/>
 </dataset>

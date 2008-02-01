@@ -283,6 +283,45 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
     }
 
     /**
+     * Packages up deletes and sets the item state to DELETED.
+     * 
+     * @see #packageObject(Synchronizable, Object[], String[], Type[], Serializable, SyncItemState)
+     */
+    @Override
+    public void onDelete(Object entity,
+            Serializable id,
+            Object[] state,
+            String[] propertyNames,
+            Type[] types) {
+    	
+	    if (log.isInfoEnabled()) {
+    	    log.info("onDelete: " + entity.getClass().getName());
+	    }
+        
+        //explicitely bailout if sync is disabled
+        if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY) return;
+
+        //first see if entity should be written to the journal at all
+        if (!this.shouldSynchronize(entity)){
+            if (log.isDebugEnabled())
+                log.debug("Determined entity not to be journaled, exiting onDelete.");        
+            return;
+		}
+        
+        //create new flush holder if needed
+        if (pendingFlushHolder.get() == null) 
+            pendingFlushHolder.set(new HashSet<Object>());
+
+        if (!pendingFlushHolder.get().contains(entity)) {
+            pendingFlushHolder.get().add(entity);
+            packageObject((Synchronizable)entity, state, propertyNames, types, id, SyncItemState.DELETED);
+        }
+        
+        return;
+
+    }    
+    
+    /**
      * Called before an object is saved. Triggers in our case for new objects
      * (inserts)
      * 
@@ -714,9 +753,11 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
 			for ( Map.Entry<String, PropertyClassValue> me : values.entrySet() ) {
                 String property = me.getKey();
                 
-                if (log.isDebugEnabled())
-	                log.debug("About to grab value for: " + property);
-                
+                // if we are processing onDelete event all we need is guid
+                if ( (state == SyncItemState.DELETED) && (!"guid".equals(property))) {
+                	continue;
+                }
+           
                 try {
                     PropertyClassValue pcv = me.getValue();
                     appendRecord(xml, entityItem, property, pcv.getClazz(), pcv.getValue());
@@ -746,7 +787,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
             
             //set the originating guid for the record: do this once per Tx; else we may end up with empty
             //string (i.e. depending on exact sequence of auto-flush, it may be that onFlushDirty is called last time
-            //before a call to Synchornizable.setLastRecordGuid() is made
+            //before a call to Synchronizable.setLastRecordGuid() is made
             if (syncRecordHolder.get().getOriginalGuid() == null || "".equals(syncRecordHolder.get().getOriginalGuid())) { 
             	syncRecordHolder.get().setOriginalGuid(originalRecordGuid);
             }

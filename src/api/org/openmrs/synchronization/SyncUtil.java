@@ -739,4 +739,11 @@ public class SyncUtil {
 
         return ret;
     }
+        
+    /**
+     * Deletes instance of Synchronizable. Used to process SyncItems with state of deleted.
+     */
+	public static synchronized void deleteOpenmrsObject(Synchronizable o) {
+		Context.getSynchronizationService().deleteSynchronizable(o);
+	}
 }

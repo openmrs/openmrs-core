@@ -44,6 +44,7 @@ import org.openmrs.api.db.SynchronizationDAO;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.SyncUtil;
+import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.filter.SyncClass;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
@@ -666,6 +667,13 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
         } catch (SQLException ex) {
             log.error("SQLException", ex);
         }
+    }
+    
+    /**
+     * @see org.openmrs.api.db.SynchronizationDAO#deleteSynchronizable(org.openmrs.synchronization.Synchronizable)
+     */
+    public void deleteSynchronizable(Synchronizable o) throws DAOException {
+    	sessionFactory.getCurrentSession().delete(o);
     }
     
 }

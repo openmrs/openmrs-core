@@ -23,6 +23,7 @@ import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.filter.SyncClass;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.openmrs.synchronization.server.RemoteServer;
+import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Synchronization related database functions 
@@ -269,5 +270,13 @@ public interface SynchronizationDAO {
      * @throws DAOException
      */
     public void createDatabaseForChild(String guidForChild, OutputStream out) throws DAOException;
+    
+    /**
+     * Deletes instance of synchronizable from storage.
+     * 
+     * @param o instance to delete from storage
+     * @throws DAOException
+     */
+    public void deleteSynchronizable(Synchronizable o) throws DAOException;
     
 }

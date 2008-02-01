@@ -86,7 +86,9 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
      * @return
      */
     public SyncImportRecord processSyncRecord(SyncRecord record, RemoteServer server) throws APIException {
-        SyncImportRecord importRecord = new SyncImportRecord();
+        
+    	ArrayList<SyncItem> deletedItems = new ArrayList<SyncItem>();
+    	SyncImportRecord importRecord = new SyncImportRecord();
         importRecord.setState(SyncRecordState.FAILED);  // by default, until we know otherwise
         importRecord.setRetryCount(record.getRetryCount());
         importRecord.setTimestamp(record.getTimestamp());
@@ -130,15 +132,34 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 	
                     boolean isError = false;
                             
-                    // for each sync item, process it and insert/update the database
+                    // for each sync item, process it and insert/update the database; 
+                    //put deletes into deletedItems collection -- these will get processed last
                     for ( SyncItem item : record.getItems() ) {
-                        // this could be done differently - just passing actual item to processSyncItem
-                        String syncItem = item.getContent();
-                        SyncImportItem importedItem = this.processSyncItem(syncItem, record.getOriginalGuid() + "|" + server.getGuid());
+                    	if (item.getState() == SyncItemState.DELETED) {
+                    		deletedItems.add(item);
+                    	} else {
+	                        SyncImportItem importedItem = this.processSyncItem(item, record.getOriginalGuid() + "|" + server.getGuid());
+	                        importedItem.setKey(item.getKey());
+	                        importRecord.addItem(importedItem);
+	                        if ( !importedItem.getState().equals(SyncItemState.SYNCHRONIZED)) isError = true;
+                    	}
+                    }
+                    
+                    /* now run through deletes: deletes must be processed after inserts/updates
+                     * because of hibernate flushing semantics inside transactions:
+                     * if deleted entity is part of a collection on another object within the same session
+                     * and this object gets flushed, error is thrown stating that deleted entities must first be removed
+                     * from collection; this happens immediately when stmts are executed (and not at the Tx boundry)
+                     * If hibernate were to execute this check at Tx boundry then all would be OK since witin the same syncRecord
+                     * there is always an operation for persistent set to remove the entity in question from the collection.
+                     */
+                    for ( SyncItem item : deletedItems ) {
+                        SyncImportItem importedItem = this.processSyncItem(item, record.getOriginalGuid() + "|" + server.getGuid());
                         importedItem.setKey(item.getKey());
                         importRecord.addItem(importedItem);
                         if ( !importedItem.getState().equals(SyncItemState.SYNCHRONIZED)) isError = true;
                     }
+                    
                     if ( !isError ) {
                         importRecord.setState(SyncRecordState.COMMITTED);
                         
@@ -185,30 +206,36 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         return importRecord;
     }
     
-    public SyncImportItem processSyncItem(String incoming, String originalGuid)  throws APIException {
-        SyncImportItem ret = new SyncImportItem();
-        ret.setContent(incoming);
-        ret.setState(SyncItemState.UNKNOWN);
+    public SyncImportItem processSyncItem(SyncItem item, String originalGuid)  throws APIException {
+    	String itemContent = null;
+        SyncImportItem ret = null; 
 
         try {
+        	ret = new SyncImportItem();
+        	itemContent = item.getContent();
+            ret.setContent(itemContent);
+            ret.setState(SyncItemState.UNKNOWN);
+
             Object o = null;
             
             try {
-                if (log.isDebugEnabled())
-                    log.debug("STARTING TO PROCESS: " + incoming);
+                if (log.isDebugEnabled()) {
+                    log.debug("STARTING TO PROCESS: " + itemContent);
+                    log.debug("SyncItem state is: " + item.getState());
+                }
                 
-                o = SyncUtil.getRootObject(incoming);
+                o = SyncUtil.getRootObject(itemContent);
                 if (o instanceof org.hibernate.collection.PersistentCollection) {
                 	log.debug("Processing a persistent collection");
-                	processHibernateCollection(o.getClass(),incoming,originalGuid);
+                	processHibernateCollection(o.getClass(),itemContent,originalGuid);
                 } else {
-                	processSynchronizable((Synchronizable)o,incoming,originalGuid);
+                	processSynchronizable((Synchronizable)o,item,originalGuid);
                 }
                 ret.setState(SyncItemState.SYNCHRONIZED);
                 
             } catch (Exception e) {
             	e.printStackTrace();
-                throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_ROOT, null, incoming);
+                throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_ROOT, null, itemContent);
             }
                 
         } catch (SyncItemIngestException siie) {
@@ -407,11 +434,15 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
     /**
      * Processes serialized SyncItem state by attempting to hydrate the object SyncItem represents and then using OpenMRS service layer to
      * update the hydrated instance of Synchronizable object.
-     * <p>Remarks: This implementation relies on internal knowledge of how SyncItems are serialized: it itterates over direct child nodes of the root xml
+     * <p/>Remarks: This implementation relies on internal knowledge of how SyncItems are serialized: it itterates over direct child nodes of the root xml
      * node in incoming assuming they are serialized public properties of the object that is being hydrated. Consequently, for each child node, 
      * property setter is determined and then called. After setting all properties, OpenMRS service layer API is used to actually save 
      * the object into persistent store. The details of how property setters are determined and how appropriate service layer methods
      * are determined are contained in SyncUtil class.
+     * <p/>
+     * SyncItem with status of DELETED is handled differently from insert/update: In case of a delete, all that is needed (and sent) 
+     * is the object type and its GUID. Consequently, the process for handling deletes consists of first fetching 
+     * existing object by guid and then deleting it by a call to sync service API. 
      *  
      * @param o empty instance of class that this SyncItem represents 
      * @param incoming Serialized state of SyncItem.
@@ -423,20 +454,24 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
      * @see SyncUtil#getOpenmrsObj(String, String)
      * @see SyncUtil#updateOpenmrsObject(Object, String, String, boolean)
      */
-    private void processSynchronizable(Synchronizable o, String incoming, String originalGuid) throws Exception {
+    private void processSynchronizable(Synchronizable o, SyncItem item, String originalGuid) throws Exception {
 
+    	String itemContent = null;
         String className = null;
         boolean isUpdateNotCreate = false;
+        boolean isDelete = false;
         ArrayList<Field> allFields = null;
         NodeList nodes = null;
 
+        isDelete = (item.getState() == SyncItemState.DELETED) ? true : false; 
+        itemContent = item.getContent();
     	className = o.getClass().getName();
         allFields = SyncUtil.getAllFields(o);  // get fields, both in class and superclass - we'll need to know what type each field is
-        nodes = SyncUtil.getChildNodes(incoming);  // get all child nodes (xml) of the root object
+        nodes = SyncUtil.getChildNodes(itemContent);  // get all child nodes (xml) of the root object
 
 	    if ( o == null || className == null || allFields == null || nodes == null ) {
 	    	log.warn("Item is missing a className or all fields or nodes");
-	    	throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOCLASS, className, incoming);
+	    	throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOCLASS, className, itemContent);
 	    }
 
 	    String guid = SyncUtil.getAttribute(nodes, "guid", allFields);
@@ -445,39 +480,46 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
             o = objOld;
             isUpdateNotCreate = true;
         }
-	        
-        log.debug("isUpdate is " + isUpdateNotCreate);
-        
-        //process contained properties
-        for ( int i = 0; i < nodes.getLength(); i++ ) {
-            try {
-            	log.debug("trying to set property: " + nodes.item(i).getNodeName() + " in className " + className);
-                SyncUtil.setProperty(o, nodes.item(i), allFields);
-            } catch ( Exception e ) {
-            	log.error("Error when trying to set " + nodes.item(i).getNodeName() + ", which is a " + className);
-            	e.printStackTrace();
-                throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_UNSET_PROPERTY, nodes.item(i).getNodeName() + "," + className, incoming);
-            }
+	       
+        if (log.isDebugEnabled()) {
+	        log.debug("isUpdate: " + isUpdateNotCreate);
+	        log.debug("isDelete: " + isDelete);
         }
         
         //set the original guid: this will prevent the change from being send back to originating server
         //see SynchronizationServiceImpl.createRecord() which will eventually get called from interceptor when
         //this change in committed
         ((Synchronizable)o).setLastRecordGuid(originalGuid);
-	        
-        // now try to commit this fully inflated object
-        try {
-        	log.warn("About to update or create a " + className + " object");
-            SyncUtil.updateOpenmrsObject(o, className, guid, isUpdateNotCreate);
-        } catch ( Exception e ) {
-        	e.printStackTrace();
-            throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, className, incoming);
-        }
-	        
-        if (log.isDebugEnabled()) {
-            log.debug("We now have an object " + o.getClass().getName() + " to INSERT with possible GUID of " + ((Synchronizable)o).getGuid());
-        }
         
+        if (isDelete) {
+        	//in case of delete just wack it
+        	SyncUtil.deleteOpenmrsObject(o);
+
+        } else {
+            //if we are doing insert/update:
+            //1. set serialized props state
+        	//2. force it down the hibernate's throat with help of openmrs api
+	        for ( int i = 0; i < nodes.getLength(); i++ ) {
+	            try {
+	            	log.debug("trying to set property: " + nodes.item(i).getNodeName() + " in className " + className);
+	                SyncUtil.setProperty(o, nodes.item(i), allFields);
+	            } catch ( Exception e ) {
+	            	log.error("Error when trying to set " + nodes.item(i).getNodeName() + ", which is a " + className);
+	            	e.printStackTrace();
+	                throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_UNSET_PROPERTY, nodes.item(i).getNodeName() + "," + className, itemContent);
+	            }
+	        }
+        	        
+	        // now try to commit this fully inflated object
+	        try {
+	        	log.warn("About to update or create a " + className + " object");
+	            SyncUtil.updateOpenmrsObject(o, className, guid, isUpdateNotCreate);
+	        } catch ( Exception e ) {
+	        	e.printStackTrace();
+	            throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, className, itemContent);
+	        }
+        }
+	                
         return;
     }
 }
