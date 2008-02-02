@@ -13,9 +13,14 @@
  */
 package org.openmrs.synchronization.engine;
 
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonName;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
+import org.openmrs.PersonAttributeType;
 
 /**
  * Testing of delete methods and whether that action is synchronized
@@ -67,4 +72,48 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 			}
 		});
 	}	
+	public void testDeletePersonAttributeType() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			public void runOnChild(){				
+				// make sure the patient identifier type is there
+				PersonAttributeType pat = Context.getPersonService().getPersonAttributeType(1);
+				assertNotNull("The PersonAttributeType could not be found in child server!", pat);
+				
+				// do the deleting
+				Context.getPersonService().deletePersonAttributeType(pat);
+				
+				pat = Context.getPersonService().getPersonAttributeType(1);
+				assertNull("The PersonAttributeType should have been deleted!", pat);
+			}
+			public void runOnParent() {
+				// make sure it was deleted by sync
+				PersonAttributeType pat = Context.getPersonService().getPersonAttributeType(1);
+				assertNull("The PersonAttributeType should have been deleted!", pat);
+			}
+		});
+	}
+	public void testDeletePatientName() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			PatientIdentifierType pit;
+			public void runOnChild() {
+				pit = Context.getPatientService().getPatientIdentifierType(2);
+				Location loc = Context.getEncounterService().getLocationByName("Someplace");
+				Patient p = Context.getPatientService().getPatient(2);
+				p.removeName(p.getPersonName());
+				p.addName(new PersonName("Peter", null, "Parker"));
+				p.addIdentifier(new PatientIdentifier("super123", pit, loc));
+				Context.getPatientService().updatePatient(p);
+			}
+			public void runOnParent() {
+				Patient p = Context.getPatientService().getPatient(2);
+				assertEquals("Name should be Peter Parker", p.getPersonName().toString(), "Peter Parker");
+				boolean found = false;
+				for (PatientIdentifier id : p.getIdentifiers())
+					if (id.getIdentifier().equals("super123") && id.getIdentifierType().equals(pit))
+						found = true;
+				assertTrue("Couldn't find new ID", found);
+			}
+		});
+	}
+	
 }
