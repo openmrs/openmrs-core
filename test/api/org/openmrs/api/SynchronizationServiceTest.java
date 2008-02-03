@@ -85,7 +85,7 @@ public class SynchronizationServiceTest extends BaseContextSensitiveTest {
         // Update it
         calendar.clear();
         calendar.set(2007, Calendar.JANUARY, 1, 12, 0, 1);
-        retrievedSyncRecord.setState(SyncRecordState.ABORTED);
+        retrievedSyncRecord.setState(SyncRecordState.FAILED);
         retrievedSyncRecord.setRetryCount(1);
         retrievedSyncRecord.setTimestamp(calendar.getTime());
 
@@ -113,15 +113,15 @@ public class SynchronizationServiceTest extends BaseContextSensitiveTest {
         assertEquals(records.size(), (numberOfSyncRecords + 1));
 
         // Retrieve all in a certain state
-        records = syncService.getSyncRecords(SyncRecordState.ABORTED);
+        records = syncService.getSyncRecords(SyncRecordState.FAILED);
         assertNotNull(
                 "No records returned from service, null, should be at least one.",
                 records);
         Iterator<SyncRecord> iterator = records.iterator();
         while (iterator.hasNext()) {
             assertEquals(
-                    "SyncRecordState did not match the expected state Aborted",
-                    iterator.next().getState(), SyncRecordState.ABORTED);
+                    "SyncRecordState did not match the expected state FAILED",
+                    iterator.next().getState(), SyncRecordState.FAILED);
         }
 
         // Clean up

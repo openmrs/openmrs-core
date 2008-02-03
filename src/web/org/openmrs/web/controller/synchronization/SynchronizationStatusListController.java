@@ -324,12 +324,11 @@ public class SynchronizationStatusListController extends SimpleFormController {
         state.put(SyncTransmissionState.TRANSMISSION_CREATION_FAILED.toString(), msa.getMessage("SynchronizationStatus.transmission.createError"));
         state.put(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD.toString(), msa.getMessage("SynchronizationStatus.transmission.corruptTxError"));
         state.put(SyncTransmissionState.OK_NOTHING_TO_DO.toString(), msa.getMessage("SynchronizationStatus.transmission.okNoSyncNeeded"));
-        state.put(SyncRecordState.ABORTED.toString(), msa.getMessage("Synchronization.record.state_FAILED"));
         state.put(SyncRecordState.ALREADY_COMMITTED.toString(), msa.getMessage("Synchronization.record.state_ALREADY_COMMITTED"));
         state.put(SyncRecordState.COMMITTED.toString(), msa.getMessage("Synchronization.record.state_COMMITTED"));
         state.put(SyncRecordState.FAILED.toString(), msa.getMessage("Synchronization.record.state_FAILED"));
+        state.put(SyncRecordState.FAILED_AND_STOPPED.toString(), msa.getMessage("Synchronization.record.state_FAILED_AND_STOPPED"));
         state.put(SyncRecordState.NEW.toString(), msa.getMessage("Synchronization.record.state_SENT"));
-        state.put(SyncRecordState.PENDING_COMMIT.toString(), msa.getMessage("Synchronization.record.state_SENT"));
         state.put(SyncRecordState.PENDING_SEND.toString(), msa.getMessage("Synchronization.record.state_SENT"));
         state.put(SyncRecordState.SEND_FAILED.toString(), msa.getMessage("Synchronization.record.state_FAILED"));
         state.put(SyncRecordState.SENT.toString(), msa.getMessage("Synchronization.record.state_SENT"));

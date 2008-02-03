@@ -25,8 +25,8 @@ public class SyncConstants {
 		SyncRecordState.SEND_FAILED,
 		SyncRecordState.SENT,
 		SyncRecordState.SENT_AGAIN,
-		SyncRecordState.ABORTED,
-		SyncRecordState.PENDING_COMMIT,
+		SyncRecordState.FAILED,
+		SyncRecordState.FAILED_AND_STOPPED //this is here so that we can display the failed record on UI
 	};
 
 	// error message codes
@@ -70,6 +70,7 @@ public class SyncConstants {
     public static final String SERVER_GUID = "synchronization.server_guid";
     public static final String RUNTIMEPROPERTY_SYNC_STATUS = "synchronization.sync_status"; //SyncStatusState enum
     public static final String PARENT_GUID = "synchronization.parent_guid";
+    public static final String PROPERTY_NAME_MAX_RETRY_COUNT = "synchronization.max_retry_count";
 
 	public static final String RESPONSE_SUFFIX = "_response";
 

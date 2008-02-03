@@ -42,6 +42,13 @@ public class SyncUtilTransmission {
 
 	private static Log log = LogFactory.getLog(SyncUtil.class);		
 
+
+	/*
+	 * TODO: consolidate this method with createSyncTransmission(RemoteServer server); has unnecessary dulication of
+	 * logic
+	 * this method is called when sync via file is used
+	 * createSyncTransmission(RemoteServer server) is called when send via Web or scheduled tx are used
+	 */
     public static SyncTransmission createSyncTransmission() {
         SyncTransmission tx = null;
 
@@ -96,6 +103,12 @@ public class SyncUtilTransmission {
         return tx;
     }
     
+    /**
+     * Prepares a sync transmission containing local changes to be send to the remote server.
+     * 
+     * @param server
+     * @return
+     */
     public static SyncTransmission createSyncTransmission(RemoteServer server) {
         SyncTransmission tx = null;
 
@@ -142,7 +155,9 @@ public class SyncUtilTransmission {
             }
         } catch ( Exception e ) {
             e.printStackTrace();
-            tx = null;
+            if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT) {
+                throw(new SyncException("Error while performing synchronization, see log messages and callstack.", e));
+            }
         }
 
         return tx;
@@ -383,12 +398,12 @@ public class SyncUtilTransmission {
                         // now get local changes destined for parent, and package those inside
                         SyncTransmission st = SyncUtilTransmission.createSyncTransmission(parent);
                         if ( str != null ) {
-                            log.warn("Received updates from parent, so replying and sending updates of our own: " + st.getFileOutput());
+                            log.info("Received updates from parent, so replying and sending updates of our own: " + st.getFileOutput());
                             str.setSyncTransmission(st);
                             str.createFile(true, "/receiveAndSend");
                             response = SyncUtilTransmission.sendSyncTranssmission(parent, null, str);
                         } else {
-                            log.warn("No updates from parent, generating our own transmission");
+                            log.info("No updates from parent, generating our own transmission");
                             response = SyncUtilTransmission.sendSyncTranssmission(parent, st, null);
                         }
 
@@ -408,6 +423,9 @@ public class SyncUtilTransmission {
             }
         } catch ( Exception e ) {
             e.printStackTrace();
+            if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT) {
+                throw(new SyncException("Error while performing synchronization, see log messages and callstack.", e));
+            }
         }
         
         return response;
@@ -449,6 +467,11 @@ public class SyncUtilTransmission {
                 //SyncImportRecord importRecord = SyncRecordIngest.processSyncRecord(record);
                 SyncImportRecord importRecord = Context.getSynchronizationIngestService().processSyncRecord(record, origin);
                 importRecords.add(importRecord);
+                
+                //if the record update failed for any reason, do not continue on, stop now
+                if (importRecord.getState() != SyncRecordState.COMMITTED) {
+                	break;
+                }
             }
         }
         if ( importRecords.size() > 0 ) str.setSyncImportRecords(importRecords);

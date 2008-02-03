@@ -16,18 +16,16 @@ public enum SyncRecordState {
     
     /** attempted send failed */
     SEND_FAILED,
-    
-    /** record is being committed at parent; outcome not yet known */
-    PENDING_COMMIT, 
-    
+        
     /** the record was successfully committed at target source */
     COMMITTED, 
-    
-    /** attempted commit of the record failed */
-    ABORTED, 
-    
-    /** the record reached the final failed state: no more retries will be attempted */
+        
+    /** the record reached the failed state during ingest: will retry next time */
     FAILED, 
+
+    /** the record reached the final failed state: max retry attempt was reached, no more retries will be attempted */
+    FAILED_AND_STOPPED, 
+
     
     /** we are trying again to send this record */
     SENT_AGAIN, 

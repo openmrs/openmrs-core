@@ -113,15 +113,24 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                     importRecord.setGuid(record.getOriginalGuid());
                     Context.getSynchronizationService().createSyncImportRecord(importRecord);
                 } else {
-                    log.warn("ImportRecord already exists and has state: " + importRecord.getState());
+                	if(log.isWarnEnabled()) {
+                		log.warn("ImportRecord already exists and has retry count: " + importRecord.getRetryCount() + ", state: " + importRecord.getState());
+                	}
                     SyncRecordState state = importRecord.getState();
                     if ( state.equals(SyncRecordState.COMMITTED) ) {
                         // apparently, the remote/child server exporting to this server doesn't realize it's
                         // committed, so let's remind by sending back this import record with already_committed
                         importRecord.setState(SyncRecordState.ALREADY_COMMITTED);
                     } else if (state.equals(SyncRecordState.FAILED)) {
-                        // apparently, this record was already sent and full-failed - let's not attempt again
-                        // TODO: eventually we should allow you to override this with a -force option
+                    	long retryCount = Long.parseLong(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RETRY_COUNT));                    	
+                    	if (importRecord.getRetryCount() >= retryCount) {
+                            //failed too many times, stop now at this exact record
+                            importRecord.setState(SyncRecordState.FAILED_AND_STOPPED);
+                    	} else {
+                    		//retry
+                    		importRecord.setRetryCount(importRecord.getRetryCount() + 1);
+                    		isUpdateNeeded = true;
+                    	}
                     }else {
                         isUpdateNeeded = true;
                     }
@@ -190,8 +199,9 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                         }
                         */
                     } else {
-                        // rollback!!
-                        // also, set to failure.  if we've come this far and record failed to commit, it will likely never commit
+                    	/* One of SyncItem commits failed, 
+                    	 * rollback (happens automatically) and set failure information.
+                    	 */
                     	log.warn("Error while processing SyncRecord with original ID " + record.getOriginalGuid() + " (" + record.getContainedClasses() + ")");
                         importRecord.setState(SyncRecordState.FAILED);
                     }
@@ -235,16 +245,18 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 
             } catch (Exception e) {
             	e.printStackTrace();
-                throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_ROOT, null, itemContent);
+                throw new SyncItemIngestException(e,SyncConstants.ERROR_ITEM_BADXML_ROOT, null, itemContent);
             }
                 
         } catch (SyncItemIngestException siie) {
             ret.setErrorMessage(siie.getItemError());
             ret.setErrorMessageArgs(siie.getItemErrorArgs());
             ret.setState(SyncItemState.CONFLICT);
+            ret.setErrorMessageDetail(siie.fillInStackTrace().toString());
         } catch (Exception e) {
         	e.printStackTrace();
             ret.setErrorMessage(SyncConstants.ERROR_ITEM_NOT_PROCESSED);
+            ret.setErrorMessageDetail(e.toString());
         }       
         
         return ret;        

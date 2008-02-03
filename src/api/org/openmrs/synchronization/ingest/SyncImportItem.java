@@ -34,8 +34,17 @@ public class SyncImportItem {
     private SyncItemState state = SyncItemState.UNKNOWN;
     private String content = null;
     private String errorMessage = "";
-    private String errorMessageArgs = null;
-    
+    private String errorMessageArgs = "";
+    private String errorMessageDetail = ""; //usually stack trace
+
+    public String getErrorMessageDetail() {
+    	return errorMessageDetail;
+    }
+
+	public void setErrorMessageDetail(String detail) {
+    	this.errorMessageDetail = detail;
+    }
+
     public String getErrorMessage() {
     	return errorMessage;
     }
@@ -44,7 +53,6 @@ public class SyncImportItem {
     	this.errorMessage = errorMessage;
     }
 
-	// Properties
     public SyncItemKey<?> getKey() {
         return key;
     }
@@ -80,14 +88,17 @@ public class SyncImportItem {
     // Methods
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof SyncItem) || o == null)
+        if (!(o instanceof SyncImportItem) || o == null)
             return false;
 
-        SyncItem oSync = (SyncItem) o;
+        SyncImportItem oSync = (SyncImportItem) o;
         boolean same = ((oSync.getKey() == null) ? (this.getKey() == null) : oSync.getKey().equals(this.getKey()))
                 && ((oSync.getContent() == null) ? (this.getContent() == null) : oSync.getContent().equals(this.getContent()))
+                && ((oSync.getErrorMessage() == null) ? (this.getErrorMessage() == null) : oSync.getErrorMessage().equals(this.getErrorMessage()))
+                && ((oSync.getErrorMessageArgs() == null) ? (this.getErrorMessageArgs() == null) : oSync.getErrorMessageArgs().equals(this.getErrorMessageArgs()))
+                && ((oSync.getErrorMessageDetail() == null) ? (this.getErrorMessageDetail() == null) : oSync.getErrorMessageDetail().equals(this.getErrorMessageDetail()))
                 && ((oSync.getState() == null) ? (this.getState() == null) : oSync.getState().equals(this.getState()));
-        
+      
         return same;
     }
 
@@ -107,8 +118,9 @@ public class SyncImportItem {
 
         //serialize primitives
         xml.setAttribute(me, "state", state.toString());
-        xml.setAttribute(me, "errorMessage", errorMessage.toString());
-        
+        if(errorMessage != null) xml.setAttribute(me, "errorMessage", errorMessage.toString());
+        if(errorMessageArgs != null) xml.setAttribute(me, "errorMessageArgs", errorMessageArgs.toString());
+               
         Item itemKey = xml.createItem(me, "key");
         if (key != null) {
             xml.setAttribute(itemKey,"key-type",key.getKeyValue().getClass().getName());
@@ -119,6 +131,11 @@ public class SyncImportItem {
         if (content != null) {
             xml.createTextAsCDATA(itemContent, content);
         }
+
+        Item itemErrorMessageDetail = xml.createItem(me, "errorMessageDetail");
+        if (errorMessageDetail != null) {
+            xml.createTextAsCDATA(itemErrorMessageDetail, errorMessageDetail);
+        }
         
         return me;
     }
@@ -126,6 +143,7 @@ public class SyncImportItem {
     public void load(Record xml, Item me) throws Exception {
         state = SyncItemState.valueOf(me.getAttribute("state"));
         errorMessage = me.getAttribute("errorMessage");
+        errorMessageArgs = me.getAttribute("errorMessageArgs");
         Item itemKey = xml.getItem(me, "key");
         
         if (itemKey.isEmpty()) {
@@ -139,13 +157,20 @@ public class SyncImportItem {
                 throw new SyncException("Failed to deserialize SyncItem, could not create sync key of type: " + keyType);
             }
         }
-        
+
         Item itemContent = xml.getItem(me, "content");
         if (itemContent.isEmpty()) {
             content = null;
         } else {
             content = itemContent.getText();
         }
+
+        Item itemErrorMessageDetail = xml.getItem(me, "errorMessageDetail");
+        if (itemErrorMessageDetail.isEmpty()) {
+        	errorMessageDetail = null;
+        } else {
+        	errorMessageDetail = itemErrorMessageDetail.getText();
+        }        
     }
 
 }

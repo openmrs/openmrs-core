@@ -1189,7 +1189,7 @@ table td#summaryHeaderPatientGender {
 	font-weight: bold;
 }
 
-.syncFAILED, .syncCONFLICT, .syncSEND_FAILED, .syncABORTED {
+.syncFAILED_AND_STOPPED, .syncFAILED, .syncCONFLICT, .syncSEND_FAILED {
 	color: #dd0022;
 	font-weight: bold;
 }

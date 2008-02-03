@@ -77,13 +77,28 @@ public class SyncStrategyFile {
         return ret;
     }
 
+    /**
+     * Prepares a sync trasnmission containing sync records from source that are to be send to the remote server.
+     * The records to be sent are determined as follows:
+     * <br/> - select records from sync journal that are in the correct state (see SyncConstants.SYNC_TO_PARENT_STATES)
+     * <br/> - if a sync record from the journal reached state of FAILED_AND_STOPPED; do not attempt to send
+     * it and records after it again
+     * <br/> - filter out records that contain classes that are accepted by the server
+     * 
+     * @param source server from where changes are to be retrieved (local server)
+     * @param writeFileToo flag to dump file or not
+     * @param server server to send Tx to
+     * @return
+     * 
+     * @see org.openmrs.synchronization.SyncConstants#SYNC_TO_PARENT_STATES
+     */
     public SyncTransmission createStateBasedSyncTransmission(SyncSource source, boolean writeFileToo, RemoteServer server) {
 
         SyncTransmission syncTx = null;
         
         if ( server != null ) {
             List<SyncRecord> changeset = null;
-            List<SyncRecord> filteredChangeset = null;
+            List<SyncRecord> filteredChangeset = new ArrayList<SyncRecord>();
             
             //get changeset for sourceA
             changeset = this.getStateBasedChangeset(source, server);
@@ -91,10 +106,13 @@ public class SyncStrategyFile {
             // need to check each SyncRecord to see if it's eligible for sync'ing
             if ( changeset != null ) {
                 for ( SyncRecord record : changeset ) {
+                	//first see if we've gotten to the failed & stopped state; if so don't
+                	//attempt to send the record and what follows it again
+                    if (record.getState() == SyncRecordState.FAILED_AND_STOPPED)  {
+                    	break;
+                    }
                     Set<String> containedClasses = record.getContainedClassSet();
                     if ( server.getClassesSent().containsAll(containedClasses) ) {
-                        //log.warn("ADDING RECORD TO TRANSMISSION BECAUSE SERVER IS SET TO SEND ALL " + containedClasses + " TO SERVER " + server.getNickname() + " with SENT: " + server.getClassesSent());
-                        if ( filteredChangeset == null ) filteredChangeset = new ArrayList<SyncRecord>();
                         filteredChangeset.add(record);
                     } else {
                         if ( server.getServerType().equals(RemoteServerType.PARENT)) {
