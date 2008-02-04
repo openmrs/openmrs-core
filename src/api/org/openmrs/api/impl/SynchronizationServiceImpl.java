@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.SynchronizationDAO;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncRecordState;
@@ -406,6 +407,16 @@ public class SynchronizationServiceImpl implements SynchronizationService {
      */
     public void setFlushModeAutomatic() throws APIException {
     	getSynchronizationDAO().setFlushModeAutomatic();
+    }
+    
+	/**
+     * Performs peristence layer flush, delegating directly to the corresponsing DAO method.
+     * 
+     * @see org.openmrs.api.SynchronizationService#flushSession()
+     * @see org.openmrs.api.db.hibernate.HibernateSynchronizationDAO#flushSession()
+     */    
+    public void flushSession() throws APIException {
+    	getSynchronizationDAO().flushSession();
     }
 }
 

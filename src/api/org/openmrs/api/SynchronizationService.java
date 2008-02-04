@@ -389,4 +389,6 @@ public interface SynchronizationService {
      * @see org.openmrs.api.db.SynchronizationDAO#setFlushModeAutomatic()
      */
     public void setFlushModeAutomatic() throws APIException;
+    
+    public void flushSession() throws APIException;
 }

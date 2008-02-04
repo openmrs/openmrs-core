@@ -139,6 +139,9 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 	
                     boolean isError = false;
                             
+                    //as we start setting properties, suspend session flushing 
+                    Context.getSynchronizationService().setFlushModeManual();
+
                     // for each sync item, process it and insert/update the database; 
                     //put deletes into deletedItems collection -- these will get processed last
                     for ( SyncItem item : record.getItems() ) {
@@ -151,6 +154,9 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 	                        if ( !importedItem.getState().equals(SyncItemState.SYNCHRONIZED)) isError = true;
                     	}
                     }
+                    
+                    Context.getSynchronizationService().flushSession();
+                    Context.getSynchronizationService().setFlushModeAutomatic();
                     
                     /* now run through deletes: deletes must be processed after inserts/updates
                      * because of hibernate flushing semantics inside transactions:
@@ -167,6 +173,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                         importRecord.addItem(importedItem);
                         if ( !importedItem.getState().equals(SyncItemState.SYNCHRONIZED)) isError = true;
                     }
+                    Context.getSynchronizationService().flushSession();
                     Context.getSynchronizationService().setFlushModeAutomatic();
                     
                     if ( !isError ) {
@@ -300,7 +307,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
     		log.error("Do not know how to process this collection type: " + collectionType.getName());
     		throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming);
     	}
-    	    	
+    	    	    	
     	//next, pull out the owner node and get owner instance: 
     	//we need reference to owner object before we start messing with collection entries
     	nodes = SyncUtil.getChildNodes(incoming);
@@ -340,36 +347,33 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         }
         entries = (Set)m.invoke(owner, (Object[])null);
 
-        /*Special recreate logic:
+        /*Two instances where even after this we may need to create a new collection:
+         * a) when collection is lazy=false and it is newly created; then asking parent for it will
+         * not return new & empty proxy, it will return null
+         * b) Special recreate logic:
          * if fetched owner instance has nothing attached, then it is safe to just create brand new collection
          * and assign it to owner without worrying about getting orphaned deletes error
          * if owner has something attached, then we process recreate as delete/update; 
          * that is clear out the existing entries and then proceed to add ones received via sync. 
          * This code essentially mimics hibernate org.hibernate.engine.Collections.prepareCollectionForUpdate()
          * implementation. 
-         * 
          * NOTE: The unfortunate bi-product of this approach is that this series of events will not produce 
          * 'recreate' event in the interceptor: thus parent's sync journal entries will look slightly diferently 
          * from what child was sending up: child sent up single 'recreate' collection action however
          * parent will instead have single 'update' with deletes & updates in it. Presumably, this is a distinction
          * without a difference.
          */
-        if ("recreate".equals(ownerCollectionAction)) {
         	
-        	if (entries == null) {
-	        	if (org.hibernate.collection.PersistentSortedSet.class.isAssignableFrom(collectionType)) {
-	        		needsRecreate = true;
-	        		entries = new TreeSet();
-	        	} else if (org.hibernate.collection.PersistentSet.class.isAssignableFrom(collectionType)) {
-	        		needsRecreate = true;
-	        		entries = new HashSet();
-	        	}
-        	} else {
-        		//clear existing entries before adding new ones:
-        		entries.clear();
+    	if (entries == null) {
+        	if (org.hibernate.collection.PersistentSortedSet.class.isAssignableFrom(collectionType)) {
+        		needsRecreate = true;
+        		entries = new TreeSet();
+        	} else if (org.hibernate.collection.PersistentSet.class.isAssignableFrom(collectionType)) {
+        		needsRecreate = true;
+        		entries = new HashSet();
         	}
-        }
-        
+    	}
+    	        
         if (entries == null) {
     		log.error("Was not able to retrieve reference to the collection using owner object.");
     		log.error("Owner info: " +
@@ -379,6 +383,11 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
     				"\nownerGuid:" + ownerGuid);
     		throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming);
         }
+        
+    	//clear existing entries before adding new ones:
+        if ("recreate".equals(ownerCollectionAction)) {
+    		entries.clear();
+    	}
         
         //now, finally process nodes, phew!!
         for ( i = 0; i < nodes.getLength(); i++ ) {
@@ -456,7 +465,8 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
      * <p/>
      * SyncItem with status of DELETED is handled differently from insert/update: In case of a delete, all that is needed (and sent) 
      * is the object type and its GUID. Consequently, the process for handling deletes consists of first fetching 
-     * existing object by guid and then deleting it by a call to sync service API. 
+     * existing object by guid and then deleting it by a call to sync service API. Note, if object is not found in DB by its guid, we
+     * skip the delete and record warning message. 
      *  
      * @param o empty instance of class that this SyncItem represents 
      * @param incoming Serialized state of SyncItem.
@@ -472,7 +482,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 
     	String itemContent = null;
         String className = null;
-        boolean isUpdateNotCreate = false;
+        boolean alreadyExists = false;
         boolean isDelete = false;
         ArrayList<Field> allFields = null;
         NodeList nodes = null;
@@ -492,23 +502,26 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         Synchronizable objOld = (Synchronizable)SyncUtil.getOpenmrsObj(className, guid);
         if ( objOld != null ) {
             o = objOld;
-            isUpdateNotCreate = true;
+            alreadyExists = true;
         }
 	       
         if (log.isDebugEnabled()) {
-	        log.debug("isUpdate: " + isUpdateNotCreate);
+	        log.debug("isUpdate: " + alreadyExists);
 	        log.debug("isDelete: " + isDelete);
         }
-        
+                
         //set the original guid: this will prevent the change from being send back to originating server
         //see SynchronizationServiceImpl.createRecord() which will eventually get called from interceptor when
         //this change in committed
         ((Synchronizable)o).setLastRecordGuid(originalGuid);
         
-        if (isDelete) {
-        	//in case of delete just wack it
+    	//execute delete if instance was found and operation is delete
+        if (alreadyExists && isDelete) {
         	SyncUtil.deleteOpenmrsObject(o);
-
+        }else if (!alreadyExists && isDelete) { 
+        	log.warn("Object to be deletes was not found in the database. skipping delete operation: Object type:");
+        	log.warn("-object type:" + o.getClass().toString());
+        	log.warn("-object guid:" + o.getGuid());
         } else {
             //if we are doing insert/update:
             //1. set serialized props state
@@ -527,13 +540,14 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 	        // now try to commit this fully inflated object
 	        try {
 	        	log.warn("About to update or create a " + className + " object");
-	            SyncUtil.updateOpenmrsObject(o, className, guid, isUpdateNotCreate);
+	            SyncUtil.updateOpenmrsObject(o, className, guid, alreadyExists);
+	            Context.getSynchronizationService().flushSession();
 	        } catch ( Exception e ) {
 	        	e.printStackTrace();
 	            throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, className, itemContent);
 	        }
         }
-	                
+        	                
         return;
     }
 }

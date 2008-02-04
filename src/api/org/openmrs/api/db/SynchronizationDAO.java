@@ -292,4 +292,11 @@ public interface SynchronizationDAO {
      * @throws DAOException 
      */
     public void setFlushModeAutomatic() throws DAOException;
+
+    /**
+     * Flushes presistence library's session.
+     * 
+     * @throws DAOException 
+     */
+    public void flushSession() throws DAOException;
 }

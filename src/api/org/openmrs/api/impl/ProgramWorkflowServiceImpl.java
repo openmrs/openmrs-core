@@ -253,13 +253,15 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 			w.setVoidReason(null);
 			w.setDateVoided(null);
 		}
-		for (ProgramWorkflowState s : w.getStates()) {
-			s.setProgramWorkflow(w);
-			if (s.getCreator() == null) {
-				s.setCreator(Context.getAuthenticatedUser());
-			}
-			if (s.getDateCreated() == null) {
-				s.setDateCreated(new Date());
+		if (w.getStates() != null) {
+			for (ProgramWorkflowState s : w.getStates()) {
+				s.setProgramWorkflow(w);
+				if (s.getCreator() == null) {
+					s.setCreator(Context.getAuthenticatedUser());
+				}
+				if (s.getDateCreated() == null) {
+					s.setDateCreated(new Date());
+				}
 			}
 		}
 		getProgramWorkflowDAO().updateWorkflow(w);

@@ -694,4 +694,15 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
     public void setFlushModeAutomatic() throws DAOException {
     	sessionFactory.getCurrentSession().setFlushMode(org.hibernate.FlushMode.AUTO);
     }
+
+    /**
+     * Executes hibernate flush.
+     * 
+     * @see org.hibernate.Session#flush()
+     * @see org.openmrs.api.db.SynchronizationDAO#flushSession()
+     */
+    public void flushSession() throws DAOException {
+    	sessionFactory.getCurrentSession().flush();
+    }
+
 }
