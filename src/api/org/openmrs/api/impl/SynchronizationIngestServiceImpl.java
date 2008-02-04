@@ -25,8 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.SynchronizationIngestService;
 import org.openmrs.api.context.Context;
-import org.openmrs.serialization.Item;
-import org.openmrs.serialization.Record;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncItemState;
 import org.openmrs.synchronization.SyncRecordState;
@@ -162,7 +160,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                      * default hibernate FlushMode is AUTO. To futher avoid this issue, explicitely susspend flushing for the 
                      * duration of deletes.
                      */
-                	//Context.getSynchronizationService().setFlushModeManual(); 
+                	Context.getSynchronizationService().setFlushModeManual(); 
                     for ( SyncItem item : deletedItems ) {
                         SyncImportItem importedItem = this.processSyncItem(item, record.getOriginalGuid() + "|" + server.getGuid());
                         importedItem.setKey(item.getKey());
@@ -201,8 +199,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                         }
                         */
                     } else {
-                    	/* One of SyncItem commits failed, 
-                    	 * rollback (happens automatically) and set failure information.
+                    	/* One of SyncItem commits failed, rollback and set failure information.
                     	 */
                     	log.warn("Error while processing SyncRecord with original ID " + record.getOriginalGuid() + " (" + record.getContainedClasses() + ")");
                         importRecord.setState(SyncRecordState.FAILED);
