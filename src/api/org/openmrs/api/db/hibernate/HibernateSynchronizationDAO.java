@@ -19,7 +19,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.sql.Blob;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -675,5 +674,24 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
     public void deleteSynchronizable(Synchronizable o) throws DAOException {
     	sessionFactory.getCurrentSession().delete(o);
     }
+
+    /**
+     * Sets hibernate flush mode to org.hibernate.FlushMode.MANUAL.
+     * 
+     * @see org.hibernate.FlushMode
+     * @see org.openmrs.api.db.SynchronizationDAO#setFlushModeManual()
+     */
+    public void setFlushModeManual() throws DAOException {
+    	sessionFactory.getCurrentSession().setFlushMode(org.hibernate.FlushMode.MANUAL);
+    }
     
+    /**
+     * Sets hibernate flush mode to org.hibernate.FlushMode.AUTO.
+     * 
+     * @see org.hibernate.FlushMode
+     * @see org.openmrs.api.db.SynchronizationDAO#setFlushModeAutomatic()
+     */
+    public void setFlushModeAutomatic() throws DAOException {
+    	sessionFactory.getCurrentSession().setFlushMode(org.hibernate.FlushMode.AUTO);
+    }
 }

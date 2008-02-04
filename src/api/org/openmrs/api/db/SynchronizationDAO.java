@@ -279,4 +279,17 @@ public interface SynchronizationDAO {
      */
     public void deleteSynchronizable(Synchronizable o) throws DAOException;
     
+    /**
+     * Sets session flush mode to manual thus suspending session flush. 
+     * 
+     * @throws DAOException
+     */
+    public void setFlushModeManual() throws DAOException;
+
+    /**
+     * Sets session flush mode to automatic thus enabling presistence library's default flush behavior. 
+     * 
+     * @throws DAOException 
+     */
+    public void setFlushModeAutomatic() throws DAOException;
 }

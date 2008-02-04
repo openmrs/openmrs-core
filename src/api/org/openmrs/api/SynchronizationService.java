@@ -368,6 +368,25 @@ public interface SynchronizationService {
      * @throws APIException
      */
     //@Authorized({"Manage Synchronization"})
-    @Transactional(readOnly=true)
+    @Transactional
     public void deleteSynchronizable(Synchronizable o) throws APIException;
+
+
+    /**
+     * Exposes ability to change persistence flush semantics.
+     * 
+     * @throws APIException
+     * 
+     * @see org.openmrs.api.db.SynchronizationDAO#setFlushModeManual()
+     */
+    public void setFlushModeManual() throws APIException;
+    
+    /**
+     * Exposes ability to change persistence flush semantics.
+     * 
+     * @throws APIException
+     * 
+     * @see org.openmrs.api.db.SynchronizationDAO#setFlushModeAutomatic()
+     */
+    public void setFlushModeAutomatic() throws APIException;
 }

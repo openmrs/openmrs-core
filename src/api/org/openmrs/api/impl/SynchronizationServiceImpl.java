@@ -387,4 +387,25 @@ public class SynchronizationServiceImpl implements SynchronizationService {
     public void deleteSynchronizable(Synchronizable o) throws APIException {
     	getSynchronizationDAO().deleteSynchronizable(o);
     }
+ 
+    /**
+     * Changes flush sematics, delegating directly to the corresponsing DAO method.
+     * 
+     * @see org.openmrs.api.SynchronizationService#setFlushModeManual()
+     * @see org.openmrs.api.db.hibernate.HibernateSynchronizationDAO#setFlushModeManual()
+     */
+    public void setFlushModeManual() throws APIException {
+    	getSynchronizationDAO().setFlushModeManual();
+    }
+    
+    /**
+     * Changes flush sematics, delegating directly to the corresponsing DAO method.
+     * 
+     * @see org.openmrs.api.SynchronizationService#setFlushModeAutomatic()
+     * @see org.openmrs.api.db.hibernate.HibernateSynchronizationDAO#setFlushModeAutomatic()
+     */
+    public void setFlushModeAutomatic() throws APIException {
+    	getSynchronizationDAO().setFlushModeAutomatic();
+    }
 }
+

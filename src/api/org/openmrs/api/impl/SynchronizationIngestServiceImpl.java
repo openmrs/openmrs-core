@@ -158,16 +158,18 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                      * because of hibernate flushing semantics inside transactions:
                      * if deleted entity is part of a collection on another object within the same session
                      * and this object gets flushed, error is thrown stating that deleted entities must first be removed
-                     * from collection; this happens immediately when stmts are executed (and not at the Tx boundry)
-                     * If hibernate were to execute this check at Tx boundry then all would be OK since witin the same syncRecord
-                     * there is always an operation for persistent set to remove the entity in question from the collection.
+                     * from collection; this happens immediately when stmts are executed (and not at the Tx boundry) because
+                     * default hibernate FlushMode is AUTO. To futher avoid this issue, explicitely susspend flushing for the 
+                     * duration of deletes.
                      */
+                	//Context.getSynchronizationService().setFlushModeManual(); 
                     for ( SyncItem item : deletedItems ) {
                         SyncImportItem importedItem = this.processSyncItem(item, record.getOriginalGuid() + "|" + server.getGuid());
                         importedItem.setKey(item.getKey());
                         importRecord.addItem(importedItem);
                         if ( !importedItem.getState().equals(SyncItemState.SYNCHRONIZED)) isError = true;
                     }
+                    Context.getSynchronizationService().setFlushModeAutomatic();
                     
                     if ( !isError ) {
                         importRecord.setState(SyncRecordState.COMMITTED);
@@ -211,6 +213,9 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
             }
         } catch (Exception e ) {
             e.printStackTrace();
+        } finally {
+        	//reset the flush mode back to automatic, no matter what
+        	Context.getSynchronizationService().setFlushModeAutomatic();
         }
 
         return importRecord;
