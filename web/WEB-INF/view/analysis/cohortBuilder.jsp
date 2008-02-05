@@ -94,7 +94,7 @@
 		if (hl7Abbrev == 'ZZ')
 			//return 'Handling Datatype N/A not yet implemented. Any suggestions on how it should behave?';
 			return null;
-		if (hl7Abbrev != 'NM' && hl7Abbrev != 'ST' && hl7Abbrev != 'CWE') {
+		if (hl7Abbrev != 'NM' && hl7Abbrev != 'ST' && hl7Abbrev != 'CWE' && hl7Abbrev != 'DT' && hl7Abbrev != 'TS') {
 			return null;
 		}
 		var lookupAnswers = false;
@@ -111,12 +111,19 @@
 		str += '<h4>Patients with observations whose <i>question</i> is ' + concept.name + '.</h4>';
 		if (hl7Abbrev == 'NM')
 			str += '<br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY">Any</option><option value="NO">None</option><option value="FIRST">Earliest</option><option value="LAST" selected="true">Most Recent</option><option value="MIN">Lowest</option><option value="MAX">Highest</option><option value="AVG">Average</option></select></span> ';
+		else if (hl7Abbrev == 'DT' || hl7Abbrev == 'TS')
+			str += '<br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY" selected="true">Any</option><option value="NO">None</option><option value="MIN">Earliest Value</option><option value="MAX">Most Recent Value</option><option value="FIRST">Earliest Recorded</option><option value="LAST">Most Recent Recorded</option></select></span> ';
 		else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE')
 			str += '<br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY">Any</option><option value="NO">None</option><option value="FIRST">Earliest</option><option value="LAST" selected="true">Most Recent</option></select></span> ';
 		if (hl7Abbrev == 'NM') {
 			str += ' <br/><br/><span style="margin-left: 40px">';
 			str += ' <spring:message code="CohortBuilder.optionalPrefix" /> What values? ';
 			str += ' <select name="modifier" id="modifier"><option value="LESS_THAN">&lt;</option><option value="LESS_EQUAL">&lt;=</option><option value="EQUAL">=</option><option value="GREATER_EQUAL">&gt;=</option><option value="GREATER_THAN">&gt;</option></select> ';
+			str += '</span>';
+		} else if (hl7Abbrev == 'DT' || hl7Abbrev == 'TS') {
+			str += ' <br/><br/><span style="margin-left: 40px">';
+			str += ' <spring:message code="CohortBuilder.optionalPrefix" /> What values? ';
+			str += ' <select name="modifier" id="modifier"><option value="LESS_THAN">before</option><option value="LESS_EQUAL" selected="true">on or before</option><option value="EQUAL">on</option><option value="GREATER_EQUAL">on or after</option><option value="GREATER_THAN">after</option></select> ';
 			str += '</span>';
 		} else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE') {
 			str += ' <br/><br/><span style="margin-left: 40px">';
@@ -128,6 +135,8 @@
 			str += '<input type="text" name="value" size="10"/>';
 			if (concept.units != null)
 				str += ' ' + concept.units;
+		} else if (hl7Abbrev == 'DT' || hl7Abbrev == 'TS') {
+			str += '<input type="text" name="value" size="10" onClick="showCalendar(this)"/>';
 		} else if (hl7Abbrev == 'CWE') {
 			str += '<select name="value" id="replace_with_answer_options"><option value=""><spring:message code="general.loading"/></option></select>';
 			lookupAnswers = true;
