@@ -3,6 +3,7 @@ package org.openmrs.api.db.hibernate;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -556,6 +557,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Number numericValue = null;
 		String stringValue = null;
 		Concept codedValue = null;
+		Date dateValue = null;
 		String valueSql = null;
 		if (value != null) {
 			if (concept == null) {
@@ -581,6 +583,17 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				else
 					codedValue = Context.getConceptService().getConceptByName(value.toString());
 				valueSql = "o.value_coded";
+			} else if (concept.getDatatype().getHl7Abbreviation().equals("DT") || concept.getDatatype().getHl7Abbreviation().equals("TS")) {
+				if (value instanceof Date) {
+					dateValue = (Date) value;
+				} else {
+					try {
+						dateValue = Context.getDateFormat().parse(value.toString());
+					} catch (ParseException ex) {
+						throw new IllegalArgumentException("Cannot interpret " + dateValue + " as a date in the format " + Context.getDateFormat());
+					}
+				}
+				valueSql = "o.value_datetime";
 			}
 		}
 
@@ -653,8 +666,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				query.setInteger("value", codedValue.getConceptId());
 			else if (stringValue != null)
 				query.setString("value", stringValue);
+			else if (dateValue != null)
+				query.setDate("value", dateValue);
 			else
-				throw new IllegalArgumentException("useValue is true, but numeric, coded, and string values are all null");
+				throw new IllegalArgumentException("useValue is true, but numeric, coded, string, and date values are all null");
 		}
 		if (fromDate != null)
 			query.setDate("fromDate", fromDate);

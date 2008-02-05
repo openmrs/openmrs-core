@@ -32,7 +32,7 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 	public boolean isReadyToRun() {
 		if (question == null)
 			return value != null && (value instanceof Concept);
-		if (question.getDatatype().getHl7Abbreviation().equals("NM")) {
+		if (question.getDatatype().getHl7Abbreviation().equals("NM") || question.getDatatype().getHl7Abbreviation().equals("DT") || question.getDatatype().getHl7Abbreviation().equals("TS")) {
 			if (getTimeModifier() == TimeModifier.ANY || getTimeModifier() == TimeModifier.NO)
 				return true;
 			else
@@ -57,7 +57,7 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 			return false;
 		if (question == null)
 			return value != null && (value instanceof Concept);
-		if (question.getDatatype().getHl7Abbreviation().equals("NM")) {
+		if (question.getDatatype().getHl7Abbreviation().equals("NM") || question.getDatatype().getHl7Abbreviation().equals("DT") || question.getDatatype().getHl7Abbreviation().equals("TS")) {
 			return true;
 		} else if (question.getDatatype().getHl7Abbreviation().equals("ST")) {
 			TimeModifier tm = getTimeModifier();
