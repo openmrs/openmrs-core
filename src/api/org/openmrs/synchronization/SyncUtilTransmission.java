@@ -469,7 +469,7 @@ public class SyncUtilTransmission {
                 importRecords.add(importRecord);
                 
                 //if the record update failed for any reason, do not continue on, stop now
-                if (importRecord.getState() != SyncRecordState.COMMITTED) {
+                if (importRecord.getState() != SyncRecordState.COMMITTED && importRecord.getState() != SyncRecordState.ALREADY_COMMITTED) {
                 	break;
                 }
             }

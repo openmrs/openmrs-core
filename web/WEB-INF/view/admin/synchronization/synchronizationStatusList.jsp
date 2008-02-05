@@ -137,7 +137,7 @@
 						<c:if test="${empty parent}">
 							<span class="error"><i><spring:message code="SynchronizationStatus.export.viaWeb.enable" /></i></span>
 						</c:if>
-						<c:if test="${syncStatus == 'DISABLED_SYNC_AND_HISTORY' || syncStatus == 'DISABLED_SYNC'}">
+						<c:if test="${syncStatus == 'DISABLED_SYNC_DUE_TO_ERROR' || syncStatus == 'DISABLED_SYNC_AND_HISTORY' || syncStatus == 'DISABLED_SYNC'}">
 							<span class="error"><i><spring:message code="SynchronizationStatus.export.viaWeb.enableSync" /></i></span>
 						</c:if>
 						<span id="syncInfo"></span><br><span id="syncDetails" style="display:none;"></span>

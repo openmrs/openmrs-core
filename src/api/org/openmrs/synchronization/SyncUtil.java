@@ -737,6 +737,54 @@ public class SyncUtil {
         	if ( pat != null && st != null ) ret = pat + " - " + st;
         }
 
+        if ( className.equals("PersonAddress") ) {
+        	PersonAddress address = Context.getPersonService().getPersonAddressByGuid(guid);
+        	String name = address.getPerson().getFamilyName() + " " + address.getPerson().getGivenName();
+        	name += address.getAddress1() != null && address.getAddress1().length() > 0 ? address.getAddress1() + " " : "";
+        	name += address.getAddress2() != null && address.getAddress2().length() > 0 ? address.getAddress2() + " " : "";
+        	name += address.getCityVillage() != null && address.getCityVillage().length() > 0 ? address.getCityVillage() + " " : "";
+        	name += address.getStateProvince() != null && address.getStateProvince().length() > 0 ? address.getStateProvince() + " " : "";
+        	if ( name != null ) ret = name;
+        }
+
+        if ( className.equals("PersonName") ) {
+        	PersonName personName = Context.getPersonService().getPersonNameByGuid(guid);
+        	String name = personName.getFamilyName() + " " + personName.getGivenName();
+        	if ( name != null ) ret = name;
+        }
+
+        if ( className.equals("Relationship") ) {
+        	Relationship relationship = Context.getPersonService().getRelationshipByGuid(guid);
+        	String from = relationship.getPersonA().getFamilyName() + " " + relationship.getPersonA().getGivenName();
+        	String to = relationship.getPersonB().getFamilyName() + " " + relationship.getPersonB().getGivenName();
+        	if ( from != null && to != null ) ret += from + " to " + to;
+        }
+
+        if ( className.equals("RelationshipType") ) {
+        	RelationshipType type = Context.getPersonService().getRelationshipTypeByGuid(guid);
+        	ret += type.getaIsToB() + " - " + type.getbIsToA();
+        }
+
+        if ( className.equals("PersonAttributeType") ) {
+        	PersonAttributeType type = Context.getPersonService().getPersonAttributeTypeByGuid(guid);
+        	ret += type.getName();
+        }
+
+        if ( className.equals("Location") ) {
+        	Location loc = Context.getEncounterService().getLocationByGuid(guid);
+        	ret += loc.getName();
+        }
+
+        if ( className.equals("EncounterType") ) {
+        	EncounterType type = Context.getEncounterService().getEncounterTypeByGuid(guid);
+        	ret += type.getName();
+        }
+
+        if ( className.equals("OrderType") ) {
+        	OrderType type = Context.getOrderService().getOrderTypeByGuid(guid);
+        	ret += type.getName();
+        }
+
         return ret;
     }
         

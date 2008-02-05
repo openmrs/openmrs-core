@@ -6,12 +6,13 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.openmrs.synchronization.Synchronizable;
+import org.openmrs.synchronization.SynchronizableInstance;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
  * ConceptWord
  */
-public class ConceptWord implements java.io.Serializable, Synchronizable,
+public class ConceptWord implements java.io.Serializable, SynchronizableInstance,
 		Comparable<ConceptWord> {
 
 	public static final long serialVersionUID = 888677L;
@@ -24,6 +25,7 @@ public class ConceptWord implements java.io.Serializable, Synchronizable,
 	private String locale;
 	private Double weight = 0.0;
 	private String guid;
+    private boolean isSynchronizable = false;
     private transient String lastRecordGuid;
     
     
@@ -276,5 +278,19 @@ public class ConceptWord implements java.io.Serializable, Synchronizable,
 		return Double.compare(word.getWeight(), weight);
 
 	}
+
+	/**
+     * @see org.openmrs.synchronization.SynchronizableInstance#getIsSynchronizable()
+     */
+    public boolean getIsSynchronizable() {
+	    return this.isSynchronizable;
+    }
+
+	/**
+     * @see org.openmrs.synchronization.SynchronizableInstance#setIsSynchronizable(boolean)
+     */
+    public void setIsSynchronizable(boolean isSynchronizable) {
+	    this.isSynchronizable = isSynchronizable;
+    }
 
 }

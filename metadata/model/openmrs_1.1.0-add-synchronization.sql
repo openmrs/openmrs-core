@@ -106,6 +106,7 @@ CREATE PROCEDURE sync_setup_procedure()
 	('FormField', 'FORM', 1, 1),
 	('GlobalProperty', 'MISC', 0, 0),
 	('Location', 'PATIENT', 1, 1),
+	('LoginCredential', 'REQUIRED', 1, 1),
 	('MimeType', 'DICTIONARY', 1, 1),
 	('Obs', 'PATIENT', 1, 1),
 	('Order', 'PATIENT', 1, 1),

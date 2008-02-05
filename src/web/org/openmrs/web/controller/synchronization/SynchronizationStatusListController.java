@@ -303,12 +303,22 @@ public class SynchronizationStatusListController extends SimpleFormController {
 				}
 			}
 
+			// persistent sets should show something other than their mainClassName (persistedSet)
+			if ( mainClassName.indexOf("Persistent") >= 0 || mainClassName.indexOf("Tree") >= 0 ) mainClassName = record.getContainedClasses();
+			
             recordTypes.put(record.getGuid(), mainClassName);
             recordChangeType.put(record.getGuid(), mainState);
-            
+
             // refactored - CA 21 Jan 2008
-            String displayName = SyncUtil.displayName(mainClassName, mainGuid);
+            String displayName = "";
+            try {
+                displayName = SyncUtil.displayName(mainClassName, mainGuid);
+            } catch ( Exception e ) {
+            	// some methods like Concept.getName() throw Exception s all the time...
+            	displayName = "";
+            }
             if ( displayName != null ) if ( displayName.length() > 0 ) recordText.put(record.getGuid(), displayName);
+
         }
         
         // syncViaWeb error messages
