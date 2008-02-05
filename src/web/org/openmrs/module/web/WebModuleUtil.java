@@ -307,10 +307,13 @@ public class WebModuleUtil {
 			String name = "", className = "";
 			for (int j=0; j < childNodes.getLength(); j++) {
 				Node childNode = childNodes.item(j);
-				if ("servlet-name".equals(childNode.getNodeName()))
-					name = childNode.getTextContent();
-				else if("servlet-class".equals(childNode.getNodeName()))
-					className = childNode.getTextContent();
+				if ("servlet-name".equals(childNode.getNodeName())) {
+					if (childNode.getTextContent() != null)
+						name = childNode.getTextContent().trim();
+				} else if("servlet-class".equals(childNode.getNodeName())) {
+					if (childNode.getTextContent() != null)
+						className = childNode.getTextContent().trim();
+				}
 			}
 			if (name.length() == 0 || className.length() == 0) {
 				log.warn("both 'servlet-name' and 'servlet-class' are required for the 'servlet' tag. Given '" + name + "' and '" + className + "' for module " + mod.getName());
