@@ -35,7 +35,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	private SessionFactory sessionFactory;
 	
-	private HibernateProgramWorkflowDAO() { }
+	public HibernateProgramWorkflowDAO() { }
 	
 	/**
 	 * Set session factory
