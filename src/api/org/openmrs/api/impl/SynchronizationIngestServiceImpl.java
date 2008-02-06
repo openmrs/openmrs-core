@@ -34,7 +34,7 @@ import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.ingest.SyncImportItem;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
-import org.openmrs.synchronization.ingest.SyncItemIngestException;
+import org.openmrs.synchronization.ingest.SyncIngestException;
 import org.openmrs.synchronization.server.RemoteServer;
 import org.openmrs.synchronization.server.RemoteServerType;
 import org.openmrs.synchronization.server.SyncServerRecord;
@@ -83,7 +83,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
      * @param server
      * @return
      */
-    public SyncImportRecord processSyncRecord(SyncRecord record, RemoteServer server) throws APIException {
+    public SyncImportRecord processSyncRecord(SyncRecord record, RemoteServer server) throws SyncIngestException {
         
     	ArrayList<SyncItem> deletedItems = new ArrayList<SyncItem>();
     	SyncImportRecord importRecord = new SyncImportRecord();
@@ -120,15 +120,9 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                         // committed, so let's remind by sending back this import record with already_committed
                         importRecord.setState(SyncRecordState.ALREADY_COMMITTED);
                     } else if (state.equals(SyncRecordState.FAILED)) {
-                    	long retryCount = Long.parseLong(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RETRY_COUNT));                    	
-                    	if (importRecord.getRetryCount() >= retryCount) {
-                            //failed too many times, stop now at this exact record
-                            importRecord.setState(SyncRecordState.FAILED_AND_STOPPED);
-                    	} else {
-                    		//retry
-                    		importRecord.setRetryCount(importRecord.getRetryCount() + 1);
-                    		isUpdateNeeded = true;
-                    	}
+                		//retry next time 
+                		importRecord.setRetryCount(importRecord.getRetryCount() + 1);
+                		isUpdateNeeded = true;
                     }else {
                         isUpdateNeeded = true;
                     }
@@ -215,8 +209,17 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                     Context.getSynchronizationService().updateSyncImportRecord(importRecord);
                 }
             }
-        } catch (Exception e ) {
+        } catch (SyncIngestException e) {
+	        e.printStackTrace();
+        	//TODO in 0.3 release, see ticket #603: fill in sync import record and rethrow to abort tx
+        	//e.setSyncImportRecord(importRecord);
+        	//throw (e);
+        }
+        catch (Exception e ) {
             e.printStackTrace();
+            //TODO in 0.3 release, see ticket #603: fill in sync import record and rethrow to abort tx
+            //SyncIngestException sie = new SyncIngestException(e,SyncConstants.ERROR_RECORD_UNEXPECTED,null,null,importRecord);
+            //throw(sie);
         } finally {
         	//reset the flush mode back to automatic, no matter what
         	Context.getSynchronizationService().setFlushModeAutomatic();
@@ -237,35 +240,34 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 
             Object o = null;
             
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug("STARTING TO PROCESS: " + itemContent);
-                    log.debug("SyncItem state is: " + item.getState());
-                }
-                
-                o = SyncUtil.getRootObject(itemContent);
-                if (o instanceof org.hibernate.collection.PersistentCollection) {
-                	log.debug("Processing a persistent collection");
-                	processHibernateCollection(o.getClass(),itemContent,originalGuid);
-                } else {
-                	processSynchronizable((Synchronizable)o,item,originalGuid);
-                }
-                ret.setState(SyncItemState.SYNCHRONIZED);
-                
-            } catch (Exception e) {
-            	e.printStackTrace();
-                throw new SyncItemIngestException(e,SyncConstants.ERROR_ITEM_BADXML_ROOT, null, itemContent);
+            if (log.isDebugEnabled()) {
+                log.debug("STARTING TO PROCESS: " + itemContent);
+                log.debug("SyncItem state is: " + item.getState());
             }
-                
-        } catch (SyncItemIngestException siie) {
-            ret.setErrorMessage(siie.getItemError());
-            ret.setErrorMessageArgs(siie.getItemErrorArgs());
+            
+            o = SyncUtil.getRootObject(itemContent);
+            if (o instanceof org.hibernate.collection.PersistentCollection) {
+            	log.debug("Processing a persistent collection");
+            	processHibernateCollection(o.getClass(),itemContent,originalGuid);
+            } else {
+            	processSynchronizable((Synchronizable)o,item,originalGuid);
+            }
+            ret.setState(SyncItemState.SYNCHRONIZED);                
+        } catch (SyncIngestException e) {
+        	//TODO in 0.3 release, see ticket #603: MUST RETHROW to abort transaction
+        	//throw (e);
+            ret.setErrorMessage(e.getItemError());
+            ret.setErrorMessageArgs(e.getItemErrorArgs());
             ret.setState(SyncItemState.CONFLICT);
-            ret.setErrorMessageDetail(siie.fillInStackTrace().toString());
-        } catch (Exception e) {
-        	e.printStackTrace();
-            ret.setErrorMessage(SyncConstants.ERROR_ITEM_NOT_PROCESSED);
+            ret.setErrorMessageDetail(e.fillInStackTrace().toString());        	
+        }
+        catch (Exception e) {
+        	//TODO in 0.3 release, see ticket #603: MUST RETHROW to abort transaction
+            //throw new SyncIngestException(e,SyncConstants.ERROR_ITEM_UNEXPECTED, null, itemContent,null);
+            e.printStackTrace();
+			ret.setErrorMessage(SyncConstants.ERROR_ITEM_UNEXPECTED);
             ret.setErrorMessageDetail(e.toString());
+            
         }       
         
         return ret;        
@@ -305,14 +307,14 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
     	if (!org.hibernate.collection.PersistentSet.class.isAssignableFrom(collectionType)) {    		
     		//don't know how to process this collection type
     		log.error("Do not know how to process this collection type: " + collectionType.getName());
-    		throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming);
+    		throw new SyncIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming,null);
     	}
     	    	    	
     	//next, pull out the owner node and get owner instance: 
     	//we need reference to owner object before we start messing with collection entries
     	nodes = SyncUtil.getChildNodes(incoming);
     	if (nodes == null) {
-    		throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming);
+    		throw new SyncIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming,null);
     	}
         for ( i = 0; i < nodes.getLength(); i++ ) {
     		if (nodes.item(i).getNodeName() == "owner") {
@@ -326,7 +328,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
     	}
     	if (ownerGuid == null) {
     		log.error("Owner guid is null while processing collection.");
-    		throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming);
+    		throw new SyncIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming,null);
     	}
         owner = (Synchronizable)SyncUtil.getOpenmrsObj(ownerClassName, ownerGuid);    	
     	
@@ -343,7 +345,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
       				"\nownerCollectionPropertyName:" + ownerCollectionPropertyName +
       				"\nownerCollectionAction:" + ownerCollectionAction +
       				"\nownerGuid:" + ownerGuid);	        	
-        	throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming);
+        	throw new SyncIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming,null);
         }
         entries = (Set)m.invoke(owner, (Object[])null);
 
@@ -381,7 +383,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
     				"\nownerCollectionPropertyName:" + ownerCollectionPropertyName +
     				"\nownerCollectionAction:" + ownerCollectionAction +
     				"\nownerGuid:" + ownerGuid);
-    		throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming);
+    		throw new SyncIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming,null);
         }
         
     	//clear existing entries before adding new ones:
@@ -423,7 +425,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 				    		log.error("entry info: " +
 					      				"\nentryClassName:" + entryClassName + 
 					      				"\nentryGuid:" + entryGuid);							
-							throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, ownerClassName, incoming);
+							throw new SyncIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, ownerClassName, incoming,null);
 						} else {
 							//finally, remove it from the collection
 							entries.remove(toBeRemoved);
@@ -432,7 +434,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 					
 				} else {
 					log.error("Unknown collection entry action, action was: " + entryAction);
-					throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, ownerClassName, incoming);
+					throw new SyncIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, ownerClassName, incoming,null);
 				}
     		}
     	}
@@ -450,7 +452,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
             SyncUtil.updateOpenmrsObject(owner, ownerClassName, ownerGuid, true);
         } catch ( Exception e ) {
         	e.printStackTrace();
-            throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, ownerClassName, incoming);
+            throw new SyncIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, ownerClassName, incoming,null);
         }
     }
 
@@ -495,7 +497,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 
 	    if ( o == null || className == null || allFields == null || nodes == null ) {
 	    	log.warn("Item is missing a className or all fields or nodes");
-	    	throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOCLASS, className, itemContent);
+	    	throw new SyncIngestException(SyncConstants.ERROR_ITEM_NOCLASS, className, itemContent,null);
 	    }
 
 	    String guid = SyncUtil.getAttribute(nodes, "guid", allFields);
@@ -533,7 +535,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 	            } catch ( Exception e ) {
 	            	log.error("Error when trying to set " + nodes.item(i).getNodeName() + ", which is a " + className);
 	            	e.printStackTrace();
-	                throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_UNSET_PROPERTY, nodes.item(i).getNodeName() + "," + className, itemContent);
+	                throw new SyncIngestException(SyncConstants.ERROR_ITEM_UNSET_PROPERTY, nodes.item(i).getNodeName() + "," + className, itemContent,null);
 	            }
 	        }
         	        
@@ -544,7 +546,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 	            Context.getSynchronizationService().flushSession();
 	        } catch ( Exception e ) {
 	        	e.printStackTrace();
-	            throw new SyncItemIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, className, itemContent);
+	            throw new SyncIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, className, itemContent,null);
 	        }
         }
         	                

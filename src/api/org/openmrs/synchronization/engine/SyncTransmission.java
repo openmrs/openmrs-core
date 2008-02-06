@@ -47,6 +47,7 @@ public class SyncTransmission implements IItem {
     private String syncSourceGuid = null; //this is GUID of a server where Tx is coming from
     private String syncTargetGuid = null; //this is GUID of server where Tx is headed TO
     private Boolean isRequestingTransmission = false;
+    private Boolean isMaxRetryReached = false; 
 
     // constructor(s)
     public SyncTransmission() {
@@ -74,7 +75,14 @@ public class SyncTransmission implements IItem {
         this.syncSourceGuid  = sourceGuid;
     }
 
-    // methods
+    public Boolean getIsMaxRetryReached() {
+        return isMaxRetryReached;
+    }
+
+    public void setIsMaxRetryReached(boolean value) {
+        isMaxRetryReached = value;
+    }
+
     public Boolean getIsRequestingTransmission() {
         return isRequestingTransmission;
     }
@@ -164,6 +172,7 @@ public class SyncTransmission implements IItem {
         if (syncSourceGuid != null) xml.setAttribute(me, "syncSourceGuid", syncSourceGuid);
         if (timestamp != null) xml.setAttribute(me, "timestamp", new TimestampNormalizer().toString(timestamp));
         if (this.isRequestingTransmission != null) xml.setAttribute(me, "isRequestingTransmission", this.isRequestingTransmission.toString());
+        if (this.isMaxRetryReached != null) xml.setAttribute(me, "isMaxRetryReached", this.isMaxRetryReached.toString());
 
         if (syncTargetGuid != null) xml.setAttribute(me, "syncTargetGuid", syncTargetGuid);
         else xml.setAttribute(me, "syncTargetGuid", SyncConstants.GUID_UNKNOWN);
@@ -192,6 +201,7 @@ public class SyncTransmission implements IItem {
         this.syncSourceGuid = me.getAttribute("syncSourceGuid");
         this.syncTargetGuid = me.getAttribute("syncTargetGuid");
         this.isRequestingTransmission = Boolean.valueOf(me.getAttribute("isRequestingTransmission"));
+        this.isMaxRetryReached =  Boolean.valueOf(me.getAttribute("isMaxRetryReached"));
 
         if (me.getAttribute("timestamp") == null)
             this.timestamp = null;

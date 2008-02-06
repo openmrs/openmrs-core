@@ -76,5 +76,10 @@ public enum SyncTransmissionState {
     /**
      * Server object passed to sync methods was null or non-existent.  This should not ever happen, so troubleshoot code.
      */    
-    INVALID_SERVER
+    INVALID_SERVER,
+    
+    /**
+     * Transmission to be sent would contain records that have been retried too many times (see global property SyncConstants.PROPERTY_NAME_MAX_RETRY_COUNT)
+     */
+    MAX_RETRY_REACHED
 }

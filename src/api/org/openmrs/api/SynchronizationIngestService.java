@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import org.openmrs.synchronization.ingest.SyncIngestException;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.ingest.SyncImportItem;
@@ -29,7 +30,7 @@ public interface SynchronizationIngestService {
      * @throws APIException
      */
     //@Authorized({"Manage Synchronization Records"})
-    public SyncImportRecord processSyncRecord(SyncRecord record, RemoteServer server) throws APIException;
+    public SyncImportRecord processSyncRecord(SyncRecord record, RemoteServer server) throws SyncIngestException;
     
     /**
      * Processes SyncImportRecord.

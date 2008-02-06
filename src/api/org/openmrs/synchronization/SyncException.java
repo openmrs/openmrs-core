@@ -13,12 +13,18 @@
  */
 package org.openmrs.synchronization;
 
-public class SyncException extends RuntimeException {
+ import org.openmrs.api.APIException;
+
+public class SyncException extends APIException {
 
     public static final long serialVersionUID = 0L;
         
 
     public SyncException() {
+    }
+
+    public SyncException(Throwable t) {
+    	super(t);
     }
 
     public SyncException(String message) {

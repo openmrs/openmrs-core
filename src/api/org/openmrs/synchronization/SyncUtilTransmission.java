@@ -28,6 +28,7 @@ import org.openmrs.synchronization.engine.SyncSourceJournal;
 import org.openmrs.synchronization.engine.SyncStrategyFile;
 import org.openmrs.synchronization.engine.SyncTransmission;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
+import org.openmrs.synchronization.ingest.SyncIngestException;
 import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
 import org.openmrs.synchronization.server.ConnectionResponse;
 import org.openmrs.synchronization.server.RemoteServer;
@@ -111,6 +112,8 @@ public class SyncUtilTransmission {
      */
     public static SyncTransmission createSyncTransmission(RemoteServer server) {
         SyncTransmission tx = null;
+        long maxRetryCount = 0;
+        boolean maxRetryCountReached = false;
 
         try {
             SyncSource source = new SyncSourceJournal();
@@ -130,9 +133,23 @@ public class SyncUtilTransmission {
                         tx.setSyncTargetGuid(server.getGuid());
                     }
                     // let's update SyncRecords to reflect the fact that we now have tried to sync them, by setting state to SENT or SENT_AGAIN
+                    maxRetryCount = Long.parseLong(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RETRY_COUNT));
                     if ( tx.getSyncRecords() != null ) {
                         for ( SyncRecord record : tx.getSyncRecords() ) {
+                        	//if max re-try was reached stop now: 
+                        	//a) mark the record as failed save it to DB, 
+                        	//b) clear out the Tx we are creating
+                        	//c) decrement the retry count on records 'after' the one that failed -- they never really got a chance
+                        	//  and if offending record is fixed, the dudes that follow would fail with max retry error
+                        	if (record.getRetryCount() >= maxRetryCount) {
+                        		record.setState(SyncRecordState.FAILED_AND_STOPPED);
+                        		Context.getSynchronizationService().updateSyncRecord(record);
+                        		maxRetryCountReached = true;
+                        		continue;
+                        	}
                             if ( record.getServerRecords() != null && !server.getServerType().equals(RemoteServerType.PARENT)) {
+                            	//parent -> child: this Tx is part of exchange where where parent is sending its changes down to child
+                            	//mark row in the synchronization_server_record table as being sent, 
                                 for ( SyncServerRecord serverRecord : record.getServerRecords() ) {
                                     if ( serverRecord.getSyncServer().equals(server)) {
                                         serverRecord.setRetryCount(serverRecord.getRetryCount() + 1);
@@ -142,6 +159,7 @@ public class SyncUtilTransmission {
                                 }
                                 Context.getSynchronizationService().updateSyncRecord(record);
                             } else if ( server.getServerType().equals(RemoteServerType.PARENT)) {
+                            	//child -> parent scenario: we are about to send data from child to parent
                                 record.setRetryCount(record.getRetryCount() + 1);
                                 if ( record.getState().equals(SyncRecordState.NEW ) ) record.setState(SyncRecordState.SENT);
                                 else record.setState(SyncRecordState.SENT_AGAIN);
@@ -149,6 +167,9 @@ public class SyncUtilTransmission {
                             } else {
                                 log.error("Odd state: trying to get syncRecords for a non-parent server with no corresponding server-records");
                             }
+                        }
+                        if (tx.getIsMaxRetryReached() || maxRetryCountReached) {
+                        	tx.setSyncRecords(null);
                         }
                     }
                 }
@@ -172,7 +193,6 @@ public class SyncUtilTransmission {
         response.setState(SyncTransmissionState.NO_PARENT_DEFINED);
         
         RemoteServer parent = Context.getSynchronizationService().getParentServer();
-        
         if ( parent != null ) {
             response = SyncUtilTransmission.sendSyncTranssmission(parent); 
         }
@@ -234,6 +254,12 @@ public class SyncUtilTransmission {
         response.setState(SyncTransmissionState.SEND_FAILED);
         
         try {
+        	//handle the case of getting to too many retries
+        	if(transmission != null) if(transmission.getIsMaxRetryReached()) {
+        		response.setState(SyncTransmissionState.MAX_RETRY_REACHED);
+        		return response;
+        	}
+        	
             if ( server != null ) {
                 String toTransmit = null;
                 if ( responseInstead != null ) {
@@ -463,9 +489,23 @@ public class SyncUtilTransmission {
         List<SyncImportRecord> importRecords = new ArrayList<SyncImportRecord>();
         
         if ( st.getSyncRecords() != null ) {
+        	SyncImportRecord importRecord = null;
             for ( SyncRecord record : st.getSyncRecords() ) {
-                //SyncImportRecord importRecord = SyncRecordIngest.processSyncRecord(record);
-                SyncImportRecord importRecord = Context.getSynchronizationIngestService().processSyncRecord(record, origin);
+            	try {
+            		//pre-create import record in case we get exception
+                	importRecord = new SyncImportRecord();
+                    importRecord.setState(SyncRecordState.FAILED);  // by default, until we know otherwise
+                    importRecord.setRetryCount(record.getRetryCount());
+                    importRecord.setTimestamp(record.getTimestamp());
+                    
+            		importRecord = Context.getSynchronizationIngestService().processSyncRecord(record, origin);
+            	} catch (SyncIngestException e) {
+            		e.printStackTrace();
+            		importRecord = e.getSyncImportRecord();
+            	} catch (Exception e) {
+            		//just report error, import record already set to failed
+            		e.printStackTrace();
+            	}
                 importRecords.add(importRecord);
                 
                 //if the record update failed for any reason, do not continue on, stop now

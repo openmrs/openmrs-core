@@ -40,15 +40,13 @@ public class SyncConstants {
 	public static final String ERROR_NO_CONNECTION = "SynchronizationStatus.transmission.noConnectionError";
 	public static final String ERROR_INVALID_SERVER = "SynchronizationStatus.transmission.invalidServer";
 
-	// error message codes - at the item level
+	// error message codes - at the item/record level
 	public static final String ERROR_ITEM_NOT_COMMITTED = "SynchronizationStatus.item.notCommitted";
-	public static final String ERROR_ITEM_NOT_PROCESSED = "SynchronizationStatus.item.notProcessed";
 	public static final String ERROR_ITEM_NOCLASS = "SynchronizationStatus.item.noClassFound";
-	public static final String ERROR_ITEM_NOSETTER = "SynchronizationStatus.item.noSetter";
-	public static final String ERROR_ITEM_BADXML_ROOT = "SynchronizationStatus.item.badXml.root";
 	public static final String ERROR_ITEM_BADXML_MISSING = "SynchronizationStatus.item.badXml.missing";
-	public static final String ERROR_ITEM_INVALID_FIELDVAL = "SynchronizationStatus.item.invalid.fieldVal";
 	public static final String ERROR_ITEM_UNSET_PROPERTY = "SynchronizationStatus.item.unsetProperty";
+	public static final String ERROR_ITEM_UNEXPECTED = "SynchronizationStatus.item.unexpected";
+	public static final String ERROR_RECORD_UNEXPECTED = "SynchronizationStatus.record.unexpected";
 	
 	// error-induced filenames
 	public static final String FILENAME_NO_RESPONSE = "no_response_from_server";

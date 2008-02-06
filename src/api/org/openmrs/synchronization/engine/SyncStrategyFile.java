@@ -95,6 +95,7 @@ public class SyncStrategyFile {
     public SyncTransmission createStateBasedSyncTransmission(SyncSource source, boolean writeFileToo, RemoteServer server) {
 
         SyncTransmission syncTx = null;
+        boolean isMaxRetryReached = false;
         
         if ( server != null ) {
             List<SyncRecord> changeset = null;
@@ -106,9 +107,8 @@ public class SyncStrategyFile {
             // need to check each SyncRecord to see if it's eligible for sync'ing
             if ( changeset != null ) {
                 for ( SyncRecord record : changeset ) {
-                	//first see if we've gotten to the failed & stopped state; if so don't
-                	//attempt to send the record and what follows it again
                     if (record.getState() == SyncRecordState.FAILED_AND_STOPPED)  {
+                    	isMaxRetryReached = true;
                     	break;
                     }
                     Set<String> containedClasses = record.getContainedClassSet();
@@ -136,6 +136,9 @@ public class SyncStrategyFile {
             syncTx = new SyncTransmission(sourceGuid,filteredChangeset);
             syncTx.create(writeFileToo);
             syncTx.setSyncTargetGuid(server.getGuid());
+            if (isMaxRetryReached)  {
+            	syncTx.setIsMaxRetryReached(true);
+            }
         }
                 
         return syncTx;
