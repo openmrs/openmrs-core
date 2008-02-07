@@ -42,6 +42,13 @@
 			<one-to-many class="org.openmrs.synchronization.filter.SyncServerClass" />
 		</set>
 
+		<set name="serverRecords" lazy="true" inverse="true" cascade="all-delete-orphan">
+			<key>
+				<column name="server_id" />
+			</key>
+			<one-to-many class="org.openmrs.synchronization.server.SyncServerRecord" />
+		</set>
+
 	    <property name="disabled" type="java.lang.Boolean" column="disabled"
 	        length="1" not-null="true" />
 

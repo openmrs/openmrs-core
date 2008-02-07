@@ -32,6 +32,7 @@ public class RemoteServer {
 	private String password;
     private Date lastSync;
     private Set<SyncServerClass> serverClasses;
+    private Set<SyncServerRecord> serverRecords;
     private String guid;
     private Boolean disabled = false;
     private String childUsername = null;
@@ -223,6 +224,14 @@ public class RemoteServer {
 
     public void setChildUsername(String childUsername) {
         this.childUsername = childUsername;
+    }
+
+	public Set<SyncServerRecord> getServerRecords() {
+    	return serverRecords;
+    }
+
+	public void setServerRecords(Set<SyncServerRecord> serverRecords) {
+    	this.serverRecords = serverRecords;
     }
 
 }

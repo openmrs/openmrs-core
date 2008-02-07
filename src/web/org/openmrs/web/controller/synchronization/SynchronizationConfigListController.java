@@ -38,18 +38,16 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ModuleConstants;
-import org.openmrs.module.ModuleUtil;
 import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.serialization.TimestampNormalizer;
-import org.openmrs.synchronization.SyncStatusState;
-import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.SyncConstants;
+import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.SyncUtilTransmission;
 import org.openmrs.synchronization.engine.SyncSource;
 import org.openmrs.synchronization.engine.SyncSourceJournal;
 import org.openmrs.synchronization.engine.SyncTransmission;
 import org.openmrs.synchronization.filter.SyncClass;
+import org.openmrs.synchronization.filter.SyncServerClass;
 import org.openmrs.synchronization.server.RemoteServer;
 import org.openmrs.synchronization.server.RemoteServerType;
 import org.openmrs.synchronization.server.ServerConnectionState;
@@ -188,6 +186,15 @@ public class SynchronizationConfigListController extends SimpleFormController {
         		success = msa.getMessage("SynchronizationConfig.parent.saved");        		
         	}
         } else if ( "saveClasses".equals(action) ) {
+        	// save guid, server name, and admin email first
+        	String serverGuid = ServletRequestUtils.getStringParameter(request, "serverGuid", "");
+        	String serverName = ServletRequestUtils.getStringParameter(request, "serverName", "");
+        	String adminEmail = ServletRequestUtils.getStringParameter(request, "serverAdminEmail", "");
+        	
+        	if ( serverGuid.length() > 0 ) SyncUtil.setLocalServerGuid(serverGuid);
+        	SyncUtil.setLocalServerName(serverName);
+        	SyncUtil.setAdminEmail(adminEmail);
+        	
             String[] classIdsTo = ServletRequestUtils.getRequiredStringParameters(request, "toDefault");
             String[] classIdsFrom = ServletRequestUtils.getRequiredStringParameters(request, "fromDefault");
             Set<String> idsTo = new HashSet<String>();
@@ -208,6 +215,29 @@ public class SynchronizationConfigListController extends SimpleFormController {
             }
 
             success = msa.getMessage("SynchronizationConfig.classes.saved");             
+        } else if ( "deleteServer".equals(action) ) {
+            // check to see if the user is trying to delete a server, react accordingly
+            Integer serverId = ServletRequestUtils.getIntParameter(request, "serverId", 0);
+            String serverName = "Server " + serverId.toString();
+
+            SynchronizationService ss = Context.getSynchronizationService();
+            
+            if ( serverId > 0 ) {
+            	RemoteServer deleteServer = ss.getRemoteServer(serverId);
+            	serverName = deleteServer.getNickname();
+
+            	try {
+            		ss.deleteRemoteServer(deleteServer);
+            		Object[] args = {serverName};
+                    success = msa.getMessage("SynchronizationConfig.server.deleted", args);             
+            	} catch (Exception e) {
+            		Object[] args = {serverName};
+            		error = msa.getMessage("SynchronizationConfig.server.deleteFailed", args);
+            	}
+            } else {
+            	error = msa.getMessage("SynchronizationConfig.server.notDeleted");
+            }
+
         } else if ( "manualTx".equals(action ) ) {
             try {
                 Integer serverId = ServletRequestUtils.getIntParameter(request, "serverId", 0);
@@ -266,19 +296,14 @@ public class SynchronizationConfigListController extends SimpleFormController {
         if (Context.isAuthenticated()) {
             SynchronizationService ss = Context.getSynchronizationService();
 
-            // check to see if the user is trying to delete a server, react accordingly
-            Integer serverId = ServletRequestUtils.getIntParameter(request, "delete", 0);
-            if ( serverId > 0 ) {
-            	ss.deleteRemoteServer(ss.getRemoteServer(serverId));
-            	
-            }
-
             serverList.addAll(ss.getRemoteServers());
             obj.put("serverList", serverList);
             
             SyncSource source = new SyncSourceJournal();
             obj.put("localServerGuid",source.getSyncSourceGuid());
             obj.put("localServerSyncStatus", source.getSyncStatus());
+            //obj.put("localServerName", SyncUtil.getLocalServerName());
+            //obj.put("localServerAdminEmail",SyncUtil.getAdminEmail());
             
         }
 
@@ -403,6 +428,8 @@ public class SynchronizationConfigListController extends SimpleFormController {
 	        ret.put("localServerSyncStatusText", msa.getMessage("SynchronizationConfig.syncStatus.status." + ref.get("localServerSyncStatus").toString()));
             ret.put("localServerSyncStatusMsg", msa.getMessage("SynchronizationConfig.syncStatus.status." + ref.get("localServerSyncStatus").toString() + ".info" , new String[] {SyncConstants.RUNTIMEPROPERTY_SYNC_STATUS}));
 	        ret.put("localServerGuid", ref.get("localServerGuid"));           
+	        ret.put("localServerName", SyncUtil.getLocalServerName());           
+	        ret.put("localServerAdminEmail", SyncUtil.getAdminEmail());           
             ret.put("localServerGuidMsg", msa.getMessage("SynchronizationConfig.syncStatus.guid.info", new String[] {SyncConstants.SERVER_GUID}));
 		}
         

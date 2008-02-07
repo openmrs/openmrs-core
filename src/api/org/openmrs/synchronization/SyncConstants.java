@@ -69,6 +69,8 @@ public class SyncConstants {
     public static final String RUNTIMEPROPERTY_SYNC_STATUS = "synchronization.sync_status"; //SyncStatusState enum
     public static final String PARENT_GUID = "synchronization.parent_guid";
     public static final String PROPERTY_NAME_MAX_RETRY_COUNT = "synchronization.max_retry_count";
+    public static final String SERVER_NAME = "synchronization.server_name";
+    public static final String SYNC_ADMIN_EMAIL = "synchronization.admin_email";
 
 	public static final String RESPONSE_SUFFIX = "_response";
 

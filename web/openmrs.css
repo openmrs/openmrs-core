@@ -1203,3 +1203,17 @@ table td#summaryHeaderPatientGender {
 	color: #444444;
 	font-weight: bold;
 }
+
+.syncStatusDisabled {
+	color: #dd0022;
+	font-weight: bold;
+	font-size: 1.1em;
+	font-family: arial, verdana, sans-serif;
+}
+
+.syncStatusEnabled {
+	color: #33aa33;
+	font-weight: bold;
+	font-size: 1.1em;
+	font-family: arial, verdana, sans-serif;
+}

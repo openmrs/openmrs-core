@@ -178,6 +178,22 @@ CREATE PROCEDURE sync_setup_procedure()
 	           'Globally unique server id used to identify a given data source in synchronization.');
 	 end if;
 
+	 # Create/fill-in server name global property
+	 if (SELECT count(*) FROM global_property where property = 'synchronization.server_name') > 0  then
+       select 'server name already assigned, no change made' from dual;
+	 else
+	    insert into global_property (property, property_value, description)
+	    values ('synchronization.server_name', '', 'Display name for this server, to distinguish it from other servers.');
+	 end if;
+
+	 # Create/fill-in admin email global property
+	 if (SELECT count(*) FROM global_property where property = 'synchronization.admin_email') > 0  then
+       select 'administrator email already assigned, no change made' from dual;
+	 else
+	    insert into global_property (property, property_value, description)
+	    values ('synchronization.admin_email', '', 'Email address for administrator responsible for this server.');
+	 end if;
+
 	#fill out the default role for sync
 	IF( SELECT count(*) > 0 FROM global_property WHERE property = 'synchronization.default_role' ) THEN
 		UPDATE global_property SET property_value='System Developer' where property='synchronization.default_role';

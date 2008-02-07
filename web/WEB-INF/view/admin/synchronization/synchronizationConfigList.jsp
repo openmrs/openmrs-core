@@ -20,7 +20,7 @@
 	function confirmDelete(id) {
 		var isConfirmed = confirm("<spring:message code="Synchronization.config.server.confirmDelete" />");
 		if ( isConfirmed ) {
-			location.href = "synchronizationConfig.list?delete=" + id;
+			document.getElementById("deleteServer" + id).submit();
 		}
 	}
 </script>
@@ -47,6 +47,7 @@
 	<b class="boxHeader"><spring:message code="SynchronizationConfig.syncStatus"/></b>
 	<div class="box">
 		<table id="syncStatus" cellpadding="10" cellspacing="0">
+			<%--
 			<thead>
 				<tr>
 					<th style="background-color: #eef3ff; font-weight: bold;"><spring:message code="SynchronizationConfig.property.name"/></th>
@@ -54,17 +55,20 @@
 					<th style="background-color: #eef3ff; font-weight: bold;"><spring:message code="SynchronizationConfig.property.comments"/></th>
 				</tr>
 			</thead>
+			--%>
 			<tbody>
 				<tr>
-					<td><b><spring:message code="SynchronizationConfig.syncStatus.status" /></b></td>
-					<td>${localServerSyncStatusText}</td>
+					<%--<td><b><spring:message code="SynchronizationConfig.syncStatus.status" /></b></td>--%>
+					<td nowrap><spring:message code="SynchronizationConfig.syncStatus.is" />: ${localServerSyncStatusText}</td>
 					<td>${localServerSyncStatusMsg}</td>
 				</tr>
+				<%--
 				<tr>
 					<td><b><spring:message code="SynchronizationConfig.syncStatus.guid" /></b></td>
 					<td>${localServerGuid}</td>
 					<td>${localServerGuidMsg}</td>
 				</tr>
+				--%>
 			</tbody>
 		</table>
 	</div>
@@ -185,7 +189,11 @@
 								<td style="background-color: #${bgStyle}; text-align:center;">
 									<c:choose>
 										<c:when test="${server.serverType != 'PARENT'}">
-											<a href="javascript:confirmDelete('${server.serverId}');"><img src="<%= request.getContextPath() %>/images/trash.gif" alt="delete" border="0" /></a>
+											<form id="deleteServer${server.serverId}" action="synchronizationConfig.list" method="post">
+												<input type="hidden" name="action" value="deleteServer" />
+												<input type="hidden" id="serverId" name="serverId" value="${server.serverId}" />
+												<a href="javascript:confirmDelete('${server.serverId}');"><img src="<%= request.getContextPath() %>/images/trash.gif" alt="delete" border="0" /></a>
+											</form>
 										</c:when>
 										<c:otherwise>
 											&nbsp;
@@ -235,10 +243,35 @@
 </div>
 
 <div id="advanced" style="display:none;">
-	<b class="boxHeader"><spring:message code="SynchronizationConfig.advanced.objects"/></b>
-	<div class="box">
-		<form action="synchronizationConfig.list" method="post">
-			<input type="hidden" name="action" value="saveClasses" />
+
+	<form action="synchronizationConfig.list" method="post">
+	<input type="hidden" name="action" value="saveClasses" />
+
+		<b class="boxHeader"><spring:message code="SynchronizationConfig.advanced.configOptions"/></b>
+		<div class="box">
+			<table id="syncStatus" cellpadding="8" cellspacing="0">
+				<tr>
+					<td align="right" nowrap><b><spring:message code="SynchronizationConfig.advanced.serverGuid" /></b></td>
+					<td><input type="text" size="50" name="serverGuid" id="serverGuid" value="${localServerGuid}" /></td>
+					<td><spring:message code="SynchronizationConfig.advanced.serverGuid.info" /></td>
+				</tr>
+				<tr>
+					<td align="right" nowrap><b><spring:message code="SynchronizationConfig.advanced.serverName" /></b></td>
+					<td><input type="text" size="50" name="serverName" id="serverName" value="${localServerName}" /></td>
+					<td><spring:message code="SynchronizationConfig.advanced.serverName.info" /></td>
+				</tr>
+				<tr>
+					<td align="right" nowrap><b><spring:message code="SynchronizationConfig.advanced.serverAdminEmail" /></b></td>
+					<td><input type="text" size="50" name="serverAdminEmail" id="serverAdminEmail" value="${localServerAdminEmail}" /></td>
+					<td><spring:message code="SynchronizationConfig.advanced.serverAdminEmail.info" /></td>
+				</tr>
+			</table>
+		</div>
+	
+		<br />
+	
+		<b class="boxHeader"><spring:message code="SynchronizationConfig.advanced.objects"/></b>
+		<div class="box">
 			<table>
 				<tr>
 					<td style="padding-right: 80px;" valign="top">
@@ -371,8 +404,10 @@
 					</td>
 				</tr>
 			</table>
-		</form>
-	</div>
+		</div>
+
+	</form>
+
 </div>
 
 <!-- turn off content based on value of  localServerSyncStatusValue-->

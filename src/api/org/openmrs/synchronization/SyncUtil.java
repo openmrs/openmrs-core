@@ -794,4 +794,35 @@ public class SyncUtil {
 	public static synchronized void deleteOpenmrsObject(Synchronizable o) {
 		Context.getSynchronizationService().deleteSynchronizable(o);
 	}
+
+    public static String getLocalServerGuid() {
+        return Context.getSynchronizationService().getGlobalProperty(SyncConstants.SERVER_GUID);        
+    }
+    
+    public static void setLocalServerGuid(String guid) {
+        Context.getSynchronizationService().setGlobalProperty(SyncConstants.SERVER_GUID, guid);
+        
+        return;   
+    }
+
+    public static String getLocalServerName() {
+        return Context.getSynchronizationService().getGlobalProperty(SyncConstants.SERVER_NAME);        
+    }
+    
+    public static void setLocalServerName(String name) {
+        Context.getSynchronizationService().setGlobalProperty(SyncConstants.SERVER_NAME, name);
+        
+        return;   
+    }
+
+    public static String getAdminEmail() {
+        return Context.getSynchronizationService().getGlobalProperty(SyncConstants.SYNC_ADMIN_EMAIL);        
+    }
+    
+    public static void setAdminEmail(String email) {
+        Context.getSynchronizationService().setGlobalProperty(SyncConstants.SYNC_ADMIN_EMAIL, email);
+        
+        return;   
+    }
+
 }
