@@ -43,6 +43,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
 import org.openmrs.serialization.TimestampNormalizer;
+import org.openmrs.synchronization.SyncException;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.SyncStatusState;
@@ -102,6 +103,7 @@ public class SynchronizationStatusListController extends SimpleFormController {
         // TODO - replace with privilege check
         if (!Context.isAuthenticated()) throw new APIAuthenticationException("Not authenticated!");
         
+        RemoteServer parent = null;
         HttpSession httpSession = request.getSession();
         String success = "";
         String error = "";
@@ -115,12 +117,16 @@ public class SynchronizationStatusListController extends SimpleFormController {
         	
 	        if ("createTx".equals(action)) {            	
 	            try {
+	                parent = Context.getSynchronizationService().getParentServer();
+	                if (parent == null) {
+	                	throw new SyncException("Could not retrieve information about the parent server; null returned.");
+	                }
+
 	            	// we are creating a sync-transmission, so start by generating a SyncTransmission object
-	            	SyncTransmission tx = SyncUtilTransmission.createSyncTransmission();
+	            	SyncTransmission tx = SyncUtilTransmission.createSyncTransmission(parent);
 	                String toTransmit = tx.getFileOutput();
 	
 	                // Record last attempt
-	                RemoteServer parent = Context.getSynchronizationService().getParentServer();
 	                parent.setLastSync(new Date());
 	                Context.getSynchronizationService().updateRemoteServer(parent);
 	                
@@ -143,7 +149,7 @@ public class SynchronizationStatusListController extends SimpleFormController {
 	
 	        	try {
 	            	String contents = "";
-	                RemoteServer parent = Context.getSynchronizationService().getParentServer();
+	                parent = Context.getSynchronizationService().getParentServer();
 	
 	            	// first, get contents of file that is being uploaded.  it is clear we are uploading a response from parent at this point
 	            	MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
@@ -160,7 +166,7 @@ public class SynchronizationStatusListController extends SimpleFormController {
 	    					}
 	    				} catch (Exception e) {
 	                        e.printStackTrace();
-	    					log.warn("Unable to read in sync data file", e);
+	    					log.error("Unable to read in sync data file", e);
 	    					error = e.getMessage();
 	    				} finally {
 	    					try {
@@ -168,7 +174,7 @@ public class SynchronizationStatusListController extends SimpleFormController {
 	    							inputStream.close();
 	    					}
 	    					catch (IOException io) {
-	    						log.warn("Unable to close temporary input stream", io);
+	    						log.error("Unable to close temporary input stream", io);
 	    					}
 	    				}
 	    			}

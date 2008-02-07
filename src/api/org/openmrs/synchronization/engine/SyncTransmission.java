@@ -63,16 +63,31 @@ public class SyncTransmission implements IItem {
         this.syncSourceGuid  = sourceGuid;
         this.isRequestingTransmission = isRequestingTransmission;
     }
+    public SyncTransmission(String sourceGuid, boolean isRequestingTransmission, String targetGuid) {
+
+        guid = UUID.randomUUID().toString();        
+        fileName = "sync_tx_" + SyncConstants.SYNC_FILENAME_MASK.format(new Date()) + "_request";
+        this.syncSourceGuid  = sourceGuid;
+        this.syncSourceGuid  = targetGuid;
+        this.isRequestingTransmission = isRequestingTransmission;
+    }
 
     /* 
      * Take passed in records and create a new sync_tx file
      */
     public SyncTransmission(String sourceGuid, List<SyncRecord> valRecords) {
+    	init(sourceGuid,valRecords, null);
+    }
+    public SyncTransmission(String sourceGuid, List<SyncRecord> valRecords,String targetGuid ) {
+    	init(sourceGuid,valRecords,targetGuid);
+    }
+    private void init(String sourceGuid, List<SyncRecord> valRecords,String targetGuid) {
 
         guid = UUID.randomUUID().toString();        
         fileName = "sync_tx_" + SyncConstants.SYNC_FILENAME_MASK.format(new Date());
         this.syncRecords = valRecords;
         this.syncSourceGuid  = sourceGuid;
+        this.syncTargetGuid  = targetGuid;
     }
 
     public Boolean getIsMaxRetryReached() {

@@ -50,6 +50,7 @@ public class SyncUtilTransmission {
 	 * this method is called when sync via file is used
 	 * createSyncTransmission(RemoteServer server) is called when send via Web or scheduled tx are used
 	 */
+	@Deprecated
     public static SyncTransmission createSyncTransmission() {
         SyncTransmission tx = null;
 
@@ -105,7 +106,7 @@ public class SyncUtilTransmission {
     }
     
     /**
-     * Prepares a sync transmission containing local changes to be send to the remote server.
+     * Prepares a sync transmission containing local changes to be sent to the remote server.
      * 
      * @param server
      * @return

@@ -130,10 +130,8 @@ public class SyncStrategyFile {
                 }
             }
             
-            String sourceGuid = source.getSyncSourceGuid();
-            
             //pack it into transmission
-            syncTx = new SyncTransmission(sourceGuid,filteredChangeset);
+            syncTx = new SyncTransmission(source.getSyncSourceGuid(),filteredChangeset, server.getGuid());
             syncTx.create(writeFileToo);
             syncTx.setSyncTargetGuid(server.getGuid());
             if (isMaxRetryReached)  {
