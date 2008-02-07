@@ -431,6 +431,7 @@ public class SynchronizationConfigListController extends SimpleFormController {
 	        ret.put("localServerName", SyncUtil.getLocalServerName());           
 	        ret.put("localServerAdminEmail", SyncUtil.getAdminEmail());           
             ret.put("localServerGuidMsg", msa.getMessage("SynchronizationConfig.syncStatus.guid.info", new String[] {SyncConstants.SERVER_GUID}));
+            
 		}
         
 	    return ret;
