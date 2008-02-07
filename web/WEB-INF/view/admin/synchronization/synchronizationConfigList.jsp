@@ -407,7 +407,6 @@
 		</div>
 
 	</form>
-
 </div>
 
 <!-- turn off content based on value of  localServerSyncStatusValue-->
