@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
@@ -38,6 +40,9 @@ public class SyncItemListSerializingUserType implements UserType {
 
     private static final int[] SQL_TYPES = {Types.CLOB};
     
+    /** Logger for this class and subclasses */
+    protected final Log log = LogFactory.getLog(getClass());
+
     /**
      * @see org.hibernate.usertype.UserType#assemble(java.io.Serializable, java.lang.Object)
      */
@@ -114,6 +119,8 @@ public class SyncItemListSerializingUserType implements UserType {
                 	throw new SQLException( e.toString() );
                 }
                 // End workaround
+
+                log.warn(content.toString());
                 
                 Collection<SyncItem> items = new LinkedList<SyncItem>();
                 
