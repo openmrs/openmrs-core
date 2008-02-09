@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.StringBuilder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -156,14 +157,16 @@ public class SynchronizationStatusListController extends SimpleFormController {
 	    			MultipartFile multipartSyncFile = multipartRequest.getFile("syncResponseFile");
 	    			if (multipartSyncFile != null && !multipartSyncFile.isEmpty()) {
 	    				InputStream inputStream = null;
+	    				StringBuilder sb = new StringBuilder();
 	
-	    				try {
+	    				try { 
 	    					inputStream = multipartSyncFile.getInputStream();
-	    					BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+	    					BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, SyncConstants.UTF8));
 	    					String line = "";
 	    					while ((line = in.readLine()) != null) {
-	    						contents += line;
+	    						sb.append(line);
 	    					}
+	    					contents = sb.toString();
 	    				} catch (Exception e) {
 	                        e.printStackTrace();
 	    					log.error("Unable to read in sync data file", e);
