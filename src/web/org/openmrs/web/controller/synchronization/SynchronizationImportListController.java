@@ -74,6 +74,13 @@ public class SynchronizationImportListController extends SimpleFormController {
 		// 3) remote connection (with username + password, also posting data) (results in pure XML)
 		// none of these result in user-friendly - so no comfy, user-friendly stuff needed here
 		
+		//outputing statistics
+		System.out.println("HttpServletRequest INFO:");
+		System.out.println("ContentType: " + request.getContentType());
+		System.out.println("CharacterEncoding: " + request.getCharacterEncoding());
+		System.out.println("ContentLength: " + request.getContentLength());
+		System.out.println("syncDataResponse: " + request.getParameter("syncDataResponse"));
+		
 		boolean isUpload = ServletRequestUtils.getBooleanParameter(request, "upload", false);
         boolean isResponse = false;
 		String contents = ServletRequestUtils.getStringParameter(request, "syncDataResponse", "");
@@ -95,7 +102,7 @@ public class SynchronizationImportListController extends SimpleFormController {
 
 				try {
 					inputStream = multipartSyncFile.getInputStream();
-					BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+					BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, SyncConstants.UTF8));
 					String line = "";
 					while ((line = in.readLine()) != null) {
 						contents += line;
