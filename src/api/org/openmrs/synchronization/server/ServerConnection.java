@@ -116,7 +116,7 @@ public class ServerConnection {
 			}
 			
 			urlcon.setRequestMethod(SyncConstants.POST_METHOD);
-			urlcon.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
+			urlcon.setRequestProperty("Content-type", "application/x-www-form-urlencoded; charset=" + SyncConstants.UTF8);
 			urlcon.setDoOutput(true);
 			urlcon.setDoInput(true);
 			pout = new PrintWriter(new OutputStreamWriter(urlcon.getOutputStream(), SyncConstants.UTF8), true);
