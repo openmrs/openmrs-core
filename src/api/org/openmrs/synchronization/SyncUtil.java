@@ -648,8 +648,8 @@ public class SyncUtil {
 			}
 
 			if ( isUpdated ) {
-				SyncRecord record = Context.getSynchronizationService().getLatestRecord();
-				if ( record != null ) ret = record.getGuid();
+				//SyncRecord record = Context.getSynchronizationService().getLatestRecord();
+				//if ( record != null ) ret = record.getGuid();
 			}
 		} else {
 			log.debug("ERROR updating OpenMRS object - not all parameters are NOT NULL");

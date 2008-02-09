@@ -115,7 +115,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 		log.warn("ImportRecord already exists and has retry count: " + importRecord.getRetryCount() + ", state: " + importRecord.getState());
                 	}
                     SyncRecordState state = importRecord.getState();
-                    if ( state.equals(SyncRecordState.COMMITTED) ) {
+                    if ( state.equals(SyncRecordState.COMMITTED)  || state.equals(SyncRecordState.ALREADY_COMMITTED) ) {
                         // apparently, the remote/child server exporting to this server doesn't realize it's
                         // committed, so let's remind by sending back this import record with already_committed
                         importRecord.setState(SyncRecordState.ALREADY_COMMITTED);

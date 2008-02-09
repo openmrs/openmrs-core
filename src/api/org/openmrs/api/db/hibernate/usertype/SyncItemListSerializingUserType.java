@@ -16,25 +16,25 @@ package org.openmrs.api.db.hibernate.usertype;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Iterator;
 import java.util.Collection;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Package;
 import org.openmrs.serialization.Record;
 import org.openmrs.synchronization.engine.SyncItem;
+import org.xml.sax.SAXParseException;
 
 public class SyncItemListSerializingUserType implements UserType {
 
@@ -95,6 +95,7 @@ public class SyncItemListSerializingUserType implements UserType {
         if (rs.wasNull()) {
             return null;
         } else {
+        	//rs.getBytes("");
             Clob clob = rs.getClob(names[0]);
             
             if (clob == null) {
@@ -120,7 +121,7 @@ public class SyncItemListSerializingUserType implements UserType {
                 }
                 // End workaround
 
-                log.warn(content.toString());
+                //log.warn(content.toString());
                 
                 Collection<SyncItem> items = new LinkedList<SyncItem>();
                 
@@ -135,6 +136,11 @@ public class SyncItemListSerializingUserType implements UserType {
                         syncItem.load(record, i);
                         items.add(syncItem);
                     }
+                } catch (SAXParseException e) {
+                	log.error("Error processing XML at column " + e.getColumnNumber() + ", and line number " + e.getLineNumber()
+                	          + "; public ID of entity causing error: " + e.getPublicId() + "; system id of entity causing error: " + e.getSystemId()
+                	          + "; contents: " + content.toString());
+                    throw new HibernateException("Error processing XML while deserializing object from storage", e);
                 } catch (Exception e) {
                     throw new HibernateException("Could not deserialize object from storage", e);
                 }
@@ -168,7 +174,17 @@ public class SyncItemListSerializingUserType implements UserType {
                 throw new HibernateException("Could not serialize SyncItems", e);
             }
             
-            ps.setClob(index, Hibernate.createClob(record.toStringAsDocumentFragement()));
+            String newRecord = record.toStringAsDocumentFragement();
+            
+            log.warn("\n\n\nABOUT TO NULLSAFESET THIS: " + newRecord);
+            
+            ps.setString(index, newRecord);
+            //ps.setBytes(index, newRecord.getBytes());
+            //ps.setCharacterStream (index, new StringReader(newRecord), newRecord.length());
+            
+            //ps.setBlob(index, Hibernate.createBlob(newRecord.getBytes()));
+            
+            //ps.setClob(index, Hibernate.createClob(record.toStringAsDocumentFragement()));
         }
     }
 
