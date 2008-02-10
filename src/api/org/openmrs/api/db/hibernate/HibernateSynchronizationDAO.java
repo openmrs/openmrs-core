@@ -38,6 +38,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.GlobalProperty;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.SynchronizationDAO;
 import org.openmrs.synchronization.SyncConstants;
@@ -235,12 +236,26 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
      */
     @SuppressWarnings("unchecked")
     public List<SyncRecord> getSyncRecords(SyncRecordState[] states, boolean inverse) throws DAOException {
+    	String maxResultsString = Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RECORDS);
+    	int maxResults = 0;
+    	
+    	if (maxResultsString == null) {
+    		maxResults = Integer.parseInt(SyncConstants.PROPERTY_NAME_MAX_RECORDS_DEFAULT);
+    	} else {
+    		maxResults = Integer.parseInt(maxResultsString);
+    	}
+
+    	if (maxResults < 1) {
+    		maxResults = Integer.parseInt(SyncConstants.PROPERTY_NAME_MAX_RECORDS_DEFAULT);
+    	}
+    	
     	if ( inverse ) {
             return sessionFactory.getCurrentSession()
             .createCriteria(SyncRecord.class)
             .add(Restrictions.not(Restrictions.in("state", states)))
             .addOrder(Order.asc("timestamp"))
             .addOrder(Order.asc("recordId"))
+            .setMaxResults(maxResults)
             .list();
     	} else {
             return sessionFactory.getCurrentSession()
@@ -248,13 +263,27 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             .add(Restrictions.in("state", states))
             .addOrder(Order.asc("timestamp"))
             .addOrder(Order.asc("recordId"))
+            .setMaxResults(maxResults)
             .list();
     	}
     }
 
     @SuppressWarnings("unchecked")
     public List<SyncRecord> getSyncRecords(SyncRecordState[] states, boolean inverse, RemoteServer server) throws DAOException {
-        if ( inverse ) {
+    	String maxResultsString = Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RECORDS);
+    	int maxResults = 0;
+    	
+    	if (maxResultsString == null) {
+    		maxResults = Integer.parseInt(SyncConstants.PROPERTY_NAME_MAX_RECORDS_DEFAULT);
+    	} else {
+    		maxResults = Integer.parseInt(maxResultsString);
+    	}
+
+    	if (maxResults < 1) {
+    		maxResults = Integer.parseInt(SyncConstants.PROPERTY_NAME_MAX_RECORDS_DEFAULT);
+    	}
+
+    	if ( inverse ) {
             return sessionFactory.getCurrentSession()
             .createCriteria(SyncRecord.class, "s")
             .createCriteria("serverRecords", "sr")
@@ -262,6 +291,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             .add(Restrictions.eq("sr.syncServer", server))
             .addOrder(Order.asc("s.timestamp"))
             .addOrder(Order.asc("s.recordId"))
+            .setMaxResults(maxResults)
             .list();
         } else {
             return sessionFactory.getCurrentSession()
@@ -271,6 +301,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             .add(Restrictions.eq("sr.syncServer", server))
             .addOrder(Order.asc("s.timestamp"))
             .addOrder(Order.asc("s.recordId"))
+            .setMaxResults(maxResults)
             .list();
         }
     }

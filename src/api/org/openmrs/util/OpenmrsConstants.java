@@ -388,6 +388,7 @@ public final class OpenmrsConstants {
         props.add(new GlobalProperty(SyncConstants.SERVER_GUID, "", "Globally unique server id used to identify a given data source in synchronization."));
         props.add(new GlobalProperty(SyncConstants.PARENT_GUID, "", "Globally unique id of this server's parent."));
         props.add(new GlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RETRY_COUNT, "10", "Number of times server attempts to apply received synchronization changes before giving up."));
+        props.add(new GlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RECORDS, SyncConstants.PROPERTY_NAME_MAX_RECORDS_DEFAULT, "Maximum number of change records that will be send to the server at one time."));
         
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

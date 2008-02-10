@@ -71,6 +71,8 @@ public class SyncConstants {
     public static final String PROPERTY_NAME_MAX_RETRY_COUNT = "synchronization.max_retry_count";
     public static final String SERVER_NAME = "synchronization.server_name";
     public static final String SYNC_ADMIN_EMAIL = "synchronization.admin_email";
+    public static final String PROPERTY_NAME_MAX_RECORDS = "synchronization.max_records";
+    public static final String PROPERTY_NAME_MAX_RECORDS_DEFAULT = "50";
 
 	public static final String RESPONSE_SUFFIX = "_response";
 
