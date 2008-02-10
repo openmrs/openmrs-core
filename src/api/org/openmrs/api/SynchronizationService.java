@@ -156,14 +156,15 @@ public interface SynchronizationService {
     public List<SyncRecord> getSyncRecords(SyncRecordState[] states) throws APIException;
 
     /**
-     * Get all SyncRecords in a specific SyncRecordStates, that the server allows sending for (per-server basis)
+     * Get all SyncRecords in a specific SyncRecordStates, that the server allows sending for (per-server basis). Filters out records
+     * with classes that are not sync-able (see RemoteServr.getClassesSent() for more info on how this works). Updates status of
+     * filtered out classes to 'not_supposed_to_sync'.
      * @param states SyncRecordStates for the SyncRecords to be returned
      * @param server Server these records will be sent to, so we can filter on Class
      * @return SyncRecord A list containing all SyncRecords with the given states
      * @throws APIException
      */
     @Authorized({"View Synchronization Records"})
-    @Transactional(readOnly=true)
     public List<SyncRecord> getSyncRecords(SyncRecordState[] states, RemoteServer server) throws APIException;
 
     

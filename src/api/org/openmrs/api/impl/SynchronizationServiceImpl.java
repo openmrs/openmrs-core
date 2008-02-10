@@ -176,6 +176,7 @@ public class SynchronizationServiceImpl implements SynchronizationService {
      */
     public List<SyncRecord> getSyncRecords(SyncRecordState[] states, RemoteServer server)
             throws APIException {
+    	List<SyncRecord> temp = null;
         List<SyncRecord> ret = null; 
         
         if ( server != null ) {
@@ -187,15 +188,16 @@ public class SynchronizationServiceImpl implements SynchronizationService {
         }
         
         // filter out classes that are not supposed to be sent to the specified server
+        // and update their status
         if ( ret != null ) {
-            List<SyncRecord> temp = new ArrayList<SyncRecord>();
+            temp = new ArrayList<SyncRecord>();
             for ( SyncRecord record : ret ) {
                 if ( server.getClassesSent().containsAll(record.getContainedClassSet()) ) {
                     record.setForServer(server);
                     temp.add(record);
                     
                 } else {
-                    log.warn("Omitting record with " + record.getContainedClasses() + " for server: " + server.getNickname());
+                    log.warn("Omitting record with " + record.getContainedClasses() + " for server: " + server.getNickname() + " with server type: " + server.getServerType());
                     if ( server.getServerType().equals(RemoteServerType.PARENT)) {
                         record.setState(SyncRecordState.NOT_SUPPOSED_TO_SYNC);
                     } else {
