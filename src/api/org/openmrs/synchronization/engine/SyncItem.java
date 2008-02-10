@@ -98,7 +98,7 @@ public class SyncItem implements Serializable, IItem {
     }
 
     public Item save(Record xml, Item parent) throws Exception {
-        Item me = xml.createItem(parent, this.getClass().getName());
+        Item me = xml.createItem(parent, this.getClass().getSimpleName());
 
         //serialize primitives
         xml.setAttribute(me, "state", state.toString());
@@ -106,11 +106,9 @@ public class SyncItem implements Serializable, IItem {
         if (containedType != null) {
         	xml.setAttribute(me, "containedType", containedType.getName());
         }
-
-        Item itemKey = xml.createItem(me, "key");
+        
         if (key != null) {
-            xml.setAttribute(itemKey,"key-type",key.getKeyValue().getClass().getName());
-            key.save(xml, itemKey);
+        	xml.setAttribute(me,"key",key.getKeyValue().toString());
         }
 
         Item itemContent = xml.createItem(me, "content");
@@ -128,6 +126,11 @@ public class SyncItem implements Serializable, IItem {
         if ( me.getAttribute("containedType") != null && !"".equals(me.getAttribute("containedType")) ) 
         	containedType = Class.forName(me.getAttribute("containedType"));
 
+        if ( me.getAttribute("key") != null) {
+        	key = new SyncItemKey<String>(me.getAttribute("key"), String.class);
+        }
+        
+        /*
         Item itemKey = xml.getItem(me, "key");        
         if (itemKey.isEmpty()) {
             key = null;
@@ -139,7 +142,7 @@ public class SyncItem implements Serializable, IItem {
             } else {
                 throw new SyncException("Failed to deserialize SyncItem, could not create sync key of type: " + keyType);
             }
-        }
+        }*/
         
         Item itemContent = xml.getItem(me, "content");
         if (itemContent.isEmpty()) {

@@ -22,7 +22,6 @@ import org.openmrs.synchronization.ingest.SyncImportItem;
 public class SyncImportItemItem {
     private String key;
     private String state;
-    private String content;
     private String errorMessage;
     private String errorMessageArgs;
     
@@ -38,20 +37,11 @@ public class SyncImportItemItem {
     		if ( item.getState() != null ) this.state = item.getState().toString();
     		else this.state = SyncRecordState.FAILED.toString();
 
-    		this.content = item.getContent();
     		this.errorMessage = item.getErrorMessage();
     		this.errorMessageArgs = item.getErrorMessageArgs();
     	} else {
     		this.state = SyncRecordState.FAILED.toString();
     	}
-    }
-
-	public String getContent() {
-    	return content;
-    }
-
-	public void setContent(String content) {
-    	this.content = content;
     }
 	
 	public String getErrorMessage() {

@@ -460,7 +460,14 @@ public class SyncUtilTransmission {
     
     
     
-    
+    /**
+     * Processes incoming sync transmission.
+     * <p/>This method is used both by child and parent. On child, it is used to process any new incoming records from parent; 
+     * on parent it is used to process child's changes.
+     *  
+     * @param st transmission to process.
+     * @return Returns  SyncTransmissionResponse object that represents the confirmation status for the records that were sent.
+     */
     public static SyncTransmissionResponse processSyncTransmission(SyncTransmission st) {
         SyncTransmissionResponse str = new SyncTransmissionResponse(st);
 

@@ -95,18 +95,14 @@ public class SyncItemListSerializingUserType implements UserType {
         if (rs.wasNull()) {
             return null;
         } else {
-        	//rs.getBytes("");
             Clob clob = rs.getClob(names[0]);
             
             if (clob == null) {
                 return null;
             } else {
-                //FIXME: length conversion from long to int might be a problem in theory. UTF8 as well. Better off with the Reader?
-
             	// 2 Sep 2007 - Christian Allen - callen@pih.org
             	// We need a workaround because clob.getSubString() and clob.length() throw an exception when used within the creating session
                 //String content = clob.getSubString(1, (int)clob.length());
-            	
             	// Here's the workaround:
             	StringBuilder content = new StringBuilder();
             	String line;
@@ -120,8 +116,6 @@ public class SyncItemListSerializingUserType implements UserType {
                 	throw new SQLException( e.toString() );
                 }
                 // End workaround
-
-                //log.warn(content.toString());
                 
                 Collection<SyncItem> items = new LinkedList<SyncItem>();
                 
@@ -176,15 +170,10 @@ public class SyncItemListSerializingUserType implements UserType {
             
             String newRecord = record.toStringAsDocumentFragement();
             
-            log.warn("\n\n\nABOUT TO NULLSAFESET THIS: " + newRecord);
-            
+            //02/09/2008: replaced setClob() with setString() to deal with encoding issues: mysql Clob inexplicably truncates if
+            // it encounters non-ASCII character
+            //ps.setClob(index, Hibernate.createClob(record.toStringAsDocumentFragement()));            
             ps.setString(index, newRecord);
-            //ps.setBytes(index, newRecord.getBytes());
-            //ps.setCharacterStream (index, new StringReader(newRecord), newRecord.length());
-            
-            //ps.setBlob(index, Hibernate.createBlob(newRecord.getBytes()));
-            
-            //ps.setClob(index, Hibernate.createClob(record.toStringAsDocumentFragement()));
         }
     }
 

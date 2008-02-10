@@ -32,7 +32,6 @@ public class SyncImportItem {
     // Fields
     private SyncItemKey<?> key = null;
     private SyncItemState state = SyncItemState.UNKNOWN;
-    private String content = null;
     private String errorMessage = "";
     private String errorMessageArgs = "";
     private String errorMessageDetail = ""; //usually stack trace
@@ -77,14 +76,6 @@ public class SyncImportItem {
         this.state = state;
     }
  
-    public String getContent() {
-        return content;
-    }
-    
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     // Methods
     @Override
     public boolean equals(Object o) {
@@ -93,7 +84,6 @@ public class SyncImportItem {
 
         SyncImportItem oSync = (SyncImportItem) o;
         boolean same = ((oSync.getKey() == null) ? (this.getKey() == null) : oSync.getKey().equals(this.getKey()))
-                && ((oSync.getContent() == null) ? (this.getContent() == null) : oSync.getContent().equals(this.getContent()))
                 && ((oSync.getErrorMessage() == null) ? (this.getErrorMessage() == null) : oSync.getErrorMessage().equals(this.getErrorMessage()))
                 && ((oSync.getErrorMessageArgs() == null) ? (this.getErrorMessageArgs() == null) : oSync.getErrorMessageArgs().equals(this.getErrorMessageArgs()))
                 && ((oSync.getErrorMessageDetail() == null) ? (this.getErrorMessageDetail() == null) : oSync.getErrorMessageDetail().equals(this.getErrorMessageDetail()))
@@ -114,24 +104,17 @@ public class SyncImportItem {
     }
 
     public Item save(Record xml, Item parent) throws Exception {
-        Item me = xml.createItem(parent, this.getClass().getName());
+        Item me = xml.createItem(parent, this.getClass().getSimpleName());
 
         //serialize primitives
         xml.setAttribute(me, "state", state.toString());
         if(errorMessage != null) xml.setAttribute(me, "errorMessage", errorMessage.toString());
         if(errorMessageArgs != null) xml.setAttribute(me, "errorMessageArgs", errorMessageArgs.toString());
-               
-        Item itemKey = xml.createItem(me, "key");
+
         if (key != null) {
-            xml.setAttribute(itemKey,"key-type",key.getKeyValue().getClass().getName());
-            key.save(xml, itemKey);
+        	xml.setAttribute(me,"key",key.getKeyValue().toString());
         }
         
-        Item itemContent = xml.createItem(me, "content");
-        if (content != null) {
-            xml.createTextAsCDATA(itemContent, content);
-        }
-
         Item itemErrorMessageDetail = xml.createItem(me, "errorMessageDetail");
         if (errorMessageDetail != null) {
             xml.createTextAsCDATA(itemErrorMessageDetail, errorMessageDetail);
@@ -144,25 +127,9 @@ public class SyncImportItem {
         state = SyncItemState.valueOf(me.getAttribute("state"));
         errorMessage = me.getAttribute("errorMessage");
         errorMessageArgs = me.getAttribute("errorMessageArgs");
-        Item itemKey = xml.getItem(me, "key");
         
-        if (itemKey.isEmpty()) {
-            key = null;
-        } else {
-            String keyType = itemKey.getAttribute("key-type");
-            if (keyType.equals("java.lang.String")) {
-                key = new SyncItemKey<String>(String.class);
-                key.load(xml, xml.getFirstItem(itemKey));
-            } else {
-                throw new SyncException("Failed to deserialize SyncItem, could not create sync key of type: " + keyType);
-            }
-        }
-
-        Item itemContent = xml.getItem(me, "content");
-        if (itemContent.isEmpty()) {
-            content = null;
-        } else {
-            content = itemContent.getText();
+        if ( me.getAttribute("key") != null) {
+        	key = new SyncItemKey<String>(me.getAttribute("key"), String.class);
         }
 
         Item itemErrorMessageDetail = xml.getItem(me, "errorMessageDetail");

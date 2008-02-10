@@ -234,12 +234,12 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 
         try {
         	ret = new SyncImportItem();
-        	itemContent = item.getContent();
-            ret.setContent(itemContent);
+            //ret.setContent(itemContent); - no need to copy content back: the server that send it knows it already
             ret.setState(SyncItemState.UNKNOWN);
 
             Object o = null;
-            
+			itemContent = item.getContent();
+			
             if (log.isDebugEnabled()) {
                 log.debug("STARTING TO PROCESS: " + itemContent);
                 log.debug("SyncItem state is: " + item.getState());

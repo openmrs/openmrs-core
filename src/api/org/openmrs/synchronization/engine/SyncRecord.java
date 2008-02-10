@@ -217,7 +217,7 @@ public class SyncRecord implements Serializable, IItem {
 
 
     public Item save(Record xml, Item parent) throws Exception {
-        Item me = xml.createItem(parent, this.getClass().getName());
+        Item me = xml.createItem(parent, this.getClass().getSimpleName());
         
         //serialize primitives
         xml.setAttribute(me, "guid", guid);
