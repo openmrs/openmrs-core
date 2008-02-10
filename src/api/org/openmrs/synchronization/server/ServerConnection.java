@@ -24,7 +24,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.zip.CRC32;
-import java.lang.StringBuilder;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -32,6 +31,7 @@ import javax.net.ssl.SSLSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.SyncConstants;
 
 /**
@@ -158,7 +158,17 @@ public class ServerConnection {
 				urlcon = (HttpURLConnection) url.openConnection();
 			}
 
-			urlcon.setConnectTimeout(SyncConstants.CONNECTION_TIMEOUT_MS);
+			// let's figure out a suitable timeout
+			Double timeout = (1000.0 * 60 * 10);  // let's just default at 10 min for now
+			try {
+				Integer maxRecords = new Integer(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RECORDS, SyncConstants.PROPERTY_NAME_MAX_RECORDS_DEFAULT));
+				timeout = (4 + (maxRecords * 0.25)) * 60 * 1000;  // formula we cooked up after running several tests: latency + 0.25N
+			} catch ( NumberFormatException nfe ) {
+				// it's ok if this fails (not sure how it could) = we'll just do 10 min timeout
+			}
+			
+			urlcon.setConnectTimeout(timeout.intValue());
+			//urlcon.setConnectTimeout(SyncConstants.CONNECTION_TIMEOUT_MS);
 			urlcon.setAllowUserInteraction(false);
 			urlcon.setUseCaches(false);
 			urlcon.setRequestMethod(SyncConstants.POST_METHOD);

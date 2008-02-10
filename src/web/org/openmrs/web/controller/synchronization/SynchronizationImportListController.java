@@ -188,12 +188,11 @@ public class SynchronizationImportListController extends SimpleFormController {
                         
                         try {
                             priorResponse = SyncDeserializer.xmlToSyncTransmissionResponse(contents);
+                            log.warn("WE SEEM TO HAVE GOTTEN THE PRIOR RESPONSE: " + priorResponse.getGuid());
                         } catch ( Exception e ) {
                             log.error("Unable to deserialize the following: " + contents);
                             e.printStackTrace();
                         }
-
-                        log.warn("WE SEEM TO HAVE GOTTEN THE PRIOR RESPONSE: " + priorResponse.getGuid());
                         
                         //figure out where this came from
                         //for responses, the target ID contains the server that generated the response
