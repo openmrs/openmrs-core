@@ -23,6 +23,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.zip.CRC32;
+import java.lang.StringBuilder;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -63,10 +65,26 @@ public class ServerConnection {
         if ( isResponse ) dataParamName = "syncDataResponse";
         
 		try {
-            cr = sendExportedData(address + SyncConstants.DATA_IMPORT_SERVLET,
-            		"username=" + URLEncoder.encode(username, SyncConstants.UTF8) 
-            		+ "&password=" + URLEncoder.encode(password, SyncConstants.UTF8)
-            		+ "&" + dataParamName + "=" + URLEncoder.encode(message, SyncConstants.UTF8));
+			
+			//first calc checksum for the data to be send
+			CRC32 crc = new CRC32();
+			crc.update(message.getBytes(SyncConstants.UTF8));
+			log.warn("Checksum for the post of data the server: " + crc.getValue());
+			
+			//now build the post string
+			StringBuilder sb = new StringBuilder();
+			sb.append("username=");sb.append(URLEncoder.encode(username, SyncConstants.UTF8) );
+			sb.append("&password=");sb.append(URLEncoder.encode(password, SyncConstants.UTF8));
+			sb.append("&checksum=");sb.append(URLEncoder.encode(Long.toString(crc.getValue()), SyncConstants.UTF8));
+			sb.append("&");sb.append(dataParamName);sb.append("=");sb.append(URLEncoder.encode(message, SyncConstants.UTF8));
+			
+			//send
+			cr = sendExportedData(address + SyncConstants.DATA_IMPORT_SERVLET,sb.toString());	                
+			
+            //cr = sendExportedData(address + SyncConstants.DATA_IMPORT_SERVLET,
+            //		"username=" + URLEncoder.encode(username, SyncConstants.UTF8) 
+            //		+ "&password=" + URLEncoder.encode(password, SyncConstants.UTF8)
+            //		+ "&" + dataParamName + "=" + URLEncoder.encode(message, SyncConstants.UTF8));
         } catch (UnsupportedEncodingException e) {
             log.error("Unable to encode synchronization data as UTF-8 before sending to parent server", e);
             e.printStackTrace();
@@ -81,13 +99,7 @@ public class ServerConnection {
 		connResponse.setErrorMessage("");
 		connResponse.setResponsePayload("");
 		connResponse.setState(ServerConnectionState.CONNECTION_FAILED);
-		
-		//System.setProperty("java.protocol.handler.pkgs", "javax.net.ssl");
-		//System.setProperty("javax.net.ssl.keyStore", WebConstants.OPENMRS_KEYSTORE);
-		//System.setProperty("javax.net.ssl.keyStorePassword", WebConstants.OPENMRS_KEYSTORE_PASSWORD);
-		//System.setProperty("javax.net.ssl.trustStore", WebConstants.OPENMRS_KEYSTORE);
-		//System.setProperty("javax.net.ssl.truststorePassword", WebConstants.OPENMRS_KEYSTORE_PASSWORD);
-		
+				
 		// Make sure URL is verified through SSL...
 		HostnameVerifier hv = new HostnameVerifier() {
 		    public boolean verify(String urlHostName, SSLSession session) {

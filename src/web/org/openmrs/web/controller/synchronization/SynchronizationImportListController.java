@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.CRC32;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -74,11 +75,13 @@ public class SynchronizationImportListController extends SimpleFormController {
 		// 3) remote connection (with username + password, also posting data) (results in pure XML)
 		// none of these result in user-friendly - so no comfy, user-friendly stuff needed here
 		
-		//outputing statistics
+		//outputing statistics: debug only!
 		System.out.println("HttpServletRequest INFO:");
 		System.out.println("ContentType: " + request.getContentType());
 		System.out.println("CharacterEncoding: " + request.getCharacterEncoding());
 		System.out.println("ContentLength: " + request.getContentLength());
+		System.out.println("checksum: " + request.getParameter("checksum"));
+		System.out.println("syncData: " + request.getParameter("syncData"));
 		System.out.println("syncDataResponse: " + request.getParameter("syncDataResponse"));
 		
 		boolean isUpload = ServletRequestUtils.getBooleanParameter(request, "upload", false);
@@ -89,7 +92,7 @@ public class SynchronizationImportListController extends SimpleFormController {
         } else {
             isResponse = true;
         }
-        
+
         //file-based upload only
         Integer serverId = ServletRequestUtils.getIntParameter(request, "serverId", 0);
 
@@ -124,7 +127,6 @@ public class SynchronizationImportListController extends SimpleFormController {
 		}
 
 		// prepare to process the input
-		String ret = "";
 		SyncTransmissionResponse str = new SyncTransmissionResponse();
 		
     	str.setErrorMessage(SyncConstants.ERROR_TX_NOT_UNDERSTOOD);
@@ -132,8 +134,7 @@ public class SynchronizationImportListController extends SimpleFormController {
     	str.setGuid(SyncConstants.GUID_UNKNOWN);
         str.setSyncSourceGuid(SyncConstants.GUID_UNKNOWN);
         str.setSyncTargetGuid(SyncConstants.GUID_UNKNOWN);
-    	str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);
-        
+    	str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);        
         str.setTimestamp(new Date()); //set the timestamp of the response
 
     	System.out.println("CONTENT IN IMPORT CONTROLLER: " + contents);
@@ -158,6 +159,20 @@ public class SynchronizationImportListController extends SimpleFormController {
                 //fill-in the server guid for the response
                 str.setSyncTargetGuid(Context.getSynchronizationService().getServerGuid());
 
+                //checksum check before doing anything at all
+                long checksumReceived = ServletRequestUtils.getLongParameter(request, "checksum", -1);
+    	        CRC32 crc = new CRC32();
+    	        crc.update(contents.getBytes(SyncConstants.UTF8));
+	        	System.out.println("checksum value received in POST: " + checksumReceived );
+	        	System.out.println("checksum of payload: " + crc.getValue());
+                if (checksumReceived > 0 && (checksumReceived != crc.getValue())) {
+    	    		// bail out
+    	        	log.error("ERROR: FAILED CHECKSUM!");
+    	        	str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);
+    	        	this.sendResponse(str, isUpload, response);
+    	        	return null;	            
+                }
+                                
                 if ( SyncConstants.TEST_MESSAGE.equals(contents) ) {
 					str.setErrorMessage("");
 					str.setState(SyncTransmissionState.OK);
@@ -223,7 +238,6 @@ public class SynchronizationImportListController extends SimpleFormController {
                         } else {
                             log.warn("ORIGIN SERVER IS " + origin.getNickname());
                         }
-
                         
                         if ( priorResponse != null ) {
                             // process response
@@ -267,12 +281,34 @@ public class SynchronizationImportListController extends SimpleFormController {
 		    	str.setState(SyncTransmissionState.AUTH_FAILED);
 			}
 		}
+		
+		this.sendResponse(str, isUpload, response);
+        // never a situation where we want to actually use the model/view - either file download or http request
+        return null;
+	}
 
+    /**
+     * 
+     * This is called prior to displaying a form for the first time. It tells
+     * Spring the form/command object to load into the request
+     * 
+     * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
+     */
+    protected Object formBackingObject(HttpServletRequest request)
+            throws ServletException {
+        // default empty Object
+    	String ret = "";
+    	
+        return ret;
+    }
+    
+    private void sendResponse(SyncTransmissionResponse str, boolean isUpload, HttpServletResponse response) throws Exception {
+    	String ret = null;
 		try {
 			str.createFile(true);
 			ret = str.getFileOutput();
 		} catch ( Exception e ) {
-			log.debug("Could not get output while writing file.  In case problem writing file, trying again to just get output.");
+			log.error("Could not get output while writing file.  In case problem writing file, trying again to just get output.");
 		}
 		
 		if ( ret.length() == 0 ) {
@@ -296,22 +332,7 @@ public class SynchronizationImportListController extends SimpleFormController {
         out.flush();
         out.close();
 
-        // never a situation where we want to actually use the model/view - either file download or http request
-        return null;
-	}
-
-    /**
-     * 
-     * This is called prior to displaying a form for the first time. It tells
-     * Spring the form/command object to load into the request
-     * 
-     * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-     */
-    protected Object formBackingObject(HttpServletRequest request)
-            throws ServletException {
-        // default empty Object
-    	String ret = "";
-    	
-        return ret;
+        return;	        	
+	
     }
 }
