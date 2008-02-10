@@ -19,6 +19,8 @@ public class SyncConstants {
 	
 	public static final String TEST_MESSAGE = "test";
 	
+    public static final int CONNECTION_TIMEOUT_MS = 10000; //http connection timeout in milliseconds
+	
 	public static final SyncRecordState[] SYNC_TO_PARENT_STATES = {
 		SyncRecordState.NEW,	
 		SyncRecordState.PENDING_SEND,
