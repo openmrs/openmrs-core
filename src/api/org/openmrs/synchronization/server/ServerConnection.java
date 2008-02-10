@@ -161,7 +161,6 @@ public class ServerConnection {
 			urlcon.setConnectTimeout(SyncConstants.CONNECTION_TIMEOUT_MS);
 			urlcon.setAllowUserInteraction(false);
 			urlcon.setUseCaches(false);
-			urlcon.setChunkedStreamingMode(1024);
 			urlcon.setRequestMethod(SyncConstants.POST_METHOD);
 			urlcon.setRequestProperty("Content-type",
 			                          "application/x-www-form-urlencoded; charset="
