@@ -1,30 +1,50 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 
 /**
- * OpenMRS form module utilities.
+ * OpenMRS utilities related to forms.  
  * 
- * @version 1.0
+ * @see org.openmrs.Form
+ * @see org.openmrs.FormField
+ * @see org.openmrs.Field
+ * @see org.openmrs.FieldType
+ * @see org.openmrs.FieldAnswer
  */
 public class FormUtil {
 
 	/**
 	 * Converts a string into a valid XML token (tag name)
 	 * 
-	 * @param s
-	 *            string to convert into XML token
+	 * @param s string to convert into XML token
+	 * 
 	 * @return valid XML token based on s
 	 */
 	public static String getXmlToken(String s) {
@@ -175,8 +195,39 @@ public class FormUtil {
 		return dateString.substring(0, 22) + ":" + dateString.substring(22);
 	}
 
+	/**
+	 * Get a string somewhat unique to this form.
+	 * Combines the form's id and version and build
+	 * 
+	 * @param form Form to get the uri for
+	 * @return String representing this form
+	 */
 	public static String getFormUriWithoutExtension(Form form) {
 		return form.getFormId() + "-" + form.getVersion() + "-"
 				+ form.getBuild();
+	}
+	
+	/**
+	 * Turn the given concept into a string acceptable to for hl7 and forms 
+	 * 
+	 * @param concept Concept to convert to a string
+	 * @param locale Locale to use for the concept name
+	 * 
+	 * @return String representation of the given concept
+	 */
+	public static String conceptToString(Concept concept, Locale locale) {
+		return concept.getConceptId() + "^" + concept.getName(locale).getName()
+				+ "^" + FormConstants.HL7_LOCAL_CONCEPT;
+	}
+	
+	/**
+	 * Turn the given drug into a string acceptable for hl7 and forms
+	 * 
+	 * @param drug Drug to convert to a string
+	 * @return String representation of the given drug
+	 */
+	public static String drugToString(Drug drug) {
+		return drug.getDrugId() + "^" + drug.getName() + "^"
+				+ FormConstants.HL7_LOCAL_DRUG;
 	}
 }
