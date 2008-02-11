@@ -14,6 +14,7 @@
 package org.openmrs.synchronization.server;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -162,7 +163,7 @@ public class ServerConnection {
 			Double timeout = (1000.0 * 60 * 10);  // let's just default at 10 min for now
 			try {
 				Integer maxRecords = new Integer(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RECORDS, SyncConstants.PROPERTY_NAME_MAX_RECORDS_DEFAULT));
-				timeout = (4 + (maxRecords * 0.25)) * 60 * 1000;  // formula we cooked up after running several tests: latency + 0.25N
+				timeout = (4 + (maxRecords * 0.2)) * 60 * 1000;  // formula we cooked up after running several tests: latency + 0.25N
 			} catch ( NumberFormatException nfe ) {
 				// it's ok if this fails (not sure how it could) = we'll just do 10 min timeout
 			}
@@ -177,8 +178,9 @@ public class ServerConnection {
 			                                  + SyncConstants.UTF8.toLowerCase());
 			urlcon.setDoOutput(true);
 			urlcon.setDoInput(true);
-			pout = new PrintWriter(new OutputStreamWriter(urlcon.getOutputStream(),
-			                                              SyncConstants.UTF8),
+			//Buff
+			pout = new PrintWriter(new BufferedWriter(new OutputStreamWriter(urlcon.getOutputStream(),
+			                                                                 SyncConstants.UTF8)),
 			                       true);
 			pout.print(formData);
 			pout.flush();
