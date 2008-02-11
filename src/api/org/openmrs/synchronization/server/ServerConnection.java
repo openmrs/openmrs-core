@@ -169,10 +169,12 @@ public class ServerConnection {
 			}
 			
 			urlcon.setConnectTimeout(timeout.intValue());
+			//urlcon.set
 			//urlcon.setConnectTimeout(SyncConstants.CONNECTION_TIMEOUT_MS);
 			urlcon.setAllowUserInteraction(false);
 			urlcon.setUseCaches(false);
 			urlcon.setRequestMethod(SyncConstants.POST_METHOD);
+			urlcon.setRequestProperty("Content-length", "" + formData.length());
 			urlcon.setRequestProperty("Content-type",
 			                          "application/x-www-form-urlencoded; charset="
 			                                  + SyncConstants.UTF8.toLowerCase());

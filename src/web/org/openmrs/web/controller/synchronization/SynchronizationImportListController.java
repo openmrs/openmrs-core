@@ -165,6 +165,7 @@ public class SynchronizationImportListController extends SimpleFormController {
     	        crc.update(contents.getBytes(SyncConstants.UTF8));
 	        	System.out.println("checksum value received in POST: " + checksumReceived );
 	        	System.out.println("checksum of payload: " + crc.getValue());
+	        	System.out.println("SIZE of payload: " + contents.length());
                 if (checksumReceived > 0 && (checksumReceived != crc.getValue())) {
     	    		// bail out
     	        	log.error("ERROR: FAILED CHECKSUM!");
