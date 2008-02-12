@@ -400,8 +400,14 @@ public class ModuleFactory {
 				        module, ModuleFactory.class.getClassLoader());
 				getModuleClassLoaderMap().put(module, moduleClassLoader);
 
-				// load the advice objects into the Context
-				loadAdvice(module);
+				// don't load the advice objects into the Context
+				// At startup, the spring context isn't refreshed until all modules
+				// have been loaded.  This causes errors if called here during a 
+				// module's startup if one of these advice points is on another 
+				// module because that other module's service won't have been loaded
+				// into spring yet.  All advice for all modules must be reloaded 
+				// a spring context refresh anyway, so skip the advice loading here
+				// loadAdvice(module);
 
 				// add all of this module's extensions to the extension map
 				for (Extension ext : module.getExtensions()) {
