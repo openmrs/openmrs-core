@@ -636,8 +636,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor implem
              */
             for (int i = 0; i < types.length; i++) {
                 String typeName = types[i].getName();                
-                //if (log.isDebugEnabled())
-                    log.warn("Processing, type: " + typeName + " Field: " + propertyNames[i]);
+                if (log.isDebugEnabled())
+                    log.debug("Processing, type: " + typeName + " Field: " + propertyNames[i]);
 
                 if (propertyNames[i].equals(idPropertyName) && log.isInfoEnabled())
                     log.warn(infoMsg + ", Id for this class: " + idPropertyName + " , value:" + currentState[i]);

@@ -19,9 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Iterator;
 import java.util.zip.CRC32;
 
 import javax.servlet.ServletException;
@@ -36,7 +35,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncTransmissionState;
 import org.openmrs.synchronization.SyncUtilTransmission;
-import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncTransmission;
 import org.openmrs.synchronization.ingest.SyncDeserializer;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
@@ -85,21 +83,47 @@ public class SynchronizationImportListController extends SimpleFormController {
 		System.out.println("syncDataResponse: " + request.getParameter("syncDataResponse"));
 		
 		boolean isUpload = ServletRequestUtils.getBooleanParameter(request, "upload", false);
+		boolean isMultipartSync = ServletRequestUtils.getBooleanParameter(request, "syncMultipart", false);
         boolean isResponse = false;
-		String contents = ServletRequestUtils.getStringParameter(request, "syncDataResponse", "");
-        if ( contents.length() == 0 ) {
-            contents = ServletRequestUtils.getStringParameter(request, "syncData", "");
-        } else {
-            isResponse = true;
+		String contents = "";
+		
+		if (!isMultipartSync) {
+			ServletRequestUtils.getStringParameter(request, "syncDataResponse", "");
+	        if ( contents.length() == 0 ) {
+	            contents = ServletRequestUtils.getStringParameter(request, "syncData", "");
+	        } else {
+	            isResponse = true;
+	        }
+		} else {
+			log.warn("Getting multipart object in importController");
+        	if ( "syncDataResponse".equals(ServletRequestUtils.getStringParameter(request, "dataType", ""))) isResponse = true;
+        	log.warn("isResponse is " + isResponse);
         }
-
-        //file-based upload only
+                
         Integer serverId = ServletRequestUtils.getIntParameter(request, "serverId", 0);
 
-		if (isUpload && request instanceof MultipartHttpServletRequest) {
-			log.debug("Seems we actually have a file object");
+        //file-based or multipart upload
+        if (request instanceof MultipartHttpServletRequest) {
 			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
-			MultipartFile multipartSyncFile = multipartRequest.getFile("syncDataFile");
+			String filenames = "";
+			for ( Iterator i = multipartRequest.getFileNames(); i.hasNext(); ) {
+				filenames += (String)i.next() + " ";
+			}
+			log.warn("Seems we actually some files: " + filenames);
+			
+			MultipartFile multipartSyncFile = null;
+			
+			if ( isUpload ) {
+				multipartSyncFile = multipartRequest.getFile("syncDataFile");
+				log.warn("We think the user is uploading a file: " + multipartSyncFile.getSize());
+			} else if ( !isResponse ) {
+				multipartSyncFile = multipartRequest.getFile("syncData");
+				log.warn("We think the user is sending syncData: " + multipartSyncFile.getSize());
+			} else {
+				multipartSyncFile = multipartRequest.getFile("syncDataResponse");
+				log.warn("We think the user is sending a syncResponse: " + multipartSyncFile.getSize());
+			}
+			
 			if (multipartSyncFile != null && !multipartSyncFile.isEmpty()) {
 				InputStream inputStream = null;
 
@@ -121,6 +145,8 @@ public class SynchronizationImportListController extends SimpleFormController {
 						log.warn("Unable to close temporary input stream", io);
 					}
 				}
+			} else {
+				log.error("ERROR: somehow we've uploaded a blank or null file object");
 			}
 		} else {
 			log.debug("seems we DO NOT have a file object");
@@ -169,9 +195,9 @@ public class SynchronizationImportListController extends SimpleFormController {
                 if (checksumReceived > 0 && (checksumReceived != crc.getValue())) {
     	    		// bail out
     	        	log.error("ERROR: FAILED CHECKSUM!");
-    	        	str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);
-    	        	this.sendResponse(str, isUpload, response);
-    	        	return null;	            
+    	        	//str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);
+    	        	//this.sendResponse(str, isUpload, response);
+    	        	//return null;	            
                 }
                                 
                 if ( SyncConstants.TEST_MESSAGE.equals(contents) ) {

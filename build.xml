@@ -291,6 +291,8 @@
 			<zipfileset dir="${commons-fileupload.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-io.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-lang.dir}" includes="*.jar" />
+			<zipfileset dir="${commons-httpclient.dir}" includes="*.jar" />
+			<zipfileset dir="${commons-codec.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-logging.dir}" includes="*.jar" excludes="*api*.jar" />
 			<zipfileset dir="${database.dir}" includes="*.jar" />
 			<zipfileset dir="${dom4j.dir}" includes="*.jar" />

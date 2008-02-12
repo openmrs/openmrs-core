@@ -14,6 +14,8 @@
 	<classpathentry kind="lib" path="lib/commons-lang/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging/commons-logging-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pool/commons-pool-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-httpclient/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache/ehcache-1.2.4.jar" sourcepath="/openmrs-source/ehcache-1.2.4-src.zip"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-page-1.1.jar"/>

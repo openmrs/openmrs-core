@@ -45,6 +45,8 @@
 		<!--<fileset dir="${activemq.dir}" includes="*.jar" />-->
 		<fileset dir="${antlr.dir}" includes="*.jar" />
 		<fileset dir="${commons-io.dir}" includes="*.jar" />
+		<fileset dir="${commons-httpclient.dir}" includes="*.jar" />
+		<fileset dir="${commons-codec.dir}" includes="*.jar" />
 		<fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${dom4j.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
@@ -77,6 +79,8 @@
 		<fileset dir="${commons-lang.dir}" includes="*.jar" />
 		<fileset dir="${commons-beanutils.dir}" includes="*.jar" />
 		<fileset dir="${commons-collections.dir}" includes="*.jar" />
+		<fileset dir="${commons-httpclient.dir}" includes="*.jar" />
+		<fileset dir="${commons-codec.dir}" includes="*.jar" />
 		<fileset dir="${dwr.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
     	<fileset dir="${hl7api.dir}" includes="*.jar" />

@@ -15,6 +15,7 @@ package org.openmrs.synchronization.server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -23,13 +24,21 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.zip.CRC32;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.PartSource;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -76,20 +85,81 @@ public class ServerConnection {
 	public static ConnectionResponse sendExportedData(String address,
 	        String username, String password, String message, boolean isResponse) {
 
-		ConnectionResponse cr = null;
+		ConnectionResponse connResponse = new ConnectionResponse();
+		connResponse.setErrorMessage("");
+		connResponse.setResponsePayload("");
+		connResponse.setState(ServerConnectionState.CONNECTION_FAILED);
 
 		String dataParamName = "syncData";
-		if (isResponse)
-			dataParamName = "syncDataResponse";
+		if (isResponse) dataParamName = "syncDataResponse";
 
+		// first calc checksum for the data to be send
+		CRC32 crc = new CRC32();
+		byte[] messageAsBytes = null;
 		try {
-
-			// first calc checksum for the data to be send
-			CRC32 crc = new CRC32();
-			crc.update(message.getBytes(SyncConstants.UTF8));
-			log.warn("Checksum for the post of data the server: "
+			messageAsBytes = message.getBytes(SyncConstants.UTF8); 
+        } catch (UnsupportedEncodingException e1) {
+	        log.error("Couldn't convert sync message to UTF-8 bytes", e1);
+        }
+        
+        if ( messageAsBytes != null ) {
+        	
+	        crc.update(messageAsBytes);
+	
+	        log.warn("Checksum for the post of data the server: "
 			        + crc.getValue());
-
+	
+			// let's figure out a suitable timeout
+			Double timeout = (1000.0 * 60 * 10);  // let's just default at 10 min for now
+			try {
+				Integer maxRecords = new Integer(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RECORDS, SyncConstants.PROPERTY_NAME_MAX_RECORDS_DEFAULT));
+				timeout = (4 + (maxRecords * 0.2)) * 60 * 1000;  // formula we cooked up after running several tests: latency + 0.25N
+			} catch ( NumberFormatException nfe ) {
+				// it's ok if this fails (not sure how it could) = we'll just do 10 min timeout
+			}
+			
+			PartSource data = new ByteArrayPartSource(dataParamName, messageAsBytes);
+			PostMethod filePost = new PostMethod(address + SyncConstants.DATA_IMPORT_SERVLET);
+			Part[] parts = {		
+				new StringPart("username", username),
+				new StringPart("password", password),
+				new StringPart("syncMultipart", "true"),
+				new StringPart("dataType", dataParamName),
+				new StringPart("checksum", Long.toString(crc.getValue())),
+				new FilePart(dataParamName, data)
+			};
+			filePost.setRequestEntity(
+			                          new MultipartRequestEntity(parts, filePost.getParams())
+			);
+			HttpClient client = new HttpClient();
+			client.getHttpConnectionManager().getParams().setConnectionTimeout(timeout.intValue());
+			try {
+	            int status = client.executeMethod(filePost);
+	            
+	            if ( status == 200 ) {
+	            	connResponse.setResponsePayload(filePost.getResponseBodyAsString());
+	            	connResponse.setState(ServerConnectionState.OK);
+	            } else {
+	            	connResponse.setResponsePayload("ERROR: received HTTP status " + status + " while trying to send sync data");
+	            }
+	            
+	        } catch (HttpException e) {
+				connResponse.setState(ServerConnectionState.MALFORMED_URL);
+	            log.error("Error generated", e);
+	        } catch (IOException e) {
+				connResponse.setState(ServerConnectionState.CONNECTION_FAILED);
+	            log.error("Error generated", e);
+	        } catch (Exception e) {
+				connResponse.setState(ServerConnectionState.CONNECTION_FAILED);
+	            log.error("Error generated", e);
+	        } finally {
+	        	filePost.releaseConnection();
+	        }
+        }
+        
+		return connResponse;
+			
+			/*
 			// now build the post string
 			StringBuilder sb = new StringBuilder();
 			sb.append("username=");
@@ -119,8 +189,9 @@ public class ServerConnection {
 			          e);
 			e.printStackTrace();
 		}
+			 * 
+			 */
 
-		return cr;
 	}
 
 	public static ConnectionResponse sendExportedData(String postUrl,
