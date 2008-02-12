@@ -243,6 +243,18 @@ public class WebModuleUtil {
 			File outFile = new File(folderPath.replace("/", File.separator));
 			outFile.deleteOnExit();
 			
+			// additional checks on module needing a context refresh
+			if (moduleNeedsContextRefresh == false) {
+				
+				// AOP advice points are only loaded during the context refresh now.
+				// if the context hasn't been marked to be refreshed yet, mark it
+				// now if this module defines some advice
+				if (mod.getAdvicePoints() != null && mod.getAdvicePoints().size() > 0) {
+					moduleNeedsContextRefresh = true;
+				}
+					
+			}
+			
 			// refresh the spring web context to get the just-created xml 
 			// files into it (if we copied an xml file)
 			if (moduleNeedsContextRefresh && delayContextRefresh == false) {
