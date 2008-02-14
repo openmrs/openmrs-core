@@ -572,7 +572,16 @@ public class SyncUtil {
 				if ( !knownToExist ) Context.getAdministrationService().createLocation((Location)o);
 				else Context.getAdministrationService().updateLocation((Location)o);
 			} else if ( "org.openmrs.LoginCredential".equals(className) ) {
-				Context.getUserService().updateLoginCredential((LoginCredential)o); 
+				LoginCredential lc = (LoginCredential)o;
+				
+				// this is really tricky.  the userId won't be the same as it was in the previous system, we have to circumvent with guid
+				User thisUser = Context.getUserService().getUserByGuid(lc.getUserGuid());
+				
+				log.warn("In system, User has id: " + thisUser.getUserId() + ", but in tx, user has id: " + lc.getUserId());
+				
+				lc.setUserId(thisUser.getUserId());
+				
+				Context.getUserService().updateLoginCredential(lc); 
 			} else if ( "org.openmrs.MimeType".equals(className) ) {
 				if ( !knownToExist ) Context.getAdministrationService().createMimeType((MimeType)o);
 				else Context.getAdministrationService().updateMimeType((MimeType)o);

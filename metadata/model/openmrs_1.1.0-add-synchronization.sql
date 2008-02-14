@@ -218,6 +218,11 @@ CREATE PROCEDURE sync_setup_procedure()
 	ALTER TABLE `concept_word` ADD INDEX (`concept_id`);
 	ALTER TABLE `concept_word` DROP PRIMARY KEY, ADD PRIMARY KEY (`concept_word_id`);
 	
+	# -------------------------------------------------------------------------------
+	# Add user_guid column to users table to use with LoginCredential sync'ing
+	# -------------------------------------------------------------------------------
+	ALTER TABLE `users` ADD COLUMN `user_guid` char(36) DEFAULT NULL;
+	
  END;
 //
 delimiter ;

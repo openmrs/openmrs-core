@@ -309,6 +309,10 @@ public class HibernateUserDAO implements
     	credentials.setSalt(salt);
     	credentials.setChangedBy(changedByUser);
     	credentials.setDateChanged(dateChanged);
+    	
+    	// IMPORTANT: we MUST have the user's guid - otherwise we have no way to reconstitute this on other end of a sync
+    	credentials.setUserGuid(changeForUser.getGuid());
+    	
     	sessionFactory.getCurrentSession().merge(credentials);
 	}	
 

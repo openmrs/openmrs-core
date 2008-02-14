@@ -28,6 +28,7 @@ public class LoginCredential implements Synchronizable {
 
 	private Integer userId;
 	private String guid;
+	private String userGuid; // not stored - used for sync'ing
 	private String hashedPassword;
 	private String salt;
 	private String secretQuestion;
@@ -172,6 +173,14 @@ public class LoginCredential implements Synchronizable {
     public boolean checkPassword(String pw) {
 	    String test = Security.encodeString(pw + getSalt());
 	    return test.equals(getHashedPassword());
+    }
+
+	public String getUserGuid() {
+    	return userGuid;
+    }
+
+	public void setUserGuid(String userGuid) {
+    	this.userGuid = userGuid;
     }
 
 }
