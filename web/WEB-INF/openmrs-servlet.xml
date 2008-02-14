@@ -145,6 +145,7 @@
 				
 				<prop key="forgotPassword.form">forgotPasswordForm</prop>
 
+				<prop key="**/globalProperties.portlet">globalPropertyPortletController</prop>
 				<prop key="**/addressLayout.portlet">addressLayoutPortletController</prop>
 				<prop key="**/nameLayout.portlet">nameLayoutPortletController</prop>
 				<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
@@ -168,6 +169,7 @@
 
 	<bean id="fieldGenController" class="org.openmrs.web.controller.FieldGenController" />
 	<bean id="portletController" class="org.openmrs.web.controller.PortletController" />
+	<bean id="globalPropertyPortletController" class="org.openmrs.web.controller.GlobalPropertyPortletController" />
 	<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController" />
 	<bean id="patientRelationshipsPortletController" class="org.openmrs.web.controller.PatientRelationshipsPortletController" />
 	<bean id="patientSetPortletController" class="org.openmrs.web.controller.PatientSetPortletController" />
