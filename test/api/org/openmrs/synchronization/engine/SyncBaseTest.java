@@ -5,8 +5,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.BaseContextSensitiveTest;
 import org.openmrs.api.context.Context;
+import org.openmrs.serialization.FilePackage;
+import org.openmrs.serialization.IItem;
+import org.openmrs.serialization.Item;
+import org.openmrs.serialization.Record;
 import org.openmrs.synchronization.server.RemoteServer;
 
 import org.openmrs.serialization.Package;
@@ -16,11 +22,13 @@ import org.openmrs.serialization.IItem;
 import org.openmrs.serialization.Item;
 
 /**
- * Placeholder to setup common routines and initialization for all sync tests.
+ *  to setup common routines and initialization for all sync tests.
  *
  */
 public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 
+	
+	protected final Log log = LogFactory.getLog(getClass());
 	public DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public abstract String getInitialDataset();
@@ -48,6 +56,7 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
 		authenticate();
 
+		log.info("\n************************************* Running On Child *************************************");
 		testMethods.runOnChild();
 		
 		this.transactionManager.commit(this.transactionStatus);
@@ -58,30 +67,36 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 		if (syncRecords == null || syncRecords.size() == 0)
 			assertFalse("No changes found (i.e. sync records size is 0)", true);
 
-        //dump the sync records state to stdout
-        Package pkg = new FilePackage();
+		log.info("\n************************************* Deleting Data *************************************");
+		deleteAllData();
+
+		
+		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
+		executeDataSet("org/openmrs/synchronization/engine/include/SyncRemoteChildServer.xml");
+		RemoteServer origin = Context.getSynchronizationService().getRemoteServer(1);
+
+		log.info("\n************************************* Processing Sync Record(s) *************************************");
+
+        FilePackage pkg = new FilePackage();
         Record record = pkg.createRecordForWrite("SyncTest");
         Item top = record.getRootItem();
-        for (SyncRecord r : syncRecords) {
-            ((IItem) r).save(record, top);
-        }
-        System.out.println ("*** serialized state ***");
+		
+		for (SyncRecord syncRecord : syncRecords) {			
+			Context.getSynchronizationIngestService().processSyncRecord(syncRecord, origin);
+            ((IItem) syncRecord).save(record, top);
+		}
+
         try {
-            System.out.println(record.toString());
+            log.info("Sync record:\n" + record.toString());
         } catch (Exception e) {
             e.printStackTrace(System.out);
             fail("Serialization failed with an exception: " + e.getMessage());
         }		
-		deleteAllData();
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncRemoteChildServer.xml");
-		RemoteServer origin = Context.getSynchronizationService().getRemoteServer(1);
-		for (SyncRecord syncRecord : syncRecords) {
-			Context.getSynchronizationIngestService().processSyncRecord(syncRecord, origin);
-		}
 		
+        log.info("\n************************************* Running on Parent *************************************");
 		testMethods.runOnParent();
 		Context.closeSession();
 	}
-
 }
+
+	

@@ -56,6 +56,37 @@ public class SyncConceptTest extends SyncBaseTest {
 		});
 	}
 	
+
+	public void testCreateCodedConcept() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			ConceptService cs;
+			public void runOnChild() {
+				cs = Context.getConceptService();
+				
+				Concept coded = new Concept();
+				coded.setDatatype(cs.getConceptDatatypeByName("Coded"));
+				coded.setConceptClass(cs.getConceptClassByName("Question"));
+				coded.setSet(false);
+				coded.addName(new ConceptName("CODED", "SOME CODE", "A coded concept", Context.getLocale()));
+				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("OTHER NON-CODED")));
+				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("NONE")));
+				cs.createConcept(coded);
+				
+			}
+			public void runOnParent() {								
+				Concept c = cs.getConceptByName("CODED");
+				log.info("names: " + c.getAnswers().size());
+				log.info("answers: " + c.getAnswers().size());
+				assertNotNull("Failed to create coded", c);
+				Set<String> answers = new HashSet<String>();
+				for (ConceptAnswer answer : c.getAnswers())
+					answers.add(answer.getAnswerConcept().getName().getName());
+
+				assertEquals(2, answers.size());
+			}
+		});
+	}	
+	
 	public void testCreateConcepts() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs;
@@ -107,6 +138,8 @@ public class SyncConceptTest extends SyncBaseTest {
 				Set<String> answers = new HashSet<String>();
 				for (ConceptAnswer a : c.getAnswers())
 					answers.add(a.getAnswerConcept().getName().getName());
+				
+				log.info("answers: " + answers.size());
 				assertEquals(answers.size(), 3);
 				answers.remove("OTHER NON-CODED");
 				answers.remove("NONE");

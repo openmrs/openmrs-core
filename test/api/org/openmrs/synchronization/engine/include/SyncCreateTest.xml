@@ -68,7 +68,7 @@
 
   <drug drug_id="1" concept_id="9" name="Advil" combination="false" dose_strength="200.0" maximum_daily_dose="1600.0" minimum_daily_dose="50.0" units="mg" creator="1" date_created="2008-01-14 18:09:57.0" voided="false" guid="29dde6a3-144e-102b-8d9c-e44ed545d86c"/>
 
-  <drug_order/>
+  <drug_order order_id="1" drug_inventory_id="1" dose="3" equivalent_daily_dose="3" units="tabs(s)" frequency="1/day x 3 days/week"	prn="0" complex="0"/>
 
   <encounter encounter_id="1" patient_id="2" provider_id="1" location_id="2" encounter_datetime="1978-06-11 00:00:00.0" creator="1" date_created="2008-01-14 17:56:26.0" voided="0" guid="5afa93e5-19c2-102b-8d9c-e44ed545d86c"/>
 
@@ -85,9 +85,9 @@
   <obs obs_id="3" person_id="2" concept_id="10" encounter_id="1" obs_datetime="1978-06-11 00:00:00.0" location_id="2" value_numeric="34.5" creator="1" date_created="2008-01-14 17:56:26.0" voided="0" guid="1a9c0d7b-19c2-102b-8d9c-e44ed545d86c"/>
 
   <order_type order_type_id="1" name="Drug" description="A drug order" creator="1" date_created="2008-01-14 17:56:26.0" guid="2ef6da52-144e-102b-8d9c-e44ed545d86c"/>
-
-  <orders/>
-
+  
+  <orders order_id="1" order_type_id="1" concept_id="9" start_date="2006-01-02 00:00:00" discontinued="0" patient_id="2" creator="1" date_created="2006-01-02 00:00:00" voided="0" guid="fc905e87-11ef-102b-a33e-82966c5b8177"/>
+  
   <patient patient_id="2" creator="1" date_created="2008-01-14 17:56:26.0" voided="0"/>
   <patient patient_id="3" creator="1" date_created="2008-01-14 17:56:26.0" voided="0"/>
 

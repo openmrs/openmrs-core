@@ -6,6 +6,7 @@
 <%@ taglib prefix="spring" uri="/WEB-INF/taglibs/spring.tld" %>
 
 <%@page import="org.openmrs.notification.Message" %>
+<%@page import="org.openmrs.api.context.Context" %>
 <%@page import="java.util.Date" %>
 <html>
 
@@ -38,7 +39,7 @@
 			message.setContent( content );
 			message.setSentDate( new Date() );
 		
-			ContextFactory.getContext().getMessageService().send( message );
+			Context.getMessageService().send( message );
 				
 			errorMessage = "Successfully sent message to " + recipients; 
 		

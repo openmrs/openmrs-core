@@ -60,7 +60,7 @@ public class AlertReminderTask implements Schedulable {
 			// TODO Change to getAllAlerts(Boolean includeRead, Boolean includeExpired);
 			Collection<Alert> alerts = Context.getAlertService().getAllAlerts(false);
 			Collection<User> users = new HashSet<User>();
-			Message message = Context.getMessageService().create("Alert Reminder", "You have unread alerts.");
+			Message message = Context.getMessageService().createMessage("Alert Reminder", "You have unread alerts.");
 
 			for (Alert alert : alerts) { 
 				log.debug("Send email to alert recipient(s) ...");
@@ -73,7 +73,7 @@ public class AlertReminderTask implements Schedulable {
 			}
 			
 			// Send a message to each person only once
-			Context.getMessageService().send(message, users);
+			Context.getMessageService().sendMessage(message, users);
 		} 
 		catch (Exception e) { 
 			log.error(e);

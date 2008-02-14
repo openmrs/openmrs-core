@@ -13,6 +13,15 @@
  */
 package org.openmrs.synchronization;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -23,7 +32,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.zip.CRC32;
+import java.util.zip.CheckedInputStream;
+import java.util.zip.CheckedOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
@@ -72,10 +87,16 @@ import org.openmrs.Role;
 import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.notification.Message;
+import org.openmrs.notification.MessageException;
+import org.openmrs.serialization.FilePackage;
+import org.openmrs.serialization.IItem;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
 import org.openmrs.serialization.TimestampNormalizer;
+import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncRecord;
+import org.openmrs.synchronization.server.RemoteServer;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -804,6 +825,8 @@ public class SyncUtil {
 		Context.getSynchronizationService().deleteSynchronizable(o);
 	}
 
+	
+	
     public static String getLocalServerGuid() {
         return Context.getSynchronizationService().getGlobalProperty(SyncConstants.SERVER_GUID);        
     }
@@ -833,5 +856,117 @@ public class SyncUtil {
         
         return;   
     }
+    
+	public static void sendSyncErrorMessage(SyncRecord syncRecord, RemoteServer server, Exception exception) { 
+		
+		try {
+							
+			
+			String adminEmail = SyncUtil.getAdminEmail();
+			
+			if (adminEmail == null || adminEmail.isEmpty()) { 
+				log.warn("Sync error message could not be sent because " + SyncConstants.SYNC_ADMIN_EMAIL + " is not configured.");
+			} 
+			else if (adminEmail != null) { 
+				log.info("Preparing to send sync error message via email to " + adminEmail);
+			
+				Message message = new Message();
+				message.setSender("info@openmrs.org");
+				message.setSentDate(new Date());
+				message.setSubject(exception.getMessage());
+				message.addRecipient(adminEmail);
+			
+
+			
+				StringBuffer content = new StringBuffer();
+			
+			
+				content.
+					append("ALERT: Synchronization has stopped between\n").
+					append("local server (").append(SyncUtil.getLocalServerName()).
+					append(") and remote server ").append(server.getNickname()).append("\n\n").
+					append("Summary of failing record\n").
+					append("Original GUID:          " + syncRecord.getOriginalGuid()).
+					append("Contained classes:      " + syncRecord.getContainedClassSet()).
+					append("Contents:\n");
+			
+		        try {
+		        	log.info("Sending email with sync record: " + syncRecord);
+	
+		        	for (SyncItem item :syncRecord.getItems()) { 
+		        		log.info("Sync item content: " + item.getContent());
+		        	}
+		        	
+					FilePackage pkg = new FilePackage();
+			        Record record = pkg.createRecordForWrite("SyncRecord");
+			        Item top = record.getRootItem();
+			        ((IItem) syncRecord).save(record, top);
+			        content.append(record.toString());
+			        
+		        } catch (Exception e) {
+		        	log.warn("An error occurred while retrieving sync record payload", e);
+		        	log.warn("Sync record: " + syncRecord.toString());
+		        }			
+				message.setContent(content.toString());
+				
+				// Send message
+				Context.getMessageService().sendMessage(message);
+			
+		        log.info("Sent sync error message to " + adminEmail);
+			}			
+			
+		} catch (MessageException e) { 
+			log.error("An error occurred while sending the sync error message", e);
+		} 
+		
+	}    
+	
+	
+	
+	/**
+	 * 
+	 * 
+	 * @param inputStream
+	 * @return
+	 * @throws Exception
+	 */
+	public static String readContents(InputStream inputStream, boolean isCompressed) throws Exception { 
+		StringBuffer contents = new StringBuffer();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, SyncConstants.UTF8));
+		
+		String line = "";
+		while ((line = reader.readLine()) != null) {
+			contents.append(line);
+		}
+		
+		return contents.toString();		
+	}
+	
+
+	public static byte [] compress(String content) throws IOException { 
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		CheckedOutputStream cos = new CheckedOutputStream(baos, new CRC32());			
+		GZIPOutputStream zos = new GZIPOutputStream(new BufferedOutputStream(cos));			
+		IOUtils.copy(new ByteArrayInputStream(content.getBytes()), zos);		
+		return baos.toByteArray();
+	}
+	
+	public static String decompress(byte[] data) throws IOException { 		
+		ByteArrayInputStream bais2 = new ByteArrayInputStream(data);	        
+        CheckedInputStream cis = new CheckedInputStream(bais2, new CRC32());
+        GZIPInputStream zis = new GZIPInputStream(new BufferedInputStream(cis));            
+        InputStreamReader reader = new InputStreamReader(zis);
+		BufferedReader br = new BufferedReader(reader);
+		StringBuffer buffer = new StringBuffer();
+		String line = "";
+		while ((line = br.readLine()) != null) {
+			buffer.append(line);
+		}
+		return buffer.toString();
+	}
+	
+	
+
+	
 
 }

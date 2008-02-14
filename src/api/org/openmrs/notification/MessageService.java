@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.synchronization.engine.SyncRecord;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -19,23 +20,21 @@ public interface MessageService {
 	public MessagePreparator getMessagePreparator();
 	
 	
-	// Send message methods
-	public void send(Message message) throws MessageException;
-	public void send(Message message, String roleName) throws MessageException;	
-	public void send(Message message, Integer userId) throws MessageException;
-	public void send(Message message, User user) throws MessageException;	
-	public void send(Message message, Role role) throws MessageException;	
-	public void send(Message message, Collection<User> users) throws MessageException;
-
-	// 
-	public void send(String recipients, String sender, String subject, String message) throws MessageException;
+	// Send messages
+	public void sendMessage(Message message) throws MessageException;
+	public void sendMessage(Message message, String roleName) throws MessageException;	
+	public void sendMessage(Message message, Integer userId) throws MessageException;
+	public void sendMessage(Message message, User user) throws MessageException;	
+	public void sendMessage(Message message, Role role) throws MessageException;	
+	public void sendMessage(Message message, Collection<User> users) throws MessageException;
+	public void sendMessage(String recipients, String sender, String subject, String message) throws MessageException;
 
 	// Prepare message methods
-	public Message create(String subject, String message) throws MessageException;
-	public Message create(String sender, String subject, String message) throws MessageException;
-	public Message create(String recipients, String sender, String subject, String message) throws MessageException;
-	public Message prepare(String templateName, Map data) throws MessageException;
-	public Message prepare(Template template) throws MessageException;
+	public Message createMessage(String subject, String message) throws MessageException;
+	public Message createMessage(String sender, String subject, String message) throws MessageException;
+	public Message createMessage(String recipients, String sender, String subject, String message) throws MessageException;
+	public Message prepareMessage(String templateName, Map data) throws MessageException;
+	public Message prepareMessage(Template template) throws MessageException;
 
 	// Template methods
 	public List getAllTemplates() throws MessageException;

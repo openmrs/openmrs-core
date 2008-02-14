@@ -13,15 +13,24 @@
  */
 package org.openmrs.web.controller.synchronization;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.CRC32;
+import java.util.zip.CheckedInputStream;
+import java.util.zip.CheckedOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,17 +43,22 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncTransmissionState;
+import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.SyncUtilTransmission;
+import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncTransmission;
 import org.openmrs.synchronization.ingest.SyncDeserializer;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
+import org.openmrs.synchronization.server.ConnectionRequest;
+import org.openmrs.synchronization.server.ConnectionResponse;
 import org.openmrs.synchronization.server.RemoteServer;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
@@ -65,13 +79,15 @@ public class SynchronizationImportListController extends SimpleFormController {
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
-		log.debug("in onSubmit method");
+		log.info("***********************************************************\n");
+		log.info("Inside SynchronizationImportListController");
 
 		// There are 3 ways to come to this point, so we'll handle all of them:
 		// 1) uploading a file (results in a file attachment as response)
 		// 2) posting data to page (results in pure XML output)
 		// 3) remote connection (with username + password, also posting data) (results in pure XML)
 		// none of these result in user-friendly - so no comfy, user-friendly stuff needed here
+		
 		
 		//outputing statistics: debug only!
 		System.out.println("HttpServletRequest INFO:");
@@ -81,80 +97,77 @@ public class SynchronizationImportListController extends SimpleFormController {
 		System.out.println("checksum: " + request.getParameter("checksum"));
 		System.out.println("syncData: " + request.getParameter("syncData"));
 		System.out.println("syncDataResponse: " + request.getParameter("syncDataResponse"));
-		
-		boolean isUpload = ServletRequestUtils.getBooleanParameter(request, "upload", false);
-		boolean isMultipartSync = ServletRequestUtils.getBooleanParameter(request, "syncMultipart", false);
-        boolean isResponse = false;
-		String contents = "";
-		
-		if (!isMultipartSync) {
-			ServletRequestUtils.getStringParameter(request, "syncDataResponse", "");
-	        if ( contents.length() == 0 ) {
-	            contents = ServletRequestUtils.getStringParameter(request, "syncData", "");
-	        } else {
-	            isResponse = true;
-	        }
-		} else {
-			log.warn("Getting multipart object in importController");
-        	if ( "syncDataResponse".equals(ServletRequestUtils.getStringParameter(request, "dataType", ""))) isResponse = true;
-        	log.warn("isResponse is " + isResponse);
-        }
-                
-        Integer serverId = ServletRequestUtils.getIntParameter(request, "serverId", 0);
 
-        //file-based or multipart upload
-        if (request instanceof MultipartHttpServletRequest) {
-			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
-			String filenames = "";
-			for ( Iterator i = multipartRequest.getFileNames(); i.hasNext(); ) {
-				filenames += (String)i.next() + " ";
-			}
-			log.warn("Seems we actually some files: " + filenames);
-			
-			MultipartFile multipartSyncFile = null;
-			
-			if ( isUpload ) {
-				multipartSyncFile = multipartRequest.getFile("syncDataFile");
-				log.warn("We think the user is uploading a file: " + multipartSyncFile.getSize());
-			} else if ( !isResponse ) {
-				multipartSyncFile = multipartRequest.getFile("syncData");
-				log.warn("We think the user is sending syncData: " + multipartSyncFile.getSize());
-			} else {
-				multipartSyncFile = multipartRequest.getFile("syncDataResponse");
-				log.warn("We think the user is sending a syncResponse: " + multipartSyncFile.getSize());
-			}
-			
-			if (multipartSyncFile != null && !multipartSyncFile.isEmpty()) {
+		// All requests should be multipart requests
+		
+    	long checksum = 0;
+    	Integer serverId = 0;
+		boolean isResponse = false;
+    	boolean isUpload = false;
+		boolean useCompression = false;
+
+    	String contents = "";
+    	String username = "";
+        String password = "";
+        
+
+        //file-based upload and form submission
+		if (request instanceof MultipartHttpServletRequest) {
+        	log.info("Processing contents of syncDataFile multipart request parameter");
+        	MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;        	
+    		serverId = ServletRequestUtils.getIntParameter(multipartRequest, "serverId", 0);
+    		isResponse = ServletRequestUtils.getBooleanParameter(multipartRequest, "isResponse", false);
+    		useCompression = ServletRequestUtils.getBooleanParameter(multipartRequest, "compressed", false);
+    		isUpload = ServletRequestUtils.getBooleanParameter(multipartRequest, "upload", false);
+			username =  ServletRequestUtils.getStringParameter(multipartRequest, "username", "");
+			password =  ServletRequestUtils.getStringParameter(multipartRequest, "password", "");
+            
+            log.info("Request class: " + request.getClass());
+            log.info("serverId: " + serverId);
+            log.info("upload = " + isUpload);
+            log.info("compressed = " + useCompression);
+            log.info("response = " + isResponse);
+            log.info("username = " + username);
+            log.info("password = " + password);
+            
+            
+            
+            
+        	log.info("Request content length: " + request.getContentLength());
+			MultipartFile multipartFile = multipartRequest.getFile("syncDataFile");
+			if (multipartFile != null && !multipartFile.isEmpty()) {
 				InputStream inputStream = null;
 
 				try {
-					inputStream = multipartSyncFile.getInputStream();
-					BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, SyncConstants.UTF8));
-					String line = "";
-					while ((line = in.readLine()) != null) {
-						contents += line;
-					}
+
+					// Decompress content in file
+					ConnectionResponse syncResponse = 
+						new ConnectionResponse(new ByteArrayInputStream(multipartFile.getBytes()), useCompression);
+					
+					log.info("Content to decompress: " + multipartFile.getBytes());
+					log.info("Content received: " + syncResponse.getResponsePayload());
+					log.info("Decompression Checksum: "+ syncResponse.getChecksum());
+					
+					
+					contents = syncResponse.getResponsePayload();
+					checksum = syncResponse.getChecksum();
+
+					log.info("Final content: " + contents);
+					
+					
+					
 				} catch (Exception e) {
 					log.warn("Unable to read in sync data file", e);
 				} finally {
-					try {
-						if (inputStream != null)
-							inputStream.close();
-					}
-					catch (IOException io) {
-						log.warn("Unable to close temporary input stream", io);
-					}
+					IOUtils.closeQuietly(inputStream);
 				}
-			} else {
-				log.error("ERROR: somehow we've uploaded a blank or null file object");
 			}
 		} else {
 			log.debug("seems we DO NOT have a file object");
 		}
 
 		// prepare to process the input
-		SyncTransmissionResponse str = new SyncTransmissionResponse();
-		
+		SyncTransmissionResponse str = new SyncTransmissionResponse();		
     	str.setErrorMessage(SyncConstants.ERROR_TX_NOT_UNDERSTOOD);
     	str.setFileName(SyncConstants.FILENAME_TX_NOT_UNDERSTOOD);
     	str.setGuid(SyncConstants.GUID_UNKNOWN);
@@ -167,9 +180,6 @@ public class SynchronizationImportListController extends SimpleFormController {
     	
 		if ( contents.length() > 0 ) {
 			
-            String username = ServletRequestUtils.getStringParameter(request, "username", "");
-            String password = ServletRequestUtils.getStringParameter(request, "password", "");
-            
 			// if this is option 3 (posting from remote server), we need to authenticate
 			if ( !Context.isAuthenticated() ) {
 				try {
@@ -185,20 +195,20 @@ public class SynchronizationImportListController extends SimpleFormController {
                 //fill-in the server guid for the response
                 str.setSyncTargetGuid(Context.getSynchronizationService().getServerGuid());
 
+	        	// TODO Will deal with checksum earlier when we first get the sync transmission
                 //checksum check before doing anything at all
                 long checksumReceived = ServletRequestUtils.getLongParameter(request, "checksum", -1);
-    	        CRC32 crc = new CRC32();
-    	        crc.update(contents.getBytes(SyncConstants.UTF8));
-	        	System.out.println("checksum value received in POST: " + checksumReceived );
-	        	System.out.println("checksum of payload: " + crc.getValue());
+	        	log.info("checksum value received in POST: " + checksumReceived );
+	        	log.info("checksum value of payload: " + checksum);
+
 	        	System.out.println("SIZE of payload: " + contents.length());
-                if (checksumReceived > 0 && (checksumReceived != crc.getValue())) {
-    	    		// bail out
+                if (checksumReceived > 0 && (checksumReceived != checksum)) {
     	        	log.error("ERROR: FAILED CHECKSUM!");
-    	        	//str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);
-    	        	//this.sendResponse(str, isUpload, response);
-    	        	//return null;	            
+    	        	str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);
+    	        	this.sendResponse(str, isUpload, response);
+    	        	return null;	            
                 }
+                
                                 
                 if ( SyncConstants.TEST_MESSAGE.equals(contents) ) {
 					str.setErrorMessage("");
@@ -299,7 +309,9 @@ public class SynchronizationImportListController extends SimpleFormController {
                     }
 				}
 
-			} else {
+			} 
+			// Could not authenticate user
+			else {
 		    	str.setErrorMessage(SyncConstants.ERROR_AUTH_FAILED);
 		    	str.setFileName(SyncConstants.FILENAME_AUTH_FAILED);
 		    	str.setGuid(SyncConstants.GUID_UNKNOWN);
@@ -329,36 +341,57 @@ public class SynchronizationImportListController extends SimpleFormController {
     }
     
     private void sendResponse(SyncTransmissionResponse str, boolean isUpload, HttpServletResponse response) throws Exception {
-    	String ret = null;
+    	String content = null;
 		try {
 			str.createFile(true);
-			ret = str.getFileOutput();
+			content = str.getFileOutput();
 		} catch ( Exception e ) {
 			log.error("Could not get output while writing file.  In case problem writing file, trying again to just get output.");
 		}
 		
-		if ( ret.length() == 0 ) {
+		if ( content.length() == 0 ) {
 			try {
 				str.createFile(false);
-				ret = str.getFileOutput();
+				content = str.getFileOutput();
 			} catch ( Exception e ) {
 				log.error("Could not get output while writing file.  In case problem writing file, trying again to just get output.");
 			}
 		}
 		
-		System.out.println("RESPONSE IS: " + ret);
+		System.out.println("RESPONSE IS: " + content);
 
-		if ( isUpload ) {
-            response.setHeader("Content-Disposition", "attachment; filename=" + str.getFileName() + ".xml");
+	
+        // If the file was uploaded manually, we'll send back an XML response
+		if (isUpload) {			
+			response.setHeader("Content-Disposition", "attachment; filename=" + str.getFileName() + ".xml");
+	        InputStream in = new ByteArrayInputStream(content.getBytes());
+	        IOUtils.copy(in, response.getOutputStream());
+	        return;
 		}
-		InputStream in = new ByteArrayInputStream(ret.getBytes());
-		response.setContentType("text/xml; charset=utf-8");
-        OutputStream out = response.getOutputStream();
-        IOUtils.copy(in, out);
-        out.flush();
-        out.close();
+
+		// We're sending back a new sync transmission (an update).
+		// We need to check the local server about whether we should apply compression.
+		boolean useCompression = 
+			Boolean.parseBoolean(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_ENABLE_COMPRESSION, "false"));
+		log.info("Global property sychronization.enable_compression = " + useCompression);
+
+		// Otherwise, all other requests are compressed and sent back to the client 
+		ConnectionRequest syncRequest = new ConnectionRequest(content, useCompression);				
+        log.info("Content to send: " + content);
+        log.info("Compressed content: " + syncRequest.getBytes());
+        log.info("Compression Checksum: "+ syncRequest.getChecksum());    
+
+        
+        response.setContentLength((int)syncRequest.getContentLength());
+        response.addHeader("Enable-Compression", String.valueOf(useCompression));
+        response.addHeader("Content-Checksum", String.valueOf(syncRequest.getChecksum()));
+        response.addHeader("Content-Encoding", "gzip");
+        
+        // Write compressed sync data to response
+        InputStream in = new ByteArrayInputStream(syncRequest.getBytes());
+        IOUtils.copy(in, response.getOutputStream());
 
         return;	        	
-	
+    	
     }
 }

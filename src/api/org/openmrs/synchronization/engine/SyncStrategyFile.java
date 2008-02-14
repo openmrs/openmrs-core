@@ -20,7 +20,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.synchronization.SyncException;
 import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.server.RemoteServer;
 import org.openmrs.synchronization.server.RemoteServerType;
 import org.openmrs.synchronization.server.SyncServerRecord;
@@ -109,6 +111,9 @@ public class SyncStrategyFile {
                 for ( SyncRecord record : changeset ) {
                     if (record.getState() == SyncRecordState.FAILED_AND_STOPPED)  {
                     	isMaxRetryReached = true;
+
+                    	SyncUtil.sendSyncErrorMessage(record, server, new SyncException("Reached maximum retry count"));
+                    	
                     	break;
                     }
                     Set<String> containedClasses = record.getContainedClassSet();

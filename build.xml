@@ -287,8 +287,10 @@
 			<zipfileset dir="${c3p0.dir}" includes="*.jar" />
 			<zipfileset dir="${cglib.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-beanutils.dir}" includes="*.jar" />
+			<zipfileset dir="${commons-codec.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-collections.dir}" includes="*.jar" excludes="*test*.jar" />
 			<zipfileset dir="${commons-fileupload.dir}" includes="*.jar" />
+			<zipfileset dir="${commons-httpclient.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-io.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-lang.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-httpclient.dir}" includes="*.jar" />
@@ -330,6 +332,8 @@
 			<lib file="${dist.dir}/${openmrs.api.name}" />
 			<lib src="${libs-zipped-temp}" />
 		</war>
+		<!--<copy file="${dist.dir}/${webapp.name}.war" tofile="${dist.dir}/${webapp.name}-parent.war"/>-->
+		
 	</target>
 	
 	<target name="package-web-src" depends="compile-web" description="Create jar file containing web java src">
@@ -402,7 +406,7 @@
 		<antcall target="install" />
 		<antcall target="growl" />
 	</target>
-	
+		
 	<target name="growl">
 		<exec executable="/usr/local/bin/growlnotify" os="Mac OS X" logError="true">
 			<arg line="-m 'OpenMRS is ready' Build completed -a Eclipse" />
