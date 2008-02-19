@@ -43,8 +43,12 @@ public final class OpenmrsConstants {
 	public static final int ORDERTYPE_DRUG = 2;
 	public static final int CONCEPT_CLASS_DRUG = 3;
 	
-	// the jar manifest file is loaded with these values at build time
-	// and loaded here by the constructor
+	/**
+	 * hack alert:
+	 * During an ant build, the openmrs api jar manifest file is loaded with 
+	 * these values.  When constructing the OpenmrsConstants class file, the
+	 * api jar is read and the values are copied in as constants
+	 */ 
 	private static final Package THIS_PACKAGE = OpenmrsConstants.class.getPackage();
 	public static final String OPENMRS_VERSION = THIS_PACKAGE.getSpecificationVendor();
 	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion();
@@ -63,6 +67,33 @@ public final class OpenmrsConstants {
 	public static final String REGEX_LARGE = "[!\"#\\$%&'\\(\\)\\*,+-\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	public static final String REGEX_SMALL = "[!\"#\\$%&'\\(\\)\\*,\\./:;<=>\\?@\\[\\\\\\\\\\]^_`{\\|}~]";
 	public static final Integer CIVIL_STATUS_CONCEPT_ID = 1054;
+	
+	/**
+	 * The directory that will store filesystem data about openmrs like
+	 * module omods, generated data exports, etc.  This shouldn't be 
+	 * accessed directory, the OpenmrsUtil.getApplicationDataDirectory()
+	 * should be used.
+	 * 
+	 * This should be null here. This constant will hold the value of the 
+	 * user's runtime property for the application_data_directory and is
+	 * set programmatically at startup.  This value is set in the openmrs
+	 * startup method
+	 * 
+	 * If this is null, the getApplicationDataDirectory() uses some
+	 * OS heuristics to determine where to put an app data dir. 
+	 * 
+	 * @see #APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY
+	 * @see OpenmrsUtil.getApplicationDataDirectory()
+	 * @see OpenmrsUtil.startup(java.util.Properties);
+	 */
+	public static String APPLICATION_DATA_DIRECTORY = null;
+	
+	/**
+	 * The name of the runtime property that a user can set that will
+	 * specify where openmrs's application directory is
+	 * @see #APPLICATION_DATA_DIRECTORY
+	 */
+	public static String APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY = "application_data_directory";
 	
 	public static final Collection<String> STOP_WORDS() {
 		List<String> stopWords = new Vector<String>();
@@ -283,7 +314,7 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_DELETE_PERSONS, "Able to delete objects");
 		}
 		
-		// always add the module core privileges back on
+		// always add the module core privileges back on	
 		for (Privilege privilege : ModuleFactory.getPrivileges()) {
 			CORE_PRIVILEGES.put(privilege.getPrivilege(), privilege.getDescription());
 		}

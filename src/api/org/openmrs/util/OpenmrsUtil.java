@@ -400,7 +400,6 @@ public class OpenmrsUtil {
 		return false;
 	}
 	
-	
 	/**
 	 * Initialize global settings
 	 * Find and load modules
@@ -451,10 +450,16 @@ public class OpenmrsUtil {
 			}
 		}
 		
+		// set the business database name
 		val = p.getProperty("connection.database_business_name", null);
 		if (val == null)
 			val = OpenmrsConstants.DATABASE_NAME;
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
+		
+		// set the application data directory
+		val = p.getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
+		if (val != null)
+			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = val;
 		
 	}
 	
@@ -866,18 +871,24 @@ public class OpenmrsUtil {
      * 			data about the application (runtime properties, modules, etc)
      */
     public static String getApplicationDataDirectory() {
-    	String filepath;
     	
-        if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
-                OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
-                OpenmrsConstants.OPERATING_SYSTEM_OSX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
-			filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
-		else
-			filepath = System.getProperty("user.home") + File.separator + 
-					"Application Data" + File.separator + 
-					"OpenMRS";
-				
-		filepath = filepath + File.separator;
+    	String filepath = null;
+    	
+    	if (OpenmrsConstants.APPLICATION_DATA_DIRECTORY != null) {
+    		filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
+    	}
+    	else {
+	        if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
+	                OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
+	                OpenmrsConstants.OPERATING_SYSTEM_OSX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
+				filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
+			else
+				filepath = System.getProperty("user.home") + File.separator + 
+						"Application Data" + File.separator + 
+						"OpenMRS";
+					
+			filepath = filepath + File.separator;
+    	}
 		
 		File folder = new File(filepath);
 		if (!folder.exists())

@@ -545,15 +545,24 @@ public class Context {
 	 * @param Properties runtime properties to use for startup
 	 */
 	public static void startup(Properties props) {
+		// do any context database specific startup
 		getContextDAO().startup(props);
+		
+		// find/set/check whether the current database version is compatible
 		checkDatabaseVersion();
 		
-		// Loop over each "module" and startup each with the custom
-		// properties
-		ModuleUtil.startup(props);
+		// this should be first in the startup routines so that the application
+		// data directory can be set from the runtime properties
 		OpenmrsUtil.startup(props);
+		
+		// Loop over each module and startup each with these custom properties
+		ModuleUtil.startup(props);
+		
+		// start the scheduled tasks
 		SchedulerUtil.startup(props);
 		
+		// add any privileges/roles that /must/ exist for openmrs to work correctly.
+		// TODO: Should this be one of the first things executed at startup? 
 		checkCoreDataset();
 	}
 	
