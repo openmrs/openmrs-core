@@ -13,6 +13,7 @@ import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.User;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,7 +73,7 @@ public interface ProgramWorkflowService {
 	public Collection<PatientProgram> getPatientPrograms(Patient patient);
 
 	public void enrollPatientInProgram(Patient patient, Program program,
-			Date enrollmentDate, Date completionDate);
+			Date enrollmentDate, Date completionDate, User creator);
 
 	public void voidPatientProgram(PatientProgram p, String reason);
 
