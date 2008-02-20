@@ -90,13 +90,13 @@ public class SynchronizationImportListController extends SimpleFormController {
 		
 		
 		//outputing statistics: debug only!
-		System.out.println("HttpServletRequest INFO:");
-		System.out.println("ContentType: " + request.getContentType());
-		System.out.println("CharacterEncoding: " + request.getCharacterEncoding());
-		System.out.println("ContentLength: " + request.getContentLength());
-		System.out.println("checksum: " + request.getParameter("checksum"));
-		System.out.println("syncData: " + request.getParameter("syncData"));
-		System.out.println("syncDataResponse: " + request.getParameter("syncDataResponse"));
+		log.warn("HttpServletRequest INFO:");
+		log.warn("ContentType: " + request.getContentType());
+		log.warn("CharacterEncoding: " + request.getCharacterEncoding());
+		log.warn("ContentLength: " + request.getContentLength());
+		log.warn("checksum: " + request.getParameter("checksum"));
+		log.warn("syncData: " + request.getParameter("syncData"));
+		log.warn("syncDataResponse: " + request.getParameter("syncDataResponse"));
 
 		// All requests should be multipart requests
 		
@@ -220,12 +220,12 @@ public class SynchronizationImportListController extends SimpleFormController {
                     SyncTransmission st = null;
 
                     if ( isResponse ) {
-                        log.warn("UNDERSTOOD THAT THIS IS A RESPONSE");
+                        log.info("Processing a response, not a transmission");
                         SyncTransmissionResponse priorResponse = null;
                         
                         try {
                             priorResponse = SyncDeserializer.xmlToSyncTransmissionResponse(contents);
-                            log.warn("WE SEEM TO HAVE GOTTEN THE PRIOR RESPONSE: " + priorResponse.getGuid());
+                            log.info("This is a response from a previous transmission.  Guid is: " + priorResponse.getGuid());
                         } catch ( Exception e ) {
                             log.error("Unable to deserialize the following: " + contents);
                             e.printStackTrace();
@@ -234,26 +234,26 @@ public class SynchronizationImportListController extends SimpleFormController {
                         //figure out where this came from
                         //for responses, the target ID contains the server that generated the response
                         String sourceGuid = priorResponse.getSyncTargetGuid();
-                        log.warn("Getting sourceGuid of " + sourceGuid);
+                        log.info("SyncTransmissionResponse has a sourceGuid of " + sourceGuid);
                         RemoteServer origin = Context.getSynchronizationService().getRemoteServer(sourceGuid);
-                        if ( origin == null ) log.warn("NOT ABLE TO GET ORIGIN SERVER BY SOURCEGUID");
-                        else log.warn("EASILY ABLE TO GET ORIGIN SERVER BY SOURCEGUID: " + sourceGuid + " = " + origin.getNickname());
+                        if ( origin == null ) log.warn("Unable to find source server by guid.  Will still try to get by serverId and username if possible.");
+                        else log.info("Found source server by guid: " + sourceGuid + " = " + origin.getNickname());
                         
                         // if that didn't do it, we should be able to get by serverId, if this is a file-based upload
                         if ( origin == null && serverId > 0 ) {
                             // make a last-ditch effort to try to figure out what server this is coming from, so we can behave appropriately.
-                            log.warn("CANNOT GET ORIGIN SERVER FOR THIS REQUEST, get by serverId " +  serverId);
+                            log.info("Trying to identify source server by serverId " +  serverId);
                             origin = Context.getSynchronizationService().getRemoteServer(serverId);
                             if ( origin != null && sourceGuid != null && sourceGuid.length() > 0 ) {
                                 // take this opportunity to save the guid, now we've identified which server this is
                                 origin.setGuid(sourceGuid);
                                 Context.getSynchronizationService().updateRemoteServer(origin);
                             } else {
-                                log.warn("STILL UNABLE TO GET ORIGIN WITH username " + username + " and sourceguid " + sourceGuid);
+                                log.warn("Still unable to get username " + username + " and sourceguid " + sourceGuid);
                             }
                         } else {
-                            if ( origin == null ) log.warn("ORIGIN SERVER IS STILL NULL AFTER 2 ATTEMPTS");
-                            else log.warn("ORIGIN SERVER IS " + origin.getNickname());
+                            if ( origin == null ) log.warn("Still can't figure out source server after checking source guid and trying serverId (serverId wasnt' present, meaning this is likely a post from a remote server)");
+                            else log.info("Source server is " + origin.getNickname());
                         }
 
                         if ( origin == null ) {
@@ -261,18 +261,20 @@ public class SynchronizationImportListController extends SimpleFormController {
                             User authenticatedUser = Context.getAuthenticatedUser();
                             if ( authenticatedUser != null ) {
                                 username = authenticatedUser.getUsername();
-                                log.warn("CANNOT GET ORIGIN SERVER FOR THIS REQUEST, get by username " + username + " instead");
+                                log.info("Trying to get source server using authenticated username instead: " + username);
                                 origin = Context.getSynchronizationService().getRemoteServerByUsername(username);
                                 if ( origin != null && sourceGuid != null && sourceGuid.length() > 0 ) {
                                     // take this opportunity to save the guid, now we've identified which server this is
                                     origin.setGuid(sourceGuid);
                                     Context.getSynchronizationService().updateRemoteServer(origin);
                                 } else {
-                                    log.warn("STILL UNABLE TO GET ORIGIN WITH username " + username + " and sourceguid " + sourceGuid);
+                                    log.warn("Still unable to get source server after trying username " + username + ", serverId, and sourceguid " + sourceGuid);
                                 }
+                            } else {
+                                log.warn("Still unable to get source server after trying username, serverId, and sourceguid " + sourceGuid + ". Check that server was configured properly.");
                             }
                         } else {
-                            log.warn("ORIGIN SERVER IS " + origin.getNickname());
+                            log.info("Source server is " + origin.getNickname());
                         }
                         
                         if ( priorResponse != null ) {
@@ -372,7 +374,7 @@ public class SynchronizationImportListController extends SimpleFormController {
 		// We're sending back a new sync transmission (an update).
 		// We need to check the local server about whether we should apply compression.
 		boolean useCompression = 
-			Boolean.parseBoolean(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_ENABLE_COMPRESSION, "false"));
+			Boolean.parseBoolean(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_ENABLE_COMPRESSION, "true"));
 		log.info("Global property sychronization.enable_compression = " + useCompression);
 
 		// Otherwise, all other requests are compressed and sent back to the client 

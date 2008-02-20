@@ -864,7 +864,7 @@ public class SyncUtil {
 			
 			String adminEmail = SyncUtil.getAdminEmail();
 			
-			if (adminEmail == null || adminEmail.isEmpty()) { 
+			if (adminEmail == null || adminEmail.length() == 0 ) { 
 				log.warn("Sync error message could not be sent because " + SyncConstants.SYNC_ADMIN_EMAIL + " is not configured.");
 			} 
 			else if (adminEmail != null) { 

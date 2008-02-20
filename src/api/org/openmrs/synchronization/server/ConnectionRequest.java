@@ -78,8 +78,8 @@ public class ConnectionRequest {
 			
 			
 			log.info("Request compressed: " + useCompression);
-			log.info("Request input: " + content);
-			log.info("Request data: " + this.baos.toString());
+			//log.info("Request input: " + content);
+			//log.info("Request data: " + this.baos.toString());
 			log.info("Request checksum: " + this.checksum);
 			
 			

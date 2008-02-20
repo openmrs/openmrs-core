@@ -104,14 +104,15 @@ public class ServerConnection {
 		// Default response - default constructor institantiates contains error codes 
 		ConnectionResponse syncResponse = new ConnectionResponse();
 		
+		url = url + SyncConstants.DATA_IMPORT_SERVLET;
+		log.info("POST multipart request to " + url);
 		
 		PostMethod method = new PostMethod(url);
 		
 		try {
 			
-			
 			boolean useCompression = 
-				Boolean.parseBoolean(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_ENABLE_COMPRESSION, "false"));
+				Boolean.parseBoolean(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_ENABLE_COMPRESSION, "true"));
 			
 			log.info("use compression: " + useCompression);
 			// Compress content
@@ -126,8 +127,6 @@ public class ServerConnection {
 					new StringPart("isResponse", String.valueOf(isResponse)),
 					new StringPart("checksum", String.valueOf(request.getChecksum()))
 			};	
-			url = url + SyncConstants.DATA_IMPORT_SERVLET;
-			log.info("POST multipart request to " + url);
 			
 			method.setRequestEntity(new MultipartRequestEntity(parts, method.getParams()));
 
@@ -141,7 +140,7 @@ public class ServerConnection {
 			// As long as the response is OK (200)
 			if (status == HttpStatus.SC_OK) {
 				// Decompress the response from the server
-				log.info("Response from server:" + method.getResponseBodyAsString());
+				//log.info("Response from server:" + method.getResponseBodyAsString());
 	
 				// Check to see if the child/parent sent back a compressed response
 				Header compressionHeader = method.getResponseHeader("Enable-Compression");
@@ -187,16 +186,16 @@ public class ServerConnection {
 
 	public static Double getTimeout() {
 		// let's figure out a suitable timeout
-		Double timeout = (1000.0 * 60 * 10); // let's just default at 10 min
+		Double timeout = (500.0 * 60 * 10); // let's just default at 5 min
 												// for now
 		try {
 			Integer maxRecords = new Integer(Context.getAdministrationService()
 			                                        .getGlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RECORDS,
 			                                                           SyncConstants.PROPERTY_NAME_MAX_RECORDS_DEFAULT));
-			timeout = (4 + (maxRecords * 0.2)) * 60 * 1000; // formula we cooked
+			timeout = (3 + (maxRecords * 0.1)) * 60 * 1000; // formula we cooked
 															// up after running
 															// several tests:
-															// latency + 0.25N
+															// latency + 0.1N
 		} catch (NumberFormatException nfe) {
 			// it's ok if this fails (not sure how it could) = we'll just do 10
 			// min timeout
@@ -416,8 +415,6 @@ public class ServerConnection {
 		return connResponse;
 	}
 	 */
-
-
 
 
 }

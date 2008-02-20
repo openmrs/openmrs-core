@@ -222,6 +222,14 @@ CREATE PROCEDURE sync_setup_procedure()
 	# Add user_guid column to users table to use with LoginCredential sync'ing
 	# -------------------------------------------------------------------------------
 	ALTER TABLE `users` ADD COLUMN `user_guid` char(36) DEFAULT NULL;
+
+	#fill out the default compression settings for sync
+	IF( SELECT count(*) > 0 FROM global_property WHERE property = 'synchronization.enable_compression' ) THEN
+		UPDATE global_property SET property_value='true' where property='synchronization.enable_compression';
+	ELSE
+		INSERT INTO global_property (property, property_value, description) values
+		('synchronization.enable_compression', 'true', 'Whether or not OpenMRS should compress data that it sends (recommend that you set this to true).');	
+	END IF;
 	
  END;
 //

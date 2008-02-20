@@ -69,8 +69,8 @@ public class ConnectionResponse {
 			}
 			
 			log.info("Response compressed: " + useCompression);
-			log.info("Response input: " + is.toString());
-			log.info("Response data: " + this.responsePayload);
+			//log.info("Response input: " + is.toString());
+			//log.info("Response data: " + this.responsePayload);
 			log.info("Response checksum: " + this.checksum);
 
 	        this.setState(ServerConnectionState.OK);
