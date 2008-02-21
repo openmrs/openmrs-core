@@ -150,7 +150,7 @@
 			<i><span id="add_relationship_name"><spring:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
 			<spring:message code="Relationship.target"/>
-			<div dojoType="PersonSearch" widgetId="add_rel_target_search"></div>
+			<div dojoType="PersonSearch" widgetId="add_rel_target_search" canAddNewPerson="true"></div>
 			<div dojoType="OpenmrsPopup" widgetId="add_rel_target_selection" hiddenInputName="add_rel_target" searchWidget="add_rel_target_search" searchTitle="Pick a person"></div> 
 		</span>
 		

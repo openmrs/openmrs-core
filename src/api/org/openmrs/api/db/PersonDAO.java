@@ -20,6 +20,8 @@ public interface PersonDAO {
 	 */
 	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws DAOException;
 	
+	public List<Person> findPeople(String name, boolean includeRetired) throws DAOException;
+	
 	public void createPersonAttributeType(PersonAttributeType type);
 
 	public void deletePersonAttributeType(PersonAttributeType type);
@@ -87,8 +89,9 @@ public interface PersonDAO {
 	 * Create a new Person
 	 * @param Person to create
 	 * @throws DAOException
+	 * @return Person created
 	 */
-	public void createPerson(Person person) throws DAOException;
+	public Person createPerson(Person person) throws DAOException;
 
 	/**
 	 * Update a person

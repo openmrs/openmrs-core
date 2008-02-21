@@ -52,6 +52,7 @@
 			<include method="getSimilarPeople"/>
 			<include method="findPeople"/>
 			<include method="findPeopleByRoles"/>
+			<include method="createPerson"/>
 			<include method="getPerson"/>
 		</create>
 	
