@@ -5,6 +5,7 @@
 
 <spring:message var="pageTitle" code="personDashboard.title" scope="page"/>
 <%@ include file="/WEB-INF/template/header.jsp" %>
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <c:if test="${person.patient}">
 	<a href="patientDashboard.form?patientId=${person.personId}">

@@ -251,9 +251,10 @@ public interface PersonService {
 	 * Create a new Person
 	 * @param Person to create
 	 * @throws APIException
+	 * @return Person created
 	 */
 	@Authorized({"Add People"})
-	public void createPerson(Person person) throws APIException;
+	public Person createPerson(Person person) throws APIException;
 	
 	/**
 	 * Update an encounter type

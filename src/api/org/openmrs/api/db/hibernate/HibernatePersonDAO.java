@@ -8,9 +8,13 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -18,6 +22,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PersonDAO;
@@ -160,6 +165,43 @@ public class HibernatePersonDAO implements PersonDAO {
 		return people;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<Person> findPeople(String name, boolean includeVoided) {
+		name = name.replace(", ", " ");
+		String[] names = name.split(" ");
+		
+		log.debug("name: " + name);
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Person.class);
+		criteria.createAlias("names", "name");
+		for (String n : names) {
+			if (n != null && n.length() > 0) {
+				criteria.add(Expression.or(
+						Expression.like("name.givenName", n, MatchMode.START),
+						Expression.or(
+							Expression.like("name.familyName", n, MatchMode.START),
+								Expression.or(
+										Expression.like("name.middleName", n, MatchMode.START),
+										Expression.like("systemId", n, MatchMode.START)
+										)
+							)
+						)
+					);
+			}
+		}
+				
+		if (includeVoided == false)
+			criteria.add(Expression.eq("voided", false));
+		
+		criteria.addOrder(Order.asc("personId"));
+		
+		List returnList = new Vector();
+		returnList = criteria.list();
+		
+		return returnList;
+	}
+		
+		
 	/**
 	 * @see org.openmrs.api.db.PersonService#getPerson(java.lang.Long)
 	 */
@@ -320,9 +362,17 @@ public class HibernatePersonDAO implements PersonDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#createPerson(org.openmrs.Person)
-	 */
+	 *
 	public void createPerson(Person person) throws DAOException {
 		sessionFactory.getCurrentSession().save(person);
+	}
+	 */
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#createPerson(org.openmrs.Person)
+	 */
+	public Person createPerson(Person person) throws DAOException {
+		return (Person)sessionFactory.getCurrentSession().merge(person);
 	}
 
 	/**
