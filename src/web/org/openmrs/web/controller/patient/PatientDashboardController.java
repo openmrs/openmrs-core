@@ -60,7 +60,7 @@ public class PatientDashboardController extends SimpleFormController {
 			patient = ps.getPatient(id);
 		}
 		catch (NumberFormatException numberError) {
-			log.warn("Invalid userId supplied: '" + patientId + "'", numberError);
+			log.warn("Invalid patientId supplied: '" + patientId + "'", numberError);
 		}
 		catch (ObjectRetrievalFailureException noPatientEx) {
 			log.warn("There is no patient with id: '" + patientId + "'", noPatientEx);

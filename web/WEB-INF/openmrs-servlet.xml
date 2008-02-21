@@ -111,6 +111,7 @@
 				<prop key="options.form">optionsForm</prop>
 				<prop key="patientSummaries.form">multiplePatientSummariesList</prop>
 				<prop key="patientDashboard.form">patientDashboardForm</prop>
+				<prop key="personDashboard.form">personDashboardForm</prop>
 				<prop key="patientSet.form">patientSetFormController</prop>
 				<prop key="cohortSummary.list">cohortSummaryController</prop>
 
@@ -149,7 +150,7 @@
 				<prop key="**/addressLayout.portlet">addressLayoutPortletController</prop>
 				<prop key="**/nameLayout.portlet">nameLayoutPortletController</prop>
 				<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
-				<prop key="**/patientRelationships.portlet">patientRelationshipsPortletController</prop>
+				<prop key="**/personRelationships.portlet">personRelationshipsPortletController</prop>
 				<prop key="**/patientSet.portlet">patientSetPortletController</prop>
 				<prop key="**/patientRegimens.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientRegimenCurrent.portlet">patientRegimenPortletController</prop>
@@ -171,7 +172,7 @@
 	<bean id="portletController" class="org.openmrs.web.controller.PortletController" />
 	<bean id="globalPropertyPortletController" class="org.openmrs.web.controller.GlobalPropertyPortletController" />
 	<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController" />
-	<bean id="patientRelationshipsPortletController" class="org.openmrs.web.controller.PatientRelationshipsPortletController" />
+	<bean id="personRelationshipsPortletController" class="org.openmrs.web.controller.PersonRelationshipsPortletController" />
 	<bean id="patientSetPortletController" class="org.openmrs.web.controller.PatientSetPortletController" />
 	<bean id="patientRegimenPortletController" class="org.openmrs.web.controller.RegimenPortletController" />
 	<bean id="patientSummaryPortletController" class="org.openmrs.web.controller.PatientSummaryPortletController" />
@@ -1105,6 +1106,13 @@
 		<property name="commandName"><value>patient</value></property>
 		<property name="formView"><value>/patientDashboardForm</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
+	</bean>
+	<bean id="personDashboardForm"
+		class="org.openmrs.web.controller.person.PersonDashboardController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>person</value></property>
+		<property name="formView"><value>/personDashboardForm</value></property>
+		<property name="successView"><value>personDashboard.form</value></property>
 	</bean>
 	<bean id="globalPropertyController"
 		class="org.openmrs.web.controller.maintenance.GlobalPropertyController">

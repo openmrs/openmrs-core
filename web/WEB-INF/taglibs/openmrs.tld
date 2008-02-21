@@ -311,6 +311,12 @@
 		<type>java.lang.Integer</type>
 	</attribute>
 	<attribute>
+		<name>personId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
 		<name>encounterId</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
