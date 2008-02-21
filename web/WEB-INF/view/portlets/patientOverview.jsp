@@ -157,6 +157,6 @@
 
 <div class="boxHeader${model.patientVariation}"><spring:message code="Relationship.relationships" /></div>
 <div class="box${model.patientVariation}">
-	<openmrs:portlet url="patientRelationships" size="normal" patientId="${patient.patientId}" />
+	<openmrs:portlet url="personRelationships" size="normal" patientId="${patient.patientId}" />
 </div>
 

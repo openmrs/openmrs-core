@@ -32,7 +32,7 @@
 	function refreshRelationshipsInitial() {
 		var rels = new Array();
 		var rel;
-		<c:forEach var="rel" items="${model.patientRelationships}">
+		<c:forEach var="rel" items="${model.personRelationships}">
 			rel = new Object();
 			rel.relationshipId = ${rel.relationshipId};
 			rel.personA = '${fn:replace(rel.personA.personName, "'", "\\'")}';
@@ -62,13 +62,13 @@
 				if (rel.personBIsPatient)
 					str += '<a href="patientDashboard.form?patientId=' + rel.personBId + '">' + rel.personB + '</a>';
 				else
-					str += rel.personB;
+					str += '<a href="personDashboard.form?personId=' + rel.personBId + '">' + rel.personB + '</a>';
 			} else if (rel.personBId == ${model.personId}) {
 				str = rel.aIsToB + ': ';
 				if (rel.personAIsPatient)
 					str += '<a href="patientDashboard.form?patientId=' + rel.personAId + '">' + rel.personA + '</a>';
 				else
-					str += rel.personA;
+					str += '<a href="personDashboard.form?personId=' + rel.personAId + '">' + rel.personA + '</a>';
 			}
 			str += '&nbsp;<a id="del_rel_' + relId + '" href="javascript:showDiv(\'voidRel' + relId + '\'); hideDiv(\'del_rel_' + relId + '\');"><spring:message code="general.deleteLink" javaScriptEscape="true" /></a>';
 			str += ' <span style="display: none; border: 1px black dashed; margin: 2px" id="voidRel' + relId + '">';
@@ -145,7 +145,7 @@
 		</table>
 
 		<span id="add_rel_details" style="display: none">		
-			${model.patient.personName}
+			${model.person.personName}
 			<spring:message code="Relationship.possessive"/>
 			<i><span id="add_relationship_name"><spring:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>

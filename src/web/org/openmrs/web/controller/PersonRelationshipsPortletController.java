@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 
-public class PatientRelationshipsPortletController extends PortletController {
+public class PersonRelationshipsPortletController extends PortletController {
 
 	protected void populateModel(HttpServletRequest request, Map model) {
 		List<RelationshipType> relationshipTypes = Context.getPersonService().getRelationshipTypes();

@@ -25,6 +25,7 @@ public class PortletTag extends ImportSupport {
 	private String parameters = "";
 	private Map<String, Object> parameterMap = null;
 	private Integer patientId = null;
+	private Integer personId = null;
 	private Integer encounterId = null;
 	private Integer userId = null;
 	private String patientIds = "";
@@ -68,6 +69,7 @@ public class PortletTag extends ImportSupport {
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.size", size);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.parameters", OpenmrsUtil.parseParameterList(parameters));
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientId", patientId);
+				pageContext.getRequest().setAttribute("org.openmrs.portlet.personId", personId);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.encounterId", encounterId);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.userId", userId);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientIds", patientIds);
@@ -100,7 +102,7 @@ public class PortletTag extends ImportSupport {
 	
 	private void resetValues() {
 		id = parameters = patientIds = moduleId = "";
-		patientId = encounterId = userId = null;
+		personId = patientId = encounterId = userId = null;
 		parameterMap = null;
 	}
 
@@ -147,6 +149,14 @@ public class PortletTag extends ImportSupport {
 	public void setPatientId(Integer patientId) {
 		this.patientId = patientId;
 	}
+
+	public Integer getPersonId() {
+    	return personId;
+    }
+
+	public void setPersonId(Integer personId) {
+    	this.personId = personId;
+    }
 
 	public String getPatientIds() {
 		return patientIds;
