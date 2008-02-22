@@ -37,23 +37,23 @@ Parameters
 							</tr>
 						</c:if>
 						<tr>
-							<th align="center"><c:if test="${showEditLink == 'true'}">
+							<th class="encounterEdit" align="center"><c:if test="${showEditLink == 'true'}">
 								<spring:message code="general.edit"/>
 							</c:if></th>
-							<th align="center"><c:if test="${showViewLink == 'true'}">
+							<th class="encounterView" align="center"><c:if test="${showViewLink == 'true'}">
 								 <spring:message code="general.view"/>
 							</c:if></th>
-							<th> <spring:message code="Encounter.datetime"/> </th>
-							<th> <spring:message code="Encounter.type"/>     </th>
-							<th> <spring:message code="Encounter.provider"/> </th>
-							<th> <spring:message code="Encounter.form"/>     </th>
-							<th> <spring:message code="Encounter.location"/> </th>
-							<th> <spring:message code="Encounter.enterer"/>  </th>
+							<th class="encounterDatetimeHeader"> <spring:message code="Encounter.datetime"/> </th>
+							<th class="encounterTypeHeader"> <spring:message code="Encounter.type"/>     </th>
+							<th class="encounterProviderHeader"> <spring:message code="Encounter.provider"/> </th>
+							<th class="encounterFormHeader"> <spring:message code="Encounter.form"/>     </th>
+							<th class="encounterLocationHeader"> <spring:message code="Encounter.location"/> </th>
+							<th class="encounterEntererHeader"> <spring:message code="Encounter.enterer"/>  </th>
 						</tr>
 						<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc" num="${model.num}">
 							<tr class="<c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
 								<c:set var="showLink" value="${fn:length(enc.obs) > 0 && showViewLink == 'true'}"/>	
-								<td align="center">
+								<td class="encounterEdit" align="center">
 									<c:if test="${showEditLink == 'true'}">
 										<openmrs:hasPrivilege privilege="Edit Encounters">
 											<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${enc.encounterId}">
@@ -62,21 +62,21 @@ Parameters
 										</openmrs:hasPrivilege>
 									</c:if>
 								</td>
-								<td align="center">
+								<td class="encounterView" align="center">
 									<c:if test="${showLink}">
 										<a href="#encounterId=${enc.encounterId}" onClick="handleGetObservations('${enc.encounterId}'); return false;">
 											<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" border="0" align="top" />
 										</a>
 									</c:if>
 								</td>
-								<td>
+								<td class="encounterDatetime">
 									<openmrs:formatDate date="${enc.encounterDatetime}" type="small" />
 								</td>
-							 	<td>${enc.encounterType.name}</td>
-							 	<td>${enc.provider.personName}</td>
-							 	<td>${enc.form.name}</td>
-							 	<td>${enc.location.name}</td>
-							 	<td>${enc.creator.personName}</td>
+							 	<td class="encounterType">${enc.encounterType.name}</td>
+							 	<td class="encounterProvider">${enc.provider.personName}</td>
+							 	<td class="encounterForm">${enc.form.name}</td>
+							 	<td class="encounterLocation">${enc.location.name}</td>
+							 	<td class="encounterEnterer">${enc.creator.personName}</td>
 							</tr>
 						</openmrs:forEachEncounter>
 					</c:if>
