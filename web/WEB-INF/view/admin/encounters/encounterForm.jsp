@@ -91,7 +91,11 @@
 
 <a href="../../patientDashboard.form?patientId=${encounter.patient.patientId}"><spring:message code="patientDashboard.viewDashboard"/></a>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.aboveTitle" type="html" parameters="encounterId=${encounter.encounterId}" />
+
 <h2><spring:message code="Encounter.manage.title"/></h2>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.belowTitle" type="html" parameters="encounterId=${encounter.encounterId}" />
 
 <spring:hasBindErrors name="encounter">
 	<spring:message code="fix.error"/>
@@ -227,6 +231,8 @@
 	</form>
 </div>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.afterSummary" type="html" parameters="encounterId=${encounter.encounterId}" />
+
 <c:if test="${encounter.encounterId != null}">
 	<br/>
 	<div class="boxHeader">
@@ -304,5 +310,7 @@
 <br />
 <a href="${pageContext.request.contextPath}/admin/observations/obs.form?encounterId=${encounter.encounterId}"><spring:message code="Obs.add"/></a>
 <br />
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.footer" type="html" parameters="encounterId=${encounter.encounterId}" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

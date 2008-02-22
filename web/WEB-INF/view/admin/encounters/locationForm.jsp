@@ -7,6 +7,8 @@
 
 <h2><spring:message code="Location.title"/></h2>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.locationForm.afterTitle" type="html" parameters="locationId=${location.locationId}" />
+
 <spring:hasBindErrors name="location">
 	<spring:message code="fix.error"/>
 	<br />
@@ -44,8 +46,11 @@
 		</tr>
 	</c:if>
 </table>
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.locationForm.inForm" type="html" parameters="locationId=${location.locationId}" />
 <br />
 <input type="submit" value="<spring:message code="Location.save"/>">
 </form>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.locationForm.footer" type="html" parameters="locationId=${location.locationId}" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
