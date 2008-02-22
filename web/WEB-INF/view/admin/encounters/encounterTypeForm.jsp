@@ -7,6 +7,8 @@
 
 <h2><spring:message code="EncounterType.title"/></h2>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.belowTitle" type="html" parameters="encounterTypeId=${encounterType.encounterTypeId}" />
+
 <spring:hasBindErrors name="encounterType">
 	<spring:message code="fix.error"/>
 	<br />
@@ -42,7 +44,13 @@
 	</c:if>
 </table>
 <br />
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.inForm" type="html" parameters="encounterTypeId=${encounterType.encounterTypeId}" />
+
 <input type="submit" value="<spring:message code="EncounterType.save"/>">
+
 </form>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterTypeForm.footer" type="html" parameters="encounterTypeId=${encounterType.encounterTypeId}" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

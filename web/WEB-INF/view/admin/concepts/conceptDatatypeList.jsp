@@ -7,11 +7,13 @@
 
 <h2><spring:message code="ConceptDatatype.manage.title"/></h2>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeList.afterTitle" type="html" />
+
 <%--  <a href="conceptDatatype.form"><spring:message code="ConceptDatatype.add"/></a> --%>
 
-(<spring:message code="general.readonly"/>)
+<div id="conceptDatatypeListReadOnly">(<spring:message code="general.readonly"/>)</div>
 
-<br /><br />
+<br />
 
 <b class="boxHeader"><spring:message code="ConceptDatatype.list.title"/></b>
 <form method="post" class="box">
@@ -32,7 +34,10 @@
 			</tr>
 		</c:forEach>
 	</table>
+	<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeList.inForm" type="html" />
 	<%--  <input type="submit" value="<spring:message code="ConceptDatatype.delete"/>" name="action"> --%>
 </form>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeList.footer" type="html" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

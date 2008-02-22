@@ -7,6 +7,8 @@
 
 <h2><spring:message code="ConceptDatatype.title"/></h2>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.afterTitle" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
+
 <%--  <form method="post"> --%>
 <table>
 	<tr>
@@ -46,11 +48,13 @@
 		</tr>
 	</c:if>
 </table>
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.inForm" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 <br />
 <%-- <input type="submit" value="<spring:message code="ConceptDatatype.save"/>">
 </form> --%>
 
-(<spring:message code="general.readonly"/>)
+<div id="conceptDatatypeFormReadOnly">(<spring:message code="general.readonly"/>)</div>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDatatypeForm.footer" type="html" parameters="conceptDatatypeId=${conceptDatatype.conceptDatatypeId}" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

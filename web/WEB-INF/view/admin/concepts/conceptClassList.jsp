@@ -9,6 +9,8 @@
 
 <a href="conceptClass.form"><spring:message code="ConceptClass.add"/></a>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptClassList.afterAdd" type="html" />
+
 <br /><br />
 
 <b class="boxHeader"><spring:message code="ConceptClass.list.title"/></b>
@@ -30,7 +32,12 @@
 			</tr>
 		</c:forEach>
 	</table>
+	
+	<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptClassList.inForm" type="html" />
+	
 	<input type="submit" value="<spring:message code="ConceptClass.delete"/>" name="action">
 </form>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptClassList.footer" type="html" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
