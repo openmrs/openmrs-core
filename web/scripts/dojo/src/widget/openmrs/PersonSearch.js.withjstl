@@ -328,7 +328,7 @@ dojo.widget.defineWidget(
             newPersonForm.innerHTML = tbl_top + r1d1 + r1d2 + r1d3 + r2d1 + r2d2 + r3d1 + r3d2 + r3d3 + r4d1 + r4d2 + r4d3 + r5d1 + r5d2 + r5d3 + r6d1 + tbl_bot;
 
             return newPersonForm;
-        },
+        }
         
 	},
 	"html"
