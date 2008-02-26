@@ -291,7 +291,7 @@ public class HibernateContextDAO implements ContextDAO {
 			psSelect = conn
 					.prepareStatement("SELECT * FROM global_property WHERE UPPER(property) = UPPER(?)");
 			psInsert = conn
-					.prepareStatement("INSERT INTO global_property VALUES (?, ?, ?)");
+					.prepareStatement("INSERT INTO global_property (property, property_value, description) VALUES (?, ?, ?)");
 			// this update should only be temporary until everyone has the new global property description code 
 			psUpdate = conn
 					.prepareStatement("UPDATE global_property SET description = ? WHERE UPPER(property) = UPPER(?) AND description IS null");
