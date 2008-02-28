@@ -109,7 +109,7 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 					getWithinLastDays(), getWithinLastMonths(),
 					getUntilDaysAgo(), getUntilMonthsAgo(),
 					getSinceDate(), getUntilDate()),
-				OpenmrsUtil.fromDateHelper(null,
+				OpenmrsUtil.toDateHelper(null,
 					getWithinLastDays(), getWithinLastMonths(),
 					getUntilDaysAgo(), getUntilMonthsAgo(),
 					getSinceDate(), getUntilDate()));
