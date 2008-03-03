@@ -628,7 +628,6 @@
 	<!-- ** Concept ** -->
 	<bean id="conceptValidator" class="org.openmrs.web.controller.ConceptFormValidator" />
 	<bean id="conceptForm" class="org.openmrs.web.controller.ConceptFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>concept</value></property>
 		<property name="validator">
 			<ref bean="conceptValidator" />
