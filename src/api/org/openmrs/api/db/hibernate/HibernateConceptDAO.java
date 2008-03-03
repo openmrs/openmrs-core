@@ -211,6 +211,11 @@ public class HibernateConceptDAO implements
 		}	
 	}
 	
+	/**
+	 * TODO This should be moved to the service layer
+	 * 
+	 * @param c
+	 */
 	protected void modifyCollections(Concept c) {
 		
 		User authUser = Context.getAuthenticatedUser();
@@ -223,8 +228,7 @@ public class HibernateConceptDAO implements
 		}
 		else {
 			c.setChangedBy(authUser);
-			if (c.getDateChanged() == null)
-				c.setDateChanged(timestamp);
+			c.setDateChanged(timestamp);
 		}
 		
 		if (c.getNames() != null) {
