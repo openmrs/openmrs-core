@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.web.dwr;
 
 import java.util.Collection;
@@ -24,11 +37,27 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
+/**
+ * This class exposes some of the methods in org.openmrs.api.ConceptService
+ * via the dwr package
+ */
 public class DWRConceptService {
 
-	protected final Log log = LogFactory.getLog(getClass());
+	protected static final Log log = LogFactory.getLog(DWRConceptService.class);
 
-	public Vector findConcepts(String phrase, boolean includeRetired,
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param phrase
+	 * @param includeRetired
+	 * @param includeClassNames
+	 * @param excludeClassNames
+	 * @param includeDatatypeNames
+	 * @param excludeDatatypeNames
+	 * @param includeDrugConcepts
+	 * @return
+	 */
+	public List<Object> findConcepts(String phrase, boolean includeRetired,
 			List<String> includeClassNames, List<String> excludeClassNames,
 			List<String> includeDatatypeNames, List<String> excludeDatatypeNames,
 			boolean includeDrugConcepts) {
@@ -106,7 +135,7 @@ public class DWRConceptService {
 
 			if (words.size() == 0) {
 				objectList
-						.add("No matches found for <b>" + phrase + "</b>");
+						.add("No matches found for <b>" + phrase + "</b> in locale: " + Context.getLocale().getDisplayName());
 			} else {
 				objectList = new Vector<Object>(words.size());
 				int maxCount = 500;
@@ -137,7 +166,7 @@ public class DWRConceptService {
 		}
 
 		if (objectList.size() == 0)
-			objectList.add("No matches found for <b>" + phrase + "</b>");
+			objectList.add("No matches found for <b>" + phrase + "</b> in locale: " + Context.getLocale().getDisplayName());
 
 		return objectList;
 	}
@@ -250,7 +279,7 @@ public class DWRConceptService {
 		return d == null ? null : new ConceptDrugListItem(d, locale);
 	}
 
-	public List getDrugs(Integer conceptId, boolean showConcept) {
+	public List<Object> getDrugs(Integer conceptId, boolean showConcept) {
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		Concept concept = cs.getConcept(conceptId);
@@ -283,7 +312,7 @@ public class DWRConceptService {
 		return items;
 	}
 
-	public List findDrugs(String phrase, boolean includeRetired) {
+	public List<Object> findDrugs(String phrase, boolean includeRetired) {
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 
