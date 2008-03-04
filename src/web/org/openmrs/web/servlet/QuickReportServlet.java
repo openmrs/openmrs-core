@@ -137,10 +137,10 @@ public class QuickReportServlet extends HttpServlet {
 		List<Obs> allObs = null;
 		
 		if (location == null || location.equals(""))
-			allObs = os.getObservations(c, "locationId asc, valueDatetime asc", ObsService.PATIENT, true);
+			allObs = os.getObservations(c, "location.locationId asc, obs.valueDatetime asc", ObsService.PATIENT, true);
 		else {
 			Location locationObj = es.getLocation(Integer.valueOf(location));
-			allObs = os.getObservations(c, locationObj, "locationId asc, valueDatetime asc", ObsService.PATIENT, true);
+			allObs = os.getObservations(c, locationObj, "location.locationId asc, obs.valueDatetime asc", ObsService.PATIENT, true);
 		}
 		
 		List<Obs> obs = new Vector<Obs>();
