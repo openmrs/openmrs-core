@@ -880,7 +880,7 @@ public class OpenmrsUtil {
     	else {
 	        if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
 	                OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
-	                OpenmrsConstants.OPERATING_SYSTEM_OSX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
+	                OpenmrsConstants.OPERATING_SYSTEM_MAC_OSX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
 				filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
 			else
 				filepath = System.getProperty("user.home") + File.separator + 

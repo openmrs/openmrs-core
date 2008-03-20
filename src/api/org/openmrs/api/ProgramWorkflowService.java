@@ -95,7 +95,7 @@ public interface ProgramWorkflowService {
 	@Transactional(readOnly=true)
 	public Collection<PatientProgram> getPatientPrograms(Patient patient);
 
-	public PatientProgram enrollPatientInProgram(Patient patient, Program program,
+	public void enrollPatientInProgram(Patient patient, Program program,
 			Date enrollmentDate, Date completionDate, User creator);
 
 	public void voidPatientProgram(PatientProgram p, String reason);
