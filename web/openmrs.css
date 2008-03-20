@@ -1184,6 +1184,10 @@ table td#summaryHeaderPatientGender {
 	padding: 0px;
 }
 
+.forgotPasswordLink {
+	font-size: small;
+}
+
 .syncCOMMITTED, .syncSYNCHRONIZED, .syncSUCCESS {
 	color: #33aa33;
 	font-weight: bold;

@@ -1,7 +1,9 @@
 package org.openmrs.web.dwr;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -9,6 +11,8 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
+import org.openmrs.PersonName;
+import org.openmrs.User;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -89,10 +93,64 @@ public class DWRPersonService {
 		PersonService ps = Context.getPersonService();
 		
 		for (Person p : ps.findPeople(searchPhrase, includeVoided, roles)) {
+//		for (Person p : ps.findPeople(searchPhrase, includeVoided)) {
+//		for (Person p : ps.getSimilarPeople(searchPhrase, null, null)) {
 			personList.add(new PersonListItem(p));
 		}
 		
 		return personList;
+	}
+	
+	/**
+	 * Creates a new person stub.  
+	 * @param given
+	 * @param middle
+	 * @param family
+	 * @param birthdate
+	 * @param dateformat
+	 * @param age
+	 * @param gender
+	 * @return PersonListItem person stub created
+	 */
+	public Object createPerson(String given, String middle, String family, String birthdate, String dateformat, String age, String gender) {
+		log.error(given + " " + middle + " " + family + " " + birthdate + " " + dateformat + " " + age + " " + gender);
+		User user = Context.getAuthenticatedUser();
+		Person p = new Person();
+		p.setCreator(user);
+		p.setDateCreated(new Date());
+		p.setChangedBy(user);
+		p.setDateChanged(new Date());
+		if ("".equals(gender)) {
+			log.error("Gender cannot be null.");
+			return new String("Gender cannot be null.");
+		}
+		else if (gender.toUpperCase().contains("M")) p.setGender("M");
+		else if (gender.toUpperCase().contains("F")) p.setGender("F");
+		else {
+			log.error("Gender must be 'M' or 'F'.");
+			return new String("Gender must be 'M' or 'F'.");
+		}
+		if ("".equals(given) || "".equals(family)) {
+			log.error("Given name and family name cannot be null.");
+			return new String("Given name and family name cannot be null.");
+		}
+		PersonName name = new PersonName(given, middle, family);
+		name.setCreator(user);
+		name.setDateCreated(new Date());
+		name.setChangedBy(user);
+		name.setDateChanged(new Date());
+		p.addName(name);		
+		try {
+			Date d = updateAge(birthdate, dateformat, age);
+			p.setBirthdate(d);
+		}
+		catch(java.text.ParseException pe) {
+			log.error(pe);
+			return new String("Birthdate cannot be parsed.");
+		}
+		p.setGender(gender);
+		Person person = Context.getPersonService().createPerson(p);
+		return new PersonListItem(person);
 	}
 	
 	/**
@@ -104,4 +162,39 @@ public class DWRPersonService {
 		Person p = Context.getPersonService().getPerson(personId);
 		return new PersonListItem(p);
 	}
+	
+	/**
+	 * 
+	 * Private method to handle birth date and age input.
+	 * 
+	 * @param birthdate
+	 * @param dateformat
+	 * @param age
+	 * @return
+	 * @throws java.text.ParseException
+	 */
+	private Date updateAge(String birthdate, String dateformat, String age) throws java.text.ParseException {
+		SimpleDateFormat df = new SimpleDateFormat();
+		if (!"".equals(dateformat)) {
+			dateformat = dateformat.toLowerCase().replaceAll("m", "M");
+		}
+		else dateformat = new String("MM/dd/yyyy");
+		df.applyPattern(dateformat);
+		Calendar cal = new GregorianCalendar();
+		cal.clear(Calendar.HOUR);
+		cal.clear(Calendar.MINUTE);
+		cal.clear(Calendar.SECOND);
+		cal.clear(Calendar.MILLISECOND);
+		if ("".equals(birthdate)) {
+			if("".equals(age)) return cal.getTime();
+			try {
+				cal.add(Calendar.YEAR, -(Integer.parseInt(age)));
+			}
+			catch (NumberFormatException nfe) { }
+			return cal.getTime();
+		}
+		else cal.setTime(df.parse(birthdate));
+		return cal.getTime();
+	}	
+
 }

@@ -243,6 +243,18 @@ public class WebModuleUtil {
 			File outFile = new File(folderPath.replace("/", File.separator));
 			outFile.deleteOnExit();
 			
+			// additional checks on module needing a context refresh
+			if (moduleNeedsContextRefresh == false) {
+				
+				// AOP advice points are only loaded during the context refresh now.
+				// if the context hasn't been marked to be refreshed yet, mark it
+				// now if this module defines some advice
+				if (mod.getAdvicePoints() != null && mod.getAdvicePoints().size() > 0) {
+					moduleNeedsContextRefresh = true;
+				}
+					
+			}
+			
 			// refresh the spring web context to get the just-created xml 
 			// files into it (if we copied an xml file)
 			if (moduleNeedsContextRefresh && delayContextRefresh == false) {
@@ -307,10 +319,13 @@ public class WebModuleUtil {
 			String name = "", className = "";
 			for (int j=0; j < childNodes.getLength(); j++) {
 				Node childNode = childNodes.item(j);
-				if ("servlet-name".equals(childNode.getNodeName()))
-					name = childNode.getTextContent();
-				else if("servlet-class".equals(childNode.getNodeName()))
-					className = childNode.getTextContent();
+				if ("servlet-name".equals(childNode.getNodeName())) {
+					if (childNode.getTextContent() != null)
+						name = childNode.getTextContent().trim();
+				} else if("servlet-class".equals(childNode.getNodeName())) {
+					if (childNode.getTextContent() != null)
+						className = childNode.getTextContent().trim();
+				}
 			}
 			if (name.length() == 0 || className.length() == 0) {
 				log.warn("both 'servlet-name' and 'servlet-class' are required for the 'servlet' tag. Given '" + name + "' and '" + className + "' for module " + mod.getName());

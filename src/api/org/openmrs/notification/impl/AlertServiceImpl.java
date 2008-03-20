@@ -48,13 +48,14 @@ public class AlertServiceImpl implements Serializable, AlertService {
 	public void createAlert(Alert alert) throws Exception {
 		log.debug("Create a alert " + alert);
 		
-		if (alert.getCreator() == null)
+		if (alert.getCreator() == null) {
 			alert.setCreator(Context.getAuthenticatedUser());
-		if (alert.getDateCreated() == null)
 			alert.setDateCreated(new Date());
-		
-		alert.setChangedBy(Context.getAuthenticatedUser());
-		alert.setDateChanged(new Date());
+		}
+		else {
+			alert.setChangedBy(Context.getAuthenticatedUser());
+			alert.setDateChanged(new Date());
+		}
 		
 		getAlertDAO().createAlert(alert);
 	}
@@ -116,13 +117,14 @@ public class AlertServiceImpl implements Serializable, AlertService {
 	public void updateAlert(Alert alert) throws Exception {
 		log.debug("Update alert " + alert);
 		
-		if (alert.getCreator() == null)
+		if (alert.getCreator() == null) {
 			alert.setCreator(Context.getAuthenticatedUser());
-		if (alert.getDateCreated() == null)
 			alert.setDateCreated(new Date());
-		
-		alert.setChangedBy(Context.getAuthenticatedUser());
-		alert.setDateChanged(new Date());
+		}
+		else {
+			alert.setChangedBy(Context.getAuthenticatedUser());
+			alert.setDateChanged(new Date());
+		}
 		
 		// Make sure all recipients are assigned to this alert
 		if (alert.getRecipients() != null) {

@@ -38,6 +38,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.HSQLDialect;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -891,6 +893,9 @@ public class HibernateAdministrationDAO implements
 		return ret;
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#executeSQL(java.lang.String, boolean)
+	 */
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException {
 		sql = sql.trim();
 		boolean dataManipulation = false;
@@ -904,6 +909,13 @@ public class HibernateAdministrationDAO implements
 
 		if (selectOnly && dataManipulation)
 			throw new DAOException("Illegal command(s) found in query string");
+		
+		// (solution for junit tests that usually use hsql
+		// hsql does not like the backtick.  Replace the backtick with the hsql
+		// escape character: the double quote (or nothing).
+		Dialect dialect = HibernateUtil.getDialect(sessionFactory);
+		if (HSQLDialect.class.getName().equals(dialect.getClass().getName()))
+			sql = sql.replace("`", "");
 		
 		Connection conn = sessionFactory.getCurrentSession().connection();
 		PreparedStatement ps = null;

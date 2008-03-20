@@ -7,8 +7,11 @@
 
 <h2><spring:message code="EncounterType.manage.title"/></h2>	
 
-<a href="encounterType.form"><spring:message code="EncounterType.add"/></a> <br />
+<a href="encounterType.form"><spring:message code="EncounterType.add"/></a> 
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterTypeList.afterAdd" type="html" />
+
+<br />
 <br />
 
 <b class="boxHeader"><spring:message code="EncounterType.list.title"/></b>
@@ -31,7 +34,11 @@
 			</tr>
 		</c:forEach>
 	</table>
+	<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterTypeList.inForm" type="html" />
+	
 	<input type="submit" value="<spring:message code="EncounterType.delete"/>" name="action">
 </form>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterTypeList.footer" type="html" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

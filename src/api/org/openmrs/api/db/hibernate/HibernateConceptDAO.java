@@ -233,6 +233,11 @@ public class HibernateConceptDAO implements
 		}	
 	}
 	
+	/**
+	 * TODO This should be moved to the service layer
+	 * 
+	 * @param c
+	 */
 	protected void modifyCollections(Concept c) {
 		
 		User authUser = Context.getAuthenticatedUser();
@@ -240,24 +245,28 @@ public class HibernateConceptDAO implements
 		
 		if (c.getCreator() == null) {
 			c.setCreator(authUser);
-			c.setDateCreated(timestamp);
+			if (c.getDateCreated() == null)
+				c.setDateCreated(timestamp);
 		}
-		
-		c.setChangedBy(authUser);
-		c.setDateChanged(timestamp);
+		else {
+			c.setChangedBy(authUser);
+			c.setDateChanged(timestamp);
+		}
 		
 		if (c.getNames() != null) {
 			for (ConceptName cn : c.getNames()) {
 				if (cn.getCreator() == null ) {
 					cn.setCreator(authUser);
-					cn.setDateCreated(timestamp);
+					if (cn.getDateCreated() == null)
+						cn.setDateCreated(timestamp);
 				}
 			}
 		}
 		for (ConceptSynonym syn : c.getSynonyms()) {
 			if (syn.getCreator() == null ) {
 				syn.setCreator(authUser);
-				syn.setDateCreated(timestamp);
+				if (syn.getDateCreated() == null)
+					syn.setDateCreated(timestamp);
 			}
 			syn.setConcept(c);
 		}
@@ -265,7 +274,8 @@ public class HibernateConceptDAO implements
 			for (ConceptSet set : c.getConceptSets()) {
 				if (set.getCreator() == null ) {
 					set.setCreator(authUser);
-					set.setDateCreated(timestamp);
+					if (set.getDateCreated() == null)
+						set.setDateCreated(timestamp);
 				}
 				set.setConceptSet(c);
 			}
@@ -274,7 +284,8 @@ public class HibernateConceptDAO implements
 			for (ConceptAnswer ca : c.getAnswers(true)) {
 				if (ca.getCreator() == null ) {
 					ca.setCreator(authUser);
-					ca.setDateCreated(timestamp);
+					if (ca.getDateCreated() == null)
+						ca.setDateCreated(timestamp);
 				}
 				ca.setConcept(c);
 			}

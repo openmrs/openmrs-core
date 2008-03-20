@@ -107,7 +107,7 @@ public class PatientIdentifier implements java.io.Serializable, Synchronizable, 
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getPatient() == null && this.getIdentifier() == null && this.getIdentifierType() == null && this.getLocation() == null) return super.hashCode();
+		if (this.getPatient() == null && this.getIdentifier() == null && this.getIdentifierType() == null) return super.hashCode();
 		int hash = 5;
 		if (getPatient() != null)
 			hash += 31 * hash + this.getPatient().hashCode();

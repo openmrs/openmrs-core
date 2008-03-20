@@ -54,6 +54,8 @@
 
 <h2><spring:message code="ConceptDrug.manage.title"/></h2>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.afterTitle" type="html" parameters="drugId=${drug.drugId}" />
+
 <spring:hasBindErrors name="drug">
 	<spring:message code="fix.error"/>
 	<br />
@@ -142,11 +144,16 @@
 		</tr>
 	</c:if>
 </table>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.inForm" type="html" parameters="drugId=${drug.drugId}" />
+
 <br />
 <input type="hidden" name="phrase" value='<request:parameter name="phrase" />'/>
 <input type="submit" value='<spring:message code="ConceptDrug.save"/>'>
 &nbsp;
 <input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1); return; document.location='index.htm?autoJump=false&phrase=<request:parameter name="phrase"/>'">
 </form>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.footer" type="html" parameters="drugId=${drug.drugId}" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

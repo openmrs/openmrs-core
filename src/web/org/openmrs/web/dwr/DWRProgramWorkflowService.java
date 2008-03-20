@@ -22,6 +22,7 @@ import org.openmrs.util.OpenmrsUtil;
 public class DWRProgramWorkflowService {
 
 	protected final Log log = LogFactory.getLog(getClass());
+	DateFormat ymdDf = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public PatientProgramItem getPatientProgram(Integer patientProgramId) {
 		return new PatientProgramItem(Context.getProgramWorkflowService().getPatientProgram(patientProgramId));
@@ -80,17 +81,54 @@ public class DWRProgramWorkflowService {
 		return ret;
 	}
 	
-	DateFormat ymdDf = new SimpleDateFormat("yyyy-MM-dd");
+	/**
+	 * Updates enrollment date and completion date for a PatientProgram.
+	 * 
+	 * Compares @param enrollmentDateYmd with {@link PatientProgram#getDateEnrolled()} and
+	 * compares @param completionDateYmd with {@link PatientProgram#getDateCompleted()} .
+	 * At least one of these comparisons must return true in order to update the PatientProgram.
+	 * In other words, if neither the @param enrollmentDateYmd or the @param completionDateYmd match
+	 * with the persisted object, then the PatientProgram will not be updated.
+	 * 
+	 * Also, if the enrollment date comes after the completion date, the PatientProgram will
+	 * not be updated.
+	 * 
+	 * @param patientProgramId
+	 * @param enrollmentDateYmd
+	 * @param completionDateYmd
+	 * @throws ParseException
+	 */
 	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd) throws ParseException {
 		PatientProgram pp = Context.getProgramWorkflowService().getPatientProgram(patientProgramId);
 		Date dateEnrolled = null;
 		Date dateCompleted = null;
+		Date ppDateEnrolled = null; 
+		Date ppDateCompleted = null;
+		// If persisted date enrolled is not null then parse to ymdDf format.
+		if (null != pp.getDateEnrolled()) {
+			String enrolled = ymdDf.format(pp.getDateEnrolled());
+			if (null != enrolled && enrolled.length() > 0)
+				ppDateEnrolled = ymdDf.parse(enrolled);
+		}
+		// If persisted date enrolled is not null then parse to ymdDf format.
+		if (null != pp.getDateCompleted()) {
+			String completed = ymdDf.format(pp.getDateCompleted());
+			if (null != completed && completed.length() > 0)
+				ppDateCompleted = ymdDf.parse(completed);
+		}
+		// Parse parameter dates to ymdDf format.
 		if (enrollmentDateYmd != null && enrollmentDateYmd.length() > 0)
 			dateEnrolled = ymdDf.parse(enrollmentDateYmd);
 		if (completionDateYmd != null && completionDateYmd.length() > 0)
 			dateCompleted = ymdDf.parse(completionDateYmd);
-		boolean anyChange = OpenmrsUtil.nullSafeEquals(dateEnrolled, pp.getDateEnrolled());
-		anyChange |= OpenmrsUtil.nullSafeEquals(dateCompleted, pp.getDateCompleted());
+		// If either either parameter and persisted instances 
+		// of enrollment and completion dates are equal, then anyChange is true.
+		boolean anyChange = OpenmrsUtil.nullSafeEquals(dateEnrolled, ppDateEnrolled);
+		anyChange |= OpenmrsUtil.nullSafeEquals(dateCompleted, ppDateCompleted);
+		// Do not update if the enrollment date is after the completion date.
+		if (null != dateEnrolled && null != dateCompleted && dateCompleted.before(dateEnrolled)) {
+			anyChange = false;
+		}
 		if (anyChange) {
 			pp.setDateEnrolled(dateEnrolled);
 			pp.setDateCompleted(dateCompleted);

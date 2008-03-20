@@ -19,7 +19,7 @@
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<!-- one of the properties available; the maximum file size in bytes -->
-		<property name="maxUploadSize"><value>20000000</value></property>
+		<property name="maxUploadSize"><value>75000000</value></property>
 	</bean>
 
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
@@ -29,6 +29,7 @@
 				<!-- <ref bean="openSessionInViewInterceptor"/> -->
 			</list>
 		</property>
+		<property name="order"><value>99</value></property>
 		<property name="mappings">
 			<props>
 				<prop key="/admin/orders/order.list">orderList</prop>
@@ -110,6 +111,7 @@
 				<prop key="options.form">optionsForm</prop>
 				<prop key="patientSummaries.form">multiplePatientSummariesList</prop>
 				<prop key="patientDashboard.form">patientDashboardForm</prop>
+				<prop key="personDashboard.form">personDashboardForm</prop>
 				<prop key="patientSet.form">patientSetFormController</prop>
 				<prop key="cohortSummary.list">cohortSummaryController</prop>
 
@@ -147,11 +149,14 @@
 				<prop key="admin/synchronization/synchronizationHelp.list">synchronizationHelpListController</prop>
 				<prop key="admin/modules/module.list">moduleListController</prop>
 				<prop key="admin/modules/moduleProperties.form">modulePropertiesFormController</prop>
+				
+				<prop key="forgotPassword.form">forgotPasswordForm</prop>
 
+				<prop key="**/globalProperties.portlet">globalPropertyPortletController</prop>
 				<prop key="**/addressLayout.portlet">addressLayoutPortletController</prop>
 				<prop key="**/nameLayout.portlet">nameLayoutPortletController</prop>
 				<prop key="**/patientPrograms.portlet">patientProgramsPortletController</prop>
-				<prop key="**/patientRelationships.portlet">patientRelationshipsPortletController</prop>
+				<prop key="**/personRelationships.portlet">personRelationshipsPortletController</prop>
 				<prop key="**/patientSet.portlet">patientSetPortletController</prop>
 				<prop key="**/patientRegimens.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientRegimenCurrent.portlet">patientRegimenPortletController</prop>
@@ -171,8 +176,9 @@
 
 	<bean id="fieldGenController" class="org.openmrs.web.controller.FieldGenController" />
 	<bean id="portletController" class="org.openmrs.web.controller.PortletController" />
+	<bean id="globalPropertyPortletController" class="org.openmrs.web.controller.GlobalPropertyPortletController" />
 	<bean id="patientProgramsPortletController" class="org.openmrs.web.controller.PatientProgramsPortletController" />
-	<bean id="patientRelationshipsPortletController" class="org.openmrs.web.controller.PatientRelationshipsPortletController" />
+	<bean id="personRelationshipsPortletController" class="org.openmrs.web.controller.PersonRelationshipsPortletController" />
 	<bean id="patientSetPortletController" class="org.openmrs.web.controller.PatientSetPortletController" />
 	<bean id="patientRegimenPortletController" class="org.openmrs.web.controller.RegimenPortletController" />
 	<bean id="patientSummaryPortletController" class="org.openmrs.web.controller.PatientSummaryPortletController" />
@@ -628,7 +634,6 @@
 	<!-- ** Concept ** -->
 	<bean id="conceptValidator" class="org.openmrs.web.controller.ConceptFormValidator" />
 	<bean id="conceptForm" class="org.openmrs.web.controller.ConceptFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>concept</value></property>
 		<property name="validator">
 			<ref bean="conceptValidator" />
@@ -1107,6 +1112,13 @@
 		<property name="formView"><value>/patientDashboardForm</value></property>
 		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
+	<bean id="personDashboardForm"
+		class="org.openmrs.web.controller.person.PersonDashboardController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>person</value></property>
+		<property name="formView"><value>/personDashboardForm</value></property>
+		<property name="successView"><value>personDashboard.form</value></property>
+	</bean>
 	<bean id="globalPropertyController"
 		class="org.openmrs.web.controller.maintenance.GlobalPropertyController">
 		<property name="commandName"><value>globalProps</value></property>
@@ -1132,6 +1144,14 @@
 		<property name="formView"><value>/admin/modules/modulePropertiesForm</value></property>
 		<property name="successView"><value>moduleProperties.form</value></property>
 	</bean>
+
+	<bean id="forgotPasswordForm"
+		class="org.openmrs.web.controller.ForgotPasswordFormController">
+		<property name="commandName"><value>forgotPassword</value></property>
+		<property name="formView"><value>/forgotPasswordForm</value></property>
+		<property name="successView"><value>forgotPassword.form</value></property>
+	</bean>
+
 	<bean id="synchronizationStatusListController" 
     class="org.openmrs.web.controller.synchronization.SynchronizationStatusListController">
 		<property name="commandName"><value>synchronizationStatusList</value></property>

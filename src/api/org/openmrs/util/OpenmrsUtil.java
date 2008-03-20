@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.util;
 
 import java.beans.IntrospectionException;
@@ -61,6 +74,7 @@ import org.openmrs.Location;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientIdentifierException;
@@ -85,6 +99,9 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 
+/**
+ * Utility methods used in openmrs
+ */
 public class OpenmrsUtil {
 
 	private static Log log = LogFactory.getLog(OpenmrsUtil.class);
@@ -327,9 +344,12 @@ public class OpenmrsUtil {
 	/**
 	 * Copy file from inputStream onto the outputStream
 	 * 
-	 * @param inputStream
-	 * @param outputStream
-	 * @throws IOException
+	 * inputStream is not closed in this method
+	 * outputStream /is/ closed at completion of this method
+	 * 
+	 * @param inputStream Stream to copy from
+	 * @param outputStream Stream/location to copy to
+	 * @throws IOException thrown if an error occurs during read/write
 	 */
 	public static void copyFile(InputStream inputStream,
 			OutputStream outputStream) throws IOException {
@@ -357,9 +377,9 @@ public class OpenmrsUtil {
 		finally {
 			if (in != null)  in.close();
 			if (out != null) out.close();
+			try { outputStream.close(); } catch (Exception e) { /* pass */ }
 		}
 		
-		outputStream.close();
 	}
 	
 	/**
@@ -379,7 +399,6 @@ public class OpenmrsUtil {
 		}
 		return false;
 	}
-	
 	
 	/**
 	 * Initialize global settings
@@ -431,10 +450,16 @@ public class OpenmrsUtil {
 			}
 		}
 		
+		// set the business database name
 		val = p.getProperty("connection.database_business_name", null);
 		if (val == null)
 			val = OpenmrsConstants.DATABASE_NAME;
 		OpenmrsConstants.DATABASE_BUSINESS_NAME = val;
+		
+		// set the application data directory
+		val = p.getProperty(OpenmrsConstants.APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY, null);
+		if (val != null)
+			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = val;
 		
 	}
 	
@@ -846,20 +871,24 @@ public class OpenmrsUtil {
      * 			data about the application (runtime properties, modules, etc)
      */
     public static String getApplicationDataDirectory() {
-    	String filepath;
     	
-    	if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
-			filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
-        }
-		else {
-			String appData = (OpenmrsConstants.WINDOWS_VISTA_OPERATING_SYSTEM ?
-								"AppData" : "Application Data");
-
-			filepath = System.getProperty("user.home") + File.separator + 
-						appData + File.separator + "OpenMRS";
-        }
-				
-		filepath = filepath + File.separator;
+    	String filepath = null;
+    	
+    	if (OpenmrsConstants.APPLICATION_DATA_DIRECTORY != null) {
+    		filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
+    	}
+    	else {
+	        if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
+	                OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
+	                OpenmrsConstants.OPERATING_SYSTEM_OSX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
+				filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
+			else
+				filepath = System.getProperty("user.home") + File.separator + 
+						"Application Data" + File.separator + 
+						"OpenMRS";
+					
+			filepath = filepath + File.separator;
+    	}
 		
 		File folder = new File(filepath);
 		if (!folder.exists())
@@ -1251,5 +1280,84 @@ public class OpenmrsUtil {
     	}
     	
     	return false;
-    }    
+    }
+    
+    /**
+     * Gets an out File object.  If date is not provided, the current 
+     * timestamp is used.
+     * 
+     * If user is not provided, the user id is not put into the filename.
+     * 
+     * Assumes dir is already created
+     * 
+     * @param dir directory to make the random filename in
+     * @param date optional Date object used for the name
+     * @param user optional User creating this file object 
+     * @return file new file that is able to be written to
+     */
+    public static File getOutFile(File dir, Date date, User user) {
+    	
+    	File outFile;
+		do {
+	    	// format to print date in filenmae
+	    	DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HHmm-ssSSS");
+	    	
+	    	// use current date if none provided
+	    	if (date == null)
+	    		date = new Date();
+	    	
+	    	StringBuilder filename = new StringBuilder();
+	    	
+	    	// the start of the filename is the time so we can do some sorting
+			filename.append(dateFormat.format(date));
+			
+			// insert the user id if they provided it
+			if (user != null) {
+				filename.append("-");
+				filename.append(user.getUserId());
+				filename.append("-");
+			}
+			
+			// the end of the filename is a randome number between 0 and 10000
+			filename.append((int)(Math.random() * 10000));
+			filename.append(".xml");
+			
+			outFile = new File(dir, filename.toString());
+			
+			// set to null to avoid very minimal possiblity of an infinite loop
+			date = null;
+			
+		} while (outFile.exists());
+		
+		return outFile;
+    }
+    
+	/**
+	 * Creates a relatively acceptable unique string of the give size 
+	 * 
+	 * @return unique string
+	 */
+	public static String generateUid(Integer size) {
+		StringBuffer sb = new StringBuffer(size);
+		for (int i = 0; i < size; i++) {
+			int ch = (int) (Math.random() * 62);
+			if (ch < 10) // 0-9
+				sb.append(ch);
+			else if (ch < 36) // a-z
+				sb.append((char) (ch - 10 + 'a'));
+			else
+				sb.append((char) (ch - 36 + 'A'));
+		}
+		return sb.toString();
+	}
+	
+	/**
+	 * Creates a uid of length 20
+	 * 
+	 * @see #generateUid(Integer)
+	 */
+	public static String generateUid() {
+		return generateUid(20);
+	}
+	
 }

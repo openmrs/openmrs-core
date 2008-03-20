@@ -7,8 +7,11 @@
 
 <h2><spring:message code="Location.manage.title"/></h2>	
 
-<a href="location.form"><spring:message code="Location.add"/></a> <br />
+<a href="location.form"><spring:message code="Location.add"/></a>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.locationList.afterAdd" type="html" />
+
+<br />
 <br />
 
 <b class="boxHeader"><spring:message code="Location.list.title"/></b>
@@ -31,7 +34,10 @@
 			</tr>
 		</c:forEach>
 	</table>
+	<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.locationList.inForm" type="html" />
 	<input type="submit" value="<spring:message code="Location.delete"/>" name="action">
 </form>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.locationList.footer" type="html" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

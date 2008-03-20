@@ -34,7 +34,11 @@
 
 <h2><spring:message code="ConceptDrug.title"/></h2>
 
-<a href="conceptDrug.form"><spring:message code="ConceptDrug.add"/></a><br/><br/>
+<a href="conceptDrug.form"><spring:message code="ConceptDrug.add"/></a>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugList.afterAdd" type="html" />
+
+<br/><br/>
 
 <div id="findConceptDrug">
 	<b class="boxHeader"><spring:message code="ConceptDrug.find"/></b>
@@ -42,5 +46,7 @@
 		<div dojoType="ConceptSearch" widgetId="dSearch" drugId='<request:existsParameter name="conceptDrugId">request.getAttribute("conceptDrugId")</request:existsParameter>' showIncludeRetired="true" searchTitle="<spring:message code="ConceptDrug.search"/>" searchPhrase='<request:existsParameter name="phrase"><request:parameter name="phrase" /></request:existsParameter>'></div>
 	</div>
 </div>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugList.footer" type="html" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

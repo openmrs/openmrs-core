@@ -104,7 +104,7 @@ public class HibernateUserDAO implements
 	public boolean hasDuplicateUsername(String username, String systemId, Integer userId) {
 		if (username == null || username.length() == 0)
 			username = "-";
-		if (systemId == null || username.length() == 0)
+		if (systemId == null || systemId.length() == 0)
 			systemId = "-";
 		
 		if (userId == null)

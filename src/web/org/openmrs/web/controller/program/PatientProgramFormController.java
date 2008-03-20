@@ -58,7 +58,7 @@ public class PatientProgramFormController implements Controller {
 		if (pws.isInProgram(patient, program, enrollmentDate, completionDate))
 			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.already");
 		else
-			Context.getProgramWorkflowService().enrollPatientInProgram(patient, program, enrollmentDate, completionDate);
+			Context.getProgramWorkflowService().enrollPatientInProgram(patient, program, enrollmentDate, completionDate, null);
 
 		return new ModelAndView(new RedirectView(returnPage));
 	}

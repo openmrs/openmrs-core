@@ -558,7 +558,7 @@ public class Obs implements java.io.Serializable, Synchronizable {
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
 			if (abbrev.equals("BIT"))
-				return getValueAsBoolean().toString();
+				return getValueAsBoolean() == null ? "" : getValueAsBoolean().toString();
 			else if (abbrev.equals("CWE")) {
 				if (getValueCoded() == null)
 					return "";
