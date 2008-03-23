@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.scheduler;
 
 import java.util.Date;
@@ -36,7 +49,7 @@ public class TaskConfig {
 	private User createdBy;
 	private Date dateCreated;
 	private User changedBy;
-	private Date dateChanged;
+	private Date dateChanged;
 	/** 
 	 * Default no-arg public constructor
 	 */
@@ -93,9 +106,9 @@ public class TaskConfig {
 	/**	 * Get the description of the task.	 * 	 * @return 	the description of the task	 */	public String getDescription() { 		return this.description;	}
 	/**	 * Set the name of the task.	 * 	 * @param name of the task	 */	public void setDescription(String description) { 		this.description = description;	}
 
-		/**	 * Get the data map used to provide the task with runtime data.	 * 	 * @return 	the data map 	 */	public Map<String,String> getProperties() { 		return this.properties;	}		/**	 * Set the name of the task.	 * 	 * @param name of the task	 */	public void setProperties(Map<String,String> properties) {		this.properties = properties;	}
+		/**	 * Get the data map used to provide the task with runtime data.	 * 	 * @return 	the data map 	 */	public Map<String,String> getProperties() { 		return this.properties;	}		/**	 * Set the name of the task.	 * 	 * @param name of the task	 */	public void setProperties(Map<String,String> properties) {		this.properties = properties;	}
   /**   * Get the schedulable object to be executed.    *   * @return    the schedulable object   */	public String getSchedulableClass() { 		return this.schedulableClass;  	}
-	    /**   * Set the schedulable object to be executed.    *   * @param schedulable schedulable object   */	public void setSchedulableClass(String schedulableClass) { 		this.schedulableClass = schedulableClass;	}
+	    /**   * Set the schedulable object to be executed.    *   * @param schedulable schedulable object   */	public void setSchedulableClass(String schedulableClass) { 		this.schedulableClass = schedulableClass;	}
 	
   	/**
   	 * Get the start time for when the task should be executed.  
