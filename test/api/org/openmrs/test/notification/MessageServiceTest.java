@@ -11,15 +11,17 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.notification;
+package org.openmrs.test.notification;
 
 import java.io.File;
 import java.util.Date;
 
-import org.openmrs.BaseContextSensitiveTest;
+import org.openmrs.test.BaseContextSensitiveTest;
+
+import org.openmrs.notification.Message;
+import org.openmrs.notification.MessageException;
+import org.openmrs.notification.MessageService;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.PatientSet;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Tests the {@link DataExportReportObject} class
@@ -32,7 +34,7 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	@Override
 	protected void onSetUpInTransaction() throws Exception {
 		initializeInMemoryDatabase();
-		executeDataSet("org/openmrs/notification/include/MessageServiceTest-initial.xml");
+		executeDataSet("org/openmrs/test/notification/include/MessageServiceTest-initial.xml");
 		authenticate();
 	}
 	
