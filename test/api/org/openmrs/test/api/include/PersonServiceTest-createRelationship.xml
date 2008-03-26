@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <relationship_type relationship_type_id="2" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0"/>
+  <relationship_type relationship_type_id="3" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-01-01 00:00:00.0"/>
+  <relationship_type relationship_type_id="4" a_is_to_b="Sibling" b_is_to_a="Sibling" preferred="0" weight="0" description="Relationship between brother/sister, brother/brother, and sister/sister" creator="1" date_created="2007-01-01 00:00:00.0"/>
+  <relationship_type relationship_type_id="5" a_is_to_b="Aunt/Uncle" b_is_to_a="Niece/Nephew" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0"/>
+  <relationship relationship_id="1" person_a="2" relationship="2" person_b="1" creator="1" date_created="2008-01-01 00:00:00.0" voided="false"/>
+</dataset>
