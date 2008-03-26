@@ -35,7 +35,6 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PersonDAO;
@@ -297,24 +296,15 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Relationship> getRelationships(Person person, boolean showVoided) throws DAOException {
-		Query query = null;
-		List<Relationship> relationships = new Vector<Relationship>();
+
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r")
+		.add(Expression.or(Expression.eq("personA", person), Expression.eq("personB", person)));
 		
-		if (person == null)
-			return relationships;
+		if (!showVoided) {
+			criteria.add(Expression.eq("voided", showVoided));
+		}
 		
-		String voided = showVoided ? "" : " and voided = 0 ";
-		
-		query = sessionFactory.getCurrentSession().createQuery(
-			"from Relationship r where r.personA = :p1 or r.personB = :p2 " + voided + " order by r.relationshipId asc "
-		)
-		.setParameter("p1", person)
-		.setParameter("p2", person);
-		
-		if (query != null)
-			relationships = query.list(); 
-			
-		return relationships;
+		return criteria.list();
 	}
 
 	/**
