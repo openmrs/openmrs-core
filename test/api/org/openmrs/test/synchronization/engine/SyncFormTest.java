@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.synchronization.engine;
+package org.openmrs.test.synchronization.engine;
 
 import org.openmrs.Concept;
 import org.openmrs.Field;
@@ -30,7 +30,7 @@ public class SyncFormTest extends SyncBaseTest {
 	 */
 	@Override
     public String getInitialDataset() {
-	    return "org/openmrs/synchronization/engine/include/SyncCreateTest.xml";
+	    return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 
 	public void testEditFormMetadata() throws Exception {

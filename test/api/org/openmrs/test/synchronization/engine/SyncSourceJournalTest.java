@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.synchronization.engine;
+package org.openmrs.test.synchronization.engine;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,10 +19,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import org.openmrs.BaseContextSensitiveTest;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
+
 import org.openmrs.synchronization.SyncItemState;
+import org.openmrs.synchronization.engine.*;
 
 /**
  * TODO: describe file

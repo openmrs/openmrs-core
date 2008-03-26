@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.synchronization.engine;
+package org.openmrs.test.synchronization.engine;
 
 import java.util.Date;
 
@@ -32,7 +32,7 @@ public class SyncUserTest extends SyncBaseTest {
 
 	@Override
     public String getInitialDataset() {
-	    return "org/openmrs/synchronization/engine/include/SyncCreateTest.xml";
+	    return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 	
 	public void testCreateUser() throws Exception {

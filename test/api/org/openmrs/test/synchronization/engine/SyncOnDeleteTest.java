@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.synchronization.engine;
+package org.openmrs.test.synchronization.engine;
 
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -29,7 +29,7 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 
 	@Override
     public String getInitialDataset() {
-		return "org/openmrs/synchronization/engine/include/SyncCreateTest.xml";
+		return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 
 	public void testDeletePatientIdentfierType() throws Exception {

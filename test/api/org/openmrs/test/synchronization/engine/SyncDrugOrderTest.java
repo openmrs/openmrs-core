@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.synchronization.engine;
+package org.openmrs.test.synchronization.engine;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,6 +42,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
+import org.openmrs.synchronization.engine.*;
+
 /**
  *
  */
@@ -49,7 +51,7 @@ public class SyncDrugOrderTest extends SyncBaseTest {
 
 	@Override
     public String getInitialDataset() {
-	    return "org/openmrs/synchronization/engine/include/SyncCreateTest.xml";
+	    return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 
 	public void testCreateDrugOrder() throws Exception {

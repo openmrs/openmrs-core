@@ -11,14 +11,16 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.synchronization.engine;
+package org.openmrs.test.synchronization.engine;
 
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.BaseContextSensitiveTest;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
+
+import org.openmrs.synchronization.engine.*;
 
 /**
  * TODO: describe test file

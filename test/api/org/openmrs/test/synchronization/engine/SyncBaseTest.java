@@ -1,4 +1,4 @@
-package org.openmrs.synchronization.engine;
+package org.openmrs.test.synchronization.engine;
 
 
 import java.text.DateFormat;
@@ -7,19 +7,15 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.BaseContextSensitiveTest;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.api.context.Context;
 import org.openmrs.serialization.FilePackage;
 import org.openmrs.serialization.IItem;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
-import org.openmrs.synchronization.server.RemoteServer;
 
-import org.openmrs.serialization.Package;
-import org.openmrs.serialization.FilePackage;
-import org.openmrs.serialization.Record;
-import org.openmrs.serialization.IItem;
-import org.openmrs.serialization.Item;
+import org.openmrs.synchronization.engine.*;
+import org.openmrs.synchronization.server.RemoteServer;
 
 /**
  *  to setup common routines and initialization for all sync tests.
@@ -34,7 +30,7 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 	public abstract String getInitialDataset();
 	
 	public String getParentSetupDataset() {
-		return "org/openmrs/synchronization/engine/include/SyncRemoteChildServer.xml";
+		return "org/openmrs/test/synchronization/engine/include/SyncRemoteChildServer.xml";
 	}
 
 	protected void setupSyncTestChild() throws Exception {
@@ -53,7 +49,7 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 	public void runSyncTest(SyncTestHelper testMethods) throws Exception {
 		deleteAllData();
 		Context.openSession();
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
+		executeDataSet("org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml");
 		authenticate();
 
 		log.info("\n************************************* Running On Child *************************************");
@@ -71,8 +67,8 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 		deleteAllData();
 
 		
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncCreateTest.xml");
-		executeDataSet("org/openmrs/synchronization/engine/include/SyncRemoteChildServer.xml");
+		executeDataSet("org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml");
+		executeDataSet("org/openmrs/test/synchronization/engine/include/SyncRemoteChildServer.xml");
 		RemoteServer origin = Context.getSynchronizationService().getRemoteServer(1);
 
 		log.info("\n************************************* Processing Sync Record(s) *************************************");
