@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -132,26 +133,29 @@ public class ModuleFactory {
 			log.debug("Loading modules from: " + modulesFolder.getAbsolutePath());
 
 		if (modulesFolder.isDirectory()) {
-			// loop over the modules and load the modules that we can
-			for (File f : modulesFolder.listFiles()) {
-				if (!f.getName().startsWith(".")) { // ignore .svn folder and
-													// the like
-					Module mod = loadModule(f);
-					log.debug("Loaded module: " + mod + " successfully");
-				}
-			}
+			loadModules(Arrays.asList(modulesFolder.listFiles()));
 		} else
 			log.error("modules folder: '" + modulesFolder.getAbsolutePath()
 			        + "' is not a valid directory");
 	}
 	
 	/**
-	 * Load all OpenMRS modules from <code>directory</code>
+	 * Attempt to load the given files as OpenMRS modules
+	 * @param modulesToLoad the list of files to try and load
 	 */
 	public static void loadModules(List<File> modulesToLoad) {
+		// loop over the modules and load the modules that we can
 		for (File f : modulesToLoad) {
-			Module mod = loadModule(f);
-			log.debug("Loaded module: " + mod + " successfully");
+			// ignore .svn folder and the like
+			if (!f.getName().startsWith(".")) {
+				try {
+					Module mod = loadModule(f);
+					log.debug("Loaded module: " + mod + " successfully");
+				}
+				catch (Throwable t) {
+					log.debug("Unable to load file in module directory: " + f + ". Skipping file.", t);
+				}
+			}
 		}
 	}
 	
