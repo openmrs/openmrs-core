@@ -274,7 +274,7 @@
 </c:choose>
 
 <c:if test="${model.allowEdits == 'true' && fn:length(model.programs) > 0}">
-	<openmrs:hasPrivilege privilege="Manage Patient Programs">
+	<openmrs:hasPrivilege privilege="Manage Programs">
 		<div id="newProgramEnroll">
 		<form method="post" action="${pageContext.request.contextPath}/admin/programs/patientProgram.form">
 			<input type="hidden" name="method" value="enroll"/>
