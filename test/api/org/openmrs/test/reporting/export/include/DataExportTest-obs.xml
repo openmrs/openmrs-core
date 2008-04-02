@@ -10,6 +10,10 @@
   <obs obs_id="8" person_id="2" concept_id="5089" encounter_id="8" obs_datetime="2006-02-16 00:00:00.0" location_id="1" value_numeric="8.0" creator="1"  date_created="2006-02-17 15:57:35.0" voided="false"/>
   <obs obs_id="9" person_id="2" concept_id="5089" encounter_id="9" obs_datetime="2006-02-17 00:00:00.0" location_id="1" value_numeric="9.0" creator="1"  date_created="2006-02-18 15:57:35.0" voided="false"/>
   <obs obs_id="10" person_id="2" concept_id="5089" encounter_id="10" obs_datetime="2006-02-18 00:00:00.0" location_id="1" value_numeric="10.0" creator="1"  date_created="2006-02-19 15:57:35.0" voided="false"/>
+  
+  <!-- a voided obs that should be ignored -->
+  <obs obs_id="11" person_id="2" concept_id="5089" encounter_id="11" obs_datetime="2005-02-18 00:00:00.0" location_id="1" value_numeric="11.0" creator="1"  date_created="2006-02-19 15:57:35.0" voided="true"/>
+  
   <encounter encounter_id="1" encounter_type="2" patient_id="2" provider_id="1" location_id="1" encounter_datetime="2006-02-14 00:00:00.0" creator="1"  date_created="2006-02-10 15:56:14.0" voided="false"/>
   <encounter encounter_id="2" encounter_type="2" patient_id="2" provider_id="1" location_id="1" encounter_datetime="2006-02-08 00:00:00.0" creator="1"  date_created="2006-02-11 15:57:35.0" voided="false"/>
   <encounter encounter_id="3" encounter_type="2" patient_id="2" provider_id="1" location_id="1" encounter_datetime="2006-02-08 00:00:00.0" creator="1"  date_created="2006-02-12 18:13:45.0" voided="false"/>
