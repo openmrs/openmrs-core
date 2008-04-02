@@ -1426,7 +1426,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 		criteria.setProjection(projectionList);
 		
-		criteria.addOrder(org.hibernate.criterion.Order.desc("voided"));
+		//criteria.addOrder(org.hibernate.criterion.Order.desc("voided"));
+		criteria.add(Expression.eq("voided", false));
 		
 		// add 'preferred' sort order if necessary
 		try {
