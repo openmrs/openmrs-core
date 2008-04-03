@@ -878,7 +878,7 @@ public class DataExportFunctions {
 		}
 		
 		if (obs.size() > 0) {
-			return obs.get(0);
+			return obs.get(obs.size() - 1);
 		}
 		
 		log.info("Could not find an Obs with concept " + concept + " for patient " + patientId);
