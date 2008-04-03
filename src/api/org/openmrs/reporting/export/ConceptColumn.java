@@ -90,7 +90,7 @@ public class ConceptColumn implements ExportColumn, Serializable {
 			
 			if (extras.length < 1) { 
 				function = "$!{fn.getValueAsString(" + function;
-				function += "('" + getConceptIdOrName() + "'))} ";
+				function += "('" + getConceptIdOrName() + "'))}";
 				s += function; // if we don't have extras, just call the normal function and print it
 			}
 			else {
