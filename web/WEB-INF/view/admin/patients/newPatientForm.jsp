@@ -344,17 +344,87 @@
 					</td>
 					<c:if test="${showTribe == 'true'}">
 						<td>
-							<spring:bind path="patient.tribe">
-								<select name="tribe">
-									<option value=""></option>
-									<openmrs:forEachRecord name="tribe">
-										<option value="${record.tribeId}" <c:catch><c:if test="${record.name == status.value || status.value == record.tribeId}">selected</c:if></c:catch>>
-											${record.name}
-										</option>
-									</openmrs:forEachRecord>
-								</select>
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
+							<spring:nestedPath path="patient">
+
+								<%-- 							
+									===========================================================================================
+																START RESTRICT PERSON TRIBE permission check
+									===========================================================================================
+									1.  If the "restrict_patient_attribute.tribe" global property is NOT set or is set to 'false' 
+										then we display the field as a select box (per usual).
+									
+									2.  If the "restrict_patient_attribute.tribe" global property is set to 'true', then we 
+										check whether the user is authorized to view or edit the tribe attribute.
+									  
+									NOTE:  	The following code could have been cleaner, but I wanted to separate the logic for 
+											restricting tribes from the default behavior in order to make sure that systems 
+											that don't care about the tribe permission were	not adversely affected by a bug 
+											in the edit tribe restriction code.
+								
+								--%>		
+								
+								<openmrs:globalProperty key="restrict_patient_attribute.tribe" var="restrictTribe" defaultValue="false" />								
+								<!-- Restrict tribe:  	${restrictTribe} -->
+							
+								<c:choose>
+								
+									<%--  Do not restrict tribe field by user permission --%>
+									<c:when test="${!restrictTribe}">
+										<spring:bind path="tribe">
+											<select name="tribe">
+												<option value=""></option>
+												<openmrs:forEachRecord name="tribe">
+													<option value="${record.tribeId}" <c:catch><c:if test="${record.name == status.value || status.value == record.tribeId}">selected</c:if></c:catch>>
+														${record.name}
+													</option>
+												</openmrs:forEachRecord>
+											</select>
+											<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+										</spring:bind>
+									</c:when>
+									
+									<%-- Restrict the tribe field by user permissions --%>
+									<c:otherwise>										
+										<%-- Check if the user is authorized to edit the tribe or just view the tribe. --%>
+										<c:set var="authorized" value="false"/>
+										<openmrs:hasPrivilege privilege="Edit Person Tribe">
+											<c:set var="authorized" value="true"/>
+										</openmrs:hasPrivilege>										
+										<!--  Authorized to edit tribe: 	${authorized} -->									
+
+										<c:choose>		
+											<%-- The user is authorized to EDIT the tribe attribute, allow edit of tribe. --%>
+											<c:when test="${authorized}">										
+												<spring:bind path="tribe">
+													<select name="tribe">
+														<option value=""></option>
+														<openmrs:forEachRecord name="tribe">
+															<option value="${record.tribeId}" <c:catch><c:if test="${record.name == status.value || status.value == record.tribeId}">selected</c:if></c:catch>>
+																${record.name}
+															</option>
+														</openmrs:forEachRecord>
+													</select>
+													<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+												</spring:bind>
+											</c:when>
+											<%-- The user is NOT authorized to EDIT the tribe attribute, show value.--%>
+											<c:otherwise>
+												<spring:bind path="tribe">
+													${status.value}					
+												</spring:bind>				
+											</c:otherwise>
+										</c:choose>										
+									</c:otherwise>
+								</c:choose>		
+								
+								
+								<%-- ===========================================================================================
+																END RESTRICT PERSON TRIBE permission check
+									=========================================================================================== --%>							
+
+
+
+							</spring:nestedPath>
 						</td>
 					</c:if>
 				</tr>
