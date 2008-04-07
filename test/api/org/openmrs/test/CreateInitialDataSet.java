@@ -40,12 +40,17 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
         
         // partial database export
         QueryDataSet initialDataSet = new QueryDataSet(connection);
-        initialDataSet.addTable("person", "SELECT * FROM person WHERE person_id = 1");
-        initialDataSet.addTable("users", "SELECT * FROM users WHERE user_id = 1");
-        initialDataSet.addTable("role", "SELECT * FROM role WHERE role = 'System Developer'");
-        initialDataSet.addTable("user_role", "SELECT * FROM user_role WHERE user_id = 1");
+        //initialDataSet.addTable("person", "SELECT * FROM person WHERE person_id = 1");
+        //initialDataSet.addTable("users", "SELECT * FROM users WHERE user_id = 1");
+        //initialDataSet.addTable("concept", "SELECT * FROM concept WHERE concept_id in (1726, 1558, 1553, 1554, 1555, 1592)");
+        //initialDataSet.addTable("concept_name", "SELECT * FROM concept_name WHERE concept_id in (1726, 1558, 1553, 1554, 1555, 1592)");
+        initialDataSet.addTable("form_field", "SELECT * FROM form_field limit 3");
+        initialDataSet.addTable("field", "SELECT * FROM field limit 3");
+        initialDataSet.addTable("form", "SELECT * FROM form limit 3");
         
-        FlatXmlDataSet.write(initialDataSet, new FileOutputStream("test/api/" + INITIAL_XML_DATASET_PACKAGE_PATH));
+        //initialDataSet.addTable("user_role", "SELECT * FROM user_role WHERE user_id = 1");
+        
+        FlatXmlDataSet.write(initialDataSet, new FileOutputStream("test/api/org/openmrs/test/api/include/formfield.xml"));
 
         // full database export
         //IDataSet fullDataSet = connection.createDataSet();

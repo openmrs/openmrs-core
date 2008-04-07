@@ -15,7 +15,6 @@ package org.openmrs.api;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.openmrs.Concept;
@@ -29,8 +28,22 @@ import org.openmrs.api.db.ObsDAO;
 import org.openmrs.logic.Aggregation;
 import org.openmrs.logic.Constraint;
 import org.openmrs.reporting.PatientSet;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * The ObsService provides methods for acting on Obs, ObsGroup, and 
+ * ComplexObs objects.
+ * 
+ * Use:
+ * <code>
+ * 	Context.getObsService().getObs(123);
+ * </code>
+ * 
+ * There are also a number of convenience methods for extracting obs
+ * pertaining to certain Concepts, people, or encounters
+ * 
+ */
 @Transactional
 public interface ObsService {
 	
@@ -46,16 +59,31 @@ public interface ObsService {
 	 * @param Obs
 	 * @throws APIException
 	 */
+	@Authorized({OpenmrsConstants.PRIV_ADD_OBS})
 	public void createObs(Obs obs) throws APIException;
-
+	
 	/**
 	 * Create a grouping of observations (observations linked by
-	 * obs.obs_group_id)
+	 * {@link org.openmrs.Obs#getObsGroupId()}
 	 * 
-	 * @param obs -
-	 *            array of observations to be grouped
+	 * The proper use is:
+	 * <pre>
+	 * Obs obsGroup = new Obs();
+	 * for (Obs member : obs) {
+	 *   obsGroup.addGroupMember(obs);
+	 * }
+	 * pass obsGroup to {@link #createObs(Obs)}
+	 * </pre>
+	 * 
+	 * @param obs array of observations to be grouped
 	 * @throws APIException
+	 * @deprecated This method should no longer need to be called on the api. This
+	 * 			  was meant as temporary until we created a true ObsGroup pojo.
+	 * 			  Replaced by {@link #createObsGroup(Obs, List)}
+	 * 
+	 * @see #createObsGroup(Obs, List)
 	 */
+	@Authorized({OpenmrsConstants.PRIV_ADD_OBS})
 	public void createObsGroup(Obs[] obs) throws APIException;
 
 	/**
@@ -67,6 +95,7 @@ public interface ObsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
+	@Authorized({OpenmrsConstants.PRIV_VIEW_OBS})
 	public Obs getObs(Integer obsId) throws APIException;
 
 	/**
@@ -75,6 +104,7 @@ public interface ObsService {
 	 * @param Obs
 	 * @throws APIException
 	 */
+	@Authorized({OpenmrsConstants.PRIV_EDIT_OBS})
 	public void updateObs(Obs obs) throws APIException;
 
 	/**
@@ -86,6 +116,7 @@ public interface ObsService {
 	 *            reason
 	 * @throws APIException
 	 */
+	@Authorized({OpenmrsConstants.PRIV_EDIT_OBS})
 	public void voidObs(Obs obs, String reason) throws APIException;
 
 	/**
@@ -94,6 +125,7 @@ public interface ObsService {
 	 * @param Obs
 	 * @throws APIException
 	 */
+	@Authorized({OpenmrsConstants.PRIV_EDIT_OBS})
 	public void unvoidObs(Obs obs) throws APIException;
 
 	/**
@@ -103,8 +135,9 @@ public interface ObsService {
 	 * @throws APIException
 	 * @see voidObs(Obs)
 	 */
+	@Authorized({OpenmrsConstants.PRIV_DELETE_OBS})
 	public void deleteObs(Obs obs) throws APIException;
-
+	
 	/**
 	 * Get all mime types
 	 * 

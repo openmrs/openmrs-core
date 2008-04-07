@@ -81,6 +81,7 @@ public class PatientTest extends TestCase {
 		// make sure the identifier is NOT added
 		assertTrue("There should be 2 identifiers in the patient object but there is actually : " + p.getIdentifiers().size(), p.getIdentifiers().size() == 2);
 		
+		pa3.setIdentifier(pa3.getIdentifier() + "some new string to make sure it gets added");
 		pa3.setVoided(true);
 		p.addIdentifier(pa3);
 		// make sure the identifier IS added

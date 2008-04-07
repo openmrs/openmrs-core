@@ -15,8 +15,6 @@ package org.openmrs.hl7.handler;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +32,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InError;
+import org.openmrs.hl7.HL7InQueueProcessor;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -60,6 +59,7 @@ import ca.uhn.hl7v2.model.v25.group.ORU_R01_ORDER_OBSERVATION;
 import ca.uhn.hl7v2.model.v25.group.ORU_R01_PATIENT_RESULT;
 import ca.uhn.hl7v2.model.v25.message.ORU_R01;
 import ca.uhn.hl7v2.model.v25.segment.MSH;
+import ca.uhn.hl7v2.model.v25.segment.OBR;
 import ca.uhn.hl7v2.model.v25.segment.OBX;
 import ca.uhn.hl7v2.model.v25.segment.ORC;
 import ca.uhn.hl7v2.model.v25.segment.PID;
@@ -67,6 +67,17 @@ import ca.uhn.hl7v2.model.v25.segment.PV1;
 import ca.uhn.hl7v2.parser.EncodingCharacters;
 import ca.uhn.hl7v2.parser.PipeParser;
 
+/**
+ * Parses ORUR01 messages into openmrs Encounter objects
+ * 
+ * Usage:
+ * GenericParser parser = new GenericParser();
+ * MessageTypeRouter router = new MessageTypeRouter();
+ * router.registerApplication("ORU", "R01", new ORUR01Handler());
+ * Message hl7message = parser.parse(somehl7string);
+ * 
+ * @see HL7InQueueProcessor
+ */
 public class ORUR01Handler implements Application {
 
 	private Log log = LogFactory.getLog(ORUR01Handler.class);
@@ -90,8 +101,7 @@ public class ORUR01Handler implements Application {
 			throw new ApplicationException(
 					"Invalid message sent to ORU_R01 handler");
 
-		if (log.isDebugEnabled())
-			log.debug("Processing ORU_R01 message");
+		log.debug("Processing ORU_R01 message");
 
 		Message response;
 		try {
@@ -106,12 +116,18 @@ public class ORUR01Handler implements Application {
 			throw new ApplicationException(e);
 		}
 
-		if (log.isDebugEnabled())
-			log.debug("Finished processing ORU_R01 message");
+		log.debug("Finished processing ORU_R01 message");
 
 		return response;
 	}
 
+	/**
+	 * Bulk of the processing done here.  Called by the main processMessage method
+	 * 
+	 * @param oru the message to process
+	 * @return the processed message
+	 * @throws HL7Exception
+	 */
 	private Message processORU_R01(ORU_R01 oru) throws HL7Exception {
 
 		// TODO: ideally, we would branch or alter our behavior based on the
@@ -143,7 +159,8 @@ public class ORUR01Handler implements Application {
 			log.debug("Processing HL7 message for patient "
 					+ patient.getPatientId());
 		Encounter encounter = createEncounter(msh, patient, pv1, orc);
-
+		
+		// do the discharge to location logic
 		try {
 			updateHealthCenter(patient, pv1);
 		} catch (Exception e) {
@@ -155,6 +172,13 @@ public class ORUR01Handler implements Application {
 		if (log.isDebugEnabled())
 			log.debug("Creating observations for message " + messageControlId
 					+ "...");
+		// we ignore all MEDICAL_RECORD_OBSERVATIONS that are OBRs.  We do not 
+		// create obs_groups for them
+		String ignoreOBRConceptId = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238");
+		Concept ignoreOBRConcept = null;
+		if (ignoreOBRConceptId.length() > 0)
+			ignoreOBRConcept = new Concept(Integer.valueOf(ignoreOBRConceptId)); 
+		
 		ORU_R01_PATIENT_RESULT patientResult = oru.getPATIENT_RESULT();
 		int numObr = patientResult.getORDER_OBSERVATIONReps();
 		for (int i = 0; i < numObr; i++) {
@@ -162,36 +186,54 @@ public class ORUR01Handler implements Application {
 				log.debug("Processing OBR (" + i + " of " + numObr + ")");
 			ORU_R01_ORDER_OBSERVATION orderObs = patientResult
 					.getORDER_OBSERVATION(i);
-			// OBR obr = orderObs.getOBR();
-			Hashtable<String, Vector<Obs>> obsGroups = null;
+			
+			// the parent obr 
+			OBR obr = orderObs.getOBR();
+			
+			// if we're not ignoring this obs group, create an 
+			// Obs grouper object that the underlying obs objects will use
+			Obs obsGrouper = null;
+			Concept obrConcept = getConcept(obr);
+			if (obrConcept != null && ignoreOBRConcept != null && !ignoreOBRConcept.equals(obrConcept)) {
+				// maybe check for a parent obs group from OBR-29 Parent ?
+				
+				// create an obs for this obs group too
+				obsGrouper = new Obs();
+				obsGrouper.setConcept(obrConcept);
+				obsGrouper.setPerson(encounter.getPatient());
+				obsGrouper.setEncounter(encounter);
+				Date datetime = getDatetime(obr);
+				if (datetime == null)
+					datetime = encounter.getEncounterDatetime();
+				obsGrouper.setObsDatetime(datetime);
+				obsGrouper.setLocation(encounter.getLocation());
+				obsGrouper.setCreator(encounter.getCreator());
+				
+				// add this obs as another row in the obs table
+				encounter.addObs(obsGrouper);
+			}
+			
+			
+			// loop over the obs and create each object, adding it to the encounter
 			int numObs = orderObs.getOBSERVATIONReps();
 			for (int j = 0; j < numObs; j++) {
 				if (log.isDebugEnabled())
 					log.debug("Processing OBS (" + j + " of " + numObs + ")");
+				
 				OBX obx = orderObs.getOBSERVATION(j).getOBX();
 				try {
-					if (log.isDebugEnabled())
-						log.debug("Parsing observation");
-					Obs obs = parseObs(encounter, obx);
+					log.debug("Parsing observation");
+					Obs obs = parseObs(encounter, obx, obr);
 					if (obs != null) {
-						if (log.isDebugEnabled())
-							log.debug("Obs is not null");
-						String subId = obx.getObservationSubID().getValue();
-						if (log.isDebugEnabled())
-							log.debug("Obs sub id = " + subId);
-						if (subId != null && subId.length() > 0) {
-							if (obsGroups == null)
-								obsGroups = new Hashtable<String, Vector<Obs>>();
-							if (log.isDebugEnabled())
-								log.debug("Adding obs to obs group");
-							addToObsGroup(obsGroups, subId, obs);
-						} else {
-							if (log.isDebugEnabled())
-								log.debug("Creating obs via API call");
-							Context.getObsService().createObs(obs);
-						}
-						if (log.isDebugEnabled())
-							log.debug("Done with this obs");
+						// set the obsGroup on this obs
+						if (obsGrouper != null)
+							obsGrouper.addGroupMember(obs);
+						
+						// set this obs on the encounter object that we
+						// will be saving later
+						log.debug("Obs is not null. Adding to encounter object");
+						encounter.addObs(obs);
+						log.debug("Done with this obs");
 					}
 				} catch (HL7Exception e) {
 					// Handle obs-level exceptions
@@ -204,39 +246,28 @@ public class ORUR01Handler implements Application {
 					hl7Service.createHL7InError(hl7InError);
 				}
 			}
-			if (obsGroups != null && obsGroups.size() > 0) {
-				if (log.isDebugEnabled())
-					log.debug("Processing " + obsGroups.size()
-							+ " obs group(s)");
-				for (Vector<Obs> group : obsGroups.values()) {
-					Obs[] groupArray = new Obs[group.size()];
-					group.toArray(groupArray);
-					if (groupArray.length == 1) {
-						if (log.isDebugEnabled())
-							log
-									.debug("Creating obs (single entry within obs group)");
-						Context.getObsService().createObs(groupArray[0]);
-					} else if (groupArray.length > 1) {
-						if (log.isDebugEnabled())
-							log.debug("Creating obs group");
-						Context.getObsService().createObsGroup(groupArray);
-					}
-				}
-				if (log.isDebugEnabled())
-					log.debug("Finished creating obs group(s)");
-			}
+
 		}
-		if (log.isDebugEnabled())
+		
+		if (log.isDebugEnabled()) {
 			log.debug("Finished creating observations");
+			log.debug("Current thread: " + Thread.currentThread());
+			log.debug("Creating the encounter object");
+		}
+		Context.getEncounterService().createEncounter(encounter);
 		
 		// Notify HL7 service that we have created a new encounter, allowing
 		// features/modules to trigger on HL7-generated encounters.
-		// TODO: this can be removed once we have a obs_group table and all
+		// -This can be removed once we have a obs_group table and all
 		// obs can be created in memory as part of the encounter *before* we
 		// call EncounterService.createEncounter().  For now, making obs groups
 		// requires that one obs be created (in the database) before others can
-		// be linked to it, forcing us to save the encounter prematurely.
-		log.debug("Current thread: " + Thread.currentThread());
+		// be linked to it, forcing us to save the encounter prematurely."
+		//
+		// NOTE: The above referenced fix is now done.  This method is 
+		// deprecated and will be removed in the next release.  All modules 
+		// should modify their AOP methods to hook around 
+		// EncounterService.createEncounter(Encounter).
 		hl7Service.encounterCreated(encounter);
 		
 		return oru;
@@ -247,21 +278,12 @@ public class ORUR01Handler implements Application {
 	// return oru.getMSH().getSendingApplication().getUniversalID().getValue();
 	// }
 
-	private void addToObsGroup(Hashtable<String, Vector<Obs>> obsGroups,
-			String subId, Obs obs) {
-		int periodPos = subId.indexOf('.');
-		String subIdKey = (periodPos == -1 ? subId : subId.substring(0,
-				periodPos));
-		if (obsGroups.containsKey(subIdKey)) {
-			obsGroups.get(subIdKey).add(obs);
-		} else {
-			Vector<Obs> entry = new Vector<Obs>();
-			entry.add(obs);
-			obsGroups.put(subIdKey, entry);
-		}
-
-	}
-
+	/**
+	 * Not used
+	 * 
+	 * @param message
+	 * @throws HL7Exception
+	 */
 	private void validate(Message message) throws HL7Exception {
 		// TODO: check version, etc.
 	}
@@ -283,7 +305,21 @@ public class ORUR01Handler implements Application {
 	}
 
 	/**
-	 * Creates an encounter
+	 * This method does not call the database to create the encounter
+	 * row. The encounter is only created after all obs have been
+	 * attached to it 
+	 *   
+	 * Creates an encounter pojo to be attached later. 
+	 * 
+	 * This method does not create an encounterId
+	 * 
+	 * @param msh
+	 * @param patient
+	 * @param pv1
+	 * @param orc
+	 * @return
+	 * 
+	 * @throws HL7Exception
 	 */
 	private Encounter createEncounter(MSH msh, Patient patient, PV1 pv1, ORC orc)
 			throws HL7Exception {
@@ -305,23 +341,29 @@ public class ORUR01Handler implements Application {
 		encounter.setEncounterType(encounterType);
 		encounter.setCreator(enterer);
 		encounter.setDateCreated(dateEntered);
-		if (log.isDebugEnabled())
-			log.debug("Creating encounter");
-		Context.getEncounterService().createEncounter(encounter);
-
-		if (encounter == null || encounter.getEncounterId() == null
-				|| encounter.getEncounterId() == 0) {
-			throw new HL7Exception("Invalid encounter");
-		}
+		
 		return encounter;
 	}
 
-	private Obs parseObs(Encounter encounter, OBX obx) throws HL7Exception {
+	/**
+	 * Creates the Obs pojo from the OBX message
+	 * 
+	 * @param encounter The Encounter object this Obs is a member of
+	 * @param obx The hl7 obx message
+	 * @param obr The parent hl7 or message
+	 * @return Obs pojo with all values filled in
+	 * @throws HL7Exception if there is a parsing exception
+	 */
+	private Obs parseObs(Encounter encounter, OBX obx, OBR obr) throws HL7Exception {
 		if (log.isDebugEnabled())
 			log.debug("parsing observation: " + obx);
+		
 		Varies[] values = obx.getObservationValue();
+		
+		// bail out if no values were found
 		if (values == null || values.length < 1)
 			return null;
+		
 		String hl7Datatype = values[0].getName();
 		if (log.isDebugEnabled())
 			log.debug("  datatype = " + hl7Datatype);
@@ -345,6 +387,10 @@ public class ORUR01Handler implements Application {
 		Type obx5 = values[0].getData();
 		if ("NM".equals(hl7Datatype)) {
 			String value = ((NM) obx5).getValue();
+			if (value == null || value.length() == 0) {
+				log.warn("Not creating null valued obs for concept " + concept);
+				return null;
+			}
 			obs.setValueNumeric(Double.valueOf(value));
 		} else if ("CWE".equals(hl7Datatype)) {
 			log.debug("  CWE observation");
@@ -399,20 +445,36 @@ public class ORUR01Handler implements Application {
 			DT value = (DT) obx5;
 			Date valueDate = getDate(value.getYear(), value.getMonth(), value
 					.getDay(), 0, 0, 0);
+			if (value == null || valueDate == null) {
+				log.warn("Not creating null valued obs for concept " + concept);
+				return null;
+			}
 			obs.setValueDatetime(valueDate);
 		} else if ("TS".equals(hl7Datatype)) {
 			DTM value = ((TS) obx5).getTime();
 			Date valueDate = getDate(value.getYear(), value.getMonth(), value
 					.getDay(), value.getHour(), value.getMinute(), value
 					.getSecond());
+			if (value == null || valueDate == null) {
+				log.warn("Not creating null valued obs for concept " + concept);
+				return null;
+			}
 			obs.setValueDatetime(valueDate);
 		} else if ("TM".equals(hl7Datatype)) {
 			TM value = (TM) obx5;
 			Date valueTime = getDate(0, 0, 0, value.getHour(), value
 					.getMinute(), value.getSecond());
+			if (value == null || valueTime == null) {
+				log.warn("Not creating null valued obs for concept " + concept);
+				return null;
+			}
 			obs.setValueDatetime(valueTime);
 		} else if ("ST".equals(hl7Datatype)) {
 			ST value = (ST) obx5;
+			if (value == null || value.getValue() == null || value.getValue().trim().length() == 0) {
+				log.warn("Not creating null valued obs for concept " + concept);
+				return null;
+			}
 			obs.setValueText(value.getValue());
 		} else {
 			// unsupported data type
@@ -421,6 +483,7 @@ public class ORUR01Handler implements Application {
 			throw new HL7Exception("Unsupported observation datatype '"
 					+ hl7Datatype + "'");
 		}
+		
 		return obs;
 	}
 
@@ -436,6 +499,13 @@ public class ORUR01Handler implements Application {
 		return cal.getTime();
 	}
 
+	/**parentGroup.g
+	 * Get a openmrs Concept object out of the given hl7 obx 
+	 * 
+	 * @param obx obx section to pull from
+	 * @return new Concept object
+	 * @throws HL7Exception if parsing errors occur
+	 */
 	private Concept getConcept(OBX obx) throws HL7Exception {
 		// TODO: don't assume that all concepts are local
 		String hl7ConceptId = obx.getObservationIdentifier().getIdentifier()
@@ -449,10 +519,68 @@ public class ORUR01Handler implements Application {
 			throw new HL7Exception("Invalid concept ID '" + hl7ConceptId + "'");
 		}
 	}
+	
+	/**
+	 * Get the openmrs Concept object out of the given obr or null if there is none
+	 * 
+	 * @param obr hl7 OBR section to pull from
+	 * @return new concept object
+	 * @throws HL7Exception if parsing errors occur]
+	 * @see {@link #getDatetime(TS)}
+	 */
+	private Concept getConcept(OBR obr) throws HL7Exception {
+		// TODO: don't assume that all concepts are local
+		String hl7ConceptId = obr.getUniversalServiceIdentifier().getIdentifier().getValue();
+		
+		if (hl7ConceptId == null)
+			return null;
+		
+		try {
+			Integer conceptId = new Integer(hl7ConceptId);
+			Concept concept = new Concept(conceptId);
+			return concept;
+		} catch (NumberFormatException e) {
+			throw new HL7Exception("Invalid concept ID '" + hl7ConceptId + "'");
+		}
+	}
 
+	/**
+	 * Pull the timestamp for this obx out. if an invalid
+	 * date is found, null is returned
+	 * 
+	 * @param obx the obs to parse and get the timestamp from
+	 * @return an obx timestamp or null
+	 * @throws HL7Exception
+	 * @see {@link #getDatetime(TS)}
+	 */
 	private Date getDatetime(OBX obx) throws HL7Exception {
-		Date datetime = null;
 		TS ts = obx.getDateTimeOfTheObservation();
+		return getDatetime(ts);
+	}
+	
+	/**
+	 * Pull the timestamp for this obr out. if an invalid
+	 * date is found, null is returned
+	 * 
+	 * @param obr
+	 * @return
+	 * @throws HL7Exception
+	 */
+	private Date getDatetime(OBR obr) throws HL7Exception {
+		TS ts = obr.getObservationDateTime();
+		return getDatetime(ts);
+		
+	}
+
+	/**
+     * Return a java date object for the given TS 
+     * 
+     * @param ts TS to parse
+     * @return date object or null
+     * @throws HL7Exception
+     */
+    private Date getDatetime(TS ts) throws HL7Exception {
+    	Date datetime = null;
 		DTM value = ts.getTime();
 
 		if (value.getYear() == 0 || value.getValue() == null)
@@ -466,7 +594,8 @@ public class ORUR01Handler implements Application {
 
 		}
 		return datetime;
-	}
+		
+    }
 
 	private Date getEncounterDate(PV1 pv1) throws HL7Exception {
 		return tsToDate(pv1.getAdmitDateTime());

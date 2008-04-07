@@ -15,6 +15,7 @@ package org.openmrs.api.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -78,32 +79,80 @@ public class ObsServiceImpl implements ObsService {
 	 * @see org.openmrs.api.ObsService#createObs(org.openmrs.Obs)
 	 */
 	public void createObs(Obs obs) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_OBS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_ADD_OBS);
+		setRequiredObsProperties(obs);
+		
 		getObsDAO().createObs(obs);
+	}
+	
+	/**
+	 * Sets the creator and dateCreated properties on the Obs object
+	 * 
+	 * @param obs
+	 */
+	private void setRequiredObsProperties(Obs obs) {
+		if (obs.getCreator() == null)
+			obs.setCreator(Context.getAuthenticatedUser());
+
+		if (obs.getDateCreated() == null)
+			obs.setDateCreated(new Date());
+		
+		if (obs.getGroupMembers() != null) {
+			for (Obs member : obs.getGroupMembers()) {
+				// if statement does a quick sanity check to
+				// avoid the simplest of infinite loops
+				if (member.getCreator() == null || 
+					member.getDateCreated() == null)
+						setRequiredObsProperties(member);
+			}
+		}
 	}
 
 	/**
+	 * 
+	 * Correct use case:
+	 * <pre>
+	 * Obs parent = new Obs();
+	 * Obs child1 = new Obs();
+	 * Obs child2 = new Obs();
+	 * 
+	 * parent.addGroupMember(child1);
+	 * parent.addGroupMember(child2);
+	 * </pre>
+	 * 
+	 * @deprecated This method should no longer need to be called on the api. This
+	 * 			  was meant as temporary until we created a true ObsGroup pojo.
+	 * 
 	 * @see org.openmrs.api.ObsService#createObsGroup(org.openmrs.Obs[])
 	 */
 	public void createObsGroup(Obs[] obs) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_OBS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_ADD_OBS);
 		if (obs == null || obs.length < 1)
 			return; // silently tolerate calls with missing/empty parameter
-
-		// TODO - consider creating a DAO-level method for creating obs groups
-		// more efficiently
-		getObsDAO().createObs(obs[0]);
-		Integer obsGroupId = obs[0].getObsId();
-		obs[0].setObsGroupId(obsGroupId);
-		getObsDAO().updateObs(obs[0]);
-		for (int i = 1; i < obs.length; i++) {
-			obs[i].setObsGroupId(obsGroupId);
-			getObsDAO().createObs(obs[i]);
-		}
+		
+		String conceptIdStr = Context.getAdministrationService().
+		getGlobalProperty(
+			  OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, 
+          "1238");
+		// fail silently if a default obs group is not defined
+		if (conceptIdStr == null || conceptIdStr.length() == 0)
+			return;
+		
+		Integer conceptId = Integer.valueOf(conceptIdStr);
+		Concept defaultObsGroupConcept = Context.getConceptService().getConcept(conceptId);
+		
+		// if they defined a bad concept, bail
+		if (defaultObsGroupConcept == null)
+		throw new APIException("There is no concept defined with concept id: " + conceptIdStr +
+		               "You should correctly define the default obs group concept id with the global propery" + 
+		               OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS);
+		
+		Obs obsGroup = new Obs();
+		obsGroup.setConcept(defaultObsGroupConcept);
+		
+		for (Obs member : obs) {
+    		obsGroup.addGroupMember(member);
+    	}
+    	
+    	updateObs(obsGroup);
 	}
 
 	/**
@@ -117,45 +166,87 @@ public class ObsServiceImpl implements ObsService {
 	 * @see org.openmrs.api.ObsService#updateObs(org.openmrs.Obs)
 	 */
 	public void updateObs(Obs obs) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_OBS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_EDIT_OBS);
-
 		if (obs.isVoided() && obs.getVoidedBy() == null)
 			voidObs(obs, obs.getVoidReason());
 		else if (obs.isVoided() == false && obs.getVoidedBy() != null)
 			unvoidObs(obs);
 		else {
+			setRequiredObsProperties(obs);
 			log.debug("Date voided: " + obs.getDateVoided());
 			getObsDAO().updateObs(obs);
 		}
 	}
 
 	/**
+	 * Voids an Obs
+	 * 
+	 * If the Obs argument is an obsGroup, all group members will be voided.
+	 * 
 	 * @see org.openmrs.api.ObsService#voidObs(org.openmrs.Obs, java.lang.String)
+	 * @param Obs obs the Obs to void
+	 * @param String reason the void reason
+	 * @throws APIException
 	 */
+	
 	public void voidObs(Obs obs, String reason) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_OBS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_EDIT_OBS);
-		obs.setVoided(true);
-		obs.setVoidReason(reason);
-		obs.setVoidedBy(Context.getAuthenticatedUser());
-		obs.setDateVoided(new Date());
+		Set<Obs> obsToVoid = new HashSet<Obs>();
+		obsToVoid.add(obs);
+		Obs testObs = obs;
+		List<Obs> childGroups = new ArrayList<Obs>();
+		while (testObs.isObsGrouping()) {
+			for (Obs oInner : testObs.getGroupMembers()) {
+				if (oInner.isObsGrouping())
+					childGroups.add(oInner);
+				obsToVoid.add(oInner);
+			}
+			if (childGroups.size() > 0)
+				testObs = childGroups.remove(childGroups.size() - 1);
+			else
+				testObs = new Obs();
+		}
+		for (Obs o : obsToVoid) {
+			o.setVoided(true);
+			o.setVoidReason(reason);
+			o.setVoidedBy(Context.getAuthenticatedUser());
+			o.setDateVoided(new Date());
+		}
 		getObsDAO().updateObs(obs);
 	}
 
 	/**
+	 * Unvoids an Obs
+	 * 
+	 * If the Obs argument is an obsGroup, all group members
+	 * with the same dateVoided will also be unvoided.
+	 * 
 	 * @see org.openmrs.api.ObsService#unvoidObs(org.openmrs.Obs)
+	 * @param Obs obs the Obs to unvoid
+	 * @throw APIException
 	 */
+
 	public void unvoidObs(Obs obs) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_OBS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_EDIT_OBS);
-		obs.setVoided(false);
-		obs.setVoidReason(null);
-		obs.setVoidedBy(null);
-		obs.setDateVoided(null);
+		Set<Obs> obsToUnVoid = new HashSet<Obs>();
+		obsToUnVoid.add(obs);
+		Obs testObs = obs;
+		List<Obs> childGroups = new ArrayList<Obs>();
+		while (testObs.isObsGrouping()) {
+			for (Obs oInner : testObs.getGroupMembers()) {
+				if (oInner.isObsGrouping())
+					childGroups.add(oInner);
+				if (oInner.getDateVoided().equals(obs.getDateVoided()))
+					obsToUnVoid.add(oInner);
+			}
+			if (childGroups.size() > 0)
+				testObs = childGroups.remove(childGroups.size() - 1);
+			else
+				testObs = new Obs();
+		}
+		for (Obs o : obsToUnVoid) {
+			o.setVoided(false);
+			o.setVoidReason(null);
+			o.setVoidedBy(null);
+			o.setDateVoided(null);
+		}
 		getObsDAO().updateObs(obs);
 	}
 
@@ -163,12 +254,9 @@ public class ObsServiceImpl implements ObsService {
 	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
 	 */
 	public void deleteObs(Obs obs) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_OBS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_DELETE_OBS);
 		getObsDAO().deleteObs(obs);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ObsService#getMimeTypes()
 	 */

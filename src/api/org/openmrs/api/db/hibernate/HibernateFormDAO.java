@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -166,22 +167,45 @@ public class HibernateFormDAO implements
 
 	
 	/**
-	 * @see org.openmrs.api.db.FormService#getFormField(org.openmrs.Form,org.openmrs.Concept)
+	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept, java.util.Collection, boolean)
 	 */
-	public FormField getFormField(Form form, Concept concept) throws APIException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormField.class)
+	@SuppressWarnings("unchecked")
+    public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force) throws APIException {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormField.class, "ff")
 			.createAlias("field", "field")
 			.add(Expression.eq("field.concept", concept))
 			.add(Expression.eq("form", form));
-
-		if (crit.list().size() < 1) {
-			String err = "FormField warning.  No FormField matching concept '" + concept + "' for form '" + form + "'";
+		
+		// get the list of all formfields with this concept for this form
+		List<FormField> formFields = crit.list();
+		
+		String err = "FormField warning.  No FormField matching concept '" + concept + "' for form '" + form + "'";
+		
+		if (formFields.size() < 1) {
 			log.warn(err);
 			return null;
 		}
 		
-		FormField ff = (FormField)crit.list().get(0); 
-		return ff;
+		// save the first formfield in case we're not a in a "force" situation
+		FormField backupPlan = formFields.get(0);
+		
+		// remove the formfields we're supposed to ignore from the return list
+		formFields.removeAll(ignoreFormFields);
+		
+		// if we ended up removing all of the formfields, check to see if we're
+		// in a "force" situation
+		if (formFields.size() < 1) {
+			if (force == false)
+				return backupPlan;
+			else {
+				log.warn(err);
+				return null;
+			}
+		}
+		else { // if formFields.size() is still greater than 0
+			FormField ff = (FormField)formFields.get(0); 
+			return ff;
+		}
 	}
 	
 	/**
@@ -276,7 +300,8 @@ public class HibernateFormDAO implements
 	/**
      * @see org.openmrs.api.db.FormDAO#findForms(java.lang.String, boolean, boolean)
      */
-    public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
+	@SuppressWarnings("unchecked")
+	public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
     	Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
 		
 		if (includeUnpublished == false)

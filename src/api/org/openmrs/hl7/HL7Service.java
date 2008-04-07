@@ -116,6 +116,10 @@ public interface HL7Service {
 	 * once we have obs groups being created correctly
 	 * 
 	 * @param encounter
+	 * 
+	 * @deprecated This method is no longer needed.  When an encounter is created in the 
+	 * 	ROUR01 handler, it is created with all obs. Any AOP hooking should be done on the
+	 * 	EncounterService.createEncounter(Encounter) method   
 	 */
 	public void encounterCreated(Encounter encounter);
 

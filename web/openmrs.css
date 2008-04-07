@@ -889,6 +889,7 @@ span.noOrdersMessage {
 	}
 	.encounterFormTable .encounterViewObsValue {
 		font-weight: bold;
+		white-space: pre;
 	}
 	.encounterFormTable .encounterViewObsDatetime {
 		font-size: .9em;
@@ -922,6 +923,7 @@ span.noOrdersMessage {
 	}
 	.encounterFormTable .encounterViewObsValue {
 		font-weight: normal;
+		white-space: pre;
 	}
 	.encounterFormTable .encounterViewObsAnswer {
 		padding-left: 1px;
@@ -936,6 +938,10 @@ span.noOrdersMessage {
 		background-color: whitesmoke;
 	}
 	*/
+	
+table#obs td.obsValue {
+	white-space: pre;
+}
 
 #eventCalendarPortlet {
 	font-size: 0.8em;

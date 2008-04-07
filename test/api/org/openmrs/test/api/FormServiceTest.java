@@ -14,6 +14,7 @@
 package org.openmrs.test.api;
 
 import java.util.List;
+import java.util.Vector;
 
 import org.openmrs.Concept;
 import org.openmrs.Field;
@@ -270,6 +271,45 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		//formService.deleteField(field1);
 		
 		assertNull(formService.getField(field3.getFieldId()));
+	}
+	
+	/**
+	 * Tests the FormService.getFormFields(Form, Concept) and 
+	 * getFormFields(Form,Concept,Collection) methods
+	 * 
+	 * @throws Exception
+	 */
+	public void testGetFormFieldsByFormAndConcept() throws Exception {
+		
+		executeDataSet(INITIAL_FIELDS_XML);
+		executeDataSet("org/openmrs/test/api/include/FormServiceTest-formFields.xml");
+		
+		FormService formService = Context.getFormService();
+		
+		Form form = new Form(1);
+		Concept concept = new Concept(1);
+		List<FormField> ignoreFormFields = new Vector<FormField>();
+		
+		// test that a null ignoreFormFields doens't error out
+		FormField ff = formService.getFormField(form, concept, null, false);
+		assertNotNull(ff);
+		
+		ff = formService.getFormField(form, concept);
+		assertNotNull(ff);
+		
+		// test a non existent concept
+		assertNull(formService.getFormField(form, new Concept(293934)));
+		
+		// test a non existent form
+		assertNull(formService.getFormField(new Form(12343), new Concept(293934)));
+		
+		// test that the first formfield is ignored when a second fetch
+		// is done on the same form and same concept
+		ignoreFormFields.add(ff);
+		FormField ff2 = formService.getFormField(form, concept, ignoreFormFields, false);
+		assertNotNull(ff2);
+		assertNotSame(ff, ff2);
+		
 	}
 	
 }
