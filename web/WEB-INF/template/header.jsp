@@ -1,3 +1,4 @@
+<%@ page errorPage="/errorhandler.jsp" %>
 <%@ page import="org.openmrs.web.WebConstants" %>
 <%
 	String useMinimalHeader = (String)session.getAttribute(WebConstants.OPENMRS_HEADER_USE_MINIMAL);
