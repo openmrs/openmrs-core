@@ -137,6 +137,10 @@
 		<level value="DEBUG" />
 		<appender-ref ref="SYNCHRONIZATION_FILE"/>
 	</logger>
+	<logger name="org.openmrs.synchronization.SyncUtil">
+		<level value="DEBUG" />
+		<appender-ref ref="SYNCHRONIZATION_FILE"/>
+	</logger>
 	
 	<root>
 		<level value="WARN" />
