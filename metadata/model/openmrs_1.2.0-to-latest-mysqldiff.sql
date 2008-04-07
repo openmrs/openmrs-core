@@ -5,9 +5,9 @@
 
 #----------------------------------------
 # OpenMRS Datamodel version 1.2.01
-# Ben Wolfe                 Dec 21st 2007
-# Removing the unneeded auto increment values
-# on patient_id and user_id.
+# Ben Wolfe                 Feb 20th 2008
+# Adding obs grouping rows to obs table and foreign
+# keying obs.obs_group_id to obs.obs_id
 #----------------------------------------
 
 DROP PROCEDURE IF EXISTS diff_procedure;
