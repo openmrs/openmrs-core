@@ -47,7 +47,7 @@
 			<one-to-many class="Order" />
 		</set>
 		<!-- bi-directional one-to-many association to Ob -->
-		<set name="obs" inverse="true" cascade="all" order-by="concept_id">
+		<set name="obs" inverse="true" cascade="all" order-by="concept_id" access="field">
 			<key column="encounter_id" />
 			<one-to-many class="Obs" />
 		</set>

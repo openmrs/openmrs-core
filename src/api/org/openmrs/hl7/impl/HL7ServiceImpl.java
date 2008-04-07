@@ -328,7 +328,7 @@ public class HL7ServiceImpl implements HL7Service {
 		// patient_id numbers
 
 		Integer patientId = null;
-
+		
 		CX[] patientIdentifierList = pid.getPatientIdentifierList();
 		if (patientIdentifierList.length < 1)
 			throw new HL7Exception("Missing patient identifier in PID segment");

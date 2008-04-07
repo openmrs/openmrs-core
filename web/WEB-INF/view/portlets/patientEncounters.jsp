@@ -52,7 +52,7 @@ Parameters
 						</tr>
 						<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc" num="${model.num}">
 							<tr class="<c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
-								<c:set var="showLink" value="${fn:length(enc.obs) > 0 && showViewLink == 'true'}"/>	
+								<c:set var="showLink" value="${fn:length(enc.allObs) > 0 && showViewLink == 'true'}"/>	
 								<td class="encounterEdit" align="center">
 									<c:if test="${showEditLink == 'true'}">
 										<openmrs:hasPrivilege privilege="Edit Encounters">

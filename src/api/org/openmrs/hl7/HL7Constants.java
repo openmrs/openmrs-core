@@ -13,6 +13,9 @@
  */
 package org.openmrs.hl7;
 
+/**
+ * Constants used by the hl7 package
+ */
 public class HL7Constants {
 
 	public static final String PRIV_ADD_HL7_SOURCE = "Add HL7 Source";
@@ -38,4 +41,5 @@ public class HL7Constants {
 	public static final int HL7_STATUS_PROCESSING = 1;
 	public static final int HL7_STATUS_PROCESSED = 2;
 	public static final int HL7_STATUS_ERROR = 3;
+	
 }

@@ -66,18 +66,23 @@ public class EncounterServiceImpl implements EncounterService {
 	public void createEncounter(Encounter encounter) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_ENCOUNTERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_ENCOUNTERS);
+		
+		if (log.isDebugEnabled())
+			log.debug("Creating encounter: " + encounter);
+		
 		Date now = new Date();
 		User me = Context.getAuthenticatedUser();
 		if (encounter.getDateCreated() == null)
 			encounter.setDateCreated(now);
 		if (encounter.getCreator() == null)
 			encounter.setCreator(me);
-		if (encounter.getObs() != null) {
-			for (Obs o : encounter.getObs()) {
+		if (encounter.getObsAtTopLevel(false) != null) {
+			for (Obs o : encounter.getObsAtTopLevel(false)) {
 				if (o.getDateCreated() == null)
 					o.setDateCreated(now);
 				if (o.getCreator() == null)
 					o.setCreator(me);
+					
 			}
 		}
 		if (encounter.getOrders() != null) {
@@ -102,6 +107,9 @@ public class EncounterServiceImpl implements EncounterService {
 	public Encounter getEncounter(Integer encounterId) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ENCOUNTERS);
+		
+		if (log.isDebugEnabled())
+			log.debug("Getting encounter with id: " + encounterId);
 		
 		return getEncounterDAO().getEncounter(encounterId);
 	}
@@ -286,7 +294,7 @@ public class EncounterServiceImpl implements EncounterService {
 			reason = "";
 		
 		ObsService os = Context.getObsService();
-		for (Obs o : encounter.getObs()) {
+		for (Obs o : encounter.getObsAtTopLevel(false)) {
 			if (!o.isVoided()) {
 				os.voidObs(o, reason);
 			}
@@ -313,7 +321,7 @@ public class EncounterServiceImpl implements EncounterService {
 			voidReason = "";
 		
 		ObsService os = Context.getObsService();
-		for (Obs o : encounter.getObs()) {
+		for (Obs o : encounter.getObsAtTopLevel(false)) {
 			if (voidReason.equals(o.getVoidReason()))
 				os.unvoidObs(o);
 		}

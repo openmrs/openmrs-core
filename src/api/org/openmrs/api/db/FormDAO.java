@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.openmrs.Concept;
@@ -122,14 +123,9 @@ public interface FormDAO {
 	public List<FormField> getFormFields(Form form) throws DAOException;
 
 	/**
-	 * Finds the FormField defined for this form/concept combination 
-	 * 
-	 * @param form
-	 * @param concept
-	 * @return Formfield for this concept
-	 * @throws APIException
+	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept, java.util.Collection, boolean)
 	 */
-	public FormField getFormField(Form form, Concept concept) throws APIException;
+	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force) throws APIException;
 	
 	/**
 	 * 

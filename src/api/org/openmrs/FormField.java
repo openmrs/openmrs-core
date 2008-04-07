@@ -30,21 +30,21 @@ public class FormField implements java.io.Serializable, Comparable<FormField> {
 
 	// Fields
 
-	private Integer formFieldId;
-	private FormField parent;
-	private Form form;
-	private Field field;
-	private Integer fieldNumber;
-	private String fieldPart;
-	private Integer pageNumber;
-	private Integer minOccurs;
-	private Integer maxOccurs;
-	private Boolean required = false;
-	private Float sortWeight;
-	private User creator;
-	private Date dateCreated;
-	private User changedBy;
-	private Date dateChanged;
+	protected Integer formFieldId;
+	protected FormField parent;
+	protected Form form;
+	protected Field field;
+	protected Integer fieldNumber;
+	protected String fieldPart;
+	protected Integer pageNumber;
+	protected Integer minOccurs;
+	protected Integer maxOccurs;
+	protected Boolean required = false;
+	protected Float sortWeight;
+	protected User creator;
+	protected Date dateCreated;
+	protected User changedBy;
+	protected Date dateChanged;
 
 	// Constructors
 
@@ -107,6 +107,15 @@ public class FormField implements java.io.Serializable, Comparable<FormField> {
 			if (f.getSortWeight() == null)
 				return 1;
 			int c = getSortWeight().compareTo(f.getSortWeight());
+			if (c != 0)
+				return c;
+		}
+		if (getPageNumber() != null || f.getPageNumber() != null) {
+			if (getPageNumber() == null)
+				return -1;
+			if (f.getPageNumber() == null)
+				return 1;
+			int c = getPageNumber().compareTo(f.getPageNumber());
 			if (c != 0)
 				return c;
 		}

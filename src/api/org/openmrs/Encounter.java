@@ -13,8 +13,10 @@
  */
 package org.openmrs;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -170,12 +172,98 @@ public class Encounter implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the obs.
+	 * @return Returns a Set<Obs> of all non-voided, non-obsGroup children Obs
+	 *         of this Encounter
 	 */
 	public Set<Obs> getObs() {
-		return obs;
+		Set<Obs> ret = new HashSet<Obs>();
+		
+		if (this.obs != null) {
+			for (Obs o : this.obs)
+				ret.addAll(getObsLeaves(o));
+				// this should be all thats needed unless the encounter has been built by hand
+				//if (o.isVoided() == false && o.isObsGrouping() == false)
+				//	ret.add(o);
+		}
+		
+			
+		return ret;
 	}
-
+	
+	/**
+	 * Convenience method to recursively get all leaf obs 
+	 * of this encounter.  This method goes down into
+	 * each obs and adds all non-grouping obs to the return
+	 * list
+	 * 
+	 * @param obsParent current obs to loop over
+	 * @return list of leaf obs
+	 */
+	private List<Obs> getObsLeaves(Obs obsParent) {
+		List<Obs> leaves = new ArrayList<Obs>();
+		
+		if (obsParent.hasGroupMembers()) {
+			for (Obs child : obsParent.getGroupMembers()) {
+				if (child.isVoided() == false) {
+					if (child.isObsGrouping() == false)
+						leaves.add(child);
+					else
+						// recurse if this is a grouping obs
+						leaves.addAll(getObsLeaves(child));
+				}
+			}
+		}
+		else if (obsParent.isVoided() == false) {
+			leaves.add(obsParent);
+		}
+		
+		return leaves;
+	}
+	
+	/**
+	 * Returns all Obs where Obs.encounterId = Encounter.encounterId
+	 * In practice, this method should not be used very often...
+	 * @param boolean includeVoided specifies whether or not to include voided Obs
+	 * @return Returns the all Obs.
+	 */
+	public Set<Obs> getAllObs(boolean includeVoided) {
+		Set<Obs> ret = new HashSet<Obs>();
+		if (this.obs != null) {
+			for (Obs o : this.obs) {
+				if (includeVoided)
+					ret.add(o);
+				else if (!o.isVoided())
+					ret.add(o);
+			}
+		}
+		return ret;
+	}
+	
+	/**
+	 * Convenience method to call {@link #getAllObs(boolean)}
+	 * with a false parameter
+	 * 
+	 * @return all non-voided obs
+	 */
+	public Set<Obs> getAllObs() {
+		return getAllObs(false);
+	}
+	
+	/**
+	 * Returns a Set<Obs> of all root-level Obs of an Encounter, including obsGroups
+	 * 
+	 * @param boolean includeVoided specifies whether or not to include voided Obs
+	 * @return Returns all obs at top level -- will not be null
+	 */
+	public Set<Obs> getObsAtTopLevel(boolean includeVoided) {
+		Set<Obs> ret = new HashSet<Obs>();
+		for (Obs o : getAllObs(includeVoided)) {
+			if (o.getObsGroup() == null) 
+				ret.add(o);
+		}
+		return ret;
+	}
+	
 	/**
 	 * @param obs The obs to set.
 	 */
@@ -372,7 +460,7 @@ public class Encounter implements java.io.Serializable {
 		ret += this.getLocation() == null ? "(no Location) " : this.getLocation().getName() + " ";
 		ret += this.getPatient() == null ? "(no Patient) " : this.getPatient().getPatientId().toString() + " ";
 		ret += this.getForm() == null ? "(no Form) " : this.getForm().getName() + " ";
-		ret += this.getObs() == null ? "(no Obss) " : "num Obs: " + this.getObs().size() + " ";
+		ret += this.getObsAtTopLevel(false) == null ? "(no Obss) " : "num Obs: " + this.getObsAtTopLevel(false) + " ";
 		ret += this.getOrders() == null ? "(no Orders) " : "num Orders: " + this.getOrders().size() + " ";
 		return "Encounter: [" + ret + "]";
 	}

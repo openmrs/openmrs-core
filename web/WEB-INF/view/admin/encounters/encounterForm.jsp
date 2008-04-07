@@ -60,6 +60,7 @@
 	function voidedClicked(input) {
 		var reason = document.getElementById("voidReason");
 		var voidedBy = document.getElementById("voidedBy");
+		if (input) {
 		if (input.checked) {
 			reason.style.display = "";
 			if (voidedBy)
@@ -69,6 +70,7 @@
 			reason.style.display = "none";
 			if (voidedBy)
 				voidedBy.style.display = "none";
+		}
 		}
 	}
 	
@@ -84,18 +86,11 @@
 		width: 5px;
 		white-space: nowrap;
 	}
-	td.obsGroupMember {
-		padding-left: 5px;
-	}
 </style>
 
 <a href="../../patientDashboard.form?patientId=${encounter.patient.patientId}"><spring:message code="patientDashboard.viewDashboard"/></a>
 
-<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.aboveTitle" type="html" parameters="encounterId=${encounter.encounterId}" />
-
 <h2><spring:message code="Encounter.manage.title"/></h2>
-
-<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.belowTitle" type="html" parameters="encounterId=${encounter.encounterId}" />
 
 <spring:hasBindErrors name="encounter">
 	<spring:message code="fix.error"/>
@@ -231,8 +226,6 @@
 	</form>
 </div>
 
-<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.afterSummary" type="html" parameters="encounterId=${encounter.encounterId}" />
-
 <c:if test="${encounter.encounterId != null}">
 	<br/>
 	<div class="boxHeader">
@@ -244,65 +237,19 @@
 	</div>
 	<div class="box">
 	<table cellspacing="0" cellpadding="2" width="98%" id="obs">
-		<tr>
+		<tr id="obsListingHeaderRow">
 			<th class="fieldNumber"></th>
-			<th><spring:message code="Obs.concept"/></th>
-			<th><spring:message code="Obs.value"/></th>
-			<th></th>
-			<th><spring:message code="Obs.creator.or.changedBy"/></th>
+			<th class="obsConceptName"><spring:message code="Obs.concept"/></th>
+			<th class="obsValue"><spring:message code="Obs.value"/></th>
+			<th class="obsAlerts"></th>
+			<th class="obsCreator"><spring:message code="Obs.creator.or.changedBy"/></th>
 		</tr>
-		<c:forEach items="${observations}" var="obs" varStatus="status">
-			<c:set var="field" value="${obsMap[obs.obsId]}"/>
-			<c:choose>
-				<c:when test="${obs.obsGroupId != null}">
-					<tr class="obsGroupHeader">
-						<td>${field.fieldNumber}<c:if test="${field.fieldPart != null && field.fieldPart != ''}">.${field.fieldPart}</c:if></td>
-						<td colspan="4">${field.field.concept.name.name}</td>
-					</tr>
-					<tr>
-						<td colspan="5"></td>
-					</tr>
-					<c:forEach items="${obsGroups[obs.obsGroupId]}" var="groupObs" varStatus="groupStatus">
-						<tr class="<c:if test="${groupObs.voided}">voided</c:if>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${groupObs.obsId}')">
-							<td class="fieldNumber"></td>
-							<td class="obsGroupMember"><a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${groupObs.obsId}" onclick="return click('${groupObs.obsId}')">${groupObs.concept.name.name}</a></td>
-							<td>${groupObs.valueAsString[locale]}</td>
-							<td valign="middle" align="right">
-								<c:if test="${fn:contains(editedObs, groupObs.obsId)}"><img src="${pageContext.request.contextPath}/images/alert.gif" title='<spring:message code="Obs.edited"/>' /></c:if>
-								<c:if test="${groupObs.comment != null && groupObs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${groupObs.comment}" /></c:if>
-							</td>
-							<td style="white-space: nowrap;">
-								${groupObs.creator.personName} -
-								<openmrs:formatDate date="${groupObs.dateCreated}" type="medium" />
-							</td>
-						</tr>
-						<tr class="<c:if test="${groupObs.voided}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this, true)" onmouseout="mouseout(this, true)" onclick="click('${groupObs.obsId}')">
-							<td></td><td colspan="4" class="obsGroupMember"><div class="description">${groupObs.concept.name.description}</div></td>
-						</tr>
-					</c:forEach>
-				</c:when>
-				<c:otherwise>
-					<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${obs.obsId}')">
-						<td class="fieldNumber">${field.fieldNumber}<c:if test="${field.fieldPart != null && field.fieldPart != ''}">.${field.fieldPart}</c:if></td>
-						<td><a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${obs.obsId}" onclick="return click('${obs.obsId}')">${obs.concept.name.name}</a></td>
-						<td>${obs.valueAsString[locale]}</td>
-						<td valign="middle" align="right">
-							<c:if test="${fn:contains(editedObs, obs.obsId)}"><img src="${pageContext.request.contextPath}/images/alert.gif" title='<spring:message code="Obs.edited"/>' /></c:if>
-							<c:if test="${obs.comment != null && obs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${obs.comment}" /></c:if>
-						</td>
-						<td style="white-space: nowrap;">
-							${obs.creator.personName} -
-							<openmrs:formatDate date="${obs.dateCreated}" type="medium" />
-						</td>
-					</tr>
-					<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this, true)" onmouseout="mouseout(this, true)" onclick="click('${obs.obsId}')">
-						<td colspan="5"><div class="description">${obs.concept.name.description}</div></td>
-					</tr>
-				</c:otherwise>
-			</c:choose>
-			
+		<c:forEach items="${obsMap}" var="obsEntry" varStatus="status">
+			<c:set var="obs" value="${obsEntry.value}" scope="request"/>
+		    <c:set var="field" value="${obsEntry.key}" scope="request"/>
+		    <c:set var="level" value="0" scope="request"/>
+			<c:import url="obsDisplay.jsp" />
 		</c:forEach>
-		
 	</table>
 	</div>
 </c:if>
@@ -310,7 +257,5 @@
 <br />
 <a href="${pageContext.request.contextPath}/admin/observations/obs.form?encounterId=${encounter.encounterId}"><spring:message code="Obs.add"/></a>
 <br />
-
-<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.footer" type="html" parameters="encounterId=${encounter.encounterId}" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

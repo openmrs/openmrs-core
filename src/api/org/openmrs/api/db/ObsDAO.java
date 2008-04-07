@@ -30,7 +30,7 @@ import org.openmrs.reporting.PatientSet;
 /**
  * Observation-related database functions
  * 
- * @version 1.0
+ * @see org.openmrs.api.ObsService
  */
 public interface ObsDAO {
 
@@ -53,7 +53,7 @@ public interface ObsDAO {
 	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
 	 */
 	public void deleteObs(Obs obs) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.ObsService#getMimeTypes()
 	 */

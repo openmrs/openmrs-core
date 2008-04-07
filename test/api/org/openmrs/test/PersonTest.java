@@ -148,12 +148,17 @@ public class PersonTest extends TestCase {
 		pa3.setVoided(false);
 		
 		p.addName(pa3);
-		// make sure the name is NOT added
+		// make sure the name is NOT added because its the same as pa1
 		assertTrue("There should be 2 names in the person object but there is actually : " + p.getNames().size(), p.getNames().size() == 2);
 		
-		pa3.setVoided(true);
-		p.addName(pa3);
-		// make sure the name IS added
+		PersonName pa4 = new PersonName();
+		pa4.setGivenName(pa1.getGivenName() + "string to change the .equals method");
+		pa4.setFamilyName(pa1.getFamilyName());
+		pa4.setDateCreated(pa1.getDateCreated());
+		pa4.setVoided(false);
+		pa4.setVoided(true);
+		p.addName(pa4);
+		// make sure a voided name IS added
 		assertTrue("There should be 3 names in the person object but there is actually : " + p.getNames().size(), p.getNames().size() == 3);
 		
 		p.removeName(pa3);
@@ -165,12 +170,14 @@ public class PersonTest extends TestCase {
 		assertTrue("There should be 3 names in the person object but there is actually : " + p.getNames().size(), p.getNames().size() == 3);
 		
 		// test removing all of the names
-		p.removeName(pa3);
-		assertTrue("There should be only 2 name in the person object now", p.getNames().size() == 2);
+		p.removeName(pa4);
+		assertTrue("There should be only 2 names in the person object now", p.getNames().size() == 2);
+		p.removeName(pa3); // pa3 was never added, but is the same as pa1
+		assertTrue("There should be only 1 names in the person object now", p.getNames().size() == 1);
 		p.removeName(pa2);
-		assertTrue("There should be only 1 name in the person object now", p.getNames().size() == 1);
+		assertTrue("There should be only no names in the person object now", p.getNames().size() == 0);
 		p.removeName(pa2);
-		assertTrue("There should still be only 1 name in the person object now", p.getNames().size() == 1);
+		assertTrue("There should still be only no names in the person object now", p.getNames().size() == 0);
 		p.removeName(pa1);
 		assertTrue("There shouldn't be any names in the person object now", p.getNames().size() == 0);
 	}

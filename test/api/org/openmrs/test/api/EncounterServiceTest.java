@@ -128,7 +128,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		assertNull("We shouldn't find the encounter after deletion", e);
 		
-		
 	}
 	
 }

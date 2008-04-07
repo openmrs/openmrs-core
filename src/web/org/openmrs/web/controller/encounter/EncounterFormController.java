@@ -13,11 +13,11 @@
  */
 package org.openmrs.web.controller.encounter;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -27,7 +27,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -37,12 +36,12 @@ import org.openmrs.Obs;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.web.WebConstants;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.propertyeditor.FormEditor;
 import org.openmrs.propertyeditor.LocationEditor;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -53,6 +52,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * This class controls the encounter.form jsp page.
+ * See /web/WEB-INF/view/admin/encounters/encounterForm.jsp
+ */
 public class EncounterFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
@@ -77,6 +80,9 @@ public class EncounterFormController extends SimpleFormController {
         binder.registerCustomEditor(Form.class, new FormEditor());
 	}
 
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
 		
 		Encounter encounter = (Encounter)obj;
@@ -165,7 +171,6 @@ public class EncounterFormController extends SimpleFormController {
 			String encounterId = request.getParameter("encounterId");
 	    	if (encounterId != null) {
 	    		encounter = es.getEncounter(Integer.valueOf(encounterId));
-	    		//encounter.getObs();
 	    	}
 		}
 		
@@ -175,223 +180,81 @@ public class EncounterFormController extends SimpleFormController {
         return encounter;
     }
 
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors error) throws Exception {
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors error) throws Exception {
 		
 		Encounter encounter = (Encounter)obj;
 		
+		// the generic returned key-value pair mapping
 		Map<String, Object> map = new HashMap<String, Object>();
+		
+		// obsIds of obs that were edited
 		List<Integer> editedObs = new Vector<Integer>();
 
-		// The map returned to the form
-		Map<Integer, FormField> obsMap = new HashMap<Integer, FormField>();
-		// Used for sorting
-		Map<Obs, FormField> obsMapTemp = new HashMap<Obs, FormField>();
+		// the map returned to the form
+		// This is a mapping between the formfield and the Obs/ObsGroup
+		// This mapping is sorted according to the comparator in FormField.java
+		SortedMap<FormField, Obs> obsMapToReturn = new TreeMap<FormField, Obs>();
 		
-		// temporary list to hold the sorted obs
-		List<FormField> formFields = new Vector<FormField>();
-		
-		// stores a map from obs group id to all obs in that group
-		Map<Integer, List<Obs>> obsGroups = new HashMap<Integer, List<Obs>>();
-		
-		// actual list of observations to loop over on display
-		List<Obs> observations = new Vector<Obs>();
-		
-		Form form = encounter.getForm();
+		// this maps the obs to form field objects for non top-level obs
+		// it is keyed on obs so that when looping over an exploded obsGroup
+		// the formfield can be fetched easily (in order to show the field numbers etc)
+		Map<Obs, FormField> otherFormFields = new HashMap<Obs, FormField>();
 		
 		if (Context.isAuthenticated()) {
 			EncounterService es = Context.getEncounterService();
 			FormService fs = Context.getFormService();
 			
+			// used to restrict the form field lookup
+			Form form = encounter.getForm();
+			
 			map.put("encounterTypes", es.getEncounterTypes());
 			map.put("forms", Context.getFormService().getForms());
 			// loop over the encounter's observations to find the edited obs
 			String reason = "";
-			if (encounter.getObs() != null && !encounter.getObs().isEmpty()) {
-				for (Obs o : encounter.getObs()) {
-					// only the voided obs have been edited
-					if (o.isVoided()){
-						// assumes format of: ".* (new obsId: \d*)"
-						reason = o.getVoidReason();
-						int start = reason.lastIndexOf(" ") + 1;
-						int end = reason.length() - 1;
-						try {
-							reason = reason.substring(start, end);
-							editedObs.add(Integer.valueOf(reason));
-						} catch (Exception e) {}
-					}
-					
-					FormField ff = fs.getFormField(form, o.getConcept());
-					if (ff == null) ff = new FormField();
-					FormField parent = ff.getParent();
-					
-					Integer groupId = o.getObsGroupId();
-					
-					if (groupId == null && parent != null) {
-						// if the obs wasn't marked as a group but the parent concept in the form is a set, treat as a grouped obs 
-						Concept fieldConcept = null;
-						if ((fieldConcept = parent.getField().getConcept()) != null && fieldConcept.isSet()) {
-							groupId = o.getObsId();
-							o.setObsGroupId(groupId);
-						}
-					}
-					
-					if (groupId != null) {
-						
-						if (!obsGroups.containsKey(groupId)) {
-							obsGroups.put(groupId, new Vector<Obs>());
-							
-							// if this is the first in the group, add the parent FormField as its FormField 
-							if (parent == null)
-								log.error("Parent should not be null for obs with a group id obs id: " + o.getObsId() + " form field id: " + ff.getFormFieldId());
-							
-							formFields.add(parent);
-							obsMap.put(o.getObsId(), parent);
-							obsMapTemp.put(o, parent);
-						}
-						
-						obsGroups.get(groupId).add(o);
-						
-					}
-					else {
-						// populate the obs map so we can 
-						//  1) sort the obs according to FormField
-						//  2) look up the formField by the obs object
-						formFields.add(ff);
-						obsMap.put(o.getObsId(), ff);
-						obsMapTemp.put(o, ff);
-					}
+			for (Obs o : encounter.getObsAtTopLevel(false)) {
+				// only the voided obs have been edited
+				if (o.isVoided()){
+					// assumes format of: ".* (new obsId: \d*)"
+					reason = o.getVoidReason();
+					int start = reason.lastIndexOf(" ") + 1;
+					int end = reason.length() - 1;
+					try {
+						reason = reason.substring(start, end);
+						editedObs.add(Integer.valueOf(reason));
+					} catch (Exception e) {}
 				}
 				
-				try {
-					// sort the temp list according the the FormFields.compare() method
-					Collections.sort(formFields, new FormFieldNameComparator());
-				}
-				catch (Exception e) {
-					log.error("Error while sorting obs for encounter: " + encounter, e);
-				}
+				// get the formfield for this obs
+				FormField ff = fs.getFormField(form, o.getConcept(), obsMapToReturn.keySet(), false);
+				if (ff == null) ff = new FormField();
 				
-				// loop over the sorted formFields to add the corresponding
-				//  obs to the returned obs list
-				for (FormField f : formFields) {
-					Obs o = popObsFromMap(obsMapTemp, f);
-					if (o != null)
-						observations.add(o);
+				// we only put the top-level obs in the obsMap.  Those would
+				// be the obs that don't have an obs grouper 
+				if (o.getObsGroup() == null) {
+					// populate the obs map with this formfield and obs
+					obsMapToReturn.put(ff, o);
+				}
+				else {
+					// this is not a top-level obs, just put the formField
+					// in a separate list and be done with it
+					otherFormFields.put(o, ff);
 				}
 			}
 		}
 		
-		log.debug("setting sorted observations in page context (size: " + observations.size() + ")");
-		map.put("observations", observations);
+		if (log.isDebugEnabled())
+			log.debug("setting obsMap in page context (size: " + obsMapToReturn.size() + ")");
+		map.put("obsMap", obsMapToReturn);
 		
-		log.debug("setting obsMap in page context (size: " + obsMap.size() + ")");
-		map.put("obsMap", obsMap);
+		map.put("otherFormFields", otherFormFields);
 		
 		map.put("locale", Context.getLocale());
 		map.put("editedObs", editedObs);
-		map.put("obsGroups", obsGroups);
 		
 		return map;
-	}
-    
-	/**
-	 * Searches the given map for the given FormField
-	 * 
-	 * @param map
-	 * @param f
-	 * @return
-	 */
-	private Obs popObsFromMap(Map<Obs, FormField> map, FormField f) {
-		for (Map.Entry<Obs, FormField> entry : map.entrySet()) {
-			if (entry.getValue() == f) {
-				Obs o = entry.getKey();
-				map.remove(o);
-				return o;
-			}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Internal class used to sort FormField first according to the parent FormFieldId
-	 * then by FormField.compare()
-	 */
-	private class FormFieldDepthComparator implements Comparator<FormField> {
-		public int compare(FormField ff1, FormField ff2) {
-			if (ff1.getParent().equals(ff2.getParent())) {
-				return ff1.compareTo(ff2);
-			}
-			else if (ff1.getParent() == null && ff2.getParent() == null)
-				return 0;
-			else {
-				// search upwards until we have siblings
-				// this algorithm is O(depth)^2 -- if we end up having 
-				// deep trees, might want to change it 
-				
-				// get arrays of ancestors
-				List<FormField> ff1Parents = new Vector<FormField>();
-				while (ff1 != null) {
-					ff1Parents.add(ff1);
-					ff1 = ff1.getParent();
-				}
-				
-				List<FormField> ff2Parents = new Vector<FormField>();
-				while (ff2 != null) {
-					ff2Parents.add(ff2);
-					ff2 = ff2.getParent();
-				}
-				
-				for (int i = 1; i < ff1Parents.size(); i++) {
-					FormField ff1Parent = ff1Parents.get(i); 
-					for (int j = 1; j < ff2Parents.size(); j++) {
-						if (ff1Parent.equals(ff2Parents.get(j))) {
-							return ff1Parents.get(i-1).compareTo(ff2Parents.get(j-1));
-						}
-					}
-				}
-				
-				return ff1Parents.get(ff1Parents.size()-1).compareTo(ff2Parents.get(ff2Parents.size()-1)); 
-			}
-		}
-	}
-	
-	/**
-	 * Internal class used to sort FormField by number/part/name
-	 */
-	private class FormFieldNameComparator implements Comparator<FormField> {
-		public int compare(FormField ff1, FormField ff2) {
-			if (ff1.getFieldNumber() != null || ff2.getFieldNumber() != null) {
-				if (ff1.getFieldNumber() == null)
-					return -1;
-				if (ff2.getFieldNumber() == null)
-					return 1;
-				int c = ff1.getFieldNumber().compareTo(ff2.getFieldNumber());
-				if (c != 0)
-					return c;
-			}
-			if (ff1.getFieldPart() != null || ff2.getFieldPart() != null) {
-				if (ff1.getFieldPart() == null)
-					return -1;
-				if (ff2.getFieldPart() == null)
-					return 1;
-				int c = ff1.getFieldPart().compareTo(ff2.getFieldPart());
-				if (c != 0)
-					return c;
-			}
-			if (ff1.getField() != null && ff2.getField() != null) {
-				int c = ff1.getField().getName().compareTo(ff2.getField().getName());
-				if (c != 0)
-					return c;
-			}
-			if (ff1.getFormFieldId() == null && ff2.getFormFieldId() != null)
-				return -1;
-			if (ff1.getFormFieldId() != null && ff2.getFormFieldId() == null)
-				return 1;
-			if (ff1.getFormFieldId() == null && ff2.getFormFieldId() == null)
-				return 1;
-			
-			return ff1.getFormFieldId().compareTo(ff2.getFormFieldId());
-		}
 	}
 	
 }
