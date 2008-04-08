@@ -55,12 +55,12 @@ public class SyncPatientTest extends SyncBaseTest {
 			Date dateEnrolled = new Date(System.currentTimeMillis() - 100000);
 			Date dateCompleted = new Date(System.currentTimeMillis() - 10000);
 			Program hivProgram = null;
+			User creator = Context.getAuthenticatedUser();
 			public void runOnChild() {
 				Patient p = Context.getPatientService().getPatient(2);
 				numberEnrolledBefore = Context.getProgramWorkflowService().getPatientPrograms(p).size();
-				hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
-				//TODO: fix this later!! 
-				//PatientProgram pp = Context.getProgramWorkflowService().enrollPatientInProgram(p, hivProgram, dateEnrolled, dateCompleted);
+				hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM"); 
+				Context.getProgramWorkflowService().enrollPatientInProgram(p, hivProgram, dateEnrolled, dateCompleted, creator);
 			}
 			public void runOnParent() {
 				Patient p = Context.getPatientService().getPatient(2);
@@ -81,15 +81,22 @@ public class SyncPatientTest extends SyncBaseTest {
 		runSyncTest(new SyncTestHelper() {
 			int numberEnrolledBefore = 0;
 			Date dateEnrolled = new Date();
+			Date dateCompleted = null;
 			Program hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
 			ProgramWorkflow txStat = hivProgram.getWorkflowByName("TREATMENT STATUS");
 			ProgramWorkflowState curedState = txStat.getStateByName("PATIENT CURED");
 			public void runOnChild() {
 				Patient p = Context.getPatientService().getPatient(2);
-				numberEnrolledBefore = Context.getProgramWorkflowService().getPatientPrograms(p).size();
-				//TODO: fix this later: broke as a result of merge
-				//PatientProgram pp = Context.getProgramWorkflowService().enrollPatientInProgram(p, hivProgram, dateEnrolled, null);
-				//Context.getProgramWorkflowService().changeToState(pp, txStat, curedState, dateEnrolled);
+				numberEnrolledBefore = Context.getProgramWorkflowService().getPatientPrograms(p).size(); 
+				Context.getProgramWorkflowService().enrollPatientInProgram(p, hivProgram, dateEnrolled,dateCompleted, Context.getAuthenticatedUser());
+				PatientProgram pp = null;
+				for (PatientProgram ppLoop : Context.getProgramWorkflowService().getPatientPrograms(p)) {
+					if (ppLoop.getProgram().equals(hivProgram)) {
+						pp = ppLoop;
+						break;
+					}
+				}				
+				Context.getProgramWorkflowService().changeToState(pp, txStat, curedState, dateEnrolled);
 			}
 			public void runOnParent() {
 				Patient p = Context.getPatientService().getPatient(2);

@@ -87,6 +87,10 @@
 		<level value="WARN" />
 	</logger>
 
+	<logger name="org.openmrs.test">
+		<level value="INFO" />
+	</logger>
+
 	<logger name="org.openmrs.api.ConceptService">
 		<level value="INFO" />
 		<appender-ref ref="CONCEPT_FILE" />

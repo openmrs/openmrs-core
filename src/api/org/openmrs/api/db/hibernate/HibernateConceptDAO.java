@@ -166,8 +166,10 @@ public class HibernateConceptDAO implements
 			createConcept(concept);
 		else {
 			modifyCollections(concept);
-			sessionFactory.getCurrentSession().merge(concept);
-			Context.getAdministrationService().updateConceptWord(concept, isForced);
+			//sessionFactory.getCurrentSession().merge(concept);
+			//Context.getAdministrationService().updateConceptWord(concept, isForced);
+			Concept obj = (Concept)sessionFactory.getCurrentSession().merge(concept);
+			Context.getAdministrationService().updateConceptWord(obj, isForced);
 		}
 	}
 	

@@ -65,29 +65,28 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 
 		log.info("\n************************************* Deleting Data *************************************");
 		deleteAllData();
-
-		
 		executeDataSet("org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml");
 		executeDataSet("org/openmrs/test/synchronization/engine/include/SyncRemoteChildServer.xml");
-		RemoteServer origin = Context.getSynchronizationService().getRemoteServer(1);
 
-		log.info("\n************************************* Processing Sync Record(s) *************************************");
-
+		log.info("\n************************************* Sync Record(s) to Process *************************************");
         FilePackage pkg = new FilePackage();
         Record record = pkg.createRecordForWrite("SyncTest");
         Item top = record.getRootItem();
-		
 		for (SyncRecord syncRecord : syncRecords) {			
-			Context.getSynchronizationIngestService().processSyncRecord(syncRecord, origin);
             ((IItem) syncRecord).save(record, top);
 		}
-
         try {
             log.info("Sync record:\n" + record.toString());
         } catch (Exception e) {
             e.printStackTrace(System.out);
             fail("Serialization failed with an exception: " + e.getMessage());
         }		
+
+		log.info("\n************************************* Processing Sync Record(s) *************************************");
+		RemoteServer origin = Context.getSynchronizationService().getRemoteServer(1);
+		for (SyncRecord syncRecord : syncRecords) {			
+			Context.getSynchronizationIngestService().processSyncRecord(syncRecord, origin);
+		}
 		
         log.info("\n************************************* Running on Parent *************************************");
 		testMethods.runOnParent();

@@ -154,7 +154,8 @@ public class ConceptServiceImpl implements ConceptService {
 		String authUserId = Context.getAuthenticatedUser().getUserId()
 				.toString();
 
-		log.info(authUserId + "|" + concept.getConceptId().toString());
+		if (log.isInfoEnabled())
+			log.info(authUserId + "|" + (concept.getConceptId() == null ? "ConceptId is null" : concept.getConceptId().toString()));
 
 		getConceptDAO().updateConcept(concept, isForced);
 	}
