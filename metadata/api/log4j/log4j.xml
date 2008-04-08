@@ -146,6 +146,18 @@
 		<appender-ref ref="SYNCHRONIZATION_FILE"/>
 	</logger>
 	
+	<logger name="org.openmrs.web.controller.patient.PatientFormController">
+		<level value="DEBUG" />
+	</logger>
+	
+	<logger name="org.openmrs.api.impl.PatientServiceImpl">
+		<level value="DEBUG" />
+	</logger>
+	
+	<logger name="org.openmrs.api.db.hibernate.HibernatePatientDAO">
+		<level value="DEBUG" />
+	</logger>
+	
 	<root>
 		<level value="WARN" />
 		<appender-ref ref="CONSOLE" />

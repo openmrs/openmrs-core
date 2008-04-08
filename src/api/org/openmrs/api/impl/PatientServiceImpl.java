@@ -134,7 +134,17 @@ public class PatientServiceImpl implements PatientService {
 		
 		setCollectionProperties(patient);
 		
+		if(log.isDebugEnabled()){
+			for(PatientIdentifier ident: patient.getIdentifiers())
+				log.debug("before check patient ident, identifier is " + ident.getIdentifier());
+		}
+		
 		checkPatientIdentifiers(patient);
+		
+		if(log.isDebugEnabled()){
+			for(PatientIdentifier ident: patient.getIdentifiers())
+				log.debug("after check patient ident, identifier is " + ident.getIdentifier());
+		}
 		
 		return getPatientDAO().updatePatient(patient);
 	}

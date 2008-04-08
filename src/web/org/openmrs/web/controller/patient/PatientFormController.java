@@ -107,6 +107,8 @@ public class PatientFormController extends PersonFormController {
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
 	
+		log.debug("Processing form submission.");
+		
 		Patient patient = (Patient)object;
 		
 		if (Context.isAuthenticated()) {
@@ -118,13 +120,20 @@ public class PatientFormController extends PersonFormController {
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 			
+			log.debug("Patient form action: " + action);
+			
 			if (!action.equals(msa.getMessage("Patient.delete"))) {
 			
 				// Patient Identifiers 
 					objs = patient.getIdentifiers().toArray();
+					
 					for (int i = 0; i < objs.length; i++ ) {
-						if (request.getParameter("identifiers[" + i + "].identifier") == null)
+						
+						log.debug("Old patient identifier: " + ((PatientIdentifier)objs[i]).getIdentifier());
+						
+						if (request.getParameter("identifiers[" + i + "].identifier") == null){
 							patient.removeIdentifier((PatientIdentifier)objs[i]);
+						}
 					}
 					
 					String[] ids = request.getParameterValues("identifier");
@@ -135,6 +144,7 @@ public class PatientFormController extends PersonFormController {
 					if (ids != null) {
 						for (int i = 0; i < ids.length; i++) {
 							String id = ids[i].trim();
+							log.debug("New patient identifier: " + id);
 							if (!id.equals("") && !idTypes.equals("")) { //skips invalid and blank identifiers/identifierTypes
 								PatientIdentifier pi = new PatientIdentifier();
 								pi.setIdentifier(id);
@@ -143,6 +153,7 @@ public class PatientFormController extends PersonFormController {
 								if (idPrefStatus != null && idPrefStatus.length > i)
 									pi.setPreferred(new Boolean(idPrefStatus[i]));
 								patient.addIdentifier(pi);
+								log.debug("New patient identifier added: " + id);
 							}
 						}
 					}
@@ -334,6 +345,8 @@ public class PatientFormController extends PersonFormController {
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
+		log.debug("Got to onSubmit.");
+		
 		HttpSession httpSession = request.getSession();
 		
 		Patient patient = (Patient)obj;
@@ -343,7 +356,7 @@ public class PatientFormController extends PersonFormController {
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 			PatientService ps = Context.getPatientService();
-						
+			
 			if (action.equals(msa.getMessage("Patient.delete"))) {
 				try {
 					ps.deletePatient(patient);
@@ -352,107 +365,147 @@ public class PatientFormController extends PersonFormController {
 				}
 				catch (APIException e) {
 					log.error(e);
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.cannot.delete");
-					return new ModelAndView(new RedirectView(getSuccessView() + "?patientId=" + patient.getPatientId().toString()));
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+					                         "Patient.cannot.delete");
+					return new ModelAndView(new RedirectView(getSuccessView()
+					        + "?patientId=" + patient.getPatientId().toString()));
 				}
-			}
-			else {
-				//boolean isNew = (patient.getPatientId() == null);
+			} else {
+				// boolean isNew = (patient.getPatientId() == null);
 				boolean isError = false;
-				
+
 				try {
-					Context.getPatientService().updatePatient(patient);	
-				} catch ( InvalidIdentifierFormatException iife ) {
+					Context.getPatientService().updatePatient(patient);
+					if(log.isDebugEnabled()){
+						for(PatientIdentifier ident : patient.getIdentifiers())
+							log.debug("updating patient with identifier: " + ident.getIdentifier());
+					}
+					
+				} catch (InvalidIdentifierFormatException iife) {
 					log.error(iife);
 					patient.removeIdentifier(iife.getPatientIdentifier());
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+					                         "PatientIdentifier.error.formatInvalid");
 					isError = true;
-				} catch ( InvalidCheckDigitException icde ) {
+				} catch (InvalidCheckDigitException icde) {
 					log.error(icde);
 					patient.removeIdentifier(icde.getPatientIdentifier());
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+					                         "PatientIdentifier.error.checkDigit");
 					isError = true;
-				} catch ( IdentifierNotUniqueException inue ) {
+				} catch (IdentifierNotUniqueException inue) {
 					log.error(inue);
 					patient.removeIdentifier(inue.getPatientIdentifier());
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+					                         "PatientIdentifier.error.notUnique");
 					isError = true;
-				} catch ( DuplicateIdentifierException die ) {
+				} catch (DuplicateIdentifierException die) {
 					log.error(die);
 					patient.removeIdentifier(die.getPatientIdentifier());
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+					                         "PatientIdentifier.error.duplicate");
 					isError = true;
-				} catch ( InsufficientIdentifiersException iie ) {
+				} catch (InsufficientIdentifiersException iie) {
 					log.error(iie);
 					patient.removeIdentifier(iie.getPatientIdentifier());
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.insufficientIdentifiers");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+					                         "PatientIdentifier.error.insufficientIdentifiers");
 					isError = true;
-				} catch ( PatientIdentifierException pie ) {
+				} catch (PatientIdentifierException pie) {
 					log.error(pie);
 					patient.removeIdentifier(pie.getPatientIdentifier());
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+					                         "PatientIdentifier.error.general");
 					isError = true;
 				}
-				
-				if ( patient.getDead() && !isError ) {
+
+				if (patient.getDead() && !isError) {
 					log.debug("Patient is dead, so let's make sure there's an Obs for it");
-					// need to make sure there is an Obs that represents the patient's cause of death, if applicable
+					// need to make sure there is an Obs that represents the
+					// patient's cause of death, if applicable
 
-					String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-					Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
+					String codProp = Context.getAdministrationService()
+					                        .getGlobalProperty("concept.causeOfDeath");
+					Concept causeOfDeath = Context.getConceptService()
+					                              .getConceptByIdOrName(codProp);
 
-					if ( causeOfDeath != null ) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath, false);
-						if ( obssDeath != null ) {
-							if ( obssDeath.size() > 1 ) {
-								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+					if (causeOfDeath != null) {
+						Set<Obs> obssDeath = Context.getObsService()
+						                            .getObservations(patient,
+						                                             causeOfDeath,
+						                                             false);
+						if (obssDeath != null) {
+							if (obssDeath.size() > 1) {
+								log.error("Multiple causes of death ("
+								        + obssDeath.size()
+								        + ")?  Shouldn't be...");
 							} else {
 								Obs obsDeath = null;
-								if ( obssDeath.size() == 1 ) {
-									// already has a cause of death - let's edit it.
+								if (obssDeath.size() == 1) {
+									// already has a cause of death - let's edit
+									// it.
 									log.debug("Already has a cause of death, so changing it");
-									
+
 									obsDeath = obssDeath.iterator().next();
-									
+
 								} else {
-									// no cause of death obs yet, so let's make one
+									// no cause of death obs yet, so let's make
+									// one
 									log.debug("No cause of death yet, let's create one.");
-									
+
 									obsDeath = new Obs();
 									obsDeath.setPerson(patient);
 									obsDeath.setConcept(causeOfDeath);
-									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
-									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
-									// TODO person healthcenter //if ( loc == null ) loc = patient.getHealthCenter();
-									if ( loc != null ) obsDeath.setLocation(loc);
-									else log.error("Could not find a suitable location for which to create this new Obs");
+									Location loc = Context.getEncounterService()
+									                      .getLocationByName("Unknown Location");
+									if (loc == null)
+										loc = Context.getEncounterService()
+										             .getLocation(new Integer(1));
+									// TODO person healthcenter //if ( loc ==
+									// null ) loc = patient.getHealthCenter();
+									if (loc != null)
+										obsDeath.setLocation(loc);
+									else
+										log.error("Could not find a suitable location for which to create this new Obs");
 								}
-								
-								// put the right concept and (maybe) text in this obs
+
+								// put the right concept and (maybe) text in
+								// this obs
 								Concept currCause = patient.getCauseOfDeath();
-								if ( currCause == null ) {
+								if (currCause == null) {
 									// set to NONE
 									log.debug("Current cause is null, attempting to set to NONE");
-									String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
-									currCause = Context.getConceptService().getConceptByIdOrName(noneConcept);
+									String noneConcept = Context.getAdministrationService()
+									                            .getGlobalProperty("concept.none");
+									currCause = Context.getConceptService()
+									                   .getConceptByIdOrName(noneConcept);
 								}
-								
-								if ( currCause != null ) {
+
+								if (currCause != null) {
 									log.debug("Current cause is not null, setting to value_coded");
 									obsDeath.setValueCoded(currCause);
-									
+
 									Date dateDeath = patient.getDeathDate();
-									if ( dateDeath == null ) dateDeath = new Date();
+									if (dateDeath == null)
+										dateDeath = new Date();
 									obsDeath.setObsDatetime(dateDeath);
 
-									// check if this is an "other" concept - if so, then we need to add value_text
-									String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
-									Concept conceptOther = Context.getConceptService().getConceptByIdOrName(otherConcept);
-									if ( conceptOther != null ) {
-										if ( conceptOther.equals(currCause) ) {
-											// seems like this is an other concept - let's try to get the "other" field info
-											String otherInfo = ServletRequestUtils.getStringParameter(request, "causeOfDeath_other", "");
-											log.debug("Setting value_text as " + otherInfo);
+									// check if this is an "other" concept - if
+									// so, then we need to add value_text
+									String otherConcept = Context.getAdministrationService()
+									                             .getGlobalProperty("concept.otherNonCoded");
+									Concept conceptOther = Context.getConceptService()
+									                              .getConceptByIdOrName(otherConcept);
+									if (conceptOther != null) {
+										if (conceptOther.equals(currCause)) {
+											// seems like this is an other
+											// concept - let's try to get the
+											// "other" field info
+											String otherInfo = ServletRequestUtils.getStringParameter(request,
+											                                                          "causeOfDeath_other",
+											                                                          "");
+											log.debug("Setting value_text as "
+											        + otherInfo);
 											obsDeath.setValueText(otherInfo);
 										} else {
 											log.debug("New concept is NOT the OTHER concept, so setting to blank");
@@ -462,7 +515,7 @@ public class PatientFormController extends PersonFormController {
 										log.debug("Don't seem to know about an OTHER concept, so deleting value_text");
 										obsDeath.setValueText("");
 									}
-									
+
 									Context.getObsService().updateObs(obsDeath);
 								} else {
 									log.debug("Current cause is still null - aborting mission");
@@ -472,14 +525,15 @@ public class PatientFormController extends PersonFormController {
 					} else {
 						log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
 					}
-					
+
 				}
-								
-				if ( !isError ) {
+
+				if (!isError) {
 					String view = getSuccessView();
-					
-					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
-					
+
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
+					                         "Patient.saved");
+
 					view = view + "?patientId=" + patient.getPatientId();
 					return new ModelAndView(new RedirectView(view));
 				} else {

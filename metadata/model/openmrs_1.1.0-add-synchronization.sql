@@ -219,7 +219,7 @@ CREATE PROCEDURE sync_setup_procedure()
 	ALTER TABLE `concept_word` DROP PRIMARY KEY, ADD PRIMARY KEY (`concept_word_id`);
 	
 	# -------------------------------------------------------------------------------
-	# Add user_guid column to users table to use with LoginCredential sync'ing
+	# Add user_guid column to users table to use with LoginCredential syncing
 	# -------------------------------------------------------------------------------
 	ALTER TABLE `users` ADD COLUMN `user_guid` char(36) DEFAULT NULL;
 
@@ -231,6 +231,13 @@ CREATE PROCEDURE sync_setup_procedure()
 		('synchronization.enable_compression', 'true', 'Whether or not OpenMRS should compress data that it sends (recommend that you set this to true).');	
 	END IF;
 	
+	#-----------------------------------------------------------------------------
+	# Adding a primary key for the patient_identifier table
+	#-----------------------------------------------------------------------------
+	ALTER TABLE `patient_identifier` ADD COLUMN `patient_identifier_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT FIRST;
+	ALTER TABLE `patient_identifier` ADD KEY `identifies_patient` (`patient_id`);
+	ALTER TABLE `patient_identifier` DROP PRIMARY KEY, ADD PRIMARY KEY (`patient_identifier_id`);
+
  END;
 //
 delimiter ;

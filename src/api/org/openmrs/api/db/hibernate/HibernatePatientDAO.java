@@ -107,6 +107,11 @@ public class HibernatePatientDAO implements PatientDAO {
 				insertPatientStub(patient);
 			}
 			
+			if(log.isDebugEnabled()){
+				for(PatientIdentifier ident: patient.getIdentifiers())
+					log.debug("before merge, identifier is " + ident.getIdentifier());
+			}
+			
 			patient = (Patient)sessionFactory.getCurrentSession().merge(patient);
 			//sessionFactory.getCurrentSession().update("org.openmrs.Person", (Object)patient);
 			return patient;
@@ -291,8 +296,11 @@ public class HibernatePatientDAO implements PatientDAO {
 
 	public void updatePatientIdentifierSync(PatientIdentifier pi) throws DAOException {
 		log.debug("type: " + pi.getIdentifierType().getName());
-
+		log.debug("We are about to update the patient identifier; it's guid is " + pi.getGuid());
+		
 		sessionFactory.getCurrentSession().merge(pi);
+		
+		log.debug("We updated the patient identifier; it's guid is now " + pi.getGuid());
 	}
 
 	/**

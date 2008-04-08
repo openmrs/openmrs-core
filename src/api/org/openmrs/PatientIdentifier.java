@@ -41,6 +41,7 @@ public class PatientIdentifier implements java.io.Serializable, Synchronizable, 
 
 	// Fields
 
+	private Integer patientIdentifierId;
 	private Patient patient;
 	private String identifier;
 	private PatientIdentifierType identifierType;
@@ -367,4 +368,18 @@ public class PatientIdentifier implements java.io.Serializable, Synchronizable, 
 	    
 	    return retValue;
     }
+
+    /**
+	 * @return the patientIdentifierId
+	 */
+	public Integer getPatientIdentifierId() {
+		return patientIdentifierId;
+	}
+
+	/**
+	 * @param patientIdentifierId the patientIdentifierId to set
+	 */
+	public void setPatientIdentifierId(Integer patientIdentifierId) {
+		this.patientIdentifierId = patientIdentifierId;
+	}
 }
