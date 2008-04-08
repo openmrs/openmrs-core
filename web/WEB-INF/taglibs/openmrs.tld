@@ -988,7 +988,7 @@
 	</attribute>
 	<attribute>
 		<name>showLabelIfNoExtensions</name>
-		<description>Whether to show the popup menu if no extensions attach to it. Defaults to true</description>
+		<!-- Whether to show the popup menu if no extensions attach to it. Defaults to true -->
 		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
@@ -999,13 +999,13 @@
 	</attribute>
 	<attribute>
 		<name>parameters</name>
-		<description>
+		<!--
 			This should be of the format name1=value1|name2=value2|...
 			Names must be plain strings.
 			Values may either be plain strings or they may be the special form:
 				javascript:someFunctionCall()
-			someFunctionCall() will be called when the user chooses an item out of the menu. If it returns a string, that value will be substituted in as a form variable. If it returns null, then form submission will be cancelled.		
-		</description>
+			someFunctionCall() will be called when the user chooses an item out of the menu. If it returns a string, that value will be substituted in as a form variable. If it returns null, then form submission will be cancelled.
+		 -->		
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
