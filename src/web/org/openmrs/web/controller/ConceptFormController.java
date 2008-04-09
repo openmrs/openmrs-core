@@ -479,7 +479,11 @@ public class ConceptFormController extends SimpleFormController {
 	
 	private ConceptNumeric getConceptNumeric(Concept concept, HttpServletRequest request) {
 		
-		ConceptNumeric cn = new ConceptNumeric(concept);
+		ConceptNumeric cn = null;
+		if (concept instanceof ConceptNumeric)
+			cn = (ConceptNumeric)concept;
+		else
+			cn = new ConceptNumeric(concept);
 		
 		String d = null;
 		
