@@ -30,10 +30,10 @@ import org.openmrs.Obs;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
-import org.openmrs.propertyeditor.LocationEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -84,6 +84,17 @@ public class ObsFormController extends SimpleFormController {
     	
 		return super.processFormSubmission(request, reponse, obs, errors);
 	}
+	
+	/**
+     * @see org.springframework.web.servlet.mvc.BaseCommandController#onBind(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.BindException)
+     */
+    @Override
+    protected void onBind(HttpServletRequest request, Object command, BindException errors) throws Exception {
+    	if (Context.isAuthenticated()) {
+		    Obs obs = (Obs) command;
+		    setObjects(obs, request);
+    	}
+    }
 
 	/** 
 	 * 
@@ -99,7 +110,6 @@ public class ObsFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			Obs obs = (Obs)obj;
-			obs = setObjects(obs, request);
 			ObsService os = Context.getObsService();
 			if (obs.getObsId() == null)
 				os.createObs(obs);

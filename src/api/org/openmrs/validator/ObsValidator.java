@@ -70,7 +70,7 @@ public class ObsValidator implements Validator {
 			errors.rejectValue("person", "error.null");
 		Concept c = obs.getConcept();
 		if (c == null) {
-			errors.reject("concept");
+			errors.rejectValue("concept", "error.null");
 		} else {
 			ConceptDatatype dt = c.getDatatype();
 			if (dt.isBoolean() && obs.getValueAsBoolean() == null) {
