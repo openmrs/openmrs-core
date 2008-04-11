@@ -57,7 +57,6 @@ public abstract class AbstractTask implements Task {
 	 * @see org.openmrs.scheduler.Task#initialize(org.openmrs.scheduler.TaskConfig)
 	 */
 	public void initialize(final TaskDefinition definition) { 
-		log.info("Initializing task " + definition.getName() + " ...");		
 		this.taskDefinition = definition;
 	}
 	
@@ -65,7 +64,6 @@ public abstract class AbstractTask implements Task {
 	 * @see org.openmrs.scheduler.Task#shutdown()
 	 */
 	public void shutdown() { 		
-    	log.info("Shutting down task " + taskDefinition.getName() + " ...");
     	taskDefinition = null;
 	}
 
@@ -75,7 +73,6 @@ public abstract class AbstractTask implements Task {
 	 * Callback method that tells the task that it has started executing.
 	 */
 	public void startExecuting() { 
-    	log.info("Starting execution for task " + taskDefinition.getName() + " ...");
 		this.isExecuting = true;
 	}
 	
@@ -84,7 +81,6 @@ public abstract class AbstractTask implements Task {
 	 * Callback method that tells the task that it has stopped executing.
 	 */
 	public void stopExecuting() { 
-    	log.info("Stopping execution for task " + taskDefinition.getName() + " ...");
 		this.isExecuting = false;
 	}
 		
@@ -93,7 +89,6 @@ public abstract class AbstractTask implements Task {
 	 * Authenticate the context so the task can call service layer.
 	 */
 	protected void authenticate() {
-		log.info("Authenticating for task " + taskDefinition.getName() + " ...");
 		try {
 			AdministrationService adminService = Context.getAdministrationService();
 			Context.authenticate(adminService.getGlobalProperty("scheduler.username"),
