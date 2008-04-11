@@ -1705,7 +1705,7 @@ CREATE TABLE `scheduler_task_config` (
   `name` varchar(255) NOT NULL,
   `description` varchar(1024) default NULL,
   `schedulable_class` text,
-  `start_time` datetime NOT NULL,
+  `start_time` datetime default NULL,
   `start_time_pattern` varchar(50) default NULL,
   `repeat_interval` int(11) NOT NULL default '0',
   `start_on_startup` int(1) NOT NULL default '0',

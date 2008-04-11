@@ -181,7 +181,7 @@
 		<property name="cohortDAO"><ref bean="cohortDAO"/></property>
 	</bean>
 	
-	<bean id="schedulerServiceTarget" class="org.openmrs.scheduler.timer.TimerSchedulerService">
+	<bean id="schedulerServiceTarget" class="org.openmrs.scheduler.timer.TimerSchedulerServiceImpl">
 		<property name="schedulerDAO"><ref bean="schedulerDAO"/></property>	
 	</bean>
 	<bean id="alertServiceTarget" class="org.openmrs.notification.impl.AlertServiceImpl">

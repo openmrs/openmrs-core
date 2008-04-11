@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.openmrs.api.db.DAOException;
 import org.openmrs.scheduler.Schedule;
-import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.scheduler.TaskDefinition;
 
 /**
  * Scheduler-related database methods.
@@ -33,7 +33,7 @@ public interface SchedulerDAO {
 	 * @param task to be created
 	 * @throws DAOException
 	 */
-	public void createTask(TaskConfig task) throws DAOException;
+	public void createTask(TaskDefinition taskDefinition) throws DAOException;
 
 	/**
 	 * Get task by internal identifier
@@ -42,7 +42,7 @@ public interface SchedulerDAO {
 	 * @return task with given internal identifier
 	 * @throws DAOException
 	 */
-	public TaskConfig getTask(Integer taskId) throws DAOException;
+	public TaskDefinition getTask(Integer taskId) throws DAOException;
 
 	/**
 	 * Update task 
@@ -50,7 +50,7 @@ public interface SchedulerDAO {
 	 * @param task to be updated
 	 * @throws DAOException
 	 */
-	public void updateTask(TaskConfig task) throws DAOException;
+	public void updateTask(TaskDefinition task) throws DAOException;
 
 	/**
 	 * Find all tasks with a given identifier
@@ -59,7 +59,7 @@ public interface SchedulerDAO {
 	 * @return set of tasks matching identifier
 	 * @throws DAOException
 	 */
-	public List<TaskConfig> getTasks() throws DAOException;
+	public List<TaskDefinition> getTasks() throws DAOException;
 	
 	/**
 	 * Delete task from database. 
@@ -67,7 +67,7 @@ public interface SchedulerDAO {
 	 * @param task task to be deleted
 	 * @throws DAOException
 	 */
-	public void deleteTask(TaskConfig task) throws DAOException;
+	public void deleteTask(TaskDefinition task) throws DAOException;
 
 	/**
 	 * Delete task from database. 

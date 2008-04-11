@@ -32,6 +32,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
+import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
 
 /**
@@ -223,17 +224,18 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		try {
 			SchedulerService service = null;
 			try {
-				Context.getSchedulerService();
+				service = Context.getSchedulerService();
 			}
 			catch (APIException e2) {
 				// if there isn't a scheduler service yet, ignore error
 				log.warn("Unable to get scheduler service", e2);
 			}
-			if (service != null)
-				service.restartTasks();
+			if (service != null) {
+				service.rescheduleAllTasks();
+			}
 		}
-		catch (Exception e) {
-			log.error("Unable to restart scheduler tasks", e);
+		catch (SchedulerException e) {
+			log.error("Failed to restart scheduler tasks", e);
 		}
 	}
 	

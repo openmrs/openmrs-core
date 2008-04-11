@@ -253,6 +253,33 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.2.02');
 
+#----------------------------------------
+# OpenMRS Datamodel version 1.2.03
+# Justin Miranda          April 11, 2008
+# Made scheduler task start time nullable 
+# (ticket #667).
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+	ALTER TABLE `scheduler_task_config` MODIFY COLUMN `start_time` DATETIME default NULL;
+	
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.2.03');
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

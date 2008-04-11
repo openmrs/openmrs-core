@@ -15,37 +15,46 @@ package org.openmrs.scheduler.tasks;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.scheduler.TaskDefinition;
 
 /**
  *  Implementation of the stateful task that sends an email.
  *
  */
-public class SendEmailTask extends AbstractTask { 
+public class OpenmrsTestTask extends AbstractTask { 
 
 	// Logger 
-	private Log log = LogFactory.getLog( SendEmailTask.class );
-
-
-	/** 
-	 *  Process the next form entry in the database and then remove the form entry from the database.
-	 *
-	 *
+	private Log log = LogFactory.getLog( OpenmrsTestTask.class );
+	
+	/**
+	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(org.openmrs.scheduler.TaskConfig)
+	 */
+	public void initialize(TaskDefinition config) { 
+		log.info("Initializing task ...");
+	} 
+	
+	/**
+	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
 	public void execute() {		
-		log.info("****************************** SEND EMAIL TASK:  Executing task ...");
+		log.info("Running task ...");
 		if (!Context.isAuthenticated()) { 
+			log.info("Authenticating ...");
 			authenticate();
 		}
 		
 	}
 
-	
+
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#shutdown()
 	 */
     public void shutdown() {
-    	log.info("****************************** SEND EMAIL TASK:  Shutting down task ...");
+    	log.info("Shutting down task ...");
+    	super.shutdown();
     }
 	
 	
