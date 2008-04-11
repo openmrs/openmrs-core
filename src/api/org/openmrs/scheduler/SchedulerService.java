@@ -21,71 +21,67 @@ import org.openmrs.util.OpenmrsMemento;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
-*  Defines methods required to schedule a task.  
-*/
+ *  Defines methods required to schedule a task.  
+ */
 @Transactional
 public interface SchedulerService { 
 
 	/**
-	 * Set the data access context.
+	 * Checks the status of a scheduled task.  
+	 * 
+	 * @param id
+	 * @return
 	 */
-	//public void setDaoContext(DAOContext daoContext);
+	@Authorized({"Manage Scheduler"})
+	public String getStatus(Integer id);
+	
 	
 	/**
-	 * Start all tasks that should be running
+	 * Start all tasks that are scheduled to run on startup.
 	 */
-	public void startup();
+	@Authorized({"Manage Scheduler"})
+	void startup();
 	
 	/**
-	 * Stop all tasks and clean up.
-	 *
+	 * Stop all tasks and clean up the scheduler instance.
 	 */
-	public void shutdown();
+	@Authorized({"Manage Scheduler"})
+	void shutdown();
 	
 	/**
-	 * Schedule a recurring task that occurs according to the given schedule (start time and interval).
-	 */
-	public void scheduleTask(Integer taskId) throws SchedulerException;
-
-	/**
-	 * Schedule a recurring task that occurs according to the given schedule (start time and interval).
-	 */
-	public void scheduleTask(TaskConfig task) throws SchedulerException;	
-
-	/**
 	 * Cancel a scheduled task.
 	 */
-	public void stopTask(Integer taskId) throws SchedulerException;
+	@Authorized({"Manage Scheduler"})
+	void shutdownTask(TaskDefinition task) throws SchedulerException;
 
 	/**
-	 * Cancel a scheduled task.
+	 * Start a scheduled task.
 	 */
-	public void stopTask(TaskConfig task) throws SchedulerException;
-
+	@Authorized({"Manage Scheduler"})
+	void scheduleTask(TaskDefinition task) throws SchedulerException;
+	
 	/**
-	 * Cancel a scheduled task.
+	 * Stop and start a scheduled task.
 	 */
-	public void startTask(Integer taskId) throws SchedulerException;
-
-	/**
-	 * Cancel a scheduled task.
-	 */
-	public void startTask(TaskConfig task) throws SchedulerException;
+	@Authorized({"Manage Scheduler"})
+	void rescheduleTask(TaskDefinition task) throws SchedulerException;
 	
 	/**
 	 * Loop over all currently started tasks and cycle them.
 	 * This should be done after the classloader has been changed
 	 * (e.g. during module start/stop)
 	 */
-	public void restartTasks() throws SchedulerException;
+	@Authorized({"Manage Scheduler"})
+	void rescheduleAllTasks() throws SchedulerException;
 	
 	/**
 	 * Get scheduled tasks.
 	 *  
 	 * @return 	all scheduled tasks
 	 */
+	@Authorized({"Manage Scheduler"})
 	@Transactional(readOnly=true)
-	public Collection<TaskConfig> getScheduledTasks();
+	Collection<TaskDefinition> getScheduledTasks();
 
 	/**
 	 * Get the list of tasks that are available to be scheduled.  
@@ -93,17 +89,9 @@ public interface SchedulerService {
 	 * 
 	 * @return	all available tasks
 	 */
-	@Transactional(readOnly=true)
-	public Collection<TaskConfig> getAvailableTasks();
-
-	/**
-	 * Get scheduled tasks.
-	 *  
-	 * @return	tasks 	the tasks that are be scheduled
-	 */
 	@Authorized({"Manage Scheduler"})
 	@Transactional(readOnly=true)
-	public Collection<TaskConfig> getTasks();
+	Collection<TaskDefinition> getRegisteredTasks();
 
 	/**
 	 * Get the task with the given identifier.
@@ -112,7 +100,7 @@ public interface SchedulerService {
 	 */
 	@Authorized({"Manage Scheduler"})
 	@Transactional(readOnly=true)
-	public TaskConfig getTask(Integer id);
+	TaskDefinition getTask(Integer id);
 
 	/**
 	 * Delete the task with the given identifier.
@@ -120,15 +108,7 @@ public interface SchedulerService {
 	 * @param	id 		the identifier of the task
 	 */
 	@Authorized({"Manage Scheduler"})
-	public void deleteTask(Integer id);
-
-	/**
-	 * Update the given task.
-	 *  
-	 * @param	task 		the task to be updated
-	 */
-	@Authorized({"Manage Scheduler"})
-	public void updateTask(TaskConfig task);
+	void deleteTask(Integer id);
 
 	/**
 	 * Create the given task
@@ -136,25 +116,25 @@ public interface SchedulerService {
 	 * @param	task 		the task to be created
 	 */
 	@Authorized({"Manage Scheduler"})
-	public void createTask(TaskConfig task);
-
+	void saveTask(TaskDefinition task);
+	
 	/**
-	 * Return SchedularConstants
+	 * Return SchedulerConstants
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	public SortedMap<String,String> getSystemVariables();
+	SortedMap<String,String> getSystemVariables();	
 	
 	/**
 	 * Save the state of the scheduler service to Memento
 	 * @return
 	 */
-	public OpenmrsMemento saveToMemento();
+	OpenmrsMemento saveToMemento();
 	
 	/**
 	 * Restore the scheduler service to state defined by Memento
 	 * @param memento
 	 * @return
 	 */
-	public void restoreFromMemento(OpenmrsMemento memento);
+	void restoreFromMemento(OpenmrsMemento memento);
 }

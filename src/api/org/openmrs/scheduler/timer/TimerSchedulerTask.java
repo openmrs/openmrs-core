@@ -14,14 +14,24 @@
 package org.openmrs.scheduler.timer;
 
 import java.util.TimerTask;
+import org.openmrs.scheduler.Task;
 
-import org.openmrs.scheduler.Schedulable;
+public class TimerSchedulerTask extends TimerTask { 
+		/**	 *  The task that will be executed by the JDK timer. 	 */	private Task task; 	/**	 *  Public constructor	 */	public TimerSchedulerTask(Task task) { 
+		this.task = task;	}
 
-public class TimerTaskWrapper extends TimerTask { 
-		/**	 *  The task that will be executed by the JDK timer. 	 */	private Schedulable schedulable; 	/**	 *  Public constructor	 */	public TimerTaskWrapper(Schedulable schedulable) { 
-		this.schedulable = schedulable;	}
+	/**	 * Executes the action to be performed by this timer task.  
+	 *  
+     * @see java.util.TimerTask#run()
+	 */	public void run() { 
+		task.execute();	}
 
-	/**	 *  The action to be performed by this timer task.  Required by JDK Timer Task interface.	 */	public void run() { 
-		schedulable.run();	}
+	/**
+	 * Shutdown the timer task and invoke the task's shutdown() callback method.
+	 */
+	public void shutdown() { 
+		super.cancel();
+		task.shutdown();
+	}
 
 }

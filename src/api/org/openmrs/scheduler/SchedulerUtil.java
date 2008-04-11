@@ -13,11 +13,14 @@
  */
 package org.openmrs.scheduler;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 
 public class SchedulerUtil {
 
@@ -25,25 +28,27 @@ public class SchedulerUtil {
 	
 	/**
 	 * Start the scheduler given the following start up properties.
+	 * 
 	 * @param p  properties used to start the service
 	 */
-	public static void startup(Properties p) {
-
+	public static void startup(Properties p) {		
 		// Override the Scheduler constants if specified by the user
 
 		String val = p.getProperty("scheduler.username", null);
 		if (val != null) {
 			SchedulerConstants.SCHEDULER_USERNAME = val;
 			log.warn("Deprecated runtime property: scheduler.username. Value set in global_property in database now.");
-		}
+		}		
 
 		val = p.getProperty("scheduler.password", null);
 		if (val != null) {
 			SchedulerConstants.SCHEDULER_PASSWORD = val;
 			log.warn("Deprecated runtime property: scheduler.username. Value set in global_property in database now.");
 		}
-
+		
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
 		Context.getSchedulerService().startup();
+		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
 	}
 	
 	/**
@@ -60,10 +65,83 @@ public class SchedulerUtil {
 			// pass
 		}
 		
+		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
 		// doesn't attempt shutdown if there was an error getting the scheduler service
-		if (service != null)
+		if (service != null) { 
 			service.shutdown();
+		}
+		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
 		
 	}
+	
+	
+	/**
+	 * Gets the next execution time based on the initial start time (possibly years ago, depending on when
+	 * the task was configured in OpenMRS) and the repeat interval of execution.
+	 * 
+	 * We need to calculate the "next execution time" because the scheduled time is most likely in the past
+	 * and the JDK timer will run the task X number of times from the start time until now in order 
+	 * to catch up.  The assumption is that this is not the desired behavior -- we just want to execute
+	 * the task on its next execution time.  
+	 * 
+	 * For instance, say we had a scheduled task that ran every 24 hours at midnight.  In the database, the 
+	 * task would likely have a past start date (i.e. 04/01/2006 12:00am).  If we scheduled the task using
+	 * the JDK Timer scheduleAtFixedRate(TimerTask task, Date startDate, int interval) method and passed in
+	 * the start date above, the JDK Timer would execute this task once for every day between the start date
+	 * and today, which would lead to hundreds of unnecessary (and likely expensive) executions.
+	 * 
+	 * @see java.util.Timer
+	 * 
+	 * @param taskDefinition	the task definition to be executed
+	 * @return	the next "future" execution time for the given task
+	 */
+	public static Date getNextExecution(TaskDefinition taskDefinition) { 
+		Calendar nextTime = Calendar.getInstance();
+
+		try { 
+			Date firstTime = taskDefinition.getStartTime();
+			
+			if (firstTime != null) { 
+
+				// Right now
+				Date currentTime = new Date();
+
+				// If the first time is actually in the future, then we use that date/time
+				if (firstTime.after(currentTime)) { 
+					return firstTime;
+				}
+				
+				// The time between successive runs (i.e. 24 hours)
+				long repeatInterval = taskDefinition.getRepeatInterval().longValue();
+								
+				// Calculate time between the first time the process was run and right now (i.e. 3 days, 15 hours)
+				long betweenTime = currentTime.getTime() - firstTime.getTime();
+				
+				// Calculate the last time the task was run   (i.e. 15 hours ago)
+				long lastTime = (betweenTime % (repeatInterval * 1000));
+				
+				// Calculate the time to add to the current time (i.e. 24 hours - 15 hours = 9 hours)
+				long additional = ((repeatInterval * 1000) - lastTime);
+												
+				nextTime.setTime(new Date(currentTime.getTime() + additional));
+
+				log.info("Start time: " + firstTime);
+				log.info("Curr time : " + currentTime);
+				log.info("Next time : " + nextTime.getTime());				
+			}
+
+
+		
+		} 
+		catch (Exception e) { 
+			log.error("Failed to get next execution time for " + taskDefinition.getName());
+		}
+			
+		return nextTime.getTime();		
+	}
+	
+	
+	
+	
 
 }

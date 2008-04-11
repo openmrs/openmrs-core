@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs.scheduler">
 
-	<class name="TaskConfig" table="scheduler_task_config">
+	<class name="TaskDefinition" table="scheduler_task_config">
 
 		<!-- Primary key -->
 		<id name="id" type="int" column="task_config_id" unsaved-value="0">
@@ -23,7 +23,7 @@
 				column="description" 
 				length="1024" />
 		
-		<property name="schedulableClass" 
+		<property name="taskClass" 
 				type="java.lang.String" 
 				column="schedulable_class" 
 				length="1024" />

@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.SchedulerService;
-import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -40,28 +40,28 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class SchedulerListController extends SimpleFormController {
-	
-	  /** 
-	   * Logger for this class and subclasses 
-	   */
-	  protected static final Log log = LogFactory.getLog(SchedulerListController.class);
 
-	  /**
-	   * Service context used to communicate with the services layer.
-	   * 
-	   * TODO  This is not used yet because we get the context from the session.
-	   */
-	  //private Context context;
-	  
-	  /**
-	   * Set the context.
-	   * 
-	   * @param context
-	   */
-	  //public void setContext(Context context) { 
-	  //	this.context = context;
-	  //}
-	  
+	/** 
+	 * Logger for this class and subclasses 
+	 */
+	protected static final Log log = LogFactory.getLog(SchedulerListController.class);
+
+	/**
+	 * Service context used to communicate with the services layer.
+	 * 
+	 * TODO  This is not used yet because we get the context from the session.
+	 */
+	//private Context context;
+
+	/**
+	 * Set the context.
+	 * 
+	 * @param context
+	 */
+	//public void setContext(Context context) { 
+	//	this.context = context;
+	//}
+
 	/**
 	 * 
 	 * Allows for Integers to be used as values in input tags.
@@ -82,7 +82,7 @@ public class SchedulerListController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		
+
 		HttpSession httpSession = request.getSession();
 		//
 		//Locale locale = request.getLocale();
@@ -93,27 +93,32 @@ public class SchedulerListController extends SimpleFormController {
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 
 		String[] taskList = request.getParameterValues("taskId");
-			
+
+		SchedulerService schedulerService = 
+			Context.getSchedulerService();
+		
 		if ( taskList != null ) { 
-			for (String task : taskList) {
+
+			for (String taskId : taskList) {
 
 				// Argument to pass to the success/error message
-				Object [] args = new Object[] { task };
+				Object [] args = new Object[] { taskId };
 
 				try {
-											
-					Integer taskId = Integer.valueOf(task);
-					
+
+					TaskDefinition task = 
+						schedulerService.getTask(Integer.valueOf(taskId));
+
 					if ( action.equals( msa.getMessage("Scheduler.taskList.delete") ) ) {
-						getSchedulerService().deleteTask(taskId);
+						schedulerService.deleteTask(Integer.valueOf(taskId));
 						success.append(msa.getMessage("Scheduler.taskList.deleted", args));
 					} 
 					else if ( action.equals( msa.getMessage("Scheduler.taskList.stop") ) ) {
-						getSchedulerService().stopTask(taskId);
+						schedulerService.shutdownTask(task);
 						success.append(msa.getMessage("Scheduler.taskList.stopped", args));
 					}
 					else if ( action.equals( msa.getMessage("Scheduler.taskList.start") ) ) {
-						getSchedulerService().startTask(taskId);						
+						schedulerService.scheduleTask(task);						
 						success.append(msa.getMessage("Scheduler.taskList.started", args));
 					}
 				}
@@ -123,16 +128,16 @@ public class SchedulerListController extends SimpleFormController {
 				}
 			}
 		}
-		
+
 		view = getSuccessView();
-		
+
 		if (!success.toString().equals("")) { 
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 		}
 		if (!error.toString().equals("")) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
-			
+
 		return new ModelAndView(new RedirectView(view));
 	}
 
@@ -143,59 +148,46 @@ public class SchedulerListController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	  protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-	  	log.info("Getting tasks");
-	  	//HttpSession httpSession = request.getSession();
-		//
-		
-		//default empty Object
-		Collection<TaskConfig> taskList = new ArrayList<TaskConfig>();
-		
-		taskList = getSchedulerService().getTasks();
-		
-	  	log.info("Returning " + taskList.size() + " tasks");
-	  	
-	      return taskList;
-	  }
-	  
-	/**
-	 * Get the scheduler service from the application context.
-	 */
-	private SchedulerService getSchedulerService() { 
-		return Context.getSchedulerService();
+		// Get all tasks that are available to be executed
+		return Context.getSchedulerService().getRegisteredTasks();
 	}
-	
+
+
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
-		
+
 		Map<String, Object> map = new HashMap<String, Object>();
-		
-		Collection<TaskConfig> tasks = (Collection<TaskConfig>)command;
-		Map<TaskConfig, String> intervals = new HashMap<TaskConfig, String>();
+
+		Collection<TaskDefinition> tasks = (Collection<TaskDefinition>)command;
+		Map<TaskDefinition, String> intervals = new HashMap<TaskDefinition, String>();
 		MessageSourceAccessor msa = getMessageSourceAccessor();
-		
-		for (TaskConfig task : tasks) {
-		
+
+		for (TaskDefinition task : tasks) {
+
 			Long interval = task.getRepeatInterval();
-			
-			if (interval < 60)
+
+			if (interval < 60) {
 				intervals.put(task, interval + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.seconds"));
-			else if (interval < 3600)
+			} 
+			else if (interval < 3600) { 
 				intervals.put(task, interval / 60 + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.minutes"));
-			else if (interval < 86400)
+			}
+			else if (interval < 86400) { 
 				intervals.put(task, interval / 3600 + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.hours"));
-			else
+			}
+			else { 
 				intervals.put(task, interval / 86400 + " " + msa.getMessage("Scheduler.scheduleForm.repeatInterval.units.days"));
-		
+			}		
 		}
 		map.put("intervals", intervals);
-		
+
 		return map;
 	}
-		
+
 }
