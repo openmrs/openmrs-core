@@ -465,7 +465,6 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	/**
      * @see org.openmrs.scheduler.SchedulerService#getStatus(java.lang.Integer)
      */
-    @Override
     public String getStatus(Integer id) {
     	
     	// Get the scheduled timer task
