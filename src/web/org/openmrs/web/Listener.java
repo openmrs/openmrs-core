@@ -449,8 +449,8 @@ public final class Listener extends ContextLoaderListener {
 			props.load(propertyStream);
 			propertyStream.close();
 
-		} catch (IOException e) {
-			log.warn("Unable to load properties file. Starting with default properties.", e);
+		} catch (Throwable t) {
+			log.warn("Unable to load properties file. Starting with default properties.", t);
 		}
 		return props;
 	}
