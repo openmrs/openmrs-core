@@ -426,6 +426,8 @@ public final class OpenmrsConstants {
         
         props.add(new GlobalProperty(GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238", "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
         
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOG_LEVEL, LOG_LEVEL_INFO, "log level used by the logger 'org.openmrs'. This value will override the log4j.xml value. Valid values are trace, debug, info, warn, error or fatal"));
+        
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
@@ -558,4 +560,19 @@ public final class OpenmrsConstants {
     public static boolean WINDOWS_BASED_OPERATING_SYSTEM = OPERATING_SYSTEM.indexOf("Windows") > -1;
     public static boolean WINDOWS_VISTA_OPERATING_SYSTEM = 
 		OPERATING_SYSTEM.equals(OPERATING_SYSTEM_WINDOWS_VISTA);
+    
+    
+    // Global property key for global logger level
+    public static final String GLOBAL_PROPERTY_LOG_LEVEL = "log.level.openmrs";
+    // Global logger category
+    public static final String LOG_CLASS_DEFAULT = "org.openmrs";
+    
+    // Log levels
+    public static final String LOG_LEVEL_TRACE = "trace";
+    public static final String LOG_LEVEL_DEBUG = "debug";
+    public static final String LOG_LEVEL_INFO  = "info";
+    public static final String LOG_LEVEL_WARN = "warn";
+    public static final String LOG_LEVEL_ERROR = "error";
+    public static final String LOG_LEVEL_FATAL = "fatal";
+    
 }
