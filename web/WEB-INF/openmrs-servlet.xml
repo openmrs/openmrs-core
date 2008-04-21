@@ -139,6 +139,7 @@
 				<prop key="remotecommunication/postHl7.form">postHl7FormController</prop>
 
 				<prop key="admin/maintenance/globalProps.form">globalPropertyController</prop>
+				<prop key="admin/maintenance/serverLog.form">serverLogController</prop>
 				<!--<prop key="**/calendar.list">calendarController</prop>-->
 				<prop key="admin/maintenance/dataEntryStats.list">dataEntryStatsController</prop>
 				<prop key="admin/modules/module.list">moduleListController</prop>
@@ -1115,6 +1116,12 @@
 		<property name="commandName"><value>globalProps</value></property>
 		<property name="formView"><value>/admin/maintenance/globalPropsForm</value></property>
 		<property name="successView"><value>globalProps.form</value></property>
+	</bean>
+	<bean id="serverLogController"
+		class="org.openmrs.web.controller.maintenance.ServerLogController">
+		<property name="commandName"><value>logLines</value></property>
+		<property name="formView"><value>/admin/maintenance/serverLog</value></property>
+		<property name="successView"><value>serverLog.form</value></property>
 	</bean>
 	<bean id="dataEntryStatsController"
 		class="org.openmrs.web.controller.maintenance.DataEntryStatisticsController">

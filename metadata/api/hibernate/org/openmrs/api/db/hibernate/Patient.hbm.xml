@@ -4,7 +4,7 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
 <hibernate-mapping package="org.openmrs">
-
+	
 	<joined-subclass name="Patient" table="patient" extends="Person">
 
 		<key column="patient_id" not-null="true" on-delete="cascade" />
