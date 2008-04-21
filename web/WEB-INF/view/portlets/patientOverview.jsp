@@ -8,8 +8,16 @@
 <openmrs:globalProperty var="importantIdentifiers" key="patient_identifier.importantTypes" />
 <openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" var="showHealthCenter"/>
 
-<div class="boxHeader${model.patientVariation}"><spring:message code="Patient.actions" /></div>
-<div class="box${model.patientVariation}">
+<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.overviewBox" type="html">
+	<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+		<div class="boxHeader${model.patientVariation}"><spring:message code="${extension.title}" /></div>
+		<div class="box${model.patientVariation}"><spring:message code="${extension.content}" /></div>
+		<br />
+	</openmrs:hasPrivilege>
+</openmrs:extensionPoint>
+
+<div id="patientActionsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Patient.actions" /></div>
+<div id="patientActionsBox" class="box${model.patientVariation}">
 	<table id="patientActions">
 		<tr>
 			<td id="patientActionsPatientSummary">
@@ -132,31 +140,31 @@
 <br />
 
 <c:if test="${not empty importantIdentifiers}">
-	<div class="boxHeader${model.patientVariation}"><spring:message code="Patient.identifiers" /></div>
-	<div class="box${model.patientVariation}">
+	<div id="patientIdentifiersBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Patient.identifiers" /></div>
+	<div id="patientIdentifiersBox" class="box${model.patientVariation}">
 		<openmrs:portlet url="patientIdentifiers" size="normal" patientId="${model.patientId}" parameters="showIfSet=true|showIfMissing=true|highlightIfMissing=false" />
 	</div>
 	<p>
 </c:if>
 
-<div class="boxHeader${model.patientVariation}"><spring:message code="Program.title"/></div>
-<div class="box${model.patientVariation}">
+<div id="patientProgramsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Program.title"/></div>
+<div id="patientProgramsBox" class="box${model.patientVariation}">
 	<openmrs:portlet url="patientPrograms" id="patientPrograms" patientId="${patient.patientId}" parameters="allowEdits=true"/>
 </div>
 <br/>
 
 <openmrs:globalProperty var="conceptIdsToUse" key="dashboard.overview.showConcepts" />
 <c:if test="${not empty conceptIdsToUse}">
-	<div class="boxHeader${model.patientVariation}"><spring:message code="patientDashboard.mostRecentObs"/></div>
-	<div class="box${model.patientVariation}">
+	<div id="patientMostRecentObsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="patientDashboard.mostRecentObs"/></div>
+	<div id="patientMostRecentObsBox" class="box${model.patientVariation}">
 		<openmrs:portlet url="customMostRecentObs" size="normal" patientId="${patient.patientId}" parameters="conceptIds=${conceptIdsToUse}|allowNew=true" />
 	</div>
 	
 	<br/>
 </c:if>
 
-<div class="boxHeader${model.patientVariation}"><spring:message code="Relationship.relationships" /></div>
-<div class="box${model.patientVariation}">
+<div id="patientRelationshipsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Relationship.relationships" /></div>
+<div id="patientRelationshipsBox" class="box${model.patientVariation}">
 	<openmrs:portlet url="personRelationships" size="normal" patientId="${patient.patientId}" />
 </div>
 
