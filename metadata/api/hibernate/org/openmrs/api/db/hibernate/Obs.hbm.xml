@@ -61,7 +61,7 @@
 		
 		<!-- many-to-one association from this obs to its parent grouping obs -->
 		<!-- insert/update=false because the groupMembers set is doing the saving for us -->
-		<many-to-one name="obsGroup" class="Obs" column="obs_group_id" insert="false" update="false"/>
+		<many-to-one name="obsGroup" class="Obs" column="obs_group_id" insert="true" update="true"/>
 		
 		<!-- one-to-many association to all obs in this grouping -->
 		<set name="groupMembers" inverse="true" cascade="all" order-by="obs_id">
