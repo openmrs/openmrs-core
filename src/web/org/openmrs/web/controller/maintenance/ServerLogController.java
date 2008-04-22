@@ -14,7 +14,6 @@
 package org.openmrs.web.controller.maintenance;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -24,9 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Appender;
-import org.apache.log4j.Layout;
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
 import org.openmrs.util.MemoryAppender;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -36,6 +33,8 @@ import org.springframework.web.servlet.view.RedirectView;
 /**
  * Get the log lines from the MEMORY_APPENDER appender of log4j as a String list and give it
  * to the view.
+ * 
+ * @see org.openmrs.util.MemoryAppender
  */
 public class ServerLogController extends SimpleFormController {
     protected final Log log = LogFactory.getLog(getClass());
@@ -62,8 +61,7 @@ public class ServerLogController extends SimpleFormController {
 		Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
 		if (appender instanceof MemoryAppender) {
 			MemoryAppender memoryAppender = (MemoryAppender) appender;
-			List<String> logLines = memoryAppender.getLogLines();
-			return logLines;
+			return memoryAppender.getLogLines();
 			
 		} else {
 			return new ArrayList<String>();
