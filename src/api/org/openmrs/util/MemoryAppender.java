@@ -14,7 +14,6 @@
 package org.openmrs.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,6 +22,10 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 
+/**
+ * This class stores a few lines of the output to the log file.  This class
+ * is set in the log4j descriptor file: /metadata/api/log4j/log4j.xml
+ */
 public class MemoryAppender extends AppenderSkeleton {
     private CircularFifoBuffer buffer;
     private int bufferSize = 100;
