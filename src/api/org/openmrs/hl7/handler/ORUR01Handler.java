@@ -225,15 +225,21 @@ public class ORUR01Handler implements Application {
 					log.debug("Parsing observation");
 					Obs obs = parseObs(encounter, obx, obr);
 					if (obs != null) {
+						
 						// set the obsGroup on this obs
 						if (obsGrouper != null)
+							// set the obs to the group.  This assumes the group is already
+							// on the encounter and that when the encounter is saved it will 
+							// propagate to the children obs
 							obsGrouper.addGroupMember(obs);
 						
-						// set this obs on the encounter object that we
-						// will be saving later
-						log.debug("Obs is not null. Adding to encounter object");
-						encounter.addObs(obs);
-						log.debug("Done with this obs");
+						else {
+							// set this obs on the encounter object that we
+							// will be saving later
+							log.debug("Obs is not null. Adding to encounter object");
+							encounter.addObs(obs);
+							log.debug("Done with this obs");
+						}
 					}
 				} catch (HL7Exception e) {
 					// Handle obs-level exceptions
