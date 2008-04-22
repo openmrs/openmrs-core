@@ -303,6 +303,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Obs o4 = obsService.getObs(o.getObsId());
 		
+		assertNotNull(o4.getVoidReason());
 		assertTrue(o4.getVoidReason().equals("testing void function"));
 		assertTrue(o4.getVoidedBy().equals(o3.getVoidedBy()));
 		assertTrue(o4.isVoided());
@@ -314,6 +315,11 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertNull(obsService.getObs(o.getObsId()));
 	}	
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @throws Exception
+	 */
 	public void testObsValidator() throws Exception {
 		executeDataSet(INITIAL_OBS_XML);
 		ConceptService conceptService = Context.getConceptService();
@@ -685,14 +691,14 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		childLeafObs = os.getObs(childOneId);
 		assertTrue(childLeafObs.isVoided());
 		
-		childLeafObs.setDateVoided(new Date());
+		childLeafObs.setDateVoided(new Date(childLeafObs.getDateVoided().getTime() - 5000)); 
 		os.updateObs(childLeafObs);
 		os.unvoidObs(oGGGP);
 		
 		childLeafObs = os.getObs(childOneId);
 		Obs childLeafObsTwo = os.getObs(childTwoId);
 		
-		//childLeafObs had its date voided date changed, so it shoul not get unvoided by the unvoid cascade
+		//childLeafObs had its date voided date changed, so it should not get unvoided by the unvoid cascade
 		//childLeafObsTwo should be unvoided, as the dateVoided date is still the same as the great-great
 		//grandparent Obs
 		
@@ -707,5 +713,60 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertNull(os.getObs(childOneId));
 		assertNull(os.getObs(childTwoId));
 	}
+	
+	/**
+	 * This test makes sure that child obs on a parent obs are given an obs group id when the 
+	 * parent obs is created
+	 * 
+	 * @throws Throwable
+	 */
+	public void testCreateObsGroupId() throws Throwable {
 		
+		executeDataSet(INITIAL_OBS_XML);
+
+		ConceptService cs = Context.getConceptService();
+		ObsService os = Context.getObsService();
+		
+		Obs o2 = new Obs();
+		o2.setConcept(cs.getConcept(1));
+		o2.setDateCreated(new Date());
+		o2.setCreator(Context.getAuthenticatedUser());
+		o2.setLocation(new Location(1));
+		o2.setObsDatetime(new Date());
+		o2.setValueText("test");
+		o2.setPerson(new Patient(2));
+
+		//create a parent obs
+		Obs oParent = new Obs();
+		oParent.setConcept(cs.getConcept(2)); //in the concept set table as a set
+		oParent.setDateCreated(new Date());
+		oParent.setCreator(Context.getAuthenticatedUser());
+		oParent.setLocation(new Location(1));
+		oParent.setObsDatetime(new Date());
+		oParent.setPerson(new Patient(2));
+		
+		oParent.addGroupMember(o2);
+		
+		os.createObs(oParent);
+		
+		// save the obs ids
+		Integer parentObsId = oParent.getObsId();
+		assertNotNull(parentObsId);
+		
+		Integer childObsId = o2.getObsId();
+		assertNotNull(childObsId);
+		
+		// clear out the session so we can refetch and test that it saved correctly
+		oParent = null;
+		o2 = null;
+		Context.clearSession();
+		
+		// try to get the same obs back and make sure it has children
+		
+		Obs fetchedParent = os.getObs(parentObsId);
+		assertTrue(fetchedParent.isObsGrouping());
+		assertEquals(1, fetchedParent.getGroupMembers().size());
+		
+		
+	}
 }
