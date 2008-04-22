@@ -279,7 +279,7 @@ public class Encounter implements java.io.Serializable {
 		observation.setEncounter(this);
 		if (obs == null)
 			obs = new HashSet<Obs>();
-		if (!obs.contains(observation) && observation != null)
+		if (observation != null)
 			obs.add(observation);
 	}
 

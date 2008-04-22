@@ -101,6 +101,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		Patient patient = new Patient(2);
 		
+		Context.clearSession();
+		
 		// check for any obs
 		Set<Obs> obsForPatient2 = obsService.getObservations(patient, false);
 		assertNotNull(obsForPatient2);
@@ -114,7 +116,13 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Set<Obs> returnVisitDateObsForPatient2 = obsService.getObservations(patient, returnVisitDateConcept, false);
 		assertEquals("There should be a return visit date", 1, returnVisitDateObsForPatient2.size());
 		Obs firstObs = (Obs)returnVisitDateObsForPatient2.toArray()[0];
-		assertEquals("The date should be the 1st", returnVisitDate.toString(), firstObs.getValueDatetime().toString());
+		
+		cal.setTime(firstObs.getValueDatetime());
+		cal.clear(Calendar.HOUR);
+		cal.clear(Calendar.MINUTE);
+		cal.clear(Calendar.SECOND);
+		cal.clear(Calendar.MILLISECOND);
+		assertEquals("The date should be the 1st", returnVisitDate.toString(), cal.getTime().toString());
 		
 		// check for the grouped obs
 		Concept contactMethod = new Concept(1558);
@@ -125,20 +133,29 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertEquals("The contact method should be phone", phoneContact, firstContactMethodObs.getValueCoded());
 		
 		// check that there is a group id
-		Integer obsGroupId = firstContactMethodObs.getObsGroupId();
-		assertNotNull("Their should be a group id", obsGroupId);
+		Obs obsGroup = firstContactMethodObs.getObsGroup();
+		assertNotNull("Their should be a grouping obs", obsGroup);
+		assertNotNull("Their should be an associated encounter", firstContactMethodObs.getEncounter());
 		
 		// check that the obs that are grouped have the same group id
 		List<Integer> groupedConceptIds = new Vector<Integer>();
 		groupedConceptIds.add(1558);
 		groupedConceptIds.add(1553);
 		groupedConceptIds.add(1554);
+		
+		// total obs should be 5
+		assertEquals(5, obsForPatient2.size());
+		
+		int groupedObsCount = 0;
 		for (Obs obs : obsForPatient2) {
 			if (groupedConceptIds.contains(obs.getConcept().getConceptId())) {
-				assertEquals("All of the group ids should match", obsGroupId, obs.getObsGroupId());
+				groupedObsCount += 1;
+				assertEquals("All of the parent groups should match", obsGroup, obs.getObsGroup());
 			}
 		}
 		
+		// the number of obs that were grouped
+		assertEquals(3, groupedObsCount);
 		
 	}
 
