@@ -117,8 +117,8 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 						scheduleTask(taskDefinition);
 					}
 					
-				} catch (SchedulerException e) { 
-					log.error("Failed to schedule task for class " + taskDefinition.getTaskClass(), e);
+				} catch (Throwable t) { 
+					log.error("Failed to schedule task for class " + taskDefinition.getTaskClass(), t);
 				}
 			}
 		}
