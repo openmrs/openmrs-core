@@ -68,7 +68,7 @@
     	<!-- Task configuration properties -->
 		<map name="properties" 
 				table="scheduler_task_config_property" 
-				lazy="true" 
+				lazy="false" 
 				cascade="save-update,merge,evict">
 			<key column="task_config_id" not-null="true" />
 			<map-key column="name" type="java.lang.String" length="100" />
