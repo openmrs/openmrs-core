@@ -189,4 +189,13 @@
 			ERROR! unknown size '${model.size}' in FindOnePatientWidget
 		</c:otherwise>
 	</c:choose>
+
+	<p/>
+	<openmrs:extensionPoint pointId="org.openmrs.findPatientPortlet.linksAtBottom" type="html">
+		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+			<a href="${extension.url}"><spring:message code="${extension.label}"/></a>
+			<br/>
+		</openmrs:hasPrivilege>
+	</openmrs:extensionPoint>
+
 </c:if>
