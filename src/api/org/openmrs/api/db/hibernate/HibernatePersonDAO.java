@@ -391,6 +391,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	public Person createPerson(Person person) throws DAOException {
 		// this has been changed (again) to return the Person object
+		log.warn("About to Create a Person object with guid: " + person.getGuid());
 		sessionFactory.getCurrentSession().save(person);
 		return person;
 	}
