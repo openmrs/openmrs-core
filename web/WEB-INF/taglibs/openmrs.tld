@@ -961,6 +961,16 @@
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
 	</attribute>
+	<attribute>
+		<description>
+			Any extension attached to this point must be of this class (or a subclass)
+			or else a runtime exception will be thrown.
+		</description>
+		<name>requiredClass</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Class</type>
+	</attribute>
 </tag>
 
 <tag>
