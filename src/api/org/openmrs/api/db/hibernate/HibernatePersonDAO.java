@@ -388,17 +388,23 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#createPerson(org.openmrs.Person)
 	 *
-	public void createPerson(Person person) throws DAOException {
-		sessionFactory.getCurrentSession().save(person);
-	}
 	 */
+	public Person createPerson(Person person) throws DAOException {
+		// this has been changed (again) to return the Person object
+		sessionFactory.getCurrentSession().save(person);
+		return person;
+	}
 	
 	/**
+	 * CA: re-setting this to be .save as above
+	 * this was changed in rev. 3456 much to the detriment of sync
+	 * 
 	 * @see org.openmrs.api.db.PersonDAO#createPerson(org.openmrs.Person)
-	 */
+	 *
 	public Person createPerson(Person person) throws DAOException {
 		return (Person)sessionFactory.getCurrentSession().merge(person);
 	}
+	*/
 
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#deletePerson(org.openmrs.Person)
