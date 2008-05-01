@@ -191,7 +191,8 @@
 	</c:choose>
 
 	<p/>
-	<openmrs:extensionPoint pointId="org.openmrs.findPatientPortlet.linksAtBottom" type="html">
+	<openmrs:extensionPoint pointId="org.openmrs.findPatientPortlet.linksAtBottom" type="html"
+		requiredClass="org.openmrs.module.web.extension.LinkExt">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 			<a href="${extension.url}"><spring:message code="${extension.label}"/></a>
 			<br/>
