@@ -80,7 +80,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	// tag attributes
 	private String pointId;
 	private String parameters = "";
-	private Class requiredClass;
+	private String requiredClass;
 
 	/** all tags using this should default to 'html' media type */
 	private String type = "html";
@@ -124,12 +124,17 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 		if (extensionList != null) {
 			log.debug("Found " + extensionList.size() + " extensions");
 			if (requiredClass != null) {
-				for (Extension ext : extensionList) {
-					if (!requiredClass.isAssignableFrom(ext.getClass())) {
-						throw new ClassCastException("Extension at this point (" + pointId + ") are " +
-						                             "required to be of " + requiredClass + " or a subclass. " +
-						                             ext.getClass() + " is not.");
+				try {
+					Class clazz = Class.forName(requiredClass);
+					for (Extension ext : extensionList) {
+						if (!clazz.isAssignableFrom(ext.getClass())) {
+							throw new ClassCastException("Extension at this point (" + pointId + ") are " +
+							                             "required to be of " + clazz + " or a subclass. " +
+							                             ext.getClass() + " is not.");
+						}
 					}
+				} catch (ClassNotFoundException ex) {
+					throw new IllegalArgumentException(ex);
 				}
 			}
 			extensions = extensionList.iterator();
@@ -300,11 +305,11 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 		this.varStatus = varStatus;
 	}
 
-	public Class getRequiredClass() {
+	public String getRequiredClass() {
     	return requiredClass;
     }
 
-	public void setRequiredClass(Class requiredClass) {
+	public void setRequiredClass(String requiredClass) {
     	this.requiredClass = requiredClass;
     }
 
