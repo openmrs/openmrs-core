@@ -316,11 +316,12 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 	 * @return
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
-		log.debug("Getting conceptName for locale: " + locale);
 		
 		if (locale == null)
 			locale = Locale.US;
-		
+
+		log.debug("Getting conceptName for locale: " + locale);
+
 		String loc = locale.getLanguage();
 		if (loc.length() > 2)
 			loc = loc.substring(0, 2);

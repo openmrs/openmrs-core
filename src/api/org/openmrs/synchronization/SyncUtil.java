@@ -631,7 +631,9 @@ public class SyncUtil {
 				if ( !knownToExist ) Context.getProgramWorkflowService().createPatientState((PatientState)o);
 				else Context.getProgramWorkflowService().updatePatientState((PatientState)o);
 			} else if ( "org.openmrs.Person".equals(className) ) {
-				if ( !knownToExist ) Context.getPersonService().createPerson((Person)o);
+				if ( !knownToExist ) {
+					Person p = Context.getPersonService().createPerson((Person)o);
+				}
 				else Context.getPersonService().updatePerson((Person)o);
 			} else if ( "org.openmrs.PersonAddress".equals(className) ) {
 				if ( !knownToExist ) Context.getPersonService().createPersonAddress((PersonAddress)o);

@@ -60,11 +60,12 @@ CREATE PROCEDURE add_guids ()
 				DEALLOCATE PREPARE stmt;
 				
 				#comment out for now
+				#why comment?  we need this... CA, 1 May 2008
 				#prepare stmt to alter column to not null
-				#SET @sql_text := concat('ALTER TABLE `',table_name,'` MODIFY COLUMN `guid` CHAR(36) NOT NULL;');
-				#PREPARE stmt from @sql_text;
-				#EXECUTE stmt;
-				#DEALLOCATE PREPARE stmt;
+				SET @sql_text := concat('ALTER TABLE `',table_name,'` MODIFY COLUMN `guid` CHAR(36) NOT NULL UNIQUE;');
+				PREPARE stmt from @sql_text;
+				EXECUTE stmt;
+				DEALLOCATE PREPARE stmt;
 								
     END IF;
   UNTIL done END REPEAT;
