@@ -171,6 +171,10 @@ public class HibernateFormDAO implements
 	 */
 	@SuppressWarnings("unchecked")
     public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force) throws APIException {
+		if (form == null) {
+			log.debug("form is null, no fields will be matched");
+			return null;
+		}
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormField.class, "ff")
 			.createAlias("field", "field")
 			.add(Expression.eq("field.concept", concept))
@@ -182,7 +186,7 @@ public class HibernateFormDAO implements
 		String err = "FormField warning.  No FormField matching concept '" + concept + "' for form '" + form + "'";
 		
 		if (formFields.size() < 1) {
-			log.warn(err);
+			log.debug(err);
 			return null;
 		}
 		
@@ -198,7 +202,7 @@ public class HibernateFormDAO implements
 			if (force == false)
 				return backupPlan;
 			else {
-				log.warn(err);
+				log.debug(err);
 				return null;
 			}
 		}
