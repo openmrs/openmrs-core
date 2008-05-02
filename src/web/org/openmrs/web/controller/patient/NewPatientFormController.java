@@ -58,6 +58,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.TribeEditor;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.user.UserFormController;
@@ -703,6 +704,8 @@ public class NewPatientFormController extends SimpleFormController {
 			for (PatientIdentifier pi : identifiers)
 				pi.setPreferred(pref.equals(pi.getIdentifier()+pi.getIdentifierType().getPatientIdentifierTypeId()));
 		
+		if (Context.isAuthenticated())
+			map.put("defaultLocation", Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION));
 		map.put("identifiers", identifiers);
 		map.put("causeOfDeathOther", causeOfDeathOther);
 		
