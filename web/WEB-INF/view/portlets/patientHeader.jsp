@@ -16,7 +16,7 @@
 		<div id="patientHeaderPreferredIdentifier">
 			<c:if test="${fn:length(model.patient.activeIdentifiers) > 0}">
 				<c:forEach var="identifier" items="${model.patient.activeIdentifiers}" begin="0" end="0">
-					<span class="patientHeaderPatientIdentifier"><span id="patientHeaderPatientIdentifierType">${identifier.identifierType.name}:</span> ${identifier.identifier}</span>
+					<span class="patientHeaderPatientIdentifier"><span id="patientHeaderPatientIdentifierType">${identifier.identifierType.name}<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientIdentifierType" type="html" parameters="identifierLocation=${identifier.location.name}"/>:</span> ${identifier.identifier}</span>
 				</c:forEach>
 			</c:if>
 		</div>
@@ -27,6 +27,7 @@
 					<c:if test="${model.patient.gender == 'F'}"><img src="${pageContext.request.contextPath}/images/female.gif" alt='<spring:message code="Person.gender.female"/>' id="femaleGenderIcon"/></c:if>
 				</td>
 				<td id="patientHeaderPatientAge">
+					<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.beforePatientHeaderPatientAge" type="html" parameters="patientId=${model.patient.patientId}" />
 					<c:if test="${model.patient.age > 0}">${model.patient.age} <spring:message code="Person.age.years"/></c:if>
 					<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Person.age.year"/></c:if>
 					<span id="patientHeaderPatientBirthdate"><c:if test="${not empty model.patient.birthdate}">(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)</c:if><c:if test="${empty model.patient.birthdate}"><spring:message code="general.unknown"/></c:if></span>
@@ -36,6 +37,7 @@
 					<td id="patientHeaderPatientTribe">
 						<spring:message code="Patient.tribe"/>:
 						<b>${model.patient.tribe.name}</b>
+						<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientTribe" type="html" parameters="patientId=${model.patient.patientId}" />
 					</td>
 				</c:if>
 				<c:if test="${not empty model.patient.attributeMap['Health Center']}">
@@ -51,13 +53,13 @@
 				<td id="patientHeaderOtherIdentifiers">
 					<c:if test="${fn:length(model.patient.activeIdentifiers) > 1}">
 						<c:forEach var="identifier" items="${model.patient.activeIdentifiers}" begin="1" end="1">
-							<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
+							<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientIdentifierType" type="html" parameters="identifierLocation=${identifier.location.name}"/>: ${identifier.identifier}</span>
 						</c:forEach>
 					</c:if>
 					<c:if test="${fn:length(model.patient.activeIdentifiers) > 2}">
 						<div id="patientHeaderMoreIdentifiers">
 							<c:forEach var="identifier" items="${model.patient.activeIdentifiers}" begin="2">
-								<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}: ${identifier.identifier}</span>
+								<span class="patientHeaderPatientIdentifier">${identifier.identifierType.name}<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientIdentifierType" type="html" parameters="identifierLocation=${identifier.location.name}"/>: ${identifier.identifier}</span>
 							</c:forEach>
 						</div>
 					</c:if>
