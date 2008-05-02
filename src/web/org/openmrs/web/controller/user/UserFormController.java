@@ -242,7 +242,12 @@ public class UserFormController extends PersonFormController {
 	    			log.warn("Invalid userId supplied: '" + userId + "'", numberError);
 	    		}
 	    		catch (ObjectRetrievalFailureException noUserEx) {
-	    			try {
+	    			// pass through to the null check
+	    		}
+	    		
+	    		// if no user was found
+	    		if (user == null) {
+		    		try {
 		    			Person person = Context.getPersonService().getPerson(id);
 		    			user = new User(person);
 		    		}

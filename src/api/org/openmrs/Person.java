@@ -131,15 +131,13 @@ public class Person implements java.io.Serializable {
 		if (obj instanceof Person) {
 			Person person = (Person) obj;
 			
-			// if personId is null for either object, for equality the
-			// two objects must be the same
-			if (getPersonId() == null || person.getPersonId() == null)
-				return super.equals(person);
-			
-			// compare the personId values
-			return (personId.equals(person.getPersonId()));
+			if (getPersonId() != null && person.getPersonId() != null)
+				return personId.equals(person.getPersonId());
 		}
-		return false;
+		
+		// if personId is null for either object, for equality the
+		// two objects must be the same
+		return this == obj;
 	}
 
 	/**

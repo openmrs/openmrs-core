@@ -69,6 +69,7 @@ public class User extends Person implements java.io.Serializable {
 
 	/** constructor with id */
 	public User(Integer userId) {
+		super(userId);
 		this.userId = userId;
 	}
 
@@ -195,7 +196,7 @@ public class User extends Person implements java.io.Serializable {
 	 * @see org.openmrs.Person#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
-		return super.equals(obj);
+			return super.equals(obj);
 	}
 
 	/**

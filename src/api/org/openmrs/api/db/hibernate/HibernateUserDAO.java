@@ -33,7 +33,6 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
-import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -43,7 +42,6 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
-import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class HibernateUserDAO implements
 		UserDAO {
@@ -153,10 +151,6 @@ public class HibernateUserDAO implements
 	public User getUser(Integer userId) {
 		User user = (User) sessionFactory.getCurrentSession().get(User.class, userId);
 		
-		if (user == null) {
-			log.warn("request for user '" + userId + "' not found");
-			throw new ObjectRetrievalFailureException(User.class, userId);
-		}
 		return user;
 	}
 	
@@ -180,41 +174,61 @@ public class HibernateUserDAO implements
 				log.debug("update user id: " + user.getUserId());
 			}
 			
-			Object obj = sessionFactory.getCurrentSession().get(Person.class, user.getUserId());
-			if (!(obj instanceof User)) {
-				insertUserStub(user);
-			}
-
-			sessionFactory.getCurrentSession().merge(user);
+			insertUserStubIfNeeded(user);
 			
+			sessionFactory.getCurrentSession().saveOrUpdate(user);
+			//sessionFactory.getCurrentSession().flush();
 		}
 	}
 	
 	/**
-	 * Inserts a row into the user table
+	 * Inserts a row into the user table if a row with users.user_id = user.getUserId() 
+	 * does not exist yet
 	 * 
 	 * This avoids hibernate's bunging of our person/patient/user inheritance
 	 * 
 	 * @param user the user to create a stub for
 	 */
-	private void insertUserStub(User user) {
+	private void insertUserStubIfNeeded(User user) {
 		Connection connection = sessionFactory.getCurrentSession().connection();
+		
+		boolean stubInsertNeeded = false;
+		
+		// check if there is a row with a matching users.user_id 
 		try {
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO users (user_id, system_id, creator, date_created) VALUES (?, ?, ?, ?)");
-			
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM users WHERE user_id = ?");
 			ps.setInt(1, user.getUserId());
-			ps.setString(2, user.getSystemId());
-			ps.setInt(3, user.getCreator().getUserId());
-			ps.setDate(4, new java.sql.Date(user.getDateCreated().getTime()));
-	
-			ps.executeUpdate();
+			ps.execute();
+			
+			if (ps.getResultSet().next())
+				stubInsertNeeded = false;
+			else
+				stubInsertNeeded = true;
 			
 		}
 		catch (SQLException e) {
-			log.warn("SQL Exception while trying to create a user stub", e);
+			log.error("Error while trying to see if this person is a user already", e);
 		}
 		
-		sessionFactory.getCurrentSession().flush();
+		if (stubInsertNeeded) {
+			try {
+				PreparedStatement ps = connection.prepareStatement("INSERT INTO users (user_id, system_id, creator, date_created, voided) VALUES (?, ?, ?, ?, ?)");
+				
+				ps.setInt(1, user.getUserId());
+				ps.setString(2, user.getSystemId());
+				ps.setInt(3, user.getCreator().getUserId());
+				ps.setDate(4, new java.sql.Date(user.getDateCreated().getTime()));
+				ps.setBoolean(5, false);
+		
+				ps.executeUpdate();
+				
+			}
+			catch (SQLException e) {
+				log.warn("SQL Exception while trying to create a user stub", e);
+			}
+		}
+		
+		//sessionFactory.getCurrentSession().flush();
 	}
 
 	/**

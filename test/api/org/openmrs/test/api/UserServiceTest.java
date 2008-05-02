@@ -14,15 +14,19 @@
 package org.openmrs.test.api;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.PatientSet;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.springframework.transaction.TransactionStatus;
 
 /**
  * TODO add more tests to cover the methods in <code>UserService</code>
@@ -71,6 +75,71 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		createdUser = us.getUserByUsername("bwolfe");
 		assertTrue("The created user should equal the passed in user", createdUser.equals(u));
+	}
+	
+	/**
+	 * Creates a user object that was a patient/person object already
+	 * 
+	 * @throws Exception
+	 */
+	public void testCreateUserWhoIsPatientAlready() throws Exception {
+		assertTrue("The context needs to be correctly authenticated to by a user", Context.isAuthenticated());
+		
+		// add in some basic data
+		executeDataSet(XML_FILENAME);
+		
+		UserService userService = Context.getUserService();
+		
+		// the user should not exist yet
+		User preliminaryFetchedUser = userService.getUser(2);
+		assertNull(preliminaryFetchedUser);
+		
+		// get the person object we'll make into a user
+		Person personToMakeUser = Context.getPersonService().getPerson(2);
+		Context.clearSession();
+		// this is the user object we'll be saving
+		User user = new User(personToMakeUser);
+		
+		user.setUserId(2);
+		user.setUsername("bwolfe");
+		user.setSystemId("asdf");
+		user.addRole(new Role("Some Role", "This is a test role")); //included in xml file
+		
+		// make sure everything was added to the user correctly
+		assertTrue(user.getUsername().equals("bwolfe"));
+		assertTrue(user.hasRole("Some Role"));
+		
+		// do the actual creating of the user object
+		userService.updateUser(user);
+		
+		// commit the user and data so that we can simulate a new page being loaded
+		transactionManager.commit(this.transactionStatus);
+		
+		// clear out the session so that we don't get a hibernate error 
+		// about "object already in session"
+		Context.clearSession();
+		
+		// get the same user we just created and make sure the user portion exists
+		User fetchedUser = userService.getUser(2);
+		User fetchedUser3 = userService.getUser(3);
+		if (fetchedUser3 != null)
+			throw new Exception("There is a user with id #3");
+		
+		assertNotNull("Uh oh, the user object was not created", fetchedUser);
+		assertNotNull("Uh oh, the username was not saved", fetchedUser.getUsername());
+		assertTrue("Uh oh, the username was not saved", fetchedUser.getUsername().equals("bwolfe"));
+		assertTrue("Uh oh, the role was not assigned", fetchedUser.hasRole("Some Role"));
+		
+		Context.clearSession();
+		
+		// there should only be 2 users in the system. (the super user that is
+		// authenticated to this test and the user we just created)
+		List<User> allUsers = userService.getUsers();
+		assertEquals(2, allUsers.size());
+		
+		// there should still only be the one patient we created in the xml file
+		PatientSet allPatientsSet = Context.getPatientSetService().getAllPatients();
+		assertEquals(1, allPatientsSet.getSize());
 	}
 	
 	/**

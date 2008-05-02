@@ -52,6 +52,12 @@ public class Role implements java.io.Serializable {
 	public Role(String role) {
 		this.role = role;
 	}
+	
+	/** constructor with all database required properties */
+	public Role(String role, String description) {
+		this.role = role;
+		this.description = description;
+	}
 
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
