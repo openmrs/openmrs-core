@@ -341,9 +341,11 @@ public class UserServiceImpl implements UserService {
 			if (r.getRole().equals(OpenmrsConstants.SUPERUSER_ROLE) &&
 				!authUser.hasRole(OpenmrsConstants.SUPERUSER_ROLE))
 					throw new APIException("You must have the role '" + OpenmrsConstants.SUPERUSER_ROLE + "' in order to assign it.");
-			for (Privilege p : r.getPrivileges())
-				if (!authUser.hasPrivilege(p.getPrivilege()))
-					requiredPrivs.add(p.getPrivilege());
+			if (r.getPrivileges() != null) {
+				for (Privilege p : r.getPrivileges())
+					if (!authUser.hasPrivilege(p.getPrivilege()))
+						requiredPrivs.add(p.getPrivilege());
+			}
 		}
 		
 		if (requiredPrivs.size() == 1) {
