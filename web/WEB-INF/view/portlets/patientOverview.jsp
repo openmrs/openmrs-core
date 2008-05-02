@@ -8,10 +8,10 @@
 <openmrs:globalProperty var="importantIdentifiers" key="patient_identifier.importantTypes" />
 <openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" var="showHealthCenter"/>
 
-<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.overviewBox" type="html">
+<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.overviewBox" type="html" parameters="patientId=${model.patient.patientId}">
 	<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 		<div class="boxHeader${model.patientVariation}"><spring:message code="${extension.title}" /></div>
-		<div class="box${model.patientVariation}"><spring:message code="${extension.content}" /></div>
+		<div class="box${model.patientVariation}"><spring:message code="${extension.content}"/></div>
 		<br />
 	</openmrs:hasPrivilege>
 </openmrs:extensionPoint>
@@ -28,6 +28,7 @@
 		</tr>
 	</table>
 	<table id="patientActions">
+		<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.patientActionsContent" type="html" parameters="patientId=${model.patient.patientId}"/>
 		<tr>
 		<c:if test="${empty model.patientReasonForExit}">
 			<td id="patientActionsOutcome">
