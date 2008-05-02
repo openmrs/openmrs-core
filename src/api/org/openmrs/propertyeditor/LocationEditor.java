@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.util.StringUtils;
 
 public class LocationEditor extends PropertyEditorSupport {
@@ -46,8 +47,8 @@ public class LocationEditor extends PropertyEditorSupport {
 
 	public String getAsText() {
 		Location t = (Location) getValue();
-		if (t == null) {
-			return "";
+		if (t == null && Context.isAuthenticated()) {
+			return Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
 		}
 		else {
 			return t.getLocationId().toString();

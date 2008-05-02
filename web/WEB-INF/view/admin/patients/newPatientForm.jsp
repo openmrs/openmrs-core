@@ -45,6 +45,14 @@
 					}
 				}
 		}
+		
+		/*
+		 Use the default location if one has been set and no location is defined
+		*/
+		if (!location && ("${defaultLocation}" != "")) {
+			location = "${defaultLocation}";
+		}
+		
 		if (location) {
 			for (var i in selects)
 				if (selects[i] && selects[i].name == "location") {
