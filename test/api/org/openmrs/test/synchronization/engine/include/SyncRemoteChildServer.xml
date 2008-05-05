@@ -14,25 +14,26 @@
   <synchronization_class class_id="9" name="ProgramWorkflowState" type="MISC" default_to="1" default_from="1"/>
   <synchronization_class class_id="10" name="PatientState" type="PATIENT" default_to="1" default_from="1"/>
   <synchronization_class class_id="11" name="Encounter" type="PATIENT" default_to="1" default_from="1"/>
-  <synchronization_class class_id="12" name="Obs" type="PATIENT" default_to="1" default_from="1"/>
-  <synchronization_class class_id="13" name="User" type="PERSON" default_to="1" default_from="1"/>
-  <synchronization_class class_id="14" name="Location" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="15" name="Form" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="16" name="Field" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="17" name="FormField" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="18" name="Concept" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="19" name="ConceptNumeric" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="20" name="ConceptWord" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="21" name="ConceptName" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="22" name="LoginCredential" type="PERSON" default_to="1" default_from="1"/>
-  <synchronization_class class_id="23" name="ConceptAnswer" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="24" name="ConceptSynonym" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="25" name="ConceptSet" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="26" name="PatientIdentifierType" type="PATIENT" default_to="1" default_from="1"/>
-  <synchronization_class class_id="27" name="RelationshipType" type="PERSON" default_to="1" default_from="1"/>
-  <synchronization_class class_id="28" name="PersonAttributeType" type="PERSON" default_to="1" default_from="1"/>
-  <synchronization_class class_id="29" name="Order" type="MISC" default_to="1" default_from="1"/>
-  <synchronization_class class_id="30" name="DrugOrder" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="12" name="EncounterType" type="PATIENT" default_to="1" default_from="1"/>
+  <synchronization_class class_id="13" name="Obs" type="PATIENT" default_to="1" default_from="1"/>
+  <synchronization_class class_id="14" name="User" type="PERSON" default_to="1" default_from="1"/>
+  <synchronization_class class_id="15" name="Location" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="16" name="Form" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="17" name="Field" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="18" name="FormField" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="19" name="Concept" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="20" name="ConceptNumeric" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="21" name="ConceptWord" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="22" name="ConceptName" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="23" name="LoginCredential" type="PERSON" default_to="1" default_from="1"/>
+  <synchronization_class class_id="24" name="ConceptAnswer" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="25" name="ConceptSynonym" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="26" name="ConceptSet" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="27" name="PatientIdentifierType" type="PATIENT" default_to="1" default_from="1"/>
+  <synchronization_class class_id="28" name="RelationshipType" type="PERSON" default_to="1" default_from="1"/>
+  <synchronization_class class_id="29" name="PersonAttributeType" type="PERSON" default_to="1" default_from="1"/>
+  <synchronization_class class_id="30" name="Order" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="31" name="DrugOrder" type="MISC" default_to="1" default_from="1"/>
   
   <!-- <synchronization_server_class server_class_id="" server_id="" class_id="" send_to="1" receive_from="1"/> -->
   <synchronization_server_class server_class_id="1" server_id="1" class_id="1" send_to="1" receive_from="1"/>
@@ -65,4 +66,5 @@
   <synchronization_server_class server_class_id="28" server_id="1" class_id="28" send_to="1" receive_from="1"/>
   <synchronization_server_class server_class_id="29" server_id="1" class_id="29" send_to="1" receive_from="1"/>
   <synchronization_server_class server_class_id="30" server_id="1" class_id="30" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="31" server_id="1" class_id="31" send_to="1" receive_from="1"/>
 </dataset>
