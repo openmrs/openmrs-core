@@ -41,6 +41,13 @@
 		</property>
 	</bean>
 
+	<!--  **************************  EVENT LISTENERS ***************************** -->
+	<bean id="openmrsEventListeners" class="org.openmrs.api.EventListeners">
+		<property name="globalPropertyListeners">
+			<list value-type="org.openmrs.api.GlobalPropertyListener" merge="true">
+			</list>
+		</property>
+	</bean>
 	
 	<!--  **************************  SERVICE CONTEXT CONFIGURATION  *************************  -->
 
