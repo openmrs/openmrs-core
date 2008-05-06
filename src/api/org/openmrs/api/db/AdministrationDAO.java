@@ -344,7 +344,7 @@ public interface AdministrationDAO {
 
 	public void setGlobalProperty(GlobalProperty gp) throws DAOException;
 
-	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException;
+	public void createGlobalProperty(GlobalProperty gp) throws DAOException;
 
 	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn, String groupBy) throws DAOException;
 

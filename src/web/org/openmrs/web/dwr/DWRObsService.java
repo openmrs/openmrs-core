@@ -39,6 +39,16 @@ public class DWRObsService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	public void voidObservation(Integer obsId, String reason) {
+		Obs obs = Context.getObsService().getObs(obsId);
+		if (obs == null) {
+			throw new IllegalArgumentException("Cannot find obs with id=" + obsId);
+		}
+		if (reason == null || reason.length() == 0)
+			throw new IllegalArgumentException("reason is required");
+		log.info("Voiding observation " + obs + " for reason " + reason);
+		Context.getObsService().voidObs(obs, reason);
+	}
 	
 	public Vector getObservations(Integer encounterId) { 
 				

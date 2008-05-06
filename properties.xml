@@ -58,6 +58,7 @@
 		<fileset dir="${spring.dir}" includes="*.jar" />
 		<fileset dir="${velocity.dir}" includes="*.jar" />
     	<fileset dir="${xerces.dir}" includes="*.jar" />
+    	<fileset dir="${xstream.dir}" includes="*.jar" />
     </path>
     <path id="api.test.classpath">
         <path refid="api.compile.classpath"/>
@@ -87,6 +88,7 @@
 		<fileset dir="${tomcat.dir}" includes="*.jar" />
 		<fileset dir="${velocity.dir}" includes="*.jar" />
     	<fileset dir="${xerces.dir}" includes="*.jar" />
+    	<fileset dir="${xstream.dir}" includes="*.jar" />
     </path>
 
 </project>

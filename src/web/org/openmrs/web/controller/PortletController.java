@@ -72,6 +72,8 @@ public class PortletController implements Controller {
 	 *          (Set<DrugOrder>) currentDrugOrders
 	 *          (Set<DrugOrder>) completedDrugOrders
 	 *          (Integer) personId
+	 *       (if the patient has any obs for the concept in the global property 'concept.reasonExitedCare')
+	 *          	(Obs) patientReasonForExit
 	 *     (if the request has a personId or patientId attribute)
 	 *     		(Person) person
 	 *          (List<Relationship>) personRelationships
@@ -170,20 +172,17 @@ public class PortletController implements Controller {
 							model.put("patientObs", new HashSet<Obs>());
 	
 						// information about whether or not the patient has exited care
-						String reasonForExitText = "";
-						String dateOfExitText = "";
+						Obs reasonForExitObs = null;
 						Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
 						if ( reasonForExitConcept != null ) {
 							Set<Obs> patientExitObs = Context.getObsService().getObservations(p, reasonForExitConcept, false);
 							if ( patientExitObs != null ) {
 								log.debug("Exit obs is size " + patientExitObs.size() );
 								if ( patientExitObs.size() == 1 ) {
-									Obs exitObs = patientExitObs.iterator().next();
-									Concept exitReason = exitObs.getValueCoded();
-									Date exitDate = exitObs.getObsDatetime();
+									reasonForExitObs = patientExitObs.iterator().next();
+									Concept exitReason = reasonForExitObs.getValueCoded();
+									Date exitDate = reasonForExitObs.getObsDatetime();
 									if ( exitReason != null && exitDate != null ) {
-										reasonForExitText = exitReason.getName(Context.getLocale()).getName();
-										dateOfExitText = Format.format(exitDate);
 										patientVariation = "Exited";
 									}
 								} else {
@@ -195,8 +194,7 @@ public class PortletController implements Controller {
 								}
 							}
 						}
-						model.put("patientReasonForExit", reasonForExitText);
-						model.put("patientDateOfExit", dateOfExitText);
+						model.put("patientReasonForExit", reasonForExitObs);
 						
 						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ORDERS)) {
 							List<DrugOrder> drugOrderList = Context.getOrderService().getDrugOrdersByPatient(p);

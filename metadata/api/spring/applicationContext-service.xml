@@ -170,6 +170,7 @@
 	</bean>
 	<bean id="adminServiceTarget" class="org.openmrs.api.impl.AdministrationServiceImpl">
 		<property name="administrationDAO"><ref bean="adminDAO"/></property>	
+		<property name="eventListeners"><ref bean="openmrsEventListeners"/></property>
 	</bean>
 	<bean id="programWorkflowServiceTarget" class="org.openmrs.api.impl.ProgramWorkflowServiceImpl">
 		<property name="programWorkflowDAO"><ref bean="programWorkflowDAO"/></property>	

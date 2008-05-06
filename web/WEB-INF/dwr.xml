@@ -90,6 +90,7 @@
 		
 		<create creator="new" javascript="DWRObsService">
 			<param name="class" value="org.openmrs.web.dwr.DWRObsService" />
+			<include method="voidObservation"/>
 			<include method="findObs"/>
 			<include method="getObservations"/>
 			<include method="createObs"/>
