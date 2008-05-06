@@ -307,6 +307,7 @@
 			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
 			<zipfileset dir="${xerces.dir}" includes="*.jar" excludes="*Samples*.jar" />
+			<zipfileset dir="${xstream.dir}" includes="*.jar" />
 		</zip>
 		
 	</target>

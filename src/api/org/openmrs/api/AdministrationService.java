@@ -384,6 +384,23 @@ public interface AdministrationService {
 	
 	public void addGlobalProperty(String propertyName, String propertyValue);
 
+	public void addGlobalProperty(GlobalProperty gp);
+	
+	/**
+	 * Allows code to be notified when a global property is created/edited/deleted.
+	 * @see GlobalPropertyListener
+	 * 
+	 * @param listener The listener to register
+	 */
+	public void addGlobalPropertyListener(GlobalPropertyListener listener);
+	
+	/**
+	 * Removes a GlobalPropertyListener previously registered by {@link #addGlobalPropertyListener(String, GlobalPropertyListener)}
+	 * 
+	 * @param listener
+	 */
+	public void removeGlobalPropertyListener(GlobalPropertyListener listener);
+	
 	/**
 	 * Creates a list of data entry stats from <code>fromDate</code> to <code>toDate</code>
 	 * 

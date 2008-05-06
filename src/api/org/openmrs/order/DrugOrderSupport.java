@@ -14,11 +14,19 @@
 package org.openmrs.order;
 
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.GlobalPropertyListener;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 
-public class DrugOrderSupport {
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
+public class DrugOrderSupport implements GlobalPropertyListener {
 
 	private static DrugOrderSupport singleton;
 	
@@ -26,10 +34,15 @@ public class DrugOrderSupport {
 	
 	List<RegimenSuggestion> standardRegimens;
 	List<RegimenSuggestion> suggestedRegimens;
+	private XStream xstream;
 	
 	public DrugOrderSupport() {
-		if (singleton == null)
+		if (singleton == null) {
 			singleton = this;
+			xstream = new XStream(new DomDriver());
+	    	xstream.alias("regimenSuggestion", RegimenSuggestion.class);
+	    	xstream.alias("drugSuggestion", DrugSuggestion.class);
+		}
 	}
 	
 	public static DrugOrderSupport getInstance() {
@@ -43,6 +56,14 @@ public class DrugOrderSupport {
 	 * @return Returns the standardRegimens.
 	 */
 	public List<RegimenSuggestion> getStandardRegimens() {
+		if (standardRegimens == null) {
+			try {
+				String xml = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS);
+				setStandardRegimens(xml);
+			} catch (Exception ex) {
+				setStandardRegimens(new Vector<RegimenSuggestion>());
+			}
+		}
 		return standardRegimens;
 	}
 	/**
@@ -63,4 +84,37 @@ public class DrugOrderSupport {
 	public void setSuggestedRegimens(List<RegimenSuggestion> suggestedRegimens) {
 		this.suggestedRegimens = suggestedRegimens;
 	}
+
+	/**
+	 * @see org.openmrs.api.GlobalPropertyListener#supportsPropertyName(java.lang.String)
+	 */
+    public boolean supportsPropertyName(String propertyName) {
+		return OpenmrsConstants.GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS.equals(propertyName);
+    }
+
+	/**
+     * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
+     */
+    public void globalPropertyChanged(GlobalProperty newValue) {
+	    try {
+	    	setStandardRegimens(newValue.getPropertyValue());
+	    } catch (Exception ex) {
+	    	log.error("Error in new xml global property value", ex);
+	    	setStandardRegimens(new Vector<RegimenSuggestion>());
+	    }
+    }
+    
+    private void setStandardRegimens(String xml) {
+    	List<RegimenSuggestion> list = (List<RegimenSuggestion>) xstream.fromXML(xml);
+    	setStandardRegimens(list);
+    }
+
+	/**
+     * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
+     */
+    public void globalPropertyDeleted(String propertyName) {
+    	if (!OpenmrsConstants.GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS.equals(propertyName))
+    		return;
+	    setStandardRegimens(new Vector<RegimenSuggestion>());
+    }
 }

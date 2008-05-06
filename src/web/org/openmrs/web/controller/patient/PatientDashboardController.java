@@ -151,7 +151,7 @@ public class PatientDashboardController extends SimpleFormController {
 					if ( exitReason != null && exitDate != null ) {
 						patientVariation = "Exited";
 					}
-				} else {
+				} else if (patientExitObs.size() > 1) {
 					log.error("Too many reasons for exit - not putting data into model");
 				}
 			}
