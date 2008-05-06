@@ -24,7 +24,7 @@ public class MessageTest extends TestCase {
 
 	private Message createTestMessage1() {
 		int id = 1;
-		String recipients = "vergil@gmail.com,cyarbrough@pih.org";
+		String recipients = "recipient1@example.com,recipient2@example.com";
 		String sender = "foo@bar.com";
 		String subject = "tres important";
 		String content = "message";
@@ -35,9 +35,19 @@ public class MessageTest extends TestCase {
 		return new Message(id, recipients, sender, subject, content, attachment, attachmentContentType, attachmentFileName);
 	}
 	
+	private Message createTestMessage2() {
+		int id = 1;
+		String recipients = "recipient1@example.com";
+		String sender = "foo@bar.com";
+		String subject = "moo";
+		String content = "message";
+		
+		return new Message(id, recipients, sender, subject, content);
+	}
+	
 	public void testConstructor() throws Exception {
 		int id = 1;
-		String recipients = "vergil@gmail.com,cyarbrough@pih.org";
+		String recipients = "recipient1@example.com,recipient2@example.com";
 		String sender = "foo@bar.com";
 		String subject = "tres important";
 		String content = "message";
@@ -56,7 +66,7 @@ public class MessageTest extends TestCase {
 	public void testSetRecipients() throws Exception {
 		Message testMessage = createTestMessage1();
 		
-		String recipients = "vergil@gmail.com,cyarbrough@pih.org";
+		String recipients = "recipient1@example.com,recipient2@example.com";
 		
 		testMessage.setRecipients(recipients);
 		
@@ -67,10 +77,18 @@ public class MessageTest extends TestCase {
 		Message testMessage = createTestMessage1();
 		
 		String oldRecipients = testMessage.getRecipients();
-		String newRecipient = "bob@gmail.com";
+		String newRecipient = "bob@example.com";
 		
 		testMessage.addRecipient(newRecipient);
 		
 		assertEquals(testMessage.getRecipients(), oldRecipients +","+ newRecipient);
+	}
+	
+	public void testHasAttachment() throws Exception {
+		Message testMessage1 = createTestMessage1();
+		Message testMessage2 = createTestMessage2();
+		
+		assertTrue(testMessage1.hasAttachment());
+		assertFalse(testMessage2.hasAttachment());
 	}
 }
