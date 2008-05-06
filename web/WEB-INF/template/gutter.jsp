@@ -1,9 +1,9 @@
 <ul id="navList">
-	<li class="firstChild">
+	<li id="homeNavLink" class="firstChild">
 		<a href="${pageContext.request.contextPath}/"><spring:message code="Navigation.home"/></a>
 	</li>
 
-	<li>
+	<li id="findPatientNavLink">
 		<a href="${pageContext.request.contextPath}/findPatient.htm">
 			<openmrs:hasPrivilege privilege="Add Patients">
 				<spring:message code="Navigation.findCreatePatient"/>
@@ -15,19 +15,19 @@
 	</li>
 	
 	<openmrs:hasPrivilege privilege="View Concepts">
-		<li>
+		<li id="dictionaryNavLink">
 			<a href="${pageContext.request.contextPath}/dictionary"><spring:message code="Navigation.dictionary"/></a>
 		</li>
 	</openmrs:hasPrivilege>
 	
 	<openmrs:hasPrivilege privilege="View Patient Cohorts">
-		<li>
+		<li id="cohortBuilderNavLink">
 			<a href="${pageContext.request.contextPath}/cohortBuilder.list"><spring:message code="Navigation.analysis"/></a>
 		</li>
 	</openmrs:hasPrivilege>
 	
 	<openmrs:hasPrivilege privilege="View Administration Functions">
-		<li>
+		<li id="administrationNavLink">
 			<a href="${pageContext.request.contextPath}/admin"><spring:message code="Navigation.administration"/></a>
 		</li>
 	</openmrs:hasPrivilege>

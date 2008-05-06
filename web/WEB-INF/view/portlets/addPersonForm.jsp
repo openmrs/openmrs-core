@@ -79,10 +79,25 @@
 					result = false;
 				}
 				
-				if ((birthdate.value == "" || birthyear.length < 4 || birthyear < (year-120) || isFutureDate(birthdate.value)) && age.value == "") {
+				if (birthdate.value == "" && age.value == "") {
 					document.getElementById("birthdateError").style.display = "";
 					result = false;
 				}
+				else {
+					if (birthdate.value != "") {
+						if (birthyear.length < 4 || birthyear < (year-120) || isFutureDate(birthdate.value)) {
+							document.getElementById("birthdateError").style.display = "";
+							result = false;
+						}
+					}
+					else if (age.value != "") {
+						if (age.value < 0 || age.value > 120) {
+							document.getElementById("birthdateError").style.display = "";
+							result = false;
+						}
+					}
+				}
+				
 				if (male.checked == false && female.checked == false) {
 					document.getElementById("genderError").style.display = "";
 					result = false;

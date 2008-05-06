@@ -36,7 +36,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
-import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.filter.SyncClass;
@@ -244,18 +244,18 @@ public class SynchronizationServerFormController extends SimpleFormController {
                     
                     // also set TaskConfig for scheduling
                     if ( server.getServerId() != null ) {
-                        TaskConfig serverSchedule = null;
-                        Collection<TaskConfig> tasks = Context.getSchedulerService().getAvailableTasks();
+                        TaskDefinition serverSchedule = null;
+                        Collection<TaskDefinition> tasks = Context.getSchedulerService().getRegisteredTasks();
                         if ( tasks != null ) {
-                            for ( TaskConfig task : tasks ) {
-                                if ( task.getSchedulableClass().equals(SyncConstants.SCHEDULED_TASK_CLASS) ) {
+                            for ( TaskDefinition task : tasks ) {
+                                if ( task.getTaskClass().equals(SyncConstants.SCHEDULED_TASK_CLASS) ) {
                                     if ( serverId.toString().equals(task.getProperty(SyncConstants.SCHEDULED_TASK_PROPERTY_SERVER_ID)) ) {
                                         serverSchedule = task;
                                     } else {
                                         log.warn("not equal comparing " + serverId + " to " + task.getProperty(SyncConstants.SCHEDULED_TASK_PROPERTY_SERVER_ID));
                                     }
                                 } else {
-                                    log.warn("not equal comparing " + task.getSchedulableClass() + " to " + SyncConstants.SCHEDULED_TASK_CLASS);
+                                    log.warn("not equal comparing " + task.getTaskClass() + " to " + SyncConstants.SCHEDULED_TASK_CLASS);
                                 }
                             }
                         } else {
@@ -268,7 +268,7 @@ public class SynchronizationServerFormController extends SimpleFormController {
                             if (log.isInfoEnabled())
                                 log.info("Sync scheduled task exists, and started is " + started + " and interval is " + repeatInterval);
                             try {
-                                Context.getSchedulerService().stopTask(serverSchedule);
+                                Context.getSchedulerService().shutdownTask(serverSchedule);
                             } catch (Exception e) {
                                 log.warn("Sync task had run wild, couldn't stop it because it wasn't really running",e);
                                 // nothing to do - means something was wrong or not yet started
@@ -281,7 +281,7 @@ public class SynchronizationServerFormController extends SimpleFormController {
                             if ( started ) {
                                 serverSchedule.setStartTime(new Date());
                             }
-                            Context.getSchedulerService().updateTask(serverSchedule);
+                            Context.getSchedulerService().saveTask(serverSchedule);
                             if ( started ) {
                                 Context.getSchedulerService().scheduleTask(serverSchedule);
                             }
@@ -289,16 +289,16 @@ public class SynchronizationServerFormController extends SimpleFormController {
                             if (log.isInfoEnabled())
                                 log.info("Sync scheduled task does not exists, and started is " + started + " and interval is " + repeatInterval);
                             if ( started ) {
-                                serverSchedule = new TaskConfig();
+                                serverSchedule = new TaskDefinition();
                                 serverSchedule.setName(server.getNickname() + " " + msa.getMessage("SynchronizationConfig.server.scheduler"));
                                 serverSchedule.setDescription(msa.getMessage("SynchronizationConfig.server.scheduler.description"));
                                 serverSchedule.setRepeatInterval((long)repeatInterval);
                                 serverSchedule.setStartTime(new Date());
-                                serverSchedule.setSchedulableClass(SyncConstants.SCHEDULED_TASK_CLASS);
+                                serverSchedule.setTaskClass(SyncConstants.SCHEDULED_TASK_CLASS);
                                 serverSchedule.setStarted(started);
                                 serverSchedule.setStartOnStartup(started);
                                 serverSchedule.setProperties(props);
-                                Context.getSchedulerService().createTask(serverSchedule);
+                                Context.getSchedulerService().saveTask(serverSchedule);
                                 Context.getSchedulerService().scheduleTask(serverSchedule);
                             }
                         }
@@ -381,15 +381,15 @@ public class SynchronizationServerFormController extends SimpleFormController {
 	        connectionState.put(ServerConnectionState.NO_ADDRESS.toString(), msa.getMessage("SynchronizationConfig.server.connection.status.noAddress"));
 	        
 	        // taskConfig for automated syncing
-	        TaskConfig serverSchedule = new TaskConfig();
+	        TaskDefinition serverSchedule = new TaskDefinition();
 	        String repeatInterval = "";
 	        if ( server != null ) {
                 if ( server.getServerId() != null ) {
-                    Collection<TaskConfig> tasks = Context.getSchedulerService().getAvailableTasks();
+                    Collection<TaskDefinition> tasks = Context.getSchedulerService().getRegisteredTasks();
                     if ( tasks != null ) {
                         String serverId = server.getServerId().toString();
-                        for ( TaskConfig task : tasks ) {
-                            if ( task.getSchedulableClass().equals(SyncConstants.SCHEDULED_TASK_CLASS) ) {
+                        for ( TaskDefinition task : tasks ) {
+                            if ( task.getTaskClass().equals(SyncConstants.SCHEDULED_TASK_CLASS) ) {
                                 if ( serverId.equals(task.getProperty(SyncConstants.SCHEDULED_TASK_PROPERTY_SERVER_ID)) ) {
                                     serverSchedule = task;
                                     Long repeat = serverSchedule.getRepeatInterval() / 60;

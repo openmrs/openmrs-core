@@ -565,8 +565,8 @@ public class ModuleClassLoader extends URLClassLoader {
 		if ((name == null) || "".equals(name.trim()))
 			return null;
 		
-		if (log.isDebugEnabled()) {
-			log.debug("findLibrary(String): name=" + name
+		if (log.isTraceEnabled()) {
+			log.trace("findLibrary(String): name=" + name
 					+ ", this=" + this);
 		}
 		String libname = System.mapLibraryName(name);
@@ -613,8 +613,8 @@ public class ModuleClassLoader extends URLClassLoader {
 //				break;
 //			}
 //		}
-		if (log.isDebugEnabled()) {
-			log.debug("findLibrary(String): name=" + name
+		if (log.isTraceEnabled()) {
+			log.trace("findLibrary(String): name=" + name
 					+ ", libname=" + libname
 					+ ", result=" + result
 					+ ", this=" + this);
@@ -732,12 +732,12 @@ public class ModuleClassLoader extends URLClassLoader {
 	 */
 	protected URL findResource(final String name,
 			final ModuleClassLoader requestor, Set<String> seenModules) {
-		if (log.isDebugEnabled()) {
+		if (log.isTraceEnabled()) {
 			if (name != null && name.contains("starter")) {
-				if (seenModules != null) log.debug("seenModules.size: " + seenModules.size());
-				log.debug("name: " + name);
+				if (seenModules != null) log.trace("seenModules.size: " + seenModules.size());
+				log.trace("name: " + name);
 				for (URL url : getURLs()) {
-					log.debug("url: " + url);
+					log.trace("url: " + url);
 				}
 			}
 		}

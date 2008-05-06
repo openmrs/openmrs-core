@@ -365,6 +365,7 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX   = "patient.identifierSuffix";
 	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS  = "patient.searchMaxResults";
 	public static final String GLOBAL_PROPERTY_GZIP_ENABLED                = "gzip.enabled";
+	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
 	
 	// These properties (and default values) are set if not found in the database on startup
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
@@ -427,7 +428,11 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS, "1000", "The maximum number of results returned by patient searches"));
 		
         props.add(new GlobalProperty(GLOBAL_PROPERTY_GZIP_ENABLED, "false", "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression."));
-
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238", "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
+        
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOG_LEVEL, LOG_LEVEL_INFO, "log level used by the logger 'org.openmrs'. This value will override the log4j.xml value. Valid values are trace, debug, info, warn, error or fatal"));
+        
         props.add(new GlobalProperty(SyncConstants.LAST_SYNC_LOCAL, "", "Timestamp of the last sucessful sync push from child to parent."));
         props.add(new GlobalProperty(SyncConstants.LAST_SYNC_REMOTE, "", "Timestamp of the last sucessful sync pull from parent."));
         props.add(new GlobalProperty(SyncConstants.SERVER_GUID, "", "Globally unique server id used to identify a given data source in synchronization."));
@@ -567,5 +572,19 @@ public final class OpenmrsConstants {
     public static boolean WINDOWS_BASED_OPERATING_SYSTEM = OPERATING_SYSTEM.indexOf("Windows") > -1;
     public static boolean WINDOWS_VISTA_OPERATING_SYSTEM = 
 		OPERATING_SYSTEM.equals(OPERATING_SYSTEM_WINDOWS_VISTA);
+		
+	    // Global property key for global logger level
+    public static final String GLOBAL_PROPERTY_LOG_LEVEL = "log.level.openmrs";
+    // Global logger category
+    public static final String LOG_CLASS_DEFAULT = "org.openmrs";
+    
+    // Log levels
+    public static final String LOG_LEVEL_TRACE = "trace";
+    public static final String LOG_LEVEL_DEBUG = "debug";
+    public static final String LOG_LEVEL_INFO  = "info";
+    public static final String LOG_LEVEL_WARN = "warn";
+    public static final String LOG_LEVEL_ERROR = "error";
+    public static final String LOG_LEVEL_FATAL = "fatal";
+    
 	
 }

@@ -5,8 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.scheduler.Schedulable;
-import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.scheduler.TaskDefinition;
+import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.synchronization.ingest.SyncTransmissionResponse;
 import org.openmrs.synchronization.server.RemoteServer;
 
@@ -14,13 +14,12 @@ import org.openmrs.synchronization.server.RemoteServer;
  * Represents scheduled task to perform full data synchronization with a remote server as identified during the task setup.
  *
  */
-public class SynchronizationTask implements Schedulable {
+public class SynchronizationTask extends AbstractTask {
 
 	// Logger
 	private static Log log = LogFactory.getLog(SynchronizationTask.class);
 	
 	// Instance of configuration information for task
-	private TaskConfig taskConfig;
 	private Integer serverId = 0;
 
 	/**
@@ -37,7 +36,7 @@ public class SynchronizationTask implements Schedulable {
 	 * <p> NOTE: Any exception (outside of session open/close) is caughted and reported in the error log thus creating retry
 	 * behavior based on the scheduled frequency.
 	 */
-	public void run() {
+	public void execute() {
 		Context.openSession();
 		try {
 			log.debug("Synchronizing data to a server.");
@@ -78,25 +77,15 @@ public class SynchronizationTask implements Schedulable {
 	 * 
 	 * @param config
 	 */
-	public void initialize(TaskConfig config) { 
-		this.taskConfig = config;
+	@Override
+	public void initialize(final TaskDefinition definition) { 
+		super.initialize(definition);
 		try {
-			this.serverId = Integer.valueOf(this.taskConfig.getProperty(SyncConstants.SCHEDULED_TASK_PROPERTY_SERVER_ID));
+			this.serverId = Integer.valueOf(definition.getProperty(SyncConstants.SCHEDULED_TASK_PROPERTY_SERVER_ID));
         } catch (Exception e) {
         	this.serverId = 0;
         	log.error("Could not find serverId for this sync scheduled task.",e);
         }
 	}
-	
-	private void authenticate() {
-		try {
-			AdministrationService adminService = Context.getAdministrationService();
-			Context.authenticate(adminService.getGlobalProperty("scheduler.username"),
-				adminService.getGlobalProperty("scheduler.password"));
-			
-		} catch (ContextAuthenticationException e) {
-			log.error("Error authenticating user", e);
-		}
-	}	 
 
 }

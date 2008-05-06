@@ -245,6 +245,75 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * Tests the getFirstObs and getFirstObsWithValues methods in the DataExportFunctions class
+	 * 
+	 * @throws Exception
+	 */
+	public void testFirstObs() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-obs.xml");
+		authenticate();
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("FIRST WEIGHT");
+		
+		SimpleColumn patientId = new SimpleColumn();
+		patientId.setColumnName("PATIENT_ID");
+		patientId.setReturnValue("$!{fn.patientId}");
+		export.getColumns().add(patientId);
+		
+		ConceptColumn firstObs = new ConceptColumn();
+		firstObs.setColumnName("WEIGHT");
+		firstObs.setColumnType("concept");
+		firstObs.setConceptId(5089);
+		firstObs.setConceptName("Weight (KG)");
+		firstObs.setModifier(DataExportReportObject.MODIFIER_FIRST);
+		export.getColumns().add(firstObs);
+		
+		PatientSet patients = new PatientSet();
+		patients.add(2);
+		
+		//System.out.println("Template String: \n" + export.generateTemplate());
+		
+		DataExportUtil.generateExport(export, patients, "\t");
+		File exportFile = DataExportUtil.getGeneratedFile(export);
+		
+		String expectedOutput = "PATIENT_ID\tWEIGHT\n2\t1.0\n";
+		String output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("exportFile: \n" + output);
+		assertEquals("The output is not right.", expectedOutput, output);
+		
+		// first obs with location
+		export = new DataExportReportObject();
+		export.setName("FIRST WEIGHT WITH LOCATION");
+		export.getColumns().add(patientId);
+		
+		firstObs = new ConceptColumn();
+		firstObs.setColumnName("WEIGHT");
+		firstObs.setColumnType("concept");
+		firstObs.setConceptId(5089);
+		firstObs.setConceptName("Weight (KG)");
+		firstObs.setExtras(new String[] {"location"});
+		firstObs.setModifier(DataExportReportObject.MODIFIER_FIRST);
+		export.getColumns().add(firstObs);
+		
+		//System.out.println("Template String: \n" + export.generateTemplate());
+		
+		DataExportUtil.generateExport(export, patients, "\t");
+		exportFile = DataExportUtil.getGeneratedFile(export);
+		
+		expectedOutput = "PATIENT_ID\tWEIGHT\tWEIGHT_location\n2\t1.0\tTest Location\n";
+		output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+
+		//System.out.println("exportFile: \n" + output);
+		assertEquals("The output is not right.", expectedOutput, output);
+	}
+	
+	/**
 	 * Tests the getLastNObsWithValues method in the DataExportFunctions class
 	 * 
 	 * @throws Exception

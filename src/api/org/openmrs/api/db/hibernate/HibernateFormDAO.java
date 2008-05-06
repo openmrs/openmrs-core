@@ -1,5 +1,19 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -154,22 +168,49 @@ public class HibernateFormDAO implements
 
 	
 	/**
-	 * @see org.openmrs.api.db.FormService#getFormField(org.openmrs.Form,org.openmrs.Concept)
+	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept, java.util.Collection, boolean)
 	 */
-	public FormField getFormField(Form form, Concept concept) throws APIException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormField.class)
+	@SuppressWarnings("unchecked")
+    public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force) throws APIException {
+		if (form == null) {
+			log.debug("form is null, no fields will be matched");
+			return null;
+		}
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormField.class, "ff")
 			.createAlias("field", "field")
 			.add(Expression.eq("field.concept", concept))
 			.add(Expression.eq("form", form));
-
-		if (crit.list().size() < 1) {
-			String err = "FormField warning.  No FormField matching concept '" + concept + "' for form '" + form + "'";
-			log.warn(err);
+		
+		// get the list of all formfields with this concept for this form
+		List<FormField> formFields = crit.list();
+		
+		String err = "FormField warning.  No FormField matching concept '" + concept + "' for form '" + form + "'";
+		
+		if (formFields.size() < 1) {
+			log.debug(err);
 			return null;
 		}
 		
-		FormField ff = (FormField)crit.list().get(0); 
-		return ff;
+		// save the first formfield in case we're not a in a "force" situation
+		FormField backupPlan = formFields.get(0);
+		
+		// remove the formfields we're supposed to ignore from the return list
+		formFields.removeAll(ignoreFormFields);
+		
+		// if we ended up removing all of the formfields, check to see if we're
+		// in a "force" situation
+		if (formFields.size() < 1) {
+			if (force == false)
+				return backupPlan;
+			else {
+				log.debug(err);
+				return null;
+			}
+		}
+		else { // if formFields.size() is still greater than 0
+			FormField ff = (FormField)formFields.get(0); 
+			return ff;
+		}
 	}
 	
 	/**
@@ -296,7 +337,8 @@ public class HibernateFormDAO implements
 	/**
      * @see org.openmrs.api.db.FormDAO#findForms(java.lang.String, boolean, boolean)
      */
-    public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
+	@SuppressWarnings("unchecked")
+	public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
     	Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
 		
 		if (includeUnpublished == false)

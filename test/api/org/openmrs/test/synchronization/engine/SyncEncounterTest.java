@@ -14,6 +14,7 @@
 package org.openmrs.test.synchronization.engine;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -52,7 +53,7 @@ public class SyncEncounterTest extends SyncBaseTest {
 				EncounterType encounterType = new EncounterType();
 				encounterType.setName("name");
 				encounterType.setDescription("description");
-				adminService.createEncounterType(encounterType);			
+				adminService.createEncounterType(encounterType);
 			}
 			public void runOnParent() {
 				EncounterType encounterType = encounterService.getEncounterType("name");

@@ -85,8 +85,9 @@ public class Patient extends Person
 	 * @return boolean true/false whether or not they are the same objects
 	 * 
 	 * @see org.openmrs.Person#equals(java.lang.Object)
-	 */public boolean equals(Object obj) {
-		return super.equals(obj);
+	 */
+	public boolean equals(Object obj) {
+			 return super.equals(obj);
 	}
 
 	/**

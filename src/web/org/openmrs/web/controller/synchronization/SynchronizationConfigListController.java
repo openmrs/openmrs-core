@@ -38,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncUtil;
@@ -138,12 +138,13 @@ public class SynchronizationConfigListController extends SimpleFormController {
         		
     	        // also set TaskConfig for scheduling
     	        if ( parent.getServerId() != null ) {
-            		TaskConfig parentSchedule = null;
-        	        Collection<TaskConfig> tasks = Context.getSchedulerService().getAvailableTasks();
-	        		String serverId = parent.getServerId().toString();
+            		TaskDefinition parentSchedule = null;
+        	        Collection<TaskDefinition> tasks = Context.getSchedulerService().getRegisteredTasks();
+	        		
+        	        String serverId = parent.getServerId().toString();
     	        	if ( tasks != null ) {
-    	            	for ( TaskConfig task : tasks ) {
-    	            		if ( task.getSchedulableClass().equals(SyncConstants.SCHEDULED_TASK_CLASS) ) {
+    	            	for ( TaskDefinition task : tasks ) {
+    	            		if ( task.getTaskClass().equals(SyncConstants.SCHEDULED_TASK_CLASS) ) {
     	            			if ( serverId.equals(task.getProperty(SyncConstants.SCHEDULED_TASK_PROPERTY_SERVER_ID)) ) {
     	            				parentSchedule = task;
     	            			}
@@ -154,7 +155,7 @@ public class SynchronizationConfigListController extends SimpleFormController {
     	        	Map<String,String> props = new HashMap<String,String>();
     	        	props.put(SyncConstants.SCHEDULED_TASK_PROPERTY_SERVER_ID, serverId);
     	        	if ( parentSchedule != null ) {
-    	        		Context.getSchedulerService().stopTask(parentSchedule);
+    	        		Context.getSchedulerService().shutdownTask(parentSchedule);
     	        		parentSchedule.setStarted(started);
     	        		parentSchedule.setRepeatInterval((long)repeatInterval);
     	        		parentSchedule.setStartOnStartup(started);
@@ -162,22 +163,22 @@ public class SynchronizationConfigListController extends SimpleFormController {
     	        		if ( started ) {
     	        			parentSchedule.setStartTime(new Date());
     	        		}
-    	        		Context.getSchedulerService().updateTask(parentSchedule);
+    	        		Context.getSchedulerService().saveTask(parentSchedule);
     	        		if ( started ) {
     	        			Context.getSchedulerService().scheduleTask(parentSchedule);
     	        		}
     	        	} else {
     	        		if ( started ) {
-        	        		parentSchedule = new TaskConfig();
+        	        		parentSchedule = new TaskDefinition();
         	        		parentSchedule.setName(msa.getMessage(SyncConstants.DEFAULT_PARENT_SCHEDULE_NAME));
         	        		parentSchedule.setDescription(msa.getMessage(SyncConstants.DEFAULT_PARENT_SCHEDULE_DESCRIPTION));
         	        		parentSchedule.setRepeatInterval((long)repeatInterval);
         	        		parentSchedule.setStartTime(new Date());
-        	        		parentSchedule.setSchedulableClass(SyncConstants.SCHEDULED_TASK_CLASS);
+        	        		parentSchedule.setTaskClass(SyncConstants.SCHEDULED_TASK_CLASS);
         	        		parentSchedule.setStarted(started);
         	        		parentSchedule.setStartOnStartup(started);
         	        		parentSchedule.setProperties(props);
-        	        		Context.getSchedulerService().createTask(parentSchedule);
+        	        		Context.getSchedulerService().saveTask(parentSchedule);
        	        			Context.getSchedulerService().scheduleTask(parentSchedule);
     	        		}
     	        	}
@@ -340,14 +341,14 @@ public class SynchronizationConfigListController extends SimpleFormController {
 	        connectionState.put(ServerConnectionState.NO_ADDRESS.toString(), msa.getMessage("SynchronizationConfig.server.connection.status.noAddress"));
 	        
 	        // taskConfig for automated syncing
-	        TaskConfig parentSchedule = new TaskConfig();
+	        TaskDefinition parentSchedule = new TaskDefinition();
 	        String repeatInterval = "";
 	        if ( parent != null ) {
-	        	Collection<TaskConfig> tasks = Context.getSchedulerService().getAvailableTasks();
+	        	Collection<TaskDefinition> tasks = Context.getSchedulerService().getRegisteredTasks();
 	        	if ( tasks != null ) {
 	        		String serverId = parent.getServerId().toString();
-	            	for ( TaskConfig task : tasks ) {
-	            		if ( task.getSchedulableClass().equals(SyncConstants.SCHEDULED_TASK_CLASS) ) {
+	            	for ( TaskDefinition task : tasks ) {
+	            		if ( task.getTaskClass().equals(SyncConstants.SCHEDULED_TASK_CLASS) ) {
 	            			if ( serverId.equals(task.getProperty(SyncConstants.SCHEDULED_TASK_PROPERTY_SERVER_ID)) ) {
 	            				parentSchedule = task;
 	            				Long repeat = parentSchedule.getRepeatInterval() / 60;

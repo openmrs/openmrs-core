@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.db.hibernate;
 
 import java.util.Calendar;
@@ -31,7 +44,6 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.api.ObsService;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.logic.Aggregation;
@@ -41,7 +53,9 @@ import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * @author bwolfe
+ * 
+ * @see org.openmrs.api.db.ObsDAO
+ * @see org.openmrs.api.ObsService
  */
 public class HibernateObsDAO implements ObsDAO {
 
@@ -68,12 +82,6 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#createObs(org.openmrs.Obs)
 	 */
 	public void createObs(Obs obs) throws DAOException {
-		if (obs.getCreator() == null)
-			obs.setCreator(Context.getAuthenticatedUser());
-
-		if (obs.getDateCreated() == null)
-			obs.setDateCreated(new Date());
-
 		sessionFactory.getCurrentSession().persist(obs);
 	}
 
@@ -90,7 +98,7 @@ public class HibernateObsDAO implements ObsDAO {
 	public Obs getObs(Integer obsId) throws DAOException {
 		return (Obs) sessionFactory.getCurrentSession().get(Obs.class, obsId);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#findObservations(java.lang.Integer, boolean, java.lang.Integer)
 	 */
@@ -147,7 +155,16 @@ public class HibernateObsDAO implements ObsDAO {
 		if (obs.getObsId() == null)
 			createObs(obs);
 		else {
-			obs = (Obs) sessionFactory.getCurrentSession().merge(obs);
+			if (obs.hasGroupMembers()) {
+				// hibernate has a problem updating child collections
+				// if the parent object was already saved so we do it 
+				// explicitly here
+				for (Obs member : obs.getGroupMembers())
+					if (member.getObsId() == null)
+						updateObs(member);
+			}
+			
+			Obs o = (Obs)sessionFactory.getCurrentSession().merge(obs);
 		}
 	}
 

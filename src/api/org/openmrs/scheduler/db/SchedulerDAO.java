@@ -1,10 +1,23 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.scheduler.db;
 
 import java.util.List;
 
 import org.openmrs.api.db.DAOException;
 import org.openmrs.scheduler.Schedule;
-import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.scheduler.TaskDefinition;
 
 /**
  * Scheduler-related database methods.
@@ -20,7 +33,7 @@ public interface SchedulerDAO {
 	 * @param task to be created
 	 * @throws DAOException
 	 */
-	public void createTask(TaskConfig task) throws DAOException;
+	public void createTask(TaskDefinition taskDefinition) throws DAOException;
 
 	/**
 	 * Get task by internal identifier
@@ -29,7 +42,7 @@ public interface SchedulerDAO {
 	 * @return task with given internal identifier
 	 * @throws DAOException
 	 */
-	public TaskConfig getTask(Integer taskId) throws DAOException;
+	public TaskDefinition getTask(Integer taskId) throws DAOException;
 
 	/**
 	 * Update task 
@@ -37,7 +50,7 @@ public interface SchedulerDAO {
 	 * @param task to be updated
 	 * @throws DAOException
 	 */
-	public void updateTask(TaskConfig task) throws DAOException;
+	public void updateTask(TaskDefinition task) throws DAOException;
 
 	/**
 	 * Find all tasks with a given identifier
@@ -46,7 +59,7 @@ public interface SchedulerDAO {
 	 * @return set of tasks matching identifier
 	 * @throws DAOException
 	 */
-	public List<TaskConfig> getTasks() throws DAOException;
+	public List<TaskDefinition> getTasks() throws DAOException;
 	
 	/**
 	 * Delete task from database. 
@@ -54,7 +67,7 @@ public interface SchedulerDAO {
 	 * @param task task to be deleted
 	 * @throws DAOException
 	 */
-	public void deleteTask(TaskConfig task) throws DAOException;
+	public void deleteTask(TaskDefinition task) throws DAOException;
 
 	/**
 	 * Delete task from database. 
@@ -103,6 +116,6 @@ public interface SchedulerDAO {
 	 * @param schedule schedule to be deleted
 	 * @throws DAOException
 	 */
-	//public void deleteSchedule(Schedule schedule) throws DAOException;
+	//public void deleteSchedule(Schedule schedule) throws DAOException;
 
 }

@@ -1,18 +1,32 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.scheduler.timer;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsMemento;
 
 public class TimerSchedulerMemento extends OpenmrsMemento {
 	
-	private Set<Integer> startedTasks = new HashSet<Integer>();
+	private Set<TaskDefinition> startedTasks = new HashSet<TaskDefinition>();
 	
-	private static Set<Integer> errorTasks = new HashSet<Integer>();
+	private static Set<TaskDefinition> errorTasks = new HashSet<TaskDefinition>();
 	
-	public TimerSchedulerMemento(Set<Integer> taskIds) {
-		this.startedTasks = taskIds;
+	public TimerSchedulerMemento(Set<TaskDefinition> tasks) {
+		this.startedTasks = tasks;
 	}
 	
 	@Override
@@ -23,18 +37,18 @@ public class TimerSchedulerMemento extends OpenmrsMemento {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void setState(Object state) {
-		this.startedTasks = (Set<Integer>)state;
+		this.startedTasks = (Set<TaskDefinition>)state;
 	}
 	
-	public Boolean addErrorTask(Integer taskId) {
-		return errorTasks.add(taskId);
+	public Boolean addErrorTask(TaskDefinition task) {
+		return errorTasks.add(task);
 	}
 	
-	public Boolean removeErrorTask(Integer taskId) {
-		return errorTasks.remove(taskId);
+	public Boolean removeErrorTask(TaskDefinition task) {
+		return errorTasks.remove(task);
 	}
 	
-	public static Set<Integer> getErrorTasks() {
+	public static Set<TaskDefinition> getErrorTasks() {
 		return errorTasks;
 	}
 

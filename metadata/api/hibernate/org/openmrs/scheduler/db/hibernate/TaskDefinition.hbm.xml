@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="org.openmrs.scheduler">
 
-	<class name="TaskConfig" table="scheduler_task_config">
+	<class name="TaskDefinition" table="scheduler_task_config">
 
 		<!-- Primary key -->
 		<id name="id" type="int" column="task_config_id" unsaved-value="0">
@@ -16,7 +16,6 @@
 		<property name="name" 
 				type="java.lang.String" 
 				column="name" 
-				not-null="true"
 				length="50" />
 		
 		<property name="description" 
@@ -24,19 +23,17 @@
 				column="description" 
 				length="1024" />
 		
-		<property name="schedulableClass" 
+		<property name="taskClass" 
 				type="java.lang.String" 
 				column="schedulable_class" 
 				length="1024" />
 		
 		<property name="repeatInterval" 
 				type="java.lang.Long" 
-				not-null="true"
 				column="repeat_interval" />
 		
 		<property name="startTime" 
-				type="java.util.Date"
-				not-null="true" 
+				type="java.util.Date" 
 				column="start_time" />
 
 		<property name="startTimePattern" 
@@ -54,7 +51,7 @@
 				type="java.lang.Boolean" 
 				column="started" 
 				length="1" 
-				not-null="true"/>						
+				not-null="false"/>						
 		
 		<!-- Schedules : this relationship has been removed -->
 	<!--
@@ -71,7 +68,7 @@
     	<!-- Task configuration properties -->
 		<map name="properties" 
 				table="scheduler_task_config_property" 
-				lazy="true" 
+				lazy="false" 
 				cascade="save-update,merge,evict">
 			<key column="task_config_id" not-null="true" />
 			<map-key column="name" type="java.lang.String" length="100" />

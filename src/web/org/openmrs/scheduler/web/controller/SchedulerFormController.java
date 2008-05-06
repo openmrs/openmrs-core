@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.scheduler.web.controller;
 
 import java.text.DateFormat;
@@ -13,7 +26,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.scheduler.TaskConfig;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -56,7 +69,7 @@ public class SchedulerFormController extends SimpleFormController {
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		
-		TaskConfig task = (TaskConfig) command;
+		TaskDefinition task = (TaskDefinition) command;
 		
 		// assign the properties to the task
 		String[] names = request.getParameterValues("propertyName");
@@ -106,11 +119,12 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		String view = getFormView();
 
-		TaskConfig task = (TaskConfig) command;
+		TaskDefinition task = (TaskDefinition) command;
 		task.setStartTimePattern(DEFAULT_DATE_PATTERN);
 		log.info("task started? " + task.getStarted());
 		
-		Context.getSchedulerService().updateTask(task);
+		Context.getSchedulerService().saveTask(task);
+
 		view = getSuccessView();
 		
 		Object [] args = new Object[] { task.getName() };
@@ -129,7 +143,7 @@ public class SchedulerFormController extends SimpleFormController {
 	 */
 	  protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		TaskConfig task = new TaskConfig();
+		  TaskDefinition task = new TaskDefinition();
 		
 		String taskId = request.getParameter("taskId");
     	if (taskId != null) {
@@ -151,7 +165,7 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		Map<String, String> map = new HashMap<String, String>();
 		
-		TaskConfig task = (TaskConfig)command;
+		TaskDefinition task = (TaskDefinition)command;
 		
 		Long interval = task.getRepeatInterval();
 		

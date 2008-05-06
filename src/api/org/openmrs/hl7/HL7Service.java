@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.hl7;
 
 import java.util.Collection;
@@ -103,6 +116,10 @@ public interface HL7Service {
 	 * once we have obs groups being created correctly
 	 * 
 	 * @param encounter
+	 * 
+	 * @deprecated This method is no longer needed.  When an encounter is created in the 
+	 * 	ROUR01 handler, it is created with all obs. Any AOP hooking should be done on the
+	 * 	EncounterService.createEncounter(Encounter) method   
 	 */
 	public void encounterCreated(Encounter encounter);
 

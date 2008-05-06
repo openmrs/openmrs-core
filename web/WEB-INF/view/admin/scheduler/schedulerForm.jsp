@@ -166,8 +166,8 @@ window.onload = init;
 		<tr>
 			<td><spring:message code="Scheduler.taskForm.class"/></td>
 			<td>
-				<spring:bind path="task.schedulableClass">
-					<input type="text" name="schedulableClass" value="${status.value}" size="60" />
+				<spring:bind path="task.taskClass">
+					<input type="text" name="taskClass" value="${status.value}" size="60" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -219,6 +219,12 @@ window.onload = init;
 <fieldset>
 	<legend><spring:message code="Scheduler.scheduleForm.legend" /></legend> 
 	<table cellpadding="5">
+		<tr>
+		
+			<td valign="top" colspan="2">
+				<spring:message code="Scheduler.scheduleForm.instructions"/>
+			</td>
+		</tr>
 		<tr>
 			<td valign="top"><spring:message code="Scheduler.scheduleForm.started"/>:</td>
 			<td>

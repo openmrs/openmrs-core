@@ -403,11 +403,11 @@ public abstract class BaseContextSensitiveTest extends
 			// because they are not in the hibernate mapping files
 			String sql = "alter table users add column password varchar(255)";
 			PreparedStatement ps = connection.prepareStatement(sql);
-			ps.execute();
+	//		ps.execute();
 			ps.close();
 			sql = "alter table users add column salt varchar(255)";
 			ps = connection.prepareStatement(sql);
-			ps.execute();
+	//		ps.execute();
 			ps.close();
 		   
 	        columnsAdded  = true;

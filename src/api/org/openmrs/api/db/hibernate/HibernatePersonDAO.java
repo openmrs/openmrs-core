@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.db.hibernate;
 
 import java.util.Date;
@@ -23,7 +36,6 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PersonDAO;
@@ -309,24 +321,15 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Relationship> getRelationships(Person person, boolean showVoided) throws DAOException {
-		Query query = null;
-		List<Relationship> relationships = new Vector<Relationship>();
+
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r")
+		.add(Expression.or(Expression.eq("personA", person), Expression.eq("personB", person)));
 		
-		if (person == null)
-			return relationships;
+		if (!showVoided) {
+			criteria.add(Expression.eq("voided", showVoided));
+		}
 		
-		String voided = showVoided ? "" : " and voided = 0 ";
-		
-		query = sessionFactory.getCurrentSession().createQuery(
-			"from Relationship r where r.personA = :p1 or r.personB = :p2 " + voided + " order by r.relationshipId asc "
-		)
-		.setParameter("p1", person)
-		.setParameter("p2", person);
-		
-		if (query != null)
-			relationships = query.list(); 
-			
-		return relationships;
+		return criteria.list();
 	}
 
 	/**

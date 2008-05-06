@@ -48,6 +48,9 @@
 					<span id="userLogout">
 						<a href='${pageContext.request.contextPath}/logout'><spring:message code="header.logout" /></a>
 					</span>
+					<span>
+						<a href="${pageContext.request.contextPath}/options.form"><spring:message code="Navigation.options"/></a>
+					</span>
 				</c:if>
 				<c:if test="${authenticatedUser == null}">
 					<span id="userLoggedOut" class="firstChild">
@@ -58,11 +61,7 @@
 					</span>
 				</c:if>
 			</openmrs:authentication>
-			
-			<span>
-				<a href="${pageContext.request.contextPath}/options.form"><spring:message code="Navigation.options"/></a>
-			</span>
-			
+
 			<span id="userHelp">
 				<a href='<%= request.getContextPath() %>/help.htm'><spring:message code="header.help"/></a>
 			</span>

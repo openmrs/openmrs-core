@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.module.web.taglib;
 
 import java.io.IOException;
@@ -67,6 +80,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	// tag attributes
 	private String pointId;
 	private String parameters = "";
+	private String requiredClass;
 
 	/** all tags using this should default to 'html' media type */
 	private String type = "html";
@@ -109,6 +123,20 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 
 		if (extensionList != null) {
 			log.debug("Found " + extensionList.size() + " extensions");
+			if (requiredClass != null) {
+				try {
+					Class clazz = Class.forName(requiredClass);
+					for (Extension ext : extensionList) {
+						if (!clazz.isAssignableFrom(ext.getClass())) {
+							throw new ClassCastException("Extension at this point (" + pointId + ") are " +
+							                             "required to be of " + clazz + " or a subclass. " +
+							                             ext.getClass() + " is not.");
+						}
+					}
+				} catch (ClassNotFoundException ex) {
+					throw new IllegalArgumentException(ex);
+				}
+			}
 			extensions = extensionList.iterator();
 		}
 
@@ -216,6 +244,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	public void release() {
 		extensions = null;
 		pointId = null;
+		requiredClass = null;
 		type = null;
 		if (bodyContent != null)
 			bodyContent.clearBody();
@@ -275,5 +304,13 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	public void setVarStatus(String varStatus) {
 		this.varStatus = varStatus;
 	}
+
+	public String getRequiredClass() {
+    	return requiredClass;
+    }
+
+	public void setRequiredClass(String requiredClass) {
+    	this.requiredClass = requiredClass;
+    }
 
 }

@@ -1,9 +1,24 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api.impl;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.openmrs.Concept;
 import org.openmrs.Field;
@@ -373,21 +388,26 @@ public class FormServiceImpl implements FormService {
 	}
 	
 	/**
-	 * Finds the FormField defined for this form/concept combination 
-	 * 
-	 * @param form
-	 * @param concept
-	 * @return Formfield for this concept
-	 * @throws APIException
+	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept)
+	 * @see #getFormField(Form, Concept, Collection)
 	 */
 	public FormField getFormField(Form form, Concept concept) throws APIException {
-		return getFormDAO().getFormField(form, concept);
+		return getFormField(form, concept, null, false);
 	}
 	
 	/**
-	 * 
-	 * @param formField
-	 * @throws APIException
+	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept, java.util.Collection, boolean)
+	 */
+	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force) throws APIException {
+		// create an empty ignoreFormFields list if none was passed in
+		if (ignoreFormFields == null)
+			ignoreFormFields = new Vector<FormField>();
+		
+		return getFormDAO().getFormField(form, concept, ignoreFormFields, force);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#createFormField(org.openmrs.FormField)
 	 */
 	public void createFormField(FormField formField) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))
@@ -399,9 +419,7 @@ public class FormServiceImpl implements FormService {
 	}
 	
 	/**
-	 * 
-	 * @param formField
-	 * @throws APIException
+	 * @see org.openmrs.api.FormService#updateFormField(org.openmrs.FormField)
 	 */
 	public void updateFormField(FormField formField) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_FORMS))

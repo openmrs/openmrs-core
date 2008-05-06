@@ -64,6 +64,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
@@ -76,6 +78,7 @@ import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
@@ -461,8 +464,63 @@ public class OpenmrsUtil {
 		if (val != null)
 			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = val;
 		
+		// set global log level
+		applyLogLevels();
+		
 	}
 	
+	/**
+	 * Set the org.openmrs log4j logger's level if global property log.level.openmrs 
+	 * ( OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL ) exists. 
+     * Valid values for global property are trace, debug, info, 
+     * warn, error or fatal.
+	 */
+	public static void applyLogLevels() {
+		AdministrationService adminService = Context.getAdministrationService();
+		String logLevel = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL);
+		String logClass = OpenmrsConstants.LOG_CLASS_DEFAULT;
+		
+		// potentially have different levels here.  only doing org.openmrs right now
+		applyLogLevel(logClass, logLevel);
+	}
+	
+	/**
+     * Set the log4j log level for class <code>logClass</code> to <code>logLevel</code>.
+     * 
+     * 
+     * @param logClass optional string giving the class level to change.  Defaults to 
+     * 		OpenmrsConstants.LOG_CLASS_DEFAULT .  Should be something like org.openmrs.___
+     * @param level one of OpenmrsConstants.LOG_LEVEL_*
+     */
+    public static void applyLogLevel(String logClass, String logLevel) {
+	    
+		if(logLevel != null) {
+			
+			// the default log level is org.openmrs
+			if (logClass == null || "".equals(logClass))
+				logClass = OpenmrsConstants.LOG_CLASS_DEFAULT;
+			
+			Logger logger = Logger.getLogger(logClass);
+			
+			logLevel = logLevel.toLowerCase();
+			if(OpenmrsConstants.LOG_LEVEL_TRACE.equals(logLevel) ) {
+				logger.setLevel(Level.TRACE);
+			} else if(OpenmrsConstants.LOG_LEVEL_DEBUG.equals(logLevel) ) {
+				logger.setLevel(Level.DEBUG);
+			} else if(OpenmrsConstants.LOG_LEVEL_INFO.equals(logLevel) ) {
+				logger.setLevel(Level.INFO);
+			} else if(OpenmrsConstants.LOG_LEVEL_WARN.equals(logLevel) ) {
+				logger.setLevel(Level.WARN);
+			} else if(OpenmrsConstants.LOG_LEVEL_ERROR.equals(logLevel) ) {
+				logger.setLevel(Level.ERROR);
+			} else if(OpenmrsConstants.LOG_LEVEL_FATAL.equals(logLevel) ) {
+				logger.setLevel(Level.FATAL);
+			} else {
+				log.warn("Global property " + logLevel + " is invalid. " +
+						"Valid values are trace, debug, info, warn, error or fatal");
+			}
+		}
+    }
 	
 	/**
 	 * Takes a String like "size=compact|order=date" and returns a Map<String,String> from the keys to the values.

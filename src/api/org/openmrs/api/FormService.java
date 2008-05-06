@@ -1,5 +1,19 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.api;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -235,17 +249,47 @@ public interface FormService {
 	public FormField getFormFieldByGuid(String guid) throws APIException;
 
 	/**
-	 * Finds the FormField defined for this form/concept combination 
+	 * Finds the FormField defined for this form/concept combination
 	 * 
-	 * @param form
-	 * @param concept
-	 * @return Formfield for this concept
+	 * Calls {@link #getFormField(Form, Concept, Collection)} with an empty
+	 * ignore list and with <code>force</code> set to false
+	 * 
+	 * @param form Form that this concept was found on 
+	 * @param concept (question) on this form that is being requested
+	 * @return Formfield for this concept on this form
 	 * @throws APIException
+	 * 
+	 * @see {@link #getFormField(Form, Concept, Collection)}
 	 */
 	@Transactional(readOnly=true)
 	public FormField getFormField(Form form, Concept concept)
 			throws APIException;
-
+	
+	/**
+	 * Finds the FormField defined for this form/concept combination 
+	 * while discounting any form field found in the <code>ignoreFormFields</code>
+	 * collection 
+	 * 
+	 * This method was added when needing to relate observations to form fields
+	 * during a display.  The use case would be that you know a Concept for a obs, 
+	 * which was defined on a form (via a formField).  You can relate the formFields
+	 * to Concepts easily enough, but if a Form reuses a Concept in two separate FormFields
+	 * you don't want to only associate that first formField with that concept.  So, keep 
+	 * a running list of formFields you've seen and pass them back in here to rule them out.
+	 * 
+	 * @param form Form that this concept was found on 
+	 * @param concept Concept (question) on this form that is being requested
+	 * @param ignoreFormFields FormFields to ignore (aka already seen formfields) 
+	 * @param force if true and there are zero matches because all formFields were ignored
+	 * 		(because of ignoreFormFields) than the first result is returned 
+	 * @return Formfield for this concept on this form
+	 * 
+	 * @throws APIException
+	 */
+	@Transactional(readOnly=true)
+	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
+			throws APIException;
+	
 	/**
 	 * Create the given form field in the database
 	 * 
@@ -280,5 +324,5 @@ public interface FormService {
      */
 	@Transactional(readOnly=true)
 	public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired);
-
+	
 }

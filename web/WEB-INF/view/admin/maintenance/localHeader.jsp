@@ -37,6 +37,13 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="View Server Log">
+		<li <c:if test="<%= request.getRequestURI().contains("serverLog") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/maintenance/serverLog.form">
+				<spring:message code="ServerLog.view"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="View Data Entry Statistics">
 		<li <c:if test="<%= request.getRequestURI().contains("dataEntryStat") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/dataEntryStats.list">

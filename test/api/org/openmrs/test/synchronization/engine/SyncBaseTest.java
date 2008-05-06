@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Session;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.api.context.Context;
 import org.openmrs.serialization.FilePackage;
@@ -65,9 +66,10 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 
 		log.info("\n************************************* Deleting Data *************************************");
 		deleteAllData();
+		
 		executeDataSet("org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml");
 		executeDataSet("org/openmrs/test/synchronization/engine/include/SyncRemoteChildServer.xml");
-
+		
 		log.info("\n************************************* Sync Record(s) to Process *************************************");
         FilePackage pkg = new FilePackage();
         Record record = pkg.createRecordForWrite("SyncTest");
@@ -82,13 +84,15 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
             fail("Serialization failed with an exception: " + e.getMessage());
         }		
 
-		log.info("\n************************************* Processing Sync Record(s) *************************************");
+        log.info("\n************************************* Processing Sync Record(s) *************************************");
 		RemoteServer origin = Context.getSynchronizationService().getRemoteServer(1);
 		for (SyncRecord syncRecord : syncRecords) {			
 			Context.getSynchronizationIngestService().processSyncRecord(syncRecord, origin);
 		}
 		
-        log.info("\n************************************* Running on Parent *************************************");
+        Context.clearSession();
+		log.info("\n************************************* Running on Parent *************************************");
+		
 		testMethods.runOnParent();
 		Context.closeSession();
 	}

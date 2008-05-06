@@ -139,6 +139,7 @@
 				<prop key="remotecommunication/postHl7.form">postHl7FormController</prop>
 
 				<prop key="admin/maintenance/globalProps.form">globalPropertyController</prop>
+				<prop key="admin/maintenance/serverLog.form">serverLogController</prop>
 				<!--<prop key="**/calendar.list">calendarController</prop>-->
 				<prop key="admin/maintenance/dataEntryStats.list">dataEntryStatsController</prop>
 				<prop key="admin/synchronization/synchronizationStatus.list">synchronizationStatusListController</prop>
@@ -217,10 +218,14 @@
 
 	<!-- ** Mime Type ** -->
 
+	<bean id="obsValidator" class="org.openmrs.validator.ObsValidator" />
 	<bean id="obsForm" class="org.openmrs.web.controller.observation.ObsFormController">
 		<property name="commandName"><value>obs</value></property>
 		<property name="formView"><value>/admin/observations/obsForm</value></property>
 		<property name="successView"><value>../encounters/encounter.form</value></property>
+		<property name="validator">
+			<ref bean="obsValidator" />
+		</property>
 	</bean>
 
 	<!--this is the optional method of declaring values in the constructor -->
@@ -552,14 +557,12 @@
 
 	<!-- ** Alert  ** -->
 	<bean id="alertList" class="org.openmrs.notification.web.controller.AlertListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>alertList</value></property>
 		<property name="formView"><value>/admin/users/alertList</value></property>
 		<property name="successView"><value>alert.list</value></property>
 	</bean>
 
 	<bean id="alertForm" class="org.openmrs.notification.web.controller.AlertFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>alert</value></property>
 		<property name="formView"><value>/admin/users/alertForm</value></property>
 		<property name="successView"><value>alert.list</value></property>
@@ -573,7 +576,6 @@
 	<!-- ============================ -->
 	<!-- ** Encounter      ** -->
 	<bean id="encounterForm" class="org.openmrs.web.controller.encounter.EncounterFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>encounter</value></property>
 		<property name="formView"><value>/admin/encounters/encounterForm</value></property>
 		<property name="successView"><value>encounter.form</value></property>
@@ -583,7 +585,6 @@
 	<!-- ** Encounter Type ** -->
 	<bean id="encounterTypeList"
 		class="org.openmrs.web.controller.encounter.EncounterTypeListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>encounterTypeList</value></property>
 		<property name="formView"><value>/admin/encounters/encounterTypeList</value></property>
 		<property name="successView"><value>encounterType.list</value></property>
@@ -594,7 +595,6 @@
 		class="org.openmrs.web.controller.encounter.EncounterTypeValidator" />
 	<bean id="encounterTypeForm"
 		class="org.openmrs.web.controller.encounter.EncounterTypeFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>encounterType</value></property>
 		<property name="validator">
 			<ref bean="encounterTypeValidator" />
@@ -605,7 +605,6 @@
 	<!-- ** /Encounter Type ** -->
 	<!-- ** Location ** -->
 	<bean id="locationList" class="org.openmrs.web.controller.encounter.LocationListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>locationList</value></property>
 		<property name="formView"><value>/admin/encounters/locationList</value></property>
 		<property name="successView"><value>location.list</value></property>
@@ -614,7 +613,6 @@
 	<!--  Validator and Form Controller for the add/edit encounter types page -->
 	<bean id="locationValidator" class="org.openmrs.web.controller.encounter.LocationValidator" />
 	<bean id="locationForm" class="org.openmrs.web.controller.encounter.LocationFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>location</value></property>
 		<property name="validator">
 			<ref bean="locationValidator" />
@@ -1124,6 +1122,12 @@
 		<property name="commandName"><value>globalProps</value></property>
 		<property name="formView"><value>/admin/maintenance/globalPropsForm</value></property>
 		<property name="successView"><value>globalProps.form</value></property>
+	</bean>
+	<bean id="serverLogController"
+		class="org.openmrs.web.controller.maintenance.ServerLogController">
+		<property name="commandName"><value>logLines</value></property>
+		<property name="formView"><value>/admin/maintenance/serverLog</value></property>
+		<property name="successView"><value>serverLog.form</value></property>
 	</bean>
 	<bean id="dataEntryStatsController"
 		class="org.openmrs.web.controller.maintenance.DataEntryStatisticsController">

@@ -1,14 +1,11 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
 
 <openmrs:require privilege="View Encounters" redirect="/encounters/encounterDisplay.htm" otherwise="/login.htm" />
 
+<%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
+
 <openmrs:globalProperty var="viewEncounterWhere" key="dashboard.encounters.viewWhere" defaultValue="newWindow"/>
 <openmrs:globalProperty var="showEmptyFields" key="dashboard.encounters.showEmptyFields" defaultValue="true"/>
-
-<link href="<%= request.getContextPath() %>/openmrs.css" type="text/css" rel="stylesheet" />
-<link href="<%= request.getContextPath() %>/style.css" type="text/css" rel="stylesheet" />
-<openmrs:htmlInclude file="/openmrs.js" />
 
 <script type="text/javascript">
 	var pageIds = new Array();
@@ -67,74 +64,90 @@
 		<spring:message code="general.onDate"/> <b><openmrs:formatDate date="${model.encounter.encounterDatetime}"/></b>
 		<spring:message code="general.atLocation"/> <b>${model.encounter.location}</b>
 	<br/>
-	<spring:message code="Encounter.form"/>: <b>${model.form.name}</b>
+	<spring:message code="Encounter.form"/>: <b>${model.encounter.form.name}</b>
 	<c:if test="${model.usePages}">
 		<br/>
 		<spring:message code="FormField.pageNumber"/>
-		<c:forEach var="pn" items="${model.pageNumbers}">
+		<c:forEach var="pageNumber" items="${model.pageNumbers}">
 			<%-- TODO: get rid of
 				style="color: white"
 			--%>
 			&nbsp;&nbsp;
-			<a style="color: white" href="javascript:showPage(${pn})">${pn}</a>
+			<a style="color: white" href="javascript:showPage(${pageNumber})">${pageNumber}</a>
 			&nbsp;&nbsp;
 		</c:forEach>
 	</c:if>
 </div>
 
-<c:forEach var="pageNumber" items="${model.pageNumbers}">
-	<c:set var="thisPage" value="${model.pages[pageNumber]}" />
+<c:forEach var="pageEntry" items="${model.pages}">
+	<c:set var="thisPage" value="${pageEntry.value}" />
+	<c:set var="pageNumber" value="${pageEntry.key}" />
 	<div id="page_${pageNumber}">
 		<table class="encounterFormTable" cellpadding="0" cellspacing="0">
 			<c:if test="${model.usePages}">
 				<tr><td align="center" colspan="2" style="background-color: black; color: white;">Page ${pageNumber}</td></tr>
 			</c:if>
+		
+		<%-- The alternating odd/even status of the current row --%>	
 		<c:set var="rowStatus" value="false"/>
+		
+		<%-- Loop over the rows on this page --%>
 		<c:forEach var="fieldHolder" items="${thisPage}" varStatus="varStatus">
-			<c:if test="${ showEmptyFields || not empty fieldHolder.observations || not empty fieldHolder.obsGroups }">
-			<%-- <c:if test="${fieldHolder.label.pageNumber == pageNumber && (showEmptyFields || not empty fieldHolder.observations || not empty fieldHolder.obsGroups)}"> --%>
+			<c:if test="${ showEmptyFields || not empty fieldHolder.obs }">
 				<tr valign="top" class='<c:choose><c:when test="${rowStatus == true}">evenRow<c:set var="rowStatus" value="false"/></c:when><c:otherwise>oddRow<c:set var="rowStatus" value="true"/></c:otherwise></c:choose>'>
 					<th class="encounterViewLabel">${fieldHolder.label}</th>
 					<td>
-						<c:if test="${not empty fieldHolder.obsGroups}">
-							<table class="borderedTable">
-								<tr>
-									<c:forEach var="conc" items="${fieldHolder.obsGroupConceptsWithObs}">
-										<th class="smallHeader"><openmrs_tag:concept conceptId="${conc.conceptId}"/></th>
-									</c:forEach>
-								</tr>
-								<c:forEach var="groupEntry" items="${fieldHolder.obsGroups}">
+						<c:choose>
+							<c:when test="${fieldHolder.obsGrouping}">
+								<table class="borderedTable">
 									<tr>
-										<c:forEach var="obsList" items="${groupEntry.value.observationsByConcepts}">
-											<td>
-												<c:forEach var="obs" items="${obsList}">
-													<span class="encounterViewObsGroup">${obs.valueAsString[model.locale]}</span>
-												</c:forEach>
-											</td>
+										<th class="smallHeader obsGroupLabel" colspan="${fn:length(fieldHolder.groupMemberConcepts)}">
+											<openmrs_tag:concept conceptId="${fieldHolder.obs[0].concept.conceptId}"/>
+										</th>
+									</tr>
+									<tr>
+										<c:forEach var="conceptColumn" items="${fieldHolder.groupMemberConcepts}">
+											<th class="smallHeader"><openmrs_tag:concept conceptId="${conceptColumn.conceptId}"/></th>
 										</c:forEach>
 									</tr>
-								</c:forEach>
-							</table>
-						</c:if>
-						<table class="encounterFormInnerTable" cellspacing="0" cellpadding="4">
-						<c:forEach var="obsEntry" items="${fieldHolder.observations}" varStatus="varStatusInner">
-							<tr <c:if test="${varStatusInner.count > 1}">class='<c:choose><c:when test="${rowStatus == true}">evenRow<c:set var="rowStatus" value="false"/></c:when><c:otherwise>oddRow<c:set var="rowStatus" value="true"/></c:otherwise></c:choose>'</c:if>>
-								<td class="encounterViewObsConcept"><openmrs_tag:concept conceptId="${obsEntry.key.conceptId}"/>:</td>
-								<td class="encounterViewObsAnswer">
-									<c:forEach var="obs" items="${obsEntry.value}">
-										<span class="encounterViewObsValue">${obs.valueAsString[model.locale]}</span>
-										<c:if test="${not empty obs.obsDatetime && obs.obsDatetime != model.encounter.encounterDatetime}">
-											<span class="encounterViewObsDatetime">
-												<spring:message code="general.onDate"/>
-												<openmrs:formatDate date="${obs.obsDatetime}"/>
-											</span>
-										</c:if>
-										<br/>
+									<c:forEach var="matrixEntry" items="${fieldHolder.obsGroupMatrix}">
+										<c:set var="obsGrouper" value="${matrixEntry.key}"/>
+										<c:set var="obsRow" value="${matrixEntry.value}"/>
+										<tr>
+											<c:forEach var="obs" items="${obsRow}">
+												<td>
+													<span class="encounterViewObsGroup">${obs.valueAsString[model.locale]}</span>
+												</td>
+											</c:forEach>
+										</tr>
 									</c:forEach>
-								</td>
-							</tr>
-						</c:forEach>
-						</table>
+								</table>
+							</c:when>
+							<c:otherwise>
+								<%-- Just loop over the obs that have been grouped together by concept --%>
+								<table class="encounterFormInnerTable" cellspacing="0" cellpadding="4">
+								<c:forEach var="obs" items="${fieldHolder.obs}" varStatus="varStatusInner">
+									<c:if test="${varStatusInner.first}">
+										<tr <c:if test="${varStatusInner.count > 1}">class='<c:choose><c:when test="${rowStatus == true}">evenRow<c:set var="rowStatus" value="false"/></c:when><c:otherwise>oddRow<c:set var="rowStatus" value="true"/></c:otherwise></c:choose>'</c:if>>
+										<td class="encounterViewObsConcept"><openmrs_tag:concept conceptId="${obs.concept.conceptId}"/>:</td>
+										<td class="encounterViewObsAnswer">
+									</c:if>
+											<span class="encounterViewObsValue">${obs.valueAsString[model.locale]}</span>
+											<c:if test="${not empty obs.obsDatetime && obs.obsDatetime != model.encounter.encounterDatetime}">
+												<span class="encounterViewObsDatetime">
+													<spring:message code="general.onDate"/>
+													<openmrs:formatDate date="${obs.obsDatetime}"/>
+												</span>
+											</c:if>
+											<br/>
+									<c:if test="${varStatusInner.last}">
+										</td>
+										</tr>
+									</c:if>
+								</c:forEach>
+								</table>
+							</c:otherwise>
+						</c:choose>
 					</td>
 				</tr>
 			</c:if>

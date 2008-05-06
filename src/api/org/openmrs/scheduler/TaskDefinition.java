@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */ 
 package org.openmrs.scheduler;
 
 import java.util.Date;
@@ -14,15 +27,17 @@ import org.openmrs.User;
  *
  * @author Justin Miranda
  */
-public class TaskConfig { 
+public class TaskDefinition { 
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	// Private fields
+	// Task metadata
 	private Integer id;
 	private String name;
 	private String description;
-	private String schedulableClass; 	// This class must implement the schedulable interface or it will fail to start
+	private String taskClass; 	// This class must implement the schedulable interface or it will fail to start
+
+	// Scheduling metadata
 	private Date startTime;
 	private Long repeatInterval;		// NOW in seconds to give us ability to support longer intervals (years, decades, milleniums)
 	private Boolean startOnStartup;  	
@@ -40,7 +55,7 @@ public class TaskConfig {
 	/** 
 	 * Default no-arg public constructor
 	 */
-	public TaskConfig() {
+	public TaskDefinition() {
 		this.started = new Boolean(false);	// default 
 		this.startTime = new Date();		// makes it easier during task creation as we have a default date populated
 		this.properties = new HashMap<String,String>();
@@ -49,13 +64,13 @@ public class TaskConfig {
 	/**
 	 * Public constructor
 	 */
-	public TaskConfig(Integer id, String name, String description, String schedulableClass) {
+	public TaskDefinition(Integer id, String name, String description, String schedulableClass) {
 		this();
 		log.debug("Creating taskconfig: " + id);
 		this.id = id;
 		this.name = name;
 		this.description = description;
-		this.schedulableClass = schedulableClass;	}
+		this.taskClass = taskClass;	}
 	
 	
 	/**
@@ -63,10 +78,11 @@ public class TaskConfig {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof TaskConfig) {
-			TaskConfig other = (TaskConfig)obj;
-			if (this.getId() != null)
+		if (obj instanceof TaskDefinition) {
+			TaskDefinition other = (TaskDefinition)obj;
+			if (this.getId() != null) { 
 				this.getId().equals(other.getId());
+			}
 		}
 		return false;
 	}
@@ -76,8 +92,9 @@ public class TaskConfig {
 	 */
 	@Override
 	public int hashCode() {
-		if (this.getId() == null)
+		if (this.getId() == null) {
 			return super.hashCode();
+		}
 		
 		Integer hash = 5;
 		return (this.getId() * hash);
@@ -94,8 +111,8 @@ public class TaskConfig {
 	/**	 * Set the name of the task.	 * 	 * @param name of the task	 */	public void setDescription(String description) { 		this.description = description;	}
 
 		/**	 * Get the data map used to provide the task with runtime data.	 * 	 * @return 	the data map 	 */	public Map<String,String> getProperties() { 		return this.properties;	}		/**	 * Set the name of the task.	 * 	 * @param name of the task	 */	public void setProperties(Map<String,String> properties) {		this.properties = properties;	}
-  /**   * Get the schedulable object to be executed.    *   * @return    the schedulable object   */	public String getSchedulableClass() { 		return this.schedulableClass;  	}
-	    /**   * Set the schedulable object to be executed.    *   * @param schedulable schedulable object   */	public void setSchedulableClass(String schedulableClass) { 		this.schedulableClass = schedulableClass;	}
+  /**   * Get the schedulable object to be executed.    *   * @return    the schedulable object   */	public String getTaskClass() { 		return this.taskClass;  	}
+	    /**   * Set the schedulable object to be executed.    *   * @param schedulable schedulable object   */	public void setTaskClass(String taskClass) { 		this.taskClass = taskClass;	}
 	
   	/**
   	 * Get the start time for when the task should be executed.  
@@ -180,6 +197,10 @@ public class TaskConfig {
 	
 	
 	
+	
+	
+
+
 	/**
 	 * Get task configuration property.
 	 * @param key
