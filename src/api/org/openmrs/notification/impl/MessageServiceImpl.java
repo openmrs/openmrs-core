@@ -87,7 +87,7 @@ public class MessageServiceImpl implements MessageService {
 	 *  
 	 *  @param  message  the Message to be sent
 	 */
-	public void send(Message message) throws MessageException {
+	public void sendMessage(Message message) throws MessageException {
 		try { 
 			messageSender.send( message );
 		} catch (Exception e ) { 
@@ -105,7 +105,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param	subject			the subject of the message
 	 * @param	content			the content or body of the message
 	 */
-	public Message create(String recipients, String sender, String subject, String content) throws MessageException {		
+	public Message createMessage(String recipients, String sender, String subject, String content) throws MessageException {		
 		Message message = new Message();	
 		message.setRecipients(recipients);
 		message.setSender(sender);
@@ -121,8 +121,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param	subject			the subject of the message
 	 * @param	content			the content or body of the message
 	 */
-	public Message create(String sender, String subject, String content) throws MessageException {		
-		return create(null, sender, subject, content);
+	public Message createMessage(String sender, String subject, String content) throws MessageException {		
+		return createMessage(null, sender, subject, content);
 	}	
 
 	/**
@@ -132,8 +132,8 @@ public class MessageServiceImpl implements MessageService {
 	 * @param	subject			the subject of the message
 	 * @param	content			the content or body of the message
 	 */
-	public Message create(String subject, String content) throws MessageException {		
-		return create(null, null, subject, content);
+	public Message createMessage(String subject, String content) throws MessageException {		
+		return createMessage(null, null, subject, content);
 	}	
 	
 	
@@ -141,9 +141,9 @@ public class MessageServiceImpl implements MessageService {
 	 *  Send a message using the given parameters.  This is a convenience method so that the client
 	 *  does not need to create its own Message object. 
 	 */
-	public void send(String recipients, String sender, String subject, String content) throws MessageException { 
-		Message message = create(recipients, sender, subject, content);
-		send(message);
+	public void sendMessage(String recipients, String sender, String subject, String content) throws MessageException { 
+		Message message = createMessage(recipients, sender, subject, content);
+		sendMessage(message);
 	}	
 
 	
@@ -153,12 +153,12 @@ public class MessageServiceImpl implements MessageService {
 	 * @param	message 		message to be sent
 	 * @param	userId			identifier of user (recipient) 
 	 */
-	public void send(Message message, Integer recipientId) throws MessageException { 
+	public void sendMessage(Message message, Integer recipientId) throws MessageException { 
 		log.debug("Sending message to user with user id " + recipientId);
 		User user = Context.getUserService().getUser( recipientId );
 		message.addRecipient( user.getUserProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS ) );
 		// message.setFormat( user( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
-		send(message);
+		sendMessage(message);
 	}
 
 	/**
@@ -167,40 +167,40 @@ public class MessageServiceImpl implements MessageService {
 	 * @param	message		the message to be sent
 	 * @param	recipient	the recipient of the message 
 	 */
-	public void send(Message message, User user) throws MessageException { 
+	public void sendMessage(Message message, User user) throws MessageException { 
 		log.debug("Sending message to user " + user);
 		String address = user.getUserProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS );
 		if (address != null) message.addRecipient(address);
 		// message.setFormat( user.getProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_FORMAT ) );
-		send(message);
+		sendMessage(message);
 	}
 		
 	/**
 	 * Send message to a collection of recipients.
 	 * 
 	 */
-	public void send(Message message, Collection<User> users) throws MessageException { 
+	public void sendMessage(Message message, Collection<User> users) throws MessageException { 
 		log.debug("Sending message to users " + users);
 		for ( User user : users ) {
 			String address = user.getUserProperty( OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS );
 			if (address != null) message.addRecipient(address);
 		}
-		send(message);
+		sendMessage(message);
 	}
 	
 	/**
 	 * Send a message to a group of users identified by their role.
 	 */
-	public void send(Message message, String roleName) throws MessageException { 
+	public void sendMessage(Message message, String roleName) throws MessageException { 
 		log.debug("Sending message to role with name " + roleName);
 		Role role = Context.getUserService().getRole( roleName );
-		send(message, role);
+		sendMessage(message, role);
 	}
 	
 	/**
 	 * Sends a message to a group of users identifier by thir role.
 	 */
-	public void send(Message message, Role role ) throws MessageException {
+	public void sendMessage(Message message, Role role ) throws MessageException {
 		log.debug("Sending message to role " + role);
 		log.debug("User Service : " + Context.getUserService());
 		
@@ -210,7 +210,7 @@ public class MessageServiceImpl implements MessageService {
 		Collection<User> users = Context.getUserService().getAllUsers( roles, false );
 
 		log.debug("Sending message " + message + " to " + users);
-		send(message, users);
+		sendMessage(message, users);
 	}
 
 	
@@ -221,7 +221,7 @@ public class MessageServiceImpl implements MessageService {
 	 *  @param the given Template
 	 *  @return the prepared Message
 	 */
-	public Message prepare(Template template) throws MessageException { 
+	public Message prepareMessage(Template template) throws MessageException { 
 		return messagePreparator.prepare( template );
 	}
 	
@@ -233,11 +233,11 @@ public class MessageServiceImpl implements MessageService {
 	 *  @param	data	data mapping used for variable substitution within template
 	 *  @return	the prepared Message
 	 */
-	public Message prepare(String templateName, Map data) throws MessageException { 
+	public Message prepareMessage(String templateName, Map data) throws MessageException { 
 		try { 
 			Template template = (Template) getTemplatesByName( templateName ).get(0);
 			template.setData( data );
-			return prepare( template );
+			return prepareMessage( template );
 		} catch (Exception e) { 
 			throw new MessageException("Could not prepare message with template " + templateName, e);
 		}
@@ -271,5 +271,89 @@ public class MessageServiceImpl implements MessageService {
 	public List getTemplatesByName(String name) throws MessageException { 
 		return templateDAO.getTemplatesByName( name );
 	}
+
+	/**
+     * @see org.openmrs.notification.MessageService#create(java.lang.String, java.lang.String)
+     */
+    public Message create(String subject, String message) throws MessageException {
+	    return createMessage(subject,message);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#create(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public Message create(String sender, String subject, String message) throws MessageException {
+	    return createMessage(sender,subject,message);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#create(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public Message create(String recipients, String sender, String subject, String message) throws MessageException {
+	    return createMessage(recipients,sender,subject,message);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#prepare(java.lang.String, java.util.Map)
+     */
+    public Message prepare(String templateName, Map data) throws MessageException {
+	    return prepareMessage(templateName,data);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#prepare(org.openmrs.notification.Template)
+     */
+    public Message prepare(Template template) throws MessageException {
+	    return prepareMessage(template);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message)
+     */
+    public void send(Message message) throws MessageException {
+	    sendMessage(message);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message, java.lang.String)
+     */
+    public void send(Message message, String roleName) throws MessageException {
+    	sendMessage(message,roleName); 
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message, java.lang.Integer)
+     */
+    public void send(Message message, Integer userId) throws MessageException {
+	    sendMessage(message,userId);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message, org.openmrs.User)
+     */
+    public void send(Message message, User user) throws MessageException {
+	    send(message,user);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message, org.openmrs.Role)
+     */
+    public void send(Message message, Role role) throws MessageException {
+	    sendMessage(message,role);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message, java.util.Collection)
+     */
+    public void send(Message message, Collection<User> users) throws MessageException {
+	    sendMessage(message,users);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void send(String recipients, String sender, String subject, String message) throws MessageException {
+	    sendMessage(recipients,sender,subject,message);
+    }
 
 }

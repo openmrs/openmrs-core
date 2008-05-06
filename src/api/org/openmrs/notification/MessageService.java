@@ -31,28 +31,65 @@ public interface MessageService {
 	public void setMessagePreparator(MessagePreparator preparator);
 	public MessagePreparator getMessagePreparator();
 	
+	/* Send Message Methods */
 	
-	// Send message methods
-	public void send(Message message) throws MessageException;
-	public void send(Message message, String roleName) throws MessageException;	
-	public void send(Message message, Integer userId) throws MessageException;
-	public void send(Message message, User user) throws MessageException;	
-	public void send(Message message, Role role) throws MessageException;	
-	public void send(Message message, Collection<User> users) throws MessageException;
+	//sends message
+	public void sendMessage(Message message) throws MessageException;
+	//sends message to everyone of a certain role
+	public void sendMessage(Message message, String roleName) throws MessageException;
+	//sends message to user with the given id
+	public void sendMessage(Message message, Integer userId) throws MessageException;
+	//sends message to user
+	public void sendMessage(Message message, User user) throws MessageException;	
+	//sends message to all users with a given role
+	public void sendMessage(Message message, Role role) throws MessageException;	
+	//sends message to a collection of users
+	public void sendMessage(Message message, Collection<User> users) throws MessageException;
 
-	// 
-	public void send(String recipients, String sender, String subject, String message) throws MessageException;
+	public void sendMessage(String recipients, String sender, String subject, String message) throws MessageException;
 
 	// Prepare message methods
-	public Message create(String subject, String message) throws MessageException;
-	public Message create(String sender, String subject, String message) throws MessageException;
-	public Message create(String recipients, String sender, String subject, String message) throws MessageException;
-	public Message prepare(String templateName, Map data) throws MessageException;
-	public Message prepare(Template template) throws MessageException;
-
+	public Message createMessage(String subject, String message) throws MessageException;
+	public Message createMessage(String sender, String subject, String message) throws MessageException;
+	public Message createMessage(String recipients, String sender, String subject, String message) throws MessageException;
+	public Message prepareMessage(String templateName, Map data) throws MessageException;
+	public Message prepareMessage(Template template) throws MessageException;
+	
 	// Template methods
 	public List getAllTemplates() throws MessageException;
 	public Template getTemplate(Integer id) throws MessageException;
 	public List getTemplatesByName(String name) throws MessageException;
+	
+	/* Begin Deprecated methods */
+	
+	// Old send message methods
+	@Deprecated
+	public void send(Message message) throws MessageException;
+	@Deprecated
+	public void send(Message message, String roleName) throws MessageException;	
+	@Deprecated
+	public void send(Message message, Integer userId) throws MessageException;
+	@Deprecated
+	public void send(Message message, User user) throws MessageException;	
+	@Deprecated
+	public void send(Message message, Role role) throws MessageException;	
+	@Deprecated
+	public void send(Message message, Collection<User> users) throws MessageException;
+
+	@Deprecated 
+	public void send(String recipients, String sender, String subject, String message) throws MessageException;
+
+	// Old prepare message methods
+	@Deprecated
+	public Message create(String subject, String message) throws MessageException;
+	@Deprecated
+	public Message create(String sender, String subject, String message) throws MessageException;
+	@Deprecated
+	public Message create(String recipients, String sender, String subject, String message) throws MessageException;
+	@Deprecated
+	public Message prepare(String templateName, Map data) throws MessageException;
+	@Deprecated
+	public Message prepare(Template template) throws MessageException;
+
 
 }
