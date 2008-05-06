@@ -28,8 +28,11 @@ public class MessageTest extends TestCase {
 		String sender = "foo@bar.com";
 		String subject = "tres important";
 		String content = "message";
+		String attachment = "attachment";
+		String attachmentContentType = "text/plain";
+		String attachmentFileName = "moo.txt";
 		
-		return new Message(id, recipients, sender, subject, content);
+		return new Message(id, recipients, sender, subject, content, attachment, attachmentContentType, attachmentFileName);
 	}
 	
 	public void testConstructor() throws Exception {
@@ -38,8 +41,11 @@ public class MessageTest extends TestCase {
 		String sender = "foo@bar.com";
 		String subject = "tres important";
 		String content = "message";
+		String attachment = "attachment";
+		String attachmentContentType = "text/plain";
+		String attachmentFileName = "moo.txt";
 		
-		Message toTest = new Message(id, recipients, sender, subject, content);
+		Message toTest = new Message(id, recipients, sender, subject, content, attachment, attachmentContentType, attachmentFileName);
 		assertEquals((int)toTest.getId(), 1);
 		assertEquals(recipients, toTest.getRecipients());
 		assertEquals(sender, toTest.getSender());

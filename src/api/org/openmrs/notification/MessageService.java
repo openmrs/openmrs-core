@@ -52,6 +52,8 @@ public interface MessageService {
 	public Message createMessage(String subject, String message) throws MessageException;
 	public Message createMessage(String sender, String subject, String message) throws MessageException;
 	public Message createMessage(String recipients, String sender, String subject, String message) throws MessageException;
+    public Message createMessage(String recipients, String sender, String subject, String message, 
+    							 String attachment, String attachmentContentType, String attachmentFileName) throws MessageException;
 	public Message prepareMessage(String templateName, Map data) throws MessageException;
 	public Message prepareMessage(Template template) throws MessageException;
 	

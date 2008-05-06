@@ -106,12 +106,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param	content			the content or body of the message
 	 */
 	public Message createMessage(String recipients, String sender, String subject, String content) throws MessageException {		
-		Message message = new Message();	
-		message.setRecipients(recipients);
-		message.setSender(sender);
-		message.setContent(content);
-		message.setSubject(subject);
-		return message;
+		return createMessage(recipients, sender, subject, content, null, null, null);
 	}
 	
 	/**
@@ -136,7 +131,21 @@ public class MessageServiceImpl implements MessageService {
 		return createMessage(null, null, subject, content);
 	}	
 	
-	
+	/**
+     * @see org.openmrs.notification.MessageService#createMessage(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public Message createMessage(String recipients, String sender, String subject, String content, String attachment, String attachmentContentType, String attachmentFileName) throws MessageException {
+    	Message message = new Message();	
+		message.setRecipients(recipients);
+		message.setSender(sender);
+		message.setContent(content);
+		message.setSubject(subject);
+		message.setAttachment(attachment);
+		message.setAttachmentContentType(attachmentContentType);
+		message.setAttachmentFileName(attachmentFileName);
+		return message;
+    }
+    
 	/**
 	 *  Send a message using the given parameters.  This is a convenience method so that the client
 	 *  does not need to create its own Message object. 
@@ -355,5 +364,7 @@ public class MessageServiceImpl implements MessageService {
     public void send(String recipients, String sender, String subject, String message) throws MessageException {
 	    sendMessage(recipients,sender,subject,message);
     }
+
+
 
 }
