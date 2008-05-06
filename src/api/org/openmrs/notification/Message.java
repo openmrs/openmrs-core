@@ -131,5 +131,9 @@ public class Message implements Serializable {
 	public void setAttachmentFileName(String attachmentFileName) {
     	this.attachmentFileName = attachmentFileName;
     }
+
+    public boolean hasAttachment() {
+	    return attachment != null;
+    }
 	
 }

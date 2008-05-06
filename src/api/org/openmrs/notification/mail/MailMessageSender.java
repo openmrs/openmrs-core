@@ -16,14 +16,15 @@ package org.openmrs.notification.mail;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessageSender;
-
 public class MailMessageSender implements MessageSender { 
 	
 	protected static final Log log = LogFactory.getLog( MailMessageSender.class );
@@ -98,9 +99,35 @@ public class MailMessageSender implements MessageSender {
 				InternetAddress.parse( message.getRecipients(), false ));
 		mimeMessage.setSubject( message.getSubject() );
 		
-		// TODO	There should be a default and preference specified somewhere
-		mimeMessage.setContent( message.getContent(), "text/plain");
+		if(!message.hasAttachment())
+			mimeMessage.setContent( message.getContent(), "text/plain");
+		else
+			mimeMessage.setContent(createMultipart(message));
+		
 		return mimeMessage;
 	}
+
+
+	/**
+     * Creates a MimeMultipart, so that we can have an attachment.
+     * 
+     * @param message
+     * @return
+     */
+    private MimeMultipart createMultipart(Message message) throws Exception {
+	    MimeMultipart toReturn = new MimeMultipart();
+	    
+	    MimeBodyPart textContent = new MimeBodyPart();
+	    textContent.setText(message.getContent());
+	    
+	    MimeBodyPart attachment = new MimeBodyPart();
+	    attachment.setContent(message.getAttachment(), message.getAttachmentContentType());
+	    attachment.setFileName(message.getAttachmentFileName());
+	    
+	    toReturn.addBodyPart(textContent);
+	    toReturn.addBodyPart(attachment);
+	    
+	    return toReturn;
+    }
 	
 }

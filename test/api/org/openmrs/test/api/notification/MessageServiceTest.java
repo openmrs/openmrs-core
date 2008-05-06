@@ -73,15 +73,26 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	public void testSendMessage() throws Exception {
-		Message tryToSend = ms.createMessage("recipient@example.com", 
+		Message tryToSend1 = ms.createMessage("recipient@example.com", 
 		                                     "sender@example.com", 
+		                                     "subject", 
+		                                     "content");
+		try{
+			ms.sendMessage(tryToSend1);
+		}catch(MessageException e){
+			e.printStackTrace();
+			fail();
+		}
+		
+		Message tryToSend2 = ms.createMessage("vergil@gmail.com,vergil+pih@gmail.com", 
+		                                     "openmrs.emailer@gmail.com", 
 		                                     "subject", 
 		                                     "content",
 		                                     "moo",
 		                                     "text/plain",
 		                                     "moo.txt");
 		try{
-			ms.sendMessage(tryToSend);
+			ms.sendMessage(tryToSend2);
 		}catch(MessageException e){
 			e.printStackTrace();
 			fail();
