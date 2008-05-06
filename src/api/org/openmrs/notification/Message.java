@@ -30,7 +30,9 @@ public class Message implements Serializable {
 	private String subject;
 	private String content;
 	private Date sentDate;
-	
+	private String attachment;
+	private String attachmentContentType;
+	private String attachmentFileName;
 	
 	public Message() {  
 	}
@@ -41,6 +43,13 @@ public class Message implements Serializable {
 		this.sender = sender;
 		this.subject = subject;
 		this.content = content;
+	}
+	
+	public Message(Integer id, String recipients, String sender, String subject, String content, String attachment, String attachmentContentType, String attachmentFileName) { 
+		this(id,recipients,sender,subject,content);
+		this.attachment = attachment;
+		this.attachmentContentType = attachmentContentType;
+		this.attachmentFileName = attachmentFileName;
 	}
 	
 	public void setId(Integer id) {
@@ -98,5 +107,29 @@ public class Message implements Serializable {
 	public String getContent() { 
 		return this.content;
 	}
+
+	public String getAttachment() {
+    	return attachment;
+    }
+
+	public void setAttachment(String attachment) {
+    	this.attachment = attachment;
+    }
+
+	public String getAttachmentContentType() {
+    	return attachmentContentType;
+    }
+
+	public void setAttachmentContentType(String attachmentContentType) {
+    	this.attachmentContentType = attachmentContentType;
+    }
+
+	public String getAttachmentFileName() {
+    	return attachmentFileName;
+    }
+
+	public void setAttachmentFileName(String attachmentFileName) {
+    	this.attachmentFileName = attachmentFileName;
+    }
 	
 }
