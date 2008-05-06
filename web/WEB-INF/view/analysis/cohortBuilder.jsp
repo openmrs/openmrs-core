@@ -117,17 +117,17 @@
 			str += '<br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY">Any</option><option value="NO">None</option><option value="FIRST">Earliest</option><option value="LAST" selected="true">Most Recent</option></select></span> ';
 		if (hl7Abbrev == 'NM') {
 			str += ' <br/><br/><span style="margin-left: 40px">';
-			str += ' <spring:message code="CohortBuilder.optionalPrefix" /> What values? ';
+			str += ' <small><spring:message code="CohortBuilder.optionalPrefix" /></small> <spring:message code="CohortBuilder.whatValuesQuestion" /> ';
 			str += ' <select name="modifier" id="modifier"><option value="LESS_THAN">&lt;</option><option value="LESS_EQUAL">&lt;=</option><option value="EQUAL">=</option><option value="GREATER_EQUAL">&gt;=</option><option value="GREATER_THAN">&gt;</option></select> ';
 			str += '</span>';
 		} else if (hl7Abbrev == 'DT' || hl7Abbrev == 'TS') {
 			str += ' <br/><br/><span style="margin-left: 40px">';
-			str += ' <spring:message code="CohortBuilder.optionalPrefix" /> What values? ';
+			str += ' <small><spring:message code="CohortBuilder.optionalPrefix" /> (valueDatetime)</small> <spring:message code="CohortBuilder.whatValuesQuestion" /> ';
 			str += ' <select name="modifier" id="modifier"><option value="LESS_THAN">before</option><option value="LESS_EQUAL" selected="true">on or before</option><option value="EQUAL">on</option><option value="GREATER_EQUAL">on or after</option><option value="GREATER_THAN">after</option></select> ';
 			str += '</span>';
 		} else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE') {
 			str += ' <br/><br/><span style="margin-left: 40px">';
-			str += ' <spring:message code="CohortBuilder.optionalPrefix" /> <spring:message code="CohortBuilder.whatValueQuestion" /> ';
+			str += ' <small><spring:message code="CohortBuilder.optionalPrefix" /></small> <spring:message code="CohortBuilder.whatValueQuestion" /> ';
 			str += ' <input type="hidden" name="modifier" value="EQUAL" /> ';
 			str += '</span>';
 		}
@@ -142,10 +142,10 @@
 			lookupAnswers = true;
 		}
 		str += ' <br/><br/><span style="margin-left: 40px">';
-		str += ' <spring:message code="CohortBuilder.optionalPrefix" /> <spring:message code="CohortBuilder.whenPrefix" /> <spring:message code="CohortBuilder.withinMonthsAndDays" arguments="withinLastMonths,withinLastDays" />';
+		str += ' <small><spring:message code="CohortBuilder.optionalPrefix" /> (obsDatetime)</small> <spring:message code="CohortBuilder.whenPrefix" /> <spring:message code="CohortBuilder.withinMonthsAndDays" arguments="withinLastMonths,withinLastDays" />';
 		str += '</span>';
 		str += ' <br/><br/><span style="margin-left: 40px">';
-		str += ' <spring:message code="CohortBuilder.optionalPrefix" /> <spring:message code="CohortBuilder.dateRangePrefix" /> <spring:message code="CohortBuilder.fromDateToDate" arguments="sinceDate,untilDate" />';
+		str += ' <small><spring:message code="CohortBuilder.optionalPrefix" /> (obsDatetime)</small> <spring:message code="CohortBuilder.dateRangePrefix" /> <spring:message code="CohortBuilder.fromDateToDate" arguments="sinceDate,untilDate" />';
 		str += '</span>';
 		str += ' <br/><br/><input type="submit" value="Search"/>';
 		str += ' &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="<spring:message code="general.cancel" />" onClick="hideLayer(\'concept_filter_box\')"/>';
@@ -173,14 +173,14 @@
 		str += ' <select name="timeModifier"><option value="ANY">Patients who have these observations</option><option value="NO">Patients who do not have these observations</option></select> ';
 		str += '</span>';
 		str += ' <br/><br/><span style="margin-left: 40px">';
-		str += ' <spring:message code="CohortBuilder.optionalPrefix" /> When? Within the last ';
+		str += ' <small><spring:message code="CohortBuilder.optionalPrefix" /> (obsDatetime)</small> When? Within the last ';
 		str += ' <input type="text" name="withinLastMonths" value="" size="2" />';
 		str += ' months and/or';
 		str += ' <input type="text" name="withinLastDays" value="" size="2" />';
 		str += ' days';
 		str += '</span>';
 		str += ' <br/><br/><span style="margin-left: 40px">';
-		str += ' <spring:message code="CohortBuilder.optionalPrefix" /> Date range? since ';
+		str += ' <small><spring:message code="CohortBuilder.optionalPrefix" /> (obsDatetime)</small> Date range? since ';
 		str += ' <input type="text" name="sinceDate" size="10" value="" onClick="showCalendar(this)" />';
 		str += ' and/or until ';
 		str += ' <input type="text" name="untilDate" size="10" value="" onClick="showCalendar(this)" />';
