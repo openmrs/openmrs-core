@@ -41,6 +41,8 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.EventListeners;
+import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.module.ModuleUtil;
@@ -58,8 +60,13 @@ public class AdministrationServiceImpl implements AdministrationService {
     protected Log log = LogFactory.getLog(getClass());
     
     private AdministrationDAO dao;
+    private EventListeners eventListeners;
     
     public AdministrationServiceImpl() {	}
+    
+    public void setEventListeners(EventListeners eventListeners){
+    	this.eventListeners = eventListeners;
+    }
     
     private AdministrationDAO getAdministrationDAO() {
         if (!Context.hasPrivilege("") && !Context.isAuthenticated())
@@ -832,11 +839,25 @@ public class AdministrationServiceImpl implements AdministrationService {
     }
     
     public void setGlobalProperties(List<GlobalProperty> props) {
-        getAdministrationDAO().setGlobalProperties(props);
+		log.debug("setting all global properties");
+		
+		// delete all properties not in this new list
+		for (GlobalProperty gp : getGlobalProperties()) {
+			if (!props.contains(gp))
+				deleteGlobalProperty(gp.getProperty());
+		}
+		
+		// add all of the new properties
+		for (GlobalProperty prop : props) {
+			if (prop.getProperty() != null && prop.getProperty().length() > 0) {
+				setGlobalProperty(prop);
+			}
+		}
     }
     
     public void deleteGlobalProperty(String propertyName) {
         getAdministrationDAO().deleteGlobalProperty(propertyName);
+        notifyGlobalPropertyDelete(propertyName);
     }
 
     public void setGlobalProperty(String propertyName, String propertyValue) {
@@ -845,10 +866,16 @@ public class AdministrationServiceImpl implements AdministrationService {
     
     public void setGlobalProperty(GlobalProperty gp) {
         getAdministrationDAO().setGlobalProperty(gp);
+        notifyGlobalPropertyChange(gp);
     }
 
+    public void addGlobalProperty(GlobalProperty gp) {
+    	getAdministrationDAO().createGlobalProperty(gp);
+    	notifyGlobalPropertyChange(gp);
+    }
+    
     public void addGlobalProperty(String propertyName, String propertyValue) {
-        getAdministrationDAO().addGlobalProperty(propertyName, propertyValue);
+        addGlobalProperty(new GlobalProperty(propertyName, propertyValue));
     }
     
     public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn, String groupBy) {
@@ -860,5 +887,41 @@ public class AdministrationServiceImpl implements AdministrationService {
             return null;
         
         return getAdministrationDAO().executeSQL(sql, selectOnly);
+    }
+    
+	/**
+     * @see org.openmrs.api.AdministrationService#addGlobalPropertyListener(java.lang.String, org.openmrs.api.GlobalPropertyListener)
+     */
+    public void addGlobalPropertyListener(GlobalPropertyListener listener) {
+    	eventListeners.getGlobalPropertyListeners().add(listener);
+    }
+
+	/**
+     * @see org.openmrs.api.AdministrationService#removeGlobalPropertyListener(java.lang.String, org.openmrs.api.GlobalPropertyListener)
+     */
+    public void removeGlobalPropertyListener(GlobalPropertyListener listener) {
+    	eventListeners.getGlobalPropertyListeners().remove(listener);
+    }
+
+	/**
+     * Calls global property listeners registered for this create/change
+     * 
+     * @param gp
+     */
+    private void notifyGlobalPropertyChange(GlobalProperty gp) {
+    	for (GlobalPropertyListener listener : eventListeners.getGlobalPropertyListeners())
+    		if (listener.supportsPropertyName(gp.getProperty()))
+    			listener.globalPropertyChanged(gp);
+    }
+    
+	/**
+     * Calls global property listeners registered for this delete
+     * 
+     * @param propertyName
+     */
+    private void notifyGlobalPropertyDelete(String propertyName) {
+    	for (GlobalPropertyListener listener : eventListeners.getGlobalPropertyListeners())
+    		if (listener.supportsPropertyName(propertyName))
+    			listener.globalPropertyDeleted(propertyName);
     }
 }

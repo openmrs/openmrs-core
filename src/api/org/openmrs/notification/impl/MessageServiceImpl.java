@@ -89,12 +89,9 @@ public class MessageServiceImpl implements MessageService {
 	 */
 	public void sendMessage(Message message) throws MessageException {
 		try { 
-			log.info("Message sender: " + messageSender);
-			
 			messageSender.send( message );
-			
 		} catch (Exception e ) { 
-			log.error("Message could not be sent due to the following exception: " + e.getMessage(), e);
+			log.error("Message could not be sent due to " + e.getMessage(), e);
 			throw new MessageException(e);
 		}
 	}
@@ -109,12 +106,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @param	content			the content or body of the message
 	 */
 	public Message createMessage(String recipients, String sender, String subject, String content) throws MessageException {		
-		Message message = new Message();	
-		message.setRecipients(recipients);
-		message.setSender(sender);
-		message.setContent(content);
-		message.setSubject(subject);
-		return message;
+		return createMessage(recipients, sender, subject, content, null, null, null);
 	}
 	
 	/**
@@ -139,7 +131,21 @@ public class MessageServiceImpl implements MessageService {
 		return createMessage(null, null, subject, content);
 	}	
 	
-	
+	/**
+     * @see org.openmrs.notification.MessageService#createMessage(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public Message createMessage(String recipients, String sender, String subject, String content, String attachment, String attachmentContentType, String attachmentFileName) throws MessageException {
+    	Message message = new Message();	
+		message.setRecipients(recipients);
+		message.setSender(sender);
+		message.setContent(content);
+		message.setSubject(subject);
+		message.setAttachment(attachment);
+		message.setAttachmentContentType(attachmentContentType);
+		message.setAttachmentFileName(attachmentFileName);
+		return message;
+    }
+    
 	/**
 	 *  Send a message using the given parameters.  This is a convenience method so that the client
 	 *  does not need to create its own Message object. 
@@ -274,5 +280,91 @@ public class MessageServiceImpl implements MessageService {
 	public List getTemplatesByName(String name) throws MessageException { 
 		return templateDAO.getTemplatesByName( name );
 	}
+
+	/**
+     * @see org.openmrs.notification.MessageService#create(java.lang.String, java.lang.String)
+     */
+    public Message create(String subject, String message) throws MessageException {
+	    return createMessage(subject,message);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#create(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public Message create(String sender, String subject, String message) throws MessageException {
+	    return createMessage(sender,subject,message);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#create(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public Message create(String recipients, String sender, String subject, String message) throws MessageException {
+	    return createMessage(recipients,sender,subject,message);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#prepare(java.lang.String, java.util.Map)
+     */
+    public Message prepare(String templateName, Map data) throws MessageException {
+	    return prepareMessage(templateName,data);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#prepare(org.openmrs.notification.Template)
+     */
+    public Message prepare(Template template) throws MessageException {
+	    return prepareMessage(template);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message)
+     */
+    public void send(Message message) throws MessageException {
+	    sendMessage(message);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message, java.lang.String)
+     */
+    public void send(Message message, String roleName) throws MessageException {
+    	sendMessage(message,roleName); 
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message, java.lang.Integer)
+     */
+    public void send(Message message, Integer userId) throws MessageException {
+	    sendMessage(message,userId);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message, org.openmrs.User)
+     */
+    public void send(Message message, User user) throws MessageException {
+	    send(message,user);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message, org.openmrs.Role)
+     */
+    public void send(Message message, Role role) throws MessageException {
+	    sendMessage(message,role);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message, java.util.Collection)
+     */
+    public void send(Message message, Collection<User> users) throws MessageException {
+	    sendMessage(message,users);
+    }
+
+	/**
+     * @see org.openmrs.notification.MessageService#send(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public void send(String recipients, String sender, String subject, String message) throws MessageException {
+	    sendMessage(recipients,sender,subject,message);
+    }
+
+
 
 }

@@ -739,8 +739,7 @@ public class HibernateAdministrationDAO implements
 		}
 	}
 
-	public void addGlobalProperty(String propertyName, String propertyValue) throws DAOException {
-		GlobalProperty prop = new GlobalProperty(propertyName, propertyValue);
+	public void createGlobalProperty(GlobalProperty prop) throws DAOException {
 		//sessionFactory.getCurrentSession().save(prop);
         Session session = sessionFactory.getCurrentSession();
         prop.setIsSynchronizable(false); //by default: do *not* record global changes

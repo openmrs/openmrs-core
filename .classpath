@@ -63,5 +63,6 @@
 	<classpathentry kind="lib" path="metadata/api/spring"/>
 	<classpathentry kind="lib" path="metadata/api/hibernate"/>
 	<classpathentry kind="lib" path="metadata/api/log4j"/>
+	<classpathentry kind="lib" path="lib/xstream/xstream-1.3.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>
