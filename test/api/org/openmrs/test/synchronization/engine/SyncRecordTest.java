@@ -30,7 +30,7 @@ import org.openmrs.synchronization.engine.*;
 import org.openmrs.synchronization.SyncItemState;
 
 /**
- * TODO: Describe test file
+ * Tests sync record serialization.
  */
 public class SyncRecordTest extends BaseContextSensitiveTest  {
 
@@ -40,8 +40,6 @@ public class SyncRecordTest extends BaseContextSensitiveTest  {
      * @throws Exception
      */
     public void testSerialization() throws Exception {
-    	initializeInMemoryDatabase();
-        authenticate();
 
         // 'normal' state
         String guid1 = UUID.randomUUID().toString();
@@ -111,8 +109,6 @@ public class SyncRecordTest extends BaseContextSensitiveTest  {
      * @throws Exception
      */
     public void testEquality() throws Exception {
-    	initializeInMemoryDatabase();
-        authenticate();
         
         //setup instance 1
         String guid1 = UUID.randomUUID().toString();
@@ -142,6 +138,9 @@ public class SyncRecordTest extends BaseContextSensitiveTest  {
        
         //assert now
         assertEquals(syncRecord1,syncRecord2);
+        
+        syncRecord1.setItems(null);
+    	assertNotSame(syncRecord1,syncRecord2);
         
         //some variations
         Date date2 =  new Date();
