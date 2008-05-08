@@ -25,8 +25,10 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	
 	@Override
-	protected void onSetUpBeforeTransaction() throws Exception {
-		super.onSetUpBeforeTransaction();
+	protected void onSetUpInTransaction() throws Exception {
+		super.onSetUpInTransaction();
+		
+		initializeInMemoryDatabase();
 		authenticate();
 	}
 
