@@ -25,6 +25,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class MessageServiceTest extends BaseContextSensitiveTest {
 
+	private static final String NO_SMTP_SERVER_ERROR = "Could not connect to SMTP host:";
+	
 	MessageService ms = null;
 	
 	@Override
@@ -80,11 +82,14 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 		try{
 			ms.sendMessage(tryToSend1);
 		}catch(MessageException e){
-			e.printStackTrace();
-			fail();
+			//So that this test doesn't fail just because the user isn't running an SMTP server.
+			if(!e.getMessage().contains(NO_SMTP_SERVER_ERROR)){
+				e.printStackTrace();
+				fail();
+			}
 		}
 		
-		Message tryToSend2 = ms.createMessage("vergil@gmail.com,vergil+pih@gmail.com", 
+		Message tryToSend2 = ms.createMessage("recipient@example.com,recipient2@example.com", 
 		                                     "openmrs.emailer@gmail.com", 
 		                                     "subject", 
 		                                     "content",
@@ -94,8 +99,11 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 		try{
 			ms.sendMessage(tryToSend2);
 		}catch(MessageException e){
-			e.printStackTrace();
-			fail();
+			//So that this test doesn't fail just because the user isn't running an SMTP server.
+			if(!e.getMessage().contains(NO_SMTP_SERVER_ERROR)){
+				e.printStackTrace();
+				fail();
+			}
 		}
 	}
 	
