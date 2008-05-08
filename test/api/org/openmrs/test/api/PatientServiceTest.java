@@ -41,6 +41,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/test/api/include/PatientServiceTest-createPatient.xml";
 	protected static final String JOHN_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-lotsOfJohns.xml";
 	protected static final String USERS_WHO_ARE_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-usersWhoArePatients.xml";
+	protected static final String FIND_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-findPatients.xml";
 	
 	protected PatientService ps = null; 
 	protected AdministrationService adminService = null;
@@ -251,4 +252,67 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * 
+	 * Tests the findPatients method.
+	 * 
+	 * @throws Exception
+	 */
+	public void testFindPatients() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		
+		//Test that "Jea" finds given_name="Jean Claude" and given_name="Jean", family_name="Claude"
+		//and given_name="Jeannette" family_name="Claudent"
+		//but not given_name="John" family_name="Claudio"
+		Collection<Patient> pset = ps.findPatients("Jea", false);
+		boolean claudioFound = false;
+		boolean jeanClaudeFound1 = false;
+		boolean jeanClaudeFound2 = false;
+		boolean jeannetteClaudentFound = false;
+		for(Patient patient : pset){
+			if(patient.getFamilyName().equals("Claudio"))
+				claudioFound = true;
+			if(patient.getGivenName().equals("Jean Claude"))
+				jeanClaudeFound1 = true;
+			if(patient.getGivenName().equals("Jean"))
+				jeanClaudeFound2 = true;
+			if(patient.getGivenName().equals("Jeannette"))
+				jeannetteClaudentFound = true;
+		}
+		assertFalse(claudioFound);
+		assertTrue(jeanClaudeFound1);
+		assertTrue(jeanClaudeFound2);
+		assertTrue(jeannetteClaudentFound);
+		
+		//Test that "Jean Claude" finds given_name="Jean Claude" and given_name="Jean", family_name="Claude"
+		//and given_name="Jeannette" family_name="Claudent" but not
+		//given_name="John" family_name="Claudio"
+		pset = ps.findPatients("Jean Claude", false);
+		claudioFound = false;
+		jeanClaudeFound1 = false;
+		jeanClaudeFound2 = false;
+		jeannetteClaudentFound = false;
+		for(Patient patient : pset){
+			if(patient.getFamilyName().equals("Claudio"))
+				claudioFound = true;
+			if(patient.getGivenName().equals("Jean Claude"))
+				jeanClaudeFound1 = true;
+			if(patient.getGivenName().equals("Jean"))
+				jeanClaudeFound2 = true;
+			if(patient.getGivenName().equals("Jeannette"))
+				jeannetteClaudentFound = true;
+		}
+		assertFalse(claudioFound);
+		assertTrue(jeanClaudeFound1);
+		assertTrue(jeanClaudeFound2);
+		assertTrue(jeannetteClaudentFound);
+		
+		//Test the "include voided" option.
+		pset = ps.findPatients("I am voided", true);
+		assertEquals(pset.iterator().next().getFamilyName(), "voided");
+		
+		pset = ps.findPatients("I am voided", false);
+		assertEquals(pset.size(), 0);
+		
+	}
 }
