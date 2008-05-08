@@ -31,6 +31,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -201,6 +202,16 @@ public class HibernatePatientDAO implements PatientDAO {
 		return criteria.list();
 	}
 
+	private LogicalExpression getNameSearch(String name){
+		return Expression.or(
+				                  Expression.like("name.familyName", name, MatchMode.START),
+				                  Expression.or(
+				                                Expression.like("name.middleName", name, MatchMode.START),
+				                                Expression.like("name.givenName", name, MatchMode.START)
+				                  )
+					);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public Collection<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException {
 		//TODO simple name search to start testing, will need to make "real" name search
@@ -216,16 +227,19 @@ public class HibernatePatientDAO implements PatientDAO {
 			log.debug("name: " + name);
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class).createAlias("names", "name");
-		for (String n : names) {
+		String nameSoFar = names[0];
+		for (int i=0 ; i < names.length ; i++) {
+			String n = names[i];
 			if (n != null && n.length() > 0) {
-				criteria.add(Expression.or(
-					Expression.like("name.familyName", n, MatchMode.START),
-					Expression.or(
-						Expression.like("name.middleName", n, MatchMode.START),
-						Expression.like("name.givenName", n, MatchMode.START)
-						)
-					)
-				);
+				LogicalExpression searchExpression;
+				LogicalExpression oneNameSearch = getNameSearch(n);
+				searchExpression = oneNameSearch;
+				if(i>0){
+					nameSoFar += " " + n;
+					LogicalExpression fullNameSearch = getNameSearch(nameSoFar);
+					searchExpression = Expression.or(oneNameSearch, fullNameSearch);
+				}
+				criteria.add(searchExpression);
 			}
 		}
 		
