@@ -512,5 +512,10 @@ public abstract class BaseContextSensitiveTest extends
 		columnsAdded = false;
 		
 		super.setDirty();
+		// set the transaction status to null because it was closed  
+		// in the super.setDirty() method.  This prevents us from getting a error during
+		// testcase cleanup when trying to rollback.  If this wasn't done here, the test
+		// would fail because the transaction was already closed
+		transactionStatus = null;
 	}
 }
