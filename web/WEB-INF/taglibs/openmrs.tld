@@ -338,7 +338,7 @@
 
 <tag>
 	<description>
-		Returns a Concept and ConceptName for the conceptId specified
+		Returns a Concept and ConceptName for the Integer conceptId or String conceptName specified
 	</description>
 	<name>concept</name>
 	<tag-class>org.openmrs.web.taglib.ConceptTag</tag-class>
@@ -347,6 +347,7 @@
 		<name-from-attribute>var</name-from-attribute>
 		<variable-class>org.openmrs.Concept</variable-class>
 	</variable>
+	<!--
 	<variable>
 		<name-from-attribute>nameVar</name-from-attribute>
 		<variable-class>org.openmrs.ConceptName</variable-class>
@@ -355,11 +356,18 @@
 		<name-from-attribute>numericVar</name-from-attribute>
 		<variable-class>org.openmrs.ConceptNumeric</variable-class>
 	</variable>
+	-->
 	<attribute>
 		<name>conceptId</name>
-		<required>true</required>
+		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>conceptName</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
 	</attribute>
 	<attribute>
 		<name>var</name>
@@ -369,13 +377,13 @@
 	</attribute>
 	<attribute>
 		<name>nameVar</name>
-		<required>true</required>
+		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
 	</attribute>
 	<attribute>
 		<name>numericVar</name>
-		<required>true</required>
+		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
 	</attribute>
