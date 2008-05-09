@@ -22,16 +22,22 @@ import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.GroupMethod;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
+/**
+ * @deprecated Use org.openmrs.reporting.DrugOrderFilter instead
+ */
 public class DrugOrderPatientFilter extends AbstractPatientFilter implements PatientFilter, Comparable<DrugOrderPatientFilter> {
 
 	protected transient final Log log = LogFactory.getLog(getClass());
+    private static final long serialVersionUID = 1L;
 	
 	private Integer drugId; // replace this with drug
 	private Concept drugConcept;
@@ -90,7 +96,7 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		this.drugConcept = drugConcept;
 	}
 
-	public PatientSet filter(PatientSet input) {
+	public Cohort filter(Cohort input, EvaluationContext context) {
 		Set<Integer> drugIds = new HashSet<Integer>();
 		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
 			drugIds = null;
@@ -105,10 +111,10 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 			}
 		}
 		PatientSetService service = Context.getPatientSetService();
-		return service.getPatientsHavingDrugOrder(input == null ? null : input.getPatientIds(), drugIds, onDate);
+		return service.getPatientsHavingDrugOrder(input == null ? null : input.getMemberIds(), drugIds, onDate);
 	}
 
-	public PatientSet filterInverse(PatientSet input) {
+	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		Set<Integer> drugIds = new HashSet<Integer>();
 		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
 			drugIds = null;
@@ -123,8 +129,8 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 			}
 		}
 		PatientSetService service = Context.getPatientSetService();
-		PatientSet temp = service.getPatientsHavingDrugOrder(input.getPatientIds(), drugIds, onDate);
-		return input.subtract(temp);
+		Cohort temp = service.getPatientsHavingDrugOrder(input.getMemberIds(), drugIds, onDate);
+		return Cohort.subtract(input, temp);
 	}
 	
 	public String getDescription() {

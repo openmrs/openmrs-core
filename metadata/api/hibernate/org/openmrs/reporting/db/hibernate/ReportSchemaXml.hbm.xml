@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<!-- 
+	This is a very simplified save of the report schema object.  The
+	object is expected to be in a serialized form in the "xml" column 
+ -->
+<hibernate-mapping package="org.openmrs.report">
+
+	<class name="ReportSchemaXml" table="report_schema_xml">
+		<id name="reportSchemaId" type="java.lang.Integer"
+			column="report_schema_id">
+			<generator class="native" />
+		</id>
+
+		<property name="name" type="java.lang.String"
+			length="255" />
+
+ 			
+		<property name="description" type="java.lang.String"
+			length="65535" />
+			
+		<property name="xml" type="java.lang.String" column="xml_data"
+			length="65535" />
+
+	</class>
+</hibernate-mapping>

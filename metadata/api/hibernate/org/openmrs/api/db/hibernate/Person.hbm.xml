@@ -29,24 +29,24 @@
 		<many-to-one name="causeOfDeath" class="Concept"
 			not-null="false" column="cause_of_death" />
 
-		<many-to-one name="creator" class="User" />
+		<many-to-one column="creator" name="personCreator" class="User" />
 
-		<property name="dateCreated" type="java.util.Date"
+		<property name="personDateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 
-		<many-to-one name="changedBy" class="User" column="changed_by" />
+		<many-to-one name="personChangedBy" class="User" column="changed_by" />
 
-		<property name="dateChanged" type="java.util.Date"
+		<property name="personDateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
 
-		<property name="voided" type="boolean" length="1" not-null="true" />
+		<property column="voided" name="personVoided" type="boolean" length="1" not-null="true" />
 
-		<many-to-one name="voidedBy" class="User" column="voided_by" />
+		<many-to-one name="personVoidedBy" class="User" column="voided_by" />
 
-		<property name="dateVoided" type="java.util.Date"
+		<property name="personDateVoided" type="java.util.Date"
 			column="date_voided" length="19" />
 
-		<property name="voidReason" type="java.lang.String"
+		<property name="personVoidReason" type="java.lang.String"
 			column="void_reason" length="255" />
 
 

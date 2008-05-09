@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
@@ -48,6 +49,8 @@ public interface ProgramWorkflowDAO {
 	public PatientState getPatientState(Integer id);
 
 	public Collection<PatientProgram> getPatientPrograms(Patient patient);
+	
+	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
 
 	public ProgramWorkflow findWorkflowByProgramAndConcept(Integer programId, Integer conceptId);
 	

@@ -26,10 +26,13 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Root;
 
 /**
  * Concept 
  */
+@Root
 public class Concept implements java.io.Serializable, Attributable<Concept> {
 
 	public static final long serialVersionUID = 5733L;
@@ -37,6 +40,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 
 	// Fields
 
+	@Attribute(required=true)
 	private Integer conceptId;
 	private Boolean retired = false;
 	private ConceptDatatype datatype;

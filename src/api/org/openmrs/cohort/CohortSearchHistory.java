@@ -16,7 +16,6 @@ package org.openmrs.cohort;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -29,10 +28,10 @@ import org.openmrs.Cohort;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.BooleanOperator;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSearch;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.reporting.ReportObject;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -46,13 +45,13 @@ public class CohortSearchHistory extends AbstractReportObject {
 		private String name;
 		private String description;
 		private Boolean saved;
-		private PatientSet cachedResult;
+		private Cohort cachedResult;
 		private Date cachedResultDate;
 		public CohortSearchHistoryItemHolder() { }
-		public PatientSet getCachedResult() {
+		public Cohort getCachedResult() {
 			return cachedResult;
 		}
-		public void setCachedResult(PatientSet cachedResult) {
+		public void setCachedResult(Cohort cachedResult) {
 			this.cachedResult = cachedResult;
 		}
 		public Date getCachedResultDate() {
@@ -95,7 +94,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 	
 	private List<PatientSearch> searchHistory;
 	private volatile List<PatientFilter> cachedFilters;
-	private volatile List<PatientSet> cachedResults;
+	private volatile List<Cohort> cachedResults;
 	private volatile List<Date> cachedResultDates;
 	
 	public CohortSearchHistory() {
@@ -103,7 +102,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 		super.setSubType("Search History");
 		searchHistory = new ArrayList<PatientSearch>();
 		cachedFilters = new ArrayList<PatientFilter>();
-		cachedResults = new ArrayList<PatientSet>();
+		cachedResults = new ArrayList<Cohort>();
 		cachedResultDates = new ArrayList<Date>();
 	}
 	
@@ -118,15 +117,15 @@ public class CohortSearchHistory extends AbstractReportObject {
 			PatientFilter filter = cachedFilters.get(i);
 			item.setFilter(filter);
 			if (search.isSavedFilterReference()) {
-				ReportObject ro = Context.getReportService().getReportObject(search.getSavedFilterId());
+				ReportObject ro = Context.getReportObjectService().getReportObject(search.getSavedFilterId());
 				item.setName(ro.getName());
 				item.setDescription(ro.getDescription());
 			} else if (search.isSavedCohortReference()) {
-				Cohort c = Context.getCohortService().getCohort(search.getSavedCohortId());
+				org.openmrs.Cohort c = Context.getCohortService().getCohort(search.getSavedCohortId());
 				item.setName(c.getName());
 				item.setDescription(c.getDescription());
 			} else if (search.isSavedSearchReference()) {
-				ReportObject ro = Context.getReportService().getReportObject(search.getSavedSearchId());
+				ReportObject ro = Context.getReportObjectService().getReportObject(search.getSavedSearchId());
 				item.setName(ro.getName());
 				item.setDescription(ro.getDescription());
 			} else if (search.isComposition()) {
@@ -150,7 +149,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 	public void setSearchHistory(List<PatientSearch> searchHistory) {
 		this.searchHistory = searchHistory;
 		cachedFilters = new ArrayList<PatientFilter>();
-		cachedResults = new ArrayList<PatientSet>();
+		cachedResults = new ArrayList<Cohort>();
 		cachedResultDates = new ArrayList<Date>();
 		for (int i = 0; i < searchHistory.size(); ++i) {
 			cachedFilters.add(null);
@@ -163,7 +162,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 		return cachedResultDates;
 	}
 
-	public List<PatientSet> getCachedResults() {
+	public List<Cohort> getCachedResults() {
 		return cachedResults;
 	}
 	
@@ -228,25 +227,28 @@ public class CohortSearchHistory extends AbstractReportObject {
 	 * @param i
 	 * @return patient set resulting from the i_th filter in the search history. (cached if possible)
 	 */
-	public PatientSet getPatientSet(int i) {
-		return getPatientSet(i, true);
+	public Cohort getPatientSet(int i, EvaluationContext context) {
+		return getPatientSet(i, true, context);
 	}
 	
 	/**
+	 * TODO: Implement {@link org.openmrs.cohort.api.impl.CohortServiceImpl#getAllPatients()}
+	 * 
 	 * @param i
 	 * @param useCache whether to use a cached result, if available
 	 * @return patient set resulting from the i_th filter in the search history
 	 */
-    public PatientSet getPatientSet(int i, boolean useCache) {
+    public Cohort getPatientSet(int i, boolean useCache, EvaluationContext context) {
 		checkArrayLengths();
-		PatientSet ret = null;
-		if (useCache)
+		Cohort ret = null;
+		if (useCache) {
 			ret = cachedResults.get(i);
+		}
 		if (ret == null) {
 			ensureCachedFilter(i);
 			PatientFilter pf = cachedFilters.get(i); 
-			PatientSet everyone = Context.getPatientSetService().getAllPatients();
-			ret = pf.filter(everyone);
+			Cohort everyone = Context.getPatientSetService().getAllPatients();
+			ret = pf.filter(everyone, context);
 			cachedFilters.set(i, pf);
 			cachedResults.set(i, ret);
 			cachedResultDates.set(i, new Date());
@@ -254,41 +256,35 @@ public class CohortSearchHistory extends AbstractReportObject {
 		return ret;
 	}
 
-    //TODO: figure out whether to return empty paitentset or all patients when history is empty
-    public PatientSet getLastPatientSet() {
+    public Cohort getLastPatientSet(EvaluationContext context) {
     	if (searchHistory.size() > 0)
-    		return getPatientSet(searchHistory.size() - 1);
+    		return getPatientSet(searchHistory.size() - 1, context);
     	else
-    		//return Context.getPatientSetService().getAllPatients();
-    		return new PatientSet();
+    		return new Cohort();
     }
     
-    public PatientSet getPatientSetCombineWithAnd() {
+    public Cohort getPatientSetCombineWithAnd(EvaluationContext context) {
     	Set<Integer> current = null;
     	for (int i = 0; i < searchHistory.size(); ++i) {
-    		PatientSet ps = getPatientSet(i);
+    		Cohort ps = getPatientSet(i, context);
     		if (current == null)
-    			current = new HashSet<Integer>(ps.getPatientIds());
+    			current = new HashSet<Integer>(ps.getMemberIds());
     		else
-    			current.retainAll(ps.getPatientIds());
+    			current.retainAll(ps.getMemberIds());
     	}
     	if (current == null)
     		return Context.getPatientSetService().getAllPatients();
     	else {
-    		List<Integer> ret = new ArrayList<Integer>(current);
-    		Collections.sort(ret);
-    		PatientSet ps = new PatientSet();
-    		ps.setPatientIds(ret);
-    		return ps;
+    		return new Cohort(current);
     	}
     }
     
-    public PatientSet getPatientSetCombineWithOr() {
+    public Cohort getPatientSetCombineWithOr(EvaluationContext context) {
     	Set<Integer> ret = new HashSet<Integer>();
     	for (int i = 0; i < searchHistory.size(); ++i) {
-    		ret.addAll(getPatientSet(i).getPatientIds());
+    		ret.addAll(getPatientSet(i, context).getMemberIds());
     	}
-    	return new PatientSet().copyPatientIds(ret);
+    	return new Cohort(ret);
     }
 	
 	// Just in case someone has modified the searchHistory list directly. Maybe I should make that getter return an unmodifiable list.

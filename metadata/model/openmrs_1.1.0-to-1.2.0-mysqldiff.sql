@@ -71,6 +71,38 @@ delimiter ;
 call diff_procedure('1.1.11');
 
 
+#----------------------------------------
+# OpenMRS Datamodel version 1.1.12
+# Ben Wolfe                 Dec 27th 2007
+# Adding report_schema_xml table
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+	CREATE TABLE `report_schema_xml` (
+	  `report_schema_id` int(11) NOT NULL auto_increment,
+	  `name` varchar(255) NOT NULL,
+	  `description` text NOT NULL,
+	  `xml_data` text NOT NULL,
+	  PRIMARY KEY  (`report_schema_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.1.12');
+
 #---------------------------------------
 # Update OpenMRS to 1.2.0
 #---------------------------------------

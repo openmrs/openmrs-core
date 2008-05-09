@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.openmrs.reporting.PatientSet;
+import org.openmrs.Cohort;
 import org.openmrs.reporting.export.ConceptColumn;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.reporting.export.DataExportUtil;
@@ -66,10 +66,10 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		age.setReturnValue("$!{fn.calculateAge($fn.getPatientAttr('Person', 'birthdate'))}");
 		export.getColumns().add(age);
 		
-		PatientSet patients = new PatientSet();
-		patients.add(2);
+		Cohort patients = new Cohort();
+		patients.addMember(2);
 		
-		DataExportUtil.generateExport(export, patients, "\t");
+		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);		
 		
 		String expectedOutput = "PATIENT_ID	GENDER	BIRTHDATE	AGE\n2	M	01/01/2000	XXX\n";
@@ -114,10 +114,10 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		firstNObs.setModifierNum(2);
 		export.getColumns().add(firstNObs);
 		
-		PatientSet patients = new PatientSet();
-		patients.add(2);
+		Cohort patients = new Cohort();
+		patients.addMember(2);
 		
-		DataExportUtil.generateExport(export, patients, "\t");
+		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		//System.out.println("Template String: " + export.generateTemplate());
@@ -147,7 +147,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		firstNObs.setModifierNum(1);
 		export.getColumns().add(firstNObs);
 		
-		DataExportUtil.generateExport(export, patients, "\t");
+		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		//System.out.println("Template String: " + export.generateTemplate());
@@ -177,7 +177,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		firstNObs.setModifierNum(-1);
 		export.getColumns().add(firstNObs);
 		
-		DataExportUtil.generateExport(export, patients, "\t");
+		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
@@ -228,10 +228,10 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		lastNObs.setModifierNum(2);
 		export.getColumns().add(lastNObs);
 		
-		PatientSet patients = new PatientSet();
-		patients.add(2);
+		Cohort patients = new Cohort();
+		patients.addMember(2);
 		
-		DataExportUtil.generateExport(export, patients, "\t");
+		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
@@ -271,12 +271,12 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		firstObs.setModifier(DataExportReportObject.MODIFIER_FIRST);
 		export.getColumns().add(firstObs);
 		
-		PatientSet patients = new PatientSet();
-		patients.add(2);
+		Cohort patients = new Cohort();
+		patients.addMember(2);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
 		
-		DataExportUtil.generateExport(export, patients, "\t");
+		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		String expectedOutput = "PATIENT_ID\tWEIGHT\n2\t1.0\n";
@@ -302,7 +302,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
 		
-		DataExportUtil.generateExport(export, patients, "\t");
+		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		expectedOutput = "PATIENT_ID\tWEIGHT\tWEIGHT_location\n2\t1.0\tTest Location\n";
@@ -342,10 +342,10 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		lastNObs.setModifierNum(2);
 		export.getColumns().add(lastNObs);
 		
-		PatientSet patients = new PatientSet();
-		patients.add(2);
+		Cohort patients = new Cohort();
+		patients.addMember(2);
 		
-		DataExportUtil.generateExport(export, patients, "\t");
+		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);		
 		
 		String expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location 	WEIGHT_(1)	WEIGHT_location_(1)\n2	10.0	Test Location	9.0	Test Location\n";
@@ -375,7 +375,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		lastNObs.setModifierNum(1);
 		export.getColumns().add(lastNObs);
 		
-		DataExportUtil.generateExport(export, patients, "\t");
+		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);		
 		
 		System.out.println("Template String: \n" + export.generateTemplate());

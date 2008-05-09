@@ -25,6 +25,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -36,9 +37,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
-import org.openmrs.logic.Aggregation;
-import org.openmrs.logic.Constraint;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -83,7 +81,7 @@ public class ObsServiceImpl implements ObsService {
 		
 		getObsDAO().createObs(obs);
 	}
-	
+
 	/**
 	 * Sets the creator and dateCreated properties on the Obs object
 	 * 
@@ -127,7 +125,7 @@ public class ObsServiceImpl implements ObsService {
 	public void createObsGroup(Obs[] obs) throws APIException {
 		if (obs == null || obs.length < 1)
 			return; // silently tolerate calls with missing/empty parameter
-		
+
 		String conceptIdStr = Context.getAdministrationService().
 		getGlobalProperty(
 			  OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, 
@@ -150,7 +148,7 @@ public class ObsServiceImpl implements ObsService {
 		
 		for (Obs member : obs) {
     		obsGroup.addGroupMember(member);
-    	}
+		}
     	
     	updateObs(obsGroup);
 	}
@@ -187,7 +185,6 @@ public class ObsServiceImpl implements ObsService {
 	 * @param String reason the void reason
 	 * @throws APIException
 	 */
-	
 	public void voidObs(Obs obs, String reason) throws APIException {
 		Set<Obs> obsToVoid = new HashSet<Obs>();
 		obsToVoid.add(obs);
@@ -223,7 +220,6 @@ public class ObsServiceImpl implements ObsService {
 	 * @param Obs obs the Obs to unvoid
 	 * @throw APIException
 	 */
-
 	public void unvoidObs(Obs obs) throws APIException {
 		Set<Obs> obsToUnVoid = new HashSet<Obs>();
 		obsToUnVoid.add(obs);
@@ -256,7 +252,7 @@ public class ObsServiceImpl implements ObsService {
 	public void deleteObs(Obs obs) throws APIException {
 		getObsDAO().deleteObs(obs);
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.ObsService#getMimeTypes()
 	 */
@@ -379,14 +375,6 @@ public class ObsServiceImpl implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, org.openmrs.logic.Aggregation, org.openmrs.Concept, org.openmrs.logic.Constraint)
-	 */
-	public List<Obs> getObservations(Person who, Aggregation aggregation,
-			Concept question, Constraint constraint) {
-		return getObsDAO().getObservations(who, aggregation, question, constraint);
-	}
-
-	/**
 	 * @see org.openmrs.api.ObsService#getObservations(java.util.List<org.openmrs.Concept>, java.util.Date, java.util.Data, boolean)
 	 */
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided) {
@@ -401,9 +389,9 @@ public class ObsServiceImpl implements ObsService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate)
+	 * @see org.openmrs.api.ObsService#getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate)
 	 */
-	public List<Obs> getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate) {
+	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate) {
 		return getObsDAO().getObservations(patients, concepts, fromDate, toDate);
 	}
 

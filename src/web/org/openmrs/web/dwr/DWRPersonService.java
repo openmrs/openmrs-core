@@ -129,10 +129,10 @@ public class DWRPersonService {
 		log.error(given + " " + middle + " " + family + " " + birthdate + " " + dateformat + " " + age + " " + gender);
 		User user = Context.getAuthenticatedUser();
 		Person p = new Person();
-		p.setCreator(user);
-		p.setDateCreated(new Date());
-		p.setChangedBy(user);
-		p.setDateChanged(new Date());
+		p.setPersonCreator(user);
+		p.setPersonDateCreated(new Date());
+		p.setPersonChangedBy(user);
+		p.setPersonDateChanged(new Date());
 		if ("".equals(gender)) {
 			log.error("Gender cannot be null.");
 			return new String("Gender cannot be null.");

@@ -91,9 +91,27 @@ tokens {
 	LOGIC="logic";
 	ACTION="action";
 	MAINTENANCE ="maintenance";
+	KNOWLEDGE="knowledge";
 	LIBRARY="library";
 	FILENAME="filename";
 	MLMNAME="mlmname";
+	TITLE="title";
+	INSTITUTION="institution";
+	AUTHOR="author";
+	PRIORITY="priority";
+	VERSION="version";
+	SPECIALIST="specialist";
+	PURPOSE="purpose";
+	EXPLANATION="explanation";
+	KEYWORDS="keywords";
+	CITATIONS="citations";
+	LINKS="links";
+	TYPE="type";
+	DATA="data";
+	LOGIC="logic";
+	ACTION="action";
+	DATE="date";
+	
 	OF = "of";
 	TIME = "time";
 	WITHIN = "within";
@@ -255,13 +273,13 @@ library_body:
 	;
 
 knowledge_category
-	: "knowledge"! COLON! knowledge_body
+	: ("knowledge"^ COLON!) knowledge_body
 	;
 
 knowledge_body
 	: type_slot!
 	data_slot
-	priority_slot!
+	priority_slot
 	evoke_slot!
 	logic_slot
 	action_slot
@@ -269,7 +287,7 @@ knowledge_body
 	;
 
 /********** Maintenance Slots **********************/
-title_slot: ("title" COLON (text)* ENDBLOCK
+title_slot: (TITLE^ COLON (text)* ENDBLOCK
 	)
    	;
 
@@ -313,7 +331,7 @@ version_num
 	;
 
 version_slot :
-	  "version" COLON INTLIT DOT INTLIT ENDBLOCK
+	  VERSION^ COLON INTLIT DOT INTLIT ENDBLOCK
 	  ;
 
 mlm_version :
@@ -321,19 +339,19 @@ mlm_version :
 	  ;
 
 institution_slot :
-	  "institution" COLON (text)* ENDBLOCK		/* text limited to 80 characters */
+	  INSTITUTION^ COLON (text)* ENDBLOCK		/* text limited to 80 characters */
 	  ;
 
 author_slot :
-	  "author" COLON (text)* (SEMI (text)*)* ENDBLOCK			/* see 6.1.6 for details */
+	  AUTHOR^ COLON (text)* (SEMI (text)*)* ENDBLOCK			/* see 6.1.6 for details */
 	  ;
 
 specialist_slot :
-	  "specialist" COLON (text)* ENDBLOCK		/* see 6.1.7 for details */
+	  SPECIALIST^ COLON (text)* ENDBLOCK		/* see 6.1.7 for details */
 	  ;
 
 date_slot :
-	  "date" COLON mlm_date ENDBLOCK
+	  DATE^ COLON mlm_date ENDBLOCK
 	  ;
 
 mlm_date :
@@ -431,17 +449,17 @@ zulu :
 /*****************Library slots*********************************/
 
 purpose_slot:
-	  "purpose" COLON (text)* ENDBLOCK
+	  PURPOSE^ COLON (text)* ENDBLOCK
 	;
 
 explanation_slot:
-	  "explanation" COLON 
+	  EXPLANATION^ COLON 
 	  (text | INTLIT)*
 	  ENDBLOCK
 	;	
 		
 keywords_slot:
-	  "keywords" COLON (keyword_text) 
+	  KEYWORDS^ COLON (keyword_text) 
 	  ;
 
 keyword_text
@@ -451,7 +469,7 @@ keyword_text
 	  
 citations_slot:
 	|
-	| "citations" COLON (citations_list) ENDBLOCK
+	| CITATIONS^ COLON (citations_list) ENDBLOCK
 	;
 
 
@@ -484,7 +502,7 @@ citation_type :
 
 links_slot:
 	|  /* empty */
-	| "links" COLON link_body ENDBLOCK
+	| LINKS^ COLON link_body ENDBLOCK
 	;
 
 /* any string of characters enclosed in single quotes (' , ASCII 44) without ";;" */
@@ -494,7 +512,7 @@ link_body:
 								/* compatibility */
 
 type_slot
-	: "type" COLON type_code ENDBLOCK
+	: TYPE^ COLON type_code ENDBLOCK
 	;
 
 type_code
@@ -504,7 +522,7 @@ type_code
 data_slot
 	: 
 	//"data"^ COLON! (data_assignment SEMI!)* ENDBLOCK
-	DATA^ COLON! (data_statement SEMI!)* ENDBLOCK
+	DATA^ COLON (data_statement SEMI!)* ENDBLOCK
 	;
 
 /*
@@ -758,7 +776,7 @@ the
 
 priority_slot :
 	|  /* empty */
-	| "priority" COLON INTLIT ENDBLOCK
+	| PRIORITY^ COLON INTLIT ENDBLOCK
 	;
 
 evoke_slot :
@@ -818,7 +836,7 @@ evoke_duration :
 
 
 logic_slot:
-	  "logic"^ COLON! (logic_statement SEMI! )* ENDBLOCK
+	  "logic"^ COLON (logic_statement SEMI! )* ENDBLOCK
 	  ;
 
 
@@ -917,7 +935,7 @@ logic_assignment
 //	;
 
 action_slot:
-	  "action"^ COLON! (action_statement SEMI!)* ENDBLOCK
+	  "action"^ COLON (action_statement SEMI!)* ENDBLOCK
 	;
   
 action_statement:
@@ -1122,7 +1140,7 @@ options {
 
 data [MLMObject obj] returns [String s=""]
 {String a,b;}
-: #(DATA {System.err.println("\n"); System.err.println("-------Starting Data--------");} 
+: //#(COLON {System.err.println("\n"); System.err.println("-------Starting Data--------");} 
 	 (
 	  {System.err.println("-----------Starting Read -------");}s=readAST[obj, s]  {System.err.println("\n");System.err.println("-----------End Read -------");}
 	 |{System.err.println("----------------Starting Event-------");} eventAST {System.err.println("\n");System.err.println("-----------End Event -------");}
@@ -1132,7 +1150,8 @@ data [MLMObject obj] returns [String s=""]
  //	 |{System.err.println("----------------Starting read func op-------");} of_read_func_opAST [obj] {System.err.println("----------------End read func op-------");}
  
 	 )* 
-  (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Data -------");})
+  (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Data -------");}
+  //)
 
 ;
 
@@ -1381,7 +1400,7 @@ eventAST returns [String s=""]
 /********************LOGIC***********************************/
 logic [MLMObject obj] returns [String s=""]
 {String a,b; Integer i = 1;}
-: #(LOGIC {System.err.println("\n"); System.err.println("-------Starting LOGIC--------");} 
+: //#(COLON {System.err.println("\n"); System.err.println("-------Starting LOGIC--------");} 
 	
 	 (
 	   {System.err.println("-----------Starting IF -------");} a=ifAST[obj]
@@ -1410,7 +1429,8 @@ logic [MLMObject obj] returns [String s=""]
 
 	{i++;} )* 
  	
-  (ENDBLOCK){System.err.println("\n");System.err.println("-----------End LOGIC -------");})
+  (ENDBLOCK){System.err.println("\n");System.err.println("-----------End LOGIC -------");}
+  //)
 ;
 
 callAST [MLMObject obj, String key] returns [String s=""]
@@ -1706,11 +1726,12 @@ logic_elseifAST [MLMObject obj, Integer i] returns [String s=""]
 /***********************ACTION*******************************************/
 action [MLMObject obj] returns [String s=""]
 {String a,b;}
-: #(ACTION {System.err.println("\n"); System.err.println("-------Starting Action--------");} 
+: //#(COLON {System.err.println("\n"); System.err.println("-------Starting Action--------");} 
 	 (
-	   {System.err.println("-----------Starting Write -------");} s = writeAST[obj] {System.err.println("\n");System.err.println("-----------End Write -------");}
+	   {System.err.println("-----------Starting Write -------");} s = writeAST[obj] {obj.setActionStr(s); System.err.println("\n");System.err.println("-----------End Write -------");}
 	 )* 
-  (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Action -------");})
+  (ENDBLOCK){System.err.println("\n");System.err.println("-----------End Action -------");}
+  //)
 ;
 
 writeAST [MLMObject obj] returns [String s=""]
@@ -1751,6 +1772,95 @@ actionExprAST [MLMObject obj] returns [String s=""]
 ;
 */
 
+/***********************KNOWLEDGE*******************************************/
+knowledge [MLMObject obj] returns [String s=""]
+{String a="",b = "";}
+: (
+  #(KNOWLEDGE
+    (
+    	(
+    	/*  #(TYPE
+    	      COLON {s += " Type: "; }  b = textAST[obj] {obj.setType(b); s += b; s += "\n";} 
+    	   )
+    	 |
+    	*/ #(DATA
+    	       COLON {System.err.println("-----------Starting Data -------");} s = data[obj] {System.err.println("\n");System.err.println("-----------End Data -------");}
+    	       
+    	   )
+    	 |#(PRIORITY 
+    	      COLON {s += " Priority: "; }  b = doubleAST[obj] {obj.setPriority(b); s += b; s += "\n";} 
+    	   )
+    	 /*|#(EVOKE
+    	        COLON {s += " Type: "; }  b = textAST[obj] {obj.setType(b); s += b; s += "\n";} 
+    	   )
+    	 */
+    	 |
+    	 #(LOGIC
+    	       COLON {System.err.println("-----------Starting Logic -------");} s = logic[obj] {System.err.println("\n");System.err.println("-----------End Logic -------");}
+    	    )
+    	 |#(ACTION
+    	       COLON {System.err.println("-----------Starting ACTION -------");} s = action[obj] {System.err.println("\n");System.err.println("-----------End Action -------");}
+    	   )
+    	 /*|#(URGENCY
+    	        COLON {s += " Type: "; }  b = textAST[obj] {obj.setType(b); s += b; s += "\n";} 
+    	   )
+    	  */
+		 | a = textAST[obj] {s += a;} ENDBLOCK {s += "\n";}     	
+    	)
+    
+    )*
+   )
+   
+  )
+;
+
+
+
+/***********************KNOWLEDGE TEXT- To return data, logic and action text to populate the DB *******************************************/
+knowledge_text [MLMObject obj] returns [String s=""]
+{String a="",b = "";}
+: (
+  #(KNOWLEDGE
+    (
+    	(
+    	/*  #(TYPE
+    	      COLON {s += " Type: "; }  b = textAST[obj] {obj.setType(b); s += b; s += "\n";} 
+    	   )
+    	 |
+    	*/ #(DATA
+    	       COLON  b = textAST[obj] {obj.setData(b); s += b; s += "\n";} 
+    	       
+    	   )
+    	 |#(PRIORITY 
+    	      COLON   b = doubleAST[obj] {obj.setPriority(b); s += b; s += "\n";} 
+    	   )
+    	 /*|#(EVOKE
+    	        COLON {s += " Type: "; }  b = textAST[obj] {obj.setType(b); s += b; s += "\n";} 
+    	   )
+    	 */
+    	 |
+    	 #(LOGIC
+    	       COLON  b = textAST[obj] {obj.setLogic(b); s += b; s += "\n";} 
+    	    )
+    	 |#(ACTION
+    	       COLON  b = textAST[obj] {obj.setAction(b); s += b; s += "\n";} 
+    	   )
+    	 /*|#(URGENCY
+    	        COLON {s += " Type: "; }  b = textAST[obj] {obj.setType(b); s += b; s += "\n";} 
+    	   )
+    	  */
+		 | a = textAST[obj] {s += a;} ENDBLOCK {s += "\n";}     	
+    	)
+    
+    )*
+   )
+   
+  )
+;
+
+
+
+/***********************MAINTENANCE*******************************************/
 maintenance [MLMObject obj] returns [String s=""]
 {String a="",b = "";}
 : (
@@ -1762,8 +1872,27 @@ maintenance [MLMObject obj] returns [String s=""]
   		|#(MLMNAME 
   			 COLON {s += " Filename: "; }  b = textAST[obj] {obj.setClassName(b); s += b; s += "\n";} 
   		  )
+  		|#(VERSION 
+  			 COLON {s += " Version: "; }  b = doubleAST[obj] {obj.setVersion(b); s += b; s += "\n";} 
+  		  )
+  		|#(TITLE
+  			COLON {s += " Title: "; }  b = textAST[obj] {obj.setTitle(b); s += b; s += "\n";} 
+  		  )
+  		|#(AUTHOR
+  			COLON {s += " Author: "; }  b = textAST[obj] {obj.setAuthor(b); s += b; s += "\n";} 
+  		  )
+  		|#(SPECIALIST
+  			COLON {s += " Specialist: "; }  b = textAST[obj] {obj.setSpecialist(b); s += b; s += "\n";} 
+  		  )
+  		|#(DATE
+  			COLON {s += " Date: "; }  b = doubleAST[obj] {obj.setDate(b); s += b; s += "\n";} 
+  		  )
+   		|#(INSTITUTION
+  			COLON {s += " Institution: "; }  b = textAST[obj] {obj.setInstitution(b); s += b; s += "\n";} 
+  		  )  
   		| a = textAST[obj] {s += a;} ENDBLOCK {s += "\n";} 
   		)
+  		
   		
     )* 
    )
@@ -1784,18 +1913,43 @@ textAST [MLMObject obj] returns [String s=""]
 )
 ;
 
+doubleAST [MLMObject obj] returns [String s=""]
+{String a="",b="";}
+: (
+	(
+ 		(str: ~(ENDBLOCK) {a = str.getText();s += a; /*System.err.println(s);*/} )*  
+	)
+)
+;
+
+/***********************LIBRARY*******************************************/
 library [MLMObject obj] returns [String s=""]
 {String a="",b="";}
 : (
   #(LIBRARY 
-  	 ( 
-  		a = textAST[obj] {s += a;} ENDBLOCK {s += "\n";} 
-    )* 
+  	 (  
+  	    #(PURPOSE 
+  	    	COLON {s += " Purpose: "; }  b = textAST[obj] {obj.setPurpose(b); s += b; s += "\n";}
+  	      )
+  	    |#(EXPLANATION
+  	    	COLON {s += " Explanation: "; }  b = textAST[obj] {obj.setExplanation(b); s += b; s += "\n";}
+  	      )
+  	    |#(KEYWORDS
+  	    	COLON {s += " Keywords: "; }  b = textAST[obj] {obj.setKeywords(b); s += b; s += "\n";}
+  	      )
+  	    |#(CITATIONS
+  	    	COLON {s += " Citations: "; }  b = textAST[obj] {obj.setCitations(b); s += b; s += "\n";}
+  	      )
+  	    |#(LINKS
+  	    	COLON {s += " Links: "; }  b = textAST[obj] {obj.setLinks(b); s += b; s += "\n";}
+  	      )
+  		| a = textAST[obj] {s += a;} ENDBLOCK {s += "\n";} 
+     )* 
    
    )
   )
 ;
-
+ 
 
 /*************************************************************************************/
 

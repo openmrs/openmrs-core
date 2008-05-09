@@ -314,7 +314,7 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_DELETE_PERSONS, "Able to delete objects");
 		}
 		
-		// always add the module core privileges back on	
+		// always add the module core privileges back on
 		for (Privilege privilege : ModuleFactory.getPrivileges()) {
 			CORE_PRIVILEGES.put(privilege.getPrivilege(), privilege.getDescription());
 		}
@@ -361,6 +361,7 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS  = "patient.searchMaxResults";
 	public static final String GLOBAL_PROPERTY_GZIP_ENABLED                = "gzip.enabled";
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
+	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS           = "report.xmlMacros";
 	public static final String GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS      = "dashboard.regimen.standardRegimens";	
 	
 	// These properties (and default values) are set if not found in the database on startup
@@ -531,10 +532,11 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS, "1000", "The maximum number of results returned by patient searches"));
 		
         props.add(new GlobalProperty(GLOBAL_PROPERTY_GZIP_ENABLED, "false", "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression."));
-        
+        props.add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_XML_MACROS, "", "Macros that will be applied to Report Schema XMLs when they are interpreted. This should be java.util.properties format."));
+		
         props.add(new GlobalProperty(GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238", "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
         
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOG_LEVEL, LOG_LEVEL_INFO, "log level used by the logger 'org.openmrs'. This value will override the log4j.xml value. Valid values are trace, debug, info, warn, error or fatal"));
+        props.add(new GlobalProperty(GLOBAL_PROPERTY_LOG_LEVEL, LOG_LEVEL_INFO, "log level used by the logger 'org.openmrs'. This value will override the log4j.xml value. Valid values are trace, debug, info, warn, error or fatal"));
         
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
@@ -657,7 +659,7 @@ public final class OpenmrsConstants {
 	public static String OPERATING_SYSTEM_LINUX = "Linux";
 	public static String OPERATING_SYSTEM_FREEBSD = "FreeBSD";
 	public static String OPERATING_SYSTEM_OSX = "Mac OS X";
-	
+		
     // Shortcut booleans used to make some OS specific checks
     // more generic; note the un*x flavored check is missing
     // some less obvious choices
@@ -668,8 +670,13 @@ public final class OpenmrsConstants {
     public static boolean WINDOWS_BASED_OPERATING_SYSTEM = OPERATING_SYSTEM.indexOf("Windows") > -1;
     public static boolean WINDOWS_VISTA_OPERATING_SYSTEM = 
 		OPERATING_SYSTEM.equals(OPERATING_SYSTEM_WINDOWS_VISTA);
-    
-    
+		
+	/**
+	 * Marker put into the serialization session map to tell @Replace methods 
+	 * whether or not to do just the very basic serialization
+	 */
+	public static final String SHORT_SERIALIZATION = "isShortSerialization";
+	
     // Global property key for global logger level
     public static final String GLOBAL_PROPERTY_LOG_LEVEL = "log.level.openmrs";
     // Global logger category

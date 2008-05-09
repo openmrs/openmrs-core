@@ -91,9 +91,9 @@ public class ForEachRecordTag extends BodyTagSupport {
 		else if (name.equals("reportObject")) {
 			List ret = null;
 			if (reportObjectType != null)
-				ret = Context.getReportService().getReportObjectsByType(reportObjectType); 
+				ret = Context.getReportObjectService().getReportObjectsByType(reportObjectType); 
 			else
-				ret = Context.getReportService().getAllReportObjects();
+				ret = Context.getReportObjectService().getAllReportObjects();
 			records = ret.iterator();
 		}
 		else if (name.equals("civilStatus")) {

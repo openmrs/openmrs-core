@@ -93,13 +93,21 @@
 		for (var i = 0; i < patientList.length; ++i) {
 			var pli = patientList[i];
 			str += (cohort_startIndex + i + 1) + '. ';
-			<c:if test="${not empty model.linkUrl}">
+			<c:choose>
+			<c:when test="${not empty model.linkUrl && model.target != '_blank'}">
 				str += '<a href="${model.linkUrl}?patientId=' + pli.patientId + '">';
-			</c:if>
-			str += pli.givenName + ' ' + pli.familyName + ' (' + pli.age + ' year old ' + (pli.gender == 'M' ? 'Male' : 'Female') + ')';
-			<c:if test="{not empty model.linkUrl}">
-				str += '</a>';
-			</c:if>
+                str += pli.givenName + ' ' + pli.familyName + ' (' + pli.age + ' year old ' + (pli.gender == 'M' ? 'Male' : 'Female') + ')';
+                str += '</a>';
+			</c:when>
+			<c:when test="${not empty model.linkUrl && model.target == '_blank'}">
+                str += '<a href="${model.linkUrl}?patientId=' + pli.patientId + '" ' + 'target="_blank"' + '>';
+                str += pli.givenName + ' ' + pli.familyName + ' (' + pli.age + ' year old ' + (pli.gender == 'M' ? 'Male' : 'Female') + ')';
+                str += '</a>';
+			</c:when>
+            <c:otherwise>
+                str += pli.givenName + ' ' + pli.familyName + ' (' + pli.age + ' year old ' + (pli.gender == 'M' ? 'Male' : 'Female') + ')';			
+			</c:otherwise>
+			</c:choose>
 			str += '<br/>';
 		}
 		if (cohort_endIndex < cohort_patientIds.length)
@@ -108,8 +116,8 @@
 	}
 
 	<c:choose>
-		<c:when test="${model.patientIds != null}">
-			cohort_setPatientIds('${model.patientIds}');
+		<c:when test="${patientIds != null}">
+			cohort_setPatientIds('${patientIds}');
 		</c:when>
 		<c:when test="${model.cohortId != null}">
 			cohort_setCohortId(${model.cohortId});
@@ -125,9 +133,11 @@
 		<b><u><span id="cohort_name">${model.cohortTitle}</span></u></b>
 	</div>
 	<div id="cohort_viewMethodDiv">
+	<%--
 		View method:
 			<b>List</b>
 			&nbsp;&nbsp; <small>Other methods are not yet implemented</small>
+    --%>
 	</div>
 	<div id="cohort_navButtons">
 		<b><u>

@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -33,12 +32,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.logic.LogicException;
 import org.openmrs.logic.LogicService;
-import org.openmrs.logic.Result;
-import org.openmrs.reporting.PatientSet;
+import org.openmrs.logic.result.Result;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
@@ -82,21 +82,26 @@ public class SummaryServlet extends HttpServlet {
 		
 		PrintWriter summary = response.getWriter();
 		
-		PatientSet patientSet = getPatientSet(request, response);
+		Cohort patientSet = getPatientSet(request, response);
 		
 		PatientService patientService = Context.getPatientService();
 		LogicService logic = Context.getLogicService();
 		
 		summary.write("<clinicalSummaryList>\n");
-		for (Integer patientId : patientSet.getPatientIds()) {
-			Result xml = logic.eval(patientService.getPatient(patientId), "CLINICAL SUMMARY");
+		for (Integer patientId : patientSet.getMemberIds()) {
+			try {
+				Result xml = logic.eval(patientService.getPatient(patientId), "CLINICAL SUMMARY");
 			
-			// Output results
-			String s = xml.toString();
-			summary.write(s);
-			String[] lines = s.split("\n");
-			for (int x=1; x<lines.length; x++) {
-				summary.write(lines[x] + "\n");
+				// Output results
+				String s = xml.toString();
+				summary.write(s);
+				String[] lines = s.split("\n");
+				for (int x=1; x<lines.length; x++) {
+					summary.write(lines[x] + "\n");
+				}
+			}
+			catch (LogicException e) {
+				throw new ServletException("Error while evaluating rule CLINICAL SUMMARY for patient: " + patientId, e);
 			}
 		}
 		summary.write("</clinicalSummaryList>");
@@ -110,7 +115,7 @@ public class SummaryServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	private PatientSet getPatientSet(HttpServletRequest request, 
+	private Cohort getPatientSet(HttpServletRequest request, 
 			HttpServletResponse response) throws ServletException, IOException {
 		
 		Locale locale = Context.getLocale();
@@ -120,7 +125,7 @@ public class SummaryServlet extends HttpServlet {
 		String locationString = ServletRequestUtils.getStringParameter(request, "location", "");
 		String identifierStrings = ServletRequestUtils.getStringParameter(request, "patientIdentifiers", "");
 		
-		PatientSet ps = new PatientSet();
+		Cohort ps = new Cohort();
 		
 		// get patients according to start/end "Return Visit Date"
 		if ((startDateString.length() != 0) || 
@@ -161,13 +166,13 @@ public class SummaryServlet extends HttpServlet {
 				}
 				endDate = cal.getTime();
 			}
-			ps.add(Context.getPatientSetService().getPatientsHavingDateObs(c.getConceptId(), startDate, endDate));
-			log.debug("PatientSet length after adding Return Visit obs: " + ps.getSize());
+			ps = Cohort.union(ps, Context.getPatientSetService().getPatientsHavingDateObs(c.getConceptId(), startDate, endDate));
+			log.debug("PatientSet length after adding Return Visit obs: " + ps.size());
 		}
 		
 		// get all patients whose last encounter was at the given location
 		if (locationString.length() > 0) {
-			ps.add(Context.getPatientSetService().getPatientsHavingLocation(Integer.valueOf(locationString)));
+			ps = Cohort.union(ps, Context.getPatientSetService().getPatientsHavingLocation(Integer.valueOf(locationString)));
 		}
 		
 		List<String> identifiers = new Vector<String>();
@@ -197,7 +202,7 @@ public class SummaryServlet extends HttpServlet {
 				}
 			}
 			
-			ps.add(Context.getPatientSetService().convertPatientIdentifier(identifiers));
+			ps = Cohort.union(ps, Context.getPatientSetService().convertPatientIdentifier(identifiers));
 		}
 		
 		

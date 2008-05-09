@@ -54,6 +54,9 @@
 	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.1.jar" sourcepath="/openmrs-source/c3p0-0.9.1-pre9.zip"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-dev.jar" sourcepath="/openmrs-source/velocity-1.5.zip"/>
 	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5.jar" sourcepath="/openmrs-source/hapi-0.5_source_v25.zip"/>
+	<classpathentry kind="lib" path="lib/simple/simple-xml-1.6.1-mod.jar" sourcepath="/Simple-xml-stream-clean/src"/>
+	<classpathentry kind="lib" path="lib/stax/stax-1.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/stax/stax-api-1.0.1.jar"/>
 	<classpathentry kind="lib" path="metadata/api/spring"/>
 	<classpathentry kind="lib" path="metadata/api/hibernate"/>
 	<classpathentry kind="lib" path="metadata/api/log4j"/>

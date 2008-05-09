@@ -22,15 +22,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.openmrs.Cohort;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
-public class ProgramStatePatientFilter extends AbstractPatientFilter implements
-		PatientFilter {
+public class ProgramStatePatientFilter extends CachingPatientFilter {
 
 	private Program program;
 	private List<ProgramWorkflowState> stateList;
@@ -43,6 +44,21 @@ public class ProgramStatePatientFilter extends AbstractPatientFilter implements
 	
 	public ProgramStatePatientFilter() { }
 	
+	@Override
+    public String getCacheKey() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(getClass().getName()).append(".");
+	    if (getProgram() != null)
+	    	sb.append(getProgram().getProgramId());
+	    sb.append(".");
+	    sb.append(OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
+	    sb.append(OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
+	    if (getStateList() != null)
+	    	for (ProgramWorkflowState s : getStateList())
+	    		sb.append(s.getProgramWorkflowStateId()).append(",");
+	    return sb.toString();
+    }
+
 	public String getDescription() {
 		StringBuilder ret = new StringBuilder();
 		
@@ -101,16 +117,11 @@ public class ProgramStatePatientFilter extends AbstractPatientFilter implements
 
 		return ret.toString();
 	}
-	
-	public PatientSet filter(PatientSet input) {
-		PatientSetService service = Context.getPatientSetService();
-		PatientSet ps = service.getPatientsByProgramAndState(program, stateList, fromDateHelper(), toDateHelper());
-		return input == null ? ps : input.intersect(ps);
-	}
 
-	public PatientSet filterInverse(PatientSet input) {
+	@Override
+	public Cohort filterImpl(EvaluationContext context) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.subtract(service.getPatientsByProgramAndState(program, stateList, fromDateHelper(), toDateHelper()));
+		return service.getPatientsByProgramAndState(program, stateList, fromDateHelper(), toDateHelper());
 	}
 
 	public boolean isReadyToRun() {

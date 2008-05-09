@@ -10,7 +10,7 @@
  * under the License.
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
- */ 
+ */
 package org.openmrs.scheduler;
 
 import java.util.Date;
@@ -21,66 +21,71 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 
-
 /**
  * Represents the metadata for a task that can be scheduled.
- *
+ * 
  * @author Justin Miranda
  */
-public class TaskDefinition { 
-	
+public class TaskDefinition {
+
 	private Log log = LogFactory.getLog(this.getClass());
-	
+
 	// Task metadata
 	private Integer id;
 	private String name;
 	private String description;
-	private String taskClass; 	// This class must implement the schedulable interface or it will fail to start
+	private String taskClass; // This class must implement the schedulable
+								// interface or it will fail to start
 
 	// Scheduling metadata
 	private Date startTime;
-	private Long repeatInterval;		// NOW in seconds to give us ability to support longer intervals (years, decades, milleniums)
-	private Boolean startOnStartup;  	
+	private Long repeatInterval; // NOW in seconds to give us ability to
+									// support longer intervals (years, decades,
+									// milleniums)
+	private Boolean startOnStartup;
 	private String startTimePattern;
-    private Boolean started;
-    
-	// Relationships
-	private Map<String,String> properties;
+	private Boolean started;
 
-	// Metadata fields 
+	// Relationships
+	private Map<String, String> properties;
+
+	// Metadata fields
 	private User createdBy;
 	private Date dateCreated;
 	private User changedBy;
-	private Date dateChanged;
-	/** 
+	private Date dateChanged;
+
+	/**
 	 * Default no-arg public constructor
 	 */
 	public TaskDefinition() {
-		this.started = new Boolean(false);	// default 
-		this.startTime = new Date();		// makes it easier during task creation as we have a default date populated
-		this.properties = new HashMap<String,String>();
+		this.started = new Boolean(false); // default
+		this.startTime = new Date(); // makes it easier during task creation
+										// as we have a default date populated
+		this.properties = new HashMap<String, String>();
 	}
 
 	/**
 	 * Public constructor
 	 */
-	public TaskDefinition(Integer id, String name, String description, String schedulableClass) {
+	public TaskDefinition(Integer id, String name, String description,
+	        String schedulableClass) {
 		this();
 		log.debug("Creating taskconfig: " + id);
 		this.id = id;
 		this.name = name;
 		this.description = description;
-		this.taskClass = taskClass;	}
-	
-	
+		this.taskClass = taskClass;
+	}
+
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof TaskDefinition) {
-			TaskDefinition other = (TaskDefinition)obj;
-			if (this.getId() != null) { 
+			TaskDefinition other = (TaskDefinition) obj;
+			if (this.getId() != null) {
 				this.getId().equals(other.getId());
 			}
 		}
@@ -95,7 +100,7 @@ public class TaskDefinition {
 		if (this.getId() == null) {
 			return super.hashCode();
 		}
-		
+
 		Integer hash = 5;
 		return (this.getId() * hash);
 	}
@@ -103,109 +108,192 @@ public class TaskDefinition {
 	/**
 	 * Get the task identifier.
 	 * 
-	 * @return  the task identifier
-	 */	public Integer getId() { 		return this.id;	}
-	/**	 * Set the task identifier.	 * 	 * @param id	 */	public void setId(Integer id) { 		this.id = id;	}
-	/**	 * Get the name of the task.	 * 	 * @return 	the name of the task	 */	public String getName() { 		return this.name;	}		/**	 * Set the name of the task.	 * 	 * @param name of the task	 */	public void setName(String name) { 		this.name = name;	}
-	/**	 * Get the description of the task.	 * 	 * @return 	the description of the task	 */	public String getDescription() { 		return this.description;	}
-	/**	 * Set the name of the task.	 * 	 * @param name of the task	 */	public void setDescription(String description) { 		this.description = description;	}
-
-		/**	 * Get the data map used to provide the task with runtime data.	 * 	 * @return 	the data map 	 */	public Map<String,String> getProperties() { 		return this.properties;	}		/**	 * Set the name of the task.	 * 	 * @param name of the task	 */	public void setProperties(Map<String,String> properties) {		this.properties = properties;	}
-  /**   * Get the schedulable object to be executed.    *   * @return    the schedulable object   */	public String getTaskClass() { 		return this.taskClass;  	}
-	    /**   * Set the schedulable object to be executed.    *   * @param schedulable schedulable object   */	public void setTaskClass(String taskClass) { 		this.taskClass = taskClass;	}
-	
-  	/**
-  	 * Get the start time for when the task should be executed.  
-  	 *  
-  	 * @return long  start time
-  	 */
-  	public Date getStartTime() { 
-  		return startTime;
-  	} 
-
-  	/**
-  	 * Set the start time for when the task should be executed.
-  	 * For instance, use "new Date()", if you want it to start now.
-  	 *
-  	 * @param  startTime   start time for the task
-  	 */
-  	public void setStartTime(Date startTime) { 
-  		this.startTime = startTime;
-  	}
-  	
-	/**
-	 *  Gets the number of seconds until task is executed again.
-	 *  
-	 *  @return long  number of seconds.
+	 * @return the task identifier
 	 */
-	public Long getRepeatInterval() { 
+	public Integer getId() {
+		return this.id;
+	}
+
+	/**
+	 * Set the task identifier.
+	 * 
+	 * @param id
+	 */
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	/**
+	 * Get the name of the task.
+	 * 
+	 * @return the name of the task
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * Set the name of the task.
+	 * 
+	 * @param name of the task
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Get the description of the task.
+	 * 
+	 * @return the description of the task
+	 */
+	public String getDescription() {
+		return this.description;
+	}
+
+	/**
+	 * Set the name of the task.
+	 * 
+	 * @param name of the task
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
+	 * Get the data map used to provide the task with runtime data.
+	 * 
+	 * @return the data map
+	 */
+	public Map<String, String> getProperties() {
+		return this.properties;
+	}
+
+	/**
+	 * Set the name of the task.
+	 * 
+	 * @param name of the task
+	 */
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
+	}
+
+	/**
+	 * Get the schedulable object to be executed.
+	 * 
+	 * @return the schedulable object
+	 */
+	public String getTaskClass() {
+		return this.taskClass;
+	}
+
+	/**
+	 * Set the schedulable object to be executed.
+	 * 
+	 * @param schedulable schedulable object
+	 */
+	public void setTaskClass(String taskClass) {
+		this.taskClass = taskClass;
+	}
+
+	/**
+	 * Get the start time for when the task should be executed.
+	 * 
+	 * @return long start time
+	 */
+	public Date getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * Set the start time for when the task should be executed. For instance,
+	 * use "new Date()", if you want it to start now.
+	 * 
+	 * @param startTime start time for the task
+	 */
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	/**
+	 * Gets the number of seconds until task is executed again.
+	 * 
+	 * @return long number of seconds.
+	 */
+	public Long getRepeatInterval() {
 		return repeatInterval;
 	}
 
 	/**
-	 *  Sets the number of seconds until task is executed again.
+	 * Sets the number of seconds until task is executed again.
 	 * 
-	 *  @param
+	 * @param
 	 */
-	public void setRepeatInterval(Long repeatInterval) { 
+	public void setRepeatInterval(Long repeatInterval) {
 		this.repeatInterval = repeatInterval;
 	}
-  
-    
 
 	/**
-	 *  Get the date format used to set the start time.  
+	 * Get the date format used to set the start time.
 	 */
-	public String getStartTimePattern() { 
-		return this.startTimePattern; 
+	public String getStartTimePattern() {
+		return this.startTimePattern;
 	}
 
 	/**
 	 * Sets the date format used to set the start time.
 	 */
-	public void setStartTimePattern(String pattern) { 
+	public void setStartTimePattern(String pattern) {
 		this.startTimePattern = pattern;
 	}
 
 	/**
 	 * Gets the flag that indicates whether we start on scheduler startup.
 	 */
-	public Boolean getStartOnStartup() { 
-		return this.startOnStartup; 
+	public Boolean getStartOnStartup() {
+		return this.startOnStartup;
 	}
 
 	/**
 	 * Sets the flag that indicates whether we start on scheduler startup.
 	 */
-	public void setStartOnStartup(Boolean startOnStartup) { 
+	public void setStartOnStartup(Boolean startOnStartup) {
 		this.startOnStartup = startOnStartup;
 	}
 
 	/**
 	 * Gets the flag that indicates whether the task has been started.
 	 */
-	public Boolean getStarted() { 
-		return this.started; 
+	public Boolean getStarted() {
+		return this.started;
 	}
 
 	/**
 	 * Sets the flag that indicates whether the task has been started.
 	 */
-	public void setStarted(Boolean started) { 
+	public void setStarted(Boolean started) {
 		this.started = started;
 	}
-	
-	
-	
-	
-	
-
 
 	/**
 	 * Get task configuration property.
+	 * 
 	 * @param key
 	 * @return
-	 */  	public String getProperty(String key) { 		return this.properties.get( key );	}		/**	 * Set task configuration property.  Only supports strings at the moment.	 * @param key	 * @param value	 */	public void setProperty(String key, String value) { 		this.properties.put(key, value);	}  	
+	 */
+	public String getProperty(String key) {
+		return this.properties.get(key);
+	}
+
+	/**
+	 * Set task configuration property. Only supports strings at the moment.
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public void setProperty(String key, String value) {
+		this.properties.put(key, value);
+	}
+
 	/**
 	 * @return Returns the creator.
 	 */
@@ -214,8 +302,7 @@ public class TaskDefinition {
 	}
 
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
 	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
@@ -229,8 +316,7 @@ public class TaskDefinition {
 	}
 
 	/**
-	 * @param dateCreated
-	 *            The dateCreated to set.
+	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
@@ -244,8 +330,7 @@ public class TaskDefinition {
 	}
 
 	/**
-	 * @param changedBy
-	 *            The changedBy to set.
+	 * @param changedBy The changedBy to set.
 	 */
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
@@ -259,11 +344,10 @@ public class TaskDefinition {
 	}
 
 	/**
-	 * @param dateChanged
-	 *            The dateChanged to set.
+	 * @param dateChanged The dateChanged to set.
 	 */
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
-	
+
 }

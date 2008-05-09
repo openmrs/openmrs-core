@@ -84,4 +84,45 @@ public class TestUtil {
 		return props;
 	}
 	
+	/**
+     * Convert the given xml output to a string that is assignable to a
+     * single String variable
+     * 
+     * @param output multi line string to convert
+     */
+    public static void printAssignableToSingleString(String output) {
+    	output = output.replace("\n", "\\n");
+		output = output.replace("\"", "\\\"");
+		System.out.println(output);
+    }
+    
+    /**
+     * Convert the given multi-line output to lines of StringBuilder.append lines
+     * 
+     * From an input of this this:
+     * asdf
+     *  asdfasdf
+     * asdf"asdf"
+     * 
+     * To this:
+     * StringBuilder correctOutput = new StringBuilder();
+     * correctOutput.append("asdf\n");
+     * correctOutput.append(" asdfasdf\n");
+     * correctOutput.append("asdf\"asdf\"\n");
+     * 
+     * @param output multi line string to convert
+     */
+    public static void printStringBuilderOutput(String output) {
+    	output = output.replace("\"", "\\\"");
+    	String[] lines = output.split("\n");
+    	
+    	System.out.println("StringBuilder correctOutput = new StringBuilder();");
+    	for (String line : lines) {
+    		System.out.print("correctOutput.append(\"");
+    		System.out.print(line);
+    		System.out.println("\");\\n");
+    	}
+    	
+    }
+	
 }

@@ -13,7 +13,15 @@
  */
 package org.openmrs.reporting;
 
-public class InversePatientFilter extends AbstractPatientFilter implements PatientFilter {
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openmrs.Cohort;
+import org.openmrs.report.EvaluationContext;
+import org.openmrs.report.Parameter;
+import org.openmrs.report.Parameterizable;
+
+public class InversePatientFilter extends AbstractPatientFilter implements PatientFilter, Parameterizable {
 	
 	private PatientFilter baseFilter;
 	
@@ -32,12 +40,12 @@ public class InversePatientFilter extends AbstractPatientFilter implements Patie
 		this.baseFilter = baseFilter;
 	}
 
-	public PatientSet filter(PatientSet input) {
-		return baseFilter.filterInverse(input);
+	public Cohort filter(Cohort input, EvaluationContext context) {
+		return baseFilter.filterInverse(input, context);
 	}
 
-	public PatientSet filterInverse(PatientSet input) {
-		return baseFilter.filter(input);
+	public Cohort filterInverse(Cohort input, EvaluationContext context) {
+		return baseFilter.filter(input, context);
 	}
 
 	public boolean isReadyToRun() {
@@ -48,5 +56,12 @@ public class InversePatientFilter extends AbstractPatientFilter implements Patie
 	public String getDescription() {
 		return "NOT " + (baseFilter == null ? "?" : baseFilter.getDescription());
 	}
+
+	/**
+     * @see org.openmrs.report.Parameterizable#getParameters()
+     */
+    public List<Parameter> getParameters() {
+	    return new ArrayList<Parameter>();
+    }
 
 }

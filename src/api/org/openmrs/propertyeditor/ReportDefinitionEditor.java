@@ -38,7 +38,7 @@ public class ReportDefinitionEditor extends PropertyEditorSupport {
 		log.debug("Setting report object text " + text);
 		if (StringUtils.hasText(text)) {
 			try {
-				setValue(Context.getReportService().getReportObject(Integer.valueOf(text)));
+				setValue(Context.getReportObjectService().getReportObject(Integer.valueOf(text)));
 				log.debug("value: " + getValue());
 			}
 			catch (Exception ex) {

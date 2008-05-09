@@ -50,19 +50,20 @@ public class HibernateReportObjectDAO implements
 	}
 	
 	public List<AbstractReportObject> getAllReportObjects() {
-
-
-		
 		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
 		//List<ReportObjectWrapper> wrappedObjects = new Vector<ReportObjectWrapper>();
 		//wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper order by date_created, name").list());
 		List<ReportObjectWrapper> wrappedObjects = sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper order by date_created, name").list();
 		for ( ReportObjectWrapper wrappedObject : wrappedObjects ) {
-			AbstractReportObject reportObject = (AbstractReportObject)wrappedObject.getReportObject();
-			if ( reportObject.getReportObjectId() == null ) {
-				reportObject.setReportObjectId(wrappedObject.getReportObjectId());
+			try {
+				AbstractReportObject reportObject = (AbstractReportObject)wrappedObject.getReportObject();
+				if ( reportObject.getReportObjectId() == null ) {
+					reportObject.setReportObjectId(wrappedObject.getReportObjectId());
+				}
+				reportObjects.add(reportObject);
+			} catch (Exception ex) {
+				log.error("Error retrieving report object with id=" + wrappedObject.getReportObjectId(), ex);
 			}
-			reportObjects.add(reportObject);
 		}
 		return reportObjects;
 	}

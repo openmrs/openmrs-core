@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
@@ -84,6 +85,9 @@ public interface ProgramWorkflowService {
 
 	@Transactional(readOnly=true)
 	public Collection<PatientProgram> getPatientPrograms(Patient patient);
+	
+	@Transactional(readOnly=true)
+	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
 
 	public void enrollPatientInProgram(Patient patient, Program program,
 			Date enrollmentDate, Date completionDate, User creator);

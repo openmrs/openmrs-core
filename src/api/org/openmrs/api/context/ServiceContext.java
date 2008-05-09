@@ -24,6 +24,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.DataSetService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.ObsService;
@@ -32,13 +33,14 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.ReportService;
 import org.openmrs.api.UserService;
 import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
-import org.openmrs.reporting.ReportService;
+import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.aop.Advisor;
@@ -182,10 +184,17 @@ public class ServiceContext {
 	}
 
 	/**
+	 * @return report object service
+	 */
+	public ReportObjectService getReportObjectService() {
+		return (ReportObjectService)getService(ReportObjectService.class);
+	}
+	
+	/** 
 	 * @return report service
 	 */
 	public ReportService getReportService() {
-		return (ReportService)getService(ReportService.class);
+		return (ReportService) getService(ReportService.class);
 	}
 
 	/**
@@ -343,10 +352,31 @@ public class ServiceContext {
 	}
 
 	/**
-	 * @param reportService the reportService to set
+	 * @param reportObjectService the reportObjectService to set
+	 */
+	public void setReportObjectService(ReportObjectService reportObjectService) {
+		setService(ReportObjectService.class, reportObjectService);
+	}
+	
+	/**
+	 * @param reportService
 	 */
 	public void setReportService(ReportService reportService) {
 		setService(ReportService.class, reportService);
+	}
+	
+	/**
+	 * @param dataSetService
+	 */
+	public void setDataSetService(DataSetService dataSetService) {
+		setService(DataSetService.class, dataSetService);
+	}
+
+	/** 
+	 * @return
+	 */
+	public DataSetService getDataSetService() {
+		return (DataSetService) getService(DataSetService.class);
 	}
 
 	/**

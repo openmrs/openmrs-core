@@ -48,7 +48,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	private SessionFactory sessionFactory;
 	
-	public HibernatePersonDAO() { }
+	public HibernatePersonDAO() {
+	}
 	
 	/**
 	 * Set session factory
@@ -63,12 +64,14 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.dao.PersonDAO#getSimilarPeople(java.lang.String,java.lang.Integer,java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws DAOException {
+	public Set<Person> getSimilarPeople(String name, Integer birthyear,
+	        String gender) throws DAOException {
 		if (birthyear == null)
 			birthyear = 0;
 		
 		// TODO return the matched name instead of the primary name
-		//   possible solution: "select new" org.openmrs.PersonListItem and return a list of those
+		// possible solution: "select new" org.openmrs.PersonListItem and return
+		// a list of those
 		
 		Set<Person> people = new LinkedHashSet<Person>();
 		
@@ -85,8 +88,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			q += " or soundex(pname.middleName) = soundex(:n2)";
 			q += " or soundex(pname.familyName) = soundex(:n3) ";
 			q += ")";
-		}
-		else if (names.length == 2) {
+		} else if (names.length == 2) {
 			q += "(";
 			q += " case";
 			q += "  when pname.givenName is null then 1";
@@ -109,8 +111,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			q += "  else 0 ";
 			q += " end";
 			q += ") between 6 and 7";
-		}
-		else if (names.length == 3) {
+		} else if (names.length == 3) {
 			q += "(";
 			q += " case";
 			q += "  when pname.givenName is null then 0";
@@ -136,22 +137,19 @@ public class HibernatePersonDAO implements PersonDAO {
 			q += "  else 0";
 			q += " end";
 			q += ") >= 5";
-		}
-		else
+		} else
 			throw new DAOException("Too many names to compare effectively.");
 		
-		String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1) +
-								" or p.birthdate is null) ";
+		String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1)
+		        + " and " + (birthyear + 1) + " or p.birthdate is null) ";
 		
 		String genderMatch = " (p.gender = :gender or p.gender = '') ";
 		
 		if (birthyear != 0 && gender != null) {
 			q += " and (" + birthdayMatch + "and " + genderMatch + ") "; 
-		}
-		else if (birthyear != 0) {
+		} else if (birthyear != 0) {
 			q += " and " + birthdayMatch;
-		}
-		else if (gender != null) {
+		} else if (gender != null) {
 			q += " and " + genderMatch;
 		}
 		
@@ -203,7 +201,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		}
 				
 		if (includeVoided == false)
-			criteria.add(Expression.eq("voided", false));
+			criteria.add(Expression.eq("personVoided", false));
 		
 		criteria.addOrder(Order.asc("personId"));
 		
@@ -218,7 +216,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonService#getPerson(java.lang.Long)
 	 */
 	public Person getPerson(Integer personId) {
-		return (Person) sessionFactory.getCurrentSession().get(Person.class, personId);
+		return (Person) sessionFactory.getCurrentSession().get(Person.class,
+		                                                       personId);
 	}
 	
 	/**
@@ -240,8 +239,9 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PersonAttributeType> getPersonAttributeTypes() {
-		return sessionFactory.getCurrentSession().createQuery(
-		"from PersonAttributeType type order by type.name").list();
+		return sessionFactory.getCurrentSession()
+		                     .createQuery("from PersonAttributeType type order by type.name")
+		                     .list();
 	}
 
 	/**
@@ -255,11 +255,14 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonDAO#getPersonAttributeType(java.lang.Integer)
 	 */
 	public PersonAttributeType getPersonAttributeType(Integer typeId) {
-		return (PersonAttributeType) sessionFactory.getCurrentSession().get(PersonAttributeType.class, typeId);
+		return (PersonAttributeType) sessionFactory.getCurrentSession()
+		                                           .get(PersonAttributeType.class,
+		                                                typeId);
 	}
 
 	public PersonAttribute getPersonAttribute(Integer id) {
-		return (PersonAttribute)sessionFactory.getCurrentSession().get(PersonAttribute.class, id);
+		return (PersonAttribute) sessionFactory.getCurrentSession()
+		                                       .get(PersonAttribute.class, id);
 	}
 
 	/**
@@ -275,8 +278,11 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getRelationship()
 	 */
-	public Relationship getRelationship(Integer relationshipId) throws DAOException {
-		Relationship relationship = (Relationship)sessionFactory.getCurrentSession().get(Relationship.class, relationshipId);
+	public Relationship getRelationship(Integer relationshipId)
+	        throws DAOException {
+		Relationship relationship = (Relationship) sessionFactory.getCurrentSession()
+		                                                         .get(Relationship.class,
+		                                                              relationshipId);
 		
 		return relationship;
 	}
@@ -286,7 +292,9 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Relationship> getRelationships() throws DAOException {
-		List<Relationship> relationships = sessionFactory.getCurrentSession().createQuery("from Relationship r order by r.relationshipId asc").list();
+		List<Relationship> relationships = sessionFactory.getCurrentSession()
+		                                                 .createQuery("from Relationship r order by r.relationshipId asc")
+		                                                 .list();
 		
 		return relationships;
 	}
@@ -295,8 +303,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PatientService#getRelationships(org.openmrs.Person)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Relationship> getRelationships(Person person, boolean showVoided) throws DAOException {
-
+	public List<Relationship> getRelationships(Person person, boolean showVoided)
+			throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r")
 		.add(Expression.or(Expression.eq("personA", person), Expression.eq("personB", person)));
 		
@@ -310,17 +318,23 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientService#getRelationshipType(java.lang.Integer)
 	 */
-	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException {
+	public RelationshipType getRelationshipType(Integer relationshipTypeId)
+	        throws DAOException {
 		RelationshipType relationshipType = new RelationshipType();
-		relationshipType = (RelationshipType)sessionFactory.getCurrentSession().get(RelationshipType.class, relationshipTypeId);
+		relationshipType = (RelationshipType) sessionFactory.getCurrentSession()
+		                                                    .get(RelationshipType.class,
+		                                                         relationshipTypeId);
 		
 		return relationshipType;
 
 	}
 	
-	public RelationshipType findRelationshipType(String relationshipTypeName) throws DAOException {
-		RelationshipType ret = (RelationshipType) sessionFactory.getCurrentSession().createQuery("from RelationshipType t where CONCAT(t.aIsToB, CONCAT('/', t.bIsToA)) = :toString order by weight")
-					.setString("toString", relationshipTypeName)
+	public RelationshipType findRelationshipType(String relationshipTypeName)
+	        throws DAOException {
+		RelationshipType ret = (RelationshipType) sessionFactory.getCurrentSession()
+		                                                        .createQuery("from RelationshipType t where CONCAT(t.aIsToB, CONCAT('/', t.bIsToA)) = :toString order by weight")
+		                                                        .setString("toString",
+		                                                                   relationshipTypeName)
 					.uniqueResult();
 		
 		return ret;
@@ -332,7 +346,9 @@ public class HibernatePersonDAO implements PersonDAO {
 	@SuppressWarnings("unchecked")
 	public List<RelationshipType> getRelationshipTypes() throws DAOException {
 		List<RelationshipType> relationshipTypes;
-		relationshipTypes = sessionFactory.getCurrentSession().createQuery("from RelationshipType t order by t.weight").list();
+		relationshipTypes = sessionFactory.getCurrentSession()
+		                                  .createQuery("from RelationshipType t order by t.weight")
+		                                  .list();
 		
 		return relationshipTypes;
 	}
@@ -340,7 +356,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * @see org.openmrs.api.db.PersonService#createRelationshipType(org.openmrs.RelationshipType)
 	 */
-	public void createRelationshipType(RelationshipType relationshipType) throws DAOException {
+	public void createRelationshipType(RelationshipType relationshipType)
+	        throws DAOException {
 		relationshipType.setCreator(Context.getAuthenticatedUser());
 		relationshipType.setDateCreated(new Date());
 		sessionFactory.getCurrentSession().save(relationshipType);
@@ -349,7 +366,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * @see org.openmrs.api.db.PersonService#updateRelationshipType(org.openmrs.RelationshipType)
 	 */
-	public void updateRelationshipType(RelationshipType relationshipType) throws DAOException {
+	public void updateRelationshipType(RelationshipType relationshipType)
+	        throws DAOException {
 		if (relationshipType.getRelationshipTypeId() == null)
 			createRelationshipType(relationshipType);
 		else
@@ -359,7 +377,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * @see org.openmrs.api.db.PersonService#deleteRelationshipType(org.openmrs.RelationshipType)
 	 */
-	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException {
+	public void deleteRelationshipType(RelationshipType relationshipType)
+	        throws DAOException {
 		sessionFactory.getCurrentSession().delete(relationshipType);
 	}
 	
@@ -399,7 +418,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * @see org.openmrs.api.db.PersonService#createRelationship(org.openmrs.Relationship)
 	 */
-	public void createRelationship(Relationship relationship) throws DAOException {
+	public void createRelationship(Relationship relationship)
+	        throws DAOException {
 		relationship.setCreator(Context.getAuthenticatedUser());
 		relationship.setDateCreated(new Date());
 		sessionFactory.getCurrentSession().save(relationship);
@@ -408,7 +428,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * @see org.openmrs.api.db.PersonService#updateRelationship(org.openmrs.Relationship)
 	 */
-	public void updateRelationship(Relationship relationship) throws DAOException {
+	public void updateRelationship(Relationship relationship)
+	        throws DAOException {
 		if (relationship.getRelationshipId() == null)
 			createRelationship(relationship);
 		else
@@ -418,7 +439,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * @see org.openmrs.api.db.PersonService#deleteRelationship(org.openmrs.Relationship)
 	 */
-	public void deleteRelationship(Relationship relationship) throws DAOException {
+	public void deleteRelationship(Relationship relationship)
+	        throws DAOException {
 		sessionFactory.getCurrentSession().delete(relationship);
 	}
 	
@@ -433,7 +455,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * @see org.openmrs.api.db.PersonService#unvoidRelationship(org.openmrs.Relationship)
 	 */
-	public void unvoidRelationship(Relationship relationship) throws DAOException {
+	public void unvoidRelationship(Relationship relationship)
+	        throws DAOException {
 		relationship.setVoided(false);
 		relationship.setVoidedBy(null);
 		relationship.setDateVoided(null);
@@ -445,17 +468,18 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * Used by deletePerson, deletePatient, and deleteUser to remove all 
 	 * properties of a person before deleting them.
 	 * 
-	 * @param sessionFactory the session factory from which to pull the current session
+	 * @param sessionFactory the session factory from which to pull the current
+	 *        session
 	 * @param person the person to delete
 	 */
-	public static void deletePersonAndAttributes(SessionFactory sessionFactory, Person person) {
+	public static void deletePersonAndAttributes(SessionFactory sessionFactory,
+	        Person person) {
 		// delete properties and fields so hibernate can't complain
 		for (PersonAddress address : person.getAddresses()) {
 			if (address.getDateCreated() == null) {
 				sessionFactory.getCurrentSession().evict(address);
 				address = null;
-			}
-			else
+			} else
 				sessionFactory.getCurrentSession().delete(address);
 		}
 		sessionFactory.getCurrentSession().evict(person.getAddresses());

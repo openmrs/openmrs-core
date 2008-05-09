@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
@@ -143,7 +144,7 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		// TODO: do this right
 		//List<Program> progs = getPrograms();
 		for (Program p : getPrograms())
-			if (p.getConcept().getName(Context.getUserContext().getLocale(), false).getName().equals(name))
+			if (p.getConcept().getName().getName().equals(name))
 				return p;
 		return null;
 	}
@@ -338,6 +339,15 @@ public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
 		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
 		return getProgramWorkflowDAO().getPatientPrograms(patient);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openmrs.api.impl.ProgramWorkflowService#getPatientPrograms(Cohort, Collection<Program>)
+	 */
+	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
+		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
+		return getProgramWorkflowDAO().getPatientPrograms(cohort, programs);
 	}
 	
 	/* (non-Javadoc)

@@ -28,7 +28,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.ReportObjectList;
-import org.openmrs.reporting.ReportService;
+import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -71,8 +71,8 @@ public class ReportObjectListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			String[] reportObjectList = request.getParameterValues("reportObjectId");
 			AdministrationService as = Context.getAdministrationService();
-			//ReportService rs = Context.getReportService();
-			//ReportService rs = new TestReportService();
+			//ReportObjectService rs = Context.getReportObjectService();
+			//ReportObjectService rs = new TestReportService();
 			
 			String success = "";
 			String error = "";
@@ -125,8 +125,8 @@ public class ReportObjectListController extends SimpleFormController {
 		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
-			ReportService rs = Context.getReportService();
-			//ReportService rs = new TestReportService();
+			ReportObjectService rs = Context.getReportObjectService();
+			//ReportObjectService rs = new TestReportService();
 	    	reportObjects = rs.getAllReportObjects();
 		}
 		

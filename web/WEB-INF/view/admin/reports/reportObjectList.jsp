@@ -32,7 +32,13 @@
 				</td>
 				<td valign="top">${reportObject.type}</td>
 				<td valign="top">${reportObject.subType}</td>
-				<td valign="top">${reportObject.description}</td>
+				<td valign="top">
+				<% try { %>
+					${reportObject.description}</td>
+				<% } catch (Exception ex) { %>
+					<font color="red">EXCEPTION!</font>
+				<% } %>
+				</td>
 			</tr>
 		</c:forEach>
 	</table>

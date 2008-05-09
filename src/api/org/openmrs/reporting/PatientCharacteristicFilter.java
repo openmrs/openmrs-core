@@ -16,10 +16,12 @@ package org.openmrs.reporting;
 import java.text.DateFormat;
 import java.util.Date;
 
+import org.openmrs.Cohort;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 
-public class PatientCharacteristicFilter extends AbstractPatientFilter implements PatientFilter, Comparable<PatientCharacteristicFilter> {
+public class PatientCharacteristicFilter extends CachingPatientFilter implements Comparable<PatientCharacteristicFilter> {
 
 	private String gender;
 	private Date minBirthdate;
@@ -28,6 +30,7 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 	private Integer maxAge;
 	private Boolean aliveOnly;
 	private Boolean deadOnly;
+	private Date effectiveDate;
 	
 	public PatientCharacteristicFilter() {
 		super.setType("Patient Filter");
@@ -42,6 +45,21 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 		this.maxBirthdate = maxBirthdate;
 	}
 	
+	@Override
+    public String getCacheKey() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(getClass().getName()).append(".");
+	    sb.append(getGender()).append(".");
+	    sb.append(getMinBirthdate()).append(".");
+	    sb.append(getMaxBirthdate()).append(".");
+	    sb.append(getMinAge()).append(".");
+	    sb.append(getMaxAge()).append(".");
+	    sb.append(getAliveOnly()).append(".");
+	    sb.append(getDeadOnly()).append(".");
+	    sb.append(getEffectiveDate());
+	    return sb.toString();
+    }
+
 	public boolean isReadyToRun() {
 		return true;
 	}
@@ -206,15 +224,18 @@ public class PatientCharacteristicFilter extends AbstractPatientFilter implement
 		this.minAge = minAge;
 	}
 
-	public PatientSet filter(PatientSet input) {
-		PatientSetService service = Context.getPatientSetService();
-		PatientSet ps = service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly);
-		return input == null ? ps : input.intersect(ps);
-	}
+	public Date getEffectiveDate() {
+    	return effectiveDate;
+    }
 
-	public PatientSet filterInverse(PatientSet input) {
+	public void setEffectiveDate(Date effectiveDate) {
+    	this.effectiveDate = effectiveDate;
+    }
+
+	@Override
+	public Cohort filterImpl(EvaluationContext context) {
 		PatientSetService service = Context.getPatientSetService();
-		return input.subtract(service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly));
+		return service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly, effectiveDate);
 	}
 	
 }

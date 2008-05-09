@@ -21,25 +21,24 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.openmrs.Cohort;
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.PatientAnalysis;
-import org.openmrs.reporting.PatientSet;
+import org.openmrs.report.EvaluationContext;
+import org.openmrs.report.Parameter;
 
 public class PatientSetPortletController extends PortletController {
 
 	@SuppressWarnings("unchecked")
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
-		String myAnalysis = (String) model.get("myAnalysis");
 		String attrToUse = (String) model.get("fromAttribute");
 		log.debug("model.fromAttribute = " + model.get("fromAttribute"));
 		HttpSession httpSession = request.getSession();
 		if (httpSession != null) {
-			PatientSet patientSet = null;
-			
-			if (myAnalysis != null) {
-				patientSet = Context.getPatientSetService().getMyPatientAnalysis().runFilters(null);
-			} else if (attrToUse != null) {
+			Cohort patientSet = null;
+			EvaluationContext evalContext = new EvaluationContext();
+			evalContext.addParameterValue(new Parameter("general.user", "Authenticated User", org.openmrs.User.class, null), Context.getAuthenticatedUser());
+			if (attrToUse != null) {
 				Object o = httpSession.getAttribute(attrToUse);
 				if (model.get("mutable") != null) {
 					model.put("mutable", model.get("mutable").toString().toLowerCase().startsWith("t"));
@@ -52,10 +51,8 @@ public class PatientSetPortletController extends PortletController {
 					model.put("droppable", Boolean.FALSE);
 				}
 				
-				if (o instanceof PatientSet) {
-					patientSet = (PatientSet) o;
-				} else if (o instanceof PatientAnalysis) {
-					patientSet = ((PatientAnalysis) o).runFilters(null);
+				if (o instanceof Cohort) {
+					patientSet = (Cohort) o;
 				} else if (o == null) {
 					log.debug("attribute " + attrToUse + " is null");
 				} else {

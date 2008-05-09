@@ -28,6 +28,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
@@ -127,6 +128,26 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 		return patientPrograms;
 	}
 	
+    public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
+		String hql = "from PatientProgram ";
+		if (cohort != null || programs != null)
+			hql += "where ";
+		if (cohort != null)
+			hql += "patient.patientId in (:patientIds) ";
+		if (programs != null) {
+			if (cohort != null)
+				hql += "and ";
+			hql += " program in (:programs)";
+		}
+		hql += " order by patient.patientId, dateEnrolled";
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		if (cohort != null)
+			query.setParameterList("patientIds", cohort.getMemberIds());
+		if (programs != null)
+			query.setParameterList("programs", programs);
+		return query.list();
+    }
+
 	public ProgramWorkflow getWorkflow(Integer id) {
 		return (ProgramWorkflow) sessionFactory.getCurrentSession().get(ProgramWorkflow.class, id);
 	}

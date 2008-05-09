@@ -13,9 +13,13 @@
  */
 package org.openmrs.reporting;
 
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Root;
+
 /**
  * This class represents an argument as might be submitted from a web user interface.
  */
+@Root
 public class SearchArgument {
 
 	private String name;
@@ -35,26 +39,32 @@ public class SearchArgument {
     	return name + " (" + propertyClass + ") = " + value;
     }
 
+    @Attribute(required=true)
 	public String getName() {
     	return name;
     }
 
+    @Attribute(required=true)
 	public void setName(String name) {
     	this.name = name;
     }
 
+    @Attribute(required=true)
 	public String getValue() {
     	return value;
     }
 
+    @Attribute(required=true)
 	public void setValue(String value) {
     	this.value = value;
     }
 
+    @Attribute(required=true)
 	public Class getPropertyClass() {
     	return propertyClass;
     }
 
+    @Attribute(required=true)
 	public void setPropertyClass(Class propertyClass) {
     	this.propertyClass = propertyClass;
     }

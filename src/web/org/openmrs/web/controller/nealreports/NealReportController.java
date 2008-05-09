@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -52,7 +53,6 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -129,9 +129,9 @@ public class NealReportController implements Controller {
 		PatientSetService pss = Context.getPatientSetService();
 		
 		String patientSetParameter = request.getParameter("patientIds");
-		PatientSet ps;
+		Cohort ps;
 		if (patientSetParameter != null && patientSetParameter.length() > 0) {
-			ps = PatientSet.parseCommaSeparatedPatientIds(patientSetParameter.trim());
+			ps = new Cohort(patientSetParameter.trim());
 		} else {
 			ps = pss.getAllPatients();
 		}
@@ -240,7 +240,7 @@ public class NealReportController implements Controller {
 		
 		// modified by CA on 5 Dec 2006
 		// to do a data dump so that we can fill in missing IMB IDs
-		List<Patient> patients = ps.getPatients();
+		List<Patient> patients = Context.getPatientSetService().getPatients(ps.getMemberIds());
 		for ( Patient p : patients ) {
 			if ( p.getActiveIdentifiers() != null ) {
 				for ( PatientIdentifier pId : p.getActiveIdentifiers() ) {

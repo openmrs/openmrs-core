@@ -13,100 +13,284 @@
  */
 package org.openmrs.logic.impl;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
+import org.openmrs.Cohort;
 import org.openmrs.Patient;
-import org.openmrs.logic.Aggregation;
-import org.openmrs.logic.ClassRule;
-import org.openmrs.logic.ConceptRule;
-import org.openmrs.logic.DateConstraint;
-import org.openmrs.logic.LogicDataSource;
+import org.openmrs.logic.LogicContext;
+import org.openmrs.logic.LogicCriteria;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.LogicService;
-import org.openmrs.logic.PatientCohort;
-import org.openmrs.logic.PatientCohortDataSource;
-import org.openmrs.logic.PatientDataSource;
-import org.openmrs.logic.Result;
 import org.openmrs.logic.Rule;
+import org.openmrs.logic.RuleFactory;
+import org.openmrs.logic.datasource.LogicDataSource;
+import org.openmrs.logic.result.Result;
+import org.openmrs.logic.result.Result.Datatype;
+import org.openmrs.logic.rule.RuleParameterInfo;
 
+/**
+ * Default implementation of the LogicService.
+ * 
+ * This class should not be used directly.  This class, if chosen,
+ * is injected into the Context and served up as the LogicService of
+ * choice.
+ * 
+ * Use:
+ * <code>
+ *   LogicService logicService = Context.getLogicService();
+ * </code>
+ * 
+ * @see org.openmrs.api.context.Context
+ * @see org.openmrs.api.LogicService
+ */
 public class LogicServiceImpl implements LogicService {
 
-	protected final Log log = LogFactory.getLog(getClass());
+    protected final Log log = LogFactory.getLog(getClass());
 
-	private HashMap<String, Rule> tokenMap = new HashMap<String, Rule>();
+    private RuleFactory ruleFactory;
+    
+    private static Map<String, LogicDataSource> dataSources;
 
-	public Rule getRule(String token) {
-		return tokenMap.get(token);
-	}
-	
-	public void addToken(String token, Class clazz) throws LogicException {
-		if (!Rule.class.isAssignableFrom(clazz)) {
-			log
-					.warn("Attempt to register Logic token with class that does not extend Rule : "
-							+ clazz.getName());
-			throw new LogicException("Class is not a Rule (must extend "
-					+ Rule.class.getName() + ") : " + clazz.getName());
-		}
-		tokenMap.put(token, new ClassRule(clazz));
-	}
+    /**
+     * Default constructor. Creates a new RuleFactory (and populates it)
+     */
+    public LogicServiceImpl() {
+        ruleFactory = new RuleFactory();
+    }
 
-	public void addToken(String token, Concept concept) throws LogicException {
-		tokenMap.put(token, new ConceptRule(concept));
-	}
+    /**
+     * @see org.openmrs.logic.LogicService#getTokens()
+     */
+    public Set<String> getTokens() {
+        return ruleFactory.getTokens();
+    }
 
-	public void removeToken(String token) {
-		tokenMap.remove(token);
-	}
+    /**
+     * @see org.openmrs.logic.LogicService#findToken(java.lang.String)
+     */
+    public Set<String> findToken(String token) {
+        return ruleFactory.findTokens(token);
+    }
+    
+    /**
+     * @see org.openmrs.logic.LogicService#addRule(java.lang.String, org.openmrs.logic.Rule)
+     */
+    public void addRule(String token, Rule rule) throws LogicException {
+        ruleFactory.addRule(token, rule);
+    }
 
-	public Result eval(Patient who, String token) {
-		return eval(who, token, null);
-	}
-	
-	public Result eval(Patient who, String token, Object[] args) {
-		Rule rule = getRule(token);
-		if (rule == null)
-			return Result.NULL_RESULT;
-		return PatientDataSource.getInstance().eval(who, rule, args);
-	}
+    /**
+     * @see org.openmrs.logic.LogicService#getRule(java.lang.String)
+     */
+    public Rule getRule(String token) throws LogicException {
+        return ruleFactory.getRule(token);
+    }
 
-	public Result eval(Patient who, Aggregation aggregation, String token,
-			DateConstraint constraint, Object[] args) {
-		Rule rule = getRule(token);
-		if (rule == null)
-			return Result.NULL_RESULT;
-		return PatientDataSource.getInstance().eval(who, aggregation, rule,
-				constraint, args);
-	}
+    /**
+     * @see org.openmrs.logic.LogicService#updateRule(java.lang.String, org.openmrs.logic.Rule)
+     */
+    public void updateRule(String token, Rule rule) throws LogicException {
+        ruleFactory.updateRule(token, rule);
+    }
 
-	public Result eval(Patient who, Concept concept) {
-		return PatientDataSource.getInstance().eval(who, null, concept, null);
-	}
+    /**
+     * @see org.openmrs.logic.LogicService#removeRule(java.lang.String)
+     */
+    public void removeRule(String token) throws LogicException {
+        ruleFactory.removeRule(token);
+    }
 
-	public Result eval(Patient who, Aggregation aggregation, Concept concept,
-			DateConstraint constraint) {
-		return PatientDataSource.getInstance().eval(who, aggregation, concept,
-				constraint);
-	}
+    /**
+     * @see org.openmrs.logic.LogicService#eval(org.openmrs.Patient,
+     *      java.lang.String)
+     */
+    public Result eval(Patient who, String token) throws LogicException {
+        return eval(who, new LogicCriteria(token));
+    }
 
-	public HashMap<Patient, HashMap<String, Result>> eval(PatientCohort cohort,
-			String[] tokenList, Object[] args) {
-		PatientCohortDataSource dataSource = new PatientCohortDataSource(cohort);
-		HashMap<Patient, HashMap<String, Result>> resultMap = new HashMap<Patient, HashMap<String, Result>>();
-		for (Patient patient : cohort.getPatients()) {
-			HashMap<String, Result> m = new HashMap<String, Result>();
-			for (String token : tokenList) {
-				Rule rule = getRule(token);
-				if (rule != null)
-					m.put(token, dataSource.eval(patient, rule, args));
-			}
-			resultMap.put(patient, m);
-		}
-		return resultMap;
-	}
+    /**
+     * @see org.openmrs.logic.LogicService#eval(org.openmrs.Patient,
+     *      java.lang.String, java.lang.Object[])
+     */
+    public Result eval(Patient who, String token, Map<String, Object> parameters)
+            throws LogicException {
+        return eval(who, new LogicCriteria(token, parameters));
+    }
 
+    /**
+     * @see org.openmrs.logic.LogicService#eval(org.openmrs.Patient,
+     *      java.lang.String, org.openmrs.logic.LogicCriteria)
+     */
+    public Result eval(Patient who, LogicCriteria criteria)
+            throws LogicException {
+        return eval(who, criteria, criteria.getLogicParameters());
+    }
+
+    /**
+     * @see org.openmrs.logic.LogicService#eval(org.openmrs.Patient,
+     *      org.openmrs.logic.LogicCriteria, java.lang.Object[])
+     */
+    public Result eval(Patient who, LogicCriteria criteria, Map<String, Object> parameters)
+            throws LogicException {
+        LogicContext context = new LogicContext(who);
+        Result result = context.eval(who, criteria, parameters);
+        context = null;
+        return result;
+    }
+
+   /**
+    * 
+    * @see org.openmrs.logic.LogicService#eval(org.openmrs.Cohort, java.lang.String)
+    */
+    public Map<Integer, Result> eval(Cohort who, String token)
+            throws LogicException {
+        return eval(who, new LogicCriteria(token));
+    }
+
+   /**
+    * 
+    * @see org.openmrs.logic.LogicService#eval(org.openmrs.Cohort, java.lang.String, java.util.Map)
+    */
+    public Map<Integer, Result> eval(Cohort who, String token, Map<String, Object> parameters)
+            throws LogicException {
+        return eval(who, new LogicCriteria(token, parameters));
+    }
+
+    /**
+     * 
+     * @see org.openmrs.logic.LogicService#eval(org.openmrs.Cohort, org.openmrs.logic.LogicCriteria)
+     */
+    public Map<Integer, Result> eval(Cohort who, LogicCriteria criteria)
+            throws LogicException {
+        return eval(who, criteria, criteria.getLogicParameters());
+    }
+
+    /**
+     * 
+     * @see org.openmrs.logic.LogicService#eval(org.openmrs.Cohort, org.openmrs.logic.LogicCriteria, java.util.Map)
+     */
+    public Map<Integer, Result> eval(Cohort who, LogicCriteria criteria,
+            Map<String, Object> parameters) throws LogicException {
+        LogicContext context = new LogicContext(who);
+        Map<Integer, Result> resultMap = new Hashtable<Integer, Result>();
+        for (Integer pid : who.getMemberIds())
+            resultMap.put(pid, context.eval(new Patient(pid), criteria, parameters));
+        context = null;
+        return resultMap;
+    }
+
+    /**
+     * 
+     * @see org.openmrs.logic.LogicService#eval(org.openmrs.Cohort, java.util.List)
+     */
+    public Map<LogicCriteria, Map<Integer, Result>> eval(Cohort patients,
+            List<LogicCriteria> criterias) throws LogicException {
+        Map<LogicCriteria, Map<Integer, Result>> result =
+            new HashMap<LogicCriteria, Map<Integer, Result>>();
+        
+        for (LogicCriteria criteria : criterias) {
+            result.put(criteria, eval(patients, criteria));
+        }
+
+        return result;
+    }
+    
+    /**
+     * @see org.openmrs.logic.LogicService#addRule(java.lang.String, java.lang.String[], org.openmrs.logic.rule.Rule)
+     */
+    public void addRule(String token, String[] tags, Rule rule) throws LogicException {
+        ruleFactory.addRule(token, tags, rule);
+    }
+
+    /**
+     * @see org.openmrs.logic.LogicService#addTokenTag(java.lang.String, java.lang.String)
+     */
+    public void addTokenTag(String token, String tag) {
+        ruleFactory.addTokenTag(token, tag);
+    }
+
+    /**
+     * @see org.openmrs.logic.LogicService#findTags(java.lang.String)
+     */
+    public Set<String> findTags(String partialTag) {
+        return ruleFactory.findTags(partialTag);
+    }
+
+    /**
+     * @see org.openmrs.logic.LogicService#getTagsByToken(java.lang.String)
+     */
+    public Collection<String> getTagsByToken(String token) {
+        return ruleFactory.getTagsByToken(token);
+    }
+
+    /**
+     * @see org.openmrs.logic.LogicService#getTokensByTag(java.lang.String)
+     */
+    public Set<String> getTokensByTag(String tag) {
+        return ruleFactory.getTokensByTag(tag);
+    }
+
+    /**
+     * @see org.openmrs.logic.LogicService#removeTokenTag(java.lang.String, java.lang.String)
+     */
+    public void removeTokenTag(String token, String tag) {
+        ruleFactory.removeTokenTag(token, tag);
+    }
+
+    /**
+     * @see org.openmrs.logic.LogicService#getDatatype(java.lang.String)
+     */
+    public Datatype getDefaultDatatype(String token) {
+        return ruleFactory.getDefaultDatatype(token);
+    }
+    
+    public Set<RuleParameterInfo> getParameterList(String token) {
+        return ruleFactory.getParameterList(token);
+    }
+    
+    /**
+     * @see org.openmrs.logic.LogicService#registerLogicDataSource(java.lang.String, org.openmrs.logic.datasource.LogicDataSource)
+     */
+    public void registerLogicDataSource(String name, LogicDataSource dataSource) throws LogicException {
+        getLogicDataSources().put(name, dataSource);
+    }
+    
+    /**
+     * @see org.openmrs.logic.LogicService#getDataService()
+     */
+    public LogicDataSource getLogicDataSource(String name) {
+        return getLogicDataSources().get(name);
+    }
+    
+    /**
+     * @see org.openmrs.logic.LogicService#getLogicDataSources()
+     */
+    public Map<String, LogicDataSource> getLogicDataSources() {
+    	if (dataSources == null)
+    		dataSources = new Hashtable<String, LogicDataSource>();
+        return dataSources;
+    }
+    
+    /**
+     * @see org.openmrs.logic.LogicService#setLogicDataSources(Map)
+     */
+    public void setLogicDataSources(Map <String, LogicDataSource> dataSources) throws LogicException {
+    	for (Map.Entry<String, LogicDataSource> entry : dataSources.entrySet()) {
+    		registerLogicDataSource(entry.getKey(), entry.getValue());
+    	}
+    }
+    
+    /**
+     * @see org.openmrs.logic.LogicService#removeLogicDataSource(java.lang.String)
+     */
+    public void removeLogicDataSource(String name) {
+        dataSources.remove(name);
+    }
 }

@@ -18,12 +18,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSet;
 import org.openmrs.Drug;
@@ -51,8 +54,6 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
-import org.openmrs.reporting.PatientAnalysis;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -79,7 +80,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	 * @param ps The set you want to export as XML
 	 * @return an XML representation of this patient-set, including patient characteristics, and observations
 	 */
-	public String exportXml(PatientSet ps) {
+	public String exportXml(Cohort ps) {
 		return getPatientSetDAO().exportXml(ps);
 	}
 
@@ -87,79 +88,74 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().exportXml(patientId);
 	}
 	
-	public PatientSet getAllPatients() throws DAOException {
+	public Cohort getAllPatients() throws DAOException {
 		return getPatientSetDAO().getAllPatients();
 	}
 	
-	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
+	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
 		return getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, null, null, null, null);
 	}
 	
-	public PatientSet getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate,
+	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate,
 			Integer minAge, Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException {
 		return getPatientSetDAO().getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly);
 	}
 
-	/*
-	public PatientSet getPatientsHavingNumericObs(Concept concept, PatientSetService.Modifier modifier, Number value) {
-		return getPatientsHavingNumericObs(concept.getConceptId(), null, modifier, value, null, null);
+	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate,
+			Integer minAge, Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate) throws DAOException {
+		return getPatientSetDAO().getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly, effectiveDate);
 	}
 	
-	public PatientSet getPatientsHavingNumericObs(Integer conceptId, PatientSetService.Modifier modifier, Number value) {
-		return getPatientsHavingNumericObs(conceptId, null, modifier, value, null, null);
-	}
-	*/
-	
-	public PatientSet getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime) {
+	public Cohort getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime) {
 		return getPatientSetDAO().getPatientsHavingDateObs(conceptId, startTime, endTime);
 	}
 	
-	public PatientSet getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier, PatientSetServiceImpl.Modifier modifier, Number value, Date fromDate, Date toDate) {
+	public Cohort getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier, PatientSetServiceImpl.Modifier modifier, Number value, Date fromDate, Date toDate) {
 		return getPatientSetDAO().getPatientsHavingNumericObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
 	}
 
-	public PatientSet getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, PatientSetServiceImpl.Modifier modifier, Object value, Date fromDate, Date toDate) {
+	public Cohort getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, PatientSetServiceImpl.Modifier modifier, Object value, Date fromDate, Date toDate) {
 		return getPatientSetDAO().getPatientsHavingObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
 	}
 	
-	public PatientSet getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
+	public Cohort getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
 		List<EncounterType> list = Collections.singletonList(encounterType);
 		return getPatientSetDAO().getPatientsHavingEncounters(list, location, form, fromDate, toDate, minCount, maxCount);
 	}
 
-	public PatientSet getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
+	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
 		return getPatientSetDAO().getPatientsHavingEncounters(encounterTypeList, location, form, fromDate, toDate, minCount, maxCount);
 	}
 	
-	public PatientSet getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate) {
+	public Cohort getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate) {
 		return getPatientSetDAO().getPatientsByProgramAndState(program, stateList, fromDate, toDate);
 	}
 	
-	public PatientSet getPatientsInProgram(Program program, Date fromDate, Date toDate) {
+	public Cohort getPatientsInProgram(Program program, Date fromDate, Date toDate) {
 		return getPatientSetDAO().getPatientsInProgram(program.getProgramId(), fromDate, toDate);
 	}
 	
-	public PatientSet getPatientsHavingTextObs(Concept concept, String value, TimeModifier timeModifier) {
+	public Cohort getPatientsHavingTextObs(Concept concept, String value, TimeModifier timeModifier) {
 		return getPatientsHavingTextObs(concept.getConceptId(), value, timeModifier);
 	}
 	
-	public PatientSet getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier) {
+	public Cohort getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier) {
 		return getPatientSetDAO().getPatientsHavingTextObs(conceptId, value, timeModifier);
 	}
 	
-	public PatientSet getPatientsHavingLocation(Location loc) {
+	public Cohort getPatientsHavingLocation(Location loc) {
 		return getPatientsHavingLocation(loc.getLocationId(), PatientLocationMethod.PATIENT_HEALTH_CENTER);
 	}
 	
-	public PatientSet getPatientsHavingLocation(Location loc, PatientLocationMethod method) {
+	public Cohort getPatientsHavingLocation(Location loc, PatientLocationMethod method) {
 		return getPatientsHavingLocation(loc.getLocationId(), method);
 	}
 	
-	public PatientSet getPatientsHavingLocation(Integer locationId) {
+	public Cohort getPatientsHavingLocation(Integer locationId) {
 		return getPatientsHavingLocation(locationId, PatientLocationMethod.PATIENT_HEALTH_CENTER);
 	}
 	
-	public PatientSet getPatientsHavingLocation(Integer locationId, PatientLocationMethod method) {
+	public Cohort getPatientsHavingLocation(Integer locationId, PatientLocationMethod method) {
 		return getPatientSetDAO().getPatientsHavingLocation(locationId, method);
 	}
 
@@ -170,16 +166,16 @@ public class PatientSetServiceImpl implements PatientSetService {
 	 * @param takingAny Collection of drugIds the patient is taking. (Or the empty set to mean "any drug" or NULL to mean "no drugs")
 	 * @param onDate Which date to look at the patients' drug orders. (NULL defaults to now().)
 	 */
-	public PatientSet getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> takingIds, Date onDate) {
+	public Cohort getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> takingIds, Date onDate) {
 		Map<Integer, Collection<Integer>> activeDrugs = getPatientSetDAO().getActiveDrugIds(patientIds, onDate, onDate);
-		List<Integer> ret = new ArrayList<Integer>();
+		Set<Integer> ret = new HashSet<Integer>();
 		boolean takingAny = takingIds != null && takingIds.size() == 0;
 		boolean takingNone = takingIds == null;
 		if (takingAny) {
 			ret.addAll(activeDrugs.keySet());
 		} else if (takingNone) {
 			if (patientIds == null) {
-				patientIds = getAllPatients().getPatientIds();
+				patientIds = getAllPatients().getMemberIds();
 			}
 			patientIds.removeAll(activeDrugs.keySet());
 			ret.addAll(patientIds);
@@ -193,17 +189,15 @@ public class PatientSetServiceImpl implements PatientSetService {
 				}
 			}
 		}
-		PatientSet ps = new PatientSet();
-		ps.setPatientIds(ret);
-		return ps;
+		return new Cohort(ret);
 	}
 	
-	public PatientSet getPatientsHavingDrugOrder(
+	public Cohort getPatientsHavingDrugOrder(
 			Collection<Integer> patientIds, Collection<Integer> drugIds, GroupMethod groupMethod,
 			Date fromDate, Date toDate) {
 
 		Map<Integer, Collection<Integer>> activeDrugs = getPatientSetDAO().getActiveDrugIds(patientIds, fromDate, toDate);
-		List<Integer> ret = new ArrayList<Integer>();
+		Set<Integer> ret = new HashSet<Integer>();
 
 		if (drugIds == null)
 			drugIds = new ArrayList();
@@ -212,7 +206,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 			if (groupMethod == GroupMethod.NONE) {
 				// Patients taking no drugs
 				if (patientIds == null) {
-					patientIds = getAllPatients().getPatientIds();
+					patientIds = getAllPatients().getMemberIds();
 				}
 				patientIds.removeAll(activeDrugs.keySet());
 				ret.addAll(patientIds);
@@ -247,12 +241,11 @@ public class PatientSetServiceImpl implements PatientSetService {
 						ret.add(e.getKey());
 			}
 		}
-		PatientSet ps = new PatientSet();
-		ps.setPatientIds(ret);
+		Cohort ps = new Cohort(ret);
 		return ps;
 	}
 	
-	public PatientSet getPatientsHavingDrugOrder(
+	public Cohort getPatientsHavingDrugOrder(
 			List<Drug> drug, List<Concept> drugConcept,
 			Date startDateFrom, Date startDateTo,
 			Date stopDateFrom, Date stopDateTo,
@@ -260,7 +253,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getPatientsHavingDrugOrder(drug, drugConcept, startDateFrom, startDateTo, stopDateFrom, stopDateTo, discontinued, discontinuedReason);
 	}
 	
-	public PatientSet getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value) {
+	public Cohort getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value) {
 		return getPatientSetDAO().getPatientsHavingPersonAttribute(attribute, value);
 	}
 	
@@ -268,7 +261,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getShortPatientDescriptions(patientIds);
 	}
 	
-	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept) {
+	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept) {
 		if (patients == null || patients.size() == 0)
 			return new HashMap<Integer, List<Obs>>();
 		return getPatientSetDAO().getObservations(patients, concept, null, null);
@@ -277,17 +270,17 @@ public class PatientSetServiceImpl implements PatientSetService {
 	/**
 	 * Date range is inclusive of both endpoints 
 	 */
-	public Map<Integer, List<Obs>> getObservations(PatientSet patients, Concept concept, Date fromDate, Date toDate) {
+	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept, Date fromDate, Date toDate) {
 		if (patients == null || patients.size() == 0)
 			return new HashMap<Integer, List<Obs>>();
 		return getPatientSetDAO().getObservations(patients, concept, fromDate, toDate);
 	}
 	
-	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c) {
+	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c) {
 		return getObservationsValues(patients, c, null);
 	}
 	
-	public Map<Integer, List<List<Object>>> getObservationsValues(PatientSet patients, Concept c, List<String> attributes) {
+	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes) {
 		if (attributes == null)
 			attributes = new Vector<String>();
 		
@@ -299,56 +292,56 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getObservationsValues(patients, c, attributes);
 	}
 
-	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, EncounterType encType) {
+	public Map<Integer, Encounter> getEncountersByType(Cohort patients, EncounterType encType) {
 		List<EncounterType> types = new Vector<EncounterType>();
 		if (encType != null)
 			types.add(encType);
 		return getPatientSetDAO().getEncountersByType(patients, types);
 	}
 	
-	public Map<Integer, Object> getEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr) {
+	public Map<Integer, Object> getEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr) {
 		if (encTypes == null)
 			encTypes = new Vector<EncounterType>();
 		
 		return getPatientSetDAO().getEncounterAttrsByType(patients, encTypes, attr, false);
 	}
 
-	public Map<Integer, Encounter> getEncountersByType(PatientSet patients, List<EncounterType> types) {
+	public Map<Integer, Encounter> getEncountersByType(Cohort patients, List<EncounterType> types) {
 		return getPatientSetDAO().getEncountersByType(patients, types);
 	}
 	
-	public Map<Integer, Encounter> getEncounters(PatientSet patients) {
+	public Map<Integer, Encounter> getEncounters(Cohort patients) {
 		return getPatientSetDAO().getEncounters(patients);
 	}
 	
-	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, EncounterType encType) {
+	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, EncounterType encType) {
 		List<EncounterType> types = new Vector<EncounterType>();
 		if (encType != null)
 			types.add(encType);
 		return getPatientSetDAO().getFirstEncountersByType(patients, types);
 	}
 	
-	public Map<Integer, Object> getFirstEncounterAttrsByType(PatientSet patients, List<EncounterType> encTypes, String attr) {
+	public Map<Integer, Object> getFirstEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr) {
 		if (encTypes == null)
 			encTypes = new Vector<EncounterType>();
 		
 		return getPatientSetDAO().getEncounterAttrsByType(patients, encTypes, attr, true);
 	}
 	
-	public Map<Integer, Encounter> getFirstEncountersByType(PatientSet patients, List<EncounterType> types) {
+	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, List<EncounterType> types) {
 		return getPatientSetDAO().getFirstEncountersByType(patients, types);
 	}
 	
 	
 	/**
-     * @see org.openmrs.api.PatientSetService#getPatientAttributes(org.openmrs.reporting.PatientSet, java.lang.String, java.lang.String[], boolean)
+     * @see org.openmrs.api.PatientSetService#getPatientAttributes(org.openmrs.Cohort, java.lang.String, java.lang.String[], boolean)
      */
-    public Map<Integer, Object> getPatientAttributes(PatientSet patients, String className, String property, boolean returnAll) {
+    public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll) {
 		return getPatientSetDAO().getPatientAttributes(patients, className, property, returnAll);
     }
 	
 	
-	public Map<Integer, Object> getPatientAttributes(PatientSet patients, String classNameDotProperty, boolean returnAll) {
+	public Map<Integer, Object> getPatientAttributes(Cohort patients, String classNameDotProperty, boolean returnAll) {
 		String[] temp = classNameDotProperty.split("\\.");
 		if (temp.length != 2) {
 			throw new IllegalArgumentException(classNameDotProperty + " must be ClassName.property");
@@ -356,7 +349,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientAttributes(patients, temp[0], temp[1], returnAll);
 	}
 	
-	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(PatientSet patients, PatientIdentifierType type) {
+	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(Cohort patients, PatientIdentifierType type) {
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		if (type != null)
 			types.add(type);
@@ -364,17 +357,17 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}	
 	
 	/**
-	 * @see org.openmrs.api.PatientSetService#getPersonAttributes(org.openmrs.reporting.PatientSet, java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean)
+	 * @see org.openmrs.api.PatientSetService#getPersonAttributes(org.openmrs.Cohort, java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean)
 	 */
-	public Map<Integer, Object> getPersonAttributes(PatientSet patients, String attributeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll) {
+	public Map<Integer, Object> getPersonAttributes(Cohort patients, String attributeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll) {
 		return getPatientSetDAO().getPersonAttributes(patients, attributeName, joinClass, joinProperty, outputColumn, returnAll);
 	}
 
-	public Map<Integer, Map<String, Object>> getCharacteristics(PatientSet patients) {
+	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients) {
 		return getPatientSetDAO().getCharacteristics(patients);
 	}
 	
-	public PatientSet convertPatientIdentifier(List<String> identifiers) {
+	public Cohort convertPatientIdentifier(List<String> identifiers) {
 		return getPatientSetDAO().convertPatientIdentifier(identifiers);
 	}
 	
@@ -382,69 +375,69 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getPatients(patientIds);		
 	}
 	
-	public Map<Integer, List<Relationship>> getRelationships(PatientSet ps, RelationshipType relType) {
+	public Map<Integer, List<Relationship>> getRelationships(Cohort ps, RelationshipType relType) {
 		return getPatientSetDAO().getRelationships(ps, relType);
 	}
 	
-	public Map<Integer, List<Person>> getRelatives(PatientSet ps, RelationshipType relType, boolean forwards) {
+	public Map<Integer, List<Person>> getRelatives(Cohort ps, RelationshipType relType, boolean forwards) {
 		return getPatientSetDAO().getRelatives(ps, relType, forwards);
 	}
 	
 	// these should go elsewhere
 	
-	private static Map<User, PatientSet> userPatientSets;
+	private static Map<User, Cohort> userPatientSets;
 	
-	public void setMyPatientSet(PatientSet ps) {
+	public void setMyPatientSet(Cohort ps) {
 		if (userPatientSets == null) {
-			userPatientSets = new HashMap<User, PatientSet>();
+			userPatientSets = new HashMap<User, Cohort>();
 		}
 		User u = Context.getAuthenticatedUser();
 		userPatientSets.put(u, ps);
 	}
 	
-	public PatientSet getMyPatientSet() {
+	public Cohort getMyPatientSet() {
 		if (Context.isAuthenticated() == false)
-			return new PatientSet();
+			return new Cohort();
 		
 		if (userPatientSets == null) {
-			userPatientSets = new HashMap<User, PatientSet>();
+			userPatientSets = new HashMap<User, Cohort>();
 		}
-		PatientSet mine = userPatientSets.get(Context.getAuthenticatedUser()); 
+		Cohort mine = userPatientSets.get(Context.getAuthenticatedUser()); 
 		if (mine == null) {
-			mine = new PatientSet();
+			mine = new Cohort();
 			userPatientSets.put(Context.getAuthenticatedUser(), mine);
 		}
 		return mine;
 	}
 	
 	public void addToMyPatientSet(Integer ptId) {
-		getMyPatientSet().add(ptId);
+		getMyPatientSet().addMember(ptId);
 	}
 	
 	public void removeFromMyPatientSet(Integer ptId) {
-		getMyPatientSet().remove(ptId);
+		getMyPatientSet().removeMember(ptId);
 	}
 	
 	public void clearMyPatientSet() {
 		setMyPatientSet(null);
 	}
 
-	public Map<Integer, PatientState> getCurrentStates(PatientSet ps, ProgramWorkflow wf) {
+	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf) {
 		return getPatientSetDAO().getCurrentStates(ps, wf);
 	}
 
-	public Map<Integer, PatientProgram> getCurrentPatientPrograms(PatientSet ps, Program program) {
+	public Map<Integer, PatientProgram> getCurrentPatientPrograms(Cohort ps, Program program) {
 		return getPatientSetDAO().getPatientPrograms(ps, program, false, false);
 	}
 	
-	public Map<Integer, PatientProgram> getPatientPrograms(PatientSet ps, Program program) {
+	public Map<Integer, PatientProgram> getPatientPrograms(Cohort ps, Program program) {
 		return getPatientSetDAO().getPatientPrograms(ps, program, false, true);
 	}
 	
 	/**
 	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's null) 
 	 */
-	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(PatientSet ps, Concept drugSet) {
+	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(Cohort ps, Concept drugSet) {
 		List<Concept> drugConcepts = null;
 		if (drugSet != null) {
 			List<ConceptSet> concepts = Context.getConceptService().getConceptSets(drugSet);
@@ -461,7 +454,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	/**
 	 * @return all drug orders whose drug concept is in the given set (or all drugs if that's null) 
 	 */
-	public Map<Integer, List<DrugOrder>> getDrugOrders(PatientSet ps, Concept drugSet) {
+	public Map<Integer, List<DrugOrder>> getDrugOrders(Cohort ps, Concept drugSet) {
 		List<Concept> drugConcepts = null;
 		if (drugSet != null) {
 			List<ConceptSet> concepts = Context.getConceptService().getConceptSets(drugSet);
@@ -473,31 +466,14 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getDrugOrders(ps, drugConcepts);		
 	}
 
-	static Map<User, PatientAnalysis> userAnalyses = new HashMap<User, PatientAnalysis>();
-	
-	public void setMyPatientAnalysis(PatientAnalysis pa) {
-		userAnalyses.put(Context.getAuthenticatedUser(), pa);
-	}
-	
-	public PatientAnalysis getMyPatientAnalysis() {
-		PatientAnalysis analysis = userAnalyses.get(Context.getAuthenticatedUser());
-		if (analysis == null) {
-			analysis = new PatientAnalysis();
-			setMyPatientAnalysis(analysis);
-		}
-		return analysis;
-	}
-
 	/**
 	 * Gets a list of encounters associated with the given form, filtered by the given patient set.
 	 * 
 	 * @param	patients	the patients to filter by (null will return all encounters for all patients)
 	 * @param 	forms		the forms to filter by
 	 */
-	public List<Encounter> getEncountersByForm(PatientSet patients, List<Form> forms) {
+	public List<Encounter> getEncountersByForm(Cohort patients, List<Form> forms) {
 		return getPatientSetDAO().getEncountersByForm(patients, forms);
-	}	
-
-
+	}
 	
 }
