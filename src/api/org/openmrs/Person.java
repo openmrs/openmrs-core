@@ -26,6 +26,11 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
+import org.simpleframework.xml.load.Replace;
 
 /**
  * A Person in the system. This can be either a small person stub, or 
@@ -38,6 +43,7 @@ import org.openmrs.util.OpenmrsUtil;
  * @see org.openmrs.Patient
  * @see org.openmrs.User
  */
+@Root(strict=false)
 public class Person implements java.io.Serializable {
 
 	public static final Log log = LogFactory.getLog(Person.class);
@@ -57,7 +63,7 @@ public class Person implements java.io.Serializable {
 	private Date deathDate;
 	private Concept causeOfDeath;
 
-	private User creator;
+	private User personCreator;
 	private Date dateCreated;
 	private User changedBy;
 	private Date dateChanged;
@@ -80,8 +86,7 @@ public class Person implements java.io.Serializable {
 	/**
 	 * default empty constructor
 	 */
-	public Person() {
-	}
+	public Person() { }
 	
 	/**
 	 * This constructor is used to build a person object from another
@@ -105,14 +110,14 @@ public class Person implements java.io.Serializable {
 		deathDate = person.getDeathDate();
 		causeOfDeath = person.getCauseOfDeath();
 		
-		creator = person.getCreator();
-		dateCreated = person.getDateCreated();
-		changedBy = person.getChangedBy();
-		dateChanged = person.getDateChanged();
-		voided = person.isVoided();
-		voidedBy = person.getVoidedBy();
-		dateVoided = person.getDateVoided();
-		voidReason=  person.getVoidReason();
+		personCreator = person.getPersonCreator();
+		dateCreated = person.getPersonDateCreated();
+		changedBy = person.getPersonChangedBy();
+		dateChanged = person.getPersonDateChanged();
+		voided = person.isPersonVoided();
+		voidedBy = person.getPersonVoidedBy();
+		dateVoided = person.getPersonDateVoided();
+		voidReason=  person.getPersonVoidReason();
 	}
 
 	/**
@@ -154,6 +159,7 @@ public class Person implements java.io.Serializable {
 	/**
 	 * @return Returns the personId.
 	 */
+	@Attribute(required=true)
 	public Integer getPersonId() {
 		return personId;
 	}
@@ -162,6 +168,7 @@ public class Person implements java.io.Serializable {
 	 * @param personId
 	 *            The personId to set.
 	 */
+	@Attribute(required=true)
 	public void setPersonId(Integer personId) {
 		this.personId = personId;
 	}
@@ -169,6 +176,7 @@ public class Person implements java.io.Serializable {
 	/**
 	 * @return person's gender
 	 */
+	@Attribute(required=false)
 	public String getGender() {
 		return this.gender;
 	}
@@ -177,6 +185,7 @@ public class Person implements java.io.Serializable {
 	 * @param gender
 	 *            person's gender
 	 */
+	@Attribute(required=false)
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
@@ -184,6 +193,7 @@ public class Person implements java.io.Serializable {
 	/**
 	 * @return person's date of birth
 	 */
+	@Element(required=false)
 	public Date getBirthdate() {
 		return this.birthdate;
 	}
@@ -192,6 +202,7 @@ public class Person implements java.io.Serializable {
 	 * @param birthdate
 	 *            person's date of birth
 	 */
+	@Element(required=false)
 	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
 	}
@@ -206,6 +217,7 @@ public class Person implements java.io.Serializable {
 		return this.birthdateEstimated;
 	}
 
+	@Attribute(required=true)
 	public Boolean getBirthdateEstimated() {
 		return isBirthdateEstimated();
 	}
@@ -214,6 +226,7 @@ public class Person implements java.io.Serializable {
 	 * @param birthdateEstimated
 	 *            true if person's birthdate is estimated
 	 */
+	@Attribute(required=true)
 	public void setBirthdateEstimated(Boolean birthdateEstimated) {
 		this.birthdateEstimated = birthdateEstimated;
 	}
@@ -228,6 +241,7 @@ public class Person implements java.io.Serializable {
 	/**
 	 * @return Returns the death status.
 	 */
+	@Attribute(required=true)
 	public Boolean getDead() {
 		return isDead();
 	}
@@ -235,6 +249,7 @@ public class Person implements java.io.Serializable {
 	/**
 	 * @param dead The dead to set.
 	 */
+	@Attribute(required=true)
 	public void setDead(Boolean dead) {
 		this.dead = dead;
 	}
@@ -242,6 +257,7 @@ public class Person implements java.io.Serializable {
 	/**
 	 * @return date of person's death
 	 */
+	@Element(required=false)
 	public Date getDeathDate() {
 		return this.deathDate;
 	}
@@ -250,6 +266,7 @@ public class Person implements java.io.Serializable {
 	 * @param deathDate
 	 *            date of person's death
 	 */
+	@Element(required=false)
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
 	}
@@ -257,6 +274,7 @@ public class Person implements java.io.Serializable {
 	/**
 	 * @return cause of person's death
 	 */
+	@Element(required=false)
 	public Concept getCauseOfDeath() {
 		return this.causeOfDeath;
 	}
@@ -265,6 +283,7 @@ public class Person implements java.io.Serializable {
 	 * @param causeOfDeath
 	 *            cause of person's death
 	 */
+	@Element(required=false)
 	public void setCauseOfDeath(Concept causeOfDeath) {
 		this.causeOfDeath = causeOfDeath;
 	}
@@ -273,6 +292,7 @@ public class Person implements java.io.Serializable {
 	 * @return list of known addresses for person
 	 * @see org.openmrs.PersonAddress
 	 */
+	@ElementList(required=false)
 	public Set<PersonAddress> getAddresses() {
 		if (addresses == null)
 			addresses = new TreeSet<PersonAddress>();
@@ -284,6 +304,7 @@ public class Person implements java.io.Serializable {
 	 *            list of known addresses for person
 	 * @see org.openmrs.PersonAddress
 	 */
+	@ElementList(required=false)
 	public void setAddresses(Set<PersonAddress> addresses) {
 		this.addresses = addresses;
 	}
@@ -292,6 +313,7 @@ public class Person implements java.io.Serializable {
 	 * @return all known names for person
 	 * @see org.openmrs.PersonName
 	 */
+	@ElementList
 	public Set<PersonName> getNames() {
 		if (names == null)
 			names = new TreeSet<PersonName>();
@@ -303,6 +325,7 @@ public class Person implements java.io.Serializable {
 	 *            update all known names for person
 	 * @see org.openmrs.PersonName
 	 */
+	@ElementList
 	public void setNames(Set<PersonName> names) {
 		this.names = names;
 	}
@@ -311,6 +334,7 @@ public class Person implements java.io.Serializable {
 	 * @return all known attributes for person
 	 * @see org.openmrs.PersonAttribute
 	 */
+	@ElementList
 	public Set<PersonAttribute> getAttributes() {
 		if (attributes == null)
 			attributes = new TreeSet<PersonAttribute>();
@@ -336,6 +360,7 @@ public class Person implements java.io.Serializable {
 	 *            update all known attributes for person
 	 * @see org.openmrs.PersonAttribute
 	 */
+	@ElementList
 	public void setAttributes(Set<PersonAttribute> attributes) {
 		this.attributes = attributes;
 		attributeMap = null;
@@ -652,71 +677,71 @@ public class Person implements java.io.Serializable {
 		return age;
 	}
 	
-	public User getChangedBy() {
+	public User getPersonChangedBy() {
 		return changedBy;
 	}
 
-	public void setChangedBy(User changedBy) {
+	public void setPersonChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
 
-	public Date getDateChanged() {
+	public Date getPersonDateChanged() {
 		return dateChanged;
 	}
 
-	public void setDateChanged(Date dateChanged) {
+	public void setPersonDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
 
-	public User getCreator() {
-		return creator;
+	public User getPersonCreator() {
+		return personCreator;
 	}
 
-	public void setCreator(User creator) {
-		this.creator = creator;
+	public void setPersonCreator(User creator) {
+		this.personCreator = creator;
 	}
 
-	public Date getDateCreated() {
+	public Date getPersonDateCreated() {
 		return dateCreated;
 	}
 
-	public void setDateCreated(Date dateCreated) {
+	public void setPersonDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 
-	public Date getDateVoided() {
+	public Date getPersonDateVoided() {
 		return dateVoided;
 	}
 
-	public void setDateVoided(Date dateVoided) {
+	public void setPersonDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
 
-	public void setVoided(Boolean voided) {
+	public void setPersonVoided(Boolean voided) {
 		this.voided = voided;
 	}
 
-	public Boolean getVoided() {
-		return isVoided();
+	public Boolean getPersonVoided() {
+		return isPersonVoided();
 	}
 
-	public Boolean isVoided() {
+	public Boolean isPersonVoided() {
 		return voided;
 	}
 
-	public User getVoidedBy() {
+	public User getPersonVoidedBy() {
 		return voidedBy;
 	}
 
-	public void setVoidedBy(User voidedBy) {
+	public void setPersonVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
 
-	public String getVoidReason() {
+	public String getPersonVoidReason() {
 		return voidReason;
 	}
 
-	public void setVoidReason(String voidReason) {
+	public void setPersonVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
 	
@@ -762,6 +787,26 @@ public class Person implements java.io.Serializable {
 	 */
 	public String toString() {
 		return "Person(personId=" + personId + ")";
+	}
+
+	/**
+	 * If the serializer wishes, don't serialize this entire object, just the important
+	 * parts
+	 * 
+	 * @param sessionMap serialization session information
+	 * @return Person object to serialize 
+	 * 
+	 * @see OpenmrsUtil#isShortSerialization(Map)
+	 */
+	@Replace
+	public Person replaceSerialization(Map<?, ?> sessionMap) {
+		if (OpenmrsUtil.isShortSerialization(sessionMap)) {
+			// only serialize the person id
+			return new Person(getPersonId());
+		}
+		
+		// don't do short serialization
+		return this;
 	}
 
 }

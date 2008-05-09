@@ -23,9 +23,18 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.AbstractReportObject;
+import org.openmrs.reporting.PatientSearch;
+import org.openmrs.reporting.PatientSearchReportObject;
+import org.openmrs.reporting.ReportObject;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.WebConstants;
+import org.springframework.context.support.MessageSourceAccessor;
+
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -57,24 +66,56 @@ public class CohortListController extends SimpleFormController {
 		}
     	return cohorts;
     }
-
+    
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
     	
     	String action = request.getParameter("method");
+    	String error = "";
+    	MessageSourceAccessor msa = getMessageSourceAccessor();
+    	String title = msa.getMessage("Cohort.title");
+    	String refByCompSearch = msa.getMessage("Cohort.referencedByACompositePatientSearch");
+    	String couldNotDelete = msa.getMessage("Cohort.couldNotDelete");
+    	HttpSession httpSession = request.getSession();
     	
     	if ("delete".equals(action)) {
     		String[] toDelete = request.getParameterValues("cohortId");
     		if (toDelete != null) {
-	    		String reason = request.getParameter("voidReason");
-	    		for (String s : toDelete) {
-	    			Integer id = Integer.valueOf(s);
-	    			Cohort cohort = Context.getCohortService().getCohort(id);
-	    			Context.getCohortService().voidCohort(cohort, reason);
-	    		}
-	    		return new ModelAndView(new RedirectView(getSuccessView()));
-    		}
+    			List<AbstractReportObject> savedSearches = Context.getReportObjectService().getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
+				for (String s : toDelete) {
+					int compositeTest = 0;
+					for (ReportObject ro : savedSearches) {
+						PatientSearchReportObject psro = (PatientSearchReportObject) ro;
+						if (psro.getPatientSearch().isComposition()) {
+							List<Object> psList = psro.getPatientSearch().getParsedComposition();
+							for (Object psObj : psList) {
+								if (psObj.getClass().getName().contains("org.openmrs.reporting.PatientSearch")) {
+									PatientSearch psInner = (PatientSearch) psObj;
+									if (psInner.getSavedCohortId() != null) {
+										if (psInner.getSavedCohortId() == Integer.valueOf(Integer.valueOf(s)).intValue()) {
+											compositeTest = 1;
+										}
+									}
+								}
+							}
+						}
+					}
+					if (compositeTest == 0) {
+						String reason = request.getParameter("voidReason");
+						Cohort cohort = Context.getCohortService().getCohort(Integer.valueOf(s));
+						Context.getCohortService().voidCohort(cohort, reason);
+					} else {
+						if (!error.equals("")) {
+							error += "<Br>";
+						}
+						error += couldNotDelete + " " + title + " " + s + ", " + refByCompSearch;
+					}
+					if (!error.equals("")) {
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+					}
+				}
+				return new ModelAndView(new RedirectView(getSuccessView()));
+			}
     	}
-    	
     	return showForm(request, response, errors);
     }
     

@@ -64,6 +64,7 @@
 		<!-- Reporting -->
 		<mapping resource="org/openmrs/reporting/db/hibernate/Report.hbm.xml" />
 		<mapping resource="org/openmrs/reporting/db/hibernate/ReportObject.hbm.xml" />
+		<mapping resource="org/openmrs/reporting/db/hibernate/ReportSchemaXml.hbm.xml" />
 		
 		<!-- Notification -->
 		<mapping resource="org/openmrs/notification/db/hibernate/Template.hbm.xml" />

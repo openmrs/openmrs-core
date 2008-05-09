@@ -20,13 +20,17 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * This class is the representation of a person's address. This class is
  * many-to-one to the Person class, so a Person/Patient/User can have zero 
- * to n
+ * to n addresses
  * 
  */
+@Root(strict=false)
 public class PersonAddress implements java.io.Serializable, Cloneable, Comparable<PersonAddress> {
 
 	private static Log log = LogFactory.getLog(PersonAddress.class);
@@ -65,8 +69,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	// Constructors
 
 	/** default constructor */
-	public PersonAddress() {
-	}
+	public PersonAddress() { }
 
 	/** constructor with id */
 	public PersonAddress(Integer personAddressId) {
@@ -179,6 +182,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the address1.
 	 */
+	@Element(data=true, required=false)
 	public String getAddress1() {
 		return address1;
 	}
@@ -186,6 +190,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param address1 The address1 to set.
 	 */
+	@Element(data=true, required=false)
 	public void setAddress1(String address1) {
 		this.address1 = address1;
 	}
@@ -193,6 +198,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the address2.
 	 */
+	@Element(data=true, required=false)
 	public String getAddress2() {
 		return address2;
 	}
@@ -200,6 +206,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param address2 The address2 to set.
 	 */
+	@Element(data=true, required=false)
 	public void setAddress2(String address2) {
 		this.address2 = address2;
 	}
@@ -207,6 +214,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the cityVillage.
 	 */
+	@Element(data=true, required=false)
 	public String getCityVillage() {
 		return cityVillage;
 	}
@@ -214,6 +222,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param cityVillage The cityVillage to set.
 	 */
+	@Element(data=true, required=false)
 	public void setCityVillage(String cityVillage) {
 		this.cityVillage = cityVillage;
 	}
@@ -221,6 +230,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the country.
 	 */
+	@Element(data=true, required=false)
 	public String getCountry() {
 		return country;
 	}
@@ -228,6 +238,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param country The country to set.
 	 */
+	@Element(data=true, required=false)
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -240,7 +251,8 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 			return new Boolean(false);
 		return preferred;
 	}
-
+	
+	@Attribute(required=true)
 	public Boolean getPreferred() {
 		return isPreferred();
 	}
@@ -248,6 +260,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param preferred The preferred to set.
 	 */
+	@Attribute(required=true)
 	public void setPreferred(Boolean preferred) {
 		this.preferred = preferred;
 	}
@@ -255,6 +268,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the creator.
 	 */
+	@Element(required=true)
 	public User getCreator() {
 		return creator;
 	}
@@ -262,6 +276,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param creator The creator to set.
 	 */
+	@Element(required=true)
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -269,6 +284,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Element(required=true)
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -276,6 +292,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
+	@Element(required=true)
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -283,6 +300,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the latitude.
 	 */
+	@Attribute(required=false)
 	public String getLatitude() {
 		return latitude;
 	}
@@ -290,6 +308,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param latitude The latitude to set.
 	 */
+	@Attribute(required=false)
 	public void setLatitude(String latitude) {
 		this.latitude = latitude;
 	}
@@ -297,6 +316,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the longitude.
 	 */
+	@Attribute(required=false)
 	public String getLongitude() {
 		return longitude;
 	}
@@ -304,6 +324,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param longitude The longitude to set.
 	 */
+	@Attribute(required=false)
 	public void setLongitude(String longitude) {
 		this.longitude = longitude;
 	}
@@ -311,6 +332,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the person.
 	 */
+	@Element(required=true)
 	public Person getPerson() {
 		return person;
 	}
@@ -318,6 +340,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param person The person to set.
 	 */
+	@Element(required=true)
 	public void setPerson(Person person) {
 		this.person = person;
 	}
@@ -325,6 +348,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the personAddressId.
 	 */
+	@Attribute(required=true)
 	public Integer getPersonAddressId() {
 		return personAddressId;
 	}
@@ -332,6 +356,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param personAddressId The personAddressId to set.
 	 */
+	@Attribute(required=true)
 	public void setPersonAddressId(Integer personAddressId) {
 		this.personAddressId = personAddressId;
 	}
@@ -339,6 +364,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the postalCode.
 	 */
+	@Element(data=true,required=false)
 	public String getPostalCode() {
 		return postalCode;
 	}
@@ -346,6 +372,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param postalCode The postalCode to set.
 	 */
+	@Element(data=true,required=false)
 	public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
 	}
@@ -353,6 +380,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the stateProvince.
 	 */
+	@Element(data=true,required=false)
 	public String getStateProvince() {
 		return stateProvince;
 	}
@@ -360,6 +388,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param stateProvince The stateProvince to set.
 	 */
+	@Element(data=true,required=false)
 	public void setStateProvince(String stateProvince) {
 		this.stateProvince = stateProvince;
 	}
@@ -367,6 +396,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the dateVoided.
 	 */
+	@Element(required=false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -374,6 +404,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
+	@Element(required=false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -385,6 +416,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 		return voided;
 	}
 
+	@Attribute(required=true)
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -392,6 +424,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param voided The voided to set.
 	 */
+	@Attribute(required=true)
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
@@ -399,6 +432,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the voidedBy.
 	 */
+	@Element(required=false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -406,6 +440,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param voidedBy The voidedBy to set.
 	 */
+	@Element(required=false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
@@ -413,6 +448,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the voidReason.
 	 */
+	@Element(data=true,required=false)
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -420,6 +456,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param voidReason The voidReason to set.
 	 */
+	@Element(data=true,required=false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
@@ -427,6 +464,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the countyDistrict.
 	 */
+	@Element(data=true,required=false)
 	public String getCountyDistrict() {
 		return countyDistrict;
 	}
@@ -434,6 +472,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param countyDistrict The countyDistrict to set.
 	 */
+	@Element(data=true,required=false)
 	public void setCountyDistrict(String countyDistrict) {
 		this.countyDistrict = countyDistrict;
 	}
@@ -441,6 +480,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return Returns the neighborhoodCell.
 	 */
+	@Element(data=true,required=false)
 	public String getNeighborhoodCell() {
 		return neighborhoodCell;
 	}
@@ -448,6 +488,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param neighborhoodCell The neighborhoodCell to set.
 	 */
+	@Element(data=true,required=false)
 	public void setNeighborhoodCell(String neighborhoodCell) {
 		this.neighborhoodCell = neighborhoodCell;
 	}
@@ -471,6 +512,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return the region
 	 */
+	@Element(data=true,required=false)
 	public String getRegion() {
 		return region;
 	}
@@ -478,6 +520,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param region the region to set
 	 */
+	@Element(data=true,required=false)
 	public void setRegion(String region) {
 		this.region = region;
 	}
@@ -485,6 +528,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return the subregion
 	 */
+	@Element(data=true,required=false)
 	public String getSubregion() {
 		return subregion;
 	}
@@ -492,6 +536,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param subregion the subregion to set
 	 */
+	@Element(data=true,required=false)
 	public void setSubregion(String subregion) {
 		this.subregion = subregion;
 	}
@@ -499,6 +544,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @return the townshipDivision
 	 */
+	@Element(data=true,required=false)
 	public String getTownshipDivision() {
 		return townshipDivision;
 	}
@@ -506,6 +552,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	/**
 	 * @param townshipDivision the townshipDivision to set
 	 */
+	@Element(data=true,required=false)
 	public void setTownshipDivision(String townshipDivision) {
 		this.townshipDivision = townshipDivision;
 	}

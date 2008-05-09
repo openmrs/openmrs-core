@@ -184,6 +184,7 @@ public class PatientProgram implements java.io.Serializable {
 		return null;
 	}
 	
+	@Deprecated
 	public PatientState getCurrentState() {
 		// TODO: this isn't really right - a patient can have many current states (in different workflows)
 		return getCurrentState(null);

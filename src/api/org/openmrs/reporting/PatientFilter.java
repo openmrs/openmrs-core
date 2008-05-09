@@ -13,7 +13,12 @@
  */
 package org.openmrs.reporting;
 
+import org.openmrs.Cohort;
+import org.openmrs.report.EvaluationContext;
 
+/**
+ * PatientFilters may use an EvaluationContext for caching, but they ignore parameter values
+ */
 public interface PatientFilter extends ReportObject {
 
 	/**
@@ -23,7 +28,7 @@ public interface PatientFilter extends ReportObject {
 	 * @param input
 	 * @return
 	 */
-	public PatientSet filter(PatientSet input);
+	public Cohort filter(Cohort input, EvaluationContext context);
 
 	/**
 	 * Determine all patients in _input_ who do *not* match some criteria
@@ -31,7 +36,7 @@ public interface PatientFilter extends ReportObject {
 	 * @param input
 	 * @return
 	 */
-	public PatientSet filterInverse(PatientSet input);
+	public Cohort filterInverse(Cohort input, EvaluationContext context);
 
 	/**
 	 * @return Whether or not this filter has had enough parameters set to be run properly

@@ -65,6 +65,7 @@ public final class Module {
 	
 	private Document config = null;
 	private Document sqldiff = null;
+	private Document log4j = null;
 	
 	// keep a reference to the file that we got this module from so we can delete
 	// it if necessary
@@ -432,6 +433,14 @@ public final class Module {
 
 	public void setConfig(Document config) {
 		this.config = config;
+	}
+	
+	public Document getLog4j() {
+		return log4j;
+	}
+
+	public void setLog4j(Document log4j) {
+		this.log4j = log4j;
 	}
 
 	public Document getSqldiff() {

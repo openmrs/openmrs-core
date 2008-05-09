@@ -16,6 +16,10 @@ package org.openmrs;
 import java.util.Date;
 import java.util.Set;
 
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Root;
+
+@Root
 public class Program implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 0L;
@@ -122,10 +126,12 @@ public class Program implements java.io.Serializable {
 		this.voidReason = voidReason;
 	}
 
+	@Attribute(required=true)
 	public Integer getProgramId() {
 		return programId;
 	}
 
+	@Attribute(required=true)
 	public void setProgramId(Integer programId) {
 		this.programId = programId;
 	}

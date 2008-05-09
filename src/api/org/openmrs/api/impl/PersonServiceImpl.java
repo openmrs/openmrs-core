@@ -323,10 +323,10 @@ public class PersonServiceImpl implements PersonService {
 			}
 		}
 		
-		person.setVoided(true);
-		person.setVoidedBy(Context.getAuthenticatedUser());
-		person.setDateVoided(new Date());
-		person.setVoidReason(reason);
+		person.setPersonVoided(true);
+		person.setPersonVoidedBy(Context.getAuthenticatedUser());
+		person.setPersonDateVoided(new Date());
+		person.setPersonVoidReason(reason);
 		updatePerson(person);
 		
 		Context.getPatientService().voidPatient(Context.getPatientService().getPatient(person.getPersonId()), reason);
@@ -339,7 +339,7 @@ public class PersonServiceImpl implements PersonService {
 	 * @throws APIException
 	 */
 	public void unvoidPerson(Person person) throws APIException {
-		String voidReason = person.getVoidReason();
+		String voidReason = person.getPersonVoidReason();
 		if (voidReason == null)
 			voidReason = "";
 		
@@ -356,10 +356,10 @@ public class PersonServiceImpl implements PersonService {
 			}
 		}
 		
-		person.setVoided(false);
-		person.setVoidedBy(null);
-		person.setDateVoided(null);
-		person.setVoidReason(null);
+		person.setPersonVoided(false);
+		person.setPersonVoidedBy(null);
+		person.setPersonDateVoided(null);
+		person.setPersonVoidReason(null);
 		updatePerson(person);
 		
 		Context.getPatientService().unvoidPatient(Context.getPatientService().getPatient(person.getPersonId()));
@@ -551,13 +551,13 @@ public class PersonServiceImpl implements PersonService {
 	 */
 	public void setCollectionProperties(Person person) {
 		// set it person creator/changer
-		if (person.getCreator() == null) {
-			person.setCreator(Context.getAuthenticatedUser());
-			person.setDateCreated(new Date());
+		if (person.getPersonCreator() == null) {
+			person.setPersonCreator(Context.getAuthenticatedUser());
+			person.setPersonDateCreated(new Date());
 		}
 		else {
-			person.setChangedBy(Context.getAuthenticatedUser());
-			person.setDateChanged(new Date());
+			person.setPersonChangedBy(Context.getAuthenticatedUser());
+			person.setPersonDateChanged(new Date());
 		}
 		
 		// address collection

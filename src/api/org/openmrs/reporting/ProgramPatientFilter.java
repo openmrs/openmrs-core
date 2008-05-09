@@ -14,16 +14,22 @@
 package org.openmrs.reporting;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import org.openmrs.Cohort;
 import org.openmrs.Program;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
+import org.openmrs.report.Parameter;
 
 /**
  * Currently can only determine whether a patient was in a given program ever, or on a specific date, or relative to dates
  * @author djazayeri
+ * @deprecated Use @see org.openmrs.reporting.ProgramStatePatientFilter instead
  */
 public class ProgramPatientFilter extends AbstractPatientFilter implements PatientFilter {
 	
@@ -37,28 +43,28 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 		super.setSubType("Program Patient Filter");
 	}
 
-	public PatientSet filter(PatientSet input) {
+	public Cohort filter(Cohort input, EvaluationContext context) {
 		if (!isReadyToRun())
 			return null;
 		PatientSetService service = Context.getPatientSetService();
-		PatientSet matches = null;
+		Cohort matches = null;
 		if (onDate != null)
 			matches = service.getPatientsInProgram(program, onDate, onDate);
 		else
 			matches = service.getPatientsInProgram(program, fromDate, toDate);
-		return input == null ? matches : input.intersect(matches);
+		return input == null ? matches : Cohort.intersect(input, matches);
 	}
 
-	public PatientSet filterInverse(PatientSet input) {
+	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		if (!isReadyToRun())
 			return null;
 		PatientSetService service = Context.getPatientSetService();
-		PatientSet matches = null;
+		Cohort matches = null;
 		if (onDate != null)
 			matches = service.getPatientsInProgram(program, onDate, onDate);
 		else
 			matches = service.getPatientsInProgram(program, fromDate, toDate);
-		return input.subtract(matches);
+		return Cohort.subtract(input, matches);
 	}
 	 
 	public String getDescription() {

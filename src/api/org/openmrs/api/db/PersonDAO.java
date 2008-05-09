@@ -183,6 +183,5 @@ public interface PersonDAO {
 	 * @throws DAOException
 	 */
 	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException;	
-
 	
 }

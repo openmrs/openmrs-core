@@ -12,8 +12,13 @@
 
 <%
 
+
 try {
+	out.write("provider size: " + Context.getDataSetService().getProviders().size());
+	for (Object o : Context.getDataSetService().getProviders())
+		out.write("provider size: " + o.getClass());
 	
+
 	out.write("Locale.displayName: " + request.getLocale().getDisplayName() + "<br>");
 	out.write("Locale.getLanguage: " + request.getLocale().getLanguage() + "<br>");
 	out.write("Locale.toString: " + request.getLocale().toString() + "<br>");

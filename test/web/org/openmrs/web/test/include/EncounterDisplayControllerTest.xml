@@ -16,6 +16,8 @@
   <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
   <patient_identifier patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" identifier="12345" identifier_type="1" preferred="1" voided="false" location_id="1" />
   
+  <encounter encounter_id="3" patient_id="3" encounter_datetime="2005-01-01 00:00:00.0" provider_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0"/>
+  
   <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false"/>
   <concept_name concept_id="1" name="" locale="en" description="this is a description" creator="1" date_created="2005-01-01 00:00:00.0" />
   

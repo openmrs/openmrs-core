@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
-<!--
-	- Application context definition for "springDispatcher" DispatcherServlet.
--->
+<!-- Application context definition for Spring for the OpenMRS web layer. -->
+<!-- See /metadata/api/spring/applicationContext-service.xml for layer agnositic spring setup -->
 
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/util
+           http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
 	<!--  **************************  VIEW RESOLVER / CONTROLLERS  *************************  -->
 
@@ -93,16 +100,21 @@
 				<prop key="admin/concepts/conceptWord.form">conceptWordForm</prop>
 				<prop key="admin/concepts/conceptSetDerived.form">conceptSetDerivedForm</prop>
 
-				<prop key="admin/reports/report.list">reportList</prop>
-				<prop key="admin/reports/report.form">reportForm</prop>
 				<prop key="admin/reports/dataExport.list">dataExportList</prop>
 				<prop key="admin/reports/dataExport.form">dataExportForm</prop>
 				<prop key="admin/reports/reportObject.list">reportObjectList</prop>
 				<prop key="admin/reports/reportObject.form">reportObjectForm</prop>
 				<prop key="admin/reports/cohorts.list">cohortList</prop>
+				<prop key="admin/reports/patientSearch.list">patientSearchList</prop>
+				<prop key="admin/reports/patientSearch.form">patientSearchForm</prop>
+				<prop key="admin/reports/runReport.list">reportsList</prop>
+				<prop key="admin/reports/runReport.form">runReportForm</prop>
+                <prop key="admin/reports/reportData.form">reportDataForm</prop>
+                <prop key="admin/reports/reportData.list">reportDataList</prop>
+                <prop key="admin/reports/reportSchemaXml.form">reportSchemaXmlForm</prop>
+                <prop key="admin/reports/reportSchemaXml.list">reportSchemaXmlList</prop>
+                <prop key="admin/reports/reportMacros.form">reportMacrosForm</prop>
 
-				<prop key="analysis.list">otfaController</prop>
-				<prop key="analysis.form">otfaActionController</prop>
 				<prop key="cohortBuilder.list">cohortBuilderController</prop>
 				<prop key="cohortBuilder.form">cohortBuilderActionController</prop>
 				<prop key="migration.list">migrationController</prop>
@@ -113,7 +125,6 @@
 				<prop key="patientDashboard.form">patientDashboardForm</prop>
 				<prop key="personDashboard.form">personDashboardForm</prop>
 				<prop key="patientSet.form">patientSetFormController</prop>
-				<prop key="cohortSummary.list">cohortSummaryController</prop>
 
 				<prop key="admin/forms/formSchemaDesign.form">formSchemaDesignForm</prop>
 				<prop key="admin/forms/formEdit.form">formEditForm</prop>
@@ -352,8 +363,7 @@
 	<!-- ** /Patient ** -->
 
 	<!-- ** New (mini) Patient ** -->
-	<bean id="newPatientForm" class="org.openmrs.web.controller.patient.NewPatientFormController"
-		singleton="false">
+	<bean id="newPatientForm" class="org.openmrs.web.controller.patient.NewPatientFormController">
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>patient</value></property>
 		<property name="commandClass"><value>org.openmrs.web.controller.patient.ShortPatientModel</value></property>
@@ -753,28 +763,53 @@
 	<!-- ============================ -->
 	<!-- ===== Report Sector ===== -->
 	<!-- ============================ -->
-	<!-- ** Report ** -->
-	<bean id="reportList" class="org.openmrs.web.controller.report.ReportListController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>reportList</value></property>
-		<property name="formView"><value>/admin/reports/reportList</value></property>
-		<property name="successView"><value>report.list</value></property>
-	</bean>
-
-	<!--  Validator and Form Controller for the add/edit reports page -->
-	<bean id="reportValidator" class="org.openmrs.web.controller.report.ReportValidator" />
-	<bean id="reportForm" class="org.openmrs.web.controller.report.ReportFormController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>report</value></property>
-		<property name="validator">
-			<ref bean="reportValidator" />
+	
+	<!-- Run Reports -->
+	   <bean id="reportsList" class="org.openmrs.web.controller.report.ReportsListController">
+        <property name="commandName"><value>reports</value></property>
+        <property name="formView"><value>/admin/reports/runReportList</value></property>
+        <property name="successView"><value>runReport.list</value></property>
+    </bean>
+    <bean id="runReportForm" class="org.openmrs.web.controller.report.RunReportController">
+        <property name="commandName"><value>report</value></property>
+        <property name="formView"><value>/admin/reports/runReportForm</value></property>
+        <property name="successView"><value>runReport.list</value></property>
+        <property name="validator">
+		    <ref bean="runReportForm" />
 		</property>
-		<property name="formView"><value>/admin/reports/reportForm</value></property>
-		<property name="successView"><value>report.list</value></property>
-	</bean>
-	<!-- ** /Report ** -->
-
-	<!-- ** ReportObject ** -->
+    </bean>
+    <bean id="reportDataForm" class="org.openmrs.web.controller.report.ReportDataFormController">
+        <property name="commandName"><value>reportData</value></property>
+        <property name="formView"><value>/admin/reports/reportDataForm</value></property>
+        <property name="successView"><value>reportData.form</value></property>
+    </bean>
+    <bean id="reportDataList" class="org.openmrs.web.controller.report.ReportDataListController">
+        <property name="commandName"><value>reportData</value></property>
+        <property name="formView"><value>/admin/reports/reportDataList</value></property>
+        <property name="successView"><value>reportData.list</value></property>
+    </bean>
+    
+    <!--  Manage reports -->
+    <bean id="reportSchemaXmlForm" class="org.openmrs.web.controller.report.ReportSchemaXmlFormController">
+        <property name="commandName"><value>reportSchemaXml</value></property>
+        <property name="formView"><value>/admin/reports/reportSchemaXmlForm</value></property>
+        <property name="successView"><value>reportSchemaXml.list</value></property>
+        <property name="validator">
+			<ref bean="reportSchemaXmlForm" />
+		</property>
+    </bean>
+    <bean id="reportSchemaXmlList" class="org.openmrs.web.controller.report.ReportSchemaXmlListController">
+        <property name="commandName"><value>reportSchemaXmlList</value></property>
+        <property name="formView"><value>/admin/reports/reportSchemaXmlList</value></property>
+        <property name="successView"><value>reportSchemaXml.list</value></property>
+    </bean>
+    <bean id="reportMacrosForm" class="org.openmrs.web.controller.report.ReportMacrosFormController">
+        <property name="commandName"><value>command</value></property>
+        <property name="formView"><value>/admin/reports/reportMacrosForm</value></property>
+        <property name="successView"><value>reportMacros.form</value></property>
+    </bean>
+    
+	<!-- ReportObject -->
 	<bean id="reportObjectList"
 		class="org.openmrs.web.controller.report.ReportObjectListController">
 		<property name="sessionForm"><value>true</value></property>
@@ -782,8 +817,6 @@
 		<property name="formView"><value>/admin/reports/reportObjectList</value></property>
 		<property name="successView"><value>reportObject.list</value></property>
 	</bean>
-
-	<!--  Validator and Form Controller for the add/edit reports page -->
 	<bean id="reportObjectValidator"
 		class="org.openmrs.web.controller.report.ReportObjectValidator" />
 	<bean id="reportObjectForm"
@@ -796,7 +829,7 @@
 		<property name="formView"><value>/admin/reports/reportObjectForm</value></property>
 		<property name="successView"><value>reportObject.list</value></property>
 	</bean>
-	<!-- ** /Report ** -->
+
 	<!-- ** DataExport ** -->
 	<bean id="dataExportList"
 		class="org.openmrs.web.controller.report.export.DataExportListController">
@@ -822,92 +855,65 @@
 		<property name="formView"><value>/admin/reports/cohortList</value></property>
 		<property name="successView"><value>cohorts.list</value></property>
 	</bean>
+	<!-- ** PatientSearchManagement ** -->
+	<bean id="patientSearchList"
+		class="org.openmrs.web.controller.report.PatientSearchListController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>patientSearchList</value></property>
+		<property name="formView"><value>/admin/reports/patientSearchList</value></property>
+		<property name="successView"><value>patientSearch.list</value></property>
+	</bean>
+	<bean id="patientSearchForm"
+		class="org.openmrs.web.controller.report.PatientSearchFormController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>patientSearchForm</value></property>
+		<property name="formView"><value>/admin/reports/patientSearchForm</value></property>
+		<property name="successView"><value>patientSearch.list</value></property>
+	</bean>
+	
 	<!-- ============================ -->
+	
 
 	<!-- ============================ -->
 	<!-- ===== Analysis Sector ===== -->
     <!-- ============================ -->
-		<!-- ** Cohort Builder, will replace on-the-fly-analysis ** -->
-		<bean id="cohortBuilderController" class="org.openmrs.web.controller.analysis.CohortBuilderController">
-			<property name="formView"><value>/analysis/cohortBuilder</value></property>
-			<property name="successView"><value>cohortBuilder.list</value></property>
-			<property name="links">
-				<list>
-					<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=patientDashboard.form:appendPatientId=true:showPatientSet=true</value>
-					<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
-					<value>nealreport.form:nealreport.IncentiveReport.name:reportType=Incentive Report</value>
-					<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
-					<value>nealreport.form:nealreport.TbReport.name:reportType=TB Report</value>
-					<value>nealreport.form:nealreport.Cd4Report.name:reportType=CD4 Report</value>
-					<value>nealreport.form:nealreport.DeclineReport.name:reportType=Decline Report</value>
-					<value>nealreport.form:nealreport.Month6Report.name:reportType=Month6 Report</value>
-					<value>nealreport.form:nealreport.AlertReport.name:reportType=Alert Report</value>
-					<value>nealreport.form:nealreport.PmtctReport.name:reportType=PMTCT Report</value>
-					<value>nealreport.form:nealreport.PedReport.name:reportType=Ped Report</value>
-					<value>nealreport.form:nealreport.LongReport.name:reportType=Long Report</value>
-					<value>nealreport.form:nealreport.TracReport.name:reportType=TRAC Report</value>
-					<value>nealreport.form:nealreport.ExceptionReport.name:reportType=Exception Report</value>
-					<value>nealreport.form:nealreport.LostReport.name:reportType=Lost Report</value>
-					<value>nealreport.form:nealreport.FlatReport.name:reportType=Flat Report</value>
-					<value>nealreport.form:nealreport.FoodPatientsReport.name:reportType=Food Patients Report</value>
-					<value>nealreport.form:nealreport.AccompLeaderReport.name:reportType=Accompagnateur Leader Report</value>
-					<value>nealreport.form:nealreport.TracRegisterReport.name:reportType=Trac Register Report</value>
-					<value>nealreport.form:nealreport.ChaiReport.name:reportType=CHAI Report</value>
-					<value>nealreport.form:nealreport.DataDumpReport.name:reportType=Data Dump</value>
-				</list>
-			</property>
-		</bean>
-	    <bean id="cohortBuilderActionController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
-			<property name="methodNameResolver"><ref bean="defaultMethodParamResolver"/></property>
-			<property name="delegate"><ref bean="cohortBuilderController"/></property>
-		</bean>
-		<!-- ** Analysis ** -->
-			<bean id="otfaController" class="org.openmrs.web.controller.analysis.OnTheFlyAnalysisController">
-				<property name="shortcuts">
-					<list>
-						<value>gender!both:*|male:@org.openmrs.reporting.PatientCharacteristicFilter(gender=m#java.lang.String)|female:@org.openmrs.reporting.PatientCharacteristicFilter(gender=f#java.lang.String)</value>
-						<value>age!all:*|child:@org.openmrs.reporting.PatientCharacteristicFilter(maxAge=14#java.lang.Integer)|adult:@org.openmrs.reporting.PatientCharacteristicFilter(minAge=15#java.lang.Integer)</value>
-						<value>arv_tx_group!all:*|treatmentGroup:@org.openmrs.reporting.ArvTxGroupFilter(treatmentGroup#java.lang.String)</value>
-						<value>location!all:*|location:@org.openmrs.reporting.LocationFilter(location#org.openmrs.Location)</value>
-						<value>+conceptNumeric!conceptNumeric:@org.openmrs.reporting.NumericObsPatientFilter(timeModifier#org.openmrs.api.PatientSetService$TimeModifier,concept#org.openmrs.Concept,modifier#org.openmrs.api.PatientSetService$Modifier,value#java.lang.Double,'in last',withinLastMonths#java.lang.Integer,'months')</value>
-					</list>
-				</property>
-				<property name="links">
-					<list>
-						<value>patientSet.form:Analysis.workWithGroup:method=setPatientSet:url=patientDashboard.form:appendPatientId=true:showPatientSet=true</value>
-						<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
-						<value>nealreport.form:nealreport.IncentiveReport.name:reportType=Incentive Report</value>
-						<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
-						<value>nealreport.form:nealreport.LongReport.name:reportType=Long Report</value>
-						<value>nealreport.form:nealreport.TbReport.name:reportType=TB Report</value>
-						<value>nealreport.form:nealreport.Cd4Report.name:reportType=CD4 Report</value>
-						<value>nealreport.form:nealreport.DeclineReport.name:reportType=Decline Report</value>
-						<value>nealreport.form:nealreport.Month6Report.name:reportType=Month6 Report</value>
-						<value>nealreport.form:nealreport.AlertReport.name:reportType=Alert Report</value>
-						<value>nealreport.form:nealreport.PmtctReport.name:reportType=PMTCT Report</value>
-						<value>nealreport.form:nealreport.PedReport.name:reportType=Ped Report</value>
-						<value>nealreport.form:nealreport.TracReport.name:reportType=TRAC Report</value>
-						<value>nealreport.form:nealreport.ExceptionReport.name:reportType=Exception Report</value>
-						<value>nealreport.form:nealreport.LostReport.name:reportType=Lost Report</value>
-						<value>nealreport.form:nealreport.FlatReport.name:reportType=Flat Report</value>
-						<value>nealreport.form:nealreport.FoodPatientsReport.name:reportType=Food Patients Report</value>
-						<value>nealreport.form:nealreport.TracRegisterReport.name:reportType=Trac Register Report</value>
-						<value>nealreport.form:nealreport.ChaiReport.name:reportType=CHAI Report</value>
-						<value>nealreport.form:nealreport.DataDumpReport.name:reportType=Data Dump</value>
-					</list>
-				</property>
-				<property name="formView"><value>/analysis/on-the-fly-analysis</value></property>
-			</bean>
-		    <bean id="defaultMethodParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
-				<property name="paramName"><value>method</value></property>
-				<property name="defaultMethodName"><value>handleRequest</value></property>
-			</bean>
-		    <bean id="otfaActionController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
-				<property name="methodNameResolver"><ref bean="defaultMethodParamResolver"/></property>
-				<property name="delegate"><ref bean="otfaController"/></property>
-			</bean>
-			<bean id="cohortSummaryController" class="org.openmrs.web.controller.analysis.CohortSummaryController"/>
-			<!-- ** /Analysis ** -->
+	<bean id="defaultMethodParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+		<property name="paramName"><value>method</value></property>
+		<property name="defaultMethodName"><value>handleRequest</value></property>
+	</bean>
+	<bean id="cohortBuilderController" class="org.openmrs.web.controller.analysis.CohortBuilderController">
+		<property name="formView"><value>/analysis/cohortBuilder</value></property>
+		<property name="successView"><value>cohortBuilder.list</value></property>
+		<property name="links">
+			<list>
+				<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=patientDashboard.form:appendPatientId=true:showPatientSet=true</value>
+				<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
+				<value>nealreport.form:nealreport.IncentiveReport.name:reportType=Incentive Report</value>
+				<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
+				<value>nealreport.form:nealreport.TbReport.name:reportType=TB Report</value>
+				<value>nealreport.form:nealreport.Cd4Report.name:reportType=CD4 Report</value>
+				<value>nealreport.form:nealreport.DeclineReport.name:reportType=Decline Report</value>
+				<value>nealreport.form:nealreport.Month6Report.name:reportType=Month6 Report</value>
+				<value>nealreport.form:nealreport.AlertReport.name:reportType=Alert Report</value>
+				<value>nealreport.form:nealreport.PmtctReport.name:reportType=PMTCT Report</value>
+				<value>nealreport.form:nealreport.PedReport.name:reportType=Ped Report</value>
+				<value>nealreport.form:nealreport.LongReport.name:reportType=Long Report</value>
+				<value>nealreport.form:nealreport.TracReport.name:reportType=TRAC Report</value>
+				<value>nealreport.form:nealreport.ExceptionReport.name:reportType=Exception Report</value>
+				<value>nealreport.form:nealreport.LostReport.name:reportType=Lost Report</value>
+				<value>nealreport.form:nealreport.FlatReport.name:reportType=Flat Report</value>
+				<value>nealreport.form:nealreport.FoodPatientsReport.name:reportType=Food Patients Report</value>
+				<value>nealreport.form:nealreport.AccompLeaderReport.name:reportType=Accompagnateur Leader Report</value>
+				<value>nealreport.form:nealreport.TracRegisterReport.name:reportType=Trac Register Report</value>
+				<value>nealreport.form:nealreport.ChaiReport.name:reportType=CHAI Report</value>
+				<value>nealreport.form:nealreport.DataDumpReport.name:reportType=Data Dump</value>
+			</list>
+		</property>
+	</bean>
+    <bean id="cohortBuilderActionController" class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
+		<property name="methodNameResolver"><ref bean="defaultMethodParamResolver"/></property>
+		<property name="delegate"><ref bean="cohortBuilderController"/></property>
+	</bean>
     <!-- ============================ -->
 	
 	<!-- ================================= -->
@@ -1873,6 +1879,19 @@
 			</list>
 		</property>
 	</bean>
+	
+	<!-- Add the web specific report renderers to the list of renderers available to the ReportService -->
+	<!-- A module adding renderers must this exact parent id --> 
+	<bean parent="reportServiceTarget">
+		<property name="renderers">
+			<map>
+				<entry>
+					<key><value>org.openmrs.web.report.CohortReportWebRenderer</value></key>
+					<bean class="org.openmrs.web.report.CohortReportWebRenderer"/>
+				</entry>
+			</map>
+		</property>
+	</bean>
 
 	<!-- CALENDAR SECTION -->
 
@@ -1893,6 +1912,5 @@
 		>\r\n			<value>(.*)</value>\r\n		</property>
 		><value>$1</value></property>
 	-->
-	
 
 </beans>

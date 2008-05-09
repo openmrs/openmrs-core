@@ -105,8 +105,8 @@
 						<%@ include file="forms/localHeader.jsp" %>
 				</div>
 			</openmrs:hasPrivilege>
-			
-			<openmrs:hasPrivilege privilege="View Reports,View Data Exports">
+
+			<openmrs:hasPrivilege privilege="Run Reports,Manage Reports,View Reports,View Data Exports">
 				<div class="adminMenuList">
 					<h4><spring:message code="Report.header"/></h4>
 						<%@ include file="reports/localHeader.jsp" %>

@@ -39,18 +39,55 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
 		IDatabaseConnection connection = new DatabaseConnection(getConnection());
         
         // partial database export
-        QueryDataSet initialDataSet = new QueryDataSet(connection);
-        //initialDataSet.addTable("person", "SELECT * FROM person WHERE person_id = 1");
-        //initialDataSet.addTable("users", "SELECT * FROM users WHERE user_id = 1");
-        //initialDataSet.addTable("concept", "SELECT * FROM concept WHERE concept_id in (1726, 1558, 1553, 1554, 1555, 1592)");
-        //initialDataSet.addTable("concept_name", "SELECT * FROM concept_name WHERE concept_id in (1726, 1558, 1553, 1554, 1555, 1592)");
-        initialDataSet.addTable("form_field", "SELECT * FROM form_field limit 3");
-        initialDataSet.addTable("field", "SELECT * FROM field limit 3");
-        initialDataSet.addTable("form", "SELECT * FROM form limit 3");
+        QueryDataSet initialDataSet = new QueryDataSet(connection);       
+        initialDataSet.addTable("concept", "SELECT * FROM concept");
+        initialDataSet.addTable("concept_answer", "SELECT * FROM concept_answer");
+        initialDataSet.addTable("concept_class", "SELECT * FROM concept_class");
+        initialDataSet.addTable("concept_datatype", "SELECT * FROM concept_datatype");
+        initialDataSet.addTable("concept_name", "SELECT * FROM concept_name");
+        initialDataSet.addTable("concept_numeric", "SELECT * FROM concept_numeric");
+        initialDataSet.addTable("concept_set", "SELECT * FROM concept_set");
+        initialDataSet.addTable("concept_synonym", "SELECT * FROM concept_synonym");
+        initialDataSet.addTable("drug", "SELECT * FROM drug");
+        initialDataSet.addTable("drug_order", "SELECT * FROM drug_order");
+        initialDataSet.addTable("encounter", "SELECT * FROM encounter");
+        initialDataSet.addTable("encounter_type", "SELECT * FROM encounter_type");
+        initialDataSet.addTable("location", "SELECT * FROM location");
+        initialDataSet.addTable("obs", "SELECT * FROM obs");
+        initialDataSet.addTable("order_type", "SELECT * FROM order_type");
+        initialDataSet.addTable("orders", "SELECT * FROM orders");
+        initialDataSet.addTable("patient", "SELECT * FROM patient");
+        initialDataSet.addTable("patient_identifier", "SELECT * FROM patient_identifier");
+        initialDataSet.addTable("patient_identifier_type", "SELECT * FROM patient_identifier_type");
+        initialDataSet.addTable("patient_program", "SELECT * FROM patient_program");
+        initialDataSet.addTable("patient_state", "SELECT * FROM patient_state");
+        initialDataSet.addTable("person", "SELECT * FROM person");
+        initialDataSet.addTable("person_address", "SELECT * FROM person_address");
+        initialDataSet.addTable("person_attribute", "SELECT * FROM person_attribute");
+        initialDataSet.addTable("person_attribute_type", "SELECT * FROM person_attribute_type");
+        initialDataSet.addTable("person_name", "SELECT * FROM person_name");
+        initialDataSet.addTable("privilege", "SELECT * FROM privilege");
+        initialDataSet.addTable("program", "SELECT * FROM program");
+        initialDataSet.addTable("program_workflow", "SELECT * FROM program_workflow");
+        initialDataSet.addTable("program_workflow_state", "SELECT * FROM program_workflow_state");
+        initialDataSet.addTable("relationship", "SELECT * FROM relationship");
+        initialDataSet.addTable("relationship_type", "SELECT * FROM relationship_type");
+        initialDataSet.addTable("role", "SELECT * FROM role");
+        initialDataSet.addTable("role_privilege", "SELECT * FROM role_privilege");
+        initialDataSet.addTable("role_role", "SELECT * FROM role_role");
+        initialDataSet.addTable("user_role", "SELECT * FROM user_role");
+        initialDataSet.addTable("users", "SELECT * FROM users");
+
+        /*
+        initialDataSet.addTable("field", "SELECT * FROM field");
+        initialDataSet.addTable("field_answer", "SELECT * FROM field_answer");
+        initialDataSet.addTable("field_type", "SELECT * FROM field_type");
+        initialDataSet.addTable("form", "SELECT * FROM form");
+        initialDataSet.addTable("form_field", "SELECT * FROM form_field");
+        initialDataSet.addTable("hl7_source", "SELECT * FROM hl7_source");
+        */
         
-        //initialDataSet.addTable("user_role", "SELECT * FROM user_role WHERE user_id = 1");
-        
-        FlatXmlDataSet.write(initialDataSet, new FileOutputStream("test/api/org/openmrs/test/api/include/formfield.xml"));
+        FlatXmlDataSet.write(initialDataSet, new FileOutputStream("test/api/org/openmrs/test/logic/include/LogicBasicTest.xml"));
 
         // full database export
         //IDataSet fullDataSet = connection.createDataSet();

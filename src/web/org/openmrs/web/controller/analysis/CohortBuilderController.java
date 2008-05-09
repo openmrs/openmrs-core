@@ -230,7 +230,7 @@ public class CohortBuilderController implements Controller {
 				}
 				
 			} else {
-				PatientFilter pf = Context.getReportService().getPatientFilterByName(spec);
+				PatientFilter pf = Context.getReportObjectService().getPatientFilterByName(spec);
 				if (label == null)
 					label = pf.getName();
 				if (pf != null)
@@ -294,7 +294,7 @@ public class CohortBuilderController implements Controller {
 			String temp = request.getParameter("filter_id");
 			if (temp != null) {
 				Integer filterId = new Integer(temp);
-				PatientFilter pf = Context.getReportService().getPatientFilterById(filterId);
+				PatientFilter pf = Context.getReportObjectService().getPatientFilterById(filterId);
 				if (pf != null)
 					history.addSearchItem(PatientSearch.createSavedFilterReference(filterId));
 				else
@@ -303,7 +303,7 @@ public class CohortBuilderController implements Controller {
 			temp = request.getParameter("search_id");
 			if (temp != null) {
 				Integer searchId = new Integer(temp);
-				PatientSearchReportObject ro = (PatientSearchReportObject) Context.getReportService().getReportObject(searchId);
+				PatientSearchReportObject ro = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(searchId);
 				if (ro != null)
 					history.addSearchItem(PatientSearch.createSavedSearchReference(searchId));
 				else
@@ -459,7 +459,7 @@ public class CohortBuilderController implements Controller {
 				throw new RuntimeException("Re-saving histories is not yet implemented");
 			history.setName(name);
 			history.setDescription(description);
-			Context.getReportService().createSearchHistory(history);
+			Context.getReportObjectService().createSearchHistory(history);
 		}
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}

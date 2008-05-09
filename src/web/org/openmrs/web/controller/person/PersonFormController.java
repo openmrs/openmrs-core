@@ -117,7 +117,7 @@ public class PersonFormController extends SimpleFormController {
 				
 			//	 Patient Info 
 				//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
-				if (person.isVoided())
+				if (person.isPersonVoided())
 					ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 				if (person.isDead() && (person.getCauseOfDeath() == null))
 					errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");

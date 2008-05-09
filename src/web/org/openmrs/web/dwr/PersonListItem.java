@@ -69,7 +69,7 @@ public class PersonListItem {
 			gender = person.getGender();
 			birthdate = person.getBirthdate();
 			birthdateEstimated = person.isBirthdateEstimated();
-			voided = person.isVoided();
+			voided = person.isPersonVoided();
 			
 			// add in the person attributes
 			for (PersonAttribute attribute : person.getActiveAttributes()) {

@@ -15,9 +15,14 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
+
 /**
  * ConceptClass 
  */
+@Root(strict=false)
 public class ConceptClass implements java.io.Serializable {
 
 	public static final long serialVersionUID = 33473L;
@@ -59,10 +64,12 @@ public class ConceptClass implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Attribute(required=true)
 	public Integer getConceptClassId() {
 		return this.conceptClassId;
 	}
 
+	@Attribute(required=true)
 	public void setConceptClassId(Integer conceptClassId) {
 		this.conceptClassId = conceptClassId;
 	}
@@ -70,10 +77,12 @@ public class ConceptClass implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Element(data=true, required=true)
 	public String getName() {
 		return this.name;
 	}
 
+	@Element(data=true, required=true)
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -81,10 +90,12 @@ public class ConceptClass implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Element(data=true, required=true)
 	public String getDescription() {
 		return this.description;
 	}
 
+	@Element(data=true, required=true)
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -92,10 +103,12 @@ public class ConceptClass implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Element(required=true)
 	public User getCreator() {
 		return this.creator;
 	}
 
+	@Element(required=true)
 	public void setCreator(User user) {
 		this.creator = user;
 	}
@@ -103,10 +116,12 @@ public class ConceptClass implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Element(required=true)
 	public Date getDateCreated() {
 		return this.dateCreated;
 	}
 
+	@Element(required=true)
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}

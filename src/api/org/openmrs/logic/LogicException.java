@@ -13,22 +13,29 @@
  */
 package org.openmrs.logic;
 
+/**
+ * 
+ * Logic-specific exception
+ * 
+ */
 public class LogicException extends Exception {
-	
-	public LogicException() {
-		super();
-	}
-	
-	public LogicException(String message) {
-		super(message);
-	}
-	
-	public LogicException(Throwable cause) {
-		super(cause);
-	}
-	
-	public LogicException(String message, Throwable cause) {
-		super(message, cause);
-	}
+
+    private static final long serialVersionUID = -2985522122680870005L;
+
+    public LogicException() {
+        super();
+    }
+
+    public LogicException(String message) {
+        super(message);
+    }
+
+    public LogicException(Throwable cause) {
+        super(cause);
+    }
+
+    public LogicException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

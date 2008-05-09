@@ -280,6 +280,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.2.03');
 
+
 #----------------------------------------
 # OpenMRS Datamodel version 1.2.04
 # Burke Mamlin          April 14, 2008
@@ -308,6 +309,115 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 
 delimiter ;
 call diff_procedure('1.2.04');
+
+#----------------------------------------
+# OpenMRS Datamodel version 1.2.05
+# Ben Wolfe                 Dec 27th 2007
+# Adding report_schema_xml table
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+	CREATE TABLE `report_schema_xml` (
+	  `report_schema_id` int(11) NOT NULL auto_increment,
+	  `name` varchar(255) NOT NULL,
+	  `description` text NOT NULL,
+	  `xml_data` text NOT NULL,
+	  PRIMARY KEY  (`report_schema_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
+	
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.2.05');
+
+#---------------------------------------
+# OpenMRS Datamodel version 1.2.06
+# Brian McKown      Mar 06 2008
+# Alter report_schema table
+# Modify xml_data to MEDIUMTEXT
+#-------------------------------------
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+    ALTER TABLE `report_schema_xml` 
+        MODIFY COLUMN `xml_data` MEDIUMTEXT CHARACTER SET utf8 NOT NULL;
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.2.06');
+
+#---------------------------------------
+# OpenMRS Datamodel version 1.2.07
+# Brian McKown      Mar 06 2008
+# Alter global_property table
+# Modify property_value to MEDIUMTEXT
+#---------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+    ALTER TABLE `global_property` 
+        MODIFY COLUMN `property_value` MEDIUMTEXT CHARACTER SET utf8 DEFAULT NULL;
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.2.07');
+
+#---------------------------------------
+# OpenMRS Datamodel version 1.2.08
+# Darius Jazayeri      Mar 29 2008
+# Drop the REPORT table which has never been used
+#---------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+	DROP TABLE `report`;
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.2.08');
+
+
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script

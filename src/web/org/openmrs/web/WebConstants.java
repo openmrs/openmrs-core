@@ -13,6 +13,7 @@
  */
 package org.openmrs.web;
 
+
 public class WebConstants {
 	
 	public static final String INIT_REQ_UNIQUE_ID = "__INIT_REQ_UNIQUE_ID__";
@@ -50,6 +51,9 @@ public class WebConstants {
 	public static final String OPENMRS_PORTLET_MODEL_NAME = "model";
 	public static final String OPENMRS_PORTLET_LAST_REQ_ID = "__openmrs_portlet_last_req_id";
 	public static final String OPENMRS_PORTLET_CACHED_MODEL = "__openmrs_portlet_cached_model";
+	
+	public static final String OPENMRS_REPORT_DATA = "__openmrs_report_data";
+	public static final String OPENMRS_REPORT_ARGUMENT = "__openmrs_report_argument";
 	
 	// these vars filled in by org.openmrs.web.Listener at webapp start time
 	public static String BUILD_TIMESTAMP = "";

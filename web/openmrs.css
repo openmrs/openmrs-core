@@ -553,6 +553,14 @@ table.patientTreatmentPrograms td {
 		color: darkred;
 	}
 	
+.button {
+	border: 1px solid darkgrey;
+	background-color: whitesmoke;
+	cursor: pointer;
+	margin: 2px;
+	padding: 3px;
+}
+
 .smallButton {
 	font-size: .7em;
 	border: 1px solid lightgrey;
@@ -970,7 +978,9 @@ table#obs td.obsValue {
 	}
 	.listItem label {
 		float: left;
-		width: 187px;
+		width: 184px;
+		padding: 0px;
+		margin: 0px;
 	}
 	.listItemChecked { 
 		background-color: #8FABC7;

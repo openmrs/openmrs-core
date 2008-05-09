@@ -37,7 +37,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.EmptyReportObject;
 import org.openmrs.reporting.ReportObjectFactory;
-import org.openmrs.reporting.ReportService;
+import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.web.WebConstants;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
@@ -146,7 +146,7 @@ public class ReportObjectFormController extends SimpleFormController {
 	@Override
 	protected void onBind(HttpServletRequest request, Object obj, BindException be) throws Exception {
 
-		ReportService rs = (ReportService)Context.getReportService();
+		ReportObjectService rs = (ReportObjectService)Context.getReportObjectService();
 
 		AbstractReportObject reportObject = (AbstractReportObject)obj;
 		String setType = reportObject.getType();
@@ -195,7 +195,7 @@ public class ReportObjectFormController extends SimpleFormController {
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		Map addedData = new HashMap();
 		
-		ReportService rs = Context.getReportService();
+		ReportObjectService rs = Context.getReportObjectService();
 
 		Set<String> availableTypes = rs.getReportObjectTypes();
 		addedData.put("availableTypes", availableTypes.iterator());
@@ -253,7 +253,7 @@ public class ReportObjectFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		AbstractReportObject reportObject = null;
-		ReportService rs = Context.getReportService();
+		ReportObjectService rs = Context.getReportObjectService();
 
 		//Context.getClass().getDeclaredField("some").getGenericType().
 		

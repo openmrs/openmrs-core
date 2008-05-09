@@ -14,12 +14,24 @@
 package org.openmrs.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.db.CohortDAO;
+import org.openmrs.cohort.CohortDefinition;
+import org.openmrs.cohort.CohortDefinitionProvider;
+import org.openmrs.report.EvaluationContext;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * API methods related to Cohorts and CohortDefinitions
+ * A Cohort is a list of patient ids.
+ * A CohortDefinition is a search strategy which can be used to arrive at a cohort.
+ * @see org.openmrs.Cohort
+ * @see org.openmrs.cohort.CohortDefinition
+ * @see org.openmrs.api.CohortDefinitionProvider
+ */
 @Transactional
 public interface CohortService {
 	
@@ -48,5 +60,59 @@ public interface CohortService {
 	
 	@Transactional
 	public void removePatientFromCohort(Cohort cohort, Patient patient);
+	
+	/**
+	 * Set the given CohortDefinitionProviders as the providers for
+	 * this service.  These are set via spring injection in 
+	 * /metadata/spring/applicationContext-service.xml
+	 * 
+	 * @param providerClassMap
+	 */
+	@Transactional(readOnly=true)
+	public void setCohortDefinitionProviders(Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap);
+	
+	/**
+	 * Adds the given cohort definition to this service's providers
+	 * 
+	 * @param cohortDefClass
+	 * @param cohortDef
+	 * @throws APIException
+	 */
+	@Transactional(readOnly=true)
+	public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> cohortDefClass, CohortDefinitionProvider cohortDef) throws APIException;
+	
+	/**
+	 * Gets all the providers registered to this service
+	 * 
+	 * @return this service's providers
+	 * 
+	 * @see #setCohortDefinitionProviders(Map)
+	 */
+	@Transactional(readOnly=true)
+	public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders();
+	
+	@Transactional(readOnly=true)
+	public void removeCohortDefinitionProvider(Class<? extends CohortDefinitionProvider> providerClass);
+
+	@Transactional(readOnly=true)
+	public List<CohortDefinition> getAllCohortDefinitions();
+	
+	@Transactional(readOnly=true)
+	public List<CohortDefinition> getCohortDefinitions(Class<? extends CohortDefinitionProvider> providerClass);
+
+	@Transactional(readOnly=true)
+	public CohortDefinition getCohortDefinition(Class<CohortDefinition> clazz, Integer id);
+	
+	@Transactional(readOnly=true)
+	public CohortDefinition saveCohortDefinition(CohortDefinition definition);
+	
+	@Transactional
+	public void purgeCohortDefinition(CohortDefinition definition);
+	
+	@Transactional(readOnly=true)
+	public Cohort evaluate(CohortDefinition definition, EvaluationContext evalContext);
+
+	@Transactional(readOnly=true)
+	public CohortDefinition getAllPatientsCohortDefinition();
 
 }

@@ -44,7 +44,7 @@ public class ArdenServiceTest extends BaseContextSensitiveTest {
 		String defaultPath = "asd fasdf asdf test/arden test/";
 		
 		for (int i = 0; i<mlmNames.length; i++) {
-			Context.getArdenService().compileFile(defaultPath + mlmNames[i]);
+			Context.getArdenService().compileFile(defaultPath + mlmNames[i], "output");
 		}
 			
 	//	Context.getArdenService().compileFile("test/arden test/directexphiriskcountry.mlm");

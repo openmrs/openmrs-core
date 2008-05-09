@@ -22,6 +22,9 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * A PersonAttribute is meant as way for implementations to add arbitrary
@@ -38,6 +41,7 @@ import org.openmrs.util.OpenmrsUtil;
  * @see org.openmrs.PersonAttributeType
  * @see org.openmrs.Attributable
  */
+@Root(strict=false)
 public class PersonAttribute implements java.io.Serializable, Comparable<PersonAttribute> {
 	
 	private Log log = LogFactory.getLog(getClass());
@@ -150,6 +154,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @return Returns the creator.
 	 */
+	@Element(required=true)
 	public User getCreator() {
 		return creator;
 	}
@@ -157,6 +162,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param creator The creator to set.
 	 */
+	@Element(required=true)
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -164,6 +170,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Element(required=true)
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -171,6 +178,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
+	@Element(required=true)
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -178,6 +186,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @return Returns the dateVoided.
 	 */
+	@Element(required=false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -185,6 +194,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
+	@Element(required=false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -192,6 +202,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @return Returns the person.
 	 */
+	@Element(required=true)
 	public Person getPerson() {
 		return person;
 	}
@@ -199,6 +210,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param person The person to set.
 	 */
+	@Element(required=true)
 	public void setPerson(Person person) {
 		this.person = person;
 	}
@@ -210,6 +222,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 		return voided;
 	}
 	
+	@Attribute(required=true)
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -217,6 +230,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param voided The voided to set.
 	 */
+	@Attribute(required=true)
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
@@ -224,6 +238,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @return Returns the voidedBy.
 	 */
+	@Element(required=false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -231,6 +246,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param voidedBy The voidedBy to set.
 	 */
+	@Element(required=false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
@@ -238,6 +254,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @return Returns the voidReason.
 	 */
+	@Element(data=true,required=false)
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -245,6 +262,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param voidReason The voidReason to set.
 	 */
+	@Element(data=true,required=false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
@@ -252,6 +270,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @return the attributeType
 	 */
+	@Element(required=true)
 	public PersonAttributeType getAttributeType() {
 		return attributeType;
 	}
@@ -259,6 +278,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param attributeType the attributeType to set
 	 */
+	@Element(required=true)
 	public void setAttributeType(PersonAttributeType attributeType) {
 		this.attributeType = attributeType;
 	}
@@ -266,6 +286,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @return the changedBy
 	 */
+	@Element(required=false)
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -273,6 +294,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param changedBy the changedBy to set
 	 */
+	@Element(required=false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -280,6 +302,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @return the dateChanged
 	 */
+	@Element(required=false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -287,6 +310,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param dateChanged the dateChanged to set
 	 */
+	@Element(required=false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -294,6 +318,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @return the value
 	 */
+	@Element(data=true,required=false)
 	public String getValue() {
 		return value;
 	}
@@ -301,10 +326,14 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param value the value to set
 	 */
+	@Element(data=true,required=false)
 	public void setValue(String value) {
 		this.value = value;
 	}
 
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		Object o = getHydratedObject();
 		if (o instanceof Attributable)
@@ -316,6 +345,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @return the personAttributeId
 	 */
+	@Attribute(required=true)
 	public Integer getPersonAttributeId() {
 		return personAttributeId;
 	}
@@ -323,6 +353,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @param personAttributeId the personAttributeId to set
 	 */
+	@Attribute(required=true)
 	public void setPersonAttributeId(Integer personAttributeId) {
 		this.personAttributeId = personAttributeId;
 	}

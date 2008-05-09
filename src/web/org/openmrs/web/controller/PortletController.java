@@ -30,6 +30,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.DrugOrder;
@@ -44,7 +45,6 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.RegimenSuggestion;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
@@ -63,7 +63,7 @@ public class PortletController implements Controller {
 	 *     		(other parameters)
 	 *     (if there's currently an authenticated user)
 	 *         	(User) authenticatedUser
-	 *          (PatientSet) myPatientSet (the user's selected patient set, PatientSetService.getMyPatientSet())
+	 *          (Cohort) myPatientSet (the user's selected patient set, PatientSetService.getMyPatientSet())
 	 *     (if the request has a patientId attribute)
 	 *     		(Integer) patientId
 	 *        	(Patient) patient
@@ -274,7 +274,7 @@ public class PortletController implements Controller {
 							model.put("patientPrograms", Context.getProgramWorkflowService().getPatientPrograms(p));
 							model.put("patientCurrentPrograms", Context.getProgramWorkflowService().getCurrentPrograms(p, null));
 						}
-
+						
 						model.put("patientId", patientId);
 						if (p != null) {
 							personId = p.getPatientId();
@@ -301,24 +301,24 @@ public class PortletController implements Controller {
 						p = Context.getPersonService().getPerson(personId);
 					model.put("person", p);
 					
-					if (Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
-						List<Relationship> relationships = new ArrayList<Relationship>();
-						relationships.addAll(Context.getPersonService().getRelationships(p, false));
-						Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
-						for (Relationship rel : relationships) {
-							List<Relationship> list = relationshipsByType.get(rel.getRelationshipType());
-							if (list == null) {
-								list = new ArrayList<Relationship>();
-								relationshipsByType.put(rel.getRelationshipType(), list);
+						if (Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
+							List<Relationship> relationships = new ArrayList<Relationship>();
+							relationships.addAll(Context.getPersonService().getRelationships(p, false));
+							Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
+							for (Relationship rel : relationships) {
+								List<Relationship> list = relationshipsByType.get(rel.getRelationshipType());
+								if (list == null) {
+									list = new ArrayList<Relationship>();
+									relationshipsByType.put(rel.getRelationshipType(), list);
+								}
+								list.add(rel);
 							}
-							list.add(rel);
-						}
-						
+							
 						model.put("personRelationships", relationships);
 						model.put("personRelationshipsByType", relationshipsByType);
+						}
 					}
 				}
-			}
 			
 			// if an encounter id is available, put "encounter" and "encounterObs" in the model
 			o = request.getAttribute("org.openmrs.portlet.encounterId");
@@ -350,7 +350,7 @@ public class PortletController implements Controller {
 			o = request.getAttribute("org.openmrs.portlet.patientIds");
 			if (o != null && !"".equals(o) && !model.containsKey("patientIds")) {
 				if (!model.containsKey("patientSet")) {
-					PatientSet ps = PatientSet.parseCommaSeparatedPatientIds((String) o);
+					Cohort ps = new Cohort((String) o);
 					model.put("patientSet", ps);
 					model.put("patientIds", (String) o);
 				}

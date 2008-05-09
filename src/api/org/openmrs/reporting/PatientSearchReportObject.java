@@ -23,6 +23,12 @@ public class PatientSearchReportObject extends AbstractReportObject {
 		super.setType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
 		super.setSubType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
 	}
+	
+	public PatientSearchReportObject(String name, PatientSearch search) {
+		this();
+		setName(name);
+		setPatientSearch(search);
+	}
 
 	public PatientSearch getPatientSearch() {
     	return patientSearch;

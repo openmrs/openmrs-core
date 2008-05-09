@@ -20,7 +20,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.api.PatientSetService.BooleanOperator;
+import org.openmrs.report.EvaluationContext;
 
 public class CompoundPatientFilter extends AbstractPatientFilter implements
 		PatientFilter {
@@ -53,39 +55,39 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements
 		this.operator = operator;
 	}
 
-	public PatientSet filter(PatientSet input) {
+	public Cohort filter(Cohort input, EvaluationContext context) {
 		if (operator == BooleanOperator.AND) {
-			PatientSet temp = input;
+			Cohort temp = input;
 			for (PatientFilter pf : filters) {
-				temp = pf.filter(temp);
+				temp = pf.filter(temp, context);
 			}
 			return temp;
 		} else {
 			Set<Integer> ptIds = new HashSet<Integer>();
 			for (PatientFilter pf : filters) {
-				ptIds.addAll(pf.filter(input).getPatientIds());
+				ptIds.addAll(pf.filter(input, context).getMemberIds());
 				log.debug("or " + pf.getName() + " (" + pf.toString() + ")");
 			}
-			PatientSet ps = new PatientSet();
-			ps.copyPatientIds(ptIds);
-			return ps;
+			Cohort ret = new Cohort();
+			ret.setMemberIds(ptIds);
+			return ret;
 		}
 	}
 
-	public PatientSet filterInverse(PatientSet input) {
+	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		if (operator == BooleanOperator.AND) {
 			// NOT(AND(x, y)) -> OR(NOT x, NOT y)
 			Set<Integer> ptIds = new HashSet<Integer>();
 			for (PatientFilter pf : filters)
-				ptIds.addAll(pf.filterInverse(input).getPatientIds());
-			PatientSet ps = new PatientSet();
-			ps.copyPatientIds(ptIds);
-			return ps;
+				ptIds.addAll(pf.filterInverse(input, context).getMemberIds());
+			Cohort ret = new Cohort();
+			ret.setMemberIds(ptIds);
+			return ret;
 		} else {
 			// NOT(OR(x, y)) -> AND(NOT x, NOT y)
-			PatientSet temp = input;
+			Cohort temp = input;
 			for (PatientFilter pf : filters) {
-				temp = pf.filterInverse(temp);
+				temp = pf.filterInverse(temp, context);
 			}
 			return temp;
 		}

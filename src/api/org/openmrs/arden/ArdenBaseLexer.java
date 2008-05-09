@@ -64,149 +64,149 @@ public ArdenBaseLexer(LexerSharedInputState state) {
 	caseSensitiveLiterals = false;
 	setCaseSensitive(false);
 	literals = new Hashtable();
-	literals.put(new ANTLRHashString("PRESENT", this), new Integer(130));
-	literals.put(new ANTLRHashString("filename", this), new Integer(68));
-	literals.put(new ANTLRHashString("type", this), new Integer(120));
+	literals.put(new ANTLRHashString("PRESENT", this), new Integer(131));
+	literals.put(new ANTLRHashString("filename", this), new Integer(69));
+	literals.put(new ANTLRHashString("type", this), new Integer(82));
 	literals.put(new ANTLRHashString("now", this), new Integer(23));
-	literals.put(new ANTLRHashString("priority", this), new Integer(153));
-	literals.put(new ANTLRHashString("LIST", this), new Integer(136));
+	literals.put(new ANTLRHashString("priority", this), new Integer(74));
+	literals.put(new ANTLRHashString("LIST", this), new Integer(137));
 	literals.put(new ANTLRHashString("before", this), new Integer(17));
 	literals.put(new ANTLRHashString("CALL", this), new Integer(155));
 	literals.put(new ANTLRHashString("action", this), new Integer(65));
-	literals.put(new ANTLRHashString("time", this), new Integer(71));
-	literals.put(new ANTLRHashString("call", this), new Integer(73));
-	literals.put(new ANTLRHashString("EVENT", this), new Integer(127));
-	literals.put(new ANTLRHashString("expired", this), new Integer(99));
-	literals.put(new ANTLRHashString("specialist", this), new Integer(93));
+	literals.put(new ANTLRHashString("time", this), new Integer(85));
+	literals.put(new ANTLRHashString("call", this), new Integer(87));
+	literals.put(new ANTLRHashString("EVENT", this), new Integer(128));
+	literals.put(new ANTLRHashString("expired", this), new Integer(106));
+	literals.put(new ANTLRHashString("specialist", this), new Integer(76));
 	literals.put(new ANTLRHashString("endif", this), new Integer(60));
-	literals.put(new ANTLRHashString("end", this), new Integer(77));
-	literals.put(new ANTLRHashString("Event", this), new Integer(128));
-	literals.put(new ANTLRHashString("production", this), new Integer(96));
+	literals.put(new ANTLRHashString("end", this), new Integer(91));
+	literals.put(new ANTLRHashString("Event", this), new Integer(129));
+	literals.put(new ANTLRHashString("production", this), new Integer(103));
 	literals.put(new ANTLRHashString("months", this), new Integer(50));
-	literals.put(new ANTLRHashString("+", this), new Integer(108));
-	literals.put(new ANTLRHashString("STRING", this), new Integer(135));
+	literals.put(new ANTLRHashString("+", this), new Integer(115));
+	literals.put(new ANTLRHashString("STRING", this), new Integer(136));
 	literals.put(new ANTLRHashString("are", this), new Integer(7));
-	literals.put(new ANTLRHashString("purpose", this), new Integer(112));
+	literals.put(new ANTLRHashString("purpose", this), new Integer(77));
 	literals.put(new ANTLRHashString("maximum", this), new Integer(36));
 	literals.put(new ANTLRHashString("exist", this), new Integer(44));
-	literals.put(new ANTLRHashString("knowledge", this), new Integer(79));
-	literals.put(new ANTLRHashString("NUMBER", this), new Integer(133));
-	literals.put(new ANTLRHashString("seconds", this), new Integer(144));
-	literals.put(new ANTLRHashString("author", this), new Integer(91));
+	literals.put(new ANTLRHashString("knowledge", this), new Integer(67));
+	literals.put(new ANTLRHashString("NUMBER", this), new Integer(134));
+	literals.put(new ANTLRHashString("seconds", this), new Integer(145));
+	literals.put(new ANTLRHashString("author", this), new Integer(73));
 	literals.put(new ANTLRHashString("where", this), new Integer(43));
 	literals.put(new ANTLRHashString("lastest", this), new Integer(41));
 	literals.put(new ANTLRHashString("maintenance", this), new Integer(66));
-	literals.put(new ANTLRHashString("minutes", this), new Integer(142));
-	literals.put(new ANTLRHashString("OCCUR", this), new Integer(145));
+	literals.put(new ANTLRHashString("minutes", this), new Integer(143));
+	literals.put(new ANTLRHashString("OCCUR", this), new Integer(146));
 	literals.put(new ANTLRHashString("write", this), new Integer(20));
 	literals.put(new ANTLRHashString("past", this), new Integer(46));
 	literals.put(new ANTLRHashString("*", this), new Integer(174));
 	literals.put(new ANTLRHashString("then", this), new Integer(32));
 	literals.put(new ANTLRHashString("be", this), new Integer(24));
-	literals.put(new ANTLRHashString("t", this), new Integer(106));
-	literals.put(new ANTLRHashString("Occur", this), new Integer(146));
-	literals.put(new ANTLRHashString("to", this), new Integer(75));
+	literals.put(new ANTLRHashString("t", this), new Integer(113));
+	literals.put(new ANTLRHashString("Occur", this), new Integer(147));
+	literals.put(new ANTLRHashString("to", this), new Integer(89));
 	literals.put(new ANTLRHashString("than", this), new Integer(15));
-	literals.put(new ANTLRHashString("explanation", this), new Integer(113));
+	literals.put(new ANTLRHashString("explanation", this), new Integer(78));
 	literals.put(new ANTLRHashString("and", this), new Integer(4));
 	literals.put(new ANTLRHashString("not", this), new Integer(30));
-	literals.put(new ANTLRHashString("occurs", this), new Integer(150));
+	literals.put(new ANTLRHashString("occurs", this), new Integer(151));
 	literals.put(new ANTLRHashString("less", this), new Integer(12));
-	literals.put(new ANTLRHashString("NULL", this), new Integer(131));
-	literals.put(new ANTLRHashString("date", this), new Integer(94));
-	literals.put(new ANTLRHashString("validation", this), new Integer(95));
+	literals.put(new ANTLRHashString("NULL", this), new Integer(132));
+	literals.put(new ANTLRHashString("date", this), new Integer(83));
+	literals.put(new ANTLRHashString("validation", this), new Integer(102));
 	literals.put(new ANTLRHashString("evoke", this), new Integer(154));
 	literals.put(new ANTLRHashString("month", this), new Integer(49));
 	literals.put(new ANTLRHashString("from", this), new Integer(16));
 	literals.put(new ANTLRHashString("they", this), new Integer(29));
 	literals.put(new ANTLRHashString("count", this), new Integer(10));
-	literals.put(new ANTLRHashString("Z", this), new Integer(110));
+	literals.put(new ANTLRHashString("Z", this), new Integer(117));
 	literals.put(new ANTLRHashString("last", this), new Integer(38));
 	literals.put(new ANTLRHashString("GT", this), new Integer(161));
-	literals.put(new ANTLRHashString("arden", this), new Integer(85));
+	literals.put(new ANTLRHashString("arden", this), new Integer(97));
 	literals.put(new ANTLRHashString("the", this), new Integer(14));
-	literals.put(new ANTLRHashString("citations", this), new Integer(115));
+	literals.put(new ANTLRHashString("citations", this), new Integer(80));
 	literals.put(new ANTLRHashString("urgency", this), new Integer(169));
-	literals.put(new ANTLRHashString("institution", this), new Integer(90));
+	literals.put(new ANTLRHashString("institution", this), new Integer(72));
 	literals.put(new ANTLRHashString("event", this), new Integer(42));
 	literals.put(new ANTLRHashString("minimum", this), new Integer(34));
-	literals.put(new ANTLRHashString("REFUTE", this), new Integer(117));
-	literals.put(new ANTLRHashString("title", this), new Integer(80));
+	literals.put(new ANTLRHashString("REFUTE", this), new Integer(120));
+	literals.put(new ANTLRHashString("title", this), new Integer(71));
 	literals.put(new ANTLRHashString("was", this), new Integer(8));
-	literals.put(new ANTLRHashString("with", this), new Integer(74));
-	literals.put(new ANTLRHashString("links", this), new Integer(118));
+	literals.put(new ANTLRHashString("with", this), new Integer(88));
+	literals.put(new ANTLRHashString("links", this), new Integer(81));
 	literals.put(new ANTLRHashString("it", this), new Integer(28));
-	literals.put(new ANTLRHashString("library", this), new Integer(67));
+	literals.put(new ANTLRHashString("library", this), new Integer(68));
 	literals.put(new ANTLRHashString("weeks", this), new Integer(52));
 	literals.put(new ANTLRHashString("SEQTO", this), new Integer(173));
 	literals.put(new ANTLRHashString("elseif", this), new Integer(59));
-	literals.put(new ANTLRHashString("version", this), new Integer(88));
-	literals.put(new ANTLRHashString("occur", this), new Integer(147));
+	literals.put(new ANTLRHashString("version", this), new Integer(75));
+	literals.put(new ANTLRHashString("occur", this), new Integer(148));
 	literals.put(new ANTLRHashString("at", this), new Integer(21));
-	literals.put(new ANTLRHashString("of", this), new Integer(70));
+	literals.put(new ANTLRHashString("of", this), new Integer(84));
 	literals.put(new ANTLRHashString("is", this), new Integer(6));
-	literals.put(new ANTLRHashString("DURATION", this), new Integer(134));
-	literals.put(new ANTLRHashString("OBJECT", this), new Integer(137));
+	literals.put(new ANTLRHashString("DURATION", this), new Integer(135));
+	literals.put(new ANTLRHashString("OBJECT", this), new Integer(138));
 	literals.put(new ANTLRHashString("logic", this), new Integer(64));
 	literals.put(new ANTLRHashString("years", this), new Integer(26));
 	literals.put(new ANTLRHashString("or", this), new Integer(31));
 	literals.put(new ANTLRHashString("MERGE", this), new Integer(170));
 	literals.put(new ANTLRHashString("GE", this), new Integer(165));
-	literals.put(new ANTLRHashString("any", this), new Integer(76));
-	literals.put(new ANTLRHashString("BOOLEAN", this), new Integer(132));
+	literals.put(new ANTLRHashString("any", this), new Integer(90));
+	literals.put(new ANTLRHashString("BOOLEAN", this), new Integer(133));
 	literals.put(new ANTLRHashString("if", this), new Integer(27));
 	literals.put(new ANTLRHashString("greater", this), new Integer(13));
 	literals.put(new ANTLRHashString("DATA", this), new Integer(172));
 	literals.put(new ANTLRHashString("min", this), new Integer(35));
-	literals.put(new ANTLRHashString("ASTM-E", this), new Integer(86));
+	literals.put(new ANTLRHashString("ASTM-E", this), new Integer(98));
 	literals.put(new ANTLRHashString("first", this), new Integer(39));
 	literals.put(new ANTLRHashString("EQ", this), new Integer(157));
-	literals.put(new ANTLRHashString("OCCURRED", this), new Integer(151));
+	literals.put(new ANTLRHashString("OCCURRED", this), new Integer(152));
 	literals.put(new ANTLRHashString("days", this), new Integer(47));
 	literals.put(new ANTLRHashString("data", this), new Integer(63));
-	literals.put(new ANTLRHashString("second", this), new Integer(143));
-	literals.put(new ANTLRHashString("hour", this), new Integer(139));
-	literals.put(new ANTLRHashString("keywords", this), new Integer(114));
-	literals.put(new ANTLRHashString("hours", this), new Integer(140));
-	literals.put(new ANTLRHashString("OCCURS", this), new Integer(148));
-	literals.put(new ANTLRHashString("SUPPORT", this), new Integer(116));
-	literals.put(new ANTLRHashString("z", this), new Integer(111));
-	literals.put(new ANTLRHashString("Occurred", this), new Integer(152));
+	literals.put(new ANTLRHashString("second", this), new Integer(144));
+	literals.put(new ANTLRHashString("hour", this), new Integer(140));
+	literals.put(new ANTLRHashString("keywords", this), new Integer(79));
+	literals.put(new ANTLRHashString("hours", this), new Integer(141));
+	literals.put(new ANTLRHashString("OCCURS", this), new Integer(149));
+	literals.put(new ANTLRHashString("SUPPORT", this), new Integer(119));
+	literals.put(new ANTLRHashString("z", this), new Integer(118));
+	literals.put(new ANTLRHashString("Occurred", this), new Integer(153));
 	literals.put(new ANTLRHashString("false", this), new Integer(62));
 	literals.put(new ANTLRHashString("exists", this), new Integer(45));
 	literals.put(new ANTLRHashString("conclude", this), new Integer(57));
 	literals.put(new ANTLRHashString("average", this), new Integer(54));
 	literals.put(new ANTLRHashString("LT", this), new Integer(159));
 	literals.put(new ANTLRHashString("/", this), new Integer(175));
-	literals.put(new ANTLRHashString("T", this), new Integer(105));
-	literals.put(new ANTLRHashString("research", this), new Integer(97));
-	literals.put(new ANTLRHashString("mlmname", this), new Integer(69));
-	literals.put(new ANTLRHashString("minute", this), new Integer(141));
+	literals.put(new ANTLRHashString("T", this), new Integer(112));
+	literals.put(new ANTLRHashString("research", this), new Integer(104));
+	literals.put(new ANTLRHashString("mlmname", this), new Integer(70));
+	literals.put(new ANTLRHashString("minute", this), new Integer(142));
 	literals.put(new ANTLRHashString("were", this), new Integer(9));
 	literals.put(new ANTLRHashString("day", this), new Integer(48));
-	literals.put(new ANTLRHashString("data-driven", this), new Integer(121));
+	literals.put(new ANTLRHashString("data-driven", this), new Integer(122));
 	literals.put(new ANTLRHashString("max", this), new Integer(37));
 	literals.put(new ANTLRHashString("year", this), new Integer(25));
 	literals.put(new ANTLRHashString("sum", this), new Integer(55));
 	literals.put(new ANTLRHashString("after", this), new Integer(18));
 	literals.put(new ANTLRHashString("SORT", this), new Integer(171));
-	literals.put(new ANTLRHashString(".", this), new Integer(107));
+	literals.put(new ANTLRHashString(".", this), new Integer(114));
 	literals.put(new ANTLRHashString("else", this), new Integer(58));
-	literals.put(new ANTLRHashString(":", this), new Integer(104));
+	literals.put(new ANTLRHashString(":", this), new Integer(111));
 	literals.put(new ANTLRHashString("in", this), new Integer(11));
 	literals.put(new ANTLRHashString("let", this), new Integer(22));
 	literals.put(new ANTLRHashString("ago", this), new Integer(19));
 	literals.put(new ANTLRHashString("avg", this), new Integer(53));
-	literals.put(new ANTLRHashString("data_driven", this), new Integer(122));
+	literals.put(new ANTLRHashString("data_driven", this), new Integer(123));
 	literals.put(new ANTLRHashString("median", this), new Integer(56));
 	literals.put(new ANTLRHashString("earliest", this), new Integer(40));
 	literals.put(new ANTLRHashString("week", this), new Integer(51));
 	literals.put(new ANTLRHashString("true", this), new Integer(61));
-	literals.put(new ANTLRHashString("within", this), new Integer(72));
-	literals.put(new ANTLRHashString("-", this), new Integer(109));
+	literals.put(new ANTLRHashString("within", this), new Integer(86));
+	literals.put(new ANTLRHashString("-", this), new Integer(116));
 	literals.put(new ANTLRHashString("read", this), new Integer(33));
-	literals.put(new ANTLRHashString("Occurs", this), new Integer(149));
-	literals.put(new ANTLRHashString("testing", this), new Integer(98));
+	literals.put(new ANTLRHashString("Occurs", this), new Integer(150));
+	literals.put(new ANTLRHashString("testing", this), new Integer(105));
 	literals.put(new ANTLRHashString("NE", this), new Integer(167));
 	literals.put(new ANTLRHashString("LE", this), new Integer(163));
 }
@@ -437,15 +437,15 @@ tryAgain:
 		
 		mLCURLY(false);
 		{
-		_loop506:
+		_loop541:
 		do {
 			// nongreedy exit test
-			if ((LA(1)=='}') && (true)) break _loop506;
+			if ((LA(1)=='}') && (true)) break _loop541;
 			if (((LA(1) >= '\u0000' && LA(1) <= '\u00ff')) && ((LA(2) >= '\u0000' && LA(2) <= '\u00ff'))) {
 				matchNot(EOF_CHAR);
 			}
 			else {
-				break _loop506;
+				break _loop541;
 			}
 			
 		} while (true);
@@ -491,7 +491,7 @@ tryAgain:
 		
 		match("//");
 		{
-		_loop510:
+		_loop545:
 		do {
 			if ((_tokenSet_0.member(LA(1)))) {
 				{
@@ -499,7 +499,7 @@ tryAgain:
 				}
 			}
 			else {
-				break _loop510;
+				break _loop545;
 			}
 			
 		} while (true);
@@ -519,7 +519,7 @@ tryAgain:
 		
 		match("/*");
 		{
-		_loop514:
+		_loop549:
 		do {
 			if (((LA(1)=='*') && ((LA(2) >= '\u0000' && LA(2) <= '\u00ff')))&&( LA(2)!='/' )) {
 				match('*');
@@ -543,7 +543,7 @@ tryAgain:
 				}
 			}
 			else {
-				break _loop514;
+				break _loop549;
 			}
 			
 		} while (true);
@@ -577,21 +577,21 @@ tryAgain:
 		
 		{
 		{
-		_loop522:
+		_loop557:
 		do {
 			if (((LA(1) >= '0' && LA(1) <= '9'))) {
 				{
-				int _cnt520=0;
-				_loop520:
+				int _cnt555=0;
+				_loop555:
 				do {
 					if (((LA(1) >= '0' && LA(1) <= '9')) && (true)) {
 						mDIGIT(false);
 					}
 					else {
-						if ( _cnt520>=1 ) { break _loop520; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+						if ( _cnt555>=1 ) { break _loop555; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 					}
 					
-					_cnt520++;
+					_cnt555++;
 				} while (true);
 				}
 				{
@@ -604,7 +604,7 @@ tryAgain:
 				}
 			}
 			else {
-				break _loop522;
+				break _loop557;
 			}
 			
 		} while (true);
@@ -614,17 +614,17 @@ tryAgain:
 			{
 			mLPAREN(false);
 			{
-			int _cnt526=0;
-			_loop526:
+			int _cnt561=0;
+			_loop561:
 			do {
 				if (((LA(1) >= '0' && LA(1) <= '9'))) {
 					mDIGIT(false);
 				}
 				else {
-					if ( _cnt526>=1 ) { break _loop526; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
+					if ( _cnt561>=1 ) { break _loop561; } else {throw new NoViableAltForCharException((char)LA(1), getFilename(), getLine(), getColumn());}
 				}
 				
-				_cnt526++;
+				_cnt561++;
 			} while (true);
 			}
 			mRPAREN(false);
@@ -690,7 +690,7 @@ tryAgain:
 		match('"');
 		text.setLength(_saveIndex);
 		{
-		_loop530:
+		_loop565:
 		do {
 			if ((LA(1)=='"') && (LA(2)=='"')) {
 				match('"');
@@ -704,7 +704,7 @@ tryAgain:
 				}
 			}
 			else {
-				break _loop530;
+				break _loop565;
 			}
 			
 		} while (true);
@@ -735,7 +735,7 @@ tryAgain:
 		match('\'');
 		text.setLength(_saveIndex);
 		{
-		_loop535:
+		_loop570:
 		do {
 			if ((LA(1)=='\'') && (LA(2)=='\'')) {
 				match('\'');
@@ -749,7 +749,7 @@ tryAgain:
 				}
 			}
 			else {
-				break _loop535;
+				break _loop570;
 			}
 			
 		} while (true);
@@ -864,7 +864,7 @@ tryAgain:
 		}
 		}
 		{
-		_loop544:
+		_loop579:
 		do {
 			switch ( LA(1)) {
 			case 'a':  case 'b':  case 'c':  case 'd':
@@ -928,7 +928,7 @@ tryAgain:
 			}
 			default:
 			{
-				break _loop544;
+				break _loop579;
 			}
 			}
 		} while (true);

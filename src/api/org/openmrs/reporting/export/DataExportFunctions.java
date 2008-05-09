@@ -51,9 +51,9 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSearchReportObject;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsUtil;
 
 public class DataExportFunctions {
@@ -62,7 +62,8 @@ public class DataExportFunctions {
 	
 	protected Integer patientId;
 	protected Patient patient;
-	protected PatientSet patientSet;
+	//protected PatientSet patientSet;
+	protected Cohort patientSet;
 	protected boolean isAllPatients = false;
 	private Integer patientCounter = 0; // used for garbage collection (Clean up every x patients)
 	
@@ -247,14 +248,14 @@ public class DataExportFunctions {
 	/**
 	 * @return Returns the patientSet.
 	 */
-	public PatientSet getPatientSet() {
+	public Cohort getPatientSet() {
 		return patientSet;
 	}
 	
 	/**
 	 * @param patientSet The patientSet to set.
 	 */
-	public void setPatientSet(PatientSet patientSet) {
+	public void setPatientSet(Cohort patientSet) {
 		this.patientSet = patientSet;
 	}
 	
@@ -286,38 +287,38 @@ public class DataExportFunctions {
 		this.separator = separator;
 	}
 	
-	public String getCohortMembership(Integer cohortId, String valueIfTrue, String valueIfFalse) {
-		return getCohortHelper("C." + cohortId) ? valueIfTrue : valueIfFalse;
+	public String getCohortMembership(Integer cohortId, String valueIfTrue, String valueIfFalse, EvaluationContext context) {
+		return getCohortHelper("C." + cohortId, context) ? valueIfTrue : valueIfFalse;
 	}
 	
-	public String getCohortDefinitionMembership(Integer filterId, String valueIfTrue, String valueIfFalse) {
-		return getCohortHelper("F." + filterId) ? valueIfTrue : valueIfFalse;
+	public String getCohortDefinitionMembership(Integer filterId, String valueIfTrue, String valueIfFalse, EvaluationContext context) {
+		return getCohortHelper("F." + filterId, context) ? valueIfTrue : valueIfFalse;
 	}
 	
-	public String getPatientSearchMembership(Integer searchId, String valueIfTrue, String valueIfFalse) {
-		return getCohortHelper("S." + searchId) ? valueIfTrue : valueIfFalse;
+	public String getPatientSearchMembership(Integer searchId, String valueIfTrue, String valueIfFalse, EvaluationContext context) {
+		return getCohortHelper("S." + searchId, context) ? valueIfTrue : valueIfFalse;
 	}
 	
-	protected Boolean getCohortHelper(String key) {
+	protected Boolean getCohortHelper(String key, EvaluationContext context) {
 		if (cohortMap.containsKey(key))
 			return cohortMap.get(key).contains(getPatientId());
 		
 		log.debug("getting cohort/definition for key: " + key);
-		PatientSet ps = null;
+		//PatientSet ps = null;
+		Cohort ps = null;
 		if (key.startsWith("C.")) {
-			Cohort c = Context.getCohortService().getCohort(Integer.valueOf(key.substring(2)));
-			ps = c.toPatientSet();
+			ps = Context.getCohortService().getCohort(Integer.valueOf(key.substring(2)));
 		} else if (key.startsWith("F.")) {
-			PatientFilter pf = Context.getReportService().getPatientFilterById(Integer.valueOf(key.substring(2)));
-			ps = pf.filter(getPatientSet());
+			PatientFilter pf = Context.getReportObjectService().getPatientFilterById(Integer.valueOf(key.substring(2)));
+			ps = pf.filter(getPatientSet(), context);
 		} else if (key.startsWith("S.")) {
-			PatientSearchReportObject ro = (PatientSearchReportObject) Context.getReportService().getReportObject(Integer.valueOf(key.substring(2)));
+			PatientSearchReportObject ro = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(Integer.valueOf(key.substring(2)));
 			PatientFilter pf = OpenmrsUtil.toPatientFilter(ro.getPatientSearch(), null);
-			ps = pf.filter(getPatientSet());
+			ps = pf.filter(getPatientSet(), context);
 		} else {
 			log.error("key = " + key);
 		}
-		Set<Integer> set = new HashSet<Integer>(ps.getPatientIds());
+		Set<Integer> set = new HashSet<Integer>(ps.getMemberIds());
 		cohortMap.put(key, set);
 		
 		return set.contains(getPatientId());
@@ -639,7 +640,6 @@ public class DataExportFunctions {
 			return sb.toString();
 		}
 	}
-	
 	
 	/**
 	 * Retrieves properties on the patient like patient.patientName.familyName
@@ -1121,7 +1121,7 @@ public class DataExportFunctions {
 	 * 
 	 * @return PatientSet object with patients or null if it isn't needed
 	 */
-	public PatientSet getPatientSetIfNotAllPatients() {
+	public Cohort getPatientSetIfNotAllPatients() {
 		if (isAllPatients)
 			return null;
 		return getPatientSet();

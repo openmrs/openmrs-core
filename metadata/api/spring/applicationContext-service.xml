@@ -70,6 +70,8 @@
         <property name="schedulerService"><ref bean="schedulerService"/></property>
         <property name="alertService"><ref bean="alertService"/></property>
         <property name="reportService"><ref bean="reportService"/></property>
+        <property name="reportObjectService"><ref bean="reportObjectService"/></property>
+        <property name="dataSetService"><ref bean="dataSetService"/></property>
         <property name="hl7Service"><ref bean="hL7Service"/></property>
         <property name="ardenService"><ref bean="ardenService"/></property>
         <property name="logicService"><ref bean="logicService"/></property>
@@ -136,7 +138,7 @@
 	<bean id="alertDAO" class="org.openmrs.notification.db.hibernate.HibernateAlertDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
-	<bean id="reportDAO" class="org.openmrs.reporting.db.hibernate.HibernateReportDAO">
+	<bean id="reportDAO" class="org.openmrs.report.db.hibernate.HibernateReportDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
 	<bean id="reportObjectDAO" class="org.openmrs.reporting.db.hibernate.HibernateReportObjectDAO">
@@ -144,6 +146,29 @@
 	</bean>
 	<bean id="hL7DAO" class="org.openmrs.hl7.db.hibernate.HibernateHL7DAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+	</bean>
+
+	<!-- *************************** LOGIC SERVICE ************************* -->
+	
+	<bean id="logicObsDAO" class="org.openmrs.logic.db.hibernate.HibernateLogicObsDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+	</bean>
+	<bean id="logicPersonDAO" class="org.openmrs.logic.db.hibernate.HibernateLogicPersonDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+	</bean>
+	<bean id="logicEncounterDAO" class="org.openmrs.logic.db.hibernate.HibernateLogicEncounterDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+	</bean>
+	<bean id="logicObsDataSource" class="org.openmrs.logic.datasource.ObsDataSource">
+		<property name="logicObsDAO"><ref bean="logicObsDAO"></ref></property>
+	</bean>
+	<bean id="logicPersonDataSource" class="org.openmrs.logic.datasource.PersonDataSource">
+		<property name="logicPersonDAO"><ref bean="logicPersonDAO"></ref></property>
+	</bean>
+	<bean id="logicEncounterDataSource" class="org.openmrs.logic.datasource.EncounterDataSource">
+		<property name="logicEncounterDAO"><ref bean="logicEncounterDAO"></ref></property>
+	</bean>
+	<bean id="logicProgramDataSource" class="org.openmrs.logic.datasource.ProgramDataSource">
 	</bean>
 
 	<!--  **************************  SCHEDULER SERVICE  *************************  -->
@@ -185,9 +210,21 @@
 	<bean id="patientSetServiceTarget" class="org.openmrs.api.impl.PatientSetServiceImpl">
 		<property name="patientSetDAO"><ref bean="patientSetDAO"/></property>	
 	</bean>
+	
+	
+	<!-- Cohort Service setup -->
 	<bean id="cohortServiceTarget" class="org.openmrs.api.impl.CohortServiceImpl">
 		<property name="cohortDAO"><ref bean="cohortDAO"/></property>
+		<property name="cohortDefinitionProviders">
+			<map>
+				<entry>
+					<key><value>org.openmrs.reporting.PatientSearch</value></key>
+					<bean class="org.openmrs.cohort.impl.PatientSearchCohortDefinitionProvider"/>
+				</entry>
+			</map>
+		</property>
 	</bean>
+	<!-- /Cohort Service setup -->
 	
 	<bean id="schedulerServiceTarget" class="org.openmrs.scheduler.timer.TimerSchedulerServiceImpl">
 		<property name="schedulerDAO"><ref bean="schedulerDAO"/></property>	
@@ -198,21 +235,63 @@
 	<bean id="messageServiceTarget" class="org.openmrs.notification.impl.MessageServiceImpl">
 		<property name="templateDAO"><ref bean="templateDAO"/></property>	
 	</bean>
-	<bean id="reportServiceTarget" class="org.openmrs.reporting.impl.ReportServiceImpl">
-		<property name="reportDAO"><ref bean="reportDAO"/></property>	
+	<bean id="reportObjectServiceTarget" class="org.openmrs.reporting.impl.ReportObjectServiceImpl">
 		<property name="reportObjectDAO"><ref bean="reportObjectDAO"/></property>	
 	</bean>
+	
+	
+	<!-- ReportService setup -->
+	<bean id="reportServiceTarget" class="org.openmrs.report.impl.ReportServiceImpl">
+		<property name="reportDAO"><ref bean="reportDAO"/></property>	
+		<property name="renderers">
+			<map>
+				<entry>
+					<key><value>org.openmrs.report.impl.TsvReportRenderer</value></key>
+					<bean class="org.openmrs.report.impl.TsvReportRenderer"/>
+				</entry>
+				<entry>
+					<key><value>org.openmrs.report.impl.CsvReportRenderer</value></key>
+					<bean class="org.openmrs.report.impl.CsvReportRenderer"/>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<!-- /ReportService setup -->
+	
+	
+	<!-- Data Set Service Setup -->
+	<bean id="dataSetServiceTarget" class="org.openmrs.report.impl.DataSetServiceImpl">
+		<property name="providers">
+			<list>
+				<bean class="org.openmrs.report.CohortDataSetProvider"/>
+				<bean class="org.openmrs.report.RowPerObsDataSetProvider"/>
+				<bean class="org.openmrs.report.RowPerProgramEnrollmentDataSetProvider"/>
+			</list>
+		</property>
+	</bean>
+	<!-- /Data Set Service setup -->
+	
+	
 	<bean id="hL7ServiceTarget" class="org.openmrs.hl7.impl.HL7ServiceImpl">
 		<property name="HL7DAO"><ref bean="hL7DAO"/></property>	
 	</bean>
 	<bean id="ardenServiceTarget" class="org.openmrs.arden.impl.ArdenServiceImpl">
 	</bean>
-	<bean id="logicServiceTarget" class="org.openmrs.logic.impl.LogicServiceImpl">
-	</bean>
 	
-	<!-- 
-		Transactional proxy 
-	-->
+	<!--  Logic Service and Logic Data source setup -->
+	<bean id="logicServiceTarget" class="org.openmrs.logic.impl.LogicServiceImpl">
+		<property name="logicDataSources">
+			<map>
+				<entry key="encounter"><ref bean="logicEncounterDataSource" /></entry>
+				<entry key="obs"><ref bean="logicObsDataSource" /></entry>
+				<entry key="person"><ref bean="logicPersonDataSource" /></entry>
+				<entry key="program"><ref bean="logicProgramDataSource" /></entry>
+			</map>
+		</property>
+	</bean>
+	<!-- /Logic Service and Logic Data Source setup -->
+	
+
 	<bean id="patientService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="patientServiceTarget"/></property>
@@ -398,6 +477,30 @@
 	<bean id="reportService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="reportServiceTarget"/></property>
+		<property name="preInterceptors">
+			<list>
+				<ref local="authorizationInterceptor"/>
+			</list>
+		</property>
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		</property>
+	</bean>
+	<bean id="reportObjectService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="reportObjectServiceTarget"/></property>
+		<property name="preInterceptors">
+			<list>
+				<ref local="authorizationInterceptor"/>
+			</list>
+		</property>
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		</property>
+	</bean>
+	<bean id="dataSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="dataSetServiceTarget"/></property>
 		<property name="preInterceptors">
 			<list>
 				<ref local="authorizationInterceptor"/>

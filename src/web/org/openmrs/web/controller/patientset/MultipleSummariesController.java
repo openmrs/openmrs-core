@@ -16,8 +16,8 @@ package org.openmrs.web.controller.patientset;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.PatientSet;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 public class MultipleSummariesController extends SimpleFormController {
@@ -31,7 +31,7 @@ public class MultipleSummariesController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		PatientSet ps = null;
+		Cohort ps = null;
 			
 		if (Context.isAuthenticated()) {
 			String source = request.getParameter("source");
@@ -40,7 +40,7 @@ public class MultipleSummariesController extends SimpleFormController {
 		}
 		
 		if (ps == null)
-			ps = new PatientSet();
+			ps = new Cohort();
 		
         return ps;
     }

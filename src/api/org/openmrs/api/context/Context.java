@@ -33,6 +33,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.DataSetService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.ObsService;
@@ -41,6 +42,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.ReportService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.arden.ArdenService;
@@ -54,7 +56,7 @@ import org.openmrs.notification.MessageSender;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.mail.MailMessageSender;
 import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
-import org.openmrs.reporting.ReportService;
+import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -315,12 +317,26 @@ public class Context {
 	public static FormService getFormService() {
 		return getServiceContext().getFormService();
 	}
-
+	
 	/**
 	 * @return report service
 	 */
 	public static ReportService getReportService() {
 		return getServiceContext().getReportService();
+	}
+
+	/**
+	 * @return report object service
+	 */
+	public static ReportObjectService getReportObjectService() {
+		return getServiceContext().getReportObjectService();
+	}
+	
+	/**
+	 * @return dataset service
+	 */
+	public static DataSetService getDataSetService() {
+		return getServiceContext().getDataSetService();
 	}
 	
 	/**

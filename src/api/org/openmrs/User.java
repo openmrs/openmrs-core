@@ -23,6 +23,11 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.load.Replace;
+import org.simpleframework.xml.load.Validate;
 
 /**
  * Defines a User in the system.  A user is simply an extension
@@ -289,6 +294,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @return Returns the systemId.
 	 */
+	@Attribute(required=false)
 	public String getSystemId() {
 		return systemId;
 	}
@@ -296,6 +302,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @param systemId The systemId to set.
 	 */
+	@Attribute(required=false)
 	public void setSystemId(String systemId) {
 		this.systemId = systemId;
 	}
@@ -303,6 +310,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @return Returns the userId.
 	 */
+	@Attribute(required=true)
 	public Integer getUserId() {
 		return userId;
 	}
@@ -310,6 +318,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @param userId The userId to set.
 	 */
+	@Attribute(required=true)
 	public void setUserId(Integer userId) {
 		super.setPersonId(userId);
 		this.userId = userId;
@@ -329,6 +338,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @return Returns the username.
 	 */
+	@Attribute(required=false)
 	public String getUsername() {
 		return username;
 	}
@@ -336,6 +346,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @param username The username to set.
 	 */
+	@Attribute(required=false)
 	public void setUsername(String username) {
 		this.username = username;
 	}
@@ -421,6 +432,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @return Returns the creator.
 	 */
+	@Element(required=false)
 	public User getCreator() {
 		return creator;
 	}
@@ -428,6 +440,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @param creator The creator to set.
 	 */
+	@Element(required=false)
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -435,6 +448,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @return Returns the changedBy.
 	 */
+	@Element(required=false)
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -442,6 +456,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @param changedBy The changedBy to set.
 	 */
+	@Element(required=false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -449,6 +464,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @return Returns the dateChanged.
 	 */
+	@Element(required=false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -456,6 +472,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @param dateChanged The dateChanged to set.
 	 */
+	@Element(required=false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -463,6 +480,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Element(required=false)
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -470,6 +488,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
+	@Element(required=false)
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -477,6 +496,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @return Returns the dateVoided.
 	 */
+	@Element(required=false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -484,6 +504,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
+	@Element(required=false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -495,6 +516,7 @@ public class User extends Person implements java.io.Serializable {
 		return voided;
 	}
 	
+	@Attribute(required=true)
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -502,6 +524,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @param voided The void status to set.
 	 */
+	@Attribute(required=true)
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
@@ -509,6 +532,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @return Returns the voidedBy.
 	 */
+	@Element(required=false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -516,6 +540,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @param voidedBy The voidedBy to set.
 	 */
+	@Element(required=false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
@@ -523,6 +548,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @return Returns the voidReason.
 	 */
+	@Element(data=true, required=false)
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -530,6 +556,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * @param voidReason The voidReason to set.
 	 */
+	@Element(data=true, required=false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
@@ -548,5 +575,35 @@ public class User extends Person implements java.io.Serializable {
 	 */
 	public String getLastName() {
 		return getFamilyName();
+	}
+	
+	/**
+	 * If the serializer wishes, don't serialize this entire object, just the important
+	 * parts
+	 * 
+	 * @param sessionMap serialization session information
+	 * @return User object to serialize 
+	 * 
+	 * @see OpenmrsUtil#isShortSerialization(Map)
+	 */
+	@Replace
+	public User replaceSerialization(Map<?, ?> sessionMap) {
+		if (OpenmrsUtil.isShortSerialization(sessionMap)) {
+			// only serialize the user id
+			return new User(getUserId());
+		}
+		
+		// don't do short serialization
+		return this;
+	}
+	
+	@Validate
+	public void validateSerialization(Map<?, ?> sessionMap) {
+		if (OpenmrsUtil.isShortSerialization(sessionMap)) {
+			// only serialize the user id
+			
+		}
+		
+		return;
 	}
 }

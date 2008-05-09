@@ -2,17 +2,24 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
-	<openmrs:hasPrivilege privilege="Add Reports,Edit Reports,Delete Reports,View Reports">
-		<li <c:if test="<%= request.getRequestURI().contains("/reportList") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/reports/report.list">
-				<spring:message code="Report.manage"/>
+	<openmrs:hasPrivilege privilege="Run Reports">
+		<li <c:if test="<%= request.getRequestURI().contains("runReport") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/reports/runReport.list">
+				<spring:message code="Report.list.title"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Add Report Objects,Edit Report Objects,Delete Report Objects,View Report Objects">
-		<li <c:if test="<%= request.getRequestURI().contains("reportObject") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/reports/reportObject.list">
-				<spring:message code="ReportObject.manage"/>
+	<openmrs:hasPrivilege privilege="Manage Reports">
+		<li <c:if test="<%= request.getRequestURI().contains("reportSchemaXml") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/reports/reportSchemaXml.list">
+				<spring:message code="Report.manage.title"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Reports">
+		<li <c:if test="<%= request.getRequestURI().contains("reportMacros") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/reports/reportMacros.form">
+				<spring:message code="Report.macros.title"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
@@ -34,6 +41,20 @@
 		<li <c:if test="<%= request.getRequestURI().contains("cohortList") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/reports/cohorts.list">
 				<spring:message code="Cohort.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Add Patient Searches,Edit Patient Searches,Delete Patient Searches,View Patient Searches">
+		<li <c:if test="<%= request.getRequestURI().contains("patientSearch") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/reports/patientSearch.list">
+				<spring:message code="PatientSearch.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Add Report Objects,Edit Report Objects,Delete Report Objects,View Report Objects">
+		<li <c:if test="<%= request.getRequestURI().contains("reportObject") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/reports/reportObject.list">
+				<spring:message code="ReportObject.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>

@@ -303,7 +303,9 @@
 			<zipfileset dir="${mail.dir}" includes="*.jar" />
 			<zipfileset dir="${neal-reporting.dir}" includes="*.jar" />
 			<zipfileset dir="${saxon.dir}" includes="*.jar" />
+			<zipfileset dir="${simple.dir}" includes="*.jar" />
 			<zipfileset dir="${spring.dir}" includes="*.jar" excludes="*Test*.jar"/>
+			<zipfileset dir="${stax.dir}" includes="*.jar" />
 			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
 			<zipfileset dir="${xerces.dir}" includes="*.jar" excludes="*Samples*.jar" />
@@ -453,7 +455,7 @@
 			    <include name="**/*.class"/>
 			    <include name="**/*.java"/>
 			</fileset>-->
-			<fileset dir="${src.dir}/org/openmrs/arden">
+			<fileset dir="${src.dir}/api/org/openmrs/arden">
 			    <include name="**/ArdenBase*.java"/>
 			    <include name="**/*.txt"/>
 			    <include name="**/*.smap"/>
@@ -463,7 +465,8 @@
 		</delete>
 	</target>
 	
-	<target name="arden-make-antlr" depends="arden-clean-grammar" >
+	<!--target name="arden-make-antlr" depends="arden-clean-grammar" > -->
+	<target name="arden-make-antlr" >
 		<antlr target="${src.dir}/api/org/openmrs/arden/ArdenRecognizer.g">
 			<classpath path="lib/antlr/antlr_2.7.6.jar" />
 		</antlr>
