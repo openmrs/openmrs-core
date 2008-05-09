@@ -92,13 +92,13 @@
 			input="${diffFileInput}"
 			regexp="${openmrs.database.version.expected.regexp}"
 			select="\1"
-			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0" 
+			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0.0" 
 			casesensitive="false" />
 		<propertyregex property="openmrs.database.version.expected.short"
 			input="${openmrs.database.version.expected}"
-			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.([0-9]+)"
+			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.${openmrs.version.micro}\.([0-9][0-9]+)"
 			select="\1"
-			defaultValue="Error" />
+			defaultValue="Invalid Database Version" />
 		
 		<loadfile srcfile="${openmrs.version.revision.filename}" property="repositoryFileInput" />
 		<if>
@@ -122,10 +122,10 @@
 		</if>
 		<property 
 			name="openmrs.version.long" 
-			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.database.version.expected.short} Build ${openmrs.version.revision}"/>
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.micro}.${openmrs.database.version.expected.short} ${openmrs.version.suffix} Build ${openmrs.version.revision}"/>
 		<property 
 			name="openmrs.version.short" 
-			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.database.version.expected.short}.${openmrs.version.revision}"/>
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.micro}.${openmrs.database.version.expected.short}.${openmrs.version.revision}"/>
 		<echo message="version: ${openmrs.version.long}"/>
 		<property 
 			name="openmrs.api.name" 
@@ -320,9 +320,6 @@
 				<include name="**/web/**/*.class" />
 				<include name="log4j.xml" />
 			</classes>
-			<classes dir="web/WEB-INF">
-				<include name="messages*.properties" />
-			</classes>
 			<lib file="${dist.dir}/${openmrs.api.name}" />
 			<lib src="${libs-zipped-temp}" />
 		</war>
@@ -347,9 +344,6 @@
 			<classes dir="${build.dir}" >
 				<include name="**/web/**/*.class" />
 				<include name="log4j.xml" />
-			</classes>
-			<classes dir="web/WEB-INF">
-				<include name="messages*.properties" />
 			</classes>
 		</war>
 	</target>
