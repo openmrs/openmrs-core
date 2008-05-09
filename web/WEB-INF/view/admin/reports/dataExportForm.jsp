@@ -114,6 +114,11 @@
 		}
 	}
 	
+	function trim(stringToTrim) {
+		return stringToTrim.replace(/^\s+|\s+$/g,"");
+	}
+	
+	
 	function updateSimpleColumn(sel) {
 		if (sel.value != "") {
 			var count = sel.name.substr(sel.name.indexOf("_")+1, 3);
@@ -123,7 +128,7 @@
 			input = getChildByName(tbl, "simpleName_" + count);
 			if (input != null && input.value == "") {
 				var opt = sel.options[sel.selectedIndex];
-				input.value = opt.text.substr(2, opt.text.length);
+				input.value = trim(opt.text);
 			}
 		}
 	}
