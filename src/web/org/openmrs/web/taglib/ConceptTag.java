@@ -35,6 +35,7 @@ public class ConceptTag extends BodyTagSupport {
 
 	// Properties accessible through tag attributes
 	private Integer conceptId;
+	private String conceptName;
 	private String var;
 	private String nameVar;
 	private String numericVar;
@@ -45,10 +46,16 @@ public class ConceptTag extends BodyTagSupport {
 		ConceptService cs = Context.getConceptService();
 		
 		// Search for a concept by id
-		c = cs.getConcept(conceptId);
+		if (conceptId != null) {
+			c = cs.getConcept(conceptId);
+		} else if (conceptName != null) {
+			c = cs.getConceptByName(conceptName);
+		}
 		if (c == null) {
 			if (conceptId != null && conceptId > 0)
 				log.warn("ConceptTag is unable to find a concept with conceptId '" + conceptId + "'");
+			if (conceptName != null)
+				log.warn("ConceptTag is unable to find a concept with conceptName '" + conceptName + "'");
 			return SKIP_BODY;
 		}
 		pageContext.setAttribute(var, c);
@@ -65,11 +72,15 @@ public class ConceptTag extends BodyTagSupport {
 				}
 			}
 		}
-		ConceptName cName = c.getName(loc);
-		pageContext.setAttribute(nameVar, cName);
-		log.debug("Retrieved name " + cName.getName() + ", set to variable: " + nameVar);
+		if (nameVar != null) {
+			ConceptName cName = c.getName(loc);
+			pageContext.setAttribute(nameVar, cName);
+			log.debug("Retrieved name " + cName.getName() + ", set to variable: " + nameVar);
+		}
 		
-		pageContext.setAttribute(numericVar, cs.getConceptNumeric(conceptId));
+		if (numericVar != null) {
+			pageContext.setAttribute(numericVar, cs.getConceptNumeric(conceptId));
+		}
         
         // If the Concept is a Set, get members of that Set
         if (c.isSet() && setMemberVar != null) {
@@ -108,6 +119,20 @@ public class ConceptTag extends BodyTagSupport {
 	public void setConceptId(Integer conceptId) {
 		this.conceptId = conceptId;
 	}
+
+	/**
+     * @return the conceptName
+     */
+    public String getConceptName() {
+    	return conceptName;
+    }
+
+	/**
+     * @param conceptName the conceptName to set
+     */
+    public void setConceptName(String conceptName) {
+    	this.conceptName = conceptName;
+    }
 
 	/**
 	 * @param var the var to set

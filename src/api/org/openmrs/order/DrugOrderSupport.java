@@ -36,7 +36,7 @@ public class DrugOrderSupport implements GlobalPropertyListener {
 	List<RegimenSuggestion> suggestedRegimens;
 	private XStream xstream;
 	
-	public DrugOrderSupport() {
+	private DrugOrderSupport() {
 		if (singleton == null) {
 			singleton = this;
 			xstream = new XStream(new DomDriver());
@@ -46,10 +46,11 @@ public class DrugOrderSupport implements GlobalPropertyListener {
 	}
 	
 	public static DrugOrderSupport getInstance() {
-		if (singleton == null)
-			throw new RuntimeException("Not Yet Instantiated");
-		else
-			return singleton;
+		synchronized (DrugOrderSupport.class) {
+			if (singleton == null)
+				singleton = new DrugOrderSupport();
+        }
+		return singleton;
 	}
 	
 	/**

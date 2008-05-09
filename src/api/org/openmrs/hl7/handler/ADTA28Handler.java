@@ -288,7 +288,7 @@ public class ADTA28Handler implements Application {
 		
 		// Date of Birth
 		TS dateOfBirth = pid.getDateTimeOfBirth();
-	    if (dateOfBirth == null)	
+	    if (dateOfBirth == null || dateOfBirth.getTime() == null || dateOfBirth.getTime().getValue() == null)	
 			throw new HL7Exception("Missing birth date in the PID segment");
 		patient.setBirthdate(tsToDate(dateOfBirth));
 		

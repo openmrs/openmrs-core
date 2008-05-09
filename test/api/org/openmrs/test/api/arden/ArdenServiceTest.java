@@ -23,9 +23,9 @@ public class ArdenServiceTest extends BaseContextSensitiveTest {
 	int MAX_MLM = 1000;
 	
 	@Override
-	protected void onSetUpBeforeTransaction() throws Exception {
-		super.onSetUpBeforeTransaction();
-		authenticate();
+	protected void onSetUpInTransaction() throws Exception {
+		super.onSetUpInTransaction();
+	//	authenticate();
 	}
 
 	public void testClass() throws Exception {
@@ -44,7 +44,7 @@ public class ArdenServiceTest extends BaseContextSensitiveTest {
 		String defaultPath = "asd fasdf asdf test/arden test/";
 		
 		for (int i = 0; i<mlmNames.length; i++) {
-			Context.getArdenService().compileFile(defaultPath + mlmNames[i]);
+	//		Context.getArdenService().compileFile(defaultPath + mlmNames[i]);
 		}
 			
 	//	Context.getArdenService().compileFile("test/arden test/directexphiriskcountry.mlm");

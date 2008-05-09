@@ -392,7 +392,7 @@ public class OrderServiceImpl implements OrderService {
 		try {
 			dos = DrugOrderSupport.getInstance();
 		} catch ( Exception e ) {
-			log.error("Error getting instance of DrugOrderSupport object");
+			log.error("Error getting instance of DrugOrderSupport object", e);
 		}
 		
 		if ( dos != null ) {

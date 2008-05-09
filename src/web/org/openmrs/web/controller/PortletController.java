@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
@@ -39,11 +40,11 @@ import org.openmrs.Person;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.reporting.PatientSet;
-import org.openmrs.util.Format;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.servlet.ModelAndView;
@@ -71,6 +72,10 @@ public class PortletController implements Controller {
 	 *          (Set<DrugOrder>) patientDrugOrders
 	 *          (Set<DrugOrder>) currentDrugOrders
 	 *          (Set<DrugOrder>) completedDrugOrders
+	 *          (Obs) patientWeight // most recent weight obs
+	 *          (Obs) patientHeight // most recent height obs
+	 *          (Double) patientBmi // BMI derived from most recent weight and most recent height
+	 *          (String) patientBmiAsString // BMI rounded to one decimal place, or "?" if unknown
 	 *          (Integer) personId
 	 *       (if the patient has any obs for the concept in the global property 'concept.reasonExitedCare')
 	 *          	(Obs) patientReasonForExit
@@ -96,6 +101,9 @@ public class PortletController implements Controller {
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
+		AdministrationService as = Context.getAdministrationService();
+		ConceptService cs = Context.getConceptService();
+		
 		//HttpSession httpSession = request.getSession();
 		//
 
@@ -166,14 +174,62 @@ public class PortletController implements Controller {
 						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
 							model.put("patientEncounters", Context.getEncounterService().getEncounters(p));
 						
-						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
-							model.put("patientObs", Context.getObsService().getObservations(p, false));
-						else
+						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS)) {
+							Set<Obs> patientObs = Context.getObsService().getObservations(p, false);
+							model.put("patientObs", patientObs);
+							Obs latestWeight = null;
+							Obs latestHeight = null;
+							String bmiAsString = "?";
+							try {
+								ConceptNumeric weightConcept = cs.getConceptNumeric(cs.getConceptByIdOrName(as.getGlobalProperty("concept.weight")).getConceptId());
+								ConceptNumeric heightConcept = cs.getConceptNumeric(cs.getConceptByIdOrName(as.getGlobalProperty("concept.height")).getConceptId());
+								for (Obs obs : patientObs) {
+									if (obs.getConcept().equals(weightConcept)) {
+										if (latestWeight == null || obs.getObsDatetime().compareTo(latestWeight.getObsDatetime()) > 0)
+											latestWeight = obs;
+									} else if (obs.getConcept().equals(heightConcept)) {
+										if (latestHeight == null || obs.getObsDatetime().compareTo(latestHeight.getObsDatetime()) > 0)
+											latestHeight = obs;
+									}
+								}
+								if (latestWeight != null)
+									model.put("patientWeight", latestWeight);
+								if (latestHeight != null)
+									model.put("patientHeight", latestHeight);
+								if (latestWeight != null && latestHeight != null) {
+									double weightInKg;
+									double heightInM;
+									if (weightConcept.getUnits().equals("kg"))
+										weightInKg = latestWeight.getValueNumeric();
+									else if (weightConcept.getUnits().equals("lb"))
+										weightInKg = latestWeight.getValueNumeric() * 0.45359237;
+									else
+										throw new IllegalArgumentException("Can't handle units of weight concept: " + weightConcept.getUnits());
+									if (heightConcept.getUnits().equals("cm"))
+										heightInM = latestHeight.getValueNumeric() / 100;
+									else if (heightConcept.getUnits().equals("m"))
+										heightInM = latestHeight.getValueNumeric();
+									else if (heightConcept.getUnits().equals("in"))
+										heightInM = latestHeight.getValueNumeric() * 0.0254;
+									else
+										throw new IllegalArgumentException("Can't handle units of height concept: " + heightConcept.getUnits());
+									double bmi = weightInKg / (heightInM * heightInM);
+									model.put("patientBmi", bmi);
+									String temp = "" + bmi;
+									bmiAsString = temp.substring(0, temp.indexOf('.') + 2);
+								}
+							} catch (Exception ex) {
+								if (latestWeight != null && latestHeight != null)
+									log.error("Failed to calculate BMI even though a weight and height were found", ex);
+							}
+							model.put("patientBmiAsString", bmiAsString);
+						} else {
 							model.put("patientObs", new HashSet<Obs>());
+						}
 	
 						// information about whether or not the patient has exited care
 						Obs reasonForExitObs = null;
-						Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
+						Concept reasonForExitConcept = cs.getConceptByIdOrName(as.getGlobalProperty("concept.reasonExitedCare"));
 						if ( reasonForExitConcept != null ) {
 							Set<Obs> patientExitObs = Context.getObsService().getObservations(p, reasonForExitConcept, false);
 							if ( patientExitObs != null ) {
@@ -307,7 +363,6 @@ public class PortletController implements Controller {
 					Map<Integer, Concept> concepts = new HashMap<Integer, Concept>();
 					Map<String, Concept> conceptsByStringIds = new HashMap<String, Concept>();
 					String conceptIds = (String) o;
-					ConceptService cs = Context.getConceptService();
 					String[] ids = conceptIds.split(",");
 					for (String cId : ids) {
 						try {

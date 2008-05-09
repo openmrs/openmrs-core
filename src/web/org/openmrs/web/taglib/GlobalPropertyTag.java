@@ -91,5 +91,13 @@ public class GlobalPropertyTag extends TagSupport {
 	public void setVar(String var) {
 		this.var = var;
 	}
+
+	public String getListSeparator() {
+    	return listSeparator;
+    }
+
+	public void setListSeparator(String listSeparator) {
+    	this.listSeparator = listSeparator;
+    }
 	
 }

@@ -34,7 +34,7 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testcreateInitialTestDataSetXmlFile() throws Exception {
+	public void createInitialTestDataSetXmlFile() throws Exception {
 		// database connection for dbunit
 		IDatabaseConnection connection = new DatabaseConnection(getConnection());
         

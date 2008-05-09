@@ -88,20 +88,10 @@
 					<td>|</td>
 
 					<c:forEach items="${p.currentStates}" var="patientState" varStatus="s">
+						<c:if test="${s.index > 0}"><td>|</td></c:if>
 						<td>${patientState.state.programWorkflow.concept.name}:</td>
 						<th>${patientState.state.concept.name}</th>
-						<td>|</td>
 					</c:forEach>
-					<td><spring:message code="Program.agent"/>:</td>
-					<th>
-						<c:forEach items="${model.patientRelationships}" var="r" varStatus="s">
-							<c:if test="${r.relationshipType.relationshipTypeId == 1 && r.personA.personId != model.patientId}">
-								<c:if test="${accompFound}">, </c:if>
-								${r.personA.personName}
-								<c:set var="accompFound" value="true"/>
-							</c:if>
-						</c:forEach>
-					</th>
 				</tr></table>
 			</c:if>
 		</c:forEach>
@@ -119,14 +109,28 @@
 			</c:if>
 		</c:forEach>
 		<table id="patientHeaderObs">
+			<openmrs:globalProperty key="concept.weight" var="weightConceptId"/>
+			<openmrs:globalProperty key="concept.height" var="heightConceptId"/>
+			<openmrs:globalProperty key="concept.cd4" var="cd4ConceptId"/>
+			
 			<tr>
-				<td id="patientHeaderObsWeight">
-					<spring:message code="Patient.weight"/>:
-					<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5089" showUnits="true" locale="${model.locale}" showDate="true" />
-				</td>
+				<th id="patientHeaderObsWeight">
+					<spring:message code="Patient.bmi"/>: ${model.patientBmiAsString}
+				</th>
+				<td> 
+					<small>
+						(
+						<spring:message code="Patient.weight"/>:
+						<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="${weightConceptId}" showUnits="true" locale="${model.locale}" showDate="false" />
+						,
+						<spring:message code="Patient.height"/>:
+						<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="${heightConceptId}" showUnits="true" locale="${model.locale}" showDate="false" />
+						)
+					</small>
+				</th>
 				<td id="patientHeaderObsCD4">
 					<spring:message code="Patient.cd4"/>:
-					<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="5497" locale="${model.locale}" />
+					<openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="${cd4ConceptId}" locale="${model.locale}" />
 				</td>
 				<td id="patientHeaderObsReturnVisit">
 					<spring:message code="Patient.returnVisit"/>:
