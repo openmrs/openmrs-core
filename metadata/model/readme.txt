@@ -13,11 +13,22 @@ update-to-latest-db.mysqldiff.sql				Updates any openmrs version to the latest v
 
 --------
 
-To install database:
+Install the database in 2 easy steps:
 
-	1. Choose one of the x.y.0.________.sql files according to your
-	   situation.  See descriptions above
+	1. Choose one of the x.y.0________.sql files according to your
+	   situation.  See descriptions above.
+	   
+	   1a) If x.y.0-createdb____.sql, type this at the command line:
+	   		mysql -uroot -p -e"source x.y.0-createdb-from-scratch-with-demo-data.sql"
+	   		
+	   1b) If x.y.0-schema___.sql, type these lines at the command line:
+	   		mysql -uroot -p
+	   		create database custom_openmrs_db default character set utf8;
+	   		use custom_openmrs_db;
+	   		source x.y.0-schema_____.sql
+	   		
 	2. Run update-to-latest-db.mysqldiff.sql (MUST BE DONE LAST)
+			mysql -uroot -p -e"source update-to-latest-db.mysqldiff.sql" -Dopenmrs
 
 --------
 
