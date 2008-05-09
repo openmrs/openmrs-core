@@ -512,7 +512,13 @@ public class DataExportFunctions {
 		if (programMap.containsKey(programName)) {
 			patientIdProgramMap = programMap.get(programName);
 		} else {
-			Program program = Context.getProgramWorkflowService().getProgram(programName);
+			Program program = null;
+			try {
+				program = Context.getProgramWorkflowService().getProgram(Integer.valueOf(programName));
+			} catch (NumberFormatException ex) { }
+			if (program == null) {
+				program = Context.getProgramWorkflowService().getProgram(programName);
+			}
 			patientIdProgramMap = patientSetService.getPatientPrograms(getPatientSetIfNotAllPatients(), program);
 			programMap.put(programName, patientIdProgramMap);
 		}
@@ -943,14 +949,21 @@ public class DataExportFunctions {
 			patientIdentifiers = patientIdentifierMap.get(typeName);
 		}
 		else {
-			// Get identifier type by the given name
-			PatientIdentifierType type = 
-				patientService.getPatientIdentifierType(typeName);
+			PatientIdentifierType type = null;
+			// First try by Integer id
+			try {
+				Integer id = Integer.valueOf(typeName);
+				type = patientService.getPatientIdentifierType(id);
+			} catch (NumberFormatException ex) { }
+			// otherwise get identifier type by the given name
+			if (type == null) {
+				type = patientService.getPatientIdentifierType(typeName);
+			}
 			// Get identifiers by type 
 			patientIdentifiers = 
 				patientSetService.getPatientIdentifiersByType(getPatientSetIfNotAllPatients(), type);
 
-			log.debug("Found identifiers for patient identifier " + type + " = " + patientIdentifiers);
+			log.debug("Found identifiers for patient identifier " + type);
 			
 			
 			patientIdentifierMap.put(typeName, patientIdentifiers);
