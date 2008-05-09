@@ -79,8 +79,6 @@
 					</c:forEach>
 				</c:if>
 
-
-
 				<option value=""> </option>
 				<option disabled><spring:message code="DataExport.simpleLastEncounter"/></option>
 				<option value="$!{fn.getLastEncounterAttr([''], 'encounterType').getName()}">&nbsp; <spring:message code="Encounter.type" /></option>
