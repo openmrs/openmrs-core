@@ -111,7 +111,7 @@
 		<table id="patientHeaderObs">
 			<openmrs:globalProperty key="concept.weight" var="weightConceptId"/>
 			<openmrs:globalProperty key="concept.height" var="heightConceptId"/>
-			<openmrs:globalProperty key="concept.cd4" var="cd4ConceptId"/>
+			<openmrs:globalProperty key="concept.cd4_count" var="cd4ConceptId"/>
 			
 			<tr>
 				<th id="patientHeaderObsWeight">
