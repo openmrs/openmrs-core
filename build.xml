@@ -96,7 +96,7 @@
 			casesensitive="false" />
 		<propertyregex property="openmrs.database.version.expected.short"
 			input="${openmrs.database.version.expected}"
-			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.${openmrs.version.micro}\.([0-9][0-9]+)"
+			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.${openmrs.version.maintenance}\.([0-9][0-9]+)"
 			select="\1"
 			defaultValue="Invalid Database Version" />
 		
@@ -122,10 +122,10 @@
 		</if>
 		<property 
 			name="openmrs.version.long" 
-			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.micro}.${openmrs.database.version.expected.short} ${openmrs.version.suffix} Build ${openmrs.version.revision}"/>
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}.${openmrs.database.version.expected.short} ${openmrs.version.suffix} Build ${openmrs.version.revision}"/>
 		<property 
 			name="openmrs.version.short" 
-			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.micro}.${openmrs.database.version.expected.short}.${openmrs.version.revision}"/>
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}.${openmrs.database.version.expected.short}.${openmrs.version.revision}"/>
 		<echo message="version: ${openmrs.version.long}"/>
 		<property 
 			name="openmrs.api.name" 
