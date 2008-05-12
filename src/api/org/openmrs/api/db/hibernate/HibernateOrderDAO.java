@@ -133,7 +133,7 @@ public class HibernateOrderDAO implements
 
 		String voided = showVoided ? "" : "where voided = 0 ";
 				
-		return sessionFactory.getCurrentSession().createQuery("from Orders " + voided).list();
+		return sessionFactory.getCurrentSession().createQuery("from Order " + voided).list();
 	}
 
 	public List<Order> getOrders() throws DAOException {
