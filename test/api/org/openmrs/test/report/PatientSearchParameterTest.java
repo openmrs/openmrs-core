@@ -109,23 +109,23 @@ public class PatientSearchParameterTest extends BaseContextSensitiveTest {
 
     	// Test if the PatientSearch parameters evaluate to the test variable values
     	List<Parameter> parameters = ps2.getParameters();
-		for (Parameter p : parameters) {
-			if ( "TestName".equals(p.getLabel()) ) {
-				assertEquals(testName, context.evaluateExpression(p.getName()).toString());
-				log.info("Testing Parameters: " + context.evaluateExpression(p.getName()).toString() + " " + testName);
-			}
-			else if ( "TestSalutation".equals(p.getLabel()) ) {
-				assertEquals(salutation, context.evaluateExpression(p.getName()).toString());
-				log.info("Testing Parameters: " + context.evaluateExpression(p.getName()).toString() + " " + salutation);
-			}
-			else if ( "TestDate".equals(p.getLabel()) ) {
-				assertEquals(df.format(today), context.evaluateExpression(p.getName()).toString());  
-				log.info("Testing Parameters: " + context.evaluateExpression(p.getName()).toString() + " " + df.format(today));
-			}
-			else {
-				log.info("Testing Parameters: " + context.evaluateExpression(p.getName()).toString() + " " + p.getName());
-			}
-		}
+    	for (Parameter p : parameters) {
+            if ( "TestName".equals(p.getLabel()) ) {
+                    assertEquals(testName, context.evaluateExpression(ps2.getArgumentValue(p.getName())).toString());
+                    log.info("Testing Parameters: " + context.evaluateExpression(p.getName()).toString() + " " + testName);
+            }
+            else if ( "TestSalutation".equals(p.getLabel()) ) {
+                    assertEquals(salutation, context.evaluateExpression(ps2.getArgumentValue(p.getName())).toString());
+                    log.info("Testing Parameters: " + context.evaluateExpression(p.getName()).toString() + " " + salutation);
+            }
+            else if ( "TestDate".equals(p.getLabel()) ) {
+                    assertEquals(df.format(today), df.format((Date)context.evaluateExpression(ps2.getArgumentValue(p.getName()))));
+                    log.info("Testing Parameters: " + context.evaluateExpression(p.getName()).toString() + " " + df.format(today));
+            }
+            else {
+                    log.info("Testing Parameters: " + context.evaluateExpression(p.getName()).toString() + " " + p.getName());
+            }
+    	}
     }
     
 }

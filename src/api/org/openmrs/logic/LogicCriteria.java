@@ -148,6 +148,9 @@ public class LogicCriteria {
     public LogicCriteria contains(Float value) {
         return createAndCriteria(Operator.CONTAINS, value);
     }
+    public LogicCriteria contains(Double value) {
+        return createAndCriteria(Operator.CONTAINS, value);
+    }
 
     public LogicCriteria contains(String value) {
         return createAndCriteria(Operator.CONTAINS, value);
@@ -166,6 +169,10 @@ public class LogicCriteria {
     }
 
     public LogicCriteria equalTo(Float value) {
+        return createAndCriteria(Operator.EQUALS, value);
+    }
+    
+    public LogicCriteria equalTo(Double value) {
         return createAndCriteria(Operator.EQUALS, value);
     }
 
@@ -188,6 +195,10 @@ public class LogicCriteria {
     public LogicCriteria gte(Float value) {
         return createAndCriteria(Operator.GTE, value);
     }
+    
+    public LogicCriteria gte(Double value) {
+        return createAndCriteria(Operator.GTE, value);
+    }
 
     public LogicCriteria gte(String value) {
         return createAndCriteria(Operator.GTE, value);
@@ -203,6 +214,10 @@ public class LogicCriteria {
     }
 
     public LogicCriteria gt(Float value) {
+        return createAndCriteria(Operator.GT, value);
+    }
+    
+    public LogicCriteria gt(Double value) {
         return createAndCriteria(Operator.GT, value);
     }
 
@@ -221,6 +236,10 @@ public class LogicCriteria {
     public LogicCriteria lt(Float value) {
         return createAndCriteria(Operator.LT, value);
     }
+    
+    public LogicCriteria lt(Double value) {
+        return createAndCriteria(Operator.LT, value);
+    }
 
     public LogicCriteria lt(String value) {
         return createAndCriteria(Operator.LT, value);
@@ -235,6 +254,10 @@ public class LogicCriteria {
     }
 
     public LogicCriteria lte(Float value) {
+        return createAndCriteria(Operator.LTE, value);
+    }
+    
+    public LogicCriteria lte(Double value) {
         return createAndCriteria(Operator.LTE, value);
     }
 

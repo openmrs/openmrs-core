@@ -60,7 +60,6 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 	}
 	
 	private Criterion getCriterion(LogicCriteria logicCriteria, Date indexDate) {
-		boolean notOperator = false;
 		Criterion c = null;
 		Operator operator = logicCriteria.getOperator();
 		Object rightOperand = logicCriteria.getRightOperand();
@@ -76,22 +75,15 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 			                         .getConceptByIdOrName(conceptName);
 			c = Restrictions.eq("concept", concept);
 
-			if (notOperator)
-				c = Restrictions.not(c);
+			
 
 		} else if (operator == Operator.BEFORE) {
 			c = Restrictions.lt("obsDatetime", rightOperand);
 
-			if (notOperator)
-				c = Restrictions.not(c);
-
 		} else if (operator == Operator.AFTER) {
 			c = Restrictions.gt("obsDatetime", rightOperand);
 
-			if (notOperator)
-				c = Restrictions.not(c);
-
-		} else if (operator == Operator.AND) {
+		} else if (operator == Operator.AND||operator == Operator.OR) {
 
 			Criterion leftCriteria = null;
 			Criterion rightCriteria = null;
@@ -106,26 +98,25 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 			}
 
 			if (leftCriteria != null && rightCriteria != null) {
-				c = Restrictions.and(leftCriteria, rightCriteria);
-			}
-		} else if (operator == Operator.OR) {
-			Criterion leftCriteria = null;
-			Criterion rightCriteria = null;
-
-			if (leftOperand instanceof LogicCriteria) {
-				leftCriteria = this.getCriterion((LogicCriteria) leftOperand,
-				                                 indexDate);
-			}
-			if (rightOperand instanceof LogicCriteria) {
-				rightCriteria = this.getCriterion((LogicCriteria) rightOperand,
-				                                  indexDate);
-			}
-
-			if (leftCriteria != null && rightCriteria != null) {
-				c = Restrictions.or(leftCriteria, rightCriteria);
+				if(operator == Operator.AND){
+					c = Restrictions.and(leftCriteria, rightCriteria);
+				}
+				if(operator == Operator.OR){
+					c = Restrictions.or(leftCriteria, rightCriteria);
+				}
 			}
 		} else if (operator == Operator.NOT) {
-			notOperator = !notOperator;
+
+			Criterion rightCriteria = null;
+
+			if (rightOperand instanceof LogicCriteria) {
+				rightCriteria = this.getCriterion((LogicCriteria) rightOperand,
+				                                  indexDate);
+			}
+
+			if (rightCriteria != null) {
+				c = Restrictions.not(rightCriteria);
+			}
 
 		} else if (operator == Operator.CONTAINS) {
 			// used with PROBLEM ADDED concept, to retrieve the "ANSWERED
@@ -138,7 +129,11 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 				                         .getConcept(((Float) rightOperand).intValue());
 				c = Restrictions.eq("valueCoded", concept);
 
-			} else if (rightOperand instanceof Integer) {
+			} if (rightOperand instanceof Double) {
+				Concept concept = Context.getConceptService()
+                			.getConcept(((Double) rightOperand).intValue());
+				c = Restrictions.eq("valueCoded", concept);
+			}else if (rightOperand instanceof Integer) {
 				Concept concept = Context.getConceptService()
 				                         .getConcept((Integer) rightOperand);
 				c = Restrictions.eq("valueCoded", concept);
@@ -153,10 +148,6 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 
 			} else
 				log.error("Invalid operand value for CONTAINS operation");
-
-			if (notOperator)
-				c = Restrictions.not(c);
-
 		} else if (operator == Operator.EQUALS) {
 			if (leftOperand instanceof String
 			        && ((String) leftOperand).equalsIgnoreCase(COMPONENT_ENCOUNTER_ID)) {
@@ -164,7 +155,8 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 				Encounter encounter = encounterService.getEncounter((Integer) rightOperand);
 				c = Restrictions.eq("encounter", encounter);
 			} else if (rightOperand instanceof Float
-			        || rightOperand instanceof Integer)
+			        || rightOperand instanceof Integer
+			        || rightOperand instanceof Double)
 				c = Restrictions.eq("valueNumeric",
 				                    Double.parseDouble(rightOperand
 				                                                    .toString()));
@@ -179,80 +171,57 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 			else
 				log.error("Invalid operand value for EQUALS operation");
 
-			if (notOperator)
-				c = Restrictions.not(c);
-
 		} else if (operator == Operator.LTE) {
 			if (rightOperand instanceof Float
-			        || rightOperand instanceof Integer)
+			        || rightOperand instanceof Integer
+			        || rightOperand instanceof Double)
 				c = Restrictions.le("valueNumeric",
 				                    Double.parseDouble(rightOperand
 				                                                    .toString()));
-			else if (rightOperand instanceof String)
-				c = Restrictions.le("valueText",
-				                    rightOperand);
 			else if (rightOperand instanceof Date)
 				c = Restrictions.le("valueDatetime",
 				                    rightOperand);
 			else
 				log.error("Invalid operand value for LESS THAN EQUAL operation");
 
-			if (notOperator)
-				c = Restrictions.not(c);
-
 		} else if (operator == Operator.GTE) {
 			if (rightOperand instanceof Float
-			        || rightOperand instanceof Integer)
+			        || rightOperand instanceof Integer
+			        || rightOperand instanceof Double)
 				c = Restrictions.ge("valueNumeric",
 				                    Double.parseDouble(rightOperand
 				                                                    .toString()));
-			else if (rightOperand instanceof String)
-				c = Restrictions.ge("valueText",
-				                    rightOperand);
 			else if (rightOperand instanceof Date)
 				c = Restrictions.ge("valueDatetime",
 				                    rightOperand);
 			else
 				log.error("Invalid operand value for GREATER THAN EQUAL operation");
 
-			if (notOperator)
-				c = Restrictions.not(c);
-
 		} else if (operator == Operator.LT) {
 			if (rightOperand instanceof Float
-			        || rightOperand instanceof Integer)
+			        || rightOperand instanceof Integer
+			        || rightOperand instanceof Double)
 				c = Restrictions.lt("valueNumeric",
 				                    Double.parseDouble(rightOperand
 				                                                    .toString()));
-			else if (rightOperand instanceof String)
-				c = Restrictions.lt("valueText",
-				                    rightOperand);
 			else if (rightOperand instanceof Date)
 				c = Restrictions.lt("valueDatetime",
 				                    rightOperand);
 			else
 				log.error("Invalid operand value for LESS THAN operation");
 
-			if (notOperator)
-				c = Restrictions.not(c);
-
 		} else if (operator == Operator.GT) {
 			if (rightOperand instanceof Float
-			        || rightOperand instanceof Integer)
+			        || rightOperand instanceof Integer
+			        || rightOperand instanceof Double)
 				c = Restrictions.gt("valueNumeric",
 				                    Double.parseDouble(rightOperand
 				                                                    .toString()));
-			else if (rightOperand instanceof String)
-				c = Restrictions.gt("valueText",
-				                    rightOperand);
 			else if (rightOperand instanceof Date)
 				c = Restrictions.gt("valueDatetime",
 				                    rightOperand);
 			else
 				log.error("Invalid operand value for GREATER THAN operation");
-
-			if (notOperator)
-				c = Restrictions.not(c);
 
 		} else if (operator == Operator.EXISTS) {
 			// EXISTS can be handled on the higher level (above
@@ -265,27 +234,28 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 
 		} else if (operator == Operator.WITHIN
 		        && rightOperand instanceof Duration) {
+			
 			Duration duration = (Duration) rightOperand;
 			Calendar within = Calendar.getInstance();
 			within.setTime(indexDate);
 
 			if (duration.getUnits() == Duration.Units.YEARS) {
-				within.roll(Calendar.YEAR, -duration.getDuration().intValue());
+				within.roll(Calendar.YEAR, duration.getDuration().intValue());
 			} else if (duration.getUnits() == Duration.Units.MONTHS) {
-				within.roll(Calendar.MONTH, -duration.getDuration().intValue());
+				within.roll(Calendar.MONTH, duration.getDuration().intValue());
 			} else if (duration.getUnits() == Duration.Units.WEEKS) {
-				within.roll(Calendar.WEEK_OF_YEAR, -duration.getDuration()
+				within.roll(Calendar.WEEK_OF_YEAR, duration.getDuration()
 				                                            .intValue());
 			} else if (duration.getUnits() == Duration.Units.DAYS) {
-				within.roll(Calendar.DAY_OF_YEAR, -duration.getDuration()
+				within.roll(Calendar.DAY_OF_YEAR, duration.getDuration()
 				                                           .intValue());
 			} else if (duration.getUnits() == Duration.Units.MINUTES) {
-				within.roll(Calendar.MINUTE, -duration.getDuration().intValue());
+				within.roll(Calendar.MINUTE, duration.getDuration().intValue());
 			} else if (duration.getUnits() == Duration.Units.SECONDS) {
-				within.roll(Calendar.SECOND, -duration.getDuration().intValue());
+				within.roll(Calendar.SECOND, duration.getDuration().intValue());
 			}
 
-			c = Restrictions.ge("obsDatetime", within.getTime());
+			c = Restrictions.between("obsDatetime", indexDate, within);
 
 		}
 		return c;
