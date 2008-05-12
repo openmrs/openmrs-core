@@ -145,7 +145,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws DAOException {
 		Query query;
 		
-		String sql = "select patient from Patient patient, PersonName name join patient.identifiers ids where ids.identifier = :id and patient.patientId = name.person.personId";
+		String sql = "select patient from Patient patient, PersonName name join patient.identifiers ids where ids.voided = false and ids.identifier = :id and patient.patientId = name.person.personId";
 		String order = " order by name.givenName asc, name.middleName asc, name.familyName asc";
 		
 		if (includeVoided) {
@@ -173,6 +173,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	public Collection<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifier.class);
+		criteria.add(Restrictions.eq("voided", false));
 		criteria.setProjection(Projections.property("patient"));
 		
 		AdministrationService adminService = Context.getAdministrationService();
