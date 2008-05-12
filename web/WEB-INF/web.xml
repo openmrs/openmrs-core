@@ -277,135 +277,112 @@
 		<location>/missing.htm</location>
 	</error-page>
 	
-	<!-- ==Struts Configuration===============
-			Other struts files: 
-				/lib/struts/*
-				/lib/commons-digester/*
-	     ==/Struts Configuration=============== -->
+	<servlet>
+		<servlet-name>openmrs</servlet-name>
+		<servlet-class>org.openmrs.web.DispatcherServlet</servlet-class>
+		<init-param>
+	        <param-name>contextConfigLocation</param-name>
+	        <param-value>
+	        	/WEB-INF/openmrs-servlet.xml
+       			classpath*:/moduleApplicationContext.xml
+	        </param-value>
+	    </init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
 
-
-
-	<!-- ==Spring Framework Configuration====== 
+	<servlet>
+		<servlet-name>openmrs_static_content</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
 	
-			Other Spring files:
-				/web/WEB-INF/openmrs-servlet.xml
-				/src/web/org/openmrs/web/spring/*
-				/web/WEB-INF/spring/taglibs/spring.tld
-				/lib/spring-framework/spring-1.2.5.jar
-	-->
+	<!-- Gives acess to servlets within modules -->
+	<servlet>
+		<servlet-name>module_servlet</servlet-name>
+		<servlet-class>org.openmrs.module.web.ModuleServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+ 		<servlet-name>module_servlet</servlet-name>
+ 		<url-pattern>/moduleServlet/*</url-pattern>
+	</servlet-mapping>
 	
-		<servlet>
-			<servlet-name>openmrs</servlet-name>
-			<servlet-class>org.openmrs.web.DispatcherServlet</servlet-class>
-			<init-param>
-		        <param-name>contextConfigLocation</param-name>
-		        <param-value>
-		        	/WEB-INF/openmrs-servlet.xml
-        			classpath*:/moduleApplicationContext.xml
-		        </param-value>
-		    </init-param>
-			<load-on-startup>1</load-on-startup>
-		</servlet>
+	<!-- Gives acess to resources within modules -->
+	<servlet>
+		<servlet-name>module_resources</servlet-name>
+		<servlet-class>org.openmrs.module.web.ModuleResourcesServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+ 		<servlet-name>module_resources</servlet-name>
+ 		<url-pattern>/moduleResources/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>jsp</servlet-name>
+		<url-pattern>*.withjstl</url-pattern>
+	</servlet-mapping>
 
-		<servlet>
-			<servlet-name>openmrs_static_content</servlet-name>
-			<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-			<load-on-startup>3</load-on-startup>
-		</servlet>
-		
-		<!-- Gives acess to servlets within modules -->
-		<servlet>
-			<servlet-name>module_servlet</servlet-name>
-			<servlet-class>org.openmrs.module.web.ModuleServlet</servlet-class>
-			<load-on-startup>2</load-on-startup>
-		</servlet>
-		<servlet-mapping>
-	 		<servlet-name>module_servlet</servlet-name>
-	 		<url-pattern>/moduleServlet/*</url-pattern>
-		</servlet-mapping>
-		
-		<!-- Gives acess to resources within modules -->
-		<servlet>
-			<servlet-name>module_resources</servlet-name>
-			<servlet-class>org.openmrs.module.web.ModuleResourcesServlet</servlet-class>
-			<load-on-startup>2</load-on-startup>
-		</servlet>
-		<servlet-mapping>
-	 		<servlet-name>module_resources</servlet-name>
-	 		<url-pattern>/moduleResources/*</url-pattern>
-		</servlet-mapping>
-		
-		<!--
-		<servlet-mapping>
-	 		<servlet-name>openmrs</servlet-name>
-	 		<url-pattern>/openmrs/*.jsp</url-pattern>
-		</servlet-mapping>
-		-->
-		<servlet-mapping>
-			<servlet-name>jsp</servlet-name>
-			<url-pattern>*.withjstl</url-pattern>
-		</servlet-mapping>
+	<servlet-mapping>
+ 		<servlet-name>openmrs_static_content</servlet-name>
+ 		<url-pattern>/scripts/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>*.form</url-pattern>
+	</servlet-mapping>
 
-		<servlet-mapping>
-	 		<servlet-name>openmrs_static_content</servlet-name>
-	 		<url-pattern>/scripts/*</url-pattern>
-		</servlet-mapping>
-		
-		<servlet-mapping>
-	 		<servlet-name>openmrs</servlet-name>
-	 		<url-pattern>*.form</url-pattern>
-		</servlet-mapping>
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>*.list</url-pattern>
+	</servlet-mapping>
 
-		<servlet-mapping>
-	 		<servlet-name>openmrs</servlet-name>
-	 		<url-pattern>*.list</url-pattern>
-		</servlet-mapping>
-
-		<servlet-mapping>
-	 		<servlet-name>openmrs</servlet-name>
-	 		<url-pattern>*.htm</url-pattern>
-		</servlet-mapping>
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>*.portlet</url-pattern>
+	</servlet-mapping>
 		
-		<servlet-mapping>
-	 		<servlet-name>openmrs</servlet-name>
-	 		<url-pattern>*.portlet</url-pattern>
-		</servlet-mapping>
-			
-		<servlet-mapping>
-	 		<servlet-name>openmrs</servlet-name>
-	 		<url-pattern>*.field</url-pattern>
-		</servlet-mapping>
-		
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>*.field</url-pattern>
+	</servlet-mapping>
+	
+	<jsp-config>
 		<taglib>
 			<taglib-uri>/spring</taglib-uri>
 			<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>
 		</taglib>
-
-	<!-- ==/Spring Configuration=============== -->
-
-	<taglib>
-		<taglib-uri>/core-rt</taglib-uri>
-		<taglib-location>/WEB-INF/taglibs/c-rt.tld</taglib-location>
-	</taglib>
 	
-	<taglib>
-		<taglib-uri>/openmrs</taglib-uri>
-		<taglib-location>/WEB-INF/taglibs/openmrs.tld</taglib-location>
-	</taglib>
+		<taglib>
+			<taglib-uri>/core-rt</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/c-rt.tld</taglib-location>
+		</taglib>
+		
+		<taglib>
+			<taglib-uri>/openmrs</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/openmrs.tld</taglib-location>
+		</taglib>
+		
+		<taglib>
+			<taglib-uri>/page</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/page.tld</taglib-location>
+		</taglib>
 	
-	<taglib>
-		<taglib-uri>/page</taglib-uri>
-		<taglib-location>/WEB-INF/taglibs/page.tld</taglib-location>
-	</taglib>
-
-	<taglib>
-		<taglib-uri>/request</taglib-uri>
-		<taglib-location>/WEB-INF/taglibs/request.tld</taglib-location>
-	</taglib>
-
-	<taglib>
-		<taglib-uri>/response</taglib-uri>
-		<taglib-location>/WEB-INF/taglibs/response.tld</taglib-location>
-	</taglib>
+		<taglib>
+			<taglib-uri>/request</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/request.tld</taglib-location>
+		</taglib>
+	
+		<taglib>
+			<taglib-uri>/response</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/response.tld</taglib-location>
+		</taglib>
+	</jsp-config>
 
 </web-app>
