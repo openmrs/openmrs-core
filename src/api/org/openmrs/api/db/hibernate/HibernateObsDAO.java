@@ -355,12 +355,14 @@ public class HibernateObsDAO implements ObsDAO {
 
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#findObsByGroupId(java.lang.Integer)
+	 * @deprecated -- should use obs.getGroupMembers
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Obs> findObsByGroupId(Integer obsGroupId) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(
 				Obs.class);
-		criteria.add(Restrictions.eq("obsGroupId", obsGroupId));
+		criteria.createAlias("obsGroup", "og");
+		criteria.add(Restrictions.eq("og.obsId", obsGroupId));
 		return criteria.list();
 	}
 

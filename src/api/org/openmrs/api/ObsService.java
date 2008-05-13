@@ -287,6 +287,7 @@ public interface ObsService {
 	/**
 	 * @param obsGroupId
 	 * @return All obs that share obsGroupId
+	 * @deprecated -- should use obs.getGroupMembers
 	 */
 	@Transactional(readOnly = true)
 	public List<Obs> findObsByGroupId(Integer obsGroupId);

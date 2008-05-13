@@ -13,7 +13,9 @@
  */
 package org.openmrs.test.api;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.openmrs.ComplexObs;
@@ -715,6 +717,32 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * Creates a simple Obs Group consisting of one parent and one child.
+	 * Assumes INITIAL_OBS_XML is being used.
+	 */
+	private void createObsGroup(Obs parent, Obs child, ConceptService cs, ObsService os){
+		child.setConcept(cs.getConcept(1));
+		child.setDateCreated(new Date());
+		child.setCreator(Context.getAuthenticatedUser());
+		child.setLocation(new Location(1));
+		child.setObsDatetime(new Date());
+		child.setValueText("test");
+		child.setPerson(new Patient(2));
+
+
+		parent.setConcept(cs.getConcept(2)); //in the concept set table as a set
+		parent.setDateCreated(new Date());
+		parent.setCreator(Context.getAuthenticatedUser());
+		parent.setLocation(new Location(1));
+		parent.setObsDatetime(new Date());
+		parent.setPerson(new Patient(2));
+		
+		parent.addGroupMember(child);
+		
+		os.createObs(parent);
+	}
+	
+	/**
 	 * This test makes sure that child obs on a parent obs are given an obs group id when the 
 	 * parent obs is created
 	 * 
@@ -727,38 +755,23 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		ObsService os = Context.getObsService();
 		
-		Obs o2 = new Obs();
-		o2.setConcept(cs.getConcept(1));
-		o2.setDateCreated(new Date());
-		o2.setCreator(Context.getAuthenticatedUser());
-		o2.setLocation(new Location(1));
-		o2.setObsDatetime(new Date());
-		o2.setValueText("test");
-		o2.setPerson(new Patient(2));
-
-		//create a parent obs
+		Obs child = new Obs();
 		Obs oParent = new Obs();
-		oParent.setConcept(cs.getConcept(2)); //in the concept set table as a set
-		oParent.setDateCreated(new Date());
-		oParent.setCreator(Context.getAuthenticatedUser());
-		oParent.setLocation(new Location(1));
-		oParent.setObsDatetime(new Date());
-		oParent.setPerson(new Patient(2));
 		
-		oParent.addGroupMember(o2);
+		createObsGroup(oParent, child, cs, os);
 		
-		os.createObs(oParent);
+
 		
 		// save the obs ids
 		Integer parentObsId = oParent.getObsId();
 		assertNotNull(parentObsId);
 		
-		Integer childObsId = o2.getObsId();
+		Integer childObsId = child.getObsId();
 		assertNotNull(childObsId);
 		
 		// clear out the session so we can refetch and test that it saved correctly
 		oParent = null;
-		o2 = null;
+		child = null;
 		Context.clearSession();
 		
 		// try to get the same obs back and make sure it has children
@@ -768,5 +781,48 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertEquals(1, fetchedParent.getGroupMembers().size());
 		
 		
+	}
+	
+	/**
+	 * 
+	 * Unit test for findObsByGroupId... yeah, it's deprecated, but doesn't hurt to check
+	 * that it's doing what we want it to be doing.
+	 * 
+	 * @throws Throwable
+	 */
+	public void testFindObsByGroupId() throws Throwable{
+		executeDataSet(INITIAL_OBS_XML);
+
+		ConceptService cs = Context.getConceptService();
+		ObsService os = Context.getObsService();
+		
+		Obs child = new Obs();
+		Obs oParent = new Obs();
+		
+		createObsGroup(oParent, child, cs, os);
+		
+		//These should both return just the child.
+		List<Obs> obs = os.findObsByGroupId(child.getObsGroupId());
+		List<Obs> obs2 = os.findObsByGroupId(oParent.getObsId());
+		
+		//This shouldn't return anything.
+		List<Obs> obs3 = os.findObsByGroupId(child.getObsId());
+		
+		Obs child2 = new Obs();
+		child2.setConcept(cs.getConcept(1)); //in the concept set table as a set
+		child2.setDateCreated(new Date());
+		child2.setCreator(Context.getAuthenticatedUser());
+		child2.setLocation(new Location(2));
+		child2.setObsDatetime(new Date());
+		child2.setPerson(new Patient(2));
+		
+		oParent.addGroupMember(child2);
+		
+		List<Obs> obs4 = os.findObsByGroupId(oParent.getObsId());
+		
+		assertTrue(obs.equals(obs2));
+		assertTrue(obs3.size()==0);
+		assertTrue(obs4.contains(child));
+		assertTrue(obs4.contains(child2));
 	}
 }

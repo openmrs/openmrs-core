@@ -369,6 +369,7 @@ public class ObsServiceImpl implements ObsService {
 
 	/**
 	 * @see org.openmrs.api.ObsService#findObsByGroupId(java.lang.Integer)
+	 * @deprecated -- should use obs.getGroupMembers
 	 */
 	public List<Obs> findObsByGroupId(Integer obsGroupId) {
 		return getObsDAO().findObsByGroupId(obsGroupId);
