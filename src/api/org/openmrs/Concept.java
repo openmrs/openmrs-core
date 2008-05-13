@@ -552,6 +552,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	}
 
 	
+	/**
+	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
+	 */
 	public List<Concept> findPossibleValues(String searchText) {
 		List<Concept> concepts = new Vector<Concept>();
 		try {
@@ -566,6 +569,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	}
 	
 
+	/**
+	 * @see org.openmrs.Attributable#getPossibleValues()
+	 */
 	public List<Concept> getPossibleValues() {
 		try {
 			return Context.getConceptService().getConceptsByName("");
@@ -577,6 +583,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	}
 	
 
+	/**
+	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
+	 */
 	public Concept hydrate(String s) {
 		try {
 			return Context.getConceptService().getConcept(Integer.valueOf(s));
@@ -588,8 +597,21 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	}
 	
 
+	/**
+	 * @see org.openmrs.Attributable#serialize()
+	 */
 	public String serialize() {
 		return "" + this.getConceptId();
+	}
+	
+	/**
+	 * @see org.openmrs.Attributable#getDisplayString()
+	 */
+	public String getDisplayString() {
+		if (getName() == null)
+			return toString();
+		else
+			return getName().getName();
 	}
 
 	
