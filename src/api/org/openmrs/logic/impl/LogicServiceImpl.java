@@ -108,8 +108,7 @@ public class LogicServiceImpl implements LogicService {
     }
 
     /**
-     * @see org.openmrs.logic.LogicService#eval(org.openmrs.Patient,
-     *      java.lang.String)
+     * @see org.openmrs.logic.LogicService#eval(org.openmrs.Patient, java.lang.String)
      */
     public Result eval(Patient who, String token) throws LogicException {
         return eval(who, new LogicCriteria(token));
