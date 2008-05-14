@@ -82,15 +82,15 @@
 				<option value=""> </option>
 				<option disabled><spring:message code="DataExport.simpleLastEncounter"/></option>
 				<option value="$!{fn.getLastEncounterAttr([''], 'encounterType').getName()}">&nbsp; <spring:message code="Encounter.type" /></option>
-				<option value="$!{fn.getLastEncounter('').getProvider().getFirstName()} $!{fn.getLastEncounter('').getProvider().getLastName()}">&nbsp; <spring:message code="Encounter.provider" /></option>
+				<option value="$!{fn.getLastEncounterAttr([''], 'provider').getFirstName()} $!{fn.getLastEncounterAttr([''], 'provider').getLastName()}">&nbsp; <spring:message code="Encounter.provider" /></option>
 				<option value="$!{fn.getLastEncounterAttr([''], 'location').getName()}">&nbsp; <spring:message code="Encounter.location" /></option>
 				<option value="$!{fn.getLastEncounterAttr([''], 'form').getName()}">&nbsp; <spring:message code="Encounter.form" /></option>
 				<option value="$!{fn.formatDate('short', $!{fn.getLastEncounterAttr([''], 'encounterDatetime')})}">&nbsp; <spring:message code="Encounter.datetime" /></option>
 
 				<option value=""> </option>
 				<option disabled><spring:message code="DataExport.simpleFirstEncounter"/></option>
-				<option value="$!{fn.getFirstEncounter('').getEncounterType().getName()}">&nbsp; <spring:message code="Encounter.type" /></option>
-				<option value="$!{fn.getFirstEncounter('').getProvider().getFirstName()} $!{fn.getFirstEncounter('').getProvider().getLastName()}">&nbsp; <spring:message code="Encounter.provider" /></option>
+				<option value="$!{fn.getFirstEncounterAttr([''], 'encounterType').getName()}">&nbsp; <spring:message code="Encounter.type" /></option>
+				<option value="$!{fn.getFirstEncounterAttr([''], 'provider').getFirstName()} $!{fn.getFirstEncounterAttr([''], 'provider').getLastName()}">&nbsp; <spring:message code="Encounter.provider" /></option>
 				<option value="$!{fn.getFirstEncounterAttr([''], 'location').getName()}">&nbsp; <spring:message code="Encounter.location" /></option>
 				<option value="$!{fn.getFirstEncounterAttr([''], 'form').getName()}">&nbsp; <spring:message code="Encounter.form" /></option>
 				<option value="$!{fn.formatDate('short', $!{fn.getFirstEncounterAttr([''], 'encounterDatetime')})}">&nbsp; <spring:message code="Encounter.datetime" /></option>
