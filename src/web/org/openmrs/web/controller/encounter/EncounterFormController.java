@@ -44,6 +44,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -91,12 +92,17 @@ public class EncounterFormController extends SimpleFormController {
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		try {
 			if (Context.isAuthenticated()) {
-				if (request.getParameter("patientId") != null)
+				if (StringUtils.hasText(request.getParameter("patientId")))
 					encounter.setPatient(Context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
-				if (request.getParameter("providerId") != null)
+				if (StringUtils.hasText(request.getParameter("providerId")))
 					encounter.setProvider(Context.getUserService().getUser(Integer.valueOf(request.getParameter("providerId"))));
 				if (encounter.isVoided())
 					ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
+				
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "patient", "error.null");
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "provider", "error.null");
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "location", "error.null");
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "error.null");
 				
 			}
 		} finally {
