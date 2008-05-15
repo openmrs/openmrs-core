@@ -10,6 +10,8 @@
 		<id name="conceptProposalId" type="java.lang.Integer" column="concept_proposal_id">
 			<generator class="native" />
 		</id>
+		
+		<discriminator column="concept_proposal_id" insert="false" />
 
 		<property name="originalText" type="java.lang.String" length="255" not-null="true" column="original_text" />
 		<property name="finalText" type="java.lang.String" length="255" column="final_text" />

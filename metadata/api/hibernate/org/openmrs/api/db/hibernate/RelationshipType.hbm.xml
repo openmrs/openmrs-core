@@ -19,7 +19,9 @@
         <generator class="native" />
     </id>
 
-    <property
+    <discriminator column="relationship_type_id" insert="false" />
+		
+	<property
         name="aIsToB"
         type="java.lang.String"
         not-null="true"

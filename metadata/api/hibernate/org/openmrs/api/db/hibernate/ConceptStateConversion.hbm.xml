@@ -11,6 +11,8 @@
 			<generator class="native" />
 		</id>
 		
+		<discriminator column="concept_state_conversion_id" insert="false" />
+		
 		<many-to-one name="concept" class="Concept" column="concept_id" not-null="true" />
 
 		<many-to-one name="programWorkflow" class="ProgramWorkflow" column="program_workflow_id" not-null="true" />

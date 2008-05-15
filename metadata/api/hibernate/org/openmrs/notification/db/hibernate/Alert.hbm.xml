@@ -12,6 +12,8 @@
 			<generator class="native" />
 		</id>
 		
+		<discriminator column="alert_id" insert="false" />
+		
 		<property name="text" type="java.lang.String" not-null="true" length="512" />
 		
 		<property name="satisfiedByAny" column="satisfied_by_any" type="java.lang.Boolean" 

@@ -12,6 +12,8 @@
 			<generator class="native" />
 		</id>
 
+		<discriminator column="person_id" insert="false" />
+		
 		<property name="gender" type="java.lang.String" column="gender"
 			not-null="true" length="50" />
 

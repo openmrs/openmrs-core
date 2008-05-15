@@ -13,6 +13,8 @@
 			<generator class="assigned" />
 		</id>
 
+		<discriminator column="role" insert="false" />
+		
 		<property name="description" type="java.lang.String"
 			column="description" not-null="true" length="255" />
 

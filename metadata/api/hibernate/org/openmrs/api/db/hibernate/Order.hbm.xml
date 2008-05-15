@@ -25,7 +25,9 @@
         <generator class="native" />
     </id>
 
-    <property
+    <discriminator column="order_id" insert="false" />
+		
+	<property
         name="instructions"
         type="java.lang.String"
         column="instructions"

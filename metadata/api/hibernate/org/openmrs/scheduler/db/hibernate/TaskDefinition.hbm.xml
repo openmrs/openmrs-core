@@ -10,7 +10,8 @@
 		<!-- Primary key -->
 		<id name="id" type="int" column="task_config_id" unsaved-value="0">
 			<generator class="native" />
-		</id>	
+		</id>
+		<discriminator column="task_config_id" insert="false" />
 		
 		<!-- Properties -->
 		<property name="name" 

@@ -14,6 +14,7 @@
 			column="report_schema_id">
 			<generator class="native" />
 		</id>
+		<discriminator column="report_schema_id" insert="false" />
 
 		<property name="name" type="java.lang.String"
 			length="255" />

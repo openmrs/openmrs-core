@@ -13,6 +13,8 @@
 			<generator class="native" />
 		</id>
 
+		<discriminator column="person_attribute_type_id" insert="false" />
+		
 		<property name="name" type="java.lang.String" column="name"
 			not-null="true" length="50" />
 

@@ -24,6 +24,8 @@
     >
         <generator class="native" />
     </id>
+    
+    <discriminator column="field_type_id" insert="false" />
 
     <property
         name="name"

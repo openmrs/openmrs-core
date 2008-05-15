@@ -12,6 +12,8 @@
 			<generator class="assigned" />
 		</id>
 
+		<discriminator column="privilege" insert="false" />
+		
 		<property name="description" type="java.lang.String"
 			column="description" not-null="true" length="250" />
 

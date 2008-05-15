@@ -25,7 +25,9 @@
         <generator class="native" />
     </id>
 
-    <property
+    <discriminator column="patient_identifier_type_id" insert="false" />
+		
+	<property
         name="name"
         type="java.lang.String"
         column="name"

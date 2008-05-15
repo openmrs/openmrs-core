@@ -17,7 +17,9 @@
         <generator class="native" />
     </id>
 
-    <property
+    <discriminator column="report_id" insert="false" />
+		
+	<property
         name="name"
         type="java.lang.String"
         column="name"

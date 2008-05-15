@@ -11,6 +11,8 @@
 			<generator class="native" />
 		</id>
 
+		<discriminator column="tribe_id" insert="false" />
+		
 		<property name="retired" type="boolean" column="retired"
 			length="1" not-null="true" />
 		<property name="name" type="java.lang.String" column="name"

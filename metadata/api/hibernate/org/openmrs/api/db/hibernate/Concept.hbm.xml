@@ -13,6 +13,8 @@
 			column="concept_id">
 			<generator class="assigned" />
 		</id>
+		
+		<discriminator column="concept_id" insert="false" />
 
 		<property name="retired" type="java.lang.Boolean"
 			column="retired" length="1" not-null="true"/>

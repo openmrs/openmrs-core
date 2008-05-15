@@ -19,7 +19,9 @@
         <generator class="native" />
     </id>
 
-    <property
+    <discriminator column="relationship_id" insert="false" />
+		
+	<property
         name="voided"
         type="java.lang.Boolean"
         column="voided"

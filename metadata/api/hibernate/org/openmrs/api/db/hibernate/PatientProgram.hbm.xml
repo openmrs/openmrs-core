@@ -11,6 +11,8 @@
         <generator class="native" />
     </id>
 
+	<discriminator column="patient_program_id" insert="false" />
+		
 	<property
         name="dateEnrolled"
         type="java.util.Date"
