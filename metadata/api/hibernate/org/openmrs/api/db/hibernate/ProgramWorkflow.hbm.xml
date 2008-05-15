@@ -11,6 +11,8 @@
 			<generator class="native" />
 		</id>
 	
+		<discriminator column="program_workflow_id" insert="false" />
+		
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
 		
 		<property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true" />

@@ -11,6 +11,8 @@
 			<generator class="native" />
 		</id>
 
+		<discriminator column="program_id" insert="false" />
+		
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 

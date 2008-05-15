@@ -10,7 +10,9 @@
 		<id name="fieldId" type="int" column="field_id" unsaved-value="0">
 			<generator class="native" />
 		</id>
-
+		
+		<discriminator column="field_id" insert="false" />
+		
 		<property name="name" type="java.lang.String"
 			column="name" length="255" not-null="true"/>
 		

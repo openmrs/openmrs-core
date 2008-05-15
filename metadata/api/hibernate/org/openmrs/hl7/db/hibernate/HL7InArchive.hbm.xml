@@ -12,6 +12,8 @@
 				<generator class="native" />
 		</id>
 
+		<discriminator column="hl7_in_archive_id" insert="false" />
+		
 		<many-to-one name="HL7Source" class="org.openmrs.hl7.HL7Source" not-null="true">
 			<column name="hl7_source" />
 		</many-to-one>

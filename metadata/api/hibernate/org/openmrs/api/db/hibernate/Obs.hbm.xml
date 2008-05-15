@@ -11,6 +11,8 @@
 			<generator class="native" />
 		</id>
 
+		<discriminator column="obs_id" insert="false" />
+		
 		<property name="personId" type="java.lang.Integer" length="11" 
 			column="person_id" not-null="true" insert="false" update="false" />
 			

@@ -23,6 +23,8 @@
     >
         <generator class="native" />
     </id>
+    
+    <discriminator column="drug_id" insert="false" />
 
     <property
         name="name"

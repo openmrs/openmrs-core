@@ -12,6 +12,8 @@
 			<generator class="native" />
 		</id>
 		
+		<discriminator column="mime_type_id" insert="false" />
+		
 		<property name="mimeType" type="java.lang.String"
 			column="mime_type"
 			length="75" />

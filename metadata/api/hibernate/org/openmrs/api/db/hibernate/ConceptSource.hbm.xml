@@ -12,6 +12,8 @@
 			<generator class="native" />
 		</id>
 		
+		<discriminator column="concept_source_id" insert="false" />
+		
 		<property name="name" type="java.lang.String"
 			column="name" length="50" />
 		<property name="description" type="java.lang.String"

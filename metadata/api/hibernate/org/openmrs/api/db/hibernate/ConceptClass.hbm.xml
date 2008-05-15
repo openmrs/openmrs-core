@@ -18,6 +18,8 @@
     >
         <generator class="native" />
     </id>
+    
+    <discriminator column="concept_class_id" insert="false" />
 
     <property
         name="name"

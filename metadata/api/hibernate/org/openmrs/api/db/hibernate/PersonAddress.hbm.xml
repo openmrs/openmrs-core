@@ -12,6 +12,8 @@
 			<generator class="native" />
 		</id>
 
+		<discriminator column="person_address_id" insert="false" />
+		
 		<many-to-one name="person" class="Person">
 			<column name="person_id" />
 		</many-to-one>

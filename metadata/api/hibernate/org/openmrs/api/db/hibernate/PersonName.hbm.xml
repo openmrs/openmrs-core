@@ -12,6 +12,8 @@
 			<generator class="native" />
 		</id>
 
+		<discriminator column="person_name_id" insert="false" />
+		
 		<property name="preferred" type="boolean" column="preferred"
 			not-null="true" />
 
