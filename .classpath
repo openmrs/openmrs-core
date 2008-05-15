@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="src/web"/>
 	<classpathentry kind="src" path="test/api"/>
 	<classpathentry kind="src" path="test/web"/>
-	<classpathentry kind="lib" path="lib/ant-contrib/ant-contrib-1.0b2.jar"/>
 	<classpathentry kind="lib" path="lib/antlr/antlr_2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/cglib/cglib-2.1_3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-1.7.0.jar"/>

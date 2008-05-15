@@ -315,34 +315,52 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
 		log.debug("Getting conceptName for locale: " + locale);
-		
+
+		ConceptName bestMatch = null; // name from compatible locale (not exactly exact)
+		ConceptName defaultName = null; // any available name for the concept
+
 		if (locale == null)
-			locale = Locale.US;
-		
-		String loc = locale.getLanguage();
-		if (loc.length() > 2)
-			loc = loc.substring(0, 2);
-		ConceptName defaultName = null;
+			locale = Context.getLocale(); // Don't presume en_US;
+
+		String desiredLanguage = locale.getLanguage();
+		String desiredCountry = locale.getCountry();
+
 		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
-			ConceptName name = i.next();
-			String lang = name.getLocale();
-			if (lang.equals(loc))
-				return name;
-			if (lang.equals("en"))
-				defaultName = name;
+			ConceptName possibleName = i.next();
+
+			if (possibleName.getLocale().equals(locale)) {
+				bestMatch = possibleName;
+				break;
+			} else {
+				if (defaultName == null)
+					defaultName = possibleName;
+				if (bestMatch == null) {
+					if (possibleName.getLocale()
+					                .getLanguage()
+					                .equals(desiredLanguage)) {
+						bestMatch = possibleName;
+					}
+				}
+			}
 		}
-		
-		//no name with the given locale was found.
-		// return null if exact match desired
+
 		if (exact) {
-			log.warn("No concept name found for concept id " + conceptId + " for locale " + loc);
-			return null;
+			if (bestMatch == null)
+				log.warn("No concept name found for concept id " + conceptId
+				        + " for locale " + locale.toString());
+			return bestMatch;
 		}
-		
-		// returning default name locale ("en") if exact match not desired
-		if (defaultName == null)
-			log.warn("No concept name found for default locale for concept id " + conceptId);
-		
+
+		if (bestMatch != null)
+			return bestMatch;
+
+		log.warn("No compatible concept name found for default locale for concept id "
+		        + conceptId);
+
+		if (defaultName == null) {
+			log.error("No concept names exist for concept id: " + conceptId);
+		}
+
 		return defaultName;
 	}
 	
@@ -424,12 +442,12 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * @return Collection of ConceptSynonym attributed to the Concept in the given locale
 	 */
 	public Collection<ConceptSynonym> getSynonyms(Locale locale) {
-		String loc = locale.getLanguage().substring(0, 2);
+		String conceptLanguage = locale.getLanguage().substring(0, 2);
 		Collection<ConceptSynonym> syns = new Vector<ConceptSynonym>();
 		for (ConceptSynonym syn : getSynonyms()) {
-			String lang = syn.getLocale();
-			if (lang == null) lang = "en";
-			if (lang.equals(loc))
+			String synLanguage = syn.getLocale().getLanguage().substring(0, 2);
+			if (synLanguage == null) synLanguage = Context.getLocale().getLanguage().substring(0, 2);
+			if (synLanguage.equals(conceptLanguage))
 				syns.add(syn);
 		}
 		log.debug("returning: " + syns);

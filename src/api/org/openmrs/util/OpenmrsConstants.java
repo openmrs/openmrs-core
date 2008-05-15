@@ -642,6 +642,16 @@ public final class OpenmrsConstants {
 	public static final String USER_PROPERTY_NOTIFICATION 			= "notification";
 	public static final String USER_PROPERTY_NOTIFICATION_ADDRESS 	= "notificationAddress";
 	public static final String USER_PROPERTY_NOTIFICATION_FORMAT 	= "notificationFormat";		// text/plain, text/html
+
+	/**
+	 * A user property name. The value should be a comma-separated ordered 
+	 * list of fully qualified locales within which the user is a proficient 
+	 * speaker. The list should be ordered from the most to the least proficiency.
+	 * 
+	 * Example:
+	 * <code>proficientLocales = en_US, en_GB, en, fr_RW</code>
+	 */
+	public static final String USER_PROPERTY_PROFICIENT_LOCALES			= "proficientLocales";
 	
 	/*
 	 * Report object properties

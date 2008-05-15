@@ -13,15 +13,19 @@
  */
 package org.openmrs;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.LocaleFactory;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
@@ -66,6 +70,9 @@ public class User extends Person implements java.io.Serializable {
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
+
+	private List<Locale> proficientLocales = null;
+	private String parsedProficientLocalesProperty = "";
 
 	// Constructors
 
@@ -606,4 +613,37 @@ public class User extends Person implements java.io.Serializable {
 		
 		return;
 	}
+
+	/**
+	 * Returns a list of Locales for which the User 
+	 * is considered proficient.
+     * 
+     * @return List of the User's proficient locales
+     */
+    public List<Locale> getProficientLocales() {
+		String proficientLocalesProperty = getUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES);
+
+    	if ((proficientLocales == null) || (!parsedProficientLocalesProperty.equals(proficientLocalesProperty))) {
+    		parsedProficientLocalesProperty = proficientLocalesProperty;
+	    	proficientLocales = new ArrayList<Locale>();
+			
+			String[] proficientLocalesArray = proficientLocalesProperty.split(",");
+			for (String proficientLocaleSpec : proficientLocalesArray) {
+				if (proficientLocaleSpec.length() > 0) {
+					Locale proficientLocale = LocaleFactory.fromSpecification(proficientLocaleSpec);
+					if (!proficientLocales.contains(proficientLocale)) {
+						proficientLocales.add(proficientLocale);
+						if (proficientLocale.getCountry() != "") {
+							// add the language also
+							Locale languageOnlyLocale = LocaleFactory.fromSpecification(proficientLocale.getLanguage());
+							if (!proficientLocales.contains(languageOnlyLocale)) {
+								proficientLocales.add(LocaleFactory.fromSpecification(proficientLocale.getLanguage()));
+							}
+						}
+					}
+				}
+			}
+    	}
+    	return proficientLocales;
+    }
 }

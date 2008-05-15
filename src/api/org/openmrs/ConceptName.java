@@ -30,7 +30,7 @@ public class ConceptName implements java.io.Serializable {
 	private String name;
 	private String shortName;
 	private String description;
-	private String locale;
+	private Locale locale;
 	private User creator;
 	private Date dateCreated;
 
@@ -104,16 +104,12 @@ public class ConceptName implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	public String getLocale() {
+	public Locale getLocale() {
 		return locale;
 	}
 
-	public void setLocale(String locale) {
-		this.locale = locale;
-	}
-	
 	public void setLocale(Locale locale) {
-		this.locale = locale.getLanguage().substring(0, 2);
+		this.locale = locale;
 	}
 
 	/**
