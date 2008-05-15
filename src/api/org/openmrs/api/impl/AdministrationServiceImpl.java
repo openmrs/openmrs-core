@@ -591,13 +591,17 @@ public class AdministrationServiceImpl implements AdministrationService {
 
 		Context.getConceptService().checkIfLocked();
 		
-		int count = 0;
-		for (Concept concept : Context.getConceptService().getConceptsByName("")) {
-			updateConceptWord(concept);
-			if (count++ > 1000) {
-				Context.clearSession();
-				count = 0;
-			}
+		// Run the operation in batches
+		ConceptService cs = Context.getConceptService();
+		int batchStartId = 0;
+		int endId = cs.getNextAvailableId();
+		int batchSize = 1000;
+		
+		while (batchStartId < endId)
+		{
+			updateConceptWords(batchStartId, batchStartId + batchSize);
+			Context.clearSession();
+			batchStartId += batchSize;
 		}
 		
 	}

@@ -212,7 +212,7 @@ public interface ConceptDAO {
 	/**
 	 * Searches on given phrase via the concept word table
 	 * @param phrase/search/words String
-	 * @param locale Locale
+	 * @param locales Locales to include in search
 	 * @param includeRetired boolean
 	 * @param requireClasses List<ConceptClass>
 	 * @param excludeClasses List<ConceptClass>
@@ -220,7 +220,7 @@ public interface ConceptDAO {
 	 * @param excludeDatatypes List<ConceptDatatype>
 	 * @return
 	 */
-	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, 
+	public List<ConceptWord> findConcepts(String phrase, List<Locale> locales, boolean includeRetired, 
 			List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
 			List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes);
 	

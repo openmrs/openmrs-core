@@ -350,6 +350,34 @@ public interface ConceptService {
 			List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
 			List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes);
 
+
+	/**
+	 * Searches on given phrase via the concept word table within a sorted list of Locales
+	 * 
+	 * @param phrase/search/words
+	 *            String
+	 * @param searchLocales
+	 *            ordered List of Locales within which to search
+	 * @param includeRetired
+	 *            boolean
+	 * @param requireClasses
+	 *            List<ConceptClass>
+	 * @param excludeClasses
+	 *            List<ConceptClass>
+	 * @param requireDatatypes
+	 *            List<ConceptDatatype>
+	 * @param excludeDatatypes
+	 *            List<ConceptDatatype>
+	 * @return
+	 * 
+	 * @see ConceptService.findConcepts(String,Locale,boolean)
+	 */
+	@Transactional(readOnly=true)
+	@Authorized({"View Concepts"})
+	public List<ConceptWord> findConcepts(String phrase, List<Locale> searchLocales, boolean includeRetired, 
+			List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+			List<ConceptDatatype> requireDatatypes,List<ConceptDatatype> excludeDatatypes);
+	
 	/**
 	 * 
 	 * Finds concepts but only returns the given range

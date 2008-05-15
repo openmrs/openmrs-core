@@ -14,6 +14,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -499,24 +500,25 @@ public class HibernateConceptDAO implements
 	}
 
 	// TODO below are functions worthy of a second tier
-	
+
 	/**
 	 * @see org.openmrs.api.db.ConceptService#findConcepts(java.lang.String,java.util.Locale,boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<ConceptWord> findConcepts(String phrase, Locale loc, boolean includeRetired, 
+	public List<ConceptWord> findConcepts(String phrase, List<Locale> locales, boolean includeRetired, 
 			List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
 			List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes) 
 			{
-		String locale = loc.getLanguage().substring(0, 2);		//only get language portion of locale
+		
 		List<String> words = ConceptWord.getUniqueWords(phrase); //assumes getUniqueWords() removes quote(') characters.  (otherwise we would have a security leak)
 		
 		List<ConceptWord> conceptWords = new Vector<ConceptWord>();
 		
 		if (words.size() > 0) {
-		
+			
 			Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class, "cw1");
-			searchCriteria.add(Restrictions.eq("locale", locale));
+			searchCriteria.add(Expression.in("locale", locales));
+			// searchCriteria.add(Restrictions.eq("locale", locale));
 			if (includeRetired == false) {
 				searchCriteria.createAlias("concept", "concept");
 				searchCriteria.add(Expression.eq("concept.retired", false));
@@ -531,7 +533,7 @@ public class HibernateConceptDAO implements
 							.setProjection(Property.forName("concept"))
 							.add(Expression.eqProperty("concept", "cw1.concept"))
 							.add(Restrictions.like("word", w, MatchMode.START))
-							.add(Restrictions.eq("locale", locale));
+							.add(Expression.in("locale", locales));
 				junction.add(Subqueries.exists(crit));
 			}
 			searchCriteria.add(junction);
@@ -560,6 +562,7 @@ public class HibernateConceptDAO implements
 		
 		return conceptWords;
 	}
+
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptService#findConcepts(java.lang.String,java.util.Locale,org.openmrs.Concept,boolean)

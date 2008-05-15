@@ -157,6 +157,19 @@ function containsError(element) {
 		</td>
 	</tr>
 	<tr>
+		<td><spring:message code="options.proficient.locales" /></td>
+		<td>
+			<spring:bind path="opts.proficientLocales">
+				<input type="text" name="${status.expression}" value="${status.value}" 
+					size="35" />
+				<span class="description">example: "en_US, en_GB, en, fr_RW"</span>
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
 		<td><spring:message code="options.showRetiredMessage" /></td>
 		<td>
 			<label for="${status.expression}"><spring:bind path="opts.showRetiredMessage"></label>

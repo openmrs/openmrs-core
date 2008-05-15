@@ -476,13 +476,42 @@ public class ConceptServiceImpl implements ConceptService {
 			requireDatatypes = new Vector<ConceptDatatype>();
 		if (excludeDatatypes == null)
 			excludeDatatypes = new Vector<ConceptDatatype>();
+
+		List<Locale> searchLocales = new ArrayList<Locale>();
+		searchLocales.add(locale);
 		
 		List<ConceptWord> conceptWords = getConceptDAO().findConcepts(phrase,
-				locale, includeRetired, requireClasses, excludeClasses, requireDatatypes, excludeDatatypes);
+		                                                              searchLocales, includeRetired, requireClasses, excludeClasses, requireDatatypes, excludeDatatypes);
 
 		return weightWords(phrase, locale, conceptWords);
 	}
 
+	/**
+     * @see org.openmrs.api.ConceptService#findConcepts(java.lang.String, java.util.List, boolean, java.util.List, java.util.List, java.util.List, java.util.List)
+     */
+    public List<ConceptWord> findConcepts(String phrase,
+            List<Locale> searchLocales, boolean includeRetired,
+            List<ConceptClass> requireClasses,
+            List<ConceptClass> excludeClasses,
+            List<ConceptDatatype> requireDatatypes,
+            List<ConceptDatatype> excludeDatatypes) {
+
+		if (requireClasses == null)
+			requireClasses = new Vector<ConceptClass>();
+		if (excludeClasses == null)
+			excludeClasses = new Vector<ConceptClass>();
+		if (requireDatatypes == null)
+			requireDatatypes = new Vector<ConceptDatatype>();
+		if (excludeDatatypes == null)
+			excludeDatatypes = new Vector<ConceptDatatype>();
+		
+		List<ConceptWord> conceptWords = getConceptDAO().
+			findConcepts(phrase, searchLocales, includeRetired, requireClasses, 
+			             excludeClasses, requireDatatypes, excludeDatatypes);
+
+		return weightWords(phrase, searchLocales, conceptWords);
+    }
+    
 	/**
 	 * 
 	 * Finds concepts but only returns the given range
@@ -529,7 +558,9 @@ public class ConceptServiceImpl implements ConceptService {
 
 	/**
 	 * This will weight and sort the concepts we are assuming the hits are
-	 * sorted with synonym matches at the bottom
+	 * sorted with synonym matches at the bottom.
+	 * 
+	 * @deprecated use weightWords() with multiple locales instead
 	 * 
 	 * @param phrase
 	 *            that was used to get this search
@@ -539,6 +570,24 @@ public class ConceptServiceImpl implements ConceptService {
 	 * @return
 	 */
 	protected List<ConceptWord> weightWords(String phrase, Locale locale,
+			List<ConceptWord> conceptWords) {
+		List<Locale> locales = new ArrayList<Locale>();
+		locales.add(locale);
+		return weightWords(phrase, locales, conceptWords);
+	}
+	
+	/**
+	 * This will weight and sort the concepts we are assuming the hits are
+	 * sorted with synonym matches at the bottom
+	 * 
+	 * @param phrase
+	 *            that was used to get this search
+	 * @param locales
+	 *            that were used to get this search
+	 * @param conceptWords
+	 * @return
+	 */
+	protected List<ConceptWord> weightWords(String phrase, List<Locale> locales,
 			List<ConceptWord> conceptWords) {
 
 		// Map<ConceptId, ConceptWord>
@@ -564,8 +613,15 @@ public class ConceptServiceImpl implements ConceptService {
 				// check synonym in case we have multiple synonym hits
 				String toSplit = initialWord.getSynonym();
 				if (toSplit == null || toSplit.equals("")) {
-					ConceptName cn = initialWord.getConcept().getName(locale);
-					toSplit = cn.getName();
+					ConceptName cn = null;
+					// find which locale provided the concept name
+					for (Locale locale : locales) {
+						cn = initialWord.getConcept().getName(locale);
+						if (cn != null) {
+							toSplit = cn.getName();
+							break;
+						}
+					}
 				}
 				List<String> nameWords = ConceptWord.getUniqueWords(toSplit);
 
@@ -593,8 +649,13 @@ public class ConceptServiceImpl implements ConceptService {
 				if (matchedString.length() == 0) {
 					// We weight name matches higher
 					tmpWord.increaseWeight(2.0);
-					matchedString = tmpWord.getConcept().getName(locale)
-							.getName();
+					for (Locale locale : locales) {
+						ConceptName cn = tmpWord.getConcept().getName(locale);
+						if (cn != null) {
+							matchedString = cn.getName();
+							break;
+						}
+					}
 				}
 
 				// increase the weight by a factor of the % of words matched

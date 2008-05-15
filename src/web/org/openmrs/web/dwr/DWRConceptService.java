@@ -67,15 +67,50 @@ public class DWRConceptService {
 		Vector<Object> objectList = new Vector<Object>();
 
 		// TODO add localization for messages
+		
+		User currentUser = Context.getAuthenticatedUser();
+		
+		if (log.isInfoEnabled()) {
+			Integer userId = -1;
+			if (currentUser != null)
+				userId = currentUser.getUserId();
 
-		Integer userId = -1;
-		User u = Context.getAuthenticatedUser();
-		if (u != null)
-			userId = u.getUserId();
-
-		log.info(userId + "|" + phrase + "|" + includeClassNames.toString());
-
-		Locale locale = Context.getLocale();
+			log.info(userId + "|" + phrase + "|" + includeClassNames.toString());
+		}
+		
+		Locale defaultLocale = Context.getLocale();
+		
+		// get the list of locales to search on from the user's
+		// defined proficient locales (if applicable)
+		List<Locale> localesToSearchOn = null;
+		if (currentUser != null)
+			localesToSearchOn = currentUser.getProficientLocales();
+		
+		if (localesToSearchOn == null)
+			// we're working with an anonymous user right now or
+			// with a user that has not defined any proficient locales
+			localesToSearchOn = new Vector<Locale>();
+		
+		// add the user's locale
+		if (localesToSearchOn.size() == 0) {
+			localesToSearchOn.add(defaultLocale);
+			
+			// if country is specified, also add the generic language locale
+			if (defaultLocale.getCountry() != "") {
+				localesToSearchOn.add(new Locale(defaultLocale.getLanguage()));
+			}
+				
+		}
+		
+		// debugging output
+		if (log.isDebugEnabled()) {
+			StringBuffer searchLocalesString = new StringBuffer();
+			for (Locale loc : localesToSearchOn) {
+				searchLocalesString.append(loc.toString() + " ");
+			}
+			log.debug("searching locales: " + searchLocalesString);
+		}
+		
 		if (includeClassNames == null)
 			includeClassNames = new Vector<String>();
 		if (excludeClassNames == null)
@@ -94,8 +129,7 @@ public class DWRConceptService {
 				// corresponding conceptId
 				Concept c = cs.getConcept(Integer.valueOf(phrase));
 				if (c != null) {
-					ConceptWord word = new ConceptWord(phrase, c, locale
-							.getLanguage(), "Concept Id #" + phrase);
+					ConceptWord word = new ConceptWord(phrase, c, defaultLocale, "Concept Id #" + phrase);
 					words.add(word);
 				}
 			}
@@ -128,15 +162,16 @@ public class DWRConceptService {
 						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
 
 				// perform the search
-				words.addAll(cs.findConcepts(phrase, locale, includeRetired, 
+				words.addAll(cs.findConcepts(phrase, localesToSearchOn, includeRetired, 
 						includeClasses, excludeClasses,
 						includeDatatypes, excludeDatatypes));
 			}
 
 			if (words.size() == 0) {
 				objectList
-						.add("No matches found for <b>" + phrase + "</b> in locale: " + Context.getLocale().getDisplayName());
-			} else {
+						.add("No matches found for <b>" + phrase + "</b> in locale: " + OpenmrsUtil.join(localesToSearchOn, ", "));
+			} 
+			else {
 				objectList = new Vector<Object>(words.size());
 				int maxCount = 500;
 				int curCount = 0;
@@ -154,7 +189,7 @@ public class DWRConceptService {
 						if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
 							for (Drug d : cs.getDrugs(word.getConcept()))
 								objectList.add(new ConceptDrugListItem(d,
-										locale));
+										defaultLocale));
 					}
 				}
 			}
@@ -166,7 +201,7 @@ public class DWRConceptService {
 		}
 
 		if (objectList.size() == 0)
-			objectList.add("No matches found for <b>" + phrase + "</b> in locale: " + Context.getLocale().getDisplayName());
+			objectList.add("No matches found for <b>" + phrase + "</b> in locale: " + defaultLocale);
 
 		return objectList;
 	}
@@ -348,9 +383,10 @@ public class DWRConceptService {
 		Concept c = Context.getConceptService().getConcept(conceptId);
 		Collection<ConceptAnswer> answers = c.getAnswers();
 		// TODO: deal with concept answers (e.g. drug) whose answer concept is null. (Not sure if this actually ever happens)
+		Locale locale = Context.getLocale();
 		for (ConceptAnswer ca : answers)
 			if (ca.getAnswerConcept() != null)
-				ret.add(new ConceptListItem(ca.getAnswerConcept(), Context.getLocale()));
+				ret.add(new ConceptListItem(ca.getAnswerConcept(), locale));
 		return ret;
 	}
 

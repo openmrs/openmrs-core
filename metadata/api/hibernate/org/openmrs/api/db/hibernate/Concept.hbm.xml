@@ -41,7 +41,7 @@
 			<composite-element class="ConceptName">
 				<parent name="concept" />
 				<property name="name" type="java.lang.String" length="255" not-null="true"/>
-				<property name="locale" type="java.lang.String" length="50" not-null="true"/>
+				<property name="locale" type="java.util.Locale" length="50" not-null="true"/>
 				<property name="shortName" type="java.lang.String" length="255" column="short_name" />
 				<property name="description" type="java.lang.String" length="65535" not-null="true" />
 				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
@@ -75,7 +75,7 @@
 			<composite-element class="ConceptSynonym">
 				<parent name="concept" />
 				<property name="synonym" type="java.lang.String" not-null="true" />
-				<property name="locale" type="java.lang.String" not-null="true" />
+				<property name="locale" type="java.util.Locale" not-null="true" />
 				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
 				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
 			</composite-element>
