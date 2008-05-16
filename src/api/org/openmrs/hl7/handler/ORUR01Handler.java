@@ -337,7 +337,7 @@ public class ORUR01Handler implements Application {
 		Form form = getForm(msh);
 		EncounterType encounterType = getEncounterType(msh, form);
 		User enterer = getEnterer(orc);
-		Date dateEntered = getDateEntered(orc);
+		Date dateEntered = getDateEntered(orc); // ignore this since we have noplace in the data model to store it
 
 		encounter.setEncounterDatetime(encounterDate);
 		encounter.setProvider(provider);
@@ -346,7 +346,7 @@ public class ORUR01Handler implements Application {
 		encounter.setForm(form);
 		encounter.setEncounterType(encounterType);
 		encounter.setCreator(enterer);
-		encounter.setDateCreated(dateEntered);
+		encounter.setDateCreated(new Date());
 		
 		return encounter;
 	}
