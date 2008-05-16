@@ -584,6 +584,7 @@ public class NewPatientFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
+    	newIdentifiers = new HashSet<PatientIdentifier>(); 
 		Patient p = null;
 		Integer id = null;
     	
@@ -596,7 +597,7 @@ public class NewPatientFormController extends SimpleFormController {
 	    			p = ps.getPatient(id);
 	    		}
 	    		catch (NumberFormatException numberError) {
-	    			log.warn("Invalid userId supplied: '" + patientId + "'", numberError);
+	    			log.warn("Invalid patientId supplied: '" + patientId + "'", numberError);
 	    		}
 	    		catch (ObjectRetrievalFailureException noUserEx) {
 	    			// continue
