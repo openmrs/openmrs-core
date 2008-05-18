@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
@@ -283,6 +284,15 @@ public class HibernateEncounterDAO implements EncounterDAO {
     		crit.add(Expression.eq("voided", false));
     	crit.addOrder(Order.asc("encounterDatetime"));
     	return crit.list();
+    }
+
+	/**
+     * @see org.openmrs.api.db.EncounterDAO#getSavedEncounterDatetime(org.openmrs.Encounter)
+     */
+    public Date getSavedEncounterDatetime(Encounter encounter) {
+	    SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery("select encounter_datetime from encounter where encounter_id = :encounterId");
+	    sql.setInteger("encounterId", encounter.getEncounterId());
+	    return (Date) sql.uniqueResult();
     }
 	
 }

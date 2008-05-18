@@ -529,5 +529,12 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 	}
+
+	/**
+     * @see org.openmrs.api.OrderService#getOrdersByEncounter(org.openmrs.Encounter)
+     */
+    public List<Order> getOrdersByEncounter(Encounter encounter) {
+	    return getOrderDAO().getOrdersByEncounter(encounter);
+    }
 }
 

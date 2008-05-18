@@ -23,9 +23,11 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSet;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
@@ -294,5 +296,15 @@ public class HibernateOrderDAO implements
 		*/
 		return null;
 	}
+
+	/**
+     * @see org.openmrs.api.db.OrderDAO#getOrdersByEncounter(org.openmrs.Encounter)
+     */
+    public List<Order> getOrdersByEncounter(Encounter encounter) {
+		Criteria c = sessionFactory.getCurrentSession()
+		                           .createCriteria(Order.class)
+		                           .add(Restrictions.eq("encounter", encounter));
+		return (List<Order>) c.list();    
+    }
 
 }

@@ -20,9 +20,11 @@ import java.util.Map;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSet;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.api.OrderService;
 
 /**
  * Order-related database functions
@@ -192,4 +194,9 @@ public interface OrderDAO {
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided) throws DAOException;
 
 	public Map<ConceptSet, List<DrugOrder>> getConceptSetsByDrugOrders(List<DrugOrder> drugOrders) throws DAOException;
+
+	/**
+     * @see OrderService#getOrdersByEncounter(Encounter)
+     */
+    public List<Order> getOrdersByEncounter(Encounter encounter);
 }

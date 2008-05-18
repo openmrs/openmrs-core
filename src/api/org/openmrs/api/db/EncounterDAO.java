@@ -195,5 +195,14 @@ public interface EncounterDAO {
                                                Collection<Form> enteredViaForms,
                                                Collection<EncounterType> encounterTypes,
                                                boolean includeVoided);
+
+	/**
+     * Gets the value of encounterDatetime currently saved in the database
+     * for the given encounter, bypassing any caches. 
+     * 
+     * @param encounter the Encounter go the the encounterDatetime of
+     * @return the encounterDatetime currently in the database for this encounter
+     */
+    public Date getSavedEncounterDatetime(Encounter encounter);
 	
 }
