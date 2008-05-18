@@ -19,29 +19,22 @@
 									<td><a href="javascript:selectStandard('${standardRegimen.codeName}');">${standardRegimen.displayName}</a></td>
 									<td><div id="stDtLabel${standardRegimen.codeName}" style="display:none"><spring:message code="general.dateStart"/></div></td>
 									<td><div id="stDt${standardRegimen.codeName}" style="display:none"><openmrs:fieldGen type="java.util.Date" formFieldName="startDate${standardRegimen.codeName}" val="" parameters="noBind=true" /></div></td>
-									<c:choose>
-										<c:when test="${not empty standardRegimen.canReplace}">
-											<td><div id="action${standardRegimen.codeName}" style="display:none">
-												<select id="actionSelect${standardRegimen.codeName}" onChange="handleStandardActionChange('${standardRegimen.codeName}');">
-													<option value=""><spring:message code="DrugOrder.regimen.action.choose" /></option>
-													<option value="add"><spring:message code="DrugOrder.regimen.action.addToCurrent" /></option>
-													<c:if test="${not empty standardRegimen.canReplace && not empty model.currentDrugOrders}">
-														<option value="discontinue"><spring:message code="DrugOrder.regimen.action.discontinue" arguments="${standardRegimen.canReplace}" /></option>
-														<option value="void"><spring:message code="DrugOrder.regimen.action.void" arguments="${standardRegimen.canReplace}" /></option>
-													</c:if>
-												</select>
-											</td>
-											<td><div id="reas${standardRegimen.codeName}" style="display:none">
-												<spring:message code="general.reason" />: 
-													<select name="reason${standardRegimen.codeName}" id="reason${standardRegimen.codeName}"></select>
-											</div></td>
-											<td><div id="replace${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="DrugOrder.regimen.addAndReplace" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
-											<td><div id="add${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="general.add" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
-										</c:when>
-										<c:otherwise>
-											<td><div id="submit${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="general.add" />" onClick="addStandard${standardRegimen.codeName}(false);"></div></td>
-										</c:otherwise>
-									</c:choose>
+									<td><div id="action${standardRegimen.codeName}" style="display:none">
+										<select id="actionSelect${standardRegimen.codeName}" onChange="handleStandardActionChange('${standardRegimen.codeName}');">
+											<option value=""><spring:message code="DrugOrder.regimen.action.choose" /></option>
+											<option value="add"><spring:message code="DrugOrder.regimen.action.addToCurrent" /></option>
+											<c:if test="${not empty standardRegimen.canReplace && not empty model.currentDrugOrders}">
+												<option value="discontinue"><spring:message code="DrugOrder.regimen.action.discontinue" arguments="${standardRegimen.canReplace}" /></option>
+												<option value="void"><spring:message code="DrugOrder.regimen.action.void" arguments="${standardRegimen.canReplace}" /></option>
+											</c:if>
+										</select>
+									</td>
+									<td><div id="reas${standardRegimen.codeName}" style="display:none">
+										<spring:message code="general.reason" />: 
+											<select name="reason${standardRegimen.codeName}" id="reason${standardRegimen.codeName}"></select>
+									</div></td>
+									<td><div id="replace${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="DrugOrder.regimen.addAndReplace" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
+									<td><div id="add${standardRegimen.codeName}" style="display:none"><input type="button" value="<spring:message code="general.add" />" onClick="addStandard${standardRegimen.codeName}(true);"></div></td>
 								</form>
 							</tr>
 						</c:forEach>

@@ -26,11 +26,15 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientProgram;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
+import org.openmrs.Relationship;
 import org.openmrs.Tribe;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
@@ -42,8 +46,12 @@ import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.MissingRequiredIdentifierException;
+import org.openmrs.api.ObsService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
+import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -257,8 +265,9 @@ public class PatientServiceImpl implements PatientService {
 	public Patient identifierInUse(String identifier, PatientIdentifierType type, Patient ignorePatient) {
 		List<PatientIdentifier> ids = getPatientIdentifiers(identifier, type);
 		for (PatientIdentifier id : ids) {
-			// Changed by CA on 10 Feb 2007 - not sure why you would only verify this for identifiers with checkdigits...
-			//if (id.getIdentifierType().hasCheckDigit() && (ignorePatient == null || !id.getPatient().equals(ignorePatient)) )
+			// ignore identifiers that are assigned to voided patients
+			if (id.getPatient().isVoided())
+				continue;
 			if ( ignorePatient == null || !id.getPatient().equals(ignorePatient))
 				return id.getPatient();
 		}
@@ -600,7 +609,8 @@ public class PatientServiceImpl implements PatientService {
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException {
 		log.debug("Merging patients: (preferred)" + preferred.getPatientId() + ", (notPreferred) " + notPreferred.getPatientId());
 		
-		// change all encounters
+		// change all encounters. This will cascade to obs and orders contained in those encounters
+		// TODO: this should be a copy, not a move
 		EncounterService es = Context.getEncounterService();
 		for (Encounter e : es.getEncounters(notPreferred)){
 			e.setPatient(preferred);
@@ -630,6 +640,8 @@ public class PatientServiceImpl implements PatientService {
 				tmpIdentifier.setVoided(false);
 				tmpIdentifier.setVoidedBy(null);
 				tmpIdentifier.setVoidReason(null);
+				// we don't want to change the preferred identifier of the preferred patient
+				tmpIdentifier.setPreferred(false);
 				preferred.addIdentifier(tmpIdentifier);
 				log.debug("Merging identifier " + tmpIdentifier.getIdentifier() + " to " + preferred.getPatientId());
 			}
@@ -656,6 +668,8 @@ public class PatientServiceImpl implements PatientService {
 				tmpName.setVoided(false);
 				tmpName.setVoidedBy(null);
 				tmpName.setVoidReason(null);
+				// we don't want to change the preferred name of the preferred patient
+				tmpName.setPreferred(false);
 				preferred.addName(tmpName);
 				log.debug("Merging name " + newName.getGivenName() + " to " + preferred.getPatientId());
 			}
@@ -684,6 +698,60 @@ public class PatientServiceImpl implements PatientService {
 				tmpAddress.setVoidReason(null);
 				preferred.addAddress(tmpAddress);
 				log.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPatientId());
+			}
+		}
+		
+		// copy all program enrollments
+		ProgramWorkflowService programService = Context.getProgramWorkflowService();
+		for (PatientProgram pp : programService.getPatientPrograms(notPreferred)) {
+			if (!pp.getVoided()) {
+				PatientProgram enroll = pp.copy();
+				enroll.setPatient(preferred);
+				log.debug("Copying patientProgram " + pp.getPatientProgramId() + " to " + preferred.getPatientId());
+				programService.createPatientProgram(enroll);
+			}
+		}
+		
+		// copy all relationships
+		PersonService personService = Context.getPersonService();
+		for (Relationship rel : personService.getRelationships(notPreferred)) {
+			if (!rel.isVoided()) {
+				Relationship tmpRel = rel.copy();
+				if (tmpRel.getPersonA().equals(notPreferred))
+					tmpRel.setPersonA(preferred);
+				if (tmpRel.getPersonB().equals(notPreferred))
+					tmpRel.setPersonB(preferred);
+				log.debug("Copying relationship " + rel.getRelationshipId() + " to " + preferred.getPatientId());
+				personService.createRelationship(tmpRel);
+			}
+		}
+		
+		// move all obs that weren't contained in encounters
+		// TODO: this should be a copy, not a move
+		ObsService obsService = Context.getObsService();
+		for (Obs obs : obsService.getObservations(notPreferred, false)) {
+			if (obs.getEncounter() == null && !obs.isVoided()) {
+				obs.setPerson(preferred);
+				obsService.updateObs(obs);
+			}
+		}
+		
+		// copy all orders that weren't contained in encounters
+		OrderService os = Context.getOrderService();
+		for (Order o : os.getOrdersByPatient(notPreferred)) {
+			if (o.getEncounter() == null && !o.getVoided()) {
+				Order tmpOrder = o.copy();
+				tmpOrder.setPatient(preferred);
+				os.createOrder(tmpOrder);
+			}
+		}
+		
+		// copy person attributes
+		for (PersonAttribute attr : notPreferred.getAttributes()) {
+			if (!attr.isVoided()) {
+				PersonAttribute tmpAttr = attr.copy();
+				tmpAttr.setPerson(null);
+				preferred.addAttribute(tmpAttr);
 			}
 		}
 		

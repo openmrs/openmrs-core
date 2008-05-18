@@ -55,16 +55,16 @@ public class PatientIdentifiersPortletController extends PortletController {
 				try {
 					Context.getPatientService().checkPatientIdentifier(identifier);
 				} catch ( InvalidCheckDigitException icde ) {
-					log.error("Caught checkDigit error");
+					log.error("Caught checkDigit error", icde);
 					identifierErrors.put(identifier, "PatientIdentifier.error.checkDigit");
 				} catch ( IdentifierNotUniqueException inue ) {
-					log.error("Caught identifier not unique error");
+					log.error("Caught identifier not unique error", inue);
 					identifierErrors.put(identifier, "PatientIdentifier.error.notUnique");
 				} catch ( InvalidIdentifierFormatException iife ) {
-					log.error("Caught format error");
+					log.error("Caught format error", iife);
 					identifierErrors.put(identifier, "PatientIdentifier.error.formatInvalid");
 				} catch ( PatientIdentifierException pie ) {
-					log.error("Caught general error");
+					log.error("Caught general error", pie);
 					identifierErrors.put(identifier, "PatientIdentifier.error.general");
 				}
 			}
@@ -72,16 +72,16 @@ public class PatientIdentifiersPortletController extends PortletController {
 			try {
 				Context.getPatientService().checkPatientIdentifiers(patient);
 			} catch ( DuplicateIdentifierException die ) {
-				log.error("Caught duplicateIdentifier error");
+				log.error("Caught duplicateIdentifier error", die);
 				identifierError = "PatientIdentifier.error.duplicate";
 			} catch ( MissingRequiredIdentifierException mrie ) {
-				log.error("Caught missingRequired error");
+				log.error("Caught missingRequired error", mrie);
 				identifierError = "PatientIdentifier.error.missingRequired";
 			} catch ( InsufficientIdentifiersException iie ) {
-				log.error("Caught insufficient identifiers error");
+				log.error("Caught insufficient identifiers error", iie);
 				identifierError = "PatientIdentifier.error.insufficientIdentifiers";
 			} catch ( PatientIdentifierException pie ) {
-				log.error("Caught general error for patient");
+				log.error("Caught general error for patient", pie);
 				identifierError = "PatientIdentifier.error.general";
 			}
 			

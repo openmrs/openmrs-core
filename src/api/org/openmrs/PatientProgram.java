@@ -47,6 +47,51 @@ public class PatientProgram implements java.io.Serializable {
 	public PatientProgram() {
 		states = new HashSet<PatientState>();
 	}
+	
+	/**
+	 * Does a mostly-shallow copy of this PatientProgram. Does not copy patientProgramId.
+	 * The 'states' property will be deep-copied.
+	 * 
+	 * @return a shallow copy of this PatientProgram
+	 */
+	public PatientProgram copy() {
+		return copyHelper(new PatientProgram());
+	}
+	
+	/**
+	 * The purpose of this method is to allow subclasses of PatientProgram to delegate a portion of
+	 * their copy() method back to the superclass, in case the base class implementation changes. 
+	 * 
+	 * @param target a PatientProgram that will have the state of <code>this</code> copied into it
+	 * @return the PatientProgram that was passed in, with state copied into it
+	 */
+	protected PatientProgram copyHelper(PatientProgram target) {
+		target.setPatient(this.getPatient());
+		target.setProgram(this.getProgram());
+		target.setDateEnrolled(this.getDateEnrolled());
+		target.setDateCompleted(target.getDateCompleted());
+		Set<PatientState> statesCopy = new HashSet<PatientState>();
+		if (this.getStates() != null) {
+			for (PatientState s : this.getStates()) {
+				PatientState stateCopy = s.copy();
+				stateCopy.setPatientProgram(target);
+				statesCopy.add(stateCopy);
+			}
+		}
+		target.setStates(statesCopy);
+		target.setCreator(this.getCreator());
+		target.setDateCreated(this.getDateCreated());
+		target.setChangedBy(this.getChangedBy());
+		target.setDateChanged(this.getDateChanged());
+		target.setVoided(this.getVoided());
+		target.setVoidedBy(this.getVoidedBy());
+		target.setDateVoided(this.getDateVoided());
+		target.setVoidReason(this.getVoidReason());
+		return target;
+	}
+	/*
+	private Set<PatientState> states;
+	*/
 
 	public User getCreator() {
 		return creator;
