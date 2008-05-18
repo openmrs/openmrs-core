@@ -37,6 +37,38 @@ public class PatientState {
 	private String voidReason;
 	
 	public PatientState() { }
+	
+	/**
+	 * Does a shallow copy of this PatientState. Does NOT copy patientStateId
+	 *
+	 * @return a copy of this PatientState
+	 */
+	public PatientState copy() {
+		return copyHelper(new PatientState());
+	}
+	
+	/**
+	 * The purpose of this method is to allow subclasses of PatientState to delegate a portion of
+	 * their copy() method back to the superclass, in case the base class implementation changes. 
+	 * 
+	 * @param target a PatientState that will have the state of <code>this</code> copied into it
+	 * @return the PatientState that was passed in, with state copied into it
+	 */
+	protected PatientState copyHelper(PatientState target) {
+		target.setPatientProgram(this.getPatientProgram());
+		target.setState(this.getState());
+		target.setStartDate(this.getStartDate());
+		target.setEndDate(this.getEndDate());
+		target.setCreator(this.getCreator());
+		target.setDateCreated(this.getDateCreated());
+		target.setChangedBy(this.getChangedBy());
+		target.setDateChanged(this.getDateChanged());
+		target.setVoided(this.getVoided());
+		target.setVoidedBy(this.getVoidedBy());
+		target.setDateVoided(this.getDateVoided());
+		target.setVoidReason(this.getVoidReason());
+		return target;
+	}
 
 	public PatientProgram getPatientProgram() {
 		return patientProgram;

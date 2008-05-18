@@ -82,6 +82,37 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 		this.attributeType = type;
 		this.value = value;
 	}
+	
+	/**
+	 * Shallow copy of this PersonAttribute. Does NOT copy personAttributeId
+	 * 
+	 * @return a shallows copy of <code>this</code>
+	 */
+	public PersonAttribute copy() {
+		return copyHelper(new PersonAttribute());
+	}
+
+	/**
+	 * The purpose of this method is to allow subclasses of PersonAttribute to delegate a portion of
+	 * their copy() method back to the superclass, in case the base class implementation changes. 
+	 * 
+	 * @param ret a PersonAttribute that will have the state of <code>this</code> copied into it
+	 * @return the PersonAttribute that was passed in, with state copied into it
+	 */
+	protected PersonAttribute copyHelper(PersonAttribute target) {
+		target.setPerson(getPerson());
+		target.setAttributeType(getAttributeType());
+		target.setValue(getValue());
+		target.setCreator(getCreator());
+		target.setDateCreated(getDateCreated());
+		target.setChangedBy(getChangedBy());
+		target.setDateChanged(getDateChanged());
+		target.setVoidedBy(getVoidedBy());
+		target.setVoided(getVoided());
+		target.setDateVoided(getDateVoided());
+		target.setVoidReason(getVoidReason());
+		return target;
+	}
 
 	/** 
 	 * Compares two objects for similarity

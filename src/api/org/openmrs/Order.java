@@ -79,6 +79,44 @@ public class Order implements java.io.Serializable {
 	public Order(Integer orderId) {
 		this.orderId = orderId;
 	}
+	
+	/**
+	 * Performs a shallow copy of this Order. Does NOT copy orderId.
+	 * 
+	 * @return a shallow copy of this Order
+	 */
+	public Order copy() {
+		return copyHelper(new Order());
+	}
+	
+	/**
+	 * The purpose of this method is to allow subclasses of Order to delegate a portion of
+	 * their copy() method back to the superclass, in case the base class implementation changes. 
+	 * 
+	 * @param ret an Order that will have the state of <code>this</code> copied into it
+	 * @return the Order that was passed in, with state copied into it
+	 */
+	protected Order copyHelper(Order target) {
+		target.setPatient(getPatient());
+		target.setOrderType(getOrderType());
+		target.setConcept(getConcept());
+		target.setInstructions(getInstructions());
+		target.setStartDate(getStartDate());
+		target.setAutoExpireDate(getAutoExpireDate());
+		target.setEncounter(getEncounter());
+		target.setOrderer(getOrderer());
+		target.setCreator(getCreator());
+		target.setDateCreated(getDateCreated());
+		target.setDiscontinued(getDiscontinued());
+		target.setDiscontinuedDate(getDiscontinuedDate());
+		target.setDiscontinuedReason(getDiscontinuedReason());
+		target.setDiscontinuedBy(getDiscontinuedBy());
+		target.setVoided(getVoided());
+		target.setVoidedBy(getVoidedBy());
+		target.setDateVoided(getDateVoided());
+		target.setVoidReason(getVoidReason());
+		return target;
+	}
 
 	/** 
 	 * Compares two objects for similarity

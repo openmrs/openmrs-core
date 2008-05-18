@@ -42,6 +42,29 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	public DrugOrder(Integer orderId) {
 		this.setOrderId(orderId);
 	}
+	
+	/**
+	 * @see org.openmrs.Order#copy()
+	 */
+	public DrugOrder copy() {
+		return copyHelper(new DrugOrder());
+	}
+	
+	/**
+	 * @see org.openmrs.Order#copyHelper(Order)
+	 */
+	protected DrugOrder copyHelper(DrugOrder target) {
+		super.copyHelper(target);
+		target.dose = getDose();
+		target.equivalentDailyDose = getEquivalentDailyDose();
+		target.units = getUnits();
+		target.frequency = getFrequency();
+		target.prn = getPrn();
+		target.complex = getComplex();
+		target.quantity = getQuantity();
+		target.drug = getDrug();
+		return target;
+	}
 
 	/** 
 	 * Compares two DrugOrder objects for similarity

@@ -40,7 +40,7 @@ public class Relationship implements java.io.Serializable {
 	/** default constructor */
 	public Relationship() {
 	}
-
+	
 	/** constructor with id */
 	public Relationship(Integer relationshipId) {
 		this.relationshipId = relationshipId;
@@ -50,6 +50,35 @@ public class Relationship implements java.io.Serializable {
 		this.personA = personA;
 		this.personB = personB;
 		this.relationshipType = type;
+	}
+	
+	/**
+	 * Does a shallow copy of this Relationship. Does NOT copy relationshipId
+	 *
+	 * @return a copy of this relationship
+	 */
+	public Relationship copy() {
+		return copyHelper(new Relationship());
+	}
+	
+	/**
+	 * The purpose of this method is to allow subclasses of Relationship to delegate a portion of
+	 * their copy() method back to the superclass, in case the base class implementation changes. 
+	 * 
+	 * @param target a Relationship that will have the state of <code>this</code> copied into it
+	 * @return the Relationship that was passed in, with state copied into it
+	 */
+	protected Relationship copyHelper(Relationship target) {
+		target.personA = getPersonA();
+		target.relationshipType = getRelationshipType();
+		target.personB = getPersonB();
+		target.creator = getCreator();
+		target.dateCreated = getDateCreated();
+		target.voided = isVoided();
+		target.voidedBy = getVoidedBy();
+		target.dateVoided = getDateVoided();
+		target.voidReason = getVoidReason();
+		return target;
 	}
 	
 	/** 
