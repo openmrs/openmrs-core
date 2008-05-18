@@ -17,10 +17,12 @@
 			<tr>
 				<td valign="top">
 					<c:forEach var="name" items="${model.patient.names}" varStatus="status">
-						<% request.setAttribute("name", pageContext.getAttribute("name")); %>
-						<spring:nestedPath path="name">
-							<openmrs:portlet url="nameLayout" id="namePortlet" size="quickView" parameters="layoutShowExtended=true" />
-						</spring:nestedPath>
+						<c:if test="${!name.voided}">
+							<% request.setAttribute("name", pageContext.getAttribute("name")); %>
+							<spring:nestedPath path="name">
+								<openmrs:portlet url="nameLayout" id="namePortlet" size="quickView" parameters="layoutShowExtended=true" />
+							</spring:nestedPath>
+						</c:if>
 					</c:forEach>
 				</td>
 				<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
