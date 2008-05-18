@@ -244,6 +244,9 @@ public class HibernatePatientDAO implements PatientDAO {
 			}
 		}
 		
+		// regardless of includeVoided, we do not want to search on voided names
+		criteria.add(Expression.eq("name.voided", false));
+		
 		if (includeVoided == false)
 			criteria.add(Expression.eq("voided", new Boolean(false)));
 
