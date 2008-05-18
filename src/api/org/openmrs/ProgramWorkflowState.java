@@ -13,12 +13,15 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class ProgramWorkflowState {
+public class ProgramWorkflowState implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
 	private Log log = LogFactory.getLog(this.getClass());
 	

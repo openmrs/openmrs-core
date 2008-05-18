@@ -255,4 +255,13 @@ public interface OrderService {
 			String voidReason, int whatToVoid);
 
 	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) throws APIException;
+
+	/**
+     * Gets all orders contained in an encounter
+     * 
+     * @param encounter the encounter in which to search for orders
+     * @return orders contained in the given encounter
+     */
+	@Transactional(readOnly=true)
+    public List<Order> getOrdersByEncounter(Encounter encounter);
 }
