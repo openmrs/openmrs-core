@@ -5,6 +5,7 @@
 <%@ attribute name="initialValue" required="false" %>
 <%@ attribute name="optionHeader" required="false" %>
 <%@ attribute name="onChange" required="false" %>
+<%@ attribute name="includeVoided" required="false" %>
 
 <c:if test="${empty drugs}">
 	<spring:message code="Drug.list.empty" />
@@ -20,8 +21,10 @@
 			</c:if>
 		</c:if>
 		<c:forEach var="drug" items="${drugs}">
-			<option value="${drug.drugId}" 
-					<c:if test="${drug.drugId == initialValue}">selected</c:if>>${drug.name}</option>		
+			<c:if test="${includeVoided == 'true' || !drug.voided}">
+				<option value="${drug.drugId}" 
+					<c:if test="${drug.drugId == initialValue}">selected</c:if>>${drug.name}</option>
+			</c:if>		
 		</c:forEach>
 	</select>
 </c:if>

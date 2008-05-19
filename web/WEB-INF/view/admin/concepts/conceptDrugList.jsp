@@ -5,48 +5,32 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
-
-<script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.ConceptSearch");
-
-	<request:existsParameter name="autoJump">
-		var autoJump = <request:parameter name="autoJump"/>;
-	</request:existsParameter>
-
-	dojo.addOnLoad( function() {
-		
-		var dSearch = dojo.widget.manager.getWidgetById("dSearch");
-		
-		dojo.event.topic.subscribe("dSearch/select", 
-			function(msg) {
-				document.location = "conceptDrug.form?drugId=" + msg.objs[0].drugId + "&phrase=" + dSearch.savedText;
-			}
-		);
-		
-		dSearch.doFindObjects = function(txt) {
-			DWRConceptService.findDrugs(dSearch.simpleClosure(dSearch, 'doObjectsFound'), txt, dSearch.includeRetired);
-		}
-		
-		dojo.widget.manager.getWidgetById("dSearch").inputNode.select();
-	});
-</script>
-
 <h2><spring:message code="ConceptDrug.title"/></h2>
 
 <a href="conceptDrug.form"><spring:message code="ConceptDrug.add"/></a>
-
-<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugList.afterAdd" type="html" />
-
 <br/><br/>
 
-<div id="findConceptDrug">
-	<b class="boxHeader"><spring:message code="ConceptDrug.find"/></b>
-	<div class="box">
-		<div dojoType="ConceptSearch" widgetId="dSearch" drugId='<request:existsParameter name="conceptDrugId">request.getAttribute("conceptDrugId")</request:existsParameter>' showIncludeRetired="true" searchTitle="<spring:message code="ConceptDrug.search"/>" searchPhrase='<request:existsParameter name="phrase"><request:parameter name="phrase" /></request:existsParameter>'></div>
-	</div>
-</div>
+<b class="boxHeader"><spring:message code="ConceptDrug.manage"/></b>
+	<table>
+		<tr>
+			<th> <spring:message code="general.name"/> </th>
+			<%-- <th> <spring:message code="ConceptDrug.concept"/> </th> --%>
+			<th> <spring:message code="ConceptDrug.doseStrength"/> </th>
+			<th> <spring:message code="ConceptDrug.units"/> </th>
+		</tr>
 
-<openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugList.footer" type="html" />
+		<c:forEach var="drug" items="${conceptDrugList}">
+			<c:if test="${!drug.voided}">
+				<tr>
+					<td>&nbsp;&nbsp;<a href="conceptDrug.form?drugId=${drug.drugId}">${drug.name}</a></td>
+					<%-- <td>${drug.concept}</td> --%>
+					<td>${drug.doseStrength}</td>
+					<td>${drug.units}</td>
+				</tr>
+	  		</c:if>
+		</c:forEach>
+	</table>
+	<br/>
+	<br/>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
