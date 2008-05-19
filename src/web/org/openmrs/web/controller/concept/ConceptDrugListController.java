@@ -13,11 +13,18 @@
  */
 package org.openmrs.web.controller.concept;
 
+import java.util.List;
+import java.util.Vector;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Drug;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 public class ConceptDrugListController extends SimpleFormController {
@@ -32,10 +39,20 @@ public class ConceptDrugListController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
+ 
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		return "";
+    	//HttpSession httpSession = request.getSession();
 		
-    }
-    
+		// default empty Object
+		List<Drug> conceptDrugList = new Vector<Drug>();
+		
+		//only fill the Object if the user has authenticated properly
+		if (Context.isAuthenticated()) {
+			ConceptService cs = Context.getConceptService();
+		   	conceptDrugList = cs.getDrugs();
+		}
+    	
+		return conceptDrugList;
+    }   
 }

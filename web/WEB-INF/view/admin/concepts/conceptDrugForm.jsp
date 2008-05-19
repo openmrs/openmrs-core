@@ -134,6 +134,17 @@
 			</spring:bind>
 		</td>
 	</tr>
+	<tr>
+		<th><spring:message code="general.voided"/></th>
+		<td>
+			<spring:bind path="drug.voided">	
+				<input type="hidden" name="_${status.expression}" value=""/>		
+				<input type="checkbox" name="${status.expression}" 
+					   <c:if test="${status.value == true}">checked</c:if> />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+			</spring:bind>
+		</td>
+	</tr>
 	<c:if test="${drug.creator != null}">
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>

@@ -46,7 +46,7 @@
 						<tr>
 							<td><spring:message code="DrugOrder.drug"/></td>
 							<td>
-								<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="drug" val="" parameters="noBind=true|optionHeader=[blank]|onChange=updateAddFields('drug','units','frequency')" />
+								<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="drug" val="" parameters="includeVoided=false|noBind=true|optionHeader=[blank]|onChange=updateAddFields('drug','units','frequency')" />
 							</td>
 							<td><spring:message code="DrugOrder.dose"/></td>
 							<td>
