@@ -67,6 +67,7 @@
 				<prop key="admin/observations/obs.form">obsForm</prop>
 				<prop key="admin/observations/mimeType.list">mimeTypeList</prop>
 				<prop key="admin/observations/mimeType.form">mimeTypeForm</prop>
+				<prop key="admin/observations/personObs.form">personObsForm</prop>
 
 				<prop key="admin/users/user.list">userList</prop>
 				<prop key="admin/users/user.form">userForm</prop>
@@ -231,6 +232,12 @@
 		<property name="validator">
 			<ref bean="obsValidator" />
 		</property>
+	</bean>
+	
+	<bean id="personObsForm" class="org.openmrs.web.controller.observation.PersonObsFormController">
+		<property name="commandName"><value>command</value></property>
+		<property name="formView"><value>/admin/observations/personObsForm</value></property>
+		<property name="successView"><value>personObs.form</value></property>
 	</bean>
 
 	<!--this is the optional method of declaring values in the constructor -->

@@ -65,6 +65,7 @@ public class ObsTableWidget extends TagSupport {
 	private Date fromDate;
 	private Date toDate;
 	private Integer limit = 0;
+	private String conceptLink = null;
 	//private String combineBy = "day";
 	
 	public ObsTableWidget() { }
@@ -76,6 +77,12 @@ public class ObsTableWidget extends TagSupport {
 		if (concepts == null || concepts.length() == 0) return;
 		this.concepts = concepts;
 	}
+	public String getConceptLink() {
+    	return conceptLink;
+    }
+	public void setConceptLink(String conceptLink) {
+    	this.conceptLink = conceptLink;
+    }
 	public String getCssClass() {
 		return cssClass;
 	}
@@ -251,7 +258,15 @@ public class ObsTableWidget extends TagSupport {
 					String name = cn.getShortName();
 					if (name == null || name.length() == 0)
 						name = cn.getName();
-					ret.append("<th>" + name + "</th>");
+					ret.append("<th>");
+					if (conceptLink != null) {
+						ret.append("<a href=\"" + conceptLink + "conceptId=" + c.getConceptId() + "\">");
+					}
+					ret.append(name);
+					if (conceptLink != null) {
+						ret.append("</a>");
+					}
+					ret.append("</th>");
 				}
 				ret.append("</tr>");
 			}
@@ -289,7 +304,15 @@ public class ObsTableWidget extends TagSupport {
 					String name = cn.getShortName();
 					if (name == null || name.length() == 0)
 						name = cn.getName();
-					ret.append("<th>" + name + "</th>");
+					ret.append("<th>");
+					if (conceptLink != null) {
+						ret.append("<a href=\"" + conceptLink + "conceptId=" + c.getConceptId() + "\">");
+					}
+					ret.append(name);
+					if (conceptLink != null) {
+						ret.append("</a>");
+					}
+					ret.append("</th>");
 				}
 				for (Date date : dateOrder) {
 					ret.append("<td>");
@@ -329,6 +352,7 @@ public class ObsTableWidget extends TagSupport {
 		fromDate = null;
 		toDate = null;
 		limit = 0;
+		conceptLink = null;
 		return EVAL_PAGE;
 	}
 	

@@ -776,6 +776,11 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
+		<name>conceptLink</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
 		<name>id</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
@@ -1043,6 +1048,44 @@
 	<name>contextPath</name>
 	<tag-class>org.openmrs.web.taglib.ContextPathTag</tag-class>
 	<body-content>empty</body-content>
+</tag>
+
+<tag>
+	<description>
+		Prints out the value of the given OpenMRS object.
+		Currently limited to a few datatypes, this will be extended to handle other types as well.
+		If you specify...
+			concept | conceptId : the name of that concept will be printed
+			obsValue : the value of that obs will be printed
+	</description>
+	<name>format</name>
+	<tag-class>org.openmrs.web.taglib.FormatTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>concept</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>conceptId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>obsValue</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>user</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>userId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
 </tag>
 
 <function>
