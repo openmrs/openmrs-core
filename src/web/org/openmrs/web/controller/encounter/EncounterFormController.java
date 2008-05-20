@@ -200,9 +200,9 @@ public class EncounterFormController extends SimpleFormController {
 		List<Integer> editedObs = new Vector<Integer>();
 
 		// the map returned to the form
-		// This is a mapping between the formfield and the Obs/ObsGroup
+		// This is a mapping between the formfield and a list of the Obs/ObsGroup in that field
 		// This mapping is sorted according to the comparator in FormField.java
-		SortedMap<FormField, Obs> obsMapToReturn = new TreeMap<FormField, Obs>();
+		SortedMap<FormField, List<Obs>> obsMapToReturn = new TreeMap<FormField, List<Obs>>();
 		
 		// this maps the obs to form field objects for non top-level obs
 		// it is keyed on obs so that when looping over an exploded obsGroup
@@ -241,7 +241,12 @@ public class EncounterFormController extends SimpleFormController {
 				// be the obs that don't have an obs grouper 
 				if (o.getObsGroup() == null) {
 					// populate the obs map with this formfield and obs
-					obsMapToReturn.put(ff, o);
+					List<Obs> list = obsMapToReturn.get(ff);
+					if (list == null) {
+						list = new Vector<Obs>();
+						obsMapToReturn.put(ff, list);
+					}
+					list.add(o);
 				}
 				else {
 					// this is not a top-level obs, just put the formField

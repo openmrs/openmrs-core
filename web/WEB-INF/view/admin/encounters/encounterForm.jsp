@@ -245,7 +245,7 @@
 			<th class="obsCreator"><spring:message code="Obs.creator.or.changedBy"/></th>
 		</tr>
 		<c:forEach items="${obsMap}" var="obsEntry" varStatus="status">
-			<c:set var="obs" value="${obsEntry.value}" scope="request"/>
+			<c:set var="obsList" value="${obsEntry.value}" scope="request"/>
 		    <c:set var="field" value="${obsEntry.key}" scope="request"/>
 		    <c:set var="level" value="0" scope="request"/>
 			<c:import url="obsDisplay.jsp" />
