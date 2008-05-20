@@ -87,10 +87,16 @@ public class WebModuleUtil {
 	 * @return boolean whether or not the spring context need to be refreshed
 	 */
 	public static boolean startModule(Module mod, ServletContext servletContext, boolean delayContextRefresh) {
+		//register the module loggers
+		if (mod.getLog4j() != null) {
+			DOMConfigurator.configure(mod.getLog4j().getDocumentElement());
+		}
+		
 		if (log.isDebugEnabled())
 			log.debug("trying to start module " + mod);
 		
-		// only try and start this module if the api started it without a problem.
+		// only try and start this module if the api started it without a
+		// problem.
 		if (ModuleFactory.isModuleStarted(mod) && !mod.hasStartupError()) {
 			
 			String realPath = servletContext.getRealPath("");
