@@ -86,10 +86,15 @@ public class SyncPatientTest extends SyncBaseTest {
 			int numberEnrolledBefore = 0;
 			Date dateEnrolled = new Date();
 			Date dateCompleted = null;
-			Program hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
-			ProgramWorkflow txStat = hivProgram.getWorkflowByName("TREATMENT STATUS");
-			ProgramWorkflowState curedState = txStat.getStateByName("PATIENT CURED");
+			Program hivProgram = null;
+			ProgramWorkflow txStat = null;
+			ProgramWorkflowState curedState = null;
 			public void runOnChild() {
+				
+				hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
+				txStat = hivProgram.getWorkflowByName("TREATMENT STATUS");
+				curedState = txStat.getStateByName("PATIENT CURED");
+				
 				Patient p = Context.getPatientService().getPatient(2);
 				numberEnrolledBefore = Context.getProgramWorkflowService().getPatientPrograms(p).size(); 
 				Context.getProgramWorkflowService().enrollPatientInProgram(p, hivProgram, dateEnrolled,dateCompleted, Context.getAuthenticatedUser());

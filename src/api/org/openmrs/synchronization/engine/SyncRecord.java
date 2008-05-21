@@ -169,15 +169,22 @@ public class SyncRecord implements Serializable, IItem {
 
     /**
      * If there is already an item with same key, replace it with passed in value, else add it.
+     * It will be added as LAST in insert order.
      * 
      * @param syncItem
      */
-    public void addOrReplaceItem(SyncItem syncItem) {
-        if (items == null) {
+    public void addOrRemoveAndAddItem(SyncItem syncItem) {
+    	String itemMapKey = null;
+    	if (syncItem == null) {
+    		return;
+    	};
+    	
+    	itemMapKey = syncItem.getKey().getKeyValue().toString() + syncItem.getState().toString();
+    	if (items == null) {
             items = new LinkedHashMap<String,SyncItem>();
         } else {
-        	if (items.containsKey(syncItem.getKey().getKeyValue().toString())) {
-    			items.remove(syncItem.getKey().getKeyValue().toString());
+        	if (items.containsKey(itemMapKey)) {
+    			items.remove(itemMapKey);
         	}
         }
         
