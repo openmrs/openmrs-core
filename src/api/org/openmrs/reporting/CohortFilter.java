@@ -14,7 +14,11 @@
 package org.openmrs.reporting;
 
 import org.openmrs.Cohort;
+import org.openmrs.report.EvaluationContext;
 
+/**
+ * 
+ */
 public class CohortFilter extends AbstractPatientFilter implements PatientFilter {
 
 	private Cohort cohort;
@@ -27,30 +31,30 @@ public class CohortFilter extends AbstractPatientFilter implements PatientFilter
 	
 	public String getName() {
 		if (getCohort() != null)
-			return getCohort().getName();
+			return cohort.getName();
 		else
 			return super.getName();
 	}
 	
 	public String getDescription() {
 		if (getCohort() != null)
-			return getCohort().getDescription();
+			return cohort.getDescription();
 		else
 			return super.getDescription();
 	}
 	
-	public PatientSet filter(PatientSet input) {
-		PatientSet temp = new PatientSet();
+	public Cohort filter(Cohort input, EvaluationContext context) {
+		Cohort temp = new Cohort();
 		if (getCohort() != null)
-			temp.copyPatientIds(getCohort().getMemberIds());
-		return input == null ? temp : input.intersect(temp);
+			temp = getCohort();
+		return input == null ? temp : Cohort.intersect(input, temp);
 	}
 
-	public PatientSet filterInverse(PatientSet input) {
-		PatientSet temp = new PatientSet();
+	public Cohort filterInverse(Cohort input, EvaluationContext context) {
+		Cohort temp = new Cohort();
 		if (getCohort() != null)
-			temp.copyPatientIds(getCohort().getMemberIds());
-		return input.subtract(temp);
+			temp = getCohort();
+		return Cohort.subtract(input, temp);
 	}
 
 	public boolean isReadyToRun() {
@@ -62,7 +66,7 @@ public class CohortFilter extends AbstractPatientFilter implements PatientFilter
 	public Cohort getCohort() {
 		return cohort;
 	}
-
+	
 	public void setCohort(Cohort cohort) {
 		this.cohort = cohort;
 	}

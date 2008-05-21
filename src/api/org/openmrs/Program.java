@@ -18,7 +18,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openmrs.synchronization.Synchronizable;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Root;
 
+@Root
 public class Program implements java.io.Serializable, Synchronizable {
 	
 	private static final long serialVersionUID = 0L;
@@ -143,10 +146,12 @@ public class Program implements java.io.Serializable, Synchronizable {
 		this.voidReason = voidReason;
 	}
 
+	@Attribute(required=true)
 	public Integer getProgramId() {
 		return programId;
 	}
 
+	@Attribute(required=true)
 	public void setProgramId(Integer programId) {
 		this.programId = programId;
 	}

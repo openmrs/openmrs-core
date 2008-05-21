@@ -30,7 +30,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.layout.web.address.AddressSupport;
 import org.openmrs.layout.web.address.AddressTemplate;
 import org.openmrs.propertyeditor.LocationEditor;
-import org.openmrs.reporting.ReportService;
+import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.reporting.export.ExportColumn;
 import org.openmrs.util.OpenmrsConstants;
@@ -176,7 +176,7 @@ public class DataExportFormController extends SimpleFormController {
 			if (!saveAsNew.equals(""))
 				report.setReportObjectId(null);
 			
-			Context.getReportService().updateReportObject(report);
+			Context.getReportObjectService().updateReportObject(report);
 			
 			String action = ServletRequestUtils.getRequiredStringParameter(request, "action");
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -204,7 +204,7 @@ public class DataExportFormController extends SimpleFormController {
 		DataExportReportObject report = null;
 		
 		if (Context.isAuthenticated()) {
-			ReportService rs = Context.getReportService();
+			ReportObjectService rs = Context.getReportObjectService();
 			String reportId = request.getParameter("dataExportId");
 	    	if (reportId != null)
 	    		report = (DataExportReportObject)rs.getReportObject(Integer.valueOf(reportId));	

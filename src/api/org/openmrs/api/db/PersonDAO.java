@@ -235,6 +235,5 @@ public interface PersonDAO {
      * @return
      */
     public RelationshipType getRelationshipTypeByGuid(String guid);	
-
 	
 }

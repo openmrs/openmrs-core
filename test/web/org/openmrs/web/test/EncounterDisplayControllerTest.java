@@ -45,7 +45,7 @@ public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
     public void xtestBasicCreate() throws Exception {
 		authenticate();
 		

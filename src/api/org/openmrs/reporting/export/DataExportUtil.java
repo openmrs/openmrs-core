@@ -24,8 +24,9 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
 import org.apache.velocity.app.event.MethodExceptionEventHandler;
+import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.PatientSet;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
 public class DataExportUtil {
@@ -34,13 +35,13 @@ public class DataExportUtil {
 	 * 
 	 * @param exports
 	 */
-	public static void generateExports(List<DataExportReportObject> exports) {
+	public static void generateExports(List<DataExportReportObject> exports, EvaluationContext context) {
 		
 		Log log = LogFactory.getLog(DataExportUtil.class);
 		
 		for (DataExportReportObject dataExport : exports) {
 			try {
-				generateExport(dataExport, null);
+				generateExport(dataExport, null, context);
 			}
 			catch (Exception e) {
 				log.warn("Error while generating export: " + dataExport, e);
@@ -58,11 +59,11 @@ public class DataExportUtil {
 	 * @param separator
 	 * @throws Exception
 	 */
-	public static void generateExport(DataExportReportObject dataExport, PatientSet patientSet, String separator) throws Exception {
+	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, String separator, EvaluationContext context) throws Exception {
 		// Set up functions used in the report ( $!{fn:...} )
 		DataExportFunctions functions = new DataExportFunctions();
 		functions.setSeparator(separator);
-		generateExport(dataExport, patientSet, functions);
+		generateExport(dataExport, patientSet, functions, context);
 	}
 	
 	/**
@@ -71,10 +72,10 @@ public class DataExportUtil {
 	 * @param patientSet
 	 * @throws Exception
 	 */
-	public static void generateExport(DataExportReportObject dataExport, PatientSet patientSet) throws Exception {
+	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, EvaluationContext context) throws Exception {
 		// Set up functions used in the report ( $!{fn:...} )
 		DataExportFunctions functions = new DataExportFunctions();
-		generateExport(dataExport, patientSet, functions);
+		generateExport(dataExport, patientSet, functions, context);
 	}
 	
 	/**
@@ -83,7 +84,7 @@ public class DataExportUtil {
 	 * @param patientSet (nullable)
 	 * @throws Exception
 	 */
-	public static void generateExport(DataExportReportObject dataExport, PatientSet patientSet, DataExportFunctions functions) throws Exception {
+	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, DataExportFunctions functions, EvaluationContext context) throws Exception {
 		
 		// defining log file here to attempt to reduce memory consumption
 		Log log = LogFactory.getLog(DataExportUtil.class);
@@ -103,7 +104,7 @@ public class DataExportUtil {
 		
 		// Set up list of patients if one wasn't passed into this method
 		if (patientSet == null) {
-			patientSet = dataExport.generatePatientSet();
+			patientSet = dataExport.generatePatientSet(context);
 			functions.setAllPatients(dataExport.isAllPatients());
 		}
 		

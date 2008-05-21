@@ -156,8 +156,14 @@ public final class Listener extends ContextLoaderListener {
 			}
 		}
 		
-		if (someModuleNeedsARefresh)
-			WebModuleUtil.refreshWAC(servletContext);
+		if (someModuleNeedsARefresh) {
+			try {
+				WebModuleUtil.refreshWAC(servletContext);
+			}
+			catch (Throwable t) {
+				log.fatal("Unable to refresh the spring application context", t);
+			}
+		}
 		
 		/** 
 		 * Copy the customization scripts over into the webapp

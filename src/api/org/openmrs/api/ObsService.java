@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openmrs.ComplexObs;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -26,9 +27,6 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ObsDAO;
-import org.openmrs.logic.Aggregation;
-import org.openmrs.logic.Constraint;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,7 +74,7 @@ public interface ObsService {
 	 * pass obsGroup to {@link #createObs(Obs)}
 	 * </pre>
 	 * 
-	 * @param obs array of observations to be grouped
+	 * @param obs - array of observations to be grouped
 	 * @throws APIException
 	 * @deprecated This method should no longer need to be called on the api. This
 	 * 			  was meant as temporary until we created a true ObsGroup pojo.
@@ -90,8 +88,7 @@ public interface ObsService {
 	/**
 	 * Get an observation
 	 * 
-	 * @param integer
-	 *            obsId of observation desired
+	 * @param integer obsId of observation desired
 	 * @return matching Obs
 	 * @throws APIException
 	 */
@@ -117,10 +114,8 @@ public interface ObsService {
 	/**
 	 * Equivalent to deleting an observation
 	 * 
-	 * @param Obs
-	 *            obs to void
-	 * @param String
-	 *            reason
+	 * @param Obs obs to void
+	 * @param String reason
 	 * @throws APIException
 	 */
 	@Authorized({OpenmrsConstants.PRIV_EDIT_OBS})
@@ -157,8 +152,7 @@ public interface ObsService {
 	/**
 	 * Get mimeType by internal identifier
 	 * 
-	 * @param mimeType
-	 *            id
+	 * @param mimeType id
 	 * @return mimeType with given internal identifier
 	 * @throws APIException
 	 */
@@ -189,7 +183,8 @@ public interface ObsService {
 	 * @return list of obs for a location
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer personType, boolean includeVoided);
+	public List<Obs> getObservations(Concept c, Location loc, String sort,
+	        Integer personType, boolean includeVoided);
 
 	/**
 	 * e.g. get all CD4 counts for a person
@@ -200,13 +195,13 @@ public interface ObsService {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided);
+	public Set<Obs> getObservations(Person who, Concept question,
+	        boolean includeVoided);
 
 	/**
 	 * e.g. get last 'n' number of observations for a person for given concept
 	 * 
-	 * @param n
-	 *            number of concepts to retrieve
+	 * @param n number of concepts to retrieve
 	 * @param who
 	 * @param question
 	 * @return
@@ -218,27 +213,27 @@ public interface ObsService {
 	/**
 	 * e.g. get all observations referring to RETURN VISIT DATE
 	 * 
-	 * @param question
-	 *            (Concept: RETURN VISIT DATE)
-	 * @param sort
-	 * 			  (obsId, obsDatetime, etc) if null, defaults to obsId
+	 * @param question (Concept: RETURN VISIT DATE)
+	 * @param sort (obsId, obsDatetime, etc) if null, defaults to obsId
 	 * @param personType
 	 * 
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservations(Concept question, String sort, Integer personType, boolean includeVoided);
+	public List<Obs> getObservations(Concept question, String sort,
+	        Integer personType, boolean includeVoided);
 
 	/**
-	 * Return all observations that have the given concept as an answer
-	 * (<code>answer.getConceptId()</code> == value_coded)
+	 * Return all observations that have the given concept as an answer (<code>answer.getConceptId()</code> ==
+	 * value_coded)
 	 * 
 	 * @param concept
 	 * @param personType
 	 * @return list of obs
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType, boolean includeVoided);
+	public List<Obs> getObservationsAnsweredByConcept(Concept answer,
+	        Integer personType, boolean includeVoided);
 	
 	/**
 	 * Return all numeric answer values for the given concept ordered by value
@@ -247,13 +242,16 @@ public interface ObsService {
 	 * personType should be one of PATIENT, PERSON, or USER;
 	 * 
 	 * @param concept
-	 * @param sortByValue true/false if sorting by valueNumeric.  If false, will sort by obsDatetime
+	 * @param sortByValue true/false if sorting by valueNumeric. If false, will
+	 *        sort by obsDatetime
 	 * @param personType
 	 * 
-	 * @return List<Object[]> [0]=<code>obsId</code>, [1]=<code>obsDatetime</code>, [2]=<code>valueNumeric</code>s
+	 * @return List<Object[]> [0]=<code>obsId</code>, [1]=<code>obsDatetime</code>,
+	 *         [2]=<code>valueNumeric</code>s
 	 */
 	@Transactional(readOnly = true)
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType, boolean includeVoided);
+	public List<Object[]> getNumericAnswersForConcept(Concept answer,
+	        Boolean sortByValue, Integer personType, boolean includeVoided);
 	
 	/**
 	 * Get all observations from a specific encounter
@@ -283,7 +281,8 @@ public interface ObsService {
 	 * @return list of matched observations
 	 */
 	@Transactional(readOnly = true)
-	public List<Obs> findObservations(String search, boolean includeVoided, Integer personType);
+	public List<Obs> findObservations(String search, boolean includeVoided,
+	        Integer personType);
 
 	/**
 	 * 
@@ -292,20 +291,17 @@ public interface ObsService {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public List<String> getDistinctObservationValues(Concept question, Integer personType);
+	public List<String> getDistinctObservationValues(Concept question,
+	        Integer personType);
 
 	/**
 	 * @param obsGroupId
 	 * @return All obs that share obsGroupId
+	 * @deprecated -- should use obs.getGroupMembers
 	 */
 	@Transactional(readOnly = true)
 	public List<Obs> findObsByGroupId(Integer obsGroupId);
 
-	@Transactional(readOnly = true)
-	@Authorized( { "View Person" })
-	public List<Obs> getObservations(Person who, Aggregation aggregation,
-			Concept question, Constraint constraint);
-	
 	/**
 	 * Get all Observations for these concepts between these dates.  Ideal for getting things like recent lab results regardless of what patient
 	 * 
@@ -333,12 +329,12 @@ public interface ObsService {
 	/**
 	 * Get all Observations for this patient set, for these concepts, between these dates.  Ideal for getting things like recent lab results for a set of patients
 	 * 
-	 * @param ps the patientset for which to retrieve data for - null means all patients
+	 * @param patients the patientset for which to retrieve data for - null means all patients
 	 * @param concepts list of the concepts for which to retrieve obs - null means all obs
 	 * @param fromDate lower bound for date - null means no lower bound
 	 * @param toDate upper bound for date - null means no upper bound
 	 * @return observations, for this patient set, with concepts in list of concepts passed, between the two dates passed in
 	 */
 	@Transactional(readOnly=true)
-	public List<Obs> getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate);
+	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate);
 }

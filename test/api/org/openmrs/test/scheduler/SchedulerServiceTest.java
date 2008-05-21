@@ -14,28 +14,10 @@
 package org.openmrs.test.scheduler;
 
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dbunit.database.DatabaseConfig;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.database.QueryDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.User;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.context.Context;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -68,8 +50,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		Calendar startDate = Calendar.getInstance();
 		startDate.set(2008, 3, 30, 1, 22, 0);
 
-		long SECOND_PER_DAY = 86400;
-		long SECOND_PER_HOUR = 3600;
+		//long SECOND_PER_DAY = 86400;
+		//long SECOND_PER_HOUR = 3600;
 		long SECOND_PER_MINUTE = 60;
 		
 		TaskDefinition taskDefinition = new TaskDefinition();

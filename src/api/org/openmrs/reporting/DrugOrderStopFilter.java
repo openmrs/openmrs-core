@@ -17,13 +17,15 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
-public class DrugOrderStopFilter extends AbstractPatientFilter implements PatientFilter {
+public class DrugOrderStopFilter extends CachingPatientFilter {
 	
 	private Date stopDate;
 	private List<Drug> drugList;
@@ -39,6 +41,28 @@ public class DrugOrderStopFilter extends AbstractPatientFilter implements Patien
 	
 	public DrugOrderStopFilter() { }
 	
+	@Override
+    public String getCacheKey() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(getClass().getName()).append(".");
+	    sb.append(getStopDate()).append(".");
+	    sb.append(getDiscontinued()).append(".");
+	    sb.append(OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
+	    sb.append(OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
+	    if (drugList != null)
+		    for (Drug d : drugList)
+		    	sb.append(d.getDrugId()).append(",");
+	    sb.append(".");
+	    if (genericDrugList != null)
+		    for (Concept c : genericDrugList)
+		    	sb.append(c.getConceptId()).append(",");
+	    sb.append(".");
+	    if (discontinuedReasonList != null)
+	    	for (Concept c : discontinuedReasonList)
+	    		sb.append(c.getConceptId()).append(",");
+	    return sb.toString();
+    }
+
 	public String getDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Patients who stopped or changed ");
@@ -103,20 +127,12 @@ public class DrugOrderStopFilter extends AbstractPatientFilter implements Patien
 		return sb.toString();
 	}
 
-	public PatientSet filter(PatientSet input) {
-		PatientSet ps = Context.getPatientSetService().getPatientsHavingDrugOrder(drugList, genericDrugList, null, null,
+	@Override
+	public Cohort filterImpl(EvaluationContext context) {
+		return Context.getPatientSetService().getPatientsHavingDrugOrder(getDrugList(), getGenericDrugList(), null, null,
 				OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
 				OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
-				discontinued, discontinuedReasonList);
-		return input == null ? ps : input.intersect(ps);
-	}
-
-	public PatientSet filterInverse(PatientSet input) {
-		PatientSet ps = Context.getPatientSetService().getPatientsHavingDrugOrder(drugList, genericDrugList, null, null,
-				OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
-				OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
-				discontinued, discontinuedReasonList);
-		return input.subtract(ps);
+				discontinued, getDiscontinuedReasonList());
 	}
 
 	public boolean isReadyToRun() {

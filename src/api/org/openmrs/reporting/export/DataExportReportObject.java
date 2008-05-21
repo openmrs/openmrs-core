@@ -14,7 +14,9 @@
 package org.openmrs.reporting.export;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -23,10 +25,10 @@ import org.openmrs.Cohort;
 import org.openmrs.Location;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSearchReportObject;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsUtil;
 
 public class DataExportReportObject extends AbstractReportObject implements Serializable {
@@ -147,7 +149,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		// print out the data
 		
 		sb.append("$!{fn.setPatientSet($patientSet)}");
-		sb.append("#foreach($patientId in $patientSet.patientIds)\n");
+		sb.append("#foreach($patientId in $patientSet.memberIds)\n");
 		sb.append("$!{fn.setPatientId($patientId)}");
 		if (columns.size() >= 1) {
 			sb.append(columns.get(0).toTemplateString());
@@ -169,43 +171,46 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	 * Generate the patientSet according to this report's characteristics
 	 * @return patientSet to be used with report template
 	 */
-	public PatientSet generatePatientSet() {
+	public Cohort generatePatientSet(EvaluationContext context) {
 		PatientSetService pss = Context.getPatientSetService();
 		
-		PatientSet patientSet = null;
+		Set<Integer> patientIdSet = new HashSet<Integer>();
 		
 		if (getPatientIds() == null || getPatientIds().size() == 0) {
-			patientSet = Context.getPatientSetService().getAllPatients();
+			patientIdSet.addAll(Context.getPatientSetService().getAllPatients().getMemberIds());
 			setAllPatients(true);
-		}
-		else {
-			patientSet = new PatientSet();
-			for (Integer p : patientIds)
-				patientSet.add(p);
+		} else {
+			patientIdSet.addAll(patientIds);
 		}
 		
 		if (location != null && !location.equals(""))
-			patientSet = patientSet.intersect(pss.getPatientsHavingLocation(getLocation()));
+			patientIdSet.retainAll(pss.getPatientsHavingLocation(getLocation()).getMemberIds());
 		
 		if (cohortId != null) {
 			// hack to hydrate this
 			Cohort cohort = Context.getCohortService().getCohort(cohortId);
 			if (cohort != null)
-				patientSet = patientSet.intersect(cohort.toPatientSet());
+				patientIdSet.retainAll(cohort.getMemberIds());
 		}
 		
 		if (cohortDefinitionId != null) {
-			PatientFilter cohortDefinition = (PatientFilter) Context.getReportService().getReportObject(cohortDefinitionId);
-			if (cohortDefinition != null)
-				patientSet = cohortDefinition.filter(patientSet);
+			PatientFilter cohortDefinition = (PatientFilter) Context.getReportObjectService().getReportObject(cohortDefinitionId);
+			if (cohortDefinition != null) {
+				Cohort c = new Cohort(patientIdSet);
+				c = cohortDefinition.filter(c, context);
+				patientIdSet = c.getMemberIds();
+			}
 		}
 		
 		if (patientSearchId != null) {
-			PatientSearchReportObject search = (PatientSearchReportObject) Context.getReportService().getReportObject(patientSearchId);
-			patientSet = OpenmrsUtil.toPatientFilter(search.getPatientSearch(), null).filter(patientSet);
+			PatientSearchReportObject search = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(patientSearchId);
+			PatientFilter cohortDefinition = OpenmrsUtil.toPatientFilter(search.getPatientSearch(), null);
+			org.openmrs.Cohort c = new Cohort(patientIdSet);
+			c = cohortDefinition.filter(c, context);
+			patientIdSet = c.getMemberIds();
 		}
 		
-		return patientSet;
+		return new Cohort(patientIdSet);
 	}
 
 	@Override

@@ -10,7 +10,9 @@
 		<id name="patientStateId" type="java.lang.Integer" column="patient_state_id">
 			<generator class="native" />
 		</id>
-		
+
+		<discriminator column="patient_state_id" insert="false" />		
+
 		<property name="guid" type="java.lang.String"
 			column="guid" length="36" />
 

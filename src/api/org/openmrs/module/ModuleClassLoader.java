@@ -444,18 +444,6 @@ public class ModuleClassLoader extends URLClassLoader {
 				return result;
 			}
 			
-			// we have to look in the requiredModules list before doing a "findClass" 
-			// so that the class is loaded by the correct ModuleClassLoader
-			for (Module reqMod : requiredModules) {
-				if (name.startsWith(reqMod.getPackageName())) {
-					ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(reqMod);
-					
-					result = mcl.loadClass(name, resolve, requestor, seenModules);
-					if (result != null)
-						return result;
-				}
-			}
-			
 			// we didn't find a loaded class and this isn't a class 
 			// from another module
 			try {

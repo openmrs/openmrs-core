@@ -21,15 +21,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.openmrs.Cohort;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
-public class EncounterPatientFilter extends AbstractPatientFilter implements PatientFilter {
+public class EncounterPatientFilter extends CachingPatientFilter {
 
+    private static final long serialVersionUID = 1L;
+    
 	private EncounterType encounterType;
 	private List<EncounterType> encounterTypeList;
 	private Form form;
@@ -45,6 +49,22 @@ public class EncounterPatientFilter extends AbstractPatientFilter implements Pat
 	
 	public EncounterPatientFilter() { }
 	
+	@Override
+    public String getCacheKey() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getName()).append(".");
+		sb.append(getForm() == null ? null : getForm().getFormId()).append(".");
+	    sb.append(OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
+	    sb.append(OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
+		sb.append(getAtLeastCount()).append(".");
+		sb.append(getAtMostCount()).append(".");
+		sb.append(getLocation() == null ? null : getLocation().getLocationId()).append(".");
+		if (getEncounterTypeList() != null)
+			for (EncounterType t : getEncounterTypeList())
+				sb.append(t.getEncounterTypeId()).append(",");
+	    return sb.toString();
+    }
+
 	public String getDescription() {
 		Locale locale = Context.getLocale();
 		StringBuffer ret = new StringBuffer();
@@ -87,21 +107,13 @@ public class EncounterPatientFilter extends AbstractPatientFilter implements Pat
 		return ret.toString();
 	}
 	
-	public PatientSet filter(PatientSet input) {
+	@Override
+	public Cohort filterImpl(EvaluationContext context) {
 		PatientSetService service = Context.getPatientSetService();
-		PatientSet ps = service.getPatientsHavingEncounters(encounterTypeList, location, form,
+		return service.getPatientsHavingEncounters(encounterTypeList, location, form,
 				OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
 				OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
 				atLeastCount, atMostCount);
-		return input == null ? ps : input.intersect(ps);
-	}
-
-	public PatientSet filterInverse(PatientSet input) {
-		PatientSetService service = Context.getPatientSetService();
-		return input.subtract(service.getPatientsHavingEncounters(encounterTypeList, location, form,
-				OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
-				OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
-				atLeastCount, atMostCount));
 	}
 
 	public boolean isReadyToRun() {

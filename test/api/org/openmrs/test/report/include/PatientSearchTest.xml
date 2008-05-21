@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0"/>
+  <concept_class concept_class_id="1" name="Finding" description="A medical discovery" creator="1" date_created="2005-01-01 00:00:00.0" />
+	
+  <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false" datatype_id="1" class_id="1" />
+  <concept_name concept_id="1" name="CD4 COUNT" locale="en" description="cd4 count" creator="1" date_created="2005-01-01 00:00:00.0" />
+  
+  <encounter encounter_id="1" creator="1" encounter_datetime="2005-01-01 00:00:00.0" date_created="2005-02-01 00:00:00.0" patient_id="2" location_id="1" voided="false" />
+  <encounter encounter_id="2" creator="1" encounter_datetime="2005-02-01 00:00:00.0" date_created="2005-03-01 00:00:00.0" patient_id="2" location_id="1" voided="false" />
+  
+  <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" />
+  <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+  <patient_identifier patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" identifier="1234" identifier_type="1" preferred="1" voided="false" location_id="1" />
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" /> 
+  
+  <person person_id="3" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" />
+  <person_name person_id="3" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
+  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+  <patient_identifier patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" identifier="12345" identifier_type="1" preferred="1" voided="false" location_id="1" />
+  
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" />
+  <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" />
+  
+  <obs obs_id="1" encounter_id="1" concept_id="1" value_numeric="100" obs_datetime="2007-05-01 00:00:00.0" person_id="2" location_id="1" creator="1" date_created="2005-03-01 00:00:00.0" voided="0"/>
+  <obs obs_id="2" encounter_id="2" concept_id="1" value_numeric="200" obs_datetime="2007-03-01 00:00:00.0" person_id="3" location_id="2" creator="1" date_created="2005-05-01 00:00:00.0" voided="0"/>
+  
+</dataset>

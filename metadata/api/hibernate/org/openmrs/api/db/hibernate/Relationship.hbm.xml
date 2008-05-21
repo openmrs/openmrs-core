@@ -19,6 +19,8 @@
         <generator class="native" />
     </id>
 
+    <discriminator column="relationship_id" insert="false" />
+
 		<property name="guid" type="java.lang.String"
 			column="guid" length="36" />
 

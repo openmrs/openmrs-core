@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.PatientSet;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
@@ -36,7 +36,7 @@ public class PatientSetController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request,
     		HttpServletResponse response) throws ServletException, IOException {
     	
-		PatientSet ps = Context.getPatientSetService().getMyPatientSet();
+		Cohort ps = Context.getPatientSetService().getMyPatientSet();
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("patientSet", ps);
 
@@ -55,13 +55,13 @@ public class PatientSetController implements Controller {
 			ps = "";
 		}
 		
-		PatientSet patientSet = PatientSet.parseCommaSeparatedPatientIds(ps);
+		Cohort patientSet = new Cohort(ps);
 		Context.getPatientSetService().setMyPatientSet(patientSet);
 		log.debug("Set user's PatientSet (" + patientSet.size() + " patients)");
 		
 		if (patientSet.size() > 0) {
 			if ("true".equals(request.getParameter("appendPatientId")))
-				url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + patientSet.getPatientIds().iterator().next();
+				url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + patientSet.getMemberIds().iterator().next();
 			if ("true".equals(request.getParameter("showPatientSet")))
 				url += (url.indexOf('?') >= 0 ? "&" : "?") + "showPatientSet=true";
 		}
@@ -93,25 +93,25 @@ public class PatientSetController implements Controller {
 		String id = request.getParameter("patientId");
 		String ids = request.getParameter("patientIds");
 		
-		PatientSet patientSet = Context.getPatientSetService().getMyPatientSet();
+		Cohort patientSet = Context.getPatientSetService().getMyPatientSet();
 		
 		if (id != null) {
 			try {
-				patientSet.add(Integer.valueOf(id.trim()));
+				patientSet.addMember(Integer.valueOf(id.trim()));
 			} catch (NumberFormatException ex) { }
 		}
 		
 		if (ids != null) {
 			for (String s : ids.split(",")) {
 				try {
-					patientSet.add(Integer.valueOf(s.trim()));
+					patientSet.addMember(Integer.valueOf(s.trim()));
 				} catch (NumberFormatException ex) { }
 			}
 		}
 		
 		if (patientSet.size() > 0) {
 			if ("true".equals(request.getParameter("appendPatientId")))
-				url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + (id != null ? id : patientSet.getPatientIds().iterator().next());
+				url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + (id != null ? id : patientSet.getMemberIds().iterator().next());
 			if ("true".equals(request.getParameter("showPatientSet")))
 				url += (url.indexOf('?') >= 0 ? "&" : "?") + "showPatientSet=true";
 		}
@@ -131,25 +131,25 @@ public class PatientSetController implements Controller {
 		String id = request.getParameter("patientId");
 		String ids = request.getParameter("patientIds");
 		
-		PatientSet patientSet = Context.getPatientSetService().getMyPatientSet();
+		Cohort patientSet = Context.getPatientSetService().getMyPatientSet();
 		
 		if (id != null) {
 			try {
-				patientSet.remove(Integer.valueOf(id.trim()));
+				patientSet.removeMember(Integer.valueOf(id.trim()));
 			} catch (NumberFormatException ex) { }
 		}
 		
 		if (ids != null) {
 			for (String s : ids.split(",")) {
 				try {
-					patientSet.remove(Integer.valueOf(s.trim()));
+					patientSet.removeMember(Integer.valueOf(s.trim()));
 				} catch (NumberFormatException ex) { }
 			}
 		}
 		
 		if (patientSet.size() > 0) {
 			if ("true".equals(request.getParameter("appendPatientId")))
-				url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + patientSet.getPatientIds().iterator().next();
+				url += (url.indexOf('?') >= 0 ? "&" : "?") + "patientId=" + patientSet.getMemberIds().iterator().next();
 			if ("true".equals(request.getParameter("showPatientSet")))
 				url += (url.indexOf('?') >= 0 ? "&" : "?") + "showPatientSet=true";
 		}

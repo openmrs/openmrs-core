@@ -33,7 +33,7 @@ public class ConceptSynonym implements java.io.Serializable, Synchronizable {
 	private Integer conceptSynonymId;
 	private Concept concept;
 	private String synonym;
-	private String locale;
+	private Locale locale;
 	private User creator;
 	private Date dateCreated;
 	private String guid;
@@ -64,7 +64,7 @@ public class ConceptSynonym implements java.io.Serializable, Synchronizable {
 	public ConceptSynonym(Concept c, String s, Locale l) {
 		setConcept(c);
 		setSynonym(s);
-		setLocale(l.getLanguage().substring(0, 2));
+		setLocale(l);
 	}
 	
 	public boolean equals(Object obj) {
@@ -141,14 +141,14 @@ public class ConceptSynonym implements java.io.Serializable, Synchronizable {
 	/**
 	 * @return Returns the locale.
 	 */
-	public String getLocale() {
+	public Locale getLocale() {
 		return locale;
 	}
 
 	/**
 	 * @param locale The locale to set.
 	 */
-	public void setLocale(String locale) {
+	public void setLocale(Locale locale) {
 		this.locale = locale;
 		//id.setLocale(locale);
 	}

@@ -15,6 +15,7 @@ package org.openmrs;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
@@ -35,7 +36,7 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 	private Concept concept;
 	private String word;
 	private String synonym;
-	private String locale;
+	private Locale locale;
 	private Double weight = 0.0;
 	private String guid;
     private boolean isSynchronizable = false;
@@ -73,7 +74,7 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 	public ConceptWord() {
 	}
 
-	public ConceptWord(String word, Concept concept, String locale,
+	public ConceptWord(String word, Concept concept, Locale locale,
 			String synonym) {
 		this.concept = concept;
 		this.word = word;
@@ -122,7 +123,7 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 	/**
 	 * @return Returns the locale.
 	 */
-	public String getLocale() {
+	public Locale getLocale() {
 		return locale;
 	}
 
@@ -130,7 +131,7 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 	 * @param locale
 	 *            The locale to set.
 	 */
-	public void setLocale(String locale) {
+	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
 

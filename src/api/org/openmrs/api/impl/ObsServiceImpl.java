@@ -25,6 +25,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.ComplexObs;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -37,9 +38,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
-import org.openmrs.logic.Aggregation;
-import org.openmrs.logic.Constraint;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -374,17 +372,10 @@ public class ObsServiceImpl implements ObsService {
 
 	/**
 	 * @see org.openmrs.api.ObsService#findObsByGroupId(java.lang.Integer)
+	 * @deprecated -- should use obs.getGroupMembers
 	 */
 	public List<Obs> findObsByGroupId(Integer obsGroupId) {
 		return getObsDAO().findObsByGroupId(obsGroupId);
-	}
-
-	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, org.openmrs.logic.Aggregation, org.openmrs.Concept, org.openmrs.logic.Constraint)
-	 */
-	public List<Obs> getObservations(Person who, Aggregation aggregation,
-			Concept question, Constraint constraint) {
-		return getObsDAO().getObservations(who, aggregation, question, constraint);
 	}
 
 	/**
@@ -420,9 +411,9 @@ public class ObsServiceImpl implements ObsService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate)
+	 * @see org.openmrs.api.ObsService#getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate)
 	 */
-	public List<Obs> getObservations(PatientSet patients, List<Concept> concepts, Date fromDate, Date toDate) {
+	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate) {
 		return getObsDAO().getObservations(patients, concepts, fromDate, toDate);
 	}
     

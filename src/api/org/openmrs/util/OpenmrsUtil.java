@@ -93,11 +93,15 @@ import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.CohortFilter;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.reporting.SearchArgument;
+import org.openmrs.xml.OpenmrsCycleStrategy;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.load.Persister;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -1147,23 +1151,111 @@ public class OpenmrsUtil {
     	return new SimpleDateFormat(pattern, Context.getLocale());
     }
     
+    public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history) {
+    	return toPatientFilter(search, history, null);
+    }
+    
+    /**
+     * Takes a String (e.g. a user-entered one) and parses it into an object of the specified class  
+     * 
+     * @param string
+     * @param clazz
+     * @return
+     */
+    public static Object parse(String string, Class clazz) {
+    	try {
+    		// If there's a valueOf(String) method, just use that (will cover at least String, Integer, Double, Boolean) 
+    		Method valueOfMethod = null;
+    		try {
+    			valueOfMethod = clazz.getMethod("valueOf", String.class );
+    		} catch (NoSuchMethodException ex) { }
+    		if (valueOfMethod != null) {
+    			return valueOfMethod.invoke(null, string);
+    		} else if (clazz.isEnum()) {
+        		// Special-case for enum types
+        		List<Enum> constants = Arrays.asList((Enum[]) clazz.getEnumConstants());
+				for (Enum e : constants)
+					if (e.toString().equals(string))
+						return e;
+				throw new IllegalArgumentException(string + " is not a legal value of enum class " + clazz);
+    		} else if (String.class.equals(clazz)) {
+        		return string;
+    		} else if (Location.class.equals(clazz)) {
+    			try {
+    				Integer.parseInt(string);
+    				LocationEditor ed = new LocationEditor();
+            		ed.setAsText(string);
+            		return ed.getValue();
+    			} catch (NumberFormatException ex) {
+    				return Context.getEncounterService().getLocationByName(string);
+    			}
+        	} else if (Concept.class.equals(clazz)) {
+        		ConceptEditor ed = new ConceptEditor();
+        		ed.setAsText(string);
+        		return ed.getValue();
+        	} else if (Program.class.equals(clazz)) {
+        		ProgramEditor ed = new ProgramEditor();
+        		ed.setAsText(string);
+        		return ed.getValue();
+        	} else if (ProgramWorkflowState.class.equals(clazz)) {
+        		ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
+        		ed.setAsText(string);
+        		return ed.getValue();
+			} else if (EncounterType.class.equals(clazz)) {
+				EncounterTypeEditor ed = new EncounterTypeEditor();
+				ed.setAsText(string);
+				return ed.getValue();
+			} else if (Form.class.equals(clazz)) {
+				FormEditor ed = new FormEditor();
+				ed.setAsText(string);
+				return ed.getValue();
+			} else if (Drug.class.equals(clazz)) {
+				DrugEditor ed = new DrugEditor();
+				ed.setAsText(string);
+				return ed.getValue();
+			} else if (PersonAttributeType.class.equals(clazz)) {
+				PersonAttributeTypeEditor ed = new PersonAttributeTypeEditor();
+				ed.setAsText(string);
+				return ed.getValue();
+			} else if (Cohort.class.equals(clazz)) {
+				CohortEditor ed = new CohortEditor();
+				ed.setAsText(string);
+				return ed.getValue();
+        	} else if (Date.class.equals(clazz)) {
+        		// TODO: this uses the date format from the current session, which could cause problems if the user changes it after searching. 
+        		DateFormat df = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+				CustomDateEditor ed = new CustomDateEditor(df, true, 10);
+				ed.setAsText(string);
+				return ed.getValue();
+        	} else if (Object.class.equals(clazz)) {
+        		// TODO: Decide whether this is a hack. Currently setting Object arguments with a String
+        		return string;
+        	} else {
+        		throw new IllegalArgumentException("Don't know how to handle class: " + clazz);
+        	}
+    	} catch (Exception ex) {
+    		log.error("error converting \"" + string + "\" to " + clazz, ex);
+    		throw new IllegalArgumentException(ex);
+    	}
+    }
+
     /**
      * Uses reflection to translate a PatientSearch into a PatientFilter  
      */
     @SuppressWarnings("unchecked")
-    public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history) {
+    public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history, EvaluationContext evalContext) {
     	if (search.isSavedSearchReference()) {
-    		PatientSearch ps = ((PatientSearchReportObject) Context.getReportService().getReportObject(search.getSavedSearchId())).getPatientSearch();
-    		return toPatientFilter(ps, history);
+    		PatientSearch ps = ((PatientSearchReportObject) Context.getReportObjectService().getReportObject(search.getSavedSearchId())).getPatientSearch();
+    		return toPatientFilter(ps, history, evalContext);
     	} else if (search.isSavedFilterReference()) {
-    		return Context.getReportService().getPatientFilterById(search.getSavedFilterId());
+    		return Context.getReportObjectService().getPatientFilterById(search.getSavedFilterId());
     	} else if (search.isSavedCohortReference()) {
     		return new CohortFilter(Context.getCohortService().getCohort(search.getSavedCohortId()));
     	} else if (search.isComposition()) {
     		if (history == null && search.requiresHistory())
     			throw new IllegalArgumentException("You can't evaluate this search without a history");
     		else
-    			return search.cloneCompositionAsFilter(history);
+    			return search.cloneCompositionAsFilter(history, evalContext);
     	} else {
 	    	Class clz = search.getFilterClass(); 
 	    	if (clz == null)
@@ -1179,6 +1271,8 @@ public class OpenmrsUtil {
 	        Class[] stringSingleton = { String.class };
 	        if (search.getArguments() != null) {
 	        	for (SearchArgument sa : search.getArguments()) {
+		        	if (log.isDebugEnabled())
+		        		log.debug("Looking at (" + sa.getPropertyClass() + ") " + sa.getName() + " -> " + sa.getValue());
 		        	PropertyDescriptor pd = null;
 		        	try {
 			        	pd = new PropertyDescriptor(sa.getName(), clz);
@@ -1189,7 +1283,18 @@ public class OpenmrsUtil {
 		        	Class<?> realPropertyType = pd.getPropertyType();
 		
 		        	// instantiate the value of the search argument
-		        	String valueAsString = sa.getValue();
+		        	String valueAsString = search.getArgumentValue(sa.getName());
+		        	if (evalContext != null && EvaluationContext.isExpression(valueAsString)) {
+		        		log.debug("found expression: " + valueAsString);
+		        		Object evaluated = evalContext.evaluateExpression(valueAsString);
+		        		if (evaluated != null) {
+		        			if (evaluated instanceof Date)
+		        				valueAsString = Context.getDateFormat().format((Date) evaluated); 
+		        			else
+		        				valueAsString = evaluated.toString();
+		        		}
+		        		log.debug("evaluated to: " + valueAsString);
+		        	}
 		        	Object value = null;
 		        	Class<?> valueClass = sa.getPropertyClass();
 		        	try {
@@ -1250,7 +1355,7 @@ public class OpenmrsUtil {
 							value = ed.getValue();
 			        	} else if (Date.class.equals(valueClass)) {
 			        		// TODO: this uses the date format from the current session, which could cause problems if the user changes it after searching. 
-			        		DateFormat df = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+			        		DateFormat df = Context.getDateFormat(); // new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
 							CustomDateEditor ed = new CustomDateEditor(df, true, 10);
 							ed.setAsText(valueAsString);
 							value = ed.getValue();
@@ -1338,6 +1443,43 @@ public class OpenmrsUtil {
     	}
     	
     	return false;
+    }
+
+    /**
+     * Get a serializer that will do the common type of serialization and deserialization.  
+     * Cycles of objects are taken into account
+     * 
+     * @return Serializer to do the (de)serialization
+     */
+    public static Serializer getSerializer() {
+	   return new Persister(new OpenmrsCycleStrategy());
+    }
+    
+	/**
+     * Get a short serializer that will only do the very basic serialization
+     * necessary.  This is controlled by the objects that are being serialized
+     * via the @Replace methods
+     * 
+     * @return Serializer to do the short (de)serialization
+     * 
+     * @see OpenmrsConstants#SHORT_SERIALIZATION
+     */
+    public static Serializer getShortSerializer() {
+	   return new Persister(new OpenmrsCycleStrategy(true));
+    }
+    
+    /**
+     * True/false whether the current serialization is supposed to be a short serialization. 
+     * A shortened serialization
+     * 
+     * This should be called from methods marked with the @Replace notation that take in
+     * a single <code>Map</code> parameter.
+     * 
+     * @param sessionMap current serialization session
+     * @return true/false whether or not to do the shortened serialization
+     */
+    public static boolean isShortSerialization(Map<?, ?> sessionMap) {
+    	return sessionMap.containsKey(OpenmrsConstants.SHORT_SERIALIZATION);
     }
     
     /**

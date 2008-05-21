@@ -327,7 +327,6 @@ public class Location implements java.io.Serializable, Attributable<Location>, S
 	public void setNeighborhoodCell(String neighborhoodCell) {
 		this.neighborhoodCell = neighborhoodCell;
 	}
-
 	
 	/**
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
@@ -340,7 +339,6 @@ public class Location implements java.io.Serializable, Attributable<Location>, S
 			return Collections.emptyList();
 		}
 	}
-
 	
 	/**
 	 * @see org.openmrs.Attributable#getPossibleValues()
@@ -353,7 +351,6 @@ public class Location implements java.io.Serializable, Attributable<Location>, S
 			return Collections.emptyList();
 		}
 	}
-
 	
 	/**
 	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
@@ -367,12 +364,18 @@ public class Location implements java.io.Serializable, Attributable<Location>, S
 		}
 	}
 
-	
 	/**
 	 * @see org.openmrs.Attributable#serialize()
 	 */
 	public String serialize() {
 		return "" + getLocationId();
+	}
+	
+	/**
+	 * @see org.openmrs.Attributable#getDisplayString()
+	 */
+	public String getDisplayString() {
+		return getName();
 	}
 
 	/**

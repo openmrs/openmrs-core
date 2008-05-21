@@ -35,7 +35,7 @@ public class ReportObjectValidator implements Validator {
 		//String clsName = c.getName();
 		// could also check if superclass is an AbstractReportObject
 		return c.getSuperclass().equals(AbstractReportObject.class); 
-		//return Helper.isStringInArray(clsName, ReportService.getAllReportObjectClasses());
+		//return Helper.isStringInArray(clsName, ReportObjectService.getAllReportObjectClasses());
 	}
 
 	

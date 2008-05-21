@@ -6,9 +6,11 @@
 <hibernate-mapping package="org.openmrs">
 
 	<class name="Cohort" table="cohort">
-		<id name="cohortId" type="java.lang.Integer" column="cohort_id">
+		<id name="cohortId" type="int" column="cohort_id">
 			<generator class="native" />
 		</id>
+
+		<discriminator column="cohort_id" insert="false" />
 		
 		<property name="guid" type="java.lang.String"
 			column="guid" length="36" />

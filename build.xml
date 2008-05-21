@@ -92,13 +92,13 @@
 			input="${diffFileInput}"
 			regexp="${openmrs.database.version.expected.regexp}"
 			select="\1"
-			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0" 
+			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0.0" 
 			casesensitive="false" />
 		<propertyregex property="openmrs.database.version.expected.short"
 			input="${openmrs.database.version.expected}"
-			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.([0-9]+)"
+			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.${openmrs.version.maintenance}\.([0-9][0-9]+)"
 			select="\1"
-			defaultValue="Error" />
+			defaultValue="Invalid Database Version" />
 		
 		<loadfile srcfile="${openmrs.version.revision.filename}" property="repositoryFileInput" />
 		<if>
@@ -122,10 +122,10 @@
 		</if>
 		<property 
 			name="openmrs.version.long" 
-			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.database.version.expected.short} Build ${openmrs.version.revision}"/>
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}.${openmrs.database.version.expected.short} ${openmrs.version.suffix} Build ${openmrs.version.revision}"/>
 		<property 
 			name="openmrs.version.short" 
-			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.database.version.expected.short}.${openmrs.version.revision}"/>
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}.${openmrs.database.version.expected.short}.${openmrs.version.revision}"/>
 		<echo message="version: ${openmrs.version.long}"/>
 		<property 
 			name="openmrs.api.name" 
@@ -291,8 +291,6 @@
 			<zipfileset dir="${commons-httpclient.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-io.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-lang.dir}" includes="*.jar" />
-			<zipfileset dir="${commons-httpclient.dir}" includes="*.jar" />
-			<zipfileset dir="${commons-codec.dir}" includes="*.jar" />
 			<zipfileset dir="${commons-logging.dir}" includes="*.jar" excludes="*api*.jar" />
 			<zipfileset dir="${database.dir}" includes="*.jar" />
 			<zipfileset dir="${dom4j.dir}" includes="*.jar" />
@@ -308,7 +306,7 @@
 			<zipfileset dir="${neal-reporting.dir}" includes="*.jar" />
 			<zipfileset dir="${saxon.dir}" includes="*.jar" />
 			<zipfileset dir="${simple.dir}" includes="*.jar" />
-			<zipfileset dir="${spring.dir}" includes="*.jar" excludes="*Mock*.jar"/>
+			<zipfileset dir="${spring.dir}" includes="*.jar" excludes="*Test*.jar"/>
 			<zipfileset dir="${stax.dir}" includes="*.jar" />
 			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
@@ -323,9 +321,6 @@
 			<classes dir="${build.dir}">
 				<include name="**/web/**/*.class" />
 				<include name="log4j.xml" />
-			</classes>
-			<classes dir="web/WEB-INF">
-				<include name="messages*.properties" />
 			</classes>
 			<lib file="${dist.dir}/${openmrs.api.name}" />
 			<lib src="${libs-zipped-temp}" />
@@ -353,9 +348,6 @@
 			<classes dir="${build.dir}" >
 				<include name="**/web/**/*.class" />
 				<include name="log4j.xml" />
-			</classes>
-			<classes dir="web/WEB-INF">
-				<include name="messages*.properties" />
 			</classes>
 		</war>
 	</target>
@@ -461,7 +453,7 @@
 			    <include name="**/*.class"/>
 			    <include name="**/*.java"/>
 			</fileset>-->
-			<fileset dir="${src.dir}/org/openmrs/arden">
+			<fileset dir="${src.dir}/api/org/openmrs/arden">
 			    <include name="**/ArdenBase*.java"/>
 			    <include name="**/*.txt"/>
 			    <include name="**/*.smap"/>
@@ -471,7 +463,8 @@
 		</delete>
 	</target>
 	
-	<target name="arden-make-antlr" depends="arden-clean-grammar" >
+	<!--target name="arden-make-antlr" depends="arden-clean-grammar" > -->
+	<target name="arden-make-antlr" >
 		<antlr target="${src.dir}/api/org/openmrs/arden/ArdenRecognizer.g">
 			<classpath path="lib/antlr/antlr_2.7.6.jar" />
 		</antlr>

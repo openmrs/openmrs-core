@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
@@ -205,7 +206,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		}
         
         if ( encounter == null )
-        	log.warn("after hibernate save, encoutner is null???");
+        	log.warn("after hibernate save, encounter is null???");
         else if (log.isDebugEnabled())
         	log.debug("AFTER UPDATE, encounter: " + encounter.getEncounterId() + ", " + encounter.getEncounterDatetime() + ", " + encounter.getEncounterType()
                 + ", " + encounter.getForm() + ", " + encounter.getLocation() + ", " + encounter.getPatient() + ", " + encounter.getPatientId()
@@ -334,5 +335,15 @@ public class HibernateEncounterDAO implements EncounterDAO {
      */
     public Location getLocationByGuid(String guid) {
 		return (Location) sessionFactory.getCurrentSession().createQuery("from Location l where l.guid = :guid").setString("guid", guid).uniqueResult();
-    }	
+    }
+    
+	/**
+     * @see org.openmrs.api.db.EncounterDAO#getSavedEncounterDatetime(org.openmrs.Encounter)
+     */
+    public Date getSavedEncounterDatetime(Encounter encounter) {
+	    SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery("select encounter_datetime from encounter where encounter_id = :encounterId");
+	    sql.setInteger("encounterId", encounter.getEncounterId());
+	    return (Date) sql.uniqueResult();
+    }
+	
 }

@@ -20,9 +20,11 @@ import java.util.Map;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSet;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
+import org.openmrs.api.OrderService;
 
 /**
  * Order-related database functions
@@ -208,4 +210,9 @@ public interface OrderDAO {
      * @return
      */
     public OrderType getOrderTypeByGuid(String guid);
+
+	/**
+     * @see OrderService#getOrdersByEncounter(Encounter)
+     */
+    public List<Order> getOrdersByEncounter(Encounter encounter);
 }

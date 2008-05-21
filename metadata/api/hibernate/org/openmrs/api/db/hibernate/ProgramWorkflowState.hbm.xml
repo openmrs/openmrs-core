@@ -10,6 +10,8 @@
 		<id name="programWorkflowStateId" type="java.lang.Integer" column="program_workflow_state_id">
 			<generator class="native" />
 		</id>
+
+		<discriminator column="program_workflow_state_id" insert="false" />
 		
 		<property name="guid" type="java.lang.String"
 			column="guid" length="36" />

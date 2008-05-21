@@ -13,12 +13,13 @@
  */
 package org.openmrs.reporting;
 
+import org.openmrs.Cohort;
 import org.openmrs.Location;
 import org.openmrs.api.PatientSetService.PatientLocationMethod;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 
-public class LocationPatientFilter extends AbstractPatientFilter implements
-		PatientFilter {
+public class LocationPatientFilter extends CachingPatientFilter {
 	
 	private Location location;
 	private PatientLocationMethod calculationMethod;
@@ -27,6 +28,16 @@ public class LocationPatientFilter extends AbstractPatientFilter implements
 		calculationMethod = PatientLocationMethod.PATIENT_HEALTH_CENTER;
 	}
 	
+	@Override
+    public String getCacheKey() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(getClass().getName()).append(".");
+	    sb.append(getCalculationMethod()).append(".");
+	    if (getLocation() != null)
+	    	sb.append(getLocation().getLocationId());
+	    return sb.toString();
+    }
+
 	public String getDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Patients who belong to ");
@@ -35,14 +46,9 @@ public class LocationPatientFilter extends AbstractPatientFilter implements
 		return sb.toString();
 	}
 	
-	public PatientSet filter(PatientSet input) {
-		PatientSet ps = Context.getPatientSetService().getPatientsHavingLocation(getLocation(), getCalculationMethod());
-		return input == null ? ps : input.intersect(ps);
-	}
-
-	public PatientSet filterInverse(PatientSet input) {
-		PatientSet ps = Context.getPatientSetService().getPatientsHavingLocation(getLocation(), getCalculationMethod());
-		return input.subtract(ps);
+	@Override
+	public Cohort filterImpl(EvaluationContext context) {
+		return Context.getPatientSetService().getPatientsHavingLocation(getLocation(), getCalculationMethod());
 	}
 
 	public boolean isReadyToRun() {

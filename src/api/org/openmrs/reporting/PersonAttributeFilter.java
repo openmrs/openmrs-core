@@ -13,10 +13,12 @@
  */
 package org.openmrs.reporting;
 
+import org.openmrs.Cohort;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 
-public class PersonAttributeFilter extends AbstractPatientFilter implements PatientFilter {
+public class PersonAttributeFilter extends CachingPatientFilter {
 
 	private PersonAttributeType attribute;
 	private String value;
@@ -26,6 +28,15 @@ public class PersonAttributeFilter extends AbstractPatientFilter implements Pati
 	 */
 	public PersonAttributeFilter() { }
 	
+	@Override
+    public String getCacheKey() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(getClass().getName()).append(".");
+	    sb.append(getAttribute()).append(".");
+	    sb.append(getValue());
+	    return sb.toString();
+    }
+
 	public String getDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Patients with ");
@@ -36,15 +47,10 @@ public class PersonAttributeFilter extends AbstractPatientFilter implements Pati
 		}
 		return sb.toString();
 	}
-	
-	public PatientSet filter(PatientSet input) {
-		PatientSet ps = Context.getPatientSetService().getPatientsHavingPersonAttribute(getAttribute(), getValue());
-		return input == null ? ps : input.intersect(ps);
-	}
 
-	public PatientSet filterInverse(PatientSet input) {
-		PatientSet ps = Context.getPatientSetService().getPatientsHavingPersonAttribute(getAttribute(), getValue());
-		return input.subtract(ps);
+	@Override
+	public Cohort filterImpl(EvaluationContext context) {
+		return Context.getPatientSetService().getPatientsHavingPersonAttribute(getAttribute(), getValue());
 	}
 
 	public boolean isReadyToRun() {

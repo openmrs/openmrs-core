@@ -83,12 +83,12 @@
 		<fileset dir="${commons-codec.dir}" includes="*.jar" />
 		<fileset dir="${commons-collections.dir}" includes="*.jar" />
 		<fileset dir="${commons-httpclient.dir}" includes="*.jar" />
-		<fileset dir="${commons-codec.dir}" includes="*.jar" />
 		<fileset dir="${dwr.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
     	<fileset dir="${hl7api.dir}" includes="*.jar" />
     	<fileset dir="${jfreechart.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
+		<fileset dir="${log4j.dir}" includes="*.jar" />
 		<fileset dir="${neal-reporting.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />
 		<fileset dir="${simple.dir}" includes="*.jar" />

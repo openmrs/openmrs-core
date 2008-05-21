@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
@@ -24,9 +25,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.PatientSet;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.springframework.transaction.TransactionStatus;
 
 /**
  * TODO add more tests to cover the methods in <code>UserService</code>
@@ -138,7 +137,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, allUsers.size());
 		
 		// there should still only be the one patient we created in the xml file
-		PatientSet allPatientsSet = Context.getPatientSetService().getAllPatients();
+		Cohort allPatientsSet = Context.getPatientSetService().getAllPatients();
 		assertEquals(1, allPatientsSet.getSize());
 	}
 	

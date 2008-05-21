@@ -17,6 +17,7 @@ public class OptionsForm {
 
 	private String defaultLocation = "";
 	private String defaultLocale = "";
+	private String proficientLocales = "";
 	private Boolean showRetiredMessage = true;
 	private Boolean verbose = false;
 	
@@ -160,6 +161,21 @@ public class OptionsForm {
 		this.verbose = verbose;
 	}
 
-		
+	/**
+	 * Sets the locales within which the user is proficient.
+     * 
+     * @param proficientLocales a comma-separated list of locales
+     */
+    public void setProficientLocales(String proficientLocales) {
+    	this.proficientLocales = proficientLocales;
+    }
+
+	/**
+	 * Returns the locales within which the user is proficient.
+     * 
+     */
+	public String getProficientLocales() {
+		return proficientLocales;
+	}
 
 }

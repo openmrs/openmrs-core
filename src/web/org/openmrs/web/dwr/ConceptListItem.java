@@ -52,7 +52,7 @@ public class ConceptListItem {
 		if (word != null) {
 			
 			Concept concept = word.getConcept();
-			Locale locale = new Locale(word.getLocale());
+			Locale locale = word.getLocale();
 			initialize(concept, locale);
 			synonym = word.getSynonym();
 		}

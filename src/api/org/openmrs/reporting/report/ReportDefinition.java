@@ -15,26 +15,15 @@ package org.openmrs.reporting.report;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
-import org.openmrs.Location;
-import org.openmrs.api.PatientSetService;
-import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
-import org.openmrs.reporting.PatientSet;
-
-import org.openmrs.reporting.export.CalculatedColumn;
-import org.openmrs.reporting.export.ConceptColumn;
-import org.openmrs.reporting.export.DataExportReportObject;
-import org.openmrs.reporting.export.ExportColumn;
-import org.openmrs.reporting.export.SimpleColumn;
 import org.openmrs.reporting.data.CohortDefinition;
 import org.openmrs.reporting.data.DatasetDefinition;
+import org.openmrs.reporting.export.DataExportReportObject;
 
 public class ReportDefinition extends AbstractReportObject implements Serializable {
 
@@ -63,7 +52,7 @@ public class ReportDefinition extends AbstractReportObject implements Serializab
     // private Cohort cohort = new Cohort();
     
     /* Patient set */
-    private PatientSet patientSet = new PatientSet();
+    private Cohort patientSet = new Cohort();
 
 	/* Default cohort definition - used if the report element does specify its own */
 	private CohortDefinition cohortDefinition = new CohortDefinition();
@@ -171,7 +160,7 @@ public class ReportDefinition extends AbstractReportObject implements Serializab
 	 * Gets the default patient set.
 	 * @return	the default patient set for this report
 	 */
-	public PatientSet getPatientSet() { 
+	public Cohort getPatientSet() { 
 		return patientSet;
 	}
 	
@@ -180,7 +169,7 @@ public class ReportDefinition extends AbstractReportObject implements Serializab
 	 * Sets the default patient set.
 	 * @param patientSet
 	 */
-	public void setPatientSet(PatientSet patientSet) { 
+	public void setPatientSet(Cohort patientSet) { 
 		this.patientSet = patientSet;
 	}
 	

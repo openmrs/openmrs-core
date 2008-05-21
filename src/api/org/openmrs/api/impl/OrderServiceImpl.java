@@ -543,5 +543,12 @@ public class OrderServiceImpl implements OrderService {
     public OrderType getOrderTypeByGuid(String guid) throws APIException {
 		return getOrderDAO().getOrderTypeByGuid(guid);
     }
+
+	/**
+     * @see org.openmrs.api.OrderService#getOrdersByEncounter(org.openmrs.Encounter)
+     */
+    public List<Order> getOrdersByEncounter(Encounter encounter) {
+	    return getOrderDAO().getOrdersByEncounter(encounter);
+    }
 }
 

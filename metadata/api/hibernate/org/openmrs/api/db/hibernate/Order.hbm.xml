@@ -25,6 +25,8 @@
         <generator class="native" />
     </id>
 
+    <discriminator column="order_id" insert="false" />
+
 		<property name="guid" type="java.lang.String"
 			column="guid" length="36" />
 

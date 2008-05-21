@@ -23,10 +23,12 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSet;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
+import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
@@ -134,7 +136,7 @@ public class HibernateOrderDAO implements
 
 		String voided = showVoided ? "" : "where voided = 0 ";
 				
-		return sessionFactory.getCurrentSession().createQuery("from Orders " + voided).list();
+		return sessionFactory.getCurrentSession().createQuery("from Order " + voided).list();
 	}
 
 	public List<Order> getOrders() throws DAOException {
@@ -308,6 +310,16 @@ public class HibernateOrderDAO implements
      */
     public OrderType getOrderTypeByGuid(String guid) {
 		return (OrderType) sessionFactory.getCurrentSession().createQuery("from OrderType ot where ot.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.OrderDAO#getOrdersByEncounter(org.openmrs.Encounter)
+     */
+    public List<Order> getOrdersByEncounter(Encounter encounter) {
+		Criteria c = sessionFactory.getCurrentSession()
+		                           .createCriteria(Order.class)
+		                           .add(Restrictions.eq("encounter", encounter));
+		return (List<Order>) c.list();    
     }
 
 }

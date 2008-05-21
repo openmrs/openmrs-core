@@ -40,6 +40,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
@@ -587,15 +588,15 @@ public class WebModuleUtil {
 		}
 		
 		if (skipRefresh == false) {
-			try {
-				if (dispatcherServlet != null)
-					dispatcherServlet.reInitFrameworkServlet();
-				if (dwrServlet != null)
-					dwrServlet.reInitServlet();
-			}
-			catch (ServletException se) {
-				log.warn("Unable to reinitialize webapplicationcontext for dispatcherservlet for module: " + mod.getName(), se);
-			}
+			//try {
+			//	if (dispatcherServlet != null)
+			//		dispatcherServlet.reInitFrameworkServlet();
+			//	if (dwrServlet != null)
+			//		dwrServlet.reInitServlet();
+			//}
+			//catch (ServletException se) {
+			//	log.warn("Unable to reinitialize webapplicationcontext for dispatcherservlet for module: " + mod.getName(), se);
+			//}
 		
 			refreshWAC(servletContext);
 		}

@@ -19,11 +19,9 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.PatientAnalysis;
-import org.openmrs.reporting.PatientFilter;
-import org.openmrs.reporting.PatientSet;
 
 public class DWRPatientSetService {
 
@@ -34,11 +32,11 @@ public class DWRPatientSetService {
 	}
 	
 	public void setMyPatientSet(String patientIds) {
-		Context.getPatientSetService().setMyPatientSet(PatientSet.parseCommaSeparatedPatientIds(patientIds));
+		Context.getPatientSetService().setMyPatientSet(new Cohort(patientIds));
 	}
 	
 	public String getMyPatientSet() {
-		return Context.getPatientSetService().getMyPatientSet().toCommaSeparatedPatientIds();
+		return Context.getPatientSetService().getMyPatientSet().getCommaSeparatedPatientIds();
 	}
 	
 	public Integer getMyPatientSetSize() {
@@ -47,7 +45,7 @@ public class DWRPatientSetService {
 	
 	public Vector<PatientListItem> getFromMyPatientSet(Integer fromIndex, Integer pageSize) {
 		Vector<PatientListItem> ret = new Vector<PatientListItem>();
-		List<Integer> temp = new ArrayList<Integer>(Context.getPatientSetService().getMyPatientSet().getPatientIds());
+		List<Integer> temp = new ArrayList<Integer>(Context.getPatientSetService().getMyPatientSet().getMemberIds());
 		if (fromIndex >= temp.size()) {
 			return ret;
 		}
@@ -100,17 +98,6 @@ public class DWRPatientSetService {
 
 	public void removeFromMyPatientSet(Integer ptId) {
 		Context.getPatientSetService().removeFromMyPatientSet(ptId);
-	}
-	
-	public void addFilterToMyAnalysis(Integer patientFilterId) {
-		PatientAnalysis analysis = Context.getPatientSetService().getMyPatientAnalysis();
-		PatientFilter pf = Context.getReportService().getPatientFilterById(patientFilterId);
-		analysis.addFilter(null, pf);
-	}
-	
-	public void removeFilterFromMyAnalysis(String patientFilterKey) {
-		PatientAnalysis analysis = Context.getPatientSetService().getMyPatientAnalysis();
-		analysis.removeFilter(patientFilterKey);
 	}
 
 }

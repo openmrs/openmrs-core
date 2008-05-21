@@ -47,7 +47,7 @@ public class ConceptTag extends BodyTagSupport {
 		
 		// Search for a concept by id
 		if (conceptId != null) {
-			c = cs.getConcept(conceptId);
+		c = cs.getConcept(conceptId);
 		} else if (conceptName != null) {
 			c = cs.getConceptByName(conceptName);
 		}
@@ -73,13 +73,13 @@ public class ConceptTag extends BodyTagSupport {
 			}
 		}
 		if (nameVar != null) {
-			ConceptName cName = c.getName(loc);
-			pageContext.setAttribute(nameVar, cName);
-			log.debug("Retrieved name " + cName.getName() + ", set to variable: " + nameVar);
+		ConceptName cName = c.getName(loc);
+		pageContext.setAttribute(nameVar, cName);
+		log.debug("Retrieved name " + cName.getName() + ", set to variable: " + nameVar);
 		}
 		
 		if (numericVar != null) {
-			pageContext.setAttribute(numericVar, cs.getConceptNumeric(conceptId));
+		pageContext.setAttribute(numericVar, cs.getConceptNumeric(conceptId));
 		}
         
         // If the Concept is a Set, get members of that Set

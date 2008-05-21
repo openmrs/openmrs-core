@@ -29,7 +29,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.ReportService;
+import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.reporting.export.DataExportUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -58,7 +58,7 @@ public class DataExportServlet extends HttpServlet {
 			return;
 		}
 		
-		ReportService rs = Context.getReportService();
+		ReportObjectService rs = Context.getReportObjectService();
 		DataExportReportObject dataExport = (DataExportReportObject)rs.getReportObject(Integer.valueOf(reportId));
 		
 		File file = DataExportUtil.getGeneratedFile(dataExport);

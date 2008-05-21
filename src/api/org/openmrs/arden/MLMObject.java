@@ -43,6 +43,23 @@ public class MLMObject {
 	private LinkedList<MLMEvaluateElement> evaluateList;
 	private HashMap<String, String> userVarMapFinal ;
 	private String className;
+	private String title;
+	private String author;
+	private String institution;
+	private String data;
+	private String logic;
+	private String action;
+	private String purpose;
+	private String explanation;
+	private String keywords;
+	private String citations;
+	private String links;
+	private String date;
+	private String specialist;
+	private int priority;
+	private double version;
+	private String type;
+	private String actionStr;
 	
 	// default constructor
 	public MLMObject(){
@@ -273,57 +290,64 @@ public class MLMObject {
 		thisList = evaluateList.listIterator(0);
 		
 		
-		while (thisList.hasNext()){		// Writes individual evaluate functions
-			Iterator iter1 = thisList.next().iterator();
-			while (iter1.hasNext()) {
-			    key = (String) iter1.next();	// else if
-			    retVal = writeEvaluateConcept(key, w);
-			    if(retVal == false){
-			    	retValEval = false;	   // Atleast 1 error
-			    }
-			}
-		}
+		
 		if(retValEval == false) {
 			return false;
 		}
 			
-		 w.append("\n@Override\npublic Result eval(LogicDataSource d, Patient p, Object[] args) {\n");
-		 w.append("\n\tpatient = p;\n\tdataSource = d;\n");
+		 w.append("\npublic Result eval(LogicContext context, Patient patient,\n" +
+		 		"Map<String, Object> parameters) throws LogicException {\n");
+		 w.append("\tString actionStr = \"\";\n");
+		 w.append("\tResult ruleResult = new Result();\n");
+		 w.append("\tBoolean ageOK = null;\n\n\n\ttry {\n");
+		 
 		 
 		 w.append("\tuserVarMap = new HashMap <String, String>();\n");
 		 w.append("\tfirstname = patient.getPersonName().getGivenName();\n");
 		 w.append("\tuserVarMap.put(\"firstname\", firstname);\n");
 		 w.append("\tinitAction();\n");		     
+		 /************************************************************************************************
+		  *   Do the LogicCriteria here 
+		  */
 		 
-		 w.append("\tResult ruleResult = new Result(\"Evaluating Rule - " + classname + "...\");\n");	
-		 w.append("\tString actionStr = \"\";\n\n");	
-		 w.append("\tif(evaluate_logic(ruleResult)){\n");	
+		 while (thisList.hasNext()){		// Writes individual evaluate functions
+				Iterator iter1 = thisList.next().iterator();
+				while (iter1.hasNext()) {
+				    key = (String) iter1.next();	// else if
+				    retVal = writeEvaluateConcept(key, w);
+				    if(retVal == false){
+				    	retValEval = false;	   // Atleast 1 error
+				    }
+				}
+			}
+		 /***********************************************************************************************/
+		 
+		 w.append("\n\tif(evaluate_logic(ruleResult)){\n");	
 		 w.append("\t\tactionStr = doAction();\n");
-		 w.append("\t\truleResult.setValueText(\"Evaluating Rule - " + classname + "...............*****CONCLUDED TRUE****\");\n");
-			
-		 w.append("\t\t//ruleResult.debug(0);\n");
-		 w.append("\t\treturn new Result(actionStr);\n");
+		 w.append("\t\truleResult.clear();\n");
+		 w.append("\t\truleResult.add(new Result(actionStr));\n");
+		 w.append("\t\treturn ruleResult;\n");
 		 w.append("\n\t}\n\n");
 		
-		 w.append("\truleResult.setValueText(\"Evaluating Rule - " + classname + "...............*****CONCLUDED FALSE****\");\n");
-		 w.append("\treturn ruleResult;\n");	
-		 w.append("\n}\n");
-		
+		 w.append("\n} catch (LogicException e) {\n");
+		 w.append("\t\treturn Result.emptyResult();");
+		 w.append("\n}\n\treturn ruleResult;\n}\n\n");
+		 
 		 w.append("\n");
 	     w.append("private boolean evaluate_logic(Result valueMap) {\n");
 
 	     w.append("\tboolean retVal = false;\n");
-	     w.append("\tResult val;\n");
-	 
-	     thisList = evaluateList.listIterator(0);   // Start the Big Evaluate()
-	     while (thisList.hasNext()){
-	    	 Iterator iter = thisList.next().iterator();
-	    	 retVal = WriteLogic(iter, w);
-	    	 w.flush();
-	     }
-	    if(retVal){				// The WriteLogic function did not find a standalone conclude
-	    	w.append("\t\treturn retVal;\n");
-	    }
+	     w.append("\tif(valueMap.exists())\n\t{\n");
+	     w.append("\t\t//conclude here\n\t\tretVal = true;\n\t\treturn retVal;\n\t}\n\t\treturn retVal;");
+	   //  thisList = evaluateList.listIterator(0);   // Start the Big Evaluate()
+	   //  while (thisList.hasNext()){
+	   // 	 Iterator iter = thisList.next().iterator();
+	   // 	 retVal = WriteLogic(iter, w);
+	   // 	 w.flush();
+	   //  }
+	    //if(retVal){				// The WriteLogic function did not find a standalone conclude
+	   // 	w.append("\t\treturn retVal;\n");
+	   // }
 	    w.append("\n\t}");
 	 	w.append("\n");
 	}
@@ -947,4 +971,109 @@ public class MLMObject {
 	public String getClassName() {
 		return className.trim();
 	}
+	
+	public void setTitle(String s) {
+	 title = s.trim();
+		
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setAuthor(String s) {
+		 author = s.trim();
+	}
+	public String getAuthor() {
+			return author;
+	}
+	public void setInstitution(String s) {
+		 institution = s.trim();
+			
+		}
+	public String getInstitution() {
+			return institution;
+	}
+	public void setPriority(String s) {
+		 priority = Integer.parseInt(s.trim());
+		}
+	public Integer getPriority() {
+			return priority;
+	}
+	public void setPurpose(String s) {
+		 purpose = s.trim();
+		}
+	public String getPurpose() {
+			return purpose;
+	}
+	public void setExplanation(String s) {
+		 explanation = s.trim();
+		}
+	public String getExplanation() {
+			return explanation;
+	}
+	public void setKeywords(String s) {
+		 keywords = s.trim();
+	}
+	public String getKeywords() {
+		return keywords;
+    }
+	public void setSpecialist(String s) {
+		 specialist = s.trim();
+	}
+	public String getSpecialist() {
+		return specialist;
+    }
+	public void setLinks(String s) {
+		 links = s.trim();
+	}
+	public String getLinks() {
+		return links;
+    }
+	public void setCitations(String s) {
+		 citations = s.trim();
+	}
+	public String getCitations() {
+		return citations;
+    }
+	public void setAction(String s) {
+		 action = s.trim();
+	}
+	public String getAction() {
+		return action;
+    }
+	public void setDate(String s) {
+		 date = s.trim();
+	}
+	public String getDate() {
+		return date;
+    }
+	public void setData(String s) {
+		 data = s.trim();
+	}
+	public String getData() {
+		return data;
+    }
+	public void setLogic(String s) {
+		 logic = s.trim();
+	}
+	public String getLogic() {
+		return logic;
+    }
+	public void setVersion(String s) {
+		 version = Double.valueOf(s.trim());
+	}
+	public Double getVersion() {
+		return version;
+    }
+	public void setType(String s) {
+		 type = s.trim();
+	}
+	public String getType() {
+		return type;
+    }
+	public void setActionStr(String s) {
+		 actionStr = s.trim();
+	}
+	public String getActionStr() {
+		return actionStr;
+   }
 }

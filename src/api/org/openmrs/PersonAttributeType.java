@@ -16,10 +16,14 @@ package org.openmrs;
 import java.util.Date;
 
 import org.openmrs.synchronization.Synchronizable;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * PersonAttributeType 
  */
+@Root(strict=false)
 public class PersonAttributeType implements java.io.Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 2112313431211L;
@@ -29,7 +33,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	private String format;
 	private Integer foreignKey;
 	private String description;
-	private Boolean searchable;
+	private Boolean searchable = false;
 	private User creator;
 	private Date dateCreated;
 	private User changedBy;
@@ -53,6 +57,9 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 		this.personAttributeTypeId = PersonAttributeTypeId;
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getPersonAttributeTypeId() == null) return super.hashCode();
 		return 7 * this.getPersonAttributeTypeId().hashCode();
@@ -78,6 +85,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the creator.
 	 */
+	@Element(required=true)
 	public User getCreator() {
 		return creator;
 	}
@@ -85,6 +93,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @param creator The creator to set.
 	 */
+	@Element(required=true)
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -92,6 +101,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Element(required=true)
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -99,6 +109,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
+	@Element(required=true)
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -106,6 +117,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the description.
 	 */
+	@Element(data=true,required=false)
 	public String getDescription() {
 		return description;
 	}
@@ -113,6 +125,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @param description The description to set.
 	 */
+	@Element(data=true,required=false)
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -120,6 +133,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the name.
 	 */
+	@Element(data=true,required=false)
 	public String getName() {
 		return name;
 	}
@@ -127,6 +141,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @param name The name to set.
 	 */
+	@Element(data=true,required=false)
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -134,6 +149,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the format.
 	 */
+	@Element(data=true,required=false)
 	public String getFormat() {
 		return format;
 	}
@@ -141,6 +157,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @param format The format to set.
 	 */
+	@Element(data=true,required=false)
 	public void setFormat(String format) {
 		this.format = format;
 	}
@@ -148,6 +165,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @return the foreignKey
 	 */
+	@Attribute(required=false)
 	public Integer getForeignKey() {
 		return foreignKey;
 	}
@@ -155,6 +173,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @param foreignKey the foreignKey to set
 	 */
+	@Attribute(required=false)
 	public void setForeignKey(Integer foreignKey) {
 		this.foreignKey = foreignKey;
 	}
@@ -162,6 +181,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the PersonAttributeTypeId.
 	 */
+	@Attribute(required=false)
 	public Integer getPersonAttributeTypeId() {
 		return personAttributeTypeId;
 	}
@@ -169,6 +189,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @param PersonAttributeTypeId The PersonAttributeTypeId to set.
 	 */
+	@Attribute(required=false)
 	public void setPersonAttributeTypeId(Integer PersonAttributeTypeId) {
 		this.personAttributeTypeId = PersonAttributeTypeId;
 	}
@@ -176,6 +197,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @return the changedBy
 	 */
+	@Element(required=false)
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -183,6 +205,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @param changedBy the changedBy to set
 	 */
+	@Element(required=false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -190,6 +213,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @return the dateChanged
 	 */
+	@Element(required=false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -197,6 +221,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @param dateChanged the dateChanged to set
 	 */
+	@Element(required=false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -211,6 +236,7 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @return the searchable status
 	 */
+	@Attribute(required=false)
 	public Boolean getSearchable() {
 		return searchable;
 	}
@@ -218,10 +244,14 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	/**
 	 * @param searchable the searchable to set
 	 */
+	@Attribute(required=false)
 	public void setSearchable(Boolean searchable) {
 		this.searchable = searchable;
 	}
 
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return this.name;
 	}

@@ -228,61 +228,18 @@ public boolean writeEvaluate(String key, Writer w) throws Exception{
 	   if(conceptEvalWritten){
 		   return true;         // we have a function that reads this concept as per READ statement
 	   }
-	   
+	   String cn = getConcept();
+	   	   
 	   if(!key.startsWith("Conclude") &&  !key.startsWith("ELSE") &&  !key.startsWith("ENDIF")
 			   && !key.equals("AND")){
-		   String cn = getConcept();
-		   concept = Context.getConceptService().getConceptByName(cn);
+		   /***************************************************************************************
+		    * 
+		    **************************************************************************************/
+		   w.append("\n\t\truleResult.add(logicService.eval(\n\t\t\t\tpatient,\n\t\t\t\tnew LogicCriteria(\"" + cn + "\").contains(\n\t\t\t\t\t");
+		   w.append("\"" + getAnswerStr()+"\").last()));");
 		   
-		   if(dbAccessRequired){
-			   if(concept != null){
-			   w.append("private Result " + key + "(){\n");
-			   w.append("\tConcept c = new Concept();\n");
-			   w.append("\tc.setConceptId(" + Integer.toString(concept.getConceptId()) + "); // " + cn + "\n");
-		       
-			 //  if(readType != null && !readType.equals("")  ){
-				   if(hasWhere){
-					   w.append("\t return dataSource.eval(patient, Aggregation" +  getReadType() + ", c, DateConstraint." + whereType 
-							   + "(Duration."  /* +  durationType + "(" */ +  durationOp + "(" +  durationVal + ")) );\n");
-					   
-					   //w.append("\treturn dataSource.eval(patient, ardenClause.concept(c)." + readType + "(" + howMany + ")." + whereType + "()." + durationType + "()." + durationOp + "(" + durationVal + "));\n");
-				    }
-				   else {
-					   w.append("\t return dataSource.eval(patient, Aggregation" +  getReadType() + ", c, null);\n");
-					   
-					   //w.append("\treturn dataSource.eval(patient, ardenClause.concept(c)." + readType+ "(" + howMany + "));\n");
-				   }
-			   //  }
-			     w.append("}\n\n");
-			   }
-			   else {
-				 System.out.println("Compiler error - No concept found in the dictionary: " + cn );
-				 error = "Compiler error - No concept found in the dictionary: " + cn;
-				 retVal = false;
-				// w.append("private ArdenValue " + key + "(){\n");
-				// w.append("\treturn null;\n");
-				// w.append("}\n\n");  
-			   }
-			   conceptEvalWritten = true;		// Finished writing
-			   
-		   }  // end of DB access required
-		   else {  // No DB access, simply conclude or else conclude
-			   if(readType != null && readType.equals("call")) {
-				   //w.append("private Result " + "call_" +cn + "(){\n");
-				   //w.append("\tResult ardenValue;\n");
-			       //w.append("\tRule mlm;\n\n");
-				   
-			       //w.append("mlm = new " + cn + "(patient, dataSource);\n");
-			       //w.append("if(mlm != null) {\n\t\tardenValue = mlm.eval(patient, dataSource);\n\t\t return ardenValue;\n}\nelse {return null;}");
-			   }
-			   else {  
-			   	w.append("\t\tString val = userVarMap.get( \"" + key + "\");\n");
-			   	w.append("\t\tif(val == \"false\") {retVal = false;}\n");
-			   	w.append("\t\tif(val == \"true\") {retVal = true;}\n");
-			   }
-			   	
-		   }
-		} 
+		   
+	   } 
        
 	   return retVal;
    }
@@ -523,3 +480,59 @@ public boolean writeEvaluate(String key, Writer w) throws Exception{
 		   return retStr;
 	}
 }
+
+
+
+
+//String cn = getConcept();
+//concept = Context.getConceptService().getConceptByName(cn);
+
+//if(dbAccessRequired){
+//	   if(concept != null){
+//	   w.append("private Result " + key + "(){\n");
+//	   w.append("\tConcept c = new Concept();\n");
+//	   w.append("\tc.setConceptId(" + Integer.toString(concept.getConceptId()) + "); // " + cn + "\n");
+    
+//	 //  if(readType != null && !readType.equals("")  ){
+//		   if(hasWhere){
+//			   w.append("\t return dataSource.eval(patient, Aggregation" +  getReadType() + ", c, DateConstraint." + whereType 
+//					   + "(Duration."  /* +  durationType + "(" */ +  durationOp + "(" +  durationVal + ")) );\n");
+			   
+//			   //w.append("\treturn dataSource.eval(patient, ardenClause.concept(c)." + readType + "(" + howMany + ")." + whereType + "()." + durationType + "()." + durationOp + "(" + durationVal + "));\n");
+//		    }
+//		   else {
+//			   w.append("\t return dataSource.eval(patient, Aggregation" +  getReadType() + ", c, null);\n");
+			   
+//			   //w.append("\treturn dataSource.eval(patient, ardenClause.concept(c)." + readType+ "(" + howMany + "));\n");
+//		   }
+	   //  }
+//	     w.append("}\n\n");
+//	   }
+//	   else {
+//		 System.out.println("Compiler error - No concept found in the dictionary: " + cn );
+//		 error = "Compiler error - No concept found in the dictionary: " + cn;
+//		 retVal = false;
+//		// w.append("private ArdenValue " + key + "(){\n");
+//		// w.append("\treturn null;\n");
+//		// w.append("}\n\n");  
+//	   }
+//	   conceptEvalWritten = true;		// Finished writing
+//	   
+//}  // end of DB access required
+//else {  // No DB access, simply conclude or else conclude
+//	   if(readType != null && readType.equals("call")) {
+//		   //w.append("private Result " + "call_" +cn + "(){\n");
+//		   //w.append("\tResult ardenValue;\n");
+//	       //w.append("\tRule mlm;\n\n");
+		   
+//	       //w.append("mlm = new " + cn + "(patient, dataSource);\n");
+//	       //w.append("if(mlm != null) {\n\t\tardenValue = mlm.eval(patient, dataSource);\n\t\t return ardenValue;\n}\nelse {return null;}");
+//	   }
+//	   else {  
+//	   	w.append("\t\tString val = userVarMap.get( \"" + key + "\");\n");
+//	   	w.append("\t\tif(val == \"false\") {retVal = false;}\n");
+//	   	w.append("\t\tif(val == \"true\") {retVal = true;}\n");
+//	   }
+	   	
+//}
+

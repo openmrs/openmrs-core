@@ -20,7 +20,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.ReportService;
+import org.openmrs.report.EvaluationContext;
+import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.reporting.export.DataExportUtil;
 import org.openmrs.scheduler.TaskDefinition;
@@ -35,8 +36,8 @@ public class GenerateDataExportTask extends AbstractTask {
 
 	// Instance of configuration information for task
 	private String idString = "";
-
-
+	private EvaluationContext context;
+	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(org.openmrs.scheduler.TaskConfig)
 	 */
@@ -45,19 +46,24 @@ public class GenerateDataExportTask extends AbstractTask {
 		this.idString = definition.getProperty("dataExportIds");
 	} 
 	
+	public void setEvaluationContext(EvaluationContext context) {
+		this.context = context;
+	}
+	
+	public EvaluationContext getEvaluationContext( ) {
+		return this.context;
+	}
+
 	/** 
 	 *  Process the next form entry in the database and then remove the form entry from the database.
 	 */
-	public void execute() {
+	public void execute( ) {
 		Context.openSession();
 		try {
 			log.debug("Generating data exports...");
 			
-			if (!Context.isAuthenticated()) { 
+			if (!Context.isAuthenticated())
 				authenticate();
-			}
-			
-			authenticate();
 			
 			if (idString != null && idString.length() > 0) {
 				idString = idString.replace(",", " ");
@@ -65,7 +71,7 @@ public class GenerateDataExportTask extends AbstractTask {
 				String[] ids = idString.split(" ");
 				
 				List<DataExportReportObject> reports = new Vector<DataExportReportObject>();
-				ReportService rs = Context.getReportService();
+				ReportObjectService rs = Context.getReportObjectService();
 				
 				for (String id : ids) {
 					if (id != null) {
@@ -77,7 +83,7 @@ public class GenerateDataExportTask extends AbstractTask {
 					}
 				}
 				
-				DataExportUtil.generateExports(reports);
+				DataExportUtil.generateExports(reports, this.getEvaluationContext());
 			}
 			
 		} catch (Exception e) {
@@ -88,5 +94,5 @@ public class GenerateDataExportTask extends AbstractTask {
 		}
 		
 	}
-
+	
 }

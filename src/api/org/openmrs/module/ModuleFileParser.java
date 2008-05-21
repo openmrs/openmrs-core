@@ -181,6 +181,34 @@ public class ModuleFileParser {
 			if (packageName == null || packageName.length() == 0)
 				throw new ModuleException("package cannot be empty", name);
 
+			// look for log4j.xml in the root of the module
+			Document log4jDoc = null;
+			try {
+	            ZipEntry log4j = jarfile.getEntry("log4j.xml");
+	            if (log4j != null) {
+					InputStream log4jStream = jarfile.getInputStream(log4j);
+
+					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+					DocumentBuilder db = dbf.newDocumentBuilder();
+					db.setEntityResolver(new EntityResolver() {
+						public InputSource resolveEntity(String publicId,
+						        String systemId) throws SAXException,
+						        IOException {
+							// When asked to resolve external entities (such as
+							// a
+							// DTD) we return an InputSource
+							// with no data at the end, causing the parser to
+							// ignore
+							// the DTD.
+							return new InputSource(new StringReader(""));
+						}
+					});
+
+					log4jDoc = db.parse(log4jStream);
+				}
+            } catch (Exception e) {
+            }
+
 			// create the module object
 			module = new Module(name, moduleId, packageName, author, desc,
 			        version);
@@ -212,7 +240,9 @@ public class ModuleFileParser {
 			        jarfile));
 
 			module.setConfig(configDoc);
-
+			
+			module.setLog4j(log4jDoc);
+			
 			module.setFile(moduleFile);
 		} finally {
 			try {

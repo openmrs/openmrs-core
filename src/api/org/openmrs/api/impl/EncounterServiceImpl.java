@@ -36,6 +36,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Encounter-related services
@@ -251,6 +252,21 @@ public class EncounterServiceImpl implements EncounterService {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_ENCOUNTERS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_ENCOUNTERS);
 
+		// If we are changing encounter.encounterDatetime, then we need to also apply that
+		// to Obs that inherited their obsDatetime from the encounter in the first place
+		if (encounter.getEncounterId() != null) {
+			Date originalDate = dao.getSavedEncounterDatetime(encounter);
+			Date newDate = encounter.getEncounterDatetime();
+			if (OpenmrsUtil.compare(originalDate, newDate) != 0) {
+				for (Obs obs : encounter.getAllObs()) {
+					if (OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
+						obs.setObsDatetime(newDate);
+						Context.getObsService().updateObs(obs);
+					}
+				}
+			}
+		}
+		
 		getEncounterDAO().updateEncounter(encounter);
 		
 		// Our data model duplicates the patient column to allow for observations to 
@@ -258,8 +274,18 @@ public class EncounterServiceImpl implements EncounterService {
 		// Therefore, encounter.patient must always equal encounter.observations[0-n].patient
 		Patient p = encounter.getPatient();
 		for (Obs obs : Context.getObsService().getObservations(encounter)) {
-			obs.setPerson(p);
-			Context.getObsService().updateObs(obs);
+			if (!p.equals(obs.getPerson())) {
+				obs.setPerson(p);
+				Context.getObsService().updateObs(obs);
+			}
+		}
+		
+		// same goes for Orders
+		for (Order o : Context.getOrderService().getOrdersByEncounter(encounter)) {
+			if (!p.equals(o.getPatient())) {
+				o.setPatient(p);
+				Context.getOrderService().updateOrder(o);
+			}
 		}
 	}
 	

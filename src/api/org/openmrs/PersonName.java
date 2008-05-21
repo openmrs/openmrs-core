@@ -24,11 +24,15 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 import org.springframework.util.StringUtils;
 
 /**
  * A Person can have zero to n PersonName(s).
  */
+@Root(strict=false)
 public class PersonName implements java.io.Serializable, Cloneable, Comparable<PersonName>, Synchronizable {
 
 	public static final long serialVersionUID = 4353L;
@@ -73,8 +77,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	// Constructors
 
 	/** default constructor */
-	public PersonName() {
-	}
+	public PersonName() { }
 
 	/** constructor with id */
 	public PersonName(Integer personNameId) {
@@ -223,6 +226,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the creator.
 	 */
+	@Element(required=true)
 	public User getCreator() {
 		return creator;
 	}
@@ -230,6 +234,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param creator The creator to set.
 	 */
+	@Element(required=true)
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -237,6 +242,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Element(required=true)
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -244,6 +250,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
+	@Element(required=true)
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -251,6 +258,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the dateVoided.
 	 */
+	@Element(required=false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -258,6 +266,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
+	@Element(required=false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -265,6 +274,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the degree.
 	 */
+	@Element(data=true,required=false)
 	public String getDegree() {
 		return degree;
 	}
@@ -272,6 +282,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param degree The degree to set.
 	 */
+	@Element(data=true,required=false)
 	public void setDegree(String degree) {
 		this.degree = degree;
 	}
@@ -279,6 +290,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the familyName.
 	 */
+	@Element(data=true,required=false)
 	public String getFamilyName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS)
 			return OpenmrsConstants.OBSCURE_PATIENTS_FAMILY_NAME;
@@ -288,6 +300,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param familyName The familyName to set.
 	 */
+	@Element(data=true,required=false)
 	public void setFamilyName(String familyName) {
 		this.familyName = familyName;
 	}
@@ -295,6 +308,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the familyName2.
 	 */
+	@Element(data=true,required=false)
 	public String getFamilyName2() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS)
 			return null;
@@ -304,6 +318,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param familyName2 The familyName2 to set.
 	 */
+	@Element(data=true,required=false)
 	public void setFamilyName2(String familyName2) {
 		this.familyName2 = familyName2;
 	}
@@ -311,6 +326,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the familyNamePrefix.
 	 */
+	@Element(data=true,required=false)
 	public String getFamilyNamePrefix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS)
 			return null;
@@ -320,6 +336,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param familyNamePrefix The familyNamePrefix to set.
 	 */
+	@Element(data=true,required=false)
 	public void setFamilyNamePrefix(String familyNamePrefix) {
 		this.familyNamePrefix = familyNamePrefix;
 	}
@@ -327,6 +344,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the familyNameSuffix.
 	 */
+	@Element(data=true,required=false)
 	public String getFamilyNameSuffix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS)
 			return null;
@@ -336,6 +354,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param familyNameSuffix The familyNameSuffix to set.
 	 */
+	@Element(data=true,required=false)
 	public void setFamilyNameSuffix(String familyNameSuffix) {
 		this.familyNameSuffix = familyNameSuffix;
 	}
@@ -343,6 +362,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the givenName.
 	 */
+	@Element(data=true,required=false)
 	public String getGivenName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS)
 			return OpenmrsConstants.OBSCURE_PATIENTS_GIVEN_NAME;
@@ -352,6 +372,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param givenName The givenName to set.
 	 */
+	@Element(data=true,required=false)
 	public void setGivenName(String givenName) {
 		this.givenName = givenName;
 	}
@@ -359,6 +380,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the middleName.
 	 */
+	@Element(data=true,required=false)
 	public String getMiddleName() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS)
 			return OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME;
@@ -368,6 +390,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param middleName The middleName to set.
 	 */
+	@Element(data=true,required=false)
 	public void setMiddleName(String middleName) {
 		this.middleName = middleName;
 	}
@@ -375,6 +398,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the person.
 	 */
+	@Element(required=true)
 	public Person getPerson() {
 		return person;
 	}
@@ -382,6 +406,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param person The person to set.
 	 */
+	@Element(required=true)
 	public void setPerson(Person person) {
 		this.person = person;
 	}
@@ -389,6 +414,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the personNameId.
 	 */
+	@Attribute(required=true)
 	public Integer getPersonNameId() {
 		return personNameId;
 	}
@@ -396,6 +422,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param personNameId The personNameId to set.
 	 */
+	@Attribute(required=true)
 	public void setPersonNameId(Integer personNameId) {
 		this.personNameId = personNameId;
 	}
@@ -409,6 +436,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 		return preferred;
 	}
 	
+	@Attribute(required=true)
 	public Boolean getPreferred() {
 		return isPreferred();
 	}
@@ -416,6 +444,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param preferred The preferred to set.
 	 */
+	@Attribute(required=true)
 	public void setPreferred(Boolean preferred) {
 		this.preferred = preferred;
 	}
@@ -423,6 +452,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the prefix.
 	 */
+	@Element(data=true,required=false)
 	public String getPrefix() {
 		if (OpenmrsConstants.OBSCURE_PATIENTS)
 			return null;
@@ -432,6 +462,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param prefix The prefix to set.
 	 */
+	@Element(data=true,required=false)
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
@@ -446,6 +477,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @see #isVoided()
 	 */
+	@Attribute(required=true)
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -453,6 +485,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param voided The voided to set.
 	 */
+	@Attribute(required=true)
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
@@ -460,6 +493,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the voidedBy.
 	 */
+	@Element(required=false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -467,6 +501,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param voidedBy The voidedBy to set.
 	 */
+	@Element(required=false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
@@ -474,6 +509,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the voidReason.
 	 */
+	@Element(data=true,required=false)
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -481,6 +517,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param voidReason The voidReason to set.
 	 */
+	@Element(data=true,required=false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
@@ -488,6 +525,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the changedBy.
 	 */
+	@Element(required=false)
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -495,6 +533,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param changedBy The changedBy to set.
 	 */
+	@Element(required=false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -502,6 +541,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @return Returns the dateChanged.
 	 */
+	@Element(required=false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -509,6 +549,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	/**
 	 * @param dateChanged The dateChanged to set.
 	 */
+	@Element(required=false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}

@@ -17,15 +17,18 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
-public class ObsPatientFilter extends AbstractPatientFilter implements PatientFilter {
+public class ObsPatientFilter extends CachingPatientFilter {
 
+    private static final long serialVersionUID = 1L;
 	private Concept question;
 	private PatientSetService.Modifier modifier;
 	private PatientSetService.TimeModifier timeModifier;
@@ -42,6 +45,27 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 		super.setSubType("Observation Patient Filter");
 	}
 	
+	@Override
+    public String getCacheKey() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(getClass().getName()).append(".");
+	    if (getQuestion() != null)
+	    	sb.append(getQuestion().getConceptId());
+	    sb.append(".");
+	    sb.append(getModifier()).append(".");
+	    sb.append(getTimeModifier()).append(".");
+	    sb.append(OpenmrsUtil.fromDateHelper(null,
+	                                         getWithinLastDays(), getWithinLastMonths(),
+	                                         getUntilDaysAgo(), getUntilMonthsAgo(),
+	                                         getSinceDate(), getUntilDate())).append(".");
+	    sb.append(OpenmrsUtil.toDateHelper(null,
+	                                       getWithinLastDays(), getWithinLastMonths(),
+	                                       getUntilDaysAgo(), getUntilMonthsAgo(),
+	                                       getSinceDate(), getUntilDate())).append(".");
+	    sb.append(getValue());
+	    return sb.toString();
+    }
+
 	public boolean isReadyToRun() {
 		if (question == null)
 			return value != null && (value instanceof Concept);
@@ -83,19 +107,12 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 		}
 	}
 	
-	public PatientSet filter(PatientSet input) {
+	@Override
+	public Cohort filterImpl(EvaluationContext context) {
 		PatientSetService service = Context.getPatientSetService();
-		PatientSet ps = service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value,
+		return service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value,
 				OpenmrsUtil.fromDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()),
 				OpenmrsUtil.toDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()) );
-		return input == null ? ps : input.intersect(ps);
-	}
-
-	public PatientSet filterInverse(PatientSet input) {
-		PatientSetService service = Context.getPatientSetService();
-		return input.subtract(service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value,
-				OpenmrsUtil.fromDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()),
-				OpenmrsUtil.toDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()) ));
 	}
 	
 	public String getDescription() {
@@ -232,5 +249,5 @@ public class ObsPatientFilter extends AbstractPatientFilter implements PatientFi
 	public void setUntilMonthsAgo(Integer untilMonthsAgo) {
 		this.untilMonthsAgo = untilMonthsAgo;
 	}
-	
+
 }

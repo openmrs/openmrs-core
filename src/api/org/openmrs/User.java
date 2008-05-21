@@ -13,17 +13,26 @@
  */
 package org.openmrs;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.synchronization.Synchronizable;
+import org.openmrs.util.LocaleFactory;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.load.Replace;
+import org.simpleframework.xml.load.Validate;
 
 /**
  * Defines a User in the system.  A user is simply an extension
@@ -62,6 +71,9 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
+
+	private List<Locale> proficientLocales = null;
+	private String parsedProficientLocalesProperty = "";
 
 	// Constructors
 
@@ -289,6 +301,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the systemId.
 	 */
+	@Attribute(required=false)
 	public String getSystemId() {
 		return systemId;
 	}
@@ -296,6 +309,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @param systemId The systemId to set.
 	 */
+	@Attribute(required=false)
 	public void setSystemId(String systemId) {
 		this.systemId = systemId;
 	}
@@ -303,6 +317,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the userId.
 	 */
+	@Attribute(required=true)
 	public Integer getUserId() {
 		return userId;
 	}
@@ -310,6 +325,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @param userId The userId to set.
 	 */
+	@Attribute(required=true)
 	public void setUserId(Integer userId) {
 		super.setPersonId(userId);
 		this.userId = userId;
@@ -329,6 +345,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the username.
 	 */
+	@Attribute(required=false)
 	public String getUsername() {
 		return username;
 	}
@@ -336,6 +353,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @param username The username to set.
 	 */
+	@Attribute(required=false)
 	public void setUsername(String username) {
 		this.username = username;
 	}
@@ -421,6 +439,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the creator.
 	 */
+	@Element(required=false)
 	public User getCreator() {
 		return creator;
 	}
@@ -428,6 +447,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @param creator The creator to set.
 	 */
+	@Element(required=false)
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -435,6 +455,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the changedBy.
 	 */
+	@Element(required=false)
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -442,6 +463,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @param changedBy The changedBy to set.
 	 */
+	@Element(required=false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -449,6 +471,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the dateChanged.
 	 */
+	@Element(required=false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -456,6 +479,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @param dateChanged The dateChanged to set.
 	 */
+	@Element(required=false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -463,6 +487,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Element(required=false)
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -470,6 +495,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
+	@Element(required=false)
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -477,6 +503,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the dateVoided.
 	 */
+	@Element(required=false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -484,6 +511,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
+	@Element(required=false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -495,6 +523,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 		return voided;
 	}
 	
+	@Attribute(required=true)
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -502,6 +531,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @param voided The void status to set.
 	 */
+	@Attribute(required=true)
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
@@ -509,6 +539,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the voidedBy.
 	 */
+	@Element(required=false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -516,6 +547,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @param voidedBy The voidedBy to set.
 	 */
+	@Element(required=false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
@@ -523,6 +555,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @return Returns the voidReason.
 	 */
+	@Element(data=true, required=false)
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -530,6 +563,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	/**
 	 * @param voidReason The voidReason to set.
 	 */
+	@Element(data=true, required=false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
@@ -560,4 +594,67 @@ public class User extends Person implements java.io.Serializable, Synchronizable
         this.guid = guid;
     }
     */
+	
+	/**
+	 * If the serializer wishes, don't serialize this entire object, just the important
+	 * parts
+	 * 
+	 * @param sessionMap serialization session information
+	 * @return User object to serialize 
+	 * 
+	 * @see OpenmrsUtil#isShortSerialization(Map)
+	 */
+	@Replace
+	public User replaceSerialization(Map<?, ?> sessionMap) {
+		if (OpenmrsUtil.isShortSerialization(sessionMap)) {
+			// only serialize the user id
+			return new User(getUserId());
+		}
+		
+		// don't do short serialization
+		return this;
+	}
+	
+	@Validate
+	public void validateSerialization(Map<?, ?> sessionMap) {
+		if (OpenmrsUtil.isShortSerialization(sessionMap)) {
+			// only serialize the user id
+			
+		}
+		
+		return;
+	}
+
+	/**
+	 * Returns a list of Locales for which the User 
+	 * is considered proficient.
+     * 
+     * @return List of the User's proficient locales
+     */
+    public List<Locale> getProficientLocales() {
+		String proficientLocalesProperty = getUserProperty(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES);
+
+    	if ((proficientLocales == null) || (!parsedProficientLocalesProperty.equals(proficientLocalesProperty))) {
+    		parsedProficientLocalesProperty = proficientLocalesProperty;
+	    	proficientLocales = new ArrayList<Locale>();
+			
+			String[] proficientLocalesArray = proficientLocalesProperty.split(",");
+			for (String proficientLocaleSpec : proficientLocalesArray) {
+				if (proficientLocaleSpec.length() > 0) {
+					Locale proficientLocale = LocaleFactory.fromSpecification(proficientLocaleSpec);
+					if (!proficientLocales.contains(proficientLocale)) {
+						proficientLocales.add(proficientLocale);
+						if (proficientLocale.getCountry() != "") {
+							// add the language also
+							Locale languageOnlyLocale = LocaleFactory.fromSpecification(proficientLocale.getLanguage());
+							if (!proficientLocales.contains(languageOnlyLocale)) {
+								proficientLocales.add(LocaleFactory.fromSpecification(proficientLocale.getLanguage()));
+							}
+						}
+					}
+				}
+			}
+    	}
+    	return proficientLocales;
+    }
 }

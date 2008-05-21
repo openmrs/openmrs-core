@@ -15,6 +15,7 @@ package org.openmrs.reporting;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,15 +24,18 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PatientSetService.GroupMethod;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
-public class DrugOrderFilter extends AbstractPatientFilter implements PatientFilter {
+public class DrugOrderFilter extends CachingPatientFilter {
 
+    private static final long serialVersionUID = 1L;
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private List<Drug> drugList;
@@ -49,6 +53,19 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 		super.setSubType("Drug Order Filter");	
 	}
 	
+	@Override
+    public String getCacheKey() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(getClass().getName()).append(".");
+	    sb.append(getAnyOrAll()).append(".");
+	    sb.append(OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
+	    sb.append(OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
+	    if (getDrugListToUse() != null)
+		    for (Drug d : getDrugListToUse())
+		    	sb.append(d.getDrugId()).append(",");
+	    return sb.toString();
+    }
+
 	public String getDescription() {
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
 		StringBuffer ret = new StringBuffer();
@@ -94,30 +111,15 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 		return ret.toString();
 	}
 	
-	public PatientSet filter(PatientSet input) {
+	@Override
+	public Cohort filterImpl(EvaluationContext context) {
 		List<Integer> drugIds = new ArrayList<Integer>();
 		if (getDrugListToUse() != null)
 			for (Drug d : getDrugListToUse())
 				drugIds.add(d.getDrugId());
 		log.debug("filtering with these ids " + drugIds);
-		PatientSet ps = Context.getPatientSetService().getPatientsHavingDrugOrder(input == null ? null : input.getPatientIds(), drugIds, getAnyOrAll(),  
-				OpenmrsUtil.fromDateHelper(null,
-					getWithinLastDays(), getWithinLastMonths(),
-					getUntilDaysAgo(), getUntilMonthsAgo(),
-					getSinceDate(), getUntilDate()),
-				OpenmrsUtil.fromDateHelper(null,
-					getWithinLastDays(), getWithinLastMonths(),
-					getUntilDaysAgo(), getUntilMonthsAgo(),
-					getSinceDate(), getUntilDate()));
-		
-		return input == null ? ps : input.intersect(ps);
-	}
-
-	public PatientSet filterInverse(PatientSet input) {
-		List<Integer> drugIds = new ArrayList<Integer>();
-		for (Drug d : getDrugListToUse())
-			drugIds.add(d.getDrugId());
-		PatientSet ps = Context.getPatientSetService().getPatientsHavingDrugOrder(input.getPatientIds(), drugIds, getAnyOrAll(),  
+		Collection<Integer> patientIds = context == null ? null : context.getBaseCohort().getMemberIds();
+		return Context.getPatientSetService().getPatientsHavingDrugOrder(patientIds, drugIds, getAnyOrAll(),  
 				OpenmrsUtil.fromDateHelper(null,
 					getWithinLastDays(), getWithinLastMonths(),
 					getUntilDaysAgo(), getUntilMonthsAgo(),
@@ -126,8 +128,6 @@ public class DrugOrderFilter extends AbstractPatientFilter implements PatientFil
 					getWithinLastDays(), getWithinLastMonths(),
 					getUntilDaysAgo(), getUntilMonthsAgo(),
 					getSinceDate(), getUntilDate()));
-		
-		return input.subtract(ps);
 	}
 
 	public boolean isReadyToRun() {

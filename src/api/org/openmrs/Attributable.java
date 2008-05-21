@@ -54,5 +54,15 @@ public interface Attributable<E> {
 	 * @return List of possible objects that can be assigned
 	 */
 	public List<E> findPossibleValues(String searchText);
+	
+	/**
+	 * Gets a descriptive String used for display purposes 
+	 * 
+	 * This is meant as an alternative to using the toString() 
+	 * to display this object to a user
+	 * 
+	 * @return String acceptable to display on a page
+	 */
+	public String getDisplayString();
 
 }

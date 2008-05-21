@@ -23,6 +23,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * A PersonAttribute is meant as way for implementations to add arbitrary
@@ -39,6 +42,7 @@ import org.openmrs.util.OpenmrsUtil;
  * @see org.openmrs.PersonAttributeType
  * @see org.openmrs.Attributable
  */
+@Root(strict=false)
 public class PersonAttribute implements java.io.Serializable, Synchronizable, Comparable<PersonAttribute> {
 	
 	private Log log = LogFactory.getLog(getClass());
@@ -88,6 +92,37 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	public PersonAttribute(PersonAttributeType type, String value) {
 		this.attributeType = type;
 		this.value = value;
+	}
+
+	/** 
+	 * Shallow copy of this PersonAttribute. Does NOT copy personAttributeId
+	 * 
+	 * @return a shallows copy of <code>this</code>
+	 */
+	public PersonAttribute copy() {
+		return copyHelper(new PersonAttribute());
+	}
+
+	/**
+	 * The purpose of this method is to allow subclasses of PersonAttribute to delegate a portion of
+	 * their copy() method back to the superclass, in case the base class implementation changes. 
+	 * 
+	 * @param ret a PersonAttribute that will have the state of <code>this</code> copied into it
+	 * @return the PersonAttribute that was passed in, with state copied into it
+	 */
+	protected PersonAttribute copyHelper(PersonAttribute target) {
+		target.setPerson(getPerson());
+		target.setAttributeType(getAttributeType());
+		target.setValue(getValue());
+		target.setCreator(getCreator());
+		target.setDateCreated(getDateCreated());
+		target.setChangedBy(getChangedBy());
+		target.setDateChanged(getDateChanged());
+		target.setVoidedBy(getVoidedBy());
+		target.setVoided(getVoided());
+		target.setDateVoided(getDateVoided());
+		target.setVoidReason(getVoidReason());
+		return target;
 	}
 
 	/** 
@@ -161,6 +196,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @return Returns the creator.
 	 */
+	@Element(required=true)
 	public User getCreator() {
 		return creator;
 	}
@@ -168,6 +204,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param creator The creator to set.
 	 */
+	@Element(required=true)
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -175,6 +212,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Element(required=true)
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -182,6 +220,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
+	@Element(required=true)
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -189,6 +228,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @return Returns the dateVoided.
 	 */
+	@Element(required=false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -196,6 +236,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
+	@Element(required=false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -203,6 +244,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @return Returns the person.
 	 */
+	@Element(required=true)
 	public Person getPerson() {
 		return person;
 	}
@@ -210,6 +252,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param person The person to set.
 	 */
+	@Element(required=true)
 	public void setPerson(Person person) {
 		this.person = person;
 	}
@@ -221,6 +264,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 		return voided;
 	}
 	
+	@Attribute(required=true)
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -228,6 +272,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param voided The voided to set.
 	 */
+	@Attribute(required=true)
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
@@ -235,6 +280,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @return Returns the voidedBy.
 	 */
+	@Element(required=false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
@@ -242,6 +288,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param voidedBy The voidedBy to set.
 	 */
+	@Element(required=false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
@@ -249,6 +296,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @return Returns the voidReason.
 	 */
+	@Element(data=true,required=false)
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -256,6 +304,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param voidReason The voidReason to set.
 	 */
+	@Element(data=true,required=false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
@@ -263,6 +312,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @return the attributeType
 	 */
+	@Element(required=true)
 	public PersonAttributeType getAttributeType() {
 		return attributeType;
 	}
@@ -270,6 +320,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param attributeType the attributeType to set
 	 */
+	@Element(required=true)
 	public void setAttributeType(PersonAttributeType attributeType) {
 		this.attributeType = attributeType;
 	}
@@ -277,6 +328,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @return the changedBy
 	 */
+	@Element(required=false)
 	public User getChangedBy() {
 		return changedBy;
 	}
@@ -284,6 +336,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param changedBy the changedBy to set
 	 */
+	@Element(required=false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
@@ -291,6 +344,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @return the dateChanged
 	 */
+	@Element(required=false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
@@ -298,6 +352,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param dateChanged the dateChanged to set
 	 */
+	@Element(required=false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -305,6 +360,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @return the value
 	 */
+	@Element(data=true,required=false)
 	public String getValue() {
 		return value;
 	}
@@ -312,14 +368,18 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param value the value to set
 	 */
+	@Element(data=true,required=false)
 	public void setValue(String value) {
 		this.value = value;
 	}
 
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		Object o = getHydratedObject();
 		if (o instanceof Attributable)
-			return "" + o;
+			return ((Attributable)o).getDisplayString();
 		
 		return this.value;
 	}
@@ -327,6 +387,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @return the personAttributeId
 	 */
+	@Attribute(required=true)
 	public Integer getPersonAttributeId() {
 		return personAttributeId;
 	}
@@ -334,6 +395,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @param personAttributeId the personAttributeId to set
 	 */
+	@Attribute(required=true)
 	public void setPersonAttributeId(Integer personAttributeId) {
 		this.personAttributeId = personAttributeId;
 	}

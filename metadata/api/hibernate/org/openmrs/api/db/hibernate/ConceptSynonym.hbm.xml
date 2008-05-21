@@ -19,7 +19,7 @@
 		
 		<property name="synonym" type="java.lang.String" not-null="true" />
 		
-		<property name="locale" type="java.lang.String" not-null="true" />
+		<property name="locale" type="java.util.Locale" not-null="true" />
 		
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
 				
