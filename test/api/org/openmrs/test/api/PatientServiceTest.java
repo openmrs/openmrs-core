@@ -164,6 +164,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void testCreatePatientWithValidatedIdentifier() throws Exception{
 		executeDataSet(CREATE_PATIENT_VALID_IDENT_XML);
 		Patient patient = createBasicPatient();
+		Patient patient2 = createBasicPatient();
 		
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
 		PatientIdentifier ident1 = new PatientIdentifier("123-1", pit, encounterService.getLocation(0));
@@ -192,8 +193,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			ps.createPatient(patient);
 			ps.deletePatient(patient);
 			patient.removeIdentifier(ident3);
-			patient.addIdentifier(ident4);
-			ps.createPatient(patient);
+			patient2.addIdentifier(ident4);
+			ps.createPatient(patient2);
 		}catch(InvalidCheckDigitException ex){
 			fail("Patient creation should have worked with identifiers " + ident3.getIdentifier() + " and " + ident4.getIdentifier());
 		}
