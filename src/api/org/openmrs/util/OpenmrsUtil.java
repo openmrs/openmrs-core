@@ -81,9 +81,11 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientIdentifierException;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.module.ModuleException;
+import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.propertyeditor.CohortEditor;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.DrugEditor;
@@ -113,108 +115,54 @@ public class OpenmrsUtil {
 
 	private static Log log = LogFactory.getLog(OpenmrsUtil.class);
 
+	/**
+	 * 
+	 * @param idWithoutCheckdigit
+	 * @return
+	 * @throws Exception
+	 * @deprecated Should be using PatientService.getPatientIdentifierValidator()
+	 */
 	public static int getCheckDigit(String idWithoutCheckdigit)
-			throws Exception {
-
-		// allowable characters within identifier
-		String validChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVYWXZ_";
-
-		// remove leading or trailing whitespace, convert to uppercase
-		idWithoutCheckdigit = idWithoutCheckdigit.trim().toUpperCase();
-
-		// this will be a running total
-		int sum = 0;
-
-		// loop through digits from right to left
-		for (int i = 0; i < idWithoutCheckdigit.length(); i++) {
-
-			// set ch to "current" character to be processed
-			char ch = idWithoutCheckdigit.charAt(idWithoutCheckdigit.length()
-					- i - 1);
-
-			// throw exception for invalid characters
-			if (validChars.indexOf(ch) == -1)
-				throw new Exception("\"" + ch + "\" is an invalid character");
-
-			// our "digit" is calculated using ASCII value - 48
-			int digit = (int) ch - 48;
-
-			// weight will be the current digit's contribution to
-			// the running total
-			int weight;
-			if (i % 2 == 0) {
-
-				// for alternating digits starting with the rightmost, we
-				// use our formula this is the same as multiplying x 2 and
-				// adding digits together for values 0 to 9. Using the
-				// following formula allows us to gracefully calculate a
-				// weight for non-numeric "digits" as well (from their
-				// ASCII value - 48).
-				weight = (2 * digit) - (int) (digit / 5) * 9;
-
-			} else {
-
-				// even-positioned digits just contribute their ascii
-				// value minus 48
-				weight = digit;
-
+	 	                        throws Exception {
+		PatientService ps = Context.getPatientService();
+		IdentifierValidator piv = ps.getDefaultIdentifierValidator();
+		
+		String withCheckDigit = piv.getValidIdentifier(idWithoutCheckdigit);
+		char checkDigitChar = withCheckDigit.charAt(withCheckDigit.length()-1);
+		
+		if(Character.isDigit(checkDigitChar))
+			return Integer.parseInt(""+checkDigitChar);
+		else{
+			switch(checkDigitChar){
+				case 'A': case 'a' : return 0;
+				case 'B': case 'b' : return 1;
+				case 'C': case 'c' : return 2;
+				case 'D': case 'd' : return 3;
+				case 'E': case 'e' : return 4;
+				case 'F': case 'f' : return 5;
+				case 'G': case 'g' : return 6;
+				case 'H': case 'h' : return 7;
+				case 'I': case 'i' : return 8;
+				case 'J': case 'j' : return 9;
+				default: return 10;
 			}
-
-			// keep a running total of weights
-			sum += weight;
-
 		}
-
-		// avoid sum less than 10 (if characters below "0" allowed,
-		// this could happen)
-		sum = Math.abs(sum) + 10;
-
-		// check digit is amount needed to reach next number
-		// divisible by ten
-		return (10 - (sum % 10)) % 10;
-
+			
 	}
-
+	
 	/**
 	 * 
 	 * @param id
 	 * @return true/false whether id has a valid check digit
 	 * @throws Exception
 	 *			 on invalid characters and invalid id formation
+	 * @deprecated Should be using PatientService.getPatientIdentifierValidator().isValid();
 	 */
 	public static boolean isValidCheckDigit(String id) throws Exception {
-
-		// Let regular expression take care of this now
-		/*
-		if (!id.matches("^[A-Za-z0-9_]+-[0-9A-J]$")) {
-			throw new Exception("Invalid characters and/or id formation");
-		}
-		*/
+		PatientService ps = Context.getPatientService();
+		IdentifierValidator piv = ps.getDefaultIdentifierValidator();
 		
-		if ( id.indexOf("-") < 1 ) {
-			throw new PatientIdentifierException("Cannot find check-digit in identifier");
-		}
-
-		String idWithoutCheckDigit = id.substring(0, id.indexOf("-"));
-
-		int computedCheckDigit = getCheckDigit(idWithoutCheckDigit);
-
-		String checkDigit = id.substring(id.indexOf("-") + 1, id.length());
-		
-		if ( checkDigit.equalsIgnoreCase("A") ) checkDigit = "0";
-		if ( checkDigit.equalsIgnoreCase("B") ) checkDigit = "1";
-		if ( checkDigit.equalsIgnoreCase("C") ) checkDigit = "2";
-		if ( checkDigit.equalsIgnoreCase("D") ) checkDigit = "3";
-		if ( checkDigit.equalsIgnoreCase("E") ) checkDigit = "4";
-		if ( checkDigit.equalsIgnoreCase("F") ) checkDigit = "5";
-		if ( checkDigit.equalsIgnoreCase("G") ) checkDigit = "6";
-		if ( checkDigit.equalsIgnoreCase("H") ) checkDigit = "7";
-		if ( checkDigit.equalsIgnoreCase("I") ) checkDigit = "8";
-		if ( checkDigit.equalsIgnoreCase("J") ) checkDigit = "9";
-		
-		int givenCheckDigit = Integer.valueOf(checkDigit);
-
-		return (computedCheckDigit == givenCheckDigit);
+		return piv.isValid(id);
 	}
 
 	/**

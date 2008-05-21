@@ -33,6 +33,7 @@ public class PatientIdentifierType implements java.io.Serializable {
 	private String description;
 	private Date dateCreated;
 	private User creator;
+	private String validator;
 
 	/** default constructor */
 	public PatientIdentifierType() {
@@ -183,6 +184,8 @@ public class PatientIdentifierType implements java.io.Serializable {
 
 	/**
 	 * @return Returns the checkdigit.
+	 * @deprecated No need to know if it has a check digit now that any validator algorithm
+	 * can be chosen.
 	 */
 	public Boolean getCheckDigit() {
 		return hasCheckDigit();
@@ -190,6 +193,8 @@ public class PatientIdentifierType implements java.io.Serializable {
 	
 	/**
 	 * @return Returns the checkdigit.
+	 * @deprecated No need to know if it has a check digit now that any validator algorithm
+	 * can be chosen.
 	 */
 	public Boolean hasCheckDigit() {
 		return checkDigit;
@@ -197,9 +202,26 @@ public class PatientIdentifierType implements java.io.Serializable {
 
 	/**
 	 * @param checkdigit The checkdigit to set.
+	 * @deprecated No need for this field now that any validator algorithm can be chosen.
 	 */
 	public void setCheckDigit(Boolean checkDigit) {
 		this.checkDigit = checkDigit;
 	}
+
+	public String getValidator() {
+    	return validator;
+    }
+
+	public void setValidator(String validator) {
+    	this.validator = validator;
+    }
+
+	/**
+     *
+     * @return Whether this identifier type has a validator.
+     */
+    public boolean hasValidator() {
+	    return validator != null && !validator.equals("");
+    }
 	
 }

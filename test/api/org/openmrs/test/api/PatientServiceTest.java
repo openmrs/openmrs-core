@@ -27,6 +27,7 @@ import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -39,6 +40,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/test/api/include/PatientServiceTest-createPatient.xml";
+	protected static final String CREATE_PATIENT_VALID_IDENT_XML = "org/openmrs/test/api/include/PatientServiceTest-createPatientValidIdent.xml";
 	protected static final String JOHN_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-lotsOfJohns.xml";
 	protected static final String USERS_WHO_ARE_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-usersWhoArePatients.xml";
 	protected static final String FIND_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-findPatients.xml";
@@ -92,15 +94,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertTrue("The gender should be new", patient2.getGender().equals("F"));	
 	}
 	
-	/**
-	 * 
-	 * Tests creating a patient 
-	 * 
-	 * @throws Exception
-	 */
-	public void testCreatePatient() throws Exception {
-		executeDataSet(CREATE_PATIENT_XML);
-		
+	private Patient createBasicPatient(){
 		Patient patient = new Patient();
 		
 		PersonName pName = new PersonName();
@@ -124,7 +118,21 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//patient.setCauseOfDeath("air");
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
-		patient.setGender("male");
+		patient.setGender("male");	
+		
+		return patient;
+	}
+	
+	/**
+	 * 
+	 * Tests creating a patient 
+	 * 
+	 * @throws Exception
+	 */
+	public void testCreatePatient() throws Exception {
+		executeDataSet(CREATE_PATIENT_XML);
+		
+		Patient patient = createBasicPatient();
 		
 		List<PatientIdentifierType> patientIdTypes = ps.getPatientIdentifierTypes();
 		assertNotNull(patientIdTypes);
@@ -147,6 +155,48 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient createdPatientById = ps.getPatient(createdPatient.getPatientId());
 		assertNotNull(createdPatientById);
 		
+	}
+	
+	/**
+	 * Tests creating patients with identifiers that are or are not validated.
+	 * @throws Exception 
+	 */
+	public void testCreatePatientWithValidatedIdentifier() throws Exception{
+		executeDataSet(CREATE_PATIENT_VALID_IDENT_XML);
+		Patient patient = createBasicPatient();
+		
+		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
+		PatientIdentifier ident1 = new PatientIdentifier("123-1", pit, encounterService.getLocation(0));
+		PatientIdentifier ident2 = new PatientIdentifier("123", pit, encounterService.getLocation(0));
+		PatientIdentifier ident3 = new PatientIdentifier("123-0", pit, encounterService.getLocation(0));
+		PatientIdentifier ident4 = new PatientIdentifier("123-A", pit, encounterService.getLocation(0));
+		
+		try{
+			patient.addIdentifier(ident1);
+			ps.createPatient(patient);
+			fail("Patient creation should have failed with identifier " + ident1.getIdentifier()	);
+		}catch(InvalidCheckDigitException ex){		}
+
+		patient.removeIdentifier(ident1);
+		
+		try{
+			patient.addIdentifier(ident2);
+			ps.createPatient(patient);
+			fail("Patient creation should have failed with identifier " + ident2.getIdentifier()	);
+		}catch(InvalidCheckDigitException ex){		}
+		
+		patient.removeIdentifier(ident2);
+
+		try{
+			patient.addIdentifier(ident3);
+			ps.createPatient(patient);
+			ps.deletePatient(patient);
+			patient.removeIdentifier(ident3);
+			patient.addIdentifier(ident4);
+			ps.createPatient(patient);
+		}catch(InvalidCheckDigitException ex){
+			fail("Patient creation should have worked with identifiers " + ident3.getIdentifier() + " and " + ident4.getIdentifier());
+		}
 	}
 	
 	/**

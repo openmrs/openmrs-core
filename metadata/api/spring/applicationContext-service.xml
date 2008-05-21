@@ -178,6 +178,14 @@
 	-->
 	<bean id="patientServiceTarget" class="org.openmrs.api.impl.PatientServiceImpl">
 		<property name="patientDAO"><ref bean="patientDAO"/></property>	
+		<property name="identifierValidators">
+			<map>
+				<entry>
+					<key><value>org.openmrs.patient.impl.LuhnIdentifierValidator</value></key>
+					<bean class="org.openmrs.patient.impl.LuhnIdentifierValidator"/>
+				</entry>
+			</map>
+		</property>
 	</bean>
 	<bean id="personServiceTarget" class="org.openmrs.api.impl.PersonServiceImpl">
 		<property name="personDAO"><ref bean="personDAO"/></property>	
@@ -304,6 +312,7 @@
 			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
 		</property>
 	</bean>
+	
 	<bean id="personService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="personServiceTarget"/></property>

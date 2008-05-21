@@ -23,6 +23,9 @@ import junit.framework.TestCase;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -30,7 +33,15 @@ import org.openmrs.util.OpenmrsUtil;
  * 
  * TODO: finish adding tests for all methods
  */
-public class OpenmrsUtilTest extends TestCase {
+public class OpenmrsUtilTest extends BaseContextSensitiveTest {
+	
+	@Override
+	protected void onSetUpInTransaction() throws Exception {
+		initializeInMemoryDatabase();
+		authenticate();
+		
+		Context.getAdministrationService().addGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR, OpenmrsConstants.LUHN_IDENTIFIER_VALIDATOR);
+	}
 	
 	/**
 	 * Test the check digit method
@@ -60,10 +71,12 @@ public class OpenmrsUtilTest extends TestCase {
 		
 		System.out.println("In testIsValidCheckDigit()");
 		
-		String[] ids2 = {"9-1", "99-2", "999-3", "123MT-2", "asdf-8"};
+		String[] ids2 = {"9-1", "99-2", "999-3", "123MT-2", "asdf-8", "12abd-7"};
+		String[] ids2Char = {"9-b", "99-c", "999-d", "123MT-c", "asdf-i", "12abd-h"};
 		for (int i = 0; i< ids2.length; i++) {
 			System.out.println(ids2[i]);
 			assertTrue(OpenmrsUtil.isValidCheckDigit(ids2[i]));
+			assertTrue(OpenmrsUtil.isValidCheckDigit(ids2Char[i]));
 		}
 		
 		String[] ids3 = {"asdf-7", "9-2", "9-4"};

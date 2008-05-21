@@ -16,7 +16,9 @@ package org.openmrs.api.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -54,8 +56,10 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.patient.IdentifierValidator;
+import org.openmrs.patient.UnallowedIdentifierException;
+import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Patient-related services
@@ -68,6 +72,11 @@ public class PatientServiceImpl implements PatientService {
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	private PatientDAO dao;
+	
+	/**
+	 * PatientIdentifierValidators registered through spring's applicationContext-service.xml
+	 */
+	private static Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators = null;
 	
 	public PatientServiceImpl() {	}
 	
@@ -236,15 +245,15 @@ public class PatientServiceImpl implements PatientService {
 				}
 			}
 	
-			// validate checkdigit
-			try {
-				if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifier)) {
-					log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifier);
-					throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, pi);
+			// validate identifier
+			if(pit.hasValidator()){
+				IdentifierValidator piv = getIdentifierValidator(pit.getValidator());
+				try{
+					if(!piv.isValid(identifier))
+						throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, pi);
+				}catch(UnallowedIdentifierException e){
+					throw new InvalidCheckDigitException("Identifier " + identifier +" is not appropriate for validation scheme " + piv.getName() + ".", pi);
 				}
-			} catch (Exception e) {
-				log.warn("Got exception while validating check digit for identifier: " + identifier, e);
-				throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, pi);
 			}
 		}
 	}
@@ -1070,5 +1079,64 @@ public class PatientServiceImpl implements PatientService {
 			if ( cause == null ) throw new APIException("Cause supplied to method is null");
 		}
 	}
+
+	/**
+     * @see org.openmrs.api.PatientService#getDefaultIdentifierValidator()
+     */
+    public IdentifierValidator getDefaultIdentifierValidator() {
+	    String defaultPIV = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR);
+
+	    try {
+	        return identifierValidators.get(Class.forName(defaultPIV));
+        } catch (ClassNotFoundException e) {
+	        log.error("Global Property " + OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR +" not set to an actual class.", e);
+	        return identifierValidators.get(LuhnIdentifierValidator.class);
+        }
+    }
+
+	/**
+     * @see org.openmrs.api.PatientService#getIdentifierValidator(java.lang.String)
+     */
+    public IdentifierValidator getIdentifierValidator(Class<IdentifierValidator> identifierValidator) {
+	    return identifierValidators.get(identifierValidator);
+    }
+
+	public Map<Class<? extends IdentifierValidator>, IdentifierValidator> getIdentifierValidators() {
+    	if(identifierValidators == null)
+    		identifierValidators = new LinkedHashMap<Class<? extends IdentifierValidator>, IdentifierValidator>();
+		return identifierValidators;
+    }
+
+	/**
+	 * ADDs identifierValidators, doesn't replace them
+	 * 
+	 * @param identifierValidators
+	 */
+	public void setIdentifierValidators(
+            Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators) {
+    	for(Map.Entry<Class<? extends IdentifierValidator>, IdentifierValidator> entry : identifierValidators.entrySet()){
+    		getIdentifierValidators().put(entry.getKey(), entry.getValue());
+    	}
+    }
+
+	/**
+     * @see org.openmrs.api.PatientService#getAllIdentifierValidators()
+     */
+    public Collection<IdentifierValidator> getAllIdentifierValidators() {
+	    return identifierValidators.values();
+    }
+
+	/**
+     * @see org.openmrs.api.PatientService#getIdentifierValidator(java.lang.String)
+     */
+    public IdentifierValidator getIdentifierValidator(String pivClassName) {
+	    try {
+	        return getIdentifierValidator(((Class<IdentifierValidator>) Class.forName(pivClassName)));
+        } catch (ClassNotFoundException e) {
+	        log.error("Could not find patient identifier validator " + pivClassName, e);
+	        return getDefaultIdentifierValidator();
+        }
+    }
+
 
 }
