@@ -55,22 +55,10 @@ dojo.widget.defineWidget(
 			// if no hits
 			if (patients.length < 1) {
 				if (this.text && this.text.match(/\d/)) {
-					if (this.isValidCheckDigit(this.text) == false) {
-						//the user didn't input an identifier with a valid check digit
-						this.hideHeaderRow();
-						var img = this.getProblemImage();
-						var tmp = " <img src='" + img.src + "' title='" + img.title + "' /> " + this.invalidCheckDigitText + this.text;
-						patients.push(tmp);
-						patients.push(this.noPatientsFoundText);
-						patients.push(this.searchOnPatientNameText);
-					}
-					else {
-						//the user did input a valid identifier, but we don't have it
-						patients.push(this.noPatientsFoundText);
-						patients.push(this.searchOnPatientNameText);
-						if (this.showAddPatientLink)
-							patients.push(this.addPatientLink);
-					}
+					patients.push(this.noPatientsFoundText);
+					patients.push(this.searchOnPatientNameText);
+					if (this.showAddPatientLink)
+						patients.push(this.addPatientLink);
 				}
 				else {
 					// the user put in a text search
@@ -80,13 +68,12 @@ dojo.widget.defineWidget(
 				}
 			}
 			// if hits
-			else if (patients.length > 1 || this.isValidCheckDigit(this.text) == false) {
+			else{
 				if (this.showAddPatientLink)
 					patients.push(this.addPatientLink);	//setup links for appending to the end
 			}
 		},
 		
-		invalidCheckDigitText: "<spring:message javaScriptEscape="true" code="error.checkdigit"/>: ",
 		searchOnPatientNameText: "<spring:message javaScriptEscape="true" code="PatientSearch.searchOnName"/>",
 		noPatientsFoundText: "<spring:message javaScriptEscape="true" code="PatientSearch.noneFound"/> <br/> ",
 		addPatientLink: "<a href='<openmrs:contextPath />/admin/person/addPerson.htm?personType=patient'><spring:message javaScriptEscape="true" code="Patient.addNew"/></a>",
@@ -107,11 +94,6 @@ dojo.widget.defineWidget(
 				var obj = document.createElement("a");
 				obj.appendChild(document.createTextNode(p.identifier + " "));
 				td.appendChild(obj);
-				if (p.identifierCheckDigit) {
-					if (this.isValidCheckDigit(p.identifier) == false) {
-						td.appendChild(this.getProblemImage());
-					}
-				}
 				if (p.voided) {
 					td.className += " retired";
 				}
@@ -161,13 +143,6 @@ dojo.widget.defineWidget(
 			return arr;
 		},
 		
-		getProblemImage: function() {
-			var img = document.createElement("img");
-			img.src = openmrsContextPath + "/images/problem.gif";
-			img.title="<spring:message javaScriptEscape="true" code="error.checkdigits.verbose"/>";
-			return img;
-		},
-		
 		getRowHeight: function() {
 			return 23;
 		},
@@ -204,66 +179,7 @@ dojo.widget.defineWidget(
 				other.className = c.substring(c.indexOf(" ") + 1, c.length);
 			}
 		},
-		
-		isValidCheckDigit: function(value) {
-			if (value == null) return false;
-			
-			if (value.length < 3 || value.indexOf('-') != value.length - 2)
-				return false;
-			
-			var checkDigit = value.charAt(value.length - 1).valueOf();
-			
-			var valueWithoutCheckDigit = value.substr(0, value.length - 2);
-			
-			return (checkDigit == this.getCheckDigit(valueWithoutCheckDigit));
-		},
-		
-		getCheckDigit: function(value) {
-		
-			// allowable characters within identifier
-			var validChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVYWXZ_";
-			
-			if (this.stripCharsInBag(value, validChars) != "") {
-				//Invalid character in string
-			}
-			
-			// remove whitespace
-			value = value.replace([ 	], "");
-			// convert to uppercase
-			value = value.toUpperCase();
-			
-			// running total
-			var sum = 0;
-			
-			//alert("sum: " + sum + " ch: " + ch + " digit: " + digit + " weight: " + weight);
-			
-			// loop through digits from right to left
-			for (var i = 0; i < value.length; i++) {
-				//set ch to "current" character to be processed
-				var ch = value.charCodeAt(value.length - i - 1);
-				var digit = ch - 48;
-				var weight;
-				if (i % 2 == 0) {
-					// for alternating digits starting with the rightmost, we use our formula
-					// this is the same as multiplying x 2 and adding digits together for values
-					// 0 to 9.  Using the following formula allows us to gracefully calculate a
-					// weight for non-numeric "digits" as well (from their ASCII value - 48).
-					weight = (2 * digit) - Math.floor(digit / 5) * 9;
-				}
-				else {
-					// even-positioned digits just contribute their ascii value minus 48
-					weight = digit;
-				}
-				// keep a running total of weights
-				sum = sum + weight;
-			}	
-		 	// avoid sum less than 10 (if characters below "0" allowed, this could happen)
-		 	sum = Math.abs(sum) + 10;
-			// check digit is amount needed to reach next number divisible by ten 
-			return (10 - (sum % 10)) % 10;
-			
-		},
-		
+				
 		stripCharsInBag: function(s, bag){
 			var i;
 		    var returnString = "";
@@ -284,7 +200,7 @@ dojo.widget.defineWidget(
 			}
 			//	only allow the first item to be automatically selected if:
 			//		the entered text is a string or the entered text is a valid identifier
-			return (this.text && (this.text.match(/\d/) == false || this.isValidCheckDigit(this.text)));
+			return (this.text && (this.text.match(/\d/) == false));
 		}
 		
 	},

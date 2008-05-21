@@ -21,7 +21,6 @@ import java.util.Map;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;

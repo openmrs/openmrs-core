@@ -57,11 +57,19 @@
 		</spring:bind></td>
 	</tr>
 	<tr>
-		<td><spring:message code="PatientIdentifierType.checkDigit" /></td>
-		<td><spring:bind path="patientIdentifierType.checkDigit">
-			<input type="hidden" name="_${status.expression}">
-			<input type="checkbox" name="${status.expression}" value="true"
-				<c:if test="${status.value == true}">checked</c:if> />
+		<td><spring:message code="PatientIdentifierType.validator" /></td>
+		<td><spring:bind path="patientIdentifierType.validator">
+			<select name="${status.expression}">
+				<option value="">None</option>
+				<c:forEach var="piv" items="${patientIdentifierValidators}">
+					<option value="${piv.class.name}" 
+						<c:if test="${status.value == piv.class.name}">selected</c:if> 
+					/>
+					${piv.name}
+						<c:if test="${defaultValidatorName == piv.name}"> (default)</c:if>
+					</option>
+				</c:forEach>
+			</select>
 			<c:if test="${status.errorMessage != ''}">
 				<span class="error">${status.errorMessage}</span>
 			</c:if>

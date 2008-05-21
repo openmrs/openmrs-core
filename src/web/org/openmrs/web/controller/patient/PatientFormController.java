@@ -45,7 +45,6 @@ import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
-import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
@@ -276,7 +275,7 @@ public class PatientFormController extends PersonFormController {
 
 					 */
 					
-				// check patient identifier checkdigits
+				// check patient identifier formats
 					for (PatientIdentifier pi : patient.getIdentifiers()) {
 						// skip voided identifiers
 						if (pi.isVoided()) continue;
@@ -289,24 +288,11 @@ public class PatientFormController extends PersonFormController {
 						if ( formatDescription != null ) if ( formatDescription.length() > 0 ) formatStr = formatDescription;
 						String[] args = {identifier, formatStr};
 						try {
-							if (pit.hasCheckDigit() && !OpenmrsUtil.isValidCheckDigit(identifier)) {
-								log.error("hasCheckDigit and is not valid: " + pit.getName() + " " + identifier);
-								String msg = getMessageSourceAccessor().getMessage("error.checkdigits.verbose", args);
-								errors.rejectValue("identifiers", msg);
-							} else if ( format != null ) if ( format.length() > 0 && !identifier.matches(format) ) {
+							if ( format != null ) if ( format.length() > 0 && !identifier.matches(format) ) {
 								log.error("Identifier format is not valid: (" + format + ") " + identifier);
 								String msg = getMessageSourceAccessor().getMessage("error.identifier.formatInvalid", args);
 								errors.rejectValue("identifiers", msg);
 							}
-							// Modified on 17 Jan 2007 by CA - don't think we need this if we can input a regexp for each ID type
-							/*
-							else if (pit.getFormat() != null) if ( pit.getFormat().length() > 0 && !identifier.matches(pit.getFormat()) ){
-								log.error("Identifer has wrong format: " + identifier + " does not match " + pit.getFormat());
-								String[] args2 = {identifier, pit.getFormat()}; 
-								String msg = getMessageSourceAccessor().getMessage("error.character.invalid", args2);
-								errors.rejectValue("identifiers", msg);
-							}
-							*/
 						} catch (Exception e) {
 							log.error("exception thrown with: " + pit.getName() + " " + identifier);
 							log.error("Error while adding patient identifiers to savedIdentifier list", e);
@@ -366,11 +352,6 @@ public class PatientFormController extends PersonFormController {
 					log.error(iife);
 					patient.removeIdentifier(iife.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
-					isError = true;
-				} catch ( InvalidCheckDigitException icde ) {
-					log.error(icde);
-					patient.removeIdentifier(icde.getPatientIdentifier());
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
 					isError = true;
 				} catch ( IdentifierNotUniqueException inue ) {
 					log.error(inue);

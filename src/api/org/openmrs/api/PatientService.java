@@ -25,6 +25,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.patient.IdentifierValidator;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -308,4 +309,25 @@ public interface PatientService {
 	public void saveCauseOfDeathObs(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason)
 			throws APIException;
 
+	/**
+     * 
+     * @param identifierValidator which validator to get.
+     */
+    public IdentifierValidator getIdentifierValidator(Class<IdentifierValidator> clazz);
+
+    /**
+     * 
+     */
+    public IdentifierValidator getIdentifierValidator(String pivClassName);
+    /**
+     * 
+     * @return the default IdentifierValidator
+     */
+    public IdentifierValidator getDefaultIdentifierValidator();
+
+	/**
+     * 
+     * @return All registered PatientIdentifierValidators
+     */
+    public Collection<IdentifierValidator> getAllIdentifierValidators();
 }

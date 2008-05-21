@@ -59,6 +59,8 @@
 
     <property name="required" type="boolean" column="required" not-null="true"/>
     
+    <property name="validator" type="java.lang.String" column="validator" length="200"/>
+    
     <property
         name="dateCreated"
         type="java.util.Date"

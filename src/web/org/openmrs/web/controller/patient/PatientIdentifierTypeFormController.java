@@ -13,6 +13,10 @@
  */
 package org.openmrs.web.controller.patient;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,9 +27,12 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -63,14 +70,21 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 		
 		String view = getFormView();
 		
+		ModelAndView toReturn = new ModelAndView(new RedirectView(view));
+		
 		if (Context.isAuthenticated()) {
 			PatientIdentifierType identifierType = (PatientIdentifierType)obj;
+	
+			identifierType.setCheckDigit(identifierType.hasValidator());
+
 			Context.getAdministrationService().updatePatientIdentifierType(identifierType);
-			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.saved");
+			toReturn = new ModelAndView(new RedirectView(getSuccessView()));
+			
 		}
 		
-		return new ModelAndView(new RedirectView(view));
+		
+		return toReturn;
 	}
 
 	/**
@@ -97,4 +111,26 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
         return identifierType;
     }
     
+
+	/**
+	 * 
+	 * Called prior to form display.  Allows for data to be put 
+	 * 	in the request to be used in the view
+	 * 
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
+		Map<String, Object> toReturn = new LinkedHashMap<String,Object>();
+		
+		Collection<IdentifierValidator> pivs = Context.getPatientService().getAllIdentifierValidators();
+		
+		toReturn.put("patientIdentifierValidators", pivs);
+		
+		String defaultValidatorName = Context.getPatientService().getDefaultIdentifierValidator().getName();
+		
+		toReturn.put("defaultValidatorName", defaultValidatorName);
+		
+		return toReturn;
+	}
+	
 }
