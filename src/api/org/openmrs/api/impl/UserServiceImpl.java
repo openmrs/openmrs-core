@@ -27,6 +27,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -401,8 +402,10 @@ public class UserServiceImpl implements UserService {
 	 * @return new system id
 	 */
 	public String generateSystemId() {
+		//Hardcoding Luhn algorithm since all existing openmrs user ids have had check digits generated this way.
+		LuhnIdentifierValidator liv = new LuhnIdentifierValidator();
+		
 		String systemId;
-		Integer checkDigit;
 		Integer offset = 0;
 		do {
 			// generate and increment the system id if necessary
@@ -411,14 +414,12 @@ public class UserServiceImpl implements UserService {
 			systemId = generatedId.toString();
 		
 			try {
-				checkDigit = OpenmrsUtil.getCheckDigit(systemId);
+				systemId = liv.getValidIdentifier(systemId);
 			}
 			catch ( Exception e ) {
 				log.error("error getting check digit", e);
 				return systemId;
 			}
-			
-			systemId = systemId + "-" + checkDigit;
 			
 			// loop until we find a system id that no one has 
 		} while (getUserDAO().hasDuplicateUsername(null, systemId, null));
