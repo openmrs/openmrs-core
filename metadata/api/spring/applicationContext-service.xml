@@ -184,6 +184,10 @@
 					<key><value>org.openmrs.patient.impl.LuhnIdentifierValidator</value></key>
 					<bean class="org.openmrs.patient.impl.LuhnIdentifierValidator"/>
 				</entry>
+				<entry>
+					<key><value>org.openmrs.patient.impl.VerhoeffIdentifierValidator</value></key>
+					<bean class="org.openmrs.patient.impl.VerhoeffIdentifierValidator"/>
+				</entry>
 			</map>
 		</property>
 	</bean>
