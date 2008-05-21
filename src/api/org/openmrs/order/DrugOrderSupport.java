@@ -47,8 +47,10 @@ public class DrugOrderSupport implements GlobalPropertyListener {
 	
 	public static DrugOrderSupport getInstance() {
 		synchronized (DrugOrderSupport.class) {
-			if (singleton == null)
+			if (singleton == null) {
 				singleton = new DrugOrderSupport();
+				Context.getAdministrationService().addGlobalPropertyListener(singleton);
+			}
         }
 		return singleton;
 	}
