@@ -66,13 +66,13 @@ public class Person implements java.io.Serializable, Synchronizable {
 	private Concept causeOfDeath;
 
 	private User personCreator;
-	private Date dateCreated;
-	private User changedBy;
-	private Date dateChanged;
-	private Boolean voided = false;
-	private User voidedBy;
-	private Date dateVoided;
-	private String voidReason;
+	private Date personDateCreated;
+	private User personChangedBy;
+	private Date personDateChanged;
+	private Boolean personVoided = false;
+	private User personVoidedBy;
+	private Date personDateVoided;
+	private String personVoidReason;
     private String guid;
     private transient String lastRecordGuid;
     
@@ -123,13 +123,13 @@ public class Person implements java.io.Serializable, Synchronizable {
 		causeOfDeath = person.getCauseOfDeath();
 		
 		personCreator = person.getPersonCreator();
-		dateCreated = person.getPersonDateCreated();
-		changedBy = person.getPersonChangedBy();
-		dateChanged = person.getPersonDateChanged();
-		voided = person.isPersonVoided();
-		voidedBy = person.getPersonVoidedBy();
-		dateVoided = person.getPersonDateVoided();
-		voidReason=  person.getPersonVoidReason();
+		personDateCreated = person.getPersonDateCreated();
+		personChangedBy = person.getPersonChangedBy();
+		personDateChanged = person.getPersonDateChanged();
+		personVoided = person.isPersonVoided();
+		personVoidedBy = person.getPersonVoidedBy();
+		personDateVoided = person.getPersonDateVoided();
+		personVoidReason=  person.getPersonVoidReason();
 	}
 
 	/**
@@ -690,19 +690,19 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	public User getPersonChangedBy() {
-		return changedBy;
+		return personChangedBy;
 	}
 
 	public void setPersonChangedBy(User changedBy) {
-		this.changedBy = changedBy;
+		this.personChangedBy = changedBy;
 	}
 
 	public Date getPersonDateChanged() {
-		return dateChanged;
+		return personDateChanged;
 	}
 
 	public void setPersonDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
+		this.personDateChanged = dateChanged;
 	}
 
 	public User getPersonCreator() {
@@ -714,23 +714,23 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	public Date getPersonDateCreated() {
-		return dateCreated;
+		return personDateCreated;
 	}
 
 	public void setPersonDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		this.personDateCreated = dateCreated;
 	}
 
 	public Date getPersonDateVoided() {
-		return dateVoided;
+		return personDateVoided;
 	}
 
 	public void setPersonDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
+		this.personDateVoided = dateVoided;
 	}
 
 	public void setPersonVoided(Boolean voided) {
-		this.voided = voided;
+		this.personVoided = voided;
 	}
 
 	public Boolean getPersonVoided() {
@@ -738,23 +738,23 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	public Boolean isPersonVoided() {
-		return voided;
+		return personVoided;
 	}
 
 	public User getPersonVoidedBy() {
-		return voidedBy;
+		return personVoidedBy;
 	}
 
 	public void setPersonVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
+		this.personVoidedBy = voidedBy;
 	}
 
 	public String getPersonVoidReason() {
-		return voidReason;
+		return personVoidReason;
 	}
 
 	public void setPersonVoidReason(String voidReason) {
-		this.voidReason = voidReason;
+		this.personVoidReason = voidReason;
 	}
 	
 	/**
