@@ -1368,7 +1368,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			syncItem.setContainedType(set.getClass());
 			syncItem.setContent(xml.toStringAsDocumentFragement());
 
-			syncRecordHolder.get().addOrReplaceItem(syncItem);
+			syncRecordHolder.get().addOrRemoveAndAddItem(syncItem);
 			syncRecordHolder.get().addContainedClass(owner.getClass()
 			                                              .getSimpleName());
 
