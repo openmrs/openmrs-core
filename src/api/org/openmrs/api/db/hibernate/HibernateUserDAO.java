@@ -40,6 +40,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
+import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 
@@ -123,8 +124,8 @@ public class HibernateUserDAO implements
 		
 		String usernameWithCheckDigit = username;
 		try {
-			Integer cd = OpenmrsUtil.getCheckDigit(username);
-			usernameWithCheckDigit = usernameWithCheckDigit + "-" + cd;
+			//Hardcoding in Luhn since past user IDs used this validator.
+			usernameWithCheckDigit = new LuhnIdentifierValidator().getValidIdentifier(username);
 		}
 		catch (Exception e) {}
 		
