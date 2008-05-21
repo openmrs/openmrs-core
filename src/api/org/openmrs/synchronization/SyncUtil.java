@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.zip.CRC32;
@@ -97,6 +98,7 @@ import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.server.RemoteServer;
+import org.openmrs.util.LocaleFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -367,6 +369,8 @@ public class SyncUtil {
 							log.debug("Still getting DateParsingException trying to turn " + fieldVal + " into a date, so retrying with backup mask");
 						}
 					}
+				} else if ( "java.util.Locale".equals(className) ) {
+					o = LocaleFactory.fromSpecification(fieldVal);
 				}
 			}
 		}

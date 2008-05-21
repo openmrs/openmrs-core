@@ -153,7 +153,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		safetypes.put("double", defN);
 		safetypes.put("float", defN);
 		safetypes.put("integer", defN);
-		// locale
+		safetypes.put("locale", defN);
 		safetypes.put("long", defN);
 		safetypes.put("short", defN);
 		safetypes.put("string", defN);
