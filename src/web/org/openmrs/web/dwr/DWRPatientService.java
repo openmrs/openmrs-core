@@ -41,6 +41,9 @@ import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.patient.IdentifierValidator;
+import org.openmrs.patient.UnallowedIdentifierException;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -95,6 +98,39 @@ public class DWRPatientService {
 					PatientListItem pi = new PatientListItem(p);
 					patientList.add(pi);
 				}
+			}
+		}
+		//no results found and a number was in the search --
+		//should check whether the check digit is correct.
+		else if(patientList.size() == 0 && searchValue.matches(".*\\d+.*")){
+			
+			//Looks through all the patient identifier validators to see if this type of identifier
+			//is supported for any of them.  If it isn't, then no need to warn about a bad check
+			//digit.  If it does match, then if any of the validators validates the check digit
+			//successfully, then the user is notified that the identifier has been entered correctly.
+			//Otherwise, the user is notified that the identifier was entered incorrectly.
+			
+			Collection<IdentifierValidator> pivs = ps.getAllIdentifierValidators();
+			boolean shouldWarnUser = true;
+			boolean validCheckDigit = false;
+			boolean identifierMatchesValidationScheme = false;
+			
+			for(IdentifierValidator piv : pivs){
+				try{
+					if(piv.isValid(searchValue)){
+						shouldWarnUser = false;
+						validCheckDigit = true;
+					}
+					identifierMatchesValidationScheme = true;
+				}catch(UnallowedIdentifierException e){
+				}
+			}
+			
+			if(identifierMatchesValidationScheme){
+				if(shouldWarnUser)
+					patientList.add("<p style=\"color:red; font-size:big;\"><b>WARNING: Identifier has been typed incorrectly!  Please double check the identifier.</b></p>");
+				else if(validCheckDigit)
+					patientList.add("<p style=\"color:green; font-size:big;\"><b>This identifier has been entered correctly, but still no patients have been found.</b></p>");
 			}
 		}
 				

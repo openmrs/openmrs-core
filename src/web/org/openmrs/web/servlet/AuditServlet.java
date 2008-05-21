@@ -29,6 +29,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
@@ -58,7 +59,7 @@ public class AuditServlet extends HttpServlet {
 			
 			for (PatientIdentifierType pit : ps.getPatientIdentifierTypes()) {
 				 //If the new identifier type is defined as having a check digit as well
-				if (pit.hasCheckDigit() && !pit.equals(newType)) {
+				if (pit.hasValidator() && !pit.equals(newType)) {
 					identifiers.addAll(ps.getPatientIdentifiers(pit));
 				}
 			}
@@ -69,7 +70,8 @@ public class AuditServlet extends HttpServlet {
 			for (PatientIdentifier identifier : identifiers) {
 				boolean updateNeeded = true;
 				try {
-					updateNeeded = !OpenmrsUtil.isValidCheckDigit(identifier.getIdentifier());
+					IdentifierValidator piv = Context.getPatientService().getIdentifierValidator(identifier.getIdentifierType().getValidator());
+					updateNeeded = !piv.isValid(identifier.getIdentifier());
 				} catch (Exception e) {
 					log.error("Patient #" + identifier.getPatient().getPatientId() + " Bad identifier: '" + identifier.getIdentifier() + "'");
 				}

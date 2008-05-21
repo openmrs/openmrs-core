@@ -88,7 +88,12 @@
 					}
 					//	only allow the first item to be automatically selected if:
 					//		the entered text is a string or the entered text is a valid identifier
-					return (savedText.match(/\d/) == false || isValidCheckDigit(savedText));	
+					//return (savedText.match(/\d/) == false || isValidCheckDigit(savedText));
+					
+					//don't autojump anymore.  keeping the above functionality
+					//would require adding a field to PatientListItem, and this inelegant solution
+					//doesn't seem worth the minimal functionality conferred above.
+					return false;
 				}
 				
 			</script>

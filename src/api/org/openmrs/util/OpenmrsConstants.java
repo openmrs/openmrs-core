@@ -25,6 +25,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.synchronization.SyncConstants;
 
@@ -368,6 +369,7 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
 	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS           = "report.xmlMacros";
 	public static final String GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS      = "dashboard.regimen.standardRegimens";	
+	public static final String GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR = "patient.defaultPatientIdentifierValidator";	
 	
 	// These properties (and default values) are set if not found in the database on startup
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
@@ -550,6 +552,8 @@ public final class OpenmrsConstants {
         props.add(new GlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RETRY_COUNT, "10", "Number of times server attempts to apply received synchronization changes before giving up."));
         props.add(new GlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RECORDS, SyncConstants.PROPERTY_NAME_MAX_RECORDS_DEFAULT, "Maximum number of change records that will be send to the server at one time."));
         
+        props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR, LUHN_IDENTIFIER_VALIDATOR, "This property sets the default patient identifier validator.  The default validator is only used in a handful of (mostly legacy) instances.  For example, it's used to generate the isValidCheckDigit calculated column and to append the string \"(default)\" to the name of the default validator on the editPatientIdentifierType form."));
+
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
@@ -712,5 +716,7 @@ public final class OpenmrsConstants {
     public static final String LOG_LEVEL_ERROR = "error";
     public static final String LOG_LEVEL_FATAL = "fatal";
     
-	
+    //Patient Identifier Validators
+	public static final String LUHN_IDENTIFIER_VALIDATOR = LuhnIdentifierValidator.class.getName();
+    
 }

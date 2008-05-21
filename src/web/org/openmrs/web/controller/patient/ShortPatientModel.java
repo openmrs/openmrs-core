@@ -27,7 +27,6 @@ import org.openmrs.PersonName;
 public class ShortPatientModel {
 	private Integer patientId;
 	private String identifier = "";
-	private Boolean identifierCheckDigit = false;
 	private String otherIdentifiers = "";
 	private PersonName name = new PersonName();
 	private String otherNames = "";
@@ -68,7 +67,6 @@ public class ShortPatientModel {
 			for (PatientIdentifier pi : patient.getIdentifiers()) {
 				if (first) {
 					identifier = pi.getIdentifier();
-					identifierCheckDigit = pi.getIdentifierType().hasCheckDigit();
 					first = false;
 				}
 				else {
@@ -151,14 +149,6 @@ public class ShortPatientModel {
 
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
-	}
-
-	public Boolean getIdentifierCheckDigit() {
-		return identifierCheckDigit;
-	}
-
-	public void setIdentifierCheckDigit(Boolean identifierCheckDigit) {
-		this.identifierCheckDigit = identifierCheckDigit;
 	}
 
 	public String getOtherIdentifiers() {
