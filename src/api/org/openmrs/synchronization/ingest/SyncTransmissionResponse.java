@@ -97,7 +97,8 @@ public class SyncTransmissionResponse implements IItem {
 	    // this needs to be bulletproof
     	if ( connResponse != null ) {
     		
-    		System.out.println("RESPONSE PAYLOAD IS: " + connResponse.getResponsePayload());
+    		if (log.isInfoEnabled())
+    			log.info("RESPONSE PAYLOAD IS: " + connResponse.getResponsePayload());
     		
     		if ( connResponse.getState().equals(ServerConnectionState.OK) ) {
     			try {
@@ -287,7 +288,7 @@ public class SyncTransmissionResponse implements IItem {
         try {
         	this.state = SyncTransmissionState.valueOf(me.getAttribute("state"));
         } catch ( Exception e ) {
-        	System.out.println("STATE IS [" + me.getAttribute("state") + "]");
+        	log.info("STATE IS [" + me.getAttribute("state") + "], defaulting to RESPONSE_NOT_UNDERSTOOD", e);
         	this.state = SyncTransmissionState.RESPONSE_NOT_UNDERSTOOD;
         }
         this.errorMessage = me.getAttribute("errorMessage");

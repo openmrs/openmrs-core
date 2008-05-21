@@ -141,11 +141,11 @@ public class SyncUtil {
 		Object propVal = null;
 		propVal = SyncUtil.valForField(propName, n.getTextContent(), allFields);
 		
-		log.warn("Trying to set value to " + propVal + " when propName is " + propName + " and context is " + n.getTextContent());
+		log.info("Trying to set value to " + propVal + " when propName is " + propName + " and context is " + n.getTextContent());
 		
 		if ( propVal !=  null ) {
 			SyncUtil.setProperty(o, propName, propVal);
-			log.warn("Successfully called set" + SyncUtil.propCase(propName) + "(" + propVal + ")" );
+			log.info("Successfully called set" + SyncUtil.propCase(propName) + "(" + propVal + ")" );
 		}
 	}
 
@@ -154,11 +154,10 @@ public class SyncUtil {
 		Object[] setterParams = new Object[1];
 		setterParams[0] = propVal;
 		
-		log.warn("getting setter method");
+		log.debug("getting setter method");
 		Method m = SyncUtil.getSetterMethod(o.getClass(), propName, propVal.getClass());
 
-		log.warn("about to call " + m.getName());
-		
+		log.debug("about to call " + m.getName());
         Object voidObj = m.invoke(o, setterParams);
 	}
 	
@@ -310,7 +309,7 @@ public class SyncUtil {
 		for ( Field f : allFields ) {
 			//log.debug("field is " + f.getName());
 			if ( f.getName().equals(fieldName) ) {
-				log.warn("found Field " + fieldName + " with type is " + f.getGenericType());
+				log.info("found Field " + fieldName + " with type is " + f.getGenericType());
 
 				String className = f.getGenericType().toString();
 				if ( className.startsWith("class ") ) className = className.substring("class ".length());

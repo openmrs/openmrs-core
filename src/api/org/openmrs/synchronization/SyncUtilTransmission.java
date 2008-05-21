@@ -274,10 +274,10 @@ public class SyncUtilTransmission {
                 String toTransmit = null;
                 if ( responseInstead != null ) {
                     toTransmit = responseInstead.getFileOutput();
-                    log.warn("Sending a response (with tx inside): " + toTransmit);
+                    log.info("Sending a response (with tx inside): " + toTransmit);
                 } else if ( transmission != null ){
                     toTransmit = transmission.getFileOutput();
-                    log.warn("Sending an actual tx: " + toTransmit);
+                    log.info("Sending an actual tx: " + toTransmit);
                 }
                 
                 if ( toTransmit != null && toTransmit.length() > 0 ) {
@@ -405,7 +405,7 @@ public class SyncUtilTransmission {
                 
                 if ( tx != null ) {
                 	if (log.isInfoEnabled()) {
-                		log.info("sync tx created was: " + tx.getFileOutput());
+                		log.info("SYNC TX created was: " + tx.getFileOutput());
                 	}
                     // start by sending request to parent server
                     SyncTransmissionResponse initialResponse = SyncUtilTransmission.sendSyncTranssmission(parent, tx);
@@ -426,9 +426,9 @@ public class SyncUtilTransmission {
                             // tx may be null - meaning no updates from parent
                             str = SyncUtilTransmission.processSyncTransmission(initialTxFromParent);
                         } else {
-                            log.warn("initialTxFromParent was null coming back from parent(?)");
+                            log.info("initialTxFromParent was null coming back from parent(?)");
                             initialResponse.createFile(true, "requestResponse");
-                            log.warn("response was: " + initialResponse.getFileOutput());
+                            log.info("response was: " + initialResponse.getFileOutput());
                         }
 
                         // now get local changes destined for parent, and package those inside
@@ -458,7 +458,7 @@ public class SyncUtilTransmission {
                 response.setState(SyncTransmissionState.INVALID_SERVER);                
             }
         } catch ( Exception e ) {
-            e.printStackTrace();
+        	log.error("Unexpected Error during full synchronize.", e);
             if (SyncUtil.getSyncStatus() == SyncStatusState.ENABLED_STRICT) {
                 throw(new SyncException("Error while performing synchronization, see log messages and callstack.", e));
             }
@@ -471,7 +471,7 @@ public class SyncUtilTransmission {
     
     /**
      * Processes incoming sync transmission.
-     * <p/>This method is used both by child and parent. On child, it is used to process any new incoming records from parent; 
+     * <p/>Remarks: This method is used both by child and parent. On child, it is used to process any new incoming records from parent; 
      * on parent it is used to process child's changes.
      *  
      * @param st transmission to process.
@@ -509,13 +509,17 @@ public class SyncUtilTransmission {
         	SyncImportRecord importRecord = null;
             for ( SyncRecord record : st.getSyncRecords() ) {
             	try {
-            		//pre-create import record in case we get exception
+            		//pre-create import record in case we get exception            		
                 	importRecord = new SyncImportRecord();
                     importRecord.setState(SyncRecordState.FAILED);  // by default, until we know otherwise
                     importRecord.setRetryCount(record.getRetryCount());
                     importRecord.setTimestamp(record.getTimestamp());
                     
+                    //TODO: write record as pending to prevent someone else trying to process this record at the same time
+                    
+                    //now attempt to process
             		importRecord = Context.getSynchronizationIngestService().processSyncRecord(record, origin);
+            		
             	} catch (SyncIngestException e) {
             		e.printStackTrace();
             		importRecord = e.getSyncImportRecord();

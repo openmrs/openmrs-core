@@ -64,12 +64,10 @@ public class SyncIngestException extends SyncException {
     	this.itemError = itemError;
     }
 
-	//TODO in 0.3 release, see ticket #603: not used until ticket #603
 	public SyncImportRecord getSyncImportRecord() {
 		return syncImportRecord;
 	}
 
-	//TODO in 0.3 release, see ticket #603: not used until ticket #603
 	public void setSyncImportRecord(SyncImportRecord value) {
 		this.syncImportRecord = value;
 	}

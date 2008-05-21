@@ -164,7 +164,7 @@ public class SyncRecord implements Serializable, IItem {
         if (items == null) {
             items = new LinkedHashMap<String,SyncItem>();
         }
-        items.put(syncItem.getKey().getKeyValue().toString(),syncItem);
+        items.put(syncItem.getKey().getKeyValue().toString() + syncItem.getState().toString(),syncItem);
     }
 
     /**
@@ -186,6 +186,7 @@ public class SyncRecord implements Serializable, IItem {
     }
 
     public void setItems(Collection<SyncItem> newItems) {
+    	if(newItems == null) return;
     	items = new LinkedHashMap<String,SyncItem>();
     	for(SyncItem newItem : newItems) {
     		this.addItem(newItem);
@@ -205,13 +206,24 @@ public class SyncRecord implements Serializable, IItem {
     public boolean equals(Object o) {
         if (!(o instanceof SyncRecord) || o == null)
             return false;
-
+        
+        
         SyncRecord oSync = (SyncRecord) o;
+        
         boolean same = ((oSync.getTimestamp() == null) ? (this.getTimestamp() == null) : oSync.getTimestamp().equals(this.getTimestamp()))
                 && ((oSync.getGuid() == null) ? (this.getGuid() == null) : oSync.getGuid().equals(this.getGuid()))
                 && ((oSync.getState() == null) ? (this.getState() == null) : oSync.getState().equals(this.getState()))
-                && ((oSync.getItems() == null) ? (this.getItems() == null) : oSync.getItems().equals(this.getItems()))
                 && (oSync.getRetryCount() == this.getRetryCount());
+        
+        //manually check linkedhashset
+        Collection<SyncItem> oSyncItems = oSync.getItems();
+        Collection<SyncItem> thisItems = this.getItems();
+        if (oSyncItems == null || thisItems == null) {
+        	same = same && (thisItems == null) && (oSyncItems == null);
+        } else {
+        	same = same && oSyncItems.containsAll(thisItems) && (oSyncItems.size() == thisItems.size());        	
+        }
+        
         return same;
     }
 

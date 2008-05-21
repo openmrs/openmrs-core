@@ -76,11 +76,14 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
     }
     
     /**
+     * Applies  synchronization record against the local data store in single transaction.  
+     * <p/> Remarks: Exceptions are always thrown if something goes wrong while processing the record in order to abort sync items as 
+     * one transaction. To report back SyncImportRecord accuratenly in case of exception, notice that SyncIngestException contains
+     * SyncImportRecord. In case of exception, callers should inspect this value as it will contain more information about the status of sync
+     * item as it failed.
      * 
-     * TODO
-     * 
-     * @param record
-     * @param server
+     * @param record SyncRecord to be processed
+     * @param server Server where the record came from
      * @return
      */
     public SyncImportRecord processSyncRecord(SyncRecord record, RemoteServer server) throws SyncIngestException {
@@ -200,10 +203,11 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                         }
                         */
                     } else {
-                    	/* One of SyncItem commits failed, rollback and set failure information.
-                    	 */
+                    	//One of SyncItem commits failed, throw to rollback and set failure information.
                     	log.warn("Error while processing SyncRecord with original ID " + record.getOriginalGuid() + " (" + record.getContainedClasses() + ")");
                         importRecord.setState(SyncRecordState.FAILED);
+                        SyncIngestException sie = new SyncIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED,null,null,importRecord);
+                        throw(sie);
                     }
                     
                     Context.getSynchronizationService().updateSyncImportRecord(importRecord);
@@ -211,15 +215,15 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
             }
         } catch (SyncIngestException e) {
 	        e.printStackTrace();
-        	//TODO in 0.3 release, see ticket #603: fill in sync import record and rethrow to abort tx
-        	//e.setSyncImportRecord(importRecord);
-        	//throw (e);
+        	//fill in sync import record and rethrow to abort tx
+        	e.setSyncImportRecord(importRecord);
+        	throw (e);
         }
         catch (Exception e ) {
             e.printStackTrace();
-            //TODO in 0.3 release, see ticket #603: fill in sync import record and rethrow to abort tx
-            //SyncIngestException sie = new SyncIngestException(e,SyncConstants.ERROR_RECORD_UNEXPECTED,null,null,importRecord);
-            //throw(sie);
+            //fill in sync import record and rethrow to abort tx
+            SyncIngestException sie = new SyncIngestException(e,SyncConstants.ERROR_RECORD_UNEXPECTED,null,null,importRecord);
+            throw(sie);
         } finally {
         	//reset the flush mode back to automatic, no matter what
         	Context.getSynchronizationService().setFlushModeAutomatic();
@@ -254,20 +258,13 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
             }
             ret.setState(SyncItemState.SYNCHRONIZED);                
         } catch (SyncIngestException e) {
-        	//TODO in 0.3 release, see ticket #603: MUST RETHROW to abort transaction
-        	//throw (e);
-            ret.setErrorMessage(e.getItemError());
-            ret.setErrorMessageArgs(e.getItemErrorArgs());
-            ret.setState(SyncItemState.CONFLICT);
-            ret.setErrorMessageDetail(e.fillInStackTrace().toString());        	
+        	//MUST RETHROW to abort transaction
+        	e.setSyncItemContent(itemContent);
+        	throw (e);
         }
         catch (Exception e) {
-        	//TODO in 0.3 release, see ticket #603: MUST RETHROW to abort transaction
-            //throw new SyncIngestException(e,SyncConstants.ERROR_ITEM_UNEXPECTED, null, itemContent,null);
-            e.printStackTrace();
-			ret.setErrorMessage(SyncConstants.ERROR_ITEM_UNEXPECTED);
-            ret.setErrorMessageDetail(e.toString());
-            
+        	//MUST RETHROW to abort transaction
+            throw new SyncIngestException(e,SyncConstants.ERROR_ITEM_UNEXPECTED, null, itemContent,null);
         }       
         
         return ret;        
@@ -332,6 +329,18 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
     	}
         owner = (Synchronizable)SyncUtil.getOpenmrsObj(ownerClassName, ownerGuid);    	
     	
+        //we didn't get the owner record: throw an execption
+        //TODO: in future, when we have conflict resolution, this maybe handled differently
+        if (owner == null) {
+        	log.error("Cannot retrieve the collection's owner object.");
+    		log.error("Owner info: " +
+      				"\nownerClassName:" + ownerClassName + 
+      				"\nownerCollectionPropertyName:" + ownerCollectionPropertyName +
+      				"\nownerCollectionAction:" + ownerCollectionAction +
+      				"\nownerGuid:" + ownerGuid);	        	
+        	throw new SyncIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming,null);
+        }
+        
     	//NOTE: we cannot just new up a collection and assign to parent:
         //if hibernate mapping has cascade deletes, it will orphan existing collection and hibernate will throw error
         //to that effect: "A collection with cascade="all-delete-orphan" was no longer referenced by the owning entity instance"
