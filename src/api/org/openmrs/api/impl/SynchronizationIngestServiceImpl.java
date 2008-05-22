@@ -314,7 +314,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
     		throw new SyncIngestException(SyncConstants.ERROR_ITEM_BADXML_MISSING, null, incoming,null);
     	}
         for ( i = 0; i < nodes.getLength(); i++ ) {
-    		if (nodes.item(i).getNodeName() == "owner") {
+    		if ("owner".equals(nodes.item(i).getNodeName())) {
     	    	//pull out collection owner info: class name of owner, its guid, and name of poperty on owner that holds this collection
     			ownerClassName = ((Element)nodes.item(i)).getAttribute("type");
     			ownerCollectionPropertyName = ((Element)nodes.item(i)).getAttribute("properyName");
@@ -402,7 +402,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         
         //now, finally process nodes, phew!!
         for ( i = 0; i < nodes.getLength(); i++ ) {
-        	if(nodes.item(i).getNodeName() == "entry") {
+        	if("entry".equals(nodes.item(i).getNodeName())) {
 				String entryClassName = ((Element)nodes.item(i)).getAttribute("type");
 				String entryGuid = ((Element)nodes.item(i)).getAttribute("guid");
 				String entryAction = ((Element)nodes.item(i)).getAttribute("action");
@@ -418,7 +418,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 						Synchronizable toBeRemoved = null;
 						for(Object o : entries) {
 							if (o instanceof Synchronizable) {
-								if( entryGuid == ((Synchronizable)o).getGuid() ) {
+								if( entryGuid.equals(((Synchronizable)o).getGuid())) {
 									toBeRemoved = (Synchronizable)o;
 									break;
 								}

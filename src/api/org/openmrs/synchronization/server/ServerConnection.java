@@ -347,7 +347,7 @@ public class ServerConnection {
 		try {
 			URL url = new URL(postUrl);
 
-			if (url.getProtocol() == "https") {
+			if ("https".equals(url.getProtocol())) {
 				httpConnection = (HttpsURLConnection)url.openConnection();
 			} else {
 				httpConnection = (HttpURLConnection)url.openConnection();
