@@ -410,7 +410,7 @@
 </div>
 
 <!-- turn off content based on value of  localServerSyncStatusValue-->
-<c:if test="${localServerSyncStatusValue == 'DISABLED'}">			
+<c:if test="${localServerSyncStatusValue == 'DISABLED_SYNC_AND_HISTORY'}">			
 	<script language="JavaScript">
 		disableDIVs();
 	</script>
