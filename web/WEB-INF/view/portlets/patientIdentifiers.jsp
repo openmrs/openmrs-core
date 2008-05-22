@@ -87,17 +87,14 @@ highlightMissing=true/false (defaults to true)
 		<c:set var="idTypeName" value="${temp[0]}"/>
 		<c:set var="highlight" value="${temp[1]}"/>
 		<c:set var="locationName" value="${temp[2]}"/>
-		<c:set var="location" value="${model.locationsByName[locationName]}"/>
 	
 		<c:set var="found" value="${null}" />
-		<c:set var="id_err" value="${null}" />
 		
 		<!-- TESTING:  -->
 		
 		<c:forEach var="identifier" items="${model.patient.identifiers}">
 			<c:if test="${!identifier.voided && identifier.identifierType.name == idTypeName}">
 				<c:set var="found" value="${identifier}"/>
-				<c:set var="id_err" value="${model.identifierErrors[identifier]}" />
 			</c:if>
 		</c:forEach>
 
@@ -125,12 +122,7 @@ highlightMissing=true/false (defaults to true)
 					<input id="idSaveButton_${iter.index}" type="button" value="<spring:message code="general.save" />" disabled="true" onClick="handleSaveIdentifier(${iter.index})"/>
 				</td>
 				<td>
-					<c:if test="${id_err == null}">
-						<span id="msg_${iter.index}" style="display:none;" class="error"></span>
-					</c:if>
-					<c:if test="${id_err != null}">
-						<span id="msg_${iter.index}" class="error"><spring:message code="${id_err}" /></span>
-					</c:if>
+					<span id="msg_${iter.index}" style="display:none;" class="error"></span>
 				</td>
 			</tr>
 		</c:if>		
