@@ -78,6 +78,7 @@ table#labTestTable th {
 						showDateHeader="true"
 						orientation="horizontal"
 						sort="asc"
+						combineEqualResults="true"
 						limit="-1"
 					/>
 				</td>
