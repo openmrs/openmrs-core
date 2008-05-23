@@ -37,6 +37,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.ReportSchemaXml;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -87,6 +88,10 @@ public class ForEachRecordTag extends BodyTagSupport {
 		else if (name.equals("form")) {
 			List<Form> forms = Context.getFormService().getForms();
 			records = forms.iterator();
+		}
+		else if (name.equals("reportSchemaXml")) {
+			List<ReportSchemaXml> list = Context.getReportService().getReportSchemaXmls();
+			records = list.iterator();
 		}
 		else if (name.equals("reportObject")) {
 			List ret = null;
