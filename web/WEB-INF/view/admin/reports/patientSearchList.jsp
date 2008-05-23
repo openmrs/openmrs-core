@@ -19,7 +19,7 @@
 		<th></th>
 		<th><spring:message code="general.name" /></th>
 		<th><spring:message code="general.description" /></th>
-		<th></th>
+		<th><spring:message code="general.parameters" /></th>
 	</tr>
 	<c:forEach var="patientSearch" items="${patientSearchList}"
 		varStatus="varStatus">
@@ -31,7 +31,13 @@
 				href="patientSearch.form?patientSearchIdLookup=${patientSearch.reportObjectId}">${patientSearch.name}</a>
 			</td>
 			<td valign="top">${patientSearch.description}</td>
-			<td></td>
+			<td>
+				<c:forEach var="par" items="${patientSearch.patientSearch.parameters}">
+					${par.name}: ${par.defaultValue}
+					(${par.clazz})
+					<br/>
+				</c:forEach>
+			</td>
 		</tr>
 	</c:forEach>
 </table>
