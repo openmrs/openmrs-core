@@ -17,6 +17,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * A ConceptProposal is a temporary holder for concept that should be 
@@ -267,6 +268,18 @@ public class ConceptProposal implements java.io.Serializable {
 	 */
 	public void setMappedConcept(Concept mappedConcept) {
 		this.mappedConcept = mappedConcept;
+	}
+	
+	/**
+	 * Convenience method to mark this proposal as rejected.
+	 * 
+	 * Be sure to call Context.getConceptService().saveConceptProposal(/thisObject/)
+	 * after calling this method
+	 * 
+	 */
+	public void rejectConceptProposal() {
+		setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);
+		setFinalText("");
 	}
 
 }

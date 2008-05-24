@@ -16,32 +16,44 @@ package org.openmrs.api;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.EncounterDAO;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Encounter-related services
+ * Services for Encounters and Encounter Types
+ * 
  * @version 1.0
  */
 @Transactional
-public interface EncounterService {
-	
-	public void setEncounterDAO(EncounterDAO dao);
-	
+public interface EncounterService extends OpenmrsService {
+
 	/**
-	 * Creates a new encounter
+	 * Set the given <code>dao</code> on this encounter service. The dao will
+	 * act as the conduit through with all encounter calls get to the database
 	 * 
-	 * @param encounter to be created
+	 * @param dao
+	 */
+	public void setEncounterDAO(EncounterDAO dao);
+
+	/**
+	 * Saves a new encounter or updates an existing encounter. If an existing
+	 * encounter, this method will automatically apply encounter.patient to all
+	 * encounter.obs.patient
+	 * 
+	 * @param encounter to be saved
 	 * @throws APIException
 	 */
-	public void createEncounter(Encounter encounter) throws APIException;
+	@Authorized( { OpenmrsConstants.PRIV_ADD_ENCOUNTERS,
+	        OpenmrsConstants.PRIV_EDIT_ENCOUNTERS })
+	public void saveEncounter(Encounter encounter) throws APIException;
 
 	/**
 	 * Get encounter by internal identifier
@@ -50,37 +62,110 @@ public interface EncounterService {
 	 * @return encounter with given internal identifier
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
 	public Encounter getEncounter(Integer encounterId) throws APIException;
-	
+
 	/**
+	 * Get all encounters (not voided) for a patient.
 	 * 
-	 * @param identifier
-	 * @param includeVoided
-	 * @return all encounters for the given patient identifer
-	 * @throws APIException
+	 * @param patient
+	 * @return List<Encounter> encounters (not voided) for a patient.
 	 */
-	@Transactional(readOnly=true)
-	public List<Encounter> getEncountersByPatientIdentifier(String identifier, boolean includeVoided) throws APIException;
-	
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public List<Encounter> getEncountersByPatient(Patient patient);
+
 	/**
+	 * Get encounters for a patientId
 	 * 
 	 * @param patientId
-	 * @param includeVoided
-	 * @return all encounters for the given patient identifer
+	 * @return all encounters (not retired) for the given patient identifer
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	public List<Encounter> getEncountersByPatientId(Integer patientId, boolean includeVoided) throws APIException;
-	
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public List<Encounter> getEncountersByPatientId(Integer patientId)
+	        throws APIException;
+
 	/**
-	 * Get all encounter types
+	 * Get encounters (not voided) for a patient identifier
 	 * 
-	 * @return encounter types list
+	 * @param identifier
+	 * @return all encounters (not retired) for the given patient identifer
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	public List<EncounterType> getEncounterTypes() throws APIException;
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public List<Encounter> getEncountersByPatientIdentifier(String identifier)
+	        throws APIException;
+
+	/**
+	 * Get all encounters that match a variety of (nullable) criteria
+	 * 
+	 * @param who
+	 * @param loc
+	 * @param fromDate
+	 * @param toDate
+	 * @param enteredViaForms
+	 * @param encounterTypes
+	 * @param includeVoided
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public List<Encounter> getEncounters(Patient who, Location loc,
+	        Date fromDate, Date toDate, Collection<Form> enteredViaForms,
+	        Collection<EncounterType> encounterTypes, boolean includeVoided);
+
+	/**
+	 * Voiding a encounter essentially removes it from circulation
+	 * 
+	 * @param Encounter encounter
+	 * @param String reason
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_EDIT_ENCOUNTERS })
+	public void voidEncounter(Encounter encounter, String reason);
+
+	/**
+	 * Unvoid encounter record
+	 * 
+	 * @param encounter encounter to be revived
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_EDIT_ENCOUNTERS })
+	public void unvoidEncounter(Encounter encounter) throws APIException;
+
+	/**
+	 * Completely remove an encounter from database.
+	 * 
+	 * For super users only. If dereferencing encounters, use
+	 * <code>voidEncounter(org.openmrs.Encounter)</code>
+	 * 
+	 * @param encounter encounter object to be purged
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_PURGE_ENCOUNTERS })
+	public void purgeEncounter(Encounter encounter) throws APIException;
+
+	/**
+	 * Completely remove an encounter from database.
+	 * 
+	 * For super users only. If dereferencing encounters, use
+	 * <code>voidEncounter(org.openmrs.Encounter)</code>
+	 * 
+	 * @param encounter encounter object to be purged
+	 * @param cascade also purge observations
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_PURGE_ENCOUNTERS })
+	public void purgeEncounter(Encounter encounter, boolean cascade)
+	        throws APIException;
+
+	/**
+	 * Save a new Encounter Type or update an existing Encounter Type.
+	 * 
+	 * @param encounterType
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES })
+	public void saveEncounterType(EncounterType encounterType);
 
 	/**
 	 * Get encounterType by internal identifier
@@ -89,9 +174,11 @@ public interface EncounterService {
 	 * @return encounterType with given internal identifier
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException;
-	
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
+	public EncounterType getEncounterType(Integer encounterTypeId)
+	        throws APIException;
+
 	/**
 	 * Get encounterType by name
 	 * 
@@ -99,16 +186,251 @@ public interface EncounterService {
 	 * @return EncounterType
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
 	public EncounterType getEncounterType(String name) throws APIException;
+
+	/**
+	 * Get all encounter types (not retired)
+	 * 
+	 * @return encounter types list
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
+	public List<EncounterType> getAllEncounterTypes() throws APIException;
+
+	/**
+	 * Get all encounter types. If includeRetired is true, also get retired
+	 * encounter types.
+	 * 
+	 * @param includeRetired
+	 * @return encounter types list
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
+	public List<EncounterType> getAllEncounterTypes(boolean includeRetired)
+	        throws APIException;
+
+	/**
+	 * Find Encounter Types with name matching the beginning of the search
+	 * string. Search strings are case insensitive so that "NaMe".equals("name")
+	 * is true. Includes retired EncounterTypes.
+	 * 
+	 * @param name of the encounter type to find
+	 * @return List<EncounterType> matching encounters
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
+	public List<EncounterType> findEncounterTypes(String name)
+	        throws APIException;
+
+	/**
+	 * 
+	 * Retire an EncounterType.
+	 * 
+	 * @param encounterType
+	 * @param reason
+	 * @throws APIException
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES })
+	public void retireEncounterType(EncounterType encounterType, String reason)
+	        throws APIException;
+
+	/**
+	 * 
+	 * Unretire an EncounterType
+	 * 
+	 * @param encounterType
+	 * @throws APIException
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES })
+	public void unretireEncounterType(EncounterType encounterType)
+	        throws APIException;
+
+	/**
+	 * 
+	 * Completely remove an encounter type from database.
+	 * 
+	 * @param encounterType
+	 * @throws APIException
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_PURGE_ENCOUNTER_TYPES })
+	public void purgeEncounterType(EncounterType encounterType)
+	        throws APIException;
+
+	/**
+	 * Creates a new encounter
+	 * 
+	 * @param encounter to be created
+	 * @throws APIException
+	 * @deprecated replaced by {@link #saveEncounter(Encounter)}
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_ADD_ENCOUNTERS })
+	public void createEncounter(Encounter encounter) throws APIException;
+
+	/**
+	 * Save changes to encounter. Automatically applys encounter.patient to all
+	 * encounter.obs.patient
+	 * 
+	 * @param encounter
+	 * @throws APIException
+	 * @deprecated replaced by {@link #saveEncounter(Encounter)}
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_EDIT_ENCOUNTERS })
+	public void updateEncounter(Encounter encounter) throws APIException;
+
+	/**
+	 * Delete encounter from database.
+	 * 
+	 * For super users only. If dereferencing encounters, use
+	 * <code>voidEncounter(org.openmrs.Encounter)</code>
+	 * 
+	 * @param encounter encounter object to be deleted
+	 * @deprecated replaced by {@link #purgeEncounter(encounter)}
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_DELETE_ENCOUNTERS })
+	public void deleteEncounter(Encounter encounter) throws APIException;
+
+	/**
+	 * Get encounters for a patientId (not voided). To include voided Encounters
+	 * use
+	 * {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 * 
+	 * @param patientId
+	 * @param includeVoided No longer supported
+	 * @return all encounters for the given patient identifer
+	 * @throws APIException
+	 * @deprecated replaced by {@link #getEncountersByPatientId(Integer)}
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public List<Encounter> getEncountersByPatientId(Integer patientId,
+	        boolean includeVoided) throws APIException;
+
+	/**
+	 * Get encounters (not voided) for a patient identifier. To include voided
+	 * encounters use
+	 * {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 * 
+	 * @param identifier
+	 * @param includeVoided No longer supported.
+	 * @return all encounters for the given patient identifer
+	 * @throws APIException
+	 * @deprecated replaced by {@link #getEncountersByPatientIdentifier(String)}
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public List<Encounter> getEncountersByPatientIdentifier(String identifier,
+	        boolean includeVoided) throws APIException;
+
+	/**
+	 * Get all encounters (not voided) for a patient
+	 * 
+	 * @param who
+	 * @return List<Encounter> encounters (not voided) for a patient
+	 * @deprecated replaced by {@link #getEncountersByPatient(Patient)}
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public List<Encounter> getEncounters(Patient who);
+
+	/**
+	 * Get all encounters (not voided) for a patient. To include voided
+	 * encounters, use
+	 * {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 * 
+	 * @param who
+	 * @param includeVoided No longer supported.
+	 * @return
+	 * @deprecated replaced by {@link #getEncountersByPatient(Patient)}
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public List<Encounter> getEncounters(Patient who, boolean includeVoided);
+
+	/**
+	 * Get all encounters for a patient that took place at a specific location
+	 * 
+	 * @param who
+	 * @param where
+	 * @return
+	 * @deprecated use
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public List<Encounter> getEncounters(Patient who, Location where);
+
+	/**
+	 * Get all encounters for a patient that took place between fromDate and
+	 * toDate (both nullable and inclusive)
+	 * 
+	 * @param who
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 * @deprecated use
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public List<Encounter> getEncounters(Patient who, Date fromDate, Date toDate);
+
+	/**
+	 * Get all encounters that took place between fromDate and toDate (both
+	 * nullable and inclusive)
+	 * 
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 * @deprecated use
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public Collection<Encounter> getEncounters(Date fromDate, Date toDate);
+
+	/**
+	 * Get all encounters that took place between fromDate and toDate (both
+	 * nullable and inclusive) at the given location
+	 * 
+	 * @param loc Location
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 * @deprecated use
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public Collection<Encounter> getEncounters(Location loc, Date fromDate,
+	        Date toDate);
+
+	/**
+	 * 
+	 * Get all encounter types (not retired)
+	 * 
+	 * @return
+	 * @throws APIException
+	 * @deprecated replaced by {@link #getAllEncounterTypes()}
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
+	public List<EncounterType> getEncounterTypes() throws APIException;
 
 	/**
 	 * Get all locations
 	 * 
 	 * @return location list
 	 * @throws APIException
+	 * @deprecated replaced by
+	 *             {@link org.openmrs.api.LocationService.getAllLocations( )}
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
 	public List<Location> getLocations() throws APIException;
 
 	/**
@@ -117,8 +439,11 @@ public interface EncounterService {
 	 * @param location id
 	 * @return location with given internal identifier
 	 * @throws APIException
+	 * @deprecated replaced by
+	 *             {@link org.openmrs.api.LocationService.getLocationByLocationId(locationId)}
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
 	public Location getLocation(Integer locationId) throws APIException;
 
 	/**
@@ -127,131 +452,25 @@ public interface EncounterService {
 	 * @param name location's name
 	 * @return location with given name
 	 * @throws APIException
+	 * @deprecated replaced by
+	 *             {@link org.openmrs.api.LocationService.getLocationByName(name)}
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
 	public Location getLocationByName(String name) throws APIException;
-	
+
 	/**
-	 * Search for locations by name.  Matches returned match the given string at 
+	 * Search for locations by name. Matches returned match the given string at
 	 * the beginning of the name
 	 * 
 	 * @param name location's name
 	 * @return list of locations with similar name
 	 * @throws APIException
+	 * @deprecated replaced by
+	 *             {@link org.openmrs.api.LocationService.findLocations(name)}
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
 	public List<Location> findLocations(String name) throws APIException;
-	
-	/**
-	 * Save changes to encounter.  
-	 * Automatically applys encounter.patient to all encounter.obs.patient
-	 * 
-	 * @param encounter
-	 * @throws APIException
-	 */
-	public void updateEncounter(Encounter encounter) throws APIException;
-	
-	/**
-	 * Delete encounter from database.
-	 * 
-	 * For super users only. If dereferencing encounters, use
-	 * <code>voidEncounter(org.openmrs.Encounter)</code>
-	 * 
-	 * @param encounter encounter object to be deleted 
-	 */
-	public void deleteEncounter(Encounter encounter) throws APIException;
-	
-	/**
-	 * Voiding a encounter essentially removes it from circulation
-	 * 
-	 * @param Encounter
-	 *            encounter
-	 * @param String
-	 *            reason
-	 */
-	public void voidEncounter(Encounter encounter, String reason);
-	
-	/**
-	 * Unvoid encounter record 
-	 * 
-	 * @param encounter encounter to be revived
-	 */
-	public void unvoidEncounter(Encounter encounter) throws APIException;
-	
-	/**
-	 * All unvoided encounters for a patient
-	 * @param who
-	 * @return
-	 */
-	@Transactional(readOnly=true)
-	public Set<Encounter> getEncounters(Patient who);
-	
-	/**
-	 * All encounters for a patient
-	 * @param who
-	 * @param includeVoided
-	 * @return
-	 */
-	@Transactional(readOnly=true)
-	public Set<Encounter> getEncounters(Patient who, boolean includeVoided);
 
-	/**
-	 * Get all encounters for a patient that took place at a specific location
-	 * @param who
-	 * @param where
-	 * @return
-	 */
-	@Transactional(readOnly=true)
-	public Set<Encounter> getEncounters(Patient who, Location where);
-
-    /**
-     * Get all encounters for a patient that took place between fromDate and toDate (both nullable and inclusive)
-     * @param who
-     * @param fromDate
-     * @param toDate
-     * @return
-     */
-	@Transactional(readOnly=true)
-	public Set<Encounter> getEncounters(Patient who, Date fromDate, Date toDate);
-    
-    /**
-     * Get all encounters that took place between fromDate and toDate (both nullable and inclusive)
-     * @param fromDate
-     * @param toDate
-     * @return
-     */
-	@Transactional(readOnly=true)
-	public Collection<Encounter> getEncounters(Date fromDate, Date toDate);
-	
-    /**
-     * Get all encounters that took place between fromDate and toDate (both nullable and inclusive)
-     * at the given location
-     * @param loc Location
-     * @param fromDate
-     * @param toDate
-     * @return
-     */
-	@Transactional(readOnly=true)
-	public Collection<Encounter> getEncounters(Location loc, Date fromDate, Date toDate);
-	
-    /**
-     * Get all encounters that match a variety of (nullable) criteria
-     * 
-     * @param who
-     * @param loc
-     * @param fromDate
-     * @param toDate
-     * @param enteredViaForms
-     * @param encounterTypes
-     * @param includeVoided
-     * @return
-     */
-	@Transactional(readOnly=true)
-	public Collection<Encounter> getEncounters(Patient who,
-                                               Location loc,
-                                               Date fromDate,
-                                               Date toDate,
-                                               Collection<Form> enteredViaForms,
-                                               Collection<EncounterType> encounterTypes,
-                                               boolean includeVoided);
 }

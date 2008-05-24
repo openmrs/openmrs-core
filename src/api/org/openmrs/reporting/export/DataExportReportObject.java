@@ -196,7 +196,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		if (cohortDefinitionId != null) {
 			PatientFilter cohortDefinition = (PatientFilter) Context.getReportObjectService().getReportObject(cohortDefinitionId);
 			if (cohortDefinition != null) {
-				Cohort c = new Cohort(patientIdSet);
+				Cohort c = new Cohort("Cohort from Definition", "cohort from cohortdefinitionid: " + cohortDefinitionId, patientIdSet);
 				c = cohortDefinition.filter(c, context);
 				patientIdSet = c.getMemberIds();
 			}
@@ -205,12 +205,12 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		if (patientSearchId != null) {
 			PatientSearchReportObject search = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(patientSearchId);
 			PatientFilter cohortDefinition = OpenmrsUtil.toPatientFilter(search.getPatientSearch(), null);
-			org.openmrs.Cohort c = new Cohort(patientIdSet);
+			org.openmrs.Cohort c = new Cohort("Cohort from patientSearch", "cohort from patientSearchId: " + patientSearchId, patientIdSet);
 			c = cohortDefinition.filter(c, context);
 			patientIdSet = c.getMemberIds();
 		}
 		
-		return new Cohort(patientIdSet);
+		return new Cohort("Cohort from selected groups", "", patientIdSet);
 	}
 
 	@Override

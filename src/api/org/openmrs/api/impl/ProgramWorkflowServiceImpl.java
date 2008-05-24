@@ -32,645 +32,796 @@ import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProgramWorkflowDAO;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
 
-public class ProgramWorkflowServiceImpl implements ProgramWorkflowService {
+/**
+ * Default implementation of the ProgramWorkflow-related services class.
+ * 
+ * This method should not be invoked by itself.  Spring injection is used
+ * to inject this implementation into the ServiceContext.  Which 
+ * implementation is injected is determined by the spring application 
+ * context file: /metadata/api/spring/applicationContext.xml
+ * 
+ * @see org.openmrs.api.ProgramWorkflowService
+ */
+@Transactional
+public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements ProgramWorkflowService {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	protected final Log log = LogFactory.getLog(this.getClass());
 
-	private ProgramWorkflowDAO dao;
+	protected ProgramWorkflowDAO dao;
 	
 	public ProgramWorkflowServiceImpl() { }
 	
-	private ProgramWorkflowDAO getProgramWorkflowDAO() {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return dao;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#setProgramWorkflowDAO(org.openmrs.api.db.ProgramWorkflowDAO)
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#setProgramWorkflowDAO(org.openmrs.api.db.ProgramWorkflowDAO)
 	 */
 	public void setProgramWorkflowDAO(ProgramWorkflowDAO dao) {
 		this.dao = dao;
 	}
 	
-	// --- Program ---
+	// **************************
+	// PROGRAM
+	// **************************
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getPrograms()
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#saveProgram(org.openmrs.Program)
 	 */
-	public List<Program> getPrograms() {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return getProgramWorkflowDAO().getPrograms();
+    public Program saveProgram(Program program) throws APIException {
+    	
+    	User currentUser = Context.getAuthenticatedUser();
+    	Date currentDate = new Date();
+    	
+    	// Program
+		if (program.getConcept() == null) {
+			throw new APIException("Program concept is required");
+		}
+    	if (program.getCreator() == null) {
+    		program.setCreator(currentUser);
+    	}
+    	if (program.getDateCreated() == null) {
+    		program.setDateCreated(currentDate);
+    	}
+		if (program.getProgramId() != null) {
+			program.setChangedBy(currentUser);
+			program.setDateChanged(currentDate);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#createOrUpdateProgram(org.openmrs.Program)
-	 */
-	public void createOrUpdateProgram(Program p) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
+		// ProgramWorkflow
+		for (ProgramWorkflow workflow : program.getWorkflows()) {
 		
-		log.debug("Creating new program");
-		if (p.getWorkflows() != null) {
-			log.debug("\twith " + p.getWorkflows().size() + " workflows: " + p.getWorkflows());
+			if (workflow.getConcept() == null) {
+				throw new APIException("ProgramWorkflow concept is required");
+			}
+	    	if (workflow.getCreator() == null) {
+	    		workflow.setCreator(currentUser);
+	    	}
+	    	if (workflow.getDateCreated() == null) {
+	    		workflow.setDateCreated(currentDate);
+	    	}
+			if (workflow.getProgramWorkflowId() != null) {
+				workflow.setChangedBy(currentUser);
+				workflow.setDateChanged(currentDate);
+		}
+			if (workflow.getProgram() == null) {
+				workflow.setProgram(program);
+			}
+			else if (!workflow.getProgram().equals(program)) {
+				throw new APIException("This Program contains a ProgramWorkflow whose parent Program is already assigned to " + workflow.getProgram());
 		}
 		
-		Date now = new Date();
-		if (p.getProgramId() == null) {
-			if (p.getCreator() == null) {
-				p.setCreator(Context.getAuthenticatedUser());
+			// ProgramWorkflowState
+			for (ProgramWorkflowState state : workflow.getStates()) {
+				
+				if (state.getConcept() == null || state.getInitial() == null || state.getTerminal() == null) {
+					throw new APIException("ProgramWorkflowState concept, initial, terminal are required");
 			}
-			p.setDateCreated(now);
-		} else {
-			p.setChangedBy(Context.getAuthenticatedUser());
-			p.setDateChanged(now);
+		    	if (state.getCreator() == null) {
+		    		state.setCreator(currentUser);
+			}
+		    	if (state.getDateCreated() == null) {
+		    		state.setDateCreated(currentDate);
 		}
-		
-		if (p.getVoided()) {
-			if (p.getDateVoided() == null) {
-				p.setDateVoided(now);
-			}
-			if (p.getVoidedBy() == null) {
-				p.setVoidedBy(Context.getAuthenticatedUser());
-			}
-		} else {
-			p.setDateVoided(null);
-			p.setVoidedBy(null);
-			p.setVoidReason(null);
-		}
-		
-		if (p.getWorkflows() != null) {
-			for (ProgramWorkflow w : p.getWorkflows()) {
-				if (w.getProgramWorkflowId() == null) {
-					if (w.getCreator() == null) {
-						w.setCreator(Context.getAuthenticatedUser());
+				if (state.getProgramWorkflowStateId() != null) {
+					state.setChangedBy(currentUser);
+					state.setDateChanged(currentDate);
 					}
-					w.setDateCreated(now);
+				if (state.getProgramWorkflow() == null) {
+					state.setProgramWorkflow(workflow);
 				}
-				if (w.getProgram() == null) {
-					w.setProgram(p);
-				} else if (!w.getProgram().getProgramId().equals(p.getProgramId())) {
-					throw new IllegalArgumentException("This Program contains a ProgramWorkflow whose parent Program is already assigned to " + w.getProgram());
+				else if (!state.getProgramWorkflow().equals(workflow)) {
+					throw new APIException("This ProgramWorkflow contains a State whose parent ProgramWorkflow is already assigned to " + workflow.getProgram());
 				}
 			}
 		}
-		getProgramWorkflowDAO().createOrUpdateProgram(p);
+		return dao.saveProgram(program);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getProgram(java.lang.Integer)
+    /**
+     * @see org.openmrs.api.ProgramWorkflowService#getProgram(java.lang.Integer)
 	 */
+    @Transactional(readOnly=true)
 	public Program getProgram(Integer id) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return getProgramWorkflowDAO().getProgram(id);
+		return dao.getProgram(id);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getProgram(java.lang.String)
+    /**
+     * @see org.openmrs.api.ProgramWorkflowService#getProgram(java.lang.String)
 	 */
+    @Transactional(readOnly=true)
 	public Program getProgram(String name) {
-		// TODO: do this right
-		//List<Program> progs = getPrograms();
-		for (Program p : getPrograms())
-			if (p.getConcept().getName().getName().equals(name))
+    	return getProgramByName(name);
+    }
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getProgram(java.lang.String)
+	 */
+    @Transactional(readOnly=true)
+	public Program getProgramByName(String name) {
+		for (Program p : getAllPrograms()) {
+			if (p.getConcept().isNamed(name)) {
 				return p;
+			}
+		}
 		return null;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#retireProgram(org.openmrs.Program)
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#getAllPrograms()
 	 */
-	public void retireProgram(Program p) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
+    @Transactional(readOnly=true)
+    public List<Program> getAllPrograms() throws APIException {
+    	return getAllPrograms(true);
+    }
 
-		p.setVoided(true);
-		createOrUpdateProgram(p);
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#getAllPrograms(boolean)
+     */
+    @Transactional(readOnly=true)
+    public List<Program> getAllPrograms(boolean includeRetired) throws APIException {
+    	return dao.getAllPrograms(includeRetired);
 	}
 	
-	// --- ProgramWorkflow ---
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#findPrograms(java.lang.String)
+     */
+    @Transactional(readOnly=true)
+    public List<Program> getPrograms(String nameFragment) throws APIException {
+    	return dao.findPrograms(nameFragment);
+    }
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#createWorkflow(org.openmrs.ProgramWorkflow)
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#purgeProgram(org.openmrs.Program)
 	 */
-	public void createWorkflow(ProgramWorkflow w) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
+    public void purgeProgram(Program program) throws APIException {
+    	purgeProgram(program, false);
+	    
+    }
 		
-		getProgramWorkflowDAO().createWorkflow(w);
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#purgeProgram(org.openmrs.Program, boolean)
+     */
+    public void purgeProgram(Program program, boolean cascade) throws APIException {
+    	if (cascade && !program.getWorkflows().isEmpty()) {
+	    	throw new APIException("Cascade purging of Programs is not implemented yet");
+	    }
+    	dao.deleteProgram(program);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getWorkflow(java.lang.Integer)
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
-	public ProgramWorkflow getWorkflow(Integer id) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return getProgramWorkflowDAO().getWorkflow(id);
+    public Program retireProgram(Program program) throws APIException {
+    	program.setRetired(true);
+    	for (ProgramWorkflow workflow : program.getWorkflows()) {
+    		workflow.setRetired(true);
+    		for (ProgramWorkflowState state : workflow.getStates()) {
+    			state.setRetired(true);
+    		}
+    	}
+    	return saveProgram(program);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getWorkflow(org.openmrs.Program, java.lang.String)
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#retireProgram(org.openmrs.Program)
 	 */
-	public ProgramWorkflow getWorkflow(Program program, String name) {
-		// TODO: fix this
-		if (program.getWorkflows() == null)
-			return null;
-		for (ProgramWorkflow wf : program.getWorkflows())
-			if (wf.getConcept().getName(Context.getUserContext().getLocale(), false).getName().equals(name))
-				return wf;
-		return null;
+    public Program unRetireProgram(Program program) throws APIException {
+    	Date lastModifiedDate = program.getDateChanged();
+    	program.setRetired(false);
+    	for (ProgramWorkflow workflow : program.getWorkflows()) {
+    		if (lastModifiedDate != null && lastModifiedDate.equals(workflow.getDateChanged())) {
+    			workflow.setRetired(false);
+	    		for (ProgramWorkflowState state : workflow.getStates()) {
+	    			if (lastModifiedDate != null && lastModifiedDate.equals(state.getDateChanged())) {
+	    				state.setRetired(false);
+	    			}
+	    		}
+    		}
+    	}
+    	return saveProgram(program);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#updateWorkflow(org.openmrs.ProgramWorkflow)
+	// **************************
+	// PATIENT PROGRAM 
+	// **************************
+    
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#savePatientProgram(org.openmrs.PatientProgram)
 	 */
-	public void updateWorkflow(ProgramWorkflow w) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
-		if (w.getVoided()) {
-			if (w.getVoidedBy() == null) {
-				w.setVoidedBy(Context.getAuthenticatedUser());
+    public PatientProgram savePatientProgram(PatientProgram patientProgram) throws APIException {
+    	User currentUser = Context.getAuthenticatedUser();
+    	Date currentDate = new Date();
+    	
+		if (patientProgram.getPatient() == null || patientProgram.getProgram() == null) {
+			throw new APIException("PatientProgram requires a Patient and a Program");
+		}
+    	// Program
+    	if (patientProgram.getCreator() == null) {
+    		patientProgram.setCreator(currentUser);
+    	}
+    	if (patientProgram.getDateCreated() == null) {
+    		patientProgram.setDateCreated(currentDate);
+    	}
+		if (patientProgram.getPatientProgramId() != null) {
+			patientProgram.setChangedBy(currentUser);
+			patientProgram.setDateChanged(currentDate);
+		}
+		if (patientProgram.getVoided()) {
+			if (patientProgram.getVoidedBy() == null) {
+				patientProgram.setVoidedBy(currentUser);
 			}
-			if (w.getDateVoided() == null) {
-				w.setDateVoided(new Date());
-			}
-		} else {
-			w.setVoidedBy(null);
-			w.setVoidReason(null);
-			w.setDateVoided(null);
-		}
-		for (ProgramWorkflowState s : w.getStates()) {
-			s.setProgramWorkflow(w);
-			if (s.getCreator() == null) {
-				s.setCreator(Context.getAuthenticatedUser());
-			}
-			if (s.getDateCreated() == null) {
-				s.setDateCreated(new Date());
+			if (patientProgram.getDateVoided() == null) {
+				patientProgram.setDateVoided(currentDate);
 			}
 		}
-		getProgramWorkflowDAO().updateWorkflow(w);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#voidWorkflow(org.openmrs.ProgramWorkflow, java.lang.String)
-	 */
-	public void voidWorkflow(ProgramWorkflow w, String reason) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PROGRAMS);
-		w.setVoided(true);
-		w.setVoidReason(reason);
-		w.setVoidedBy(Context.getAuthenticatedUser());
-		w.setDateVoided(new Date());
-		getProgramWorkflowDAO().updateWorkflow(w);
-	}
-
-		
-	// --- ProgramWorkflowState ---
-	
-	public List<ProgramWorkflowState> getStates() {
-		return getStates(false);
-	}
-	
-	public List<ProgramWorkflowState> getStates(boolean includeVoided) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return getProgramWorkflowDAO().getStates(false);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getState(java.lang.Integer)
-	 */
-	public ProgramWorkflowState getState(Integer id) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return getProgramWorkflowDAO().getState(id);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getState(org.openmrs.ProgramWorkflow, java.lang.String)
-	 */
-	public ProgramWorkflowState getState(ProgramWorkflow wf, String name) {
-		// TODO: fix this
-		for (ProgramWorkflowState st : wf.getStates())
-			if (st.getConcept().getName(Context.getUserContext().getLocale(), false).equals(name))
-				return st;
-		return null;
-	}
-	
-	// --- PatientProgram ---
-
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#createPatientProgram(org.openmrs.PatientProgram)
-	 */
-	public void createPatientProgram(PatientProgram p) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
-		
-		Date now = new Date();
-		if (p.getCreator() == null) {
-			p.setCreator(Context.getAuthenticatedUser());
-		}
-		p.setDateCreated(now);
-		for (PatientState s : p.getStates()) {
-			if (s.getCreator() == null)
-				s.setCreator(Context.getAuthenticatedUser());
-			if (s.getDateCreated() == null)
-				s.setDateCreated(now);
+		else {
+			patientProgram.setVoidedBy(null);
+			patientProgram.setVoidReason(null);
+			patientProgram.setDateVoided(null);
 		}
 		
-		getProgramWorkflowDAO().createPatientProgram(p);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#updatePatientProgram(org.openmrs.PatientProgram)
-	 */
-	public void updatePatientProgram(PatientProgram p) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
-		
-		Date now = new Date();
-		p.setChangedBy(Context.getAuthenticatedUser());
-		p.setDateChanged(now);
-		for (PatientState state : p.getStates()) {
-			if (state.getDateCreated() == null)
-				state.setDateCreated(now);
-			if (state.getCreator() == null)
-				state.setCreator(Context.getAuthenticatedUser());
+		// Patient State
+		for (PatientState state : patientProgram.getStates()) {
+			if (state.getState() == null) {
+				throw new APIException("PatientState requires a State");
+			}
+			if (state.getPatientProgram() == null) {
+				state.setPatientProgram(patientProgram);
+			}
+			else if (!state.getPatientProgram().equals(patientProgram)) {
+				throw new APIException("This PatientProgram contains a ProgramWorkflowState whose parent is already assigned to " + state.getPatientProgram());
+			}
+	    	if (state.getCreator() == null) {
+	    		state.setCreator(currentUser);
+	    	}
+	    	if (state.getDateCreated() == null) {
+	    		state.setDateCreated(currentDate);
+	    	}
+			if (state.getPatientStateId() != null) {
+				state.setChangedBy(currentUser);
+				state.setDateChanged(currentDate);
+			}
+			if (patientProgram.getVoided() || state.getVoided()) {
+				state.setVoided(true);
+				if (state.getVoidedBy() == null) {
+					state.setVoidedBy(currentUser);
+				}
+				if (state.getDateVoided() == null) {
+					state.setDateVoided(currentDate);
+			}
+				if (state.getVoidReason() == null && patientProgram.getVoidReason() != null) {
+					state.setVoidReason(patientProgram.getVoidReason());
+			}
 		}
-		
-		getProgramWorkflowDAO().updatePatientProgram(p);
+			else {
+				state.setVoidedBy(null);
+				state.setVoidReason(null);
+				state.setDateVoided(null);
+			}
+		}
+		return dao.savePatientProgram(patientProgram);
+		}
+    
+    /**
+     * @see org.openmrs.api.ProgramWorkflowService#getPatientProgram(java.lang.Integer)
+     */
+    @Transactional(readOnly=true)
+	public PatientProgram getPatientProgram(Integer patientProgramId) {
+		return dao.getPatientProgram(patientProgramId);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getPatientProgram(java.lang.Integer)
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#getPatientPrograms(org.openmrs.Patient, org.openmrs.Program, java.util.Date, java.util.Date, java.util.Date, java.util.Date)
 	 */
-	public PatientProgram getPatientProgram(Integer id) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return getProgramWorkflowDAO().getPatientProgram(id);
+    @Transactional(readOnly=true)
+    public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate, Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided) throws APIException {
+    	return dao.getPatientPrograms(patient, program, minEnrollmentDate, maxEnrollmentDate, minCompletionDate, maxCompletionDate, includeVoided);
 	}
 
-	public PatientState getPatientState(Integer id) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return getProgramWorkflowDAO().getPatientState(id);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getPatientPrograms(org.openmrs.Patient)
-	 */
-	public Collection<PatientProgram> getPatientPrograms(Patient patient) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return getProgramWorkflowDAO().getPatientPrograms(patient);
-	}
-	
-	/* (non-Javadoc)
+    /**
 	 * @see org.openmrs.api.impl.ProgramWorkflowService#getPatientPrograms(Cohort, Collection<Program>)
 	 */
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return getProgramWorkflowDAO().getPatientPrograms(cohort, programs);
+		if (cohort.getMemberIds().size() < 1)
+			return dao.getPatientPrograms(null, programs);
+		else
+			return dao.getPatientPrograms(cohort, programs);
+	}
+		
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#purgePatientProgram(org.openmrs.PatientProgram)
+     */
+    public void purgePatientProgram(PatientProgram patientProgram) throws APIException {
+	    purgePatientProgram(patientProgram, false);
+	
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#enrollPatientInProgram(org.openmrs.Patient, org.openmrs.Program, java.util.Date, java.util.Date)
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#purgePatientProgram(org.openmrs.PatientProgram, boolean)
+     */
+    public void purgePatientProgram(PatientProgram patientProgram, boolean cascade) throws APIException {
+    	if (cascade && !patientProgram.getStates().isEmpty()) {
+	    	throw new APIException("Cascade purging of PatientPrograms is not implemented yet");
+	    }
+    	dao.deletePatientProgram(patientProgram);
+	}
+
+    /**
+     * @see org.openmrs.api.ProgramWorkflowService#voidPatientProgram(org.openmrs.PatientProgram, java.lang.String)
+	 */
+	public PatientProgram voidPatientProgram(PatientProgram patientProgram, String reason) {
+		patientProgram.setVoided(true);
+		patientProgram.setVoidReason(reason);
+		return savePatientProgram(patientProgram); // The savePatientProgram method handles all of the voiding defaults and cascades
+	}
+	
+    /**
+     * @see org.openmrs.api.ProgramWorkflowService#voidPatientProgram(org.openmrs.PatientProgram, java.lang.String)
+	 */
+	public PatientProgram unvoidPatientProgram(PatientProgram patientProgram) {
+		Date voidDate = patientProgram.getDateVoided();
+		patientProgram.setVoided(false);
+		for (PatientState state : patientProgram.getStates()) {
+			if (voidDate != null && voidDate.equals(state.getDateVoided())) {
+				state.setVoided(false);
+				state.setVoidedBy(null);
+				state.setDateVoided(null);
+				state.setVoidReason(null);
+			}
+		}
+		return savePatientProgram(patientProgram); // The savePatientProgram method handles all of the unvoiding defaults
+	}
+	
+
+	// **************************
+	// CONCEPT STATE CONVERSION 
+	// **************************
+
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#saveConceptStateConversion(org.openmrs.ConceptStateConversion)
+	 */
+    public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion csc) throws APIException {
+    	if (csc.getConcept() == null || csc.getProgramWorkflow() == null || csc.getProgramWorkflowState() == null) {
+    		throw new APIException("ConceptStateConversion requires a Concept, ProgramWorkflow, and ProgramWorkflowState");
+		}
+    	return dao.saveConceptStateConversion(csc);
+		}
+		
+    /**
+     * @see org.openmrs.api.ProgramWorkflowService#getConceptStateConversion(java.lang.Integer)
+     */
+    @Transactional(readOnly=true)
+	public ConceptStateConversion getConceptStateConversion(Integer id) {
+		return dao.getConceptStateConversion(id);
+	}
+	
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#getAllConceptStateConversions()
+	 */
+    @Transactional(readOnly=true)
+    public List<ConceptStateConversion> getAllConceptStateConversions() throws APIException {
+    	return dao.getAllConceptStateConversions();
+    }
+		
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#purgeConceptStateConversion(org.openmrs.ConceptStateConversion)
+     */
+    public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion) throws APIException {
+    	purgeConceptStateConversion(conceptStateConversion, false);
+		}
+		
+	/**
+     * @see org.openmrs.api.ProgramWorkflowService#purgeConceptStateConversion(org.openmrs.ConceptStateConversion, boolean)
+     */
+    public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion, boolean cascade) throws APIException {
+    	dao.deleteConceptStateConversion(conceptStateConversion);
+	}
+	
+    /**
+     * @see org.openmrs.api.ProgramWorkflowService#triggerStateConversion(org.openmrs.Patient, org.openmrs.Concept, java.util.Date)
+	 */
+	public void triggerStateConversion(Patient patient, Concept trigger, Date dateConverted) {
+
+		// Check input parameters
+		if ( patient == null ) throw new APIException("Attempting to convert state of an invalid patient");
+		if ( trigger == null ) throw new APIException("Attempting to convert state for a patient without a valid trigger concept");
+		if ( dateConverted == null ) throw new APIException("Invalid date for converting patient state");
+
+		for (PatientProgram patientProgram : getPatientPrograms(patient, null, null, null, null, null, false)) {
+			Set<ProgramWorkflow> workflows = patientProgram.getProgram().getWorkflows();
+			for (ProgramWorkflow workflow : workflows) {
+				if (!workflow.isRetired()) {
+					ProgramWorkflowState currentState = patientProgram.getCurrentState(workflow).getState();
+					ProgramWorkflowState transitionState = workflow.getState(trigger);
+					if (transitionState != null && workflow.isLegalTransition(currentState, transitionState)) {
+						patientProgram.transitionToState(transitionState, dateConverted);
+						log.info("State Conversion Triggered: patientProgram=" + patientProgram + " transition from " + currentState + " to " + transitionState + " on " + dateConverted);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getConceptStateConversion(org.openmrs.ProgramWorkflow, org.openmrs.Concept)
+	 */
+	@Transactional(readOnly=true)
+	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger) {
+		return dao.getConceptStateConversion(workflow, trigger);
+	}
+	
+	// **************************
+	// DEPRECATED PROGRAM
+	// **************************
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#createOrUpdateProgram(org.openmrs.Program)
+	 * @deprecated
+	 */
+	public void createOrUpdateProgram(Program program) {
+		saveProgram(program);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getPrograms()
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public List<Program> getPrograms() {
+		return getAllPrograms();
+		}
+
+	// **************************
+	// DEPRECATED PROGRAM WORKFLOW
+	// **************************
+	
+	/**
+	 * @see org.pih.api.ProgramWorkflowService#createWorkflow(ProgramWorkflow)
+	 * @deprecated
+	 */
+	public void createWorkflow(ProgramWorkflow w) {
+		updateWorkflow(w);
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#updateWorkflow(org.openmrs.ProgramWorkflow)
+	 * @deprecated
+	 */
+	public void updateWorkflow(ProgramWorkflow w) {
+		if (w.getProgram() == null) {
+			throw new APIException("ProgramWorkflow requires a Program");
+		}
+		saveProgram(w.getProgram());
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getWorkflow(java.lang.Integer)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public ProgramWorkflow getWorkflow(Integer id) {
+		for (Program p : getAllPrograms()) {
+			for (ProgramWorkflow w : p.getWorkflows()) {
+				if (w.getProgramWorkflowId().equals(id)) {
+					return w;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getWorkflow(org.openmrs.Program, java.lang.String)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public ProgramWorkflow getWorkflow(Program program, String name) {
+		return program.getWorkflowByName(name);
+		}
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#voidWorkflow(org.openmrs.ProgramWorkflow, java.lang.String)
+	 * @deprecated
+	 */
+	public void voidWorkflow(ProgramWorkflow w, String reason) {
+		w.setRetired(true);
+		saveProgram(w.getProgram());
+	}
+	
+	// **************************
+	// DEPRECATED PROGRAM WORKFLOW STATE
+	// **************************
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getStates()
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public List<ProgramWorkflowState> getStates() {
+		return getStates(true);
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getStates(boolean)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public List<ProgramWorkflowState> getStates(boolean includeRetired) {
+		List<ProgramWorkflowState> ret = new ArrayList<ProgramWorkflowState>();
+		for (Program p : getAllPrograms()) {
+			for (ProgramWorkflow w : p.getWorkflows()) {
+				for (ProgramWorkflowState s : w.getStates()) {
+					if (includeRetired || !s.isRetired()) {
+						ret.add(s);
+					}
+		}
+		}
+		}
+		return ret;
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getState(java.lang.Integer)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public ProgramWorkflowState getState(Integer id) {
+		for (ProgramWorkflowState s : getStates()) {
+			if (s.getProgramWorkflowStateId().equals(id)) {
+				return s;
+		}
+		}
+		return null;
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getState(org.openmrs.ProgramWorkflow, java.lang.String)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public ProgramWorkflowState getState(ProgramWorkflow programWorkflow, String name) {
+		return programWorkflow.getStateByName(name);
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getPossibleNextStates(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram, ProgramWorkflow workflow) {
+		return workflow.getPossibleNextStates(patientProgram);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#isLegalTransition(org.openmrs.ProgramWorkflowState, org.openmrs.ProgramWorkflowState)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public boolean isLegalTransition(ProgramWorkflowState fromState, ProgramWorkflowState toState) {
+		return fromState.getProgramWorkflow().isLegalTransition(fromState, toState);
+	}
+		
+
+	// **************************
+	// DEPRECATED PATIENT PROGRAM 
+	// **************************
+		
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#createPatientProgram(org.openmrs.PatientProgram)
+	 * @deprecated
+	 */
+	public void createPatientProgram(PatientProgram patientProgram) {
+		savePatientProgram(patientProgram);
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#updatePatientProgram(org.openmrs.PatientProgram)
+	 * @deprecated
+	 */
+	public void updatePatientProgram(PatientProgram patientProgram) {
+		savePatientProgram(patientProgram);
+	}
+		
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#enrollPatientInProgram(org.openmrs.Patient, org.openmrs.Program, java.util.Date, java.util.Date, org.openmrs.User)
+	 * @deprecated
 	 */
 	public void enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate, Date completionDate, User creator) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
-		// Should we add a boolean to the program title that says patients can be enrolled there twice simultaneously? 
-		if (isInProgram(patient, program, enrollmentDate, completionDate))
-			throw new IllegalArgumentException("patient is already in " + program +
-					" sometime between " + enrollmentDate + " and " + completionDate);
 		PatientProgram p = new PatientProgram();
 		p.setPatient(patient);
 		p.setProgram(program);
 		p.setDateEnrolled(enrollmentDate);
-		if (null != creator) {
-			p.setCreator(creator);
-		}
-		createPatientProgram(p);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#voidPatientProgram(org.openmrs.PatientProgram, java.lang.String)
-	 */
-	public void voidPatientProgram(PatientProgram p, String reason) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
-		if (!p.getVoided()) {
-			p.setVoided(true);
-			p.setDateVoided(new Date());
-			p.setVoidedBy(Context.getAuthenticatedUser());
-			p.setVoidReason(reason);
-			updatePatientProgram(p);
-		}
+		p.setDateCompleted(completionDate);
+		p.setCreator(creator);
+		savePatientProgram(p);
 	}
 
-	// Utility methods
-	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#patientsInProgram(org.openmrs.Program, java.util.Date, java.util.Date)
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getPatientPrograms(org.openmrs.Patient)
+	 * @deprecated
 	 */
+	@Transactional(readOnly=true)
+	public Collection<PatientProgram> getPatientPrograms(Patient patient) {
+		return getPatientPrograms(patient, null, null, null, null, null, false);
+	}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#patientsInProgram(org.openmrs.Program, java.util.Date, java.util.Date)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
 	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return getProgramWorkflowDAO().patientsInProgram(program, fromDate, toDate);
+		List<Integer> ret = new ArrayList<Integer>();
+	    Collection<PatientProgram> programs = getPatientPrograms(null, program, null, toDate, fromDate, null, false);
+	    for (PatientProgram patProgram : programs) {
+	    	ret.add(patProgram.getPatient().getPatientId());
+	    }
+		return ret;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getCurrentPrograms(org.openmrs.Patient, java.util.Date)
+		
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getCurrentPrograms(org.openmrs.Patient, java.util.Date)
+	 * @deprecated
 	 */
+	@Transactional(readOnly=true)
 	public Collection<PatientProgram> getCurrentPrograms(Patient patient, Date onDate) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		if (onDate == null)
-			onDate = new Date();
-		
-		Collection<PatientProgram> ret = new HashSet<PatientProgram>();
-		for (PatientProgram pp : getPatientPrograms(patient))
-			if ( pp.getActive(onDate) )
+		List<PatientProgram> ret = new ArrayList<PatientProgram>();
+		for (PatientProgram pp : getPatientPrograms(patient)) {
+			if (pp.getActive(onDate == null ? new Date() : onDate)) {
 				ret.add(pp);
-		
-		return ret;
-	}
-	
-	// TODO: move this into Patient (probably make this a lazily-loaded hibernate mapping).
-	// This is just a quick implementation without changing any hibernate mappings
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getLatestState(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow)
-	 */
-	public PatientState getLatestState(PatientProgram patientProgram, ProgramWorkflow workflow) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		PatientState ret = null;
-		// treat null as the earliest date
-		for (PatientState state : patientProgram.getStates()) {
-			if (!state.getVoided() && state.getState().getProgramWorkflow().equals(workflow))
-				if (ret == null || ret.getStartDate() == null || (state.getStartDate() != null && state.getStartDate().compareTo(ret.getStartDate()) > 0))
-					ret = state;
-		}
-		return ret;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getPossibleNextStates(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow)
-	 */
-	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram, ProgramWorkflow workflow) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		List<ProgramWorkflowState> ret = new ArrayList<ProgramWorkflowState>();
-		PatientState currentState = getLatestState(patientProgram, workflow);
-		for (ProgramWorkflowState st : workflow.getSortedStates()) {
-			if (isLegalTransition(currentState == null ? null : currentState.getState(), st))
-				ret.add(st);
-		}
-		return ret;
-	}
-	
-	// TODO: once we have a table of legal state transitions, then use that instead of this simple algorithm
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#isLegalTransition(org.openmrs.ProgramWorkflowState, org.openmrs.ProgramWorkflowState)
-	 */
-	public boolean isLegalTransition(ProgramWorkflowState fromState, ProgramWorkflowState toState) {
-		if (fromState == null)
-			return toState.getInitial();
-		else if (fromState.equals(toState))
-			return false;
-		else
-			return true;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#changeToState(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow, org.openmrs.ProgramWorkflowState, java.util.Date)
-	 */
-	public void changeToState(PatientProgram patientProgram, ProgramWorkflow wf, ProgramWorkflowState st, Date onDate) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
-		PatientState lastState = getLatestState(patientProgram, wf);
-		if (lastState != null && onDate == null) {
-			throw new IllegalArgumentException("You can't change from a non-null state without giving a change date");
-		}
-		if (lastState != null && lastState.getEndDate() != null) {
-			throw new IllegalArgumentException("You can't change out of a state that has an end date already");
-		}
-		if (lastState != null && lastState.getStartDate() != null && OpenmrsUtil.compare(lastState.getStartDate(), onDate) > 0) {
-			throw new IllegalArgumentException("You can't change out of a state before that state started");
-		}
-		if (lastState != null)
-			lastState.setEndDate(onDate);
-		PatientState newState = new PatientState();
-		newState.setPatientProgram(patientProgram);
-		newState.setState(st);
-		newState.setStartDate(onDate);
-		patientProgram.getStates().add(newState);
-		updatePatientProgram(patientProgram);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#voidLastState(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow, java.lang.String)
-	 */
-	public void voidLastState(PatientProgram patientProgram, ProgramWorkflow wf, String voidReason) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
-		List<PatientState> states = patientProgram.statesInWorkflow(wf, false);
-		PatientState last = null;
-		PatientState nextToLast = null;
-		if (states.size() > 0)
-			last = states.get(states.size() - 1);
-		if (states.size() > 1)
-			nextToLast = states.get(states.size() - 2);
-		if (last != null) {
-			last.setVoided(true);
-			last.setVoidReason(voidReason);
-		}
-		if (nextToLast != null && nextToLast.getEndDate() != null) {
-			nextToLast.setEndDate(null);
-			nextToLast.setDateChanged(new Date());
-			nextToLast.setChangedBy(Context.getAuthenticatedUser());
-		}
-		updatePatientProgram(patientProgram);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#isInProgram(org.openmrs.Patient, org.openmrs.Program, java.util.Date, java.util.Date)
-	 */
-	public boolean isInProgram(Patient patient, Program program, Date fromDate, Date toDate) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		return patientsInProgram(program, fromDate, toDate).contains(patient.getPatientId());
-	}
-
-	public void terminatePatientProgram(PatientProgram patProg, ProgramWorkflowState finalState, Date terminatedOn) {
-		this.changeToState(patProg, finalState.getProgramWorkflow(), finalState, terminatedOn);
-	}
-	
-	public void createConceptStateConversion(ConceptStateConversion csc) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
-		
-		getProgramWorkflowDAO().createConceptStateConversion(csc);
-	}
-
-	public void updateConceptStateConversion(ConceptStateConversion csc) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
-		
-		getProgramWorkflowDAO().updateConceptStateConversion(csc);
-	}
-
-	public void deleteConceptStateConversion(ConceptStateConversion csc) {
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS);
-		
-		getProgramWorkflowDAO().deleteConceptStateConversion(csc);
-	}
-
-	@Transactional(readOnly=true)
-	public ConceptStateConversion getConceptStateConversion(Integer id) {
-		log.debug("In getcsc with id of " + id.toString());
-		ConceptStateConversion ret = null;
-
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		
-		ret = getProgramWorkflowDAO().getConceptStateConversion(id);
-		
-		return ret;
-	}
-	
-	@Transactional(readOnly=true)
-	public List<ConceptStateConversion> getAllConversions() {
-		log.debug("In getAllConversions");
-		List<ConceptStateConversion> ret = null;
-
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		
-		ret = getProgramWorkflowDAO().getAllConversions();
-		
-		return ret;
-	}
-
-	public Set<ProgramWorkflow> getCurrentWorkflowsByPatient(Patient patient) {
-		log.debug("Getting workflows with patient: " + patient);
-		Set<ProgramWorkflow> ret = null;
-		
-		List<PatientProgram> programs = (List<PatientProgram>)this.getPatientPrograms(patient);
-		if ( programs != null ) {
-			for ( PatientProgram program : programs ) {
-				Set<ProgramWorkflow> workflows = this.getCurrentWorkflowsByPatientProgram(program);
-				if ( workflows != null ) {
-					if ( ret == null ) ret = new HashSet<ProgramWorkflow>();
-					ret.addAll(workflows);					
-				}
 			}
 		}
+		return ret;
+	}
+	
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#isInProgram(org.openmrs.Patient, org.openmrs.Program, java.util.Date, java.util.Date)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public boolean isInProgram(Patient patient, Program program, Date fromDate, Date toDate) {
+		return !getPatientPrograms(patient, program, null, toDate, fromDate, null, false).isEmpty();
+	}
 
-		if ( ret == null ) log.debug("Ret is null, leaving the method");
-		else log.debug("Ret is size: " + ret.size());
+	// **************************
+	// DEPRECATED PATIENT STATE 
+	// **************************
 		
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getPatientState(java.lang.Integer)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public PatientState getPatientState(Integer patientStateId) {
+		for (PatientProgram p : getPatientPrograms(null, null, null, null, null, null, false)) {
+			PatientState state = p.getPatientState(patientStateId);
+			if (state != null) {
+				return state;
+				}
+			}
+		return null;
+		}
+
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getLatestState(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public PatientState getLatestState(PatientProgram patientProgram, ProgramWorkflow workflow) {
+		return patientProgram.getCurrentState(workflow);
+	}
+		
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getCurrentWorkflowsByPatient(org.openmrs.Patient)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public Set<ProgramWorkflow> getCurrentWorkflowsByPatient(Patient patient) {
+		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
+		for (PatientProgram patientProgram : getPatientPrograms(patient)) {
+			ret.addAll(getCurrentWorkflowsByPatientProgram(patientProgram));
+		}
 		return ret;
 	}
 
-	public Set<ProgramWorkflow> getCurrentWorkflowsByPatientProgram(PatientProgram program) {
-		log.debug("Getting workflows with program: " + program);
-		Set<ProgramWorkflow> ret = null;
-		
-		if ( program != null ) {
-			Set<PatientState> states = program.getStates();
-			if ( states != null ) {
-				for ( PatientState state : states ) {
-					if ( ret == null ) ret = new HashSet<ProgramWorkflow>();
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getCurrentWorkflowsByPatientProgram(org.openmrs.PatientProgram)
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public Set<ProgramWorkflow> getCurrentWorkflowsByPatientProgram(PatientProgram patientProgram) {
+		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
+		if (patientProgram != null) {
+			for (PatientState state : patientProgram.getStates()) {
 					ret.add(state.getState().getProgramWorkflow());
 				}
 			}
+		return ret;
 		}
 
-		if ( ret == null ) log.debug("Ret is null, leaving the method");
-		else log.debug("Ret is size: " + ret.size());
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#changeToState(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow, org.openmrs.ProgramWorkflowState, java.util.Date)
+	 * @deprecated
+	 */
+	public void changeToState(PatientProgram patientProgram, ProgramWorkflow workflow, ProgramWorkflowState state, Date onDate) {
+		patientProgram.transitionToState(state, onDate);
+		savePatientProgram(patientProgram);
+	}
 		
-		return ret;
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#voidLastState(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow, java.lang.String)
+	 * @deprecated
+	 */
+	public void voidLastState(PatientProgram patientProgram, ProgramWorkflow workflow, String voidReason) {
+		patientProgram.voidLastState(workflow, Context.getAuthenticatedUser(), new Date(), voidReason);
 	}
 	
-	public void triggerStateConversion(Patient patient, Concept trigger, Date dateConverted) {
-		log.debug("in triggerConversion with patient: " + patient + ", trigger " + trigger + ", and date: " + dateConverted);
-		if ( patient != null && trigger != null && dateConverted !=  null ) {
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#terminatePatientProgram(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflowState, java.util.Date)
+	 * @deprecated
+	 */
+	public void terminatePatientProgram(PatientProgram patientProgram, ProgramWorkflowState finalState, Date terminatedOn) {
+		changeToState(patientProgram, finalState.getProgramWorkflow(), finalState, terminatedOn);
+	}
 			
-			// first, we need to find out what worklows we're dealing with - a little roundabout because of the way the tables are set up
-			List<PatientProgram> programs = (List<PatientProgram>)this.getPatientPrograms(patient);
-			if ( programs != null ) {
-				for ( PatientProgram program : programs ) {
+	// **************************
+	// DEPRECATED CONCEPT STATE CONVERSION
+	// **************************
 				
-					Set<ProgramWorkflow> workflows = this.getCurrentWorkflowsByPatientProgram(program);
-					if ( workflows != null ) {
-						for ( ProgramWorkflow workflow : workflows ) {
-							ConceptStateConversion conversion = this.getConceptStateConversion(workflow, trigger);
-							if ( conversion != null ) {
-								// that means that there is a conversion to make for this workflow/trigger - let's try to change state
-								log.debug("Found conversion: " + conversion);
-								ProgramWorkflowState resultingState = conversion.getProgramWorkflowState();
-								boolean isTerminal = false;
-								if ( program.getCurrentState(workflow) != null ) {
-									isTerminal = program.getCurrentState(workflow).getState().getTerminal();
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#createConceptStateConversion(org.openmrs.ConceptStateConversion)
+	 * @deprecated
+	 */
+	public void createConceptStateConversion(ConceptStateConversion csc) {
+		saveConceptStateConversion(csc);
 								}
 								
-								// this is the place to add logic about what conditions we'd want to actually convert for
-								if ( program.getActive(dateConverted) || !isTerminal ) {
-									log.debug("Changing patient " + patient + " to state " + resultingState + " in workflow " + workflow);
-									this.changeToState(program, workflow, resultingState, dateConverted);									
-								} else {
-									if ( !program.getActive(dateConverted) ) log.debug("was about to change state, but failed because program not active");
-									if ( isTerminal ) log.debug("was about to change state, but failed because current state is already terminal");
-								}
-							}
-						}
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#updateConceptStateConversion(org.openmrs.ConceptStateConversion)
+	 * @deprecated
+	 */
+	public void updateConceptStateConversion(ConceptStateConversion csc) {
+		saveConceptStateConversion(csc);
 					}
 
-					
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#getAllConversions()
+	 * @deprecated
+	 */
+	@Transactional(readOnly=true)
+	public List<ConceptStateConversion> getAllConversions() {
+		return getAllConceptStateConversions();
 				}				
-			}
-		} else {
-			if ( patient == null ) throw new APIException("Attempting to convert state of an invalid patient");
-			if ( trigger == null ) throw new APIException("Attempting to convert state for a patient without a valid trigger concept");
-			if ( dateConverted == null ) throw new APIException("Invalid date for converting patient state");
-		}
-	}
 
-	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger) {
-		log.debug("In getcsc with workflow: " + workflow + ", and trigger concept: " + trigger);
-		ConceptStateConversion ret = null;
-
-		if (!Context.getUserContext().hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS))
-			throw new APIAuthenticationException("Privilege required: "
-					+ OpenmrsConstants.PRIV_VIEW_PROGRAMS);
-		
-		ret = getProgramWorkflowDAO().getConceptStateConversion(workflow, trigger);
-		
-		return ret;
+	/**
+	 * @see org.openmrs.api.ProgramWorkflowService#deleteConceptStateConversion(org.openmrs.ConceptStateConversion)
+	 * @deprecated
+	 */
+	public void deleteConceptStateConversion(ConceptStateConversion csc) {
+		purgeConceptStateConversion(csc);
 	}
 
 }

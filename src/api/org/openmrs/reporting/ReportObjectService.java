@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.openmrs.api.APIException;
+import org.openmrs.api.OpenmrsService;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.db.ReportObjectDAO;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-public interface ReportObjectService {
+public interface ReportObjectService extends OpenmrsService {
 
 	public void setReportObjectDAO(ReportObjectDAO dao);
 

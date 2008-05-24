@@ -56,6 +56,17 @@ public interface ContextDAO {
 	public void clearSession();
 	
 	/**
+	 * Used to clear a cached object out of a session in the middle of a unit of work.
+	 * 
+	 * Future updates to this object will not be saved.  Future gets of this object will
+	 * not fetch this cached copy
+	 * 
+	 * @param obj The object to evict/remove from the session
+	 * @see Context.evictFromSession(Object)
+	 */
+	public void evictFromSession(Object obj);
+	
+	/**
 	 * Starts the OpenMRS System
 	 * Should be called prior to any kind of activity
 	 * @param Properties

@@ -13,152 +13,101 @@
  */
 package org.openmrs.api.db;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Tribe;
-import org.openmrs.api.APIException;
 
 /**
- * Patient-related database functions
+ * Database methods for the PatientService
  *
- * @version 1.0
+ * @see org.openmrs.api.context.Context
+ * @see org.openmrs.api.PatientService
  */
 public interface PatientDAO {
 
 	/**
-	 * Creates a new patient record
-	 * 
-	 * @param patient to be created
-	 * @returns the created patient
-	 * @throws DAOException
+	 * @see org.openmrs.api.PatientService#savePatient(org.openmrs.Patient)
 	 */
-	public Patient createPatient(Patient patient) throws DAOException;
+	public Patient savePatient(Patient patient) throws DAOException;
 
 	/**
-	 * Get patient by internal identifier
-	 * 
-	 * @param patientId internal patient identifier
-	 * @return patient with given internal identifier
-	 * @throws DAOException
+	 * @see org.openmrs.api.PatientService#getPatient(Integer)
 	 */
 	public Patient getPatient(Integer patientId) throws DAOException;
 
 	/**
-	 * Update patient 
-	 * 
-	 * @param patient to be updated
-	 * @returns the crated patient
-	 * @throws DAOException
-	 */
-	public Patient updatePatient(Patient patient) throws DAOException;
-
-	/**
-	 * Find all patients with a given identifier
-	 * 
-	 * @param identifier
-	 * @return set of patients matching identifier
-	 * @throws DAOException
-	 */
-	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws DAOException;
-	
-	/**
-	 * Find all patients with a given identifier and use the regex 
-	 * <code>OpenmrsConstants.PATIENT_IDENTIFIER_REGEX</code>
-	 * 
-	 * Note: Uses NON-STANDARD SQL: "...WHERE identifier REGEXP '...' ..."
-	 * 
-	 * @param identifier
-	 * @param includeVoided
-	 * @return
-	 * @throws DAOException
-	 */
-	public Collection<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws DAOException;
-	
-	/**
-	 * Find patients by name
-	 * 
-	 * @param name
-	 * @return set of patients matching name
-	 * @throws DAOException
-	 */
-	public Collection<Patient> getPatientsByName(String name, boolean includeVoided) throws DAOException;
-	
-	/**
-	 * Delete patient from database. This <b>should not be called</b>
-	 * except for testing and administration purposes.  Use the void
-	 * method instead.
+	 * Delete patient from database. This <b>should not be called</b> except
+	 * for testing and administration purposes. Use the void method instead
 	 * 
 	 * @param patient patient to be deleted
 	 * 
-	 * @see #voidPatient(Patient, String) 
+	 * @see org.openmrs.api.PatientService#deletePatient(org.openmrs.Patient)
+	 * @see #voidPatient(Patient, String)
 	 */
 	public void deletePatient(Patient patient) throws DAOException;
 	
 	/**
-	 * Get all patientIdentifiers
-	 * 
-	 * @param PatientIdentifierType
-	 * @return patientIdentifier list
-	 * @throws DAOException
+     * @see org.openmrs.api.PatientService#getAllPatients(boolean)
 	 */
-	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType p) throws DAOException;
+    public List<Patient> getAllPatients(boolean includeVoided) throws DAOException;
 	
 	/**
-	 * Get Patient Identifiers matching the identifier and type 
-	 * 
-	 * @param identifier
-	 * @param PatientIdentifierType
-	 * @return patientIdentifier list
-	 * @throws DAOException
+     * @see org.openmrs.api.PatientService#getPatients(java.lang.String, java.lang.String, java.util.List)
 	 */
-	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType p) throws DAOException;
+    public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes)
+                         	        throws DAOException;
+	
+	/**
+     * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.Boolean)
+	 */
+    public List<PatientIdentifier> getPatientIdentifiers(String identifier,
+            List<PatientIdentifierType> patientIdentifierTypes,
+            List<Location> locations, List<Patient> patients,
+            Boolean isPreferred)
+            throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(org.openmrs.PatientIdentifierType)
+	 */
+	public PatientIdentifierType savePatientIdentifierType(
+	        PatientIdentifierType patientIdentifierType) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.PatientService#getAllPatientIdentifierTypes(boolean)
+	 */
+	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired)
+	        throws DAOException;
 	
 	
 	/**
-	 * 
-	 * @param pi
-	 * @throws APIException
+     * @see org.openmrs.api.PatientService#getPatientIdentifierTypes(java.lang.String, java.lang.String, java.lang.Boolean, java.lang.Boolean)
 	 */
-	public void updatePatientIdentifier(PatientIdentifier pi) throws APIException;
-	
-	
+    public List<PatientIdentifierType> getPatientIdentifierTypes(String name,
+	                                                             String format, Boolean required, Boolean hasCheckDigit)
+	                                                             throws DAOException;
 	/**
-	 * Get all patientIdentifier types
-	 * 
-	 * @return patientIdentifier types list
-	 * @throws DAOException
+	 * @see org.openmrs.api.PatientService#getPatientIdentifierType(java.lang.Integer)
 	 */
-	public List<PatientIdentifierType> getPatientIdentifierTypes() throws DAOException;
+	public PatientIdentifierType getPatientIdentifierType(
+	        Integer patientIdentifierTypeId) throws DAOException;
 
 	/**
-	 * Get patientIdentifierType by internal identifier
-	 * 
-	 * @param patientIdentifierType id
-	 * @return patientIdentifierType with given internal identifier
-	 * @throws DAOException
+	 * @see org.openmrs.api.PatientService#purgePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
-	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws DAOException;
+	public void deletePatientIdentifierType(
+	        PatientIdentifierType patientIdentifierType) throws DAOException;
 
-	/**
-	 * Get patientIdentifierType by name
-	 * 
-	 * @param name
-	 * @return patientIdentifierType with given name
-	 * @throws APIException
-	 */
-	public PatientIdentifierType getPatientIdentifierType(String name) throws DAOException;
-	
 	/**
 	 * Get tribe by internal tribe identifier
 	 * 
 	 * @return Tribe
 	 * @param tribeId 
 	 * @throws DAOException
+	 * @deprecated tribe will be moved to patient attribute
 	 */
 	public Tribe getTribe(Integer tribeId) throws DAOException;
 	
@@ -167,6 +116,7 @@ public interface PatientDAO {
 	 * 
 	 * @return non-retired Tribe list
 	 * @throws DAOException
+	 * @deprecated tribe will be moved to patient attribute
 	 */
 	public List<Tribe> getTribes() throws DAOException;
 	
@@ -176,16 +126,13 @@ public interface PatientDAO {
 	 * @param Search string
 	 * @return non-retired Tribe list
 	 * @throws DAOException
+	 * @deprecated tribe will be moved to patient attribute
 	 */
 	public List<Tribe> findTribes(String s) throws DAOException;
 	
 	/**
-	 * Search the database for patients that share the given attributes
-	 * attributes similar to: [gender, tribe, givenName, middleName, familyname]
-	 * 
-	 * @param attributes
-	 * @return list of patients that match other patients
+     * @see org.openmrs.api.PatientService#getDuplicatePatientsByAttributes(java.util.List)
 	 */
-	public List<Patient> findDuplicatePatients(Set<String> attributes);
+    public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) throws DAOException;
 	
 }

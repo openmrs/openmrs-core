@@ -200,10 +200,17 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
-	 * Perform cleanup on current session
+	 * @see org.openmrs.api.db.ContextDAO#clearSession()
 	 */
 	public void clearSession() {
 		sessionFactory.getCurrentSession().clear();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ContextDAO#evictFromSession(java.lang.Object)
+	 */
+	public void evictFromSession(Object obj) {
+		sessionFactory.getCurrentSession().evict(obj);
 	}
 
 	/**

@@ -17,7 +17,8 @@ import java.util.Date;
 
 /**
  * OrderType
- * @version 1.0
+ * 
+ * @see Order
  */
 public class OrderType implements java.io.Serializable {
 
@@ -30,6 +31,12 @@ public class OrderType implements java.io.Serializable {
 	private String description;
 	private User creator;
 	private Date dateCreated;
+	
+	private User retiredBy;
+	private Boolean retired = Boolean.FALSE;
+	private Date dateRetired;
+	private String retireReason;
+	
 
 	// Constructors
 
@@ -40,13 +47,22 @@ public class OrderType implements java.io.Serializable {
 	/** constructor with id */
 	public OrderType(Integer orderTypeId) {
 		this.orderTypeId = orderTypeId;
-	} 
-
-	/** 
-	 * Compares two objects for similarity
+	}
+	
+	/**
+	 * Convenience constructor that takes in the elements
+	 * required to save this OrderType to the database
 	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
+	 * @param name The name of this order Type
+	 * @param description A short description about this order type
+	 */
+	public OrderType(String name, String description) {
+		this.name = name;
+		this.description = description;
+	}
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof OrderType) {
@@ -57,6 +73,9 @@ public class OrderType implements java.io.Serializable {
 		return false;
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getOrderTypeId() == null) return super.hashCode();
 		return this.getOrderTypeId().hashCode();
@@ -134,5 +153,60 @@ public class OrderType implements java.io.Serializable {
 		this.orderTypeId = orderTypeId;
 	}
 
+	/**
+     * @return the retiredBy
+     */
+    public User getRetiredBy() {
+    	return retiredBy;
+    }
+
+	/**
+     * @param retiredBy the retiredBy to set
+     */
+    public void setRetiredBy(User retiredBy) {
+    	this.retiredBy = retiredBy;
+    }
+
+	/**
+     * @return the retired
+     */
+    public Boolean getRetired() {
+    	return retired;
+    }
+
+	/**
+     * @param retired the retired to set
+     */
+    public void setRetired(Boolean retired) {
+    	this.retired = retired;
+    }
+
+	/**
+     * @return the dateRetired
+     */
+    public Date getDateRetired() {
+    	return dateRetired;
+    }
+
+	/**
+     * @param dateRetired the dateRetired to set
+     */
+    public void setDateRetired(Date dateRetired) {
+    	this.dateRetired = dateRetired;
+    }
+
+	/**
+     * @return the retireReason
+     */
+    public String getRetireReason() {
+    	return retireReason;
+    }
+
+	/**
+     * @param retireReason the retireReason to set
+     */
+    public void setRetireReason(String retireReason) {
+    	this.retireReason = retireReason;
+    }
 	
 }

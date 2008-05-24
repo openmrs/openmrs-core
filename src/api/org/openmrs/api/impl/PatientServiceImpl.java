@@ -15,6 +15,7 @@ package org.openmrs.api.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.Tribe;
-import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.DuplicateIdentifierException;
@@ -56,18 +57,22 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.order.OrderUtil;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.UnallowedIdentifierException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * Patient-related services
+ * Default implementation of the patient service.  This class should
+ * not be used on its own.  The current OpenMRS implementation
+ * should be fetched from the Context via <code>Context.getPatientService()</code>
  * 
- * @version 1.0
+ * @see org.openmrs.api.context.Context
+ * @see org.openmrs.api.PatientService
  * @see org.openmrs.api.PersonService
  */
-public class PatientServiceImpl implements PatientService {
+public class PatientServiceImpl extends BaseOpenmrsService implements PatientService {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -78,80 +83,97 @@ public class PatientServiceImpl implements PatientService {
 	 */
 	private static Map<Class<? extends IdentifierValidator>, IdentifierValidator> identifierValidators = null;
 	
-	public PatientServiceImpl() {	}
-	
-	private PatientDAO getPatientDAO() {
-		return dao;
-	}
-	
+	/**
+	 * @see org.openmrs.api.PatientService#setPatientDAO(org.openmrs.api.db.PatientDAO)
+	 */
 	public void setPatientDAO(PatientDAO dao) {
 		this.dao = dao;
 	}
 	
 	/**
-	 * Creates a new patient record
-	 * 
-	 * @param patient to be created
-	 * @throws APIException
+	 * @see {@link #savePatient(Patient)}
+	 * @deprecated replaced by #savePatient(Patient)
+	 * @see org.openmrs.api.PatientService#createPatient(org.openmrs.Patient)
 	 */
 	public Patient createPatient(Patient patient) throws APIException {
-		if (log.isDebugEnabled()) {
-			String s = "" + patient.getPatientId();
-			if (patient.getIdentifiers() != null)
-				s += "|" + patient.getIdentifiers();
+		return savePatient(patient);
+	}
 			
-			log.debug("Creating patient: " + s);
-		}
+	/**
+	 * @see org.openmrs.api.PatientService#savePatient(org.openmrs.Patient)
+	 */
+	public Patient savePatient(Patient patient) throws APIException {
+		if (patient.getPatientId() == null)
+			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
+		else
+			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
 		
 		setCollectionProperties(patient);
 		
 		checkPatientIdentifiers(patient);
 		
+		Date now = new Date();
 		if (patient.getDateCreated() == null)
-			patient.setDateCreated(new Date());
+			patient.setDateCreated(now);
 		if (patient.getCreator() == null)
 			patient.setCreator(Context.getAuthenticatedUser());
+		if (patient.getPatientId() != null) {
+			patient.setChangedBy(Context.getAuthenticatedUser());
+			patient.setDateChanged(now);
+		}
 		
-		return getPatientDAO().createPatient(patient);
+		return dao.savePatient(patient);
 	}
 
 	/**
-	 * Get patient by internal identifier
-	 * 
-	 * @param patientId internal patient identifier
-	 * @return patient with given internal identifier
-	 * @throws APIException
+	 * @see org.openmrs.api.PatientService#getPatient(java.lang.Integer)
 	 */
 	public Patient getPatient(Integer patientId) throws APIException {
-		return getPatientDAO().getPatient(patientId);
+		return dao.getPatient(patientId);
 	}
 
 	/**
-	 * Update patient 
-	 * 
-	 * @param patient to be updated
-	 * @returns patient
-	 * @throws APIException
+	 * @see #savePatient(Patient)
+	 * @deprecated replaced by #savePatient(Patient)
+	 * @see org.openmrs.api.PatientService#updatePatient(org.openmrs.Patient)
 	 */
 	public Patient updatePatient(Patient patient) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
-		
-		setCollectionProperties(patient);
-		
-		checkPatientIdentifiers(patient);
-		
-		return getPatientDAO().updatePatient(patient);
+		return savePatient(patient);
 	}
 	
 	/**
-	 * Throws an API Exception if one of the patient's identifier already exists 
-	 * in the system. Also throws an Exception if a patient has zero identifiers
-	 * 
-	 * @param patient
-	 * @throws APIException
+     * @see org.openmrs.api.PatientService#getAllPatients()
+     */
+    public List<Patient> getAllPatients() throws APIException {
+	    return getAllPatients(false);
+    }
+
+	/**
+     * @see org.openmrs.api.PatientService#getAllPatients(boolean)
+     */
+    public List<Patient> getAllPatients(boolean includeVoided)
+            throws APIException {
+	    return dao.getAllPatients(includeVoided);
+    }
+		
+	/**
+     * @see org.openmrs.api.PatientService#getPatients(java.lang.String, java.lang.String, java.util.List)
+     */
+    public List<Patient> getPatients(String name, String identifier,
+            List<PatientIdentifierType> identifierTypes)
+            throws APIException {
+		
+    	if (identifierTypes == null)
+    		identifierTypes = Collections.emptyList();
+		
+    	return dao.getPatients(name, identifier, identifierTypes);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#checkPatientIdentifiers(org.openmrs.Patient)
 	 */
-	public void checkPatientIdentifiers(Patient patient) throws PatientIdentifierException {
+	public void checkPatientIdentifiers(Patient patient)
+	        throws PatientIdentifierException {
 		// check patient has at least one identifier
 		if (patient.getIdentifiers().size() < 1 )
 			throw new InsufficientIdentifiersException("At least one Patient Identifier is required");
@@ -159,12 +181,14 @@ public class PatientServiceImpl implements PatientService {
 		List<PatientIdentifier> identifiers = new Vector<PatientIdentifier>();
 		identifiers.addAll(patient.getIdentifiers());
 		List<String> identifiersUsed = new Vector<String>();
-		List<PatientIdentifierType> requiredTypes = this.getRequiredPatientIdentifierTypes();
-		if ( requiredTypes == null ) requiredTypes = new ArrayList<PatientIdentifierType>();
+		List<PatientIdentifierType> requiredTypes = getPatientIdentifierTypes(null, null, true, null);
+		if (requiredTypes == null)
+			requiredTypes = new ArrayList<PatientIdentifierType>();
 		List<PatientIdentifierType> foundRequiredTypes = new ArrayList<PatientIdentifierType>();
 
 		for (PatientIdentifier pi : identifiers) {
-			if (pi.isVoided()) continue;
+			if (pi.isVoided())
+				continue;
 
 			try {
 				checkPatientIdentifier(pi);
@@ -187,7 +211,13 @@ public class PatientServiceImpl implements PatientService {
 			// check this patient for duplicate identifiers
 			if (identifiersUsed.contains(pi.getIdentifier())) {
 				patient.removeIdentifier(pi);
-				throw new DuplicateIdentifierException("This patient has two identical identifiers of type " + pi.getIdentifierType().getName() + ": " + pi.getIdentifier() + ", deleting one of them", pi);
+				throw new DuplicateIdentifierException("This patient has two identical identifiers of type "
+				                                               + pi.getIdentifierType()
+				                                                   .getName()
+				                                               + ": "
+				                                               + pi.getIdentifier()
+				                                               + ", deleting one of them",
+				                                       pi);
 			}
 			
 			else
@@ -197,29 +227,40 @@ public class PatientServiceImpl implements PatientService {
 		if ( requiredTypes.size() > 0 ) {
 			String missingNames = "";
 			for ( PatientIdentifierType pit : requiredTypes ) {
-				missingNames += (missingNames.length() > 0) ? ", " + pit.getName() : pit.getName();
+				missingNames += (missingNames.length() > 0) ? ", "
+				        + pit.getName() : pit.getName();
 			}
-			throw new MissingRequiredIdentifierException("Patient is missing the following required identifier(s): " + missingNames);
+			throw new MissingRequiredIdentifierException("Patient is missing the following required identifier(s): "
+			        + missingNames);
 		}
 	}
 
 	/**
 	 * @see org.openmrs.api.PatientService#checkPatientIdentifier(org.openmrs.PatientIdentifier)
 	 */
-	public void checkPatientIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
+	public void checkPatientIdentifier(PatientIdentifier pi)
+	        throws PatientIdentifierException {
 		
 		// skip and remove invalid/empty identifiers
-		if (pi == null) throw new BlankIdentifierException("Identifier cannot be null or blank", pi);
-		else if (pi.getIdentifier() == null ) throw new BlankIdentifierException("Identifier cannot be null or blank", pi);
-		else if ( pi.getIdentifier().length() == 0 ) throw new BlankIdentifierException("Identifier cannot be null or blank", pi);
+		if (pi == null)
+			throw new BlankIdentifierException("Identifier cannot be null or blank",
+			                                   pi);
+		else if (pi.getIdentifier() == null)
+			throw new BlankIdentifierException("Identifier cannot be null or blank",
+			                                   pi);
+		else if (pi.getIdentifier().length() == 0)
+			throw new BlankIdentifierException("Identifier cannot be null or blank",
+			                                   pi);
 		
-		// do not do any more checks if this identifeir is voided
+		// do not do any more checks if this identifier is voided
 		if (pi.isVoided() == false) {
 			
 			// check is already in use by another patient
 			Patient p = identifierInUse(pi);
 			if (p != null) {
-				throw new IdentifierNotUniqueException("Identifier " + pi.getIdentifier() + " already in use by patient #" + p.getPatientId(), pi);
+				throw new IdentifierNotUniqueException("Identifier "
+				        + pi.getIdentifier() + " already in use by patient #"
+				        + p.getPatientId(), pi);
 			}
 	
 			// also validate regular expression - if it exists
@@ -229,15 +270,31 @@ public class PatientServiceImpl implements PatientService {
 			String regExp = pit.getFormat();
 			if ( regExp != null ) {
 				if ( regExp.length() > 0 ) {
-					// if this ID has a valid corresponding regular expression, check against it
-					log.debug("Trying to match " + identifier + " and " + regExp);
+					// if this ID has a valid corresponding regular expression,
+					// check against it
+					log.debug("Trying to match " + identifier + " and "
+					        + regExp);
 					if ( !identifier.matches(regExp) ) {
 						log.debug("The two DO NOT match");
 						if ( pit.getFormatDescription() != null ) {
-							if ( pit.getFormatDescription().length() > 0 ) throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormatDescription(), pi);
-							else throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormat(), pi);
+							if (pit.getFormatDescription().length() > 0)
+								throw new InvalidIdentifierFormatException("Identifier ["
+								                                                   + identifier
+								                                                   + "] does not match required format: "
+								                                                   + pit.getFormatDescription(),
+								                                           pi);
+							else
+								throw new InvalidIdentifierFormatException("Identifier ["
+								                                                   + identifier
+								                                                   + "] does not match required format: "
+								                                                   + pit.getFormat(),
+								                                           pi);
 						} else {
-							throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + pit.getFormat(), pi);
+							throw new InvalidIdentifierFormatException("Identifier ["
+							                                                   + identifier
+							                                                   + "] does not match required format: "
+							                                                   + pit.getFormat(),
+							                                           pi);
 						}
 					} else {
 						log.debug("The two match!!");
@@ -263,305 +320,416 @@ public class PatientServiceImpl implements PatientService {
 	 * 
 	 * @param pi PatientIdentifier
 	 * @return true/false whether or not this PatientIdentifier is in use
+	 * @deprecated use getPatientByIdentifier(String) instead
 	 */
-	public Patient identifierInUse(PatientIdentifier pi) {
-		return identifierInUse(pi.getIdentifier(), pi.getIdentifierType(), pi.getPatient());
+	private Patient identifierInUse(PatientIdentifier pi) {
+		return identifierInUse(pi.getIdentifier(),
+		                       pi.getIdentifierType(),
+		                       pi.getPatient());
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientService#identifierInUse(java.lang.String, org.openmrs.PatientIdentifierType, org.openmrs.Patient)
+	 * @see org.openmrs.api.PatientService#identifierInUse(java.lang.String,
+	 *      org.openmrs.PatientIdentifierType, org.openmrs.Patient)
+	 * @deprecated use getPatientByIdentifier(String) instead
 	 */
-	public Patient identifierInUse(String identifier, PatientIdentifierType type, Patient ignorePatient) {
-		List<PatientIdentifier> ids = getPatientIdentifiers(identifier, type);
-		for (PatientIdentifier id : ids) {
-			// ignore identifiers that are assigned to voided patients
-			if (id.getPatient().isVoided())
-				continue;
-			if ( ignorePatient == null || !id.getPatient().equals(ignorePatient))
-				return id.getPatient();
-		}
+	public Patient identifierInUse(String identifier,
+	        PatientIdentifierType type, Patient ignorePatient) {
 		
+		// get all patients with this identifier
+		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
+		types.add(type);
+		List<Patient> patients = getPatients(null, identifier, types);
+		
+		// ignore this patient
+		patients.remove(ignorePatient);
+		
+		if (patients.size() > 0)
+			return patients.get(0);
+		else
 		return null; 
 	}
 
 	/**
-	 * Find all patients with a given identifier
-	 * 
-	 * @param identifier
-	 * @return set of patients matching identifier
-	 * @throws APIException
+	 * @deprecated replaced by @deprecated replaced by {@link #getPatients(String, String, List, String)}
+	 * @see org.openmrs.api.PatientService#getPatientsByIdentifier(java.lang.String, boolean)
 	 */
-	public Set<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		return getPatientDAO().getPatientsByIdentifier(identifier, includeVoided);
+	public List<Patient> getPatientsByIdentifier(String identifier,
+	        boolean includeVoided) throws APIException {
+		
+		if (includeVoided == true)
+			throw new APIException("Searching on voided patients is no longer allowed");
+		
+		return getPatients(null, identifier, null);
 	}
 	
 	/**
-	 * Find all patients with a given identifier and use the regex 
-	 * <code>OpenmrsConstants.PATIENT_IDENTIFIER_REGEX</code>
-	 * 
-	 * Note: Uses NON-STANDARD SQL: "...WHERE identifier REGEXP '...' ..."
-	 * 
-	 * @param identifier
-	 * @return set of patients matching identifier
-	 * @throws APIException
+	 * @deprecated replaced by @deprecated replaced by {@link #getPatients(String, String, List, String)}
+	 * @see org.openmrs.api.PatientService#getPatientsByIdentifierPattern(java.lang.String, boolean)
 	 */
-	public Collection<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		return getPatientDAO().getPatientsByIdentifierPattern(identifier, includeVoided);
-	}
-	
-	
-	public Collection<Patient> getPatientsByName(String name) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		return getPatientsByName(name, false);
-	}
-	/**
-	 * Find patients by name
-	 * 
-	 * @param name
-	 * @return set of patients matching name
-	 * @throws APIException
-	 */
-	public Collection<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		return getPatientDAO().getPatientsByName(name, includeVoided);
+	public List<Patient> getPatientsByIdentifierPattern(String identifier,
+	        boolean includeVoided) throws APIException {
+		
+		if (includeVoided == true)
+			throw new APIException("Searching on voided patients is no longer allowed");
+		
+		return getPatients(null, identifier, null);
 	}
 	
 	/**
-	 * Void patient record (functionally delete patient from system)
-	 * 
-	 * @param patient patient to be voided
-	 * @param reason reason for voiding patient
+	 * @see org.openmrs.api.PatientService#getPatientsByName(java.lang.String)
+	 * @deprecated replaced by {@link #getPatients(String, String, List, String)}
 	 */
-	public void voidPatient(Patient patient, String reason) throws APIException {
+	public List<Patient> getPatientsByName(String name) throws APIException {
+		return getPatients(name, null, null);
+	}
+	
+	/**
+	 * @deprecated replaced by {@link #getPatients(String, String, List, String)}
+	 */
+	public List<Patient> getPatientsByName(String name, boolean includeVoided)
+	        throws APIException {
+		
+		if (includeVoided == true)
+			throw new APIException("Searching on voided patients is no longer allowed");
+		
+		return getPatients(name, null, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#voidPatient(org.openmrs.Patient, java.lang.String)
+	 */
+	public Patient voidPatient(Patient patient, String reason) throws APIException {
+		
+		// TODO should we move voided attributes from the patient up to the person?
+		// voiding a patient portion of a person and keeping the user portion doesn't
+		// seem like a necessary goal
+		
 		if (patient == null)
-			return;
+			return null;
+
+		User voidedBy = Context.getAuthenticatedUser();
+		Date voidDate = new Date();
 		
 		if (patient.getIdentifiers() != null) 
 			for (PatientIdentifier pi : patient.getIdentifiers()) {
 				if (!pi.isVoided()) {
 					pi.setVoided(true);
 					pi.setVoidReason(reason);
+					pi.setDateVoided(voidDate);
+					pi.setVoidedBy(voidedBy);
 				}
 			}
 		
 		patient.setVoided(true);
-		patient.setVoidedBy(Context.getAuthenticatedUser());
-		patient.setDateVoided(new Date());
+		patient.setVoidedBy(voidedBy);
+		patient.setDateVoided(voidDate);
 		patient.setVoidReason(reason);
-		updatePatient(patient);
+		
+		return savePatient(patient);
 	}
 
 	/**
-	 * Unvoid patient record 
-	 * 
-	 * @param patient patient to be revived
+	 * @see org.openmrs.api.PatientService#unvoidPatient(org.openmrs.Patient)
 	 */
-	public void unvoidPatient(Patient patient) throws APIException {
+	public Patient unvoidPatient(Patient patient) throws APIException {
 		if (patient == null)
-			return;
+			return null;
 		
 		String voidReason = patient.getVoidReason();
 		if (voidReason == null)
 			voidReason = "";
 		
 		for (PatientIdentifier pi : patient.getIdentifiers()) {
-			if (voidReason.equals(pi.getVoidReason())) {
+			if (voidReason.equals(pi.getDateVoided())) {
 				pi.setVoided(false);
 				pi.setVoidReason(null);
+				pi.setDateVoided(null);
+				pi.setVoidedBy(null);
 			}
 		}
 		patient.setVoided(false);
 		patient.setVoidedBy(null);
 		patient.setDateVoided(null);
 		patient.setVoidReason(null);
-		updatePatient(patient);
+		
+		return savePatient(patient);
 	}
 	
 	/**
-	 * Delete patient from database. This <b>should not be called</b>
-	 * except for testing and administration purposes.  Use the void
-	 * method instead.
-	 * 
-	 * @param patient patient to be deleted
-	 * @throws APIException
-	 * 
-	 * @see voidPatient(org.openmrs.Patient,java.lang.String)
+	 * @see #voidPatient(org.openmrs.Patient,java.lang.String)
+	 * @deprecated replaced by {@link #purgePatient(Patient)}
 	 */
 	public void deletePatient(Patient patient) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_PATIENTS);
-		getPatientDAO().deletePatient(patient);
+		purgePatient(patient);
 	}
-	
-	/**
-	 * Get all patientIdentifiers 
-	 * 
-	 * @param pit
-	 * @return patientIdentifier list
-	 * @throws APIException
-	 */
-	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType pit) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		
-		return getPatientDAO().getPatientIdentifiers(pit);
-	}
-	
-	/**
-	 * Get Patient Identifiers matching the identifier and type 
-	 * 
-	 * @param identifier
-	 * @param pit
-	 * @return patientIdentifier list
-	 * @throws APIException
-	 */
-	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType pit) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		
-		return getPatientDAO().getPatientIdentifiers(identifier, pit);
-	}
-	
-	/**
-	 * Update patient identifier
-	 * 
-	 * @param patient to be updated
-	 * @throws APIException
-	 */
-	public void updatePatientIdentifier(PatientIdentifier pi) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
 
-		// this method allows you change only the Identifier type, so let's do that and then do a full ID check
+	/**
+	 * @see org.openmrs.api.PatientService#purgePatient(org.openmrs.Patient)
+	 */
+	public void purgePatient(Patient patient) throws APIException {
+		dao.deletePatient(patient);
+	}
+	
+	
+	// patient identifier section
+	
+	/**
+     * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List, java.util.List, java.util.List, java.lang.Boolean)
+	 */
+    public List<PatientIdentifier> getPatientIdentifiers(String identifier,
+            List<PatientIdentifierType> patientIdentifierTypes,
+            List<Location> locations, List<Patient> patients,
+            Boolean isPreferred)
+            throws APIException {
+	    
+    	if (patientIdentifierTypes == null)
+    		patientIdentifierTypes = new Vector<PatientIdentifierType>();
+    	
+    	if (locations == null)
+    		locations = new Vector<Location>();
+    	
+    	if (patients == null)
+    		patients = new Vector<Patient>();
+		
+	    return dao.getPatientIdentifiers(identifier, patientIdentifierTypes, locations, patients, isPreferred);
+	}
+	
+	/**
+	 * @deprecated replaced by {@link #getPatientIdentifiers(String, List, List, List, Boolean)}
+	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(org.openmrs.PatientIdentifierType)
+	 */
+	public List<PatientIdentifier> getPatientIdentifiers(
+	        PatientIdentifierType pit) throws APIException {
+		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
+		types.add(pit);
+		return getPatientIdentifiers(null, types, null, null, null);
+	}
+		
+	/**
+	 * @deprecated replaced by {@link #getPatientIdentifiers(String, List, List, List, Boolean, boolean)}
+	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, org.openmrs.PatientIdentifierType)
+	 */
+	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
+	        PatientIdentifierType pit) throws APIException {
+		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
+		types.add(pit);
+		return getPatientIdentifiers(identifier, types, null, null, null);
+	}
+	
+	/**
+	 * @deprecated replaced by {@link #getPatientIdentifiers(String, List, List, List, Boolean, boolean)}
+	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String,
+	 *      org.openmrs.PatientIdentifierType, boolean)
+	 */
+	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
+	        PatientIdentifierType patientIdentifierType, boolean includeVoided)
+	        throws APIException {
+		
+		if (includeVoided == true)
+			throw new APIException("Searching on voided identifiers is no longer allowed");
+		
+		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
+		types.add(patientIdentifierType);
+		return getPatientIdentifiers(identifier, types, null, null, null);
+	}
+
+	/**
+	 * @deprecated patient identifiers should not be updated directly; rather,
+	 *             after changing patient identifiers, use
+	 *             {@link #savePatient(Patient)} to save changes to the database
+	 */
+	public void updatePatientIdentifier(PatientIdentifier pi)
+	        throws APIException {
+		// this method allows you change only the Identifier type, so let's do
+		// that and then do a full ID check
 		Patient p = pi.getPatient();
 		Set<PatientIdentifier> identifiers = p.getIdentifiers();
 		for ( PatientIdentifier identifier : identifiers ) {
 			if ( identifier.getIdentifier().equals(pi.getIdentifier())
-					&& identifier.getLocation().equals(pi.getLocation()) )
-			{
+			        && identifier.getLocation().equals(pi.getLocation())) {
 				identifier.setIdentifierType(pi.getIdentifierType());
 				break;
 			}
 		}
 		
-		this.updatePatient(p);
-		//getPatientDAO().updatePatientIdentifier(pi);
+		savePatient(p);
 	}
 	
+	// end patient identifier section
+	
+	
+	// patient identifier _type_ section
+
 	/**
-	 * Get all patientIdentifier types
+	 * TODO: Add changedBy and DateChanged columns to table
+	 * patient_identifier_type
 	 * 
-	 * @return patientIdentifier types list
-	 * @throws APIException
+	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
-	public List<PatientIdentifierType> getPatientIdentifierTypes() throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
+	public PatientIdentifierType savePatientIdentifierType(
+	        PatientIdentifierType patientIdentifierType) throws APIException {
+		Date now = new Date();
+		if (patientIdentifierType.getDateCreated() == null)
+			patientIdentifierType.setDateCreated(now);
+		if (patientIdentifierType.getCreator() == null)
+			patientIdentifierType.setCreator(Context.getAuthenticatedUser());
+		// if (patientIdentifierType.getPatientIdentifierTypeId() != null) {
+		// patientIdentifierType.setChangedBy(Context.getAuthenticatedUser());
+		// patientIdentifierType.setDateChanged(now);
+		// }
+		return dao.savePatientIdentifierType(patientIdentifierType);
+	}
 		
-		return getPatientDAO().getPatientIdentifierTypes();
+	/**
+	 * @deprecated replaced by {@link #getAllPatientIdentifierTypes()}
+	 * @see org.openmrs.api.PatientService#getPatientIdentifierTypes()
+	 * @see org.openmrs.api.PatientService#getAllPatientIdentifierTypes()
+	 */
+	public List<PatientIdentifierType> getPatientIdentifierTypes()
+	        throws APIException {
+		return getAllPatientIdentifierTypes();
 	}
 
-	public List<PatientIdentifierType> getRequiredPatientIdentifierTypes() throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
+	/**
+	 * @see org.openmrs.api.PatientService#getAllPatientIdentifierTypes()
+	 */
+	public List<PatientIdentifierType> getAllPatientIdentifierTypes()
+	        throws APIException {
+		return getAllPatientIdentifierTypes(false);
+	}
 
-		List<PatientIdentifierType> requiredTypes = null; 
+	/**
+	 * @see org.openmrs.api.PatientService#getAllPatientIdentifierTypes(boolean)
+	 */
+	public List<PatientIdentifierType> getAllPatientIdentifierTypes(boolean includeRetired)
+	        throws APIException {
+		return dao.getAllPatientIdentifierTypes(includeRetired);
+	}
 		
-		List<PatientIdentifierType> allTypes = getPatientDAO().getPatientIdentifierTypes();
+	/**
+     * @see org.openmrs.api.PatientService#getPatientIdentifierTypes(java.lang.String, java.lang.String, java.lang.Boolean, java.lang.Boolean)
+     */
+    public List<PatientIdentifierType> getPatientIdentifierTypes(String name,
+            String format, Boolean required, Boolean hasCheckDigit)
+            throws APIException {
+	    	return dao.getPatientIdentifierTypes(name, format, required, hasCheckDigit);
+    }
 
-		if ( allTypes != null ) {
-			for ( PatientIdentifierType idType : allTypes ) {
-				if ( idType.getRequired() ) {
-					if ( requiredTypes == null ) requiredTypes = new ArrayList<PatientIdentifierType>();
-					requiredTypes.add(idType);
+	/**
+	 * @see org.openmrs.api.PatientService#getPatientIdentifierType(java.lang.Integer)
+	 */
+	public PatientIdentifierType getPatientIdentifierType(
+	        Integer patientIdentifierTypeId) throws APIException {
+		return dao.getPatientIdentifierType(patientIdentifierTypeId);
 				}
+
+	/**
+	 * @see org.openmrs.api.PatientService#getPatientIdentifierType(java.lang.String)
+	 * @deprecated
+	 */
+	public PatientIdentifierType getPatientIdentifierType(String name)
+	        throws APIException {
+		return getPatientIdentifierTypeByName(name);
 			}
-		}
 
-		return requiredTypes;
+	/**
+	 * @see org.openmrs.api.PatientService#getPatientIdentifierTypeByName(java.lang.String)
+	 */
+	public PatientIdentifierType getPatientIdentifierTypeByName(String name)
+	        throws APIException {
+		List<PatientIdentifierType> types = getPatientIdentifierTypes(name, null, null, null);
+		
+		if (types.size() > 0)
+			return types.get(0);
+		
+		return null;
 	}
 
 	/**
-	 * Get patientIdentifierType by internal identifier
-	 * 
-	 * @param patientIdentifierType id
-	 * @return patientIdentifierType with given internal identifier
-	 * @throws APIException
+	 * @see org.openmrs.api.PatientService#retirePatientIdentifierType(org.openmrs.PatientIdentifierType, String)
 	 */
-	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
+	public PatientIdentifierType retirePatientIdentifierType(
+	        PatientIdentifierType patientIdentifierType, String reason) throws APIException {
+		if (reason == null || reason.length() < 1)
+			throw new APIException("A reason is required when retiring an identifier type");
 		
-		return getPatientDAO().getPatientIdentifierType(patientIdentifierTypeId);
+		patientIdentifierType.setRetired(true);
+		patientIdentifierType.setRetiredBy(Context.getAuthenticatedUser());
+		patientIdentifierType.setDateRetired(new Date());
+		patientIdentifierType.setRetireReason(reason);
+		return savePatientIdentifierType(patientIdentifierType);
 	}
 
 	/**
-	 * Get patientIdentifierType by name
-	 * 
-	 * @param name
-	 * @return patientIdentifierType with given name
-	 * @throws APIException
+	 * @see org.openmrs.api.PatientService#unretirePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
-	public PatientIdentifierType getPatientIdentifierType(String name) throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
+	public PatientIdentifierType unretirePatientIdentifierType(
+	        PatientIdentifierType patientIdentifierType) throws APIException {
+		patientIdentifierType.setRetired(false);
+		patientIdentifierType.setRetiredBy(null);
+		patientIdentifierType.setDateRetired(null);
+		patientIdentifierType.setRetireReason(null);
+		return savePatientIdentifierType(patientIdentifierType);
+	}
 		
-		return getPatientDAO().getPatientIdentifierType(name);
+	/**
+	 * @see org.openmrs.api.PatientService#purgePatientIdentifierType(org.openmrs.PatientIdentifierType)
+	 */
+	public void purgePatientIdentifierType(
+	        PatientIdentifierType patientIdentifierType) throws APIException {
+		dao.deletePatientIdentifierType(patientIdentifierType);
 	}
 	
+	// end patient identifier _type_ section
+	
+	
+	// tribe section
+
 	/**
-	 * Get tribe by internal tribe identifier
-	 * 
-	 * @return Tribe
-	 * @param tribeId 
-	 * @throws APIException
+	 * @deprecated tribe will be moved to patient attribute
+	 * @see org.openmrs.api.PatientService#getTribe(java.lang.Integer)
 	 */
 	public Tribe getTribe(Integer tribeId) throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
-		
-		return getPatientDAO().getTribe(tribeId);
+		return dao.getTribe(tribeId);
 	}
 	
 	/**
-	 * Get list of tribes that are not retired
-	 * 
-	 * @return non-retired Tribe list
-	 * @throws APIException
+	 * @deprecated tribe will be moved to patient attributes
+	 * @see org.openmrs.api.PatientService#getTribes()
 	 */
 	public List<Tribe> getTribes() throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
-		
-		return getPatientDAO().getTribes();
+		return dao.getTribes();
 	}
-	
+		
 	/**
-	 * Find tribes by partial name lookup
-	 * 
-	 * @return non-retired Tribe list
-	 * @throws APIException
+	 * @deprecated tribe will be moved to patient attributes
+	 * @see org.openmrs.api.PatientService#findTribes(java.lang.String)
 	 */
 	public List<Tribe> findTribes(String search) throws APIException {
-		if (!Context.isAuthenticated())
-			throw new APIAuthenticationException("Authentication required");
+		return dao.findTribes(search);
+	}
+	
+	// end tribe section
+	
+
+	/**
+	 * @see org.openmrs.api.PatientService#findPatients(java.lang.String, boolean)
+	 */
+	public List<Patient> findPatients(String query, boolean includeVoided) throws APIException {
+		if (includeVoided == true)
+			throw new APIException("Searching on voided patients is no longer allowed");
 		
-		return getPatientDAO().findTribes(search);
+		return getPatients(query);
 	}
 		
-	public Collection<Patient> findPatients(String query, boolean includeVoided) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
-		
+	/**
+	 * @see org.openmrs.api.PatientService#findPatients(java.lang.String)
+	 */
+	public List<Patient> getPatients(String query) throws APIException {
 		List<Patient> patients = new Vector<Patient>();
-		PatientDAO dao = getPatientDAO();
 		
+		// TODO create a global property that users can change for this
 		//query must be more than 2 characters
 		if (query.length() < 3)
 			return patients;
@@ -569,22 +737,30 @@ public class PatientServiceImpl implements PatientService {
 		// if there is a number in the query string
 		if (query.matches(".*\\d+.*")) {
 			log.debug("[Identifier search] Query: " + query);
-			return dao.getPatientsByIdentifierPattern(query, includeVoided);
+			return getPatients(null, query, null);
+		} else {
+			// there is no number in the string, search on name
+			return getPatients(query, null, null);
 		}
-		else {
-			//there is no number in the string, search on name
-			return dao.getPatientsByName(query, includeVoided);
 		}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#findPatient(org.openmrs.Patient)
+	 * @see #getPatientByExample(Patient)
+	 * @deprecated
+	 */
+	public Patient findPatient(Patient patientToMatch) throws APIException {
+		return getPatientByExample(patientToMatch);
 	}
 	
 	/**
-	 * This default implementation simply looks at the OpenMRS internal id (patient_id).  If 
-	 * the id is null, assume this patient isn't found.  If the patient_id is not null, try 
-	 * and find that id in the database
+	 * This default implementation simply looks at the OpenMRS internal id
+	 * (patient_id). If the id is null, assume this patient isn't found. If the
+	 * patient_id is not null, try and find that id in the database
 	 * 
-	 * @see org.openmrs.api.PatientService#findPatient(org.openmrs.Patient)
+	 * @see org.openmrs.api.PatientService#getPatientByExample(org.openmrs.Patient)
 	 */
-	public Patient findPatient(Patient patientToMatch) {
+	public Patient getPatientByExample(Patient patientToMatch) throws APIException {
 		if (patientToMatch == null || patientToMatch.getPatientId() == null)
 			return null;
 		
@@ -592,54 +768,71 @@ public class PatientServiceImpl implements PatientService {
 	}
 
 	/**
-	 * Search the database for patients that share the given attributes
-	 * attributes similar to: [gender, tribe, givenName, middleName, familyname]
-	 * 
-	 * @param attributes
-	 * @return list of patients that match other patients
+	 * @deprecated use {@link #getDuplicatePatientsByAttributes(List)}
 	 */
-	public List<Patient> findDuplicatePatients(Set<String> attributes) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
+	public List<Patient> findDuplicatePatients(Set<String> attributes) throws APIException {
+		List<String> attributesAsList = new Vector<String>();
+		attributesAsList.addAll(attributes);
 		
-		PatientDAO dao = getPatientDAO();
-		return dao.findDuplicatePatients(attributes);
+		return getDuplicatePatientsByAttributes(attributesAsList);
 	}
 	
 	/**
-	 * 1) Moves object (encounters/obs) pointing to <code>nonPreferred</code> to <code>preferred</code>
-	 * 2) Copies data (gender/birthdate/names/ids/etc) from <code>nonPreferred</code> to 
-	 * <code>preferred</code> iff the data is missing or null in <code>preferred</code>
-	 * 3) <code>notPreferred</code> is marked as voided
+     * @see org.openmrs.api.PatientService#getDuplicatePatientsByAttributes(java.util.List)
+	 */
+    public List<Patient> getDuplicatePatientsByAttributes(
+            List<String> attributes) throws APIException {
+    	
+    	if (attributes == null || attributes.size() < 1) {
+    		throw new APIException("There must be at least one attribute supplied to search on");
+    	}
+		
+	    return dao.getDuplicatePatientsByAttributes(attributes);
+	}
+	
+	/**
+	 * 1) Moves object (encounters/obs) pointing to <code>nonPreferred</code>
+	 * to <code>preferred</code> 2) Copies data
+	 * (gender/birthdate/names/ids/etc) from <code>nonPreferred</code> to
+	 * <code>preferred</code> iff the data is missing or null in
+	 * <code>preferred</code> 3) <code>notPreferred</code> is marked as
+	 * voided
+	 * 
 	 * @param preferred
 	 * @param notPreferred
 	 * @throws APIException
 	 */
-	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException {
-		log.debug("Merging patients: (preferred)" + preferred.getPatientId() + ", (notPreferred) " + notPreferred.getPatientId());
+	public void mergePatients(Patient preferred, Patient notPreferred)
+	        throws APIException {
+		log.debug("Merging patients: (preferred)" + preferred.getPatientId()
+		        + ", (notPreferred) " + notPreferred.getPatientId());
 		
 		// change all encounters. This will cascade to obs and orders contained in those encounters
 		// TODO: this should be a copy, not a move
 		EncounterService es = Context.getEncounterService();
 		for (Encounter e : es.getEncounters(notPreferred)){
 			e.setPatient(preferred);
-			log.debug("Merging encounter " + e.getEncounterId() + " to " + preferred.getPatientId());
-			es.updateEncounter(e);
+			log.debug("Merging encounter " + e.getEncounterId() + " to "
+			        + preferred.getPatientId());
+			es.saveEncounter(e);
 		}
 		
 		// move all identifiers
 		for (PatientIdentifier pi : notPreferred.getIdentifiers()) {
 			PatientIdentifier tmpIdentifier = new PatientIdentifier();
 			tmpIdentifier.setIdentifier(pi.getIdentifier());
-			tmpIdentifier.setIdentifierType(null); // don't compare identifier types.
+			tmpIdentifier.setIdentifierType(null); // don't compare identifier
+			// types.
 			tmpIdentifier.setLocation(pi.getLocation());
 			tmpIdentifier.setPatient(preferred);
 			boolean found = false;
 			for (PatientIdentifier preferredIdentifier : preferred.getIdentifiers()) {
-				if (preferredIdentifier.getIdentifier() != null &&
-					preferredIdentifier.getIdentifier().equals(tmpIdentifier.getIdentifier()) &&
-					preferredIdentifier.getIdentifierType() != null &&
-					preferredIdentifier.getIdentifierType().equals(tmpIdentifier.getIdentifierType()))
+				if (preferredIdentifier.getIdentifier() != null
+				        && preferredIdentifier.getIdentifier()
+				                              .equals(tmpIdentifier.getIdentifier())
+				        && preferredIdentifier.getIdentifierType() != null
+				        && preferredIdentifier.getIdentifierType()
+				                              .equals(tmpIdentifier.getIdentifierType()))
 						found = true;
 			}
 			if (!found) {
@@ -652,7 +845,8 @@ public class PatientServiceImpl implements PatientService {
 				// we don't want to change the preferred identifier of the preferred patient
 				tmpIdentifier.setPreferred(false);
 				preferred.addIdentifier(tmpIdentifier);
-				log.debug("Merging identifier " + tmpIdentifier.getIdentifier() + " to " + preferred.getPatientId());
+				log.debug("Merging identifier " + tmpIdentifier.getIdentifier()
+				        + " to " + preferred.getPatientId());
 			}
 		}
 		
@@ -664,10 +858,9 @@ public class PatientServiceImpl implements PatientService {
 				String middle = newName.getMiddleName();
 				String family = newName.getFamilyName();
 				
-				if ((given != null && given.equals(currentName.getGivenName())) &&
-					(middle != null && middle.equals(currentName.getMiddleName())) &&
-					(family != null && family.equals(currentName.getFamilyName()))	
-						) {
+				if ((given != null && given.equals(currentName.getGivenName()))
+				        && (middle != null && middle.equals(currentName.getMiddleName()))
+				        && (family != null && family.equals(currentName.getFamilyName()))) {
 					containsName = true;
 				}
 			}
@@ -680,7 +873,8 @@ public class PatientServiceImpl implements PatientService {
 				// we don't want to change the preferred name of the preferred patient
 				tmpName.setPreferred(false);
 				preferred.addName(tmpName);
-				log.debug("Merging name " + newName.getGivenName() + " to " + preferred.getPatientId());
+				log.debug("Merging name " + newName.getGivenName() + " to "
+				        + preferred.getPatientId());
 			}
 		}
 		
@@ -692,10 +886,9 @@ public class PatientServiceImpl implements PatientService {
 				String address2 = currentAddress.getAddress2();
 				String cityVillage = currentAddress.getCityVillage();
 				
-				if ((address1 != null && address1.equals(newAddress.getAddress1())) ||
-					(address2 != null && address2.equals(newAddress.getAddress2())) ||
-					(cityVillage != null && cityVillage.equals(newAddress.getCityVillage()))	
-						) {
+				if ((address1 != null && address1.equals(newAddress.getAddress1()))
+				        || (address2 != null && address2.equals(newAddress.getAddress2()))
+				        || (cityVillage != null && cityVillage.equals(newAddress.getCityVillage()))) {
 					containsAddress = true;
 				}
 			}
@@ -706,10 +899,11 @@ public class PatientServiceImpl implements PatientService {
 				tmpAddress.setVoidedBy(null);
 				tmpAddress.setVoidReason(null);
 				preferred.addAddress(tmpAddress);
-				log.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPatientId());
+				log.debug("Merging address " + newAddress.getPersonAddressId()
+				        + " to " + preferred.getPatientId());
 			}
 		}
-		
+	
 		// copy all program enrollments
 		ProgramWorkflowService programService = Context.getProgramWorkflowService();
 		for (PatientProgram pp : programService.getPatientPrograms(notPreferred)) {
@@ -766,16 +960,18 @@ public class PatientServiceImpl implements PatientService {
 		
 		// move all other patient info
 		
-		if (!"M".equals(preferred.getGender()) && !"F".equals(preferred.getGender()))
+		if (!"M".equals(preferred.getGender())
+		        && !"F".equals(preferred.getGender()))
 			preferred.setGender(notPreferred.getGender());
 		
 		/* 
-		if (preferred.getRace() == null || preferred.getRace().equals(""))
-			preferred.setRace(notPreferred.getRace());
+		 * if (preferred.getRace() == null || preferred.getRace().equals(""))
+		 * preferred.setRace(notPreferred.getRace());
 		*/
 		
-		if (preferred.getBirthdate() == null || preferred.getBirthdate().equals("") ||
-				( preferred.getBirthdateEstimated() && !notPreferred.getBirthdateEstimated())) {
+		if (preferred.getBirthdate() == null
+		        || preferred.getBirthdate().equals("")
+		        || (preferred.getBirthdateEstimated() && !notPreferred.getBirthdateEstimated())) {
 			preferred.setBirthdate(notPreferred.getBirthdate());
 			preferred.setBirthdateEstimated(notPreferred.getBirthdateEstimated());
 		}
@@ -784,61 +980,73 @@ public class PatientServiceImpl implements PatientService {
 			preferred.setTribe(notPreferred.getTribe());
 		
 		/*
-		if (preferred.getBirthplace() == null || preferred.getBirthplace().equals(""))
-			preferred.setBirthplace(notPreferred.getBirthplace());
-		
-		if (preferred.getCitizenship() == null || preferred.getCitizenship().equals(""))
-			preferred.setCitizenship(notPreferred.getCitizenship());
-		
-		if (preferred.getMothersName() == null || preferred.getMothersName().equals(""))
-			preferred.setMothersName(notPreferred.getMothersName());
-		
-		if (preferred.getCivilStatus() == null)
-			preferred.setCivilStatus(notPreferred.getCivilStatus());
+		 * if (preferred.getBirthplace() == null ||
+		 * preferred.getBirthplace().equals(""))
+		 * preferred.setBirthplace(notPreferred.getBirthplace());
+		 * 
+		 * if (preferred.getCitizenship() == null ||
+		 * preferred.getCitizenship().equals(""))
+		 * preferred.setCitizenship(notPreferred.getCitizenship());
+		 * 
+		 * if (preferred.getMothersName() == null ||
+		 * preferred.getMothersName().equals(""))
+		 * preferred.setMothersName(notPreferred.getMothersName());
+		 * 
+		 * if (preferred.getCivilStatus() == null)
+		 * preferred.setCivilStatus(notPreferred.getCivilStatus());
 		*/
 		
-		if (preferred.getDeathDate() == null || preferred.getDeathDate().equals(""))
+		if (preferred.getDeathDate() == null
+		        || preferred.getDeathDate().equals(""))
 			preferred.setDeathDate(notPreferred.getDeathDate());
 		
-		if (preferred.getCauseOfDeath() == null || preferred.getCauseOfDeath().equals(""))
+		if (preferred.getCauseOfDeath() == null
+		        || preferred.getCauseOfDeath().equals(""))
 			preferred.setCauseOfDeath(notPreferred.getCauseOfDeath());
 		
 		/*
-		if (preferred.getHealthDistrict() == null || preferred.getHealthDistrict().equals(""))
-			preferred.setHealthDistrict(notPreferred.getHealthDistrict());
-		
-		if (preferred.getHealthCenter() == null)
-			preferred.setHealthCenter(notPreferred.getHealthCenter());
+		 * if (preferred.getHealthDistrict() == null ||
+		 * preferred.getHealthDistrict().equals(""))
+		 * preferred.setHealthDistrict(notPreferred.getHealthDistrict());
+		 * 
+		 * if (preferred.getHealthCenter() == null)
+		 * preferred.setHealthCenter(notPreferred.getHealthCenter());
 		*/
 		
 		// void the non preferred patient
-		voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
+		voidPatient(notPreferred, "Merged with patient #"
+		        + preferred.getPatientId());
 		
 		// Save the newly update preferred patient
 		// This must be called _after_ voiding the nonPreferred patient so that
 		//  a "Duplicate Identifier" error doesn't pop up.
-		updatePatient(preferred);
+		savePatient(preferred);
 		
 	}
 	
 	/**
-	 * Iterates over Names/Addresses/Identifiers to set dateCreated and creator properties if needed
+	 * Iterates over Names/Addresses/Identifiers to set dateCreated and creator
+	 * properties if needed
+	 * 
 	 * @param patient
 	 */
 	private void setCollectionProperties(Patient patient) {
 		// set the properties on the collections for the generic person object
 		Context.getPersonService().setCollectionProperties(patient);
 		
+		User currentUser = Context.getAuthenticatedUser();
+		Date currentTime = new Date();
+		
 		// patient creator
 		if (patient.getCreator() == null)
-			patient.setCreator(Context.getAuthenticatedUser());
+			patient.setCreator(currentUser);
 		if (patient.getDateCreated() == null)
-			patient.setDateCreated(new Date());
+			patient.setDateCreated(currentTime);
 		
 		// patient changer
 		if (patient.getPatientId() != null) {
-			patient.setChangedBy(Context.getAuthenticatedUser());
-			patient.setDateChanged(new Date());
+			patient.setChangedBy(currentUser);
+			patient.setDateChanged(currentTime);
 		}
 		
 		// identifier collection
@@ -846,73 +1054,100 @@ public class PatientServiceImpl implements PatientService {
 			for (PatientIdentifier pIdentifier : patient.getIdentifiers()) {
 				// set the creator and date created if not set yet
 				if (pIdentifier.getDateCreated() == null)
-					pIdentifier.setDateCreated(new Date());
+					pIdentifier.setDateCreated(currentTime);
 				if (pIdentifier.getCreator() == null)
-					pIdentifier.setCreator(Context.getAuthenticatedUser());
+					pIdentifier.setCreator(currentUser);
 				
-				// make sure the identifier is associated with the current patient
+				// make sure the identifier is associated with the current
+				// patient
 				if (pIdentifier.getPatient() == null)
 					pIdentifier.setPatient(patient);
 				
-				// if the user has marked this identifier as voided, make sure the
-				// other void attrs are filled in
+				// if the user has marked this identifier as voided, make sure
+				// the other void attrs are filled in
 				if (pIdentifier.isVoided()) {
 					if (pIdentifier.getVoidedBy() == null)
-						pIdentifier.setVoidedBy(Context.getAuthenticatedUser());
+						pIdentifier.setVoidedBy(currentUser);
 					if (pIdentifier.getDateVoided() == null)
-						pIdentifier.setDateVoided(new Date());
+						pIdentifier.setDateVoided(currentTime);
 				}
 			}
 		}
 	}
 
 	/**
-	 * This is the way to establish that a patient has left the care center.  This API call is responsible for:
-	 * 1) Closing workflow statuses
-	 * 2) Terminating programs
-	 * 3) Discontinuing orders
-	 * 4) Flagging patient table (if applicable)
-	 * 5) Creating any relevant observations about the patient
+	 * This is the way to establish that a patient has left the care center.
+	 * This API call is responsible for: 1) Closing workflow statuses 2)
+	 * Terminating programs 3) Discontinuing orders 4) Flagging patient table
+	 * (if applicable) 5) Creating any relevant observations about the patient
+	 * 
 	 * @param patient - the patient who has exited care
 	 * @param dateExited - the declared date/time of the patient's exit
-	 * @param reasonForExit - the concept that corresponds with why the patient has been declared as exited
+	 * @param reasonForExit - the concept that corresponds with why the patient
+	 *        has been declared as exited
 	 * @throws APIException
 	 */
-	public void exitFromCare(Patient patient, Date dateExited, Concept reasonForExit) {
-		if ( patient != null && dateExited != null && reasonForExit != null ) {
-			// need to create an observation to represent this (otherwise how will we know?)
-			saveReasonForExitObs(patient, dateExited, reasonForExit);
+	public void exitFromCare(Patient patient, Date dateExited,
+	        Concept reasonForExit) throws APIException {
 			
-			// need to terminate any applicable programs
-			Context.getProgramWorkflowService().triggerStateConversion(patient, reasonForExit, dateExited);
-			
-			// need to discontinue any open orders for this patient
-			Context.getOrderService().discontinueAllOrders(patient, reasonForExit, dateExited);
-		} else {
 			if ( patient == null )
 					throw new APIException("Attempting to exit from care an invalid patient. Cannot proceed");
 			if ( dateExited == null ) 
 					throw new APIException("Must supply a valid dateExited when indicating that a patient has left care");
 			if ( reasonForExit == null ) 
 					throw new APIException("Must supply a valid reasonForExit (even if 'Unknown') when indicating that a patient has left care");
-		}
-	}
+		
+		
+		// need to create an observation to represent this (otherwise how
+		// will we know?)
+		saveReasonForExitObs(patient, dateExited, reasonForExit);
 
+		// need to terminate any applicable programs
+		Context.getProgramWorkflowService()
+		       .triggerStateConversion(patient, reasonForExit, dateExited);
+
+		// need to discontinue any open orders for this patient
+		OrderUtil.discontinueAllOrders(patient,
+                                       reasonForExit,
+                                       dateExited);
+		}
+
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param patient
+	 * @param exitDate
+	 * @param cause
+	 */
 	// TODO: Patients should actually be allowed to exit multiple times 
-	private void saveReasonForExitObs(Patient patient, Date exitDate, Concept cause) {
-		if ( patient != null && exitDate != null && cause != null ) {
+	private void saveReasonForExitObs(Patient patient, Date exitDate,
+	        Concept cause) throws APIException {
+		
+		if (patient == null)
+			throw new APIException("Patient supplied to method is null");
+		if (exitDate == null)
+			throw new APIException("Exit date supplied to method is null");
+		if (cause == null)
+			throw new APIException("Cause supplied to method is null");
 			
-			// need to make sure there is an Obs that represents the patient's exit
+		// need to make sure there is an Obs that represents the patient's
+		// exit
 			log.debug("Patient is exiting, so let's make sure there's an Obs for it");
 
-			String codProp = Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare");
-			Concept reasonForExit = Context.getConceptService().getConceptByIdOrName(codProp);
+		String codProp = Context.getAdministrationService()
+		                        .getGlobalProperty("concept.reasonExitedCare");
+		Concept reasonForExit = Context.getConceptService()
+		                               .getConceptByIdOrName(codProp);
 
 			if ( reasonForExit != null ) {
-				Set<Obs> obssExit = Context.getObsService().getObservations(patient, reasonForExit, false);
+			Set<Obs> obssExit = Context.getObsService()
+			                           .getObservations(patient,
+			                                            reasonForExit,
+			                                            false);
 				if ( obssExit != null ) {
 					if ( obssExit.size() > 1 ) {
-						log.error("Multiple reasons for exit (" + obssExit.size() + ")?  Shouldn't be...");
+					log.error("Multiple reasons for exit ("
+					        + obssExit.size() + ")?  Shouldn't be...");
 					} else {
 						Obs obsExit = null;
 						if ( obssExit.size() == 1 ) {
@@ -929,40 +1164,48 @@ public class PatientServiceImpl implements PatientService {
 							obsExit.setPerson(patient);
 							obsExit.setConcept(reasonForExit);
 							Location loc = null; //patient.getHealthCenter();
-							if ( loc == null ) loc = Context.getEncounterService().getLocationByName("Unknown Location");
-							if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
-							if ( loc != null ) obsExit.setLocation(loc);
-							else log.error("Could not find a suitable location for which to create this new Obs");
+						if (loc == null)
+							loc = Context.getEncounterService()
+							             .getLocationByName("Unknown Location");
+						if (loc == null)
+							loc = Context.getLocationService()
+							             .getLocation(new Integer(1));
+						if (loc != null)
+							obsExit.setLocation(loc);
+						else
+							log.error("Could not find a suitable location for which to create this new Obs");
 						}
 						
 						if ( obsExit != null ) {
-							// put the right concept and (maybe) text in this obs
+						// put the right concept and (maybe) text in this
+						// obs
 							obsExit.setValueCoded(cause);
 							obsExit.setObsDatetime(exitDate);
-							Context.getObsService().updateObs(obsExit);
+						Context.getObsService().saveObs(obsExit, null);
 						}
 					}
 				}
 			} else {
 				log.debug("Reason for exit is null - should not have gotten here without throwing an error on the form.");
 			}
-		} else {
-			if ( patient == null ) throw new APIException("Patient supplied to method is null");
-			if ( exitDate == null ) throw new APIException("Exit date supplied to method is null");
-			if ( cause == null ) throw new APIException("Cause supplied to method is null");
 		}
-	}
 		
 	/**
-	 * This is the way to establish that a patient has died.  In addition to exiting the patient from care (see above),
-	 * this method will also set the appropriate patient characteristics to indicate that they have died, when they died, etc.
+	 * This is the way to establish that a patient has died. In addition to
+	 * exiting the patient from care (see above), this method will also set the
+	 * appropriate patient characteristics to indicate that they have died, when
+	 * they died, etc.
+	 * 
 	 * @param patient - the patient who has died
 	 * @param dateDied - the declared date/time of the patient's death
-	 * @param causeOfDeath - the concept that corresponds with the reason the patient died
-	 * @param otherReason - in case the causeOfDeath is 'other', a place to store more info
+	 * @param causeOfDeath - the concept that corresponds with the reason the
+	 *        patient died
+	 * @param otherReason - in case the causeOfDeath is 'other', a place to
+	 *        store more info
 	 * @throws APIException
 	 */
-	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason) {
+	public void processDeath(Patient patient, Date dateDied,
+	        Concept causeOfDeath, String otherReason) throws APIException {
 		//SQLStateConverter s = null;
 		
 		if ( patient != null && dateDied != null && causeOfDeath != null ) {
@@ -975,10 +1218,13 @@ public class PatientServiceImpl implements PatientService {
 			
 			// exit from program
 			// first, need to get Concept for "Patient Died"
-			String strPatientDied = Context.getAdministrationService().getGlobalProperty("concept.patientDied");
-			Concept conceptPatientDied = Context.getConceptService().getConceptByIdOrName(strPatientDied);
+			String strPatientDied = Context.getAdministrationService()
+			                               .getGlobalProperty("concept.patientDied");
+			Concept conceptPatientDied = Context.getConceptService()
+			                                    .getConceptByIdOrName(strPatientDied);
 			
-			if ( conceptPatientDied == null ) log.debug("ConceptPatientDied is null");
+			if (conceptPatientDied == null)
+				log.debug("ConceptPatientDied is null");
 			exitFromCare(patient, dateDied, conceptPatientDied);
 
 		} else {
@@ -991,23 +1237,42 @@ public class PatientServiceImpl implements PatientService {
 		}
 	}
 
-	public void saveCauseOfDeathObs(Patient patient, Date deathDate, Concept cause, String otherReason) {
-		if ( patient != null && deathDate != null && cause != null ) {
-			if ( !patient.getDead() ) patient.setDead(true);
+	/**
+	 * @see org.openmrs.api.PatientService#saveCauseOfDeathObs(org.openmrs.Patient, java.util.Date, org.openmrs.Concept, java.lang.String)
+	 */
+	public void saveCauseOfDeathObs(Patient patient, Date deathDate,
+	        Concept cause, String otherReason) throws APIException {
+		
+		if (patient == null)
+			throw new APIException("Patient supplied to method is null");
+		if (deathDate == null)
+			throw new APIException("Death date supplied to method is null");
+		if (cause == null)
+			throw new APIException("Cause supplied to method is null");
+		
+		if (!patient.getDead())
+			patient.setDead(true);
 			patient.setDeathDate(deathDate);
 			patient.setCauseOfDeath(cause);
 			
 			log.debug("Patient is dead, so let's make sure there's an Obs for it");
-			// need to make sure there is an Obs that represents the patient's cause of death, if applicable
+		// need to make sure there is an Obs that represents the patient's
+		// cause of death, if applicable
 
-			String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-			Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
+		String codProp = Context.getAdministrationService()
+		                        .getGlobalProperty("concept.causeOfDeath");
+		Concept causeOfDeath = Context.getConceptService()
+		                              .getConceptByIdOrName(codProp);
 
 			if ( causeOfDeath != null ) {
-				Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath, false);
+			Set<Obs> obssDeath = Context.getObsService()
+			                            .getObservations(patient,
+			                                             causeOfDeath,
+			                                             false);
 				if ( obssDeath != null ) {
 					if ( obssDeath.size() > 1 ) {
-						log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
+					log.error("Multiple causes of death ("
+					        + obssDeath.size() + ")?  Shouldn't be...");
 					} else {
 						Obs obsDeath = null;
 						if ( obssDeath.size() == 1 ) {
@@ -1024,10 +1289,16 @@ public class PatientServiceImpl implements PatientService {
 							obsDeath.setPerson(patient);
 							obsDeath.setConcept(causeOfDeath);
 							Location loc = null; //patient.getHealthCenter();
-							if ( loc == null ) loc = Context.getEncounterService().getLocationByName("Unknown Location");
-							if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
-							if ( loc != null ) obsDeath.setLocation(loc);
-							else log.error("Could not find a suitable location for which to create this new Obs");
+						if (loc == null)
+							loc = Context.getEncounterService()
+							             .getLocationByName("Unknown Location");
+						if (loc == null)
+							loc = Context.getLocationService()
+							             .getLocation(new Integer(1));
+						if (loc != null)
+							obsDeath.setLocation(loc);
+						else
+							log.error("Could not find a suitable location for which to create this new Obs");
 						}
 						
 						// put the right concept and (maybe) text in this obs
@@ -1035,8 +1306,10 @@ public class PatientServiceImpl implements PatientService {
 						if ( currCause == null ) {
 							// set to NONE
 							log.debug("Current cause is null, attempting to set to NONE");
-							String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
-							currCause = Context.getConceptService().getConceptByIdOrName(noneConcept);
+						String noneConcept = Context.getAdministrationService()
+						                            .getGlobalProperty("concept.none");
+						currCause = Context.getConceptService()
+						                   .getConceptByIdOrName(noneConcept);
 						}
 						
 						if ( currCause != null ) {
@@ -1044,16 +1317,22 @@ public class PatientServiceImpl implements PatientService {
 							obsDeath.setValueCoded(currCause);
 							
 							Date dateDeath = patient.getDeathDate();
-							if ( dateDeath == null ) dateDeath = new Date();
+						if (dateDeath == null)
+							dateDeath = new Date();
 							obsDeath.setObsDatetime(dateDeath);
 
-							// check if this is an "other" concept - if so, then we need to add value_text
-							String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
-							Concept conceptOther = Context.getConceptService().getConceptByIdOrName(otherConcept);
+						// check if this is an "other" concept - if so, then
+						// we need to add value_text
+						String otherConcept = Context.getAdministrationService()
+						                             .getGlobalProperty("concept.otherNonCoded");
+						Concept conceptOther = Context.getConceptService()
+						                              .getConceptByIdOrName(otherConcept);
 							if ( conceptOther != null ) {
 								if ( conceptOther.equals(currCause) ) {
-									// seems like this is an other concept - let's try to get the "other" field info
-									log.debug("Setting value_text as " + otherReason);
+								// seems like this is an other concept -
+								// let's try to get the "other" field info
+								log.debug("Setting value_text as "
+								        + otherReason);
 									obsDeath.setValueText(otherReason);
 								} else {
 									log.debug("New concept is NOT the OTHER concept, so setting to blank");
@@ -1064,7 +1343,7 @@ public class PatientServiceImpl implements PatientService {
 								obsDeath.setValueText("");
 							}
 							
-							Context.getObsService().updateObs(obsDeath);
+						Context.getObsService().saveObs(obsDeath, null);
 						} else {
 							log.debug("Current cause is still null - aborting mission");
 						}
@@ -1073,19 +1352,14 @@ public class PatientServiceImpl implements PatientService {
 			} else {
 				log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
 			}
-		} else {
-			if ( patient == null ) throw new APIException("Patient supplied to method is null");
-			if ( deathDate == null ) throw new APIException("Death date supplied to method is null");
-			if ( cause == null ) throw new APIException("Cause supplied to method is null");
 		}
-	}
-
+	
 	/**
      * @see org.openmrs.api.PatientService#getDefaultIdentifierValidator()
      */
     public IdentifierValidator getDefaultIdentifierValidator() {
-	    String defaultPIV = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR);
-
+	    String defaultPIV = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR, "");
+	    
 	    try {
 	        return identifierValidators.get(Class.forName(defaultPIV));
         } catch (ClassNotFoundException e) {
@@ -1137,6 +1411,4 @@ public class PatientServiceImpl implements PatientService {
 	        return getDefaultIdentifierValidator();
         }
     }
-
-
 }

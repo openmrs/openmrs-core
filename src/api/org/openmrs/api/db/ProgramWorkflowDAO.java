@@ -22,59 +22,155 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
-import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
-import org.openmrs.ProgramWorkflowState;
 
 /**
- * Program- and Workflow-related database functions
- *  
+ * Program- and PatientProgram- and ConceptStateConversion-related database functions
  * @version 1.0
  */
 public interface ProgramWorkflowDAO {
 
-	public void createOrUpdateProgram(Program program) throws DAOException;
-
-	public List<Program> getPrograms() throws DAOException;
+	// **************************
+	// PROGRAM
+	// **************************
 	
-	public Program getProgram(Integer id) throws DAOException;
+	/**
+	 * Saves a Program to the database
+	 * @param program - The {@link Program} to save
+	 * @return The saved {@link Program}
+	 * @throws DAOException
+	 */
+	public Program saveProgram(Program program) throws DAOException;
 
-	public void createPatientProgram(PatientProgram p);
+	/**
+	 * Retrieves a {@link Program} from the database by primary key programId
+	 * @param programId - The primary key programId to use to retrieve a {@link Program}
+	 * @return Program - The {@link Program} matching the passed programId
+	 * @throws DAOException
+	 */
+	public Program getProgram(Integer programId) throws DAOException;
 
-	public void updatePatientProgram(PatientProgram p);
+    /**
+     * Returns all programs
+     * @param includeRetired whether or not to include retired programs
+     * @return List<Program> all existing programs, including retired based on the input parameter
+     * @throws DAOException
+     */
+	public List<Program> getAllPrograms(boolean includeRetired) throws DAOException;
 
+    /**
+     * Returns programs that match the given string.
+     * A null list will never be returned.  An empty list will be returned if there are no programs
+     * matching this <code>nameFragment</code>
+     *
+     * @param nameFragment is the string used to search for programs
+     * @return List<Program> - list of Programs whose name matches the input parameter
+     * @throws DAOException
+     */
+	public List<Program> findPrograms(String nameFragment) throws DAOException;
+
+    /**
+     * Completely remove a program from the database (not reversible)
+     * This method delegates to #purgeProgram(program, boolean) method
+     *
+     * @param program the Program to clean out of the database.
+     * @throws DAOException
+     */
+	public void deleteProgram(Program program) throws DAOException;
+
+	// **************************
+	// PATIENT PROGRAM
+	// **************************
+	
+    /**
+     * Save patientProgram to database (create if new or update if changed)
+     * @param patientProgram is the PatientProgram to be saved to the database
+     * @return PatientProgram - the saved PatientProgram
+     * @throws DAOException
+     */
+	public PatientProgram savePatientProgram(PatientProgram patientProgram) throws DAOException;
+
+    /**
+     * Returns a PatientProgram given that PatientPrograms primary key <code>patientProgramId</code>
+     * A null value is returned if no PatientProgram exists with this patientProgramId.
+     *
+     * @param patientProgramId integer primary key of the PatientProgram to find
+     * @returns PatientProgram object that has patientProgram.patientProgramId = <code>patientProgramId</code> passed in.
+     * @throws DAOException
+     */
 	public PatientProgram getPatientProgram(Integer id);
-
-	public PatientState getPatientState(Integer id);
-
-	public Collection<PatientProgram> getPatientPrograms(Patient patient);
 	
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
-
-	public ProgramWorkflow findWorkflowByProgramAndConcept(Integer programId, Integer conceptId);
 	
-	public ProgramWorkflow getWorkflow(Integer id);
+    /**
+     * Returns PatientPrograms that match the input parameters.  If an input parameter is set to null, the parameter will not be used.
+     * Calling this method will all null parameters will return all PatientPrograms in the database
+     * A null list will never be returned.  An empty list will be returned if there are no programs matching the input criteria
+     *
+     * @param patient - if supplied all PatientPrograms returned will be for this Patient
+     * @param program - if supplied all PatientPrograms returned will be for this Program
+     * @param minEnrollmentDate - if supplied will limit PatientPrograms to those with enrollments on or after this Date
+     * @param maxEnrollmentDate - if supplied will limit PatientPrograms to those with enrollments on or before this Date
+     * @param minCompletionDate - if supplied will limit PatientPrograms to those completed on or after this Date OR not yet completed
+     * @param maxCompletionDate - if supplied will limit PatientPrograms to those completed on or before this Date
+     * @param includeVoided - boolean, if true will return voided PatientPrograms as well.  If false, will not return voided PatientPrograms
+     * @return List<PatientProgram> of PatientPrograms that match the passed input parameters
+     * @throws DAOException
+     */
+	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate, Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided) throws DAOException;
 	
-	public void createWorkflow(ProgramWorkflow w);
+    /**
+     * Completely remove a patientProgram from the database (not reversible)
+     * This method delegates to #purgePatientProgram(patientProgram, boolean) method
+     *
+     * @param patientProgram the PatientProgram to clean out of the database.
+     * @throws DAOException
+     */
+	public void deletePatientProgram(PatientProgram patientProgram) throws DAOException;
+
+	// **************************
+	// CONCEPT STATE CONVERSION
+	// **************************
 	
-	public void updateWorkflow(ProgramWorkflow w);
+    /**
+     * Save ConceptStateConversion to database (create if new or update if changed)
+     * @param conceptStateConversion - The ConceptStateConversion to save
+     * @return ConceptStateConversion - The saved ConceptStateConversion
+     * @throws DAOException
+     */
+	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion csc) throws DAOException;
 
-	public List<ProgramWorkflowState> getStates(boolean includeVoided);
+    /**
+     * Returns all conceptStateConversions
+     * @return List<ConceptStateConversion> of all ConceptStateConversions that exist
+     * @throws DAOException
+     */
+	public List<ConceptStateConversion> getAllConceptStateConversions() throws DAOException;
 	
-	public ProgramWorkflowState getState(Integer id);
-
-	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate);
-	
-	public void createConceptStateConversion(ConceptStateConversion csc);
-
-	public void updateConceptStateConversion(ConceptStateConversion csc);
-
-	public void deleteConceptStateConversion(ConceptStateConversion csc);
-
+    /**
+     * Returns a conceptStateConversion given that conceptStateConversions primary key <code>conceptStateConversionId</code>
+     * A null value is returned if no conceptStateConversion exists with this conceptStateConversionId.
+     * @param conceptStateConversionId integer primary key of the conceptStateConversion to find
+     * @returns ConceptStateConversion object that has conceptStateConversion.conceptStateConversionId = <code>conceptStateConversionId</code> passed in.
+     * @throws DAOException
+     */
 	public ConceptStateConversion getConceptStateConversion(Integer id);
 
-	public List<ConceptStateConversion> getAllConversions();
+    /**
+     * Completely remove a conceptStateConversion from the database (not reversible)
+     * @param conceptStateConversion the ConceptStateConversion to clean out of the database.
+     * @param cascade <code>true</code> to delete related content
+     * @throws DAOException
+     */
+	public void deleteConceptStateConversion(ConceptStateConversion csc);
 
+    /**
+     * Retrieves the ConceptStateConversion that matches the passed <code>ProgramWorkflow</code> and <code>Concept</code>
+     * @param workflow - the ProgramWorkflow to check
+     * @param trigger - the Concept to check
+     * @return ConceptStateConversion that matches the passed <code>ProgramWorkflow</code> and <code>Concept</code>
+     * @throws DAOException
+     */
 	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger);
 }

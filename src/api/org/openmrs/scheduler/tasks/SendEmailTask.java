@@ -37,9 +37,8 @@ public class SendEmailTask extends AbstractTask {
 		if (!Context.isAuthenticated()) { 
 			authenticate();
 		}
-		
-	}
 
+	}
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#shutdown()

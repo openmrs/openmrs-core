@@ -25,14 +25,12 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
-import org.openmrs.ConceptSynonym;
 import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
-import org.openmrs.Obs;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -40,7 +38,6 @@ import org.openmrs.Tribe;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.EventListeners;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
@@ -49,28 +46,31 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.util.OpenmrsConstants;
-import org.springframework.util.StringUtils;
 
 /**
- * Admin-related services
- * @version 1.0
+ * Default implementation of the administration services.  This class should
+ * not be used on its own.  The current OpenMRS implementation
+ * should be fetched from the Context
+ * 
+ * @see org.openmrs.api.AdministrationService
+ * @see org.openmrs.api.context.Context
  */
-public class AdministrationServiceImpl implements AdministrationService {
+public class AdministrationServiceImpl extends BaseOpenmrsService implements AdministrationService {
 	
 	protected Log log = LogFactory.getLog(getClass());
 	
-	private AdministrationDAO dao;
+	protected AdministrationDAO dao;
 	private EventListeners eventListeners;
 	
-	public AdministrationServiceImpl() {	}
-	
-	private AdministrationDAO getAdministrationDAO() {
-		if (!Context.hasPrivilege("") && !Context.isAuthenticated())
-			throw new APIAuthenticationException("unauthorized access to administration service");
-		
-		return dao;
+	/**
+	 * Default empty constructor
+	 */
+	public AdministrationServiceImpl() {
 	}
 	
+	/**
+	 * @see org.openmrs.api.AdministrationService#setAdministrationDAO(org.openmrs.api.db.AdministrationDAO)
+	 */
 	public void setAdministrationDAO(AdministrationDAO dao) {
 		this.dao = dao;
 	}
@@ -80,777 +80,661 @@ public class AdministrationServiceImpl implements AdministrationService {
 	}
 
 	/**
-	 * Create a new EncounterType
-	 * @param EncounterType to create
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#createEncounterType(org.openmrs.EncounterType)
+	 * @deprecated
 	 */
-	public void createEncounterType(EncounterType encounterType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
-		encounterType.setCreator(Context.getAuthenticatedUser());
-		encounterType.setDateCreated(new Date());
-		getAdministrationDAO().createEncounterType(encounterType);
+	public void createEncounterType(EncounterType encounterType)
+	        throws APIException {
+		Context.getEncounterService().saveEncounterType(encounterType);
 	}
 
 	/**
-	 * Update an encounter type
-	 * @param EncounterType to update
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#updateEncounterType(org.openmrs.EncounterType)
+	 * @deprecated
 	 */
-	public void updateEncounterType(EncounterType encounterType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
-		
-		if (encounterType.getEncounterTypeId() == null)
-			createEncounterType(encounterType);
-		else
-			getAdministrationDAO().updateEncounterType(encounterType);
+	public void updateEncounterType(EncounterType encounterType)
+	        throws APIException {
+		Context.getEncounterService().saveEncounterType(encounterType);
 	}
 
 	/**
-	 * Delete an encounter type
-	 * @param EncounterType to delete
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#deleteEncounterType(org.openmrs.EncounterType)
+	 * @deprecated
 	 */
-	public void deleteEncounterType(EncounterType encounterType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES);
-
-		getAdministrationDAO().deleteEncounterType(encounterType);
+	public void deleteEncounterType(EncounterType encounterType)
+	        throws APIException {
+		Context.getEncounterService().purgeEncounterType(encounterType);
 	}
 
 	/**
-	 * Create a new PatientIdentifierType
-	 * @param PatientIdentifierType to create
-	 * @throws APIException
+	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(PatientIdentifierType)
+	 * @deprecated replaced by
+	 *             {@link org.openmrs.api.PatientService#savePatientIdentifierType(PatientIdentifierType)}
 	 */
-	public void createPatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES);
-
-		getAdministrationDAO().createPatientIdentifierType(patientIdentifierType);
+	public void createPatientIdentifierType(
+	        PatientIdentifierType patientIdentifierType) throws APIException {
+		Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
 	}
 
 	/**
-	 * Update PatientIdentifierType
-	 * @param PatientIdentifierType to update
-	 * @throws APIException
+	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(PatientIdentifierType)
+	 * @deprecated replaced by
+	 *             {@link org.openmrs.api.PatientService#savePatientIdentifierType(PatientIdentifierType)}
 	 */
-	public void updatePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES);
-
-		getAdministrationDAO().updatePatientIdentifierType(patientIdentifierType);
+	public void updatePatientIdentifierType(
+	        PatientIdentifierType patientIdentifierType) throws APIException {
+		Context.getPatientService().savePatientIdentifierType(patientIdentifierType);
 	}
 	
 	/**
-	 * Delete PatientIdentifierType
-	 * @param PatientIdentifierType to delete
-	 * @throws APIException
+	 * @see org.openmrs.api.PatientService#purgePatientIdentifierType(PatientIdentifierType)
+	 * @deprecated replaced by
+	 *             {@link org.openmrs.api.PatientService#purgePatientIdentifierType(PatientIdentifierType)}
 	 */
-	public void deletePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES);
-
-		getAdministrationDAO().deletePatientIdentifierType(patientIdentifierType);
+	public void deletePatientIdentifierType(
+	        PatientIdentifierType patientIdentifierType) throws APIException {
+		Context.getPatientService().purgePatientIdentifierType(patientIdentifierType);
 	}
 
 	/**
 	 * Create a new Tribe
+	 * 
 	 * @param Tribe to create
 	 * @throws APIException
 	 */
 	public void createTribe(Tribe tribe) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_TRIBES);
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_MANAGE_TRIBES);
 
-		getAdministrationDAO().createTribe(tribe);
+		dao.createTribe(tribe);
 	}
 
 	/**
 	 * Update Tribe
+	 * 
 	 * @param Tribe to update
 	 * @throws APIException
 	 */
 	public void updateTribe(Tribe tribe) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_TRIBES);
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_MANAGE_TRIBES);
 
-		getAdministrationDAO().updateTribe(tribe);
+		dao.updateTribe(tribe);
 	}
 
 	/**
 	 * Delete Tribe
+	 * 
 	 * @param Tribe to delete
 	 * @throws APIException
 	 */
 	public void deleteTribe(Tribe tribe) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_TRIBES);
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_MANAGE_TRIBES);
 
-		getAdministrationDAO().deleteTribe(tribe);
+		dao.deleteTribe(tribe);
 	}
 	
 	/**
 	 * Retire Tribe
+	 * 
 	 * @param Tribe to retire
 	 * @throws APIException
 	 */
 	public void retireTribe(Tribe tribe) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_TRIBES);
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_MANAGE_TRIBES);
 
-		getAdministrationDAO().retireTribe(tribe);
+		dao.retireTribe(tribe);
 	}
 
 	/**
 	 * Unretire Tribe
+	 * 
 	 * @param Tribe to unretire
 	 * @throws APIException
 	 */
 	public void unretireTribe(Tribe tribe) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_TRIBES);
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_MANAGE_TRIBES);
 
-		getAdministrationDAO().unretireTribe(tribe);
+		dao.unretireTribe(tribe);
 	}
 	
 	/**
-	 * Create a new FieldType
-	 * @param FieldType to create
-	 * @throws APIException
+	 * @deprecated
 	 */
 	public void createFieldType(FieldType fieldType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES);
-
-		getAdministrationDAO().createFieldType(fieldType);
+		Context.getFormService().saveFieldType(fieldType);
 	}
 
 	/**
-	 * Update FieldType
-	 * @param FieldType to update
-	 * @throws APIException
+	 * @deprecated
 	 */
 	public void updateFieldType(FieldType fieldType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES);
-
-		getAdministrationDAO().updateFieldType(fieldType);
+		Context.getFormService().saveFieldType(fieldType);
 	}
 
 	/**
-	 * Delete FieldType
-	 * @param FieldType to delete
-	 * @throws APIException
+	 * @deprecated
 	 */
 	public void deleteFieldType(FieldType fieldType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES);
-
-		getAdministrationDAO().deleteFieldType(fieldType);
+		Context.getFormService().purgeFieldType(fieldType);
 	}
 	
 	/**
-	 * Create a new MimeType
-	 * @param MimeType to create
-	 * @throws APIException
+	 * @deprecated use {@link org.openmrs.api.ObsService#saveMimeType(MimeType)}
 	 */
 	public void createMimeType(MimeType mimeType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_MIME_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_MIME_TYPES);
-
-		getAdministrationDAO().createMimeType(mimeType);
+		Context.getObsService().saveMimeType(mimeType);
 	}
 
 	/**
-	 * Update MimeType
-	 * @param MimeType to update
-	 * @throws APIException
+	 * @deprecated use {@link org.openmrs.api.ObsService#saveMimeType(MimeType)}
 	 */
 	public void updateMimeType(MimeType mimeType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_MIME_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_MIME_TYPES);
-
-		getAdministrationDAO().updateMimeType(mimeType);
+		Context.getObsService().saveMimeType(mimeType);
 	}
 
 	/**
-	 * Delete MimeType
-	 * @param MimeType to delete
-	 * @throws APIException
+	 * @deprecated use {@link org.openmrs.api.ObsService#purgeMimeType(MimeType)}
 	 */
 	public void deleteMimeType(MimeType mimeType) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_MIME_TYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_MIME_TYPES);
-
-		getAdministrationDAO().deleteMimeType(mimeType);
+		Context.getObsService().purgeMimeType(mimeType);
 	}
 
 	/**
-	 * Create a new Location
-	 * @param Location to create
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#createLocation(org.openmrs.Location)
+	 * @deprecated
 	 */
 	public void createLocation(Location location) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_LOCATIONS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_LOCATIONS);
-
-		getAdministrationDAO().createLocation(location);
+		Context.getLocationService().saveLocation(location);
 	}
 
 	/**
-	 * Update Location
-	 * @param Location to update
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#updateLocation(org.openmrs.Location)
+	 * @deprecated
 	 */
 	public void updateLocation(Location location) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_LOCATIONS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_LOCATIONS);
-
-		getAdministrationDAO().updateLocation(location);
+		Context.getLocationService().saveLocation(location);
 	}
 
 	/**
-	 * Delete Location
-	 * @param Location to delete
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#deleteLocation(org.openmrs.Location)
+	 * @deprecated
 	 */
 	public void deleteLocation(Location location) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_LOCATIONS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_LOCATIONS);
-
-		getAdministrationDAO().deleteLocation(location);
+		Context.getLocationService().purgeLocation(location);
 	}
 	
 	/**
-	 * Create a new Role
-	 * @param Role to create
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#createRole(org.openmrs.Role)
+	 * @deprecated
 	 */
 	public void createRole(Role role) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
-
-		checkLooping(role);
-		
-		checkPrivileges(role);
-		
-		getAdministrationDAO().createRole(role);
+		Context.getUserService().saveRole(role);
 	}
 
 	/**
-	 * Update Role
-	 * @param Role to update
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#updateRole(org.openmrs.Role)
+	 * @deprecated
 	 */
 	public void updateRole(Role role) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
-
-		checkLooping(role);
-		
-		checkPrivileges(role);
-		
-		getAdministrationDAO().updateRole(role);
+		Context.getUserService().saveRole(role);
 	}
 
 	/**
-	 * Delete Role
-	 * @param Role to delete
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#deleteRole(org.openmrs.Role)
+	 * @deprecated
 	 */
 	public void deleteRole(Role role) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ROLES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_ROLES);
-		
-		if (role == null || role.getRole() == null)
-			return;
-		
-		if (OpenmrsConstants.CORE_ROLES().keySet().contains(role.getRole()))
-			throw new APIException("Cannot delete a core role");
-		
-		getAdministrationDAO().deleteRole(role);
+		Context.getUserService().purgeRole(role);
 	}
 
 	/**
-	 * Create a new Privilege
-	 * @param Privilege to create
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#createPrivilege(org.openmrs.Privilege)
+	 * @deprecated
 	 */
 	public void createPrivilege(Privilege privilege) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PRIVILEGES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PRIVILEGES);
-
-		getAdministrationDAO().createPrivilege(privilege);
+		Context.getUserService().savePrivilege(privilege);
 	}
 
 	/**
-	 * Update Privilege
-	 * @param Privilege to update
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#updatePrivilege(org.openmrs.Privilege)
+	 * @deprecated
 	 */
 	public void updatePrivilege(Privilege privilege) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PRIVILEGES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PRIVILEGES);
-
-		getAdministrationDAO().updatePrivilege(privilege);
+		Context.getUserService().savePrivilege(privilege);
 	}
 
 	/**
-	 * Delete Privilege
-	 * @param Privilege to delete
-	 * @throws APIException
+	 * @see org.openmrs.api.AdministrationService#deletePrivilege(org.openmrs.Privilege)
+	 * @deprecated
 	 */
 	public void deletePrivilege(Privilege privilege) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_PRIVILEGES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_PRIVILEGES);
-
-		if (OpenmrsConstants.CORE_PRIVILEGES().keySet().contains(privilege.getPrivilege()))
-			throw new APIException("Cannot delete a core privilege");
-			getAdministrationDAO().deletePrivilege(privilege);
+		Context.getUserService().purgePrivilege(privilege);
 	}
 
 	/**
-	 * Create a new ConceptClass
-	 * @param ConceptClass to create
-	 * @throws APIException
+	 * @deprecated moved to ConceptService
 	 */
 	public void createConceptClass(ConceptClass cc) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
-		
-		Context.getConceptService().checkIfLocked();
-		
-		getAdministrationDAO().createConceptClass(cc);
+		Context.getConceptService().saveConceptClass(cc);
 	}
 
 	/**
-	 * Update ConceptClass
-	 * @param ConceptClass to update
-	 * @throws APIException
+	 * @deprecated moved to ConceptService
 	 */
 	public void updateConceptClass(ConceptClass cc) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
-
-		Context.getConceptService().checkIfLocked();
-		
-		getAdministrationDAO().updateConceptClass(cc);
+		Context.getConceptService().saveConceptClass(cc);
 	}
 
 	/**
-	 * Delete ConceptClass
-	 * @param ConceptClass to delete
-	 * @throws APIException
+	 * @deprecated moved to ConceptService
 	 */
 	public void deleteConceptClass(ConceptClass cc) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES);
-
-		Context.getConceptService().checkIfLocked();
-		
-		getAdministrationDAO().deleteConceptClass(cc);
+		Context.getConceptService().purgeConceptClass(cc);
 	}
 
 	/**
-	 * Create a new ConceptDatatype
-	 * @param ConceptDatatype to create
-	 * @throws APIException
+	 * @deprecated moved to ConceptService
 	 */
 	public void createConceptDatatype(ConceptDatatype cd) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
-
-		Context.getConceptService().checkIfLocked();
-		
-		getAdministrationDAO().createConceptDatatype(cd);
+		Context.getConceptService().saveConceptDatatype(cd);
 	}
 
 	/**
-	 * Update ConceptDatatype
-	 * @param ConceptDatatype to update
-	 * @throws APIException
+	 * @deprecated moved to ConceptService
 	 */
 	public void updateConceptDatatype(ConceptDatatype cd) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
-
-		Context.getConceptService().checkIfLocked();
-		
-		getAdministrationDAO().updateConceptDatatype(cd);
+		Context.getConceptService().saveConceptDatatype(cd);
 	}
 
 	/**
-	 * Delete ConceptDatatype
-	 * @param ConceptDatatype to delete
-	 * @throws APIException
+	 * @deprecated moved to ConceptService
 	 */
 	public void deleteConceptDatatype(ConceptDatatype cd) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES);
-
-		Context.getConceptService().checkIfLocked();
-		
-		getAdministrationDAO().deleteConceptDatatype(cd);
+		Context.getConceptService().purgeConceptDatatype(cd);
 	}
 	
 	/**
 	 * Create a new Report
+	 * 
 	 * @param Report to create
 	 * @throws APIException
 	 */
 	public void createReport(Report report) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_REPORTS);
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_ADD_REPORTS);
 
-		getAdministrationDAO().createReport(report);
+		dao.createReport(report);
 	}
 
 	/**
 	 * Update Report
+	 * 
 	 * @param Report to update
 	 * @throws APIException
 	 */
 	public void updateReport(Report report) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_REPORTS);
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_EDIT_REPORTS);
 
-		getAdministrationDAO().updateReport(report);
+		dao.updateReport(report);
 	}
 
 	/**
 	 * Delete Report
+	 * 
 	 * @param Report to delete
 	 * @throws APIException
 	 */
 	public void deleteReport(Report report) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_REPORTS);
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_DELETE_REPORTS);
 
-		getAdministrationDAO().deleteReport(report);
+		dao.deleteReport(report);
 	}
 	
 	/**
 	 * Create a new Report Object
+	 * 
 	 * @param Report Object to create
 	 * @throws APIException
 	 */
-	public void createReportObject(AbstractReportObject reportObject) throws APIException {
+	public void createReportObject(AbstractReportObject reportObject)
+	        throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS);
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS);
 
-		getAdministrationDAO().createReportObject(reportObject);
+		dao.createReportObject(reportObject);
 	}
 
 	/**
 	 * Update Report Object
+	 * 
 	 * @param Report Object to update
 	 * @throws APIException
 	 */
-	public void updateReportObject(AbstractReportObject reportObject) throws APIException {
+	public void updateReportObject(AbstractReportObject reportObject)
+	        throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS);
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS);
 
-		getAdministrationDAO().updateReportObject(reportObject);
+		dao.updateReportObject(reportObject);
 	}
 
 	/**
 	 * Delete Report Object
+	 * 
 	 * @param Report Object to delete
 	 * @throws APIException
 	 */
 	public void deleteReportObject(Integer reportObjectId) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS);
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS);
 
-		getAdministrationDAO().deleteReportObject(reportObjectId);
+		dao.deleteReportObject(reportObjectId);
 	}
 
 	/**
-	 * Iterates over the words in names and synonyms (for each locale) and updates the concept word business table 
-	 * @param concept
-	 * @throws APIException
+	 * @deprecated moved to ConceptServiceImpl
 	 */
 	public void updateConceptWord(Concept concept) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
-
-		Context.getConceptService().checkIfLocked();
-		
-		getAdministrationDAO().updateConceptWord(concept);
+		Context.getConceptService().updateConceptWord(concept);
 	}
 	
 	/**
-	 * Iterates over all concepts calling updateConceptWord(concept)
-	 * @throws APIException
+	 * @deprecated moved to ConceptServiceImpl
 	 */
 	public void updateConceptWords() throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
-
-		Context.getConceptService().checkIfLocked();
-		
-		// Run the operation in batches
-		ConceptService cs = Context.getConceptService();
-		int batchStartId = 0;
-		int endId = cs.getNextAvailableId();
-		int batchSize = 1000;
-		
-		while (batchStartId < endId)
-		{
-			updateConceptWords(batchStartId, batchStartId + batchSize);
-			Context.clearSession();
-			batchStartId += batchSize;
-		}
-		
+		Context.getConceptService().updateConceptWords();
 	}
 	
 	/**
-	 * Iterates over all concepts with conceptIds between <code>conceptIdStart</code>
-	 * and <code>conceptIdEnd</code> (inclusive) calling updateConceptWord(concept)
-	 * @throws APIException
+	 * @deprecated moved to ConceptService
 	 */
-	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
-		
-		Context.getConceptService().checkIfLocked();
-		
-		Integer i = conceptIdStart;
-		ConceptService cs = Context.getConceptService();
-		while (i++ <= conceptIdEnd) {
-			updateConceptWord(cs.getConcept(i));
+	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd)
+	        throws APIException {
+		Context.getConceptService().updateConceptWords(conceptIdStart, conceptIdEnd);
 		}
-	}
 	
 	/**
-	 * Updates the concept set derived business table for this concept (bursting the concept sets) 
-	 * @param concept
-	 * @throws APIException
+	 * @deprecated moved to ConceptService
 	 */
 	public void updateConceptSetDerived(Concept concept) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
-
-		Context.getConceptService().checkIfLocked();
-		
-		getAdministrationDAO().updateConceptSetDerived(concept);
+		Context.getConceptService().updateConceptSetDerived(concept);
 	}
 	
 	/**
-	 * Iterates over all concepts calling updateConceptSetDerived(concept)
-	 * @throws APIException
+	 * @deprecated moved to ConceptService
 	 */
 	public void updateConceptSetDerived() throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPTS);
-
-		Context.getConceptService().checkIfLocked();
-		
-		getAdministrationDAO().updateConceptSetDerived();
-	}
-	
-	public void createConceptProposal(ConceptProposal cp) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_CONCEPT_PROPOSAL))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_CONCEPT_PROPOSAL);
-
-		getAdministrationDAO().createConceptProposal(cp);
-	}
-	
-	public void updateConceptProposal(ConceptProposal cp) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_CONCEPT_PROPOSAL))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_CONCEPT_PROPOSAL);
-
-		cp.setChangedBy(Context.getAuthenticatedUser());
-		cp.setDateChanged(new Date());
-		getAdministrationDAO().updateConceptProposal(cp);
-	}
-	
-	public void mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException {
-		
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_CONCEPTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_CONCEPTS);
-		
-		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
-			rejectConceptProposal(cp);
-			return;
-		}
-		
-		if (mappedConcept == null)
-			throw new APIException("Illegal Mapped Concept");
-		
-		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT) || 
-				!StringUtils.hasText(cp.getFinalText())) {
-			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
-			cp.setFinalText("");
-		}
-		else if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_SYNONYM)) {
-			
-			Context.getConceptService().checkIfLocked();
-			
-			String finalText = cp.getFinalText();
-			ConceptSynonym syn = new ConceptSynonym(mappedConcept, finalText, Context.getLocale());
-			syn.setDateCreated(new Date());
-			syn.setCreator(Context.getAuthenticatedUser());
-			
-			mappedConcept.addSynonym(syn);
-			mappedConcept.setChangedBy(Context.getAuthenticatedUser());
-			mappedConcept.setDateChanged(new Date());
-			updateConceptWord(mappedConcept);
-		}
-		
-		cp.setMappedConcept(mappedConcept);
-		
-		if (cp.getObsConcept() != null) {
-			Obs ob = new Obs();
-			ob.setEncounter(cp.getEncounter());
-			ob.setConcept(cp.getObsConcept());
-			ob.setValueCoded(cp.getMappedConcept());
-			ob.setCreator(Context.getAuthenticatedUser());
-			ob.setDateCreated(new Date());
-			ob.setObsDatetime(cp.getEncounter().getEncounterDatetime());
-			ob.setLocation(cp.getEncounter().getLocation());
-			ob.setPerson(cp.getEncounter().getPatient());
-			cp.setObs(ob);
-		}
-		
-		updateConceptProposal(cp);
-	}
-	
-	public void rejectConceptProposal(ConceptProposal cp) {
-		cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);
-		cp.setFinalText("");
-		updateConceptProposal(cp);
+		Context.getConceptService().updateConceptSetDerived();
 	}
 	
 	/**
-	 * This function checks if the authenticated user has all privileges they are giving out to the new role
-	 * @param new user that has privileges 
+	 * @deprecated moved to ConceptService
 	 */
-	private void checkPrivileges(Role role) {
-		Collection<Privilege> privileges = role.getPrivileges();
-		
-		if (privileges != null)
-			for (Privilege p : privileges) {
-				if (!Context.hasPrivilege(p.getPrivilege()))
-					throw new APIAuthenticationException("Privilege required: " + p);
-			}
+	public void createConceptProposal(ConceptProposal cp) throws APIException {
+		Context.getConceptService().saveConceptProposal(cp);
 	}
 	
-	private void checkLooping(Role role) {
-		
-		log.debug("allParentRoles: " + role.getAllParentRoles());
-		log.debug("role: " + role);
-		
-		if (role.getAllParentRoles().contains(role))
-			throw new APIAuthenticationException("Invalid Role or parent Role.  A role cannot inherit itself.");
-		
+	/**
+	 * @deprecated moved to ConceptService
+	 */
+	public void updateConceptProposal(ConceptProposal cp) throws APIException {
+		Context.getConceptService().saveConceptProposal(cp);
 	}
-	
-	public void mrnGeneratorLog(String site, Integer start, Integer count) {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
 
-		getAdministrationDAO().mrnGeneratorLog(site, start, count);
+	/**
+	 * @deprecated moved to ConceptService
+	 */
+	public void mapConceptProposalToConcept(ConceptProposal cp,
+	        Concept mappedConcept) throws APIException {
+		Context.getConceptService().mapConceptProposalToConcept(cp, mappedConcept);
 	}
 	
-	public Collection getMRNGeneratorLog() {
+	/**
+	 * @deprecated moved to ConceptService
+	 * @see org.openmrs.api.AdministrationService#rejectConceptProposal(org.openmrs.ConceptProposal)
+	 */
+	public void rejectConceptProposal(ConceptProposal cp) {
+		Context.getConceptService().rejectConceptProposal(cp);
+	}
+		
+	/**
+	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String, java.lang.Integer, java.lang.Integer)
+	 */
+	public void mrnGeneratorLog(String site, Integer start, Integer count) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_PATIENTS);
-
-		return getAdministrationDAO().getMRNGeneratorLog();		
-	}
-	
-	public SortedMap<String,String> getSystemVariables() {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS);
-		TreeMap<String,String> systemVariables = new TreeMap<String,String>();
-		systemVariables.put("OPENMRS_VERSION", String.valueOf(OpenmrsConstants.OPENMRS_VERSION));
-		systemVariables.put("DATABASE_VERSION_EXPECTED", String.valueOf(OpenmrsConstants.DATABASE_VERSION_EXPECTED));
-		systemVariables.put("DATABASE_VERSION", String.valueOf(OpenmrsConstants.DATABASE_VERSION));
-		systemVariables.put("DATABASE_NAME",OpenmrsConstants.DATABASE_NAME);
-		systemVariables.put("DATABASE_BUSINESS_NAME",OpenmrsConstants.DATABASE_BUSINESS_NAME);
-		systemVariables.put("OBSCURE_PATIENTS", String.valueOf(OpenmrsConstants.OBSCURE_PATIENTS));
-		systemVariables.put("OBSCURE_PATIENTS_FAMILY_NAME",OpenmrsConstants.OBSCURE_PATIENTS_FAMILY_NAME);
-		systemVariables.put("OBSCURE_PATIENTS_GIVEN_NAME",OpenmrsConstants.OBSCURE_PATIENTS_GIVEN_NAME);
-		systemVariables.put("OBSCURE_PATIENTS_MIDDLE_NAME",OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME);
-		systemVariables.put("STOP_WORDS",OpenmrsConstants.STOP_WORDS().toString());
-		systemVariables.put("MODULE_REPOSITORY_PATH", ModuleUtil.getModuleRepository().getAbsolutePath());
-		systemVariables.put("OPERATING_SYSTEM_KEY", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_KEY));
-		systemVariables.put("OPERATING_SYSTEM", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM));
-		systemVariables.put("OPERATING_SYSTEM_WINDOWS_XP", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_WINDOWS_XP));
-		systemVariables.put("OPERATING_SYSTEM_LINUX", String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_LINUX));
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_EDIT_PATIENTS);
+		
+		dao.mrnGeneratorLog(site, start, count);
+		}
+		
+	/**
+	 * @see org.openmrs.api.AdministrationService#getMRNGeneratorLog()
+	 */
+	public Collection<?> getMRNGeneratorLog() throws APIException {
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
+			throw new APIAuthenticationException("Privilege required: "
+			        + OpenmrsConstants.PRIV_EDIT_PATIENTS);
+		
+		return dao.getMRNGeneratorLog();
+		}
+			
+	/**
+	 * Static-ish variable used to cache the system variables.  This is not
+	 * static so that every time a module is loaded or removed the variable
+	 * is destroyed (along with the administration service) and recreated the
+	 * next time it is called 
+	 */
+	protected SortedMap<String, String> systemVariables = null;
+			
+	/**
+	 * @see org.openmrs.api.AdministrationService#getSystemVariables()
+	 */
+	public SortedMap<String, String> getSystemVariables() throws APIException {
+		if (systemVariables == null) {
+			systemVariables = new TreeMap<String, String>();
+			systemVariables.put("OPENMRS_VERSION",
+			                    String.valueOf(OpenmrsConstants.OPENMRS_VERSION));
+			systemVariables.put("DATABASE_VERSION_EXPECTED",
+			                    String.valueOf(OpenmrsConstants.DATABASE_VERSION_EXPECTED));
+			systemVariables.put("DATABASE_VERSION",
+			                    String.valueOf(OpenmrsConstants.DATABASE_VERSION));
+			systemVariables.put("DATABASE_NAME", OpenmrsConstants.DATABASE_NAME);
+			systemVariables.put("DATABASE_BUSINESS_NAME",
+			                    OpenmrsConstants.DATABASE_BUSINESS_NAME);
+			systemVariables.put("OBSCURE_PATIENTS",
+			                    String.valueOf(OpenmrsConstants.OBSCURE_PATIENTS));
+			systemVariables.put("OBSCURE_PATIENTS_FAMILY_NAME",
+			                    OpenmrsConstants.OBSCURE_PATIENTS_FAMILY_NAME);
+			systemVariables.put("OBSCURE_PATIENTS_GIVEN_NAME",
+			                    OpenmrsConstants.OBSCURE_PATIENTS_GIVEN_NAME);
+			systemVariables.put("OBSCURE_PATIENTS_MIDDLE_NAME",
+			                    OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME);
+			systemVariables.put("STOP_WORDS", OpenmrsConstants.STOP_WORDS()
+			                                                  .toString());
+			systemVariables.put("MODULE_REPOSITORY_PATH",
+			                    ModuleUtil.getModuleRepository().getAbsolutePath());
+			systemVariables.put("OPERATING_SYSTEM_KEY",
+			                    String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_KEY));
+			systemVariables.put("OPERATING_SYSTEM",
+			                    String.valueOf(OpenmrsConstants.OPERATING_SYSTEM));
+			systemVariables.put("OPERATING_SYSTEM_WINDOWS_XP",
+			                    String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_WINDOWS_XP));
+			systemVariables.put("OPERATING_SYSTEM_LINUX",
+			                    String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_LINUX));
+		}
 		
 		return systemVariables;
 	}
-	
-	
-	public String getGlobalProperty(String propertyName) {
-		// uses direct access to the dao object to bypass isAuthenticated() check
+		
+	/**
+	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String)
+	 */
+	public String getGlobalProperty(String propertyName) throws APIException {
+		// This method should not have any authorization check
 		return dao.getGlobalProperty(propertyName);
 	}
-	
-	public String getGlobalProperty(String propertyName, String defaultValue) { 
+		
+	/**
+	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String, java.lang.String)
+	 */
+	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException {
 		String s = getGlobalProperty(propertyName);
 		if (s == null)
 			return defaultValue;
 		return s;
 	}
-	
-	public List<GlobalProperty> getGlobalProperties() {
-		return getAdministrationDAO().getGlobalProperties();
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#getGlobalProperties()
+	 * @deprecated
+	 */
+	public List<GlobalProperty> getGlobalProperties() throws APIException {
+		return getAllGlobalProperties();
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#setGlobalProperties(java.util.List)
+	 * @deprecated
+	 */
+	public void setGlobalProperties(List<GlobalProperty> props) throws APIException {
+		saveGlobalProperties(props);
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#deleteGlobalProperty(java.lang.String)
+	 * @deprecated
+	 */
+	public void deleteGlobalProperty(String propertyName) throws APIException {
+		purgeGlobalProperty(new GlobalProperty(propertyName));
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#setGlobalProperty(java.lang.String, java.lang.String)
+	 * @deprecated
+	 */
+	public void setGlobalProperty(String propertyName, String propertyValue) throws APIException {
+		saveGlobalProperty(new GlobalProperty(propertyName, propertyValue));
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#setGlobalProperty(org.openmrs.GlobalProperty)
+	 * @deprecated
+	 */
+	public void setGlobalProperty(GlobalProperty gp) throws APIException {
+		saveGlobalProperty(gp);
 	}
 	
-	public void setGlobalProperties(List<GlobalProperty> props) {
-		log.debug("setting all global properties");
+	/**
+	 * @see org.openmrs.api.AdministrationService#addGlobalProperty(org.openmrs.GlobalProperty)
+	 * @deprecated
+	 */
+	public void addGlobalProperty(GlobalProperty gp) {
+		setGlobalProperty(gp);
+	}
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#addGlobalProperty(java.lang.String, java.lang.String)
+	 * @deprecated
+	 */
+	public void addGlobalProperty(String propertyName, String propertyValue) throws APIException {
+		//dao.addGlobalProperty(propertyName, propertyValue);
+		saveGlobalProperty(new GlobalProperty(propertyName, propertyValue));
+	}
+	
+	/**
+     * @see org.openmrs.api.AdministrationService#getAllGlobalProperties()
+     */
+    public List<GlobalProperty> getAllGlobalProperties() throws APIException {
+	    return dao.getAllGlobalProperties();
+    }
+
+	/**
+     * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(org.openmrs.GlobalProperty)
+     */
+    public void purgeGlobalProperty(GlobalProperty globalProperty)
+            throws APIException {
+    	dao.deleteGlobalProperty(globalProperty);
+    }
+
+	/**
+     * @see org.openmrs.api.AdministrationService#saveGlobalProperties(java.util.List)
+     */
+    public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props)
+            throws APIException {
+	    log.debug("saving a list of global properties");
 		
 		// delete all properties not in this new list
 		for (GlobalProperty gp : getGlobalProperties()) {
 			if (!props.contains(gp))
-				deleteGlobalProperty(gp.getProperty());
+				purgeGlobalProperty(gp);
 		}
 		
 		// add all of the new properties
 		for (GlobalProperty prop : props) {
 			if (prop.getProperty() != null && prop.getProperty().length() > 0) {
-				setGlobalProperty(prop);
+				saveGlobalProperty(prop);
 			}
 		}
-	}
-	
-	public void deleteGlobalProperty(String propertyName) {
-		getAdministrationDAO().deleteGlobalProperty(propertyName);
-		notifyGlobalPropertyDelete(propertyName);
+    	
+    	return props;
+    }
+
+	/**
+     * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
+     */
+    public GlobalProperty saveGlobalProperty(GlobalProperty gp)
+            throws APIException {
+    	
+    	// only try to save it if the global property has a key
+    	if (gp.getProperty() != null && gp.getProperty().length() > 0) {
+    		dao.saveGlobalProperty(gp);
+    		notifyGlobalPropertyChange(gp);
+    		return gp;
+    	}
+    	
+    	return gp;
+    }
+
+	/**
+	 * @see org.openmrs.api.AdministrationService#getDataEntryStatistics(java.util.Date, java.util.Date, java.lang.String, java.lang.String, java.lang.String)
+	 */
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate,
+	        Date toDate, String encounterUserColumn, String orderUserColumn,
+	        String groupBy) throws APIException {
+		return dao.getDataEntryStatistics(fromDate,
+                                         toDate,
+                                         encounterUserColumn,
+                                         orderUserColumn,
+                                         groupBy);
 	}
 
-	public void setGlobalProperty(String propertyName, String propertyValue) {
-		setGlobalProperty(new GlobalProperty(propertyName, propertyValue));
-	}
-	
-	public void setGlobalProperty(GlobalProperty gp) {
-		getAdministrationDAO().setGlobalProperty(gp);
-		notifyGlobalPropertyChange(gp);
-	}
-	
-	public void addGlobalProperty(GlobalProperty gp) {
-		getAdministrationDAO().createGlobalProperty(gp);
-		notifyGlobalPropertyChange(gp);
-	}
-
-	public void addGlobalProperty(String propertyName, String propertyValue) {
-		addGlobalProperty(new GlobalProperty(propertyName, propertyValue));
-	}
-
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn, String groupBy) {
-		return getAdministrationDAO().getDataEntryStatistics(fromDate, toDate, encounterUserColumn, orderUserColumn, groupBy);
-	}
-	
-	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException {
+	/**
+	 * @see org.openmrs.api.AdministrationService#executeSQL(java.lang.String, boolean)
+	 */
+	public List<List<Object>> executeSQL(String sql, boolean selectOnly)
+	        throws APIException {
 		if (sql == null || sql.trim().equals(""))
 			return null;
-		
-		return getAdministrationDAO().executeSQL(sql, selectOnly);
+
+		return dao.executeSQL(sql, selectOnly);
 	}
 
 	/**

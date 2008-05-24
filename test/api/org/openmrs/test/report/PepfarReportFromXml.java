@@ -83,7 +83,7 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		xml.append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
 		xml.append("	</parameters>\n");
 		xml.append("	<dataSets class=\"java.util.ArrayList\">\n");
-		xml.append("		<dataSetDefinition class=\"org.openmrs.dataset.CohortDataSetDefinition\" name=\"Cohorts\">\n");
+		xml.append("		<dataSetDefinition class=\"org.openmrs.report.CohortDataSetDefinition\" name=\"Cohorts\">\n");
 		xml.append("			<strategies class=\"java.util.LinkedHashMap\">\n");
 		xml.append("				<entry>\n");
 		xml.append("					<string>1.a</string>\n");

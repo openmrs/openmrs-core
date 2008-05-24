@@ -16,8 +16,8 @@ package org.openmrs.web.dwr;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 
@@ -25,8 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.PersonService;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -103,12 +105,32 @@ public class DWRPersonService {
 	
 	public List<?> findPeopleByRoles(String searchPhrase, boolean includeVoided, String roles) {
 		Vector<Object> personList = new Vector<Object>();
-		PersonService ps = Context.getPersonService();
 		
-		for (Person p : ps.findPeople(searchPhrase, includeVoided, roles)) {
-//		for (Person p : ps.findPeople(searchPhrase, includeVoided)) {
-//		for (Person p : ps.getSimilarPeople(searchPhrase, null, null)) {
-			personList.add(new PersonListItem(p));
+		roles = roles.trim();
+		
+		// if roles were given, search for users with those roles
+		if (roles != null && roles.length() > 0) {
+			UserService us = Context.getUserService();
+			
+			List<Role> roleList = new Vector<Role>();
+			
+			if ( roles != null ) if ( roles.length() > 0 ) {
+				String[] splitRoles = roles.split(",");
+				for ( String role : splitRoles ) {
+					roleList.add(new Role(role));
+				}
+			}
+			
+			for (Person p : us.getUsers(searchPhrase, roleList, includeVoided)) {
+				personList.add(new PersonListItem(p));
+			}
+		
+		}
+		else { // if no roles were given, search for normal people
+			PersonService ps = Context.getPersonService();
+			for (Person p : ps.getPeople(searchPhrase, null)) {
+				personList.add(new PersonListItem(p));
+			}
 		}
 		
 		return personList;

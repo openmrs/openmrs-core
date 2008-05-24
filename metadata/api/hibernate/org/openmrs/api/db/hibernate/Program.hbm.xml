@@ -10,23 +10,23 @@
 		<id name="programId" type="java.lang.Integer" column="program_id">
 			<generator class="native" />
 		</id>
-
+		
 		<discriminator column="program_id" insert="false" />
 		
+		<property name="name" type="java.lang.String"
+			column="name" not-null="true" length="100" />
+		
+		<property name="description" type="java.lang.String"
+			column="description" not-null="true" length="500" />
+
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
 
-		<property name="voided" type="boolean" column="voided" not-null="true"/>
-
-		<property name="dateVoided" type="java.util.Date"
-			column="date_voided" length="19" />
-
-		<property name="voidReason" type="java.lang.String"
-			column="void_reason" length="255" />
-
+		<property name="retired" type="boolean" column="retired" not-null="true"/>
+ 
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to Concept -->
@@ -40,9 +40,6 @@
 		</many-to-one>
 		<many-to-one name="changedBy" class="User">
 			<column name="changed_by" />
-		</many-to-one>
-		<many-to-one name="voidedBy" class="User">
-			<column name="voided_by" />
 		</many-to-one>
 
 		<!-- bi-directional one-to-many association to ProgramWorkflow -->

@@ -14,7 +14,9 @@
 package org.openmrs.web.controller.maintenance;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +35,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ *
+ */
 public class GlobalPropertyController extends SimpleFormController {
 	
 	public static final String PROP_NAME = "property";
@@ -49,7 +54,8 @@ public class GlobalPropertyController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	@SuppressWarnings("unchecked")
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		String action = request.getParameter("action");
 		if (action == null) action = "cancel";
@@ -59,8 +65,17 @@ public class GlobalPropertyController extends SimpleFormController {
 			
 			
 			if (Context.isAuthenticated()) {
-				
 				AdministrationService as = Context.getAdministrationService();
+				
+				// fetch the backing object
+				// and save it to a hashmap for easy retrieval of already-used-GPs
+				List<GlobalProperty> formBackingObject = (List<GlobalProperty>)obj;
+				Map<String, GlobalProperty> formBackingObjectMap = new HashMap<String, GlobalProperty>();
+				for (GlobalProperty prop : formBackingObject) {
+					formBackingObjectMap.put(prop.getProperty(), prop);
+				}
+				
+				// the list we'll save to the database
 				List<GlobalProperty> globalPropList = new ArrayList<GlobalProperty>();
 				
 				String[] keys = request.getParameterValues(PROP_NAME);
@@ -71,11 +86,24 @@ public class GlobalPropertyController extends SimpleFormController {
 					String key = keys[x];
 					String val = values[x];
 					String desc = descriptions[x];
-					globalPropList.add(new GlobalProperty(key, val, desc));
+					
+					// try to get an already-used global property for this key
+					GlobalProperty tmpGlobalProperty = formBackingObjectMap.get(key);
+					
+					// if it exists, use that object...just update it
+					if (tmpGlobalProperty != null) {
+						tmpGlobalProperty.setPropertyValue(val);
+						tmpGlobalProperty.setDescription(desc);
+						globalPropList.add(tmpGlobalProperty);
+					}
+					else {
+						// if it doesn't exist, create a new global property
+						globalPropList.add(new GlobalProperty(key, val, desc));
+					}
 				}
 				
 				try {
-					as.setGlobalProperties(globalPropList);
+					as.saveGlobalProperties(globalPropList);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.saved");
 					
 					// refresh log level from global property(ies)
@@ -105,16 +133,13 @@ public class GlobalPropertyController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		//default empty Object
-		List<GlobalProperty> globalPropList = new ArrayList<GlobalProperty>();
-		
-		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
+			// return a non-empty list if the user has authenticated properly
 			AdministrationService as = Context.getAdministrationService();
-			globalPropList = as.getGlobalProperties();
+			return as.getAllGlobalProperties();
 		}
-    	
-        return globalPropList;
+		else
+    	    return new ArrayList<GlobalProperty>();
     }
     
 }

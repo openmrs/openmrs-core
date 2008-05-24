@@ -7,29 +7,35 @@
 
 	<class name="ConceptDatatype" table="concept_datatype">
 
-		<id name="conceptDatatypeId" type="java.lang.Integer" 
+		<id name="conceptDatatypeId" type="java.lang.Integer"
 			column="concept_datatype_id" unsaved-value="0">
 			<generator class="native" />
 		</id>
 		
 		<discriminator column="concept_datatype_id" insert="false" />
 
-		<property name="name" type="java.lang.String" 
-			column="name" not-null="true" length="255" />
+		<property name="name" type="java.lang.String" not-null="true"
+			length="255" />
 
-		<property name="description" type="java.lang.String" 
-			column="description" not-null="true" length="255" />
+		<property name="description" type="java.lang.String"
+			not-null="true" length="255" />
 
-		<property name="dateCreated" type="java.util.Date" 
+		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 
-		<property name="hl7Abbreviation" type="java.lang.String" 
+		<property name="hl7Abbreviation" type="java.lang.String"
 			column="hl7_abbreviation" not-null="false" length="3" />
-		
-		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="creator" class="User" not-null="true">
-			<column name="creator" />
-		</many-to-one>
+
+		<many-to-one name="creator" class="User" not-null="true" />
+
+		<many-to-one name="retiredBy" class="org.openmrs.User"
+			column="retired_by" />
+		<property name="dateRetired" type="java.util.Date"
+			column="date_retired" length="19" />
+		<property name="retireReason" type="java.lang.String"
+			column="retire_reason" length="255" />
+		<property name="retired" type="boolean" length="1"
+			not-null="true" />
 
 	</class>
 

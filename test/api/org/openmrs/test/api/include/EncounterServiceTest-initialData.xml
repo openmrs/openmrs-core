@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" />
-  <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" />
-  <encounter_type encounter_type_id="1" name="Test Enc Type" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" />
-  <encounter_type encounter_type_id="2" name="Test Enc Type 2" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" />
-  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" />
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"  />
+  <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"  />
+  <encounter_type encounter_type_id="1" name="Test Enc Type" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <encounter_type encounter_type_id="2" name="Test Enc Type 2" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" />
   
   <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" />
   <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
@@ -15,6 +15,5 @@
   <person_name person_id="3" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John3" middle_name=" " family_name="Doe" />
   <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
   <patient_identifier patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" identifier="12345" identifier_type="1" preferred="1" voided="false" location_id="1" />
-  
   
 </dataset>

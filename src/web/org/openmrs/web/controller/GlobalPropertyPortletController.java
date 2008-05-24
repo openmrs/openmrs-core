@@ -49,7 +49,7 @@ public class GlobalPropertyPortletController extends PortletController {
 				model.put("excludePrefix", excludePrefix);
 			}
 			List<GlobalProperty> properties = new ArrayList<GlobalProperty>();
-			for (GlobalProperty p : Context.getAdministrationService().getGlobalProperties()) {
+			for (GlobalProperty p : Context.getAdministrationService().getAllGlobalProperties()) {
 				if (p.getProperty().startsWith(propertyPrefix)
 						&& (excludePrefix == null || !p.getProperty().startsWith(excludePrefix)) ) {
 					properties.add(p);

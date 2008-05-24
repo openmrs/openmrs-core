@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" />
-  <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" />
-  <encounter_type encounter_type_id="1" name="Test Enc Type" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" />
-  <encounter_type encounter_type_id="2" name="Test Enc Type 2" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" />
-  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" />
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <encounter_type encounter_type_id="1" name="Test Enc Type" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <encounter_type encounter_type_id="2" name="Test Enc Type 2" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"/>
   
   <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" />
   <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
@@ -17,18 +17,18 @@
   <patient_identifier patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" identifier="12345" identifier_type="1" preferred="1" voided="false" location_id="1" />
   
   <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false"/>
-  <concept_name concept_id="1" name="" locale="en" description="this is a description" creator="1" date_created="2005-01-01 00:00:00.0" />
+  <concept_name concept_name_id="12" concept_id="1" name="" locale="en" description="this is a description" creator="1" date_created="2005-01-01 00:00:00.0" />
   
   <concept concept_id="905" retired="false" datatype_id="2" class_id="4" is_set="false" creator="59" date_created="2004-06-30 00:00:00.0" version="" changed_by="2" date_changed="2005-02-18 15:44:23.0"/>
   <concept concept_id="1284" retired="false" datatype_id="4" class_id="11" is_set="false" creator="2" date_created="2005-02-24 12:33:10.0" version=""/>
   <concept concept_id="5018" retired="false" datatype_id="4" class_id="12" is_set="false" creator="2" date_created="2004-08-12 00:00:00.0" version="" changed_by="2" date_changed="2005-02-12 11:48:00.0"/>
   <concept concept_id="5497" retired="false" datatype_id="1" class_id="1" is_set="false" creator="59" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="305" date_changed="2006-11-02 06:44:36.0"/>
   <concept concept_id="5096" retired="false" datatype_id="6" class_id="11" is_set="false" creator="59" date_created="2004-08-12 00:00:00.0" version=""/>
-  <concept_name concept_id="905" name="MISSED ABORTION" short_name="" description="An intrauterine death of a fetus that is not followed by its immediate expulsion." locale="en" creator="2" date_created="2004-06-30 00:00:00.0"/>
-  <concept_name concept_id="1284" name="PROBLEM LIST" short_name="" description="List of problems for a given patient visit." locale="en" creator="2" date_created="2005-02-24 12:33:10.0"/>
-  <concept_name concept_id="5018" name="DIARRHEA, CHRONIC" short_name="" description="Diarrhea, recurrent or chronic and greater than two weeks duration." locale="en" creator="2" date_created="2004-08-12 00:00:00.0"/>
-  <concept_name concept_id="5497" name="CD4, BY FACS" short_name="CD4 COUNT" description="Flow cytometry scanning count of T-cell population, helper cell subset (CD4 positive).  Measure of CD4 (T-helper cells) in blood" locale="en" creator="2" date_created="2004-08-12 00:00:00.0"/>
-  <concept_name concept_id="5096" name="RETURN VISIT DATE" short_name="" description="Patient is to return on this date" locale="en" creator="2" date_created="2004-08-12 00:00:00.0"/>
+  <concept_name concept_name_id="1" concept_id="905" name="MISSED ABORTION" short_name="" description="An intrauterine death of a fetus that is not followed by its immediate expulsion." locale="en" creator="2" date_created="2004-06-30 00:00:00.0"/>
+  <concept_name concept_name_id="2" concept_id="1284" name="PROBLEM LIST" short_name="" description="List of problems for a given patient visit." locale="en" creator="2" date_created="2005-02-24 12:33:10.0"/>
+  <concept_name concept_name_id="3" concept_id="5018" name="DIARRHEA, CHRONIC" short_name="" description="Diarrhea, recurrent or chronic and greater than two weeks duration." locale="en" creator="2" date_created="2004-08-12 00:00:00.0"/>
+  <concept_name concept_name_id="4" concept_id="5497" name="CD4, BY FACS" short_name="CD4 COUNT" description="Flow cytometry scanning count of T-cell population, helper cell subset (CD4 positive).  Measure of CD4 (T-helper cells) in blood" locale="en" creator="2" date_created="2004-08-12 00:00:00.0"/>
+  <concept_name concept_name_id="5" concept_id="5096" name="RETURN VISIT DATE" short_name="" description="Patient is to return on this date" locale="en" creator="2" date_created="2004-08-12 00:00:00.0"/>
   
   <!-- Grouped obs -->
   <concept concept_id="1553" retired="false" datatype_id="1" class_id="7" is_set="false" creator="305" date_created="2007-05-09 14:38:25.0" version="0.1" changed_by="305" date_changed="2007-05-09 14:38:25.0"/>
@@ -37,15 +37,17 @@
   <concept concept_id="1558" retired="false" datatype_id="2" class_id="7" is_set="false" creator="305" date_created="2007-05-09 14:45:38.0" version="0.1" changed_by="305" date_changed="2007-06-19 14:04:24.0"/>
   <concept concept_id="1592" retired="false" datatype_id="6" class_id="7" is_set="false" creator="305" date_created="2007-05-14 17:07:25.0" version="0.1" changed_by="305" date_changed="2007-05-14 17:07:25.0"/>
   <concept concept_id="1726" retired="false" datatype_id="4" class_id="7" is_set="true" creator="305" date_created="2007-06-05 17:38:53.0" version="0.1" changed_by="305" date_changed="2007-06-05 17:38:53.0"/>
-  <concept_name concept_id="1553" name="NUMBER OF ATTEMPTS" short_name="" description="General question:  &quot;Number of attempts&quot;" locale="en" creator="305" date_created="2007-05-09 14:38:25.0"/>
-  <concept_name concept_id="1554" name="SUCCESSFUL" short_name="" description="General question:  &quot;Successful?&quot;" locale="en" creator="305" date_created="2007-05-09 14:39:34.0"/>
-  <concept_name concept_id="1555" name="PHONE" short_name="" description="Generic answer to a question:  &quot;Phone&quot;.  " locale="en" creator="305" date_created="2007-05-09 14:42:57.0"/>
-  <concept_name concept_id="1558" name="PATIENT CONTACT METHOD" short_name="" description="General Question: &quot;What method was used to contact the patient?&quot;" locale="en" creator="305" date_created="2007-05-09 14:45:38.0"/>
-  <concept_name concept_id="1592" name="MISSED RETURNED VISIT DATE" short_name="" description="Patients who missed their scheduled appointment date." locale="en" creator="305" date_created="2007-05-14 17:07:25.0"/>
-  <concept_name concept_id="1726" name="FOLLOW-UP ACTION" short_name="" description="Complex question that follow-up action was taken to track patient." locale="en" creator="305" date_created="2007-06-05 17:38:53.0"/>
+  <concept_name concept_name_id="6" concept_id="1553" name="NUMBER OF ATTEMPTS" short_name="" description="General question:  &quot;Number of attempts&quot;" locale="en" creator="305" date_created="2007-05-09 14:38:25.0"/>
+  <concept_name concept_name_id="7" concept_id="1554" name="SUCCESSFUL" short_name="" description="General question:  &quot;Successful?&quot;" locale="en" creator="305" date_created="2007-05-09 14:39:34.0"/>
+  <concept_name concept_name_id="8" concept_id="1555" name="PHONE" short_name="" description="Generic answer to a question:  &quot;Phone&quot;.  " locale="en" creator="305" date_created="2007-05-09 14:42:57.0"/>
+  <concept_name concept_name_id="9" concept_id="1558" name="PATIENT CONTACT METHOD" short_name="" description="General Question: &quot;What method was used to contact the patient?&quot;" locale="en" creator="305" date_created="2007-05-09 14:45:38.0"/>
+  <concept_name concept_name_id="10" concept_id="1592" name="MISSED RETURNED VISIT DATE" short_name="" description="Patients who missed their scheduled appointment date." locale="en" creator="305" date_created="2007-05-14 17:07:25.0"/>
+  <concept_name concept_name_id="11" concept_id="1726" name="FOLLOW-UP ACTION" short_name="" description="Complex question that follow-up action was taken to track patient." locale="en" creator="305" date_created="2007-06-05 17:38:53.0"/>
   <concept_set concept_id="1553" concept_set="1726" sort_weight="1.0" creator="305" date_created="2007-06-05 17:38:53.0"/>
   <concept_set concept_id="1554" concept_set="1726" sort_weight="2.0" creator="305" date_created="2007-06-05 17:38:53.0"/>
   <concept_set concept_id="1558" concept_set="1726" sort_weight="0.0" creator="305" date_created="2007-06-05 17:38:53.0"/>
   <!-- /Grouped obs -->
+  
+  <obs obs_id="1" concept_id="905" value_numeric="100" obs_datetime="2007-05-01 00:00:00.0" person_id="2" location_id="1" creator="1" date_created="2005-03-01 00:00:00.0" voided="0"/>
   
 </dataset>

@@ -30,12 +30,12 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 
-	protected static final String ORU_INITIAL_DATA_XML = "org/openmrs/web/test/include/EncounterDisplayController.xml";
+	protected static final String DISPLAY_CONTROLLER_DATA = "org/openmrs/web/test/include/EncounterDisplayControllerTest.xml";
 	
 	@Override
 	protected void onSetUpInTransaction() throws Exception {
 		initializeInMemoryDatabase();
-		executeDataSet(ORU_INITIAL_DATA_XML);
+		executeDataSet(DISPLAY_CONTROLLER_DATA);
 		authenticate();
 	}
 
@@ -46,9 +46,7 @@ public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
-    public void xtestBasicCreate() throws Exception {
-		authenticate();
-		
+    public void testBasicCreate() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setParameter("encounterId", "3");
 		

@@ -11,7 +11,7 @@
 	<classpathentry kind="lib" path="lib/commons-collections/commons-collections-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload/commons-fileupload-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang/commons-lang-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pool/commons-pool-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache/ehcache-1.2.4.jar" sourcepath="/openmrs-source/ehcache-1.2.4-src.zip"/>
@@ -49,7 +49,7 @@
 	<classpathentry kind="lib" path="lib/neal-reporting/reports.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.1.jar" sourcepath="/openmrs-source/jfreechart-1.0.3-src.zip"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.1.jar" sourcepath="/openmrs-source/c3p0-0.9.1-pre9.zip"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-dev.jar" sourcepath="/openmrs-source/velocity-1.5.zip"/>
 	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5.jar" sourcepath="/openmrs-source/hapi-0.5_source_v25.zip"/>

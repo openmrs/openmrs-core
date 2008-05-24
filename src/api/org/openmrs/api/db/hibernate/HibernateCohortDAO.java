@@ -23,6 +23,11 @@ import org.openmrs.Cohort;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.api.db.DAOException;
 
+/**
+ * Hibernate implementation of the CohortDAO
+ *
+ * @see CohortDAO
+ */
 public class HibernateCohortDAO implements CohortDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
@@ -35,26 +40,55 @@ public class HibernateCohortDAO implements CohortDAO {
 		this.sessionFactory = sessionFactory;
 	}
 	
-	public void createCohort(Cohort cohort) throws DAOException {
-		sessionFactory.getCurrentSession().persist(cohort);
-	}
-
 	public Cohort getCohort(Integer id) throws DAOException {
 		return (Cohort) sessionFactory.getCurrentSession().get(Cohort.class, id);
 	}
 	
-	public List<Cohort> getCohorts() throws DAOException {
-		return (List<Cohort>) sessionFactory.getCurrentSession().createQuery("from Cohort order by name").list();
-	}
-	
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException {
-		Query query = sessionFactory.getCurrentSession().createQuery("from Cohort c where :patientId in elements(c.memberIds)");
+		Query query = sessionFactory.getCurrentSession().createQuery("from Cohort c where :patientId in elements(c.memberIds) order by name");
 		query.setInteger("patientId", patientId);
 		return (List<Cohort>) query.list();
 	}
 
-    public void updateCohort(Cohort cohort) throws DAOException {
-    	sessionFactory.getCurrentSession().update(cohort);
+	/**
+     * @see org.openmrs.api.db.CohortDAO#deleteCohort(org.openmrs.Cohort)
+     */
+    public Cohort deleteCohort(Cohort cohort) throws DAOException {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+
+	/**
+     * @see org.openmrs.api.db.CohortDAO#findCohorts(java.lang.String)
+     */
+    public List<Cohort> getCohorts(String nameFragment) throws DAOException {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+
+	/**
+     * @see org.openmrs.api.db.CohortDAO#getAllCohorts(boolean)
+     */
+    public List<Cohort> getAllCohorts(boolean includeVoided) throws DAOException {
+    	String hql = "from Cohort order by name";
+    	if (!includeVoided)
+    		hql += " where voided = false";
+    	return (List<Cohort>) sessionFactory.getCurrentSession().createQuery(hql).list();
+    }
+
+	/**
+     * @see org.openmrs.api.db.CohortDAO#getCohort(java.lang.String)
+     */
+    public Cohort getCohort(String name) {
+	    return (Cohort) sessionFactory.getCurrentSession().createQuery("from Cohort where name = :name").setString("name", name).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.CohortDAO#saveCohort(org.openmrs.Cohort)
+     */
+    public Cohort saveCohort(Cohort cohort) throws DAOException {
+	    sessionFactory.getCurrentSession().saveOrUpdate(cohort);
+	    return cohort;
     }
 
 }

@@ -80,14 +80,6 @@
 				function(id) { return '<a href="javascript:removeWorkflow(' + id + ')">[x]</a>';},
 			]);
 	}
-
-	function maybeShowVoidInfo(selectInput) {
-		if (selectInput.options[selectInput.selectedIndex].value == 'true') {
-			showDiv('voidInfoBox');
-		} else {
-			hideDiv('voidInfoBox');
-		}
-	}
 </script>
 
 <h2><spring:message code="Program.manage.title"/></h2>
@@ -99,6 +91,24 @@
 
 <form method="post" id="theForm">
 <table>
+	<tr>
+		<th><spring:message code="general.name"/></th>
+		<td>
+			<spring:bind path="program.name">
+				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<th><spring:message code="general.description"/></th>
+		<td>
+			<spring:bind path="program.description">
+				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
 	<tr>
 		<th><spring:message code="Program.concept"/></th>
 		<td>
@@ -119,24 +129,13 @@
 		<td><spring:message code="Program.conceptHint"/></td>
 	</tr>
 	<tr>
-		<th valign="top"><spring:message code="general.voided"/>?</th>
+		<th valign="top"><spring:message code="general.retired"/>?</th>
 		<td valign="top">
-			<spring:bind path="program.voided">
-				<select name="${status.expression}" onChange="maybeShowVoidInfo(this)">
+			<spring:bind path="program.retired">
+				<select name="${status.expression}">
 					<option value="false" <c:if test="${status.value == false}">selected</c:if>><spring:message code="general.no"/></option>
 					<option value="true" <c:if test="${status.value == true}">selected</c:if>><spring:message code="general.yes"/></option>
 				</select>
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr id="voidInfoBox" <c:if test="${!program.voided}">style="display: none"</c:if>/>
-		<th valign="top"><spring:message code="general.voidReason"/></th>
-		<td valign="top">
-			<spring:bind path="program.voidReason">
-				<input type="text" size="60" name="${status.expression}" value="${status.value}"/>
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">${status.errorMessage}</span>
 				</c:if>

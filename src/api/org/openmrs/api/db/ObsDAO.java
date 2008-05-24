@@ -15,15 +15,14 @@ package org.openmrs.api.db;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
-import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.Person;
+import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 
 /**
  * Observation-related database functions
@@ -33,9 +32,9 @@ import org.openmrs.Person;
 public interface ObsDAO {
 
 	/**
-	 * @see org.openmrs.api.ObsService#createObs(org.openmrs.Obs)
+	 * @see org.openmrs.api.ObsService#saveObs(org.openmrs.Obs)
 	 */
-	public void createObs(Obs obs) throws DAOException;
+	public Obs saveObs(Obs obs) throws DAOException;
 
 	/**
 	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
@@ -43,19 +42,14 @@ public interface ObsDAO {
 	public Obs getObs(Integer obsId) throws DAOException;
 
 	/**
-	 * @see org.openmrs.api.ObsService#updateObs(org.openmrs.Obs)
-	 */
-	public void updateObs(Obs obs) throws DAOException;
-
-	/**
-	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
+	 * @see org.openmrs.api.ObsService#purgeObs(Obs)
 	 */
 	public void deleteObs(Obs obs) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getMimeTypes()
+	 * @see org.openmrs.api.ObsService#getAllMimeTypes(boolean)
 	 */
-	public List<MimeType> getMimeTypes() throws DAOException;
+	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws DAOException;
 
 	/**
 	 * @see org.openmrs.api.ObsService#getMimeType(java.lang.Integer)
@@ -63,79 +57,33 @@ public interface ObsDAO {
 	public MimeType getMimeType(Integer mimeTypeId) throws DAOException;
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person)
+	 * @see org.openmrs.api.ObsService#saveMimeType(MimeType)
 	 */
-	public Set<Obs> getObservations(Person who, boolean includeVoided) throws DAOException;
+	public MimeType saveMimeType(MimeType mimeType) throws DAOException;
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept,org.openmrs.Location,java.lang.String,java.lang.Integer)
+	 * @see org.openmrs.api.ObsService#purgeMimeType(MimeType)
 	 */
-	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer patientType)
-			throws DAOException;
+	public void deleteMimeType(MimeType mimeType) throws DAOException;
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person,org.openmrs.Concept)
-	 */
-	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided)
-			throws DAOException;
-
-	/**
-	 * e.g. get last 'n' number of observations for a patient for given concept
+	 * Assumes that <code>whom</code>, <code>encounters</code>, 
+	 * <code>locations</code>, <code>personTypes</code>, 
+	 * <code>questions</code>, and <code>answers</code> are non-null lists
 	 * 
-	 * @param n
-	 *            number of concepts to retrieve
-	 * @param who
-	 * @param question
-	 * @return
+     * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean)
 	 */
-	public List<Obs> getLastNObservations(Integer n, Person who,
-			Concept question);
+    public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters,
+	                                 List<Concept> questions, List<Concept> answers,
+	                                 List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
+	                                 Integer mostRecentN, Integer obsGroupId, Date fromDate,
+	                                 Date toDate, boolean includeVoidedObs) throws DAOException;
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept,java.lang.String,java.lang.Integer)
+     * Auto generated method comment
+	 * 
+	 * @see org.openmrs.api.ObsService#getObservations(String)
 	 */
-	public List<Obs> getObservations(Concept question, String sort, Integer personType)
-			throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept,java.lang.Integer)
-	 */
-	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType);
-	
-	/**
-	 *  @see org.openmrs.api.ObsService#getNumericAnswersForConcept(org.openmrs.Concept,java.lang.Boolean,java.lang.Integer)
-	 */
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType);
-	
-	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Encounter)
-	 */
-	public Set<Obs> getObservations(Encounter whichEncounter)
-			throws DAOException;
+    //public List<Obs> getObservations(String searchString) throws DAOException;
 
-	/**
-	 * @see org.openmrs.api.ObsService#getVoidedObservations()
-	 */
-	public List<Obs> getVoidedObservations() throws DAOException;
-
-	/**
-	 * @see org.openmrs.api.ObsService#findObservations(java.lang.Integer,boolean,java.lang.Integer)
-	 */
-	public List<Obs> findObservations(Integer id, boolean includeVoided, Integer personType)
-			throws DAOException;
-
-	/**
-	 * @see org.openmrs.api.ObsService#findObsByGroupId(java.lang.Integer)
-	 */
-	public List<Obs> findObsByGroupId(Integer obsGroupId) throws DAOException;
-
-	/**
-	 * @see org.openmrs.api.ObsService#getObservations(java.util.List<org.openmrs.Concept>, java.util.Date, java.util.Data, boolean)
-	 */
-	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided) throws DAOException;
-
-	/**
-	 * @see org.openmrs.api.ObsService#getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate)
-	 */
-	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate);
 }

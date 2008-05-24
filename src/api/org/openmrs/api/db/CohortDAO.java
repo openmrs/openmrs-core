@@ -15,17 +15,81 @@ package org.openmrs.api.db;
 
 import java.util.List;
 import org.openmrs.Cohort;
+import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Database methods for cohort objects. 
+ * 
+ * @see org.openmrs.Cohort
+ * @see org.openmrs.api.CohortService
+ * @see org.openmrs.api.context.Context
+ */
 public interface CohortDAO {
-	
-	public void createCohort(Cohort cohort) throws DAOException;
-	
+		
+	/**
+	 * Finds the cohort with the given primary key
+	 * 
+	 * @param id
+	 * @return The cohort with the given cohortId, or null if none exists
+	 * @throws DAOException
+	 */
+	@Transactional(readOnly=true)
 	public Cohort getCohort(Integer id) throws DAOException;
 	
-	public List<Cohort> getCohorts() throws DAOException;
+	/**
+     * Finds a cohort by name
+     * 
+     * @param name
+     * @return The Cohort with the given name, or null if none exists
+     */
+    @Transactional(readOnly=true)
+    public Cohort getCohort(String name);
 	
+	/**
+	 * Gets all cohorts in the database
+	 * 
+	 * @param includeVoided whether to include voided cohorts
+	 * @return All cohorts in the database, possibly including voided ones
+	 * @throws DAOException
+	 */
+	@Transactional(readOnly=true)
+	public List<Cohort> getAllCohorts(boolean includeVoided) throws DAOException;
+	
+	/**
+	 * Finds all cohorts that contain the given patientId 
+	 * 
+	 * @param patientId
+	 * @return
+	 * @throws DAOException
+	 */
+	@Transactional(readOnly=true)
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException;
 	
-	public void updateCohort(Cohort cohort) throws DAOException;
+	/**
+     * Saves a Cohort to the database
+     * 
+     * @param cohort
+     * @return
+     */
+	@Transactional
+    public Cohort saveCohort(Cohort cohort) throws DAOException;
+
+	/**
+     * Finds all Cohorts with matching names
+     * 
+     * @param nameFragment
+     * @return
+     */
+	@Transactional(readOnly=true)
+    public List<Cohort> getCohorts(String nameFragment) throws DAOException;
+
+	/**
+     * Removes a cohort from the database
+     * 
+     * @param cohort
+     * @return
+     */
+	@Transactional
+    public Cohort deleteCohort(Cohort cohort) throws DAOException;
 
 }

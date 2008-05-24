@@ -44,8 +44,14 @@ import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 
-public class HibernateUserDAO implements
-		UserDAO {
+/**
+ * Hibernate specific database methods for the UserService
+ * 
+ * @see org.openmrs.api.context.Context
+ * @see org.openmrs.api.db.UserDAO
+ * @see org.openmrs.api.UserService
+ */
+public class HibernateUserDAO implements UserDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
@@ -53,8 +59,6 @@ public class HibernateUserDAO implements
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
-
-	public HibernateUserDAO() { }
 
 	/**
 	 * Set session factory
@@ -66,31 +70,27 @@ public class HibernateUserDAO implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.UserService#createUser(org.openmrs.User)
+	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User)
 	 */
-	public User createUser(User user, String password) {
-		if (hasDuplicateUsername(user.getUsername(), user.getSystemId(), user.getUserId()))
-			throw new DAOException("Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
+	public User saveUser(User user, String password) {
 		
-		try {
-			sessionFactory.getCurrentSession().save(user);
-			//sessionFactory.getCurrentSession().refresh(user);
-		}
-		catch (NonUniqueObjectException e) {
-			sessionFactory.getCurrentSession().merge(user);
-		}
+		insertUserStubIfNeeded(user);
 		
+		sessionFactory.getCurrentSession().saveOrUpdate(user);
+		
+		if (password != null) {
 		//update the new user with the password
 		String salt = Security.getRandomToken();
 		String hashedPassword = Security.encodeString(password + salt);
 		
 		updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user.getUserId());
+		}
 			
 		return user;
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserService#getUserByUsername(java.lang.String)
+	 * @see org.openmrs.api.UserService#getUserByUsername(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
 	public User getUserByUsername(String username) {
@@ -104,14 +104,13 @@ public class HibernateUserDAO implements
 		if (users == null || users.size() == 0) {
 			log.warn("request for username '" + username + "' not found");
 			return null;
-			//throw new ObjectRetrievalFailureException(User.class, username);
 		}
 
 		return users.get(0);
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.UserService#hasDuplicateUsername(org.openmrs.User)
+	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
 	public boolean hasDuplicateUsername(String username, String systemId, Integer userId) {
 		if (username == null || username.length() == 0)
@@ -147,7 +146,7 @@ public class HibernateUserDAO implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.UserService#getUser(java.lang.Long)
+	 * @see org.openmrs.api.UserService#getUser(java.lang.Long)
 	 */
 	public User getUser(Integer userId) {
 		User user = (User) sessionFactory.getCurrentSession().get(User.class, userId);
@@ -156,35 +155,16 @@ public class HibernateUserDAO implements
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.UserService#getUsers()
+	 * @see org.openmrs.api.UserService#getAllUsers()
 	 */
 	@SuppressWarnings("unchecked")
-	public List<User> getUsers() throws DAOException {
+	public List<User> getAllUsers() throws DAOException {
 		return sessionFactory.getCurrentSession().createQuery("from User u order by u.userId")
 								.list();
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserService#updateUser(org.openmrs.User)
-	 */
-	public void updateUser(User user) {
-		if (user.getUserId() == null)
-			createUser(user, "");
-		else {
-			if (log.isDebugEnabled()) {
-				log.debug("update user id: " + user.getUserId());
-			}
-			
-			insertUserStubIfNeeded(user);
-			
-			sessionFactory.getCurrentSession().saveOrUpdate(user);
-			//sessionFactory.getCurrentSession().flush();
-		}
-	}
-	
-	/**
-	 * Inserts a row into the user table if a row with users.user_id = user.getUserId() 
-	 * does not exist yet
+	 * Inserts a row into the user table
 	 * 
 	 * This avoids hibernate's bunging of our person/patient/user inheritance
 	 * 
@@ -195,23 +175,25 @@ public class HibernateUserDAO implements
 		
 		boolean stubInsertNeeded = false;
 		
-		// check if there is a row with a matching users.user_id 
-		try {
-			PreparedStatement ps = connection.prepareStatement("SELECT * FROM users WHERE user_id = ?");
-			ps.setInt(1, user.getUserId());
-			ps.execute();
-			
-			if (ps.getResultSet().next())
-				stubInsertNeeded = false;
-			else
-				stubInsertNeeded = true;
-			
-		}
-		catch (SQLException e) {
-			log.error("Error while trying to see if this person is a user already", e);
-		}
+		if (user.getUserId() != null) {
+			// check if there is a row with a matching users.user_id 
+			try {
+				PreparedStatement ps = connection.prepareStatement("SELECT * FROM users WHERE user_id = ?");
+				ps.setInt(1, user.getUserId());
+				ps.execute();
 		
-		if (stubInsertNeeded) {
+				if (ps.getResultSet().next())
+					stubInsertNeeded = false;
+				else
+					stubInsertNeeded = true;
+				
+			}
+			catch (SQLException e) {
+				log.error("Error while trying to see if this person is a user already", e);
+			}
+	}
+	
+	if (stubInsertNeeded) {
 			try {
 				PreparedStatement ps = connection.prepareStatement("INSERT INTO users (user_id, system_id, creator, date_created, voided) VALUES (?, ?, ?, ?, ?)");
 				
@@ -233,7 +215,7 @@ public class HibernateUserDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserService#deleteUser(org.openmrs.User)
+	 * @see org.openmrs.api.UserService#deleteUser(org.openmrs.User)
 	 */
 	public void deleteUser(User user) {
 		HibernatePersonDAO.deletePersonAndAttributes(sessionFactory, user);
@@ -255,47 +237,60 @@ public class HibernateUserDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserService#getPrivileges()
+	 * @see org.openmrs.api.UserService#getAllPrivileges()
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Privilege> getPrivileges() throws DAOException {
+	public List<Privilege> getAllPrivileges() throws DAOException {
 		return sessionFactory.getCurrentSession().createQuery("from Privilege p order by p.privilege").list();
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserService#getRoles()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Role> getRoles() throws DAOException {
-		return sessionFactory.getCurrentSession().createQuery("from Role r order by r.role").list();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.UserService#getInheritingRoles(org.openmrs.Role)
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Role> getInheritingRoles(Role role) throws DAOException {
-		/*
-		Criteria crit = session.createCriteria(Role.class, "r")
-			.add(Expression.in("r.inheritedRoles", role))
-			.addOrder(Order.asc("r.role"));
-		return crit.list();
-		*/
-		
-		return sessionFactory.getCurrentSession().createQuery("from Role r where :role in inheritedRoles order by r.role")
-				.setParameter("role", role)
-				.list();
-	}
-
-	/**
-	 * @see org.openmrs.api.db.UserService#getPrivilege()
+	 * @see org.openmrs.api.UserService#getPrivilege()
 	 */
 	public Privilege getPrivilege(String p) throws DAOException {
 		return (Privilege)sessionFactory.getCurrentSession().get(Privilege.class, p);
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserService#getRole()
+     * @see org.openmrs.api.db.UserDAO#deletePrivilege(org.openmrs.Privilege)
+	 */
+    public void deletePrivilege(Privilege privilege) throws DAOException {
+    	sessionFactory.getCurrentSession().delete(privilege);
+	}
+	
+	/**
+     * @see org.openmrs.api.db.UserDAO#savePrivilege(org.openmrs.Privilege)
+	 */
+    public Privilege savePrivilege(Privilege privilege) throws DAOException {
+    	sessionFactory.getCurrentSession().saveOrUpdate(privilege);
+    	return privilege;
+    }
+
+	/**
+     * @see org.openmrs.api.UserService#deleteRole(org.openmrs.Role)
+		*/
+    public void deleteRole(Role role) throws DAOException {
+    	sessionFactory.getCurrentSession().delete(role);
+    }
+		
+	/**
+     * @see org.openmrs.api.UserService#saveRole(org.openmrs.Role)
+     */
+    public Role saveRole(Role role) throws DAOException {
+    	sessionFactory.getCurrentSession().saveOrUpdate(role);
+    	return role;
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#getAllRoles()
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Role> getAllRoles() throws DAOException {
+		return sessionFactory.getCurrentSession().createQuery("from Role r order by r.role").list();
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#getRole()
 	 */
 	public Role getRole(String r) throws DAOException {
 		return (Role)sessionFactory.getCurrentSession().get(Role.class, r);
@@ -385,7 +380,7 @@ public class HibernateUserDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserDAO#changePassword(java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.UserService#changePassword(java.lang.String, java.lang.String)
 	 */
 	public void changePassword(String pw, String pw2) throws DAOException {
 		User u = Context.getAuthenticatedUser();
@@ -419,6 +414,9 @@ public class HibernateUserDAO implements
 		updateUserPassword(newPassword, salt, u.getUserId(), new Date(), u.getUserId());
 	}
 	
+	/**
+	 * @see org.openmrs.api.UserService#changeQuestionAnswer(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	public void changeQuestionAnswer(String pw, String question, String answer) throws DAOException {
 		User u = Context.getAuthenticatedUser();
 
@@ -464,6 +462,9 @@ public class HibernateUserDAO implements
 		
 	}
 	
+	/**
+	 * @see org.openmrs.api.UserService#isSecretAnswer(User, java.lang.String)
+	 */
 	public boolean isSecretAnswer(User u, String answer) throws DAOException {
 		
 		if (answer == null || answer.equals(""))
@@ -485,15 +486,20 @@ public class HibernateUserDAO implements
 		return (answer.equals(answerOnRecord));
 	}
 	
+	/**
+	 * @see org.openmrs.api.UserService#getUsers(java.lang.String, java.util.List, boolean)
+	 */
 	@SuppressWarnings("unchecked")
-	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
-		name = name.replace(", ", " ");
-		String[] names = name.split(" ");
-		
+	public List<User> getUsers(String name, List<Role> roles, boolean includeVoided) {
 		log.debug("name: " + name);
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
+		
+		if (name != null) {
 		criteria.createAlias("names", "name");
+			
+			name = name.replace(", ", " ");
+			String[] names = name.split(" ");
 		for (String n : names) {
 			if (n != null && n.length() > 0) {
 				criteria.add(Expression.or(
@@ -502,14 +508,17 @@ public class HibernateUserDAO implements
 							Expression.like("name.familyName", n, MatchMode.START),
 								Expression.or(
 										Expression.like("name.middleName", n, MatchMode.START),
-										Expression.like("systemId", n, MatchMode.START)
+											Expression.or(
+											    Expression.like("systemId", n, MatchMode.START),
+											    Expression.like("username", n, MatchMode.START)
+											    )
 										)
 							)
 						)
 					);
 			}
 		}
-		
+		}
 		/*
 		if (roles != null && roles.size() > 0) {
 			criteria.createAlias("roles", "r")
@@ -530,56 +539,30 @@ public class HibernateUserDAO implements
 		
 		// TODO figure out how to get Hibernate to do the sql for us
 		
-		List returnList = new Vector();
 		if (roles != null && roles.size() > 0) {
+		List returnList = new Vector();
+			
 			log.debug("looping through to find matching roles");
 			for (Object o : criteria.list()) {
 				User u = (User)o;
-				for (String r : roles)
-					if (u.hasRole(r, true)) {
+				for (Role r : roles)
+					if (u.hasRole(r.getRole(), true)) {
 						returnList.add(u);
 						break;
 					}
 			}
+			
+			return returnList;
 		}
 		else {
 			log.debug("not looping because there appears to be no roles");
-			returnList = criteria.list();
-		}
-		
-		return returnList;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<User> getAllUsers(List<Role> roles, boolean includeVoided) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
-		
-		if (includeVoided == false)
-			criteria.add(Expression.eq("voided", false));
-		
-		List<User> returnList = new Vector<User>();
-		if (roles != null && roles.size() > 0) {
-			for (Object o : criteria.list()) {
-				User u = (User)o;
-				for (Role r : roles)
-					if (r != null) {
-						if (u.hasRole(r.getRole(), true)) {
-							returnList.add(u);
-							break;
+			return criteria.list();
 						}
-					}
-			}
-		}
-		else
-			returnList = criteria.list();
 		
-		return returnList;
-		
-		// TODO figure out how to get Hibernate to do the sql for us
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.UserDAO#generateSystemId()
+	 * @see org.openmrs.api.api.UserService#generateSystemId()
 	 */
 	public Integer generateSystemId() {
 		
@@ -605,10 +588,10 @@ public class HibernateUserDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.UserDAO#findUsers(java.lang.String, java.lang.String, boolean)
+	 * @see org.openmrs.api.UserService#getUsersByName(java.lang.String, java.lang.String, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<User> findUsers(String givenName, String familyName, boolean includeVoided) {
+	public List<User> getUsersByName(String givenName, String familyName, boolean includeVoided) {
 		List<User> users = new Vector<User>();
 		String query = "from User u where u.names.givenName = :givenName and u.names.familyName = :familyName";
 		if (!includeVoided)

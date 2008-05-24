@@ -112,19 +112,19 @@ public class WorkflowFormController extends SimpleFormController {
 					pws.setConcept(Context.getConceptService().getConcept(conceptId));
 					wf.addState(pws);
 				} else {
-					// unvoid if necessary
-					if (pws.getVoided()) {
-						pws.setVoided(false);
+					// un-retire if necessary
+					if (pws.isRetired()) {
+						pws.setRetired(false);
 					}
 				}
 				pws.setInitial(Boolean.valueOf(tmp[1]));
 				pws.setTerminal(Boolean.valueOf(tmp[2]));
 				log.debug("pws: " + pws);
 			}
-			// void states if we didn't see their concept during the loop above
+			// retire states if we didn't see their concept during the loop above
 			for (ProgramWorkflowState s : wf.getStates()) {
 				if (!doneSoFar.contains(s.getConcept().getConceptId())) {
-					s.setVoided(true);
+					s.setRetired(true);
 				}
 			}
 			
