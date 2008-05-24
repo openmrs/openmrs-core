@@ -454,6 +454,7 @@ public final class Listener extends ContextLoaderListener {
 			
 			props.load(propertyStream);
 			propertyStream.close();
+			log.warn("Using runtime properties file: " + filepath);
 
 		} catch (Throwable t) {
 			log.warn("Unable to load properties file. Starting with default properties.", t);

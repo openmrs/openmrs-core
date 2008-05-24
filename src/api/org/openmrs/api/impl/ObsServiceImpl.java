@@ -487,7 +487,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
      */
     private List<String> makeSortList(String sort) {
     	List<String> sortList = new Vector<String>();
-		if (sort != null && !sort.isEmpty()) {
+		if (sort != null && !"".equals(sort)) {
 			for (String sortPart : sort.split(",")) {
 				
 				sortPart = sortPart.trim();
@@ -497,7 +497,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 					sortPart = sortPart.substring(0, sortPart.indexOf(" "));
 				
 				// add the current sort to the list of things to sort on
-				if (!sortPart.isEmpty())
+				if (!"".equals(sort))
 					sortList.add(sortPart);
 			}
 		}

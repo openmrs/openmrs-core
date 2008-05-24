@@ -165,7 +165,7 @@ public class HibernateObsDAO implements ObsDAO {
     	// TODO add an option for each sort item to be asc/desc
     	if (sortList.size() > 0) {
     		for (String sort : sortList) {
-    			if (sort != null && !sort.isEmpty())
+    			if (sort != null && !"".equals(sort))
     				criteria.addOrder(Order.desc(sort));
     		}
     	}
