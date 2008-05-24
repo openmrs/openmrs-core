@@ -32,7 +32,6 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
-import org.openmrs.notification.AlertService;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
@@ -73,6 +72,9 @@ public class AlertFormController extends SimpleFormController {
 
 	}
 
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request,
 			HttpServletResponse reponse, Object obj, BindException errors)
 			throws Exception {
@@ -119,15 +121,14 @@ public class AlertFormController extends SimpleFormController {
 				// add all new users
 				if (userIds != null) {
 					for (Integer userId : userIds) {
-						alert.addRecipient(us.getUser(userId));
+						alert.addRecipient(new User(userId));
 					}
 				}
 				
 				// add all new users according to the role(s) selected
 				if (roles != null) {
 					for (String roleStr : roles) {
-						Role role = us.getRole(roleStr);
-						List<User> users = us.getUsersByRole(role);
+						List<User> users = us.getUsersByRole(new Role(roleStr));
 						for (User user : users)
 							alert.addRecipient(user);
 					}
@@ -168,8 +169,7 @@ public class AlertFormController extends SimpleFormController {
 		String view = getFormView();
 
 		if (Context.isAuthenticated()) {
-			Alert alert = (Alert) obj;
-			Context.getAlertService().updateAlert(alert);
+			Context.getAlertService().saveAlert((Alert) obj);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 					"Alert.saved");
@@ -191,10 +191,9 @@ public class AlertFormController extends SimpleFormController {
 		Alert alert = null;
 
 		if (Context.isAuthenticated()) {
-			AlertService as = Context.getAlertService();
 			String a = request.getParameter("alertId");
 			if (a != null)
-				alert = as.getAlert(Integer.valueOf(a));
+				alert = Context.getAlertService().getAlert(Integer.valueOf(a));
 		}
 
 		if (alert == null)
@@ -203,14 +202,15 @@ public class AlertFormController extends SimpleFormController {
 		return alert;
 	}
 
-	protected Map referenceData(HttpServletRequest request, Object object,
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object object,
 			Errors errors) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		if (Context.isAuthenticated()) {
-			List<Role> allRoles = Context.getUserService().getRoles();
-
-			map.put("allRoles", allRoles);
+			map.put("allRoles", Context.getUserService().getAllRoles());
 		}
 
 		return map;

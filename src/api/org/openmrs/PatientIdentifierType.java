@@ -35,6 +35,11 @@ public class PatientIdentifierType implements java.io.Serializable {
 	private User creator;
 	private String validator;
 
+	private User retiredBy;
+	private Boolean retired = Boolean.FALSE;
+	private Date dateRetired;
+	private String retireReason;
+
 	/** default constructor */
 	public PatientIdentifierType() {
 	}
@@ -178,10 +183,6 @@ public class PatientIdentifierType implements java.io.Serializable {
 		this.patientIdentifierTypeId = patientIdentifierTypeId;
 	}
 
-	public String toString() {
-		return this.name;
-	}
-
 	/**
 	 * @return Returns the checkdigit.
 	 * @deprecated No need to know if it has a check digit now that any validator algorithm
@@ -208,7 +209,63 @@ public class PatientIdentifierType implements java.io.Serializable {
 		this.checkDigit = checkDigit;
 	}
 
-	public String getValidator() {
+	/**
+     * @return the retiredBy
+     */
+    public User getRetiredBy() {
+    	return retiredBy;
+    }
+
+	/**
+     * @param retiredBy the retiredBy to set
+     */
+    public void setRetiredBy(User retiredBy) {
+    	this.retiredBy = retiredBy;
+    }
+
+	/**
+     * @return the retired
+     */
+    public Boolean getRetired() {
+    	return retired;
+    }
+
+	/**
+     * @param retired the retired to set
+     */
+    public void setRetired(Boolean retired) {
+    	this.retired = retired;
+    }
+
+	/**
+     * @return the dateRetired
+     */
+    public Date getDateRetired() {
+    	return dateRetired;
+    }
+
+	/**
+     * @param dateRetired the dateRetired to set
+     */
+    public void setDateRetired(Date dateRetired) {
+    	this.dateRetired = dateRetired;
+    }
+
+	/**
+     * @return the retireReason
+     */
+    public String getRetireReason() {
+    	return retireReason;
+    }
+
+	/**
+     * @param retireReason the retireReason to set
+     */
+    public void setRetireReason(String retireReason) {
+    	this.retireReason = retireReason;
+    }
+    
+    public String getValidator() {
     	return validator;
     }
 
@@ -223,5 +280,16 @@ public class PatientIdentifierType implements java.io.Serializable {
     public boolean hasValidator() {
 	    return validator != null && !validator.equals("");
     }
+
+	/**
+	 * TODO: make this return a more debug-worth string instead
+	 * 		of just the name.  Check the webapp to make
+	 * 		sure it is not depending on this
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return this.name;
+	}
 	
 }

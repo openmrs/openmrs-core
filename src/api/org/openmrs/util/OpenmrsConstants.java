@@ -41,7 +41,18 @@ import org.openmrs.scheduler.SchedulerConstants;
 public final class OpenmrsConstants {
 	//private static Log log = LogFactory.getLog(OpenmrsConstants.class);
 	
+	/**
+	 * This is the hard coded primary key of the order type for DRUG.
+	 * This has to be done because some logic in the API acts on this
+	 * order type
+	 */
 	public static final int ORDERTYPE_DRUG = 2;
+	
+	/**
+	 * This is the hard coded primary key of the concept class for DRUG.
+	 * This has to be done because some logic in the API acts on this
+	 * concept class
+	 */
 	public static final int CONCEPT_CLASS_DRUG = 3;
 	
 	/**
@@ -56,10 +67,16 @@ public final class OpenmrsConstants {
 	public static final String DATABASE_VERSION_EXPECTED = THIS_PACKAGE.getImplementationVersion();
 	public static String DATABASE_NAME = "openmrs";
 	public static String DATABASE_BUSINESS_NAME = "openmrs";
-	// loaded from (Hibernate)Util.checkDatabaseVersion
+	
+	/**
+	 * This is loaded at runtime from (Hibernate)Util.checkDatabaseVersion
+	 * and will contain the current database version
+	 */
 	public static String DATABASE_VERSION = null;	
 	
-	// Set true from runtime configuration to obscure patients for system demonstrations 
+	/**
+	 * Set true from runtime configuration to obscure patients for system demonstrations
+	 */
 	public static boolean OBSCURE_PATIENTS = false;
 	public static String OBSCURE_PATIENTS_GIVEN_NAME = "Demo";
 	public static String OBSCURE_PATIENTS_MIDDLE_NAME = null;
@@ -96,6 +113,11 @@ public final class OpenmrsConstants {
 	 */
 	public static String APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY = "application_data_directory";
 	
+	/**
+	 * These words are ignored in concept and patient searches
+	 * 
+	 * @return
+	 */
 	public static final Collection<String> STOP_WORDS() {
 		List<String> stopWords = new Vector<String>();
 		stopWords.add("A");
@@ -112,7 +134,13 @@ public final class OpenmrsConstants {
 		return stopWords;
 	}
 	
-	// TODO issues with localization
+	/**
+	 * A gender character to gender name map
+	 * 
+	 * TODO issues with localization. How should this be handled?
+	 * 
+	 * @return
+	 */
 	public static final Map<String, String> GENDER() {
 		Map<String, String> genders = new LinkedHashMap<String, String>();
 		genders.put("M", "Male");
@@ -124,45 +152,72 @@ public final class OpenmrsConstants {
 	// Baked in Privileges:
 	
 	public static final String PRIV_VIEW_CONCEPTS   = "View Concepts";
-	public static final String PRIV_ADD_CONCEPTS	= "Add Concepts";
-	public static final String PRIV_EDIT_CONCEPTS   = "Edit Concepts";
-	public static final String PRIV_DELETE_CONCEPTS = "Delete Concepts";
+	public static final String PRIV_MANAGE_CONCEPTS = "Manage Concepts";
+	public static final String PRIV_PURGE_CONCEPTS = "Purge Concepts";
 	
-	public static final String PRIV_ADD_CONCEPT_PROPOSAL  = "Add Concept Proposal";
-	public static final String PRIV_EDIT_CONCEPT_PROPOSAL = "Edit Concept Proposal";
+	public static final String PRIV_VIEW_CONCEPT_PROPOSALS = "View Concept Proposals";
+	public static final String PRIV_ADD_CONCEPT_PROPOSALS  = "Add Concept Proposals";
+	public static final String PRIV_EDIT_CONCEPT_PROPOSALS = "Edit Concept Proposals";
+	public static final String PRIV_DELETE_CONCEPT_PROPOSALS = "Delete Concept Proposals";
+	public static final String PRIV_PURGE_CONCEPT_PROPOSALS = "Purge Concept Proposals";
 	
 	public static final String PRIV_VIEW_USERS	= "View Users";
 	public static final String PRIV_ADD_USERS	= "Add Users";
 	public static final String PRIV_EDIT_USERS	= "Edit Users";
 	public static final String PRIV_DELETE_USERS= "Delete Users";
+	public static final String PRIV_PURGE_USERS 		= "Purge Users";
 	public static final String PRIV_EDIT_USER_PASSWORDS = "Edit User Passwords";
 
 	public static final String PRIV_VIEW_ENCOUNTERS		= "View Encounters";
 	public static final String PRIV_ADD_ENCOUNTERS		= "Add Encounters";
 	public static final String PRIV_EDIT_ENCOUNTERS		= "Edit Encounters";
 	public static final String PRIV_DELETE_ENCOUNTERS	= "Delete Encounters";
+	public static final String PRIV_PURGE_ENCOUNTERS	= "Purge Encounters";
 
+	public static final String PRIV_VIEW_ENCOUNTER_TYPES	= "View Encounter Types";
+	public static final String PRIV_MANAGE_ENCOUNTER_TYPES	= "Manage Encounter Types";
+	public static final String PRIV_PURGE_ENCOUNTER_TYPES	= "Purge Encounter Types";
+
+	public static final String PRIV_VIEW_LOCATIONS		= "View Locations";
+	public static final String PRIV_MANAGE_LOCATIONS	= "Manage Locations";
+	public static final String PRIV_PURGE_LOCATIONS		= "Purge Locations";
+	
 	public static final String PRIV_VIEW_OBS	= "View Observations";
 	public static final String PRIV_ADD_OBS		= "Add Observations";
 	public static final String PRIV_EDIT_OBS	= "Edit Observations";
 	public static final String PRIV_DELETE_OBS	= "Delete Observations";
+	public static final String PRIV_PURGE_OBS	= "Purge Observations";
+
+	public static final String PRIV_VIEW_MIME_TYPES	 = "View Mime Types";
+	public static final String PRIV_PURGE_MIME_TYPES = "Purge Mime Types";
 
 	public static final String PRIV_VIEW_PATIENTS   = "View Patients";
 	public static final String PRIV_ADD_PATIENTS	= "Add Patients";
 	public static final String PRIV_EDIT_PATIENTS   = "Edit Patients";
 	public static final String PRIV_DELETE_PATIENTS = "Delete Patients";
+	public static final String PRIV_PURGE_PATIENTS = "Purge Patients";
+	
+	public static final String PRIV_VIEW_PATIENT_IDENTIFIERS   = "View Patient Identifiers";
+	public static final String PRIV_ADD_PATIENT_IDENTIFIERS    = "Add Patient Identifiers";
+	public static final String PRIV_EDIT_PATIENT_IDENTIFIERS   = "Edit Patient Identifiers";
+	public static final String PRIV_DELETE_PATIENT_IDENTIFIERS = "Delete Patient Identifiers";
+	public static final String PRIV_PURGE_PATIENT_IDENTIFIERS  = "Purge Patient Identifiers";
 
 	public static final String PRIV_VIEW_PATIENT_COHORTS = "View Patient Cohorts";
+	public static final String PRIV_ADD_COHORTS 		 = "Add Cohorts";
+	public static final String PRIV_EDIT_COHORTS 		 = "Edit Cohorts";
+	public static final String PRIV_DELETE_COHORTS 		 = "Delete Cohorts";
+	public static final String PRIV_PURGE_COHORTS 		 = "Purge Cohorts";
 	
 	public static final String PRIV_VIEW_ORDERS		= "View Orders";
 	public static final String PRIV_ADD_ORDERS		= "Add Orders";
 	public static final String PRIV_EDIT_ORDERS		= "Edit Orders";
 	public static final String PRIV_DELETE_ORDERS	= "Delete Orders";
+	public static final String PRIV_PURGE_ORDERS	= "Purge Orders";
 
 	public static final String PRIV_VIEW_FORMS		= "View Forms";
-	public static final String PRIV_ADD_FORMS		= "Add Forms";
-	public static final String PRIV_EDIT_FORMS		= "Edit Forms";
-	public static final String PRIV_DELETE_FORMS	= "Delete Forms";
+	public static final String PRIV_MANAGE_FORMS	= "Manage Forms";
+	public static final String PRIV_PURGE_FORMS		= "Purge Forms";
 	
 	public static final String PRIV_VIEW_REPORTS	= "View Reports";
 	public static final String PRIV_ADD_REPORTS		= "Add Reports";
@@ -174,20 +229,44 @@ public final class OpenmrsConstants {
 	public static final String PRIV_EDIT_REPORT_OBJECTS		= "Edit Report Objects";
 	public static final String PRIV_DELETE_REPORT_OBJECTS	= "Delete Report Objects";
 
+	/** @deprecated we plan to move tribe to a person attribute */
+	public static final String PRIV_VIEW_TRIBES				= "View Tribes";
+	/** @deprecated we plan to move tribe to a person attribute */
 	public static final String PRIV_MANAGE_TRIBES			= "Manage Tribes";
-	public static final String PRIV_MANAGE_RELATIONSHIPS	= "Manage Relationships";
+	/** @deprecated we plan to move tribe to a person attribute */
+	public static final String PRIV_PURGE_TRIBES			= "Purge Tribes";
 	public static final String PRIV_MANAGE_IDENTIFIER_TYPES	= "Manage Identifier Types";
-	public static final String PRIV_MANAGE_LOCATIONS		= "Manage Locations";
+	public static final String PRIV_VIEW_IDENTIFIER_TYPES   = "View Identifier Types";
+	public static final String PRIV_PURGE_IDENTIFIER_TYPES  = "Purge Identifier Types";
 	public static final String PRIV_MANAGE_MIME_TYPES		= "Manage Mime Types";
+	
+	public static final String PRIV_VIEW_CONCEPT_CLASSES	= "View Concept Classes";
 	public static final String PRIV_MANAGE_CONCEPT_CLASSES	= "Manage Concept Classes";
+	public static final String PRIV_PURGE_CONCEPT_CLASSES	= "Purge Concept Classes";
+	
+	public static final String PRIV_VIEW_CONCEPT_DATATYPES= "View Concept Datatypes";
 	public static final String PRIV_MANAGE_CONCEPT_DATATYPES= "Manage Concept Datatypes";
-	public static final String PRIV_MANAGE_ENCOUNTER_TYPES	= "Manage Encounter Types";
+	public static final String PRIV_PURGE_CONCEPT_DATATYPES= "Purge Concept Datatypes";
+	
+	public static final String PRIV_VIEW_PRIVILEGES		= "View Privileges";
 	public static final String PRIV_MANAGE_PRIVILEGES		= "Manage Privileges";
+	public static final String PRIV_PURGE_PRIVILEGES		= "Purge Privileges";
+	
+	public static final String PRIV_VIEW_ROLES				= "View Roles";
 	public static final String PRIV_MANAGE_ROLES			= "Manage Roles";
+	public static final String PRIV_PURGE_ROLES				= "Purge Roles";
+	
+	public static final String PRIV_VIEW_FIELD_TYPES		= "View Field Types";
 	public static final String PRIV_MANAGE_FIELD_TYPES		= "Manage Field Types";
-	public static final String PRIV_MANAGE_ORDERS			= "Manage Orders";
+	public static final String PRIV_PURGE_FIELD_TYPES		= "Purge Field Types";
+	
+	public static final String PRIV_VIEW_ORDER_TYPES		= "View Order Types";
 	public static final String PRIV_MANAGE_ORDER_TYPES		= "Manage Order Types";
+	public static final String PRIV_PURGE_ORDER_TYPES		= "Purge Order Types";
+	
+	public static final String PRIV_VIEW_RELATIONSHIP_TYPES		= "View Relationship Types";
 	public static final String PRIV_MANAGE_RELATIONSHIP_TYPES	= "Manage Relationship Types";
+	public static final String PRIV_PURGE_RELATIONSHIP_TYPES	= "Purge Relationship Types";
 	public static final String PRIV_MANAGE_ALERTS 				= "Manage Alerts";
 	
 	public static final String PRIV_VIEW_NAVIGATION_MENU	= "View Navigation Menu";
@@ -197,7 +276,12 @@ public final class OpenmrsConstants {
 	
 	public static final String PRIV_VIEW_PROGRAMS = "View Programs";
 	public static final String PRIV_MANAGE_PROGRAMS = "Manage Programs";
+	
+	public static final String PRIV_VIEW_PATIENT_PROGRAMS = "View Patient Programs";
+	public static final String PRIV_ADD_PATIENT_PROGRAMS = "Add Patient Programs";
 	public static final String PRIV_EDIT_PATIENT_PROGRAMS = "Edit Patient Programs";
+	public static final String PRIV_DELETE_PATIENT_PROGRAMS = "Delete Patient Programs";
+	public static final String PRIV_PURGE_PATIENT_PROGRAMS = "Add Patient Programs";
 	
 	public static final String PRIV_DASHBOARD_OVERVIEW = "Patient Dashboard - View Overview Section";
 	public static final String PRIV_DASHBOARD_REGIMEN = "Patient Dashboard - View Regimen Section";
@@ -207,21 +291,53 @@ public final class OpenmrsConstants {
 	public static final String PRIV_DASHBOARD_FORMS = "Patient Dashboard - View Forms Section";
 	public static final String PRIV_DASHBOARD_SUMMARY = "Patient Dashboard - View Patient Summary";
 	
+	public static final String PRIV_VIEW_GLOBAL_PROPERTIES = "View Global Properties";
 	public static final String PRIV_MANAGE_GLOBAL_PROPERTIES = "Manage Global Properties";
+	public static final String PRIV_PURGE_GLOBAL_PROPERTIES = "Purge Global Properties";
+	
 	public static final String PRIV_MANAGE_MODULES = "Manage Modules";
 	
 	public static final String PRIV_MANAGE_SCHEDULER = "Manage Scheduler";
 	
+	public static final String PRIV_VIEW_PERSON_ATTRIBUTE_TYPES = "View Person Attribute Types";
 	public static final String PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES = "Manage Person Attribute Types";
+	public static final String PRIV_PURGE_PERSON_ATTRIBUTE_TYPES = "Purge Person Attribute Types";
 	
+	public static final String PRIV_VIEW_PERSONS   = "View People";
 	public static final String PRIV_ADD_PERSONS    = "Add People";
 	public static final String PRIV_EDIT_PERSONS   = "Edit People";
 	public static final String PRIV_DELETE_PERSONS = "Delete People";
-	public static final String PRIV_VIEW_PERSONS   = "View People";
+	public static final String PRIV_PURGE_PERSONS   = "Purge People";
+
+	/**
+	 * @deprecated replacing with ADD/EDIT/DELETE privileges
+	 */
+	public static final String PRIV_MANAGE_RELATIONSHIPS = "Manage Relationships";
 	
+	public static final String PRIV_VIEW_RELATIONSHIPS = "View Relationships";
+	public static final String PRIV_ADD_RELATIONSHIPS = "Add Relationships";
+	public static final String PRIV_EDIT_RELATIONSHIPS = "Edit Relationships";
+	public static final String PRIV_DELETE_RELATIONSHIPS = "Delete Relationships";
+	public static final String PRIV_PURGE_RELATIONSHIPS = "Purge Relationships";
+	
+	/**
+	 * Cached list of core privileges 
+	 */
 	private static Map<String, String> CORE_PRIVILEGES = null;
+	
+	/**
+	 * These are the privileges that are required by OpenMRS.  Upon
+	 * startup, if any of these privileges do not exist in the database,
+	 * they are inserted.
+	 * 
+	 * These privileges are not allowed to be deleted.  They are marked
+	 * as 'locked' in the administration screens.
+	 * 
+	 * @return privileges core to the system
+	 */
 	public static final Map<String, String> CORE_PRIVILEGES() {
 		
+		// if we don't have a cache, create one
 		if (CORE_PRIVILEGES == null) {
 			CORE_PRIVILEGES = new HashMap<String, String>();
 		
@@ -232,12 +348,12 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_VIEW_UNPUBLISHED_FORMS, "Able to view and fill out unpublished forms");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPTS, "Able to view concept entries");
-			CORE_PRIVILEGES.put(PRIV_ADD_CONCEPTS, "Able to add concepts to the dictionary");
-			CORE_PRIVILEGES.put(PRIV_EDIT_CONCEPTS, "Able to edit concepts in the dictionary");
-			CORE_PRIVILEGES.put(PRIV_DELETE_CONCEPTS, "Able to delete concepts from the dictionary");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPTS, "Able to add/edit/delete concept entries");
 			
-			CORE_PRIVILEGES.put(PRIV_ADD_CONCEPT_PROPOSAL, "Able to add concept proposals to the system");
-			CORE_PRIVILEGES.put(PRIV_EDIT_CONCEPT_PROPOSAL, "Able to edit concept proposals in the system");
+			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPT_PROPOSALS, "Able to view concept proposals to the system");
+			CORE_PRIVILEGES.put(PRIV_ADD_CONCEPT_PROPOSALS, "Able to add concept proposals to the system");
+			CORE_PRIVILEGES.put(PRIV_EDIT_CONCEPT_PROPOSALS, "Able to edit concept proposals in the system");
+			CORE_PRIVILEGES.put(PRIV_DELETE_CONCEPT_PROPOSALS, "Able to delete concept proposals from the system");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_USERS, "Able to view users in OpenMRS");
 			CORE_PRIVILEGES.put(PRIV_ADD_USERS, "Able to add users to OpenMRS");
@@ -255,12 +371,22 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_EDIT_OBS, "Able to edit patient observations");
 			CORE_PRIVILEGES.put(PRIV_DELETE_OBS, "Able to delete patient observations");
 			
+			CORE_PRIVILEGES.put(PRIV_VIEW_MIME_TYPES, "Able to view complex observation mime types");
+			
 			CORE_PRIVILEGES.put(PRIV_VIEW_PATIENTS, "Able to view patients");
 			CORE_PRIVILEGES.put(PRIV_ADD_PATIENTS, "Able to add patients");
 			CORE_PRIVILEGES.put(PRIV_EDIT_PATIENTS, "Able to edit patients");
 			CORE_PRIVILEGES.put(PRIV_DELETE_PATIENTS, "Able to delete patients");
 			
+			CORE_PRIVILEGES.put(PRIV_VIEW_PATIENT_IDENTIFIERS, "Able to view patient identifiers");
+			CORE_PRIVILEGES.put(PRIV_ADD_PATIENT_IDENTIFIERS, "Able to add patient identifiers");
+			CORE_PRIVILEGES.put(PRIV_EDIT_PATIENT_IDENTIFIERS, "Able to edit patient identifiers");
+			CORE_PRIVILEGES.put(PRIV_DELETE_PATIENT_IDENTIFIERS, "Able to delete patient identifiers");
+			
 			CORE_PRIVILEGES.put(PRIV_VIEW_PATIENT_COHORTS, "Able to view patient cohorts");
+			CORE_PRIVILEGES.put(PRIV_ADD_COHORTS, "Able to add a cohort to the system");
+			CORE_PRIVILEGES.put(PRIV_EDIT_COHORTS, "Able to add a cohort to the system");
+			CORE_PRIVILEGES.put(PRIV_DELETE_COHORTS, "Able to add a cohort to the system");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_ORDERS, "Able to view orders");
 			CORE_PRIVILEGES.put(PRIV_ADD_ORDERS, "Able to add orders");
@@ -268,28 +394,54 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_DELETE_ORDERS, "Able to delete orders");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_FORMS, "Able to view forms");
-			CORE_PRIVILEGES.put(PRIV_ADD_FORMS, "Able to add forms");
-			CORE_PRIVILEGES.put(PRIV_EDIT_FORMS, "Able to edit forms");
-			CORE_PRIVILEGES.put(PRIV_DELETE_FORMS, "Able to delete forms");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_FORMS, "Able to add/edit/delete forms");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_REPORTS, "Able to view reports");
 			CORE_PRIVILEGES.put(PRIV_ADD_REPORTS, "Able to add reports");
 			CORE_PRIVILEGES.put(PRIV_EDIT_REPORTS, "Able to edit reports");
 			CORE_PRIVILEGES.put(PRIV_DELETE_REPORTS, "Able to delete reports");
 			
+			CORE_PRIVILEGES.put(PRIV_VIEW_REPORT_OBJECTS, "Able to view report objects");
+			CORE_PRIVILEGES.put(PRIV_ADD_REPORT_OBJECTS, "Able to add report objects");
+			CORE_PRIVILEGES.put(PRIV_EDIT_REPORT_OBJECTS, "Able to edit report objects");
+			CORE_PRIVILEGES.put(PRIV_DELETE_REPORT_OBJECTS, "Able to delete report objects");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_TRIBES, "Able to view tribes");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_TRIBES, "Able to add/edit/delete tribes");
+			CORE_PRIVILEGES.put(PRIV_VIEW_IDENTIFIER_TYPES, "Able to view patient identifier types");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_RELATIONSHIPS, "Able to add/edit/delete relationships");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_IDENTIFIER_TYPES, "Able to add/edit/delete patient identifier types");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_LOCATIONS, "Able to view locations");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_LOCATIONS, "Able to add/edit/delete locations");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_MIME_TYPES, "Able to add/edit/delete obs mime types");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_CLASSES, "Able to add/edit/delete concept classes");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_DATATYPES, "Able to add/edit/delete concept datatypes");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPT_CLASSES, "Able to view concept classes");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_CLASSES, "Able to add/edit/retire concept classes");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPT_DATATYPES, "Able to view concept datatypes");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_DATATYPES, "Able to add/edit/retire concept datatypes");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_ENCOUNTER_TYPES, "Able to view encounter types");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_ENCOUNTER_TYPES, "Able to add/edit/delete encounter types");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_PRIVILEGES, "Able to view user privileges");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_PRIVILEGES, "Able to add/edit/delete privileges");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_FIELD_TYPES, "Able to add/edit/delete field types");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_ORDER_TYPES, "Able to add/edit/delete order types");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_RELATIONSHIP_TYPES, "Able to add/edit/delete relationship types");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_FIELD_TYPES, "Able to view field types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_FIELD_TYPES, "Able to add/edit/retire field types");
+			CORE_PRIVILEGES.put(PRIV_PURGE_FIELD_TYPES, "Able to purge field types");
+			
+			CORE_PRIVILEGES.put(PRIV_MANAGE_ORDER_TYPES, "Able to add/edit/retire order types");
+			CORE_PRIVILEGES.put(PRIV_VIEW_ORDER_TYPES, "Able to view order types");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_RELATIONSHIP_TYPES, "Able to view relationship types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_RELATIONSHIP_TYPES, "Able to add/edit/retire relationship types");
+			
 			CORE_PRIVILEGES.put(PRIV_MANAGE_ALERTS, "Able to add/edit/delete user alerts");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_ROLES, "Able to view user roles");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_ROLES, "Able to add/edit/delete user roles");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_NAVIGATION_MENU, "Able to view the navigation menu (Home, View Patients, Dictionary, Administration, My Profile)");
 			CORE_PRIVILEGES.put(PRIV_VIEW_ADMIN_FUNCTIONS, "Able to view the 'Administration' link in the navigation bar");
@@ -302,17 +454,24 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_DASHBOARD_FORMS, "Able to view the 'Forms' tab on the patient dashboard");
 			CORE_PRIVILEGES.put(PRIV_DASHBOARD_SUMMARY, "Able to view the 'Summary' tab on the patient dashboard");
 			
-			CORE_PRIVILEGES.put(PRIV_MANAGE_GLOBAL_PROPERTIES, "Able to add/edit/delete global properties");
+			CORE_PRIVILEGES.put(PRIV_VIEW_GLOBAL_PROPERTIES, "Able to view global properties on the administration screen");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_GLOBAL_PROPERTIES, "Able to add/edit global properties");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_MODULES, "Able to add/remove modules to the system");
 			
 			CORE_PRIVILEGES.put(PRIV_MANAGE_SCHEDULER, "Able to add/edit/remove scheduled tasks");
 			
-			CORE_PRIVILEGES.put(PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES, "Able to add/edit/delete person attribute tyeps");
+			CORE_PRIVILEGES.put(PRIV_VIEW_PERSON_ATTRIBUTE_TYPES, "Able to view person attribute types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES, "Able to add/edit/delete person attribute types");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_PERSONS, "Able to view person objects");
 			CORE_PRIVILEGES.put(PRIV_ADD_PERSONS, "Able to add person objects");
 			CORE_PRIVILEGES.put(PRIV_EDIT_PERSONS, "Able to edit person objects");
 			CORE_PRIVILEGES.put(PRIV_DELETE_PERSONS, "Able to delete objects");
+
+			CORE_PRIVILEGES.put(PRIV_VIEW_RELATIONSHIPS, "Able to view relationships");
+			CORE_PRIVILEGES.put(PRIV_ADD_RELATIONSHIPS, "Able to add relationships");
+			CORE_PRIVILEGES.put(PRIV_EDIT_RELATIONSHIPS, "Able to edit relationships");
+			CORE_PRIVILEGES.put(PRIV_DELETE_RELATIONSHIPS, "Able to delete relationships");
 		}
 		
 		// always add the module core privileges back on
@@ -329,6 +488,15 @@ public final class OpenmrsConstants {
 	public static final String AUTHENTICATED_ROLE = "Authenticated";
 	public static final String PROVIDER_ROLE = "Provider";
 	
+	/**
+	 * All roles returned by this method are inserted into the database
+	 * if they do not exist already.
+	 * 
+	 * These roles are also forbidden to be deleted from the administration
+	 * screens.
+	 * 
+	 * @return roles that are core to the system
+	 */
 	public static final Map<String, String> CORE_ROLES() {
 		Map<String, String> roles = new HashMap<String, String>();
 		
@@ -340,7 +508,11 @@ public final class OpenmrsConstants {
 		return roles;
 	}
 	
-	// These roles are given to a user automatically and cannot be assigned
+	/**
+	 * These roles are given to a user automatically and cannot be assigned
+	 * 
+	 * @return
+	 */
 	public static final Collection<String> AUTO_ROLES() {
 		List<String> roles = new Vector<String>();
 		
@@ -350,8 +522,7 @@ public final class OpenmrsConstants {
 		return roles;
 	}
 	
-	public static String GP_CONCEPTS_LOCKED = "concepts.locked";
-	
+	public static final String GLOBAL_PROPERTY_CONCEPTS_LOCKED            = "concepts.locked";
 	public static final String GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES = "patient.listingAttributeTypes";
 	public static final String GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES = "patient.viewingAttributeTypes";
 	public static final String GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES    = "user.listingAttributeTypes";
@@ -367,7 +538,12 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR = "patient.defaultPatientIdentifierValidator";	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES = "patient_identifier.importantTypes";
 	
-	// These properties (and default values) are set if not found in the database on startup
+	/**
+	 * These properties (and default values) are set if not found in the database 
+	 * when OpenMRS is started if they do not exist yet
+	 * 
+	 * @return
+	 */
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
 		List<GlobalProperty> props = new Vector<GlobalProperty>();
 		
@@ -521,7 +697,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty("scheduler.username", SchedulerConstants.SCHEDULER_USERNAME, "Username for the OpenMRS user that will perform the scheduler activities"));
 		props.add(new GlobalProperty("scheduler.password", SchedulerConstants.SCHEDULER_PASSWORD, "Password for the OpenMRS user that will perform the scheduler activities"));
 		
-		props.add(new GlobalProperty(GP_CONCEPTS_LOCKED, "false", "true/false whether or not concepts can be edited in this database."));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_CONCEPTS_LOCKED, "false", "true/false whether or not concepts can be edited in this database."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for patients in _lists_"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for patients when _viewing individually_"));
@@ -706,6 +882,15 @@ public final class OpenmrsConstants {
     public static final String LOG_LEVEL_WARN = "warn";
     public static final String LOG_LEVEL_ERROR = "error";
     public static final String LOG_LEVEL_FATAL = "fatal";
+    
+    /**
+	 * These enumerations should be used in ObsService and PersonService getters  
+	 * to help determine which type of object to restrict on
+	 * 
+	 * @see org.openmrs.api.ObsService
+	 * @see org.openmrs.api.PersonService 
+	 */
+	public static enum PERSON_TYPE {PERSON, PATIENT, USER}
     
     //Patient Identifier Validators
 	public static final String LUHN_IDENTIFIER_VALIDATOR = LuhnIdentifierValidator.class.getName();

@@ -16,11 +16,11 @@ package org.openmrs.scheduler;
 public class SchedulerConstants {
 	
 	// Number of milliseconds per second (used for readability)
+	// Number of milliseconds per second (used for readability)
 	public static int SCHEDULER_MILLIS_PER_SECOND = 1000; 
 	
 	// 30 second delay added before the initial start of a task
 	public static long SCHEDULER_DEFAULT_DELAY = 30000;
-	
 	
 	// These constants should not be used.  Global properties are now used to set 
 	//  the username/password.

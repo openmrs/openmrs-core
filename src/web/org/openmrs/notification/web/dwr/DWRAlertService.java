@@ -27,7 +27,8 @@ public class DWRAlertService {
 	protected final Log log = LogFactory.getLog(getClass());
 
 	/**
-	 * Calls the corresponding AlertService.getAlerts() method
+	 * Calls the corresponding AlertService.getAlertsByUser(null) method
+	 * to get alerts for the current user or for the authenticated role
 	 * 
 	 * @return
 	 */
@@ -41,7 +42,7 @@ public class DWRAlertService {
 			AlertService as = Context.getAlertService();
 
 			// loop over the Alerts to create AlertListItems
-			for (Alert a : as.getAlerts()) {
+			for (Alert a : as.getAlertsByUser(null)) {
 				alerts.add(new AlertListItem(a));
 			}
 
@@ -60,10 +61,14 @@ public class DWRAlertService {
 
 		try {
 			AlertService as = Context.getAlertService();
+			
 			// Get the alert object
 			Alert alert = as.getAlert(alertId);
-			// Mark the alert as read
-			as.markAlertRead(alert);
+			
+			// Mark the alert as read and save it
+			if (alert != null)
+				as.saveAlert(alert.markAlertRead());
+			
 		} catch (Exception e) {
 			log.error("Error while marking alert '" + alertId + "' as read", e);
 		}

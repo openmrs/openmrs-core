@@ -19,11 +19,18 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * ProgramWorkflowState
+ */
 public class ProgramWorkflowState implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
+	
+	private final Log log = LogFactory.getLog(getClass());
 
-	private Log log = LogFactory.getLog(this.getClass());
+	// ******************
+	// Properties
+	// ******************
 	
 	private Integer programWorkflowStateId;
 	private ProgramWorkflow programWorkflow;
@@ -32,12 +39,46 @@ public class ProgramWorkflowState implements Serializable {
 	private Boolean terminal;
 	private User creator; 
 	private Date dateCreated; 
-	private Boolean voided = false; 
-	private User voidedBy;
-	private Date dateVoided; 
-	private String voidReason;
+	private User changedBy;
+	private Date dateChanged;
+	private Boolean retired = false; 
 	
+	// ******************
+	// Constructors
+	// ******************
+	
+	/** Default Constructor */
 	public ProgramWorkflowState() { }
+
+	/** Constructor with id */
+	public ProgramWorkflowState(Integer programWorkflowStateId) {
+		setProgramWorkflowStateId(programWorkflowStateId);
+	}
+
+	// ******************
+	// Instance methods
+	// ******************
+	
+	/** @see Object#equals(Object) */
+	public boolean equals(Object obj) {
+		if (obj != null && obj instanceof ProgramWorkflowState) {
+			ProgramWorkflowState p = (ProgramWorkflowState)obj;
+			if (this.getProgramWorkflowStateId() == null) {
+				return p.getProgramWorkflowStateId() == null;
+			}
+			return (this.getProgramWorkflowStateId().equals(p.getProgramWorkflowStateId()));
+		}
+		return false;
+	}
+	
+	/** @see Object#toString() */
+	public String toString() {
+		return("State " + getConcept().getName() + " initial=" + getInitial() + " terminal=" + getTerminal());
+	}
+	
+	// ******************
+	// Property Access
+	// ******************
 
 	public Concept getConcept() {
 		return concept;
@@ -79,14 +120,6 @@ public class ProgramWorkflowState implements Serializable {
 		this.dateCreated = dateCreated;
 	}
 
-	public Date getDateVoided() {
-		return dateVoided;
-	}
-
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-
 	public ProgramWorkflow getProgramWorkflow() {
 		return programWorkflow;
 	}
@@ -103,41 +136,31 @@ public class ProgramWorkflowState implements Serializable {
 		this.programWorkflowStateId = programWorkflowStateId;
 	}
 
-	public Boolean getVoided() {
-		return voided;
+    public Boolean getRetired() {
+    	return retired;
 	}
 
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
+    public Boolean isRetired() {
+    	return getRetired();
 	}
 
-	public User getVoidedBy() {
-		return voidedBy;
+    public void setRetired(Boolean retired) {
+    	this.retired = retired;
 	}
 
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
+    public User getChangedBy() {
+    	return changedBy;
 	}
 
-	public String getVoidReason() {
-		return voidReason;
+    public void setChangedBy(User changedBy) {
+    	this.changedBy = changedBy;
 	}
 
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
+    public Date getDateChanged() {
+    	return dateChanged;
 	}
 
-	public String toString() {
-		return("State " + getConcept().getName(null, false) + " initial=" + getInitial() + " terminal=" + getTerminal());
-	}
-	
-	public boolean equals(Object o) {
-		if (o instanceof ProgramWorkflowState) {
-			ProgramWorkflowState other = (ProgramWorkflowState) o;
-			return getProgramWorkflowStateId() != null && other.getProgramWorkflowStateId() != null && getProgramWorkflowStateId().equals(other.getProgramWorkflowStateId());
+    public void setDateChanged(Date dateChanged) {
+    	this.dateChanged = dateChanged;
 		}
-		log.warn("o: " + o + " is not a ProgramWorkflowState");
-		return false;
-	}
-	
 }

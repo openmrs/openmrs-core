@@ -189,7 +189,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 				}
 			}
 		}
-		return new Cohort(ret);
+		return new Cohort("Cohort from drug orders", "", ret);
 	}
 	
 	public Cohort getPatientsHavingDrugOrder(
@@ -241,7 +241,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 						ret.add(e.getKey());
 			}
 		}
-		Cohort ps = new Cohort(ret);
+		Cohort ps = new Cohort("Cohort from drug orders", "", ret);
 		return ps;
 	}
 	

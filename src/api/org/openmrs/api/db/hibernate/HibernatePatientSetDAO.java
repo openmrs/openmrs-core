@@ -456,7 +456,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Set<Integer> ids = new HashSet<Integer>();
 		ids.addAll(query.list());
 		
-		return new Cohort(ids);
+		return new Cohort("All patients", "", ids);
 	}
 	
 	/**
@@ -1406,7 +1406,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				criteria.add(Restrictions.in("person.personId", patients.getMemberIds()));
 			
 			// do not include voided person rows
-			criteria.add(Expression.eq("voided", false));
+			criteria.add(Expression.eq("personVoided", false));
 		}
 		else {
 			projectionList.add(Projections.property("patient.personId"));

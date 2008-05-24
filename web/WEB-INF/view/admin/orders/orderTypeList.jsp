@@ -20,7 +20,7 @@
 			<th> <spring:message code="general.description" /> </th>
 		</tr>
 		<c:forEach var="orderType" items="${orderTypeList}">
-			<tr>
+			<tr <c:if test="${orderType.retired}">class="retired"</c:if>>
 				<td valign="top"><input type="checkbox" name="orderTypeId" value="${orderType.orderTypeId}"></td>
 				<td valign="top">
 					<a href="orderType.form?orderTypeId=${orderType.orderTypeId}">

@@ -94,9 +94,76 @@ public class Obs implements java.io.Serializable {
 	public Obs() {
 	}
 
+	/**
+	 * Required parameters constructor 
+	 * 
+	 * A value is also required, but that can be one of:
+	 * valueCoded, 
+	 * valueDrug,
+	 * valueNumeric, or
+	 * valueText
+	 * 
+	 * @param person The Person this obs is acting on
+	 * @param question The question concept this obs is related to
+	 * @param obsDatetime The time this obs took place
+	 * @param location The location this obs took place
+	 */
+	public Obs(Person person, Concept question, Date obsDatetime, Location location) {
+		this.person = person;
+		this.personId = person.getPersonId();
+		this.concept = question;
+		this.obsDatetime = obsDatetime;
+		this.location = location;
+	}
+
 	/** constructor with id */
 	public Obs(Integer obsId) {
 		this.obsId = obsId;
+	}
+
+	/**
+	 * This is an equivalent to a copy constructor.
+	 * 
+	 * Creates a new copy of the given <code>obsToCopy</code> with a null obs id
+	 * 
+	 * @param obsToCopy The Obs that is going to be copied
+	 * @return a new Obs object with all the same attributes as the given obs
+	 */
+	public static Obs newInstance(Obs obsToCopy) {
+		Obs newObs = new Obs(obsToCopy.getPerson(), obsToCopy.getConcept(), 
+		                     obsToCopy.getObsDatetime(), obsToCopy.getLocation());
+		
+		newObs.setObsGroup(obsToCopy.getObsGroup());
+		newObs.setAccessionNumber(obsToCopy.getAccessionNumber());
+		newObs.setValueCoded(obsToCopy.getValueCoded());
+		newObs.setValueDrug(obsToCopy.getValueDrug());
+		newObs.setValueGroupId(obsToCopy.getValueGroupId());
+		newObs.setValueDatetime(obsToCopy.getValueDatetime());
+		newObs.setValueNumeric(obsToCopy.getValueNumeric());
+		newObs.setValueModifier(obsToCopy.getValueModifier());
+		newObs.setValueText(obsToCopy.getValueText());
+		newObs.setComment(obsToCopy.getComment());
+		newObs.setOrder(obsToCopy.getOrder());
+		newObs.setEncounter(obsToCopy.getEncounter());
+		newObs.setDateStarted(obsToCopy.getDateStarted());
+		newObs.setDateStopped(obsToCopy.getDateStopped());
+		newObs.setCreator(obsToCopy.getCreator());
+		newObs.setDateCreated(obsToCopy.getDateCreated());
+		newObs.setVoided(obsToCopy.getVoided());
+		newObs.setVoidedBy(obsToCopy.getVoidedBy());
+		newObs.setDateVoided(obsToCopy.getDateVoided());
+		newObs.setVoidReason(obsToCopy.getVoidReason());
+		
+		if (obsToCopy.getGroupMembers() != null)
+			for (Obs member : obsToCopy.getGroupMembers()) {
+				// if the obs hasn't been saved yet, no need to duplicate it
+				if (member.getObsId() == null)
+					newObs.addGroupMember(member);
+				else
+					newObs.addGroupMember(Obs.newInstance(member));
+			}
+
+		return newObs;
 	}
 
 	/**
@@ -142,6 +209,31 @@ public class Obs implements java.io.Serializable {
 		return false;
 	}
 
+	/**
+	 * Sets the required Obs properties:
+	 * creator and dateCreated
+	 * 
+	 * @param creator
+	 * @param dateCreated
+	 */
+	public void setRequiredProperties(User creator, Date dateCreated ) {
+		if (this.getCreator() == null)
+			setCreator(creator);
+
+		if (this.getDateCreated() == null)
+			setDateCreated(dateCreated);
+		
+		if (getGroupMembers() != null) {
+			for (Obs member : getGroupMembers()) {
+				// if statement does a quick sanity check to
+				// avoid the simplest of infinite loops
+				if (member.getCreator() == null || 
+					member.getDateCreated() == null)
+						member.setRequiredProperties(creator, dateCreated);
+			}
+		}
+	}
+	
 	// Property accessors
 
 	/**
@@ -654,9 +746,10 @@ public class Obs implements java.io.Serializable {
 
 	/**
 	 * @return Returns the voided.
+	 * @see #isVoided()
 	 */
 	public Boolean getVoided() {
-		return voided;
+		return isVoided();
 	}
 
 	/**

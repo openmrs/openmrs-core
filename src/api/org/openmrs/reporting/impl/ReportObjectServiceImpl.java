@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
+import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.PatientFilter;
@@ -17,7 +18,7 @@ import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.reporting.db.ReportObjectDAO;
 import org.openmrs.util.OpenmrsConstants;
 
-public class ReportObjectServiceImpl implements ReportObjectService {
+public class ReportObjectServiceImpl extends BaseOpenmrsService implements ReportObjectService {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	

@@ -13,20 +13,6 @@
 	<i>${report.schema.description}</i>
 	
 	<br/><br/>
-	<h4><spring:message code="Report.run.inputCohort"/></h4>
-	<span style="margin-left: 1.5em">
-		<c:choose>
-			<c:when test="${not empty report.inputCohort}">
-				${report.inputCohort.name}
-				<i>(<spring:message code="Cohort.ofN" arguments="${fn:length(report.inputCohort.memberIds)}"/>)</i>
-			</c:when>
-			<c:otherwise>
-				<spring:message code="Report.run.allPatients"/>
-			</c:otherwise>
-		</c:choose>
-	</span>
-		
-	<br/>
 	
 	<spring:hasBindErrors name="reportFromXml">
 		<spring:message code="fix.error"/>
@@ -38,14 +24,13 @@
 		<br />
 	</spring:hasBindErrors>
 	
-	<br/>
+	<br/><br/>
 	
 	<form method="post">
-		<input type="hidden" name="isSubmit" value="true"/>
-		<h4><spring:message code="Report.parameters"/></h4>
+		<b><spring:message code="Report.parameters"/></b>
 		
 		<spring:nestedPath path="report">
-			<table style="margin-left: 1.5em">
+			<table>
 				<c:forEach var="p" items="${report.schema.reportParameters}">
 	                <tr>
 	                    <spring:bind path="userEnteredParams[${p.name}]">
@@ -68,23 +53,21 @@
 	            </spring:bind>
 	        </table>
 	        
-	        <br/>
+	        <br/><br/>
 			
-			<h4><spring:message code="Report.run.outputFormat"/></h4>
-			<span style="margin-left: 1.5em">
-				<spring:bind path="selectedRenderer">
-		            <select name="${status.expression}">
-		                <c:forEach var="r" items="${report.renderingModes}">
-		                	<c:set var="thisVal" value="${r.renderer.class.name}!${r.argument}"/>
-		                    <option
-		                        <c:if test="${status.value == thisVal}"> selected</c:if>
-		                        value="${thisVal}">
-		                            ${r.label}
-		                    </option>
-		                </c:forEach>
-		            </select>
-		        </spring:bind>
-		    </span>
+			<b><spring:message code="Report.run.outputFormat"/></b>
+			<spring:bind path="selectedRenderer">
+	            <select name="${status.expression}">
+	                <c:forEach var="r" items="${report.renderingModes}">
+	                	<c:set var="thisVal" value="${r.renderer.class.name}!${r.argument}"/>
+	                    <option
+	                        <c:if test="${status.value == thisVal}"> selected</c:if>
+	                        value="${thisVal}">
+	                            ${r.label}
+	                    </option>
+	                </c:forEach>
+	            </select>
+	        </spring:bind>
 		</spring:nestedPath>
 		
 		<br/>

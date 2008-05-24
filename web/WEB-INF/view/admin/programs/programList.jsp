@@ -24,34 +24,43 @@
 				<th> <spring:message code="general.id"/> </th>
 				<th> <spring:message code="general.name"/> </th>
 				<th> <spring:message code="general.description"/> </th>
+				<th> <spring:message code="Concept.name"/> </th>
 				<th> <spring:message code="Program.workflows"/> </th>
 			</tr>
 			<c:forEach var="program" items="${programList}">
-				<tr> 
-					<td valign="top">
-						<c:if test="${program.voided}"><i><spring:message code="general.voided"/><strike></c:if>
-						${program.programId}
-						<c:if test="${program.voided}"></strike></i></c:if>
-					</td>
-					<openmrs:concept conceptId="${program.concept.conceptId}" var="v" nameVar="n" numericVar="num">
-						<td valign="top">
-							<c:if test="${program.voided}"><strike></c:if>
-							<a href="program.form?programId=${program.programId}">
-							${n.name}
-							</a>
-							<c:if test="${program.voided}"></strike></c:if>
+				<tr>
+					<c:if test="${program.retired}">
+						<td colspan="5">
+							<i><spring:message code="general.retired"/><strike>
+								<a href="program.form?programId=${program.programId}">${program.name}</a>
+							</strike></i>
 						</td>
-						<td valign="top">${n.description}</td>
-					</openmrs:concept>
-					<td>
-						<c:forEach var="workflow" items="${program.workflows}">
-							<a href="workflow.form?programWorkflowId=${workflow.programWorkflowId}">
-								<openmrs_tag:concept conceptId="${workflow.concept.conceptId}"/>
-								(${fn:length(workflow.states)})
-							</a>
-							<br/>
-						</c:forEach>
-					</td>
+					</c:if>
+					<c:if test="${!program.retired}">
+						<td valign="top">
+							${program.programId}
+						</td>
+						<td valign="top">
+							<a href="program.form?programId=${program.programId}">${program.name}</a>
+						</td>
+						<td valign="top">
+							${program.description}
+						</td>
+						<openmrs:concept conceptId="${program.concept.conceptId}" var="v" nameVar="n" numericVar="num">
+							<td valign="top">
+								${n.name}
+							</td>
+						</openmrs:concept>
+						<td>
+							<c:forEach var="workflow" items="${program.workflows}">
+								<a href="workflow.form?programWorkflowId=${workflow.programWorkflowId}">
+									<openmrs_tag:concept conceptId="${workflow.concept.conceptId}"/>
+									(${fn:length(workflow.states)})
+								</a>
+								<br/>
+							</c:forEach>
+						</td>
+					</c:if>
 				</tr>
 			</c:forEach>
 		</table>

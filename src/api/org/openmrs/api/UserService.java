@@ -19,29 +19,48 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Contains methods pertaining to Users in the system
+ * 
+ * Use:<br/>
+ * 
+ * <pre>
+ *   List<User> users = Context.getUserService().getAllUsers();
+ * </pre>
+ * 
+ * @see org.openmrs.api.context.Context
+ */
 @Transactional
-public interface UserService {
+public interface UserService extends OpenmrsService {
 
 	/**
-	 * Create a new user
+	 * Saves a user to the database.
 	 * @param user
 	 * @param password
-	 * @returns newly created User object
+	 * @returns a User object 
 	 * @throws APIException
 	 */
-	@Authorized({"Add Users"})
+	@Authorized({OpenmrsConstants.PRIV_ADD_USERS,OpenmrsConstants.PRIV_EDIT_USERS})
+	public User saveUser(User user, String password) throws APIException;
+	
+	/**
+	 * @see {@link #saveUser(User, String)}
+	 * @deprecated replaced by {@link #saveUser(User, String)}
+	 */
+	@Authorized({OpenmrsConstants.PRIV_ADD_USERS})
 	public User createUser(User user, String password) throws APIException;
 
 	/**
-	 * Get user by internal user identifier
+	 * Get user by internal user identifier.
 	 * @param userId internal identifier
 	 * @return requested user
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	@Authorized({"View Users"})
+	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
 	public User getUser(Integer userId) throws APIException;
 
 	/**
@@ -51,7 +70,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	@Authorized({"View Users"})
+	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
 	public User getUserByUsername(String username) throws APIException;
 
 	/**
@@ -61,7 +80,7 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	@Authorized({"View Users"})
+	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
 	public boolean hasDuplicateUsername(User user) throws APIException;
 
 	/**
@@ -71,33 +90,33 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	@Authorized({"View Users"})
+	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
 	public List<User> getUsersByRole(Role role) throws APIException;
 
 	/**
-	 * Save changes to user
+	 * Save changes to given <code>user</code> to the database.
 	 * @param user
 	 * @throws APIException
+	 * @see {@link #saveUser(User, String)}
+	 * @deprecated replaced by {@link #saveUser(User, String)}
 	 */
-	@Authorized({"Edit Users"})
+	@Authorized({OpenmrsConstants.PRIV_EDIT_USERS})
 	public void updateUser(User user) throws APIException;
 
 	/**
-	 * Grant roles for user
-	 * @param user
-	 * @param role
-	 * @throws APIException
+	 * Use should be UserService.saveUser(user.addRole(role)) 
+	 * 
+	 * @deprecated use {@link org.openmrs.User#addRole(Role)} 
 	 */
-	@Authorized({"Edit Users"})
+	@Authorized({OpenmrsConstants.PRIV_EDIT_USERS})
 	public void grantUserRole(User user, Role role) throws APIException;
 
 	/**
-	 * Revoke roles from user
-	 * @param user
-	 * @param role
-	 * @throws APIException
+	 * Use UserService.saveUser(user.removeRole(role)) 
+	 * 
+	 * @deprecated use {@link org.openmrs.User#removeRole(Role)} 
 	 */
-	@Authorized({"Edit Users"})
+	@Authorized({OpenmrsConstants.PRIV_EDIT_USERS})
 	public void revokeUserRole(User user, Role role) throws APIException;
 
 	/** 
@@ -108,23 +127,44 @@ public interface UserService {
 	 * 
 	 * @param user
 	 * @param reason
+	 * @return the given user voided out
 	 * @throws APIException
 	 */
-	@Authorized({"Edit Users"})
-	public void voidUser(User user, String reason) throws APIException;
+	@Authorized({OpenmrsConstants.PRIV_EDIT_USERS})
+	public User voidUser(User user, String reason) throws APIException;
 
 	/**
 	 * Clear voided flag for user (equivalent to an "undelete" or
 	 * Lazarus Effect for user)
 	 * 
 	 * @param user
+	 * @return the given user unvoided
 	 * @throws APIException
 	 */
-	@Authorized({"Edit Users"})
-	public void unvoidUser(User user) throws APIException;
+	@Authorized({OpenmrsConstants.PRIV_EDIT_USERS})
+	public User unvoidUser(User user) throws APIException;
 
 	/**
-	 * Delete user from database. This is included for troubleshooting and
+	 * @see #voidUser(User, String)
+	 * @see #purgeUser(User)
+	 * @deprecated use {@link #purgeUser(User)}
+	 */
+	@Authorized({OpenmrsConstants.PRIV_DELETE_USERS})
+	public void deleteUser(User user) throws APIException;
+	
+    /**
+     * Completely remove a location from the database (not reversible).
+     * This method delegates to #purgeLocation(location, boolean) method.
+     * 
+     * @param user the User to remove from the database.
+     */
+    @Authorized({OpenmrsConstants.PRIV_PURGE_USERS})
+    public void purgeUser(User user) throws APIException;
+
+    /**
+     * Completely remove a user from the database (not reversible).
+     * 
+	 * This is a delete from the database. This is included for troubleshooting and
 	 * low-level system administration. Ideally, this method should <b>never</b>
 	 * be called &mdash; <code>Users</code> should be <em>voided</em> and
 	 * not <em>deleted</em> altogether (since many foreign key constraints
@@ -135,13 +175,17 @@ public interface UserService {
 	 * record. If the user has been included in any other parts of the database
 	 * (through a foreign key), the attempt to delete the user will violate
 	 * foreign key constraints and fail.
-	 * 
-	 * @param user
-	 * @throws APIException
-	 * @see #voidUser(User, String)
+     * 
+     * @param cascade <code>true</code> to delete associated content
+     */
+    @Authorized({OpenmrsConstants.PRIV_PURGE_USERS})
+    public void purgeUser(User user, boolean cascade) throws APIException;	
+	
+	/**
+	 * @deprecated use {@link #getAllPrivileges()}
 	 */
-	@Authorized({"Delete Users"})
-	public void deleteUser(User user) throws APIException;
+	@Transactional(readOnly=true)
+	public List<Privilege> getPrivileges() throws APIException;
 	
 	/**
 	 * Returns all privileges currently possible for any User
@@ -149,33 +193,66 @@ public interface UserService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	public List<Privilege> getPrivileges() throws APIException;
+	public List<Privilege> getAllPrivileges() throws APIException;
 
+	/**
+	 * @deprecated use {@link #getAllRoles()}
+	 */
+	@Transactional(readOnly=true)
+	public List<Role> getRoles() throws APIException;
+	
 	/**
 	 * Returns all roles currently possible for any User
 	 * @return Global list of roles
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	public List<Role> getRoles() throws APIException;
+	public List<Role> getAllRoles() throws APIException;
 
 	/**
-	 * Returns roles that inherit from this role
-	 * @return inheriting roles
-	 * @throws APIException
+	 * @deprecated use {@link org.openmrs.Role#getInheritedRoles()}
 	 */
 	@Transactional(readOnly=true)
 	public List<Role> getInheritingRoles(Role role) throws APIException;
-
+	
 	/**
-	 * Returns all users in the system
-	 * @return Global list of users
+	 * Save the given role in the database
+	 * 
+	 * @param Role to update
+	 * @return the saved role
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	@Authorized({"View Users"})
-	public List<User> getUsers() throws APIException;
+	@Authorized({OpenmrsConstants.PRIV_MANAGE_ROLES})
+	public Role saveRole(Role role) throws APIException;
 
+	/**
+	 * Complete remove a role from the database
+	 * 
+	 * @param Role to delete from the database
+	 * @throws APIException
+	 */
+	@Authorized({OpenmrsConstants.PRIV_PURGE_ROLES})
+	public void purgeRole(Role role) throws APIException;
+	
+	/**
+	 * Save the given privilege in the database
+	 * 
+	 * @param Privilege to update
+	 * @return the saved privilege
+	 * @throws APIException
+	 */
+	@Authorized({OpenmrsConstants.PRIV_MANAGE_PRIVILEGES})
+	public Privilege savePrivilege(Privilege privilege) throws APIException;
+
+	/**
+	 * Complete remove a privilege from the database
+	 * 
+	 * @param Privilege to delete
+	 * @throws APIException
+	 */
+	@Authorized({OpenmrsConstants.PRIV_PURGE_PRIVILEGES})
+	public void purgePrivilege(Privilege privilege) throws APIException;
+	
 	/**
 	 * Returns role object with given string role
 	 * @return Role
@@ -191,7 +268,23 @@ public interface UserService {
 	 */
 	@Transactional(readOnly=true)
 	public Privilege getPrivilege(String p) throws APIException;
-
+	
+	/**
+	 * @deprecated use {@link #getAllUsers()}
+	 */
+	@Transactional(readOnly=true)
+	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
+	public List<User> getUsers() throws APIException;
+	
+	/**
+	 * Returns all users in the system
+	 * @return Global list of users
+	 * @throws APIException
+	 */
+	@Transactional(readOnly=true)
+	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
+	public List<User> getAllUsers() throws APIException;
+	
 	/**
 	 * Changes the <code>user<code>'s password
 	 * ** Restricted to Super User access**
@@ -199,11 +292,11 @@ public interface UserService {
 	 * @param pw2 new password
 	 * @throws APIException
 	 */
-	@Authorized({"Edit Users"})
+	@Authorized({OpenmrsConstants.PRIV_EDIT_USERS})
 	public void changePassword(User u, String pw) throws APIException;
 
 	/**
-	 * Changes the current user's password
+	 * Changes the current user's password.  
 	 * @param pw current password
 	 * @param pw2 new password
 	 * @throws APIException
@@ -211,85 +304,101 @@ public interface UserService {
 	public void changePassword(String pw, String pw2) throws APIException;
 
 	/**
-	 * Changes the current user's secret question and answer
+	 * Changes the current user's secret question and answer.
+	 * 
 	 * @param pw user's password
 	 * @param question
 	 * @param answer
 	 * @throws APIException
 	 */
-	public void changeQuestionAnswer(String pw, String q, String a);
+	public void changeQuestionAnswer(String pw, String q, String a) throws APIException;
 
 	/**
-	 * Compares <code>answer</code> against the <code>user</code>'s secret answer
+	 * Compares <code>answer</code> against the <code>user</code>'s secret answer.
+	 * 
 	 * @param user
 	 * @param answer
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	public boolean isSecretAnswer(User u, String answer);
-
+	public boolean isSecretAnswer(User u, String answer) throws APIException;
+	
 	/**
-	 * Return a user if any part of the search matches first/last/system id and the user
-	 * has one of the roles supplied
-	 * @param name
+	 * Return a user if any part of the search matches first/last/system id and the 
+	 * user has one at least one of the given <code>roles</code> assigned to them
+	 * 
+	 * @param nameSearch
 	 * @param roles
 	 * @param includeVoided
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	@Authorized({"View Users"})
-	public List<User> findUsers(String name, List<String> roles, boolean includeVoided);
+	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
+	public List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws APIException;
+	
+	/**
+	 * @deprecated use {@link #getUsers(String, List, boolean)}
+	 */
+	@Transactional(readOnly=true)
+	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
+	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) throws APIException;
 
 	/**
-	 * Find a user by exact first name and last name
+	 * @deprecated use {@link #getUsersByName(String, String, boolean)}
+	 */
+	@Transactional(readOnly=true)
+	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
+	public List<User> findUsers(String givenName, String familyName, boolean includeVoided) throws APIException;
+	
+	/**
+	 * Search for a list of users by exact first name and last name.
+	 * 
 	 * @param givenName
 	 * @param familyName
 	 * @param includeVoided
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	@Authorized({"View Users"})
-	public List<User> findUsers(String givenName, String familyName, boolean includeVoided);
+	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
+	public List<User> getUsersByName(String givenName, String familyName, boolean includeVoided) throws APIException;
 	
 	/**
-	 * Get users that have any role in <code>roles</code> granted
-	 * @param Role role that the Users must have to be returned 
-	 * @return users with requested role
-	 * @throws APIException
+	 * @deprecated use {@link #getUsers(String, List, boolean)}
 	 */
 	@Transactional(readOnly=true)
-	@Authorized({"View Users"})
-	public List<User> getAllUsers(List<Role> roles, boolean includeVoided);
+	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
+	public List<User> getAllUsers(List<Role> roles, boolean includeVoided) throws APIException;
 
 	/**
 	 * Adds the <code>key</code>/<code>value</code> pair to the 
-	 * given <code>user</code> 
+	 * given <code>user</code>.
 	 * 
 	 * <b>Implementations of this method should handle privileges</b>
 	 * 
 	 * @param user
 	 * @param key
 	 * @param value
+	 * @return the user that was passed in and added to
 	 */
-	public void setUserProperty(User user, String key, String value);
+	public User setUserProperty(User user, String key, String value) throws APIException;
 	
 	/**
 	 * Removes the property denoted by <code>key</code> from the 
-	 * <code>user</code>'s properties 
+	 * <code>user</code>'s properties.
 	 * 
 	 * <b>Implementations of this method should handle privileges</b>
 	 * 
 	 * @param user
 	 * @param key
+	 * @return the user that was passed in and removed from
 	 */
-	public void removeUserProperty(User user, String key);
-	
+	public User removeUserProperty(User user, String key) throws APIException;
 	
 	/**
 	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied
 	 * in this method
 	 * @return new system id
 	 */
-	String generateSystemId();
-
+	public String generateSystemId() throws APIException;
+	
 }

@@ -275,7 +275,7 @@ public class CohortSearchHistory extends AbstractReportObject {
     	if (current == null)
     		return Context.getPatientSetService().getAllPatients();
     	else {
-    		return new Cohort(current);
+    		return new Cohort("Cohort anded together", "", current);
     	}
     }
     
@@ -284,7 +284,7 @@ public class CohortSearchHistory extends AbstractReportObject {
     	for (int i = 0; i < searchHistory.size(); ++i) {
     		ret.addAll(getPatientSet(i, context).getMemberIds());
     	}
-    	return new Cohort(ret);
+    	return new Cohort("Cohort or'd together", "", ret);
     }
 	
 	// Just in case someone has modified the searchHistory list directly. Maybe I should make that getter return an unmodifiable list.

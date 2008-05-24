@@ -9,6 +9,7 @@
 		<!--  Hibernate Mapping files -->
 		
 		<!-- API -->
+		<mapping resource="org/openmrs/api/db/hibernate/ConceptName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Concept.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptClass.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptDatatype.hbm.xml" />

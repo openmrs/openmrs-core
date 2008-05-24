@@ -14,18 +14,15 @@
 		<discriminator column="field_id" insert="false" />
 		
 		<property name="name" type="java.lang.String"
-			column="name" length="255" not-null="true"/>
+			length="255" not-null="true"/>
 		
-		<property name="description" type="java.lang.String"
-			column="description" length="65535" />
+		<property name="description" type="java.lang.String" length="65535" />
 
 		<many-to-one name="fieldType" class="FieldType" not-null="true">
 			<column name="field_type" />
 		</many-to-one>
 
-		<many-to-one name="concept" class="Concept">
-			<column name="concept_id" />
-		</many-to-one>
+		<many-to-one name="concept" class="Concept" column="concept_id" />
 		
 		<property name="tableName" type="java.lang.String"
 			column="table_name" length="50" />
@@ -39,9 +36,7 @@
 		<property name="selectMultiple" type="boolean"
 			column="select_multiple" length="1" not-null="true"/>
 		
-		<many-to-one name="creator" class="User" not-null="true">
-			<column name="creator" />
-		</many-to-one>
+		<many-to-one name="creator" class="User" not-null="true" />
 
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
@@ -64,6 +59,15 @@
 			<key column="field_id" />
 			<many-to-many column="form_id" class="Form" />
 		</set>
+		
+		<many-to-one name="retiredBy" class="org.openmrs.User"
+			column="retired_by" />
+		<property name="dateRetired" type="java.util.Date"
+			column="date_retired" length="19" />
+		<property name="retireReason" type="java.lang.String"
+			column="retire_reason" length="255" />
+		<property name="retired" type="boolean" length="1"
+			not-null="true" />
 		
 	</class>
 </hibernate-mapping>

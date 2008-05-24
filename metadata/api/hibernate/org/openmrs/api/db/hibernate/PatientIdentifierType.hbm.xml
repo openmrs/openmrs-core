@@ -4,17 +4,8 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
     
 <hibernate-mapping package="org.openmrs">
-<!-- 
-    Created by the Middlegen Hibernate plugin 2.1
 
-    http://boss.bekk.no/boss/middlegen/
-    http://www.hibernate.org/
--->
-
-<class 
-    name="org.openmrs.PatientIdentifierType" 
-    table="patient_identifier_type"
->
+<class name="PatientIdentifierType" table="patient_identifier_type">
 
     <id
         name="patientIdentifierTypeId"
@@ -30,21 +21,18 @@
 	<property
         name="name"
         type="java.lang.String"
-        column="name"
         not-null="true"
         length="50"
     />
     <property
         name="description"
         type="java.lang.String"
-        column="description"
         not-null="true"
         length="65535"
     />
     <property
         name="format"
         type="java.lang.String"
-        column="format"
         length="50"
     />
 
@@ -57,7 +45,7 @@
     
     <property name="checkDigit" type="boolean" column="check_digit" not-null="true"/>
 
-    <property name="required" type="boolean" column="required" not-null="true"/>
+    <property name="required" type="boolean" not-null="true"/>
     
     <property name="validator" type="java.lang.String" column="validator" length="200"/>
     
@@ -71,30 +59,15 @@
 
     <!-- Associations -->
   
-    <!-- bi-directional one-to-many association to PatientIdentifier -->
-    <!--
-    <set
-        name="patientIdentifiers"
-        lazy="true"
-        inverse="true"
-		cascade="none"
-    >
-        <key>
-            <column name="identifier_type" />
-        </key>
-        <one-to-many 
-            class="org.openmrs.PatientIdentifier"
-        />
-    </set>
-    -->
-    <!-- bi-directional many-to-one association to User -->
-    <many-to-one
-        name="creator"
-        class="org.openmrs.User"
-        not-null="true"
-    >
-        <column name="creator" />
-    </many-to-one>
+    <many-to-one name="creator" class="User" not-null="true" />
+    
+    <many-to-one name="retiredBy" class="User" column="retired_by" />
+	<property name="dateRetired" type="java.util.Date"
+			column="date_retired" length="19" />
+	<property name="retireReason" type="java.lang.String"
+			column="retire_reason" length="255" />
+	<property name="retired" type="boolean" column="retired"
+			length="1" not-null="true" />
 
 </class>
 </hibernate-mapping>

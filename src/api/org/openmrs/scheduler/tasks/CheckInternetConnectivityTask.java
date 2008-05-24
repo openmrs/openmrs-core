@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.notification.Alert;
 
 /**
  *  Simple implementation to check if we have a connection to the internet.
@@ -55,7 +56,7 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 				// TODO role should be provided as a property to taskconfig
 				Role role = Context.getUserService().getRole("System Developer");
 				Collection<User> users = Context.getUserService().getUsersByRole(role);
-				Context.getAlertService().createAlert(text, users);
+				Context.getAlertService().saveAlert(new Alert(text, users));
 			} catch (Exception e) { 
 				// Uh oh, just log it.
 				log.error(e);

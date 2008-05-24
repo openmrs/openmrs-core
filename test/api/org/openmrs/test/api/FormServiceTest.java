@@ -52,7 +52,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Form form1 = new Form();
 		
 		String name1 = "form name1";
-		String version1 = "version1";
+		String version1 = "1.0";
 		String descript1 = "descript1";
 		
 		form1.setName(name1);
@@ -66,7 +66,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Form form2 = formService.getForm(form1.getFormId());
 		
 		String name2 = "form name2";
-		String version2 = "version2";
+		String version2 = "2.0";
 		String descript2 = "descript2";
 		
 		form2.setName(name2);
@@ -93,7 +93,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		formService.unretireForm(form2);
 		assertFalse(form2.isRetired());
-		assertFalse(form2.getRetiredReason().equals("reason"));
+		assertNull(form2.getRetiredReason());
 		
 		//testing deletion
 		

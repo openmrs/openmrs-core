@@ -13,6 +13,12 @@
  */
 package org.openmrs.test.api;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.openmrs.OrderType;
+import org.openmrs.api.OrderService;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
@@ -45,5 +51,62 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		
 	}	
+	
+
+	/**
+	 * TODO finish and activate this test method
+	 * 
+	 * @throws Exception
+	 */
+	public void xtestOrderType() throws Exception {
+		
+		OrderService orderService = Context.getOrderService();
+		
+		//testing creation
+		
+		OrderType orderType = new OrderType();
+		
+		orderType.setName("testing");
+		orderType.setDescription("desc");
+		
+		orderService.saveOrderType(orderType);
+		assertNotNull(orderType.getOrderTypeId());
+		
+		List<OrderType> orderTypes = orderService.getAllOrderTypes();
+		
+		//make sure we get a list
+		assertNotNull(orderTypes);
+		
+		boolean found = false;
+		for(Iterator<OrderType> i = orderTypes.iterator(); i.hasNext();) {
+			OrderType orderType2 = i.next();
+			assertNotNull(orderType);
+			//check .equals function
+			assertTrue(orderType.equals(orderType2) == (orderType.getOrderTypeId().equals(orderType2.getOrderTypeId())));
+			//mark found flag
+			if (orderType.equals(orderType2))
+				found = true;
+		}
+		
+		//assert that the new orderType was returned in the list
+		assertTrue(found);
+		
+		
+		//check update
+		orderType.setName("another test");
+		orderService.saveOrderType(orderType);
+		
+		OrderType newerOrderType = orderService.getOrderType(orderType.getOrderTypeId());
+		assertTrue(newerOrderType.getName().equals(orderType.getName()));
+		
+		
+		//check deletion
+		
+		// TODO must create this method before testing it!
+		//as.deleteOrderType(orderType.getOrderTypeId());
+		
+		assertNull(orderService.getOrderType(orderType.getOrderTypeId()));
+
+	}
 	
 }

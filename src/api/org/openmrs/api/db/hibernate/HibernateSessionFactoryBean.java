@@ -51,7 +51,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		for (Object key : properties.keySet()) {
 			String prop = (String)key;
 			String value = (String)properties.get(key);
-			log.debug("Setting property: " + prop + ":" + value);
+			log.trace("Setting property: " + prop + ":" + value);
 			config.setProperty(prop, value);
 			if (!prop.startsWith("hibernate"))
 				config.setProperty("hibernate." + prop, value);

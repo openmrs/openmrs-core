@@ -613,6 +613,307 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.3.0.01');
 
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.02
+# Darius Jazayeri               March 13, 2008
+# Adding modified* columns to Cohort
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+	ALTER TABLE `cohort` ADD COLUMN `changed_by` int(11) default NULL;
+	ALTER TABLE `cohort` ADD COLUMN `date_changed` datetime default NULL;
+	ALTER TABLE `cohort` ADD KEY `user_who_changed_cohort` (`changed_by`);
+	ALTER TABLE `cohort` ADD CONSTRAINT `user_who_changed_cohort` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`);
+	
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.02');
+
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.03
+# Mike Seaton         March 31, 2008
+# API-Refactoring of Program tables
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+	ALTER TABLE `program` ADD COLUMN `name` varchar(50);
+	UPDATE program p SET p.name = (SELECT n.name FROM concept_name n WHERE n.concept_id = p.concept_id);
+	ALTER TABLE `program` MODIFY `name` varchar(50) NOT NULL;
+	ALTER TABLE `program` ADD COLUMN `description` varchar(500);
+	ALTER TABLE `program` CHANGE `voided` `retired` tinyint(1) NOT NULL default '0';
+	ALTER TABLE `program` DROP FOREIGN KEY `user_who_voided_program`;
+	ALTER TABLE `program` DROP COLUMN `voided_by`;
+	ALTER TABLE `program` DROP COLUMN `date_voided`;
+	ALTER TABLE `program` DROP COLUMN `void_reason`;
+
+	ALTER TABLE `program_workflow` CHANGE COLUMN `voided` `retired` tinyint(1) NOT NULL default '0';
+	ALTER TABLE `program_workflow` DROP FOREIGN KEY `workflow_voided_by`;
+	ALTER TABLE `program_workflow` CHANGE COLUMN `voided_by` `changed_by` int(11) default NULL;
+	ALTER TABLE `program_workflow` ADD CONSTRAINT `workflow_changed_by` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`);
+	ALTER TABLE `program_workflow` CHANGE COLUMN `date_voided` `date_changed` datetime default NULL;
+	ALTER TABLE `program_workflow` DROP COLUMN `void_reason`;
+	
+	ALTER TABLE `program_workflow_state` CHANGE COLUMN `voided` `retired` tinyint(1) NOT NULL default '0';
+	ALTER TABLE `program_workflow_state` DROP FOREIGN KEY `state_voided_by`;
+	ALTER TABLE `program_workflow_state` CHANGE COLUMN `voided_by` `changed_by` int(11) default NULL;
+	ALTER TABLE `program_workflow_state` ADD CONSTRAINT `state_changed_by` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`);
+	ALTER TABLE `program_workflow_state` CHANGE COLUMN `date_voided` `date_changed` datetime default NULL;
+	ALTER TABLE `program_workflow_state` DROP COLUMN `void_reason`;
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.03');
+
+
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.04
+# Ben Wolfe               April 1st, 2008
+# Adding retired* columns to Order Type
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+	ALTER TABLE `order_type` ADD COLUMN `retired` tinyint(1) NOT NULL default 0;
+	ALTER TABLE `order_type` ADD COLUMN `retired_by` int(11) default NULL;
+	ALTER TABLE `order_type` ADD COLUMN `date_retired` datetime default NULL;
+	ALTER TABLE `order_type` ADD COLUMN `retire_reason` varchar(255) default NULL;
+	ALTER TABLE `order_type` ADD KEY `user_who_retired_order_type` (`retired_by`);
+	ALTER TABLE `order_type` ADD CONSTRAINT `user_who_retired_order_type` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`);
+	ALTER TABLE `order_type` ADD INDEX `retired_status` (`retired`);
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.04');
+
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.05
+# Brian McKown               April 4, 2008
+# Adding retired* columns to Encounter Type
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+    ALTER TABLE `encounter_type` ADD COLUMN `retired` tinyint(1) NOT NULL default 0;
+    ALTER TABLE `encounter_type` ADD COLUMN `retired_by` int(11) default NULL;
+    ALTER TABLE `encounter_type` ADD COLUMN `date_retired` datetime default NULL;
+    ALTER TABLE `encounter_type` ADD KEY `user_who_retired_encounter_type` (`retired_by`);
+    ALTER TABLE `encounter_type` ADD CONSTRAINT `user_who_retired_encounter_type` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`);
+    ALTER TABLE `encounter_type` ADD INDEX `encounter_type_retired_status` (`retired`);
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.05');
+
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.06
+# Ben Wolfe               April 8th, 2008
+# Adding retired* columns to PatientIdentifierType
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+	ALTER TABLE `patient_identifier_type` ADD COLUMN `retired` tinyint(1) NOT NULL default 0;
+	ALTER TABLE `patient_identifier_type` ADD COLUMN `retired_by` int(11) default NULL;
+	ALTER TABLE `patient_identifier_type` ADD COLUMN `date_retired` datetime default NULL;
+	ALTER TABLE `patient_identifier_type` ADD COLUMN `retire_reason` varchar(255) default NULL;
+	ALTER TABLE `patient_identifier_type` ADD KEY `user_who_retired_patient_identifier_type` (`retired_by`);
+	ALTER TABLE `patient_identifier_type` ADD CONSTRAINT `user_who_retired_patient_identifier_type` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`);
+	ALTER TABLE `patient_identifier_type` ADD INDEX `retired_status` (`retired`);
+
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.06');
+
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.07
+# Brian McKown               April 8, 2008
+# Adding retired* columns to Location
+# Added retire_reason col to EncounterType
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+    ALTER TABLE `encounter_type` ADD COLUMN `retire_reason` varchar(255) default NULL;
+    ALTER TABLE `encounter_type` DROP INDEX `encounter_type_retired_status`, 
+    ADD INDEX `retired_status` (`retired`);
+
+    ALTER TABLE `location` ADD COLUMN `retired` tinyint(1) NOT NULL default 0;
+    ALTER TABLE `location` ADD COLUMN `retired_by` int(11) default NULL;
+    ALTER TABLE `location` ADD COLUMN `date_retired` datetime default NULL;
+    ALTER TABLE `location` ADD COLUMN `retire_reason` varchar(255) default NULL;
+    ALTER TABLE `location` ADD KEY `user_who_retired_location` (`retired_by`);
+    ALTER TABLE `location` ADD CONSTRAINT `user_who_retired_location` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`);
+    ALTER TABLE `location` ADD INDEX `retired_status` (`retired`);
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.07');
+
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.08
+# Ben Wolfe               May 16th, 2008
+# Adding retired* columns to Concept
+
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+    ALTER TABLE `concept` ADD COLUMN `retired_by` int(11) default NULL;
+    ALTER TABLE `concept` ADD COLUMN `date_retired` datetime default NULL;
+    ALTER TABLE `concept` ADD COLUMN `retire_reason` varchar(255) default NULL;
+    ALTER TABLE `concept` ADD KEY `user_who_retired_concept` (`retired_by`);
+    ALTER TABLE `concept` ADD CONSTRAINT `user_who_retired_concept` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`);
+	
+	ALTER TABLE `concept_datatype` ADD COLUMN `retired` tinyint(1) NOT NULL default 0;
+    ALTER TABLE `concept_datatype` ADD COLUMN `retired_by` int(11) default NULL;
+    ALTER TABLE `concept_datatype` ADD COLUMN `date_retired` datetime default NULL;
+    ALTER TABLE `concept_datatype` ADD COLUMN `retire_reason` varchar(255) default NULL;
+    ALTER TABLE `concept_datatype` ADD KEY `user_who_retired_concept_datatype` (`retired_by`);
+    ALTER TABLE `concept_datatype` ADD CONSTRAINT `user_who_retired_concept_datatype` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`);
+	ALTER TABLE `concept_datatype` ADD INDEX `concept_datatype_retired_status` (`retired`);
+
+	ALTER TABLE `concept_class` ADD COLUMN `retired` tinyint(1) NOT NULL default 0;
+    ALTER TABLE `concept_class` ADD COLUMN `retired_by` int(11) default NULL;
+    ALTER TABLE `concept_class` ADD COLUMN `date_retired` datetime default NULL;
+    ALTER TABLE `concept_class` ADD COLUMN `retire_reason` varchar(255) default NULL;
+    ALTER TABLE `concept_class` ADD KEY `user_who_retired_concept_class` (`retired_by`);
+    ALTER TABLE `concept_class` ADD CONSTRAINT `user_who_retired_concept_class` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`);
+	ALTER TABLE `concept_class` ADD INDEX `concept_class_retired_status` (`retired`);
+	
+	ALTER TABLE `drug` CHANGE COLUMN `voided` `retired` tinyint(1) NOT NULL default '0';
+	ALTER TABLE `drug` DROP FOREIGN KEY `user_who_voided_drug`;
+	ALTER TABLE `drug` CHANGE COLUMN `voided_by` `retired_by` int(11) default NULL;
+	ALTER TABLE `drug` ADD CONSTRAINT `drug_retired_by` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`);
+	ALTER TABLE `drug` CHANGE COLUMN `date_voided` `date_retired` datetime default NULL;
+	ALTER TABLE `drug` CHANGE COLUMN `void_reason` `retire_reason` datetime default NULL;
+	
+	ALTER TABLE `concept_name` ADD COLUMN `concept_name_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT;
+	ALTER TABLE `concept_name` ADD INDEX `unique_concept_name_id` (`concept_id`);
+	ALTER TABLE `concept_name` DROP PRIMARY KEY, ADD PRIMARY KEY (`concept_name_id`);
+	
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.08');
+
+
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.09
+# Darius Jazayeri               May 4, 2008
+# Adding retired column to Field
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+    ALTER TABLE `field` ADD COLUMN `retired` tinyint(1) NOT NULL default 0;
+    ALTER TABLE `field` ADD COLUMN `retired_by` int(11) default NULL;
+    ALTER TABLE `field` ADD COLUMN `date_retired` datetime default NULL;
+    ALTER TABLE `field` ADD COLUMN `retire_reason` varchar(255) default NULL;
+    ALTER TABLE `field` ADD KEY `user_who_retired_field` (`retired_by`);
+    ALTER TABLE `field` ADD CONSTRAINT `user_who_retired_field` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`);
+	ALTER TABLE `field` ADD INDEX `field_retired_status` (`retired`);
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.09');
+
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script

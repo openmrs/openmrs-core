@@ -13,97 +13,261 @@
  */
 package org.openmrs;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.HashSet;
 
-import org.openmrs.api.context.Context;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.support.PropertyComparator;
 
+/**
+ * ProgramWorkflow
+ */
 public class ProgramWorkflow implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	// ******************
+	// Properties
+	// ******************
 	
 	private Integer programWorkflowId;
 	private Program program;
 	private Concept concept;
 	private User creator; 
 	private Date dateCreated;
-	private Boolean voided = false; 
-	private User voidedBy;
-	private Date dateVoided; 
-	private String voidReason;
-	private Set<ProgramWorkflowState> states;
+	private Boolean retired = false; 
+	private User changedBy;
+	private Date dateChanged;
+	private Set<ProgramWorkflowState> states = new HashSet<ProgramWorkflowState>();
 
+	// ******************
+	// Constructors
+	// ******************
+	
+	/** Default Constructor */
 	public ProgramWorkflow() { }
 	
+	/** Constructor with id */
+	public ProgramWorkflow(Integer programWorkflowId) {
+		setProgramWorkflowId(programWorkflowId);
+	}
+	
+	// ******************
+	// Instance methods
+	// ******************
+	
+	/**
+	 * Adds a new {@link ProgramWorkflowState} to this ProgramWorkflow
+	 * @param state - the {@link ProgramWorkflowState} to add
+	 */
+	public void addState(ProgramWorkflowState state) {
+		state.setProgramWorkflow(this);
+		getStates().add(state);
+	}
+
+	/**
+	 * Removes a {@link ProgramWorkflowState} from this ProgramWorkflow
+	 * @param state - the {@link ProgramWorkflowState} to remove
+	 */
+	public void removeState(ProgramWorkflowState state) {
+		if (getStates().contains(state)) {
+			getStates().remove(state);
+			state.setProgramWorkflow(null);
+		}
+	}
+	
+	/**
+	 * Retires a {@link ProgramWorkflowState}
+	 * @param state - the {@link ProgramWorkflowState} to retire
+	 */
+	public void retireState(ProgramWorkflowState state) {
+		state.setRetired(true);
+	}
+
+	/**
+	 * Returns a {@link ProgramWorkflowState} whose primary key id matches the input parameter
+	 * @param programWorkflowStateId the primary key {@link Integer} id to match
+	 * @return a {@link ProgramWorkflowState} whose identifier matches the passed <code>programWorkflowStateId</code>
+	 */
+	public ProgramWorkflowState getState(Integer programWorkflowStateId) {
+		for (ProgramWorkflowState s : getStates()) {
+			if (s.getProgramWorkflowStateId().equals(programWorkflowStateId)) {
+				return s;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns a {@link ProgramWorkflowState} whose Concept matches the passed concept
+	 * @param name the Concept to match
+	 * @return a {@link ProgramWorkflowState} whose {@link Concept} matches the passed <code>concept</code>
+	 */
+	public ProgramWorkflowState getState(Concept concept) {
+		for (ProgramWorkflowState s : getStates()) {
+			if (s.getConcept().equals(concept)) {
+				return s;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns a {@link ProgramWorkflowState} whose Concept name matches the passed name in any {@link Locale}
+	 * @param name the Concept name to match in any {@link Locale}
+	 * @return a {@link ProgramWorkflowState} whose {@link Concept} name matches the passed <code>name</code>
+	 */
+	public ProgramWorkflowState getState(String name) {
+		for (ProgramWorkflowState s : getStates()) {
+			if (s.getConcept().isNamed(name)) {
+				return s;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns a {@link ProgramWorkflowState} whose {@link Concept} has any {@link ConceptName} that matches the given <code>name</name>
+	 * @param name the {@link ProgramWorkflowState} name, in any {@link Locale}
+	 * @return a {@link ProgramWorkflowState} which has the passed <code>name</code> in any {@link Locale}
+	 */
+	public ProgramWorkflowState getStateByName(String name) {
+		for (ProgramWorkflowState s : getStates()) {
+			if (s.getConcept().isNamed(name)) {
+				return s;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns a {@link Set<ProgramWorkflowState>} including all non-retired ProgramWorkflowStates
+	 * and all retired ProgramWorkflowStates in this ProgramWorkflow if <code>includeRetired</code> is true
+	 * @param includeRetired - if false, returns only non-retired {@link ProgramWorkflowState} objects in this ProgramWorkflow
+	 * @return Set<ProgramWorkflowState> - all ProgramWorkflowStates matching input parameters 
+	 */
+	public Set<ProgramWorkflowState> getStates(boolean includeRetired) {
+		Set<ProgramWorkflowState> ret = new HashSet<ProgramWorkflowState>();
+		for (ProgramWorkflowState s : getStates()) {
+			if (includeRetired || !s.isRetired()) {
+				ret.add(s);
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * Returns a {@link Set<ProgramWorkflowState>} including all ProgramWorkflowStates, sorted by {@link ConceptName}
+	 * @return Set<ProgramWorkflowState> - all ProgramWorkflowStates, sorted by {@link ConceptName}
+	 */
+	@SuppressWarnings("unchecked")
+	public Set<ProgramWorkflowState> getSortedStates() {
+		Comparator c = new PropertyComparator("concept.name.name", true, true);
+		TreeSet<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(c);
+		if (getStates() != null ) {
+			sorted.addAll(getStates());
+		}
+		return sorted;
+	}
+	
+	/**
+	 * Returns a {@link List<ProgramWorkflowState>} including all possible next ProgramWorkflowStates, 
+	 * for the passed {@link PatientProgram} ordered by {@link ConceptName}
+	 * @param - patientProgram - The PatientProgram to check
+	 * @return List<ProgramWorkflowState> - all possible next ProgramWorkflowStates, for the passed {@link PatientProgram} ordered by {@link ConceptName}
+	 */
+	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram) {
+		List<ProgramWorkflowState> ret = new ArrayList<ProgramWorkflowState>();
+		PatientState currentState = patientProgram.getCurrentState(this);
+		for (ProgramWorkflowState st : getSortedStates()) {
+			if (isLegalTransition(currentState == null ? null : currentState.getState(), st)) {
+				ret.add(st);
+			}
+		}
+		return ret;
+	}
+	
+	/**
+	 * Returns a {@link List<ProgramWorkflowState>} including all possible next ProgramWorkflowStates, 
+	 * for the passed {@link PatientProgram} ordered by {@link ConceptName}
+	 * @param fromState - {@link ProgramWorkflowState} to check transition from
+	 * @param toState - {@link ProgramWorkflowState} to check transition to
+	 * @return boolean - true if it is allowable to transition from <code>fromState</code> to <code>toState</code>
+	 */
+	public boolean isLegalTransition(ProgramWorkflowState fromState, ProgramWorkflowState toState) {
+		if (fromState == null) {
+			return toState.getInitial();
+		}
+		if (fromState.equals(toState)) {
+			return false;
+		}
+		return true;
+	}
+
+	/** @see Object#equals(Object) */
 	public boolean equals(Object obj) {
-		if (obj instanceof ProgramWorkflow) {
-			ProgramWorkflow wf = (ProgramWorkflow)obj;
-			return (this.getProgramWorkflowId().equals(wf.getProgramWorkflowId()));
+		if (obj != null && obj instanceof ProgramWorkflow) {
+			ProgramWorkflow p = (ProgramWorkflow)obj;
+			if (this.getProgramWorkflowId() == null) {
+				return p.getProgramWorkflowId() == null;
+			}
+			return (this.getProgramWorkflowId().equals(p.getProgramWorkflowId()));
 		}
 		return false;
 	}
 	
-	/**
-	 * @return A state that has the given name in any locale, or null if none does
-	 */
-	public ProgramWorkflowState getStateByName(String name) {
-		for (ProgramWorkflowState state : getStates())
-			if (state.getConcept().isNamed(name))
-				return state;
-		return null;
+	/** @see Object#toString() */
+	public String toString() {
+		return "ProgramWorkflow(id=" + getProgramWorkflowId() + ", concept=" + getConcept() + ", states=" + getStates() + ")";
 	}
 	
-	public Date getDateVoided() {
-		return dateVoided;
-	}
-
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-
+	// ******************
+	// Property Access
+	// ******************
+	
 	public Set<ProgramWorkflowState> getStates() {
 		return states;
-	}
-
-	public Set<ProgramWorkflowState> getSortedStates() {
-		TreeSet<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(new StateAlphaComparator());
-		
-		if ( this.getStates() != null ) {
-			sorted.addAll(this.getStates());
-		}
-
-		return sorted;
 	}
 	
 	public void setStates(Set<ProgramWorkflowState> states) {
 		this.states = states;
 	}
+	
+    public Boolean getRetired() {
+    	return retired;
+    }
+    
+    public Boolean isRetired() {
+    	return getRetired();
+    }
 
-	public Boolean getVoided() {
-		return voided;
-	}
+    public void setRetired(Boolean retired) {
+    	this.retired = retired;
+    }
 
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
+    public User getChangedBy() {
+    	return changedBy;
+    }
 
-	public User getVoidedBy() {
-		return voidedBy;
-	}
+    public void setChangedBy(User changedBy) {
+    	this.changedBy = changedBy;
+    }
 
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
-	}
+    public Date getDateChanged() {
+    	return dateChanged;
+    }
 
-	public String getVoidReason() {
-		return voidReason;
-	}
-
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
-	}
+    public void setDateChanged(Date dateChanged) {
+    	this.dateChanged = dateChanged;
+    }
 
 	public Concept getConcept() {
 		return concept;
@@ -143,29 +307,5 @@ public class ProgramWorkflow implements java.io.Serializable {
 
 	public void setProgramWorkflowId(Integer programWorkflowId) {
 		this.programWorkflowId = programWorkflowId;
-	}
-	
-	public void addState(ProgramWorkflowState s) {
-		s.setProgramWorkflow(this);
-		states.add(s);
-	}
-	
-	public String toString() {
-		return "Workflow_" + programWorkflowId; 
-	}
-	
-	private class StateAlphaComparator implements Comparator<ProgramWorkflowState> {
-
-		public int compare(ProgramWorkflowState s1, ProgramWorkflowState s2) {
-			if ( s1 != null && s2 != null ) {
-				String name1 = s1.getConcept().getName(Context.getLocale()).getName();
-				String name2 = s2.getConcept().getName(Context.getLocale()).getName();
-				if ( name1 != null && name2 != null ) {
-					return name1.compareTo(name2);
-				}
-			}
-			return 0;
-		}
-		
 	}
 }

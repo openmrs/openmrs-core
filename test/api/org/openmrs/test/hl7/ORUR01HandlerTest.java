@@ -49,6 +49,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	
 	@Override
 	protected void onSetUpInTransaction() throws Exception {
+		//deleteAllData();
+		
 		initializeInMemoryDatabase();
 		executeDataSet(ORU_INITIAL_DATA_XML);
 		authenticate();
@@ -65,6 +67,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\rPID|||3^^^^||John3^Doe^||\rPV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080226102537|1^Super User\rOBR|1|||\rOBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\rOBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
+		
+		//System.out.println("obs size for pat 2: " + obsService.getObservations(new Patient(2), false));
 		
 		Patient patient = new Patient(3);
 		
@@ -95,16 +99,18 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		authenticate();
 		ObsService obsService = Context.getObsService();
 		
-		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226103553||ORU^R01|OD9PWqcD9g0NKn81rvSD|P|2.5|1||||||||66^AMRS.ELD.FORMID\rPID|||2^^^^||John^Doe^||\rPV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080205|||||||V\rORC|RE||||||||20080226103428|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|DT|1592^MISSED RETURNED VISIT DATE^99DCT||20080201|||||||||20080205\rOBR|2|||1726^FOLLOW-UP ACTION^99DCT\rOBX|1|CWE|1558^PATIENT CONTACT METHOD^99DCT|1|1555^PHONE^99DCT|||||||||20080205\rOBX|2|NM|1553^NUMBER OF ATTEMPTS^99DCT|1|1|||||||||20080205\rOBX|3|NM|1554^SUCCESSFUL^99DCT|1|1|||||||||20080205";
+		//System.out.println("obs size for patient #2: " + obsService.getObservations(new Patient(2), false));
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226103553||ORU^R01|OD9PWqcD9g0NKn81rvSD|P|2.5|1||||||||66^AMRS.ELD.FORMID\rPID|||3^^^^||John^Doe^||\rPV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080205|||||||V\rORC|RE||||||||20080226103428|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|DT|1592^MISSED RETURNED VISIT DATE^99DCT||20080201|||||||||20080205\rOBR|2|||1726^FOLLOW-UP ACTION^99DCT\rOBX|1|CWE|1558^PATIENT CONTACT METHOD^99DCT|1|1555^PHONE^99DCT|||||||||20080205\rOBX|2|NM|1553^NUMBER OF ATTEMPTS^99DCT|1|1|||||||||20080205\rOBX|3|NM|1554^SUCCESSFUL^99DCT|1|1|||||||||20080205";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
-		Patient patient = new Patient(2);
+		Patient patient = new Patient(3);
 		
 		Context.clearSession();
 		
 		// check for any obs
-		Set<Obs> obsForPatient2 = obsService.getObservations(patient, false);
+		List<Obs> obsForPatient2 = obsService.getObservationsByPerson(patient);
 		assertNotNull(obsForPatient2);
 		assertTrue("There should be some obs created for #3", obsForPatient2.size() > 0);
 		
@@ -148,6 +154,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		int groupedObsCount = 0;
 		for (Obs obs : obsForPatient2) {
+			System.out.println("obs: " + obs.getConcept());
 			if (groupedConceptIds.contains(obs.getConcept().getConceptId())) {
 				groupedObsCount += 1;
 				assertEquals("All of the parent groups should match", obsGroup, obs.getObsGroup());

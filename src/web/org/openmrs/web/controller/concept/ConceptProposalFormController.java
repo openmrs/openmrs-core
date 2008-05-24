@@ -35,6 +35,7 @@ import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
@@ -153,7 +154,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 				msg = msa.getMessage("ConceptProposal.alert.ignored", args, locale);
 			}
 			
-			alertService.createAlert(msg, uniqueProposers);
+			alertService.saveAlert(new Alert(msg, uniqueProposers));
 			
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptProposal.saved");
@@ -186,7 +187,10 @@ public class ConceptProposalFormController extends SimpleFormController {
         return cp;
     }
     
-	protected Map referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		

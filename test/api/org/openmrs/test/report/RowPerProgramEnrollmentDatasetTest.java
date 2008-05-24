@@ -14,9 +14,11 @@
 package org.openmrs.test.report;
 
 import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.openmrs.Cohort;
-import org.openmrs.api.DataSetService;
+import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.report.ReportData;
@@ -41,10 +43,10 @@ public class RowPerProgramEnrollmentDatasetTest extends BaseContextSensitiveTest
      */
     public void testSerialization() throws Exception {
     	initializeInMemoryDatabase();
-		authenticate();
+    	executeDataSet("org/openmrs/test/report/include/RowPerProgramEnrollment.xml");
+    	authenticate();
 		
 		EvaluationContext evalContext = new EvaluationContext();
-		DataSetService service = Context.getDataSetService();
 		PatientSearch kids = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 		kids.addArgument("maxAge", "3", Integer.class);
 		Cohort kidsCohort = Context.getCohortService().evaluate(kids, evalContext);
@@ -53,7 +55,9 @@ public class RowPerProgramEnrollmentDatasetTest extends BaseContextSensitiveTest
 		definition.setName("Row per enrollment");
 		//commenting this out because serializing PatientSearches is not yet implemented
 		//definition.setFilter(kids);
-		definition.getPrograms().add(Context.getProgramWorkflowService().getProgram(1));
+		Set<Program> programs = new HashSet<Program>();
+		programs.add(Context.getProgramWorkflowService().getProgram(1));
+		definition.setPrograms(programs);
 		
 		ReportSchema rs = new ReportSchema();
 		rs.setName("Testing row-per-obs");

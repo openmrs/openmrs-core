@@ -13,7 +13,6 @@
  */
 package org.openmrs.web.controller.observation;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
@@ -45,6 +45,12 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * This controller gives the backing object and does the saving for the
+ * obs.form page.  The jsp for this page is located in 
+ * /web/WEB-INF/view/admin/observations/obsForm.jsp
+ * 
+ */
 public class ObsFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
@@ -69,6 +75,9 @@ public class ObsFormController extends SimpleFormController {
         		new CustomBooleanEditor(true)); //allow for an empty boolean value
 	}
 
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
 		
 		// sets the objects in case edit Reason is rejected
@@ -111,40 +120,20 @@ public class ObsFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			Obs obs = (Obs)obj;
 			ObsService os = Context.getObsService();
-			if (obs.getObsId() == null)
-				os.createObs(obs);
-			else {
-				if (obs.isVoided()) {
-					// either the user just clicked the void checkbox, or is updating a voided obs (for whatever reason)
-					String reason = obs.getVoidReason();
-					if (reason != null && reason.length() > 0)
-						reason += ", ";
-					os.voidObs(obs, reason + request.getParameter("editReason"));
-				}
-				else {
-					//save the current obsId so we can void this obs after creating the new one
-					Integer oldObsId = obs.getObsId();
-	
-					Context.clearSession();
-					
-					//and recreate the obs as this editor
-					obs.setObsId(null);
-					obs.setCreator(Context.getAuthenticatedUser());
-					obs.setDateCreated(new Date());
-					os.updateObs(obs);
-					Integer newObsId = obs.getObsId();
-					
-					Context.clearSession();
-					
-					Obs oldObs = os.getObs(oldObsId);
-					os.voidObs(oldObs, request.getParameter("editReason") + " (new obsId: " + newObsId + ")");
-				}
+			String reason = request.getParameter("editReason");
+	    	
+			try {
+				os.saveObs(obs, reason);
 			}
-			view = getSuccessView();
+			catch (APIException e) {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+				return showForm(request, response, errors);
+			}
+
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.saved");
 			
 			if (obs.getEncounter() != null)
-				view = view + "?encounterId=" + obs.getEncounter().getEncounterId() + "&phrase=" + request.getParameter("phrase");
+				view = getSuccessView() + "?encounterId=" + obs.getEncounter().getEncounterId() + "&phrase=" + request.getParameter("phrase");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -186,7 +175,12 @@ public class ObsFormController extends SimpleFormController {
         return obs;
     }
 
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
+	/**
+	 * The other things shown on the obs form that are in the database
+	 * 
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
 		
 		Obs obs = (Obs)obj;
 		
@@ -210,6 +204,14 @@ public class ObsFormController extends SimpleFormController {
 		return map;
 	}
 	
+	/**
+	 * Convenience method used when saving the object to populate the object with 
+	 * full-fledged objects
+	 * 
+	 * @param obs
+	 * @param request
+	 * @return
+	 */
 	private Obs setObjects(Obs obs, HttpServletRequest request) {
 
 		if (Context.isAuthenticated()) {

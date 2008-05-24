@@ -282,6 +282,16 @@ public class Order implements java.io.Serializable {
 	 * @return Returns the voided.
 	 */
 	public Boolean getVoided() {
+		return isVoided();
+	}
+	
+	/**
+	 * Whether or not this Order has been deleted/voided
+	 * from the system or not
+	 * 
+	 * @return true/false on the void status
+	 */
+	public Boolean isVoided() {
 		return voided;
 	}
 
@@ -497,6 +507,16 @@ public class Order implements java.io.Serializable {
 	
 	public Integer getId() {
 		return this.orderId;
+	}
+	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "Order. orderId: " + orderId + 
+			   " patient: " + patient + 
+			   " orderType: " + orderType + 
+			   " concept: " + concept;
 	}
 
 }

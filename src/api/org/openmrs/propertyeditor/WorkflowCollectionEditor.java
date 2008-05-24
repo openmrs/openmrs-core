@@ -38,7 +38,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	 * where program_id is the id of the program that this collection is for (or not present, if it's a new program)
 	 * and list is a space-separated list of concept ids.
 	 * This class is a bit of a hack, because I don't know a better way to do this. -DJ
-	 * The purpose is to void and unvoid workflows where possible rather than deleting and creating them.  
+	 * The purpose is to retire and un-retire workflows where possible rather than deleting and creating them.  
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
@@ -68,9 +68,9 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 			Set<ProgramWorkflow> newSet = new HashSet<ProgramWorkflow>();
 			for (ProgramWorkflow pw : oldSet) {
 				if (!newConceptIds.contains(pw.getConcept().getConceptId())) {
-					pw.setVoided(true);
-				} else if (pw.getVoided()) { // && newConceptIds.contains(pw...)
-					pw.setVoided(false);
+					pw.setRetired(true);
+				} else if (pw.isRetired()) { // && newConceptIds.contains(pw...)
+					pw.setRetired(false);
 				}
 				newSet.add(pw);
 				alreadyDone.add(pw.getConcept().getConceptId());

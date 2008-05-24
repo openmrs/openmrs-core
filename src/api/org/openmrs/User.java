@@ -280,22 +280,29 @@ public class User extends Person implements java.io.Serializable {
 	
 	/**
 	 * Add the given Role to the list of roles for this User
+	 * 
 	 * @param roleservation
+	 * @return this user with the given role attached
 	 */
-	public void addRole(Role role) {
+	public User addRole(Role role) {
 		if (roles == null)
 			roles = new HashSet<Role>();
 		if (!roles.contains(role) && role != null)
 			roles.add(role);
+		
+		return this;
 	}
 
 	/**
 	 * Remove the given Role from the list of roles for this User
 	 * @param roleservation
+	 * @return this user with the given role removed
 	 */
-	public void removeRole(Role role) {
+	public User removeRole(Role role) {
 		if (roles != null)
 			roles.remove(role);
+		
+		return this;
 	}
 
 	/**

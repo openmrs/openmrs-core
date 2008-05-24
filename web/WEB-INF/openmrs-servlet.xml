@@ -778,7 +778,6 @@
         <property name="successView"><value>runReport.list</value></property>
     </bean>
     <bean id="runReportForm" class="org.openmrs.web.controller.report.RunReportController">
-    	<property name="sessionForm"><value>true</value></property>
         <property name="commandName"><value>report</value></property>
         <property name="formView"><value>/admin/reports/runReportForm</value></property>
         <property name="successView"><value>runReport.list</value></property>
@@ -961,7 +960,7 @@
 		<property name="successView"><value>form.list</value></property>
 	</bean>
 
-	<bean id="formEditValidator" class="org.openmrs.web.controller.form.FormValidator" />
+	<bean id="formEditValidator" class="org.openmrs.validator.FormValidator" />
 	<bean id="formEditForm" class="org.openmrs.web.controller.form.FormFormController">
 		<property name="commandName"><value>form</value></property>
 		<property name="formView"><value>/admin/forms/formEditForm</value></property>

@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
@@ -32,12 +34,17 @@ import org.openmrs.util.OpenmrsUtil;
  */
 public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	
+	private static GlobalProperty luhnGP = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR, OpenmrsConstants.LUHN_IDENTIFIER_VALIDATOR);
+	
+	/**
+	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpInTransaction()
+	 */
 	@Override
 	protected void onSetUpInTransaction() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 		
-		Context.getAdministrationService().addGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR, OpenmrsConstants.LUHN_IDENTIFIER_VALIDATOR);
+		Context.getAdministrationService().saveGlobalProperty(luhnGP);
 	}
 	
 	/**

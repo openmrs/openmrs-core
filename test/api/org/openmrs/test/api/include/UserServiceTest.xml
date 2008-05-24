@@ -11,4 +11,14 @@
   <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" /> 
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" />
   
+  <role role="Some Role" description="This is a test role" />
+  
+  <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" />
+  <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
+  <person_address person_id="2" person_address_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" address1="123 First St" address2="Indianapolis" />
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+  <patient_identifier patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" identifier="1234" identifier_type="1" preferred="1" voided="false" location_id="1" />
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"/> 
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  
 </dataset>

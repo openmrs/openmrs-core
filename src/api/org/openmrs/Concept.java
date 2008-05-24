@@ -43,6 +43,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	@Attribute(required=true)
 	private Integer conceptId;
 	private Boolean retired = false;
+	private User retiredBy;
+	private Date dateRetired;
+	private String retireReason;
 	private ConceptDatatype datatype;
 	private ConceptClass conceptClass;
 	private Boolean set = false;
@@ -427,6 +430,48 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
+
+	/**
+     * @return the retiredBy
+     */
+    public User getRetiredBy() {
+    	return retiredBy;
+    }
+
+	/**
+     * @param retiredBy the retiredBy to set
+     */
+    public void setRetiredBy(User retiredBy) {
+    	this.retiredBy = retiredBy;
+    }
+
+	/**
+     * @return the dateRetired
+     */
+    public Date getDateRetired() {
+    	return dateRetired;
+    }
+
+	/**
+     * @param dateRetired the dateRetired to set
+     */
+    public void setDateRetired(Date dateRetired) {
+    	this.dateRetired = dateRetired;
+    }
+
+	/**
+     * @return the retireReason
+     */
+    public String getRetireReason() {
+    	return retireReason;
+    }
+
+	/**
+     * @param retireReason the retireReason to set
+     */
+    public void setRetireReason(String retireReason) {
+    	this.retireReason = retireReason;
+    }
 
 	/**
 	 * @return Returns the synonyms.

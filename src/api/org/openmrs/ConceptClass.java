@@ -34,6 +34,11 @@ public class ConceptClass implements java.io.Serializable {
 	private String description;
 	private User creator;
 	private Date dateCreated;
+	
+	private User retiredBy;
+	private Boolean retired = Boolean.FALSE;
+	private Date dateRetired;
+	private String retireReason;
 
 	// Constructors
 
@@ -113,9 +118,6 @@ public class ConceptClass implements java.io.Serializable {
 		this.creator = user;
 	}
 
-	/**
-	 * 
-	 */
 	@Element(required=true)
 	public Date getDateCreated() {
 		return this.dateCreated;
@@ -126,4 +128,60 @@ public class ConceptClass implements java.io.Serializable {
 		this.dateCreated = dateCreated;
 	}
 
+	/**
+     * @return the retiredBy
+     */
+    public User getRetiredBy() {
+    	return retiredBy;
+    }
+
+	/**
+     * @param retiredBy the retiredBy to set
+     */
+    public void setRetiredBy(User retiredBy) {
+    	this.retiredBy = retiredBy;
+    }
+
+	/**
+     * @return the retired
+     */
+    public Boolean getRetired() {
+    	return retired;
+    }
+
+	/**
+     * @param retired the retired to set
+     */
+    public void setRetired(Boolean retired) {
+    	this.retired = retired;
+    }
+
+	/**
+     * @return the dateRetired
+     */
+    public Date getDateRetired() {
+    	return dateRetired;
+    }
+
+	/**
+     * @param dateRetired the dateRetired to set
+     */
+    public void setDateRetired(Date dateRetired) {
+    	this.dateRetired = dateRetired;
+    }
+
+	/**
+     * @return the retireReason
+     */
+    public String getRetireReason() {
+    	return retireReason;
+    }
+
+	/**
+     * @param retireReason the retireReason to set
+     */
+    public void setRetireReason(String retireReason) {
+    	this.retireReason = retireReason;
+    }
+	
 }

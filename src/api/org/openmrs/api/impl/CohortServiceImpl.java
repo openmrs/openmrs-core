@@ -14,6 +14,7 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,97 +33,168 @@ import org.openmrs.cohort.CohortDefinitionProvider;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
+import org.openmrs.util.OpenmrsConstants;
+import org.springframework.util.StringUtils;
 
 /**
- *
+ * API functions related to Cohorts
  */
-public class CohortServiceImpl implements CohortService {
+public class CohortServiceImpl extends BaseOpenmrsService implements CohortService {
 
-	protected Log log = LogFactory.getLog(this.getClass());
+	private Log log = LogFactory.getLog(this.getClass());
 	private CohortDAO dao;
 	
 	private static Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> cohortDefinitionProviders = null;
 	
-	public CohortServiceImpl() {
-	}
-	
-	private CohortDAO getCohortDAO() {
-		return dao;
-	}
-	
+	/**
+	 * @see org.openmrs.api.CohortService#setCohortDAO(org.openmrs.api.db.CohortDAO)
+	 */
 	public void setCohortDAO(CohortDAO dao) {
 		this.dao = dao;
 	}
 	
-	public void createCohort(Cohort cohort) {
-		if (cohort.getCreator() == null)
+	/**
+	 * @see org.openmrs.api.CohortService#saveCohort(org.openmrs.Cohort)
+	 */
+	public Cohort saveCohort(Cohort cohort) throws APIException {
+        if (cohort.getCohortId() == null) {
+            Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_COHORTS);
+        } else {
+            Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_COHORTS);
+        }
+        if (cohort.getName() == null) {
+            throw new APIException("Cohort name is required");
+        }
+        Date now = new Date();
+        if (cohort.getDateCreated() == null) {
+            cohort.setDateCreated(now);
+        }
+        if (cohort.getCreator() == null) {
 			cohort.setCreator(Context.getAuthenticatedUser());
-		if (cohort.getDateCreated() == null)
-			cohort.setDateCreated(new java.util.Date());
-		if (cohort.getName() == null)
-			throw new IllegalArgumentException("Missing Name");
-		getCohortDAO().createCohort(cohort);
+	}
+        if (cohort.getCohortId() != null) {
+            cohort.setChangedBy(Context.getAuthenticatedUser());
+            cohort.setDateChanged(now);
+        }
+        if (log.isInfoEnabled())
+            log.info("Saving cohort " + cohort);
+
+		return dao.saveCohort(cohort);
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#createCohort(org.openmrs.Cohort)
+	 */
+	public Cohort createCohort(Cohort cohort) {
+		return saveCohort(cohort);
 	}
 
+	/**
+	 * @see org.openmrs.api.CohortService#getCohort(java.lang.Integer)
+	 */
 	public Cohort getCohort(Integer id) {
-		return getCohortDAO().getCohort(id); 
+		return dao.getCohort(id); 
 	}
 	
+	/**
+	 * @see org.openmrs.api.CohortService#getCohorts()
+	 */
 	public List<Cohort> getCohorts() {
-		return getCohortDAO().getCohorts();
+		return getAllCohorts();
 	}
 	
-	public void voidCohort(Cohort cohort, String reason) {
+	/**
+	 * @see org.openmrs.api.CohortService#voidCohort(org.openmrs.Cohort, java.lang.String)
+	 */
+	public Cohort voidCohort(Cohort cohort, String reason) {
+		if (cohort.isVoided()) {
+			return cohort;
+		} else {
+			if (!StringUtils.hasText(reason))
+				throw new APIException("Reason is required");
 		cohort.setVoided(true);
 		cohort.setVoidedBy(Context.getAuthenticatedUser());
 		cohort.setVoidReason(reason);
-		updateCohort(cohort);
+			return saveCohort(cohort);
+		}
 	}
 
 	/**
      * @see org.openmrs.api.CohortService#addPatientToCohort(org.openmrs.Cohort, org.openmrs.Patient)
      */
-    public void addPatientToCohort(Cohort cohort, Patient patient) {
+    public Cohort addPatientToCohort(Cohort cohort, Patient patient) {
+    	if (!cohort.contains(patient)) {
 	    cohort.getMemberIds().add(patient.getPatientId());
-	    updateCohort(cohort);
+    		saveCohort(cohort);
+    	}
+    	return cohort;
     }
 
 	/**
      * @see org.openmrs.api.CohortService#removePatientFromCohort(org.openmrs.Cohort, org.openmrs.Patient)
      */
-    public void removePatientFromCohort(Cohort cohort, Patient patient) {
+    public Cohort removePatientFromCohort(Cohort cohort, Patient patient) {
+    	if (cohort.contains(patient)) {
 	    cohort.getMemberIds().remove(patient.getPatientId());
-	    updateCohort(cohort);
+    		saveCohort(cohort);
+    	}
+    	return cohort;
     }
 
 	/**
      * @see org.openmrs.api.CohortService#updateCohort(org.openmrs.Cohort)
      */
-    public void updateCohort(Cohort cohort) {
-		if (cohort.getCreator() == null)
-			cohort.setCreator(Context.getAuthenticatedUser());
-		if (cohort.getDateCreated() == null)
-			cohort.setDateCreated(new java.util.Date());
-		if (cohort.getName() == null)
-			throw new IllegalArgumentException("Missing Name");
-		// TODO: Add modifiedBy and dateModified to Cohort
-		//cohort.setDateModified(new java.util.Date());
-		//cohort.setModifiedBy(Context.getAuthenticatedUser());
-		getCohortDAO().updateCohort(cohort);
+    public Cohort updateCohort(Cohort cohort) {
+		return saveCohort(cohort);
 	}
 
 	/**
      * @see org.openmrs.api.CohortService#getCohortsContainingPatient(org.openmrs.Patient)
      */
     public List<Cohort> getCohortsContainingPatient(Patient patient) {
-	    return getCohortDAO().getCohortsContainingPatientId(patient.getPatientId());
+	    return dao.getCohortsContainingPatientId(patient.getPatientId());
     }
     
     public List<Cohort> getCohortsContainingPatientId(Integer patientId) {
-    	return getCohortDAO().getCohortsContainingPatientId(patientId);
+    	return dao.getCohortsContainingPatientId(patientId);
     }
 
-    /**
+	/**
+     * @see org.openmrs.api.CohortService#getCohorts(java.lang.String)
+     */
+    public List<Cohort> getCohorts(String nameFragment) throws APIException {
+	    return dao.getCohorts(nameFragment);
+    }
+
+	/**
+     * @see org.openmrs.api.CohortService#getAllCohorts()
+     */
+    public List<Cohort> getAllCohorts() throws APIException {
+	    return getAllCohorts(false);
+    }
+
+	/**
+     * @see org.openmrs.api.CohortService#getAllCohorts(boolean)
+     */
+    public List<Cohort> getAllCohorts(boolean includeVoided) throws APIException {
+    	return dao.getAllCohorts(includeVoided);
+    }
+
+	/**
+     * @see org.openmrs.api.CohortService#getCohort(java.lang.String)
+     */
+    public Cohort getCohort(String name) throws APIException {
+    	return dao.getCohort(name);
+    }
+
+	/**
+     * @see org.openmrs.api.CohortService#purgeCohort(org.openmrs.Cohort)
+     */
+    public Cohort purgeCohort(Cohort cohort) throws APIException {
+    	return dao.deleteCohort(cohort);
+    }
+	
+	/**
      * Auto generated method comment
      * 
      * @param definitionClass

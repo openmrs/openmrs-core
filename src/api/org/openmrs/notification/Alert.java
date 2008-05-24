@@ -14,11 +14,13 @@
 package org.openmrs.notification;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 
 /**
  * Alerts are the simplest form of communication. An Administrator (or script)
@@ -34,9 +36,9 @@ public class Alert implements Serializable {
 
 	private String text;
 
-	private Boolean satisfiedByAny = false;
+	private Boolean satisfiedByAny = Boolean.FALSE;
 	
-	private Boolean alertRead = false;
+	private Boolean alertRead = Boolean.FALSE;
 
 	private Date dateToExpire;
 
@@ -63,15 +65,46 @@ public class Alert implements Serializable {
 		this.alertId = alertId;
 	}
 
+	/**
+	 * Convenience constructor to create an alert with the given text
+	 * and for the given users
+	 *  
+     * @param text String to display for the alert
+     * @param users Recipients of this alert
+     */
+    public Alert(String text, Collection<User> users) {
+    	setText(text);
+		for (User user : users) 
+			addRecipient(user);
+    }
+
+	/**
+	 * Convenience constructor to create an alert with the given text
+	 * and for the given users
+	 * 
+     * @param text String to display for the alert
+     * @param user Recipient of the alert
+     */
+    public Alert(String text, User user) {
+    	setText(text);
+		addRecipient(user);
+    }
+
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Alert) {
 			Alert a = (Alert)obj;
 			if (alertId != null && a != null)
 				return (alertId.equals(a.getAlertId()));
 		}
-		return false;
+		return obj == this;
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getAlertId() == null) return super.hashCode();
 		int hash = 8;
@@ -243,6 +276,12 @@ public class Alert implements Serializable {
 		this.recipients = recipients;
 	}
 
+	/**
+	 * Convenience method to add the given AlertRecipient to 
+	 * the list of recipients for this alert
+	 * 
+	 * @param r AlertRecipient to add
+	 */
 	public void addRecipient(AlertRecipient r) {
 		if (this.recipients == null)
 			this.recipients = new HashSet<AlertRecipient>();
@@ -252,17 +291,34 @@ public class Alert implements Serializable {
 		recipients.add(r);
 	}
 
+	/**
+	 * Convenience method to add the given user to this list of
+	 * recipients for this alert
+	 * 
+	 * @param u User to add to list of recipients
+	 */
 	public void addRecipient(User u) {
 		addRecipient(new AlertRecipient(u, false));
 	}
 	
+	/**
+	 * Convenience method to remove the given AlertRecipient 
+	 * from this Alert's list of recipients
+	 * 
+	 * @param r user to remove from list of recipients
+	 */
 	public void removeRecipient(AlertRecipient r) {
-		if (recipients != null) {
-			if (recipients.contains(r))
-				recipients.remove(r);
-		}
+		if (recipients != null)
+			recipients.remove(r);
 	}
 	
+	/**
+	 * Convenience method to find the AlertRecipient object
+	 * within this alert that corresponds to the given <code>recipient</code>
+	 * 
+	 * @param recipient
+	 * @return AlertRecipient
+	 */
 	public AlertRecipient getRecipient(User recipient) {
 		for (AlertRecipient ar : recipients) {
 			if (ar.getRecipient().equals(recipient))
@@ -270,8 +326,34 @@ public class Alert implements Serializable {
 		}
 		return null;
 	}
-
-	// @override
+	
+	/**
+	 * Convenience method to mark this alert as read.
+	 * 
+	 * In order to persist this change in the database, 
+	 * AlertService.saveAlert(Alert) will need to be called
+	 * after this method is done.
+	 * 
+	 * @return This alert (for chaining and one-liner purposes)
+	 * 
+	 * @see org.openmrs.notification.AlertService#saveAlert(Alert)
+	 */
+	public Alert markAlertRead() {
+		User authUser = Context.getAuthenticatedUser();
+		
+		if (authUser != null) {
+			AlertRecipient ar = getRecipient(authUser);
+			ar.setAlertRead(true);
+			if (isSatisfiedByAny())
+				setAlertRead(true);
+		}
+		
+		return this;
+	}
+	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return "Alert: #" + alertId;
 	}

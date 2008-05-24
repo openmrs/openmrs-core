@@ -466,7 +466,7 @@ public class ConceptFormController extends SimpleFormController {
 		
     	//get complete class and datatype lists 
 		map.put("classes", cs.getConceptClasses());
-		map.put("datatypes", cs.getConceptDatatypes());
+		map.put("datatypes", cs.getAllConceptDatatypes());
 		
 		// make spring locale available to jsp
 		map.put("locale", locale.getLanguage().substring(0, 2));

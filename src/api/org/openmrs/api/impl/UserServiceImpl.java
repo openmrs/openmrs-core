@@ -23,33 +23,30 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
- * User-related services
+ * Default implementation of the user service.  This class should
+ * not be used on its own.  The current OpenMRS implementation
+ * should be fetched from the Context
  * 
- * @version 1.0
+ * @see org.openmrs.api.UserService
+ * @see org.openmrs.api.context.Context
  */
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	
 	private static Log log = LogFactory.getLog(UserServiceImpl.class);
 	
-	//private Context Context;
-	//private DAOContext daoContext;
-	
-	private UserDAO dao;
+	protected UserDAO dao;
 	
 	public UserServiceImpl() { }
-	
-	private UserDAO getUserDAO() {
-		return dao;
-	}
 	
 	public void setUserDAO(UserDAO dao) {
 		this.dao = dao;
@@ -57,279 +54,349 @@ public class UserServiceImpl implements UserService {
 	
 	/**
 	 * @see org.openmrs.api.UserService#createUser(org.openmrs.User, java.lang.String)
+	 * @deprecated
 	 */
 	public User createUser(User user, String password) throws APIException {
-		log.debug("Creating user");
-		checkPrivileges(user);
+		return saveUser(user, password);
+	}
+	
+	/**
+     * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
+     */
+    public User saveUser(User user, String password) throws APIException {
+        if (user.getUserId() == null) {
+            Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+        } else {
+            Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+        }
+        
+        checkPrivileges(user);
 		setCollectionProperties(user);
 		
-		user.setSystemId(generateSystemId());
+		// if we're creating a user and a password wasn't supplied, throw an error
+		if (user.getUserId() == null && (password == null || password.length() < 1))
+			throw new APIException("A password is required when creating a user");
 		
-		return getUserDAO().createUser(user, password);
-	}
+		// if the user doesn't have a system id, generate one
+		if (user.getSystemId() == null || user.getSystemId().equals(""))
+			user.setSystemId(generateSystemId());
+		
+		if (hasDuplicateUsername(user))
+			throw new DAOException("Username " + user.getUsername() + " or system id " + user.getSystemId() + " is already in use.");
+		
+        // TODO Check required fields for user!!
+        
+        Date now = new Date();
+        if (user.getDateCreated() == null) {
+            user.setDateCreated(now);
+        }
+        if (user.getCreator() == null) {
+            user.setCreator(Context.getAuthenticatedUser());
+        }
+        if (user.getUserId() != null) {
+            user.setChangedBy(Context.getAuthenticatedUser());
+            user.setDateChanged(now);
+        }
+
+		return dao.saveUser(user, password);
+    }
 
 	/**
-	 * Get user by internal user identifier
-	 * @param userId internal identifier
-	 * @return requested user
-	 * @throws APIException
+	 * @see org.openmrs.api.UserService#getUser(java.lang.Integer)
 	 */
 	public User getUser(Integer userId) throws APIException {
-		return getUserDAO().getUser(userId);
-	}
-	
-	/**
-	 * Get user by username (user's login identifier)
-	 * @param username user's identifier used for authentication
-	 * @return requested user
-	 * @throws APIException
-	 */
-	public User getUserByUsername(String username) throws APIException {
-		return getUserDAO().getUserByUsername(username);
+		return dao.getUser(userId);
 	}
 
 	/**
-	 * true/false if username or systemId is already in db in username or system_id columns
-	 * @param User to compare
-	 * @return boolean
-	 * @throws APIException
+	 * @see org.openmrs.api.UserService#getUserByUsername(java.lang.String)
 	 */
-	public boolean hasDuplicateUsername(User user) throws APIException {
-		return getUserDAO().hasDuplicateUsername(user.getUsername(), user.getSystemId(), user.getUserId());
+	public User getUserByUsername(String username) throws APIException {
+		return dao.getUserByUsername(username);
 	}
 	
 	/**
-	 * Get users by role granted
-	 * @param Role role that the Users must have to be returned 
-	 * @return users with requested role
-	 * @throws APIException
+	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
+	 */
+	public boolean hasDuplicateUsername(User user) throws APIException {
+		return dao.hasDuplicateUsername(user.getUsername(), user.getSystemId(), user.getUserId());
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#getUsersByRole(org.openmrs.Role)
 	 */
 	public List<User> getUsersByRole(Role role) throws APIException {
 		List<Role> roles = new Vector<Role>();
 		roles.add(role);
 		
-		return getAllUsers(roles, false);
+		return getUsers(null, roles, false);
 	}
 	
 	/**
-	 * Save changes to given <code>user</code> to the database.
-	 * 
-	 * If the user.systemId is blank or null, it will be filled in automatically
-	 * by the current systemId algorithm 
-	 * 
-	 * @param user the OpenMRS User to save to the database
-	 * @throws APIException
+	 * @deprecated replaced by {@link #saveUser(User, String)}
+	 * @see org.openmrs.api.UserService#updateUser(org.openmrs.User)
 	 */
 	public void updateUser(User user) throws APIException {
-		checkPrivileges(user);
-		setCollectionProperties(user);
-		
-		if (user.getSystemId() == null || user.getSystemId().equals(""))
-			user.setSystemId(generateSystemId());
-		
-		getUserDAO().updateUser(user);
+		saveUser(user, null);
 	}
 	
 	/**
-	 * Give a <code>role</code> to the given <code>user</code>.  If the 
-	 * <code>user</code> already has this role, the user is saved anyway.
-	 * 
-	 * @param user The OpenMRS user to add the <code>role</code> to 
-	 * @param role Role to give to the <code>user</code>
-	 * @throws APIException
+	 * @see org.openmrs.api.UserService#grantUserRole(org.openmrs.User, org.openmrs.Role)
+	 * @deprecated
 	 */
 	public void grantUserRole(User user, Role role) throws APIException {
-		user.addRole(role);
-		updateUser(user);
-	}
-	
-	/**
-	 * Remove the given <code>role</code> from the given <code>user</code>
-	 * If the <code>user</code> does not have this <code>role</code>, no
-	 * errors will be thrown and the user will be saved anyway
-	 * 
-	 * @param user the OpenMRS user from which to remove the <code>role</code> 
-	 * @param role Role to remove from <code>user</code>
-	 * 
-	 * @throws APIException
-	 */
-	public void revokeUserRole(User user, Role role) throws APIException {
-		user.removeRole(role);
-		updateUser(user);
+		saveUser(user.addRole(role), null);
 	}
 
-	/** 
-	 * Mark user as voided (effectively deleting user without removing
-	 * their data &mdash; since anything the user touched in the database
-	 * will still have their internal identifier and point to the voided
-	 * user for historical tracking purposes.
-	 * 
-	 * @param user
-	 * @param reason
-	 * @throws APIException
+	/**
+	 * @see org.openmrs.api.UserService#revokeUserRole(org.openmrs.User, org.openmrs.Role)
+	 * @deprecated
 	 */
-	public void voidUser(User user, String reason) throws APIException {
+	public void revokeUserRole(User user, Role role) throws APIException {
+		saveUser(user.removeRole(role), null);
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#voidUser(org.openmrs.User, java.lang.String)
+	 */
+	public User voidUser(User user, String reason) throws APIException {
 		user.setVoided(true);
 		user.setVoidReason(reason);
 		user.setVoidedBy(Context.getAuthenticatedUser());
 		user.setDateVoided(new Date());
-		updateUser(user);
+		
+		return saveUser(user, null);
 	}
-	
+
 	/**
-	 * Clear voided flag for user (equivalent to an "undelete" or
-	 * Lazarus Effect for user)
-	 * 
-	 * @param user
-	 * @throws APIException
+	 * @see org.openmrs.api.UserService#unvoidUser(org.openmrs.User)
 	 */
-	public void unvoidUser(User user) throws APIException {
+	public User unvoidUser(User user) throws APIException {
 		user.setVoided(false);
 		user.setVoidReason(null);
 		user.setVoidedBy(null);
 		user.setDateVoided(null);
-		updateUser(user);
+		
+		return saveUser(user, null);
 	}
 	
 	/**
-	 * Delete user from database. This is included for troubleshooting and
-	 * low-level system administration. Ideally, this method should <b>never</b>
-	 * be called &mdash; <code>Users</code> should be <em>voided</em> and
-	 * not <em>deleted</em> altogether (since many foreign key constraints
-	 * depend on users, deleting a user would require deleting all traces, and
-	 * any historical trail would be lost).
-	 * 
-	 * This method only clears user roles and attempts to delete the user
-	 * record. If the user has been included in any other parts of the database
-	 * (through a foreign key), the attempt to delete the user will violate
-	 * foreign key constraints and fail.
-	 * 
-	 * @param user
-	 * @throws APIException
-	 * @see #voidUser(User, String)
+	 * @see org.openmrs.api.UserService#deleteUser(org.openmrs.User)
+	 * @deprecated
 	 */
 	public void deleteUser(User user) throws APIException {
-		getUserDAO().deleteUser(user);
+		purgeUser(user);
 	}
 	
 	/**
-	 * Returns all privileges currently possible for any User
-	 * @return Global list of privileges
-	 * @throws APIException
-	 */
-	public List<Privilege> getPrivileges() throws APIException {
-		return getUserDAO().getPrivileges();
-	}
-	
-	/**
-	 * Returns all roles currently possible for any User
-	 * @return Global list of roles
-	 * @throws APIException
-	 */
-	public List<Role> getRoles() throws APIException {
-		return getUserDAO().getRoles();
-	}
-	
-	/**
-	 * Returns roles that inherit from this role
-	 * @return inheriting roles
-	 * @throws APIException
-	 */
-	public List<Role> getInheritingRoles(Role role) throws APIException {
-		return getUserDAO().getInheritingRoles(role);
-	}
-
-	/**
-	 * Returns all users in the system
-	 * @return Global list of users
-	 * @throws APIException
+	 * @see org.openmrs.api.UserService#getUsers()
+	 * @deprecated
 	 */
 	public List<User> getUsers() throws APIException {
-		return getUserDAO().getUsers();
+		return getAllUsers();
 	}
-
+	
 	/**
-	 * Returns role object with given string role
-	 * @return Role
-	 * @throws APIException
+	 * @see org.openmrs.api.UserService#getAllUsers()
 	 */
-	public Role getRole(String r) throws APIException {
-		return getUserDAO().getRole(r);
+	public List<User> getAllUsers() throws APIException {
+		return dao.getAllUsers();
 	}
 
 	/**
-	 * Returns Privilege in the system with given String privilege
-	 * @return Privilege
-	 * @throws APIException
+	 * @see org.openmrs.api.UserService#getPrivileges()
+	 * @deprecated
+	 */
+	public List<Privilege> getPrivileges() throws APIException {
+		return getAllPrivileges();
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getAllPrivileges()
+	 */
+	public List<Privilege> getAllPrivileges() throws APIException {
+		return dao.getAllPrivileges();
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getPrivilege(java.lang.String)
 	 */
 	public Privilege getPrivilege(String p) throws APIException {
-		return getUserDAO().getPrivilege(p);
-	}
-	
-	public void changePassword(User u, String pw) throws APIException {
-		getUserDAO().changePassword(u, pw);
+		return dao.getPrivilege(p);
 	}
 	
 	/**
-	 * Changes the current user's password
-	 * @param pw
-	 * @param pw2
-	 * @throws APIException
+     * @see org.openmrs.api.UserService#purgePrivilege(org.openmrs.Privilege)
+     */
+    public void purgePrivilege(Privilege privilege) throws APIException {
+    	if (OpenmrsConstants.CORE_PRIVILEGES()
+                .keySet()
+                .contains(privilege.getPrivilege()))
+    		throw new APIException("Cannot delete a core privilege");
+    	
+	    dao.deletePrivilege(privilege);
+    }
+
+	/**
+     * @see org.openmrs.api.UserService#savePrivilege(org.openmrs.Privilege)
+     */
+    public Privilege savePrivilege(Privilege privilege) throws APIException {
+	    return dao.savePrivilege(privilege);
+    }
+
+	/**
+	 * @see org.openmrs.api.UserService#getRoles()
+	 * @deprecated
+	 */
+	public List<Role> getRoles() throws APIException {
+		return getAllRoles();
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getAllRoles()
+	 */
+	public List<Role> getAllRoles() throws APIException {
+		return dao.getAllRoles();
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getInheritingRoles(org.openmrs.Role)
+	 * @deprecated
+	 */
+	public List<Role> getInheritingRoles(Role role) throws APIException {
+		
+		List<Role> roles = new Vector<Role>();
+		roles.addAll(role.getInheritedRoles());
+		
+		return roles;
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#getRole(java.lang.String)
+	 */
+	public Role getRole(String r) throws APIException {
+		return dao.getRole(r);
+	}
+
+	/**
+     * @see org.openmrs.api.UserService#purgeRole(org.openmrs.Role)
+     */
+    public void purgeRole(Role role) throws APIException {
+    	if (role == null || role.getRole() == null)
+			return;
+
+		if (OpenmrsConstants.CORE_ROLES().keySet().contains(role.getRole()))
+			throw new APIException("Cannot delete a core role");
+		
+	    dao.deleteRole(role);
+    }
+
+	/**
+     * @see org.openmrs.api.UserService#saveRole(org.openmrs.Role)
+     */
+    public Role saveRole(Role role) throws APIException {
+    	
+    	// make sure one of the parents of this role isn't itself...this would
+    	// cause an infinite loop
+    	if (role.getAllParentRoles().contains(role))
+			throw new APIAuthenticationException("Invalid Role or parent Role.  A role cannot inherit itself.");
+
+		checkPrivileges(role);
+		
+	    return dao.saveRole(role);
+    }
+
+	/**
+	 * @see org.openmrs.api.UserService#changePassword(org.openmrs.User, java.lang.String)
+	 */
+	public void changePassword(User u, String pw) throws APIException {
+		dao.changePassword(u, pw);
+	}
+
+	/**
+	 * @see org.openmrs.api.UserService#changePassword(java.lang.String, java.lang.String)
 	 */
 	public void changePassword(String pw, String pw2) throws APIException {
-		getUserDAO().changePassword(pw, pw2);
+		dao.changePassword(pw, pw2);
 	}
-	
+
+	/**
+	 * @see org.openmrs.api.UserService#changeQuestionAnswer(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	public void changeQuestionAnswer(String pw, String q, String a) {
-		getUserDAO().changeQuestionAnswer(pw, q, a);
-	}
-	
-	public boolean isSecretAnswer(User u, String answer) {
-		return getUserDAO().isSecretAnswer(u, answer);
+		dao.changeQuestionAnswer(pw, q, a);
 	}
 	
 	/**
-	 * Return a user if any part of the search matches first/last/system id and the user
-	 * has one of the roles supplied
-	 * @param name
-	 * @param roles
-	 * @param includeVoided
-	 * @return
+	 * @see org.openmrs.api.UserService#isSecretAnswer(org.openmrs.User, java.lang.String)
+	 */
+	public boolean isSecretAnswer(User u, String answer) {
+		return dao.isSecretAnswer(u, answer);
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#findUsers(String, List, boolean)
+	 * @deprecated
 	 */
 	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) {
-		name = name.replace(", ", " ");
-		return getUserDAO().findUsers(name, roles, includeVoided);
+		
+		List<Role> rolesToSearch = new Vector<Role>();
+		
+		for (String role : roles) {
+			rolesToSearch.add(new Role(role));
+		}
+		
+		return getUsers(name, rolesToSearch, includeVoided);
 	}
 	
 	/**
-	 * Find a user by exact first name and last name
-	 * @param givenName
-	 * @param familyName
-	 * @param includeVoided
-	 * @return
+	 * @see org.openmrs.api.UserService#findUsers(String, String, boolean)
+	 * @deprecated
 	 */
 	public List<User> findUsers(String givenName, String familyName, boolean includeVoided) {
-		return getUserDAO().findUsers(givenName, familyName, includeVoided);
+		return getUsersByName(givenName, familyName, includeVoided);
 	}
 	
 	/**
-	 * Get all users that have at least one of the roles in <code>roles</code>
-	 * 
-	 * @param roles
-	 * @param includeVoided
-	 * @return list of users
+     * @see org.openmrs.api.UserService#getUsersByName(java.lang.String, java.lang.String, boolean)
+     */
+    public List<User> getUsersByName(String givenName, String familyName,
+            boolean includeVoided) throws APIException {
+    	return dao.getUsersByName(givenName, familyName, includeVoided);
+    }
+
+	/**
+	 * @see org.openmrs.api.UserService#getAllUsers(List, boolean)
+	 * @deprecated
 	 */
 	public List<User> getAllUsers(List<Role> roles, boolean includeVoided) {
-		Role auth_role = getRole(OpenmrsConstants.AUTHENTICATED_ROLE);
-		
-		if (roles.contains(auth_role))
-			return getUserDAO().getAllUsers(getRoles(), includeVoided);
-		
-		return getUserDAO().getAllUsers(roles, includeVoided);
+		return getUsers(null, roles, includeVoided);
 	}
 	
 	/**
-	 * This function checks if the authenticated user has all privileges they are giving out
+     * @see org.openmrs.api.UserService#getUsers(java.lang.String, java.util.List, boolean)
+     */
+    public List<User> getUsers(String nameSearch, List<Role> roles,
+            boolean includeVoided) throws APIException {
+	    
+    	if (nameSearch != null)
+    		nameSearch = nameSearch.replace(", ", " ");
+    	
+    	if (roles == null)
+    		roles = new Vector<Role>();
+    	
+    	// if the authenticated role is in the list of searched roles, then all
+    	// persons should be searched
+    	Role auth_role = getRole(OpenmrsConstants.AUTHENTICATED_ROLE);
+		if (roles.contains(auth_role))
+			return dao.getUsers(nameSearch, new Vector<Role>(), includeVoided);
+		else
+			return dao.getUsers(nameSearch, roles, includeVoided);
+    }
+
+	/**
+	 * Convenience method to check if the authenticated user has all privileges they are giving out
+	 * 
 	 * @param new user that has privileges 
 	 */
 	private void checkPrivileges(User user) {
@@ -366,40 +433,53 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#addUserProperty(org.openmrs.User, java.lang.String, java.lang.String)
 	 */
-	public void setUserProperty(User user, String key, String value) {
+	public User setUserProperty(User user, String key, String value) {
 		if (user != null) {
 			if (!user.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS) &&
 					!user.equals(Context.getAuthenticatedUser()))
 					throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
 
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 			user.setUserProperty(key, value);
-			updateUser(user);
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+			try {
+				saveUser(user, null);
+			}
+			finally {
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+			}
 		}
+		
+		return user;
 	}
 
 	/**
 	 * @see org.openmrs.api.UserService#removeUserProperty(org.openmrs.User, java.lang.String)
 	 */
-	public void removeUserProperty(User user, String key) {
+	public User removeUserProperty(User user, String key) {
 		if (user != null) {
-			if (!user.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS) &&
+			
+			// if the current user isn't allowed to edit users and
+			// the user being edited is not the current user, throw an exceiption
+			if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS) &&
 					!user.equals(Context.getAuthenticatedUser()))
 					throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
 
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 			user.removeUserProperty(key);
-			updateUser(user);
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+			
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+			try {
+				saveUser(user, null);
+			}
+			finally {
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+			}
 		}
+		
+		return user;
 	}
 
 	/**
-	 * Get/generate/find the next system id to be doled out.  Assume check digit <b>is</b> applied
-	 * in this method (not in DAO)
-	 * 
-	 * @return new system id
+	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
 	public String generateSystemId() {
 		//Hardcoding Luhn algorithm since all existing openmrs user ids have had check digits generated this way.
@@ -409,7 +489,7 @@ public class UserServiceImpl implements UserService {
 		Integer offset = 0;
 		do {
 			// generate and increment the system id if necessary
-			Integer generatedId = getUserDAO().generateSystemId() + offset++;
+			Integer generatedId = dao.generateSystemId() + offset++;
 		
 			systemId = generatedId.toString();
 		
@@ -422,7 +502,7 @@ public class UserServiceImpl implements UserService {
 			}
 			
 			// loop until we find a system id that no one has 
-		} while (getUserDAO().hasDuplicateUsername(null, systemId, null));
+		} while (dao.hasDuplicateUsername(null, systemId, null));
 		
 		return systemId;
 	}
@@ -445,4 +525,40 @@ public class UserServiceImpl implements UserService {
 			user.setDateChanged(new Date());
 		}
 	}
+
+	/**
+     * @see org.openmrs.api.UserService#purgeUser(org.openmrs.User)
+     */
+    public void purgeUser(User user) throws APIException {
+    	dao.deleteUser(user);	    
+    }
+
+	/**
+     * @see org.openmrs.api.UserService#purgeUser(org.openmrs.User, boolean)
+     */
+    public void purgeUser(User user, boolean cascade) throws APIException {
+	    if (cascade == true) {
+	    	throw new APIException("I don't think we want to cascade here");
+	    }
+	    
+	    dao.deleteUser(user);
+    }
+    
+	/**
+	 * Convenience method to check if the authenticated user has all privileges they
+	 * are giving out to the new role
+	 * 
+	 * @param new user that has privileges
+	 */
+	private void checkPrivileges(Role role) {
+		Collection<Privilege> privileges = role.getPrivileges();
+
+		if (privileges != null)
+			for (Privilege p : privileges) {
+				if (!Context.hasPrivilege(p.getPrivilege()))
+					throw new APIAuthenticationException("Privilege required: "
+					        + p);
+			}
+	}
+	
 }

@@ -35,6 +35,14 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	public void testcreateInitialTestDataSetXmlFile() throws Exception {
+		
+		// only run this test if it is being run alone.
+		// this allows the junit-report ant target and the "right-
+		// click-on-/test/api-->run as-->junit test" methods to skip
+		// over this whole "test"
+		if (getLoadCount() != 1)
+			return;
+		
 		// database connection for dbunit
 		IDatabaseConnection connection = new DatabaseConnection(getConnection());
         

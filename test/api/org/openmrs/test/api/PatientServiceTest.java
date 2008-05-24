@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.openmrs.GlobalProperty;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -71,11 +73,20 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		executeDataSet(CREATE_PATIENT_XML);
 		
-		Set<Patient> patientList = ps.getPatientsByIdentifier("???", true);
+		List<Patient> patientList = ps.getPatients(null, "???", null);
 		assertNotNull("an empty list should be returned instead of a null object", patientList);
 		assertTrue("There shouldn't be any patients with this weird identifier", patientList.size() == 0);
 		
-		patientList = ps.getPatientsByIdentifier("1234", true);
+		// make sure there is no identifier regex defined
+		GlobalProperty prop = new GlobalProperty("patient.identifierRegex", "");
+		Context.getAdministrationService().saveGlobalProperty(prop);
+		patientList = ps.getPatients(null, "1234", null);
+		assertTrue("There should be at least one patient found with this identifier", patientList.size() > 0);
+		
+		// try the same search with a regex defined
+		prop.setPropertyValue("^0*@SEARCH@([A-Z]+-[0-9])?$");
+		Context.getAdministrationService().saveGlobalProperty(prop);
+		patientList = ps.getPatients(null, "1234", null);
 		assertTrue("There should be at least one patient found with this identifier", patientList.size() > 0);
 		
 		// get a patient by id
@@ -87,13 +98,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		
 		patient.setGender("F");
-		ps.updatePatient(patient);
+		ps.savePatient(patient);
 		Patient patient2 = ps.getPatient(patient.getPatientId());
 		assertTrue("The updated patient and the orig patient should still be equal", patient.equals(patient2));
 		
 		assertTrue("The gender should be new", patient2.getGender().equals("F"));	
 	}
 	
+		
 	private Patient createBasicPatient(){
 		Patient patient = new Patient();
 		
@@ -132,21 +144,44 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void testCreatePatient() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		
-		Patient patient = createBasicPatient();
+		Patient patient = new Patient();
 		
-		List<PatientIdentifierType> patientIdTypes = ps.getPatientIdentifierTypes();
+		PersonName pName = new PersonName();
+		pName.setGivenName("Tom");
+		pName.setMiddleName("E.");
+		pName.setFamilyName("Patient");
+		patient.addName(pName);
+		
+		PersonAddress pAddress = new PersonAddress();
+		pAddress.setAddress1("123 My street");
+		pAddress.setAddress2("Apt 402");
+		pAddress.setCityVillage("Anywhere city");
+		pAddress.setCountry("Some Country");
+		Set<PersonAddress> pAddressList = patient.getAddresses();
+		pAddressList.add(pAddress);
+		patient.setAddresses(pAddressList);
+		patient.addAddress(pAddress);
+		//patient.removeAddress(pAddress);
+		
+		patient.setDeathDate(new Date());
+		//patient.setCauseOfDeath("air");
+		patient.setBirthdate(new Date());
+		patient.setBirthdateEstimated(true);
+		patient.setGender("male");
+		
+		List<PatientIdentifierType> patientIdTypes = ps.getAllPatientIdentifierTypes();
 		assertNotNull(patientIdTypes);
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setIdentifier("123-0");
 		patientIdentifier.setIdentifierType(patientIdTypes.get(0));
-		patientIdentifier.setLocation(encounterService.getLocations().get(0));
+		patientIdentifier.setLocation(new Location(1));
 		
 		Set<PatientIdentifier> patientIdentifiers = new TreeSet<PatientIdentifier>();
 		patientIdentifiers.add(patientIdentifier);
 		
 		patient.setIdentifiers(patientIdentifiers);
 		
-		ps.createPatient(patient);
+		ps.savePatient(patient);
 		Patient createdPatient = ps.getPatient(patient.getPatientId());
 		assertNotNull(createdPatient);
 		
@@ -157,7 +192,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
-	/**
+		/**
 	 * Tests creating patients with identifiers that are or are not validated.
 	 * @throws Exception 
 	 */
@@ -210,7 +245,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(CREATE_PATIENT_XML);
 		
 		// get the first patient
-		Collection<Patient> johnPatients = ps.getPatientsByName("John");
+		Collection<Patient> johnPatients = ps.getPatients("John", null, null);
 		assertNotNull("There should be a patient named 'John'", johnPatients);
 		assertFalse("There should be a patient named 'John'", johnPatients.isEmpty());
 		
@@ -219,7 +254,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// get a list of patients with this identifier, make sure the john patient is actually there
 		String identifier = firstJohnPatient.getPatientIdentifier().getIdentifier();
 		assertNotNull("Uh oh, the patient doesn't have an identifier", identifier);
-		Set<Patient> patients = ps.getPatientsByIdentifier(identifier, true);
+		List<Patient> patients = ps.getPatients(null, identifier, null);
 		assertTrue("Odd. The firstJohnPatient isn't in the list of patients for this identifier", patients.contains(firstJohnPatient));
 		
 	}
@@ -250,7 +285,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void testGetPatientsByNameShouldLimitSize() throws Exception {
 		executeDataSet(JOHN_PATIENTS_XML);
 		
-		Collection<Patient> patients = ps.getPatientsByName("John");
+		Collection<Patient> patients = ps.getPatients("John", null, null);
 		
 		assertTrue("The patient list size should be restricted to under the max (1000). its " + patients.size(), patients.size() == 1000);
 		
@@ -315,7 +350,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//Test that "Jea" finds given_name="Jean Claude" and given_name="Jean", family_name="Claude"
 		//and given_name="Jeannette" family_name="Claudent"
 		//but not given_name="John" family_name="Claudio"
-		Collection<Patient> pset = ps.findPatients("Jea", false);
+		Collection<Patient> pset = ps.getPatients("Jea", null, null);
 		boolean claudioFound = false;
 		boolean jeanClaudeFound1 = false;
 		boolean jeanClaudeFound2 = false;
@@ -338,7 +373,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//Test that "Jean Claude" finds given_name="Jean Claude" and given_name="Jean", family_name="Claude"
 		//and given_name="Jeannette" family_name="Claudent" but not
 		//given_name="John" family_name="Claudio"
-		pset = ps.findPatients("Jean Claude", false);
+		pset = ps.getPatients("Jean Claude", null, null);
 		claudioFound = false;
 		jeanClaudeFound1 = false;
 		jeanClaudeFound2 = false;
@@ -357,12 +392,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertTrue(jeanClaudeFound1);
 		assertTrue(jeanClaudeFound2);
 		assertTrue(jeannetteClaudentFound);
-		
-		//Test the "include voided" option.
-		pset = ps.findPatients("I am voided", true);
-		assertEquals(pset.iterator().next().getFamilyName(), "voided");
-		
-		pset = ps.findPatients("I am voided", false);
+				
+		pset = ps.getPatients("I am voided", null, null);
 		assertEquals(pset.size(), 0);
 		
 	}

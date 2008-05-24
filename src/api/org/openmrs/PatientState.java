@@ -17,11 +17,22 @@ import java.util.Date;
 
 import org.openmrs.util.OpenmrsUtil;
 
-public class PatientState {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/**
+ * PatientState
+ */
+public class PatientState implements java.io.Serializable {
+	
+	public static final long serialVersionUID = 0L;
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	// ******************
+	// Properties
+	// ******************
 
 	private Integer patientStateId;
-	// private Program program;
-	// private ProgramWorkflow programWorkflow;
 	private PatientProgram patientProgram;
 	private ProgramWorkflowState state;
 	private Date startDate;
@@ -36,7 +47,17 @@ public class PatientState {
 	private Date dateVoided; 
 	private String voidReason;
 	
+	// ******************
+	// Constructors
+	// ******************
+	
+	/** Default Constructor */
 	public PatientState() { }
+	
+	/** Constructor with id */
+	public PatientState(Integer patientStateId) {
+		setPatientStateId(patientStateId);
+	}
 	
 	/**
 	 * Does a shallow copy of this PatientState. Does NOT copy patientStateId
@@ -69,6 +90,51 @@ public class PatientState {
 		target.setVoidReason(this.getVoidReason());
 		return target;
 	}
+	
+	// ******************
+	// Instance methods
+	// ******************
+	
+	/**
+	 * Returns true if this {@link PatientState} is active as of the passed {@link Date}
+	 * @param onDate - {@link Date} to check for {@link PatientState} enrollment
+	 * @return boolean - true if this {@link PatientState} is active as of the passed {@link Date}
+	 */
+	public boolean getActive(Date onDate) {
+		if (onDate == null) {
+			onDate = new Date();
+		}
+		return !getVoided() && (startDate == null || OpenmrsUtil.compare(startDate, onDate) <= 0) && (endDate == null || OpenmrsUtil.compare(endDate, onDate) > 0);
+	}
+	
+	/**
+	 * Returns true if this {@link PatientState} is currently active
+	 * @return boolean - true if this {@link PatientState} is currently active
+	 */
+	public boolean getActive() {
+		return getActive(null);
+	}
+	
+	/** @see Object#equals(Object) */
+	public boolean equals(Object obj) {
+		if (obj != null && obj instanceof PatientState) {
+			PatientState p = (PatientState)obj;
+			if (this.getPatientStateId() == null) {
+				return p.getPatientStateId() == null;
+			}
+			return (this.getPatientStateId().equals(p.getPatientStateId()));
+		}
+		return false;
+	}
+
+	/** @see Object#toString() */
+	public String toString() {
+		return "PatientState(id=" + getPatientStateId() + ", patientProgram=" + getPatientProgram() + ", state=" + getState() + ", startDate=" + getStartDate() + ", endDate=" + getEndDate();
+	}
+	
+	// ******************
+	// Property Access
+	// ******************
 
 	public PatientProgram getPatientProgram() {
 		return patientProgram;
@@ -173,15 +239,4 @@ public class PatientState {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-	
-	public boolean getActive() {
-		return getActive(null);
-	}
-	
-	public boolean getActive(Date onDate) {
-		if (onDate == null)
-			onDate = new Date();
-		return (startDate == null || OpenmrsUtil.compare(startDate, onDate) <= 0) && (endDate == null || OpenmrsUtil.compare(endDate, onDate) > 0);
-	}
-	
 }

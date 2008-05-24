@@ -99,7 +99,7 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	/**
 	 * Start up hook for the scheduler and all of its scheduled tasks.
 	 */
-	public void startup() {
+	public void onStartup() {
 		log.debug("Starting scheduler service ...");
 		
 		
@@ -127,7 +127,7 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	/**
 	 * Shutdown hook for the scheduler and all of its scheduled tasks.  
 	 */
-	public void shutdown() { 
+	public void onShutdown() { 
 		log.debug("Gracefully shutting down scheduler service ...");
 		// gracefully shutdown all tasks and remove all references to the timers, scheduler
 		try {
