@@ -35,18 +35,9 @@
 			<column name="datatype_id" />
 		</many-to-one>
 
-		<set name="names" lazy="true" cascade="all,delete-orphan,evict" 
-				table="concept_name" order-by="name asc">
+		<set name="names" lazy="true" cascade="all,delete-orphan,evict" inverse="true" order-by="name asc">
 			<key column="concept_id" not-null="true" />
-			<composite-element class="ConceptName">
-				<parent name="concept" />
-				<property name="name" type="java.lang.String" length="255" not-null="true"/>
-				<property name="locale" type="java.util.Locale" length="50" not-null="true"/>
-				<property name="shortName" type="java.lang.String" length="255" column="short_name" />
-				<property name="description" type="java.lang.String" length="65535" not-null="true" />
-				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
-				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
-			</composite-element>
+			<one-to-many class="ConceptName" />
 		</set>
 
 		<set name="answers" lazy="true" cascade="all,evict" 

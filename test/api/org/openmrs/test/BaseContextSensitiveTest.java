@@ -202,8 +202,6 @@ public abstract class BaseContextSensitiveTest extends
 			
 			// automatically create the tables defined in the hbm files
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
-			
-			//runtimeProperties.setProperty(Environment.TRANSACTION_STRATEGY, "org.openmrs.test.RollbackTransactionFactory");
 		}
 
 		return runtimeProperties;

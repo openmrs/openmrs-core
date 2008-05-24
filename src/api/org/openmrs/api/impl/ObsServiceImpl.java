@@ -668,7 +668,11 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate)
 	 */
 	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate) {
-		return getObservations(patients, concepts, fromDate, toDate);
+		List<Person> persons = new Vector<Person>();
+		for (Integer memberId : patients.getMemberIds())
+			persons.add(new Person(memberId));
+		
+		return getObservations(persons, null, concepts, null, null, null, null, null, null, fromDate, toDate, false);
 	}
 
 }
