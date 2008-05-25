@@ -60,6 +60,7 @@ public class ObsTableWidget extends TagSupport {
 	private Boolean showEmptyConcepts = true;
 	private Boolean showConceptHeader = true;
 	private Boolean showDateHeader = true;
+	private Boolean combineEqualResults = true;
 	private String id;
 	private String cssClass;
 	private Date fromDate;
@@ -159,6 +160,12 @@ public class ObsTableWidget extends TagSupport {
 		if (limit == null) return;
 		this.limit = limit;
 	}
+	public Boolean getCombineEqualResults() {
+    	return combineEqualResults;
+    }
+	public void setCombineEqualResults(Boolean combineEqualResults) {
+    	this.combineEqualResults = combineEqualResults;
+    }
 
 	public int doStartTag() {
 		Locale loc = Context.getLocale();
@@ -279,9 +286,15 @@ public class ObsTableWidget extends TagSupport {
 					String key = c.getConceptId() + "." + date;
 					List<Obs> list = groupedObs.get(key);
 					if (list != null) {
-						for (Obs obs : list) {
-							ret.append(obs.getValueAsString(loc));
-							ret.append("<br/>");
+						if (combineEqualResults) {
+							List<String> unique = new ArrayList<String>();
+							for (Obs obs : list)
+								unique.add(obs.getValueAsString(loc));
+							for (String s : unique)
+								ret.append(s).append("<br/>");
+						} else {
+							for (Obs obs : list)
+								ret.append(obs.getValueAsString(loc)).append("<br/>");
 						}
 					}
 					ret.append("</td>");
@@ -319,9 +332,15 @@ public class ObsTableWidget extends TagSupport {
 					String key = c.getConceptId() + "." + date;
 					List<Obs> list = groupedObs.get(key);
 					if (list != null) {
-						for (Obs obs : list) {
-							ret.append(obs.getValueAsString(loc));
-							ret.append("<br/>");
+						if (combineEqualResults) {
+							List<String> unique = new ArrayList<String>();
+							for (Obs obs : list)
+								unique.add(obs.getValueAsString(loc));
+							for (String s : unique)
+								ret.append(s).append("<br/>");
+						} else {
+							for (Obs obs : list)
+								ret.append(obs.getValueAsString(loc)).append("<br/>");
 						}
 					}
 					ret.append("</td>");
@@ -345,6 +364,10 @@ public class ObsTableWidget extends TagSupport {
 		observations = null;
 		sortDescending = true;
 		orientVertical = true;
+		showEmptyConcepts = true;
+		showConceptHeader = true;
+		showDateHeader = true;
+		combineEqualResults = true;
 		id = null;
 		cssClass = null;
 		showEmptyConcepts = true;

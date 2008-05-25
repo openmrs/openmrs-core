@@ -82,16 +82,19 @@ public class DWRCohortBuilderService {
 		Cohort ps = history.getLastPatientSet(null);
 		return ps;
 	}
-	
-	public List<ListItem> getSavedSearches() {
+		
+	public List<ListItem> getSavedSearches(boolean includeParameterized) {
 		List<ListItem> ret = new ArrayList<ListItem>();
 		List<AbstractReportObject> savedSearches = Context.getReportObjectService().getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
 		for (ReportObject ps : savedSearches) {
-			ListItem li = new ListItem();
-			li.setId(ps.getReportObjectId());
-			li.setName(ps.getName());
-			li.setDescription(ps.getDescription());
-			ret.add(li);
+			if (includeParameterized ||
+					((PatientSearchReportObject) ps).getPatientSearch().getParameters().size() == 0) {
+				ListItem li = new ListItem();
+				li.setId(ps.getReportObjectId());
+				li.setName(ps.getName());
+				li.setDescription(ps.getDescription());
+				ret.add(li);
+			}
 		}
 		return ret;
 	}

@@ -806,6 +806,11 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
+		<name>combineEqualResults</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
 		<name>fromDate</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>

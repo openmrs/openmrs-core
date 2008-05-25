@@ -1231,10 +1231,11 @@ public class OpenmrsUtil {
 		        	Class<?> realPropertyType = pd.getPropertyType();
 		
 		        	// instantiate the value of the search argument
-		        	String valueAsString = search.getArgumentValue(sa.getName());
-		        	if (evalContext != null && EvaluationContext.isExpression(valueAsString)) {
-		        		log.debug("found expression: " + valueAsString);
-		        		Object evaluated = evalContext.evaluateExpression(valueAsString);
+		        	String valueAsString = sa.getValue();
+		        	String testForExpression = search.getArgumentValue(sa.getName());
+		        	if (evalContext != null && EvaluationContext.isExpression(testForExpression)) {
+		        		log.debug("found expression: " + testForExpression);
+		        		Object evaluated = evalContext.evaluateExpression(testForExpression);
 		        		if (evaluated != null) {
 		        			if (evaluated instanceof Date)
 		        				valueAsString = Context.getDateFormat().format((Date) evaluated); 

@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openmrs.Cohort;
 import org.openmrs.api.ReportService;
 import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
@@ -54,6 +55,7 @@ public class RunReportController extends SimpleFormController implements Validat
 
 	public class CommandObject {
 		private ReportSchema schema;
+		private Cohort inputCohort;
 		private Map<String, String> userEnteredParams;
 		private List<RenderingMode> renderingModes;
 		private String selectedRenderer;
@@ -83,7 +85,13 @@ public class RunReportController extends SimpleFormController implements Validat
         }
 		public void setUserEnteredParams(Map<String, String> userEnteredParams) {
         	this.userEnteredParams = userEnteredParams;
-		}		
+		}
+		public Cohort getInputCohort() {
+        	return inputCohort;
+        }
+		public void setInputCohort(Cohort inputCohort) {
+        	this.inputCohort = inputCohort;
+        }		
 	}
 	
 	public boolean supports(Class c) {
@@ -117,7 +125,17 @@ public class RunReportController extends SimpleFormController implements Validat
 		ValidationUtils.rejectIfEmpty(errors, "selectedRenderer", "Pick a renderer");
     }
 
-	
+	/**
+	 * This check allows callers to visit this form initially via a POST. (This is necessary
+	 * to allow very long 'patientIds' parameters to be passed in.
+	 * 
+	 * @see org.springframework.web.servlet.mvc.AbstractFormController#isFormSubmission(javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+    protected boolean isFormSubmission(HttpServletRequest request) {
+	    return "true".equals(request.getParameter("isSubmit"));
+    }
+
 	@Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		CommandObject ret = new CommandObject();
@@ -127,6 +145,17 @@ public class RunReportController extends SimpleFormController implements Validat
 			ReportSchema schema = reportService.getReportSchema(id);
 			ret.setSchema(schema);
 			ret.setRenderingModes(reportService.getRenderingModes(schema));
+			
+			String commaSeparated = request.getParameter("patientIds");
+			String cohortName = request.getParameter("cohortName");
+			if (commaSeparated != null) {
+				try {
+					Cohort inputCohort = new Cohort(commaSeparated);
+					if (cohortName != null)
+						inputCohort.setName(cohortName);
+					ret.setInputCohort(inputCohort);
+				} catch (Exception ex) { }
+			}
 		}
 		return ret;
     }
@@ -158,7 +187,7 @@ public class RunReportController extends SimpleFormController implements Validat
 		if (errors.hasErrors())
 			return showForm(request, response, errors);
 		
-		ReportData data = reportService.evaluate(rs, null, evalContext);
+		ReportData data = reportService.evaluate(rs, command.getInputCohort(), evalContext);
 		String renderClass = command.getSelectedRenderer();
 		String renderArg = "";
 		if (renderClass.indexOf("!") > 0) {

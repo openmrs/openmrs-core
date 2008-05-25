@@ -1406,7 +1406,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				criteria.add(Restrictions.in("person.personId", patients.getMemberIds()));
 			
 			// do not include voided person rows
-			criteria.add(Expression.eq("personVoided", false));
+			criteria.add(Expression.eq("voided", false));
 		}
 		else {
 			projectionList.add(Projections.property("patient.personId"));

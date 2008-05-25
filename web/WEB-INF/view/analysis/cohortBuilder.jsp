@@ -316,7 +316,7 @@
 			$('saved_searches').innerHTML = '<li><spring:message code="general.loading"/></li>';
 			$('saved_cohorts').innerHTML = '<li><spring:message code="general.loading"/></li>';
 			showLayer('saved_filters');
-			DWRCohortBuilderService.getSavedSearches(function(searches) {
+			DWRCohortBuilderService.getSavedSearches(false, function(searches) {
 					var str = '<ul>';
 					if (searches.length == 0)
 						str = '<spring:message code="general.none"/>';
@@ -387,7 +387,7 @@
 	function refreshStateOptions() {
 		hideDiv('state');
 		var workflow = DWRUtil.getValue('workflow');
-		if (workflow == null) {
+		if (workflow == null || workflow == '') {
 			DWRUtil.removeAllOptions('state');
 		} else
 			DWRProgramWorkflowService.getStatesByWorkflow(workflow, function (states) {
@@ -1198,12 +1198,24 @@
 
 		<b><spring:message code="CohortBuilder.actionsMenu"/></b>
 		
-		<openmrs:extensionPopupMenu
-			pointId="org.openmrs.quickWebReports"
-			popupDivId="webReportPopupMenu"
-			label="CohortBuilder.reportsPopupButton"
-			position="above"
-			parameters="patientIds=javascript:getCurrentPatientIds()" />
+		<span style="position: relative">
+			<div id="webReportPopupMenu" style="width: 35em; border: 1px solid black; background-color: #f0f0a0; position: absolute; bottom: 0px; padding-right: 1.2em; z-index: 1; display: none">
+				<div style="float: right"><a href="javascript:hideLayer('webReportPopupMenu');" >[<spring:message code="general.close"/>]</a></div>
+				<ul>
+					<openmrs:forEachRecord name="reportSchemaXml">
+						<form id="${record.reportSchemaId}" method="post" action="admin/reports/runReport.form">
+							<input type="hidden" name="reportId" value="${record.reportSchemaId}"/>
+							<input type="hidden" name="patientIds" value=""/>
+							<input type="hidden" name="cohortName" value="<spring:message code="CohortBuilder.nameOfCohortForReport"/>"/>
+							<li>
+								<a href="#" onClick="submitLink(this)">${record.name}</a> <small>${record.description}</small>
+							</li>
+						</form>
+					</openmrs:forEachRecord>
+				</ul>
+			</div>
+		</span>
+		<a href="#" onClick="toggleLayer('webReportPopupMenu')" style="border: 1px black solid"><spring:message code="CohortBuilder.reportsPopupButton"/></a>
 
 		<a href="#" title='<spring:message code="CohortBuilder.saveCohort.help" />' onClick="toggleLayer('saveCohortDiv'); document.getElementById('saveCohortName').focus(); return false;">
 			<img src="${pageContext.request.contextPath}/images/save.gif" style="border: 0px" />
