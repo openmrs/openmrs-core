@@ -132,9 +132,19 @@ public class UserFormController extends PersonFormController {
 				Set<Role> newRoles = new HashSet<Role>();
 				if (roles != null) {
 					for (String r : roles) {
-						Role role = us.getRole(r);
+						// Make sure that if we already have a detached instance of this role in the
+						// user's roles, that we don't fetch a second copy of that same role from
+						// the database, or else hibernate will throw a NonUniqueObjectException.
+						Role role = null;
+						for (Role test : user.getRoles())
+							if (test.getRole().equals(r))
+								role = test;
+						if (role == null) {
+							role = us.getRole(r);
+							user.addRole(role);
+						}
 						newRoles.add(role);
-						user.addRole(role);
+						
 					}
 				}
 				
