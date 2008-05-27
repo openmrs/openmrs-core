@@ -658,7 +658,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
 
 	ALTER TABLE `program` ADD COLUMN `name` varchar(50);
-	UPDATE program p SET p.name = (SELECT n.name FROM concept_name n WHERE n.concept_id = p.concept_id);
+	UPDATE program p SET p.name = (SELECT n.name FROM concept_name n WHERE n.concept_id = p.concept_id LIMIT 1);
 	ALTER TABLE `program` MODIFY `name` varchar(50) NOT NULL;
 	ALTER TABLE `program` ADD COLUMN `description` varchar(500);
 	ALTER TABLE `program` CHANGE `voided` `retired` tinyint(1) NOT NULL default '0';
