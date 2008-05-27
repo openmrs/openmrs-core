@@ -727,7 +727,7 @@ public class PersonServiceImpl implements PersonService {
 			throw new APIException(personTypeStr + " is an invalid value for 'personType' attribute");
 		
 		ATTR_VIEW_TYPE attrDisplayType = null;
-		if ("listing".equals(personTypeStr))
+		if ("listing".equals(displayTypeStr))
 			attrDisplayType = ATTR_VIEW_TYPE.LISTING;
 		else if ("viewing".equals(displayTypeStr))
 			attrDisplayType = ATTR_VIEW_TYPE.VIEWING;

@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.util.Format;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.Format.FORMAT_TYPE;
 
 /**
@@ -925,14 +926,21 @@ public class Obs implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method for obtaining a Map of available locale 
+	 * This was a convenience method for obtaining a Map of available locale 
 	 * to observation's value as a string
+	 * 
+	 * This method is a waste and should be not be used.  This was used in the web
+	 * layer because jstl can't pass parameters to a method (${obs.valueAsString[locale]}
+	 * was used instead of what would be convenient ${obs.valueAsString(locale)})
+	 * Now the openmrs:format tag should be used in the web layer:
+	 * <openmrs:format obsValue="${obs}"/> 
+	 * 
+	 * @deprecated 
 	 */
 	public Map<Locale, String> getValueAsString() {
 		Map<Locale, String> ret = new HashMap<Locale, String>();
-		Locale[] locales = Locale.getAvailableLocales();
-		for (int i=0; i<locales.length; i++) {
-			ret.put(locales[i], getValueAsString(locales[i]));
+		for (Locale locale : OpenmrsConstants.OPENMRS_CONCEPT_LOCALES()) {
+			ret.put(locale, getValueAsString(locale));
 		}
 		return ret;
 	}

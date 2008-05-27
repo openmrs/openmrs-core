@@ -15,8 +15,8 @@ package org.openmrs.web.dwr;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
@@ -29,16 +29,24 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
 
+/**
+ *
+ */
 public class DWRObsService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	/**
+	 * Void the given observation
+	 * 
+	 * @param obsId
+	 * @param reason
+	 */
 	public void voidObservation(Integer obsId, String reason) {
 		Obs obs = Context.getObsService().getObs(obsId);
 		if (obs == null) {
@@ -50,7 +58,15 @@ public class DWRObsService {
 		Context.getObsService().voidObs(obs, reason);
 	}
 	
-	public Vector getObservations(Integer encounterId) { 
+	/**
+	 * Get all observations for the given encounter
+	 * 
+	 * TODO: rename to getObservationsByEncounter
+	 * 
+	 * @param encounterId
+	 * @return
+	 */
+	public Vector<Object> getObservations(Integer encounterId) { 
 				
 		log.info("Get observations for encounter " + encounterId);
 		Vector<Object> obsList = new Vector<Object>();
@@ -60,12 +76,11 @@ public class DWRObsService {
 		try {
 			Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
 			
-			Set<Obs> observations = Context.getObsService().getObservations(encounter);
-			for (Obs obs : observations) {
-				obsList.add(new ObsListItem(obs,request.getLocale()));
-			}		
-			
-			
+			Set<Obs> observations = encounter.getAllObs();
+			if (observations != null)
+				for (Obs obs : observations) {
+					obsList.add(new ObsListItem(obs,request.getLocale()));
+				}		
 			
 		} catch (Exception e) {
 			log.error(e);
@@ -76,10 +91,29 @@ public class DWRObsService {
 	}
 	
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param personId
+	 * @param encounterId
+	 * @param conceptId
+	 * @param valueText
+	 * @param obsDateStr
+	 */
 	public void createObs(Integer personId, Integer encounterId, Integer conceptId, String valueText, String obsDateStr) { 
 		createNewObs(personId, encounterId, null, conceptId, valueText, obsDateStr);
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param personId
+	 * @param encounterId
+	 * @param locationId
+	 * @param conceptId
+	 * @param valueText
+	 * @param obsDateStr
+	 */
 	public void createNewObs(Integer personId, Integer encounterId, Integer locationId, Integer conceptId, String valueText, String obsDateStr) { 
 		
 		log.info("Create new observation ");
@@ -110,13 +144,13 @@ public class DWRObsService {
 		} else {
 			Location location = null;
 			if (locationId != null)
-				Context.getEncounterService().getLocation(locationId);
+				Context.getLocationService().getLocation(locationId);
 			if ( location == null ) {
-				location = Context.getEncounterService().getLocationByName("Unknown Location");
+				location = Context.getLocationService().getLocation("Unknown Location");
 				if (location == null)
-					location = Context.getEncounterService().getLocationByName("Unknown");
+					location = Context.getLocationService().getLocation("Unknown");
 				if (location == null)
-					location = Context.getEncounterService().getLocation(1);
+					location = Context.getLocationService().getLocation(1);
 			}
 			obs.setLocation(location);
 		}
@@ -133,10 +167,11 @@ public class DWRObsService {
 		}
 		
 		// Create the observation
-		Context.getObsService().createObs(obs);
+		Context.getObsService().saveObs(obs, null);
 
 	}
 		
+	/* Commenting out an unused method
 	public Vector findObs(String phrase, boolean includeVoided) {
 		
 		// List to return
@@ -147,21 +182,19 @@ public class DWRObsService {
 			EncounterService es = Context.getEncounterService();
 			Set<Encounter> encs = new HashSet<Encounter>();
 			
-			/*
-			if (phrase.matches("\\d+")) {
-				// user searched on a number.  Insert obs with corresponding obsId
-				Obs e = os.getObs(Integer.valueOf(phrase));
-				if (e != null) {
-					encs.add(e);
-				}
-			}
-			*/
+//			if (phrase.matches("\\d+")) {
+//				// user searched on a number.  Insert obs with corresponding obsId
+//				Obs e = os.getObs(Integer.valueOf(phrase));
+//				if (e != null) {
+//					encs.add(e);
+//				}
+//			}
 			
 			if (phrase == null || phrase.equals("")) {
 				//TODO get all concepts for testing purposes?
 			}
 			else {
-				encs.addAll(es.getEncountersByPatientIdentifier(phrase, includeVoided));
+				encs.addAll(es.getEncountersByPatientIdentifier(phrase));
 			}
 
 			if (encs.size() == 0) {
@@ -180,7 +213,16 @@ public class DWRObsService {
 
 		return objectList;
 	}
+	*/
 
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param personId
+	 * @param conceptId
+	 * @param encounterId
+	 * @return
+	 */
 	public Vector<ObsListItem> getObsByPatientConceptEncounter(String personId, String conceptId, String encounterId) {
 		log.debug("Started with: [" + personId + "] [" + conceptId + "] [" + encounterId + "]");
 		
@@ -208,17 +250,17 @@ public class DWRObsService {
 		if ( conceptId != null ) c = OpenmrsUtil.getConceptByIdOrName(conceptId);
 		if ( eId != null ) e = Context.getEncounterService().getEncounter(eId);
 		
-		Set<Obs> obss = null;
+		Collection<Obs> obss = null;
 		
 		if ( p != null && c != null ) {
 			log.debug("Getting obss with patient and concept");
-			obss = Context.getObsService().getObservations(p, c, true);
+			obss = Context.getObsService().getObservationsByPersonAndConcept(p, c);
 		} else if ( e != null ) {
-			log.debug("Getting obss with encounter");
-			obss = Context.getObsService().getObservations(e);
+			log.debug("Getting obss by encounter");
+			obss = e.getAllObs();
 		} else if ( p != null ) {
 			log.debug("Getting obss with just patient");
-			obss = Context.getObsService().getObservations(p, true);
+			obss = Context.getObsService().getObservationsByPerson(p);
 		}
 
 		if ( obss != null ) {
@@ -232,6 +274,12 @@ public class DWRObsService {
 		return ret;
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param obsId
+	 * @return
+	 */
 	public ObsListItem getObs(Integer obsId) {
 		Obs o = null;
 		if ( obsId != null ) {

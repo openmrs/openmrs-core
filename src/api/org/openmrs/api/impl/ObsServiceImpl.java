@@ -538,19 +538,23 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, org.openmrs.Concept, boolean includeVoided)
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, org.openmrs.Concept, boolean)
 	 * @deprecated
 	 */
 	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided) {
+		List<Obs> obs = getObservationsByPersonAndConcept(who, question);
+		Set<Obs> obsSet = new HashSet<Obs>();
+		obsSet.addAll(obs);
+		return obsSet;
+	}
+	
+	public List<Obs> getObservationsByPersonAndConcept(Person who, Concept question) throws APIException {
 		List<Person> whom = new Vector<Person>();
 		whom.add(who);
 		List<Concept> questions = new Vector<Concept>();
 		questions.add(question);
 		
-		List<Obs> obs = getObservations(whom, null, questions, null, null, null, null, null, null, null, null, includeVoided);
-		Set<Obs> obsSet = new HashSet<Obs>();
-		obsSet.addAll(obs);
-		return obsSet;
+		return getObservations(whom, null, questions, null, null, null, null, null, null, null, null, false);
 	}
 
 	/**
