@@ -14,12 +14,10 @@
 			<tr class="<c:if test="${obs.voided}">voided </c:if>">
 				<td colspan="5"><%-- this is the empty row to mimic the description row--%></td>
 			</tr>
-			<c:forEach items="${obs.groupMembers}" var="groupMember">
-				<c:set var="obs" value="${groupMember}" scope="request"/>
-				<c:set var="field" value="${otherFormFields[groupMember]}" scope="request"/>
-				<c:set var="level" value="${level+1}" scope="request"/>
-				<c:import url="obsDisplay.jsp" />
-			</c:forEach>
+			<c:set var="obsList" value="${obs.groupMembers}" scope="request"/>
+			<c:set var="field" value="${otherFormFields[groupMember]}" scope="request"/>
+			<c:set var="level" value="${level+1}" scope="request"/>
+			<c:import url="obsDisplay.jsp" />
 		</c:when>
 		<c:otherwise>
 			<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this)" onmouseout="mouseout(this)" onclick="click('${obs.obsId}')">
