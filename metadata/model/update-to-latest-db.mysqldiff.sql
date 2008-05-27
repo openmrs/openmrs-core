@@ -917,7 +917,7 @@ call diff_procedure('1.3.0.09');
 
 #----------------------------------------
 # OpenMRS Datamodel version 1.3.0.10
-# Darius Jazayeri               May 4, 2008
+# Ben Wolfe               May 24, 2008
 # Adding retired column to PersonAttributeType
 #----------------------------------------
 
@@ -946,6 +946,32 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 
 delimiter ;
 call diff_procedure('1.3.0.10');
+
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.11
+# Ben Wolfe               May 27, 2008
+# Modifying concept_name table for hibernate insert quirk
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+    ALTER TABLE `concept_name` MODIFY COLUMN `concept_id` int(11) default NULL;
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.11');
 
 
 #-----------------------------------

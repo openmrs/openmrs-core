@@ -14,8 +14,7 @@
 		<many-to-one
 			name="concept"
 			column="concept_id"
-			class="Concept"
-			not-null="true"/>
+			class="Concept" />
 
 		<property name="name" type="java.lang.String" length="65535" not-null="true" />
 		<property name="locale" type="java.util.Locale" length="50" not-null="true"/>

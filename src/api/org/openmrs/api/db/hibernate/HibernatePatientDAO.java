@@ -88,8 +88,8 @@ public class HibernatePatientDAO implements PatientDAO {
 			// if we're saving a new patient, just do the normal thing 
 			// and rows in the person and patient table will be created by 
 			// hibernate
-		sessionFactory.getCurrentSession().saveOrUpdate(patient);
-		return patient;
+			sessionFactory.getCurrentSession().saveOrUpdate(patient);
+			return patient;
 		} else {
 			// if we're updating a patient, its possible that a person
 			// row exists but a patient row does not. hibernate does not deal
@@ -106,6 +106,8 @@ public class HibernatePatientDAO implements PatientDAO {
 				insertPatientStub(patient);
 			}
 			
+			// TODO: look at UserService.saveUser(User) to see how to do it without
+			// 		it requiring a merge
 			// do a merge here because of the previous get 2 lines up
 			patient = (Patient) sessionFactory.getCurrentSession()
 			                                  .merge(patient);
