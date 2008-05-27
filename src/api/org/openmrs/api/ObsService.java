@@ -298,14 +298,16 @@ public interface ObsService extends OpenmrsService {
 	
 	/**
 	 * @see {@link org.openmrs.Person#getObservations()}
-	 * @deprecated use the method on the org.openmrs.Person for getObservations
+	 * @deprecated use {@link #getObservationsByPerson(Person)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public Set<Obs> getObservations(Person who, boolean includeVoided);
 
 	/**
-	 * Get all Observations for the given personperson
+	 * Get all Observations for the given person.
+	 * 
+	 * Does not return voided observations
 	 * 
 	 * @param who the user to match on
 	 * @return
@@ -375,6 +377,18 @@ public interface ObsService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided);
+	
+	/**
+	 * Get all nonvoided observations for the given patient with the given
+	 * concept as the question concept (conceptId)
+	 * 
+	 * @param who person to match on
+	 * @param question conceptId to match on
+	 * @return list of all nonvoided observations matching these criteria
+	 * @throws APIException
+	 * @see {@link #getObservations(List, List, List, List, List, List, List, Integer, Integer, Date, Date, boolean)}
+	 */
+	public List<Obs> getObservationsByPersonAndConcept(Person who, Concept question) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}

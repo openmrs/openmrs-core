@@ -95,7 +95,6 @@
 			<param name="class" value="org.openmrs.web.dwr.DWRObsService" />
 			<include method="voidObservation"/>
 			<include method="voidObservation"/>
-			<include method="findObs"/>
 			<include method="getObservations"/>
 			<include method="createObs"/>
 			<include method="createNewObs"/>
@@ -249,12 +248,11 @@
 			DWRPersonService.getSimilarPeople(String name, String birthdate, String age, String gender);
 			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
 			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
-			DWRObsService.findObs(String phrase, boolean includeVoided);
 			DWRObsService.getObservations(Integer encounterId);
 			DWRObsService.createObs(Integer patientId, Integer encounterId, Integer conceptId, String valueText, Date obsDate);
 			DWRMessageService.sendFeedback(String sender, String subject, String content);
 			DWRMessageService.sendMessage( String recipients, String sender, String subject, String content );
 		]]>
 	</signatures>
-  
+  	
 </dwr>

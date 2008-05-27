@@ -55,9 +55,10 @@ public class LoggingAdvice implements MethodInterceptor {
     	Method method = invocation.getMethod();
     	String name = method.getName();
     	
-    	// decide what type of logging we're doing with the current method and loglevel 
-    	boolean logGetter = (name.startsWith("get") || name.startsWith("find")) && log.isDebugEnabled();
-    	boolean logSetter = (logGetter == false) && log.isInfoEnabled();
+    	// decide what type of logging we're doing with the current method and loglevel
+    	boolean isGetterTypeOfMethod = name.startsWith("get") || name.startsWith("find");
+    	boolean logGetter = isGetterTypeOfMethod && log.isDebugEnabled();
+    	boolean logSetter = !isGetterTypeOfMethod && log.isInfoEnabled();
     	
     	// used for the execution time calculations
     	long startTime = new Date().getTime();
