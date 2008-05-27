@@ -254,8 +254,8 @@
 			<c:set var="obsList" value="${obsEntry.value}" scope="request"/>
 		    <c:set var="field" value="${obsEntry.key}" scope="request"/>
 		    <c:set var="level" value="0" scope="request"/>
-			<c:import url="obsDisplay.jsp" />
-		</c:forEach>
+			<c:import url="obsDisplay.jsp"/>
+		</c:forEach> 
 	</table>
 	</div>
 </c:if>
