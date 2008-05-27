@@ -23,7 +23,6 @@
 
 		<many-to-one name="creator" class="User" not-null="true" />
 		
-		
 		<many-to-one name="retiredBy" class="User" column="retired_by" />
 		<property name="dateRetired" type="java.util.Date"
 			column="date_retired" length="19" />
