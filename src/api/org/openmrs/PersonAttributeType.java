@@ -41,6 +41,11 @@ public class PersonAttributeType implements java.io.Serializable {
 	private User changedBy;
 	private Date dateChanged;
 
+	private Boolean retired = false;
+	private User retiredBy;
+	private Date dateRetired;
+	private String retireReason;
+	
 	/** default constructor */
 	public PersonAttributeType() {}
 
@@ -240,6 +245,62 @@ public class PersonAttributeType implements java.io.Serializable {
 	public void setSearchable(Boolean searchable) {
 		this.searchable = searchable;
 	}
+	
+	/**
+     * @return the retired
+     */
+    public Boolean getRetired() {
+    	return retired;
+    }
+
+	/**
+     * @param retired the retired to set
+     */
+    public void setRetired(Boolean retired) {
+    	this.retired = retired;
+    }
+
+	/**
+     * @return the retiredBy
+     */
+    public User getRetiredBy() {
+    	return retiredBy;
+    }
+
+	/**
+     * @param retiredBy the retiredBy to set
+     */
+    public void setRetiredBy(User retiredBy) {
+    	this.retiredBy = retiredBy;
+    }
+
+	/**
+     * @return the dateRetired
+     */
+    public Date getDateRetired() {
+    	return dateRetired;
+    }
+
+	/**
+     * @param dateRetired the dateRetired to set
+     */
+    public void setDateRetired(Date dateRetired) {
+    	this.dateRetired = dateRetired;
+    }
+
+	/**
+     * @return the retireReason
+     */
+    public String getRetireReason() {
+    	return retireReason;
+    }
+
+	/**
+     * @param retireReason the retiredReason to set
+     */
+    public void setRetireReason(String retiredReason) {
+    	this.retireReason = retiredReason;
+    }
 
 	/**
 	 * @see java.lang.Object#toString()
