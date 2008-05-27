@@ -213,10 +213,11 @@
 		<javac srcdir="${test.dir}/api" destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.test.classpath">
 			<compilerarg line="${compile.arguments}" />
 		</javac>
-		<copy todir="${build.dir}">
-			<fileset dir="${test.dir}/api/org/openmrs/test" includes="TestingApplicationContext.xml" />
-			<fileset dir="${test.dir}/api/org/openmrs/test/include/" includes="initialInMemoryTestDataSet.xml" />
-		</copy>
+		
+		<!-- move files over that are required for modules to use this test-openmrs-api*.jar file -->
+		<copy todir="${build.dir}/org/openmrs/test" file="${test.dir}/api/org/openmrs/test/TestingApplicationContext.xml" />
+		<copy todir="${build.dir}/org/openmrs/test/include" file="${test.dir}/api/org/openmrs/test/include/initialInMemoryTestDataSet.xml" />
+		
 	</target>
 
 	<target name="package-api-tests" depends="compile-api-tests" description="create api-tests jar">
@@ -226,9 +227,10 @@
 				<attribute name="Class-Path" value="tests-${openmrs.api.name}" />
 			</manifest>
 			<fileset dir="${build.dir}">
+				<exclude name="**/web/test/*.class" />
 				<include name="**/test/*.class" />
-				<include name="TestingApplicationContext.xml" />
-				<include name="**/initialInMemoryTestDataSet.xml" />
+				<include name="org/openmrs/test/TestingApplicationContext.xml" />
+				<include name="org/openmrs/test/include/initialInMemoryTestDataSet.xml" />
 			</fileset>
 		</jar>
 	</target>
