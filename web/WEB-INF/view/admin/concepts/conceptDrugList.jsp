@@ -20,7 +20,7 @@
 		</tr>
 
 		<c:forEach var="drug" items="${conceptDrugList}">
-			<c:if test="${!drug.voided}">
+			<c:if test="${!drug.retired}">
 				<tr>
 					<td>&nbsp;&nbsp;<a href="conceptDrug.form?drugId=${drug.drugId}">${drug.name}</a></td>
 					<%-- <td>${drug.concept}</td> --%>
