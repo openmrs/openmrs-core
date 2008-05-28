@@ -175,16 +175,15 @@ public class PersonServiceImpl implements PersonService {
 		User user = Context.getAuthenticatedUser();
 		Date date = new Date();
 		
-		if (type.getPersonAttributeTypeId() == null) {
+		if (type.getCreator() == null)
+			type.setCreator(user);
+
+		if (type.getDateCreated() == null)
+			type.setDateCreated(date);
+		
+		if (type.getPersonAttributeTypeId() != null) {
     		type.setChangedBy(user);
 			type.setDateChanged(date);
-    	}
-    	else {
-	    	if (type.getCreator() == null)
-			type.setCreator(user);
-			
-			if (type.getDateCreated() == null)
-				type.setDateCreated(date);
     	}
     	
     	return dao.savePersonAttributeType(type);

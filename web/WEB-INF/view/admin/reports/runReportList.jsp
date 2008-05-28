@@ -10,7 +10,7 @@
 <br/>
 
 <c:if test="${fn:length(reports) == 0}">
-	<spring:message code="general.none" />
+	<spring:message code="Report.noReports" />
 </c:if>
 
 <c:if test="${fn:length(reports) != 0}">
