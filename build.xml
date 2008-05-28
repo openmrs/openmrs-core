@@ -162,6 +162,9 @@
 		</javac>
 	</target>
 
+	<target name="package-all" depends="package-api,package-api-tests,package-web-src"
+		description="packages api, test, and web jars for use in modules"/>
+	
 	<target name="package-api" depends="compile-api" description="create api jar">
 		<mkdir dir="${dist.dir}" />
 		<jar destfile="${dist.dir}/${openmrs.api.name}">
@@ -247,11 +250,21 @@
 		</javac>
 	</target>
 
-    <target name="deploy" depends="package-web" if="tomcat.home" description="Move war into the tomcat's webapps directory">
-		<copy todir="${tomcat.home}/webapps">
-			<fileset file="${dist.dir}/${webapp.name}.war" />
-		</copy>
+	<!-- 
+		TODO: The 'deploy' target doesn't work all that well with our setup for some reason.  	
+	-->
+    <target name="deploy" depends="package-web" if="tomcat.home" description="Move war into the tomcat's webapps directory - ">
+		<echo message="Deploying webapp to Tomcat.  NOTE: The 'deploy' target is not working as expected yet."/>
+        <unwar src="${dist.dir}/${webapp.name}.war"
+            dest="${tomcat.home}/webapps/${webapp.name}"/>
     </target>
+	
+	<target name="undeploy" if="tomcat.home" description="undeploy war file to servlet container's deployment dir">
+		<echo message="Undeploying webapp from Tomcat"/>
+		<delete file="${tomcat.home}/webapps/${webapp.name}.war"/>
+		<delete dir="${tomcat.home}/webapps/${webapp.name}"/>
+	</target>		
+	
 	
 	<target name="deploy-web" description="standalone copy web target">
 		<copy todir="${tomcat.home}/webapps/${webapp.name}">
@@ -267,6 +280,10 @@
 			</fileset>			
 		</copy>
 	</target>
+
+	
+
+	
 	
 	<target name="package-web-init" depends="compile-web" description="start creation of webapp. Use package-web for complete">
 		<mkdir dir="${dist.dir}/web" />
@@ -536,5 +553,8 @@
 			</batchtest>
 		</junit>
 	</target>
+	
+	
+
 	
 </project>
