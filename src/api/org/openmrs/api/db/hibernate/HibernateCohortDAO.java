@@ -17,8 +17,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.api.db.DAOException;
@@ -27,6 +30,8 @@ import org.openmrs.api.db.DAOException;
  * Hibernate implementation of the CohortDAO
  *
  * @see CohortDAO
+ * @see org.openmrs.api.context.Context
+ * @see org.openmrs.api.CohortService
  */
 public class HibernateCohortDAO implements CohortDAO {
 
@@ -34,17 +39,27 @@ public class HibernateCohortDAO implements CohortDAO {
 	
 	private SessionFactory sessionFactory;
 	
-	public HibernateCohortDAO() { }
-	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param sessionFactory
+	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.CohortDAO#getCohort(java.lang.Integer)
+	 */
 	public Cohort getCohort(Integer id) throws DAOException {
 		return (Cohort) sessionFactory.getCurrentSession().get(Cohort.class, id);
 	}
 	
-	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException {
+	/**
+	 * @see org.openmrs.api.db.CohortDAO#getCohortsContainingPatientId(java.lang.Integer)
+	 */
+	@SuppressWarnings("unchecked")
+    public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException {
 		Query query = sessionFactory.getCurrentSession().createQuery("from Cohort c where :patientId in elements(c.memberIds) order by name");
 		query.setInteger("patientId", patientId);
 		return (List<Cohort>) query.list();
@@ -69,18 +84,27 @@ public class HibernateCohortDAO implements CohortDAO {
 	/**
      * @see org.openmrs.api.db.CohortDAO#getAllCohorts(boolean)
      */
+    @SuppressWarnings("unchecked")
     public List<Cohort> getAllCohorts(boolean includeVoided) throws DAOException {
-    	String hql = "from Cohort order by name";
+    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
+    	
+    	criteria.addOrder(Order.asc("name"));
+    	
     	if (!includeVoided)
-    		hql += " where voided = false";
-    	return (List<Cohort>) sessionFactory.getCurrentSession().createQuery(hql).list();
+    		criteria.add(Restrictions.eq("voided", false));
+    	
+    	return (List<Cohort>) criteria.list();
     }
 
 	/**
      * @see org.openmrs.api.db.CohortDAO#getCohort(java.lang.String)
      */
     public Cohort getCohort(String name) {
-	    return (Cohort) sessionFactory.getCurrentSession().createQuery("from Cohort where name = :name").setString("name", name).uniqueResult();
+    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
+    	
+   		criteria.add(Restrictions.eq("name", name));
+    	
+    	return (Cohort) criteria.uniqueResult();
     }
 
 	/**
