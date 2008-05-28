@@ -200,8 +200,6 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		if (encounter.getCreator() == null)
 			createEncounter(encounter);
 		else {
-				Encounter e = (Encounter) sessionFactory.getCurrentSession().merge(encounter);
-				sessionFactory.getCurrentSession().evict(e);
 				sessionFactory.getCurrentSession().saveOrUpdate(encounter);
 		}
         
