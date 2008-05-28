@@ -21,7 +21,7 @@
 			</c:if>
 		</c:if>
 		<c:forEach var="drug" items="${drugs}">
-			<c:if test="${includeVoided == 'true' || !drug.voided}">
+			<c:if test="${includeVoided == 'true' || !drug.retired}">
 				<option value="${drug.drugId}" 
 					<c:if test="${drug.drugId == initialValue}">selected</c:if>>${drug.name}</option>
 			</c:if>		

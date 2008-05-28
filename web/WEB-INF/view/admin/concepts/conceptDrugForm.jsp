@@ -137,7 +137,7 @@
 	<tr>
 		<th><spring:message code="general.voided"/></th>
 		<td>
-			<spring:bind path="drug.voided">	
+			<spring:bind path="drug.retired">	
 				<input type="hidden" name="_${status.expression}" value=""/>		
 				<input type="checkbox" name="${status.expression}" 
 					   <c:if test="${status.value == true}">checked</c:if> />
