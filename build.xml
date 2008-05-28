@@ -255,7 +255,7 @@
 	-->
     <target name="deploy" depends="package-web" if="tomcat.home" description="Move war into the tomcat's webapps directory - ">
 		<echo message="Deploying webapp to Tomcat.  NOTE: The 'deploy' target is not working as expected yet."/>
-        <unwar src="${dist.dir}/${webapp.name}.war"
+        <war src="${dist.dir}/${webapp.name}.war"
             dest="${tomcat.home}/webapps/${webapp.name}"/>
     </target>
 	
