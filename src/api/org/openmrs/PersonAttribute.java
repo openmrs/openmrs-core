@@ -128,6 +128,9 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 		return false;
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getPersonAttributeId() == null) return super.hashCode();
 		int hash = 5;
