@@ -897,13 +897,13 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
     IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
     SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
 
-    ALTER TABLE `personAttributeType` ADD COLUMN `retired` tinyint(1) NOT NULL default 0;
-    ALTER TABLE `personAttributeType` ADD COLUMN `retired_by` int(11) default NULL;
-    ALTER TABLE `personAttributeType` ADD COLUMN `date_retired` datetime default NULL;
-    ALTER TABLE `personAttributeType` ADD COLUMN `retire_reason` varchar(255) default NULL;
-    ALTER TABLE `personAttributeType` ADD KEY `user_who_retired_personAttributeType` (`retired_by`);
-    ALTER TABLE `personAttributeType` ADD CONSTRAINT `user_who_retired_personAttributeType` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`);
-	ALTER TABLE `personAttributeType` ADD INDEX `personAttributeType_retired_status` (`retired`);
+    ALTER TABLE `field` ADD COLUMN `retired` tinyint(1) NOT NULL default 0;
+    ALTER TABLE `field` ADD COLUMN `retired_by` int(11) default NULL;
+    ALTER TABLE `field` ADD COLUMN `date_retired` datetime default NULL;
+    ALTER TABLE `field` ADD COLUMN `retire_reason` varchar(255) default NULL;
+    ALTER TABLE `field` ADD KEY `user_who_retired_field` (`retired_by`);
+    ALTER TABLE `field` ADD CONSTRAINT `user_who_retired_field` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`);
+	ALTER TABLE `field` ADD INDEX `field_retired_status` (`retired`);
 
     UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
     
