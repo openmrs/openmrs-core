@@ -273,7 +273,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param String idOrName
 	 * @return the found Concept
-	 * @deprecated use {@link #getConceptByName(String)}
+	 * @deprecated use {@link #getConcept(String)}
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)

@@ -13,7 +13,6 @@
  */
 package org.openmrs.reporting.db.hibernate;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -28,6 +27,9 @@ import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.reporting.db.ReportObjectDAO;
 
+/**
+ *
+ */
 public class HibernateReportObjectDAO implements
 		ReportObjectDAO {
 
@@ -49,7 +51,11 @@ public class HibernateReportObjectDAO implements
 		this.sessionFactory = sessionFactory;
 	}
 	
-	public List<AbstractReportObject> getAllReportObjects() {
+	/**
+	 * @see org.openmrs.reporting.db.ReportObjectDAO#getAllReportObjects()
+	 */
+	@SuppressWarnings("unchecked")
+    public List<AbstractReportObject> getAllReportObjects() {
 		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
 		//List<ReportObjectWrapper> wrappedObjects = new Vector<ReportObjectWrapper>();
 		//wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper order by date_created, name").list());
@@ -68,6 +74,9 @@ public class HibernateReportObjectDAO implements
 		return reportObjects;
 	}
 
+	/**
+	 * @see org.openmrs.reporting.db.ReportObjectDAO#getReportObject(java.lang.Integer)
+	 */
 	public AbstractReportObject getReportObject(Integer reportObjId) throws DAOException {
 		ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObjId);
 
@@ -81,16 +90,9 @@ public class HibernateReportObjectDAO implements
 		return reportObject;
 	}
 
-	public Integer createReportObject(AbstractReportObject reportObj) throws DAOException {
-		log.debug("Saving: " + reportObj);
-		
-		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);
-		wrappedReportObject.setCreator(Context.getAuthenticatedUser());
-		wrappedReportObject.setDateCreated(new Date());
-		sessionFactory.getCurrentSession().save(wrappedReportObject);
-		return wrappedReportObject.getReportObjectId();
-	}
-
+	/**
+	 * @see org.openmrs.reporting.db.ReportObjectDAO#deleteReportObject(org.openmrs.reporting.AbstractReportObject)
+	 */
 	public void deleteReportObject(AbstractReportObject reportObj) throws DAOException {
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);
 		// TODO - The creator/created date needs to be set here otherwise we get an exception
@@ -100,24 +102,38 @@ public class HibernateReportObjectDAO implements
 		sessionFactory.getCurrentSession().delete(wrappedReportObject);
 	}
 
-	public void updateReportObject(AbstractReportObject reportObj) throws DAOException {
-		if (reportObj.getReportObjectId() == null)
-			createReportObject(reportObj);
+	/**
+	 * @see org.openmrs.reporting.db.ReportObjectDAO#saveReportObject(org.openmrs.reporting.AbstractReportObject)
+	 */
+	public AbstractReportObject saveReportObject(AbstractReportObject reportObj) throws DAOException {
+		
+		ReportObjectWrapper wrappedReportObject;
+		
+		if (reportObj.getReportObjectId() == null) {
+			wrappedReportObject = new ReportObjectWrapper(reportObj);
+			wrappedReportObject.setCreator(Context.getAuthenticatedUser());
+			wrappedReportObject.setDateCreated(new Date());
+			
+		}
 		else {
-			log.debug("ATTEMPTING TO SAVE reportObj: " + reportObj);
-			//ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);		
-			ReportObjectWrapper wrappedReportObject = 
-				(ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObj.getReportObjectId());
+			wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObj.getReportObjectId());
 			wrappedReportObject.setReportObject(reportObj);
 			wrappedReportObject.setChangedBy(Context.getAuthenticatedUser());
 			wrappedReportObject.setDateChanged(new Date());
-
-			//wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().merge(wrappedReportObject);
-			sessionFactory.getCurrentSession().update(wrappedReportObject);
 		}
+		
+		//wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().merge(wrappedReportObject);
+		sessionFactory.getCurrentSession().saveOrUpdate(wrappedReportObject);
+		
+		reportObj.setReportObjectId(wrappedReportObject.getReportObjectId());
+		return reportObj;
 	}
 
-	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException {
+	/**
+	 * @see org.openmrs.reporting.db.ReportObjectDAO#getReportObjectsByType(java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+    public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException {
 		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
 
 		Query query = sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper ro where ro.type=:type order by date_created, name");

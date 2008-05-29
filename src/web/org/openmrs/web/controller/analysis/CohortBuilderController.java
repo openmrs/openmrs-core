@@ -112,7 +112,7 @@ public class CohortBuilderController implements Controller {
 			{
 				Concept c = cs.getConceptByName("REASON ORDER STOPPED");
 				if (c != null)
-					orderStopReasons.addAll(cs.getConceptsInSet(c));
+					orderStopReasons.addAll(cs.getConceptsByConceptSet(c));
 				if (c != null && c.getAnswers() != null)
 					for (ConceptAnswer ca : c.getAnswers())
 						orderStopReasons.add(ca.getAnswerConcept());
@@ -131,7 +131,7 @@ public class CohortBuilderController implements Controller {
 				if (StringUtils.hasText(temp)) {
 					String[] drugSetNames = temp.split(",");
 					for (String setName : drugSetNames) {
-						Concept c = Context.getConceptService().getConceptByIdOrName(setName);
+						Concept c = Context.getConceptService().getConcept(setName);
 						if (c != null)
 							drugSets.add(c);
 					}
@@ -140,15 +140,15 @@ public class CohortBuilderController implements Controller {
 			
 			model.put("searchHistory", history);
 			model.put("links", linkHelper());
-			model.put("programs", Context.getProgramWorkflowService().getPrograms());
-			model.put("encounterTypes", Context.getEncounterService().getEncounterTypes());
-			model.put("locations", Context.getEncounterService().getLocations());
-			model.put("forms", Context.getFormService().getForms());
-			model.put("drugs", Context.getConceptService().getDrugs());
+			model.put("programs", Context.getProgramWorkflowService().getAllPrograms());
+			model.put("encounterTypes", Context.getEncounterService().getAllEncounterTypes());
+			model.put("locations", Context.getLocationService().getAllLocations());
+			model.put("forms", Context.getFormService().getAllForms());
+			model.put("drugs", Context.getConceptService().getAllDrugs());
 			model.put("drugConcepts", genericDrugs);
 			model.put("drugSets", drugSets);
 			model.put("orderStopReasons", orderStopReasons);
-			model.put("personAttributeTypes", Context.getPersonService().getPersonAttributeTypes());
+			model.put("personAttributeTypes", Context.getPersonService().getAllPersonAttributeTypes());
 			model.put("shortcuts", shortcuts);
 		}
 		return new ModelAndView(formView, "model", model);
@@ -313,8 +313,9 @@ public class CohortBuilderController implements Controller {
 			if (temp != null) {
 				Integer cohortId = new Integer(temp);
 				Cohort c = Context.getCohortService().getCohort(cohortId);
-				if (c != null)
+				if (c != null) {
 					history.addSearchItem(PatientSearch.createSavedCohortReference(cohortId));
+				}
 				else
 					log.warn("addCohort(id) didn't find " + cohortId);
 			}
@@ -459,7 +460,7 @@ public class CohortBuilderController implements Controller {
 				throw new RuntimeException("Re-saving histories is not yet implemented");
 			history.setName(name);
 			history.setDescription(description);
-			Context.getReportObjectService().createSearchHistory(history);
+			Context.getReportObjectService().saveSearchHistory(history);
 		}
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
