@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.cohort.CohortDefinition
  * @see org.openmrs.api.CohortDefinitionProvider
  */
+@Transactional
 public interface CohortService extends OpenmrsService {
 	
 	/**
@@ -94,6 +95,7 @@ public interface CohortService extends OpenmrsService {
 	 * @return the Cohort with the given primary key, or null if none exists
 	 * @throws APIException
 	 */
+	@Transactional(readOnly=true)
 	@Authorized({OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS})
 	public Cohort getCohort(Integer id) throws APIException;
 	

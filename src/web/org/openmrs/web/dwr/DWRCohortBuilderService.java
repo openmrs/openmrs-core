@@ -112,9 +112,14 @@ public class DWRCohortBuilderService {
 		return ret;
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @return
+	 */
 	public List<ListItem> getSavedCohorts() {
 		List<ListItem> ret = new ArrayList<ListItem>();
-		List<Cohort> cohorts = Context.getCohortService().getCohorts();
+		List<Cohort> cohorts = Context.getCohortService().getAllCohorts();
 		for (Cohort c : cohorts) {
 			ListItem li = new ListItem();
 			li.setId(c.getCohortId());
@@ -125,6 +130,12 @@ public class DWRCohortBuilderService {
 		return ret;
 	}
 
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param filterId
+	 * @return
+	 */
 	public String getFilterResultAsCommaSeparatedIds(Integer filterId) {
 		PatientFilter pf = Context.getReportObjectService().getPatientFilterById(filterId);
 		if (pf == null)
@@ -133,6 +144,12 @@ public class DWRCohortBuilderService {
 			return Context.getPatientSetService().getAllPatients().getCommaSeparatedPatientIds();
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param cohortId
+	 * @return
+	 */
 	public String getCohortAsCommaSeparatedIds(Integer cohortId) {
 		Cohort c = Context.getCohortService().getCohort(cohortId);
 		if (c == null)
@@ -141,9 +158,14 @@ public class DWRCohortBuilderService {
 			return c.getCommaSeparatedPatientIds();
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @return
+	 */
 	public List<ListItem> getSearchHistories() {
 		List<ListItem> ret = new ArrayList<ListItem>();
-		List<CohortSearchHistory> histories = Context.getReportObjectService().getSearchHistories();
+		List<CohortSearchHistory> histories = Context.getReportObjectService().getAllSearchHistories();
 		for (CohortSearchHistory h : histories) {
 			ListItem li = new ListItem();
 			li.setId(h.getReportObjectId());
@@ -154,15 +176,26 @@ public class DWRCohortBuilderService {
 		return ret;
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param name
+	 * @param description
+	 */
 	public void saveSearchHistory(String name, String description) {
 		CohortSearchHistory history = getMySearchHistory();
 		if (history.getReportObjectId() != null)
 			throw new RuntimeException("Re-saving search history Not Yet Implemented");
 		history.setName(name);
 		history.setDescription(description);
-		Context.getReportObjectService().createSearchHistory(history);
+		Context.getReportObjectService().saveSearchHistory(history);
 	}
 		
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param id
+	 */
 	public void loadSearchHistory(Integer id) {
 		Context.setVolatileUserData("CohortBuilderSearchHistory", Context.getReportObjectService().getSearchHistory(id));
 	}
@@ -185,8 +218,8 @@ public class DWRCohortBuilderService {
 			ro.setName(name);
 			ro.setDescription(description);
 			ro.setPatientSearch(ps);
-			Integer newId = Context.getReportObjectService().createReportObject(ro);
-			history.getSearchHistory().set(indexInHistory, PatientSearch.createSavedSearchReference(newId));
+			Context.getReportObjectService().saveReportObject(ro);
+			history.getSearchHistory().set(indexInHistory, PatientSearch.createSavedSearchReference(ro.getReportObjectId()));
 			return true;
 		} catch (Exception ex) {
 			log.error("Exception", ex);
@@ -194,13 +227,20 @@ public class DWRCohortBuilderService {
 		}
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param name
+	 * @param description
+	 * @param commaSeparatedIds
+	 */
 	public void saveCohort(String name, String description, String commaSeparatedIds) {
 		Set<Integer> ids = new HashSet<Integer>(OpenmrsUtil.delimitedStringToIntegerList(commaSeparatedIds, ","));
 		Cohort cohort = new Cohort();
 		cohort.setName(name);
 		cohort.setDescription(description);
 		cohort.setMemberIds(ids);
-		Context.getCohortService().createCohort(cohort);
+		Context.getCohortService().saveCohort(cohort);
 	}
 	
 	/**

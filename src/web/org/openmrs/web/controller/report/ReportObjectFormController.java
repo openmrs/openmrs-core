@@ -20,8 +20,8 @@ import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,14 +34,14 @@ import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.UserEditor;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.EmptyReportObject;
 import org.openmrs.reporting.ReportObjectFactory;
 import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.web.WebConstants;
-import org.openmrs.propertyeditor.ConceptEditor;
-import org.openmrs.propertyeditor.LocationEditor;
-import org.openmrs.propertyeditor.UserEditor;
 import org.openmrs.web.taglib.HtmlIncludeTag;
 import org.springframework.beans.propertyeditors.CharacterEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -197,13 +197,13 @@ public class ReportObjectFormController extends SimpleFormController {
 		
 		ReportObjectService rs = Context.getReportObjectService();
 
-		Set<String> availableTypes = rs.getReportObjectTypes();
+		List<String> availableTypes = rs.getReportObjectTypes();
 		addedData.put("availableTypes", availableTypes.iterator());
 		
 		String selectedType = ServletRequestUtils.getStringParameter(request, "type", "");
 
 		if ( selectedType.length() > 0 ) {
-			Set<String> availableSubTypes = rs.getReportObjectSubTypes(selectedType);
+			List<String> availableSubTypes = rs.getReportObjectSubTypes(selectedType);
 			addedData.put("availableSubTypes", availableSubTypes.iterator());
 		}
 		

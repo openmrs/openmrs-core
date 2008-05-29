@@ -15,16 +15,19 @@ package org.openmrs.reporting;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 
+/**
+ *
+ */
 public class ReportObjectFactory {
 
 	private static ReportObjectFactory singleton;
@@ -34,11 +37,19 @@ public class ReportObjectFactory {
 	private String defaultValidator;
 	private List<ReportObjectFactoryModule> modules;
 	
+	/**
+	 * 
+	 */
 	public ReportObjectFactory() {
 		if (singleton == null)
 			singleton = this;
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @return
+	 */
 	public static ReportObjectFactory getInstance() {
 		if (singleton == null)
 			throw new RuntimeException("Not Yet Instantiated");
@@ -46,43 +57,59 @@ public class ReportObjectFactory {
 			return singleton;
 	}
 	
-	public Set<String> getReportObjectTypes() {
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @return
+	 */
+	public List<String> getReportObjectTypes() {
 		if ( modules != null ) {
-			Set<String> uniqueTypes = new HashSet<String>();
-			for ( int i = 0; i < modules.size(); i++ ) {
-				ReportObjectFactoryModule mod = modules.get(i);
-				boolean isAdded = uniqueTypes.add(mod.getType());
+			List<String> uniqueTypes = new Vector<String>();
+			for (ReportObjectFactoryModule mod : modules) {
+				if (!uniqueTypes.contains(mod.getType()))
+					uniqueTypes.add(mod.getType());
 			}
 
 			return uniqueTypes;
 		} else {
-			return new HashSet<String>();
+			return Collections.emptyList();
 		}
 	}
 	
-	public Set<String> getReportObjectSubTypes(String type) {
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public List<String> getReportObjectSubTypes(String type) {
 		if ( modules != null && type != null ) {
-			Set<String> uniqueTypes = new HashSet<String>();
-			for ( int i = 0; i < modules.size(); i++ ) {
-				ReportObjectFactoryModule mod = modules.get(i);
-				if ( type.equals(mod.getType()) ) {
-					boolean isAdded = uniqueTypes.add(mod.getDisplayName());
+			List<String> uniqueTypes = new Vector<String>();
+			for (ReportObjectFactoryModule mod : modules) {
+				if ( type.equals(mod.getType()) && !uniqueTypes.contains(mod.getDisplayName())) {
+					uniqueTypes.add(mod.getDisplayName());
 				}
 			}
 
 			return uniqueTypes;
 		} else {
-			return new HashSet<String>();
+			return Collections.emptyList();
 		}
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param type
+	 * @param subType
+	 * @return
+	 */
 	public boolean isSubTypeOfType(String type, String subType) {
 		boolean retVal = false;
 		
-		
-		Set availableTypes = getReportObjectTypes();
+		List<String> availableTypes = getReportObjectTypes();
 		if ( availableTypes.contains(type) )  {
-			Set availableSubTypes = getReportObjectSubTypes(type);
+			List<String> availableSubTypes = getReportObjectSubTypes(type);
 			if ( availableSubTypes.contains(subType) ) {
 				retVal = true;
 			}
@@ -90,11 +117,16 @@ public class ReportObjectFactory {
 		return retVal;
 	}
 
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param subType
+	 * @return
+	 */
 	public String getReportObjectClassBySubType(String subType) {
 		if ( modules != null && subType != null ) {
 			String className = "";
-			for ( int i = 0; i < modules.size(); i++ ) {
-				ReportObjectFactoryModule mod = modules.get(i);
+			for (ReportObjectFactoryModule mod : modules) {
 				if ( subType.equals(mod.getDisplayName()) ) {
 					className = mod.getClassName();
 				}
@@ -106,11 +138,16 @@ public class ReportObjectFactory {
 		}
 	}
 
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public String getReportObjectClassByName(String name) {
 		if ( modules != null && name != null ) {
 			String className = "";
-			for ( int i = 0; i < modules.size(); i++ ) {
-				ReportObjectFactoryModule mod = modules.get(i);
+			for (ReportObjectFactoryModule mod : modules) {
 				if ( name.equals(mod.getName()) ) {
 					className = mod.getClassName();
 				}
@@ -122,20 +159,31 @@ public class ReportObjectFactory {
 		}
 	}
 
-	public Set<String> getAllReportObjectClasses() {
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @return
+	 */
+	public List<String> getAllReportObjectClasses() {
 		if ( modules != null ) {
-			Set<String> uniqueClasses = new HashSet<String>();
-			for ( int i = 0; i < modules.size(); i++ ) {
-				ReportObjectFactoryModule mod = modules.get(i);
-				boolean isAdded = uniqueClasses.add(mod.getClassName());
+			List<String> uniqueClasses = new Vector<String>();
+			for ( ReportObjectFactoryModule mod : modules) {
+				if (!uniqueClasses.contains(mod.getClassName()))
+					uniqueClasses.add(mod.getClassName());
 			}
 
 			return uniqueClasses;
 		} else {
-			return new HashSet<String>();
+			return Collections.emptyList();
 		}
 	}
 
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param currentClassName
+	 * @return
+	 */
 	public String getReportObjectValidatorByClass(String currentClassName) {
 		if ( modules != null && currentClassName != null ) {
 			String validator = "";
@@ -152,6 +200,14 @@ public class ReportObjectFactory {
 		}
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param reportObjectName
+	 * @param initialValues
+	 * @param context
+	 * @return
+	 */
 	public static AbstractReportObject getInstance(String reportObjectName, Map<String, Object> initialValues, Context context) {
 		ReportObjectFactory rof = ReportObjectFactory.singleton;
 		String className = rof.getReportObjectClassByName(reportObjectName);
@@ -171,6 +227,13 @@ public class ReportObjectFactory {
 		return reportObj;
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param reportObjectClass
+	 * @param initialValues
+	 * @return
+	 */
 	public static AbstractReportObject getInstance(Class reportObjectClass, Map<String, Object> initialValues) {
 		AbstractReportObject reportObj = null;
 		
@@ -187,6 +250,13 @@ public class ReportObjectFactory {
 		return reportObj;
 	}
 
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param reportObj
+	 * @param initialValues
+	 * @return
+	 */
 	private static AbstractReportObject initInstance(AbstractReportObject reportObj, Map<String, Object> initialValues) {
 		if ( reportObj != null && initialValues != null ) {
 			for ( Iterator<String> i = initialValues.keySet().iterator(); i.hasNext(); ) {

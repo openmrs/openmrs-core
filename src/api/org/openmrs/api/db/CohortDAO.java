@@ -14,8 +14,8 @@
 package org.openmrs.api.db;
 
 import java.util.List;
+
 import org.openmrs.Cohort;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Database methods for cohort objects. 
@@ -33,7 +33,6 @@ public interface CohortDAO {
 	 * @return The cohort with the given cohortId, or null if none exists
 	 * @throws DAOException
 	 */
-	@Transactional(readOnly=true)
 	public Cohort getCohort(Integer id) throws DAOException;
 	
 	/**
@@ -42,7 +41,6 @@ public interface CohortDAO {
      * @param name
      * @return The Cohort with the given name, or null if none exists
      */
-    @Transactional(readOnly=true)
     public Cohort getCohort(String name);
 	
 	/**
@@ -52,7 +50,6 @@ public interface CohortDAO {
 	 * @return All cohorts in the database, possibly including voided ones
 	 * @throws DAOException
 	 */
-	@Transactional(readOnly=true)
 	public List<Cohort> getAllCohorts(boolean includeVoided) throws DAOException;
 	
 	/**
@@ -62,7 +59,6 @@ public interface CohortDAO {
 	 * @return
 	 * @throws DAOException
 	 */
-	@Transactional(readOnly=true)
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException;
 	
 	/**
@@ -71,7 +67,6 @@ public interface CohortDAO {
      * @param cohort
      * @return
      */
-	@Transactional
     public Cohort saveCohort(Cohort cohort) throws DAOException;
 
 	/**
@@ -80,7 +75,6 @@ public interface CohortDAO {
      * @param nameFragment
      * @return
      */
-	@Transactional(readOnly=true)
     public List<Cohort> getCohorts(String nameFragment) throws DAOException;
 
 	/**
@@ -89,7 +83,6 @@ public interface CohortDAO {
      * @param cohort
      * @return
      */
-	@Transactional
     public Cohort deleteCohort(Cohort cohort) throws DAOException;
 
 }

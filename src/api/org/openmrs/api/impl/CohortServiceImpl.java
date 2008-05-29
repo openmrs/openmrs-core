@@ -71,13 +71,11 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
         }
         if (cohort.getCreator() == null) {
 			cohort.setCreator(Context.getAuthenticatedUser());
-	}
+        }
         if (cohort.getCohortId() != null) {
             cohort.setChangedBy(Context.getAuthenticatedUser());
             cohort.setDateChanged(now);
         }
-        if (log.isInfoEnabled())
-            log.info("Saving cohort " + cohort);
 
 		return dao.saveCohort(cohort);
 	}
