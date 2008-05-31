@@ -543,8 +543,12 @@ public class ModuleUtil {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		ServiceContext.getInstance().startRefreshingContext();
-		ctx.refresh();
-		ServiceContext.getInstance().doneRefreshingContext();
+		try {
+			ctx.refresh();
+		}
+		finally {
+			ServiceContext.getInstance().doneRefreshingContext();
+		}
 		
 		ctx.setClassLoader(OpenmrsClassLoader.getInstance());
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());

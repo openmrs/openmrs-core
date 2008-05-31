@@ -653,7 +653,7 @@ public class ModuleFactory {
 				AdministrationService as = Context.getAdministrationService();
 				GlobalProperty gp = new GlobalProperty(moduleId + ".started",
 				        "false", getGlobalPropertyStartedDescription(moduleId));
-				as.setGlobalProperty(gp);
+				as.saveGlobalProperty(gp);
 				Context.removeProxyPrivilege("");
 			}
 

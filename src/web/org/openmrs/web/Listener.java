@@ -161,7 +161,17 @@ public final class Listener extends ContextLoaderListener {
 				WebModuleUtil.refreshWAC(servletContext);
 			}
 			catch (Throwable t) {
-				log.fatal("Unable to refresh the spring application context", t);
+				log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", t);
+				try {
+					WebModuleUtil.shutdownModules(servletContext);
+					for (Module mod : ModuleFactory.getLoadedModules()) {// use loadedModules to avoid a concurrentmodificationexception
+						ModuleFactory.stopModule(mod, true); // pass in the true value here so that the global properties aren't written to
+					}
+					WebModuleUtil.refreshWAC(servletContext);
+				}
+				catch (Throwable t2) {
+					log.warn("caught another error: ", t2);
+				}
 			}
 		}
 		
