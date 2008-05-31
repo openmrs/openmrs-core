@@ -188,7 +188,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			if (!Context.isRefreshingContext())
 				mementos.put(key, Context.getSchedulerService().saveToMemento());
 		}
-		catch (APIException e) {
+		catch (Throwable t) {
 			// pass
 		}
 		
