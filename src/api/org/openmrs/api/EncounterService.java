@@ -427,7 +427,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @return location list
 	 * @throws APIException
 	 * @deprecated replaced by
-	 *             {@link org.openmrs.api.LocationService.getAllLocations( )}
+	 *             {@link org.openmrs.api.LocationService#getAllLocations( )}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -440,7 +440,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @return location with given internal identifier
 	 * @throws APIException
 	 * @deprecated replaced by
-	 *             {@link org.openmrs.api.LocationService.getLocationByLocationId(locationId)}
+	 *             {@link org.openmrs.api.LocationService#getLocation(Integer)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -453,7 +453,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @return location with given name
 	 * @throws APIException
 	 * @deprecated replaced by
-	 *             {@link org.openmrs.api.LocationService.getLocationByName(name)}
+	 *             {@link org.openmrs.api.LocationService#getLocation(String)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -467,7 +467,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @return list of locations with similar name
 	 * @throws APIException
 	 * @deprecated replaced by
-	 *             {@link org.openmrs.api.LocationService.findLocations(name)}
+	 *             {@link org.openmrs.api.LocationService#getLocations(String)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })

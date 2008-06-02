@@ -28,12 +28,13 @@ public class FieldGenHandlerFactory {
 	private Map<String,String> handlers = null;
 	
 	private static FieldGenHandlerFactory singleton;
-	
+
 	/**
 	 * Generic constructor
 	 */
 	public FieldGenHandlerFactory() {
-		singleton = this;
+		if (singleton == null)
+			singleton = this;
 	}
 	
 	/**
@@ -52,7 +53,7 @@ public class FieldGenHandlerFactory {
 	 * @return Returns the handlers.
 	 */
 	public Map<String,String> getHandlers() {
-		return handlers;
+		return singleton.handlers;
 	}
 
 	/**
@@ -61,10 +62,10 @@ public class FieldGenHandlerFactory {
 	 * @param handlers The handlers to set.
 	 */
 	public void setHandlers(Map<String,String> handlers) {
-		if (this.handlers == null)
-			this.handlers = handlers;
+		if (singleton.handlers == null)
+			singleton.handlers = handlers;
 		else
-			this.handlers.putAll(handlers);
+			singleton.handlers.putAll(handlers);
 	}
 	
 	/**
@@ -75,8 +76,8 @@ public class FieldGenHandlerFactory {
 	 */
 	public String getHandlerByClassName(String className) {
 		if ( className != null ) {
-			if ( handlers.containsKey(className) ) {
-				return handlers.get(className);
+			if ( singleton.handlers.containsKey(className) ) {
+				return singleton.handlers.get(className);
 			} else {
 				return null;
 			}

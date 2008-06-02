@@ -248,9 +248,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public void createOrdersAndEncounter(Patient p, Collection<Order> orders) throws APIException {
 		User unknownUser = Context.getUserService().getUserByUsername("Unknown");
-		Location unknownLocation = Context.getEncounterService().getLocationByName("Unknown Location");
+		Location unknownLocation = Context.getLocationService().getLocation("Unknown Location");
 		if (unknownLocation == null)
-			unknownLocation = Context.getEncounterService().getLocationByName("Unknown");
+			unknownLocation = Context.getLocationService().getLocation("Unknown");
 		
 		// TODO: fix this hack
 		if (unknownUser == null) {
