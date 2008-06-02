@@ -20,8 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
@@ -41,7 +39,6 @@ import org.springframework.util.StringUtils;
  */
 public class CohortServiceImpl extends BaseOpenmrsService implements CohortService {
 
-	private Log log = LogFactory.getLog(this.getClass());
 	private CohortDAO dao;
 	
 	private static Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> cohortDefinitionProviders = null;
@@ -302,6 +299,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
      * @see org.openmrs.api.CohortService#getCohortDefinitions(java.lang.Class)
      */
+    @SuppressWarnings("unchecked")
     public List<CohortDefinition> getCohortDefinitions(Class providerClass) {
     	CohortDefinitionProvider provider = getCohortDefinitionProvider(providerClass);
 	    return provider.getAllCohortDefinitions();

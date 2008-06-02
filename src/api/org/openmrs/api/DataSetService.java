@@ -21,7 +21,6 @@ import org.openmrs.report.DataSetDefinition;
 import org.openmrs.report.DataSetProvider;
 import org.openmrs.report.EvaluationContext;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *  
