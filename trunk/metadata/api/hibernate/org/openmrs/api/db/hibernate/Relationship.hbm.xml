@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping package="org.openmrs">
+
+<class 
+    name="Relationship" 
+    table="relationship"
+>
+
+    <id
+        name="relationshipId"
+        type="int"
+        column="relationship_id"
+        unsaved-value="0"
+    >
+        <generator class="native" />
+    </id>
+
+    <discriminator column="relationship_id" insert="false" />
+		
+	<property
+        name="voided"
+        type="java.lang.Boolean"
+        column="voided"
+        length="1"
+        not-null="true"
+    />
+    <property
+        name="dateVoided"
+        type="java.util.Date"
+        column="date_voided"
+        length="19"
+    />
+    <property
+        name="voidReason"
+        type="java.lang.String"
+        column="void_reason"
+        length="255"
+    />
+    <property
+        name="dateCreated"
+        type="java.util.Date"
+        column="date_created"
+        not-null="true"
+        length="19"
+    />
+
+    <!-- Associations -->
+
+    <many-to-one
+        name="personA"
+        column="person_a"
+        class="org.openmrs.Person"
+        not-null="true"
+    />
+
+    <many-to-one
+        name="personB"
+        column="person_b"
+        class="org.openmrs.Person"
+        not-null="true"
+    />
+
+  
+    <!-- bi-directional many-to-one association to RelationshipType -->
+    <many-to-one
+        name="relationshipType"
+        column="relationship"
+        class="org.openmrs.RelationshipType"
+        not-null="true"
+    />
+
+    <!-- bi-directional many-to-one associations to User -->
+    <many-to-one
+        name="creator"
+        class="org.openmrs.User"
+        not-null="true"
+    />
+    
+    <many-to-one
+        name="voidedBy"
+        column="voided_by"
+        class="org.openmrs.User"
+    />
+    
+</class>
+</hibernate-mapping>

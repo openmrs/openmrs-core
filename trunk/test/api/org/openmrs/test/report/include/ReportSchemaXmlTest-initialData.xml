@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <encounter_type encounter_type_id="1" name="Test Enc Type" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <encounter_type encounter_type_id="2" name="Test Enc Type 2" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"/>
+  
+  <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" />
+  <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+  <patient_identifier patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" identifier="1234" identifier_type="1" preferred="1" voided="false" location_id="1" />
+  
+  <person person_id="3" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="F" />
+  <person_name person_id="3" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John3" middle_name=" " family_name="Doe" />
+  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+  <patient_identifier patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" identifier="12345" identifier_type="1" preferred="1" voided="false" location_id="1" />
+  
+  <report_object report_object_id="1" name="Male" description="Male Patients" report_object_type="Patient Search" report_object_sub_type="Patient Search" xml_data="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; 
+&lt;java version=&quot;1.6.0_03&quot; class=&quot;java.beans.XMLDecoder&quot;&gt; 
+ &lt;object class=&quot;org.openmrs.reporting.PatientSearchReportObject&quot;&gt; 
+  &lt;void property=&quot;description&quot;&gt; 
+   &lt;string&gt;Male Patients&lt;/string&gt; 
+  &lt;/void&gt; 
+  &lt;void property=&quot;name&quot;&gt; 
+   &lt;string&gt;Male&lt;/string&gt; 
+  &lt;/void&gt; 
+  &lt;void property=&quot;patientSearch&quot;&gt; 
+   &lt;object class=&quot;org.openmrs.reporting.PatientSearch&quot;&gt; 
+    &lt;void property=&quot;arguments&quot;&gt; 
+     &lt;object class=&quot;java.util.ArrayList&quot;&gt; 
+      &lt;void method=&quot;add&quot;&gt; 
+       &lt;object class=&quot;org.openmrs.reporting.SearchArgument&quot;&gt; 
+        &lt;void property=&quot;name&quot;&gt; 
+         &lt;string&gt;gender&lt;/string&gt; 
+        &lt;/void&gt; 
+        &lt;void property=&quot;propertyClass&quot;&gt; 
+         &lt;class&gt;java.lang.String&lt;/class&gt; 
+        &lt;/void&gt; 
+        &lt;void property=&quot;value&quot;&gt; 
+         &lt;string&gt;m&lt;/string&gt; 
+        &lt;/void&gt; 
+       &lt;/object&gt; 
+      &lt;/void&gt; 
+     &lt;/object&gt; 
+    &lt;/void&gt; 
+    &lt;void property=&quot;filterClass&quot;&gt; 
+     &lt;class&gt;org.openmrs.reporting.PatientCharacteristicFilter&lt;/class&gt; 
+    &lt;/void&gt; 
+   &lt;/object&gt; 
+  &lt;/void&gt; 
+ &lt;/object&gt; 
+&lt;/java&gt; 
+" creator="1" date_created="2007-12-26 13:14:12.0" voided="false"/>
+  <report_object report_object_id="2" name="Adult" description="Adult Patients" report_object_type="Patient Search" report_object_sub_type="Patient Search" xml_data="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; 
+&lt;java version=&quot;1.6.0_03&quot; class=&quot;java.beans.XMLDecoder&quot;&gt; 
+ &lt;object class=&quot;org.openmrs.reporting.PatientSearchReportObject&quot;&gt; 
+  &lt;void property=&quot;description&quot;&gt; 
+   &lt;string&gt;Adult Patients&lt;/string&gt; 
+  &lt;/void&gt; 
+  &lt;void property=&quot;name&quot;&gt; 
+   &lt;string&gt;Adult&lt;/string&gt; 
+  &lt;/void&gt; 
+  &lt;void property=&quot;patientSearch&quot;&gt; 
+   &lt;object class=&quot;org.openmrs.reporting.PatientSearch&quot;&gt; 
+    &lt;void property=&quot;arguments&quot;&gt; 
+     &lt;object class=&quot;java.util.ArrayList&quot;&gt; 
+      &lt;void method=&quot;add&quot;&gt; 
+       &lt;object class=&quot;org.openmrs.reporting.SearchArgument&quot;&gt; 
+        &lt;void property=&quot;name&quot;&gt; 
+         &lt;string&gt;minAge&lt;/string&gt; 
+        &lt;/void&gt; 
+        &lt;void property=&quot;propertyClass&quot;&gt; 
+         &lt;class&gt;java.lang.Integer&lt;/class&gt; 
+        &lt;/void&gt; 
+        &lt;void property=&quot;value&quot;&gt; 
+         &lt;string&gt;13&lt;/string&gt; 
+        &lt;/void&gt; 
+       &lt;/object&gt; 
+      &lt;/void&gt; 
+     &lt;/object&gt; 
+    &lt;/void&gt; 
+    &lt;void property=&quot;filterClass&quot;&gt; 
+     &lt;class&gt;org.openmrs.reporting.PatientCharacteristicFilter&lt;/class&gt; 
+    &lt;/void&gt; 
+   &lt;/object&gt; 
+  &lt;/void&gt; 
+ &lt;/object&gt; 
+&lt;/java&gt; 
+" creator="1" date_created="2007-12-26 13:15:06.0" voided="false"/>
+  <report_object report_object_id="3" name="EnrolledOnDate" description="Patients in a program enrolled on after a date" report_object_type="Patient Search" report_object_sub_type="Patient Search" xml_data="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; 
+&lt;java version=&quot;1.6.0_03&quot; class=&quot;java.beans.XMLDecoder&quot;&gt; 
+ &lt;object class=&quot;org.openmrs.reporting.PatientSearchReportObject&quot;&gt; 
+  &lt;void property=&quot;description&quot;&gt; 
+   &lt;string&gt;Patients in a program enrolled on after a date&lt;/string&gt; 
+  &lt;/void&gt; 
+  &lt;void property=&quot;name&quot;&gt; 
+   &lt;string&gt;EnrolledOnDate&lt;/string&gt; 
+  &lt;/void&gt; 
+  &lt;void property=&quot;patientSearch&quot;&gt; 
+   &lt;object class=&quot;org.openmrs.reporting.PatientSearch&quot;&gt; 
+    &lt;void property=&quot;arguments&quot;&gt; 
+     &lt;object class=&quot;java.util.ArrayList&quot;&gt; 
+      &lt;void method=&quot;add&quot;&gt; 
+       &lt;object class=&quot;org.openmrs.reporting.SearchArgument&quot;&gt; 
+        &lt;void property=&quot;name&quot;&gt; 
+         &lt;string&gt;sinceDate&lt;/string&gt; 
+        &lt;/void&gt; 
+        &lt;void property=&quot;propertyClass&quot;&gt; 
+         &lt;class&gt;java.util.Date&lt;/class&gt; 
+        &lt;/void&gt; 
+        &lt;void property=&quot;value&quot;&gt; 
+         &lt;string&gt;${untilDate}&lt;/string&gt; 
+        &lt;/void&gt; 
+       &lt;/object&gt; 
+      &lt;/void&gt; 
+     &lt;/object&gt; 
+    &lt;/void&gt; 
+    &lt;void property=&quot;filterClass&quot;&gt; 
+     &lt;class&gt;org.openmrs.reporting.ProgramStatePatientFilter&lt;/class&gt; 
+    &lt;/void&gt; 
+   &lt;/object&gt; 
+  &lt;/void&gt; 
+ &lt;/object&gt; 
+&lt;/java&gt; 
+" creator="1" date_created="2007-12-26 13:20:52.0" voided="false"/>
+  
+  
+</dataset>

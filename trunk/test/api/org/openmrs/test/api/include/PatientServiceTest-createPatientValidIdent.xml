@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="true" creator="1" date_created="2005-01-01 00:00:00.0" required="false" validator="org.openmrs.patient.impl.LuhnIdentifierValidator" retired="false"/> 
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+</dataset>

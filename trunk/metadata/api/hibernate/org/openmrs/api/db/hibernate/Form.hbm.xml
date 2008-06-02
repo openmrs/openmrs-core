@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Form" table="form">
+
+		<id name="formId" type="int" column="form_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<discriminator column="form_id" insert="false" />
+		
+		<property name="name" type="java.lang.String" 
+			column="name" not-null="true" length="50" />
+
+		<property name="version" type="java.lang.String" 
+			column="version" not-null="true" length="50" />
+		
+		<property name="build" type="java.lang.Integer" column="build" 
+			not-null="false" />
+		
+		<property name="published" type="boolean" column="published"
+			length="1" not-null="false" />
+
+		<property name="description" type="java.lang.String" 
+			column="description" length="1024" />
+
+		<many-to-one name="encounterType" class="EncounterType">
+			<column name="encounter_type" />
+		</many-to-one>
+
+		<property name="template" type="java.lang.String" 
+			column="template" length="2147483647" />
+
+		<property name="xslt" type="java.lang.String"
+			column="xslt" length="2147483647" />
+
+		<many-to-one name="creator" class="User" not-null="true">
+			<column name="creator" />
+		</many-to-one>
+
+		<property name="dateCreated" type="java.util.Date" 
+			column="date_created" not-null="true" length="19" />
+
+		<many-to-one name="changedBy" class="User">
+			<column name="changed_by" />
+		</many-to-one>
+
+		<property name="dateChanged" type="java.util.Date" 
+			column="date_changed" length="19" />
+
+		<set name="formFields" lazy="true" inverse="true" cascade="all-delete-orphan">
+			<key>
+				<column name="form_id" />
+			</key>
+			<one-to-many class="FormField" />
+		</set>
+
+		<property name="retired" type="boolean" 
+			column="retired" length="1" not-null="true"/>
+
+		<many-to-one name="retiredBy" class="User">
+			<column name="retired_by" />
+		</many-to-one>
+
+		<property name="dateRetired" type="java.util.Date"
+			column="date_retired" length="19" />
+
+		<property name="retiredReason" type="java.lang.String" 
+			column="retired_reason" length="50" />
+
+	</class>
+</hibernate-mapping>
