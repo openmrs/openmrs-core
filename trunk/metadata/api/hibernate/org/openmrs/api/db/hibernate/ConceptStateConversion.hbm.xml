@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ConceptStateConversion" table="concept_state_conversion">
+
+		<id name="conceptStateConversionId" type="java.lang.Integer" column="concept_state_conversion_id">
+			<generator class="native" />
+		</id>
+		
+		<discriminator column="concept_state_conversion_id" insert="false" />
+		
+		<many-to-one name="concept" class="Concept" column="concept_id" not-null="true" />
+
+		<many-to-one name="programWorkflow" class="ProgramWorkflow" column="program_workflow_id" not-null="true" />
+	
+		<many-to-one name="programWorkflowState" class="ProgramWorkflowState" column="program_workflow_state_id" not-null="true" />
+	
+	</class>
+</hibernate-mapping>

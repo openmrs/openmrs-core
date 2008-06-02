@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping package="org.openmrs.reporting">
+
+<class 
+    name="ReportObjectWrapper" 
+    table="report_object"
+>
+    <id
+        name="reportObjectId"
+        type="java.lang.Integer"
+        column="report_object_id"
+    >
+        <generator class="native" />
+    </id>
+
+    <discriminator column="report_object_id" insert="false" />
+		
+	<property
+        name="name"
+        type="java.lang.String"
+        column="name"
+        not-null="true"
+        length="255"
+    />
+	<property
+		name="description"
+		type="java.lang.String"
+		column="description"
+		length="1000"
+	/>
+	<property
+		name="type"
+		type="java.lang.String"
+		column="report_object_type"
+		length="255"
+	/>
+	<property
+		name="subType"
+		type="java.lang.String"
+		column="report_object_sub_type"
+		length="255"
+	/>
+	<property
+		name="xml"
+		type="java.lang.String"
+		column="xml_data"
+		length="65535"
+	/>
+    <property
+        name="dateCreated"
+        type="java.util.Date"
+        column="date_created"
+        not-null="true"
+        length="19"
+    />
+    <property
+        name="dateChanged"
+        type="java.util.Date"
+        column="date_changed"
+        length="19"
+    />
+	<property
+		name="voided"
+		type="boolean"
+		column="voided"
+		not-null="true"
+	/>
+	<property
+		name="dateVoided"
+		type="java.util.Date"
+		column="date_voided"
+		length="19"
+	/>
+	<property
+		name="voidReason"
+		type="java.lang.String"
+		column="void_reason"
+		length="255"
+	/>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one
+        name="creator"
+        class="org.openmrs.User"
+        not-null="true"
+    >
+	    <column name="creator" />
+    </many-to-one>
+
+	<many-to-one
+		name="changedBy"
+		class="org.openmrs.User"
+	>
+		<column name="changed_by" />
+	</many-to-one>
+
+	<many-to-one
+		name="voidedBy"
+		class="org.openmrs.User"
+	>
+		<column name="voided_by" />
+	</many-to-one>
+</class>
+</hibernate-mapping>

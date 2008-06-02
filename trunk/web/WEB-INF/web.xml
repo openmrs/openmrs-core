@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	version="2.4">
+
+	<display-name>@WEBAPP.DISPLAY.NAME@</display-name>
+	<display-name>@WEBAPP.DESCRIPTION@</display-name> 
+
+	<context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+        	classpath*:/moduleApplicationContext.xml
+        	classpath*:/webModuleApplicationContext.xml
+        	classpath:applicationContext-service.xml
+        	/WEB-INF/openmrs-servlet.xml
+        </param-value>
+    </context-param>
+    
+    <!-- These init parameter(s) are read in by org.openmrs.web.Listener -->
+    <context-param>
+        <param-name>build.timestamp</param-name>
+        <param-value>@TIMESTAMP@</param-value>
+    </context-param>
+	<!-- // End init parameters -->
+	
+	<servlet>
+		<servlet-name>showGraphServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.ShowGraphServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>showGraphServlet</servlet-name>
+		<url-pattern>/showGraphServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>timelineGraphServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.TimelineGraphServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>timelineGraphServlet</servlet-name>
+		<url-pattern>/timelineGraphServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>pieChartServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.PieChartServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>pieChartServlet</servlet-name>
+		<url-pattern>/pieChartServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>displayChartServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.DisplayChartServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>displayChartServlet</servlet-name>
+		<url-pattern>/displayChartServlet</url-pattern> <!-- Must match DisplayChartServlet.SERVLET_NAME -->
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>loginServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.LoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>loginServlet</servlet-name>
+		<url-pattern>/loginServlet</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>logoutServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.LogoutServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>logoutServlet</servlet-name>
+		<url-pattern>/logout</url-pattern>
+	</servlet-mapping>
+
+	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
+	<servlet>
+		<servlet-name>hl7InQueueProcessorServlet</servlet-name>
+		<servlet-class>org.openmrs.hl7.web.HL7InQueueProcessorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>hl7InQueueProcessorServlet</servlet-name>
+		<url-pattern>/hl7InQueueProcessor</url-pattern>
+	</servlet-mapping>
+	<!-- #### TEMPORARY ACCESS TO QUEUE PROCESSING SERVLETS (Burke 3/18/2006) #### -->
+
+	<servlet>
+		<servlet-name>downloadDictionaryServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.DownloadDictionaryServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>downloadDictionaryServlet</servlet-name>
+		<url-pattern>/downloadDictionary.csv</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>mrnGeneratorServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.MRNGeneratorServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>mrnGeneratorServlet</servlet-name>
+		<url-pattern>/mrnGenerator</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>auditServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.AuditServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>auditServlet</servlet-name>
+		<url-pattern>/auditServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>quickReportServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.QuickReportServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>quickReportServlet</servlet-name>
+		<url-pattern>/quickReportServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>dataExportServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.DataExportServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>dataExportServlet</servlet-name>
+		<url-pattern>/dataExportServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>summaryServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.SummaryServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>summaryServlet</servlet-name>
+		<url-pattern>/summaryServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>sampleFlowsheetServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.SampleFlowsheetServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>sampleFlowsheetServlet</servlet-name>
+		<url-pattern>/sampleFlowsheet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>conceptRedirectServlet</servlet-name>
+		<servlet-class>org.openmrs.web.servlet.ConceptRedirectServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>conceptRedirectServlet</servlet-name>
+		<url-pattern>/concept/*</url-pattern>
+	</servlet-mapping>
+		
+	<listener>
+		<listener-class>org.openmrs.web.Listener</listener-class>
+		<!--  extends ContextLoaderListener -->
+	</listener>
+	
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	
+	<servlet>
+		<servlet-name>dwr-invoker</servlet-name>
+		<servlet-class>org.openmrs.web.dwr.OpenmrsDWRServlet</servlet-class>
+		<!--  debug parameter exposes DWR methods via [webapp]/dwr url  -->
+		<!--  good for testing, bad for security...so make sure to turn -->
+		<!--  this off (set value to "false") in production mode        -->
+		<init-param>
+			<param-name>debug</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>config-base</param-name>
+			<param-value>/WEB-INF/dwr.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>config-modules</param-name>
+			<param-value>/WEB-INF/dwr-modules.xml</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>dwr-invoker</servlet-name>
+		<url-pattern>/dwr/*</url-pattern>
+	</servlet-mapping>
+
+	<!--  Should be the first filter -->
+	<filter>
+        <filter-name>HibernateFilter</filter-name>
+        <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+    </filter>
+    <!--  End first filter -->
+	<filter-mapping>
+		<filter-name>HibernateFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>OpenmrsFilter</filter-name> 
+		<filter-class>org.openmrs.web.OpenmrsFilter</filter-class> 
+	</filter>
+	<filter-mapping>
+		<filter-name>OpenmrsFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
+
+    <filter>
+        <filter-name>compressionFilter</filter-name>
+        <filter-class>org.openmrs.web.filter.GZIPFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.css</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.jsp</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.js</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.html</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.htm</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.xml</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.dwr</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.xsn</url-pattern>
+    </filter-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.form</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/WEB-INF/view/uncaughtException.jsp</location>
+	</error-page>
+	
+	<error-page>
+		<exception-type>org.openmrs.api.APIAuthenticationException</exception-type>
+		<location>/login.htm</location>
+	</error-page>
+	
+	<error-page>
+		<error-code>404</error-code>
+		<location>/missing.htm</location>
+	</error-page>
+	
+	<servlet>
+		<servlet-name>openmrs</servlet-name>
+		<servlet-class>org.openmrs.web.DispatcherServlet</servlet-class>
+		<init-param>
+	        <param-name>contextConfigLocation</param-name>
+	        <param-value>
+	        	/WEB-INF/openmrs-servlet.xml
+       			classpath*:/moduleApplicationContext.xml
+	        </param-value>
+	    </init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet>
+		<servlet-name>openmrs_static_content</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+	
+	<!-- Gives acess to servlets within modules -->
+	<servlet>
+		<servlet-name>module_servlet</servlet-name>
+		<servlet-class>org.openmrs.module.web.ModuleServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+ 		<servlet-name>module_servlet</servlet-name>
+ 		<url-pattern>/moduleServlet/*</url-pattern>
+	</servlet-mapping>
+	
+	<!-- Gives acess to resources within modules -->
+	<servlet>
+		<servlet-name>module_resources</servlet-name>
+		<servlet-class>org.openmrs.module.web.ModuleResourcesServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+ 		<servlet-name>module_resources</servlet-name>
+ 		<url-pattern>/moduleResources/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>jsp</servlet-name>
+		<url-pattern>*.withjstl</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+ 		<servlet-name>openmrs_static_content</servlet-name>
+ 		<url-pattern>/scripts/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>*.form</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>*.list</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>*.portlet</url-pattern>
+	</servlet-mapping>
+		
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>*.field</url-pattern>
+	</servlet-mapping>
+	
+	<jsp-config>
+		<taglib>
+			<taglib-uri>/spring</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/spring.tld</taglib-location>
+		</taglib>
+	
+		<taglib>
+			<taglib-uri>/core-rt</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/c-rt.tld</taglib-location>
+		</taglib>
+		
+		<taglib>
+			<taglib-uri>/openmrs</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/openmrs.tld</taglib-location>
+		</taglib>
+		
+		<taglib>
+			<taglib-uri>/page</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/page.tld</taglib-location>
+		</taglib>
+	
+		<taglib>
+			<taglib-uri>/request</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/request.tld</taglib-location>
+		</taglib>
+	
+		<taglib>
+			<taglib-uri>/response</taglib-uri>
+			<taglib-location>/WEB-INF/taglibs/response.tld</taglib-location>
+		</taglib>
+	</jsp-config>
+
+</web-app>

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <person person_id="1" gender="" dead="0" creator="1" birthdate="1975-06-30 00:00:00.0" date_created="2005-01-01 00:00:00.0" changed_by="1" date_changed="2007-09-20 21:54:12.0" voided="false" void_reason=""/>
+
+  <users user_id="1" system_id="1-8" username="admin" password="4a1750c8607dfa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2005-01-01 00:00:00.0" changed_by="1" date_changed="2007-09-20 21:54:12.0" voided="false" void_reason=""/>
+  
+  <role role="System Developer" description="Developers of the OpenMRS .. have additional access to change fundamental structure of the database model."/>
+  <role role="Anonymous" description="Everyone and their brother should have this role"/>
+  <role role="Authenticated" description="Every person logged in automatically has this role."/>
+    
+  <user_role user_id="1" role="System Developer"/>
+</dataset>

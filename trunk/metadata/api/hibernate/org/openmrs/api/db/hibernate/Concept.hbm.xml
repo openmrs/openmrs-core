@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Concept" table="concept" batch-size="25">
+		
+		<!--  cache usage="read-write"/ -->
+		
+		<id name="conceptId" type="java.lang.Integer"
+			column="concept_id">
+			<generator class="assigned" />
+		</id>
+		
+		<discriminator column="concept_id" insert="false" />
+
+		<property name="retired" type="java.lang.Boolean"
+			column="retired" length="1" not-null="true"/>
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+		<property name="version" type="java.lang.String"
+			column="version" length="50" /> 
+		<property name="dateChanged" type="java.util.Date"
+			column="date_changed" length="19" />
+		<property name="set" type="java.lang.Boolean" column="is_set"
+			length="1" not-null="true" />
+		
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-one association to ConceptDatatype -->
+		<many-to-one name="datatype" class="ConceptDatatype"
+			not-null="true">
+			<column name="datatype_id" />
+		</many-to-one>
+
+		<set name="names" lazy="true" cascade="all-delete-orphan,evict" inverse="true" order-by="name asc">
+			<key column="concept_id" not-null="true" />
+			<one-to-many class="ConceptName" />
+		</set>
+
+		<set name="answers" lazy="true" cascade="all,evict" 
+				table="concept_answer" order-by="concept_answer_id asc" access="field">
+			<key column="concept_id" not-null="true" />
+			<composite-element class="ConceptAnswer">
+				<parent name="concept"/>
+				<property generated="insert" insert="false" name="conceptAnswerId" type="java.lang.Integer" column="concept_answer_id" />
+				<many-to-one name="answerConcept" class="org.openmrs.Concept" column="answer_concept" not-null="true"/>
+				<many-to-one name="answerDrug" class="org.openmrs.Drug" column="answer_drug" />
+				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
+				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
+			</composite-element>
+		</set>
+		
+		<!-- Ok, so it seems that Hibernate doesn't care about our multiple
+			primary keys in this composite-element.  We are able to control
+			that action via the .equals() and .hashCode() because we are using
+			a Set.
+		-->
+		<set name="synonyms" lazy="true" cascade="all,evict" 
+			table="concept_synonym" order-by="synonym asc">
+			<key not-null="true">
+				<column name="concept_id" />
+			</key>
+			<composite-element class="ConceptSynonym">
+				<parent name="concept" />
+				<property name="synonym" type="java.lang.String" not-null="true" />
+				<property name="locale" type="java.util.Locale" not-null="true" />
+				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
+				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
+			</composite-element>
+		</set>
+		
+		<set name="conceptSets" table="concept_set" lazy="true" 
+				cascade="all,evict" order-by="sort_weight asc">
+			<key not-null="true">
+				<column name="concept_set" />
+			</key>
+			<composite-element class="ConceptSet">
+				<parent name="conceptSet"/>
+				<many-to-one name="concept" class="Concept" column="concept_id" not-null="true"/>
+				<property name="sortWeight" type="java.lang.Double" column="sort_weight" length="22" not-null="true" />
+				<property name="dateCreated" type="java.util.Date" column="date_created" length="19" not-null="true" />
+				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
+			</composite-element>
+		</set>
+		
+		<!-- bi-directional many-to-one association to ConceptClass -->
+		<many-to-one name="conceptClass" class="ConceptClass"
+			not-null="true">
+			<column name="class_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="changedBy" class="User"
+			not-null="true">
+			<column name="changed_by" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="creator" class="User"
+			not-null="true">
+			<column name="creator" />
+		</many-to-one>
+		
+		<joined-subclass name="org.openmrs.ConceptNumeric" table="concept_numeric" extends="org.openmrs.Concept" lazy="false">
+			<key column="concept_id" not-null="true" on-delete="cascade" />
+			<property name="hiAbsolute" type="java.lang.Double" column="hi_absolute" length="22" />
+			<property name="hiCritical" type="java.lang.Double" column="hi_critical" length="22" />
+			<property name="hiNormal" type="java.lang.Double" column="hi_normal" length="22" />
+			<property name="lowAbsolute" type="java.lang.Double" column="low_absolute" length="22" />
+			<property name="lowCritical" type="java.lang.Double" column="low_critical" length="22" />
+			<property name="lowNormal" type="java.lang.Double" column="low_normal" length="22" />
+			<property name="units" type="java.lang.String" column="units" length="50" />
+			<property name="precise" type="java.lang.Boolean" column="precise" length="1" not-null="true"/>
+		</joined-subclass>
+		
+		<joined-subclass name="org.openmrs.ConceptDerived" table="concept_derived" extends="org.openmrs.Concept" lazy="false">
+			<key column="concept_id" not-null="true" on-delete="cascade" />
+			<property name="rule" type="java.lang.String" column="rule" length="1000000" />
+			<property name="compileDate" type="java.util.Date" column="compile_date" />
+			<property name="compileStatus" type="java.lang.String" column="compile_status" length="255" />
+			<property name="className" type="java.lang.String" column="class_name" length="1024" />
+		</joined-subclass>
+		
+		
+	</class>
+
+</hibernate-mapping>

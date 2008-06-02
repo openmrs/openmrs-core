@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false"/>
+  <concept_name concept_name_id="1" concept_id="1" name="Some concept name" locale="en" description="this is a description" creator="1" date_created="2005-01-01 00:00:00.0" />
+</dataset>
