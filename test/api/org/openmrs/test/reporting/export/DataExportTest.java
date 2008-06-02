@@ -387,6 +387,107 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		assertEquals("The output is not right.", expectedOutput, output);
 	}
 	
+	/**
+	 * Tests the data export keys
+	 * 
+	 * @throws Exception
+	 */
+	public void testDataExportKeyAddition() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
+		authenticate();
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("Data Export Keys");
+		
+		SimpleColumn patientId = new SimpleColumn();
+		patientId.setColumnName("PATIENT_ID");
+		patientId.setReturnValue("$!{fn.patientId}");
+		export.getColumns().add(patientId);
+		
+		// this is the column that will be using the key
+		SimpleColumn dataExportKey = new SimpleColumn();
+		dataExportKey.setColumnName("bobkey");
+		dataExportKey.setReturnValue("$!{bob}");
+		export.getColumns().add(dataExportKey);
+		
+		Cohort patients = new Cohort();
+		patients.addMember(2);
+		
+		// add the key so that we can use it
+		DataExportUtil.putDataExportKey("bob", "joe");
+		
+		DataExportUtil.generateExport(export, patients, "\t", null);
+		File exportFile = DataExportUtil.getGeneratedFile(export);		
+		
+		String expectedOutput = "PATIENT_ID	bobkey\n2	joe\n";
+		String output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("exportFile: " + output);
+		assertEquals("The output is not right.", expectedOutput, output);
+	}
 	
-
+	/**
+	 * Tests removing data export keys
+	 * 
+	 * @throws Exception
+	 */
+	public void testDataExportKeyRemoval() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
+		authenticate();
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("Data Export Keys");
+		
+		SimpleColumn patientId = new SimpleColumn();
+		patientId.setColumnName("PATIENT_ID");
+		patientId.setReturnValue("$!{fn.patientId}");
+		export.getColumns().add(patientId);
+		
+		// this is the column that will be using the key
+		SimpleColumn dataExportKey = new SimpleColumn();
+		dataExportKey.setColumnName("bobkey");
+		dataExportKey.setReturnValue("$!{bob}");
+		export.getColumns().add(dataExportKey);
+		
+		Cohort patients = new Cohort();
+		patients.addMember(2);
+		
+		// add the key so that we can use it
+		DataExportUtil.putDataExportKey("bob", "joe");
+		
+		// remove the key now and try the data export
+		DataExportUtil.removeDataExportKey("bob");
+		
+		// try to remove things that aren't there
+		DataExportUtil.removeDataExportKey("bob");
+		DataExportUtil.removeDataExportKey("asdfasdf");
+		
+		DataExportUtil.generateExport(export, patients, "\t", null);
+		File exportFile = DataExportUtil.getGeneratedFile(export);		
+		
+		String expectedOutput = "PATIENT_ID	bobkey\n2	\n";
+		String output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("exportFile: " + output);
+		assertEquals("The output is not right.", expectedOutput, output);
+	}
+	
+	/**
+	 * Tests getting data export keys
+	 * 
+	 * @throws Exception
+	 */
+	public void testDataExportKeyGetting() throws Exception {
+		// add the key so that we can use it
+		DataExportUtil.putDataExportKey("bob", "joe");
+		
+		assertEquals("joe", DataExportUtil.getDataExportKey("bob"));
+		
+		// get a bogus key.  should return null (and not error out)
+		assertNull(DataExportUtil.getDataExportKey("asdfasdf"));
+	}
 }

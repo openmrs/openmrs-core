@@ -15,8 +15,10 @@ package org.openmrs.reporting.export;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +31,49 @@ import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
+/**
+ * Utility methods for use by Data Exports
+ */
 public class DataExportUtil {
+	
+	private static HashMap<String, Object> dataExportKeys = new HashMap<String, Object>();
+
+	/**
+	 * Allows a module or some other service to add things to the available
+	 * keys in the velocity context
+	 * 
+	 * @see #generateExport(DataExportReportObject, Cohort, DataExportFunctions, EvaluationContext)
+	 */
+	public static void putDataExportKey(String key, Object obj) {
+		dataExportKeys.put(key, obj);
+	}
+
+	/**
+	 * Remove the given key from the available data export keys
+	 * 
+	 * If the key doesn't exist, this will fail silently
+	 * 
+	 * @param key key to remove
+	 * 
+	 * @see #putDataExportKey(String, Object)
+	 * @see #generateExport(DataExportReportObject, Cohort, DataExportFunctions, EvaluationContext)
+	 */
+	public static void removeDataExportKey(String key) {
+		dataExportKeys.remove(key);
+	}
+
+	/**
+	 * Find the data export key previously added or null if not found
+	 * 
+	 * @param key
+	 * @return
+	 * 
+	 * @see #putDataExportKey(String, Object)
+	 * @see #generateExport(DataExportReportObject, Cohort, DataExportFunctions, EvaluationContext)
+	 */
+	public static Object getDataExportKey(String key) {
+		return dataExportKeys.get(key);
+	}
 	
 	/**
 	 * 
@@ -79,9 +123,12 @@ public class DataExportUtil {
 	}
 	
 	/**
+	 * Auto generated method comment
 	 * 
 	 * @param dataExport
-	 * @param patientSet (nullable)
+	 * @param patientSet
+	 * @param functions
+	 * @param context
 	 * @throws Exception
 	 */
 	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, DataExportFunctions functions, EvaluationContext context) throws Exception {
@@ -117,6 +164,16 @@ public class DataExportUtil {
 		Locale locale = Context.getLocale();
 		velocityContext.put("locale", locale);		
 		velocityContext.put("fn", functions);
+		
+		/*
+		 * If we have any additional velocity objects that need to 
+		 * be added, do so here.
+		 */
+		if (dataExportKeys != null && dataExportKeys.size() != 0) {
+			for (Map.Entry<String, Object> entry : dataExportKeys.entrySet()) {
+				velocityContext.put(entry.getKey(), entry.getValue());
+			}
+		}
 		
 		velocityContext.put("patientSet", patientSet);
 		
@@ -195,7 +252,8 @@ public class DataExportUtil {
 		 * 
 		 * @see org.apache.velocity.app.event.MethodExceptionEventHandler#methodException(java.lang.Class, java.lang.String, java.lang.Exception)
 		 */
-		public Object methodException(Class claz, String method, Exception e) throws Exception {
+		@SuppressWarnings("unchecked")
+        public Object methodException(Class claz, String method, Exception e) throws Exception {
 			
 			log.debug("Claz: " + claz.getName() + " method: " + method, e);
 			
