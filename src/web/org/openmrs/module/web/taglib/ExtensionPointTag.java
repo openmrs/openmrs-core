@@ -128,7 +128,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 					Class clazz = Class.forName(requiredClass);
 					for (Extension ext : extensionList) {
 						if (!clazz.isAssignableFrom(ext.getClass())) {
-							throw new ClassCastException("Extension at this point (" + pointId + ") are " +
+							throw new ClassCastException("Extensions at this point (" + pointId + ") are " +
 							                             "required to be of " + clazz + " or a subclass. " +
 							                             ext.getClass() + " is not.");
 						}

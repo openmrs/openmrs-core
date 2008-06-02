@@ -22,6 +22,11 @@ public abstract class BoxExt extends Extension {
 	}
 	
 	/**
+	 * @return The message code of the label of this link
+	 */
+	public abstract String getPortletUrl();
+	
+	/**
 	 * The title is used as the title for the boxHeader.
 	 * The returned String can be either straight up plain
 	 * text or a Spring message code.
