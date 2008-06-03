@@ -490,4 +490,37 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		// get a bogus key.  should return null (and not error out)
 		assertNull(DataExportUtil.getDataExportKey("asdfasdf"));
 	}
+	
+	/**
+	 * Test the name option for data exports 
+	 * 
+	 * @throws Exception
+	 */
+	public void testGetNames() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
+		authenticate();
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("Given names export");
+		
+		export.addSimpleColumn("PATIENT_ID", "$!{fn.patientId}");
+		
+		export.addSimpleColumn("Name", "$!{fn.getPatientAttr('PersonName', 'givenName')}");
+		
+		Cohort patients = new Cohort();
+		patients.addMember(2);
+		
+		DataExportUtil.generateExport(export, patients, "\t", null);
+		File exportFile = DataExportUtil.getGeneratedFile(export);
+		
+		//System.out.println("Template String: \n" + export.generateTemplate());
+		String expectedOutput = "PATIENT_ID	Name\n2	John\n";
+		String output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("exportFile: \n" + output);
+		assertEquals("The output is not right.", expectedOutput, output);
+		
+	}
 }
