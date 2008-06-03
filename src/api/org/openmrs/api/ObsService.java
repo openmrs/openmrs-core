@@ -372,7 +372,7 @@ public interface ObsService extends OpenmrsService {
 	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer personType, boolean includeVoided);
 	
 	/**
-	 * @deprecated use {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
+	 * @deprecated use {@link #getObservationsByPersonAndConcept(Person, Concept)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)

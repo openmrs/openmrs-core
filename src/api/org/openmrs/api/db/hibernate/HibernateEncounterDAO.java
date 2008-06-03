@@ -105,10 +105,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	        Collection<EncounterType> encounterTypes, boolean includeVoided) {
 		Criteria crit = sessionFactory.getCurrentSession()
 		                              .createCriteria(Encounter.class);
-		if (patient != null) {
+		if (patient != null && patient.getPatientId() != null) {
 			crit.add(Expression.eq("patient", patient));
 		}
-		if (location != null) {
+		if (location != null && location.getLocationId() != null) {
 			crit.add(Expression.eq("location", location));
 		}
 		if (fromDate != null) {

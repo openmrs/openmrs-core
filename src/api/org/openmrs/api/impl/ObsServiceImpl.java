@@ -550,7 +550,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	public List<Obs> getObservationsByPersonAndConcept(Person who, Concept question) throws APIException {
 		List<Person> whom = new Vector<Person>();
-		whom.add(who);
+		if (who != null && who.getPersonId() != null)
+			whom.add(who);
 		List<Concept> questions = new Vector<Concept>();
 		questions.add(question);
 		
