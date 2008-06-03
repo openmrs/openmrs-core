@@ -1488,6 +1488,8 @@
 				
 				<prop key="stateProvince">Location.province</prop>
 				<prop key="postalCode">Location.postalCode</prop>
+				<prop key="longitude">Location.longitude</prop>
+				<prop key="latitude">Location.latitude</prop>
 				<prop key="country">Location.country</prop>
 			</props>
 		</property>
@@ -1508,6 +1510,8 @@
 				
 				<prop key="stateProvince">24</prop>
 				<prop key="postalCode">6</prop>
+				<prop key="longitude">10</prop>
+				<prop key="latitude">10</prop>
 				<prop key="country">10</prop>
 				
 			</props>
@@ -1524,7 +1528,9 @@
 				<value>neighborhoodCell cityVillage</value>
 				<value>subregion region</value>
 				<value>townshipDivision countyDistrict</value>
-				<value>stateProvince postalCode country</value>
+				<value>stateProvince postalCode</value>
+				<value>latitude longitude</value>
+                                <value>country</value>
 			</list>
 		</property>
 	</bean>
