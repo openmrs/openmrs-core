@@ -1390,6 +1390,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Patient", "patient");
 		else if (className.equals("org.openmrs.Person"))
 			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Person", "person");
+		else if (className.equals("org.openmrs.PersonName"))
+			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.PersonName", "personName");			
 		else
 			criteria = sessionFactory.getCurrentSession().createCriteria(className);
 		
@@ -1398,7 +1400,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		// set up the query
 		ProjectionList projectionList = Projections.projectionList();
 		
-		if (className.contains("Person")) {
+		if (className.equals("org.openmrs.Person")) {
 			projectionList.add(Projections.property("person.personId"));
 			projectionList.add(Projections.property(property));
 			
@@ -1408,7 +1410,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			// do not include voided person rows
 			criteria.add(Expression.eq("personVoided", false));
 		}
-		else {
+		else if(className.equals("org.openmrs.Patient")){
 			projectionList.add(Projections.property("patient.personId"));
 			projectionList.add(Projections.property(property));
 			
@@ -1417,6 +1419,16 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			
 			// do not include voided patients
 			criteria.add(Expression.eq("voided", false));
+		}else if(className.equals("org.openmrs.PersonName")){
+			projectionList.add(Projections.property("personName.person.personId"));
+			projectionList.add(Projections.property(property));
+			
+			// do not include voided names
+			criteria.add(Expression.eq("voided", false));
+			
+			// do not include voided people
+			// the following doesn't work for some reason
+			// criteria.add(Expression.eq("person.personVoided", false));
 		}
 		criteria.setProjection(projectionList);
 		
