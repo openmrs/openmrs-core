@@ -192,15 +192,16 @@ public class ConceptWord implements java.io.Serializable,
 				words.add(new ConceptWord(part, concept, name.getLocale(), ""));
 			}
 		}
-
-		for (ConceptSynonym synonym : concept.getSynonyms()) {
-			String syn = synonym.getSynonym();
-			List<String> uniqueParts = getUniqueWords(syn);
-			for (String part : uniqueParts) {
-				words.add(new ConceptWord(part, concept, synonym.getLocale(),
-						syn));
+		
+		if (concept.getSynonyms() != null)
+			for (ConceptSynonym synonym : concept.getSynonyms()) {
+				String syn = synonym.getSynonym();
+				List<String> uniqueParts = getUniqueWords(syn);
+				for (String part : uniqueParts) {
+					words.add(new ConceptWord(part, concept, synonym.getLocale(),
+							syn));
+				}
 			}
-		}
 
 		return words;
 	}

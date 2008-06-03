@@ -117,7 +117,7 @@ public class LoggingAdvice implements MethodInterceptor {
     	}
     	catch (Throwable t) {
     		if (logGetter || logSetter)
-    			log.error("An error occurred while executing this method. Error message: " + t.getMessage());
+    			log.error("An error occurred while executing this method. Error message: " + t.getMessage(), t);
     		throw t;
     	}
     	finally {

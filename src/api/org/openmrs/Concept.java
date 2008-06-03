@@ -317,6 +317,13 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * @return
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
+		
+		// fail early if this concept has no names defined
+		if (getNames() == null || getNames().size() == 0) {
+			log.debug("there are no names defined for: " + conceptId);
+			return null;
+		}
+		
 		log.debug("Getting conceptName for locale: " + locale);
 
 		ConceptName bestMatch = null; // name from compatible locale (not exactly exact)
@@ -327,7 +334,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 
 		String desiredLanguage = locale.getLanguage();
 		String desiredCountry = locale.getCountry();
-
+		
 		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
 			ConceptName possibleName = i.next();
 
