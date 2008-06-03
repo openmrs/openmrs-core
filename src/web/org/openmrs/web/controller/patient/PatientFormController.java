@@ -494,7 +494,7 @@ public class PatientFormController extends PersonFormController {
 	    				throw new ObjectRetrievalFailureException(Patient.class, id); 
 	    		}
 	    		catch (NumberFormatException numberError) {
-	    			log.warn("Invalid userId supplied: '" + patientId + "'", numberError);
+	    			log.warn("Invalid patientId supplied: '" + patientId + "'", numberError);
 	    		}
 	    		catch (ObjectRetrievalFailureException noPatientEx) {
 	    			try {
@@ -544,13 +544,13 @@ public class PatientFormController extends PersonFormController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Encounter> encounters = new Vector<Encounter>();
 		
-		if (Context.isAuthenticated()) {
+		if (Context.isAuthenticated() && patient.getPatientId() != null) {
 			boolean onlyPublishedForms = true;
 			if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS))
 				onlyPublishedForms = false;
-			forms.addAll(Context.getFormService().getForms(onlyPublishedForms));
+			forms.addAll(Context.getFormService().getForms(null, onlyPublishedForms, null, false, null, null));
 			
-			List<Encounter> encs = Context.getEncounterService().getEncounters(patient);
+			List<Encounter> encs = Context.getEncounterService().getEncountersByPatient(patient);
 			if (encs != null && encs.size() > 0)
 				encounters.addAll(encs);
 		}
@@ -558,7 +558,7 @@ public class PatientFormController extends PersonFormController {
 		String patientVariation = "";
 		
 		Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
-		if ( reasonForExitConcept != null ) {
+		if ( reasonForExitConcept != null && patient.getPatientId() != null) {
 			Set<Obs> patientExitObs = Context.getObsService().getObservations(patient, reasonForExitConcept, false);
 			if ( patientExitObs != null ) {
 				log.debug("Exit obs is size " + patientExitObs.size() );
