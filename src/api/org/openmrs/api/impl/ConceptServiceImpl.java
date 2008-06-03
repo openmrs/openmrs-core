@@ -1084,14 +1084,15 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				}
 			}
 		}
-		for (ConceptSynonym syn : concept.getSynonyms()) {
-			if (syn.getCreator() == null ) {
-				syn.setCreator(authUser);
-				if (syn.getDateCreated() == null)
-					syn.setDateCreated(timestamp);
+		if (concept.getSynonyms() != null)
+			for (ConceptSynonym syn : concept.getSynonyms()) {
+				if (syn.getCreator() == null ) {
+					syn.setCreator(authUser);
+					if (syn.getDateCreated() == null)
+						syn.setDateCreated(timestamp);
+				}
+				syn.setConcept(concept);
 			}
-			syn.setConcept(concept);
-		}
 		if (concept.getConceptSets() != null) {
 			for (ConceptSet set : concept.getConceptSets()) {
 				if (set.getCreator() == null ) {

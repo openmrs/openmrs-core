@@ -55,6 +55,9 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 			}
 			
 			Collection<ConceptAnswer> originalConceptAnswers = (Collection<ConceptAnswer>)getValue();
+			if (originalConceptAnswers == null)
+				originalConceptAnswers = new HashSet<ConceptAnswer>();
+			
 			Collection<ConceptAnswer> deletedConceptAnswers = new HashSet<ConceptAnswer>();
 			
 			// loop over original concept answers to find any deleted answers

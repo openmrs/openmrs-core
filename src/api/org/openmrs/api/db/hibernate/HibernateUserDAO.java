@@ -191,9 +191,9 @@ public class HibernateUserDAO implements UserDAO {
 			catch (SQLException e) {
 				log.error("Error while trying to see if this person is a user already", e);
 			}
-	}
-	
-	if (stubInsertNeeded) {
+		}
+		
+		if (stubInsertNeeded) {
 			try {
 				PreparedStatement ps = connection.prepareStatement("INSERT INTO users (user_id, system_id, creator, date_created, voided) VALUES (?, ?, ?, ?, ?)");
 				
