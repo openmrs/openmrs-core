@@ -368,7 +368,8 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	@SuppressWarnings("unchecked")
+    public String toString() {
 		Object o = getHydratedObject();
 		if (o instanceof Attributable)
 			return ((Attributable)o).getDisplayString();

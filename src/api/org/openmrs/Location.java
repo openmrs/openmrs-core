@@ -319,7 +319,7 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	 */
 	public List<Location> findPossibleValues(String searchText) {
 		try {
-			return Context.getEncounterService().findLocations(searchText);
+			return Context.getLocationService().getLocations(searchText);
 		}
 		catch (Exception e) {
 			return Collections.emptyList();
@@ -331,7 +331,7 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	 */
 	public List<Location> getPossibleValues() {
 		try {
-			return Context.getEncounterService().getLocations();
+			return Context.getLocationService().getAllLocations();
 		}
 		catch (Exception e) {
 			return Collections.emptyList();
@@ -343,7 +343,7 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	 */
 	public Location hydrate(String locationId) {
 		try {
-			return Context.getEncounterService().getLocation(Integer.valueOf(locationId));
+			return Context.getLocationService().getLocation(Integer.valueOf(locationId));
 		}
 		catch (Exception e) {
 			return new Location();

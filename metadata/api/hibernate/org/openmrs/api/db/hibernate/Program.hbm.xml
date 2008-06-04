@@ -43,7 +43,7 @@
 		</many-to-one>
 
 		<!-- bi-directional one-to-many association to ProgramWorkflow -->
-		<set name="workflows" inverse="true" lazy="false" cascade="all-delete-orphan" order-by="date_created asc">
+		<set name="workflows" inverse="true" lazy="false" cascade="all-delete-orphan" order-by="date_created asc" access="field">
 			<key column="program_id" not-null="true"/>
 			<one-to-many class="ProgramWorkflow" />
 		</set>

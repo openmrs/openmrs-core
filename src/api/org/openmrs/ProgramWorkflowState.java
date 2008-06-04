@@ -16,9 +16,6 @@ package org.openmrs;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * ProgramWorkflowState
  */
@@ -26,8 +23,6 @@ public class ProgramWorkflowState implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private final Log log = LogFactory.getLog(getClass());
-
 	// ******************
 	// Properties
 	// ******************
@@ -41,7 +36,7 @@ public class ProgramWorkflowState implements Serializable {
 	private Date dateCreated; 
 	private User changedBy;
 	private Date dateChanged;
-	private Boolean retired = false; 
+	private Boolean retired = false;
 	
 	// ******************
 	// Constructors

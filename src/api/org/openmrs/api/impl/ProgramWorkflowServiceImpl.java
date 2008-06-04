@@ -92,7 +92,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 		// ProgramWorkflow
-		for (ProgramWorkflow workflow : program.getWorkflows()) {
+		for (ProgramWorkflow workflow : program.getAllWorkflows()) {
 		
 			if (workflow.getConcept() == null) {
 				throw new APIException("ProgramWorkflow concept is required");
@@ -206,7 +206,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
      * @see org.openmrs.api.ProgramWorkflowService#purgeProgram(org.openmrs.Program, boolean)
      */
     public void purgeProgram(Program program, boolean cascade) throws APIException {
-    	if (cascade && !program.getWorkflows().isEmpty()) {
+    	if (cascade && !program.getAllWorkflows().isEmpty()) {
 	    	throw new APIException("Cascade purging of Programs is not implemented yet");
 	    }
     	dao.deleteProgram(program);
@@ -232,7 +232,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
     public Program unRetireProgram(Program program) throws APIException {
     	Date lastModifiedDate = program.getDateChanged();
     	program.setRetired(false);
-    	for (ProgramWorkflow workflow : program.getWorkflows()) {
+    	for (ProgramWorkflow workflow : program.getAllWorkflows()) {
     		if (lastModifiedDate != null && lastModifiedDate.equals(workflow.getDateChanged())) {
     			workflow.setRetired(false);
 	    		for (ProgramWorkflowState state : workflow.getStates()) {
@@ -454,13 +454,12 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		for (PatientProgram patientProgram : getPatientPrograms(patient, null, null, null, null, null, false)) {
 			Set<ProgramWorkflow> workflows = patientProgram.getProgram().getWorkflows();
 			for (ProgramWorkflow workflow : workflows) {
-				if (!workflow.isRetired()) {
-					ProgramWorkflowState currentState = patientProgram.getCurrentState(workflow).getState();
-					ProgramWorkflowState transitionState = workflow.getState(trigger);
-					if (transitionState != null && workflow.isLegalTransition(currentState, transitionState)) {
-						patientProgram.transitionToState(transitionState, dateConverted);
-						log.info("State Conversion Triggered: patientProgram=" + patientProgram + " transition from " + currentState + " to " + transitionState + " on " + dateConverted);
-					}
+				// (getWorkflows() is only returning over nonretired workflows)
+				ProgramWorkflowState currentState = patientProgram.getCurrentState(workflow).getState();
+				ProgramWorkflowState transitionState = workflow.getState(trigger);
+				if (transitionState != null && workflow.isLegalTransition(currentState, transitionState)) {
+					patientProgram.transitionToState(transitionState, dateConverted);
+					log.info("State Conversion Triggered: patientProgram=" + patientProgram + " transition from " + currentState + " to " + transitionState + " on " + dateConverted);
 				}
 			}
 		}
@@ -524,7 +523,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	@Transactional(readOnly=true)
 	public ProgramWorkflow getWorkflow(Integer id) {
 		for (Program p : getAllPrograms()) {
-			for (ProgramWorkflow w : p.getWorkflows()) {
+			for (ProgramWorkflow w : p.getAllWorkflows()) {
 				if (w.getProgramWorkflowId().equals(id)) {
 					return w;
 				}
@@ -572,7 +571,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public List<ProgramWorkflowState> getStates(boolean includeRetired) {
 		List<ProgramWorkflowState> ret = new ArrayList<ProgramWorkflowState>();
 		for (Program p : getAllPrograms()) {
-			for (ProgramWorkflow w : p.getWorkflows()) {
+			for (ProgramWorkflow w : p.getAllWorkflows()) {
 				for (ProgramWorkflowState s : w.getStates()) {
 					if (includeRetired || !s.isRetired()) {
 						ret.add(s);

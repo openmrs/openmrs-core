@@ -41,9 +41,12 @@ public class ProgramFormController extends SimpleFormController {
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
     	super.initBinder(request, binder);
     	
+    	// this depends on this form being a "session-form" (defined in openrms-servlet.xml)
+    	Program program = (Program) binder.getTarget();
+    	
 		binder.registerCustomEditor(Concept.class, new ConceptEditor());
         binder.registerCustomEditor(java.util.Collection.class, "workflows", 
-        		new WorkflowCollectionEditor());
+        		new WorkflowCollectionEditor(program));
     }
     
 	/**
