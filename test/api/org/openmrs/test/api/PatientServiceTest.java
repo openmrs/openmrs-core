@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -28,8 +29,8 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.InvalidCheckDigitException;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -49,7 +50,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	protected PatientService ps = null; 
 	protected AdministrationService adminService = null;
-	protected EncounterService encounterService = null;
+	protected LocationService locationService = null;
+	
 	
 	@Override
 	protected void onSetUpInTransaction() throws Exception {
@@ -59,7 +61,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		if (ps == null) {
 			ps = Context.getPatientService();
 			adminService = Context.getAdministrationService();
-			encounterService = Context.getEncounterService();
+			locationService = Context.getLocationService();
 		}
 	}
 
@@ -202,14 +204,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient2 = createBasicPatient();
 		
 		PatientIdentifierType pit = ps.getPatientIdentifierType(1);
-		PatientIdentifier ident1 = new PatientIdentifier("123-1", pit, encounterService.getLocation(0));
-		PatientIdentifier ident2 = new PatientIdentifier("123", pit, encounterService.getLocation(0));
-		PatientIdentifier ident3 = new PatientIdentifier("123-0", pit, encounterService.getLocation(0));
-		PatientIdentifier ident4 = new PatientIdentifier("123-A", pit, encounterService.getLocation(0));
+		PatientIdentifier ident1 = new PatientIdentifier("123-1", pit, locationService.getLocation(0));
+		PatientIdentifier ident2 = new PatientIdentifier("123", pit, locationService.getLocation(0));
+		PatientIdentifier ident3 = new PatientIdentifier("123-0", pit, locationService.getLocation(0));
+		PatientIdentifier ident4 = new PatientIdentifier("123-A", pit, locationService.getLocation(0));
 		
 		try{
 			patient.addIdentifier(ident1);
-			ps.createPatient(patient);
+			ps.savePatient(patient);
 			fail("Patient creation should have failed with identifier " + ident1.getIdentifier()	);
 		}catch(InvalidCheckDigitException ex){		}
 
@@ -217,7 +219,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		try{
 			patient.addIdentifier(ident2);
-			ps.createPatient(patient);
+			ps.savePatient(patient);
 			fail("Patient creation should have failed with identifier " + ident2.getIdentifier()	);
 		}catch(InvalidCheckDigitException ex){		}
 		
@@ -225,11 +227,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		try{
 			patient.addIdentifier(ident3);
-			ps.createPatient(patient);
-			ps.deletePatient(patient);
+			ps.savePatient(patient);
+			ps.purgePatient(patient);
 			patient.removeIdentifier(ident3);
 			patient2.addIdentifier(ident4);
-			ps.createPatient(patient2);
+			ps.savePatient(patient2);
 		}catch(InvalidCheckDigitException ex){
 			fail("Patient creation should have worked with identifiers " + ident3.getIdentifier() + " and " + ident4.getIdentifier());
 		}
@@ -397,4 +399,31 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals(pset.size(), 0);
 		
 	}
+	
+	/**
+	 * Test the PatientService.getPatients(String, String, List) method with both an identifier and
+	 * an identifiertype
+	 * 
+	 * @throws Exception
+	 */
+	public void testGetPatientsByIdentifierAndIdentifierType() throws Exception {
+		executeDataSet(FIND_PATIENTS_XML);
+		
+		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
+		types.add(new PatientIdentifierType(1));
+		
+		// make sure we get back only one patient
+		List<Patient> patients = Context.getPatientService().getPatients(null, "1234", types);
+		assertEquals(1, patients.size());
+		
+		// make sure we get back only one patient
+		patients = Context.getPatientService().getPatients(null, "1234", null);
+		assertEquals(1, patients.size());
+		
+		// make sure we get back only patient #2 and patient #5
+		patients = Context.getPatientService().getPatients(null, null, types);
+		assertEquals(2, patients.size());
+		
+	}
+	
 }

@@ -515,7 +515,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
      * Returns a Collection<PatientProgram> of all PatientPrograms for the passed <code>patient</code>
      * @param patient - The Patient to retrieve all PatientPrograms for
      * @return Collection<PatientProgram> of all PatientPrograms for the passed <code>patient</code>
-     * @deprecated use {@link getPatientPrograms(Patient, Program, Date, Date, Date, Date)}
+     * @deprecated use {@link #getPatientPrograms(Patient, Program, Date, Date, Date, Date)}
      * @throws APIException
      */
     @Authorized({OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS})

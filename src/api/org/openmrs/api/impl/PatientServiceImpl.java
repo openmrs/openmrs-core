@@ -341,8 +341,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		types.add(type);
 		List<Patient> patients = getPatients(null, identifier, types);
 		
-		// ignore this patient
-		patients.remove(ignorePatient);
+		// ignore this patient (loop until no changes made)
+		while (patients.remove(ignorePatient)) { };
 		
 		if (patients.size() > 0)
 			return patients.get(0);
@@ -906,18 +906,18 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 		// copy all program enrollments
 		ProgramWorkflowService programService = Context.getProgramWorkflowService();
-		for (PatientProgram pp : programService.getPatientPrograms(notPreferred)) {
+		for (PatientProgram pp : programService.getPatientPrograms(notPreferred, null, null, null, null, null, false)) {
 			if (!pp.getVoided()) {
 				PatientProgram enroll = pp.copy();
 				enroll.setPatient(preferred);
 				log.debug("Copying patientProgram " + pp.getPatientProgramId() + " to " + preferred.getPatientId());
-				programService.createPatientProgram(enroll);
+				programService.savePatientProgram(enroll);
 			}
 		}
 		
 		// copy all relationships
 		PersonService personService = Context.getPersonService();
-		for (Relationship rel : personService.getRelationships(notPreferred)) {
+		for (Relationship rel : personService.getRelationshipsByPerson(notPreferred)) {
 			if (!rel.isVoided()) {
 				Relationship tmpRel = rel.copy();
 				if (tmpRel.getPersonA().equals(notPreferred))
@@ -925,17 +925,17 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				if (tmpRel.getPersonB().equals(notPreferred))
 					tmpRel.setPersonB(preferred);
 				log.debug("Copying relationship " + rel.getRelationshipId() + " to " + preferred.getPatientId());
-				personService.createRelationship(tmpRel);
+				personService.saveRelationship(tmpRel);
 			}
 		}
 		
 		// move all obs that weren't contained in encounters
 		// TODO: this should be a copy, not a move
 		ObsService obsService = Context.getObsService();
-		for (Obs obs : obsService.getObservations(notPreferred, false)) {
+		for (Obs obs : obsService.getObservationsByPerson(notPreferred)) {
 			if (obs.getEncounter() == null && !obs.isVoided()) {
 				obs.setPerson(preferred);
-				obsService.updateObs(obs);
+				obsService.saveObs(obs, null);
 			}
 		}
 		
@@ -945,7 +945,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			if (o.getEncounter() == null && !o.getVoided()) {
 				Order tmpOrder = o.copy();
 				tmpOrder.setPatient(preferred);
-				os.createOrder(tmpOrder);
+				os.saveOrder(tmpOrder);
 			}
 		}
 		
@@ -1137,13 +1137,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		String codProp = Context.getAdministrationService()
 		                        .getGlobalProperty("concept.reasonExitedCare");
 		Concept reasonForExit = Context.getConceptService()
-		                               .getConceptByIdOrName(codProp);
+		                               .getConcept(codProp);
 
 			if ( reasonForExit != null ) {
-			Set<Obs> obssExit = Context.getObsService()
-			                           .getObservations(patient,
-			                                            reasonForExit,
-			                                            false);
+			List<Obs> obssExit = Context.getObsService()
+			                           .getObservationsByPersonAndConcept(patient,
+			                                            reasonForExit);
 				if ( obssExit != null ) {
 					if ( obssExit.size() > 1 ) {
 					log.error("Multiple reasons for exit ("
@@ -1165,8 +1164,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 							obsExit.setConcept(reasonForExit);
 							Location loc = null; //patient.getHealthCenter();
 						if (loc == null)
-							loc = Context.getEncounterService()
-							             .getLocationByName("Unknown Location");
+							loc = Context.getLocationService().getLocation("Unknown Location");
 						if (loc == null)
 							loc = Context.getLocationService()
 							             .getLocation(new Integer(1));
@@ -1221,7 +1219,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			String strPatientDied = Context.getAdministrationService()
 			                               .getGlobalProperty("concept.patientDied");
 			Concept conceptPatientDied = Context.getConceptService()
-			                                    .getConceptByIdOrName(strPatientDied);
+			                                    .getConcept(strPatientDied);
 			
 			if (conceptPatientDied == null)
 				log.debug("ConceptPatientDied is null");
@@ -1262,13 +1260,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		String codProp = Context.getAdministrationService()
 		                        .getGlobalProperty("concept.causeOfDeath");
 		Concept causeOfDeath = Context.getConceptService()
-		                              .getConceptByIdOrName(codProp);
+		                              .getConcept(codProp);
 
 			if ( causeOfDeath != null ) {
-			Set<Obs> obssDeath = Context.getObsService()
-			                            .getObservations(patient,
-			                                             causeOfDeath,
-			                                             false);
+			List<Obs> obssDeath = Context.getObsService()
+			                            .getObservationsByPersonAndConcept(patient,
+			                                             causeOfDeath);
 				if ( obssDeath != null ) {
 					if ( obssDeath.size() > 1 ) {
 					log.error("Multiple causes of death ("
@@ -1290,8 +1287,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 							obsDeath.setConcept(causeOfDeath);
 							Location loc = null; //patient.getHealthCenter();
 						if (loc == null)
-							loc = Context.getEncounterService()
-							             .getLocationByName("Unknown Location");
+							loc = Context.getLocationService()
+							             .getLocation("Unknown Location");
 						if (loc == null)
 							loc = Context.getLocationService()
 							             .getLocation(new Integer(1));
@@ -1309,7 +1306,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						String noneConcept = Context.getAdministrationService()
 						                            .getGlobalProperty("concept.none");
 						currCause = Context.getConceptService()
-						                   .getConceptByIdOrName(noneConcept);
+						                   .getConcept(noneConcept);
 						}
 						
 						if ( currCause != null ) {
@@ -1326,7 +1323,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						String otherConcept = Context.getAdministrationService()
 						                             .getGlobalProperty("concept.otherNonCoded");
 						Concept conceptOther = Context.getConceptService()
-						                              .getConceptByIdOrName(otherConcept);
+						                              .getConcept(otherConcept);
 							if ( conceptOther != null ) {
 								if ( conceptOther.equals(currCause) ) {
 								// seems like this is an other concept -
@@ -1403,6 +1400,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
      * @see org.openmrs.api.PatientService#getIdentifierValidator(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     public IdentifierValidator getIdentifierValidator(String pivClassName) {
 	    try {
 	        return getIdentifierValidator(((Class<IdentifierValidator>) Class.forName(pivClassName)));
