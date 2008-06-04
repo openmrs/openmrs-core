@@ -15,11 +15,13 @@
 				<spring:message code="Field.manage"/>
 			</a>
 		</li>
+		<!-- commenting out link until page is implemented
 		<li <c:if test="<%= request.getRequestURI().contains("fieldAnswers") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/forms/fieldAnswer.list" class="retired">
 				<spring:message code="FieldAnswer.manage"/>
 			</a>
 		</li>
+		-->
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Field Types">
 		<li <c:if test="<%= request.getRequestURI().contains("fieldType") %>">class="active"</c:if>>
