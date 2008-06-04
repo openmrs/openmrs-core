@@ -150,11 +150,13 @@ public class HibernatePatientDAO implements PatientDAO {
     	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
     	
     	criteria.createAlias("names", "name");
-		criteria.add(Expression.eq("name.voided", false));
 		criteria.addOrder(Order.asc("name.givenName"));
 		criteria.addOrder(Order.asc("name.middleName"));
 		criteria.addOrder(Order.asc("name.familyName"));
     	
+		// get only distinct patients 
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		
     	if (name != null) {
     		// TODO simple name search to start testing, will need to make "real"
     		// name search
@@ -181,10 +183,10 @@ public class HibernatePatientDAO implements PatientDAO {
     					searchExpression = Expression.or(oneNameSearch, fullNameSearch);
     				}
     				criteria.add(searchExpression);
-		}
-		}
+    			}
+    		}
 		
-	}
+    	}
 	
     	// do the restriction on either identifier string or types
     	if (identifier != null || identifierTypes.size() > 0) {
