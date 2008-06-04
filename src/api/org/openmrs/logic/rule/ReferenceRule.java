@@ -63,9 +63,9 @@ public class ReferenceRule implements Rule {
         if (dataSource == null)
             throw new InvalidReferenceRuleException(
                     "Invalid logic data source: " + dataSourceName);
-        if (!dataSource.hasKey(key))
+        if (key == null || !dataSource.hasKey(key))
             throw new InvalidReferenceRuleException("Invalid key (" + key
-                    + ") for LogicDataSource (" + dataSourceName + ")");
+                    + ") for LogicDataSource (" + dataSourceName + ").  Key attempted to be pulled from reference: " + reference);
     }
 
     /**

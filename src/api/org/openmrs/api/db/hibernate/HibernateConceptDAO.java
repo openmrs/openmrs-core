@@ -291,9 +291,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#purgeConceptClass(org.openmrs.ConceptClass)
 	 */
 	public void purgeConceptClass(ConceptClass cc) throws DAOException  {
-		sessionFactory.getCurrentSession().createQuery("delete from ConceptClass where concept_class_id = :c")
-					.setInteger("c", cc.getConceptClassId())
-					.executeUpdate();			
 		sessionFactory.getCurrentSession().delete(cc);
 	}
 
@@ -307,6 +304,7 @@ public class HibernateConceptDAO implements ConceptDAO {
     /**
      * @see org.openmrs.api.db.ConceptDAO#getAllConceptDatatypes(boolean)
      */
+    @SuppressWarnings("unchecked")
     public List<ConceptDatatype> getAllConceptDatatypes(boolean includeRetired)
             throws DAOException {
     	Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptDatatype.class);
@@ -320,6 +318,7 @@ public class HibernateConceptDAO implements ConceptDAO {
     /**
      * @see org.openmrs.api.db.ConceptDAO#getConceptDatatypes(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     public List<ConceptDatatype> getConceptDatatypes(String name)
             throws DAOException {
     	Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptDatatype.class);

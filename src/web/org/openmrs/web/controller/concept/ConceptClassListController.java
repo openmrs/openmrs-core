@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptClass;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -70,7 +69,6 @@ public class ConceptClassListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			
 			String[] conceptClassList = request.getParameterValues("conceptClassId");
-			AdministrationService as = Context.getAdministrationService();
 			ConceptService cs = Context.getConceptService();
 			
 			String success = "";
@@ -81,7 +79,7 @@ public class ConceptClassListController extends SimpleFormController {
 			String notDeleted = msa.getMessage("general.cannot.delete");
 			for (String cc : conceptClassList) {
 				try {
-					as.deleteConceptClass(cs.getConceptClass(Integer.valueOf(cc)));
+					cs.purgeConceptClass(cs.getConceptClass(Integer.valueOf(cc)));
 					if (!success.equals("")) success += "<br/>";
 					success += cc + " " + deleted;
 				}
