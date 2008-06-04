@@ -1021,14 +1021,12 @@
 	<!-- =====    Programs and Workflows    ===== -->
 	<!-- ======================================== -->
 	<bean id="programList" class="org.openmrs.web.controller.program.ProgramListController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>programList</value></property>
 		<property name="formView"><value>/admin/programs/programList</value></property>
 		<property name="successView"><value>program.list</value></property>
 	</bean>
 	<bean id="programValidator" class="org.openmrs.web.controller.program.ProgramValidator" />
 	<bean id="programForm" class="org.openmrs.web.controller.program.ProgramFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>program</value></property>
 		<property name="validator">
 			<ref bean="programValidator" />

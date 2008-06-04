@@ -108,7 +108,8 @@ public class Cohort implements Serializable {
 	 * This constructor does not check whether the database contains patients with the given ids, but @see CohortService.saveCohort(Cohort) will.
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
-	public Cohort(Collection patientsOrIds) {
+	@SuppressWarnings("unchecked")
+    public Cohort(Collection patientsOrIds) {
 		 this(null, null, patientsOrIds);
 	}
 	
@@ -118,7 +119,8 @@ public class Cohort implements Serializable {
 	 * @param description optional description
 	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
-	public Cohort(String name, String description, Collection patientsOrIds) {
+	@SuppressWarnings("unchecked")
+    public Cohort(String name, String description, Collection patientsOrIds) {
 		this.name = name;
 		this.description = description;
 		memberIds = new HashSet<Integer>();

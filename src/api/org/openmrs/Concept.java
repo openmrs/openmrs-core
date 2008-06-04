@@ -333,7 +333,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 			locale = Context.getLocale(); // Don't presume en_US;
 
 		String desiredLanguage = locale.getLanguage();
-		String desiredCountry = locale.getCountry();
+		//String desiredCountry = locale.getCountry();
 		
 		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
 			ConceptName possibleName = i.next();

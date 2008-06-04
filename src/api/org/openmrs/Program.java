@@ -69,7 +69,7 @@ public class Program implements java.io.Serializable {
 	 */
 	public void addWorkflow(ProgramWorkflow workflow) {
 		workflow.setProgram(this);
-		getWorkflows().add(workflow);
+		getAllWorkflows().add(workflow);
 	}
 
 	/**
@@ -77,8 +77,8 @@ public class Program implements java.io.Serializable {
 	 * @param workflow - the {@link ProgramWorkflow} to remove
 	 */
 	public void removeWorkflow(ProgramWorkflow workflow) {
-		if (getWorkflows().contains(workflow)) {
-			getWorkflows().remove(workflow);
+		if (getAllWorkflows().contains(workflow)) {
+			getAllWorkflows().remove(workflow);
 			workflow.setProgram(null);
 		}
 	}
@@ -97,7 +97,7 @@ public class Program implements java.io.Serializable {
 	 * @return a {@link ProgramWorkflow} which has the passed <code>name</code> in any {@link Locale}
 	 */
 	public ProgramWorkflow getWorkflowByName(String name) {
-		for (ProgramWorkflow pw : getWorkflows()) {
+		for (ProgramWorkflow pw : getAllWorkflows()) {
 			if (pw.getConcept().isNamed(name)) {
 				return pw;
 			}
@@ -204,7 +204,30 @@ public class Program implements java.io.Serializable {
     	this.retired = retired;
     }
 
+	/**
+	 * Get only the non-retired workflows
+	 * 
+	 * @return
+	 */
 	public Set<ProgramWorkflow> getWorkflows() {
+		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
+		
+		if (this.workflows != null) {
+			for (ProgramWorkflow workflow : this.workflows) {
+				if (workflow.isRetired() == false)
+					ret.add(workflow);
+			}
+		}
+			
+		return ret;
+	}
+	
+	/**
+	 * Get all workflows...including the retired ones
+	 * 
+	 * @return
+	 */
+	public Set<ProgramWorkflow> getAllWorkflows() {
 		return workflows;
 	}
 

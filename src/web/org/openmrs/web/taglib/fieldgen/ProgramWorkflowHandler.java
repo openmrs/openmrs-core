@@ -47,7 +47,7 @@ public class ProgramWorkflowHandler extends AbstractFieldGenHandler implements F
 			List<ProgramWorkflow> workflows = new ArrayList<ProgramWorkflow>();
 			
 			ProgramWorkflowService pws = Context.getProgramWorkflowService();
-			List<Program> programs = pws.getPrograms();
+			List<Program> programs = pws.getAllPrograms();
 			if ( programs != null ) {
 				for ( Program program : programs ) {
 					Set<ProgramWorkflow> currFlows = program.getWorkflows();
