@@ -114,6 +114,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 				ps.execute();
 		
 				if (ps.getResultSet().next()) {
+					// we have to evict the current concept out of the session because
+					// the user probably had to change the class of this object to get it 
+					// to now be a numeric
+					// (must be done before the "insert into...")
+					sessionFactory.getCurrentSession().clear();
+					
 					ps = connection.prepareStatement("INSERT INTO concept_numeric (concept_id, precise) VALUES (?, false)");
 					ps.setInt(1, concept.getConceptId());
 					ps.executeUpdate();

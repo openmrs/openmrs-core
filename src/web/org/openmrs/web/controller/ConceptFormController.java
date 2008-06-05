@@ -59,6 +59,16 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * This is the controlling class for hte conceptForm.jsp page.
+ * 
+ * It initBinder and formBackingObject are called before page load.
+ * 
+ * After submission, formBackingObject (because we're not a session 
+ * form), processFormSubmission, and onSubmit methods are called
+ * 
+ * @see org.openmrs.Concept
+ */
 public class ConceptFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
@@ -259,7 +269,7 @@ public class ConceptFormController extends SimpleFormController {
 			
 			if (action.equals(msa.getMessage("Concept.delete"))) {
 				try {
-					cs.deleteConcept(concept);
+					cs.purgeConcept(concept);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.deleted");
 					return new ModelAndView(new RedirectView("index.htm"));
 				}
@@ -312,7 +322,6 @@ public class ConceptFormController extends SimpleFormController {
 	}
 	
 	/**
-	 * 
 	 * This is called prior to displaying a form for the first time.  It tells Spring
 	 *   the form/command object to load into the request
 	 * 
@@ -327,17 +336,8 @@ public class ConceptFormController extends SimpleFormController {
 		if (conceptId == null) {
 			// do nothing
 		}
-		else if (isFormSubmission(request)) {
-			// we don't want to refetch the concept from the db right 
-			// before the onSubmit method.
-			// we need to apply the chosen concept id to the backing object
-			// because the conceptId is not in the form input boxes submission.
-			concept = new Concept(Integer.valueOf(conceptId));
-		}
 		else if (conceptId != null) {
     		concept = cs.getConcept(Integer.valueOf(conceptId));
-    		//if (concept.isNumeric())
-    		//	concept = (ConceptNumeric)concept;
     	}
 		
 		if (concept == null)
@@ -353,7 +353,7 @@ public class ConceptFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Map referenceData(HttpServletRequest request) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		
 		Locale locale = Context.getLocale();
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -425,9 +425,9 @@ public class ConceptFormController extends SimpleFormController {
 		    		conceptAnswers.put(key, name);
 		    	}
 
-		    	forms = Context.getFormService().getForms(concept);
+		    	forms = Context.getFormService().getFormsContainingConcept(concept);
 		    	
-		    	for (Concept c : Context.getConceptService().getQuestionsForAnswer(concept)) {
+		    	for (Concept c : Context.getConceptService().getConceptsByAnswer(concept)) {
 		    		ConceptName cn = c.getName(locale);
 		    		if (cn == null)
 		    			questionsAnswered.put(c.getConceptId(), "No Name Defined");
@@ -474,7 +474,7 @@ public class ConceptFormController extends SimpleFormController {
     	map.put("containedInSets", containedInSets);
 		
     	//get complete class and datatype lists 
-		map.put("classes", cs.getConceptClasses());
+		map.put("classes", cs.getAllConceptClasses());
 		map.put("datatypes", cs.getAllConceptDatatypes());
 		
 		// make spring locale available to jsp

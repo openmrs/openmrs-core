@@ -67,7 +67,6 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		answers = new HashSet<ConceptAnswer>();
 		synonyms = new HashSet<ConceptSynonym>();
 		conceptSets = new HashSet<ConceptSet>();
-		//conceptNumeric = new ConceptNumeric();
 	}
 
 	/** constructor with id */
