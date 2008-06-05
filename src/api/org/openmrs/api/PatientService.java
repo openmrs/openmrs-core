@@ -130,12 +130,15 @@ public interface PatientService extends OpenmrsService {
 	 * The identifier is matched with the regex
 	 * <code>OpenmrsConstants.PATIENT_IDENTIFIER_REGEX</code>
 	 * 
+	 * All parameters are optional and nullable.  If null, it is not included
+	 * in the search.
+	 * 
 	 * Will not return voided patients
 	 * 
-	 * @param name this is a slight break from the norm, patients with a 
+	 * @param name (optional) this is a slight break from the norm, patients with a 
 	 * 		partial match on this name will be returned
-	 * @param identifier only patients with a matching identifier are returned
-	 * @param identifierTypes the PatientIdentifierTypes to restrict to
+	 * @param (optional)identifier only patients with a matching identifier are returned
+	 * @param (optional)identifierTypes the PatientIdentifierTypes to restrict to
 	 * @return patients that matched the given criteria (and are not voided)
 	 * @throws APIException
 	 */
