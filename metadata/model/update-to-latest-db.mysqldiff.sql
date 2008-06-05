@@ -219,11 +219,13 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	-- This creates a temp table mapping from grouper obs to its obs_group_id
 	SELECT 'Fixing obs_group_id values on all obs that were grouped' as 'Current step: (3/8)' FROM dual;
 	DROP TABLE IF EXISTS `new_obs_groups_mapping`;
-	CREATE TEMPORARY TABLE `new_obs_groups_mapping` (
-	  `grouper_obs_id` int(11) NOT NULL,
-	  `obs_group_id` int(11) default NULL,
-	  PRIMARY KEY  (`grouper_obs_id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	CREATE TABLE `new_obs_groups_mapping` (
+		`grouper_obs_id` int(11) NOT NULL,
+		`obs_group_id` int(11) default NULL,
+		PRIMARY KEY  (`grouper_obs_id`),
+		KEY `grouper` (`grouper_obs_id`),
+		KEY `the_group_id` (`obs_group_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	
 	-- This populates the previous table
 	INSERT INTO `new_obs_groups_mapping`
@@ -240,6 +242,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 			o2.obs_group_id;
 	
 	-- This changes the obs_group_ids on the obs table to point at the obs_id of the grouper obs
+	SELECT 'Applying temporary table values to obs table' as 'Current step: (3.5/8)' FROM dual;
 	UPDATE 
 		`obs` o left join new_obs_groups_mapping mapping on o.obs_group_id = mapping.obs_group_id
 	SET
@@ -269,10 +272,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	-- remove all bad obs grouping by setting obs_group_id to null for any obs in a solitary group and its grouper concept is not a set 
 	SELECT 'Cleaning up the obs that think they are in an obs_group but really are not.' AS 'Current step (5/8):' FROM dual;
 	DROP TABLE IF EXISTS `single_member_obs_groups`;
-	CREATE TEMPORARY TABLE `single_member_obs_groups` (
+	CREATE TABLE `single_member_obs_groups` (
 	  `obs_id` int(11) NOT NULL,
       `obs_group_id` int(11) NOT NULL,
-	  PRIMARY KEY  (`obs_id`)
+	  PRIMARY KEY  (`obs_id`),
+	  KEY `the_group_id` (`obs_group_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	INSERT INTO `single_member_obs_groups`
 		(obs_id,
@@ -315,7 +319,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	SELECT 'Voiding those obs groupers that are in all-voided groups' as 'Current step: (7/8)' FROM dual;
 	-- create a temp table to hold the obs_id of obs groupers that need to be voided
 	DROP TABLE IF EXISTS `obs_groupers_needing_voided`;
-	CREATE TEMPORARY TABLE `obs_groupers_needing_voided` (
+	CREATE TABLE `obs_groupers_needing_voided` (
 		`obs_id` int(11) NOT NULL,
 		`voided_by` int(11) default NULL,
 		`date_voided` datetime default NULL,
