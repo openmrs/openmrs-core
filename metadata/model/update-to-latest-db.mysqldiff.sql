@@ -266,7 +266,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	-- Sanity check...we shouldn't really have any obs groupers with concept_id = MEDICAL RECORD OBSERVATIONS
 	IF (SELECT COUNT(*)<>'0' FROM obs o WHERE concept_id = @OTHER_CONCEPT_ID AND EXISTS (SELECT * FROM obs o2 WHERE o2.obs_group_id = o.obs_id)) THEN
 		SELECT 'These obs rows pertaining to obs_groups have the been given a generic concept_id. You should find and correct with their right grouping concept_id' AS '########## WARNING! #############' FROM DUAL;
-		SELECT * FROM obs_group WHERE concept_id = @OTHER_CONCEPT_ID; 
+		SELECT * FROM obs WHERE concept_id = @OTHER_CONCEPT_ID; 
 	END IF;
 
 	-- remove all bad obs grouping by setting obs_group_id to null for any obs in a solitary group and its grouper concept is not a set 
