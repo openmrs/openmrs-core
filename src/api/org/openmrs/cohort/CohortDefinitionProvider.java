@@ -43,7 +43,7 @@ public interface CohortDefinitionProvider {
 	/**
 	 * @return All cohort definitions whose persistence is managed by this provider
 	 */
-	public List<CohortDefinition> getAllCohortDefinitions();
+	public List<CohortDefinitionItemHolder> getAllCohortDefinitions();
 	
 	/**
 	 * @param id

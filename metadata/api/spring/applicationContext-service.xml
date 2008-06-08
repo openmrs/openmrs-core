@@ -240,6 +240,10 @@
 					<key><value>org.openmrs.reporting.PatientSearch</value></key>
 					<bean class="org.openmrs.cohort.impl.PatientSearchCohortDefinitionProvider"/>
 				</entry>
+				<entry>
+					<key><value>org.openmrs.cohort.StaticCohortDefinition</value></key>
+					<bean class="org.openmrs.cohort.impl.StaticCohortDefinitionProvider"/>
+				</entry>
 			</map>
 		</property>
 	</bean>

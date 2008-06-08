@@ -20,6 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
@@ -27,6 +29,7 @@ import org.openmrs.api.CohortService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.cohort.CohortDefinition;
+import org.openmrs.cohort.CohortDefinitionItemHolder;
 import org.openmrs.cohort.CohortDefinitionProvider;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.PatientCharacteristicFilter;
@@ -39,6 +42,7 @@ import org.springframework.util.StringUtils;
  */
 public class CohortServiceImpl extends BaseOpenmrsService implements CohortService {
 
+	private Log log = LogFactory.getLog(this.getClass());
 	private CohortDAO dao;
 	
 	private static Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> cohortDefinitionProviders = null;
@@ -68,11 +72,13 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
         }
         if (cohort.getCreator() == null) {
 			cohort.setCreator(Context.getAuthenticatedUser());
-        }
+	}
         if (cohort.getCohortId() != null) {
             cohort.setChangedBy(Context.getAuthenticatedUser());
             cohort.setDateChanged(now);
         }
+        if (log.isInfoEnabled())
+            log.info("Saving cohort " + cohort);
 
 		return dao.saveCohort(cohort);
 	}
@@ -231,12 +237,33 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
     	return provider.getCohortDefinition(id);
     }
 
+    /**
+     * @see org.openmrs.api.CohortService#getCohortDefinition(java.lang.String)
+     */
+    public CohortDefinition getCohortDefinition(String key) { 
+    	try { 
+    		
+    		Cohort cohort;
+    		String [] keyValues = key.split(":");
+    		Integer id = Integer.parseInt((keyValues[0]!=null)?keyValues[0]:"0");
+    		String className = (keyValues[1]!=null)?keyValues[1]:"";
+    		Class clazz = Class.forName(className);	    		
+    		return getCohortDefinition(clazz, id);
+    	} 
+    	catch (ClassNotFoundException e) { 
+    		throw new APIException(e);
+    	}
+    }
+    
 	/**
      * @see org.openmrs.api.CohortService#getCohortDefinitions()
      */
-    public List<CohortDefinition> getAllCohortDefinitions() {
-	    List<CohortDefinition> ret = new ArrayList<CohortDefinition>();
+    public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
+    	
+	    List<CohortDefinitionItemHolder> ret = new ArrayList<CohortDefinitionItemHolder>();
 	    for (CohortDefinitionProvider p : cohortDefinitionProviders.values()) {
+	    	
+	    	log.info("Getting cohort definitions from " + p.getClass());
 	    	ret.addAll(p.getAllCohortDefinitions());
 	    }
 	    return ret;
@@ -299,8 +326,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
      * @see org.openmrs.api.CohortService#getCohortDefinitions(java.lang.Class)
      */
-    @SuppressWarnings("unchecked")
-    public List<CohortDefinition> getCohortDefinitions(Class providerClass) {
+    public List<CohortDefinitionItemHolder> getCohortDefinitions(Class providerClass) {
     	CohortDefinitionProvider provider = getCohortDefinitionProvider(providerClass);
 	    return provider.getAllCohortDefinitions();
     }

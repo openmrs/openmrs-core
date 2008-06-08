@@ -20,6 +20,7 @@ import org.openmrs.Cohort;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortDefinition;
+import org.openmrs.cohort.CohortDefinitionItemHolder;
 import org.openmrs.cohort.CohortDefinitionProvider;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.AbstractReportObject;
@@ -60,11 +61,19 @@ public class PatientSearchCohortDefinitionProvider implements
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#getAllCohortDefinitions()
 	 */
-	public List<CohortDefinition> getAllCohortDefinitions() {
-		List<CohortDefinition> ret = new ArrayList<CohortDefinition>();
-		for (AbstractReportObject o : Context.getReportObjectService().getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH)) {
-			PatientSearchReportObject s = (PatientSearchReportObject) o;
-			ret.add(s.getPatientSearch());
+	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
+		List<CohortDefinitionItemHolder> ret = new ArrayList<CohortDefinitionItemHolder>();
+		
+		List<AbstractReportObject> patientSearches = 
+			Context.getReportObjectService().getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
+
+		for (AbstractReportObject o : patientSearches) {
+			PatientSearchReportObject psro = (PatientSearchReportObject) o;
+			CohortDefinitionItemHolder item = new CohortDefinitionItemHolder();
+			item.setKey(psro.getReportObjectId() + ":" + psro.getPatientSearch().getClass().getCanonicalName());
+			item.setName(psro.getName());
+			item.setCohortDefinition(psro.getPatientSearch());
+			ret.add(item);
 		}
 		return ret;
 	}
