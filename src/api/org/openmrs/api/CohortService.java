@@ -22,6 +22,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.CohortDAO;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.cohort.CohortDefinition;
+import org.openmrs.cohort.CohortDefinitionItemHolder;
 import org.openmrs.cohort.CohortDefinitionProvider;
 import org.openmrs.report.EvaluationContext;
 import org.springframework.transaction.annotation.Transactional;
@@ -224,14 +225,17 @@ public interface CohortService extends OpenmrsService {
 	public void removeCohortDefinitionProvider(Class<? extends CohortDefinitionProvider> providerClass);
 	
 	@Transactional(readOnly=true)
-	public List<CohortDefinition> getAllCohortDefinitions();
+	public List<CohortDefinitionItemHolder> getAllCohortDefinitions();
 	
 	@Transactional(readOnly=true)
-	public List<CohortDefinition> getCohortDefinitions(Class<? extends CohortDefinitionProvider> providerClass);
+	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class<? extends CohortDefinitionProvider> providerClass);
 	
 	@Transactional(readOnly=true)
 	public CohortDefinition getCohortDefinition(Class<CohortDefinition> clazz, Integer id);
-	
+
+	@Transactional(readOnly=true)
+	public CohortDefinition getCohortDefinition(String cohortKey);
+
 	@Transactional(readOnly=true)
 	public CohortDefinition saveCohortDefinition(CohortDefinition definition);
 	

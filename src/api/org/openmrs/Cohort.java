@@ -216,6 +216,10 @@ public class Cohort implements Serializable {
 		return size();
 	}
 	
+	public boolean isEmpty() { 
+		return size() == 0;
+	}
+	
 	// static utility methods
 	
 	public static Cohort union(Cohort a, Cohort b) {
