@@ -116,7 +116,7 @@
 										<tr>
 											<c:forEach var="obs" items="${obsRow}">
 												<td>
-													<span class="encounterViewObsGroup">${obs.valueAsString[model.locale]}</span>
+													<span class="encounterViewObsGroup"><openmrs:format obsValue="${obs}" /></span>
 												</td>
 											</c:forEach>
 										</tr>
@@ -132,7 +132,7 @@
 										<td class="encounterViewObsConcept"><openmrs_tag:concept conceptId="${obs.concept.conceptId}"/>:</td>
 										<td class="encounterViewObsAnswer">
 									</c:if>
-											<span class="encounterViewObsValue">${obs.valueAsString[model.locale]}</span>
+											<span class="encounterViewObsValue"><openmrs:format obsValue="${obs}" /></span>
 											<c:if test="${not empty obs.obsDatetime && obs.obsDatetime != model.encounter.encounterDatetime}">
 												<span class="encounterViewObsDatetime">
 													<spring:message code="general.onDate"/>
