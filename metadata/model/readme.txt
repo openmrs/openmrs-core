@@ -8,8 +8,8 @@ x.y.0-schema-only.sql							Uses currently selected database to create the table
 x.y.0-schema-with-core-and-demo-data.sql		Uses currently selected database to create tables and demo data
 x.y.0-schema-with-core-data.sql					Uses currently selected database to create tables and the very base data
 readme.txt										This file
-test-data-conventions.sql						Utility script to test some expected conventions in your database
 update-to-latest-db.mysqldiff.sql				Updates any openmrs version to the latest version
+util/											Utility scripts to work on the database
 
 --------
 
