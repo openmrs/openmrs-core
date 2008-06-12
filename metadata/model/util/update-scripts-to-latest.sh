@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# Unix based script to run the update-to-latest.sql
+# Unix based shell script to run the update-to-latest.sql
 # script against each of the .sql files in /metadata/model
 #
-# WARNING: This will drop and recreated the mysql database named 'openmrs'
+# WARNING: This will drop and recreate the mysql database named 'openmrs'
 #
 
 # user defined variables
@@ -26,7 +26,7 @@ mysql -u$dbuser -p$dbpass -e"source $currentversion-createdb-from-scratch-with-d
 mysql -u$dbuser -p$dbpass -e"source update-to-latest-db.mysqldiff.sql" -Dopenmrs
 mysqldump -u$dbuser -p$dbpass -e -q --add-drop-database --skip-add-locks --skip-add-drop-table -N -r"./$newversion-createdb-from-scratch-with-demo-data.sql" --databases openmrs
 
-# Note that this mysqldump has the -d flag to ignore the rows that this .sql doesn't have
+# Note that this mysqldump has the -d flag to ignore the rows (because this file is table schema only)
 echo Creating schema only sql file
 mysql -u$dbuser -p$dbpass -e"source $currentversion-schema-only.sql" -Dopenmrs
 mysql -u$dbuser -p$dbpass -e"source update-to-latest-db.mysqldiff.sql" -Dopenmrs
@@ -37,7 +37,7 @@ mysql -u$dbuser -p$dbpass -e"source $currentversion-schema-with-core-and-demo-da
 mysql -u$dbuser -p$dbpass -e"source update-to-latest-db.mysqldiff.sql" -Dopenmrs
 mysqldump -u$dbuser -p$dbpass -e -q --add-drop-table --skip-add-locks -N -r"./$newversion-schema-with-core-and-demo-data.sql" openmrs
 
-echo Creating schema with core only sql file
+echo Creating schema with core data only sql file
 mysql -u$dbuser -p$dbpass -e"source $currentversion-schema-with-core-data.sql" -Dopenmrs
 mysql -u$dbuser -p$dbpass -e"source update-to-latest-db.mysqldiff.sql" -Dopenmrs
 mysqldump -u$dbuser -p$dbpass -e -q --add-drop-table --skip-add-locks -N -r"./$newversion-schema-with-core-data.sql" openmrs
@@ -46,7 +46,10 @@ mysqldump -u$dbuser -p$dbpass -e -q --add-drop-table --skip-add-locks -N -r"./$n
 #create database openmrs default charset utf8;
 #use openmrs;
 
-echo You will also have to put this into the createdb-from-scratch after the 'create database...' statement
-echo drop user test;
-echo create user test identified by 'test';
-echo grant all on openmrs.* to test;
+echo ""
+echo WARNING!!!
+echo You will also have to put these lines into the createdb-from-scratch after the \"create database...\" statement
+echo DELETE FROM mysql.user WHERE User=\'test\'\;
+echo CREATE USER test IDENTIFIED BY \'test\'\;
+echo GRANT ALL ON openmrs.* TO test\;
+echo ""
