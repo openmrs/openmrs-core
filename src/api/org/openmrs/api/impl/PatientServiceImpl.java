@@ -346,7 +346,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		if (patients.size() > 0)
 			return patients.get(0);
-		else
+		
 		return null; 
 	}
 
