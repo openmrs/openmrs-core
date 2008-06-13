@@ -518,7 +518,7 @@ public class SyncUtil {
 				}
 				else Context.getConceptService().updateConcept((Concept)o, true);
 				*/
-				if ( !knownToExist ) Context.getConceptService().createConcept((Concept) o);
+				if ( !knownToExist ) Context.getConceptService().createConcept((Concept) o, true);
 				else Context.getConceptService().updateConcept((Concept) o);
 			} else if ( "org.openmrs.ConceptAnswer".equals(className) ) {
 				if ( !knownToExist ) Context.getConceptService().createConceptAnswer((ConceptAnswer)o, true);
