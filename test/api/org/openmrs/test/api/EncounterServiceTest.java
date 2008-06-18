@@ -23,9 +23,11 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.EncounterService;
@@ -131,8 +133,44 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Encounter e = es.getEncounter(newEnc.getEncounterId());
 		
 		assertNull("We shouldn't find the encounter after deletion", e);
+
+	}
+	
+	/**
+	 * You should be able to add an obs to an encounter, save the encounter,
+	 * and have the obs automatically persisted.
+	 * 
+	 * @throws Exception
+	 */
+	public void testAddObsToEncounter() throws Exception {
+		EncounterService es = Context.getEncounterService();
+		LocationService locationService = Context.getLocationService();
+		PatientService ps = Context.getPatientService();
+		Encounter enc = new Encounter();
+
+		//create an encounter
+		Location loc1 = locationService.getAllLocations().get(0);
+		assertNotNull("We need a location", loc1);
+		EncounterType encType1 = es.getAllEncounterTypes().get(0);
+		assertNotNull("We need an encounter type", encType1);
+		Date d1 = new Date();
+		Patient pat1 = new Patient(3);
+		User pro1 = Context.getAuthenticatedUser();
+		enc.setLocation(loc1);
+		enc.setEncounterType(encType1);
+		enc.setEncounterDatetime(d1);
+		enc.setPatient(pat1);
+		enc.setProvider(pro1);
+		es.saveEncounter(enc);
 		
-		}
+		// Now add an obs to it
+		Obs newObs = new Obs();
+		Concept concept = Context.getConceptService().getConcept(1);
+		newObs.setConcept(concept);
+		newObs.setValueNumeric(50d);
+		enc.addObs(newObs);
+		es.saveEncounter(enc);
+	}
 	
 	/**
 	 * Test create/update/delete of encounter type
