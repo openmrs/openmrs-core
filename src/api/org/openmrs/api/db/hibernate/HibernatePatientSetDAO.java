@@ -1390,8 +1390,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Patient", "patient");
 		else if (className.equals("org.openmrs.Person"))
 			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.Person", "person");
-		else if (className.equals("org.openmrs.PersonName"))
-			criteria = sessionFactory.getCurrentSession().createCriteria("org.openmrs.PersonName", "personName");			
 		else
 			criteria = sessionFactory.getCurrentSession().createCriteria(className);
 		
@@ -1400,7 +1398,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		// set up the query
 		ProjectionList projectionList = Projections.projectionList();
 		
-		if (className.equals("org.openmrs.Person")) {
+		// if Person, PersonName, or PersonAddress
+		if (className.contains("Person")) {
 			projectionList.add(Projections.property("person.personId"));
 			projectionList.add(Projections.property(property));
 			
@@ -1408,9 +1407,16 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				criteria.add(Restrictions.in("person.personId", patients.getMemberIds()));
 			
 			// do not include voided person rows
-			criteria.add(Expression.eq("personVoided", false));
+			if (className.equals("org.openmrs.Person"))
+				// the voided column on the person table is mapped to the person object 
+				// through the getPersonVoided() to distinguish it from patient/user.voided 
+				criteria.add(Expression.eq("personVoided", false));
+			else
+				// this is here to support PersonName and PersonAddress
+				criteria.add(Expression.eq("voided", false));
 		}
-		else if(className.equals("org.openmrs.Patient")){
+		// if one of the Patient tables
+		else {
 			projectionList.add(Projections.property("patient.personId"));
 			projectionList.add(Projections.property(property));
 			
@@ -1419,16 +1425,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			
 			// do not include voided patients
 			criteria.add(Expression.eq("voided", false));
-		}else if(className.equals("org.openmrs.PersonName")){
-			projectionList.add(Projections.property("personName.person.personId"));
-			projectionList.add(Projections.property(property));
-			
-			// do not include voided names
-			criteria.add(Expression.eq("voided", false));
-			
-			// do not include voided people
-			// the following doesn't work for some reason
-			// criteria.add(Expression.eq("person.personVoided", false));
 		}
 		criteria.setProjection(projectionList);
 		
