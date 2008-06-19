@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.openmrs.Cohort;
+import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 
 /**
@@ -328,7 +329,10 @@ public class EvaluationContext {
 								log.debug(e.getMessage());
 								throw new ParameterException("Error parsing dates in expression: " + replacement);
 							}
-						} 
+						}
+						else if (value instanceof Location) {
+							replacement = replacement.replace(parameter.getName(), ((Location)value).getLocationId().toString());
+						}
 						// Handle default parameters
 						else {
 							replacement = replacement.replace(parameter.getName(), value.toString());
