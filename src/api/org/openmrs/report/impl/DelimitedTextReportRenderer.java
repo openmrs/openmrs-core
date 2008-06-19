@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.openmrs.Cohort;
+import org.openmrs.report.CohortDataSet;
 import org.openmrs.report.DataSet;
 import org.openmrs.report.RenderingException;
 import org.openmrs.report.RenderingMode;
@@ -97,7 +99,12 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 				Object colValue = map.get(colKey);
 				writer.write(getBeforeColumnDelimiter());
 				if (colValue != null)
-					writer.write(escape(colValue.toString()));
+					if (dataset instanceof CohortDataSet) {
+						writer.write(escape(Integer.toString(((Cohort)colValue).size())));
+					}
+					else {
+						writer.write(escape(colValue.toString()));
+					}
 				writer.write(getAfterColumnDelimiter());
 			}
 			writer.write(getAfterRowDelimiter());
