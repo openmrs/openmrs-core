@@ -85,7 +85,7 @@
                     </td>
                     <td>&nbsp;</td>
                     <td>
-                        &nbsp;<a href="reportData.list?indicator=${cohortData.key }">${cohortData.value }</a>
+                        &nbsp;<a href="reportData.list?indicator=${cohortData.key }">${cohortData.value.size }</a>
                     </td>
                 </tr>
             </c:forEach>
