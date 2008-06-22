@@ -222,6 +222,14 @@ public class Cohort implements Serializable {
 	
 	// static utility methods
 	
+	/**
+	 * 
+	 * Returns the union of two cohorts
+	 * 
+	 * @param a The first Cohort
+	 * @param b The second Cohort
+	 * @return Cohort
+	 */
 	public static Cohort union(Cohort a, Cohort b) {
 		Cohort ret = new Cohort();
 		ret.setName("(" + a.getName() + " + " + b.getName() + ")");
@@ -232,6 +240,14 @@ public class Cohort implements Serializable {
 		return ret;
 	}
 	
+	/**
+	 * 
+	 * Returns the intersection of two cohorts
+	 * 
+	 * @param a The first Cohort
+	 * @param b The second Cohort
+	 * @return Cohort
+	 */
 	public static Cohort intersect(Cohort a, Cohort b) {
 		Cohort ret = new Cohort();
 		ret.setName("(" + a.getName() + " * " + b.getName() + ")");
@@ -242,6 +258,14 @@ public class Cohort implements Serializable {
 		return ret;
 	}
 	
+	/**
+	 * 
+	 * Subtracts a cohort from a cohort
+	 * 
+	 * @param a the original Cohort
+	 * @param b the Cohort to subtract
+	 * @return Cohort
+	 */
 	public static Cohort subtract(Cohort a, Cohort b) {
 		Cohort ret = new Cohort();
 		ret.setName("(" + a.getName() + " - " + b.getName() + ")");
