@@ -57,24 +57,6 @@ public class Cohort implements Serializable {
 	private Set<Integer> memberIds;
 	private CohortDefinition cohortDefinition;
 	private EvaluationContext evaluationContext;
-	private String guid;
-    private transient String lastRecordGuid;
-	
-    public String getLastRecordGuid() {
-        return lastRecordGuid;
-    }
-
-    public void setLastRecordGuid(String lastRecordGuid) {
-        this.lastRecordGuid = lastRecordGuid;
-    }
-
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
-    }
 
 	public Cohort() {
 		memberIds = new HashSet<Integer>();
