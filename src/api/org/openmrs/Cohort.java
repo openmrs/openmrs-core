@@ -40,7 +40,7 @@ import org.simpleframework.xml.Root;
  * @see org.openmrs.cohort.CohortDefinition
  */
 @Root(strict=false)
-public class Cohort implements Serializable, Synchronizable {
+public class Cohort implements Serializable {
 
 	public static final long serialVersionUID = 0L;
 	public Log log = LogFactory.getLog(this.getClass());
