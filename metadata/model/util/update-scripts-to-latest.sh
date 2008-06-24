@@ -48,8 +48,10 @@ mysqldump -u$dbuser -p$dbpass -e -q --add-drop-table --skip-add-locks -N -r"./$n
 
 echo ""
 echo WARNING!!!
+echo Change the \"create database\" line to: \"create database openmrs default character set utf8;\"
 echo You will also have to put these lines into the createdb-from-scratch after the \"create database...\" statement
 echo DELETE FROM mysql.user WHERE User=\'test\'\;
 echo CREATE USER test IDENTIFIED BY \'test\'\;
 echo GRANT ALL ON openmrs.* TO test\;
+
 echo ""
