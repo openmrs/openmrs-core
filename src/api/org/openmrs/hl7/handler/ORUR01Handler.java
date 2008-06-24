@@ -260,7 +260,7 @@ public class ORUR01Handler implements Application {
 			log.debug("Current thread: " + Thread.currentThread());
 			log.debug("Creating the encounter object");
 		}
-		Context.getEncounterService().createEncounter(encounter);
+		Context.getEncounterService().saveEncounter(encounter);
 		
 		// Notify HL7 service that we have created a new encounter, allowing
 		// features/modules to trigger on HL7-generated encounters.
@@ -337,7 +337,7 @@ public class ORUR01Handler implements Application {
 		Form form = getForm(msh);
 		EncounterType encounterType = getEncounterType(msh, form);
 		User enterer = getEnterer(orc);
-		Date dateEntered = getDateEntered(orc); // ignore this since we have noplace in the data model to store it
+		Date dateEntered = getDateEntered(orc); // ignore this since we have no place in the data model to store it
 
 		encounter.setEncounterDatetime(encounterDate);
 		encounter.setProvider(provider);
