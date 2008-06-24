@@ -173,11 +173,13 @@
 	<p>
 </c:if>
 
-<div id="patientProgramsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Program.title"/></div>
-<div id="patientProgramsBox" class="box${model.patientVariation}">
-	<openmrs:portlet url="patientPrograms" id="patientPrograms" patientId="${patient.patientId}" parameters="allowEdits=true"/>
-</div>
-<br/>
+<openmrs:hasPrivilege privilege="View Patient Programs">
+	<div id="patientProgramsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Program.title"/></div>
+	<div id="patientProgramsBox" class="box${model.patientVariation}">
+		<openmrs:portlet url="patientPrograms" id="patientPrograms" patientId="${patient.patientId}" parameters="allowEdits=true"/>
+	</div>
+	<br/>
+</openmrs:hasPrivilege>
 
 <openmrs:globalProperty var="conceptIdsToUse" key="dashboard.overview.showConcepts" />
 <c:if test="${not empty conceptIdsToUse}">
