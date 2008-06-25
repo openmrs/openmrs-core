@@ -179,7 +179,8 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 			// TODO Do we ever want the same task definition to run more than once?
 			TimerSchedulerTask schedulerTask = scheduledTasks.get(taskDefinition.getId());			
 			if (schedulerTask != null) {
-				schedulerTask.cancel();	
+				//schedulerTask.cancel();	
+				schedulerTask.shutdown();
 			} 
 				
 			try { 
