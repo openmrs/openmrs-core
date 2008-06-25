@@ -320,6 +320,7 @@ public final class OpenmrsConstants {
 	public static final String PRIV_DELETE_RELATIONSHIPS = "Delete Relationships";
 	public static final String PRIV_PURGE_RELATIONSHIPS = "Purge Relationships";
 	
+	public static final String PRIV_VIEW_DATAENTRY_STATS = "View Data Entry Statistics";
 	/**
 	 * Cached list of core privileges 
 	 */
@@ -472,6 +473,8 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_ADD_RELATIONSHIPS, "Able to add relationships");
 			CORE_PRIVILEGES.put(PRIV_EDIT_RELATIONSHIPS, "Able to edit relationships");
 			CORE_PRIVILEGES.put(PRIV_DELETE_RELATIONSHIPS, "Able to delete relationships");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_DATAENTRY_STATS, "Able to view data entry statistics from the admin screen");
 		}
 		
 		// always add the module core privileges back on

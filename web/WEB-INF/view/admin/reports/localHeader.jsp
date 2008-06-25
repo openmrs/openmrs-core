@@ -23,7 +23,7 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Add Data Exports,Edit Data Exports,Delete Data Exports,View Data Exports">
+	<openmrs:hasPrivilege privilege="Add Report Objects,Edit Report Objects,Delete Report Objects,View Report Objects">
 		<li <c:if test="<%= request.getRequestURI().contains("dataExport") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/reports/dataExport.list">
 				<spring:message code="DataExport.manage"/>
