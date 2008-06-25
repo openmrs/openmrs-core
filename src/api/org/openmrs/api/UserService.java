@@ -19,6 +19,7 @@ import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.annotation.Logging;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized({OpenmrsConstants.PRIV_ADD_USERS,OpenmrsConstants.PRIV_EDIT_USERS})
+	@Logging(ignoredArgumentIndexes={1})
 	public User saveUser(User user, String password) throws APIException;
 	
 	/**
@@ -51,6 +53,7 @@ public interface UserService extends OpenmrsService {
 	 * @deprecated replaced by {@link #saveUser(User, String)}
 	 */
 	@Authorized({OpenmrsConstants.PRIV_ADD_USERS})
+	@Logging(ignoredArgumentIndexes={1})
 	public User createUser(User user, String password) throws APIException;
 
 	/**
@@ -293,6 +296,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized({OpenmrsConstants.PRIV_EDIT_USERS})
+	@Logging(ignoredArgumentIndexes={1})
 	public void changePassword(User u, String pw) throws APIException;
 
 	/**
@@ -301,6 +305,7 @@ public interface UserService extends OpenmrsService {
 	 * @param pw2 new password
 	 * @throws APIException
 	 */
+	@Logging(ignoredArgumentIndexes={1})
 	public void changePassword(String pw, String pw2) throws APIException;
 
 	/**
@@ -311,6 +316,7 @@ public interface UserService extends OpenmrsService {
 	 * @param answer
 	 * @throws APIException
 	 */
+	@Logging(ignoreAllArgumentValues=true)
 	public void changeQuestionAnswer(String pw, String q, String a) throws APIException;
 
 	/**
@@ -321,6 +327,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
+	@Logging(ignoredArgumentIndexes={1})
 	public boolean isSecretAnswer(User u, String answer) throws APIException;
 	
 	/**

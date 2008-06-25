@@ -22,20 +22,24 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation used to provide a few extra options to the API logging advice.
- * @see org.openmrs.aop.LoggingAdvice
  * 
  * This annotation is only needed if a specific method needs some extra information
  * (like if you want to limit the output of this method when being logged because
- * of size concerns or security concerns)
+ * of size concerns or security concerns).<br/><br/>
  * 
  *  To use, simply place the annotation before a method declaration in its interface:
  *  <pre>
- *    @Logging(ignoreAllArgumentValues=true)
+ *    &#064;Logging(ignoreAllArgumentValues=true)
  *    public SomeString setSomeLargeString(String aVeryLargeString);
  *    
- *    @Logging(ignoreAllArgumentValues=true)
+ *    &#064;Logging(ignoreAllArgumentValues=true)
+ *    public User saveUser(User userToSave, String password);
+ *    
+ *    &#064;Logging(ignoredArgumentIndexes={1})
  *    public User saveUser(User userToSave, String password);
  *  </pre>
+ *  
+ *  @see org.openmrs.aop.LoggingAdvice
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -54,7 +58,7 @@ public @interface Logging {
     public boolean ignoreAllArgumentValues() default false;
     
     /**
-     * This list should be set to the argument index that should not be printed.
+     * This list should set the argument indexes that should not be printed.
      * This is useful if one of the arguments/parameters is more sensitive than others.
      * 
      * Note:
