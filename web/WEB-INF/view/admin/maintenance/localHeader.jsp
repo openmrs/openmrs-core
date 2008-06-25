@@ -9,13 +9,6 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Edit Patients">
-		<li <c:if test="<%= request.getRequestURI().contains("mrnGenerator") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/maintenance/mrnGenerator.htm">
-				<spring:message code="MRNGenerator.generate.identifiers"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Audit">
 		<li <c:if test="<%= request.getRequestURI().contains("auditPatientIdentifiers") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/auditPatientIdentifiers.htm">
