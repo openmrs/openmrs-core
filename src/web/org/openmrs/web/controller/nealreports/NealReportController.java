@@ -316,7 +316,7 @@ public class NealReportController implements Controller {
 				log.debug("states is null, can't proceed");
 			}
 			
-			wf = Context.getProgramWorkflowService().getWorkflow(hivProgram, "ANTIRETROVIRAL TREATMENT GROUP");
+			wf = Context.getProgramWorkflowService().getWorkflow(hivProgram, "TREATMENT GROUP");
 			log.debug("worlflow is " + wf + " and patientSet is " + ps);
 			states = pss.getCurrentStates(ps, wf);
 			if ( states != null ) {
