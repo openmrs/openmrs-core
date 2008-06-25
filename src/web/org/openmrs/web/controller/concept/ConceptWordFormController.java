@@ -47,25 +47,35 @@ public class ConceptWordFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			String s = request.getParameter("conceptId");
 			if (s != null && !s.equals("")) {
-				s = s.trim();
-				// if they put in something like 1230-2322
-				if (s.contains("-")) {
-					String[] parts = s.split("-");
-					String start = parts[0].trim();
-					String end = parts[1].trim();
-					Context.getAdministrationService().updateConceptWords(Integer.valueOf(start), Integer.valueOf(end));
-				}
-				else {
-					// they put in an integer
-					Concept c = Context.getConceptService().getConcept(Integer.valueOf(s));
-					if (c != null) {
-						log.debug("c.conceptId: " + c.getConceptId());
-						Context.getAdministrationService().updateConceptWord(c);
+				try {
+					s = s.trim();
+					// if they put in something like 1230-2322
+					if (s.contains("-")) {
+						String[] parts = s.split("-");
+						String start = parts[0].trim();
+						String end = parts[1].trim();
+						Context.getConceptService().updateConceptWords(Integer.valueOf(start), Integer.valueOf(end));
 					}
+					else {
+						// they put in an integer
+						Concept c = Context.getConceptService().getConcept(Integer.valueOf(s));
+						if (c != null) {
+							log.debug("c.conceptId: " + c.getConceptId());
+							Context.getConceptService().updateConceptWord(c);
+						}
+					}
+				}
+				catch (ArrayIndexOutOfBoundsException aioobe) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "ConceptWord.rangeError");
+					return showForm(request, response, errors);
+				}
+				catch (NumberFormatException nfe) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "ConceptWord.rangeError");
+					return showForm(request, response, errors);
 				}
 			}
 			else {
-				Context.getAdministrationService().updateConceptWords();
+				Context.getConceptService().updateConceptWords();
 			}
 			
 			view = getSuccessView();
