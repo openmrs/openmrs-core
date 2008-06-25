@@ -135,15 +135,6 @@
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>summaryServlet</servlet-name>
-		<servlet-class>org.openmrs.web.servlet.SummaryServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>summaryServlet</servlet-name>
-		<url-pattern>/summaryServlet</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
 		<servlet-name>sampleFlowsheetServlet</servlet-name>
 		<servlet-class>org.openmrs.web.servlet.SampleFlowsheetServlet</servlet-class>
 	</servlet>

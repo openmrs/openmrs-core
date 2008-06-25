@@ -30,13 +30,6 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Add Data Exports,Edit Data Exports,Delete Data Exports,View Data Exports">
-		<li <c:if test="<%= request.getRequestURI().contains("summaryForm") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/reports/summaryForm.htm">
-				<spring:message code="PatientSummary.manage"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Add Cohorts,Edit Cohorts,Delete Cohorts,View Cohorts">
 		<li <c:if test="<%= request.getRequestURI().contains("cohortList") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/reports/cohorts.list">
