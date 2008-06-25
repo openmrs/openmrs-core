@@ -344,7 +344,11 @@ public final class OpenmrsConstants {
 		
 			CORE_PRIVILEGES.put(PRIV_VIEW_PROGRAMS, "Able to view patient programs");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_PROGRAMS, "Able to add/view/delete patient programs");
-			CORE_PRIVILEGES.put(PRIV_EDIT_PATIENT_PROGRAMS, "Able to edit patient programs");
+			
+			CORE_PRIVILEGES.put(PRIV_VIEW_PATIENT_PROGRAMS, "Able to see which programs that patients are in");
+			CORE_PRIVILEGES.put(PRIV_ADD_PATIENT_PROGRAMS, "Able to add patients to programs");
+			CORE_PRIVILEGES.put(PRIV_EDIT_PATIENT_PROGRAMS, "Able to edit patients in programs");
+			CORE_PRIVILEGES.put(PRIV_DELETE_PATIENT_PROGRAMS, "Able to delete patients from programs");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_UNPUBLISHED_FORMS, "Able to view and fill out unpublished forms");
 			

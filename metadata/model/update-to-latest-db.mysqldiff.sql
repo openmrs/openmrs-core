@@ -977,6 +977,43 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.3.0.11');
 
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.12
+# Ben Wolfe               June 25, 2008
+# Giving 1.3 modified privileges to roles
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+	set FOREIGN_KEY_CHECKS = 0;
+    insert into role_privilege (role, privilege) select distinct role, 'View Patient Programs' from role_privilege where privilege = 'Manage Patient Programs';
+	insert into role_privilege (role, privilege) select distinct role, 'Edit Patient Programs' from role_privilege where privilege = 'Manage Patient Programs';
+	update role_privilege set privilege = 'Delete Patient Programs' where privilege = 'Manage Patient Programs';
+	
+	update role_privilege set privilege = 'Edit Concepts' where privilege = 'Manage Concepts';
+	delete from role_privilege where privilege = 'Add Concepts';
+
+	update role_privilege set privilege = 'Edit Forms' where privilege = 'Manage Forms';
+	delete from role_privilege where privilege = 'Add Forms';
+
+	set FOREIGN_KEY_CHECKS = 1;
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.12');
+
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
