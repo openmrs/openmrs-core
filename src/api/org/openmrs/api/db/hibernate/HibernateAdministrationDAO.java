@@ -145,8 +145,8 @@ public class HibernateAdministrationDAO implements
 	 */
 	public void mrnGeneratorLog(String site, Integer start, Integer count) {
 		try {
-			String sql = "insert into ";
-			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + ".ext_mrn_log ";
+			String sql = "insert into `";
+			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + "`.ext_mrn_log ";
 			sql += "(date_generated, generated_by, site, mrn_first, mrn_count) values (?, ?, ?, ?, ?)";
 			
 			PreparedStatement ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
@@ -172,8 +172,8 @@ public class HibernateAdministrationDAO implements
 		try {
 			Map<String, Object> row;
 			
-			String sql = "select * from ";
-			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + ".ext_mrn_log ";
+			String sql = "select * from `";
+			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + "`.ext_mrn_log ";
 			sql += "order by mrn_log_id desc";
 			
 			PreparedStatement ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
