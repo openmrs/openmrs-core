@@ -279,8 +279,15 @@ public class Encounter implements java.io.Serializable {
 		observation.setEncounter(this);
 		if (obs == null)
 			obs = new HashSet<Obs>();
-		if (observation != null)
+		if (observation != null) {
+			if (observation.getObsDatetime() == null)
+				observation.setObsDatetime(getEncounterDatetime());
+			if (observation.getPerson() == null)
+				observation.setPerson(getPatient());
+			if (observation.getLocation() == null)
+				observation.setLocation(getLocation());
 			obs.add(observation);
+		}
 	}
 
 	/**

@@ -13,22 +13,16 @@
  */
 package org.openmrs.test.api;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openmrs.DataEntryStatistic;
 import org.openmrs.FieldType;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.reporting.DataTable;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * TODO clean up and finish this test class. Should test all methods
@@ -48,30 +42,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		ps = Context.getPatientService();
 		as = Context.getAdministrationService();
 		formService = Context.getFormService();
-	}
-
-	/**
-	 * TODO make this method not visual-verification dependent
-	 * 
-	 * @throws Exception
-	 */
-	public void testDataEntryStats() throws Exception {
-		
-		Calendar c = new GregorianCalendar();
-		c.set(2006, 6, 12);
-		c.set(Calendar.HOUR_OF_DAY, 0);
-		c.set(Calendar.MINUTE, 0);
-		c.set(Calendar.SECOND, 0);
-		Date fromDate = c.getTime();
-		c.add(Calendar.DATE, 7);
-		Date toDate = c.getTime();
-		
-		Date toDateToUse = OpenmrsUtil.lastSecondOfDay(toDate);
-		String encUserColumn = null;
-		String orderUserColumn = null;
-		List<DataEntryStatistic> stats = Context.getAdministrationService().getDataEntryStatistics(fromDate, toDateToUse, encUserColumn, orderUserColumn, "location");
-		DataTable table = DataEntryStatistic.tableByUserAndType(stats, true);
-		System.out.print("Data entry stats output: " + table.getHtmlTable());
 	}
 	
 	/**

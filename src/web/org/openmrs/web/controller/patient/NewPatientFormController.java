@@ -175,6 +175,9 @@ public class NewPatientFormController extends SimpleFormController {
 							
 							PatientIdentifier pi = new PatientIdentifier(id, pit, loc);
 							pi.setPreferred(pref.equals(id+types[i]));
+							if (newIdentifiers.contains(pi))
+								newIdentifiers.remove(pi);
+							
 							newIdentifiers.add(pi);
 							
 							if (log.isDebugEnabled()) {

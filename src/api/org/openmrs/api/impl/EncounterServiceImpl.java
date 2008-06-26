@@ -63,40 +63,53 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public void saveEncounter(Encounter encounter) throws APIException {
 		Date now = new Date();
 		User me = Context.getAuthenticatedUser();
+		
+		boolean isNewEncounter = false;
+		Date newDate = encounter.getEncounterDatetime();
+		Date originalDate = null;
+		
+		// check permissions
 		if (encounter.getEncounterId() == null) {
+			isNewEncounter = true;
 			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_ENCOUNTERS);
-			
-			if (encounter.getDateCreated() == null)
-				encounter.setDateCreated(now);
-			if (encounter.getCreator() == null)
-				encounter.setCreator(me);
-			if (encounter.getObsAtTopLevel(false) != null) {
-				for (Obs o : encounter.getObsAtTopLevel(false)) {
-						if (o.getDateCreated() == null)
-							o.setDateCreated(now);
-						if (o.getCreator() == null)
-							o.setCreator(me);
-					}
-				}
-			if (encounter.getOrders() != null) {
-				for (Order o : encounter.getOrders()) {
-					if (o.getDateCreated() == null)
-						o.setDateCreated(now);
-					if (o.getCreator() == null)
-						o.setCreator(me);
-				}
-			}
-			dao.saveEncounter(encounter);
 		} else { 
 			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_ENCOUNTERS);
-			
+		}
+		
+		// set up child object lists 
+		if (encounter.getDateCreated() == null)
+			encounter.setDateCreated(now);
+		if (encounter.getCreator() == null)
+			encounter.setCreator(me);
+		for (Obs o : encounter.getAllObs(true)) {
+			if (o.getDateCreated() == null)
+				o.setDateCreated(now);
+			if (o.getCreator() == null)
+				o.setCreator(me);
+		}
+		if (encounter.getOrders() != null) {
+			for (Order o : encounter.getOrders()) {
+				if (o.getDateCreated() == null)
+					o.setDateCreated(now);
+				if (o.getCreator() == null)
+					o.setCreator(me);
+			}
+		}
+		
+		// This must be done after setting dateCreated etc on the obs because
+		// of the way the ORM tools flush things and check for nullity
+		// This also must be done before the save encounter so we can use the orig date
+		// after the save
+		if (isNewEncounter == false)
 			// fetch the datetime from the database prior to saving for this encounter
 			// to see if it has changed and change all obs after saving if so
-			Date originalDate = dao.getSavedEncounterDatetime(encounter);
-			Date newDate = encounter.getEncounterDatetime();
-			
-			dao.saveEncounter(encounter);
-			
+			originalDate = dao.getSavedEncounterDatetime(encounter);
+		
+		// do the actual saving to the database
+		dao.saveEncounter(encounter);
+		
+		// (only check for changed dates or persons if updating this encounter 
+		if (isNewEncounter == false) {
 			// Our data model duplicates the patient column to allow for observations to 
 			//   not have to look up the parent Encounter to find the patient
 			// Therefore, encounter.patient must always equal encounter.observations[0-n].patient
