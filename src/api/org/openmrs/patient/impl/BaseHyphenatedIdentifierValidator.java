@@ -100,7 +100,7 @@ public abstract class BaseHyphenatedIdentifierValidator implements
      * @throws UnallowedIdentifierException if identifier contains unallowed characters or is 
      * otherwise invalid.
      */
-    private void checkAllowedIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException{
+    public void checkAllowedIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException{
     	if(undecoratedIdentifier == null)
     		throw new UnallowedIdentifierException("Identifier can not be null.");
     	if(undecoratedIdentifier.length() == 0 )
