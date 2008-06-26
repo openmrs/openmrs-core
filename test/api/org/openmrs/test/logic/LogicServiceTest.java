@@ -29,15 +29,8 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
     protected void onSetUpInTransaction() throws Exception {
     	initializeInMemoryDatabase();
     	executeDataSet("org/openmrs/test/logic/include/LogicTests-patients.xml");
+    	executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
         authenticate();
-    }
-    
-    /**
-     * @see org.openmrs.BaseContextSensitiveTest#useInMemoryDatabase()
-     */
-    @Override
-    public Boolean useInMemoryDatabase() {
-    	return true;
     }
 
     /**
@@ -49,12 +42,12 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
         Cohort patients = new Cohort();
         Map<Integer, Result> result = null;
 
-        patients.addMember(6217);
+        patients.addMember(2);
 
         try {
             log.error("Evaluating CD4 COUNT"); // for a single patient
-            Result r = logicService.eval(new Patient(6217), "CD4 COUNT");
-            log.error("PatientID: 6217 " + r);
+            Result r = logicService.eval(new Patient(2), "CD4 COUNT");
+            log.error("PatientID: 2 " + r);
 
             log.error("Evaluating CD4 COUNT");
             result = logicService.eval(patients, "CD4 COUNT");

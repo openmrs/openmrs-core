@@ -168,6 +168,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Concept concept = Context.getConceptService().getConcept(1);
 		newObs.setConcept(concept);
 		newObs.setValueNumeric(50d);
+		newObs.setObsDatetime(new Date());
 		enc.addObs(newObs);
 		es.saveEncounter(enc);
 	}

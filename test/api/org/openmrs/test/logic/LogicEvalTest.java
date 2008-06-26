@@ -48,6 +48,8 @@ public class LogicEvalTest extends BaseContextSensitiveTest {
 		// add temperature as a concept in the database
 		executeDataSet("org/openmrs/test/logic/include/LogicEvalTest.testSimpleLogic.xml");
 		
+		// RuleFactory needs to be cleaned up so that it picks up the new concepts
+		
 		// register temperature as a rule if needed
 		Concept temperature = Context.getConceptService().getConcept(1);
         String name = temperature.getName().getName();

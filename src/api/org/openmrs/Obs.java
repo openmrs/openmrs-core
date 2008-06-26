@@ -592,15 +592,23 @@ public class Obs implements java.io.Serializable {
 	}
 	
 	/**
-	 * The person id
-	 * @return
+	 * The person id of the person on this object.  This should be the same
+	 * as <code>{@link #getPerson()}.getPersonId()</code>.  It is duplicated
+	 * here for speed and simplicity reasons
+	 * 
+	 * @return the integer person id of the person this obs is acting on
 	 */
 	public Integer getPersonId() {
 		return personId;
 	}
 	
 	/**
-	 * Set the person id
+	 * Set the person id on this obs object.  This method 
+	 * is here for convenience, but really the {@link #setPerson(Person)}
+	 * method should be used like <code>setPerson(new Person(personId))</code>
+	 * 
+	 * @see #setPerson(Person)
+	 * 
 	 * @param personId
 	 */
 	protected void setPersonId(Integer personId) {
@@ -608,17 +616,23 @@ public class Obs implements java.io.Serializable {
 	}
 	
 	/**
-	 * Get the person object
-	 * @return
+	 * Get the person object that this obs is acting on.
+	 * 
+	 * @see #getPersonId()
+	 * 
+	 * @return the person object
 	 */
 	public Person getPerson() {
 		return person;
 	}
 	
 	/**
-	 * Set the person object
-	 * @param person
-	 * @return
+	 * Set the person object to this obs object.  This will 
+	 * also set the personId on this obs object
+	 * 
+	 * @see #setPersonId(Integer)
+	 * 
+	 * @param person the Patient/Person object that this obs is acting on 
 	 */
 	public void setPerson(Person person) {
 		this.person = person;

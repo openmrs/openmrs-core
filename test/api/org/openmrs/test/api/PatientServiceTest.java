@@ -27,7 +27,6 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
-import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.LocationService;
@@ -315,29 +314,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 
 		writer.close();
 		*/
-	}
-	
-	/**
-	 * Make sure the api can handle having a User object that is also a 
-	 * patient and was previously loaded via hibernate 
-	 * 
-	 * @throws Exception
-	 */
-	public void testAllowUsersWhoArePatients() throws Exception {
-		executeDataSet(USERS_WHO_ARE_PATIENTS_XML);
-		
-		// we must fetch this person first, because this person is
-		// the creator of the next.  We ned to make sure hibernate isn't
-		// caching and returning different person objects when it shouldn't be
-		Patient patient2 = ps.getPatient(2);
-		assertTrue("When getting a patient, it should be of the class patient, not: " + patient2.getClass(), patient2.getClass().equals(Patient.class));
-		
-		Patient patient3 = ps.getPatient(3);
-		assertTrue("When getting a patient, it should be of the class patient, not: " + patient3.getClass(), patient3.getClass().equals(Patient.class));
-		
-		User user2 = Context.getUserService().getUser(2);
-		assertTrue("When getting a user, it should be of the class user, not: " + user2.getClass(), user2.getClass().equals(User.class));
-		
 	}
 	
 	/**

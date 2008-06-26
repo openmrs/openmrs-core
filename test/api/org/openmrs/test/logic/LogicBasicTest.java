@@ -33,40 +33,63 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 
 	@Override
 	protected void onSetUpInTransaction() throws Exception {
-		// initializeInMemoryDatabase();
-		// executeDataSet("org/openmrs/test/include/LargeTestDatabase.xml");
+		initializeInMemoryDatabase();
+		//executeDataSet("org/openmrs/test/logic/include/LargeTestDatabase.xml");
+		executeDataSet("org/openmrs/test/logic/include/LogicTests-patients.xml");
+		
 		authenticate();
 	}
 
-	/**
-	 * @see org.openmrs.test.BaseContextSensitiveTest#useInMemoryDatabase()
-	 */
-	@Override
-	public Boolean useInMemoryDatabase() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	public void testCheckWhetherRecentResultsExist() throws Exception {
+		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
+				
 		// Result = NO CD4 COUNT IN LAST 6 MONTHS
 		Patient patient = Context.getPatientService().getPatient(2);
 		Result result = Context.getLogicService()
 		                       .eval(patient,
 		                             new LogicCriteria("CD4 COUNT").within(Duration.months(6))
 		                                                           .exists());
+		
+		assertFalse(result.exists());
 	}
-
+	
+	/**
+	 * This test looks for "LAST CD4 COUNT < 350".
+	 * 
+	 * @throws Exception
+	 */
 	public void testFilterByNumericResult() throws Exception {
+		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
+		// Result = LAST CD4 COUNT < 350
+		Patient patient = Context.getPatientService().getPatient(3);
+		Result result = Context.getLogicService()
+		                       .eval(patient,
+		                             new LogicCriteria("CD4 COUNT").last()
+		                                                           .lt(350));
+		assertTrue(result.exists());
+		assertEquals(125.0, result.toNumber());
+	}
+	
+	/**
+	 * This test looks for "LAST CD4 COUNT < 350".  The catch is that
+	 * the last cd4 count for patient #2 is voided
+	 * 
+	 * @throws Exception
+	 */
+	public void testFilterByNumericResultWithVoidedObs() throws Exception {
+		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 		// Result = LAST CD4 COUNT < 350
 		Patient patient = Context.getPatientService().getPatient(2);
 		Result result = Context.getLogicService()
 		                       .eval(patient,
 		                             new LogicCriteria("CD4 COUNT").last()
 		                                                           .lt(350));
-
+		assertTrue(result.exists());
+		assertEquals(100.0, result.toNumber());
 	}
 
 	public void testFetchActiveMedications() throws Exception {
+		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 		// Result = ACTIVE MEDICATIONS
 		Patient patient = Context.getPatientService().getPatient(2);
 		Result result = Context.getLogicService()
@@ -75,6 +98,7 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 	}
 
 	public void testFilterUsingComposition() throws Exception {
+		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 		// LAST CD4 COUNT < 350 AND NO ACTIVE MEDICATIONS
 		Patient patient = Context.getPatientService().getPatient(2);
 		Result result = Context.getLogicService()
@@ -82,6 +106,7 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 		                             new LogicCriteria("CD4 COUNT").last()
 		                                                           .lt(350)
 		                                                           .and(new LogicCriteria("%%orders.ACTIVE MEDS").notExists()));
+		
 	}
 
 	/**
