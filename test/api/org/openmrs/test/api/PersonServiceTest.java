@@ -139,5 +139,23 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		// Neither Patient#2 or Patient#3 should have any relationships now.
 		assertEquals(updatedARels, updatedBRels);
 	}
+	
+	/**
+	 * This test should get the first/last name out of a string into a
+	 * PersonName object.
+	 * 
+	 * @throws Exception
+	 */
+	public void testParseTwoPersonName() throws Exception {
+		PersonService service = Context.getPersonService();
+		
+		PersonName pname = service.parsePersonName("Doe, John");
+		assertEquals("Doe", pname.getFamilyName());
+		assertEquals("John", pname.getGivenName());
+		
+		PersonName pname2 = service.parsePersonName("John Doe");
+		assertEquals("Doe", pname2.getFamilyName());
+		assertEquals("John", pname2.getGivenName());
+	}
 
 }
