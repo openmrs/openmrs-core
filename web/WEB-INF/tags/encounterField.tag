@@ -22,7 +22,7 @@
 			function(msg) {
 				if (msg) {
 					var enc = msg.objs[0];
-					encPopup.displayNode.innerHTML = '<a id="${formFieldName}_name" href="#View" <c:if test="${not empty linkUrl}">onclick="return gotoUrl("${linkUrl}", ' + enc.encounterId + ')"</c:if>>' + (enc.formName ? enc.formName : '') + ' (' + enc.encounterDateString + ')</a>';
+					encPopup.displayNode.innerHTML = '<a id="${formFieldName}_name" href="#View" <c:if test="${not empty linkUrl}">onclick="return gotoUrl(\'${linkUrl}\', ' + enc.encounterId + ')"</c:if>>' + (enc.formName ? enc.formName : '') + ' (' + enc.encounterDateString + ')</a>';
 					encPopup.hiddenInputNode.value = enc.encounterId;
 					<c:if test="${not empty callback}">
 						${callback}(enc.encounterId);

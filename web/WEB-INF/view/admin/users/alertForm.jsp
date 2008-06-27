@@ -43,14 +43,6 @@
 
 <script type="text/javascript">
 		
-	function gotoUser(select, userId) {
-		if (userId == null)
-			userId = $(select).value;
-		if (userId != "")
-			window.location = "${pageContext.request.contextPath}/admin/users/user.form?userId=" + userId;
-		return false;
-	}
-	
 	function removeItem(nameList, idList, delim)
 	{
 		var sel   = document.getElementById(nameList);

@@ -24,7 +24,7 @@
 					locPopup = dojo.widget.manager.getWidgetById("${formFieldName}_selection");
 					locSearch = dojo.widget.manager.getWidgetById("${formFieldName}_search");
 					
-					locPopup.displayNode.innerHTML = '<a id="${formFieldName}_name" href="#View" <c:if test="${not empty linkUrl}">onclick="return gotoUrl("${linkUrl}", ' + loc.locationId + ')"</c:if>>' + loc.name + '</a>';
+					locPopup.displayNode.innerHTML = '<a id="${formFieldName}_name" href="#View" <c:if test="${not empty linkUrl}">onclick="return gotoUrl(\'${linkUrl}\', ' + loc.locationId + ')"</c:if>>' + loc.name + '</a>';
 					locPopup.hiddenInputNode.value = loc.locationId;
 					<c:if test="${not empty callback}">
 						${callback}(loc.locationId);

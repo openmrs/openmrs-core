@@ -37,13 +37,6 @@
 		return false;
 	}
 
-	function gotoUser(tagName, userId) {
-		if (userId == null)
-			userId = $(tagName).value;
-		window.location = "${pageContext.request.contextPath}/admin/users/user.form?userId=" + userId;
-		return false;
-	}
-
 </script>
 
 <style>
