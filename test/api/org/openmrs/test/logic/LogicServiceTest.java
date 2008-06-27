@@ -128,8 +128,8 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
             }
 
             log.error("Evaluating CD4 COUNT < 200");
-            patients.addMember(2994);
-            patients.addMember(2004);
+            patients.addMember(2);
+            patients.addMember(3);
             result = logicService.eval(patients, new LogicCriteria("CD4 COUNT")
                     .lt(200));
             for (Integer id : result.keySet()) {
