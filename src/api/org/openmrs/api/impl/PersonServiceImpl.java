@@ -801,7 +801,7 @@ public class PersonServiceImpl implements PersonService {
 			}
 			else {
 				firstName = names[1];
-				lastName = names[2];
+				lastName = names[0];
 			}
 		}
 		else if (name.contains(" ")) {
