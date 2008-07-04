@@ -21,7 +21,7 @@
 		
 		<many-to-one name="program" class="Program" column="program_id" not-null="true" />
 	
-		<many-to-one name="concept" class="Concept" column="concept_id" not-null="true" />
+		<many-to-one name="concept" class="Concept" column="concept_id" not-null="true" lazy="false"/>
 	
 		<many-to-one name="creator" class="User" column="creator" not-null="true" />
 		
