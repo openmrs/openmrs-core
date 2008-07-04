@@ -274,8 +274,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		List<Concept> concepts =  getConcepts(name, Context.getLocale(), false, null, null);
 		int size = concepts.size(); 
 		if (size > 0){
-			if (size > 1)
+			if (size > 1){
 				log.warn("Multiple concepts found for '" + name + "'");
+				for (Concept c:concepts){
+					if (c.getName(Context.getLocale()).getName().compareTo(name) == 0)
+						return c;
+				}
+			}
 			return concepts.get(0);
 		}	
 		return null;
