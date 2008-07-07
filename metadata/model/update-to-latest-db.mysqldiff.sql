@@ -1014,6 +1014,32 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.3.0.12');
 
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.13
+# Ben Wolfe               July 3, 2008
+# Changing person.dead and person_attribute_type.searchable to tinyint
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+	ALTER TABLE person CHANGE COLUMN dead dead tinyint(1) NOT NULL DEFAULT '0';
+	ALTER TABLE person_attribute_type CHANGE COLUMN searchable searchable tinyint(1) NOT NULL DEFAULT '0';
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.13');
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script

@@ -12,7 +12,7 @@ export newversion=1.3.0
 export dbuser=root
 
 # Ask for the user's database password
-echo -n "MySQL password: "
+echo -n "MySQL $dbuser password: "
 stty -echo
 read dbpass
 stty echo
@@ -53,5 +53,7 @@ echo You will also have to put these lines into the createdb-from-scratch after 
 echo DELETE FROM mysql.user WHERE User=\'test\'\;
 echo CREATE USER test IDENTIFIED BY \'test\'\;
 echo GRANT ALL ON openmrs.* TO test\;
+echo ""
+echo Also change the \"schema only\" file to have : \"INSERT INTO global_property VALUES (\'database_version\',\'1.3.0.11\',NULL);\" with the latest version
 
 echo ""
