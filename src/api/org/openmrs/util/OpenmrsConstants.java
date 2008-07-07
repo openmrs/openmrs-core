@@ -321,6 +321,7 @@ public final class OpenmrsConstants {
 	public static final String PRIV_PURGE_RELATIONSHIPS = "Purge Relationships";
 	
 	public static final String PRIV_VIEW_DATAENTRY_STATS = "View Data Entry Statistics";
+	
 	/**
 	 * Cached list of core privileges 
 	 */
