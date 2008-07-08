@@ -1387,7 +1387,7 @@ public class OpenmrsUtil {
     		return false;
     	
     	for (Object o : objects) {
-    		if (o.equals(obj))
+    		if (o != null && o.equals(obj))
     			return true;
     	}
     	

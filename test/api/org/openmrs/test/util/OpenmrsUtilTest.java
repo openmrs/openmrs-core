@@ -146,5 +146,28 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		
 		assertTrue("Just because the date is null, doesn't make it not in the list anymore", OpenmrsUtil.collectionContains(identifiers, pi));
 	}
+
+	/**
+	 * test the collection contains method for collections containing nulls
+	 * 
+	 * @throws Exception
+	 */
+	public void testCollectionContainsWithListAndNulls() throws Exception {
+		
+		ArrayList<PatientIdentifier> identifiers = new ArrayList<PatientIdentifier>();
+		
+		PatientIdentifier pi = new PatientIdentifier();
+		pi.setIdentifier("123");
+		pi.setIdentifierType(new PatientIdentifierType(1));
+		pi.setDateCreated(new Date());
+		pi.setCreator(new User(1));
+		
+		identifiers.add(null);
+		identifiers.add(pi);
+		identifiers.add(pi);
+		
+		
+		assertTrue("NullRerefenceException should not be thrown.", OpenmrsUtil.collectionContains(identifiers, pi));
+	}
 	
 }
