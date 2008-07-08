@@ -7,23 +7,14 @@
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.PersonSearch");
-	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	
-	dojo.addOnLoad( function() {
-		dojo.event.topic.subscribe("add_rel_target_search/select", 
-			function(msg) {
-				if (msg) {
-					var person = msg.objs[0];
-					var personPopup = dojo.widget.manager.getWidgetById("add_rel_target_selection");
+	function callbackAfterSelect(relType, person) {
+		var personPopup = dojo.widget.manager.getWidgetById("add_rel_target_selection");
 
-					var displayString = person.personName;
-					personPopup.displayNode.innerHTML = displayString;
-					personPopup.hiddenInputNode.value = person.personId;
-				}
-			}
-		);
-	})
+		var displayString = person.personName;
+		personPopup.displayNode.innerHTML = displayString;
+		personPopup.hiddenInputNode.value = person.personId;
+	}
 	
 	function refreshRelationships() {
 		DWRRelationshipService.getRelationships(${model.personId}, null, refreshRelationshipsCallback);
@@ -150,8 +141,7 @@
 			<i><span id="add_relationship_name"><spring:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
 			<spring:message code="Relationship.target"/>
-			<div dojoType="PersonSearch" widgetId="add_rel_target_search" canAddNewPerson="true"></div>
-			<div dojoType="OpenmrsPopup" widgetId="add_rel_target_selection" hiddenInputName="add_rel_target" searchWidget="add_rel_target_search" searchTitle="Pick a person"></div> 
+			<openmrs_tag:personField formFieldName="add_rel_target" searchLabel="Find a Person" callback="callbackAfterSelect" canAddNewPerson="true" />
 		</span>
 		
 		<br/>
