@@ -208,8 +208,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 			// TODO: check patient has at least one "sufficient" identifier
 
-			// check this patient for duplicate identifiers
-			if (identifiersUsed.contains(pi.getIdentifier())) {
+			// check this patient for duplicate identifiers+identifierType
+			if (identifiersUsed.contains(pi.getIdentifier() + " id type #: " + pi.getIdentifierType().getPatientIdentifierTypeId())) {
 				patient.removeIdentifier(pi);
 				throw new DuplicateIdentifierException("This patient has two identical identifiers of type "
 				                                               + pi.getIdentifierType()
@@ -219,9 +219,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				                                               + ", deleting one of them",
 				                                       pi);
 			}
-			
-			else
-				identifiersUsed.add(pi.getIdentifier());
+			else {
+				identifiersUsed.add(pi.getIdentifier() + " id type #: " + pi.getIdentifierType().getPatientIdentifierTypeId());
+			}
 		}
 
 		if ( requiredTypes.size() > 0 ) {
