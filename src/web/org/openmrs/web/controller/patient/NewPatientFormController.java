@@ -565,6 +565,9 @@ public class NewPatientFormController extends SimpleFormController {
 				Map<String, Object> model = new HashMap<String, Object>();
 				model.put(getCommandName(), new ShortPatientModel(patient));
 				
+				// evict from session so that nothing temporarily added here is saved
+				Context.evictFromSession(patient);
+				
 				return this.showForm(request, response, errors, model);
 				//return new ModelAndView(new RedirectView(getFormView()));
 			}
@@ -654,8 +657,9 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		// the list of identifiers to display 
-		Set<PatientIdentifier> identifiers = new TreeSet<PatientIdentifier>();
+		// the list of identifiers to display
+		// this is a hashset so that the comparison is one with .equals() instead of .compareTo
+		Set<PatientIdentifier> identifiers = new HashSet<PatientIdentifier>();
 		
 		Patient patient = null;
 		String causeOfDeathOther = "";
