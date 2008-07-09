@@ -378,16 +378,7 @@ public interface PersonService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
 	public List<RelationshipType> getAllRelationshipTypes() throws APIException;
 	
-	/**
-	 * Get all relationshipTypes with or without the retired ones
-	 * 
-	 * @param includeRetired true/false whether or not to include the relationship types
-	 * @return relationshipType list
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
-	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) throws APIException;
+	
 	
 	/**
 	 * @deprecated use {@link #getAllRelationshipTypes()}
