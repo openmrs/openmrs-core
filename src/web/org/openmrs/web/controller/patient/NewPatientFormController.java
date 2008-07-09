@@ -210,8 +210,11 @@ public class NewPatientFormController extends SimpleFormController {
 			}
 			
 		}
-			
-		return super.processFormSubmission(request, response, shortPatient, errors);
+		
+		// skip calling super.processFormSubmission so that setting up the page is done
+		// again in the onSubmit method
+		
+		return onSubmit(request, response, shortPatient, errors);
 	}
 
 	/**
@@ -555,7 +558,7 @@ public class NewPatientFormController extends SimpleFormController {
 				
 			}
 			
-			if ( isError ) {
+			if ( isError || errors.hasErrors()) {
 				log.error("Had an error during processing. Redirecting to " + this.getFormView());
 				
 				Map<String, Object> model = new HashMap<String, Object>();
