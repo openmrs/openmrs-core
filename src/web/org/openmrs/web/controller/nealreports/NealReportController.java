@@ -284,7 +284,7 @@ public class NealReportController implements Controller {
 		// General.HIV_POSITIVE_P
 		// General.TB_ACTIVE_P 
 		Program hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
-		Program hivPediatricProgram = Context.getProgramWorkflowService().getProgramByName("HIV PEDIATRIC PROGRAM");
+		Program hivPediatricProgram = Context.getProgramWorkflowService().getProgram("HIV PEDIATRIC PROGRAM");
 		if (hivProgram != null && hivPediatricProgram != null) {
 			Map<Integer, PatientProgram> progs = pss.getCurrentPatientPrograms(ps, hivProgram);
 			progs.putAll(pss.getCurrentPatientPrograms(ps, hivPediatricProgram));
