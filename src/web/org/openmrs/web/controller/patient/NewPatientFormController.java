@@ -236,7 +236,7 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			ShortPatientModel shortPatient = (ShortPatientModel)obj;
 			String view = getSuccessView();
-			boolean isError = false;
+			boolean isError = errors.hasErrors(); // account for possible errors in the processFormSubmission method
 			
 			String action = request.getParameter("action");
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -377,50 +377,51 @@ public class NewPatientFormController extends SimpleFormController {
 				patient.setCauseOfDeath(null);
 			}
 			
-			// save or add the patient
 			Patient newPatient = null;
-			try {
-				newPatient = ps.savePatient(patient);
-			} catch ( InvalidIdentifierFormatException iife ) {
-				log.error(iife);
-				patient.removeIdentifier(iife.getPatientIdentifier());
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
-				//errors = new BindException(new InvalidIdentifierFormatException(msa.getMessage("PatientIdentifier.error.formatInvalid")), "givenName");
-				isError = true;
-			} catch ( InvalidCheckDigitException icde ) {
-				log.error(icde);
-				patient.removeIdentifier(icde.getPatientIdentifier());
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
-				//errors = new BindException(new InvalidCheckDigitException(msa.getMessage("PatientIdentifier.error.checkDigit")), "givenName");
-				isError = true;
-			} catch ( IdentifierNotUniqueException inue ) {
-				log.error(inue);
-				patient.removeIdentifier(inue.getPatientIdentifier());
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
-				//errors = new BindException(new IdentifierNotUniqueException(msa.getMessage("PatientIdentifier.error.notUnique")), "givenName");
-				isError = true;
-			} catch ( DuplicateIdentifierException die ) {
-				log.error(die);
-				patient.removeIdentifier(die.getPatientIdentifier());
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
-				//errors = new BindException(new DuplicateIdentifierException(msa.getMessage("PatientIdentifier.error.duplicate")), "givenName");
-				isError = true;
-			} catch ( InsufficientIdentifiersException iie ) {
-				log.error(iie);
-				patient.removeIdentifier(iie.getPatientIdentifier());
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.insufficientIdentifiers");
-				//errors = new BindException(new InsufficientIdentifiersException(msa.getMessage("PatientIdentifier.error.insufficientIdentifiers")), "givenName");
-				isError = true;
-			} catch ( PatientIdentifierException pie ) {
-				log.error(pie);
-				patient.removeIdentifier(pie.getPatientIdentifier());
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
-				//errors = new BindException(new PatientIdentifierException(msa.getMessage("PatientIdentifier.error.general")), "givenName");
-				isError = true;
-			}
-						
-			// update patient's relationships and death reason
+			
 			if ( !isError ) {
+				// save or add the patient
+				try {
+					newPatient = ps.savePatient(patient);
+				} catch ( InvalidIdentifierFormatException iife ) {
+					log.error(iife);
+					patient.removeIdentifier(iife.getPatientIdentifier());
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
+					//errors = new BindException(new InvalidIdentifierFormatException(msa.getMessage("PatientIdentifier.error.formatInvalid")), "givenName");
+					isError = true;
+				} catch ( InvalidCheckDigitException icde ) {
+					log.error(icde);
+					patient.removeIdentifier(icde.getPatientIdentifier());
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
+					//errors = new BindException(new InvalidCheckDigitException(msa.getMessage("PatientIdentifier.error.checkDigit")), "givenName");
+					isError = true;
+				} catch ( IdentifierNotUniqueException inue ) {
+					log.error(inue);
+					patient.removeIdentifier(inue.getPatientIdentifier());
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
+					//errors = new BindException(new IdentifierNotUniqueException(msa.getMessage("PatientIdentifier.error.notUnique")), "givenName");
+					isError = true;
+				} catch ( DuplicateIdentifierException die ) {
+					log.error(die);
+					patient.removeIdentifier(die.getPatientIdentifier());
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
+					//errors = new BindException(new DuplicateIdentifierException(msa.getMessage("PatientIdentifier.error.duplicate")), "givenName");
+					isError = true;
+				} catch ( InsufficientIdentifiersException iie ) {
+					log.error(iie);
+					patient.removeIdentifier(iie.getPatientIdentifier());
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.insufficientIdentifiers");
+					//errors = new BindException(new InsufficientIdentifiersException(msa.getMessage("PatientIdentifier.error.insufficientIdentifiers")), "givenName");
+					isError = true;
+				} catch ( PatientIdentifierException pie ) {
+					log.error(pie);
+					patient.removeIdentifier(pie.getPatientIdentifier());
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
+					//errors = new BindException(new PatientIdentifierException(msa.getMessage("PatientIdentifier.error.general")), "givenName");
+					isError = true;
+				}
+						
+				// update patient's relationships and death reason
 				String[] personAs = request.getParameterValues("personA");
 				String[] types = request.getParameterValues("relationshipType");
 				Person person = personService.getPerson(patient.getPatientId());
