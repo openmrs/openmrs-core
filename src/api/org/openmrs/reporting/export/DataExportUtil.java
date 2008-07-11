@@ -123,7 +123,7 @@ public class DataExportUtil {
 		String template = dataExport.generateTemplate();
 		
 		if (log.isDebugEnabled())
-			log.debug("Template: " + template.substring(0, template.length() < 3500 ? template.length() : 3500) + "...");
+			log.debug("Template: " + template);
 		
 		try {
 			velocityEngine.evaluate(velocityContext, report, DataExportUtil.class.getName(), template);

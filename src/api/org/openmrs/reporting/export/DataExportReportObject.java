@@ -22,6 +22,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
