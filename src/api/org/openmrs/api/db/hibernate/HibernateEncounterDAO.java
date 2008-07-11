@@ -57,8 +57,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#saveEncounter(org.openmrs.Encounter)
 	 */
-	public void saveEncounter(Encounter encounter) throws DAOException {
+	public Encounter saveEncounter(Encounter encounter) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(encounter);
+		return encounter;
 	}
 
 	/**
@@ -133,8 +134,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#saveEncounterType(org.openmrs.EncounterType)
 	 */
-	public void saveEncounterType(EncounterType encounterType) {
+	public EncounterType saveEncounterType(EncounterType encounterType) {
 		sessionFactory.getCurrentSession().saveOrUpdate(encounterType);
+		return encounterType;
 	}
 
 	/**
