@@ -508,14 +508,35 @@ public class DataExportFunctions {
 		return patientIdObsMap.get(patientId);
 	}
 	
-	public PatientProgram getProgram(String programName) {
+	
+	/**
+	 * Gets a patient program given a program ID or program name.
+	 * 
+	 * @param programIdOrName	the identifier or name of the program
+	 * @return
+	 */
+	public PatientProgram getProgram(String programIdOrName) {
+		
 		Map<Integer, PatientProgram> patientIdProgramMap;
-		if (programMap.containsKey(programName)) {
-			patientIdProgramMap = programMap.get(programName);
+		if (programMap.containsKey(programIdOrName)) {
+			patientIdProgramMap = programMap.get(programIdOrName);
 		} else {
-			Program program = Context.getProgramWorkflowService().getProgramByName(programName);
+		
+			Program program = null;
+			
+			//
+			// Ticket #912 - Fixed by adding some code to lookup the program by ID
+			//
+			try { 
+				Integer programId = Integer.parseInt(programIdOrName);
+				program = Context.getProgramWorkflowService().getProgram(programId);
+			} catch (NumberFormatException e) { /* ignore error because we're going to look the program up by name */ }
+			
+			if (program == null) { 
+				program = Context.getProgramWorkflowService().getProgramByName(programIdOrName);
+			}
 			patientIdProgramMap = patientSetService.getPatientPrograms(getPatientSetIfNotAllPatients(), program);
-			programMap.put(programName, patientIdProgramMap);
+			programMap.put(programIdOrName, patientIdProgramMap);
 		}
 		return patientIdProgramMap.get(patientId);		
 	}
