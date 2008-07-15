@@ -44,7 +44,14 @@
 					<c:if test="${not empty model.completedDrugOrderSets['*']}">
 						<c:forEach items="${model.completedDrugOrderSets['*']}" var="drugOrder">
 							<tr>
-								<td>&nbsp;&nbsp;&nbsp;&nbsp;<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a></td>
+								<td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;
+									<c:if test="${!empty drugOrder.drug}">
+										<span class="patientRegimenDrugName">${drugOrder.drug.name}</span><a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a>
+									</c:if>
+									<c:if test="${empty drugOrder.drug}">
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.concept.name.name}</a>
+									</c:if>
+								</td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
 								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
@@ -115,7 +122,14 @@
 					<c:if test="${not empty model.completedDrugOrderSets[drugSetId]}">
 						<c:forEach items="${model.completedDrugOrderSets[drugSetId]}" var="drugOrder">
 							<tr>
-								<td>&nbsp;&nbsp;&nbsp;&nbsp;<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a></td>
+								<td>&nbsp;&nbsp;&nbsp;&nbsp;
+									<c:if test="${!empty drugOrder.drug}">
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a>
+									</c:if>
+									<c:if test="${empty drugOrder.drug}">
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.concept.name.name}</a>
+									</c:if>
+								</td>	
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
 								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>
@@ -170,7 +184,14 @@
 					<c:if test="${not empty model.completedDrugOrders}">
 						<c:forEach items="${model.completedDrugOrders}" var="drugOrder">
 							<tr>
-								<td><span class="patientRegimenDrugName">${drugOrder.drug.name}</span></td>
+								<td>
+									<c:if test="${!empty drugOrder.drug}">
+										<span class="patientRegimenDrugName">${drugOrder.drug.name}</span>
+									</c:if>
+									<c:if test="${empty drugOrder.drug}">
+										<span class="patientRegimenDrugName">${drugOrder.concept.name.name}</span>
+									</c:if>
+								</td>
 								<td>${drugOrder.dose} ${drugOrder.units}</td>
 								<td>${drugOrder.frequency}</td>
 								<td><openmrs:formatDate date="${drugOrder.startDate}" type="medium" /></td>

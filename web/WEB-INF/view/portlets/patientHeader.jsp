@@ -140,7 +140,7 @@
 					<spring:message code="Patient.regimen" />:
 					<span id="patientHeaderRegimen">
 						<c:forEach items="${model.currentDrugOrders}" var="drugOrder" varStatus="drugOrderStatus">
-							${drugOrder.drug.name}
+							<c:if test="${!empty drugOrder.drug}">${drugOrder.drug.name}</c:if><c:if test="${empty drugOrder.drug}">${drugOrder.concept.name.name}</c:if>
 							<c:if test="${!drugOrderStatus.last}">, </c:if>
 						</c:forEach>
 					</span>
