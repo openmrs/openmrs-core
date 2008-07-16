@@ -575,7 +575,7 @@ public class Person implements java.io.Serializable {
 	 * @return Returns the "preferred" person name.
 	 */
 	public PersonName getPersonName() {
-		if (names != null && names.size() > 0) {
+		if (getNames() != null && names.size() > 0) {
 			return (PersonName) names.toArray()[0];
 		} else {
 			return new PersonName();
