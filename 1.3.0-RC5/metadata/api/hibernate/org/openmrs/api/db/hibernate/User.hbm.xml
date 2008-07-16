@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<joined-subclass name="User" table="users" extends="Person">
+
+		<key column="user_id" not-null="true" on-delete="cascade" />
+		
+		<property name="userId" type="int" not-null="true" access="field"
+			column="user_id" update="false" insert="false" />
+		
+		<property name="systemId" type="java.lang.String"
+			not-null="true" column="system_id" length="50" />
+
+		<property name="username" type="java.lang.String" length="50" />
+
+		<many-to-one name="creator" class="User" not-null="true" />
+
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+
+		<many-to-one name="changedBy" class="User" column="changed_by" />
+
+		<property name="dateChanged" type="java.util.Date"
+			column="date_changed" length="19" />
+
+		<property name="voided" type="boolean" column="voided"
+			length="1" not-null="true" />
+
+		<many-to-one name="voidedBy" class="User" column="voided_by" />
+
+		<property name="dateVoided" type="java.util.Date"
+			column="date_voided" length="19" />
+
+		<property name="voidReason" type="java.lang.String"
+			column="void_reason" length="255" />
+
+		<property name="secretQuestion" type="java.lang.String"
+			column="secret_question" length="255" />
+
+		<!-- Associations -->
+
+		<!-- bi-directional many-to-many association to Role -->
+		<set name="roles" table="user_role" lazy="false"
+			cascade="save-update,merge,evict">
+			<!-- <cache usage="read-write"/>-->
+			<key>
+				<column name="user_id" />
+			</key>
+			<many-to-many class="Role">
+				<column name="role" />
+			</many-to-many>
+		</set>
+
+		<map name="userProperties" table="user_property" lazy="true"
+			cascade="save-update,merge,evict">
+			<key column="user_id" not-null="true" />
+			<map-key column="property" type="java.lang.String"
+				length="100" />
+			<element column="property_value" type="java.lang.String"
+				length="255" />
+		</map>
+
+	</joined-subclass>
+	
+</hibernate-mapping>

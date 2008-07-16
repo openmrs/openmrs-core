@@ -1,0 +1,65 @@
+Maintenance:
+	Title:		HiRiskLeadScreen;;
+	Filename:	HiRiskLeadScreen;;
+	Version:	1.0;;
+	Institution:	iCHSR;;
+	Author:		Steve Downs;;
+	Specialist:	Pediatrics;;
+	Date:		12-29-2003 ;;
+	Validation:	;;
+Library:
+	Purpose:	PWS prompt to obtain blood lead if child has a risk factor;;
+	Explanation:	;;
+	Keywords:	lead risk based screening PWS;;
+	Citations:	;;
+	Links:	;;
+Knowledge:
+	Type:	data_driven;;
+/*	Priority:	748;;
+	Evoke:	;;
+	Urgency:	;;
+*/
+Data:
+Last_Pb := read Exist {LEAD LEVEL-PEDS from RMRS} Where it Occurred Within Past 330 Days;
+Qual_Pb := read Exist {Qualitative_Blood_Lead from CHICA} Where it Occurred Within Past 330 Days;
+HousePre50 := read Last {HouseBltPre1950 from CHICA} Where it Occurred Within Past 2 Years;
+RenovatedPre78 := read Last {RenovatedPre78 from CHICA} Where it Occurred Within Past 365 Days;
+HiPbSibFriend := read Last {HiPbSibFriend from CHICA} Where it Occurred Within Past 365 Days;
+;;
+	Priority:	748;;
+	Evoke:	;;
+
+logic:
+if (Last_Pb = true) then conclude False;
+if (Qual_Pb = True) then conclude False;
+if (HousePre50 = YES) then LeadRisk := "lives in a house built before 1950";
+elseif (RenovatedPre78 = YES) then LeadRisk := "lives in a pre-1978 house undergoing renovation";
+elseif (HiPbSibFriend = YES) then LeadRisk := "has a friend or sibling with elevated blood lead";
+else conclude False;
+conclude True;
+;;
+Action:
+write ("|| firstname || reportedly || LeadRisk ||.  Drawing a blood lead level is recommended annually:");
+;;
+	Urgency:	;;
+/*
+CHICA:
+Minimum Age: 10 months;
+Maximum Age: 36 months;
+CHICA Priority: 748;
+JIT Filename: ;
+If  (Box2) then Qualitative_Blood_Lead = 10-14mg/dl;
+If  (Box4) then Qualitative_Blood_Lead = 15-19mg/dl;
+If  (Box5) then Qualitative_Blood_Lead = Pending;
+If  (Box6) then Qualitative_Blood_Lead = >19mg/dl;
+If  (Box3) then Qualitative_Blood_Lead = < 10mg/dl;;;
+PWS Leaves:
+Box1 := Blood Pb done this year----->
+Box2 := 10-14 mg/dl: CBC+rpt Pb 3mo
+Box3 := Previous blood lead <10 (OK)
+Box4 := 15-19: above+call hlth dept
+Box5 := Blood lead ordered today
+Box6 := >19: above+call Dr. Merk
+;;
+*/
+end:
