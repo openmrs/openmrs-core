@@ -112,11 +112,11 @@
 					defaultValue="? (error with pre-1.4 revision regexp)" />
 			</then>
 			<else>
-				<!-- SVN 1.4+ does not use XML format, just grab 4th line -->
+				<!-- SVN 1.4+ does not use XML format, just grab 11th line -->
 				<propertyregex property="openmrs.version.revision"
 					input="${repositoryFileInput}"
-					regexp="^(.*)\n(.*)\n(.*)\n(.*)"
-					select="\4"
+					regexp="^(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n"
+					select="\11"
 					defaultValue="? (error in post-1.4 revision regexp)" />				
 			</else>
 		</if>
