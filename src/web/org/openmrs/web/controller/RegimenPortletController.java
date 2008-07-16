@@ -54,12 +54,14 @@ public class RegimenPortletController extends PortletController {
 					}
 				}
 				for (DrugOrder order : ((List<DrugOrder>) model.get("patientDrugOrders"))) {
-					Concept orderConcept = order.getDrug().getConcept();
 					String setIdToUse = null;
-					for (Map.Entry<String, Collection<Concept>> e : drugConceptsBySetId.entrySet()) {
-						if (e.getValue().contains(orderConcept)) {
-							setIdToUse = e.getKey();
-							break;
+					if (order.getDrug() != null){
+					Concept orderConcept = order.getDrug().getConcept();
+						for (Map.Entry<String, Collection<Concept>> e : drugConceptsBySetId.entrySet()) {
+							if (e.getValue().contains(orderConcept)) {
+								setIdToUse = e.getKey();
+								break;
+							}
 						}
 					}
 					if (setIdToUse == null && includeOther)

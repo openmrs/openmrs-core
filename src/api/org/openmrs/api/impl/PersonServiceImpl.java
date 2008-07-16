@@ -586,15 +586,7 @@ public class PersonServiceImpl implements PersonService {
      * @see org.openmrs.api.PersonService#getAllRelationshipTypes()
      */
     public List<RelationshipType> getAllRelationshipTypes() throws APIException {
-	    return getAllRelationshipTypes(true);
-    }
-
-	/**
-     * @see org.openmrs.api.PersonService#getAllRelationshipTypes(boolean)
-     */
-    public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired)
-            throws APIException {
-	    return dao.getAllRelationshipTypes(includeRetired);
+	    return dao.getAllRelationshipTypes();
     }
 
 	/**
@@ -801,7 +793,7 @@ public class PersonServiceImpl implements PersonService {
 			}
 			else {
 				firstName = names[1];
-				lastName = names[0];
+				lastName = names[2];
 			}
 		}
 		else if (name.contains(" ")) {

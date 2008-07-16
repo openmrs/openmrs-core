@@ -7,6 +7,7 @@
 <%@ attribute name="initialValue" required="false" %> <%-- This should be a personId --%>
 <%@ attribute name="linkUrl" required="false" %>
 <%@ attribute name="callback" required="false" %>
+<%@ attribute name="canAddNewPerson" required="false" %>
 
 <openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
@@ -37,7 +38,7 @@
 						if ( relType.indexOf(relPrefix) >= 0 ) {
 							relType = relType.substring(relPrefix.length);
 						}
-						${callback}(relType, person.personId);
+						${callback}(relType, person);
 					</c:if>
 				}
 			}
@@ -57,8 +58,8 @@
 <div class="personSearchLabel">${searchLabel}</div>
 <div dojoType="PersonSearch" widgetId="${formFieldName}_search" personId="${initialValue}" roles="${roles}"></div>
 <c:if test="${not empty searchLabelCode}">
-	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" arguments="${searchLabelArguments}" />"></div>
+	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" arguments="${searchLabelArguments}" />" canAddNewPerson="${canAddNewPerson}"></div>
 </c:if> 
 <c:if test="${empty searchLabelCode}">
-	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}"></div>
+	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}" canAddNewPerson="${canAddNewPerson}" ></div>
 </c:if> 

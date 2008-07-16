@@ -35,7 +35,7 @@ public interface EncounterDAO {
 	 * @param encounter to be saved
 	 * @throws DAOException
 	 */
-	public void saveEncounter(Encounter encounter) throws DAOException;
+	public Encounter saveEncounter(Encounter encounter) throws DAOException;
 
 	/**
 	 * Purge an encounter from database.
@@ -84,7 +84,7 @@ public interface EncounterDAO {
 	 * 
 	 * @param encounterType
 	 */
-	public void saveEncounterType(EncounterType encounterType);
+	public EncounterType saveEncounterType(EncounterType encounterType);
 	
 	/**
 	 * 

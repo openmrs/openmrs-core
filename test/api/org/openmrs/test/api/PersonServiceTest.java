@@ -25,6 +25,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
@@ -117,6 +118,16 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person p = personService.getPerson(2);
 		List<Relationship> aRels = personService.getRelationshipsByPerson(p);
 		List<Relationship> bRels = personService.getRelationshipsByPerson(patient);
+		
+		//test loading relationship types real quick.
+		List<RelationshipType> rTmp = personService.getAllRelationshipTypes();
+		assertNotNull(rTmp);
+		RelationshipType rTypeTmp = personService.getRelationshipTypeByName("Doctor/Patient");
+		assertNotNull(rTypeTmp);
+		rTypeTmp = personService.getRelationshipTypeByName("booya");
+		assertNull(rTypeTmp);
+		
+
 		// Uncomment for console output.
 		//System.out.println("Relationships before voiding all:");
 		//System.out.println(aRels);

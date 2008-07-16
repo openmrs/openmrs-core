@@ -115,6 +115,11 @@
 		<appender-ref ref="DWR_FILE" />
 	</logger>
 	
+	<!-- Hide the useless MissingResourceException -->
+	<logger name="org.springframework.context.support.ResourceBundleMessageSource">
+		<level value="ERROR" />
+	</logger>
+	
 	<root>
 		<level value="WARN" />
 		<appender-ref ref="CONSOLE" />

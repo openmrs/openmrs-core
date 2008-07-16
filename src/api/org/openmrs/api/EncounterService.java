@@ -53,7 +53,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_ENCOUNTERS,
 	        OpenmrsConstants.PRIV_EDIT_ENCOUNTERS })
-	public void saveEncounter(Encounter encounter) throws APIException;
+	public Encounter saveEncounter(Encounter encounter) throws APIException;
 
 	/**
 	 * Get encounter by internal identifier
@@ -125,7 +125,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param String reason
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_ENCOUNTERS })
-	public void voidEncounter(Encounter encounter, String reason);
+	public Encounter voidEncounter(Encounter encounter, String reason);
 
 	/**
 	 * Unvoid encounter record
@@ -133,7 +133,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounter encounter to be revived
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_ENCOUNTERS })
-	public void unvoidEncounter(Encounter encounter) throws APIException;
+	public Encounter unvoidEncounter(Encounter encounter) throws APIException;
 
 	/**
 	 * Completely remove an encounter from database.
@@ -165,7 +165,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES })
-	public void saveEncounterType(EncounterType encounterType);
+	public EncounterType saveEncounterType(EncounterType encounterType);
 
 	/**
 	 * Get encounterType by internal identifier
@@ -236,7 +236,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES })
-	public void retireEncounterType(EncounterType encounterType, String reason)
+	public EncounterType retireEncounterType(EncounterType encounterType, String reason)
 	        throws APIException;
 
 	/**
@@ -247,7 +247,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES })
-	public void unretireEncounterType(EncounterType encounterType)
+	public EncounterType unretireEncounterType(EncounterType encounterType)
 	        throws APIException;
 
 	/**

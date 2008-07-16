@@ -45,6 +45,9 @@ public class DWRRelationshipService {
 	}
 	
 	public Vector<RelationshipListItem> getRelationships(Integer personId, Integer relationshipTypeId) {
+		// hack to make sure other relationships aren't still hanging around
+		Context.clearSession();
+		
 		Vector<RelationshipListItem> ret = new Vector<RelationshipListItem>();
 		List<Relationship> rels = Context.getPersonService().getRelationships(Context.getPersonService().getPerson(personId));
 		for (Relationship rel : rels) {
