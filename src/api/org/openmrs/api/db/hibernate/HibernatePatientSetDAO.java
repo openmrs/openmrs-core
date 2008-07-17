@@ -89,6 +89,15 @@ import org.openmrs.api.db.PatientSetDAO;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Hibernate specific implementation of the PatientSetDAO.  This class
+ * should not be instatiated.  Rather, it is injected into the PatientSetService
+ * by Spring.
+ * 
+ * @see org.openmrs.api.context.Context
+ * @see org.openmrs.api.PatientSetService
+ * @see org.openmrs.api.db.PatientSetDAO
+ */
 public class HibernatePatientSetDAO implements PatientSetDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
@@ -97,8 +106,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * Hibernate sessionFactory.getCurrentSession() factory
 	 */
 	private SessionFactory sessionFactory;
-	
-	public HibernatePatientSetDAO() { }
 	
 	/**
 	 * Set sessionFactory.getCurrentSession() factory
@@ -154,8 +161,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (obs.getDateStopped() != null) {
 			obsNode.setAttribute("date_stopped", df.format(obs.getDateStopped()));
 		}
-		if (obs.getObsGroupId() != null) {
-			obsNode.setAttribute("obs_group_id", obs.getObsGroupId().toString());
+		if (obs.getObsGroup() != null) {
+			obsNode.setAttribute("obs_group_id", obs.getObsGroup().getObsId().toString());
 		}
 		if (obs.getValueGroupId() != null) {
 			obsNode.setAttribute("value_group_id", obs.getValueGroupId().toString());
@@ -216,7 +223,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		EncounterService encounterService = Context.getEncounterService();
 
 		Patient p = patientService.getPatient(patientId);
-		List<Encounter> encounters = encounterService.getEncountersByPatientId(patientId, false);
+		List<Encounter> encounters = encounterService.getEncountersByPatientId(patientId);
 	    
 	    try {
 	    	DocumentBuilder builder = factory.newDocumentBuilder();
@@ -401,7 +408,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 			
 			ObsService obsService = Context.getObsService();
-			Set<Obs> allObservations = obsService.getObservations(p, false);
+			List<Obs> allObservations = obsService.getObservationsByPerson(p);
 			if (allObservations != null && allObservations.size() > 0) {
 				log.debug("allObservations has " + allObservations.size() + " obs");
 				Set<Obs> undoneObservations = new HashSet<Obs>();
@@ -456,7 +463,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Set<Integer> ids = new HashSet<Integer>();
 		ids.addAll(query.list());
 		
-		return new Cohort(ids);
+		return new Cohort("All patients", "", ids);
 	}
 	
 	/**
@@ -1066,7 +1073,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes) {
+	@SuppressWarnings("unchecked")
+    public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes) {
 		Map<Integer, List<List<Object>>> ret = new HashMap<Integer, List<List<Object>>>();
 		
 		List<String> aliases = new Vector<String>();
@@ -1275,7 +1283,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}	
 	
 	
-	public Map<Integer, Object> getEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr, Boolean earliestFirst) {
+	@SuppressWarnings("unchecked")
+    public Map<Integer, Object> getEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr, Boolean earliestFirst) {
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
 		
 		// default query
@@ -1478,7 +1487,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	/**
 	 * @see org.openmrs.api.db.PatientSetDAO#getPersonAttributes(org.openmrs.Cohort, java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean)
 	 */
-	public Map<Integer, Object> getPersonAttributes(Cohort patients, String attributeTypeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll) {
+	@SuppressWarnings("unchecked")
+    public Map<Integer, Object> getPersonAttributes(Cohort patients, String attributeTypeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll) {
 		Map<Integer, Object> ret = new HashMap<Integer, Object>();
 		
 		StringBuilder queryString = new StringBuilder();
@@ -1827,6 +1837,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public Map<Integer, List<DrugOrder>> getDrugOrders(Cohort patients, List<Concept> drugConcepts) throws DAOException {
 		Map<Integer, List<DrugOrder>> ret = new HashMap<Integer, List<DrugOrder>>();
+		if (patients != null && patients.size() == 0)
+			return ret;
 
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
 		criteria.setCacheMode(CacheMode.IGNORE);

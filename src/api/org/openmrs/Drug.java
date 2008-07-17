@@ -20,7 +20,6 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Drug 
- * @version 1.0
  */
 public class Drug implements java.io.Serializable, Synchronizable {
 
@@ -40,10 +39,10 @@ public class Drug implements java.io.Serializable, Synchronizable {
 	private Date dateCreated;
 	private Concept concept;
 	private User creator;
-	private Boolean voided = false;
-	private User voidedBy;
-	private Date dateVoided;
-	private String voidReason;
+	private Boolean retired = false;
+	private User retiredBy;
+	private Date dateRetired;
+	private String retireReason;
 	private String guid;
     private transient String lastRecordGuid;
     
@@ -240,12 +239,12 @@ public class Drug implements java.io.Serializable, Synchronizable {
 		this.creator = creator;
 	}
 
-	public Date getDateVoided() {
-		return dateVoided;
+	public Date getDateRetired() {
+		return dateRetired;
 	}
 
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
+	public void setDateRetired(Date dateRetired) {
+		this.dateRetired = dateRetired;
 	}
 
 	public Concept getDosageForm() {
@@ -280,28 +279,32 @@ public class Drug implements java.io.Serializable, Synchronizable {
 		this.route = route;
 	}
 
-	public Boolean getVoided() {
-		return voided;
+	public Boolean isRetired() {
+		return retired;
+	}
+	
+	public Boolean getRetired() {
+		return isRetired();
 	}
 
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
 	}
 
-	public User getVoidedBy() {
-		return voidedBy;
+	public User getRetiredBy() {
+		return retiredBy;
 	}
 
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
+	public void setRetiredBy(User retiredBy) {
+		this.retiredBy = retiredBy;
 	}
 
-	public String getVoidReason() {
-		return voidReason;
+	public String getRetireReason() {
+		return retireReason;
 	}
 
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
+	public void setRetireReason(String retireReason) {
+		this.retireReason = retireReason;
 	}
 
 }

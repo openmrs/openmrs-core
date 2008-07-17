@@ -15,27 +15,37 @@ package org.openmrs;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.openmrs.synchronization.Synchronizable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
+/**
+ * Program
+ */
 @Root
 public class Program implements java.io.Serializable, Synchronizable {
 	
-	private static final long serialVersionUID = 0L;
+	public static final long serialVersionUID = 3214567L;
+	protected final Log log = LogFactory.getLog(getClass());
 
+	// ******************
+	// Properties
+	// ******************
+	
 	private Integer programId;
+	private String name;
+	private String description;
 	private Concept concept;
 	private User creator; 
 	private Date dateCreated; 
 	private User changedBy;
 	private Date dateChanged;
-	private Boolean voided = false; 
-	private User voidedBy;
-	private Date dateVoided; 
-	private String voidReason;
+	private Boolean retired = false; 
 	private Set<ProgramWorkflow> workflows;
 	private String guid;
 	private transient String lastRecordGuid;
@@ -55,20 +65,101 @@ public class Program implements java.io.Serializable, Synchronizable {
   public void setGuid(String guid) {
       this.guid = guid;
   }
-
+  
+	// ******************
+	// Constructors
+	// ******************
+	
+	/** Default Constructor */
 	public Program() { }
 	
+	/** Constructor with id */
+	public Program(Integer programId) {
+		setProgramId(programId);
+	}
+	
+	// ******************
+	// Instance methods
+	// ******************
+	
 	/**
-	 * Convenience method to get a workflow by name.
-	 * @param name the workflow's name, in any locale
-	 * @return a workflow which has that name in any locale
+	 * Adds a new {@link ProgramWorkflow} to this Program
+	 * @param workflow - the {@link ProgramWorkflow} to add
+	 */
+	public void addWorkflow(ProgramWorkflow workflow) {
+		workflow.setProgram(this);
+		getAllWorkflows().add(workflow);
+	}
+
+	/**
+	 * Removes a {@link ProgramWorkflow} from this Program
+	 * @param workflow - the {@link ProgramWorkflow} to remove
+	 */
+	public void removeWorkflow(ProgramWorkflow workflow) {
+		if (getAllWorkflows().contains(workflow)) {
+			getAllWorkflows().remove(workflow);
+			workflow.setProgram(null);
+		}
+	}
+	
+	/**
+	 * Retires a {@link ProgramWorkflow}
+	 * @param workflow - the {@link ProgramWorkflow} to retire
+	 */
+	public void retireWorkflow(ProgramWorkflow workflow) {
+		workflow.setRetired(true);
+	}
+
+	/**
+	 * Returns a {@link ProgramWorkflow} whose {@link Concept} has any {@link ConceptName} that matches the given <code>name</name>
+	 * @param name the {@link ProgramWorkflow} name, in any {@link Locale}
+	 * @return a {@link ProgramWorkflow} which has the passed <code>name</code> in any {@link Locale}
 	 */
 	public ProgramWorkflow getWorkflowByName(String name) {
-		for (ProgramWorkflow pw : workflows)
-			if (pw.getConcept().isNamed(name))
+		for (ProgramWorkflow pw : getAllWorkflows()) {
+			if (pw.getConcept().isNamed(name)) {
 				return pw;
+			}
+		}
 		return null;
 	}
+	
+	/** @see Object#equals(Object) */
+	public boolean equals(Object obj) {
+		if (obj != null && obj instanceof Program) {
+			Program p = (Program)obj;
+			if (this.getProgramId() == null) {
+				return p.getProgramId() == null;
+			}
+			return (this.getProgramId().equals(p.getProgramId()));
+		}
+		return false;
+	}
+
+	/** @see Object#toString() */
+	public String toString() {
+		return "Program(id=" + getProgramId() + ", concept=" + getConcept() + ", workflows=" + getWorkflows() + ")";
+	}
+	
+	// ******************
+	// Property Access
+	// ******************
+
+    public String getName() {
+    	return name;
+    }
+
+    public void setName(String name) {
+    	this.name = name;
+    }
+
+    public String getDescription() {
+    	return description;
+    }
+    
+    public void setDescription(String description) {
+    	this.description = description;
+    }
 
 	public Concept getConcept() {
 		return concept;
@@ -110,42 +201,6 @@ public class Program implements java.io.Serializable, Synchronizable {
 		this.dateChanged = dateChanged;
 	}
 
-	public Date getDateVoided() {
-		return dateVoided;
-	}
-
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-
-	public Boolean getVoided() {
-		return isVoided();
-	}
-	
-	public Boolean isVoided() {
-		return voided;
-	}
-
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
-
-	public User getVoidedBy() {
-		return voidedBy;
-	}
-
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
-	}
-
-	public String getVoidReason() {
-		return voidReason;
-	}
-
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
-	}
-
 	@Attribute(required=true)
 	public Integer getProgramId() {
 		return programId;
@@ -156,23 +211,47 @@ public class Program implements java.io.Serializable, Synchronizable {
 		this.programId = programId;
 	}
 
-	public String toString() {
-		return "Program(id=" + programId + ", concept=" + concept + ", workflows=" + workflows + ")";
-	}
+    public Boolean getRetired() {
+    	return retired;
+    }
+    
+    public Boolean isRetired() {
+    	return getRetired();
+    }
 
+    public void setRetired(Boolean retired) {
+    	this.retired = retired;
+    }
+
+	/**
+	 * Get only the non-retired workflows
+	 * 
+	 * @return
+	 */
 	public Set<ProgramWorkflow> getWorkflows() {
+		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
+		
+		if (this.workflows != null) {
+			for (ProgramWorkflow workflow : this.workflows) {
+				if (workflow.isRetired() == false)
+					ret.add(workflow);
+			}
+		}
+			
+		return ret;
+	}
+	
+	/**
+	 * Get all workflows...including the retired ones
+	 * 
+	 * @return
+	 */
+	public Set<ProgramWorkflow> getAllWorkflows() {
 		return workflows;
 	}
 
 	public void setWorkflows(Set<ProgramWorkflow> workflows) {
 		this.workflows = workflows;
-	}
-	
-	public void addWorkflow(ProgramWorkflow wf) {
-		wf.setProgram(this);
-		if (getWorkflows() == null)
-			setWorkflows(new HashSet<ProgramWorkflow>());
-		getWorkflows().add(wf);
 	}
 	
 }

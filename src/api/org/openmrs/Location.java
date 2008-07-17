@@ -53,6 +53,11 @@ public class Location implements java.io.Serializable, Attributable<Location>, S
 	private String guid;
     private transient String lastRecordGuid;
     
+    private User retiredBy;
+	private Boolean retired = Boolean.FALSE;
+	private Date dateRetired;
+	private String retireReason;
+    
     public String getLastRecordGuid() {
         return lastRecordGuid;
     }
@@ -333,7 +338,7 @@ public class Location implements java.io.Serializable, Attributable<Location>, S
 	 */
 	public List<Location> findPossibleValues(String searchText) {
 		try {
-			return Context.getEncounterService().findLocations(searchText);
+			return Context.getLocationService().getLocations(searchText);
 		}
 		catch (Exception e) {
 			return Collections.emptyList();
@@ -345,7 +350,7 @@ public class Location implements java.io.Serializable, Attributable<Location>, S
 	 */
 	public List<Location> getPossibleValues() {
 		try {
-			return Context.getEncounterService().getLocations();
+			return Context.getLocationService().getAllLocations();
 		}
 		catch (Exception e) {
 			return Collections.emptyList();
@@ -357,7 +362,7 @@ public class Location implements java.io.Serializable, Attributable<Location>, S
 	 */
 	public Location hydrate(String locationId) {
 		try {
-			return Context.getEncounterService().getLocation(Integer.valueOf(locationId));
+			return Context.getLocationService().getLocation(Integer.valueOf(locationId));
 		}
 		catch (Exception e) {
 			return new Location();
@@ -419,6 +424,61 @@ public class Location implements java.io.Serializable, Attributable<Location>, S
 	public void setTownshipDivision(String townshipDivision) {
 		this.townshipDivision = townshipDivision;
 	}
+	
+	/**
+     * @return the retiredBy
+     */
+    public User getRetiredBy() {
+    	return retiredBy;
+    }
 
+	/**
+     * @param retiredBy the retiredBy to set
+     */
+    public void setRetiredBy(User retiredBy) {
+    	this.retiredBy = retiredBy;
+    }
+
+	/**
+     * @return the retired
+     */
+    public Boolean getRetired() {
+    	return retired;
+    }
+
+	/**
+     * @param retired the retired to set
+     */
+    public void setRetired(Boolean retired) {
+    	this.retired = retired;
+    }
+
+	/**
+     * @return the dateRetired
+     */
+    public Date getDateRetired() {
+    	return dateRetired;
+    }
+
+	/**
+     * @param dateRetired the dateRetired to set
+     */
+    public void setDateRetired(Date dateRetired) {
+    	this.dateRetired = dateRetired;
+    }
+
+	/**
+     * @return the retireReason
+     */
+    public String getRetireReason() {
+    	return retireReason;
+    }
+
+	/**
+     * @param retireReason the retireReason to set
+     */
+    public void setRetireReason(String retireReason) {
+    	this.retireReason = retireReason;
+    }
 	
 }

@@ -18,11 +18,50 @@ import java.util.List;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.reporting.AbstractReportObject;
 
+/**
+ *
+ */
 public interface ReportObjectDAO {
-	List<AbstractReportObject> getAllReportObjects();
-	AbstractReportObject getReportObject(Integer reportObjId) throws DAOException;
-	Integer createReportObject(AbstractReportObject reportObj) throws DAOException;
-	void deleteReportObject(AbstractReportObject reportObj) throws DAOException;
-	void updateReportObject(AbstractReportObject reportObj) throws DAOException;
-	List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException;
+
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @return
+	 */
+	public List<AbstractReportObject> getAllReportObjects() throws DAOException;
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param reportObjId
+	 * @return
+	 * @throws DAOException
+	 */
+	public AbstractReportObject getReportObject(Integer reportObjId) throws DAOException;
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param reportObj
+	 * @throws DAOException
+	 */
+	public void deleteReportObject(AbstractReportObject reportObj) throws DAOException;
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param reportObj
+	 * @return
+	 * @throws DAOException
+	 */
+	public AbstractReportObject saveReportObject(AbstractReportObject reportObj) throws DAOException;
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param reportObjectType
+	 * @return
+	 * @throws DAOException
+	 */
+	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException;
 }

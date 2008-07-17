@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
@@ -52,6 +53,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
+import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.ConceptSynonym;
@@ -63,10 +65,12 @@ import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.LoginCredential;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -480,7 +484,17 @@ public class SyncUtil {
 				
 		return m;
 	}
-	
+
+    private static Synchronizable findByGUID(Collection<? extends Synchronizable> list, Synchronizable toCheck){
+
+    	for(Synchronizable element:list){
+    		if(element.getGuid().equals(toCheck.getGuid()))
+    			return element;
+    	}
+    	
+    	return null;
+    }
+    
     /**
      * 
      * Uses openmrs API to commit an update to an instance of an openmrs class.
@@ -498,185 +512,153 @@ public class SyncUtil {
      * @param knownToExist if true, update method on openmrs API is called using guid, else create method is used
      * @return
      */
-	public static synchronized String updateOpenmrsObject(Object o, String className, String guid, boolean knownToExist) {
+	public static synchronized String updateOpenmrsObject(Object o, String className, String guid) {
 		String ret = null;
 		if ( o != null ) {
 			boolean isUpdated = true;
-			
 			if ( "org.openmrs.Cohort".equals(className) ) { 
-				if ( !knownToExist ) Context.getCohortService().createCohort((Cohort)o);
-				else Context.getCohortService().updateCohort((Cohort)o);
+				Context.getCohortService().saveCohort((Cohort)o);
 			} else if ( "org.openmrs.ComplexObs".equals(className) ) {
-				log.debug("UNABLE TO CREATE/UPDATE ComplexObs in Synchronization process - no service method exists");
-				isUpdated = false;
+				Context.getObsService().saveObs((Obs)o, ((Obs)o).getVoidReason());
 			} else if ( "org.openmrs.Concept".equals(className) ) {
-				/*
-				if ( !knownToExist ) {
-					Integer id = Context.getConceptService().getNextAvailableId();
-					((Concept)o).setConceptId(id);
-					Context.getConceptService().createConcept((Concept)o, true);
-				}
-				else Context.getConceptService().updateConcept((Concept)o, true);
-				*/
-				if ( !knownToExist ) Context.getConceptService().createConcept((Concept) o, true);
-				else Context.getConceptService().updateConcept((Concept) o, true);
+				Context.getConceptService().saveConcept((Concept)o);
 			} else if ( "org.openmrs.ConceptAnswer".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConceptAnswer((ConceptAnswer)o, true);
-				else Context.getConceptService().updateConceptAnswer((ConceptAnswer)o, true);
+				ConceptAnswer ca = (ConceptAnswer) o;
+				ConceptAnswer toRemove = (ConceptAnswer) findByGUID(ca.getConcept().getAnswers(), ca);
+				if(toRemove != null)
+					ca.getConcept().removeAnswer(toRemove);
+				ca.getConcept().addAnswer(ca);
+				
+				Context.getConceptService().saveConcept(ca.getConcept());
 			} else if ( "org.openmrs.ConceptClass".equals(className) ) {
-				if ( !knownToExist ) Context.getAdministrationService().createConceptClass((ConceptClass)o, true);
-				else Context.getAdministrationService().createConceptClass((ConceptClass)o, true);
+				Context.getConceptService().saveConceptClass((ConceptClass)o);
 			} else if ( "org.openmrs.ConceptDatatype".equals(className) ) {
-				if ( !knownToExist ) Context.getAdministrationService().createConceptDatatype((ConceptDatatype)o, true);
-				else Context.getAdministrationService().updateConceptDatatype((ConceptDatatype)o, true);
+				Context.getConceptService().saveConceptDatatype((ConceptDatatype)o);
 			} else if ( "org.openmrs.ConceptDerived".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConcept((ConceptDerived)o, true);
-				else Context.getConceptService().updateConcept((ConceptDerived)o, true);
+				Context.getConceptService().saveConcept((ConceptDerived)o);
 			} else if ( "org.openmrs.ConceptName".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConceptName((ConceptName)o, true);
-				else Context.getConceptService().updateConceptName((ConceptName)o, true);
+				ConceptName cn = (ConceptName) o;
+				ConceptName toRemove = (ConceptName) findByGUID(cn.getConcept().getNames(),cn);
+				if(toRemove != null)
+					cn.getConcept().removeName(toRemove);
+				cn.getConcept().addName(cn);
+				
+				System.out.println("Concept name " + cn.getName() + " added to concept " + cn.getConcept().getConceptId());
+				
+				Context.getConceptService().saveConcept(cn.getConcept());
 			} else if ( "org.openmrs.ConceptNumeric".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConcept((ConceptNumeric)o, true);
-				else Context.getConceptService().updateConcept((ConceptNumeric)o, true);
+				if( ((ConceptNumeric)o).getName() == null)
+					System.out.println("Concept name is NULL");
+				else
+					System.out.println("Concept name for numeric concept is now " + ((ConceptNumeric)o).getName().getName());
+				
+				Context.getConceptService().saveConcept((ConceptNumeric)o);
 			} else if ( "org.openmrs.ConceptProposal".equals(className) ) {
-				if ( !knownToExist ) Context.getAdministrationService().createConceptProposal((ConceptProposal)o);
-				else Context.getAdministrationService().updateConceptProposal((ConceptProposal)o);
+				Context.getConceptService().saveConceptProposal((ConceptProposal)o);
 			} else if ( "org.openmrs.ConceptSet".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConceptSet((ConceptSet)o, true);
-				else Context.getConceptService().updateConceptSet((ConceptSet)o, true);
+				ConceptSet cs = (ConceptSet) o;
+				ConceptSet toRemove = (ConceptSet) findByGUID(cs.getConcept().getConceptSets(),cs);
+				if(toRemove !=null)
+					cs.getConcept().getConceptSets().remove(toRemove);
+				cs.getConcept().getConceptSets().add(cs);
+				
+				Context.getConceptService().saveConcept(cs.getConcept());
 			} else if ( "org.openmrs.ConceptSetDerived".equals(className) ) {
-				log.debug("UNABLE TO CREATE/UPDATE ConceptSetDerived in Synchronization process - no service method exists");
-				isUpdated = false;
+				Context.getConceptService().updateConceptSetDerived(((ConceptSetDerived)o).getConcept());
 			} else if ( "org.openmrs.ConceptSource".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConceptSource((ConceptSource)o, true);
-				else Context.getConceptService().updateConceptSource((ConceptSource)o, true);
+				log.debug("UNABLE TO CREATE/UPDATE ConceptSource in Synchronization process - no service method exists");
+				isUpdated = false;
 			} else if ( "org.openmrs.ConceptStateConversion".equals(className) ) {
-				if ( !knownToExist ) Context.getProgramWorkflowService().createConceptStateConversion((ConceptStateConversion)o);
-				else Context.getProgramWorkflowService().updateConceptStateConversion((ConceptStateConversion)o);
+				Context.getProgramWorkflowService().saveConceptStateConversion((ConceptStateConversion)o);
 			} else if ( "org.openmrs.ConceptSynonym".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConceptSynonym((ConceptSynonym)o, true);
-				else Context.getConceptService().updateConceptSynonym((ConceptSynonym)o, true);
+				ConceptSynonym cs = (ConceptSynonym) o;
+				ConceptSynonym toRemove = (ConceptSynonym) findByGUID(cs.getConcept().getSynonyms(), cs);
+				if(toRemove!=null)
+					cs.getConcept().getSynonyms().remove(toRemove);
+				cs.getConcept().addSynonym(cs);
+				
+				Context.getConceptService().saveConcept(cs.getConcept());
 			} else if ( "org.openmrs.ConceptWord".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createConceptWord((ConceptWord)o, true);
-				else Context.getConceptService().updateConceptWord((ConceptWord)o, true);
+				Context.getConceptService().saveConcept(((ConceptWord)o).getConcept());
 			} else if ( "org.openmrs.Drug".equals(className) ) {
-				if ( !knownToExist ) Context.getConceptService().createDrug((Drug)o, true);
-				else Context.getConceptService().updateDrug((Drug)o, true);
+				Context.getConceptService().saveDrug((Drug)o);
 			} else if ( "org.openmrs.DrugIngredient".equals(className) ) {
 				log.debug("UNABLE TO CREATE/UPDATE DrugIngredient in Synchronization process - no service method exists");
 				isUpdated = false;
 			} else if ( "org.openmrs.DrugOrder".equals(className) ) {
-				if ( !knownToExist ) Context.getOrderService().createOrder((DrugOrder)o);
-				else Context.getOrderService().createOrder((DrugOrder)o);
+				Context.getOrderService().saveOrder((DrugOrder)o);
 			} else if ( "org.openmrs.Encounter".equals(className) ) {
-				if ( !knownToExist ) Context.getEncounterService().createEncounter((Encounter)o);
-				else Context.getEncounterService().updateEncounter((Encounter)o);
+				Context.getEncounterService().saveEncounter((Encounter)o);
 			} else if ( "org.openmrs.EncounterType".equals(className) ) {
-				if ( !knownToExist ) Context.getAdministrationService().createEncounterType((EncounterType)o);
-				else Context.getAdministrationService().updateEncounterType((EncounterType)o);
+				Context.getEncounterService().saveEncounterType((EncounterType)o);
 			} else if ( "org.openmrs.Field".equals(className) ) {
-				if ( !knownToExist ) Context.getFormService().createField((org.openmrs.Field)o);
-				else Context.getFormService().updateField((org.openmrs.Field)o);
+				Context.getFormService().saveField((org.openmrs.Field)o);
 			} else if ( "org.openmrs.FieldAnswer".equals(className) ) {
 				log.debug("UNABLE TO CREATE/UPDATE FieldAnswer in Synchronization process - no service method exists");
 				isUpdated = false;
 			} else if ( "org.openmrs.FieldType".equals(className) ) {
-				if ( !knownToExist ) Context.getAdministrationService().createFieldType((FieldType)o);
-				else Context.getAdministrationService().updateFieldType((FieldType)o);
+				Context.getFormService().saveFieldType((FieldType)o);
 			} else if ( "org.openmrs.Form".equals(className) ) {
-				if ( !knownToExist ) Context.getFormService().createForm((Form)o);
-				else Context.getFormService().updateForm((Form)o);
+				Context.getFormService().saveForm((Form)o);
 			} else if ( "org.openmrs.FormField".equals(className) ) {
-				if ( !knownToExist ) Context.getFormService().createFormField((FormField)o);
-				else Context.getFormService().updateFormField((FormField)o);
+				Context.getFormService().saveFormField((FormField)o);
 			} else if ( "org.openmrs.GlobalProperty".equals(className) ) {
-				log.debug("UNABLE TO CREATE/UPDATE GlobalProperty in Synchronization process - no service method exists");
-				isUpdated = false;
+				Context.getAdministrationService().saveGlobalProperty((GlobalProperty)o);
 			} else if ( "org.openmrs.Location".equals(className) ) { 
-				if ( !knownToExist ) Context.getAdministrationService().createLocation((Location)o);
-				else Context.getAdministrationService().updateLocation((Location)o);
+				Context.getLocationService().saveLocation((Location)o);
 			} else if ( "org.openmrs.LoginCredential".equals(className) ) {
-				LoginCredential lc = (LoginCredential)o;
-				
-				// this is really tricky.  the userId won't be the same as it was in the previous system, we have to circumvent with guid
-				User thisUser = Context.getUserService().getUserByGuid(lc.getUserGuid());
-				
-				log.warn("In system, User has id: " + thisUser.getUserId() + ", but in tx, user has id: " + lc.getUserId());
-				
-				lc.setUserId(thisUser.getUserId());
-				
-				Context.getUserService().updateLoginCredential(lc); 
+				log.debug("UNABLE TO CREATE/UPDATE LoginCredential in Synchronization process - no service method exists");
+				isUpdated = false;
 			} else if ( "org.openmrs.MimeType".equals(className) ) {
-				if ( !knownToExist ) Context.getAdministrationService().createMimeType((MimeType)o);
-				else Context.getAdministrationService().updateMimeType((MimeType)o);
+				Context.getObsService().saveMimeType((MimeType)o);
 			} else if ( "org.openmrs.Obs".equals(className) ) {
-				if ( !knownToExist ) Context.getObsService().createObs((Obs)o);
-				else Context.getObsService().updateObs((Obs)o);
+				Context.getObsService().saveObs((Obs)o,((Obs)o).getVoidReason());
 			} else if ( "org.openmrs.Order".equals(className) ){
-				if ( !knownToExist ) Context.getOrderService().createOrder((DrugOrder)o);
-				else Context.getOrderService().createOrder((DrugOrder)o);
+				Context.getOrderService().saveOrder((Order)o);
 			} else if ( "org.openmrs.OrderType".equals(className) ){
-				if ( !knownToExist ) Context.getOrderService().createOrderType((OrderType)o);
-				else Context.getOrderService().updateOrderType((OrderType)o);
+				Context.getOrderService().saveOrderType((OrderType)o);
 			} else if ( "org.openmrs.Patient".equals(className) ){
-				if ( !knownToExist ) Context.getPatientService().createPatientNoChecks((Patient)o);
-				else Context.getPatientService().updatePatientNoChecks((Patient)o);
+				Context.getPatientService().savePatient((Patient)o);
 			} else if ( "org.openmrs.PatientIdentifierType".equals(className) ) {
-				if ( !knownToExist ) Context.getAdministrationService().createPatientIdentifierType((PatientIdentifierType)o);
-				else Context.getAdministrationService().updatePatientIdentifierType((PatientIdentifierType)o);
+				Context.getPatientService().savePatientIdentifierType((PatientIdentifierType)o);
 			} else if ( "org.openmrs.PatientIdentifier".equals(className) ) {
-				if ( !knownToExist ) Context.getPatientService().createPatientIdentifierSync((PatientIdentifier)o);
-				else Context.getPatientService().updatePatientIdentifierSync((PatientIdentifier)o);
+				Context.getPatientService().savePatient(((PatientIdentifier)o).getPatient());
 			} else if ( "org.openmrs.PatientProgram".equals(className) ) {
-				if ( !knownToExist ) Context.getProgramWorkflowService().createPatientProgram((PatientProgram)o);
-				else Context.getProgramWorkflowService().updatePatientProgram((PatientProgram)o);
+				Context.getProgramWorkflowService().savePatientProgram((PatientProgram)o);
 			} else if ( "org.openmrs.PatientState".equals(className) ) {
-				if ( !knownToExist ) Context.getProgramWorkflowService().createPatientState((PatientState)o);
-				else Context.getProgramWorkflowService().updatePatientState((PatientState)o);
+				Context.getProgramWorkflowService().savePatientProgram(((PatientState)o).getPatientProgram());
 			} else if ( "org.openmrs.Person".equals(className) ) {
-				if ( !knownToExist ) {
-					Person p = Context.getPersonService().createPerson((Person)o);
-				}
-				else Context.getPersonService().updatePerson((Person)o);
+				Context.getPersonService().savePerson((Person)o);
 			} else if ( "org.openmrs.PersonAddress".equals(className) ) {
-				if ( !knownToExist ) Context.getPersonService().createPersonAddress((PersonAddress)o);
-				else Context.getPersonService().updatePersonAddress((PersonAddress)o);
+				Context.getPersonService().savePerson(((PersonAddress)o).getPerson());
 			} else if ( "org.openmrs.PersonAttribute".equals(className) ) {
-				if ( !knownToExist ) Context.getPersonService().createPersonAttribute((PersonAttribute)o);
-				else Context.getPersonService().updatePersonAttribute((PersonAttribute)o);
+				Context.getPersonService().savePerson(((PersonAttribute)o).getPerson());
 			} else if ( "org.openmrs.PersonAttributeType".equals(className) ) {
-				if ( !knownToExist ) Context.getPersonService().createPersonAttributeType((PersonAttributeType)o);
-				else Context.getPersonService().updatePersonAttributeType((PersonAttributeType)o);
+				Context.getPersonService().savePersonAttributeType((PersonAttributeType)o);
 			} else if ( "org.openmrs.PersonName".equals(className) ) {
-				if ( !knownToExist ) Context.getPersonService().createPersonName((PersonName)o);
-				else Context.getPersonService().updatePersonName((PersonName)o);
+				PersonName pn = (PersonName)o;
+				Context.getPersonService().savePerson(pn.getPerson());
 			} else if ( "org.openmrs.Privilege".equals(className) ) {
-				if ( !knownToExist ) Context.getAdministrationService().createPrivilege((Privilege)o);
-				else Context.getAdministrationService().updatePrivilege((Privilege)o);
+				Context.getUserService().savePrivilege((Privilege)o);
 			} else if ( "org.openmrs.Program".equals(className) ) {
-				if ( !knownToExist ) Context.getProgramWorkflowService().createOrUpdateProgram((Program)o);
-				else Context.getProgramWorkflowService().createOrUpdateProgram((Program)o);
+				Context.getProgramWorkflowService().saveProgram((Program)o);
 			} else if ( "org.openmrs.ProgramWorkflow".equals(className) ) {
-				if ( !knownToExist ) Context.getProgramWorkflowService().createWorkflow((ProgramWorkflow)o);
-				else Context.getProgramWorkflowService().updateWorkflow((ProgramWorkflow)o);
+				ProgramWorkflow pw = (ProgramWorkflow) o;
+				pw.getProgram().addWorkflow(pw);
+				Context.getProgramWorkflowService().saveProgram(pw.getProgram());
 			} else if ( "org.openmrs.ProgramWorkflowState".equals(className) ) {
-				if ( !knownToExist ) Context.getProgramWorkflowService().createState((ProgramWorkflowState)o);
-				else Context.getProgramWorkflowService().updateState((ProgramWorkflowState)o);
+				Context.getProgramWorkflowService().saveProgram(((ProgramWorkflowState)o).getProgramWorkflow().getProgram());
 			} else if ( "org.openmrs.Relationship".equals(className) ) {
-				if ( !knownToExist ) Context.getPersonService().createRelationship((Relationship)o);
-				else Context.getPersonService().updateRelationship((Relationship)o);
+				Context.getPersonService().saveRelationship((Relationship)o);
 			} else if ( "org.openmrs.RelationshipType".equals(className) ) {
-				if ( !knownToExist ) Context.getPersonService().createRelationshipType((RelationshipType)o);
-				else Context.getPersonService().updateRelationshipType((RelationshipType)o);
+				Context.getPersonService().saveRelationshipType((RelationshipType)o);
 			} else if ( "org.openmrs.Role".equals(className) ) {
-				if ( !knownToExist ) Context.getAdministrationService().createRole((Role)o);
-				else Context.getAdministrationService().updateRole((Role)o);
+				Context.getUserService().saveRole((Role)o);
 			} else if ( "org.openmrs.Tribe".equals(className) ) { 
-				if ( !knownToExist ) Context.getAdministrationService().createTribe((Tribe)o);
-				else Context.getAdministrationService().updateTribe((Tribe)o);
+				log.debug("UNABLE TO CREATE/UPDATE Tribe in Synchronization process - object not recognized");
+				isUpdated = false;
 			} else if ( "org.openmrs.User".equals(className) ) {
-				if ( !knownToExist ) Context.getUserService().createUser((User)o);
-				else Context.getUserService().updateUser((User)o);
+				Context.getUserService().saveUser((User)o,null);
 			} else {
 				log.debug("UNABLE TO CREATE/UPDATE " + className + " in Synchronization process - object not recognized");
 				isUpdated = false;

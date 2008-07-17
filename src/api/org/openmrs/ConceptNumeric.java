@@ -17,8 +17,10 @@ import org.openmrs.synchronization.Synchronizable;
 
 
 /**
- * ConceptNumeric
- * @version 1.0
+ * The ConceptNumeric extends upon the Concept object by adding some
+ * number range values 
+ * 
+ * @see Concept
  */
 public class ConceptNumeric extends Concept implements java.io.Serializable, Synchronizable {
 
@@ -50,6 +52,11 @@ public class ConceptNumeric extends Concept implements java.io.Serializable, Syn
 	public ConceptNumeric() {
 	}
 	
+	/**
+	 * Generic constructor taking the primary key
+	 * 
+	 * @param conceptId key for this numeric concept
+	 */
 	public ConceptNumeric(Integer conceptId) {
 		setConceptId(conceptId);
 	}
@@ -85,6 +92,9 @@ public class ConceptNumeric extends Concept implements java.io.Serializable, Syn
 		this.precise   = false;
 	}
 
+	/**
+	 * @see org.openmrs.Concept#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptNumeric) {
 			ConceptNumeric c = (ConceptNumeric)obj;
@@ -93,6 +103,9 @@ public class ConceptNumeric extends Concept implements java.io.Serializable, Syn
 		return false;
 	}
 	
+	/**
+	 * @see org.openmrs.Concept#hashCode()
+	 */
 	public int hashCode() {
 		if (getConceptId() == null) return super.hashCode();
 		int hash = 6;

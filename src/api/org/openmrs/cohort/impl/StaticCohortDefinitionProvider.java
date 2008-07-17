@@ -20,6 +20,7 @@ import org.openmrs.Cohort;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortDefinition;
+import org.openmrs.cohort.CohortDefinitionItemHolder;
 import org.openmrs.cohort.CohortDefinitionProvider;
 import org.openmrs.cohort.StaticCohortDefinition;
 import org.openmrs.report.EvaluationContext;
@@ -55,14 +56,20 @@ public class StaticCohortDefinitionProvider implements CohortDefinitionProvider 
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#getAllCohortDefinitions()
 	 */
-	public List<CohortDefinition> getAllCohortDefinitions() {
-		List<CohortDefinition> ret = new Vector<CohortDefinition>();
-		for (Cohort c : Context.getCohortService().getCohorts()) {
-			ret.add(new StaticCohortDefinition(c));
+	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
+		List<CohortDefinitionItemHolder> ret = new Vector<CohortDefinitionItemHolder>();
+		for (Cohort cohort : Context.getCohortService().getCohorts()) {
+			CohortDefinitionItemHolder item = new CohortDefinitionItemHolder();			
+			CohortDefinition cohortDefinition = new StaticCohortDefinition(cohort);
+			item.setKey(cohort.getCohortId() + ":" + cohortDefinition.getClass().getCanonicalName());
+			item.setName(cohort.getName());
+			item.setCohortDefinition(cohortDefinition);
+			ret.add(item);
 		}
 		return ret;
 	}
-
+	
+	
 	/**
 	 * @see org.openmrs.cohort.CohortDefinitionProvider#getCohortDefinition(java.lang.Integer)
 	 */

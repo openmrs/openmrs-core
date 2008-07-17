@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
@@ -30,10 +32,16 @@ import org.openmrs.ConceptSynonym;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 
+/**
+ * This servlet will package all non retired concepts into a comma delimited file.
+ * 
+ * Retired concepts are ignored.
+ */
 public class DownloadDictionaryServlet extends HttpServlet {
 
 	public static final long serialVersionUID = 1231231L;
-
+	private Log log = LogFactory.getLog(this.getClass());
+	
 	/**
 	 * 
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
@@ -41,22 +49,21 @@ public class DownloadDictionaryServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
-		Locale locale = Context.getLocale();
 		
-		ConceptService cs = Context.getConceptService();
-		String s = new SimpleDateFormat("dMy_Hm").format(new Date());
-
-		response.setHeader("Content-Type", "text/csv");
-		response.setHeader("Content-Disposition", "attachment; filename=conceptDictionary" + s + ".csv");
-		
-		String line = "Concept Id,Name,Description,Synonyms,Answers,Class,Datatype,Creator,Changed By";
-		response.getOutputStream().println(line);
-		
-		for (Concept c : cs.getConcepts("conceptId", "asc")){
+		try {
+			Locale locale = Context.getLocale();
 			
-			if (c.isRetired() == false) {
+			ConceptService cs = Context.getConceptService();
+			String s = new SimpleDateFormat("dMy_Hm").format(new Date());
+	
+			response.setHeader("Content-Type", "text/csv;charset=UTF-8");
+			response.setHeader("Content-Disposition", "attachment; filename=conceptDictionary" + s + ".csv");
 			
+			String line = "Concept Id,Name,Description,Synonyms,Answers,Class,Datatype,Changed By,Creator\n";
+			response.getWriter().write(line);
+			
+			for (Concept c : cs.getAllConcepts("conceptId", true, false)){
+				
 				line = c.getConceptId()+ ",";
 				String name, description;
 				ConceptName cn = c.getName(locale);
@@ -80,9 +87,9 @@ public class DownloadDictionaryServlet extends HttpServlet {
 				tmp = "";
 				for (ConceptAnswer answer : c.getAnswers()) {
 					if (answer.getAnswerConcept() != null)
-						tmp += answer.getAnswerConcept().toString() + "\n";
+						tmp += answer.getAnswerConcept().getName() + "\n";
 					else if (answer.getAnswerDrug() != null)
-						tmp += answer.getAnswerDrug().toString() + "\n";
+						tmp += answer.getAnswerDrug().getFullName(Context.getLocale()) + "\n";
 				}
 				line += '"' + tmp.trim() + "\",";
 				
@@ -105,11 +112,14 @@ public class DownloadDictionaryServlet extends HttpServlet {
 				line += '"';
 				if (c.getCreator() != null)
 					line += c.getCreator().getPersonName();
-				line += "\"";
+				line += "\"\n";
 			
-				response.getOutputStream().println(line);
-				
+				response.getWriter().write(line);
 			}
+			
+		}
+		catch (Throwable t) {
+			log.error("Error while downloading concepts.", t);
 		}
 	}
 	

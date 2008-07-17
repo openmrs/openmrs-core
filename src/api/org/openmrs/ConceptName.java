@@ -27,6 +27,7 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	public static final long serialVersionUID = 33226787L;
 
 	// Fields
+
 	private Integer conceptNameId;
 	private Concept concept;
 	private String name;
@@ -60,6 +61,23 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	public ConceptName() {
 	}
 	
+	/**
+	 * Convenience constructor to create a ConceptName object by primary key
+	 * 
+	 * @param conceptNameId
+	 */
+	public ConceptName(Integer conceptNameId) {
+		this.conceptNameId = conceptNameId;
+	}
+	
+	/**
+	 * Convenience constructor taking in the required properties
+	 * 
+	 * @param name
+	 * @param shortName
+	 * @param description
+	 * @param locale
+	 */
 	public ConceptName(String name, String shortName, String description, Locale locale) {
 		setName(name);
 		setShortName(shortName);
@@ -67,6 +85,9 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 		setDescription(description);  
 	}
 
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptName) {
 			ConceptName c = (ConceptName) obj;
@@ -77,6 +98,9 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 		return false;
 	}
 
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getConcept() == null || this.getName() == null
 				|| this.getLocale() == null)
@@ -88,6 +112,11 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 		return hash;
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @return
+	 */
 	public String getShortestName() {
 		String ret = getShortName();
 		if (ret == null || ret.length() == 0)
@@ -97,14 +126,12 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 		return ret;
 	}
 
-	// Property accessors
-
 	/**
-	 * @return Returns the conceptId.
-	 */
-	public Integer getConceptNameId() {
-		return conceptNameId;
-	}
+     * @return the conceptNameId
+     */
+    public Integer getConceptNameId() {
+    	return conceptNameId;
+    }
 
 	/**
 	 * @param conceptNameId The conceptId to set.
@@ -205,6 +232,9 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 		this.dateCreated = dateCreated;
 	}
 
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return this.name;
 	}

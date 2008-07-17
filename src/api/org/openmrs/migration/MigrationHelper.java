@@ -328,7 +328,7 @@ public class MigrationHelper {
 				//ProgramWorkflow wf = pws.getWorkflow(program, temp[3]);
 				ProgramWorkflow wf = program.getWorkflowByName(temp[3]);
 				if (wf == null)
-					throw new RuntimeException("Couldn't find workflow \"" + temp[3] + "\" for program " + program + " (in " + program.getWorkflows() + ")");
+					throw new RuntimeException("Couldn't find workflow \"" + temp[3] + "\" for program " + program + " (in " + program.getAllWorkflows() + ")");
 				//ProgramWorkflowState st = pws.getState(wf, temp[4]);
 				ProgramWorkflowState st = wf.getStateByName(temp[4]);
 				if (st == null)

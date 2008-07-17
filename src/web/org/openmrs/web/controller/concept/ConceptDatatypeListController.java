@@ -117,7 +117,7 @@ public class ConceptDatatypeListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
-	    	cdList = cs.getConceptDatatypes();
+	    	cdList = cs.getAllConceptDatatypes();
 		}
     	
         return cdList;

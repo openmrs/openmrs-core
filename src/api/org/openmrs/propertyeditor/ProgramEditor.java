@@ -34,7 +34,7 @@ public class ProgramEditor extends PropertyEditorSupport {
 				if (text.startsWith("concept.")) {
 					Integer conceptId = Integer.valueOf(text.substring(text.indexOf('.') + 1));
 					Concept c = Context.getConceptService().getConcept(conceptId);
-					setValue(Context.getProgramWorkflowService().getProgram(c.getName().getName()));
+					setValue(Context.getProgramWorkflowService().getProgramByName(c.getName().getName()));
 				} else {
 					Integer programId = Integer.valueOf(text);
 					setValue(Context.getProgramWorkflowService().getProgram(programId));

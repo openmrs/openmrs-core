@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.SortedMap;
 
 import org.openmrs.annotation.Authorized;
+import org.openmrs.api.OpenmrsService;
 import org.openmrs.util.OpenmrsMemento;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
  *  Defines methods required to schedule a task.  
  */
 @Transactional
-public interface SchedulerService { 
+public interface SchedulerService extends OpenmrsService { 
 
 	/**
 	 * Checks the status of a scheduled task.  
@@ -40,31 +41,31 @@ public interface SchedulerService {
 	 * Start all tasks that are scheduled to run on startup.
 	 */
 	@Authorized({"Manage Scheduler"})
-	void startup();
+	public void onStartup();
 	
 	/**
 	 * Stop all tasks and clean up the scheduler instance.
 	 */
 	@Authorized({"Manage Scheduler"})
-	void shutdown();
+	public void onShutdown();
 	
 	/**
 	 * Cancel a scheduled task.
 	 */
 	@Authorized({"Manage Scheduler"})
-	void shutdownTask(TaskDefinition task) throws SchedulerException;
+	public void shutdownTask(TaskDefinition task) throws SchedulerException;
 
 	/**
 	 * Start a scheduled task.
 	 */
 	@Authorized({"Manage Scheduler"})
-	void scheduleTask(TaskDefinition task) throws SchedulerException;
+	public void scheduleTask(TaskDefinition task) throws SchedulerException;
 	
 	/**
 	 * Stop and start a scheduled task.
 	 */
 	@Authorized({"Manage Scheduler"})
-	void rescheduleTask(TaskDefinition task) throws SchedulerException;
+	public void rescheduleTask(TaskDefinition task) throws SchedulerException;
 	
 	/**
 	 * Loop over all currently started tasks and cycle them.
@@ -72,7 +73,7 @@ public interface SchedulerService {
 	 * (e.g. during module start/stop)
 	 */
 	@Authorized({"Manage Scheduler"})
-	void rescheduleAllTasks() throws SchedulerException;
+	public void rescheduleAllTasks() throws SchedulerException;
 	
 	/**
 	 * Get scheduled tasks.
@@ -81,7 +82,7 @@ public interface SchedulerService {
 	 */
 	@Authorized({"Manage Scheduler"})
 	@Transactional(readOnly=true)
-	Collection<TaskDefinition> getScheduledTasks();
+	public Collection<TaskDefinition> getScheduledTasks();
 
 	/**
 	 * Get the list of tasks that are available to be scheduled.  
@@ -91,7 +92,7 @@ public interface SchedulerService {
 	 */
 	@Authorized({"Manage Scheduler"})
 	@Transactional(readOnly=true)
-	Collection<TaskDefinition> getRegisteredTasks();
+	public Collection<TaskDefinition> getRegisteredTasks();
 
 	/**
 	 * Get the task with the given identifier.
@@ -100,7 +101,7 @@ public interface SchedulerService {
 	 */
 	@Authorized({"Manage Scheduler"})
 	@Transactional(readOnly=true)
-	TaskDefinition getTask(Integer id);
+	public TaskDefinition getTask(Integer id);
 
 	/**
 	 * Delete the task with the given identifier.
@@ -108,7 +109,7 @@ public interface SchedulerService {
 	 * @param	id 		the identifier of the task
 	 */
 	@Authorized({"Manage Scheduler"})
-	void deleteTask(Integer id);
+	public void deleteTask(Integer id);
 
 	/**
 	 * Create the given task
@@ -116,25 +117,25 @@ public interface SchedulerService {
 	 * @param	task 		the task to be created
 	 */
 	@Authorized({"Manage Scheduler"})
-	void saveTask(TaskDefinition task);
+	public void saveTask(TaskDefinition task);
 	
 	/**
 	 * Return SchedulerConstants
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	SortedMap<String,String> getSystemVariables();	
+	public SortedMap<String,String> getSystemVariables();	
 	
 	/**
 	 * Save the state of the scheduler service to Memento
 	 * @return
 	 */
-	OpenmrsMemento saveToMemento();
+	public OpenmrsMemento saveToMemento();
 	
 	/**
 	 * Restore the scheduler service to state defined by Memento
 	 * @param memento
 	 * @return
 	 */
-	void restoreFromMemento(OpenmrsMemento memento);
+	public void restoreFromMemento(OpenmrsMemento memento);
 }

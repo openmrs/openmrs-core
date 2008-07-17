@@ -13,8 +13,10 @@
  */
 package org.openmrs.patient.impl;
 
+import org.openmrs.patient.UnallowedIdentifierException;
+
 /**
- * A IdentifierValidator based on the Riegenstrief Institute's version of the Luhn Algorithm.
+ * A IdentifierValidator based on the Regenstrief Institute's version of the Luhn Algorithm.
  */
 public class LuhnIdentifierValidator extends BaseHyphenatedIdentifierValidator {
 
@@ -89,5 +91,19 @@ public class LuhnIdentifierValidator extends BaseHyphenatedIdentifierValidator {
     public String getAllowedCharacters() {
 	    return ALLOWED_CHARS;
     }
-
+	
+	/**
+	 * @see org.openmrs.patient.IdentifierValidator#getValidIdentifier(java.lang.String)
+	 */
+	@Override
+	public String getValidIdentifier(String undecoratedIdentifier)
+	        throws UnallowedIdentifierException {
+		
+		checkAllowedIdentifier(undecoratedIdentifier);
+		
+		int checkDigit = getCheckDigit(undecoratedIdentifier);
+		
+		String result = undecoratedIdentifier + "-" + checkDigit;
+		return result;
+	}
 }

@@ -18,135 +18,166 @@ import java.util.List;
 
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.OpenmrsService;
 import org.openmrs.notification.db.AlertDAO;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Contains methods pertaining to creating/deleting/voiding Alerts in the system
+ * 
+ * Use:<br/>
+ * 
+ * <pre>
+ *   Alert alert = new Alert();
+ *   alert.set___(___);
+ *   ...etc
+ *   Context.getAlertService().saveAlert(alert);
+ * </pre>
+ */
 @Transactional
-public interface AlertService {
+public interface AlertService extends OpenmrsService {
 
+	/**
+	 * Used by Spring to set the specific/chosen database access implementation
+	 * 
+	 * @param dao The dao implementation to use
+	 */
 	public void setAlertDAO(AlertDAO dao);
 
 	/**
-	 * Creates a new alert record
+	 * Save the given <code>alert</code> in the database
 	 * 
-	 * @param alert
-	 *            to be created
+	 * @param alert the Alert object to save
+	 * @return The saved alert object
 	 * @throws APIException
 	 */
-	public void createAlert(Alert alert) throws Exception;
+	public Alert saveAlert(Alert alert) throws APIException;
 
 	/**
-	 * Convenience method for creating an alert
-	 * @param text
-	 * @param User assigned to this alert
-	 * @throws Exception
+	 * @deprecated use {@link #saveAlert(Alert)}
 	 */
-	public void createAlert(String text, User user) throws Exception;
+	public void createAlert(Alert alert) throws APIException;
 
 	/**
-	 * Convenience method for creating an alert
-	 * @param text
-	 * @param Collection<User> users assigned to this alert
-	 * @throws Exception
+	 * Use AlertService.saveAlert(new Alert(text, user))
+	 * 
+	 * @deprecated use {@link #saveAlert(Alert)}
+	 */
+	public void createAlert(String text, User user) throws APIException;
+
+	/**
+	 * Use AlertService.saveAlert(new Alert(text, users))
+	 * 
+	 * @deprecated use {@link #saveAlert(Alert)}
 	 */
 	public void createAlert(String text, Collection<User> users)
-			throws Exception;
+	        throws APIException;
 
 	/**
 	 * Get alert by internal identifier
 	 * 
-	 * @param alertId
-	 *            internal alert identifier
+	 * @param alertId internal alert identifier
 	 * @return alert with given internal identifier
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	public Alert getAlert(Integer alertId) throws Exception;
+	@Transactional(readOnly = true)
+	public Alert getAlert(Integer alertId) throws APIException;
 
 	/**
-	 * Update alert
+	 * @deprecated use {@link #saveAlert(Alert)}
+	 */
+	public void updateAlert(Alert alert) throws APIException;
+
+	/**
+	 * Completely delete the given alert from the database
 	 * 
-	 * @param alert
-	 *            to be updated
+	 * @param alert the Alert to purge/delete
 	 * @throws APIException
 	 */
-	public void updateAlert(Alert alert) throws Exception;
+	public void purgeAlert(Alert alert) throws APIException;
 
 	/**
-	 * Mark the given alert as read by the authenticated user
+	 * Use AlertService.saveAlert(alert.markAlertRead())
 	 * 
-	 * @param alert
-	 * @throws Exception
+	 * @deprecated use {@link #saveAlert(Alert)}
 	 */
-	public void markAlertRead(Alert alert) throws Exception;
+	public void markAlertRead(Alert alert) throws APIException;
 
 	/**
-	 * Find all alerts for a user whether or not the alert has
-	 * been read or expired
-	 * @param User
-	 * @return all alerts attributed to the user (with expired and read included)
-	 * @throws Exception
+	 * @deprecated use #getAlerts(User, boolean, boolean)
 	 */
-	@Transactional(readOnly=true)
-	public List<Alert> getAllAlerts(User user) throws Exception;
+	@Transactional(readOnly = true)
+	public List<Alert> getAllAlerts(User user) throws APIException;
 
 	/**
 	 * Find all alerts for a user that have not expired
+	 * 
 	 * @param User
 	 * @return alerts that are unread _or_ read that have not expired
-	 * @throws Exception
+	 * @see #getAlerts(User, boolean, boolean)
+	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	public List<Alert> getAllActiveAlerts(User user) throws Exception;
+	@Transactional(readOnly = true)
+	public List<Alert> getAllActiveAlerts(User user) throws APIException;
 
 	/**
-	 * Find the alerts that are not read and have not expired for a user
-	 * This will probably be the most commonly called method
+	 * @deprecated use {@link #getAlertsByUser(User)}
+	 */
+	@Transactional(readOnly = true)
+	public List<Alert> getAlerts(User user) throws APIException;
+
+	/**
+	 * Find the alerts that are not read and have not expired for a user This
+	 * will probably be the most commonly called method
 	 * 
-	 * @param user
-	 * @return alerts that are unread and unexpired
-	 * @throws Exception
-	 */
-	@Transactional(readOnly=true)
-	public List<Alert> getAlerts(User user) throws Exception;
-
-	/**
-	 * Find alerts for the currently authenticated user.  If no user is 
-	 *  authenticated, search on "new User()" (for "Anonymous" role 
-	 *  possibilities)
-	 * @return roles associated with Context.getAuthenticatedUser()
-	 * @throws Exception
-	 */
-	@Transactional(readOnly=true)
-	public List<Alert> getAlerts() throws Exception;
-
-	/**
+	 * If null is passed in for <code>user</code>, find alerts for the
+	 * currently authenticated user. If no user is authenticated, search on "new
+	 * User()" (for "Anonymous" role alert possibilities)
 	 * 
-	 * @param user to restrict to 
+	 * @param user the user that is assigned to the returned alerts
+	 * @return alerts that are unread and not expired
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	public List<Alert> getAlertsByUser(User user) throws APIException;
+
+	/**
+	 * @deprecated use {@link #getAlertsByUser(User)} and pass "null" as the
+	 *             parameter for <code>user</code>
+	 */
+	@Transactional(readOnly = true)
+	public List<Alert> getAlerts() throws APIException;
+
+	/**
+	 * Finds alerts for the given user with the given status
+	 * 
+	 * @param user to restrict to
 	 * @param includeRead
 	 * @param includeExpired
 	 * @return alerts for this user with these options
-	 * @throws Exception
+	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<Alert> getAlerts(User user, boolean includeRead,
-			boolean includeExpired) throws Exception;
+	        boolean includeExpired) throws APIException;
 
 	/**
 	 * Get all unexpired alerts for all users
+	 * 
 	 * @return list of unexpired alerts
-	 * @throws Exception
+	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	public List<Alert> getAllAlerts() throws Exception;
+	@Transactional(readOnly = true)
+	public List<Alert> getAllAlerts() throws APIException;
 
 	/**
 	 * Get alerts for all users while obeying includeExpired
+	 * 
 	 * @param includeExpired
 	 * @return list of alerts
-	 * @throws Exception
+	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	public List<Alert> getAllAlerts(boolean includeExpired) throws Exception;
+	@Transactional(readOnly = true)
+	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException;
 
 }

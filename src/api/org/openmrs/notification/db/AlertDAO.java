@@ -19,15 +19,38 @@ import org.openmrs.User;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.notification.Alert;
 
+/**
+ * Database methods for the AlertService
+ * 
+ * @see org.openmrs.api.context.Context
+ * @see org.openmrs.notification.AlertService
+ */
 public interface AlertDAO {
-	public void createAlert(Alert alert) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.notification.AlertService#saveAlert(org.openmrs.notification.Alert)
+	 */
+	public Alert saveAlert(Alert alert) throws DAOException;
 
+	/**
+	 * @see org.openmrs.notification.AlertService#getAlert(Integer)
+	 */
 	public Alert getAlert(Integer alertId) throws DAOException;
 
-	public void updateAlert(Alert alert) throws DAOException;
-
+	/**
+	 * @see org.openmrs.notification.AlertService#getAlerts(org.openmrs.User,
+	 *      boolean, boolean)
+	 */
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeVoided) throws DAOException;
 	
-	public List<Alert> getAllAlerts(boolean includeExpired) throws DAOException;
+	/**
+	 * @see org.openmrs.notification.AlertService#purgeAlert(org.openmrs.notification.Alert)
+	 */
+	public void deleteAlert(Alert alert) throws DAOException;
+
+	/**
+	 * @see org.openmrs.notification.AlertService#getAllAlerts(boolean)
+	 */
+	public List<Alert> getAllAlerts(boolean includeExpired);
 	
 }

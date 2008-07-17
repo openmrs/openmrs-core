@@ -1198,7 +1198,11 @@ public class OpenmrsUtil {
     	} else if (search.isSavedFilterReference()) {
     		return Context.getReportObjectService().getPatientFilterById(search.getSavedFilterId());
     	} else if (search.isSavedCohortReference()) {
-    		return new CohortFilter(Context.getCohortService().getCohort(search.getSavedCohortId()));
+    		Cohort c = Context.getCohortService().getCohort(search.getSavedCohortId());
+    		// to prevent lazy loading exceptions, cache the member ids here
+    		if (c != null)
+    			c.getMemberIds().size();
+    		return new CohortFilter(c);
     	} else if (search.isComposition()) {
     		if (history == null && search.requiresHistory())
     			throw new IllegalArgumentException("You can't evaluate this search without a history");

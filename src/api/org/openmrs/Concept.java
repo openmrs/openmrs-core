@@ -44,6 +44,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 	@Attribute(required=true)
 	private Integer conceptId;
 	private Boolean retired = false;
+	private User retiredBy;
+	private Date dateRetired;
+	private String retireReason;
 	private ConceptDatatype datatype;
 	private ConceptClass conceptClass;
 	private Boolean set = false;
@@ -83,7 +86,6 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 		answers = new HashSet<ConceptAnswer>();
 		synonyms = new HashSet<ConceptSynonym>();
 		conceptSets = new HashSet<ConceptSet>();
-		//conceptNumeric = new ConceptNumeric();
 	}
 
 	/** constructor with id */
@@ -333,6 +335,13 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 	 * @return
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
+		
+		// fail early if this concept has no names defined
+		if (getNames() == null || getNames().size() == 0) {
+			log.debug("there are no names defined for: " + conceptId);
+			return null;
+		}
+		
 		log.debug("Getting conceptName for locale: " + locale);
 		
 		ConceptName bestMatch = null; // name from compatible locale (not exactly exact)
@@ -342,8 +351,8 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 			locale = Context.getLocale(); // Don't presume en_US;
 
 		String desiredLanguage = locale.getLanguage();
-		String desiredCountry = locale.getCountry();
-
+		//String desiredCountry = locale.getCountry();
+		
 		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
 			ConceptName possibleName = i.next();
 
@@ -446,6 +455,48 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
+
+	/**
+     * @return the retiredBy
+     */
+    public User getRetiredBy() {
+    	return retiredBy;
+    }
+
+	/**
+     * @param retiredBy the retiredBy to set
+     */
+    public void setRetiredBy(User retiredBy) {
+    	this.retiredBy = retiredBy;
+    }
+
+	/**
+     * @return the dateRetired
+     */
+    public Date getDateRetired() {
+    	return dateRetired;
+    }
+
+	/**
+     * @param dateRetired the dateRetired to set
+     */
+    public void setDateRetired(Date dateRetired) {
+    	this.dateRetired = dateRetired;
+    }
+
+	/**
+     * @return the retireReason
+     */
+    public String getRetireReason() {
+    	return retireReason;
+    }
+
+	/**
+     * @param retireReason the retireReason to set
+     */
+    public void setRetireReason(String retireReason) {
+    	this.retireReason = retireReason;
+    }
 
 	/**
 	 * @return Returns the synonyms.

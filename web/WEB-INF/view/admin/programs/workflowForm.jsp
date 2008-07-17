@@ -110,7 +110,7 @@
 <script type="text/javascript">
 	<c:forEach var="state" items="${workflow.states}">
 		idToNameMap[${state.concept.conceptId}] = '<openmrs:concept conceptId="${state.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>';
-		<c:if test="${!state.voided}">
+		<c:if test="${!state.retired}">
 			states.push([ ${state.concept.conceptId}, ${state.initial}, ${state.terminal} ]);
 		</c:if>
 	</c:forEach>

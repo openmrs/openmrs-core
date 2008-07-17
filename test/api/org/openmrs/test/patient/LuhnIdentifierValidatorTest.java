@@ -18,7 +18,7 @@ import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import junit.framework.TestCase;
 
 /**
- *
+ * Tests the {@link LuhnIdentifierValidator}
  */
 public class LuhnIdentifierValidatorTest extends TestCase {
 	
@@ -36,7 +36,7 @@ public class LuhnIdentifierValidatorTest extends TestCase {
 		//Make sure valid identifiers come back with the right check digit
 		
 		for(int i=0;i<allowedIdentifiers.length;i++){
-			assertEquals(validator.getValidIdentifier(allowedIdentifiers[i]), allowedIdentifiers[i] + "-" + allowedIdentifiersCheckDigits[i]);
+			assertEquals(validator.getValidIdentifier(allowedIdentifiers[i]), allowedIdentifiers[i] + "-" + allowedIdentifiersCheckDigitsInts[i]);
 		}
 		
 		//Make sure invalid identifiers throw an exception

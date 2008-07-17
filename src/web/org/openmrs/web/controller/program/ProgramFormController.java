@@ -41,9 +41,12 @@ public class ProgramFormController extends SimpleFormController {
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
     	super.initBinder(request, binder);
     	
+    	// this depends on this form being a "session-form" (defined in openrms-servlet.xml)
+    	Program program = (Program) binder.getTarget();
+    	
 		binder.registerCustomEditor(Concept.class, new ConceptEditor());
         binder.registerCustomEditor(java.util.Collection.class, "workflows", 
-        		new WorkflowCollectionEditor());
+        		new WorkflowCollectionEditor(program));
     }
     
 	/**
@@ -84,12 +87,17 @@ public class ProgramFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
-		
+
 		if (Context.isAuthenticated()) {
 			Program p = (Program) obj;
-			Context.getProgramWorkflowService().createOrUpdateProgram(p);
+			try {
+				Context.getProgramWorkflowService().saveProgram(p);
+			}
+			catch (Exception e) {
+				log.warn("Error saving Program", e);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+			}
 			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Program.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));

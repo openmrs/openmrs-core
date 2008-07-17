@@ -14,6 +14,7 @@
 package org.openmrs.hl7.impl;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -23,9 +24,9 @@ import org.openmrs.Location;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
-import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
-import org.openmrs.hl7.HL7Constants;
+import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.hl7.HL7InQueue;
@@ -40,177 +41,312 @@ import ca.uhn.hl7v2.model.v25.datatype.XCN;
 import ca.uhn.hl7v2.model.v25.segment.PID;
 
 /**
- * OpenMRS HL7 API
+ * OpenMRS HL7 API default methods
  * 
- * @version 1.0
+ * This class shouldn't be instantiated by itself. Use the
+ * {@link org.openmrs.api.context.Context}
+ * 
+ * @see org.openmrs.hl7.HL7Service
  */
-public class HL7ServiceImpl implements HL7Service {
+public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
-	private HL7DAO dao;
+	protected HL7DAO dao;
 
-	public HL7ServiceImpl() { }
-
-	private HL7DAO getHL7DAO() {
-		return dao;
+	/**
+	 * Default constructor
+	 */
+	public HL7ServiceImpl() {
 	}
-	
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#setHL7DAO(org.openmrs.hl7.db.HL7DAO)
+	 */
 	public void setHL7DAO(HL7DAO dao) {
 		this.dao = dao;
 	}
 
-	public void createHL7Source(HL7Source hl7Source) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_ADD_HL7_SOURCE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to create an HL7 source");
-		getHL7DAO().createHL7Source(hl7Source);
-	}
+	/**
+	 * @see org.openmrs.hl7.HL7Service#saveHL7Source(org.openmrs.hl7.HL7Source)
+	 */
+	public HL7Source saveHL7Source(HL7Source hl7Source) throws APIException {
+		if (hl7Source.getCreator() == null)
+			hl7Source.setCreator(Context.getAuthenticatedUser());
+		if (hl7Source.getDateCreated() == null)
+			hl7Source.setDateCreated(new Date());
 
-	public HL7Source getHL7Source(Integer hl7SourceId) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_SOURCE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 source");
-		return getHL7DAO().getHL7Source(hl7SourceId);
-	}
-	
-	public HL7Source getHL7Source(String name) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_SOURCE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 source");
-		return getHL7DAO().getHL7Source(name);
-	}
-
-	public Collection<HL7Source> getHL7Sources() {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_SOURCE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 source");
-		return getHL7DAO().getHL7Sources();
-	}
-
-	public void updateHL7Source(HL7Source hl7Source) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_UPDATE_HL7_SOURCE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to update an HL7 source");
-		getHL7DAO().updateHL7Source(hl7Source);
-	}
-
-	public void deleteHL7Source(HL7Source hl7Source) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_DELETE_HL7_SOURCE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to delete an HL7 source");
-		getHL7DAO().deleteHL7Source(hl7Source);
-	}
-
-	public void createHL7InQueue(HL7InQueue hl7InQueue) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_ADD_HL7_IN_QUEUE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to create an HL7 inbound queue entry");
-		getHL7DAO().createHL7InQueue(hl7InQueue);
-	}
-
-	public HL7InQueue getHL7InQueue(Integer hl7InQueueId) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 inbound queue entry");
-		return getHL7DAO().getHL7InQueue(hl7InQueueId);
-	}
-
-	public Collection<HL7InQueue> getHL7InQueues() {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 inbound queue entry");
-		return getHL7DAO().getHL7InQueues();
-	}
-
-	public HL7InQueue getNextHL7InQueue() {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 inbound queue entry");
-		return getHL7DAO().getNextHL7InQueue();
-	}
-
-	public void deleteHL7InQueue(HL7InQueue hl7InQueue) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_DELETE_HL7_IN_QUEUE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to delete an HL7 inbound queue entry");
-		getHL7DAO().deleteHL7InQueue(hl7InQueue);
-	}
-
-	public void createHL7InArchive(HL7InArchive hl7InArchive) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_ADD_HL7_IN_ARCHIVE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to create an HL7 inbound archive entry");
-		getHL7DAO().createHL7InArchive(hl7InArchive);
-	}
-
-	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 inbound archive entry");
-		return getHL7DAO().getHL7InArchive(hl7InArchiveId);
-	}
-
-	public Collection<HL7InArchive> getHL7InArchives() {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 inbound archive entry");
-		return getHL7DAO().getHL7InArchives();
-	}
-
-	public void updateHL7InArchive(HL7InArchive hl7InArchive) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_UPDATE_HL7_IN_ARCHIVE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to update an HL7 inbound archive entry");
-		getHL7DAO().updateHL7InArchive(hl7InArchive);
-	}
-
-	public void deleteHL7InArchive(HL7InArchive hl7InArchive) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_DELETE_HL7_IN_ARCHIVE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to delete an HL7 inbound archive entry");
-		getHL7DAO().deleteHL7InArchive(hl7InArchive);
-	}
-
-	public void createHL7InError(HL7InError hl7InError) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_ADD_HL7_IN_ARCHIVE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to create an HL7 inbound archive entry");
-		getHL7DAO().createHL7InError(hl7InError);
-	}
-
-	public HL7InError getHL7InError(Integer hl7InErrorId) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 inbound archive entry");
-		return getHL7DAO().getHL7InError(hl7InErrorId);
-	}
-
-	public Collection<HL7InError> getHL7InErrors() {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to view an HL7 inbound archive entry");
-		return getHL7DAO().getHL7InErrors();
-	}
-
-	public void updateHL7InError(HL7InError hl7InError) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_UPDATE_HL7_IN_ARCHIVE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to update an HL7 inbound archive entry");
-		getHL7DAO().updateHL7InError(hl7InError);
-	}
-
-	public void deleteHL7InError(HL7InError hl7InError) {
-		if (!Context.hasPrivilege(HL7Constants.PRIV_DELETE_HL7_IN_ARCHIVE))
-			throw new APIAuthenticationException(
-					"Insufficient privilege to delete an HL7 inbound archive entry");
-		getHL7DAO().deleteHL7InError(hl7InError);
+		return dao.saveHL7Source(hl7Source);
 	}
 
 	/**
-	 * @param xcn
-	 *            HL7 component of data type XCN (extended composite ID number
-	 *            and name for persons) (see HL7 2.5 manual Ch.2A.86)
+	 * @see org.openmrs.hl7.HL7Service#purgeHL7Source(org.openmrs.hl7.HL7Source)
+	 */
+	public void purgeHL7Source(HL7Source hl7Source) throws APIException {
+		dao.deleteHL7Source(hl7Source);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#retireHL7Source(org.openmrs.hl7.HL7Source)
+	 */
+	public HL7Source retireHL7Source(HL7Source hl7Source) throws APIException {
+		throw new APIException("Not implemented yet");
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#createHL7Source(org.openmrs.hl7.HL7Source)
+	 * @deprecated
+	 */
+	public void createHL7Source(HL7Source hl7Source) {
+		saveHL7Source(hl7Source);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7Source(java.lang.Integer)
+	 */
+	public HL7Source getHL7Source(Integer hl7SourceId) {
+		return dao.getHL7Source(hl7SourceId);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getAllHL7Sources()
+	 */
+	public List<HL7Source> getAllHL7Sources() throws APIException {
+		return dao.getAllHL7Sources();
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7SourceByName(java.lang.String)
+	 */
+	public HL7Source getHL7SourceByName(String name) throws APIException {
+		return dao.getHL7SourceByName(name);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7Source(java.lang.String)
+	 * @deprecated
+	 */
+	public HL7Source getHL7Source(String name) {
+		return getHL7SourceByName(name);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7Sources()
+	 * @deprecated
+	 */
+	public Collection<HL7Source> getHL7Sources() {
+		return getAllHL7Sources();
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#updateHL7Source(org.openmrs.hl7.HL7Source)
+	 * @deprecated
+	 */
+	public void updateHL7Source(HL7Source hl7Source) {
+		saveHL7Source(hl7Source);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#deleteHL7Source(org.openmrs.hl7.HL7Source)
+	 * @deprecated
+	 */
+	public void deleteHL7Source(HL7Source hl7Source) {
+		purgeHL7Source(hl7Source);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getAllHL7InQueues()
+	 */
+	public List<HL7InQueue> getAllHL7InQueues() throws APIException {
+		return dao.getAllHL7InQueues();
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#purgeHL7InQueue(org.openmrs.hl7.HL7InQueue)
+	 */
+	public void purgeHL7InQueue(HL7InQueue hl7InQueue) {
+		dao.deleteHL7InQueue(hl7InQueue);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#saveHL7InQueue(org.openmrs.hl7.HL7InQueue)
+	 */
+	public HL7InQueue saveHL7InQueue(HL7InQueue hl7InQueue) throws APIException {
+		if (hl7InQueue.getDateCreated() == null)
+			hl7InQueue.setDateCreated(new Date());
+
+		return dao.saveHL7InQueue(hl7InQueue);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#createHL7InQueue(org.openmrs.hl7.HL7InQueue)
+	 * @deprecated
+	 */
+	public void createHL7InQueue(HL7InQueue hl7InQueue) {
+		saveHL7InQueue(hl7InQueue);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7InQueue(java.lang.Integer)
+	 */
+	public HL7InQueue getHL7InQueue(Integer hl7InQueueId) {
+		return dao.getHL7InQueue(hl7InQueueId);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7InQueues()
+	 * @deprecated
+	 */
+	public Collection<HL7InQueue> getHL7InQueues() {
+		return getAllHL7InQueues();
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getNextHL7InQueue()
+	 */
+	public HL7InQueue getNextHL7InQueue() {
+		return dao.getNextHL7InQueue();
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#deleteHL7InQueue(org.openmrs.hl7.HL7InQueue)
+	 * @deprecated
+	 */
+	public void deleteHL7InQueue(HL7InQueue hl7InQueue) {
+		purgeHL7InQueue(hl7InQueue);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getAllHL7InArchives()
+	 */
+	public List<HL7InArchive> getAllHL7InArchives() throws APIException {
+		return dao.getAllHL7InArchives();
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#purgeHL7InArchive(org.openmrs.hl7.HL7InArchive)
+	 */
+	public void purgeHL7InArchive(HL7InArchive hl7InArchive)
+	        throws APIException {
+		dao.deleteHL7InArchive(hl7InArchive);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#saveHL7InArchive(org.openmrs.hl7.HL7InArchive)
+	 */
+	public HL7InArchive saveHL7InArchive(HL7InArchive hl7InArchive)
+	        throws APIException {
+
+		hl7InArchive.setDateCreated(new Date());
+
+		return dao.saveHL7InArchive(hl7InArchive);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#createHL7InArchive(org.openmrs.hl7.HL7InArchive)
+	 * @deprecated
+	 */
+	public void createHL7InArchive(HL7InArchive hl7InArchive) {
+		saveHL7InArchive(hl7InArchive);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7InArchive(java.lang.Integer)
+	 */
+	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId) {
+		return dao.getHL7InArchive(hl7InArchiveId);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7InArchives()
+	 * @deprecated
+	 */
+	public Collection<HL7InArchive> getHL7InArchives() {
+		return getAllHL7InArchives();
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#updateHL7InArchive(org.openmrs.hl7.HL7InArchive)
+	 * @deprecated
+	 */
+	public void updateHL7InArchive(HL7InArchive hl7InArchive) {
+		saveHL7InArchive(hl7InArchive);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#deleteHL7InArchive(org.openmrs.hl7.HL7InArchive)
+	 * @deprecated
+	 */
+	public void deleteHL7InArchive(HL7InArchive hl7InArchive) {
+		purgeHL7InArchive(hl7InArchive);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getAllHL7InErrors()
+	 */
+	public List<HL7InError> getAllHL7InErrors() throws APIException {
+		return dao.getAllHL7InErrors();
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#purgeHL7InError(org.openmrs.hl7.HL7InError)
+	 */
+	public void purgeHL7InError(HL7InError hl7InError)
+	        throws APIException {
+		dao.deleteHL7InError(hl7InError);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#saveHL7InError(org.openmrs.hl7.HL7InError)
+	 */
+	public HL7InError saveHL7InError(HL7InError hl7InError) throws APIException {
+		hl7InError.setDateCreated(new Date());
+
+		return dao.saveHL7InError(hl7InError);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#createHL7InError(org.openmrs.hl7.HL7InError)
+	 * @deprecated
+	 */
+	public void createHL7InError(HL7InError hl7InError) {
+		saveHL7InError(hl7InError);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7InError(java.lang.Integer)
+	 */
+	public HL7InError getHL7InError(Integer hl7InErrorId) {
+		return dao.getHL7InError(hl7InErrorId);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7InErrors()
+	 * @deprecated
+	 */
+	public Collection<HL7InError> getHL7InErrors() {
+		return dao.getAllHL7InErrors();
+	}
+
+	/**
+	 * @deprecated
+	 * @see org.openmrs.hl7.HL7Service#updateHL7InError(org.openmrs.hl7.HL7InError)
+	 */
+	public void updateHL7InError(HL7InError hl7InError) {
+		saveHL7InError(hl7InError);
+	}
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#deleteHL7InError(org.openmrs.hl7.HL7InError)
+	 * @deprecated
+	 */
+	public void deleteHL7InError(HL7InError hl7InError) {
+		purgeHL7InError(hl7InError);
+	}
+
+	/**
+	 * @param xcn HL7 component of data type XCN (extended composite ID number
+	 *        and name for persons) (see HL7 2.5 manual Ch.2A.86)
 	 * @return Internal ID # of the specified user, or null if that user can't
 	 *         be found or is ambiguous
 	 */
@@ -220,22 +356,18 @@ public class HL7ServiceImpl implements HL7Service {
 		String idNumber = xcn.getIDNumber().getValue();
 		String familyName = xcn.getFamilyName().getSurname().getValue();
 		String givenName = xcn.getGivenName().getValue();
-		
+
 		// unused
-		//String assigningAuthority = xcn.getAssigningAuthority()
-		//		.getUniversalID().getValue();
-		
-		
+		// String assigningAuthority = xcn.getAssigningAuthority()
+		// .getUniversalID().getValue();
+
 		/*
-		if ("null".equals(familyName))
-			familyName = null;
-		if ("null".equals(givenName))
-			givenName = null;
-		if ("null".equals(assigningAuthority))
-			assigningAuthority = null;
-		*/
+		 * if ("null".equals(familyName)) familyName = null; if
+		 * ("null".equals(givenName)) givenName = null; if
+		 * ("null".equals(assigningAuthority)) assigningAuthority = null;
+		 */
 		if (idNumber != null && idNumber.length() > 0) {
-			//log.debug("searching for user by id " + idNumber);
+			// log.debug("searching for user by id " + idNumber);
 			try {
 				Integer userId = new Integer(idNumber);
 				User user = Context.getUserService().getUser(userId);
@@ -245,7 +377,7 @@ public class HL7ServiceImpl implements HL7Service {
 				return null;
 			}
 		} else {
-			//log.debug("searching for user by name");
+			// log.debug("searching for user by name");
 			try {
 				StringBuilder username = new StringBuilder();
 				if (familyName != null) {
@@ -256,23 +388,22 @@ public class HL7ServiceImpl implements HL7Service {
 						username.append(" "); // separate names with a space
 					username.append(givenName);
 				}
-				//log.debug("looking for username '" + username + "'");
-				User user = Context.getUserService().getUserByUsername(
-						username.toString());
+				// log.debug("looking for username '" + username + "'");
+				User user = Context.getUserService()
+				                   .getUserByUsername(username.toString());
 				return user.getUserId();
 			} catch (Exception e) {
 				log.error("Error resolving user with family name '"
-						+ familyName + "' and given name '" + givenName + "'",
-						e);
+				                  + familyName + "' and given name '"
+				                  + givenName + "'",
+				          e);
 				return null;
 			}
 		}
 	}
 
 	/**
-	 * @param pl
-	 *            HL7 component of data type PL (person location) (see Ch
-	 *            2.A.53)
+	 * @param pl HL7 component of data type PL (person location) (see Ch 2.A.53)
 	 * @return internal identifier of the specified location, or null if it is
 	 *         not found or ambiguous
 	 */
@@ -292,28 +423,27 @@ public class HL7ServiceImpl implements HL7Service {
 			if (facility == null) { // we have no tricks left up our sleeve, so
 				// throw an exception
 				throw new HL7Exception("Error trying to treat PL.pointOfCare '"
-						+ pointOfCare + "' as a location.location_id", ex);
+				        + pointOfCare + "' as a location.location_id", ex);
 			}
 		}
 
 		// Treat the 4th component "Facility" as location.name
 		try {
-			Location l = Context.getEncounterService().getLocationByName(
-					facility);
+			Location l = Context.getEncounterService()
+			                    .getLocationByName(facility);
 			if (l == null) {
 				log.debug("Couldn't find a location named '" + facility + "'");
 			}
 			return l == null ? null : l.getLocationId();
 		} catch (Exception ex) {
 			log.error("Error trying to treat PL.facility '" + facility
-					+ "' as a location.name", ex);
+			        + "' as a location.name", ex);
 			return null;
 		}
 	}
 
 	/**
-	 * @param pid
-	 *            A PID segment of an hl7 message
+	 * @param pid A PID segment of an hl7 message
 	 * @return The internal id number of the Patient described by the PID
 	 *         segment, or null of the patient is not found, or if the PID
 	 *         segment is ambiguous
@@ -345,21 +475,22 @@ public class HL7ServiceImpl implements HL7Service {
 			// TODO if 1st component is blank, check 2nd and 3rd of assigning
 			// authority
 			String assigningAuthority = identifier.getAssigningAuthority()
-					.getNamespaceID().getValue();
+			                                      .getNamespaceID()
+			                                      .getValue();
 
 			if (assigningAuthority != null && assigningAuthority.length() > 0) {
 				// Assigning authority defined
 				try {
 					PatientIdentifierType pit = Context.getPatientService()
-							.getPatientIdentifierType(assigningAuthority);
+					                                   .getPatientIdentifierType(assigningAuthority);
 					if (pit == null) {
 						log.warn("Can't find PatientIdentifierType named '"
-								+ assigningAuthority + "'");
+						        + assigningAuthority + "'");
 						continue; // skip identifiers with unknown type
 					}
-					List<PatientIdentifier> matchingIds = Context
-							.getPatientService().getPatientIdentifiers(
-									hl7PatientId, pit);
+					List<PatientIdentifier> matchingIds = Context.getPatientService()
+					                                             .getPatientIdentifiers(hl7PatientId,
+					                                                                    pit);
 					if (matchingIds == null || matchingIds.size() < 1) {
 						// no matches
 						log.warn("NO matches found for " + hl7PatientId);
@@ -370,23 +501,22 @@ public class HL7ServiceImpl implements HL7Service {
 					} else {
 						// ambiguous identifier
 						log.debug("Ambiguous identifier in PID. "
-								+ matchingIds.size()
-								+ " matches for identifier '" + hl7PatientId
-								+ "' of type '" + pit + "'");
+						        + matchingIds.size()
+						        + " matches for identifier '" + hl7PatientId
+						        + "' of type '" + pit + "'");
 						continue; // try next identifier
 					}
 				} catch (Exception e) {
 					log.error("Error resolving patient identifier '"
-							+ hl7PatientId + "' for assigning authority '"
-							+ assigningAuthority + "'", e);
+					        + hl7PatientId + "' for assigning authority '"
+					        + assigningAuthority + "'", e);
 					continue;
 				}
 			} else {
 				try {
-					log
-							.debug("PID contains patient ID '"
-									+ hl7PatientId
-									+ "' without assigning authority -- assuming patient.patient_id");
+					log.debug("PID contains patient ID '"
+					        + hl7PatientId
+					        + "' without assigning authority -- assuming patient.patient_id");
 					patientId = Integer.parseInt(hl7PatientId);
 					return patientId;
 				} catch (NumberFormatException e) {
@@ -400,15 +530,18 @@ public class HL7ServiceImpl implements HL7Service {
 		return null;
 	}
 
+	/**
+	 * @see org.openmrs.hl7.HL7Service#garbageCollect()
+	 */
 	public void garbageCollect() {
-		getHL7DAO().garbageCollect();
+		dao.garbageCollect();
 	}
 
 	/**
 	 * @see org.openmrs.hl7.HL7Service#encounterCreated(org.openmrs.Encounter)
 	 */
 	public void encounterCreated(Encounter encounter) {
-		// nothing is done here in core.  Modules override/hook on this method
+		// nothing is done here in core. Modules override/hook on this method
 	}
-	
+
 }

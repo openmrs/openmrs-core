@@ -26,7 +26,7 @@
 
 					var displayString = patient.personName;
 					<c:if test="${not empty linkUrl}">
-						displayString = '<a id="${formFieldName}_name" href="#View" onclick="return gotoUrl("${linkUrl}", ' + patient.patientId + ')">' + displayString + '</a>';
+						displayString = '<a id="${formFieldName}_name" href="#View" onclick="return gotoPatient(\'${linkUrl}\', ' + patient.patientId + ')">' + displayString + '</a>';
 					</c:if>
 					patientPopup.displayNode.innerHTML = displayString;					
 					
@@ -39,6 +39,15 @@
 		);
 		
 	})
+	
+	function gotoPatient(url, pId) {
+		if (url === null || url === '') {
+			return false;
+		} else {
+			window.location = url + "?patientId=" + pId;
+		}
+		return false;
+	}
 </script>
 
 <div dojoType="PatientSearch" widgetId="${formFieldName}_search" patientId="${initialValue}"></div>

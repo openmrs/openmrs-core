@@ -36,6 +36,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.DataSetService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
@@ -132,8 +133,8 @@ public class Context {
 	 * @param userContext
 	 */
 	public static void setUserContext(UserContext ctx) { 
-		if (log.isDebugEnabled())
-			log.debug("Setting user context " + ctx);
+		if (log.isTraceEnabled())
+			log.trace("Setting user context " + ctx);
 		
 		Object[] arr = new Object[] {ctx};
 		userContextHolder.set(arr);
@@ -143,8 +144,8 @@ public class Context {
 	 * Clears the user context from the threadlocal.
 	 */
 	public static void clearUserContext() {
-		if (log.isDebugEnabled())
-			log.debug("Clearing user context " + userContextHolder.get());
+		if (log.isTraceEnabled())
+			log.trace("Clearing user context " + userContextHolder.get());
 		
 		userContextHolder.remove();
 	}
@@ -158,11 +159,11 @@ public class Context {
 	public static UserContext getUserContext() {
 		Object[] arr = userContextHolder.get();
 		
-		if (log.isDebugEnabled())
-			log.debug("Getting user context " + arr + " from userContextHolder " + userContextHolder);
+		if (log.isTraceEnabled())
+			log.trace("Getting user context " + arr + " from userContextHolder " + userContextHolder);
 		
 		if (arr == null) {
-			log.debug("userContext is null. Creating new userContext");
+			log.trace("userContext is null. Creating new userContext");
             setUserContext(new UserContext());
         }
 		return (UserContext)userContextHolder.get()[0];
@@ -179,8 +180,8 @@ public class Context {
 			serviceContext = ServiceContext.getInstance();
 		}
 		
-		if (log.isDebugEnabled())
-			log.debug("serviceContext: " + serviceContext);
+		if (log.isTraceEnabled())
+			log.trace("serviceContext: " + serviceContext);
 		
 		return ServiceContext.getInstance();
 	}
@@ -216,8 +217,8 @@ public class Context {
 	 * @throws ContextAuthenticationException
 	 */
 	public static void becomeUser(String systemId) throws ContextAuthenticationException {
-		if (log.isDebugEnabled())
-			log.debug("systemId: " + systemId);
+		if (log.isInfoEnabled())
+			log.info("systemId: " + systemId);
 		
 		getUserContext().becomeUser(systemId);
 	}
@@ -228,8 +229,8 @@ public class Context {
 	 * @return copy of the runtime properties
 	 */
 	public static Properties getRuntimeProperties() {
-		if (log.isDebugEnabled())
-			log.debug("getting runtime properties. size: " + runtimeProperties.size());
+		if (log.isTraceEnabled())
+			log.trace("getting runtime properties. size: " + runtimeProperties.size());
 		
 		Properties props = new Properties();
 		props.putAll(runtimeProperties);
@@ -258,6 +259,13 @@ public class Context {
 	 */
 	public static EncounterService getEncounterService() {
 		return getServiceContext().getEncounterService();
+	}
+	
+	/**
+	 * @return location services
+	 */
+	public static LocationService getLocationService() {
+		return getServiceContext().getLocationService();
 	}
 
 	/**
@@ -516,6 +524,17 @@ public class Context {
 	}
 	
 	/**
+	 * Throws an exception if the currently authenticated user does not have the specified privilege. 
+	 * 
+	 * @param privilege
+	 * @throws ContextAuthenticationException
+	 */
+	public static void requirePrivilege(String privilege) throws ContextAuthenticationException {
+		if (!hasPrivilege(privilege))
+			throw new ContextAuthenticationException();
+	}
+	
+	/**
 	 * Convenience method.  Passes through to @see org.openmrs.api.context.UserContext#addProxyPrivilege(java.lang.String)
 	 */
 	public static void addProxyPrivilege(String privilege) {
@@ -549,7 +568,7 @@ public class Context {
 	 * openSession and closeSession calls.  
 	 */
 	public static void openSession() {
-		log.debug("opening session");
+		log.trace("opening session");
 		getContextDAO().openSession();
 	}
 
@@ -558,7 +577,7 @@ public class Context {
 	 * openSession and closeSession calls.  
 	 */
 	public static void closeSession() {
-		log.debug("closing session");
+		log.trace("closing session");
 		getContextDAO().closeSession();
 	}
 	
@@ -566,8 +585,21 @@ public class Context {
 	 * Used to clear cached objects out of a session in the middle of a unit of work.
 	 */
 	public static void clearSession() {
-		log.debug("clearing session");
+		log.trace("clearing session");
 		getContextDAO().clearSession();
+	}
+	
+	/**
+	 * Used to clear a cached object out of a session in the middle of a unit of work.
+	 * 
+	 * Future updates to this object will not be saved.  Future gets of this object will
+	 * not fetch this cached copy
+	 * 
+	 * @param obj The object to evict/remove from the session
+	 */
+	public static void evictFromSession(Object obj) {
+		log.trace("clearing session");
+		getContextDAO().evictFromSession(obj);
 	}
 	
 	/**

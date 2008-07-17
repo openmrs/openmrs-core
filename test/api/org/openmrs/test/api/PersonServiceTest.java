@@ -88,7 +88,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
-		List<PatientIdentifierType> patientIdTypes = ps.getPatientIdentifierTypes();
+		List<PatientIdentifierType> patientIdTypes = ps.getAllPatientIdentifierTypes();
 		assertNotNull(patientIdTypes);
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setIdentifier("123-0");
@@ -96,45 +96,41 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Set<PatientIdentifier> patientIdentifiers = new TreeSet<PatientIdentifier>();
 		patientIdentifiers.add(patientIdentifier);
 		patient.setIdentifiers(patientIdentifiers);
-		ps.createPatient(patient);
-		Patient createdPatient = ps.getPatient(patient.getPatientId());
-
+		ps.savePatient(patient);
+		
 		// Create a sibling relationship between Patient#2 and Patient#3
 		Relationship sibling = new Relationship();
 		sibling.setPersonA(ps.getPatient(2));
 		sibling.setPersonB(patient);
 		sibling.setRelationshipType(personService.getRelationshipType(4));
 		// relationship.setCreator(Context.getUserService().getUser(1));
-		personService.createRelationship(sibling);
+		personService.saveRelationship(sibling);
 
 		// Make Patient#3 the Doctor of Patient#2.
 		Relationship doctor = new Relationship();
 		doctor.setPersonB(ps.getPatient(2));
 		doctor.setPersonA(patient);
 		doctor.setRelationshipType(personService.getRelationshipType(3));
-		personService.createRelationship(doctor);
+		personService.saveRelationship(doctor);
 
 		// Get unvoided relationships before voiding any.
 		Person p = personService.getPerson(2);
-		List<Relationship> aRels = personService.getRelationships(p, false);
-		List<Relationship> bRels = personService.getRelationships(patient,
-		                                                          false);
+		List<Relationship> aRels = personService.getRelationshipsByPerson(p);
+		List<Relationship> bRels = personService.getRelationshipsByPerson(patient);
 		// Uncomment for console output.
 		//System.out.println("Relationships before voiding all:");
 		//System.out.println(aRels);
 		//System.out.println(bRels);
 
 		// Void all relationships.
-		List<Relationship> allRels = personService.getRelationships();
+		List<Relationship> allRels = personService.getAllRelationships();
 		for (Relationship r : allRels) {
 			personService.voidRelationship(r, "Because of a JUnit test.");
 		}
 
 		// Get unvoided relationships after voiding all of them.
-		List<Relationship> updatedARels = personService.getRelationships(p,
-		                                                                 false);
-		List<Relationship> updatedBRels = personService.getRelationships(patient,
-		                                                                 false);
+		List<Relationship> updatedARels = personService.getRelationshipsByPerson(p);
+		List<Relationship> updatedBRels = personService.getRelationshipsByPerson(patient);
 		// Uncomment for console output
 		//System.out.println("Relationships after voiding all:");
 		//System.out.println(updatedARels);
@@ -142,6 +138,24 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 
 		// Neither Patient#2 or Patient#3 should have any relationships now.
 		assertEquals(updatedARels, updatedBRels);
+	}
+	
+	/**
+	 * This test should get the first/last name out of a string into a
+	 * PersonName object.
+	 * 
+	 * @throws Exception
+	 */
+	public void testParseTwoPersonName() throws Exception {
+		PersonService service = Context.getPersonService();
+		
+		PersonName pname = service.parsePersonName("Doe, John");
+		assertEquals("Doe", pname.getFamilyName());
+		assertEquals("John", pname.getGivenName());
+		
+		PersonName pname2 = service.parsePersonName("John Doe");
+		assertEquals("Doe", pname2.getFamilyName());
+		assertEquals("John", pname2.getGivenName());
 	}
 
 }

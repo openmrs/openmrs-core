@@ -458,7 +458,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         
         //finally, trigger update
         try {
-            SyncUtil.updateOpenmrsObject(owner, ownerClassName, ownerGuid, true);
+            SyncUtil.updateOpenmrsObject(owner, ownerClassName, ownerGuid);
         } catch ( Exception e ) {
         	e.printStackTrace();
             throw new SyncIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, ownerClassName, incoming,null);
@@ -551,7 +551,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 	        // now try to commit this fully inflated object
 	        try {
 	        	log.warn("About to update or create a " + className + " object");
-	            SyncUtil.updateOpenmrsObject(o, className, guid, alreadyExists);
+	            SyncUtil.updateOpenmrsObject(o, className, guid);
 	            Context.getSynchronizationService().flushSession();
 	        } catch ( Exception e ) {
 	        	e.printStackTrace();

@@ -25,7 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet; 
+import java.sql.ResultSet;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,6 +43,8 @@ import org.apache.commons.logging.LogFactory;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.DefaultDataSet;
+import org.dbunit.dataset.DefaultTable;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.DefaultDataSet; 
@@ -52,7 +54,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.HSQLDialect;
-import org.openmrs.test.TestUtil;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -108,6 +110,15 @@ public abstract class BaseContextSensitiveTest extends
 	 */
 	protected static boolean columnsAdded = false;
 
+	/**
+	 * Variable used by {@link #commitTransaction()} and {@link #onTearDownInTransaction()}
+	 * for flagging and cleaning up transactions that were committed during the 
+	 * test.  (If a commit happened, data was written to the database and then not 
+	 * rolled back after the test was done.  Future tests' validity is in danger if the data
+	 * base is not always empty when a test starts)
+	 */
+	private boolean wasCommitted = false;
+	
 	/**
 	 * @see org.springframework.test.AbstractSingleSpringContextTests#getConfigLocations()
 	 */
@@ -566,5 +577,48 @@ public abstract class BaseContextSensitiveTest extends
 		// clear the (hibernate) session to make sure nothing is cached, etc
 		Context.clearSession();
 
-	}	
+	}
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 */
+	public void commitTransaction(boolean andStartNewTransaction) {
+		transactionManager.commit(transactionStatus);
+		transactionStatus = null;
+		
+		if (andStartNewTransaction)
+			startNewTransaction();
+		
+		wasCommitted = true;
+	}
+
+	/**
+	 * If the {@link #commitTransaction()} method was called during this test,
+	 * we need to delete all that data manually because the automatic rollback
+	 * was skipped over
+	 * 
+     * @see org.springframework.test.AbstractTransactionalSpringContextTests#onTearDownInTransaction()
+     */
+    @Override
+    protected void onTearDownAfterTransaction() throws Exception {
+    	try {
+		    super.onTearDownAfterTransaction();
+		    
+		    if (wasCommitted) {
+		    	if (useInMemoryDatabase() == false)
+			    	throw new APIException("A commit occurred on a non-inmemory database.  It is recommended that either a manual commit or the setComplete() method is used instead or commitTransaction(boolean)");
+			    
+		    	startNewTransaction();
+		    	deleteAllData();
+		    	transactionManager.commit(transactionStatus);
+		    	transactionStatus = null;
+	}
+}
+    	finally {
+    		wasCommitted = false;
+    	}
+	    
+    }
+	
 }

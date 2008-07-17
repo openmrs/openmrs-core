@@ -65,7 +65,7 @@ public class ConceptClassFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			ConceptClass cc = (ConceptClass)obj;
-			Context.getAdministrationService().updateConceptClass(cc);
+			Context.getConceptService().saveConceptClass(cc);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptClass.saved");
 		}

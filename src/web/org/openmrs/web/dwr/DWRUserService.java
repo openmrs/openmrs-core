@@ -36,25 +36,36 @@ public class DWRUserService {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	@SuppressWarnings("unchecked")
-	public Collection<UserListItem> findUsers(String searchValue, List<String> roles, boolean includeVoided) {
+	public Collection<UserListItem> findUsers(String searchValue, List<String> rolesStrings, boolean includeVoided) {
 		
 		Vector userList = new Vector();
 
 		try {
+			UserService userService = Context.getUserService();
+			
 			String userId = "Anonymous";
 			if (Context.isAuthenticated()) {
 				User us = Context.getAuthenticatedUser();
 				userId = us.getUserId().toString();
 			}
 			
-			log.info(userId + "|" + searchValue + "|" + roles.toString());
+			log.info(userId + "|" + searchValue + "|" + rolesStrings.toString());
 			
-			if (roles == null) 
-				roles = new Vector<String>();
+			if (rolesStrings == null) 
+				rolesStrings = new Vector<String>();
+			
+			List<Role> roles = new Vector<Role>();
+			for (String r : rolesStrings) {
+				if (!"".equals(r)) {
+					Role role = userService.getRole(r);
+					if (role != null)
+						roles.add(role);
+				}
+			}
 			
 			userList = new Vector();
 			
-			for (User u :  Context.getUserService().findUsers(searchValue, roles, includeVoided)) {
+			for (User u :  userService.getUsers(searchValue, roles, includeVoided)) {
 				userList.add(new UserListItem(u));
 			}
 		} catch (Exception e) {
@@ -99,7 +110,7 @@ public class DWRUserService {
 					}
 				}
 				
-				users.addAll(us.getAllUsers(roles, includeVoided));
+				users.addAll(us.getUsers(null, roles, includeVoided));
 				
 				userList = new Vector(users.size());
 				
@@ -142,8 +153,11 @@ public class DWRUserService {
 	private class UserComparator implements Comparator<User> {
 
 		public int compare(User user1, User user2) {
-			String name1 = "" + user1.getPersonName();
-			String name2 = "" + user2.getPersonName();
+			
+			// compare on full name (and then on person id in case the names are identical) 
+			String name1 = "" + user1.getPersonName() + user1.getPersonId();
+			String name2 = "" + user2.getPersonName() + user2.getPersonId();
+			
 			return name1.compareTo(name2);
 		}
 		

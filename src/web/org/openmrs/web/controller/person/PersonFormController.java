@@ -32,6 +32,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -91,14 +92,12 @@ public class PersonFormController extends SimpleFormController {
 					errors.rejectValue("gender", "Person.gender.required");
 				
 			// look for person attributes in the request and save to person
-				for (PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes("", "all")) {
+				for (PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PERSON, null)) {
 					String value = request.getParameter(type.getPersonAttributeTypeId().toString());
 					
 					// if there is an error displaying the attribute, the value will be null
-					if (value == null)
-						value = "";
-					
-					person.addAttribute(new PersonAttribute(type, value));
+					if (value != null)
+						person.addAttribute(new PersonAttribute(type, value));
 				}
 				
 			// check patients birthdate against future dates and really old dates

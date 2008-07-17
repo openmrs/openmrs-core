@@ -16,8 +16,6 @@ package org.openmrs.notification;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 
 /**
@@ -30,7 +28,6 @@ import org.openmrs.User;
  */
 public class AlertRecipient implements Serializable {
 
-	private Log log = LogFactory.getLog(this.getClass());
 	private static final long serialVersionUID = -507111109155L;
 
 	private Alert alert;
@@ -70,22 +67,22 @@ public class AlertRecipient implements Serializable {
 		this.alertRead = read;
 	}
 
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof AlertRecipient) {
 			AlertRecipient a = (AlertRecipient) obj;
-			log.debug("Alert: " + alert);
-			log.debug("recipient: " + recipient);
-			if (a != null) {
-				log.debug("a.alert: " + a.getAlert());
-				log.debug("a.recip: " + a.getRecipient());
-			}
 			if (alert != null && a.getAlert() != null
 					&& recipient != null && a.getRecipient() != null)
 				return (alert.equals(a.getAlert()) && recipient.equals(a.getRecipient()));
 		}
-		return false;
+		return obj == this;
 	}
 
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getAlert() == null)
 			return super.hashCode();
@@ -127,7 +124,7 @@ public class AlertRecipient implements Serializable {
 
 	// @override
 	public String toString() {
-		return alert + "|" + recipient;
+		return "Alert: " + alert + ". Recipient: " + recipient;
 	}
 
 	/**

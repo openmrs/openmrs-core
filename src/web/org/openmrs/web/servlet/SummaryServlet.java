@@ -91,7 +91,7 @@ public class SummaryServlet extends HttpServlet {
 		for (Integer patientId : patientSet.getMemberIds()) {
 			try {
 				Result xml = logic.eval(patientService.getPatient(patientId), "CLINICAL SUMMARY");
-			
+				
 				// Output results
 				String s = xml.toString();
 				summary.write(s);

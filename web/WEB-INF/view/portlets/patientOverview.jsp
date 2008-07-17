@@ -12,7 +12,11 @@
 <openmrs:extensionPoint pointId="org.openmrs.patientDashboard.overviewBox" type="html" parameters="patientId=${model.patient.patientId}">
 	<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 		<div class="boxHeader${model.patientVariation}"><spring:message code="${extension.title}" /></div>
-		<div class="box${model.patientVariation}"><spring:message code="${extension.content}" /></div>
+		<div class="box${model.patientVariation}"><spring:message code="${extension.content}" />
+  			<c:if test="${extension.portletUrl != null}">
+   				<openmrs:portlet url="${extension.portletUrl}" moduleId="${extension.moduleId}" id="${extension.portletUrl}" patientId="${patient.patientId}" parameters="allowEdits=true"/>
+ 			</c:if>
+		</div>
 		<br />
 	</openmrs:hasPrivilege>
 </openmrs:extensionPoint>
@@ -169,11 +173,13 @@
 	<p>
 </c:if>
 
-<div id="patientProgramsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Program.title"/></div>
-<div id="patientProgramsBox" class="box${model.patientVariation}">
-	<openmrs:portlet url="patientPrograms" id="patientPrograms" patientId="${patient.patientId}" parameters="allowEdits=true"/>
-</div>
-<br/>
+<openmrs:hasPrivilege privilege="View Patient Programs">
+	<div id="patientProgramsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Program.title"/></div>
+	<div id="patientProgramsBox" class="box${model.patientVariation}">
+		<openmrs:portlet url="patientPrograms" id="patientPrograms" patientId="${patient.patientId}" parameters="allowEdits=true"/>
+	</div>
+	<br/>
+</openmrs:hasPrivilege>
 
 <openmrs:globalProperty var="conceptIdsToUse" key="dashboard.overview.showConcepts" />
 <c:if test="${not empty conceptIdsToUse}">

@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.api.APIException;
 import org.openmrs.util.Format;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.Format.FORMAT_TYPE;
 
 /**
@@ -115,9 +116,76 @@ public class Obs implements java.io.Serializable, Synchronizable {
 	public Obs() {
 	}
 
+	/**
+	 * Required parameters constructor 
+	 * 
+	 * A value is also required, but that can be one of:
+	 * valueCoded, 
+	 * valueDrug,
+	 * valueNumeric, or
+	 * valueText
+	 * 
+	 * @param person The Person this obs is acting on
+	 * @param question The question concept this obs is related to
+	 * @param obsDatetime The time this obs took place
+	 * @param location The location this obs took place
+	 */
+	public Obs(Person person, Concept question, Date obsDatetime, Location location) {
+		this.person = person;
+		this.personId = person.getPersonId();
+		this.concept = question;
+		this.obsDatetime = obsDatetime;
+		this.location = location;
+	}
+
 	/** constructor with id */
 	public Obs(Integer obsId) {
 		this.obsId = obsId;
+	}
+
+	/**
+	 * This is an equivalent to a copy constructor.
+	 * 
+	 * Creates a new copy of the given <code>obsToCopy</code> with a null obs id
+	 * 
+	 * @param obsToCopy The Obs that is going to be copied
+	 * @return a new Obs object with all the same attributes as the given obs
+	 */
+	public static Obs newInstance(Obs obsToCopy) {
+		Obs newObs = new Obs(obsToCopy.getPerson(), obsToCopy.getConcept(), 
+		                     obsToCopy.getObsDatetime(), obsToCopy.getLocation());
+		
+		newObs.setObsGroup(obsToCopy.getObsGroup());
+		newObs.setAccessionNumber(obsToCopy.getAccessionNumber());
+		newObs.setValueCoded(obsToCopy.getValueCoded());
+		newObs.setValueDrug(obsToCopy.getValueDrug());
+		newObs.setValueGroupId(obsToCopy.getValueGroupId());
+		newObs.setValueDatetime(obsToCopy.getValueDatetime());
+		newObs.setValueNumeric(obsToCopy.getValueNumeric());
+		newObs.setValueModifier(obsToCopy.getValueModifier());
+		newObs.setValueText(obsToCopy.getValueText());
+		newObs.setComment(obsToCopy.getComment());
+		newObs.setOrder(obsToCopy.getOrder());
+		newObs.setEncounter(obsToCopy.getEncounter());
+		newObs.setDateStarted(obsToCopy.getDateStarted());
+		newObs.setDateStopped(obsToCopy.getDateStopped());
+		newObs.setCreator(obsToCopy.getCreator());
+		newObs.setDateCreated(obsToCopy.getDateCreated());
+		newObs.setVoided(obsToCopy.getVoided());
+		newObs.setVoidedBy(obsToCopy.getVoidedBy());
+		newObs.setDateVoided(obsToCopy.getDateVoided());
+		newObs.setVoidReason(obsToCopy.getVoidReason());
+		
+		if (obsToCopy.getGroupMembers() != null)
+			for (Obs member : obsToCopy.getGroupMembers()) {
+				// if the obs hasn't been saved yet, no need to duplicate it
+				if (member.getObsId() == null)
+					newObs.addGroupMember(member);
+				else
+					newObs.addGroupMember(Obs.newInstance(member));
+			}
+
+		return newObs;
 	}
 
 	/**
@@ -163,6 +231,31 @@ public class Obs implements java.io.Serializable, Synchronizable {
 		return false;
 	}
 
+	/**
+	 * Sets the required Obs properties:
+	 * creator and dateCreated
+	 * 
+	 * @param creator
+	 * @param dateCreated
+	 */
+	public void setRequiredProperties(User creator, Date dateCreated ) {
+		if (this.getCreator() == null)
+			setCreator(creator);
+
+		if (this.getDateCreated() == null)
+			setDateCreated(dateCreated);
+		
+		if (getGroupMembers() != null) {
+			for (Obs member : getGroupMembers()) {
+				// if statement does a quick sanity check to
+				// avoid the simplest of infinite loops
+				if (member.getCreator() == null || 
+					member.getDateCreated() == null)
+						member.setRequiredProperties(creator, dateCreated);
+			}
+		}
+	}
+	
 	// Property accessors
 
 	/**
@@ -520,15 +613,23 @@ public class Obs implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * The person id
-	 * @return
+	 * The person id of the person on this object.  This should be the same
+	 * as <code>{@link #getPerson()}.getPersonId()</code>.  It is duplicated
+	 * here for speed and simplicity reasons
+	 * 
+	 * @return the integer person id of the person this obs is acting on
 	 */
 	public Integer getPersonId() {
 		return personId;
 	}
 	
 	/**
-	 * Set the person id
+	 * Set the person id on this obs object.  This method 
+	 * is here for convenience, but really the {@link #setPerson(Person)}
+	 * method should be used like <code>setPerson(new Person(personId))</code>
+	 * 
+	 * @see #setPerson(Person)
+	 * 
 	 * @param personId
 	 */
 	protected void setPersonId(Integer personId) {
@@ -536,17 +637,23 @@ public class Obs implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Get the person object
-	 * @return
+	 * Get the person object that this obs is acting on.
+	 * 
+	 * @see #getPersonId()
+	 * 
+	 * @return the person object
 	 */
 	public Person getPerson() {
 		return person;
 	}
 	
 	/**
-	 * Set the person object
-	 * @param person
-	 * @return
+	 * Set the person object to this obs object.  This will 
+	 * also set the personId on this obs object
+	 * 
+	 * @see #setPersonId(Integer)
+	 * 
+	 * @param person the Patient/Person object that this obs is acting on 
 	 */
 	public void setPerson(Person person) {
 		this.person = person;
@@ -675,9 +782,10 @@ public class Obs implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * @return Returns the voided.
+	 * @see #isVoided()
 	 */
 	public Boolean getVoided() {
-		return voided;
+		return isVoided();
 	}
 
 	/**
@@ -853,14 +961,21 @@ public class Obs implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience method for obtaining a Map of available locale 
+	 * This was a convenience method for obtaining a Map of available locale 
 	 * to observation's value as a string
+	 * 
+	 * This method is a waste and should be not be used.  This was used in the web
+	 * layer because jstl can't pass parameters to a method (${obs.valueAsString[locale]}
+	 * was used instead of what would be convenient ${obs.valueAsString(locale)})
+	 * Now the openmrs:format tag should be used in the web layer:
+	 * <openmrs:format obsValue="${obs}"/> 
+	 * 
+	 * @deprecated 
 	 */
 	public Map<Locale, String> getValueAsString() {
 		Map<Locale, String> ret = new HashMap<Locale, String>();
-		Locale[] locales = Locale.getAvailableLocales();
-		for (int i=0; i<locales.length; i++) {
-			ret.put(locales[i], getValueAsString(locales[i]));
+		for (Locale locale : OpenmrsConstants.OPENMRS_CONCEPT_LOCALES()) {
+			ret.put(locale, getValueAsString(locale));
 		}
 		return ret;
 	}

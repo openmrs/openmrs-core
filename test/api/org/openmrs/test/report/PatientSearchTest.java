@@ -67,18 +67,17 @@ public class PatientSearchTest extends BaseContextSensitiveTest {
 		inRange.add(Calendar.DATE, -45);
 		Obs firstObs = obsService.getObs(1);
 		firstObs.setObsDatetime(inRange.getTime());
-		obsService.updateObs(firstObs);
+		obsService.saveObs(firstObs, "Creating obs");
 		
 		// set the date of the second obs to be OUT of the range of the param
 		Calendar outOfRange = new GregorianCalendar();
 		outOfRange.add(Calendar.DATE, -95);
 		Obs secondObs = obsService.getObs(2);
 		secondObs.setObsDatetime(outOfRange.getTime());
-		obsService.updateObs(secondObs);
+		obsService.saveObs(secondObs, "Creating obs");
 		
 		// flush (commit) these changes to the database
-		transactionManager.commit(transactionStatus);
-		transactionManager.getTransaction(transactionDefinition);
+		commitTransaction(true);
 		
 		Map<Parameter, Object> globalParamValues = new HashMap<Parameter, Object>();
 		{
@@ -115,6 +114,7 @@ public class PatientSearchTest extends BaseContextSensitiveTest {
 		
 		// make sure it was the patient#2 that was selected (the patient for the first obs)
 		assertTrue(result.getMemberIds().contains(2));
+		
 	}
 	
 }

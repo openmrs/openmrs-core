@@ -136,16 +136,16 @@ public class UserFormController extends PersonFormController {
 						// user's roles, that we don't fetch a second copy of that same role from
 						// the database, or else hibernate will throw a NonUniqueObjectException.
 						Role role = null;
-						if(user.getRoles() != null) {
+						if (user.getRoles() != null)
 							for (Role test : user.getRoles())
 								if (test.getRole().equals(r))
 									role = test;
-						}
 						if (role == null) {
 							role = us.getRole(r);
 							user.addRole(role);
 						}
 						newRoles.add(role);
+						
 					}
 				}
 				

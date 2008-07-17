@@ -43,7 +43,7 @@ public class SyncAdminTest extends SyncBaseTest {
 		runSyncTest(new SyncTestHelper() {
 			int numBefore = 0;
 			public void runOnChild() {
-				numBefore = Context.getProgramWorkflowService().getPrograms().size();
+				numBefore = Context.getProgramWorkflowService().getAllPrograms().size();
 				ConceptService cs = Context.getConceptService();
 				Concept tbProgram = cs.getConceptByName("TB PROGRAM");
 				Concept txStatus = cs.getConceptByName("TREATMENT STATUS");
@@ -52,12 +52,12 @@ public class SyncAdminTest extends SyncBaseTest {
 
 				Program prog = new Program();
 				prog.setConcept(tbProgram);
-				Context.getProgramWorkflowService().createOrUpdateProgram(prog);
+
 				
 				ProgramWorkflow wf = new ProgramWorkflow();
 				wf.setConcept(txStatus);
 				prog.addWorkflow(wf);
-				Context.getProgramWorkflowService().createWorkflow(wf);
+
 				
 				ProgramWorkflowState followState = new ProgramWorkflowState();
 				followState.setConcept(following);
@@ -69,7 +69,7 @@ public class SyncAdminTest extends SyncBaseTest {
 				cureState.setTerminal(true);
 				wf.addState(followState);
 				wf.addState(cureState);
-				Context.getProgramWorkflowService().updateWorkflow(wf);
+				Context.getProgramWorkflowService().saveProgram(prog);
 			}
 			public void runOnParent() {
 				assertEquals("Failed to create program",
@@ -107,8 +107,7 @@ public class SyncAdminTest extends SyncBaseTest {
 				st.setInitial(false);
 				st.setTerminal(true);
 				wf.addState(st);
-				ps.createState(st);
-				ps.createOrUpdateProgram(hiv);
+				ps.saveProgram(hiv);
 			}
 			public void runOnParent() {
 				Program hiv = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");

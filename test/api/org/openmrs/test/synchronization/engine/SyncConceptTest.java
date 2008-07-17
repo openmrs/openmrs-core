@@ -47,7 +47,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				Concept wt = cs.getConceptByName("WEIGHT");
 				numNamesBefore = wt.getNames().size();
 				wt.addName(new ConceptName("POIDS", null, "Weight in french", Locale.FRENCH));
-				cs.updateConcept(wt);
+				cs.saveConcept(wt);
 			}
 			public void runOnParent() {
 				Concept wt = cs.getConceptByName("WEIGHT");
@@ -119,7 +119,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				cn.setPrecise(true);
 				cn.setLowAbsolute(0d);
 				cn.setHiCritical(100d);
-				cs.createConcept(cn);
+				cs.saveConcept(cn);
 				
 				Concept coded = new Concept(conceptIdCoded);
 				coded.addName(new ConceptName("SOMETHING CODED", "SUM CODE", "A coded concept", Context.getLocale()));
@@ -130,7 +130,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("OTHER NON-CODED")));
 				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("NONE")));
 				coded.addAnswer(new ConceptAnswer(cn));
-				cs.createConcept(coded);
+				cs.saveConcept(coded);
 				
 				Concept set = new Concept(conceptIdSet);
 				set.addName(new ConceptName("A CONCEPT SET", "SET", "A set of concepts", Context.getLocale()));
@@ -142,18 +142,19 @@ public class SyncConceptTest extends SyncBaseTest {
 				cset.add(new ConceptSet(coded, 1d));
 				cset.add(new ConceptSet(cn, 2d));
 				set.setConceptSets(cset);
-				cs.createConcept(set);
+				cs.saveConcept(set);
 			}
 			public void runOnParent() {
-				Concept c = cs.getConceptByName("SOMETHING NUMERIC");
-				assertNotNull("Failed to create numeric", c);
-				ConceptNumeric cn = cs.getConceptNumeric(c.getConceptId());
+				//Concept c = cs.getConceptByName("SOMETHING NUMERIC");
+//				assertNotNull("Failed to create numeric", c);
+				assertEquals(cs.getConcept(99997).getName().getName(), "SOMETHING NUMERIC");
+				ConceptNumeric cn = cs.getConceptNumeric(99997);
 				assertEquals(cn.getLowAbsolute(), 0d);
 				assertEquals(cn.getHiCritical(), 100d);
 				assertEquals(cn.getDatatype().getName(), "Numeric");
 				assertEquals(cn.getConceptClass().getName(), "Question");
 				
-				c = cs.getConceptByName("SOMETHING CODED");
+				Concept c = cs.getConceptByName("SOMETHING CODED");
 				assertNotNull("Failed to create coded", c);
 				
 				//doesn't work in junit/in-mem DB; tested manually only

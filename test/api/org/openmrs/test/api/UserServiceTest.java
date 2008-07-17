@@ -82,6 +82,10 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	public void testCreateUserWhoIsPatientAlready() throws Exception {
+		
+		//deleteAllData();
+		//initializeInMemoryDatabase();
+		
 		assertTrue("The context needs to be correctly authenticated to by a user", Context.isAuthenticated());
 		
 		// add in some basic data
@@ -112,7 +116,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userService.updateUser(user);
 		
 		// commit the user and data so that we can simulate a new page being loaded
-		transactionManager.commit(this.transactionStatus);
+		commitTransaction(true);
 		
 		// clear out the session so that we don't get a hibernate error 
 		// about "object already in session"
@@ -157,7 +161,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		User u2 = us.getUserByUsername("admin2");
 		
-		assertTrue("The fetched user should equal the user we tried to update", u.equals(u2));
+		assertEquals("The fetched user should equal the user we tried to update", u, u2);
 	}
 	
 	/**

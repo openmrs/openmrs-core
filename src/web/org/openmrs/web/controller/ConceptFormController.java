@@ -43,22 +43,32 @@ import org.openmrs.Form;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.WebConstants;
 import org.openmrs.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.propertyeditor.ConceptClassEditor;
 import org.openmrs.propertyeditor.ConceptDatatypeEditor;
 import org.openmrs.propertyeditor.ConceptSetsEditor;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * This is the controlling class for hte conceptForm.jsp page.
+ * 
+ * It initBinder and formBackingObject are called before page load.
+ * 
+ * After submission, formBackingObject (because we're not a session 
+ * form), processFormSubmission, and onSubmit methods are called
+ * 
+ * @see org.openmrs.Concept
+ */
 public class ConceptFormController extends SimpleFormController {
 	
     /** Logger for this class and subclasses */
@@ -134,6 +144,9 @@ public class ConceptFormController extends SimpleFormController {
 				
 				// ==== Concept Synonyms ====
 					Collection<ConceptSynonym> originalSyns = concept.getSynonyms();
+					if (originalSyns == null)
+						originalSyns = new HashSet<ConceptSynonym>();
+					
 					for (Locale l : OPENMRS_CONCEPT_LOCALES()) {
 						// the attribute *must* be named differently than the property, otherwise
 						//   spring will modify the property as a text array
@@ -153,9 +166,11 @@ public class ConceptFormController extends SimpleFormController {
 								parameterSyns.add(new ConceptSynonym(concept, syn.toUpperCase(), l));
 						}
 						
-						log.debug("initial originalSyns: ");
-						for (ConceptSynonym s : originalSyns)
-							log.debug(s);
+						if (log.isDebugEnabled()) {
+							log.debug("initial originalSyns: ");
+							for (ConceptSynonym s : originalSyns)
+								log.debug(s);
+						}
 						
 						// Union the originalSyns and parameterSyns to get the 'clean' synonyms
 						//   remove synonym from originalSynonym if 'clean' (already in db)
@@ -175,13 +190,15 @@ public class ConceptFormController extends SimpleFormController {
 							}
 						}
 						
-						log.debug("evaluated parameterSyns: ");
-						for (ConceptSynonym s : parameterSyns)
-							log.debug(s);
-						
-						log.debug("evaluated originalSyns: ");
-						for (ConceptSynonym s : originalSyns)
-							log.debug(s);
+						if (log.isDebugEnabled()) {
+							log.debug("evaluated parameterSyns: ");
+							for (ConceptSynonym s : parameterSyns)
+								log.debug(s);
+							
+							log.debug("evaluated originalSyns: ");
+							for (ConceptSynonym s : originalSyns)
+								log.debug(s);
+						}
 						
 					}
 					concept.setSynonyms(originalSyns);
@@ -252,7 +269,7 @@ public class ConceptFormController extends SimpleFormController {
 			
 			if (action.equals(msa.getMessage("Concept.delete"))) {
 				try {
-					cs.deleteConcept(concept);
+					cs.purgeConcept(concept);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.deleted");
 					return new ModelAndView(new RedirectView("index.htm"));
 				}
@@ -275,21 +292,16 @@ public class ConceptFormController extends SimpleFormController {
 						isNew = true;
 						concept.setConceptId(cs.getNextAvailableId());
 						if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Numeric")) {
-							ConceptNumeric cn = getConceptNumeric(concept, request);
-							cs.createConcept(cn);
+							concept = getConceptNumeric(concept, request);
 						}
-						else {
-							cs.createConcept(concept);
-						}
+						cs.saveConcept(concept);
 					}
 					else {
 						if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Numeric")) {
-							ConceptNumeric cn = getConceptNumeric(concept, request);
-							cs.updateConcept(cn);
+							concept = getConceptNumeric(concept, request);
 						}
-						else {
-							cs.updateConcept(concept);
-						}
+
+						cs.saveConcept(concept);
 					}
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
 				}
@@ -308,9 +320,8 @@ public class ConceptFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(getFormView()));
 	}
-
+	
 	/**
-	 * 
 	 * This is called prior to displaying a form for the first time.  It tells Spring
 	 *   the form/command object to load into the request
 	 * 
@@ -323,12 +334,10 @@ public class ConceptFormController extends SimpleFormController {
 		ConceptService cs = Context.getConceptService();
 		String conceptId = request.getParameter("conceptId");
 		if (conceptId == null) {
-
+			// do nothing
 		}
-		if (conceptId != null) {
+		else if (conceptId != null) {
     		concept = cs.getConcept(Integer.valueOf(conceptId));
-    		//if (concept.isNumeric())
-    		//	concept = (ConceptNumeric)concept;
     	}
 		
 		if (concept == null)
@@ -344,7 +353,7 @@ public class ConceptFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Map referenceData(HttpServletRequest request) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		
 		Locale locale = Context.getLocale();
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -416,9 +425,9 @@ public class ConceptFormController extends SimpleFormController {
 		    		conceptAnswers.put(key, name);
 		    	}
 
-		    	forms = Context.getFormService().getForms(concept);
+		    	forms = Context.getFormService().getFormsContainingConcept(concept);
 		    	
-		    	for (Concept c : Context.getConceptService().getQuestionsForAnswer(concept)) {
+		    	for (Concept c : Context.getConceptService().getConceptsByAnswer(concept)) {
 		    		ConceptName cn = c.getName(locale);
 		    		if (cn == null)
 		    			questionsAnswered.put(c.getConceptId(), "No Name Defined");
@@ -465,8 +474,8 @@ public class ConceptFormController extends SimpleFormController {
     	map.put("containedInSets", containedInSets);
 		
     	//get complete class and datatype lists 
-		map.put("classes", cs.getConceptClasses());
-		map.put("datatypes", cs.getConceptDatatypes());
+		map.put("classes", cs.getAllConceptClasses());
+		map.put("datatypes", cs.getAllConceptDatatypes());
 		
 		// make spring locale available to jsp
 		map.put("locale", locale.getLanguage().substring(0, 2));
@@ -477,13 +486,22 @@ public class ConceptFormController extends SimpleFormController {
 		return map;
 	} 
 	
+	/**
+	 * Convenience method to get the ConceptNumeric specific values out of 
+	 * the request and put them onto an object
+	 * 
+	 * @param concept
+	 * @param request
+	 * @return
+	 */
 	private ConceptNumeric getConceptNumeric(Concept concept, HttpServletRequest request) {
 		
 		ConceptNumeric cn = null;
 		if (concept instanceof ConceptNumeric)
 			cn = (ConceptNumeric)concept;
-		else
+		else {
 			cn = new ConceptNumeric(concept);
+		}
 		
 		String d = null;
 		

@@ -184,31 +184,39 @@ function toggleVisibility(element, childrenTagNames, className) {
 }
 
 function toggleRowVisibilityForClass(elementId, className, hasDescriptionRow) {
-		var el = document.getElementById(elementId);
+	var el = document.getElementById(elementId);
+	
+	if (el) {
+		toggleVisibility(el, "tr", className);
+	
+		var rows = el.rows;
+		var oddRow = true;
 		
-		if (el) {
-			toggleVisibility(el, "tr", className);
-		
-			var rows = el.rows;
-			var oddRow = true;
-			
-			for (var i=1; i<rows.length; i++) {
-				if (rows[i].style.display == "") {
-					var c = "";
-					if (rows[i].className.substr(0, className.length) == className)
-						c = className + " ";
-					if (oddRow)
-						c = c + "oddRow";
-					else
-						c = c + "evenRow";
-					oddRow = !oddRow;
-					
-					rows[i].className = c;
-					if (hasDescriptionRow)
-						rows[++i].className = c;
-				}
+		for (var i=1; i<rows.length; i++) {
+			if (rows[i].style.display == "") {
+				var c = "";
+				if (rows[i].className.substr(0, className.length) == className)
+					c = className + " ";
+				if (oddRow)
+					c = c + "oddRow";
+				else
+					c = c + "evenRow";
+				oddRow = !oddRow;
+				
+				rows[i].className = c;
+				if (hasDescriptionRow)
+					rows[++i].className = c;
 			}
 		}
-		
-		return false;
 	}
+	
+	return false;
+}
+
+function gotoUser(select, userId) {
+	if (userId == null)
+		userId = $(select).value;
+	if (userId != "")
+		window.location = openmrsContextPath + "/admin/users/user.form?userId=" + userId;
+	return false;
+}

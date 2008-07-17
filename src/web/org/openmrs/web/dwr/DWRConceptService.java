@@ -162,9 +162,7 @@ public class DWRConceptService {
 						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
 
 				// perform the search
-				words.addAll(cs.findConcepts(phrase, localesToSearchOn, includeRetired, 
-						includeClasses, excludeClasses,
-						includeDatatypes, excludeDatatypes));
+				words.addAll(cs.getConceptWords(phrase, localesToSearchOn, includeRetired, includeClasses, excludeClasses, includeDatatypes, excludeDatatypes, null, null, null));
 			}
 
 			if (words.size() == 0) {

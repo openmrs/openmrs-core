@@ -46,7 +46,6 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
 import org.openmrs.api.DuplicateIdentifierException;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.InvalidCheckDigitException;
@@ -54,12 +53,14 @@ import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
+import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.TribeEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.user.UserFormController;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -112,14 +113,15 @@ public class NewPatientFormController extends SimpleFormController {
 	}
 
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
-	
+		
+		newIdentifiers = new HashSet<PatientIdentifier>();
+		
 		ShortPatientModel shortPatient = (ShortPatientModel)obj;
 		
 		log.debug("\nNOW GOING THROUGH PROCESSFORMSUBMISSION METHOD.......................................\n\n");
 		
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
-			EncounterService es = Context.getEncounterService();
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			
 			String action = request.getParameter("action");
@@ -171,10 +173,13 @@ public class NewPatientFormController extends SimpleFormController {
 								errors.reject(msg);
 							}
 							else
-								loc = es.getLocation(Integer.valueOf(locs[i]));
+								loc = Context.getLocationService().getLocation(Integer.valueOf(locs[i]));
 							
 							PatientIdentifier pi = new PatientIdentifier(id, pit, loc);
 							pi.setPreferred(pref.equals(id+types[i]));
+							if (newIdentifiers.contains(pi))
+								newIdentifiers.remove(pi);
+							
 							pi.setGuid(null);
 							newIdentifiers.add(pi);
 							
@@ -315,10 +320,27 @@ public class NewPatientFormController extends SimpleFormController {
 			for (PatientIdentifier pi : patient.getIdentifiers()) {
 				pi.setPreferred(pref.equals(pi.getIdentifier()+pi.getIdentifierType().getPatientIdentifierTypeId()));
 			}
+
+			// look for person attributes in the request and save to person
+			for (PersonAttributeType type : personService.getPersonAttributeTypes(PERSON_TYPE.PATIENT, ATTR_VIEW_TYPE.VIEWING)) {
+				String value = request.getParameter(type.getPersonAttributeTypeId().toString());
+				
+				patient.addAttribute(new PersonAttribute(type, value));
+			}
 			
-			
-			// add the new identifiers
-			//patient.getIdentifiers().addAll(newIdentifiers);
+			// add the new identifiers.  First remove them so that things like
+			// changes to preferred status and location are persisted 
+			for (PatientIdentifier identifier : newIdentifiers) {
+				// this loop is used instead of just using removeIdentifier becuase
+				// the identifier set on patient is a TreeSet which will use .compareTo
+				identifier.setPatient(patient);
+				for (PatientIdentifier currentIdentifier : patient.getActiveIdentifiers()) {
+					if (currentIdentifier.equals(identifier)) {
+						patient.removeIdentifier(currentIdentifier);
+						Context.evictFromSession(currentIdentifier);
+					}
+				}
+			}
 			patient.addIdentifiers(newIdentifiers);
 			
 			
@@ -333,7 +355,6 @@ public class NewPatientFormController extends SimpleFormController {
 					identifier.setVoided(true);
 				}
 			}
-			
 			
 			// set the other patient attributes
 			patient.setBirthdate(shortPatient.getBirthdate());
@@ -356,17 +377,10 @@ public class NewPatientFormController extends SimpleFormController {
 				patient.setCauseOfDeath(null);
 			}
 			
-			// look for person attributes in the request and save to person
-			for (PersonAttributeType type : personService.getPersonAttributeTypes("patient", "viewing")) {
-				String value = request.getParameter(type.getPersonAttributeTypeId().toString());
-				
-				patient.addAttribute(new PersonAttribute(type, value));
-			}
-			
 			// save or add the patient
 			Patient newPatient = null;
 			try {
-				newPatient = ps.updatePatient(patient);
+				newPatient = ps.savePatient(patient);
 			} catch ( InvalidIdentifierFormatException iife ) {
 				log.error(iife);
 				patient.removeIdentifier(iife.getPatientIdentifier());
@@ -409,12 +423,12 @@ public class NewPatientFormController extends SimpleFormController {
 			if ( !isError ) {
 				String[] personAs = request.getParameterValues("personA");
 				String[] types = request.getParameterValues("relationshipType");
-				Person person = personService.getPerson(patient);
+				Person person = personService.getPerson(patient.getPatientId());
 				List<Relationship> relationships;
 				List<Person> newPersonAs = new Vector<Person>(); //list of all persons specifically selected in the form
 				
 				if (person != null) 
-					relationships = personService.getRelationships(person);
+					relationships = personService.getRelationshipsByPerson(person);
 				else
 					relationships = new Vector<Relationship>();
 				
@@ -454,9 +468,9 @@ public class NewPatientFormController extends SimpleFormController {
 				for (Relationship rel : relationships) {
 					if (newPersonAs.contains(rel.getPersonA()) || 
 							person.equals(rel.getPersonA()))
-						personService.updateRelationship(rel);
+						personService.saveRelationship(rel);
 					else
-						personService.deleteRelationship(rel);
+						personService.purgeRelationship(rel);
 				}
 				
 				
@@ -466,10 +480,10 @@ public class NewPatientFormController extends SimpleFormController {
 					// need to make sure there is an Obs that represents the patient's cause of death, if applicable
 	
 					String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-					Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
+					Concept causeOfDeath = Context.getConceptService().getConcept(codProp);
 	
 					if ( causeOfDeath != null ) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath, false);
+						List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, causeOfDeath);
 						if ( obssDeath != null ) {
 							if ( obssDeath.size() > 1 ) {
 								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
@@ -488,8 +502,8 @@ public class NewPatientFormController extends SimpleFormController {
 									obsDeath = new Obs();
 									obsDeath.setPerson(patient);
 									obsDeath.setConcept(causeOfDeath);
-									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
-									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
+									Location loc = Context.getLocationService().getLocation("Unknown Location");
+									if ( loc == null ) loc = Context.getLocationService().getLocation(new Integer(1));
 									// TODO person healthcenter if ( loc == null ) loc = patient.getHealthCenter();
 									if ( loc != null ) obsDeath.setLocation(loc);
 									else log.error("Could not find a suitable location for which to create this new Obs");
@@ -501,7 +515,7 @@ public class NewPatientFormController extends SimpleFormController {
 									// set to NONE
 									log.debug("Current cause is null, attempting to set to NONE");
 									String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
-									currCause = Context.getConceptService().getConceptByIdOrName(noneConcept);
+									currCause = Context.getConceptService().getConcept(noneConcept);
 								}
 								
 								if ( currCause != null ) {
@@ -514,7 +528,7 @@ public class NewPatientFormController extends SimpleFormController {
 	
 									// check if this is an "other" concept - if so, then we need to add value_text
 									String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
-									Concept conceptOther = Context.getConceptService().getConceptByIdOrName(otherConcept);
+									Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
 									if ( conceptOther != null ) {
 										if ( conceptOther.equals(currCause) ) {
 											// seems like this is an other concept - let's try to get the "other" field info
@@ -530,7 +544,7 @@ public class NewPatientFormController extends SimpleFormController {
 										obsDeath.setValueText("");
 									}
 									
-									Context.getObsService().updateObs(obsDeath);
+									Context.getObsService().saveObs(obsDeath, null);
 								} else {
 									log.debug("Current cause is still null - aborting mission");
 								}
@@ -547,7 +561,10 @@ public class NewPatientFormController extends SimpleFormController {
 			if ( isError ) {
 				log.error("Had an error during processing. Redirecting to " + this.getFormView());
 				
-				return this.showForm(request, response, errors);
+				Map<String, Object> model = new HashMap<String, Object>();
+				model.put(getCommandName(), new ShortPatientModel(patient));
+				
+				return this.showForm(request, response, errors, model);
 				//return new ModelAndView(new RedirectView(getFormView()));
 			}
 			else {
@@ -656,9 +673,9 @@ public class NewPatientFormController extends SimpleFormController {
 		    		
 		    		// get 'other' cause of death
 		    		String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-					Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
-					if ( conceptCause != null ) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause, false);
+					Concept conceptCause = Context.getConceptService().getConcept(propCause);
+					if ( conceptCause != null && patient.getPatientId() != null) {
+						List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, conceptCause);
 						if ( obssDeath.size() == 1 ) {
 							Obs obsDeath = obssDeath.iterator().next();
 							causeOfDeathOther = obsDeath.getValueText();

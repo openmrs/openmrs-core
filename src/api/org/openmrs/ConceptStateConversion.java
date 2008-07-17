@@ -17,9 +17,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.synchronization.Synchronizable;
 
+/**
+ * ConceptStateConversion
+ */
 public class ConceptStateConversion implements Synchronizable {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	public static final long serialVersionUID = 3214511L;
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	// ******************
+	// Properties
+	// ******************
 	
 	private Integer conceptStateConversionId;
 	private Concept concept;
@@ -43,21 +51,43 @@ public class ConceptStateConversion implements Synchronizable {
   public void setGuid(String guid) {
       this.guid = guid;
   }
+		// ******************
+	// Constructors
+	// ******************
 	
+	/** Default Constructor */
 	public ConceptStateConversion() { }
-
-	public String toString() {
-		return("ConceptStateConversion: Concept[" + concept + "] results in State [" + programWorkflowState + "] for workflow [" + programWorkflow + "]");
+	
+	/** Constructor with id */
+	public ConceptStateConversion(Integer conceptStateConversionId) {
+		setConceptStateConversionId(conceptStateConversionId);
 	}
 	
-	public boolean equals(Object o) {
-		if (o instanceof ConceptStateConversion) {
-			ConceptStateConversion other = (ConceptStateConversion) o;
-			return getConceptStateConversionId() != null && other.getConceptStateConversionId() != null && getConceptStateConversionId().equals(other.getConceptStateConversionId());
+	// ******************
+	// Instance methods
+	// ******************
+	
+	/** @see Object#equals(Object) */
+	public boolean equals(Object obj) {
+		if (obj != null && obj instanceof ConceptStateConversion) {
+			ConceptStateConversion p = (ConceptStateConversion)obj;
+			if (this.getConceptStateConversionId() == null) {
+				return p.getConceptStateConversionId() == null;
+			}
+			return (this.getConceptStateConversionId().equals(p.getConceptStateConversionId()));
 		}
 		return false;
 	}
 
+	/** @see Object#toString() */
+	public String toString() {
+		return("ConceptStateConversion: Concept[" + concept + "] results in State [" + programWorkflowState + "] for workflow [" + programWorkflow + "]");
+	}
+	
+	// ******************
+	// Property Access
+	// ******************
+	
 	/**
 	 * @return Returns the concept.
 	 */
@@ -113,5 +143,4 @@ public class ConceptStateConversion implements Synchronizable {
 	public void setProgramWorkflowState(ProgramWorkflowState programWorkflowState) {
 		this.programWorkflowState = programWorkflowState;
 	}
-	
 }

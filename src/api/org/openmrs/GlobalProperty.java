@@ -43,13 +43,22 @@ public class GlobalProperty implements SynchronizableInstance {
 	public GlobalProperty() {	}
 	
 	/**
+	 * Constructor defining the key for this GP
+	 * 
+	 * @param property key to name the property
+	 */
+	public GlobalProperty(String property) {
+		this.property = property;
+	}
+	
+	/**
 	 * Constructor defining the key and value of this GP
 	 * 
 	 * @param property key to name the property
 	 * @param value value to give to the property
 	 */
 	public GlobalProperty(String property, String value) {
-		this.property = property;
+		this(property);
 		this.propertyValue = value;
 	}
 	
@@ -61,8 +70,7 @@ public class GlobalProperty implements SynchronizableInstance {
 	 * @param description description of how this property is used
 	 */
 	public GlobalProperty(String property, String value, String description) {
-		this.property = property;
-		this.propertyValue = value;
+		this(property, value);
 		this.description = description;
 	}
 

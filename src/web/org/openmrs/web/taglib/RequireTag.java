@@ -61,8 +61,10 @@ public class RequireTag extends TagSupport {
 		
 		if (!userContext.hasPrivilege(privilege)) {
 			errorOccurred = true;
-			if (userContext.isAuthenticated())
+			if (userContext.isAuthenticated()) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.unauthorized");
+				log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + redirect + " which requires privilege: " + privilege);
+			}
 			else
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
 		}

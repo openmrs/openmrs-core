@@ -201,7 +201,7 @@ public class SyncPatientTest extends SyncBaseTest {
 			Patient p = Context.getPatientService().getPatient(2);
 			
 			
-			Set<Encounter> encs = Context.getEncounterService().getEncounters(p);
+			List<Encounter> encs = Context.getEncounterService().getEncounters(p);
 			assertEquals("Should now have one more encounter than before",
 			             numEncountersSoFar + 1,
 			             encs.size());

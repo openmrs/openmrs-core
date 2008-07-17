@@ -25,7 +25,7 @@
 
 					var displayString = person.personName;
 					<c:if test="${not empty linkUrl}">
-						displayString = '<a id="${formFieldName}_name" href="#View" onclick="return gotoUrl("${linkUrl}", ' + person.personId + ')">' + displayString + '</a>';
+						displayString = '<a id="${formFieldName}_name" href="#View" onclick="return gotoPerson(\'${linkUrl}\', ' + person.personId + ')">' + displayString + '</a>';
 					</c:if>
 					personPopup.displayNode.innerHTML = displayString;
 					
@@ -43,6 +43,15 @@
 			}
 		);
 	})
+		
+	function gotoPerson(url, pId) {
+		if (url === null || url === '') {
+			return false;
+		} else {
+			window.location = url + "?personId=" + pId;
+		}
+		return false;
+	}
 </script>
 
 <div class="personSearchLabel">${searchLabel}</div>

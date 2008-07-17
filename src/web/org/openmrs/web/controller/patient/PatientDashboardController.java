@@ -111,7 +111,7 @@ public class PatientDashboardController extends SimpleFormController {
 				onlyPublishedForms = false;
 			forms.addAll(Context.getFormService().getForms(onlyPublishedForms));
 			
-			Set<Encounter> encs = Context.getEncounterService().getEncounters(patient);
+			List<Encounter> encs = Context.getEncounterService().getEncounters(patient);
 			if (encs != null && encs.size() > 0)
 				encounters.addAll(encs);
 			

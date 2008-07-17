@@ -14,6 +14,7 @@
 package org.openmrs;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -54,6 +55,8 @@ public class Cohort implements Serializable {
 	private User voidedBy;
 	private Date dateVoided;
 	private String voidReason;
+	private User changedBy;
+	private Date dateChanged;
 	private Set<Integer> memberIds;
 	private CohortDefinition cohortDefinition;
 	private EvaluationContext evaluationContext;
@@ -73,15 +76,73 @@ public class Cohort implements Serializable {
 		this.cohortId = cohortId;
 	}
 	
-	public Cohort(Set<Integer> memberIds) {
-		this.memberIds = memberIds;
+	/**
+	 * This constructor does not check whether the database contains patients with the given ids, but @see CohortService.saveCohort(Cohort) will.
+	 * @param name
+	 * @param description optional description
+	 * @param ids option array of Integer ids
+	 */
+	public Cohort(String name, String description, Integer[] ids) {
+		this.name = name;
+		this.description = description;
+		memberIds = new HashSet<Integer>();
+		if (ids != null)
+			memberIds.addAll(Arrays.asList(ids));
 	}
 	
-	public Cohort(Collection<Integer> memberIds) {
-		this.memberIds = new HashSet<Integer>();
-		this.memberIds.addAll(memberIds);
+	/**
+	 * This constructor does not check whether the database contains patients with the given ids, but @see CohortService.saveCohort(Cohort) will.
+	 * @param name
+	 * @param description optional description
+	 * @param patients optional array of patients
+	 */
+	public Cohort(String name, String description, Patient[] patients) {
+		this.name = name;
+		this.description = description;
+		memberIds = new HashSet<Integer>();
+		if (patients != null)
+			for (Patient p : patients)
+				memberIds.add(p.getPatientId());
 	}
 	
+	/**
+	 * This constructor does not check whether the database contains patients with the given ids, but @see CohortService.saveCohort(Cohort) will.
+	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may be Integers, Strings, or anything whose toString() can be parsed to an Integer.
+	 */
+	@SuppressWarnings("unchecked")
+    public Cohort(Collection patientsOrIds) {
+		 this(null, null, patientsOrIds);
+	}
+	
+	/**
+	 * This constructor does not check whether the database contains patients with the given ids, but @see CohortService.saveCohort(Cohort) will.
+	 * @param name
+	 * @param description optional description
+	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may be Integers, Strings, or anything whose toString() can be parsed to an Integer.
+	 */
+	@SuppressWarnings("unchecked")
+    public Cohort(String name, String description, Collection patientsOrIds) {
+		this.name = name;
+		this.description = description;
+		memberIds = new HashSet<Integer>();
+		if (patientsOrIds != null) {
+			for (Object o : patientsOrIds) {
+				if (o instanceof Patient)
+					memberIds.add(((Patient) o).getPatientId());
+				else if (o instanceof Integer)
+					memberIds.add((Integer) o);
+				else
+					memberIds.add(Integer.valueOf(o.toString()));
+			}
+		}
+	}
+	
+	/**
+	 * Convenience contructor taking in a string that is a list of comma separated patient ids
+	 * This constructor does not check whether the database contains patients with the given ids, but @see CohortService.saveCohort(Cohort) will.
+	 * 
+	 * @param commaSeparatedIds
+	 */
 	public Cohort(String commaSeparatedIds) {
 		memberIds = new HashSet<Integer>();
 		for (StringTokenizer st = new StringTokenizer(commaSeparatedIds, ","); st.hasMoreTokens(); ) {
@@ -101,10 +162,24 @@ public class Cohort implements Serializable {
 		return sb.toString();
 	}
 	
-	public String toString() {
-		return getMemberIds() == null ? "Cohort with null members" : (getMemberIds().size() + " patients");
+	
+	public boolean contains(Patient patient) {
+		return getMemberIds() != null && getMemberIds().contains(patient.getPatientId());
 	}
 	
+	public boolean contains(Integer patientId) {
+		return getMemberIds() != null && getMemberIds().contains(patientId);
+	}
+		
+	public String toString() {
+		StringBuilder sb = new StringBuilder("Cohort id=" + getCohortId());
+		if (getName() != null)
+			sb.append(" name=" + getName());
+		if (getMemberIds() != null)
+			sb.append(" size=" + getMemberIds().size());
+		return sb.toString();
+	}
+		
 	public boolean equals(Object obj) {
 		if (this.getCohortId() == null)
 			return false;
@@ -138,8 +213,20 @@ public class Cohort implements Serializable {
 		return size();
 	}
 	
+	public boolean isEmpty() { 
+		return size() == 0;
+	}
+	
 	// static utility methods
 	
+	/**
+	 * 
+	 * Returns the union of two cohorts
+	 * 
+	 * @param a The first Cohort
+	 * @param b The second Cohort
+	 * @return Cohort
+	 */
 	public static Cohort union(Cohort a, Cohort b) {
 		Cohort ret = new Cohort();
 		ret.setName("(" + a.getName() + " + " + b.getName() + ")");
@@ -150,6 +237,14 @@ public class Cohort implements Serializable {
 		return ret;
 	}
 	
+	/**
+	 * 
+	 * Returns the intersection of two cohorts
+	 * 
+	 * @param a The first Cohort
+	 * @param b The second Cohort
+	 * @return Cohort
+	 */
 	public static Cohort intersect(Cohort a, Cohort b) {
 		Cohort ret = new Cohort();
 		ret.setName("(" + a.getName() + " * " + b.getName() + ")");
@@ -160,6 +255,14 @@ public class Cohort implements Serializable {
 		return ret;
 	}
 	
+	/**
+	 * 
+	 * Subtracts a cohort from a cohort
+	 * 
+	 * @param a the original Cohort
+	 * @param b the Cohort to subtract
+	 * @return Cohort
+	 */
 	public static Cohort subtract(Cohort a, Cohort b) {
 		Cohort ret = new Cohort();
 		ret.setName("(" + a.getName() + " - " + b.getName() + ")");
@@ -233,6 +336,14 @@ public class Cohort implements Serializable {
 		this.name = name;
 	}
 	
+	public Boolean isVoided() {
+		return voided;
+	}
+	
+	/**
+	 * @see #isVoided()
+	 * @deprecated use isVoided()
+	 */
 	@Attribute(required=false)
 	public Boolean getVoided() {
 		return voided;
@@ -286,6 +397,23 @@ public class Cohort implements Serializable {
 		this.memberIds = memberIds;
 	}
 		
+
+	public User getChangedBy() {
+    	return changedBy;
+    }
+
+	public void setChangedBy(User changedBy) {
+    	this.changedBy = changedBy;
+    }
+
+	public Date getDateChanged() {
+    	return dateChanged;
+    }
+
+	public void setDateChanged(Date dateChanged) {
+    	this.dateChanged = dateChanged;
+    }
+	
 	/**
      * @return the cohortDefinition
      */
@@ -317,5 +445,4 @@ public class Cohort implements Serializable {
 	public void setEvaluationContext(EvaluationContext evaluationContext) {
     	this.evaluationContext = evaluationContext;
     }
-	
 }

@@ -54,7 +54,7 @@ public class SyncConceptStageTest extends BaseContextSensitiveTest {
         wt.setConceptClass(cs.getConceptClassByName("Misc"));
 
         //now update it
-        cs.updateConcept(wt, true);
+        cs.saveConcept(wt);
 
         Concept c = cs.getConceptByName("WEIGHT (KG)");
 		assertNotNull("Failed to update numeric", c);

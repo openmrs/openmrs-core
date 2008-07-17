@@ -46,8 +46,9 @@ public class SchedulerUtil {
 			log.warn("Deprecated runtime property: scheduler.username. Value set in global_property in database now.");
 		}
 		
+		// TODO: do this for all services
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
-		Context.getSchedulerService().startup();
+		Context.getSchedulerService().onStartup();
 		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
 	}
 	
@@ -65,10 +66,11 @@ public class SchedulerUtil {
 			// pass
 		}
 		
+		// TODO: Do this for all services
 		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
 		// doesn't attempt shutdown if there was an error getting the scheduler service
 		if (service != null) { 
-			service.shutdown();
+			service.onShutdown();
 		}
 		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
 		

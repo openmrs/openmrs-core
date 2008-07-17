@@ -9,7 +9,7 @@
 				value="%p - %C{1}.%M(%L) |%d{ISO8601}| %m%n" />
 		</layout>
 	</appender>
-
+	
 	<!-- TODO This limits to the tomcat home dir with ${catalina.home} -->
 	<appender name="CONCEPT_FILE"
 		class="org.apache.log4j.DailyRollingFileAppender">
@@ -96,9 +96,13 @@
 	</logger>
 
 	<logger name="org.openmrs">
-		<level value="WARN" />
+		<level value="INFO" />
 	</logger>
-
+	
+	<logger name="org.openmrs.api">
+		<level value="INFO" />
+	</logger>
+	
 	<logger name="org.openmrs.test">
 		<level value="INFO" />
 	</logger>
@@ -127,7 +131,7 @@
 		<level value="INFO" />
 		<appender-ref ref="DWR_FILE" />
 	</logger>
-
+	
 	<!-- Sync-related logging setup -->
 	<logger name="org.openmrs.api.SynchronizationIngestService">
 		<level value="INFO" />

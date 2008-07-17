@@ -14,6 +14,8 @@
 package org.openmrs.test.api;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
@@ -21,12 +23,15 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -56,14 +61,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 		
 		EncounterService es = Context.getEncounterService();
+		LocationService locationService = Context.getLocationService();
 		PatientService ps = Context.getPatientService();
 		Encounter enc = new Encounter();
 
 		//testing creation
 		
-		Location loc1 = es.getLocations().get(0);
+		Location loc1 = locationService.getAllLocations().get(0);
 		assertNotNull("We need a location", loc1);
-		EncounterType encType1 = es.getEncounterTypes().get(0);
+		EncounterType encType1 = es.getAllEncounterTypes().get(0);
 		assertNotNull("We need an encounter type", encType1);
 		Date d1 = new Date();
 		Patient pat1 = new Patient(3);
@@ -75,7 +81,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		enc.setPatient(pat1);
 		enc.setProvider(pro1);
 
-		es.createEncounter(enc);
+		es.saveEncounter(enc);
 		
 		Encounter newEnc = es.getEncounter(enc.getEncounterId());
 		assertNotNull("We should get back an encounter", newEnc);
@@ -84,9 +90,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		//testing update
 		
-		Location loc2 = es.getLocations().get(1);
+		Location loc2 = locationService.getAllLocations().get(1);
 		assertNotNull("We need a location", loc2);
-		EncounterType encType2 = es.getEncounterTypes().get(1);
+		EncounterType encType2 = es.getAllEncounterTypes().get(1);
 		assertNotNull("we need an encounter type", encType2);
 		Date d2 = new Date(d1.getTime() + 25);
 		Patient pat2 = ps.getPatient(2);
@@ -97,7 +103,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		enc.setEncounterDatetime(d2);
 		enc.setPatient(pat2);
 
-		es.updateEncounter(newEnc);
+		es.saveEncounter(newEnc);
 		
 		Encounter newestEnc = es.getEncounter(newEnc.getEncounterId());
 
@@ -122,12 +128,103 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		//testing deletion
 		
-		es.deleteEncounter(newEnc);
+		es.purgeEncounter(newEnc);
 		
 		Encounter e = es.getEncounter(newEnc.getEncounterId());
 		
 		assertNull("We shouldn't find the encounter after deletion", e);
+
+	}
+	
+	/**
+	 * You should be able to add an obs to an encounter, save the encounter,
+	 * and have the obs automatically persisted.
+	 * 
+	 * @throws Exception
+	 */
+	public void testAddObsToEncounter() throws Exception {
+		EncounterService es = Context.getEncounterService();
+		LocationService locationService = Context.getLocationService();
+		PatientService ps = Context.getPatientService();
+		Encounter enc = new Encounter();
+
+		//create an encounter
+		Location loc1 = locationService.getAllLocations().get(0);
+		assertNotNull("We need a location", loc1);
+		EncounterType encType1 = es.getAllEncounterTypes().get(0);
+		assertNotNull("We need an encounter type", encType1);
+		Date d1 = new Date();
+		Patient pat1 = new Patient(3);
+		User pro1 = Context.getAuthenticatedUser();
+		enc.setLocation(loc1);
+		enc.setEncounterType(encType1);
+		enc.setEncounterDatetime(d1);
+		enc.setPatient(pat1);
+		enc.setProvider(pro1);
+		es.saveEncounter(enc);
 		
+		// Now add an obs to it
+		Obs newObs = new Obs();
+		Concept concept = Context.getConceptService().getConcept(1);
+		newObs.setConcept(concept);
+		newObs.setValueNumeric(50d);
+		newObs.setObsDatetime(new Date());
+		enc.addObs(newObs);
+		es.saveEncounter(enc);
+	}
+	
+	/**
+	 * Test create/update/delete of encounter type
+	 * 
+	 * @throws Exception
+	 */
+	public void testEncounterType() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		//testing creation
+		
+		EncounterType encounterType = new EncounterType();
+		
+		encounterType.setName("testing");
+		encounterType.setDescription("desc");
+		
+		encounterService.saveEncounterType(encounterType);
+		
+		//assertNotNull(newE);
+		
+		EncounterType newEncounterType = encounterService.getEncounterType(encounterType.getEncounterTypeId());
+		assertNotNull(newEncounterType);
+		
+		List<EncounterType> encounterTypes = encounterService.getAllEncounterTypes();
+		
+		//make sure we get a list
+		assertNotNull(encounterTypes);
+		
+		boolean found = false;
+		for(Iterator<EncounterType> i = encounterTypes.iterator(); i.hasNext();) {
+			EncounterType encounterType2 = i.next();
+			assertNotNull(encounterType);
+			//check .equals function
+			assertTrue(encounterType.equals(encounterType2) == (encounterType.getEncounterTypeId().equals(encounterType2.getEncounterTypeId())));
+			//mark found flag
+			if (encounterType.equals(encounterType2))
+				found = true;
+		}
+		
+		//assert that the new encounterType was returned in the list
+		assertTrue(found);
+		
+		
+		//check update
+		newEncounterType.setName("another test");
+		encounterService.saveEncounterType(newEncounterType);
+		
+		EncounterType newerEncounterType = encounterService.getEncounterType(newEncounterType.getEncounterTypeId());
+		assertTrue(newerEncounterType.getName().equals(newEncounterType.getName()));
+		
+		//check deletion
+		encounterService.purgeEncounterType(newEncounterType);
+		assertNull(encounterService.getEncounterType(newEncounterType.getEncounterTypeId()));
+	
 	}
 	
 }

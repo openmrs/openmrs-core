@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <location location_id="2" name="Other Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"/>
+  <patient_identifier_type patient_identifier_type_id="2" name="Test Identifier Type With Check Digit" description="Test description" check_digit="true" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"/>
+  <person_attribute_type person_attribute_type_id="1" name="Phone Number" format="java.lang.String" description="Patient's phone number" creator="1" date_created="2005-01-01 00:00:00.0" searchable="false" retired="false" />
+  
+  <!-- From OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES so the patient form has this entry box -->
+  <global_property property="patient.viewingAttributeTypes" property_value="Phone Number" />
+  
+</dataset>

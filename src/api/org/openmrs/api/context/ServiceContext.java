@@ -27,6 +27,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.DataSetService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
@@ -141,6 +142,13 @@ public class ServiceContext {
 	 */
 	public EncounterService getEncounterService() {
 		return (EncounterService)getService(EncounterService.class);
+	}
+	
+	/**
+	 * @return location services
+	 */
+	public LocationService getLocationService() {
+		return (LocationService)getService(LocationService.class);
 	}
 
 	/**
@@ -325,6 +333,13 @@ public class ServiceContext {
 		setService(EncounterService.class, encounterService);
 	}
 
+	/**
+	 * @param locationService the LocationService to set
+	 */
+	public void setLocationService(LocationService locationService) {
+		setService(LocationService.class, locationService);
+	}
+	
 	/**
 	 * @param formService the formService to set
 	 */
@@ -531,8 +546,8 @@ public class ServiceContext {
 	 */
 	@SuppressWarnings("unchecked")
     public Object getService(Class cls) {
-		if (log.isDebugEnabled())
-			log.debug("Getting service: " + cls);
+		if (log.isTraceEnabled())
+			log.trace("Getting service: " + cls);
 		
 		// if the context is refreshing, wait until it is 
 		// done -- otherwise a null service might be returned

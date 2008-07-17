@@ -26,14 +26,14 @@
   <encounter encounter_id="10" encounter_type="2" patient_id="2" provider_id="1" location_id="1" encounter_datetime="2005-03-16 00:00:00.0" creator="1" date_created="2006-10-14 00:00:00.0" voided="false"/>
   
   <concept concept_id="5089" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1"  date_created="2004-08-12 00:00:00.0" version="" changed_by="2" date_changed="2005-02-25 11:43:43.0"/>
-  <concept_name concept_id="5089" name="WEIGHT (KG)" short_name="WT" description="Patient&apos;s weight in kilograms." locale="en" creator="1"  date_created="2004-08-12 00:00:00.0"/>
+  <concept_name concept_name_id="1" concept_id="5089" name="WEIGHT (KG)" short_name="WT" description="Patient&apos;s weight in kilograms." locale="en" creator="1"  date_created="2004-08-12 00:00:00.0"/>
   <concept_numeric concept_id="5089" hi_absolute="250.0" low_absolute="0.0" units="kg" precise="true"/>
   
-  <concept_class concept_class_id="1" name="Test" description="Acq. during patient encounter (vitals, labs, etc.)" creator="1"  date_created="2004-02-02 00:00:00.0"/>
-  <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float (e.g., creatinine, weight)" creator="1"  date_created="2004-02-02 00:00:00.0"/>
+  <concept_class concept_class_id="1" name="Test" description="Acq. during patient encounter (vitals, labs, etc.)" creator="1"  date_created="2004-02-02 00:00:00.0" retired="false" />
+  <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float (e.g., creatinine, weight)" creator="1"  date_created="2004-02-02 00:00:00.0" retired="false" />
   
   <concept concept_id="5090" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1"  date_created="2004-08-12 00:00:00.0" version="" changed_by="2" date_changed="2005-02-25 11:43:43.0"/>
-  <concept_name concept_id="5090" name="SOME OTHER CONCEPT" short_name="WT" description="This is another concept." locale="en" creator="1"  date_created="2004-08-12 00:00:00.0"/>
+  <concept_name concept_name_id="2" concept_id="5090" name="SOME OTHER CONCEPT" short_name="WT" description="This is another concept." locale="en" creator="1"  date_created="2004-08-12 00:00:00.0"/>
   <concept_numeric concept_id="5090" hi_absolute="10.0" low_absolute="0.0" units="kg" precise="true"/>
   
 </dataset>

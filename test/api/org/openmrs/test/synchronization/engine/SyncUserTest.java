@@ -45,40 +45,13 @@ public class SyncUserTest extends SyncBaseTest {
 				u.setGender("M");
 				u.addRole(us.getRole("System Developer"));
 				u.addRole(us.getRole("Provider"));
-				us.createUser(u);
+				us.saveUser(u, "test");
 			}
 			public void runOnParent() {
 				User u = us.getUserByUsername("djazayeri");
 				assertNotNull("User not created", u);
 				assertEquals("Failed to create person name", u.getPersonName().getGivenName(), "Darius");
 				assertEquals("Failed to assign roles", u.getRoles().size(), 2);
-			}
-		});
-	}
-	
-	public void testChangePassword() throws Exception {
-		runSyncTest(new SyncTestHelper() {
-			UserService us = Context.getUserService();
-			String newPassword;
-			String newSalt;
-			public void runOnChild() {
-				User u = us.getUser(1);
-				System.out.println("password was " + us.getLoginCredential(u).getHashedPassword());
-				us.changePassword(u, "newPassword");
-				newPassword = us.getLoginCredential(u).getHashedPassword();
-				newSalt= us.getLoginCredential(u).getSalt();
-			}
-			public void runOnParent() {
-				User u = us.getUser(1);
-				LoginCredential newCred = us.getLoginCredential(u);
-				System.out.println("on parent " + us.getLoginCredential(u).getHashedPassword());
-				assertEquals(newPassword, newCred.getHashedPassword());
-				assertEquals(newSalt, newCred.getSalt());
-				try {
-					Context.authenticate(u.getUsername(), "newPassword");
-				} catch (ContextAuthenticationException e) {
-					assertTrue(false);
-				}
 			}
 		});
 	}

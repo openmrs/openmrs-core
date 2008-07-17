@@ -285,7 +285,7 @@
 			<select name="programId" onChange="document.getElementById('enrollSubmitButton').disabled = (this.selectedIndex == 0)">
 				<option value=""><spring:message code="Program.choose"/></option>
 				<c:forEach var="program" items="${model.programs}">
-					<c:if test="${!program.voided}">
+					<c:if test="${!program.retired}">
 					  <option value="${program.programId}"><openmrs_tag:concept conceptId="${program.concept.conceptId}"/></option>
 					</c:if>
 				</c:forEach>

@@ -200,11 +200,18 @@ public class Patient extends Person
 			identifiers.add(patientIdentifier);
 	}
 
+	/**
+	 * Convenience method to remove the given identifier from this patient's
+	 * list of identifiers.
+	 * 
+	 * If <code>patientIdentifier</code> is null, nothing is done.
+	 * 
+	 * @param patientIdentifier the identifier to remove
+	 */
 	public void removeIdentifier(PatientIdentifier patientIdentifier) {
-		if (getIdentifiers() != null)
+		if (getIdentifiers() != null && patientIdentifier != null)
 			identifiers.remove(patientIdentifier);
 	}
-
 	
 	/**
 	 * Convenience method to get the "preferred" identifier for patient.

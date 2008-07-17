@@ -139,6 +139,9 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 		return false;
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getPersonAttributeId() == null) return super.hashCode();
 		int hash = 5;
@@ -376,7 +379,8 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	/**
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	@SuppressWarnings("unchecked")
+    public String toString() {
 		Object o = getHydratedObject();
 		if (o instanceof Attributable)
 			return ((Attributable)o).getDisplayString();
