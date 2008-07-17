@@ -25,8 +25,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
+import org.hibernate.type.Type;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -214,12 +216,10 @@ public class HibernatePersonDAO implements PersonDAO {
 		}
 				
 		criteria.add(Expression.eq("personVoided", false));
-		
 		if (dead != null)
-			criteria.add(Expression.eq("dead", dead));
-		
+			criteria.add(Expression.eq("dead", dead));		
 		criteria.addOrder(Order.asc("personId"));
-		
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		return criteria.list();
 	}
 		
