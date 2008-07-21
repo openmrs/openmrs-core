@@ -212,16 +212,50 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to get the "preferred" identifier for patient.
+	 * Convenience method to get the first "preferred" identifier for a patient.
+	 * Otherwise, returns the first non-voided identifier
+	 * Otherwise, null
 	 * 
 	 * @return Returns the "preferred" patient identifier.
 	 */
 	public PatientIdentifier getPatientIdentifier() {
-		if (getIdentifiers() != null && identifiers.size() > 0) {
-			return (PatientIdentifier) identifiers.toArray()[0];
-		} else {
+		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
+			for (PatientIdentifier id : getIdentifiers()) {
+					if (id.isPreferred() && !id.isVoided())
+						return id;
+			}
+			for (PatientIdentifier id : getIdentifiers()) {
+				if (!id.isVoided())
+					return id;
+			}
 			return null;
-		}
+		} 
+		return null;
+
+	}
+	
+	/**
+	 * 
+	 * Returns the first (preferred) patient identifier matching a <code>PatientIdentifierType</code>
+	 * Otherwise, returns the first non-voided identifier
+	 * Otherwise, null
+	 * 
+	 * @param identifierType
+	 * @return
+	 */
+	public PatientIdentifier getPatientIdentifier(PatientIdentifierType pit) {
+		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
+			for (PatientIdentifier id : getIdentifiers()) {
+					if (id.isPreferred() && !id.isVoided() && pit.equals(id.getIdentifierType()))
+						return id;
+			}
+			for (PatientIdentifier id : getIdentifiers()) {
+				if (!id.isVoided() && pit.equals(id.getIdentifierType()))
+					return id;
+			}
+			return null;
+		} 
+		return null;
 	}
 	
 	/**
@@ -229,43 +263,43 @@ public class Patient extends Person implements java.io.Serializable {
 	 * 
 	 * @param identifierTypeId
 	 * @return preferred patient identifier
+	 *
 	 */
 	public PatientIdentifier getPatientIdentifier(Integer identifierTypeId) {
-		if (getIdentifiers() != null && identifiers.size() > 0) {
-			PatientIdentifier found = null;
-			for (PatientIdentifier id : identifiers) {
-				if (id.getIdentifierType().getPatientIdentifierTypeId().equals(identifierTypeId)) {
-					found = id;
-					if (found.isPreferred())
-						return found;
-				}
+		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
+			for (PatientIdentifier id : getIdentifiers()) {
+					if (id.isPreferred() && !id.isVoided() && identifierTypeId.equals(id.getIdentifierType().getPatientIdentifierTypeId()))
+						return id;
 			}
-			return found;
-		} else {
+			for (PatientIdentifier id : getIdentifiers()) {
+				if (!id.isVoided() && identifierTypeId.equals(id.getIdentifierType().getPatientIdentifierTypeId()))
+					return id;
+			}
 			return null;
-		}
+		} 
+		return null;
 	}
 	
 	/**
-	 * Return's the first (preferred) patient identifier matching <code>identifierTypeName</code>
+	 * Return's the (preferred) patient identifier matching <code>identifierTypeName</code>
+	 * Otherwise returns that last <code>PatientIdenitifer</code>
 	 * 
 	 * @param identifierTypeName
 	 * @return preferred patient identifier
 	 */
 	public PatientIdentifier getPatientIdentifier(String identifierTypeName) {
-		if (getIdentifiers() != null && identifiers.size() > 0) {
-			PatientIdentifier found = null;
-			for (PatientIdentifier id : identifiers) {
-				if (id.getIdentifierType().getName().equals(identifierTypeName)) {
-					found = id;
-					if (found.isPreferred())
-						return found;
-				}
+		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
+			for (PatientIdentifier id : getIdentifiers()) {
+					if (id.isPreferred() && !id.isVoided() && identifierTypeName.equals(id.getIdentifierType().getName()))
+						return id;
 			}
-			return found;
-		} else {
+			for (PatientIdentifier id : getIdentifiers()) {
+				if (!id.isVoided() && identifierTypeName.equals(id.getIdentifierType().getName()))
+					return id;
+			}
 			return null;
-		}		
+		} 
+		return null;		
 	}
 	
 	/**
@@ -273,14 +307,33 @@ public class Patient extends Person implements java.io.Serializable {
 	 * If you want <u>all</u> identifiers, use {@link #getIdentifiers()}
 	 * 
 	 * @return list of non-voided identifiers for this patient
-	 * 
 	 * @see #getIdentifiers()
 	 */
 	public List<PatientIdentifier> getActiveIdentifiers() {
 		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
 		if (getIdentifiers() != null) {
-			for (PatientIdentifier pi : identifiers) {
+			for (PatientIdentifier pi : getIdentifiers()) {
 				if (pi.isVoided() == false)
+					ids.add(pi);
+			}
+		}
+		return ids;
+	}
+	
+	
+	/**
+	 * Returns only the non-voided identifiers for this patient.
+	 * If you want <u>all</u> identifiers, use {@link #getIdentifiers()}
+	 * 
+	 * @return list of non-voided identifiers for this patient
+	 * @param identifierType
+	 * @see #getIdentifiers()
+	 */
+	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType pit) {
+		List<PatientIdentifier> ids = new Vector<PatientIdentifier>();
+		if (getIdentifiers() != null) {
+			for (PatientIdentifier pi : getIdentifiers()) {
+				if (pi.isVoided() == false && pit.equals(pi.getIdentifierType()))
 					ids.add(pi);
 			}
 		}
