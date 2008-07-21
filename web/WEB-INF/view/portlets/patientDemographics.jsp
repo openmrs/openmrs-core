@@ -43,10 +43,12 @@
 		</thead>
 		<tbody>
 			<c:forEach var="address" items="${model.patient.addresses}" varStatus="status">
+				<c:if test="${!address.voided}">
 				<% request.setAttribute("address", pageContext.getAttribute("address")); %>
 				<spring:nestedPath path="address">
 					<openmrs:portlet url="addressLayout" id="addressPortlet" size="inOneRow" parameters="layoutMode=view|layoutShowTable=false|layoutShowExtended=true" />
 				</spring:nestedPath>
+				</c:if>
 			</c:forEach>
 		</tbody>
 	</table>
