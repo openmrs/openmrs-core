@@ -227,4 +227,48 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	}
 	
+	public void testModifyEncounterDatetime() throws Exception {
+		authenticate();
+		
+		//First, create an encounter with an obs:
+		
+		EncounterService es = Context.getEncounterService();
+		LocationService locationService = Context.getLocationService();
+		PatientService ps = Context.getPatientService();
+		Encounter enc = new Encounter();
+		
+		Location loc1 = locationService.getAllLocations().get(0);
+		assertNotNull("We need a location", loc1);
+		EncounterType encType1 = es.getAllEncounterTypes().get(0);
+		assertNotNull("We need an encounter type", encType1);
+		Date d1 = new Date();
+		Patient pat1 = new Patient(3);
+		User pro1 = Context.getAuthenticatedUser();
+		
+		enc.setLocation(loc1);
+		enc.setEncounterType(encType1);
+		enc.setEncounterDatetime(d1);
+		enc.setPatient(pat1);
+		enc.setProvider(pro1);
+
+		Obs o = new Obs();
+		o.setConcept(Context.getConceptService().getConcept(1));
+		o.setCreator(Context.getAuthenticatedUser());
+		o.setDateCreated(new Date());
+		o.setEncounter(enc);
+		o.setVoided(false);
+		o.setLocation(loc1);
+		o.setPatient(pat1);
+		o.setValueDatetime(new Date());
+		o.setObsDatetime(enc.getEncounterDatetime());
+		enc.addObs(o);
+		es.saveEncounter(enc);
+		
+		//now modify the encounterDatetime and re-save.
+		
+		enc.setEncounterDatetime(new Date(5000));
+		es.saveEncounter(enc);
+		
+		
+	}
 }
