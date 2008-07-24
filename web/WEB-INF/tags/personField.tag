@@ -56,10 +56,10 @@
 </script>
 
 <div class="personSearchLabel">${searchLabel}</div>
-<div dojoType="PersonSearch" widgetId="${formFieldName}_search" personId="${initialValue}" roles="${roles}"></div>
+<div dojoType="PersonSearch" widgetId="${formFieldName}_search" personId="${initialValue}" roles="${roles}" canAddNewPerson="${canAddNewPerson}"></div>
 <c:if test="${not empty searchLabelCode}">
-	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" arguments="${searchLabelArguments}" />" canAddNewPerson="${canAddNewPerson}"></div>
+	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" arguments="${searchLabelArguments}" />" ></div>
 </c:if> 
 <c:if test="${empty searchLabelCode}">
-	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}" canAddNewPerson="${canAddNewPerson}" ></div>
+	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}" ></div>
 </c:if> 

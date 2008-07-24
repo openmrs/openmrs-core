@@ -45,16 +45,14 @@ public class RelationshipListItem {
 		personA = p.getPersonName().toString();
 		personAId = p.getPersonId();
 		try {
-			Patient pat = Context.getPatientService().getPatient(p.getPersonId());
-			personAType = pat != null ? "Patient" : "User";
+			personAType = p.isPatient() ? "Patient" : "User";
 		} catch (Exception ex) { personAType = "User"; }
 		
 		p = r.getPersonB();
 		personB = p.getPersonName().toString();
 		personBId = p.getPersonId();
 		try {
-			Patient pat = Context.getPatientService().getPatient(p.getPersonId());
-			personBType = pat != null ? "Patient" : "User";
+			personBType = p.isPatient() ? "Patient" : "User";
 		} catch (Exception ex) { personAType = "User"; }
 	}
 	
