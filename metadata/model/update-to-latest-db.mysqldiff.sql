@@ -1042,6 +1042,88 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.3.0.13');
 
+#----------------------------------------
+# OpenMRS Datamodel version 1.3.0.14
+# Ben Wolfe               July 24th, 2008
+# Giving 1.3 modified privileges to roles
+#----------------------------------------
+
+#-- temporary procedure to check and add a privilege to the Authenticated role
+DROP PROCEDURE IF EXISTS insert_authenticated_privilege;
+delimiter //
+CREATE PROCEDURE insert_authenticated_privilege (IN priv VARCHAR(50))
+ BEGIN
+	IF NOT EXISTS (SELECT * FROM role_privilege where role = 'Authenticated' and privilege = priv) THEN
+		insert into role_privilege (role, privilege) values ('Authenticated', priv);
+	END IF;
+ END;
+//
+delimiter ;
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+	set FOREIGN_KEY_CHECKS = 0;
+	
+    insert into role_privilege (role, privilege) select distinct role, 'View Patient Programs' from role_privilege rp where privilege = 'Manage Patient Programs' and not exists (select * from role_privilege where role = rp.role and privilege = 'View Patient Programs');
+	insert into role_privilege (role, privilege) select distinct role, 'Edit Patient Programs' from role_privilege rp where privilege = 'Manage Patient Programs' and not exists (select * from role_privilege where role = rp.role and privilege = 'Edit Patient Programs');
+	update role_privilege set privilege = 'Delete Patient Programs' where privilege = 'Manage Patient Programs';
+	
+	#-- the 1.3.0.14 update didn't do this change correctly
+	update role_privilege set privilege = 'Manage Concepts' where privilege = 'Edit Concepts';
+	update role_privilege set privilege = 'Manage Forms' where privilege = 'Edit Forms';
+	
+	#-- The concept proposal privilege changed slightly
+	insert into role_privilege (role, privilege) select distinct role, 'Add Concept Proposals' from role_privilege rp where privilege = 'Add Concept Proposal' and not exists (select * from role_privilege where role = rp.role and privilege = 'Add Concept Proposals');
+	insert into role_privilege (role, privilege) select distinct role, 'Edit Concept Proposals' from role_privilege rp where privilege = 'Edit Concept Proposal' and not exists (select * from role_privilege where role = rp.role and privilege = 'Edit Concept Proposals');
+	
+	#-- These objects/methods now require an explicit privilege.  Previously they only required authentication
+	call insert_authenticated_privilege('View Encounter Types');
+	call insert_authenticated_privilege('View Locations');
+	call insert_authenticated_privilege('View Mime Types');
+	call insert_authenticated_privilege('View Identifier Types');
+	call insert_authenticated_privilege('View Concept Classes');
+	call insert_authenticated_privilege('View Concept Datatypes');
+	call insert_authenticated_privilege('View Privileges');
+	call insert_authenticated_privilege('View Roles');
+	call insert_authenticated_privilege('View Field Types');
+	call insert_authenticated_privilege('View Order Types');
+	call insert_authenticated_privilege('View RelationshipTypes');
+	call insert_authenticated_privilege('View Global Properties');
+	call insert_authenticated_privilege('View Person Attribute Types');
+	call insert_authenticated_privilege('View Relationships');
+	call insert_authenticated_privilege('View Tribes');
+	
+	#-- If a role can View Patients...add the new View Patient Identifiers privilege to that role
+	insert into role_privilege (role, privilege) select distinct role, 'View Patient Identifiers' from role_privilege rp where privilege = 'View Patients' and not exists (select * from role_privilege where role = rp.role and privilege = 'View Patient Identifiers');	
+	
+	#-- Convert Manage Encounter Types
+	insert into role_privilege (role, privilege) select distinct role, 'Add Encounter Types' from role_privilege rp where privilege = 'Manage Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Add Encounter Types');
+	insert into role_privilege (role, privilege) select distinct role, 'Edit Encounter Types' from role_privilege rp where privilege = 'Manage Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Edit Encounter Types');
+	update role_privilege set privilege = 'Delete Encounter Types' where privilege = 'Manage Encounter Types';
+	
+	#-- Convert Manage Relationships privilege
+	insert into role_privilege (role, privilege) select distinct role, 'Add Relationships' from role_privilege rp where privilege = 'Manage Relationships' and not exists (select * from role_privilege where role = rp.role and privilege = 'Add Relationships');
+	insert into role_privilege (role, privilege) select distinct role, 'Edit Relationships' from role_privilege rp where privilege = 'Manage Relationships' and not exists (select * from role_privilege where role = rp.role and privilege = 'Edit Relationships');
+	update role_privilege set privilege = 'Delete Relationships' where privilege = 'Manage Relationships';
+	
+	set FOREIGN_KEY_CHECKS = 1;
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.14');
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------
