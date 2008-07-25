@@ -45,15 +45,20 @@ mysqldump -u$dbuser -p$dbpass -e -q --add-drop-table --skip-add-locks -N -r"./$n
 #drop database if exists openmrs;
 #create database openmrs default charset utf8;
 #use openmrs;
+echo Done.
 
 echo ""
+echo ""
 echo WARNING!!!
-echo Change the \"create database\" line to: \"create database openmrs default character set utf8;\"
-echo You will also have to put these lines into the createdb-from-scratch after the \"create database...\" statement
+echo WARNING!!!
+echo WARNING!!!
+echo Change the \"create database\" line to: \"create database openmrs default character set utf8\;\"
+echo You will also have to put the following lines into the createdb-from-scratch after that \"create database...\" statement
 echo DELETE FROM mysql.user WHERE User=\'test\'\;
-echo CREATE USER test IDENTIFIED BY \'test\'\;
+echo flush privileges\;
+echo CREATE USER \'test\'@\'localhost\' IDENTIFIED BY \'test\'\;
 echo GRANT ALL ON openmrs.* TO test\;
 echo ""
-echo Also change the \"schema only\" file to have : \"INSERT INTO global_property VALUES (\'database_version\',\'1.3.0.11\',NULL);\" with the latest version
+echo Also change the \"schema only\" file to have : \"INSERT INTO global_property VALUES \(\'database_version\',\'1.3.0.14\',NULL\)\;\" with the __latest_version__
 
 echo ""

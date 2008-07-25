@@ -1075,7 +1075,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	insert into role_privilege (role, privilege) select distinct role, 'Edit Patient Programs' from role_privilege rp where privilege = 'Manage Patient Programs' and not exists (select * from role_privilege where role = rp.role and privilege = 'Edit Patient Programs');
 	update role_privilege set privilege = 'Delete Patient Programs' where privilege = 'Manage Patient Programs';
 	
-	#-- the 1.3.0.14 update didn't do this change correctly
+	#-- the 1.3.0.12 update didn't do this change correctly
 	update role_privilege set privilege = 'Manage Concepts' where privilege = 'Edit Concepts';
 	update role_privilege set privilege = 'Manage Forms' where privilege = 'Edit Forms';
 	
