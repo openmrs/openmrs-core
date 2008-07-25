@@ -191,7 +191,10 @@
 	<br/>
 </c:if>
 
+<openmrs:hasPrivilege privilege="View Relationships">
 <div id="patientRelationshipsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Relationship.relationships" /></div>
 <div id="patientRelationshipsBox" class="box${model.patientVariation}">
 	<openmrs:portlet url="personRelationships" size="normal" patientId="${patient.patientId}" />
 </div>
+<br/>
+</openmrs:hasPrivilege>
