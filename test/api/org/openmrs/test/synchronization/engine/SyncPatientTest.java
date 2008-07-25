@@ -67,14 +67,17 @@ public class SyncPatientTest extends SyncBaseTest {
 				Context.getProgramWorkflowService().enrollPatientInProgram(p, hivProgram, dateEnrolled, dateCompleted, creator);
 			}
 			public void runOnParent() {
+				int compare = 0;
 				Patient p = Context.getPatientService().getPatient(2);
 				assertEquals("Enrollment failed",
 				             numberEnrolledBefore + 1,
 				             Context.getProgramWorkflowService().getPatientPrograms(p).size());
 				for (PatientProgram pp : Context.getProgramWorkflowService().getPatientPrograms(p)) {
 					if (pp.getProgram().equals(hivProgram)) {
-						assertEquals("Wrong enrollment date", pp.getDateEnrolled(), dateEnrolled);
-						assertEquals("Wrong completion date", pp.getDateCompleted(), dateCompleted);
+						compare = OpenmrsUtil.compare( pp.getDateEnrolled(), dateEnrolled);						
+						assertEquals("Failed to change date", compare, 0);
+						compare = OpenmrsUtil.compare( pp.getDateCompleted(), dateCompleted);
+						assertEquals("Failed to change date", compare, 0);
 					}
 				}
 			}
@@ -108,15 +111,19 @@ public class SyncPatientTest extends SyncBaseTest {
 				Context.getProgramWorkflowService().changeToState(pp, txStat, curedState, dateEnrolled);
 			}
 			public void runOnParent() {
+				int compare = 0;
 				Patient p = Context.getPatientService().getPatient(2);
 				assertEquals("Enrollment failed",
 				             numberEnrolledBefore + 1,
 				             Context.getProgramWorkflowService().getPatientPrograms(p).size());
 				for (PatientProgram pp : Context.getProgramWorkflowService().getPatientPrograms(p)) {
 					if (pp.getProgram().equals(hivProgram)) {
-						assertEquals("Wrong enrollment date", pp.getDateEnrolled(), dateEnrolled);
-						assertEquals("Wrong completion date", pp.getDateCompleted(), null);
-						assertEquals("Wrong state", pp.getCurrentState(txStat), curedState);
+						compare = OpenmrsUtil.compare(  pp.getDateEnrolled(), dateEnrolled);						
+						assertEquals("Failed to change date", compare, 0);
+							
+						assertNull("Failed to change date",pp.getDateCompleted());
+						
+						assertEquals("Wrong state", pp.getCurrentState(txStat), curedState);						
 					}
 				}
 			}
@@ -321,10 +328,10 @@ public class SyncPatientTest extends SyncBaseTest {
 				assertNotNull(ids);
 				if (ids.size() != 1)
 					assertFalse("Can't find patient we just created. ids.size()==" + ids.size(), true);
-				System.out.println("Patients at end " + Context.getPatientService().findPatients("Darius", true).size());
+				System.out.println("Patients at end " + Context.getPatientService().findPatients("Darius", false).size());
 			}
 			public void runOnParent() {
-				System.out.println("Patients at beginning " + Context.getPatientService().findPatients("Darius", true).size());
+				System.out.println("Patients at beginning " + Context.getPatientService().findPatients("Darius", false).size());
 				Location loc = Context.getEncounterService().getLocationByName("Someplace");
 				PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierType(2);
 				PersonName name = new PersonName("Darius", "Graham", "Jazayeri");

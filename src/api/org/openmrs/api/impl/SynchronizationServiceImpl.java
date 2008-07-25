@@ -420,5 +420,18 @@ public class SynchronizationServiceImpl implements SynchronizationService {
     public void flushSession() throws APIException {
     	getSynchronizationDAO().flushSession();
     }
+
+    /**
+     * Processes save/update to instance of Synchronizable by persisting it into local persistance store.
+     * 
+     * @param object instance of Synchronizable to be processed.
+     * @return
+     * @throws APIException
+     */
+    //@Authorized({"Manage Synchronization Records"})
+    public void saveOrUpdate(Synchronizable object)  throws APIException {
+    	getSynchronizationDAO().saveOrUpdate(object);
+    }
 }
+
 

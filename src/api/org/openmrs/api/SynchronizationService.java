@@ -392,4 +392,13 @@ public interface SynchronizationService {
     public void setFlushModeAutomatic() throws APIException;
     
     public void flushSession() throws APIException;
+
+    /**
+     * Processes save/update to instance of Synchronizable by persisting it into local persistance store.
+     * 
+     * @param object instance of Synchronizable to be processed.
+     * @return
+     * @throws APIException
+     */
+    public void saveOrUpdate(Synchronizable object)  throws APIException;    
 }

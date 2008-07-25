@@ -299,4 +299,11 @@ public interface SynchronizationDAO {
      * @throws DAOException 
      */
     public void flushSession() throws DAOException;
+
+    /**
+     * Performs generic save of openmrs object using persistance api.
+     * 
+     * @throws DAOException 
+     */
+    public void saveOrUpdate(Object object) throws DAOException;
 }

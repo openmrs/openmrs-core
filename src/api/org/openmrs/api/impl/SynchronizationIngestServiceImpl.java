@@ -412,6 +412,8 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 						entries.add(entry);
 					}
 				} else if ("delete".equals(entryAction)) {
+					OpenmrsUtil.collectionContains(entries, entry);
+					entries.contains(entry);					
 					if (!entries.remove(entry)) {
 						//couldn't find entry in collection: hmm, bad implementation of equals?
 						//fall back to trying to find the item in entries by guid
@@ -458,7 +460,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         
         //finally, trigger update
         try {
-            SyncUtil.updateOpenmrsObject(owner, ownerClassName, ownerGuid);
+            SyncUtil.updateOpenmrsObject2(owner, ownerClassName, ownerGuid);
         } catch ( Exception e ) {
         	e.printStackTrace();
             throw new SyncIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, ownerClassName, incoming,null);
@@ -551,7 +553,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 	        // now try to commit this fully inflated object
 	        try {
 	        	log.warn("About to update or create a " + className + " object");
-	            SyncUtil.updateOpenmrsObject(o, className, guid);
+	            SyncUtil.updateOpenmrsObject2(o, className, guid);
 	            Context.getSynchronizationService().flushSession();
 	        } catch ( Exception e ) {
 	        	e.printStackTrace();

@@ -496,6 +496,23 @@ public class SyncUtil {
     }
     
     /**
+     * Replaces updateOpenmrsObject by using generic hibernate API to perform the save as oposed to service API.
+     * 
+     * @param o object to save
+     * @param className type
+     * @param guid unique id of the object that is being saved
+     * 
+     * @see SyncUtil#updateOpenmrsObject(Object, String, String, boolean)
+     */
+    public static synchronized void updateOpenmrsObject2(Synchronizable o, String className, String guid) {
+		if ( o != null ) {
+			Context.getSynchronizationService().saveOrUpdate(o);
+		} else {
+			log.warn("Will not update OpenMRS object that is NULL");
+		}
+    }
+    
+    /**
      * 
      * Uses openmrs API to commit an update to an instance of an openmrs class.
      * 

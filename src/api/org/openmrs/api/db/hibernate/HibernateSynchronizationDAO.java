@@ -736,4 +736,12 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
     	sessionFactory.getCurrentSession().flush();
     }
 
+    /**
+     * Performs generic save of openmrs object using Hibernate session.saveorupdate.
+     * 
+     * @throws DAOException 
+     */
+	public void saveOrUpdate(Object object) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(object);
+	}
 }
