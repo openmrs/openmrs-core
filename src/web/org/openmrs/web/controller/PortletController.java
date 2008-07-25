@@ -302,7 +302,7 @@ public class PortletController implements Controller {
 						p = Context.getPersonService().getPerson(personId);
 					model.put("person", p);
 					
-						if (Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_RELATIONSHIPS)) {
+						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS)) {
 							List<Relationship> relationships = new ArrayList<Relationship>();
 							relationships.addAll(Context.getPersonService().getRelationships(p, false));
 							Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
