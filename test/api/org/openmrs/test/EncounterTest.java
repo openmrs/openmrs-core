@@ -38,7 +38,7 @@ public class EncounterTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testObsGroupAwareMethods() throws Exception {
+	public void testShouldObsGroupAwareMethods() throws Exception {
 		//create an Encounter 
 		Encounter enc = new Encounter();
 		

@@ -40,7 +40,7 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 		authenticate();
 	}
 
-	public void testCheckWhetherRecentResultsExist() throws Exception {
+	public void testShouldCheckWhetherRecentResultsExist() throws Exception {
 		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 				
 		// Result = NO CD4 COUNT IN LAST 6 MONTHS
@@ -58,7 +58,7 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testFilterByNumericResult() throws Exception {
+	public void testShouldFilterByNumericResult() throws Exception {
 		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 		// Result = LAST CD4 COUNT < 350
 		Patient patient = Context.getPatientService().getPatient(3);
@@ -76,7 +76,7 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testFilterByNumericResultWithVoidedObs() throws Exception {
+	public void testShouldFilterByNumericResultWithVoidedObs() throws Exception {
 		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 		// Result = LAST CD4 COUNT < 350
 		Patient patient = Context.getPatientService().getPatient(2);
@@ -88,7 +88,7 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 		assertEquals(100.0, result.toNumber());
 	}
 
-	public void testFetchActiveMedications() throws Exception {
+	public void testShouldFetchActiveMedications() throws Exception {
 		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 		// Result = ACTIVE MEDICATIONS
 		Patient patient = Context.getPatientService().getPatient(2);
@@ -97,7 +97,7 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 		                             new LogicCriteria("CURRENT ANTIRETROVIRAL DRUGS USED FOR TREATMENT"));
 	}
 
-	public void testFilterUsingComposition() throws Exception {
+	public void testShouldFilterUsingComposition() throws Exception {
 		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 		// LAST CD4 COUNT < 350 AND NO ACTIVE MEDICATIONS
 		Patient patient = Context.getPatientService().getPatient(2);
@@ -115,7 +115,7 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public void testSimpleLogic() throws Exception {
+	public void testShouldSimpleLogic() throws Exception {
 
 		// Patient p = Context.getPatientService().getPatient(2);
 		Cohort cohort = new Cohort();

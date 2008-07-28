@@ -58,7 +58,7 @@ public class PatientSearchTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testParameters() throws Exception {
+	public void testShouldParameters() throws Exception {
 		ObsService obsService = Context.getObsService();
 		
 		// set the date of the first obs to be within the range of the param

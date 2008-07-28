@@ -26,7 +26,7 @@ import org.openmrs.report.ParameterException;
  */
 public class EvaluationContextTest extends junit.framework.TestCase {
 
-	public void testEvaluateExpression() throws Exception {
+	public void testShouldEvaluateExpression() throws Exception {
 		
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		

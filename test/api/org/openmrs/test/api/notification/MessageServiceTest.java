@@ -38,7 +38,7 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 		ms = Context.getMessageService();
 	}
 	
-	public void testCreateMessage() throws Exception {
+	public void testShouldCreateMessage() throws Exception {
 		String recipients = "foo@bar.com,marco@polo.com";
 		String sender = "me@mydomain.com";
 		String subject = "foo";
@@ -74,7 +74,7 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 		assertEquals(attachmentFileName, msg4.getAttachmentFileName());
 	}
 	
-	public void testSendMessage() throws Exception {
+	public void testShouldSendMessage() throws Exception {
 		Message tryToSend1 = ms.createMessage("recipient@example.com", 
 		                                     "sender@example.com", 
 		                                     "subject", 

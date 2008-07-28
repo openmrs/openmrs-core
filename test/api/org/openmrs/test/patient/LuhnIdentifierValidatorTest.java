@@ -31,7 +31,7 @@ public class LuhnIdentifierValidatorTest extends TestCase {
 	private int[] allowedIdentifiersCheckDigitsInts = {3, 6, 9, 7, 8, 7, 7, 7, 1};
 	private String[] invalidIdentifiers = {"", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def "};
 	
-	public void testGetValidIdentifier(){
+	public void testShouldGetValidIdentifier(){
 		
 		//Make sure valid identifiers come back with the right check digit
 		
@@ -49,7 +49,7 @@ public class LuhnIdentifierValidatorTest extends TestCase {
 		}
 	}
 	
-	public void testIsValid(){
+	public void testShouldIsValid(){
 		//Make sure invalid identifiers throw an exception
 		
 		for(int j=0;j<invalidIdentifiers.length;j++){

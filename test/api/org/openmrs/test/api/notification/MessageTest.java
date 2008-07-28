@@ -45,7 +45,7 @@ public class MessageTest extends TestCase {
 		return new Message(id, recipients, sender, subject, content);
 	}
 	
-	public void testConstructor() throws Exception {
+	public void testShouldConstructor() throws Exception {
 		int id = 1;
 		String recipients = "recipient1@example.com,recipient2@example.com";
 		String sender = "foo@bar.com";
@@ -63,7 +63,7 @@ public class MessageTest extends TestCase {
 		assertEquals(content, toTest.getContent());
 	}
 	
-	public void testSetRecipients() throws Exception {
+	public void testShouldSetRecipients() throws Exception {
 		Message testMessage = createTestMessage1();
 		
 		String recipients = "recipient1@example.com,recipient2@example.com";
@@ -73,7 +73,7 @@ public class MessageTest extends TestCase {
 		assertEquals(testMessage.getRecipients(), recipients);
 	}
 	
-	public void testAddRecipient() throws Exception {
+	public void testShouldAddRecipient() throws Exception {
 		Message testMessage = createTestMessage1();
 		
 		String oldRecipients = testMessage.getRecipients();
@@ -84,7 +84,7 @@ public class MessageTest extends TestCase {
 		assertEquals(testMessage.getRecipients(), oldRecipients +","+ newRecipient);
 	}
 	
-	public void testHasAttachment() throws Exception {
+	public void testShouldHasAttachment() throws Exception {
 		Message testMessage1 = createTestMessage1();
 		Message testMessage2 = createTestMessage2();
 		

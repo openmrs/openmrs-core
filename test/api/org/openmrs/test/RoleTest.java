@@ -34,7 +34,7 @@ public class RoleTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAddRemovePrivilege() throws Exception {
+	public void testShouldAddRemovePrivilege() throws Exception {
 		Role role = new Role();
 		
 		// test the null parameter cases
@@ -70,7 +70,7 @@ public class RoleTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testHasPrivilege() throws Exception {
+	public void testShouldHasPrivilege() throws Exception {
 		Role role = new Role();
 		
 		// test the null cases
@@ -95,7 +95,7 @@ public class RoleTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testInheritingRoles() throws Exception {
+	public void testShouldInheritingRoles() throws Exception {
 		
 		// TODO finish test method
 		

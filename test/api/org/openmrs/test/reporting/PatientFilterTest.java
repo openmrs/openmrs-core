@@ -31,7 +31,7 @@ public class PatientFilterTest extends BaseContextSensitiveTest {
 
 	DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 	
-	public void testDrugOrderFilter() throws Exception {
+	public void testShouldDrugOrderFilter() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/include/PatientFilterTest.xml");
 		authenticate();

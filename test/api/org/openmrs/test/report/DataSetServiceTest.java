@@ -64,7 +64,7 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
      * 
      * @throws Exception
      */
-    public void testLogicCriteriaBuilder() throws Exception { 
+    public void testShouldLogicCriteriaBuilder() throws Exception { 
     	
 		for(int i=0; i<expressions.length; i++) { 	
 			log.info("Expression: " + expressions[i]);
@@ -83,7 +83,7 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
      * 
      * @throws Exception
      */
-    public void testSerialize() throws Exception { 
+    public void testShouldSerialize() throws Exception { 
     	LogicCriteriaBuilder.serialize("TOKEN(CD4 COUNT).AFTER(04/12/2006).LAST()");
     	
     }
@@ -93,7 +93,7 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
      * 
      * @throws Exception
      */
-    public void testDeserialize() throws Exception { 
+    public void testShouldDeserialize() throws Exception { 
     	
     	LogicCriteria criteria = new LogicCriteria("CD4 COUNT");
     	criteria.after(new Date()).last();
@@ -106,7 +106,7 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
      * Auto generated method comment
      * 
      * @throws Exception
-    public void testLogicCriteriaParser() throws Exception { 
+    public void testShouldLogicCriteriaParser() throws Exception { 
     	authenticate();
     	//LogicCriteria lc = new LogicCriteria("CD4 COUNT").before(new Date());
     	
@@ -142,7 +142,7 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
      */
 
     /*
-	public void testDataSetService() throws Exception {
+	public void testShouldDataSetService() throws Exception {
 		authenticate();
 		
 		log.error("Testing");
@@ -207,7 +207,7 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testMultipleDataSets() throws Exception {
+	public void testShouldMultipleDataSets() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/report/include/ReportTests-patients.xml");
 		authenticate();

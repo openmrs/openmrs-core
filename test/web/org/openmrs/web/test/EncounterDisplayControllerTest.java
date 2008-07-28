@@ -40,13 +40,13 @@ public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * 
-	 * TODO: add encounter to test data to test with this method
+	 * Makes sure that the processing done in the encounter form
+	 * controller is done properly for a normal encounter
 	 * 
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
-    public void testBasicCreate() throws Exception {
+    public void testShouldGetNormalEncounterPageData() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setParameter("encounterId", "3");
 		

@@ -68,7 +68,7 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		return ret;
 	}
 
-	public void testFromXml() throws Exception {
+	public void testShouldFromXml() throws Exception {
 		authenticate();
 		
 		StringBuilder xml = new StringBuilder();
@@ -156,7 +156,7 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		renderer.render(data, null, System.out);
 	}
 
-	public void testBooleansInPatientSearch() throws Exception {
+	public void testShouldBooleansInPatientSearch() throws Exception {
 		authenticate();
 		
 		// Make sure we have all required PatientSearches

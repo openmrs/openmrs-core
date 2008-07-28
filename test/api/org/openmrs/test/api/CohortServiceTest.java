@@ -38,7 +38,7 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		service = Context.getCohortService();
 	}
 	
-	public void testPatientSearchCohortDefinitionProvider() throws Exception {
+	public void testShouldPatientSearchCohortDefinitionProvider() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		CohortDefinition def = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 		Cohort result = service.evaluate(def, null);

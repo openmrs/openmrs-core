@@ -44,7 +44,7 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testSerialization() throws Exception {
+	public void testShouldSerialization() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/report/include/RowPerObsDatasetTest.xml");
 		authenticate();

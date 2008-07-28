@@ -70,7 +70,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testUpdatePatientProgram( ) throws Exception {
+	public void testShouldUpdatePatientProgram( ) throws Exception {
 		
 		Date today = new Date();
 		

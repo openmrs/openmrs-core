@@ -35,7 +35,7 @@ public class OrderTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testIsDiscontinued() throws Exception {
+	public void testShouldIsDiscontinued() throws Exception {
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 		
 		Order o = new Order();
@@ -66,7 +66,7 @@ public class OrderTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testIsCurrent() throws Exception {
+	public void testShouldIsCurrent() throws Exception {
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 
 		Order o = new Order();

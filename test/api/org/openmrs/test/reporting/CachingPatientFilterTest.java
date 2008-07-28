@@ -24,7 +24,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class CachingPatientFilterTest extends BaseContextSensitiveTest {
 
-	public void testCachingPatientFilter() throws Exception {
+	public void testShouldCachingPatientFilter() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/include/PatientFilterTest.xml");
 		authenticate();

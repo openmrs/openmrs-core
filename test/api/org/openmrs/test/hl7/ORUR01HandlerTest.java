@@ -60,7 +60,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testBasicCreate() throws Exception {
+	public void testShouldBasicCreate() throws Exception {
 		authenticate();
 		ObsService obsService = Context.getObsService();
 		
@@ -95,7 +95,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGroupObsCreate() throws Exception {
+	public void testShouldGroupObsCreate() throws Exception {
 		authenticate();
 		ObsService obsService = Context.getObsService();
 		

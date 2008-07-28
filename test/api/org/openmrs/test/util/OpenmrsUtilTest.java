@@ -52,7 +52,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetCheckDigit() throws Exception {
+	public void testShouldGetCheckDigit() throws Exception {
 		
 		System.out.println("In testGetCheckDigit()");
 		
@@ -71,7 +71,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testIsValidCheckDigit() throws Exception {
+	public void testShouldIsValidCheckDigit() throws Exception {
 		
 		System.out.println("In testIsValidCheckDigit()");
 		
@@ -105,7 +105,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testCollectionContainsWithList() throws Exception {
+	public void testShouldCollectionContainsWithList() throws Exception {
 		
 		ArrayList<PatientIdentifier> identifiers = new ArrayList<PatientIdentifier>();
 		
@@ -132,7 +132,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testCollectionContainsWithSortedSet() throws Exception {
+	public void testShouldCollectionContainsWithSortedSet() throws Exception {
 		
 		SortedSet<PatientIdentifier> identifiers = new TreeSet<PatientIdentifier>();
 		
