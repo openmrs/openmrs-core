@@ -61,7 +61,7 @@
 						<option value="ZW">ZW - Ziwa</option>
 					</optgroup>
 					<optgroup label="Other sites">
-						<option value="HC">HC - Highway Clinic</option>
+						<option value="HW">HW - Highway Clinic</option>
 						<option value="PM">PM - PMTCT</option>
 						<option value="VC">VC - OVC</option>
 					</optgroup>
