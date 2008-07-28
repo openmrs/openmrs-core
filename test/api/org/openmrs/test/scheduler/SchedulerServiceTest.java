@@ -45,7 +45,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testNextExecution() throws Exception {
+	public void testShouldNextExecution() throws Exception {
 		
 		Calendar startDate = Calendar.getInstance();
 		startDate.set(2008, 3, 30, 1, 22, 0);

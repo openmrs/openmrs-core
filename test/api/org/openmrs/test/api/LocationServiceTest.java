@@ -40,7 +40,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testLocation() throws Exception {
+	public void testShouldLocation() throws Exception {
 		LocationService locationService = Context.getLocationService();
 
 		// testing creation
@@ -104,7 +104,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testRetireLocation() throws Exception {
+	public void testShouldRetireLocation() throws Exception {
 		LocationService locationService = Context.getLocationService();
 		
 		// Create a location.

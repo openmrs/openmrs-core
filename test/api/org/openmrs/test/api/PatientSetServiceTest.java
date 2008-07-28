@@ -35,7 +35,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 	}
 	
-	public void testGetDrugOrders() throws Exception {
+	public void testShouldGetDrugOrders() throws Exception {
 		PatientSetService service = Context.getPatientSetService();
 		Cohort nobody = new Cohort();
 		Map<Integer, List<DrugOrder>> results = service.getDrugOrders(nobody, null);

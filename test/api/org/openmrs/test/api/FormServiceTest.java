@@ -44,7 +44,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testFormCreateUpdateDelete() throws Exception {
+	public void testShouldFormCreateUpdateDelete() throws Exception {
 		FormService formService = Context.getFormService();
 		
 		//testing Form creation
@@ -200,7 +200,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testFieldCreateModifyDelete() throws Exception {
+	public void testShouldFieldCreateModifyDelete() throws Exception {
 		
 		executeDataSet(INITIAL_FIELDS_XML);
 		
@@ -279,7 +279,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetFormFieldsByFormAndConcept() throws Exception {
+	public void testShouldGetFormFieldsByFormAndConcept() throws Exception {
 		
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/test/api/include/FormServiceTest-formFields.xml");

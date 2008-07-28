@@ -65,7 +65,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetUnvoidedRelationships() throws Exception {
+	public void testShouldGetUnvoidedRelationships() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		executeDataSet(CREATE_RELATIONSHIP_XML);
 
@@ -157,7 +157,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testParseTwoPersonName() throws Exception {
+	public void testShouldParseTwoPersonName() throws Exception {
 		PersonService service = Context.getPersonService();
 		
 		PersonName pname = service.parsePersonName("Doe, John");

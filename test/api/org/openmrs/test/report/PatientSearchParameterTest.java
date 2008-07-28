@@ -61,7 +61,7 @@ public class PatientSearchParameterTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-    public void testPatientSearchParameter() throws Exception {
+    public void testShouldPatientSearchParameter() throws Exception {
     	executeDataSet(INITIAL_REPORT_OBJECTS_XML);
     	 	
     	// test variables

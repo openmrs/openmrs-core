@@ -91,7 +91,7 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testModuleALoadingModuleB() throws Exception {
+	public void testShouldModuleALoadingModuleB() throws Exception {
 		// create the basic user and give it full rights
 		initializeInMemoryDatabase();
 		

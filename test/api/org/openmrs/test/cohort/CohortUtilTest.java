@@ -44,7 +44,7 @@ public class CohortUtilTest extends BaseContextSensitiveTest {
 	}
 
 	
-	public void testParse() throws Exception {
+	public void testShouldParse() throws Exception {
 		{
 			// Create a search called "Male" 
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);

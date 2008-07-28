@@ -49,7 +49,7 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 *
 	 */
-	public void testSaveGetDeleteReportSchema() throws Exception {
+	public void testShouldSaveGetDeleteReportSchema() throws Exception {
 		
 		StringBuilder xml = new StringBuilder();
 		xml.append("<reportSchema id=\"1\" reportSchemaId=\"1\">\n");
@@ -119,7 +119,7 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testUpdateReportSchemaXml() throws Exception {
+	public void testShouldUpdateReportSchemaXml() throws Exception {
 		
 		StringBuilder xml = new StringBuilder();
 		xml.append("<reportSchema id=\"2\" reportSchemaId=\"2\">\n");

@@ -37,7 +37,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetAlerts() throws Exception {
+	public void testShouldGetAlerts() throws Exception {
 		
 		AlertService as = Context.getAlertService();
 		System.out.println(as.getAllAlerts());

@@ -96,7 +96,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	/**
 	 * TODO finish and complete
 	 */
-	public void testGettingUser() throws Exception {
+	public void testShouldGettingUser() throws Exception {
 		authenticate();
 		
 		UserService us = Context.getUserService();
@@ -110,7 +110,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	/**
 	 * TODO create method
 	 */
-	public void testProxyPrivilege() throws Exception {
+	public void testShouldProxyPrivilege() throws Exception {
 		authenticate();
 		
 		//create a bum user

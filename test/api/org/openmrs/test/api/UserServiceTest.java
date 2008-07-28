@@ -56,7 +56,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testCreateUser() throws Exception {
+	public void testShouldCreateUser() throws Exception {
 		assertTrue("The context needs to be correctly authenticated to by a user", Context.isAuthenticated());
 		
 		UserService us = Context.getUserService();
@@ -81,7 +81,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testCreateUserWhoIsPatientAlready() throws Exception {
+	public void testShouldCreateUserWhoIsPatientAlready() throws Exception {
 		
 		//deleteAllData();
 		//initializeInMemoryDatabase();
@@ -150,7 +150,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testUpdateUsername() throws Exception {
+	public void testShouldUpdateUsername() throws Exception {
 		UserService us = Context.getUserService();
 		
 		User u = us.getUserByUsername("admin");
@@ -169,7 +169,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testUpdatePasswordMultipleTimes() throws Exception {
+	public void testShouldUpdatePasswordMultipleTimes() throws Exception {
 		UserService us = Context.getUserService();
 		
 		User u = us.getUserByUsername("admin");
@@ -184,7 +184,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGrantRoles() throws Exception {
+	public void testShouldGrantRoles() throws Exception {
 		UserService us = Context.getUserService();
 		
 		// add in some basic properties

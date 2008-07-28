@@ -34,7 +34,7 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testcreateInitialTestDataSetXmlFile() throws Exception {
+	public void testShouldcreateInitialTestDataSetXmlFile() throws Exception {
 		
 		// only run this test if it is being run alone.
 		// this allows the junit-report ant target and the "right-

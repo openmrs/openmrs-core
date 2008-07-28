@@ -38,7 +38,7 @@ public class PersonTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAddRemoveAddress() throws Exception {
+	public void testShouldAddRemoveAddress() throws Exception {
 		
 		Person p = new Person();
 		
@@ -109,7 +109,7 @@ public class PersonTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAddRemoveName() throws Exception {
+	public void testShouldAddRemoveName() throws Exception {
 		
 		Person p = new Person();
 		
@@ -187,7 +187,7 @@ public class PersonTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAddRemoveAttribute() throws Exception {
+	public void testShouldAddRemoveAttribute() throws Exception {
 		
 		Person p = new Person();
 		
@@ -257,7 +257,7 @@ public class PersonTest extends TestCase {
 		assertTrue("There shouldn't be any attributes in the person object now", p.getAttributes().size() == 0);
 	}
 
-	public void testAge() throws Exception {
+	public void testShouldAge() throws Exception {
 		Person p = new Person();
 		assertNull(p.getAge());
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");

@@ -28,7 +28,7 @@ public class ArdenServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 	}
 
-	public void testClass() throws Exception {
+	public void testShouldClass() throws Exception {
 
 	//	Integer pid = 1;
 	//	Patient patient;

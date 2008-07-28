@@ -37,7 +37,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testOrderCreateUpdateDelete() throws Exception {
+	public void testShouldOrderCreateUpdateDelete() throws Exception {
 		
 		
 	}	
@@ -47,7 +47,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testDrugOrderCreateUpdateDelete() throws Exception {
+	public void testShouldDrugOrderCreateUpdateDelete() throws Exception {
 		
 		
 	}	

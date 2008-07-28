@@ -37,7 +37,7 @@ public class ObsTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testValueAsString() throws Exception {
+	public void testShouldValueAsString() throws Exception {
 
 		// TODO: finish this test method
 		
@@ -50,7 +50,7 @@ public class ObsTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAddandRemoveObsToGroup() throws Exception {
+	public void testShouldAddandRemoveObsToGroup() throws Exception {
 		
 		Obs obs = new Obs(1);
 		
@@ -97,7 +97,7 @@ public class ObsTest extends TestCase {
 		/**
 		 * tests the getRelatedObservations method:
 		 */	
-		public void testGetRelatedObservations() throws Exception {
+		public void testShouldGetRelatedObservations() throws Exception {
 		// create a child Obs
 		Obs o = new Obs();
 		o.setDateCreated(new Date());

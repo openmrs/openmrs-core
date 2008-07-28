@@ -27,7 +27,7 @@ public class ReportSchemaXmlTestNonContext extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testUpdateFromAttributes() throws Exception {
+	public void testShouldUpdateFromAttributes() throws Exception {
 		StringBuilder xml = new StringBuilder();
 		xml.append("<reportSchema id=\"1\">\n");
 		xml.append("    <name>PEPFAR report</name>\n");

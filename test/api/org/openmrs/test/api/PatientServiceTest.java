@@ -70,7 +70,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetPatient() throws Exception {
+	public void testShouldGetPatient() throws Exception {
 		
 		executeDataSet(CREATE_PATIENT_XML);
 		
@@ -142,7 +142,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testCreatePatient() throws Exception {
+	public void testShouldCreatePatient() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		
 		Patient patient = new Patient();
@@ -197,7 +197,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * Tests creating patients with identifiers that are or are not validated.
 	 * @throws Exception 
 	 */
-	public void testCreatePatientWithValidatedIdentifier() throws Exception{
+	public void testShouldCreatePatientWithValidatedIdentifier() throws Exception{
 		executeDataSet(CREATE_PATIENT_VALID_IDENT_XML);
 		Patient patient = createBasicPatient();
 		Patient patient2 = createBasicPatient();
@@ -241,7 +241,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetPatientsByIdentifier() throws Exception {
+	public void testShouldGetPatientsByIdentifier() throws Exception {
 		
 		executeDataSet(CREATE_PATIENT_XML);
 		
@@ -283,7 +283,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetPatientsByNameShouldLimitSize() throws Exception {
+	public void testShouldGetPatientsByNameShouldLimitSize() throws Exception {
 		executeDataSet(JOHN_PATIENTS_XML);
 		
 		Collection<Patient> patients = ps.getPatients("John", null, null);
@@ -322,7 +322,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testFindPatients() throws Exception {
+	public void testShouldFindPatients() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
 		
 		//Test that "Jea" finds given_name="Jean Claude" and given_name="Jean", family_name="Claude"
@@ -382,7 +382,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetPatientsByIdentifierAndIdentifierType() throws Exception {
+	public void testShouldGetPatientsByIdentifierAndIdentifierType() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();

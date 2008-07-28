@@ -30,7 +30,7 @@ public class VerhoeffIdentifierValidatorTest extends TestCase {
 	private char unusedCheckDigit = 'C';
 	private String[] invalidIdentifiers = {"", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def ", "ab32kcdak3", "chaseisreallycoolyay", "1", "moose", "MOOSE", "MooSE", "adD3Eddf429daD999"};
 	
-	public void testGetValidIdentifier(){
+	public void testShouldGetValidIdentifier(){
 		
 		//Make sure valid identifiers come back with the right check digit
 		
@@ -48,7 +48,7 @@ public class VerhoeffIdentifierValidatorTest extends TestCase {
 		}
 	}
 	
-	public void testIsValid(){
+	public void testShouldIsValid(){
 		//Make sure invalid identifiers throw an exception
 		
 		for(int j=0;j<invalidIdentifiers.length;j++){

@@ -37,7 +37,7 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
      * TODO make this test use assert statements instead of printing to stdout
      * 
      */
-    public void testObservationRule() {
+    public void testShouldObservationRule() {
         LogicService logicService = Context.getLogicService();
         Cohort patients = new Cohort();
         Map<Integer, Result> result = null;
@@ -175,7 +175,7 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
      * TODO make this test use assert statements instead of printing to stdout
      * 
      */
-    public void testDemographicsRule() {
+    public void testShouldDemographicsRule() {
         LogicService logicService = Context.getLogicService();
         Cohort patients = new Cohort();
         Map<Integer, Result> result;
@@ -246,7 +246,7 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
      * TODO make this test use assert statements instead of printing to stdout
      * 
      */
-    public void testHIVPositiveRule() {
+    public void testShouldHIVPositiveRule() {
         LogicService logicService = Context.getLogicService();
         Cohort patients = new Cohort();
         Map<Integer, Result> result = null;
@@ -317,7 +317,7 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
      * TODO make this test use assert statements instead of printing to stdout
      * 
      */
-    public void testReferenceRule() {
+    public void testShouldReferenceRule() {
         LogicService logicService = Context.getLogicService();
         Cohort patients = new Cohort();
         Map<Integer, Result> result = null;

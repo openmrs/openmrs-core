@@ -29,7 +29,7 @@ public class ObsDataSourceTest extends BaseContextSensitiveTest {
     /**
      * TODO change to use the in memory database
      */
-    public void testObsDataSource() {
+    public void testShouldObsDataSource() {
         LogicDataSource lds = Context.getLogicService().getLogicDataSource("obs");
         Cohort patients = new Cohort();
 

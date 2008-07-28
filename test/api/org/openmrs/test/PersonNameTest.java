@@ -33,7 +33,7 @@ public class PersonNameTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testPersonNameEqualityWithPersonSubObject() throws Exception {
+	public void testShouldPersonNameEqualityWithPersonSubObject() throws Exception {
 		
 		PersonName pn1 = new PersonName();
 		pn1.setGivenName("firsttest");

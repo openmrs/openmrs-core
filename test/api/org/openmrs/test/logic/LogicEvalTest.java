@@ -43,7 +43,7 @@ public class LogicEvalTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testSimpleLogic() throws Exception {
+	public void testShouldSimpleLogic() throws Exception {
 		
 		// add temperature as a concept in the database
 		executeDataSet("org/openmrs/test/logic/include/LogicEvalTest.testSimpleLogic.xml");

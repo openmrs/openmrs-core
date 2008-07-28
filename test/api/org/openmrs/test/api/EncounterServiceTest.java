@@ -57,7 +57,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testEncounterCreateUpdateDelete() throws Exception {
+	public void testShouldEncounterCreateUpdateDelete() throws Exception {
 		authenticate();
 		
 		EncounterService es = Context.getEncounterService();
@@ -142,7 +142,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAddObsToEncounter() throws Exception {
+	public void testShouldAddObsToEncounter() throws Exception {
 		EncounterService es = Context.getEncounterService();
 		LocationService locationService = Context.getLocationService();
 		PatientService ps = Context.getPatientService();
@@ -178,7 +178,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testEncounterType() throws Exception {
+	public void testShouldEncounterType() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		//testing creation
 		
@@ -227,7 +227,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	}
 	
-	public void testModifyEncounterDatetime() throws Exception {
+	public void testShouldModifyEncounterDatetime() throws Exception {
 		authenticate();
 		
 		//First, create an encounter with an obs:

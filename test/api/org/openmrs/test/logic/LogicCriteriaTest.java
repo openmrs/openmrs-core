@@ -25,7 +25,7 @@ import org.openmrs.logic.LogicCriteria;
  */
 public class LogicCriteriaTest extends TestCase {
 
-	public void testLogicCriteria() {
+	public void testShouldLogicCriteria() {
 		LogicCriteria criteria = new LogicCriteria("CD4 COUNT").within(Duration.months(6))
 		                                                       .exists();
 

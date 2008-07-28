@@ -79,7 +79,7 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testPepfarReport() throws Exception {
+	public void testShouldPepfarReport() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/report/include/PepfarReportTest.xml");
 		

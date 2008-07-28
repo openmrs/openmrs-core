@@ -58,7 +58,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testSaveObs() throws Exception {
+	public void testShouldSaveObs() throws Exception {
 		
 		executeDataSet(INITIAL_OBS_XML);
 		
@@ -200,7 +200,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testVoidObs() throws Exception {
+	public void testShouldVoidObs() throws Exception {
 		executeDataSet(INITIAL_OBS_XML);
 		ObsService obsService = Context.getObsService();
 		
@@ -246,7 +246,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testComplexObsCreateUpdateDelete() throws Exception {
+	public void testShouldComplexObsCreateUpdateDelete() throws Exception {
 		
 		// we don't have any complex obs in the system yet
 	}	
@@ -256,7 +256,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testMimeType() throws Exception {
+	public void testShouldMimeType() throws Exception {
 		
 		ObsService obsService = Context.getObsService();
 		
@@ -329,7 +329,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testObsCreatorMetaData() throws Exception {
+	public void testShouldObsCreatorMetaData() throws Exception {
 		
 		executeDataSet(INITIAL_OBS_XML);
 		
@@ -367,7 +367,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testObsValidator() throws Exception {
+	public void testShouldObsValidator() throws Exception {
 		executeDataSet(INITIAL_OBS_XML);
 		ConceptService conceptService = Context.getConceptService();
 		Concept numeric = conceptService.getConcept(1);
@@ -440,7 +440,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testObsGroupCreateUpdate() throws Exception {
+	public void testShouldObsGroupCreateUpdate() throws Exception {
 		executeDataSet(INITIAL_OBS_XML);
 		ObsService obsService = Context.getObsService();
 		
@@ -518,7 +518,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testSaveUpdateDeleteVoidObsGroupCascades() throws Exception {
+	public void testShouldSaveUpdateDeleteVoidObsGroupCascades() throws Exception {
 		executeDataSet(INITIAL_OBS_XML);
 
 		ObsService os = Context.getObsService();
@@ -788,7 +788,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Throwable
 	 */
-	public void testCreateObsGroupId() throws Throwable {
+	public void testShouldCreateObsGroupId() throws Throwable {
 		
 		executeDataSet(INITIAL_OBS_XML);
 
@@ -828,7 +828,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Throwable
 	 */
-	public void testFindObsByGroupId() throws Throwable{
+	public void testShouldFindObsByGroupId() throws Throwable{
 		executeDataSet(INITIAL_OBS_XML);
 		
 		ConceptService cs = Context.getConceptService();
@@ -870,7 +870,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetObservationsRestrictedToPatients() throws Exception {
+	public void testShouldGetObservationsRestrictedToPatients() throws Exception {
 		executeDataSet(INITIAL_OBS_XML);
 		
 		ObsService os = Context.getObsService();
@@ -894,7 +894,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetObservationsRestrictedToUsers() throws Exception {
+	public void testShouldGetObservationsRestrictedToUsers() throws Exception {
 		executeDataSet(INITIAL_OBS_XML);
 		
 		ObsService os = Context.getObsService();

@@ -39,7 +39,7 @@ public class PatientTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAddRemoveIdentifiers() throws Exception {
+	public void testShouldAddRemoveIdentifiers() throws Exception {
 		
 		Patient p = new Patient();
 		

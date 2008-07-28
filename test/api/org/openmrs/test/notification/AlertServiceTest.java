@@ -54,7 +54,7 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testSaveBasicAlert() throws Exception {
+	public void testShouldSaveBasicAlert() throws Exception {
 		AlertService alertService = Context.getAlertService();
 		
 		Alert alert = new Alert("asdf", new User(1));
@@ -70,7 +70,7 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAlertRecipientsByRole() throws Exception {
+	public void testShouldAlertRecipientsByRole() throws Exception {
 		AlertService alertService = Context.getAlertService();
 		UserService userService = Context.getUserService();
 		

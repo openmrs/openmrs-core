@@ -56,7 +56,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
-    public void testPageLoadWithEmptyParameters() throws Exception {
+    public void testShouldPageLoadWithEmptyParameters() throws Exception {
 		NewPatientFormController controller = new NewPatientFormController();
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		HttpServletResponse response = new MockHttpServletResponse();
@@ -75,7 +75,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
-    public void testSubmitWithAllFieldsEnteredCorrectly() throws Exception {
+    public void testShouldSubmitWithAllFieldsEnteredCorrectly() throws Exception {
 		
 		PatientService ps = Context.getPatientService();
 		
@@ -129,7 +129,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
-    public void testSubmitWithNoIdentifierFilledIn() throws Exception {
+    public void testShouldSubmitWithNoIdentifierFilledIn() throws Exception {
 		
 		PatientService ps = Context.getPatientService();
 		
@@ -197,7 +197,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
-    public void testSubmitChangedIdentifierLocation() throws Exception {
+    public void testShouldSubmitChangedIdentifierLocation() throws Exception {
 		executeDataSet(CONTROLLER_PATIENTS_DATA);
 		
 		PatientService ps = Context.getPatientService();

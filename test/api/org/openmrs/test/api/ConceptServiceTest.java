@@ -56,7 +56,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetConceptByName() throws Exception {
+	public void testShouldGetConceptByName() throws Exception {
 		
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
@@ -75,7 +75,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
-	public void testSaveConceptNumeric() throws Exception {
+	public void testShouldSaveConceptNumeric() throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		ConceptService conceptService = Context.getConceptService();
 		
