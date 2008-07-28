@@ -1125,7 +1125,7 @@ delimiter ;
 call diff_procedure('1.3.0.14');
 
 #----------------------------------------
-# OpenMRS Datamodel version 1.3.0.15
+# OpenMRS Datamodel version 1.4.0.01
 # Mike Seaton          July 28, 2008
 # Adding accession_number to orders
 #----------------------------------------
@@ -1148,7 +1148,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 //
 
 delimiter ;
-call diff_procedure('1.3.0.15');
+call diff_procedure('1.4.0.01');
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
