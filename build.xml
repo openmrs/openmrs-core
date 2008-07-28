@@ -92,13 +92,13 @@
 			input="${diffFileInput}"
 			regexp="${openmrs.database.version.expected.regexp}"
 			select="\1"
-			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0.0" 
+			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0.00" 
 			casesensitive="false" />
 		<propertyregex property="openmrs.database.version.expected.short"
 			input="${openmrs.database.version.expected}"
 			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.${openmrs.version.maintenance}\.([0-9][0-9]+)"
 			select="\1"
-			defaultValue="Invalid Database Version" />
+			defaultValue="00" />
 		
 		<loadfile srcfile="${openmrs.version.revision.filename}" property="repositoryFileInput" />
 		<if>
