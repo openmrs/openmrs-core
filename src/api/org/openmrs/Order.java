@@ -63,6 +63,7 @@ public class Order implements java.io.Serializable {
 	private User discontinuedBy;
 	private Date discontinuedDate;
 	private Concept discontinuedReason;
+	private String accessionNumber;
 	private Boolean voided = false;
 	private User voidedBy;
 	private Date dateVoided;
@@ -111,6 +112,7 @@ public class Order implements java.io.Serializable {
 		target.setDiscontinuedDate(getDiscontinuedDate());
 		target.setDiscontinuedReason(getDiscontinuedReason());
 		target.setDiscontinuedBy(getDiscontinuedBy());
+		target.setAccessionNumber(getAccessionNumber());
 		target.setVoided(getVoided());
 		target.setVoidedBy(getVoidedBy());
 		target.setDateVoided(getDateVoided());
@@ -358,6 +360,20 @@ public class Order implements java.io.Serializable {
 		this.instructions = instructions;
 	}
 
+	/**
+	 * @return Returns the accessionNumber.
+	 */
+	public String getAccessionNumber() {
+		return accessionNumber;
+	}
+
+	/**
+	 * @param accessionNumber The accessionNumber to set.
+	 */
+	public void setAccessionNumber(String accessionNumber) {
+		this.accessionNumber = accessionNumber;
+	}
+	
 	/**
 	 * @return Returns the orderer.
 	 */

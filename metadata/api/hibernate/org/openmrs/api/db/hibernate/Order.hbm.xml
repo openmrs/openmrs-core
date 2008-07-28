@@ -58,6 +58,7 @@
         column="discontinued_date"
         length="19"
     />
+    <property name="accessionNumber" type="java.lang.String" column="accession_number" length="255" />
     <property
         name="dateCreated"
         type="java.util.Date"
