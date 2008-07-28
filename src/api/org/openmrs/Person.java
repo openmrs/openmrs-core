@@ -709,6 +709,24 @@ public class Person implements java.io.Serializable {
 		return age;
 	}
 	
+	/**
+	 * Convenience method: sets a person's birth date from an age as of the given date
+	 * Also sets flag indicating that the birth date is inexact.
+	 * This sets the person's birth date to January 1 of the year that matches this age and date
+	 * 
+	 * @param age (the age to set)
+	 * @param onDate (null defaults to today)
+	 */
+	public void setBirthdateFromAge(int age, Date ageOnDate) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(ageOnDate == null ? new Date() : ageOnDate);
+		c.set(Calendar.DATE, 1);
+		c.set(Calendar.MONTH, Calendar.JANUARY);
+		c.add(Calendar.YEAR, -1*age);
+		setBirthdate(c.getTime());
+		setBirthdateEstimated(true);
+	}
+	
 	public User getPersonChangedBy() {
 		return changedBy;
 	}

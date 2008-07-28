@@ -267,4 +267,32 @@ public class PersonTest extends TestCase {
 		assertEquals(p.getAge(df.parse("2007-04-12")).intValue(), 29);
 		assertEquals(p.getAge(df.parse("2007-04-10")).intValue(), 28);
 	}
+	
+	/**
+	 * Test that setting a person's age correctly sets their birth date 
+	 * and records that this is inexact
+	 * 
+	 * @throws Exception
+	 */
+	public void testShouldSetInexactBirthdateFromAge() throws Exception {
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			Person p = new Person();
+			
+			// Test that default values are correct
+			assertNull(p.getAge());
+			assertFalse(p.isBirthdateEstimated());
+
+			// Test standard case and ensure estimated field is set to true
+			p.setBirthdateFromAge(10, df.parse("2008-05-20"));
+			assertEquals(p.getBirthdate(), df.parse("1998-01-01"));
+			assertTrue(p.getBirthdateEstimated());
+			
+			// Test boundary cases
+			p.setBirthdateFromAge(52, df.parse("2002-01-01"));
+			assertEquals(p.getBirthdate(), df.parse("1950-01-01"));
+			p.setBirthdateFromAge(35, df.parse("2004-12-31"));
+			assertEquals(p.getBirthdate(), df.parse("1969-01-01"));
+			p.setBirthdateFromAge(0, df.parse("2008-05-20"));
+			assertEquals(p.getBirthdate(), df.parse("2008-01-01"));
+	}
 }
