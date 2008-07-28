@@ -169,9 +169,24 @@ public class WebModuleUtil {
 					if (name.startsWith("web/module/")) {
 						// trim out the starting path of "web/module/"
 						String filepath = name.substring(11);
-						String absPath = realPath + "/WEB-INF/view/module/" + mod.getModuleId() + "/" + filepath;
+						
+						StringBuffer absPath = new StringBuffer(realPath + "/WEB-INF");
+						
+						// If this is within the tag file directory, copy it into /WEB-INF/tags/module/moduleId/...
+						if (filepath.startsWith("tags/")) {
+							filepath = filepath.substring(5);
+							absPath.append("/tags/module/");
+						}
+						// Otherwise, copy it into /WEB-INF/view/module/moduleId/...
+						else {
+							absPath.append("/view/module/");
+						}
+						absPath.append(mod.getModuleId() + "/" + filepath);
+						if (log.isDebugEnabled())
+							log.debug("Moving file from: " + name + " to " + absPath);
+
 						// get the output file
-						File outFile = new File(absPath.replace("/", File.separator));
+						File outFile = new File(absPath.toString().replace("/", File.separator));
 						if (entry.isDirectory()) {
 							if (!outFile.exists()) {
 								outFile.mkdirs();
