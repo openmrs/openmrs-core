@@ -344,9 +344,6 @@ public class Order implements java.io.Serializable {
 	 */
 	public void setEncounter(Encounter encounter) {
 		this.encounter = encounter;
-		if (encounter != null) {
-			setPatient(encounter.getPatient());
-		}
 	}
 
 	/**
