@@ -71,6 +71,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
     		order.setCreator(Context.getAuthenticatedUser());
     	if (order.getDateCreated() == null)
     		order.setDateCreated(new Date());
+    	if (order.getPatient() == null && order.getEncounter() != null)
+    		order.setPatient(order.getEncounter().getPatient());
     	
 	    return dao.saveOrder(order);
     }

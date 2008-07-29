@@ -325,9 +325,6 @@ public class Obs implements java.io.Serializable {
 	 */
 	public void setEncounter(Encounter encounter) {
 		this.encounter = encounter;
-		if (encounter != null) {
-			setPerson(encounter.getPatient());
-		}
 	}
 
 	/**
