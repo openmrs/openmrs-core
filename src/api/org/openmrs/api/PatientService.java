@@ -137,10 +137,21 @@ public interface PatientService extends OpenmrsService {
 	 * 
 	 * @param name (optional) this is a slight break from the norm, patients with a 
 	 * 		partial match on this name will be returned
-	 * @param (optional)identifier only patients with a matching identifier are returned
-	 * @param (optional)identifierTypes the PatientIdentifierTypes to restrict to
+	 * @param identifier (optional) only patients with a matching identifier are returned
+	 * @param identifierTypes (optional) the PatientIdentifierTypes to restrict to
+	 * @param matchIdentifierExactly (required) if true, then the given <code>identifier</code>
+	 * 		must equal the id in the database.  if false, then the identifier is 'searched' for
+	 * 		by using a regular expression 
 	 * @return patients that matched the given criteria (and are not voided)
 	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS })
+	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes, boolean matchIdentifierExactly)
+	        throws APIException;
+	
+	/**
+	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS })
