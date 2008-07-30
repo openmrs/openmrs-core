@@ -13,11 +13,18 @@
  */
 package org.openmrs.test.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -39,8 +46,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpInTransaction()
 	 */
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 		
@@ -52,7 +59,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldGetCheckDigit() throws Exception {
+	@Test
+	public void shouldGetCheckDigit() throws Exception {
 		
 		System.out.println("In testGetCheckDigit()");
 		
@@ -71,7 +79,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldIsValidCheckDigit() throws Exception {
+	@Test
+	public void shouldIsValidCheckDigit() throws Exception {
 		
 		System.out.println("In testIsValidCheckDigit()");
 		
@@ -105,7 +114,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldCollectionContainsWithList() throws Exception {
+	@Test
+	public void shouldCollectionContainsWithList() throws Exception {
 		
 		ArrayList<PatientIdentifier> identifiers = new ArrayList<PatientIdentifier>();
 		
@@ -132,7 +142,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldCollectionContainsWithSortedSet() throws Exception {
+	@Test
+	public void shouldCollectionContainsWithSortedSet() throws Exception {
 		
 		SortedSet<PatientIdentifier> identifiers = new TreeSet<PatientIdentifier>();
 		

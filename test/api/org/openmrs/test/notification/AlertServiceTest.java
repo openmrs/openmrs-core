@@ -13,8 +13,12 @@
  */
 package org.openmrs.test.notification;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
@@ -35,11 +39,9 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	 * in this class.
 	 * 
 	 * Require authorization before every test method in this class
-	 * 
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpBeforeTransaction()
 	 */
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		// create the basic user and give it full rights
 		initializeInMemoryDatabase();
 		
@@ -54,7 +56,8 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldSaveBasicAlert() throws Exception {
+	@Test
+	public void shouldSaveBasicAlert() throws Exception {
 		AlertService alertService = Context.getAlertService();
 		
 		Alert alert = new Alert("asdf", new User(1));
@@ -70,7 +73,8 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldAlertRecipientsByRole() throws Exception {
+	@Test
+	public void shouldAlertRecipientsByRole() throws Exception {
 		AlertService alertService = Context.getAlertService();
 		UserService userService = Context.getUserService();
 		

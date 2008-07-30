@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -25,8 +27,8 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
     /**
      * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpInTransaction()
      */
-    @Override
-    protected void onSetUpInTransaction() throws Exception {
+    @Before
+    public void runBeforeEachTest() throws Exception {
     	initializeInMemoryDatabase();
     	executeDataSet("org/openmrs/test/logic/include/LogicTests-patients.xml");
     	executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
@@ -37,7 +39,8 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
      * TODO make this test use assert statements instead of printing to stdout
      * 
      */
-    public void testShouldObservationRule() {
+    @Test
+	public void shouldObservationRule() {
         LogicService logicService = Context.getLogicService();
         Cohort patients = new Cohort();
         Map<Integer, Result> result = null;
@@ -175,7 +178,8 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
      * TODO make this test use assert statements instead of printing to stdout
      * 
      */
-    public void testShouldDemographicsRule() {
+    @Test
+	public void shouldDemographicsRule() {
         LogicService logicService = Context.getLogicService();
         Cohort patients = new Cohort();
         Map<Integer, Result> result;
@@ -246,7 +250,8 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
      * TODO make this test use assert statements instead of printing to stdout
      * 
      */
-    public void testShouldHIVPositiveRule() {
+    @Test
+	public void shouldHIVPositiveRule() {
         LogicService logicService = Context.getLogicService();
         Cohort patients = new Cohort();
         Map<Integer, Result> result = null;
@@ -317,7 +322,8 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
      * TODO make this test use assert statements instead of printing to stdout
      * 
      */
-    public void testShouldReferenceRule() {
+    @Test
+	public void shouldReferenceRule() {
         LogicService logicService = Context.getLogicService();
         Cohort patients = new Cohort();
         Map<Integer, Result> result = null;

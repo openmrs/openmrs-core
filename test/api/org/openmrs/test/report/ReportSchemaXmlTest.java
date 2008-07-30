@@ -13,8 +13,14 @@
  */
 package org.openmrs.test.report;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.api.ReportService;
 import org.openmrs.api.context.Context;
 import org.openmrs.report.ReportSchemaXml;
@@ -31,10 +37,10 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 	 * Set up the database with the initial dataset before every test method
 	 * in this class.
 	 * 
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpBeforeTransaction()
+	 * 
 	 */
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		// Comment out when running test on underlying database instead of in-memory database.
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/report/include/ReportSchemaXmlTest-initialData.xml");
@@ -49,7 +55,8 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 *
 	 */
-	public void testShouldSaveGetDeleteReportSchema() throws Exception {
+	@Test
+	public void shouldSaveGetDeleteReportSchema() throws Exception {
 		
 		StringBuilder xml = new StringBuilder();
 		xml.append("<reportSchema id=\"1\" reportSchemaId=\"1\">\n");
@@ -119,7 +126,8 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldUpdateReportSchemaXml() throws Exception {
+	@Test
+	public void shouldUpdateReportSchemaXml() throws Exception {
 		
 		StringBuilder xml = new StringBuilder();
 		xml.append("<reportSchema id=\"2\" reportSchemaId=\"2\">\n");

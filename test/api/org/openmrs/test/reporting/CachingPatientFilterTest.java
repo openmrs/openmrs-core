@@ -13,6 +13,11 @@
  */
 package org.openmrs.test.reporting;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.CachingPatientFilter;
@@ -24,7 +29,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class CachingPatientFilterTest extends BaseContextSensitiveTest {
 
-	public void testShouldCachingPatientFilter() throws Exception {
+	@Test
+	public void shouldCachingPatientFilter() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/include/PatientFilterTest.xml");
 		authenticate();

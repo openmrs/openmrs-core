@@ -18,6 +18,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -34,7 +35,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	/*
 	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(ENC_INITIAL_DATA_XML);
 		authenticate();
@@ -45,7 +46,8 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldNextExecution() throws Exception {
+	@Test
+	public void shouldNextExecution() throws Exception {
 		
 		Calendar startDate = Calendar.getInstance();
 		startDate.set(2008, 3, 30, 1, 22, 0);

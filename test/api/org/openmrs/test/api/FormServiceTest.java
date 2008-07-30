@@ -13,9 +13,17 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import java.util.Vector;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Field;
 import org.openmrs.FieldType;
@@ -33,8 +41,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String INITIAL_FIELDS_XML = "org/openmrs/test/api/include/FormServiceTest-initialFieldTypes.xml";
 	
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 	}
@@ -44,7 +52,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldFormCreateUpdateDelete() throws Exception {
+	@Test
+	public void shouldFormCreateUpdateDelete() throws Exception {
 		FormService formService = Context.getFormService();
 		
 		//testing Form creation
@@ -200,7 +209,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldFieldCreateModifyDelete() throws Exception {
+	@Test
+	public void shouldFieldCreateModifyDelete() throws Exception {
 		
 		executeDataSet(INITIAL_FIELDS_XML);
 		
@@ -279,7 +289,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldGetFormFieldsByFormAndConcept() throws Exception {
+	@Test
+	public void shouldGetFormFieldsByFormAndConcept() throws Exception {
 		
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/test/api/include/FormServiceTest-formFields.xml");

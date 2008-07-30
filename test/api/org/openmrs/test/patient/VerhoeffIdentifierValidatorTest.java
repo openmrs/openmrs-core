@@ -13,14 +13,18 @@
  */
 package org.openmrs.test.patient;
 
-import org.openmrs.patient.impl.VerhoeffIdentifierValidator;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.openmrs.patient.impl.VerhoeffIdentifierValidator;
 
 /**
  *
  */
-public class VerhoeffIdentifierValidatorTest extends TestCase {
+public class VerhoeffIdentifierValidatorTest {
 
 	private VerhoeffIdentifierValidator validator = new VerhoeffIdentifierValidator();
 	
@@ -30,7 +34,8 @@ public class VerhoeffIdentifierValidatorTest extends TestCase {
 	private char unusedCheckDigit = 'C';
 	private String[] invalidIdentifiers = {"", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def ", "ab32kcdak3", "chaseisreallycoolyay", "1", "moose", "MOOSE", "MooSE", "adD3Eddf429daD999"};
 	
-	public void testShouldGetValidIdentifier(){
+	@Test
+	public void shouldGetValidIdentifier(){
 		
 		//Make sure valid identifiers come back with the right check digit
 		
@@ -48,7 +53,8 @@ public class VerhoeffIdentifierValidatorTest extends TestCase {
 		}
 	}
 	
-	public void testShouldIsValid(){
+	@Test
+	public void shouldIsValid(){
 		//Make sure invalid identifiers throw an exception
 		
 		for(int j=0;j<invalidIdentifiers.length;j++){

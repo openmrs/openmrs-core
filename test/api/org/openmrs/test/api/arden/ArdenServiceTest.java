@@ -13,6 +13,8 @@
  */
 package org.openmrs.test.api.arden;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
@@ -22,13 +24,13 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class ArdenServiceTest extends BaseContextSensitiveTest {
 	int MAX_MLM = 1000;
 	
-	@Override
-	protected void onSetUpBeforeTransaction() throws Exception {
-		super.onSetUpBeforeTransaction();
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		authenticate();
 	}
 
-	public void testShouldClass() throws Exception {
+	@Test
+	public void shouldClass() throws Exception {
 
 	//	Integer pid = 1;
 	//	Patient patient;

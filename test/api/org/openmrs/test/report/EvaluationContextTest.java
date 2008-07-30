@@ -13,10 +13,15 @@
  */
 package org.openmrs.test.report;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.junit.Test;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.report.Parameter;
 import org.openmrs.report.ParameterException;
@@ -24,9 +29,10 @@ import org.openmrs.report.ParameterException;
 /**
  *
  */
-public class EvaluationContextTest extends junit.framework.TestCase {
+public class EvaluationContextTest {
 
-	public void testShouldEvaluateExpression() throws Exception {
+	@Test
+	public void shouldEvaluateExpression() throws Exception {
 		
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		

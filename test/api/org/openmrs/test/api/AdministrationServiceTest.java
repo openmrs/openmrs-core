@@ -13,9 +13,15 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Iterator;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.FieldType;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
@@ -34,8 +40,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	private AdministrationService as = null;
 	private FormService formService = null;
 	
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 		
@@ -49,7 +55,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldFieldType() throws Exception {
+	@Test
+	public void shouldFieldType() throws Exception {
 		
 		//testing creation
 		
@@ -105,7 +112,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldPatientIdentifierType() throws Exception {
+	@Test
+	public void shouldPatientIdentifierType() throws Exception {
 		
 		//testing creation
 		
@@ -162,7 +170,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldExecuteSqlGroupBy() throws Exception {
+	@Test
+	public void shouldExecuteSqlGroupBy() throws Exception {
 		
 		String sql = "select encounter1_.location_id, encounter1_.creator, encounter1_.encounter_type, encounter1_.form_id, location2_.location_id, count(obs0_.obs_id) from obs obs0_ right outer join encounter encounter1_ on obs0_.encounter_id=encounter1_.encounter_id inner join location location2_ on encounter1_.location_id=location2_.location_id inner join users user3_ on encounter1_.creator=user3_.user_id inner join person user3_1_ on user3_.user_id=user3_1_.person_id inner join encounter_type encountert4_ on encounter1_.encounter_type=encountert4_.encounter_type_id inner join form form5_ on encounter1_.form_id=form5_.form_id where encounter1_.date_created>='2007-05-05' and encounter1_.date_created<= '2008-05-05' group by encounter1_.location_id, encounter1_.creator , encounter1_.encounter_type , encounter1_.form_id";
 		as.executeSQL(sql, true);

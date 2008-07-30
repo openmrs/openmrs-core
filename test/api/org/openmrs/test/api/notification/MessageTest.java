@@ -13,14 +13,17 @@
  */
 package org.openmrs.test.api.notification;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
 import org.openmrs.notification.Message;
 
 /**
  * Unit testing for the Message class
  */
-public class MessageTest extends TestCase {
+public class MessageTest {
 
 	private Message createTestMessage1() {
 		int id = 1;
@@ -45,7 +48,8 @@ public class MessageTest extends TestCase {
 		return new Message(id, recipients, sender, subject, content);
 	}
 	
-	public void testShouldConstructor() throws Exception {
+	@Test
+	public void shouldConstructor() throws Exception {
 		int id = 1;
 		String recipients = "recipient1@example.com,recipient2@example.com";
 		String sender = "foo@bar.com";
@@ -63,7 +67,8 @@ public class MessageTest extends TestCase {
 		assertEquals(content, toTest.getContent());
 	}
 	
-	public void testShouldSetRecipients() throws Exception {
+	@Test
+	public void shouldSetRecipients() throws Exception {
 		Message testMessage = createTestMessage1();
 		
 		String recipients = "recipient1@example.com,recipient2@example.com";
@@ -73,7 +78,8 @@ public class MessageTest extends TestCase {
 		assertEquals(testMessage.getRecipients(), recipients);
 	}
 	
-	public void testShouldAddRecipient() throws Exception {
+	@Test
+	public void shouldAddRecipient() throws Exception {
 		Message testMessage = createTestMessage1();
 		
 		String oldRecipients = testMessage.getRecipients();
@@ -84,7 +90,8 @@ public class MessageTest extends TestCase {
 		assertEquals(testMessage.getRecipients(), oldRecipients +","+ newRecipient);
 	}
 	
-	public void testShouldHasAttachment() throws Exception {
+	@Test
+	public void shouldHasAttachment() throws Exception {
 		Message testMessage1 = createTestMessage1();
 		Message testMessage2 = createTestMessage2();
 		

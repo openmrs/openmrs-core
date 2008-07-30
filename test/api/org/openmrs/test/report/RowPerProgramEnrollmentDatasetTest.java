@@ -17,6 +17,7 @@ import java.io.StringWriter;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
@@ -41,7 +42,8 @@ public class RowPerProgramEnrollmentDatasetTest extends BaseContextSensitiveTest
      * 
      * @throws Exception
      */
-    public void testShouldSerialization() throws Exception {
+    @Test
+	public void shouldSerialization() throws Exception {
     	initializeInMemoryDatabase();
     	executeDataSet("org/openmrs/test/report/include/RowPerProgramEnrollment.xml");
     	authenticate();

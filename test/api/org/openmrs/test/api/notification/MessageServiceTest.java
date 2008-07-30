@@ -13,6 +13,11 @@
  */
 package org.openmrs.test.api.notification;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
@@ -29,8 +34,8 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	
 	MessageService ms = null;
 	
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/api/notification/include/MessageServiceTest-initial.xml");
 		authenticate();
@@ -38,7 +43,8 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 		ms = Context.getMessageService();
 	}
 	
-	public void testShouldCreateMessage() throws Exception {
+	@Test
+	public void shouldCreateMessage() throws Exception {
 		String recipients = "foo@bar.com,marco@polo.com";
 		String sender = "me@mydomain.com";
 		String subject = "foo";
@@ -74,7 +80,8 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 		assertEquals(attachmentFileName, msg4.getAttachmentFileName());
 	}
 	
-	public void testShouldSendMessage() throws Exception {
+	@Test
+	public void shouldSendMessage() throws Exception {
 		Message tryToSend1 = ms.createMessage("recipient@example.com", 
 		                                     "sender@example.com", 
 		                                     "subject", 

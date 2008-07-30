@@ -13,14 +13,18 @@
  */
 package org.openmrs.test.patient;
 
-import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+import org.openmrs.patient.impl.LuhnIdentifierValidator;
 
 /**
  * Tests the {@link LuhnIdentifierValidator}
  */
-public class LuhnIdentifierValidatorTest extends TestCase {
+public class LuhnIdentifierValidatorTest {
 	
 	private LuhnIdentifierValidator validator = new LuhnIdentifierValidator();
 	
@@ -31,7 +35,8 @@ public class LuhnIdentifierValidatorTest extends TestCase {
 	private int[] allowedIdentifiersCheckDigitsInts = {3, 6, 9, 7, 8, 7, 7, 7, 1};
 	private String[] invalidIdentifiers = {"", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def "};
 	
-	public void testShouldGetValidIdentifier(){
+	@Test
+	public void shouldGetValidIdentifier(){
 		
 		//Make sure valid identifiers come back with the right check digit
 		
@@ -49,7 +54,8 @@ public class LuhnIdentifierValidatorTest extends TestCase {
 		}
 	}
 	
-	public void testShouldIsValid(){
+	@Test
+	public void shouldIsValid(){
 		//Make sure invalid identifiers throw an exception
 		
 		for(int j=0;j<invalidIdentifiers.length;j++){

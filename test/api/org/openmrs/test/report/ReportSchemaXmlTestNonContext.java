@@ -13,21 +13,23 @@
  */
 package org.openmrs.test.report;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
 import org.openmrs.report.ReportSchemaXml;
 
 /**
  * Tests the small class ReportSchemaXml without database accesses
  */
-public class ReportSchemaXmlTestNonContext extends TestCase {
+public class ReportSchemaXmlTestNonContext {
 
 	/**
 	 * Test the updateFromAttributes method
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldUpdateFromAttributes() throws Exception {
+	@Test
+	public void shouldUpdateFromAttributes() throws Exception {
 		StringBuilder xml = new StringBuilder();
 		xml.append("<reportSchema id=\"1\">\n");
 		xml.append("    <name>PEPFAR report</name>\n");

@@ -13,6 +13,11 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.context.Context;
@@ -31,14 +36,15 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/test/api/include/PatientServiceTest-createPatient.xml";
 	protected static CohortService service;
 
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 		service = Context.getCohortService();
 	}
 	
-	public void testShouldPatientSearchCohortDefinitionProvider() throws Exception {
+	@Test
+	public void shouldPatientSearchCohortDefinitionProvider() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		CohortDefinition def = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 		Cohort result = service.evaluate(def, null);

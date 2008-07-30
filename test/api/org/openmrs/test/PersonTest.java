@@ -13,12 +13,17 @@
  */
 package org.openmrs.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -31,14 +36,15 @@ import org.openmrs.PersonName;
  * This class does not touch the database, so it does not need to
  * extend the normal openmrs BaseTest
  */
-public class PersonTest extends TestCase {
+public class PersonTest {
 
 	/**
 	 * Test the add/removeAddresses method in the person object 
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldAddRemoveAddress() throws Exception {
+	@Test
+	public void shouldAddRemoveAddress() throws Exception {
 		
 		Person p = new Person();
 		
@@ -109,7 +115,8 @@ public class PersonTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldAddRemoveName() throws Exception {
+	@Test
+	public void shouldAddRemoveName() throws Exception {
 		
 		Person p = new Person();
 		
@@ -187,7 +194,8 @@ public class PersonTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldAddRemoveAttribute() throws Exception {
+	@Test
+	public void shouldAddRemoveAttribute() throws Exception {
 		
 		Person p = new Person();
 		
@@ -257,7 +265,8 @@ public class PersonTest extends TestCase {
 		assertTrue("There shouldn't be any attributes in the person object now", p.getAttributes().size() == 0);
 	}
 
-	public void testShouldAge() throws Exception {
+	@Test
+	public void shouldAge() throws Exception {
 		Person p = new Person();
 		assertNull(p.getAge());
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -274,7 +283,8 @@ public class PersonTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldSetInexactBirthdateFromAge() throws Exception {
+	@Test
+	public void shouldSetInexactBirthdateFromAge() throws Exception {
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 			Person p = new Person();
 			

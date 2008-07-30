@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections/commons-collections-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload/commons-fileupload-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang/commons-lang-2.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang/commons-lang-2.1.jar" sourcepath="/openmrs-source/commons-lang-2.1-src.zip"/>
 	<classpathentry kind="lib" path="lib/commons-logging/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pool/commons-pool-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j/dom4j-1.6.1.jar"/>
@@ -18,7 +18,7 @@
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-page-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jstl/jstl-1.1.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="lib" path="lib/jta/jta.jar"/>
-	<classpathentry kind="lib" path="lib/junit/junit-3.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/junit/junit-4.4.jar"/>
 	<classpathentry kind="lib" path="lib/junit/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/junit/dbunit-2.2.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java/mysql-connector-java-3.1.10-bin.jar"/>

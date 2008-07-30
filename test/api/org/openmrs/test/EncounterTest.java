@@ -13,14 +13,18 @@
  */
 package org.openmrs.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 
+import org.junit.Test;
+import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
-import org.openmrs.Encounter;
-
-import junit.framework.TestCase;
 
 /**
  *This class tests the Encounter object methods other than getters and setters
@@ -29,7 +33,7 @@ import junit.framework.TestCase;
  * 
  * @see Encounter
  */
-public class EncounterTest extends TestCase {
+public class EncounterTest {
 
 	
 	/**
@@ -38,7 +42,8 @@ public class EncounterTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldObsGroupAwareMethods() throws Exception {
+	@Test
+	public void shouldObsGroupAwareMethods() throws Exception {
 		//create an Encounter 
 		Encounter enc = new Encounter();
 		

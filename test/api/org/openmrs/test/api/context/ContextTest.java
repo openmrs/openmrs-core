@@ -13,6 +13,11 @@
  */
 package org.openmrs.test.api.context;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
@@ -30,10 +35,10 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * Set up the database with the initial dataset before every test method
 	 * in this class.
 	 * 
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpBeforeTransaction()
+	 * 
 	 */
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		// creates the basic user and give it full rights
 		initializeInMemoryDatabase();
 	}
@@ -44,7 +49,8 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldNotAuthenticateWithNullParameters() throws Exception {
+	@Test
+	public void shouldNotAuthenticateWithNullParameters() throws Exception {
 		
 		Context.logout();
 		assertFalse("This test needs to start with an unauthenticated context",
@@ -96,7 +102,8 @@ public class ContextTest extends BaseContextSensitiveTest {
 	/**
 	 * TODO finish and complete
 	 */
-	public void testShouldGettingUser() throws Exception {
+	@Test
+	public void shouldGettingUser() throws Exception {
 		authenticate();
 		
 		UserService us = Context.getUserService();
@@ -110,7 +117,8 @@ public class ContextTest extends BaseContextSensitiveTest {
 	/**
 	 * TODO create method
 	 */
-	public void testShouldProxyPrivilege() throws Exception {
+	@Test
+	public void shouldProxyPrivilege() throws Exception {
 		authenticate();
 		
 		//create a bum user

@@ -16,6 +16,8 @@ package org.openmrs.test.logic;
 import java.util.Date;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.api.context.Context;
@@ -30,8 +32,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class LogicEvalTest extends BaseContextSensitiveTest {
 
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/logic/include/LogicTests-patients.xml");
 		
@@ -43,7 +45,8 @@ public class LogicEvalTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldSimpleLogic() throws Exception {
+	@Test
+	public void shouldSimpleLogic() throws Exception {
 		
 		// add temperature as a concept in the database
 		executeDataSet("org/openmrs/test/logic/include/LogicEvalTest.testSimpleLogic.xml");

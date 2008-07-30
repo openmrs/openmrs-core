@@ -13,14 +13,17 @@
  */
 package org.openmrs.test.module;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Properties;
 
+import org.junit.Test;
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
-import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Tests how modules interact and call each other.  Both when loaded by Spring during
@@ -38,7 +41,7 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 		Properties props = super.getRuntimeProperties();
 		
 		// NOTE! These two modules are modified heavily from the original atd and dss modules.
-		// the "/lib" folder has been emptied to converse size.
+		// the "/lib" folder has been emptied to compact the size.
 		// the "/metadata/sqldiff.xml" file has been deleted in order to load the modules into hsql.
 		//    (the sql tables are built from hibernate mapping files automatically in unit tests)
 		props.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD, 
@@ -49,51 +52,16 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see org.springframework.test.AbstractSingleSpringContextTests#loadContextLocations(java.lang.String[])
-	 */
-	@Override
-	protected ConfigurableApplicationContext loadContextLocations(
-	        String[] locations) throws Exception {
-	    
-		ConfigurableApplicationContext appContext = super.loadContextLocations(locations);
-	    
-		ModuleUtil.startup(runtimeProperties);
-		
-		// reset the boolean flag because we just restarted spring
-		columnsAdded = false;
-		
-	    return appContext;
-	}
-	
-	/**
-	 * This test exists solely to either mark the application context as dirty or
-	 * not for the next test.  If we've run other tests, then the context needs to 
-	 * be recreated for the {@link #testModuleALoadingModuleB()} test.  If we 
-	 * haven't run any other tests, leave the context alone, otherwise 
-	 * {@link #testModuleALoadingModuleB()} won't run correctly
-	 * 
-	 * @throws Exception
-	 */
-	public void testShouldOnlyBeUsedByJunitReport() throws Exception {
-		
-		// the load count will be "1" if this test was run as a stand-alone in an IDE
-		// if we're in a stand-alone, we don't need to reset the application context for the next test
-
-		// the load count will be <> 1 if this test is run in a suite or using
-		//   something like junit report
-		// if we're in a suite, we need to reset he application context for the next test
-		if (getLoadCount() != 1)
-			setDirty();
-	}
-	
-	/**
 	 * Test that module A that requires module B can call a service method on module B
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldModuleALoadingModuleB() throws Exception {
+	@Test
+	public void shouldModuleALoadingModuleB() throws Exception {
 		// create the basic user and give it full rights
 		initializeInMemoryDatabase();
+		
+		ModuleUtil.startup(runtimeProperties);
 		
 		// authenticate to the temp database
 		authenticate();
@@ -121,7 +89,6 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 		ModuleClassLoader dssServiceClassLoader = (ModuleClassLoader) dssServiceClass2.getClassLoader();
 		assertEquals("dssmodule", dssServiceClassLoader.getModule().getModuleId());
 		
-		setDirty();
 	}
 
 }

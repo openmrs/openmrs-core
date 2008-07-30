@@ -13,6 +13,10 @@
  */
 package org.openmrs.test.hl7;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -20,6 +24,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
@@ -47,8 +53,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		router.registerApplication("ORU", "R01", new ORUR01Handler());
 	}
 	
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		//deleteAllData();
 		
 		initializeInMemoryDatabase();
@@ -60,7 +66,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldBasicCreate() throws Exception {
+	@Test
+	public void shouldBasicCreate() throws Exception {
 		authenticate();
 		ObsService obsService = Context.getObsService();
 		
@@ -95,7 +102,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldGroupObsCreate() throws Exception {
+	@Test
+	public void shouldGroupObsCreate() throws Exception {
 		authenticate();
 		ObsService obsService = Context.getObsService();
 		
