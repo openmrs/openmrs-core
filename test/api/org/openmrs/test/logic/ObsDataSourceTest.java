@@ -1,9 +1,14 @@
 package org.openmrs.test.logic;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicContext;
@@ -19,8 +24,8 @@ public class ObsDataSourceTest extends BaseContextSensitiveTest {
 
     private Log log = LogFactory.getLog(this.getClass());
 
-    @Override
-    protected void onSetUpInTransaction() throws Exception {
+    @Before
+    public void runBeforeEachTest() throws Exception {
     	initializeInMemoryDatabase();
     	executeDataSet("org/openmrs/test/logic/include/ObsDataSourceTest.xml");
         authenticate();
@@ -29,7 +34,8 @@ public class ObsDataSourceTest extends BaseContextSensitiveTest {
     /**
      * TODO change to use the in memory database
      */
-    public void testShouldObsDataSource() {
+    @Test
+	public void shouldObsDataSource() {
         LogicDataSource lds = Context.getLogicService().getLogicDataSource("obs");
         Cohort patients = new Cohort();
 

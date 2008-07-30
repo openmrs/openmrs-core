@@ -13,10 +13,16 @@
  */
 package org.openmrs.test.logic;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
@@ -31,8 +37,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class LogicBasicTest extends BaseContextSensitiveTest {
 
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		//executeDataSet("org/openmrs/test/logic/include/LargeTestDatabase.xml");
 		executeDataSet("org/openmrs/test/logic/include/LogicTests-patients.xml");
@@ -40,7 +46,8 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 		authenticate();
 	}
 
-	public void testShouldCheckWhetherRecentResultsExist() throws Exception {
+	@Test
+	public void shouldCheckWhetherRecentResultsExist() throws Exception {
 		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 				
 		// Result = NO CD4 COUNT IN LAST 6 MONTHS
@@ -58,7 +65,8 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldFilterByNumericResult() throws Exception {
+	@Test
+	public void shouldFilterByNumericResult() throws Exception {
 		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 		// Result = LAST CD4 COUNT < 350
 		Patient patient = Context.getPatientService().getPatient(3);
@@ -67,7 +75,7 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 		                             new LogicCriteria("CD4 COUNT").last()
 		                                                           .lt(350));
 		assertTrue(result.exists());
-		assertEquals(125.0, result.toNumber());
+		assertEquals(125.0, result.toNumber(), 0);
 	}
 	
 	/**
@@ -76,7 +84,8 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldFilterByNumericResultWithVoidedObs() throws Exception {
+	@Test
+	public void shouldFilterByNumericResultWithVoidedObs() throws Exception {
 		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 		// Result = LAST CD4 COUNT < 350
 		Patient patient = Context.getPatientService().getPatient(2);
@@ -84,11 +93,12 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 		                       .eval(patient,
 		                             new LogicCriteria("CD4 COUNT").last()
 		                                                           .lt(350));
-		assertTrue(result.exists());
-		assertEquals(100.0, result.toNumber());
+		assertTrue("A result should exist", result.exists());
+		assertEquals(100.0, result.toNumber().doubleValue());
 	}
 
-	public void testShouldFetchActiveMedications() throws Exception {
+	@Test
+	public void shouldFetchActiveMedications() throws Exception {
 		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 		// Result = ACTIVE MEDICATIONS
 		Patient patient = Context.getPatientService().getPatient(2);
@@ -97,7 +107,8 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 		                             new LogicCriteria("CURRENT ANTIRETROVIRAL DRUGS USED FOR TREATMENT"));
 	}
 
-	public void testShouldFilterUsingComposition() throws Exception {
+	@Test
+	public void shouldFilterUsingComposition() throws Exception {
 		executeDataSet("org/openmrs/test/logic/include/LogicBasicTest.concepts.xml");
 		// LAST CD4 COUNT < 350 AND NO ACTIVE MEDICATIONS
 		Patient patient = Context.getPatientService().getPatient(2);
@@ -115,7 +126,8 @@ public class LogicBasicTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
-	public void testShouldSimpleLogic() throws Exception {
+	@Test
+	public void shouldSimpleLogic() throws Exception {
 
 		// Patient p = Context.getPatientService().getPatient(2);
 		Cohort cohort = new Cohort();

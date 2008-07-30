@@ -13,6 +13,8 @@
  */
 package org.openmrs.test;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -21,44 +23,54 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Runs tests on the openmrs junit tests
+ * 
+ * TODO: add unit test to make sure all tests have a call to assert* in them.
+ * 		This would help prevent people from making tests that just print
+ * 		results to the screen 
  */
-public class OpenmrsTestsTest extends TestCase {
+@SuppressWarnings("unchecked")
+public class OpenmrsTestsTest {
 	
 	private ClassLoader classLoader = this.getClass().getClassLoader();
-	private List<Class<TestCase>> testClasses = null;
+    private List<Class> testClasses = null;
 	
 	/**
 	 * Make sure there is at least one _other_ test case out there
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldHaveAtLeastOneTest() throws Exception {
-		List<Class<TestCase>> classes = getTestClasses();
+	@Test
+	public void shouldHaveAtLeastOneTest() throws Exception {
+		List<Class> classes = getTestClasses();
 		
 		assertTrue("There should be more than one class but there was only " + classes.size(), classes.size() > 1);
 	}
 	
 	/**
-	 * Makes sure all methods in org.openmrs.test that start with
-	 * "test" actually start with "testShould" 
+	 * Makes sure all test methods in org.openmrs.test start 
+	 * with the word "should" 
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldStartWithTestShould() throws Exception {
+	@Test
+	public void shouldStartWithShould() throws Exception {
 		
-		List<Class<TestCase>> classes = getTestClasses();
+		List<Class> classes = getTestClasses();
 		
 		for (Class<TestCase> currentClass : classes) {
 			for (Method method : currentClass.getMethods()) {
-	    		String methodName = method.getName();
 	    		
-	    		// make sure every "test" method starts with "testShould"
-	    		if (methodName.startsWith("test")) {
-	    			assertTrue(currentClass.getName() + "#" + methodName + " is supposed to start with 'testShould' but it doesn't", methodName.startsWith("testShould"));
+	    		// make sure every "test" method (determined by having 
+	    		// the @Test annotation) starts with "testShould"
+	    		if (method.getAnnotation(Test.class) != null) {
+	    			String methodName = method.getName();
+		    		
+	    			assertTrue(currentClass.getName() + "#" + methodName + " is supposed to start with 'should' but it doesn't", methodName.startsWith("should"));
 	    		}
 	    	}
 		}
@@ -70,7 +82,7 @@ public class OpenmrsTestsTest extends TestCase {
 	 * 
 	 * @return list of TestCase classes in org.openmrs.test
 	 */
-	private List<Class<TestCase>> getTestClasses() {
+	private List<Class> getTestClasses() {
 		if (testClasses != null)
 			return testClasses;
 		
@@ -97,10 +109,9 @@ public class OpenmrsTestsTest extends TestCase {
 	 * 
 	 * @param directory to loop through the files of
 	 */
-	@SuppressWarnings("unchecked")
-    private List<Class<TestCase>> getTestClassesInDirectory(File directory) {
+    private List<Class> getTestClassesInDirectory(File directory) {
 		
-		List<Class<TestCase>> currentDirTestClasses = new ArrayList<Class<TestCase>>();
+		List<Class> currentDirTestClasses = new ArrayList<Class>();
 		
 		for (File currentFile : directory.listFiles()) {
 			
@@ -122,11 +133,7 @@ public class OpenmrsTestsTest extends TestCase {
 				try {
 	                Class<?> currentClass = classLoader.loadClass(className);
 	                
-	                // if the class is a TestCase, put it in the current list of classes
-	                // if we change to junit4, this will probably have to change
-	                if (TestCase.class.isAssignableFrom(currentClass)) {
-	                	currentDirTestClasses.add((Class<TestCase>)currentClass);
-	                }
+                	currentDirTestClasses.add(currentClass);
 	                
                 } catch (ClassNotFoundException e) {
 	               System.out.println("Unable to load class: " + className + " error: " + e.getMessage());

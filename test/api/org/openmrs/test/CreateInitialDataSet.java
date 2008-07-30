@@ -19,6 +19,7 @@ import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.junit.Test;
 
 /**
  * This class can be run like a junit test, but it is not actually a test. JUnit
@@ -34,7 +35,8 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldcreateInitialTestDataSetXmlFile() throws Exception {
+	@Test
+	public void shouldCreateInitialTestDataSetXmlFile() throws Exception {
 		
 		// only run this test if it is being run alone.
 		// this allows the junit-report ant target and the "right-

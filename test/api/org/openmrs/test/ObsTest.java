@@ -13,10 +13,15 @@
  */
 package org.openmrs.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Date;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
@@ -30,14 +35,15 @@ import org.openmrs.api.APIException;
  * 
  * @see Obs
  */
-public class ObsTest extends TestCase {
+public class ObsTest {
 
 	/**
 	 * Tests the get/setValueAsString methods
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldValueAsString() throws Exception {
+	@Test
+	public void shouldValueAsString() throws Exception {
 
 		// TODO: finish this test method
 		
@@ -50,7 +56,8 @@ public class ObsTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldAddandRemoveObsToGroup() throws Exception {
+	@Test
+	public void shouldAddandRemoveObsToGroup() throws Exception {
 		
 		Obs obs = new Obs(1);
 		
@@ -97,7 +104,8 @@ public class ObsTest extends TestCase {
 		/**
 		 * tests the getRelatedObservations method:
 		 */	
-		public void testShouldGetRelatedObservations() throws Exception {
+		@Test
+	public void shouldGetRelatedObservations() throws Exception {
 		// create a child Obs
 		Obs o = new Obs();
 		o.setDateCreated(new Date());

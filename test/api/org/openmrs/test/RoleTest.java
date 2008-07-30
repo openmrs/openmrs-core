@@ -13,8 +13,10 @@
  */
 package org.openmrs.test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.util.OpenmrsConstants;
@@ -27,14 +29,15 @@ import org.openmrs.util.OpenmrsConstants;
  * 
  * @see Role
  */
-public class RoleTest extends TestCase {
+public class RoleTest {
 
 	/**
 	 * Test the adding and removing of privileges to a role
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldAddRemovePrivilege() throws Exception {
+	@Test
+	public void shouldAddRemovePrivilege() throws Exception {
 		Role role = new Role();
 		
 		// test the null parameter cases
@@ -70,7 +73,8 @@ public class RoleTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldHasPrivilege() throws Exception {
+	@Test
+	public void shouldHasPrivilege() throws Exception {
 		Role role = new Role();
 		
 		// test the null cases
@@ -95,7 +99,8 @@ public class RoleTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldInheritingRoles() throws Exception {
+	@Test
+	public void shouldInheritingRoles() throws Exception {
 		
 		// TODO finish test method
 		

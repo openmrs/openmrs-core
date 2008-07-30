@@ -13,13 +13,15 @@
  */
 package org.openmrs.test.report;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.ConceptClass;
 import org.openmrs.Location;
@@ -38,7 +40,7 @@ import org.simpleframework.xml.Serializer;
  * Test class that tests the serialization and deserialization of the 
  * a very simple pepfar report 
  */
-public class PepfarReportSerializationTest extends TestCase {
+public class PepfarReportSerializationTest {
 
 	/**
 	 * Creates a basic pepfar report schema and makes sure it can be
@@ -46,7 +48,8 @@ public class PepfarReportSerializationTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldPepfarStaticCohortSerialization() throws Exception {
+	@Test
+	public void shouldPepfarStaticCohortSerialization() throws Exception {
 		
 		// the report schema object to serialize
 		ReportSchema pepfarReportSchema = new ReportSchema();
@@ -132,7 +135,8 @@ public class PepfarReportSerializationTest extends TestCase {
     /**
      * TODO: move this out of the pepfarReportSerializationTest class
      */
-    public void testShouldCohortSerialization() throws Exception {
+    @Test
+	public void shouldCohortSerialization() throws Exception {
     	
     	PatientSearch cohortByPatientSearch = PatientSearch.createCompositionSearch("[Male] AND [Adult]");
     	
@@ -148,7 +152,8 @@ public class PepfarReportSerializationTest extends TestCase {
     /**
      * TODO: move this out of the pepfarReportSerializationTest class
      */
-    public void testShouldConceptClassShortSerialization() throws Exception {
+    @Test
+	public void shouldConceptClassShortSerialization() throws Exception {
     	User user = new User(1);
 		user.setSystemId("systemId1");
 		user.setCreator(user);
@@ -171,7 +176,8 @@ public class PepfarReportSerializationTest extends TestCase {
 		
     }
     
-    public void testShouldConceptClassDeserialization() throws Exception {
+    @Test
+	public void shouldConceptClassDeserialization() throws Exception {
     	Serializer serializer = OpenmrsUtil.getShortSerializer();
     	
 		String serializedClass = "<conceptClass id=\"0\" conceptClassId=\"123\">\n   <description id=\"1\"><![CDATA[This is the description]]></description>\n   <name id=\"2\"><![CDATA[This is the name]]></name>\n   <dateCreated id=\"3\">2007-12-17 14:00:01.515 EST</dateCreated>\n   <creator id=\"4\" birthdateEstimated=\"false\" voided=\"false\" userId=\"1\" personId=\"1\" dead=\"false\">\n      <names class=\"java.util.TreeSet\" id=\"5\"/>\n      <attributes class=\"java.util.TreeSet\" id=\"6\"/>\n      <addresses class=\"java.util.TreeSet\" id=\"7\"/>\n   </creator>\n</conceptClass>";

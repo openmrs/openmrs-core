@@ -13,8 +13,13 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Date;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.PatientProgram;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
@@ -36,8 +41,8 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	protected AdministrationService adminService = null;
 	protected EncounterService encounterService = null;
 	
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(CREATE_PATIENT_PROGRAMS_XML);
 
@@ -70,7 +75,8 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldUpdatePatientProgram( ) throws Exception {
+	@Test
+	public void shouldUpdatePatientProgram( ) throws Exception {
 		
 		Date today = new Date();
 		

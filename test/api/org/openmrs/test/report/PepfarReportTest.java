@@ -13,6 +13,8 @@
  */
 package org.openmrs.test.report;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -26,6 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Program;
 import org.openmrs.api.ReportService;
@@ -79,7 +82,8 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldPepfarReport() throws Exception {
+	@Test
+	public void shouldPepfarReport() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/report/include/PepfarReportTest.xml");
 		

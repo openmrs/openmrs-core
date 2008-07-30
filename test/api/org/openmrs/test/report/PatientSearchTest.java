@@ -13,6 +13,9 @@
  */
 package org.openmrs.test.report;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -20,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
@@ -44,10 +49,10 @@ public class PatientSearchTest extends BaseContextSensitiveTest {
 	 * Set up the database with the initial dataset before every test method
 	 * in this class.
 	 * 
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpBeforeTransaction()
+	 * 
 	 */
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/report/include/PatientSearchTest.xml");
 		authenticate();
@@ -58,7 +63,8 @@ public class PatientSearchTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldParameters() throws Exception {
+	@Test
+	public void shouldParameters() throws Exception {
 		ObsService obsService = Context.getObsService();
 		
 		// set the date of the first obs to be within the range of the param
@@ -77,7 +83,8 @@ public class PatientSearchTest extends BaseContextSensitiveTest {
 		obsService.saveObs(secondObs, "Creating obs");
 		
 		// flush (commit) these changes to the database
-		commitTransaction(true);
+		// commenting this out because junit4 doesn't seem to care
+		//commitTransaction(true);
 		
 		Map<Parameter, Object> globalParamValues = new HashMap<Parameter, Object>();
 		{

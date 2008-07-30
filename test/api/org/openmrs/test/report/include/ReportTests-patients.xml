@@ -1,9 +1,26 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" birthdate="2000-01-01 00:00:00.0" />
+  <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" birthdate="1970-01-01 00:00:00.0" />
   <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
   <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
   <patient_identifier patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" identifier="1234" identifier_type="1" preferred="1" voided="false" location_id="1" />
+  
+  <person person_id="3" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="F" birthdate="1970-01-01 00:00:00.0" />
+  <person_name person_id="3" person_name_id="3" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
+  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+  <patient_identifier patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" identifier="12345" identifier_type="1" preferred="1" voided="false" location_id="1" />
+  
+  <person person_id="4" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" birthdate="2008-07-01 00:00:00.0" />
+  <person_name person_id="4" person_name_id="4" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
+  <patient patient_id="4" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+  <patient_identifier patient_id="4" creator="1" date_created="2005-01-01 00:00:00.0" identifier="123456" identifier_type="1" preferred="1" voided="false" location_id="1" />
+  
+  <person person_id="5" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="F" birthdate="2008-07-01 00:00:00.0" />
+  <person_name person_id="5" person_name_id="5" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
+  <patient patient_id="5" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
+  <patient_identifier patient_id="5" creator="1" date_created="2005-01-01 00:00:00.0" identifier="1234567" identifier_type="1" preferred="1" voided="false" location_id="1" />
+  
+  
   <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"/> 
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
 </dataset>

@@ -13,12 +13,13 @@
  */
 package org.openmrs.test.report;
 
-import java.io.BufferedOutputStream;
-import java.io.OutputStream;
+import static org.junit.Assert.assertEquals;
+
 import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.api.DataSetService;
 import org.openmrs.api.context.Context;
@@ -30,7 +31,6 @@ import org.openmrs.report.impl.TsvReportRenderer;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.TestUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Serializer;
 
@@ -44,7 +44,8 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldSerialization() throws Exception {
+	@Test
+	public void shouldSerialization() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/report/include/RowPerObsDatasetTest.xml");
 		authenticate();

@@ -13,10 +13,12 @@
  */
 package org.openmrs.test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 
@@ -26,14 +28,15 @@ import org.openmrs.PersonName;
  * This class does not touch the database, so it does not need to
  * extend the normal openmrs BaseTest
  */
-public class PersonNameTest extends TestCase {
+public class PersonNameTest {
 	
 	/**
 	 * Test the .equals method  
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldPersonNameEqualityWithPersonSubObject() throws Exception {
+	@Test
+	public void shouldPersonNameEqualityWithPersonSubObject() throws Exception {
 		
 		PersonName pn1 = new PersonName();
 		pn1.setGivenName("firsttest");

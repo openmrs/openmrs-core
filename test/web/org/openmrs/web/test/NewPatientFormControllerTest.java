@@ -13,11 +13,19 @@
  */
 package org.openmrs.web.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.api.PatientService;
@@ -41,8 +49,8 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	protected static final String CONTROLLER_DATA = "org/openmrs/web/test/include/NewPatientFormControllerTest.xml";
 	protected static final String CONTROLLER_PATIENTS_DATA = "org/openmrs/web/test/include/NewPatientFormControllerTest-patients.xml";
 	
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(CONTROLLER_DATA);
 		authenticate();
@@ -56,7 +64,8 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
-    public void testShouldPageLoadWithEmptyParameters() throws Exception {
+    @Test
+	public void shouldPageLoadWithEmptyParameters() throws Exception {
 		NewPatientFormController controller = new NewPatientFormController();
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		HttpServletResponse response = new MockHttpServletResponse();
@@ -75,7 +84,8 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
-    public void testShouldSubmitWithAllFieldsEnteredCorrectly() throws Exception {
+    @Test
+	public void shouldSubmitWithAllFieldsEnteredCorrectly() throws Exception {
 		
 		PatientService ps = Context.getPatientService();
 		
@@ -84,7 +94,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		assertTrue(patients.isEmpty());
 		
 		NewPatientFormController controller = new NewPatientFormController();
-		controller.setApplicationContext(getApplicationContext());
+		controller.setApplicationContext(applicationContext);
 		controller.setSuccessView("patientDashboard.form");
 		
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -129,7 +139,8 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
-    public void testShouldSubmitWithNoIdentifierFilledIn() throws Exception {
+    @Test
+	public void shouldSubmitWithNoIdentifierFilledIn() throws Exception {
 		
 		PatientService ps = Context.getPatientService();
 		
@@ -138,7 +149,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		assertTrue(patients.isEmpty());
 		
 		NewPatientFormController controller = new NewPatientFormController();
-		controller.setApplicationContext(getApplicationContext());
+		controller.setApplicationContext(applicationContext);
 		controller.setSuccessView("patientDashboard.form");
 		controller.setFormView("newPatient.form");
 		
@@ -197,22 +208,35 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
-    public void testShouldSubmitChangedIdentifierLocation() throws Exception {
+    @Test
+	public void shouldSubmitChangedIdentifierLocation() throws Exception {
 		executeDataSet(CONTROLLER_PATIENTS_DATA);
 		
 		PatientService ps = Context.getPatientService();
 		
-		// make sure we don't have any John's to begin with
+		// make sure we do have one John to begin with
 		List<Patient> patients = ps.getPatients("John");
 		assertFalse(patients.isEmpty());
+		assertEquals(2, patients.size());
 		
+		Patient patientJohn = patients.get(0);
 		
+		// make sure we don't have "john3"
+		assertEquals(2, patientJohn.getPersonId().intValue());
+		// make sure that john's identifier is 1234
+		assertEquals("1234", patientJohn.getPatientIdentifier().getIdentifier());
+		// and that the location is 1 (we'll be changing it to 2)
+		assertEquals(new Location(1), patientJohn.getPatientIdentifier().getLocation());
+		
+		// set up the controller
 		NewPatientFormController controller = new NewPatientFormController();
-		controller.setApplicationContext(getApplicationContext());
+		controller.setApplicationContext(applicationContext);
 		controller.setSuccessView("patientDashboard.form");
 		controller.setFormView("newPatient.form");
 		controller.setSessionForm(true);
 		
+		// set up the request and do an initial "get" as if the user loaded the
+		// page for the first time
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin/patients/newPatient.form?patientId=2");
 		request.setSession(new MockHttpSession(null));
 		HttpServletResponse response = new MockHttpServletResponse();

@@ -13,9 +13,17 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Iterator;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
@@ -28,8 +36,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/test/api/include/EncounterServiceTest-initialData.xml";
 
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(ENC_INITIAL_DATA_XML);
 		authenticate();
@@ -40,7 +48,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldLocation() throws Exception {
+	@Test
+	public void shouldLocation() throws Exception {
 		LocationService locationService = Context.getLocationService();
 
 		// testing creation
@@ -104,7 +113,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldRetireLocation() throws Exception {
+	@Test
+	public void shouldRetireLocation() throws Exception {
 		LocationService locationService = Context.getLocationService();
 		
 		// Create a location.
@@ -130,10 +140,10 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		List<Location> locationsNotRetiredAfter = locationService.getAllLocations(false);
 
 		// Both location lists that include retired should be equal.
-		this.assertEquals(locationsBeforeRetired, locationsAfterRetired);
+		assertEquals(locationsBeforeRetired, locationsAfterRetired);
 
 		// Both location lists that do not include retired should not be the same.
-		this.assertNotSame(locationsNotRetiredBefore, locationsNotRetiredAfter);
+		assertNotSame(locationsNotRetiredBefore, locationsNotRetiredAfter);
 
 	}
 

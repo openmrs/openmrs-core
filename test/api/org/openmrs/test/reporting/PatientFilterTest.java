@@ -13,10 +13,13 @@
  */
 package org.openmrs.test.reporting;
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 
+import org.junit.Test;
 import org.openmrs.Drug;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -31,7 +34,8 @@ public class PatientFilterTest extends BaseContextSensitiveTest {
 
 	DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 	
-	public void testShouldDrugOrderFilter() throws Exception {
+	@Test
+	public void shouldDrugOrderFilter() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/include/PatientFilterTest.xml");
 		authenticate();

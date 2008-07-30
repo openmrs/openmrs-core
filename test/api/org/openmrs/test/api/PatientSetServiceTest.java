@@ -13,9 +13,13 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.DrugOrder;
 import org.openmrs.api.PatientSetService;
@@ -29,13 +33,14 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/test/api/include/PatientServiceTest-createPatient.xml";
 	
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 	}
 	
-	public void testShouldGetDrugOrders() throws Exception {
+	@Test
+	public void shouldGetDrugOrders() throws Exception {
 		PatientSetService service = Context.getPatientSetService();
 		Cohort nobody = new Cohort();
 		Map<Integer, List<DrugOrder>> results = service.getDrugOrders(nobody, null);

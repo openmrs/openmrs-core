@@ -13,11 +13,17 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -46,8 +52,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	protected AdministrationService adminService = null;
 	protected PersonService personService = null;
 
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void onSetUpInTransaction() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 
@@ -65,7 +71,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldGetUnvoidedRelationships() throws Exception {
+	@Test
+	public void shouldGetUnvoidedRelationships() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		executeDataSet(CREATE_RELATIONSHIP_XML);
 
@@ -157,7 +164,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldParseTwoPersonName() throws Exception {
+	@Test
+	public void shouldParseTwoPersonNameWithAndWithoutComma() throws Exception {
 		PersonService service = Context.getPersonService();
 		
 		PersonName pname = service.parsePersonName("Doe, John");

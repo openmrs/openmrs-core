@@ -13,9 +13,13 @@
  */
 package org.openmrs.test.cohort;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortUtil;
@@ -34,17 +38,18 @@ public class CohortUtilTest extends BaseContextSensitiveTest {
 	 * Set up the database with the initial dataset before every test method
 	 * in this class.
 	 * 
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpBeforeTransaction()
+	 * 
 	 */
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		// creates the basic user and give it full rights
 		initializeInMemoryDatabase();
 		authenticate();
 	}
 
 	
-	public void testShouldParse() throws Exception {
+	@Test
+	public void shouldParse() throws Exception {
 		{
 			// Create a search called "Male" 
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);

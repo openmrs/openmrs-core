@@ -13,11 +13,13 @@
  */
 package org.openmrs.test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.openmrs.Order;
 
 /**
@@ -28,14 +30,15 @@ import org.openmrs.Order;
  * 
  * @see Order
  */
-public class OrderTest extends TestCase {
+public class OrderTest {
 	
 	/**
 	 * Tests the {@link Order#isDiscontinued()} method
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldIsDiscontinued() throws Exception {
+	@Test
+	public void shouldIsDiscontinued() throws Exception {
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 		
 		Order o = new Order();
@@ -66,7 +69,8 @@ public class OrderTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldIsCurrent() throws Exception {
+	@Test
+	public void shouldIsCurrent() throws Exception {
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 
 		Order o = new Order();

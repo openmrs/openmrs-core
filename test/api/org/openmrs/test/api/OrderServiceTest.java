@@ -13,9 +13,15 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Iterator;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.OrderType;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
@@ -26,8 +32,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class OrderServiceTest extends BaseContextSensitiveTest {
 	
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 	}
@@ -37,7 +43,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldOrderCreateUpdateDelete() throws Exception {
+	@Test
+	public void shouldOrderCreateUpdateDelete() throws Exception {
 		
 		
 	}	
@@ -47,7 +54,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldDrugOrderCreateUpdateDelete() throws Exception {
+	@Test
+	public void shouldDrugOrderCreateUpdateDelete() throws Exception {
 		
 		
 	}	

@@ -13,6 +13,8 @@
  */
 package org.openmrs.test.notification.db.hibernate;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.AlertService;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -24,9 +26,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	
-	@Override
-	protected void onSetUpBeforeTransaction() throws Exception {
-		super.onSetUpBeforeTransaction();
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		authenticate();
 	}
 
@@ -35,7 +36,8 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldGetAlerts() throws Exception {
+	@Test
+	public void shouldGetAlerts() throws Exception {
 		
 		AlertService as = Context.getAlertService();
 		System.out.println(as.getAllAlerts());

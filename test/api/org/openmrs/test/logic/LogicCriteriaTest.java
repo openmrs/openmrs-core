@@ -13,19 +13,21 @@
  */
 package org.openmrs.test.logic;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Calendar;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.openmrs.logic.Duration;
 import org.openmrs.logic.LogicCriteria;
 
 /**
  * 
  */
-public class LogicCriteriaTest extends TestCase {
+public class LogicCriteriaTest {
 
-	public void testShouldLogicCriteria() {
+	@Test
+	public void shouldLogicCriteria() {
 		LogicCriteria criteria = new LogicCriteria("CD4 COUNT").within(Duration.months(6))
 		                                                       .exists();
 

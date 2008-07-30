@@ -13,10 +13,12 @@
  */
 package org.openmrs.test;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -32,14 +34,15 @@ import org.openmrs.PatientIdentifierType;
  * TODO: Complete this class by testing all other non getter/setters in the
  * patient object
  */
-public class PatientTest extends TestCase {
+public class PatientTest {
 
 	/**
 	 * Test the add/removeIdentifiers method in the patient object 
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldAddRemoveIdentifiers() throws Exception {
+	@Test
+	public void shouldAddRemoveIdentifiers() throws Exception {
 		
 		Patient p = new Patient();
 		

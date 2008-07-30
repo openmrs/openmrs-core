@@ -13,6 +13,13 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +27,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -52,8 +61,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	protected LocationService locationService = null;
 	
 	
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 		
@@ -70,7 +79,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldGetPatient() throws Exception {
+	@Test
+	public void shouldGetPatient() throws Exception {
 		
 		executeDataSet(CREATE_PATIENT_XML);
 		
@@ -142,7 +152,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldCreatePatient() throws Exception {
+	@Test
+	public void shouldCreatePatient() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		
 		Patient patient = new Patient();
@@ -197,7 +208,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * Tests creating patients with identifiers that are or are not validated.
 	 * @throws Exception 
 	 */
-	public void testShouldCreatePatientWithValidatedIdentifier() throws Exception{
+	@Test
+	public void shouldCreatePatientWithValidatedIdentifier() throws Exception{
 		executeDataSet(CREATE_PATIENT_VALID_IDENT_XML);
 		Patient patient = createBasicPatient();
 		Patient patient2 = createBasicPatient();
@@ -241,7 +253,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldGetPatientsByIdentifier() throws Exception {
+	@Test
+	public void shouldGetPatientsByIdentifier() throws Exception {
 		
 		executeDataSet(CREATE_PATIENT_XML);
 		
@@ -283,7 +296,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldGetPatientsByNameShouldLimitSize() throws Exception {
+	@Test
+	public void shouldGetPatientsByNameShouldLimitSize() throws Exception {
 		executeDataSet(JOHN_PATIENTS_XML);
 		
 		Collection<Patient> patients = ps.getPatients("John", null, null);
@@ -322,7 +336,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldFindPatients() throws Exception {
+	@Test
+	public void shouldFindPatients() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
 		
 		//Test that "Jea" finds given_name="Jean Claude" and given_name="Jean", family_name="Claude"
@@ -382,7 +397,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldGetPatientsByIdentifierAndIdentifierType() throws Exception {
+	@Test
+	public void shouldGetPatientsByIdentifierAndIdentifierType() throws Exception {
 		executeDataSet(FIND_PATIENTS_XML);
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();

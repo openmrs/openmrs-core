@@ -13,6 +13,8 @@
  */
 package org.openmrs.test.report;
 
+import static org.junit.Assert.assertEquals;
+
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +22,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.report.Parameter;
@@ -35,16 +39,16 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class PatientSearchParameterTest extends BaseContextSensitiveTest {
 
 	private static Log log = LogFactory.getLog(PatientSearchParameterTest.class);
-	protected static final String INITIAL_REPORT_OBJECTS_XML = "org/openmrs/test/report/PatientSearchParameterTest.xml";
+	protected static final String INITIAL_REPORT_OBJECTS_XML = "org/openmrs/test/report/include/PatientSearchParameterTest.xml";
 
 	/**
 	 * Set up the database with the initial dataset before every test method
 	 * in this class.
 	 * 
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onSetUpBeforeTransaction()
+	 * 
 	 */
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		// creates the basic user and give it full rights
 		initializeInMemoryDatabase();
 		authenticate();
@@ -61,7 +65,8 @@ public class PatientSearchParameterTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-    public void testShouldPatientSearchParameter() throws Exception {
+    @Test
+	public void shouldPatientSearchParameter() throws Exception {
     	executeDataSet(INITIAL_REPORT_OBJECTS_XML);
     	 	
     	// test variables

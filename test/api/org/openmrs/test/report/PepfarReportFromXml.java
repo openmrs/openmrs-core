@@ -13,6 +13,10 @@
  */
 package org.openmrs.test.report;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,6 +27,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Program;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ReportService;
@@ -50,10 +56,21 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 	
 	DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 	
-	@Override
-    public Boolean useInMemoryDatabase() {
-	    return false;
-    }
+	/**
+	 * Set up the database with the initial dataset before every test method
+	 * in this class.
+	 * 
+	 * Require authorization before every test method in this class
+	 */
+	@Before
+	public void runBeforeEachTest() throws Exception {
+		
+		// create the basic user and give it full rights
+		initializeInMemoryDatabase();
+		
+		// authenticate to the temp database
+		authenticate();
+	}
 
 	Map<Parameter, Object> getUserEnteredParameters(Collection<Parameter> params) throws ParseException {
 		Map<Parameter, Object> ret = new HashMap<Parameter, Object>();
@@ -68,9 +85,10 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		return ret;
 	}
 
-	public void testShouldFromXml() throws Exception {
-		authenticate();
-		
+	@Test
+	public void shouldFromXml() throws Exception {
+		executeDataSet("org/openmrs/test/report/include/PepfarReportTest.xml");
+
 		StringBuilder xml = new StringBuilder();
 		xml.append("<reportSchema id=\"1\">\n");
 		xml.append("    <name>PEPFAR report</name>\n");
@@ -156,8 +174,9 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		renderer.render(data, null, System.out);
 	}
 
-	public void testShouldBooleansInPatientSearch() throws Exception {
-		authenticate();
+	@Test
+	public void shouldBooleansInPatientSearch() throws Exception {
+		executeDataSet("org/openmrs/test/report/include/ReportTests-patients.xml");
 		
 		// Make sure we have all required PatientSearches
 		if (Context.getReportObjectService().getPatientSearch("Male") == null) {
@@ -210,6 +229,8 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		PatientSearch complex3 = new PatientSearch();
 		complex2.setSpecificationString("[Male] or [Female]");
 		complex3.setSpecificationString("(([Male] and [Child]) or [Female])");
-		assertNotSame("Should be different sizes", cs.evaluate(complex2, evalContext).size(), cs.evaluate(complex3, evalContext).size());
+		// this assertion will fail 15 years after 2008-07-01 because the birthdates are
+		// set to that in the dataset for the two "children"
+		assertNotSame("Complex2 and Complex3 should be different sizes", cs.evaluate(complex2, evalContext).size(), cs.evaluate(complex3, evalContext).size());
 	}
 }

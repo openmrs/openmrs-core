@@ -13,9 +13,16 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
@@ -39,10 +46,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Authenticate the user for all of the tests
 	 * 
-	 * @see org.openmrs.BaseTest#onSetUpBeforeTransaction()
+	 * @see org.openmrs.BaseTest#runBeforeEachTest()
 	 */
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 		conceptService = Context.getConceptService();
@@ -56,7 +63,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testShouldGetConceptByName() throws Exception {
+	@Test
+	public void shouldGetConceptByName() throws Exception {
 		
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
@@ -75,7 +83,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
-	public void testShouldSaveConceptNumeric() throws Exception {
+	@Test
+	public void shouldSaveConceptNumeric() throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		ConceptService conceptService = Context.getConceptService();
 		
@@ -102,14 +111,15 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		conceptService.saveConcept(cn3);
 		
 		// commit these so we can refetch from the database cleanly
-		commitTransaction(true);
+		// commenting this out because junit4 doesn't seem to care
+		//commitTransaction(true);
 		
 		// check the first concept
 		Concept firstConcept = conceptService.getConcept(1);
 		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
 		assertTrue(firstConcept instanceof ConceptNumeric);
 		ConceptNumeric firstConceptNumeric = (ConceptNumeric)firstConcept;
-		assertEquals(20.0, firstConceptNumeric.getHiAbsolute());
+		assertEquals(20.0, firstConceptNumeric.getHiAbsolute().doubleValue(), 0);
 		
 		// check the second concept
 		Concept secondConcept = conceptService.getConcept(2);
@@ -125,7 +135,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertTrue(thirdConcept instanceof ConceptNumeric);
 		ConceptNumeric thirdConceptNumeric = (ConceptNumeric)thirdConcept;
 		assertEquals("a brand new conceptnumeric", thirdConceptNumeric.getName(Locale.US).getName());
-		assertEquals(50.0, thirdConceptNumeric.getHiAbsolute());
+		assertEquals(50.0, thirdConceptNumeric.getHiAbsolute().doubleValue(), 0);
 		
 	}
 

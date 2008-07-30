@@ -52,11 +52,16 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.HSQLDialect;
+import org.junit.After;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsClassLoader;
-import org.springframework.test.AbstractTransactionalSpringContextTests;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This is the base for spring/context tests. Tests that NEED to use calls to
@@ -69,10 +74,12 @@ import org.springframework.test.AbstractTransactionalSpringContextTests;
  * {@link junit.framework.TestCase}
  * 
  */
-public abstract class BaseContextSensitiveTest extends
-        AbstractTransactionalSpringContextTests {
+@ContextConfiguration(locations={"classpath:applicationContext-service.xml"})
+@TestExecutionListeners({TransactionalTestExecutionListener.class})
+@Transactional
+public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private static Log log = LogFactory.getLog(BaseContextSensitiveTest.class);
 	
 	/**
 	 * Only the classpath/package path and filename of the initial dataset
@@ -107,44 +114,52 @@ public abstract class BaseContextSensitiveTest extends
 	 * in the hsql database yet (adding password and salt columns)
 	 */
 	protected static boolean columnsAdded = false;
-
-	/**
-	 * Variable used by {@link #commitTransaction()} and {@link #onTearDownInTransaction()}
-	 * for flagging and cleaning up transactions that were committed during the 
-	 * test.  (If a commit happened, data was written to the database and then not 
-	 * rolled back after the test was done.  Future tests' validity is in danger if the data
-	 * base is not always empty when a test starts)
-	 */
-	private boolean wasCommitted = false;
 	
 	/**
-	 * @see org.springframework.test.AbstractSingleSpringContextTests#getConfigLocations()
+	 * Static variable to keep track of the number of times
+	 * this class has been loaded (aka, number of tests already run)
 	 */
-	protected String[] getConfigLocations() {
-		Thread.currentThread()
-		      .setContextClassLoader(OpenmrsClassLoader.getInstance());
-
-		return new String[] { "classpath:applicationContext-service.xml" };
-	}
-
+	private static Integer loadCount = 0;
+	
 	/**
-	 * This method is called before Spring is setup, so its used to set the
-	 * runtime properties on Context.
+	 * Basic constructor for the super class to all openmrs
+	 * api unit tests.  This constructor sets up the classloader
+	 * and the properties file so that by the type spring gets 
+	 * around to finally starting, the openmrs runtime properties 
+	 * are already in place
+	 * A static load count is kept to count the number of times
+	 * this class has been loaded.
 	 * 
-	 * @see org.springframework.test.AbstractSpringContextTests#contextKeyString(java.lang.Object)
+	 * @see #getLoadCount()   
 	 */
-	protected String contextKeyString(Object contextKey) {
+	public BaseContextSensitiveTest() {
+		
+		Thread.currentThread()
+	      .setContextClassLoader(OpenmrsClassLoader.getInstance());
+	
 		Properties props = getRuntimeProperties();
-
+	
 		if (log.isDebugEnabled())
 			log.debug("props: " + props);
-
+	
 		Context.setRuntimeProperties(props);
-
-		// continue as normal
-		return super.contextKeyString(contextKey);
+		
+		loadCount++;
 	}
-
+	
+	/**
+	 * Get the number of times this class has been loaded.
+	 * This is a rough approx of how many tests have been
+	 * run so far.  This can be used to determine if the 
+	 * test is being run in a standalone context or if 
+	 * other tests have been run before.
+	 * 
+	 * @return number of times this class has been loaded
+	 */
+	public Integer getLoadCount() {
+		return loadCount;
+	}
+	
 	/**
 	 * Used for runtime properties. The default is "openmrs" because most people
 	 * will use that as the default. If your webapp and runtime properties are
@@ -155,21 +170,6 @@ public abstract class BaseContextSensitiveTest extends
 	 */
 	public String getWebappName() {
 		return "openmrs";
-	}
-
-	/**
-	 * If a user wants to have their test commit to the database, then they
-	 * probably do not want to be using an in-memory database. Set
-	 * <code>useInMemoryDatabase</code> to false when this method is called
-	 * 
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#setComplete() @
-	 */
-	@Override
-	protected void setComplete() throws UnsupportedOperationException {
-		if (useInMemoryDatabase() == true)
-			throw new UnsupportedOperationException("Completing a transaction for an in-memory database does not make sense. You should override useInMemoryDatabase() to return false");
-		
-		super.setComplete();
 	}
 
 	/**
@@ -517,22 +517,6 @@ public abstract class BaseContextSensitiveTest extends
 	}
 	
 	/**
-	 * @see org.springframework.test.AbstractSingleSpringContextTests#setDirty()
-	 */
-	protected void setDirty() {
-		// reset the columns flag because the user has declared they want to rebuild the context
-		// before the next test
-		columnsAdded = false;
-		
-		super.setDirty();
-		// set the transaction status to null because it was closed  
-		// in the super.setDirty() method.  This prevents us from getting a error during
-		// testcase cleanup when trying to rollback.  If this wasn't done here, the test
-		// would fail because the transaction was already closed
-		transactionStatus = null;
-	}
-	
-	/**
 	 * This is a convenience method to clear out all rows in all tables in the
 	 * current connection
 	 *
@@ -576,47 +560,5 @@ public abstract class BaseContextSensitiveTest extends
 		Context.clearSession();
 
 	}
-	
-	/**
-	 * Auto generated method comment
-	 * 
-	 */
-	public void commitTransaction(boolean andStartNewTransaction) {
-		transactionManager.commit(transactionStatus);
-		transactionStatus = null;
-		
-		if (andStartNewTransaction)
-			startNewTransaction();
-		
-		wasCommitted = true;
-	}
-
-	/**
-	 * If the {@link #commitTransaction()} method was called during this test,
-	 * we need to delete all that data manually because the automatic rollback
-	 * was skipped over
-	 * 
-     * @see org.springframework.test.AbstractTransactionalSpringContextTests#onTearDownInTransaction()
-     */
-    @Override
-    protected void onTearDownAfterTransaction() throws Exception {
-    	try {
-		    super.onTearDownAfterTransaction();
-		    
-		    if (wasCommitted) {
-		    	if (useInMemoryDatabase() == false)
-			    	throw new APIException("A commit occurred on a non-inmemory database.  It is recommended that either a manual commit or the setComplete() method is used instead or commitTransaction(boolean)");
-			    
-		    	startNewTransaction();
-		    	deleteAllData();
-		    	transactionManager.commit(transactionStatus);
-		    	transactionStatus = null;
-	}
-}
-    	finally {
-    		wasCommitted = false;
-    	}
-	    
-    }
 	
 }
