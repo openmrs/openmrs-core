@@ -30,6 +30,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -219,6 +220,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		for (Obs o : encounter.getObsAtTopLevel(false)) {
 			if (!o.isVoided()) {
 				os.voidObs(o, reason);
+			}
+		}
+		
+		OrderService orderService = Context.getOrderService();
+		for (Order o : encounter.getOrders()) {
+			if (!o.isVoided()) {
+				orderService.voidOrder(o, reason);
 			}
 		}
 
