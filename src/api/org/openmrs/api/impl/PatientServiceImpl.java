@@ -157,16 +157,26 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
     }
 		
 	/**
+	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)}
      * @see org.openmrs.api.PatientService#getPatients(java.lang.String, java.lang.String, java.util.List)
      */
     public List<Patient> getPatients(String name, String identifier,
             List<PatientIdentifierType> identifierTypes)
             throws APIException {
+    	return getPatients(name, identifier, identifierTypes, false);
+	}
+    
+    /**
+     * @see org.openmrs.api.PatientService#getPatients(java.lang.String, java.lang.String, java.util.List, boolean)
+     */
+    public List<Patient> getPatients(String name, String identifier,
+            List<PatientIdentifierType> identifierTypes, boolean matchIdentifierExactly)
+            throws APIException {
 		
     	if (identifierTypes == null)
     		identifierTypes = Collections.emptyList();
 		
-    	return dao.getPatients(name, identifier, identifierTypes);
+    	return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly);
 	}
 	
 	/**
@@ -320,7 +330,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * 
 	 * @param pi PatientIdentifier
 	 * @return true/false whether or not this PatientIdentifier is in use
-	 * @deprecated use getPatientByIdentifier(String) instead
+	 * @deprecated use {@link #getPatientsByIdentifier(String, boolean)}yIdentifier(String) instead
 	 */
 	private Patient identifierInUse(PatientIdentifier pi) {
 		return identifierInUse(pi.getIdentifier(),
@@ -339,7 +349,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// get all patients with this identifier
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(type);
-		List<Patient> patients = getPatients(null, identifier, types);
+		List<Patient> patients = getPatients(null, identifier, types, /* exact name+identifier search */ true);
 		
 		// ignore this patient (loop until no changes made)
 		while (patients.remove(ignorePatient)) { };
@@ -351,7 +361,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 
 	/**
-	 * @deprecated replaced by @deprecated replaced by {@link #getPatients(String, String, List, String)}
+	 * @deprecated replaced by @deprecated replaced by {@link #getPatients(String, String, List)}
 	 * @see org.openmrs.api.PatientService#getPatientsByIdentifier(java.lang.String, boolean)
 	 */
 	public List<Patient> getPatientsByIdentifier(String identifier,
@@ -364,7 +374,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @deprecated replaced by @deprecated replaced by {@link #getPatients(String, String, List, String)}
+	 * @deprecated replaced by {@link #getPatients(String, String, List, String)}
 	 * @see org.openmrs.api.PatientService#getPatientsByIdentifierPattern(java.lang.String, boolean)
 	 */
 	public List<Patient> getPatientsByIdentifierPattern(String identifier,

@@ -56,9 +56,9 @@ public interface PatientDAO {
     public List<Patient> getAllPatients(boolean includeVoided) throws DAOException;
 	
 	/**
-     * @see org.openmrs.api.PatientService#getPatients(java.lang.String, java.lang.String, java.util.List)
+     * @see org.openmrs.api.PatientService#getPatients(java.lang.String, java.lang.String, java.util.List, boolean)
 	 */
-    public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes)
+    public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes, boolean matchIdentifierExactly)
                          	        throws DAOException;
 	
 	/**
