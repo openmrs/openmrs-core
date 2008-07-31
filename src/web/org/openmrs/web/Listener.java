@@ -18,7 +18,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -146,13 +148,15 @@ public final class Listener extends ContextLoaderListener {
 		/**
 		 * Copy the module messages over into the webapp and perform web portion of startup
 		 */
+		List<Module> startedModules = new ArrayList<Module>();
+		startedModules.addAll(ModuleFactory.getStartedModules());
 		boolean someModuleNeedsARefresh = false;
-		for (Module mod : ModuleFactory.getStartedModules()) {
+		for (Module mod : startedModules) {
 			try {
 				boolean thisModuleCausesRefresh = WebModuleUtil.startModule(mod, servletContext, /* delayContextRefresh */ true); 
 				someModuleNeedsARefresh = someModuleNeedsARefresh || thisModuleCausesRefresh;
 			} catch (Throwable t) {
-				mod.setStartupErrorMessage(t.getMessage());
+				mod.setStartupErrorMessage("Unable to start module", t);
 			}
 		}
 		
