@@ -19,7 +19,7 @@
 	var conceptSelection;
 	var codedSearch;
 	var codedSelection;
-	
+
 	dojo.addOnLoad( function() {
 		encounterSelection = dojo.widget.manager.getWidgetById("encounterSelection");
 		encounterSearch = dojo.widget.manager.getWidgetById("eSearch");
@@ -27,16 +27,16 @@
 		conceptSearch = dojo.widget.manager.getWidgetById("cSearch");
 		codedSelection = dojo.widget.manager.getWidgetById("codedSelection");
 		codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
-		
-		dojo.event.topic.subscribe("eSearch/select", 
+
+		dojo.event.topic.subscribe("eSearch/select",
 			function(msg) {
 				var encounterSearch = dojo.widget.manager.getWidgetById("eSearch");
 				encounterSelection.hiddenInputNode.value = msg.objs[0].encounterId;
 				encounterSelection.displayNode.innerHTML = msg.objs[0].location + " - " + encounterSearch.getDateString(msg.objs[0].encounterDateTime);
 			}
 		);
-		
-		dojo.event.topic.subscribe("cSearch/select", 
+
+		dojo.event.topic.subscribe("cSearch/select",
 			function(msg) {
 				var conceptSelection = dojo.widget.manager.getWidgetById("conceptSelection");
 				conceptSelection.hiddenInputNode.value = msg.objs[0].conceptId;
@@ -45,16 +45,16 @@
 				updateObsValues(msg.objs[0]);
 			}
 		);
-		
-		dojo.event.connect(codedSelection, "onChangeButtonClick", 
+
+		dojo.event.connect(codedSelection, "onChangeButtonClick",
 			function() {
 				var codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
 				var conceptId = conceptSelection.hiddenInputNode.value;
 				DWRConceptService.findConceptAnswers(codedSearch.simpleClosure(codedSearch, 'doObjectsFound'), '', conceptId, false, true);
 			}
 		);
-		
-		dojo.event.topic.subscribe("codedSearch/select", 
+
+		dojo.event.topic.subscribe("codedSearch/select",
 			function(msg) {
 				var obj = msg.objs[0];
 				var codedSelection = dojo.widget.manager.getWidgetById("codedSelection");
@@ -69,7 +69,7 @@
 					codedSelection.descriptionDisplayNode.innerHTML = obj.description;
 					codedSelection.hiddenInputNode.value = obj.conceptId;
 				}
-				
+
 			}
 		);
 
@@ -78,21 +78,21 @@
 			var codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
 			DWRConceptService.findConceptAnswers(codedSearch.simpleClosure(codedSearch, 'doObjectsFound'), txt, conceptId, false, true);
 		}
-		
-		dojo.event.topic.subscribe("codedSearch/objectsFound", 
+
+		dojo.event.topic.subscribe("codedSearch/objectsFound",
 			function(msg) {
 				msg.objs.push('<a href="#proposeConcept" onclick="javascript:return showProposeConceptForm();"><spring:message code="ConceptProposal.propose.new"/></a>');
 			}
 		);
-		
+
 		<c:if test="${obs.concept.conceptId == null}">
 			updateObsValues();
 		</c:if>
-		
+
 		$('obsTable').style.visibility = 'visible';
-		
+
 	});
-	
+
 	function showProposeConceptForm() {
 		var qs = "?";
 		var encounterId = "${obs.encounter.encounterId}" || $("encounterId").value;
@@ -103,26 +103,31 @@
 			qs += "&obsConceptId=" + obsConceptId;
 		document.location = "${pageContext.request.contextPath}/admin/concepts/proposeConcept.form" + qs;
 	}
-	
+
 	function updateObsValues(tmpConcept) {
-		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow'];
+		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueStructuredNumericRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow'];
 		for (var i=0; i<values.length; i++) {
 			$(values[i]).style.display = "none";
 		}
-		
+
 		if (tmpConcept != null) {
 			var datatype = tmpConcept.hl7Abbreviation;
 			if (typeof datatype != 'string')
 				datatype = tmpConcept.datatype.hl7Abbreviation;
-			
+
 			if (datatype == 'BIT') {
 				$('valueBooleanRow').style.display = "";
 				$('valueBooleanRow').style.visibility = "visible";
 			}
-			else if (datatype == 'NM' || datatype == 'SN') {
+			else if (datatype == 'NM') {
 				$('valueNumericRow').style.display = "";
 				$('valueNumericRow').style.visibility = "visible";
 				DWRConceptService.getConceptNumericUnits(fillNumericUnits, tmpConcept.conceptId);
+			}
+			else if (datatype == 'SN') {
+				$('valueStructuredNumericRow').style.display = "";
+				$('valueStructuredNumericRow').style.visibility = "visible";
+				DWRConceptService.getConceptNumericUnits(fillStructuredNumericUnits, tmpConcept.conceptId);
 			}
 			else if (datatype == 'CWE') {
 				$('valueCodedRow').style.display = "";
@@ -149,11 +154,14 @@
 			}
 		}
 	}
-	
+
 	function fillNumericUnits(units) {
 		$('numericUnits').innerHTML = units;
 	}
-	
+	function fillStructuredNumericUnits(units) {
+		$('structuredNumericUnits').innerHTML = units;
+	}
+
 	function validateNumericRange(value) {
 		if (!isNaN(value)) {
 			var conceptId = conceptSelection.hiddenInputNode.value;
@@ -168,7 +176,7 @@
 			DWRConceptService.isValidNumericValue(numericErrorMessage, value, conceptId);
 		}
 	}
-	
+
 	function removeHiddenRows() {
 		var rows = document.getElementsByTagName("TR");
 		var i = 0;
@@ -179,7 +187,7 @@
 				i = i + 1;
 		}
 	}
-	
+
 	var fillValueInvalidPossible = function(invalidConcept) {
 		return function(questions) {
 			var div = $('valueInvalidPossibleConcepts');
@@ -202,7 +210,7 @@
 			}
 		}
 	}
-	
+
 	var selectNewQuestion = function (question, answer) {
 		return function() {
 				var conceptSearch = dojo.widget.manager.getWidgetById("cSearch");
@@ -215,7 +223,7 @@
 				return false;
 		};
 	}
-	
+
 </script>
 
 <style>
@@ -325,11 +333,11 @@
 	<tr>
 		<th><spring:message code="Obs.datetime"/></th>
 		<td>
-			<spring:bind path="obs.obsDatetime">			
-				<input type="text" name="${status.expression}" size="10" 
+			<spring:bind path="obs.obsDatetime">
+				<input type="text" name="${status.expression}" size="10"
 					   value="${status.value}" onClick="showCalendar(this)" id="${status.expression}" />
 				(<spring:message code="general.format"/>: <openmrs:datePattern />)
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -393,11 +401,11 @@
 	<tr id="valueDatetimeRow">
 		<th><spring:message code="general.value"/></th>
 		<td>
-			<spring:bind path="obs.valueDatetime">			
-				<input type="text" name="${status.expression}" size="10" 
+			<spring:bind path="obs.valueDatetime">
+				<input type="text" name="${status.expression}" size="10"
 					   value="${status.value}" onClick="showCalendar(this)" />
 				  (<spring:message code="general.format"/>: <openmrs:datePattern />)
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -412,11 +420,12 @@
 			</td>
 		</spring:bind>
 	</tr>
-	<tr id="valueModifierRow" class="obsValue">
-		<th><spring:message code="Obs.valueModifier"/></th>
-		<spring:bind path="obs.valueModifier">
+	<tr id="valueStructuredNumericRow" class="obsValue">
+		<th><spring:message code="Obs.value"/></th>
+		<spring:bind path="obs.valueStructuredNumeric">
 			<td>
-				<input type="text" name="${status.expression}" id="valueModifierInput" value="${status.value}" size="3" maxlength="2"/>
+				<input type="text" name="${status.expression}" id="valueStructuredNumericInput" value="${status.value}" size="20" />
+				<span id="structuredNumericUnits"></span>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>
@@ -437,30 +446,30 @@
 			<div id="valueInvalidPossibleConcepts"></div>
 		</td>
 	</tr>
-	
+
 	<c:if test="${1 == 2}">
 		<tr>
 			<th><spring:message code="Obs.dateStarted"/></th>
 			<td>
-				<spring:bind path="obs.dateStarted">			
-					<input type="text" name="${status.expression}" size="10" 
+				<spring:bind path="obs.dateStarted">
+					<input type="text" name="${status.expression}" size="10"
 						   value="${status.value}" onClick="showCalendar(this)" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
 		<tr>
 			<th><spring:message code="Obs.dateStopped"/></th>
 			<td>
-				<spring:bind path="obs.dateStopped">			
-					<input type="text" name="${status.expression}" size="10" 
+				<spring:bind path="obs.dateStopped">
+					<input type="text" name="${status.expression}" size="10"
 						   value="${status.value}" onClick="showCalendar(this)" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</tr>
 	</c:if>
-	
+
 	<tr>
 		<th><spring:message code="Obs.comment"/></th>
 		<spring:bind path="obs.comment">
@@ -485,9 +494,9 @@
 			<td>
 				<spring:bind path="obs.voided">
 					<input type="hidden" name="_${status.expression}">
-					<input type="checkbox" name="${status.expression}" 
-						   id="${status.expression}" 
-						   <c:if test="${status.value == true}">checked</c:if> 
+					<input type="checkbox" name="${status.expression}"
+						   id="${status.expression}"
+						   <c:if test="${status.value == true}">checked</c:if>
 					/>
 				</spring:bind>
 			</td>
@@ -523,7 +532,7 @@
 </c:if>
 
 <input type="submit" value='<spring:message code="Obs.save"/>' >
-&nbsp; 
+&nbsp;
 <input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1);">
 </form>
 

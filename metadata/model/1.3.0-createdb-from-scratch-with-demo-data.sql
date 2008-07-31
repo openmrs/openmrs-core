@@ -1357,7 +1357,7 @@ CREATE TABLE `obs` (
   `value_drug` int(11) default NULL,
   `value_datetime` datetime default NULL,
   `value_numeric` double default NULL,
-  `value_modifier` varchar(2) default NULL,
+  `value_structured_numeric` varchar(50) default NULL,
   `value_text` text,
   `date_started` datetime default NULL,
   `date_stopped` datetime default NULL,

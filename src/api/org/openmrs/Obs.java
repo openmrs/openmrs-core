@@ -33,15 +33,15 @@ import org.openmrs.util.Format.FORMAT_TYPE;
 /**
  * Observation object.  An observation is a single unit of information
  * Observations are collected and grouped together into one Encounter (one visit).
- * 
- * Obs can be grouped in a hierarchical fashion.  The {@link #getObsGroup()} 
- * method returns an optional parent.  That parent object is also an Obs.  The 
+ *
+ * Obs can be grouped in a hierarchical fashion.  The {@link #getObsGroup()}
+ * method returns an optional parent.  That parent object is also an Obs.  The
  * parent Obs object knows about its child objects through the {@link #getGroupMembers()}
  * method.  (Multi-level hierarchies are achieved by an Obs parent object being
  * a member of another Obs (grand)parent object)
- * 
- * Read up on the obs table: http://openmrs.org/wiki/Obs_Table_Primer 
- * 
+ *
+ * Read up on the obs table: http://openmrs.org/wiki/Obs_Table_Primer
+ *
  * @see Encounter
  */
 public class Obs implements java.io.Serializable {
@@ -53,29 +53,29 @@ public class Obs implements java.io.Serializable {
 	protected Concept concept;
 	protected Date obsDatetime;
 	protected String accessionNumber;
-	
+
 	/**
 	 * The "parent" of this obs. It is the grouping that brings other obs together.
-	 * note: obsGroup.getConcept().isSet() should be true  
-	 * 
+	 * note: obsGroup.getConcept().isSet() should be true
+	 *
 	 * This will be non-null if this obs is a member of another groupedObs
 	 * @see #isGroupMember()
 	 */
 	protected Obs obsGroup;
-	
+
 	/**
-	 * The list of obs grouped under this obs.   
+	 * The list of obs grouped under this obs.
 	 */
 	protected Set<Obs> groupMembers;
-	
+
 	protected Concept valueCoded;
 	protected Drug valueDrug;
 	protected Integer valueGroupId;
 	protected Date valueDatetime;
 	protected Double valueNumeric;
-	protected String valueModifier;
+	protected String valueStructuredNumeric;
 	protected String valueText;
-	
+
 	protected String comment;
 	protected Integer personId;
 	protected Person person;
@@ -96,14 +96,14 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * Required parameters constructor 
-	 * 
+	 * Required parameters constructor
+	 *
 	 * A value is also required, but that can be one of:
-	 * valueCoded, 
+	 * valueCoded,
 	 * valueDrug,
 	 * valueNumeric, or
 	 * valueText
-	 * 
+	 *
 	 * @param person The Person this obs is acting on
 	 * @param question The question concept this obs is related to
 	 * @param obsDatetime The time this obs took place
@@ -124,16 +124,16 @@ public class Obs implements java.io.Serializable {
 
 	/**
 	 * This is an equivalent to a copy constructor.
-	 * 
+	 *
 	 * Creates a new copy of the given <code>obsToCopy</code> with a null obs id
-	 * 
+	 *
 	 * @param obsToCopy The Obs that is going to be copied
 	 * @return a new Obs object with all the same attributes as the given obs
 	 */
 	public static Obs newInstance(Obs obsToCopy) {
-		Obs newObs = new Obs(obsToCopy.getPerson(), obsToCopy.getConcept(), 
+		Obs newObs = new Obs(obsToCopy.getPerson(), obsToCopy.getConcept(),
 		                     obsToCopy.getObsDatetime(), obsToCopy.getLocation());
-		
+
 		newObs.setObsGroup(obsToCopy.getObsGroup());
 		newObs.setAccessionNumber(obsToCopy.getAccessionNumber());
 		newObs.setValueCoded(obsToCopy.getValueCoded());
@@ -141,7 +141,7 @@ public class Obs implements java.io.Serializable {
 		newObs.setValueGroupId(obsToCopy.getValueGroupId());
 		newObs.setValueDatetime(obsToCopy.getValueDatetime());
 		newObs.setValueNumeric(obsToCopy.getValueNumeric());
-		newObs.setValueModifier(obsToCopy.getValueModifier());
+		newObs.setValueStructuredNumeric(obsToCopy.getValueStructuredNumeric());
 		newObs.setValueText(obsToCopy.getValueText());
 		newObs.setComment(obsToCopy.getComment());
 		newObs.setOrder(obsToCopy.getOrder());
@@ -154,7 +154,7 @@ public class Obs implements java.io.Serializable {
 		newObs.setVoidedBy(obsToCopy.getVoidedBy());
 		newObs.setDateVoided(obsToCopy.getDateVoided());
 		newObs.setVoidReason(obsToCopy.getVoidReason());
-		
+
 		if (obsToCopy.getGroupMembers() != null)
 			for (Obs member : obsToCopy.getGroupMembers()) {
 				// if the obs hasn't been saved yet, no need to duplicate it
@@ -171,7 +171,7 @@ public class Obs implements java.io.Serializable {
 	 * Compares two Obs for similarity.  The comparison is done on
 	 * obsId of both this and the given <code>obs</code> object.  If
 	 * either has a null obsId, then they are not equal
-	 * 
+	 *
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
 	 */
@@ -187,7 +187,7 @@ public class Obs implements java.io.Serializable {
 			 * this.getLocation().equals(o.getLocation()));
 			 */
 		}
-		
+
 		// if the obsIds don't match, its possible that they are the same
 		// exact object.  Check that now on the way out.
 		return this == obj;
@@ -213,7 +213,7 @@ public class Obs implements java.io.Serializable {
 	/**
 	 * Sets the required Obs properties:
 	 * creator and dateCreated
-	 * 
+	 *
 	 * @param creator
 	 * @param dateCreated
 	 */
@@ -223,18 +223,18 @@ public class Obs implements java.io.Serializable {
 
 		if (this.getDateCreated() == null)
 			setDateCreated(dateCreated);
-		
+
 		if (getGroupMembers() != null) {
 			for (Obs member : getGroupMembers()) {
 				// if statement does a quick sanity check to
 				// avoid the simplest of infinite loops
-				if (member.getCreator() == null || 
+				if (member.getCreator() == null ||
 					member.getDateCreated() == null)
 						member.setRequiredProperties(creator, dateCreated);
 			}
 		}
 	}
-	
+
 	// Property accessors
 
 	/**
@@ -360,12 +360,12 @@ public class Obs implements java.io.Serializable {
 	/**
 	 * @return Returns the obsId of the parent obs group
 	 * @deprecated The {@link #getObsGroup()} method should be used
-	 * @see #getObsGroup()  
+	 * @see #getObsGroup()
 	 */
 	public Integer getObsGroupId() {
 		if (getObsGroup() == null)
 			return null;
-		
+
 		return obsGroup.getObsId();
 	}
 
@@ -378,18 +378,18 @@ public class Obs implements java.io.Serializable {
 	 */
 	public void setObsGroupId(Integer obsGroupId) {
 		throw new APIException("I don't know what to do here because I don't" +
-		                       "know what the parent is of the group I'm " + 
+		                       "know what the parent is of the group I'm " +
 		                       "being put into. This method is deprecated "+
 		                       "and should not be used.");
 	}
-	
+
 	/**
-	 * An obs grouping occurs when the question (#getConcept()) is 
+	 * An obs grouping occurs when the question (#getConcept()) is
 	 * a set. (@link org.openmrs.Concept#isSet())
-	 * 
+	 *
 	 * If this is non-null, it means the current Obs is in the list
 	 * returned by <code>obsGroup</code>.{@link #getGroupMembers()}
-	 * 
+	 *
      * @return the Obs that is the grouping factor
      */
     public Obs getObsGroup() {
@@ -399,54 +399,54 @@ public class Obs implements java.io.Serializable {
 	/**
 	 * This method does NOT add this current obs to the list of obs
 	 * in obsGroup.getGroupMembers().  That must be done (and should
-	 * be done) manually.  (I am not doing it here for fear of 
-	 * screwing up the normal loading and creation of this object 
+	 * be done) manually.  (I am not doing it here for fear of
+	 * screwing up the normal loading and creation of this object
 	 * via hibernate/spring)
-	 * 
+	 *
      * @param obsGroup the obsGroup to set
      */
     public void setObsGroup(Obs obsGroup) {
     	this.obsGroup = obsGroup;
     }
-    
+
     /**
      * Convenience method that checks for nullity and length
      * of the (@link #getGroupMembers()) method
-     * 
-     * NOTE: This method could also be called "isObsGroup" for a 
+     *
+     * NOTE: This method could also be called "isObsGroup" for a
      * little less confusion on names.  However, jstl in a web layer
      * (or any psuedo-getter) access isn't good with both an "isObsGroup"
      * method and a "getObsGroup" method.  Which one should be returned
      * with a simplified jstl call like ${obs.obsGroup} ?
-     * With this setup, ${obs.obsGrouping} returns a boolean of 
+     * With this setup, ${obs.obsGrouping} returns a boolean of
      * whether this obs is a parent and has members.  ${obs.obsGroup}
      * returns the parent object to this obs if this obs is a group member
      * of some other group.
-     * 
+     *
      * @return true if this is the parent group of other obs
      */
     public boolean isObsGrouping() {
     	return hasGroupMembers();
     }
-    
+
     /**
      * Convenience method that checks for nullity and length
      * of the (@link #getGroupMembers()) method
-     * 
+     *
      * @return true if this is the parent group of other obs
      */
     public boolean hasGroupMembers() {
     	return getGroupMembers() != null && getGroupMembers().size() > 0;
     }
-    
+
 	/**
 	 * This should only be true if this obs is a grouping obs.
-	 * {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} should be 
+	 * {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} should be
 	 * true for this to be non-null.
-	 *  
+	 *
      * @return the Obs that are members of this group.
      * @see #addGroupMember(Obs)
-     * @see #hasGroupMembers()  
+     * @see #hasGroupMembers()
      */
     public Set<Obs> getGroupMembers() {
     	return groupMembers;
@@ -454,21 +454,21 @@ public class Obs implements java.io.Serializable {
 
 	/**
 	 * This should only be true if this obs is a grouping obs.
-	 * {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} should be 
+	 * {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} should be
 	 * true for this to be non-null.
-	 * 
+	 *
      * @param groupMembers the groupedObs to set
      * @see #addGroupMember(Obs)
-     * @see #hasGroupMembers() 
+     * @see #hasGroupMembers()
      */
     public void setGroupMembers(Set<Obs> groupMembers) {
     	this.groupMembers = groupMembers;
     }
-    
+
     /**
-     * Convenience method to add the given <code>obs</code> to this 
+     * Convenience method to add the given <code>obs</code> to this
      * grouping.  Will implicitly make this obs an ObsGroup
-     * 
+     *
      * @param member Obs to add to this group
      * @see #setGroupMembers(Set)
      * @see #getGroupMembers()
@@ -476,25 +476,25 @@ public class Obs implements java.io.Serializable {
     public void addGroupMember(Obs member) {
     	if (member == null)
     		return;
-    	
+
     	if (getGroupMembers() == null)
     		groupMembers = new HashSet<Obs>();
-    	
+
     	// a quick sanity check to make sure someone isn't adding
     	// itself to the group
     	if (member.equals(this))
-    		throw new APIException("An obsGroup cannot have itself as a mentor. obsGroup: " + 
+    		throw new APIException("An obsGroup cannot have itself as a mentor. obsGroup: " +
     		                       this + " obsMember attempting to add: " + member);
-    	
+
     	member.setObsGroup(this);
     	groupMembers.add(member);
     }
-    
+
     /**
      * Convenience method to remove an Obs from this grouping
-     * This also removes the link in the given <code>obs</code>object to 
+     * This also removes the link in the given <code>obs</code>object to
      * this obs grouper
-     * 
+     *
      * @param member Obs to remove from this group
      * @see #setGroupMembers(Set)
      * @see #getGroupMembers()
@@ -502,25 +502,25 @@ public class Obs implements java.io.Serializable {
     public void removeGroupMember(Obs member) {
     	if (member == null || getGroupMembers() == null)
     		return;
-    	
+
     	if (groupMembers.remove(member))
     		member.setObsGroup(null);
     }
-    
+
     /**
      * Convenience method that returns related Obs
-     * 
-     * If the Obs argument is not an ObsGroup:  
+     *
+     * If the Obs argument is not an ObsGroup:
      * a Set<Obs> will be returned containing
-     * all of the children of  this Obs' parent that are not ObsGroups themselves.  
+     * all of the children of  this Obs' parent that are not ObsGroups themselves.
      * This will include this Obs by default, unless getObsGroup()
      * returns null, in which case an empty set is returned.
-     * 
-     * If the Obs argument is an ObsGroup: 
+     *
+     * If the Obs argument is an ObsGroup:
      * a Set<Obs> will be returned containing
-     * 1. all of this Obs' group members, and 
+     * 1. all of this Obs' group members, and
      * 2. all ancestor Obs that are not themselves obsGroups.
-     * 
+     *
      * @return Set<Obs>
      */
     public Set<Obs> getRelatedObservations() {
@@ -543,7 +543,7 @@ public class Obs implements java.io.Serializable {
 		}
 		return ret;
 	}
-    
+
 	/**
 	 * @return Returns the obsId.
 	 */
@@ -590,49 +590,49 @@ public class Obs implements java.io.Serializable {
 	public void setPatient(Patient patient) {
 		setPerson(patient);
 	}
-	
+
 	/**
 	 * The person id of the person on this object.  This should be the same
 	 * as <code>{@link #getPerson()}.getPersonId()</code>.  It is duplicated
 	 * here for speed and simplicity reasons
-	 * 
+	 *
 	 * @return the integer person id of the person this obs is acting on
 	 */
 	public Integer getPersonId() {
 		return personId;
 	}
-	
+
 	/**
-	 * Set the person id on this obs object.  This method 
+	 * Set the person id on this obs object.  This method
 	 * is here for convenience, but really the {@link #setPerson(Person)}
 	 * method should be used like <code>setPerson(new Person(personId))</code>
-	 * 
+	 *
 	 * @see #setPerson(Person)
-	 * 
+	 *
 	 * @param personId
 	 */
 	protected void setPersonId(Integer personId) {
 		this.personId = personId;
 	}
-	
+
 	/**
 	 * Get the person object that this obs is acting on.
-	 * 
+	 *
 	 * @see #getPersonId()
-	 * 
+	 *
 	 * @return the person object
 	 */
 	public Person getPerson() {
 		return person;
 	}
-	
+
 	/**
-	 * Set the person object to this obs object.  This will 
+	 * Set the person object to this obs object.  This will
 	 * also set the personId on this obs object
-	 * 
+	 *
 	 * @see #setPersonId(Integer)
-	 * 
-	 * @param person the Patient/Person object that this obs is acting on 
+	 *
+	 * @param person the Patient/Person object that this obs is acting on
 	 */
 	public void setPerson(Person person) {
 		this.person = person;
@@ -661,7 +661,7 @@ public class Obs implements java.io.Serializable {
 	public void setValueCoded(Concept valueCoded) {
 		this.valueCoded = valueCoded;
 	}
-	
+
 	/**
 	 * @return Returns the valueDrug
 	 */
@@ -708,18 +708,18 @@ public class Obs implements java.io.Serializable {
 	}
 
 	/**
-	 * @return Returns the valueModifier.
+	 * @return Returns the valueStructuredNumeric.
 	 */
-	public String getValueModifier() {
-		return valueModifier;
+	public String getValueStructuredNumeric() {
+		return valueStructuredNumeric;
 	}
 
 	/**
-	 * @param valueModifier
-	 *            The valueModifier to set.
+	 * @param valueStructuredNumeric
+	 *            The valueStructuredNumeric to set.
 	 */
-	public void setValueModifier(String valueModifier) {
-		this.valueModifier = valueModifier;
+	public void setValueStructuredNumeric(String valueStructuredNumeric) {
+		this.valueStructuredNumeric = valueStructuredNumeric;
 	}
 
 	/**
@@ -856,7 +856,7 @@ public class Obs implements java.io.Serializable {
 
 	/**
 	 * Convenience method for obtaining the observation's value as a string
-	 * 
+	 *
 	 * @param locale
 	 *            locale for locale-specific depictions of value
 	 */
@@ -874,8 +874,10 @@ public class Obs implements java.io.Serializable {
 				else
 					return getValueCoded().getName(locale).getName();
 			}
-			else if (abbrev.equals("NM") || abbrev.equals("SN"))
+			else if (abbrev.equals("NM"))
 				return getValueNumeric() == null ? "" : getValueNumeric().toString();
+			else if (abbrev.equals("SN"))
+				return getValueStructuredNumeric() == null ? "" : getValueStructuredNumeric();
 			else if (abbrev.equals("DT"))
 				return (getValueDatetime() == null ? "" : Format.format(getValueDatetime(), locale, FORMAT_TYPE.DATE));
 			else if (abbrev.equals("TM") )
@@ -885,7 +887,7 @@ public class Obs implements java.io.Serializable {
 			else if (abbrev.equals("ST"))
 				return getValueText();
 		}
-		
+
 		// if the datatype is 'unknown', default to just returning what is not null
 		if (getValueNumeric() != null)
 			return getValueNumeric().toString();
@@ -912,10 +914,10 @@ public class Obs implements java.io.Serializable {
 			}
 			return sb.toString();
 		}
-		
+
 		return "";
 	}
-	
+
 	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 	public void setValueAsString(String s) throws ParseException {
 		log.debug("getConcept() == " + getConcept());
@@ -938,18 +940,18 @@ public class Obs implements java.io.Serializable {
 			throw new RuntimeException("concept is null for " + this);
 		}
 	}
-	
+
 	/**
-	 * This was a convenience method for obtaining a Map of available locale 
+	 * This was a convenience method for obtaining a Map of available locale
 	 * to observation's value as a string
-	 * 
+	 *
 	 * This method is a waste and should be not be used.  This was used in the web
 	 * layer because jstl can't pass parameters to a method (${obs.valueAsString[locale]}
 	 * was used instead of what would be convenient ${obs.valueAsString(locale)})
 	 * Now the openmrs:format tag should be used in the web layer:
-	 * <openmrs:format obsValue="${obs}"/> 
-	 * 
-	 * @deprecated 
+	 * <openmrs:format obsValue="${obs}"/>
+	 *
+	 * @deprecated
 	 */
 	public Map<Locale, String> getValueAsString() {
 		Map<Locale, String> ret = new HashMap<Locale, String>();
@@ -958,14 +960,14 @@ public class Obs implements java.io.Serializable {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
 		if (obsId == null)
 			return "null";
-		
+
 		return "Obs #" + obsId.toString();
 	}
 

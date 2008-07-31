@@ -8,22 +8,22 @@ var answerSearch;
 var setSearch;
 
 dojo.addOnLoad( function() {
-		
+
 	answerSearch = dojo.widget.manager.getWidgetById("aSearch");
 	setSearch = dojo.widget.manager.getWidgetById("sSearch");
-	
-	dojo.event.topic.subscribe("aSearch/select", 
+
+	dojo.event.topic.subscribe("aSearch/select",
 		function(msg) {
 			selectConcept('answerNames', 'answerIds', msg.objs, answerSearch);
 		}
 	);
-	
-	dojo.event.topic.subscribe("sSearch/select", 
+
+	dojo.event.topic.subscribe("sSearch/select",
 		function(msg) {
 			selectConcept('conceptSetsNames', 'conceptSets', msg.objs, setSearch);
 		}
 	);
-	
+
 	changeDatatype(document.getElementById("datatype"));
 	changeSetStatus(document.getElementById('conceptSet'));
 });
@@ -31,11 +31,11 @@ dojo.addOnLoad( function() {
 function selectConcept(nameList, idList, conceptList, widget) {
 	var nameListBox = $(nameList);
 	var idListBox = $(idList);
-	
+
 	var options = nameListBox.options;
 	for (i=0; i<conceptList.length; i++)
 		addOption(conceptList[i], options);
-		
+
 	copyIds(nameListBox.id, idListBox.id, ' ');
 }
 
@@ -151,10 +151,10 @@ function addSynonym(locale) {
 function addOption(obj, options) {
 	var objId = obj.conceptId;
 	var objName = obj.name + ' ('+objId+')';
-	
+
 	if (obj.drugId != null) //if obj is actually a drug object
 		objId = objId + "^" + obj.drugId;
-		
+
 	if (isAddable(objId, options)==true) {
 		var opt = new Option(objName, objId);
 		opt.selected = true;
@@ -192,7 +192,7 @@ function changeSetStatus(obj) {
 var customDatatypes = new Array();
 customDatatypes.push("numeric");
 customDatatypes.push("coded");
-
+customDatatypes.push("structured numeric");
 function changeDatatype(obj) {
 	for (var i=0; i < customDatatypes.length; i++) {
 		var row = document.getElementById(customDatatypes[i] + "DatatypeRow");
@@ -213,7 +213,7 @@ function listKeyPress(from, to, delim, event) {
 
 function synonymKeyPress(obj, event, locale) {
 	if (event.keyCode==13) {
-		addSynonym(locale); 
+		addSynonym(locale);
 		return false;
 	}
 	else if (event.keyCode == 46 && obj.value == "") {

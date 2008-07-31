@@ -12,11 +12,11 @@
 		if (anchor.href.lastIndexOf("=") == anchor.href.length - 1)
 			anchor.href += $("conceptName_${locale}").value;
 	}
-	
+
 	// concept name tab functionality
 	function selectTab(tab) {
 		var displays = new Array();
-		
+
 		var tabs = tab.parentNode.getElementsByTagName("a");
 		for (var tabIndex=0; tabIndex<tabs.length; tabIndex++) {
 			var index = tabs[tabIndex].id.indexOf("Tab");
@@ -30,18 +30,18 @@
 				removeClass(tabs[tabIndex], 'selectedTab');
 			}
 		}
-		
+
 		var parent = tab.parentNode.parentNode.parentNode;
-		var elements = parent.getElementsByTagName("td");	
+		var elements = parent.getElementsByTagName("td");
 		for (var i=0; i<elements.length; i++) {
 			if (displays[elements[i].className] != null)
 					elements[i].style.display = displays[elements[i].className];
 		}
-		
+
 		tab.blur();
 		return false;
 	}
-	
+
 	function jumpToConcept(which) {
 		var action = document.getElementById('jumpAction');
 		action.value = which;
@@ -49,7 +49,7 @@
 		jumpForm.submit();
 		return false;
 	}
-	
+
 </script>
 
 <style>
@@ -62,7 +62,7 @@
 		text-align: left;
 	}
 	#conceptNameTable th {
-		text-align: left;	
+		text-align: left;
 	}
 	.localeSpecific td, a.selectedTab {
 		background-color: whitesmoke;
@@ -102,8 +102,8 @@
 <openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
 
 <form class="inlineForm" action="index.htm" method="get">
-  &nbsp; &nbsp; 
-  <input type="text" id="searchPhrase" name="phrase" size="18"> 
+  &nbsp; &nbsp;
+  <input type="text" id="searchPhrase" name="phrase" size="18">
   <input type="submit" class="smallButton" value="<spring:message code="general.search"/>"/>
 </form>
 
@@ -195,7 +195,7 @@
 			</td>
 		</c:forEach>
 	</tr>
-	
+
 	<tr class="localeSpecific">
 		<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">
 			<spring:message code="Concept.synonyms" />
@@ -227,9 +227,9 @@
 			</td>
 		</c:forEach>
 	</tr>
-	
-	
-	
+
+
+
 	<tr>
 		<th title="<spring:message code="Concept.conceptClass.help"/>">
 			<spring:message code="Concept.conceptClass" />
@@ -372,6 +372,63 @@
 			</table>
 		</td>
 	</tr>
+	<tr id="structured numericDatatypeRow">
+		<th valign="top"><spring:message code="ConceptStructuredNumeric.name"/></th>
+		<td>
+			<table border="0">
+				<tr>
+					<th></th>
+					<th><spring:message code="ConceptNumeric.low"/></th>
+					<th><spring:message code="ConceptNumeric.high"/></th>
+				</tr>
+				<tr>
+					<th valign="middle"><spring:message code="ConceptNumeric.absolute"/></th>
+					<td valign="middle">
+						<input type="text" name="lowAbsolute" value="<c:if test="${concept.numeric}">${concept.lowAbsolute}</c:if>" size="10" />
+					</td>
+					<td valign="middle">
+						<input type="text" name="hiAbsolute" value="<c:if test="${concept.numeric}">${concept.hiAbsolute}</c:if>" size="10"/>
+					</td>
+				</tr>
+				<tr>
+					<th valign="middle"><spring:message code="ConceptNumeric.critical"/></th>
+					<td valign="middle">
+						<input type="text" name="lowCritical" value="<c:if test="${concept.numeric}">${concept.lowCritical}</c:if>" size="10" />
+					</td>
+					<td valign="middle">
+						<input type="text" name="hiCritical" value="<c:if test="${concept.numeric}">${concept.hiCritical}</c:if>" size="10"/>
+					</td>
+				</tr>
+				<tr>
+					<th valign="middle"><spring:message code="ConceptNumeric.normal"/></th>
+					<td valign="middle">
+						<input type="text" name="lowNormal" value="<c:if test="${concept.numeric}">${concept.lowNormal}</c:if>" size="10" />
+					</td>
+					<td valign="middle">
+						<input type="text" name="hiNormal" value="<c:if test="${concept.numeric}">${concept.hiNormal}</c:if>" size="10"/>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td colspan="2"><small><em>(<spring:message code="ConceptNumeric.inclusive"/>)</em></small>
+					</td>
+				</tr>
+				<tr>
+					<th><spring:message code="ConceptNumeric.units"/></th>
+					<td colspan="2">
+						<input type="text" name="units" value="<c:if test="${concept.numeric}">${concept.units}</c:if>" size="15"/>
+					</td>
+				</tr>
+				<tr>
+					<th><spring:message code="ConceptNumeric.precise"/></th>
+					<td colspan="2">
+						<input type="hidden" name="_precise" value=""/>
+						<input type="checkbox" name="precise" <c:if test="${concept.numeric && concept.precise}">checked="checked"</c:if>/>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
 	<tr>
 		<th><spring:message code="Concept.version" /></th>
 		<td><spring:bind path="concept.version">
@@ -424,9 +481,9 @@
 		</tr>
 	</cif>
 	-->
-	
+
 	<tr><td colspan="2"><br/></td></tr>
-	
+
 	<c:if test="${fn:length(questionsAnswered) > 0}">
 		<tr>
 			<th valign="top"><spring:message code="dictionary.questionsAnswered" /></th>
@@ -437,7 +494,7 @@
 			</td>
 		</tr>
 	</c:if>
-	
+
 	<c:if test="${fn:length(containedInSets) > 0}">
 		<tr>
 			<th valign="top"><spring:message code="dictionary.containedInSets" /></th>
@@ -448,7 +505,7 @@
 			</td>
 		</tr>
 	</c:if>
-	
+
 	<c:if test="${fn:length(formsInUse) > 0}">
 		<tr>
 			<th valign="top"><spring:message code="dictionary.forms" /></th>
@@ -459,10 +516,10 @@
 			</td>
 		</tr>
 	</c:if>
-	
+
 	<tr><td colspan="2"><br/></td></tr>
-	
-	<tr>	
+
+	<tr>
 		<td valign="top">
 			<b><spring:message code="Concept.resources" /></b>
 		</td>
@@ -484,9 +541,9 @@
 </table>
 
 <div id="saveDeleteButtons" style="margin-top: 15px">
-	
+
 	<input type="submit" name="action" value="<spring:message code="Concept.save"/>" onMouseUp="removeHiddenRows()"/>
-	
+
 	<c:if test="${concept.conceptId != null}">
 		<openmrs:hasPrivilege privilege="Delete Concepts">
 			 &nbsp; &nbsp; &nbsp;

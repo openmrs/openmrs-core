@@ -30,6 +30,7 @@ public class ConceptDatatype implements java.io.Serializable {
 	public static final String DATETIME = "TS";
 	public static final String DOCUMENT = "RP";
 	public static final String NUMERIC = "NM";
+	public static final String STRUCTUREDNUMERIC = "NM";
 	public static final String TEXT = "ST";
 	public static final String TIME = "TM";
 
@@ -41,7 +42,7 @@ public class ConceptDatatype implements java.io.Serializable {
 	private String hl7Abbreviation;
 	private Date dateCreated;
 	private User creator;
-	
+
 	private User retiredBy;
 	private Boolean retired = Boolean.FALSE;
 	private Date dateRetired;
@@ -75,7 +76,7 @@ public class ConceptDatatype implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * 
+	 *
 	 */
 	public Integer getConceptDatatypeId() {
 		return this.conceptDatatypeId;
@@ -86,7 +87,7 @@ public class ConceptDatatype implements java.io.Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public String getName() {
 		return this.name;
@@ -97,7 +98,7 @@ public class ConceptDatatype implements java.io.Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public String getDescription() {
 		return this.description;
@@ -123,7 +124,7 @@ public class ConceptDatatype implements java.io.Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public User getCreator() {
 		return this.creator;
@@ -134,7 +135,7 @@ public class ConceptDatatype implements java.io.Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public Date getDateCreated() {
 		return this.dateCreated;
@@ -153,6 +154,13 @@ public class ConceptDatatype implements java.io.Serializable {
 	 */
 	public boolean isNumeric() {
 		return NUMERIC.equals(getHl7Abbreviation());
+	}
+
+	/**
+	 * @return <code>true</code> if datatype is a numeric datatype
+	 */
+	public boolean isStructuredNumeric() {
+		return STRUCTUREDNUMERIC.equals(getHl7Abbreviation());
 	}
 
 	/**
@@ -180,7 +188,7 @@ public class ConceptDatatype implements java.io.Serializable {
 		return TEXT.equals(getHl7Abbreviation())
 				|| DOCUMENT.equals(getHl7Abbreviation());
 	}
-	
+
 	/**
 	 * @return <code>true</code> if datatype is boolean
 	 */
@@ -243,5 +251,5 @@ public class ConceptDatatype implements java.io.Serializable {
     public void setRetireReason(String retireReason) {
     	this.retireReason = retireReason;
     }
-	
+
 }
