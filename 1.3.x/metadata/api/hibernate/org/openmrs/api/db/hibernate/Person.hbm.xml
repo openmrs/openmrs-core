@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Person" table="person">
+
+		<id name="personId" type="java.lang.Integer" column="person_id"
+			unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<discriminator column="person_id" insert="false" />
+		
+		<property name="gender" type="java.lang.String" column="gender"
+			not-null="true" length="50" />
+
+		<property name="birthdate" type="java.util.Date"
+			column="birthdate" length="10" />
+
+		<property name="birthdateEstimated" type="boolean"
+			column="birthdate_estimated" />
+
+		<property name="dead" type="boolean" length="1" not-null="true" />
+
+		<property name="deathDate" type="java.util.Date"
+			column="death_date" length="19" />
+
+		<many-to-one name="causeOfDeath" class="Concept"
+			not-null="false" column="cause_of_death" />
+
+		<many-to-one column="creator" name="personCreator" class="User" />
+
+		<property name="personDateCreated" type="java.util.Date"
+			column="date_created" not-null="true" length="19" />
+
+		<many-to-one name="personChangedBy" class="User" column="changed_by" />
+
+		<property name="personDateChanged" type="java.util.Date"
+			column="date_changed" length="19" />
+
+		<property column="voided" name="personVoided" type="boolean" length="1" not-null="true" />
+
+		<many-to-one name="personVoidedBy" class="User" column="voided_by" />
+
+		<property name="personDateVoided" type="java.util.Date"
+			column="date_voided" length="19" />
+
+		<property name="personVoidReason" type="java.lang.String"
+			column="void_reason" length="255" />
+
+
+		<!-- Associations -->
+
+		<!-- bi-directional one-to-many association to PersonAddress -->
+		<set name="addresses" lazy="false" inverse="true"
+			cascade="all-delete-orphan" sort="natural"
+			order-by="voided asc, preferred desc, date_created desc">
+			<key column="person_id" not-null="true" />
+			<one-to-many class="PersonAddress" />
+		</set>
+
+		<!-- bi-directional one-to-many association to PersonName -->
+		<set name="names" lazy="false" inverse="true"
+			cascade="all-delete-orphan" sort="natural"
+			order-by="voided asc, preferred desc, date_created desc">
+			<key column="person_id" />
+			<one-to-many class="PersonName" />
+		</set>
+		
+		<set name="attributes" lazy="false" inverse="true"
+			cascade="all-delete-orphan" sort="natural"
+			order-by="voided asc, date_created desc">
+			<key column="person_id" />
+			<one-to-many class="PersonAttribute" />
+		</set>
+		
+	    <property name="patient" type="boolean" insert="false" update="false" lazy="true">
+	    	<formula>case when exists (select * from patient p where p.patient_id = person_id) then 1 else 0 end</formula> 
+	    </property>
+	    
+	    <property name="user" type="boolean" insert="false" update="false" lazy="true">
+	    	<formula>case when exists (select * from users u where u.user_id = person_id) then 1 else 0 end</formula> 
+	    </property>
+		
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <form_field form_field_id="2" form_id="1" field_id="1" field_number="1" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:11:53.0" creator="1" date_created="2006-07-18 11:04:36.0" sort_weight="10.0"/>
+  <form_field form_field_id="3" form_id="1" field_id="1" field_number="2" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:12:05.0" creator="1" date_created="2006-07-18 11:06:52.0" sort_weight="20.0"/>
+  <form_field form_field_id="5" form_id="1" field_id="1" field_number="3" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:13:59.0" creator="1" date_created="2006-07-18 11:13:57.0" sort_weight="30.0"/>
+  
+  <field field_id="1" name="Some concept" description="This is a test field" field_type="1" concept_id="1" table_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:03:31.0" retired="false"/>
+  
+  <form form_id="1" name="Basic Form" version="0.1" build="0" published="0" description="Test form" xslt="" template="" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false" retired_reason=""/>
+  
+</dataset>

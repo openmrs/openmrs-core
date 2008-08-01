@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="MimeType" table="mime_type">
+
+		<id name="mimeTypeId" type="int"
+			column="mime_type_id">
+			<generator class="native" />
+		</id>
+		
+		<discriminator column="mime_type_id" insert="false" />
+		
+		<property name="mimeType" type="java.lang.String"
+			column="mime_type"
+			length="75" />
+
+		<property name="description" type="java.lang.String"
+			column="description" length="1024" />
+
+	</class>
+	
+</hibernate-mapping>

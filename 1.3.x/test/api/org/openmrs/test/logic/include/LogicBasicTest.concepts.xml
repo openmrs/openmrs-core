@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false" class_id="1" datatype_id="1" />
+  <concept_name concept_name_id="1" concept_id="1" name="CD4 COUNT" locale="en" description="# of cd4 cells in the body" creator="1" date_created="2005-01-01 00:00:00.0"/>
+  <concept_class concept_class_id="1" name="Finding" description="A medical discovery" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  
+  <concept concept_id="2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false" class_id="2" datatype_id="2" />
+  <concept_name concept_name_id="2" concept_id="2" name="CURRENT ANTIRETROVIRAL DRUGS USED FOR TREATMENT" locale="en" description="Active meds" creator="1" date_created="2005-01-01 00:00:00.0"/>
+  <concept_class concept_class_id="2" name="Question" description="Question on a form" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="2" name="Coded" hl7_abbreviation="CWE" description="Coded answer" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  
+  <concept concept_id="3" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false" class_id="1" datatype_id="1" />
+  <concept_name concept_name_id="3" concept_id="3" name="WEIGHT (KG)" locale="en" description="mass" creator="1" date_created="2005-01-01 00:00:00.0"/>
+  
+  <!-- A cd4 count obs older than 6 months -->
+  <obs obs_id="1" person_id="2" concept_id="1" obs_datetime="2006-02-10 00:00:00.0" location_id="1" value_numeric="100" creator="1"  date_created="2006-02-11 15:57:35.0" voided="false"/>
+  
+  <!-- A voided cd4 count obs less than 6 months -->
+  <obs obs_id="1" person_id="2" concept_id="1" obs_datetime="2006-02-10 00:00:00.0" location_id="1" value_numeric="200" creator="1"  date_created="2008-06-25 15:57:35.0" voided="true"/>
+  
+  <!-- A cd4 count for patient #3 -->
+  <obs obs_id="1" person_id="3" concept_id="1" obs_datetime="2006-02-10 00:00:00.0" location_id="1" value_numeric="125" creator="1"  date_created="2006-02-11 15:57:35.0" voided="false"/>
+      
+</dataset>
