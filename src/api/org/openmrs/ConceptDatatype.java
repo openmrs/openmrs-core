@@ -30,7 +30,7 @@ public class ConceptDatatype implements java.io.Serializable {
 	public static final String DATETIME = "TS";
 	public static final String DOCUMENT = "RP";
 	public static final String NUMERIC = "NM";
-	public static final String STRUCTUREDNUMERIC = "NM";
+	public static final String STRUCTUREDNUMERIC = "SN";
 	public static final String TEXT = "ST";
 	public static final String TIME = "TM";
 

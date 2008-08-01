@@ -16,8 +16,8 @@ package org.openmrs;
 
 /**
  * The ConceptNumeric extends upon the Concept object by adding some
- * number range values 
- * 
+ * number range values
+ *
  * @see Concept
  */
 public class ConceptNumeric extends Concept implements java.io.Serializable {
@@ -40,16 +40,16 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	/** default constructor */
 	public ConceptNumeric() {
 	}
-	
+
 	/**
 	 * Generic constructor taking the primary key
-	 * 
+	 *
 	 * @param conceptId key for this numeric concept
 	 */
 	public ConceptNumeric(Integer conceptId) {
 		setConceptId(conceptId);
 	}
-	
+
 	/**
 	 * Optional constructor for turning a Concept into a ConceptNumeric
 	 * Note: This cannot copy over numeric specific values
@@ -70,7 +70,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		this.setRetired(c.getRetired());
 		this.setSynonyms(c.getSynonyms());
 		this.setVersion(c.getVersion());
-		
+
 		this.hiAbsolute  = null;
 		this.hiCritical  = null;
 		this.hiNormal    = null;
@@ -91,7 +91,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * @see org.openmrs.Concept#hashCode()
 	 */
@@ -106,7 +106,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	// Property accessors
 
 	/**
-	 * 
+	 *
 	 */
 	public Double getHiAbsolute() {
 		return this.hiAbsolute;
@@ -117,7 +117,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public Double getHiCritical() {
 		return this.hiCritical;
@@ -128,7 +128,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public Double getHiNormal() {
 		return this.hiNormal;
@@ -139,7 +139,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public Double getLowAbsolute() {
 		return this.lowAbsolute;
@@ -150,7 +150,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public Double getLowCritical() {
 		return this.lowCritical;
@@ -161,7 +161,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public Double getLowNormal() {
 		return this.lowNormal;
@@ -172,7 +172,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public String getUnits() {
 		return this.units;
@@ -185,7 +185,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	public Boolean isPrecise() {
 		return (precise == null ? false : precise);
 	}
-	
+
 	public Boolean getPrecise() {
 		return isPrecise();
 	}
@@ -193,8 +193,8 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	public void setPrecise(Boolean precise) {
 		this.precise = precise;
 	}
-	
+
 	public boolean isNumeric() {
-		return (getDatatype().getName().equals("Numeric"));
+		return (getDatatype().getName().equals("Numeric")||getDatatype().getName().equals("Structured Numeric"));
 	}
 }

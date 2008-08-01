@@ -19,21 +19,22 @@ import java.util.List;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Obs;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
- * Validator for the Obs class.  This class checks for 
+ * Validator for the Obs class.  This class checks for
  * anything set on the Obs object that will cause errors or
  * is incorrect.  Things checked are similar to:
  * <ul>
- *   <li>all required properties are filled in on the 
+ *   <li>all required properties are filled in on the
  *   	Obs object.
  *   <li>checks for no recursion in the obs grouping.
  *   <li>Makes sure the obs has at least one value (if not an
  *       obs grouping)
  * </li>
- * 
+ *
  * @see org.openmrs.Obs
  */
 public class ObsValidator implements Validator {
@@ -55,11 +56,11 @@ public class ObsValidator implements Validator {
 		//ancestors.add(obs);
 		validateHelper(obs, errors, ancestors, true);
 	}
-	
+
 	/**
 	 * Checks whether obs has all required values, and also checks to make sure that no obs group
-	 * contains any of its ancestors 
-	 * 
+	 * contains any of its ancestors
+	 *
 	 * @param obs
 	 * @param errors
 	 * @param ancestors
@@ -93,6 +94,17 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("valueNumeric", "error.null");
 				else
 					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+			}else if (dt.isStructuredNumeric() && obs.getValueStructuredNumeric() == null) {
+				if (atRootNode)
+					errors.rejectValue("valueStructuredNumeric", "error.null");
+				else
+					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+			}else if (dt.isStructuredNumeric()) {
+				if (OpenmrsUtil.isNotValidStructuredNumeric(obs.getValueStructuredNumeric()))
+					if (atRootNode)
+					    errors.rejectValue("valueStructuredNumeric", "error.invalidStructuredNumeric");
+					else
+						errors.rejectValue("groupMembers","Obs.error.inGroupMember");
 			} else if (dt.isText() && obs.getValueText() == null) {
 				if (atRootNode)
 					errors.rejectValue("valueText", "error.null");
@@ -104,7 +116,7 @@ public class ObsValidator implements Validator {
 		// If an obs fails validation, don't bother checking its children
 		if (errors.hasErrors())
 			return;
-		
+
 		if (ancestors.contains(obs))
 			errors.rejectValue("groupMembers", "Obs.error.groupContainsItself");
 
