@@ -61,9 +61,10 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 		Context.openSession();
 
 		List<SyncRecord> syncRecords = Context.getSynchronizationService().getSyncRecords();
-		if (syncRecords == null || syncRecords.size() == 0)
+		if (syncRecords == null || syncRecords.size() == 0) { 
 			assertFalse("No changes found (i.e. sync records size is 0)", true);
-
+		}
+		
 		log.info("\n************************************* Deleting Data *************************************");
 		deleteAllData();
 		

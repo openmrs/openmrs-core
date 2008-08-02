@@ -397,11 +397,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 			
 			criteria.createAlias("names", "names");
 			MatchMode matchmode = MatchMode.EXACT;
-			if (searchOnPhrase)
+			if (searchOnPhrase) { 
 				matchmode = MatchMode.ANYWHERE;
+			}
 			
 			criteria.add(Expression.like("names.name", name, matchmode));
-			criteria.add(Expression.eq("names.locale", loc.getLanguage().substring(0, 2)));
+			criteria.add(Expression.like("names.locale", loc.getLanguage().substring(0, 2), MatchMode.START));
 		}
 		
 		if (classes.size() > 0)

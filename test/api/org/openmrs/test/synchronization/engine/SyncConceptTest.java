@@ -39,35 +39,14 @@ public class SyncConceptTest extends SyncBaseTest {
 	    return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 
-	public void testAddNameToConcept() throws Exception {
+	public void testSaveConceptCoded() throws Exception {
 		runSyncTest(new SyncTestHelper() {
-			ConceptService cs = Context.getConceptService();
-			int numNamesBefore;
-			public void runOnChild() {
-				Concept wt = cs.getConceptByName("WEIGHT");
-				numNamesBefore = wt.getNames().size();
-				wt.addName(new ConceptName("POIDS", null, "Weight in french", Locale.FRENCH));
-				cs.saveConcept(wt);
-			}
-			public void runOnParent() {
-				Concept wt = cs.getConceptByName("WEIGHT");
-				assertNotNull(wt);
-				assertEquals("Should be one more name than before", numNamesBefore + 1, wt.getNames().size());
-				assertEquals("Incorrect french name", wt.getName(Locale.FRENCH).getName(), "POIDS");
-			}
-		});
-	}
-	
-
-	public void testCreateCodedConcept() throws Exception {
-		runSyncTest(new SyncTestHelper() {
-			private int conceptId = 0;
+			private int conceptId = 99999;
 			public void runOnChild() {
 				ConceptService cs = Context.getConceptService();
 				
-				 //this doesn't work with in-mem DB
+				//this doesn't work with in-mem DB
 				//conceptId = cs.getNextAvailableId();
-				conceptId = 99999;
 				Concept coded = new Concept(conceptId);
 				coded.setDatatype(cs.getConceptDatatypeByName("Coded"));
 				coded.setConceptClass(cs.getConceptClassByName("Question"));
@@ -76,14 +55,14 @@ public class SyncConceptTest extends SyncBaseTest {
 				coded.addName(new ConceptName("CODED", "SOME CODE", "A coded concept", Context.getLocale()));
 				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("OTHER NON-CODED")));
 				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("NONE")));
-				cs.createConcept(coded);
+				cs.saveConcept(coded);
 			}
 			public void runOnParent() {								
 				ConceptService cs = Context.getConceptService();
 
 				Concept c = cs.getConcept(conceptId);
 				log.info("names: " + c.getNames().size());
-				assertNotNull("Failed to create coded", c);
+				assertNotNull("Failed to create coded concept", c);
 				assertEquals(c.getConceptClass().getConceptClassId(), cs.getConceptClassByName("Question").getConceptClassId());
 				assertEquals(c.getDatatype().getConceptDatatypeId(), cs.getConceptDatatypeByName("Coded").getConceptDatatypeId());
 				
@@ -92,26 +71,58 @@ public class SyncConceptTest extends SyncBaseTest {
 				//assertEquals(2, answers.size());
 			}
 		});
-	}	
-	
-	public void testCreateConcepts() throws Exception {
+	}		
+	public void testSaveConceptNumeric() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs;
-			private int conceptIdNum= 0;
-			private int conceptIdCoded= 0;
-			private int conceptIdSet= 0;
+			private int conceptId=99999;
 			
 			public void runOnChild() {
 				cs = Context.getConceptService();
 				//this doesn't work with in-mem DB
 				//conceptIdNum = cs.getNextAvailableId();
-				//conceptIdCoded = cs.getNextAvailableId();
-				//conceptIdSet = cs.getNextAvailableId();
-				conceptIdNum = 99997;
-				conceptIdCoded = 99998;
-				conceptIdSet = 99999;
+				ConceptNumeric cn = new ConceptNumeric(conceptId);
+				cn.addName(new ConceptName("SOMETHING NUMERIC", "SUM NUM", "A numeric concept", Context.getLocale()));
+				cn.setDatatype(cs.getConceptDatatypeByName("Numeric"));
+				cn.setConceptClass(cs.getConceptClassByName("Question"));
+				cn.setSet(false);
+				cn.setPrecise(true);
+				cn.setLowAbsolute(0d);
+				cn.setHiCritical(100d);
+				cs.saveConcept(cn);
+			}
+			public void runOnParent() {
+				//Concept c = cs.getConceptByName("SOMETHING NUMERIC");
+				// assertNotNull("Failed to create numeric", c);
+				assertEquals(cs.getConcept(conceptId).getName().getName(), "SOMETHING NUMERIC");
+				ConceptNumeric cn = cs.getConceptNumeric(conceptId);
+				assertEquals("Concept numeric absolute low values do not match", 0d, cn.getLowAbsolute());
+				assertEquals("Concept nuermic high critical values do not match", 100d, cn.getHiCritical());
+				assertEquals("Concept numeric datatypes does not match", "Numeric", cn.getDatatype().getName());
+				assertEquals("Concept numeric classes does not match", "Question", cn.getConceptClass().getName());
+				
+			}
+		});
+	}
 	
-				ConceptNumeric cn = new ConceptNumeric(conceptIdNum);
+	
+
+	
+	
+	
+	public void testSaveConceptSet() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			ConceptService cs;
+			private int conceptNumericId=99997;
+			private int conceptCodedId=99998;
+			private int conceptSetId=99999;
+			
+			private String guid = "";
+			
+			public void runOnChild() {
+				cs = Context.getConceptService();
+
+				ConceptNumeric cn = new ConceptNumeric(conceptNumericId);
 				cn.addName(new ConceptName("SOMETHING NUMERIC", "SUM NUM", "A numeric concept", Context.getLocale()));
 				cn.setDatatype(cs.getConceptDatatypeByName("Numeric"));
 				cn.setConceptClass(cs.getConceptClassByName("Question"));
@@ -121,18 +132,32 @@ public class SyncConceptTest extends SyncBaseTest {
 				cn.setHiCritical(100d);
 				cs.saveConcept(cn);
 				
-				Concept coded = new Concept(conceptIdCoded);
+				Concept coded = new Concept(conceptCodedId);
 				coded.addName(new ConceptName("SOMETHING CODED", "SUM CODE", "A coded concept", Context.getLocale()));
 				coded.setDatatype(cs.getConceptDatatypeByName("Coded"));
 				coded.setConceptClass(cs.getConceptClassByName("Question"));
 				coded.setSet(false);
 				coded.setSynonyms(new HashSet<ConceptSynonym>());
-				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("OTHER NON-CODED")));
-				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("NONE")));
+				
+				Concept other = cs.getConceptByName("OTHER NON-CODED");
+				assertNotNull("Failed to get concept OTHER NON-CODED", other);
+
+				Concept none = cs.getConceptByName("NONE");
+				assertNotNull("Failed to get concept NONE", none);
+				
+				coded.addAnswer(new ConceptAnswer(other));
+				coded.addAnswer(new ConceptAnswer(none));
 				coded.addAnswer(new ConceptAnswer(cn));
 				cs.saveConcept(coded);
+			
 				
-				Concept set = new Concept(conceptIdSet);
+				//ConceptSet conceptSet = new ConceptSet();
+				
+				
+				Concept set = new Concept(conceptSetId);
+				
+				log.info("Locale: " + Context.getLocale());
+				
 				set.addName(new ConceptName("A CONCEPT SET", "SET", "A set of concepts", Context.getLocale()));
 				set.setDatatype(cs.getConceptDatatypeByName("N/A"));
 				set.setConceptClass(cs.getConceptClassByName("ConvSet"));
@@ -143,31 +168,57 @@ public class SyncConceptTest extends SyncBaseTest {
 				cset.add(new ConceptSet(cn, 2d));
 				set.setConceptSets(cset);
 				cs.saveConcept(set);
+				
+				guid = set.getGuid();
+				log.info("GUID:  " + set.getGuid());
 			}
 			public void runOnParent() {
-				//Concept c = cs.getConceptByName("SOMETHING NUMERIC");
-//				assertNotNull("Failed to create numeric", c);
-				assertEquals(cs.getConcept(99997).getName().getName(), "SOMETHING NUMERIC");
-				ConceptNumeric cn = cs.getConceptNumeric(99997);
-				assertEquals(cn.getLowAbsolute(), 0d);
-				assertEquals(cn.getHiCritical(), 100d);
-				assertEquals(cn.getDatatype().getName(), "Numeric");
-				assertEquals(cn.getConceptClass().getName(), "Question");
+				Concept c = cs.getConceptByName("SOMETHING NUMERIC");
+				assertNotNull("Failed to create numeric", c);
+			
+				Concept set = cs.getConcept(conceptSetId);
+								
+				set = cs.getConceptByName("A CONCEPT SET");
 				
-				Concept c = cs.getConceptByName("SOMETHING CODED");
-				assertNotNull("Failed to create coded", c);
+				
+				assertEquals("Concept names do not match", "SOMETHING NUMERIC", cs.getConcept(conceptNumericId).getName().getName());
+				
+				
+				ConceptNumeric cn = cs.getConceptNumeric(conceptNumericId);
+				assertEquals("Concept numeric absolute low values do not match", 0d, cn.getLowAbsolute());
+				assertEquals("Concept numeric critical high values do not match", 100d, cn.getHiCritical());
+				assertEquals("Concept numeric datatypes do not match", "Numeric", cn.getDatatype().getName());
+				assertEquals("Concept numeric classes do not match", "Question", cn.getConceptClass().getName());
 				
 				//doesn't work in junit/in-mem DB; tested manually only
 				//Set<String> answers = new HashSet<String>();
 				//for (ConceptAnswer a : c.getAnswers())
 				//	answers.add(a.getAnswerConcept().getName().getName());
-								
-				c = cs.getConceptByName("A CONCEPT SET");
-				assertNotNull("Failed to create set", c);
-				assertEquals(c.getConceptSets().size(), 2);
+				
+				// Test the coded concept 			
+				Concept conceptCoded = cs.getConcept(conceptCodedId);
+				assertNotNull("Failed to save coded concept - Could not retrieve concept by ID", conceptCoded);
+
+				conceptCoded = cs.getConceptByName("SOMETHING CODED");
+				assertNotNull("Failed to save coded concept - Could not retrieve concept by name", conceptCoded);
+					
+				
+				// Test the concept set 
+				
+				Concept conceptSet = cs.getConcept(conceptSetId);
+				assertNotNull("Failed to save concept set - Could not retrieve concept by ID", conceptSet);
+				
+				conceptSet = cs.getConceptByName("A CONCEPT SET");
+				assertNotNull("Failed to create coded concept - Could not retrieve code concept by name", conceptSet);
+
+				
+				assertEquals("Failed to create concept set - Concept set should have two elements", conceptSet.getConceptSets().size(), 2);
+				
+			
 			}
 		});
-	}
+	}		
+	
 
 	public void testEditConcepts() throws Exception {
 		runSyncTest(new SyncTestHelper() {
@@ -178,7 +229,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				Concept wt = cs.getConceptByName("WEIGHT");
 				ConceptNumeric weight = cs.getConceptNumeric(wt.getConceptId());
 				weight.setHiCritical(200d);
-				cs.updateConcept(weight);
+				cs.saveConcept(weight);
 				
 				Concept coded = cs.getConceptByName("CAUSE OF DEATH");
 				assertNotNull(coded);
@@ -187,11 +238,11 @@ public class SyncConceptTest extends SyncBaseTest {
 				malaria.setDatatype(cs.getConceptDatatypeByName("N/A"));
 				malaria.setConceptClass(cs.getConceptClassByName("Diagnosis"));
 				malaria.setSynonyms(new HashSet<ConceptSynonym>());
-				cs.createConcept(malaria);
+				cs.saveConcept(malaria);
 				numAnswersBefore = coded.getAnswers().size();
 				coded.addAnswer(new ConceptAnswer(malaria));
 				coded.addSynonym("DEATH REASON", Context.getLocale());
-				cs.updateConcept(coded);
+				cs.saveConcept(coded);
 			}
 			public void runOnParent() {
 				Concept wt = cs.getConceptByName("WEIGHT");
@@ -212,4 +263,26 @@ public class SyncConceptTest extends SyncBaseTest {
 		});
 	}
 
+	
+	public void testAddNameToConcept() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			ConceptService cs = Context.getConceptService();
+			int numNamesBefore;
+			public void runOnChild() {
+				Concept wt = cs.getConceptByName("WEIGHT");
+				numNamesBefore = wt.getNames().size();
+				wt.addName(new ConceptName("POIDS", null, "Weight in french", Locale.FRENCH));
+				cs.saveConcept(wt);
+			}
+			public void runOnParent() {
+				Concept wt = cs.getConceptByName("WEIGHT");
+				assertNotNull(wt);
+				assertEquals("Should be one more name than before", numNamesBefore + 1, wt.getNames().size());
+				assertEquals("Incorrect french name", wt.getName(Locale.FRENCH).getName(), "POIDS");
+			}
+		});
+	}
+	
+
+	
 }
