@@ -73,7 +73,9 @@ public class ProgramWorkflow implements java.io.Serializable, Synchronizable {
 	// ******************
 	
 	/** Default Constructor */
-	public ProgramWorkflow() { }
+	public ProgramWorkflow() { 
+		states = new HashSet<ProgramWorkflowState>();		
+	}
 	
 	/** Constructor with id */
 	public ProgramWorkflow(Integer programWorkflowId) {

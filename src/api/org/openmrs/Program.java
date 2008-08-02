@@ -71,7 +71,9 @@ public class Program implements java.io.Serializable, Synchronizable {
 	// ******************
 	
 	/** Default Constructor */
-	public Program() { }
+	public Program() { 
+		workflows = new HashSet<ProgramWorkflow>();
+	}
 	
 	/** Constructor with id */
 	public Program(Integer programId) {

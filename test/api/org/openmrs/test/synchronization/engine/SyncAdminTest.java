@@ -51,6 +51,8 @@ public class SyncAdminTest extends SyncBaseTest {
 				Concept cured = cs.getConceptByName("PATIENT CURED");
 
 				Program prog = new Program();
+				prog.setName("TB PROGRAM");
+				prog.setDescription("TB PROGRAM DESCRIPTION");
 				prog.setConcept(tbProgram);
 
 				
