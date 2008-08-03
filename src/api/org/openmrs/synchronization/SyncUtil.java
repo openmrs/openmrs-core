@@ -496,8 +496,10 @@ public class SyncUtil {
     }
     
     /**
-     * Replaces updateOpenmrsObject by using generic hibernate API to perform the save as oposed to service API.
-     * 
+     * Replaces updateOpenmrsObject by using generic hibernate API to perform the save as oposed to service API. Exceptions that 
+     * still need custom code:
+     * <br />LoginCredential: 
+     *  
      * @param o object to save
      * @param className type
      * @param guid unique id of the object that is being saved
@@ -505,7 +507,20 @@ public class SyncUtil {
      * @see SyncUtil#updateOpenmrsObject(Object, String, String, boolean)
      */
     public static synchronized void updateOpenmrsObject2(Synchronizable o, String className, String guid) {
-		if ( o != null ) {
+
+    	//first handle weird stuff
+    	if ( "org.openmrs.LoginCredential".equals(className) ) {
+			LoginCredential lc = (LoginCredential)o;
+			
+			//This is really tricky.  the userId won't be the same as it was in the previous system, 
+			//we have to circumvent with user_guid
+			User thisUser = Context.getUserService().getUserByGuid(lc.getUserGuid());
+			log.warn("In system, User has id: " + thisUser.getUserId() + ", but in tx, user has id: " + lc.getUserId());
+			lc.setUserId(thisUser.getUserId());
+			
+			Context.getSynchronizationService().saveOrUpdate(lc); 
+    	} //now do the 'normal' save or update
+    	else if ( o != null ) {
 			Context.getSynchronizationService().saveOrUpdate(o);
 		} else {
 			log.warn("Will not update OpenMRS object that is NULL");

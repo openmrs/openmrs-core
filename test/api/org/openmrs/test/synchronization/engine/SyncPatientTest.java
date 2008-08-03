@@ -29,17 +29,15 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientState;
 import org.openmrs.PatientProgram;
 import org.openmrs.PersonName;
-import org.openmrs.Privilege;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -94,7 +92,8 @@ public class SyncPatientTest extends SyncBaseTest {
 			ProgramWorkflowState curedState = null;
 			public void runOnChild() {
 				
-				hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
+				hivProgram = Context.getProgramWorkflowService().getProgramByName("HIV PROGRAM");
+
 				txStat = hivProgram.getWorkflowByName("TREATMENT STATUS");
 				curedState = txStat.getStateByName("PATIENT CURED");
 				
@@ -122,8 +121,8 @@ public class SyncPatientTest extends SyncBaseTest {
 						assertEquals("Failed to change date", compare, 0);
 							
 						assertNull("Failed to change date",pp.getDateCompleted());
-						
-						assertEquals("Wrong state", pp.getCurrentState(txStat), curedState);						
+
+						assertEquals("Wrong state", pp.getCurrentState(txStat).getState(), curedState);						
 					}
 				}
 			}
@@ -250,11 +249,12 @@ public class SyncPatientTest extends SyncBaseTest {
 			Date d2 = ymd.parse("1978-12-31");
 			public void runOnChild(){
 				Patient p = Context.getPatientService().getPatient(2);
-				Collection<Encounter> encs = Context.getEncounterService().getEncounters(p, d1, d2);
+				Collection<Encounter> encs = Context.getEncounterService().getEncountersByPatient(p);
 				assertEquals(encs.size(), 1);
 				Encounter e = encs.iterator().next();
 				e.setEncounterDatetime(d2);
-				Context.getEncounterService().updateEncounter(e);
+				//Context.getEncounterService().updateEncounter(e);
+				Context.getEncounterService().saveEncounter(e);
 			}
 			public void runOnParent() {
 				Patient p = Context.getPatientService().getPatient(2);
@@ -268,7 +268,7 @@ public class SyncPatientTest extends SyncBaseTest {
 			}
 		});
 	}
-	
+
 	public void testEditObs() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			Date d = ymd.parse("1978-04-11");
@@ -370,6 +370,8 @@ public class SyncPatientTest extends SyncBaseTest {
 					if (id.getIdentifier().equals("super123") && id.getIdentifierType().equals(pit))
 						found = true;
 				assertTrue("Couldn't find new ID", found);
+		        Context.clearSession();
+				Context.closeSession();				
 			}
 		});
 	}

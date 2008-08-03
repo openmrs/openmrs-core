@@ -55,7 +55,24 @@ public class SyncUserTest extends SyncBaseTest {
 			}
 		});
 	}
-	
+
+	public void testChangePwd() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			UserService us = Context.getUserService();
+			String newPWD = "NewPassword";
+			String userGuid = null; 
+			public void runOnChild() {
+				userGuid = us.getUser(1).getGuid();
+				us.saveUser(us.getUser(1), newPWD);
+				assertEquals(userGuid,us.getUser(1).getGuid());
+			}
+			public void runOnParent() {
+				assertEquals(userGuid,us.getUser(1).getGuid());
+				Context.authenticate(us.getUser(1).getUsername(), newPWD);
+			}
+		});
+	}
+
 	public void testEditUser() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			UserService us = Context.getUserService();
@@ -67,7 +84,7 @@ public class SyncUserTest extends SyncBaseTest {
 				u.addName(new PersonName("Darius", "Graham", "Jazayeri"));
 				numRolesBefore = u.getRoles().size();
 				u.addRole(us.getRole("Provider"));
-				us.updateUser(u);
+				us.saveUser(u, null);
 			}
 			public void runOnParent() {
 				User u = us.getUser(1);
@@ -83,11 +100,11 @@ public class SyncUserTest extends SyncBaseTest {
 			public void runOnChild() {
 				Privilege priv = new Privilege("Kitchen Use");
 				priv.setDescription("Can step into the kitchen");
-				Context.getAdministrationService().createPrivilege(priv);
+				Context.getUserService().savePrivilege(priv);
 				Role role = new Role("Chef");
 				role.setDescription("One who cooks");
 				role.addPrivilege(priv);
-				Context.getAdministrationService().createRole(role);
+				Context.getUserService().saveRole(role);
 			}
 			public void runOnParent() {
 				Privilege priv = Context.getUserService().getPrivilege("Kitchen Use");
@@ -106,7 +123,7 @@ public class SyncUserTest extends SyncBaseTest {
 				Role role = Context.getUserService().getRole("Provider");
 				numAtStart = role.getPrivileges().size();
 				role.addPrivilege(priv);
-				Context.getAdministrationService().updateRole(role);
+				Context.getUserService().saveRole(role);
 			}
 			public void runOnParent() {
 				Role role = Context.getUserService().getRole("Provider");

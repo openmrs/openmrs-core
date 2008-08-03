@@ -28,7 +28,7 @@ public class LoginCredential implements Synchronizable {
 
 	private Integer userId;
 	private String guid;
-	private String userGuid; // not stored - used for sync'ing
+	private String userGuid; //stored so that we can refer back to same user object; userids maybe different accross the sync
 	private String hashedPassword;
 	private String salt;
 	private String secretQuestion;
