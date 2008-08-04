@@ -79,7 +79,7 @@ public interface SynchronizationService {
      * @return SyncRecord The latest SyncRecord or null if not found
      * @throws APIException
      */
-    @Authorized({"View Synchronization Records"})
+    //@Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public SyncRecord getLatestRecord() throws APIException;
 
@@ -88,7 +88,7 @@ public interface SynchronizationService {
      * @param SyncImportRecord The SyncImportRecord to create
      * @throws APIException
      */
-    @Authorized({"Manage Synchronization Records"})
+    //@Authorized({"Manage Synchronization Records"})
     public void createSyncImportRecord(SyncImportRecord record) throws APIException;
     
     /**
@@ -96,7 +96,7 @@ public interface SynchronizationService {
      * @param SyncImportRecord The SyncImportRecord to update
      * @throws APIException
      */
-    @Authorized({"Manage Synchronization Records"})
+    //@Authorized({"Manage Synchronization Records"})
     public void updateSyncImportRecord(SyncImportRecord record) throws APIException;
     
     /**
@@ -104,7 +104,7 @@ public interface SynchronizationService {
      * @param SyncImportRecord The SyncImportRecord to delete
      * @throws APIException
      */
-    @Authorized({"Manage Synchronization Records"})
+    //@Authorized({"Manage Synchronization Records"})
     public void deleteSyncImportRecord(SyncImportRecord record) throws APIException;
 
     /**
@@ -113,7 +113,7 @@ public interface SynchronizationService {
      * @return SyncRecord The SyncImportRecord or null if not found
      * @throws APIException
      */
-    @Authorized({"View Synchronization Records"})
+    //@Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public SyncImportRecord getSyncImportRecord(String guid) throws APIException;
     
@@ -164,7 +164,7 @@ public interface SynchronizationService {
      * @return SyncRecord A list containing all SyncRecords with the given states
      * @throws APIException
      */
-    @Authorized({"View Synchronization Records"})
+    //@Authorized({"View Synchronization Records"})
     public List<SyncRecord> getSyncRecords(SyncRecordState[] states, RemoteServer server) throws APIException;
 
     
@@ -174,7 +174,7 @@ public interface SynchronizationService {
      * @return SyncRecord A list containing all SyncRecords with the given states
      * @throws APIException
      */
-    @Authorized({"View Synchronization Records"})
+    //@Authorized({"View Synchronization Records"})
     @Transactional(readOnly=true)
     public List<SyncRecord> getSyncRecords(SyncRecordState[] states, boolean inverse) throws APIException;
 
@@ -226,7 +226,7 @@ public interface SynchronizationService {
      * @param SyncRecord The SyncRecord to create
      * @throws APIException
      */
-    @Authorized({"Manage Synchronization Servers"})
+    //@Authorized({"Manage Synchronization Servers"})
     public void createRemoteServer(RemoteServer server) throws APIException;
     
     /**
@@ -234,7 +234,7 @@ public interface SynchronizationService {
      * @param SyncRecord The SyncRecord to update
      * @throws APIException
      */
-    @Authorized({"Manage Synchronization Servers"})
+    //@Authorized({"Manage Synchronization Servers"})
     public void updateRemoteServer(RemoteServer server) throws APIException;
     
     /**
@@ -242,7 +242,7 @@ public interface SynchronizationService {
      * @param SyncRecord The SyncRecord to delete
      * @throws APIException
      */
-    @Authorized({"Manage Synchronization Servers"})
+    //@Authorized({"Manage Synchronization Servers"})
     public void deleteRemoteServer(RemoteServer server) throws APIException;
 
     /**
@@ -251,7 +251,7 @@ public interface SynchronizationService {
      * @return SyncRecord The SyncRecord or null if not found
      * @throws APIException
      */
-    @Authorized({"View Synchronization Servers"})
+    //@Authorized({"View Synchronization Servers"})
     @Transactional(readOnly=true)
     public RemoteServer getRemoteServer(Integer serverId) throws APIException;
 
@@ -261,7 +261,7 @@ public interface SynchronizationService {
      * @return SyncRecord The SyncRecord or null if not found
      * @throws APIException
      */
-    @Authorized({"View Synchronization Servers"})
+    //@Authorized({"View Synchronization Servers"})
     @Transactional(readOnly=true)
     public RemoteServer getRemoteServer(String guid) throws APIException;
 
@@ -271,7 +271,7 @@ public interface SynchronizationService {
      * @return SyncRecord The SyncRecord or null if not found
      * @throws APIException
      */
-    @Authorized({"View Synchronization Servers"})
+    //@Authorized({"View Synchronization Servers"})
     @Transactional(readOnly=true)
     public RemoteServer getRemoteServerByUsername(String username) throws APIException;
 
@@ -281,7 +281,7 @@ public interface SynchronizationService {
      * @return SyncRecord The SyncRecord or null if not found
      * @throws APIException
      */
-    @Authorized({"View Synchronization Servers"})
+    //@Authorized({"View Synchronization Servers"})
     @Transactional(readOnly=true)
     public List<RemoteServer> getRemoteServers() throws APIException;
 
@@ -291,7 +291,7 @@ public interface SynchronizationService {
      * @return SyncRecord The SyncRecord or null if not found
      * @throws APIException
      */
-    @Authorized({"View Synchronization Servers"})
+    //@Authorized({"View Synchronization Servers"})
     @Transactional(readOnly=true)
     public RemoteServer getParentServer() throws APIException;
     
@@ -300,7 +300,7 @@ public interface SynchronizationService {
      * @return guid of the server.
      * @throws APIException
      */
-    @Authorized({"View Synchronization Servers"})
+    //@Authorized({"View Synchronization Servers"})
     @Transactional(readOnly=true)
     public String getServerGuid() throws APIException;
 
@@ -358,7 +358,7 @@ public interface SynchronizationService {
      * @param out write the sql here
      * @throws APIException
      */
-    @Authorized({"Backup Entire Database"})
+    //@Authorized({"Backup Entire Database"})
     @Transactional(readOnly=true)
     public void createDatabaseForChild(String guidForChild, OutputStream out) throws APIException;
 

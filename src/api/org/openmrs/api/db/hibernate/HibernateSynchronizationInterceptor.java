@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -338,19 +339,23 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		}
 
 		// create new flush holder if needed
-		if (pendingFlushHolder.get() == null)
+		if (pendingFlushHolder.get() == null) {
 			pendingFlushHolder.set(new HashSet<Object>());
+		}
 
+		//add to flush holder: i.e. indicate there is something to be processed
 		if (!pendingFlushHolder.get().contains(entity)) {
 			pendingFlushHolder.get().add(entity);
-			packageObject((Synchronizable) entity,
+		}
+		
+		//now package
+		packageObject((Synchronizable) entity,
 			              state,
 			              propertyNames,
 			              types,
 			              id,
 			              SyncItemState.DELETED);
-		}
-
+		
 		return;
 
 	}
@@ -391,15 +396,14 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 
 		if (!pendingFlushHolder.get().contains(entity)) {
 			pendingFlushHolder.get().add(entity);
-			return packageObject((Synchronizable) entity,
-			                     state,
-			                     propertyNames,
-			                     types,
-			                     id,
-			                     SyncItemState.NEW);
 		}
-
-		return false;
+		
+		return packageObject((Synchronizable) entity,
+		                     state,
+		                     propertyNames,
+		                     types,
+		                     id,
+		                     SyncItemState.NEW);
 	}
 
 	/**
@@ -452,22 +456,14 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 
 		if (!pendingFlushHolder.get().contains(entity)) {
 			pendingFlushHolder.get().add(entity);
-			return packageObject((Synchronizable) entity,
+		}
+		
+		return packageObject((Synchronizable) entity,
 			                     currentState,
 			                     propertyNames,
 			                     types,
 			                     id,
 			                     SyncItemState.UPDATED);
-		} else {
-			// TODO: replace entity in the record?
-			if (log.isDebugEnabled()) {
-				log.debug("replacing sync item in the sync record for entity: "
-				        + entity.getClass().getName());
-			}
-
-		}
-
-		return false;
 	}
 
 	@Override
@@ -1179,6 +1175,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		Synchronizable owner = null;
 		String originalRecordGuid = null;
 		SessionFactory factory = null;
+		LinkedHashMap<String, Synchronizable> entriesHolder = null;
 
 		// we only process recreate and update
 		if (!"update".equals(action) && !"recreate".equals(action)) {
@@ -1262,20 +1259,10 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 
 		// Setup the serialization data structures to hold the state
 		Package pkg = new Package();
+		entriesHolder = new LinkedHashMap<String,Synchronizable>();
 		try {
 
-			Record xml = pkg.createRecordForWrite(set.getClass().getName());
-			Item entityItem = xml.getRootItem();
-
-			// serialize owner info: we will need type, prop name where set
-			// goes, and owner guid
-			Item item = xml.createItem(entityItem, "owner");
-			item.setAttribute("type", owner.getClass().getName());
-			item.setAttribute("properyName", ownerPropertyName);
-			item.setAttribute("action", action);
-			item.setAttribute("guid", owner.getGuid());
-
-			// now persist new/updated set entries
+			// find out what entries need to be serialized
 			for (Object entry : set) {
 				if (entry instanceof Synchronizable) {
 					Synchronizable obj = (Synchronizable) entry;
@@ -1296,11 +1283,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 						log.error("Cannot handle set entries where guid is null.");
 						throw new CallbackException("Cannot handle set entries where guid is null.");
 					}
-
-					Item itemUpdate = xml.createItem(entityItem, "entry");
-					itemUpdate.setAttribute("type", obj.getClass().getName());
-					itemUpdate.setAttribute("action", "update");
-					itemUpdate.setAttribute("guid", entryGuid);
+					
+					//add it to the holder to avoid possible duplicates: key = guid + action
+					entriesHolder.put(entryGuid + "|update",obj);
 				} else {
 					// TODO: more debug info
 					log.error("Cannot handle sets where entries are not Synchronizable!");
@@ -1325,8 +1310,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 								if (log.isDebugEnabled()) {
 									log.debug("Entry guid was null, attempted to fetch guid with the following results");
 									log.debug("Entry type:"
-									        + entryDeleteGuid.getClass()
-									                         .getName()
+									        + entryDeleteGuid.getClass().getName()
 									        + ",guid:" + entryDeleteGuid);
 								}
 							}
@@ -1337,13 +1321,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 								throw new CallbackException("Cannot handle set delete entries where guid is null.");
 							}
 
-							Item itemDelete = xml.createItem(entityItem,
-							                                 "entry");
-							itemDelete.setAttribute("type",
-							                        objDelete.getClass()
-							                                 .getName());
-							itemDelete.setAttribute("action", "delete");
-							itemDelete.setAttribute("guid", entryDeleteGuid);
+							//add it to the holder to avoid possible duplicates: key = guid + action
+							entriesHolder.put(entryDeleteGuid + "|delete",objDelete);
+							
 						} else {
 							// TODO: more debug info
 							log.error("Cannot handle sets where entries are not Synchronizable!");
@@ -1361,6 +1341,29 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			 * parent object or updates to more than one collection on same
 			 * owner
 			 */
+			
+			// Setup the serialization data structures to hold the state
+			Record xml = pkg.createRecordForWrite(set.getClass().getName());
+			Item entityItem = xml.getRootItem();
+
+			// serialize owner info: we will need type, prop name where set
+			// goes, and owner guid
+			Item item = xml.createItem(entityItem, "owner");
+			item.setAttribute("type", owner.getClass().getName());
+			item.setAttribute("properyName", ownerPropertyName);
+			item.setAttribute("action", action);
+			item.setAttribute("guid", owner.getGuid());
+			
+			//build out the xml for the item content
+			for( String entryKey : entriesHolder.keySet()) {
+				Synchronizable entryObject = entriesHolder.get(entryKey);
+				
+				Item temp = xml.createItem(entityItem, "entry");
+				temp.setAttribute("type", entryObject.getClass().getName());
+				temp.setAttribute("action", entryKey.substring(entryKey.indexOf('|') + 1));
+				temp.setAttribute("guid", entryObject.getGuid());				
+			}
+			
 			SyncItem syncItem = new SyncItem();
 			syncItem.setKey(new SyncItemKey<String>(owner.getGuid() + "|"
 			        + ownerPropertyName, String.class));

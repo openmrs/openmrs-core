@@ -532,7 +532,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         if (alreadyExists && isDelete) {
         	SyncUtil.deleteOpenmrsObject(o);
         }else if (!alreadyExists && isDelete) { 
-        	log.warn("Object to be deletes was not found in the database. skipping delete operation: Object type:");
+        	log.warn("Object to be deletes was not found in the database. skipping delete operation:");
         	log.warn("-object type:" + o.getClass().toString());
         	log.warn("-object guid:" + o.getGuid());
         } else {

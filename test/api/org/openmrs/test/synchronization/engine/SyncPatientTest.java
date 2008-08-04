@@ -243,6 +243,11 @@ public class SyncPatientTest extends SyncBaseTest {
 		runSyncTest(new CreateEncounterAndObsTest());
 	}
 	
+	/**
+	 * Fails due to known bug: see ticket #934
+	 * 
+	 * @throws Exception
+	 */
 	public void testEditEncounter() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			Date d1 = ymd.parse("1978-01-01");
@@ -253,7 +258,6 @@ public class SyncPatientTest extends SyncBaseTest {
 				assertEquals(encs.size(), 1);
 				Encounter e = encs.iterator().next();
 				e.setEncounterDatetime(d2);
-				//Context.getEncounterService().updateEncounter(e);
 				Context.getEncounterService().saveEncounter(e);
 			}
 			public void runOnParent() {
