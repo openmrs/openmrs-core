@@ -1094,7 +1094,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	call insert_authenticated_privilege('View Roles');
 	call insert_authenticated_privilege('View Field Types');
 	call insert_authenticated_privilege('View Order Types');
-	call insert_authenticated_privilege('View RelationshipTypes');
+	call insert_authenticated_privilege('View Relationship Types');
 	call insert_authenticated_privilege('View Global Properties');
 	call insert_authenticated_privilege('View Person Attribute Types');
 	call insert_authenticated_privilege('View Relationships');
