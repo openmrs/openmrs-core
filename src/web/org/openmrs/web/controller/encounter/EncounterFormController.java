@@ -88,10 +88,11 @@ public class EncounterFormController extends SimpleFormController {
 		
 		Encounter encounter = (Encounter)obj;
 		
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		try {
 			if (Context.isAuthenticated()) {
+				Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+				Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+				
 				if (StringUtils.hasText(request.getParameter("patientId")))
 					encounter.setPatient(Context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
 				if (StringUtils.hasText(request.getParameter("providerId")))

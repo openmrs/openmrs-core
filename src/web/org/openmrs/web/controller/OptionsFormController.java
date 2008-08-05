@@ -29,7 +29,6 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.LocaleFactory;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.OptionsForm;
 import org.openmrs.web.WebConstants;
@@ -158,9 +157,14 @@ public class OptionsFormController extends SimpleFormController {
 			}
 			
 			if (opts.getUsername().length() > 0 && !errors.hasErrors()) {
-				Context.addProxyPrivilege("View Users");
-				if (us.hasDuplicateUsername(user)) {
-					errors.rejectValue("username", "error.username.taken");
+				try {
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+					if (us.hasDuplicateUsername(user)) {
+						errors.rejectValue("username", "error.username.taken");
+					}
+				}
+				finally {
+					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 				}
 			}
 			
@@ -168,9 +172,13 @@ public class OptionsFormController extends SimpleFormController {
 				user.setUsername(opts.getUsername());
 				user.setUserProperties(properties);
 				
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-				us.updateUser(user);
-				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+				try {
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+					us.saveUser(user, null);
+				}
+				finally {
+					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+				}
 				
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "options.saved");
 			}

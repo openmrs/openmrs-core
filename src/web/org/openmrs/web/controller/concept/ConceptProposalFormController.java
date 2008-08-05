@@ -154,7 +154,14 @@ public class ConceptProposalFormController extends SimpleFormController {
 				msg = msa.getMessage("ConceptProposal.alert.ignored", args, locale);
 			}
 			
-			alertService.saveAlert(new Alert(msg, uniqueProposers));
+			try {
+				// allow this user to save changes to alerts temporarily
+				Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ALERTS);
+				alertService.saveAlert(new Alert(msg, uniqueProposers));
+			}
+			finally {
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ALERTS);
+			}
 			
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptProposal.saved");

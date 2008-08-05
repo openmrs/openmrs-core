@@ -97,8 +97,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
             
             // void out the original observation to keep it around for
             // historical purposes
-            Context.addProxyPrivilege(OpenmrsConstants.PRIV_DELETE_OBS);
             try {
+            	Context.addProxyPrivilege(OpenmrsConstants.PRIV_DELETE_OBS);
+                
             	String reason = changeMessage + " (new obsId: " + newObs.getObsId() + ")";
             	
             	// fetch a clean copy of this obs from the database so that 
