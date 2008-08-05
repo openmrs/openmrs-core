@@ -130,7 +130,7 @@ public class OpenmrsFilter implements Filter {
 		}
 		
 		// TODO why are we setting the userContext here again?
-		httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
+		//httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
 		
 		log.debug("after doFilter");
 		

@@ -320,10 +320,11 @@ public class Alert implements Serializable {
 	 * @return AlertRecipient
 	 */
 	public AlertRecipient getRecipient(User recipient) {
-		for (AlertRecipient ar : recipients) {
-			if (ar.getRecipient().equals(recipient))
-				return ar;
-		}
+		if (getRecipients() != null)
+			for (AlertRecipient ar : recipients) {
+				if (ar.getRecipient().equals(recipient))
+					return ar;
+			}
 		return null;
 	}
 	

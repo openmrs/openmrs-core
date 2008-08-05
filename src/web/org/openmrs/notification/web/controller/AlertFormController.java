@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
@@ -78,11 +79,17 @@ public class AlertFormController extends SimpleFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request,
 			HttpServletResponse reponse, Object obj, BindException errors)
 			throws Exception {
-
+		
 		Alert alert = (Alert) obj;
 
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		try {
+			// check that the user has the right privileges here because
+			// we are giving them a proxy privilege in the line following this
+			if (Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ALERTS) == false)
+				throw new APIAuthenticationException("Must be logged in as user with alerts privileges");
+			
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+			
 			UserService us = Context.getUserService();
 
 			if (Context.isAuthenticated()) {

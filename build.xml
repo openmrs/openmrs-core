@@ -277,7 +277,9 @@
 				<include name="**/*.tag"/>
 				<include name="**/messages*.properties"/>
 				<include name="**/images/**/*" />
-			</fileset>			
+				<!-- This fileset doesn't exclude /web/test so that 
+					 developers can easily test files -->
+			</fileset>
 		</copy>
 	</target>
 
@@ -334,7 +336,7 @@
 	</target>
 	
 	<target name="package-web" depends="package-web-init" description="create webapp war file">
-		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml" webxml="${dist.dir}/web/web.xml" duplicate="add">
+		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml, **/test/" webxml="${dist.dir}/web/web.xml" duplicate="add">
 			<classes dir="${build.dir}">
 				<include name="**/web/**/*.class" />
 				<include name="log4j.xml" />
@@ -359,7 +361,7 @@
 	</target>
 	
 	<target name="package-web-without-libs" depends="package-web-init" description="create webapp war file without libs">
-		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml" webxml="${dist.dir}/web/web.xml" duplicate="add">
+		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml, **/test/" webxml="${dist.dir}/web/web.xml" duplicate="add">
 			<classes dir="${build.dir}" >
 				<include name="**/web/**/*.class" />
 				<include name="log4j.xml" />
