@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.api.DataSetService;
 import org.openmrs.api.context.Context;
@@ -64,7 +65,8 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
      * 
      * @throws Exception
      */
-    public void testLogicCriteriaBuilder() throws Exception { 
+    @Test
+	public void shouldLogicCriteriaBuilder() throws Exception { 
     	
 		for(int i=0; i<expressions.length; i++) { 	
 			log.info("Expression: " + expressions[i]);
@@ -83,7 +85,8 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
      * 
      * @throws Exception
      */
-    public void testSerialize() throws Exception { 
+    @Test
+	public void shouldSerialize() throws Exception { 
     	LogicCriteriaBuilder.serialize("TOKEN(CD4 COUNT).AFTER(04/12/2006).LAST()");
     	
     }
@@ -93,7 +96,8 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
      * 
      * @throws Exception
      */
-    public void testDeserialize() throws Exception { 
+    @Test
+	public void shouldDeserialize() throws Exception { 
     	
     	LogicCriteria criteria = new LogicCriteria("CD4 COUNT");
     	criteria.after(new Date()).last();
@@ -106,7 +110,8 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
      * Auto generated method comment
      * 
      * @throws Exception
-    public void testLogicCriteriaParser() throws Exception { 
+    @Test
+	public void shouldLogicCriteriaParser() throws Exception { 
     	authenticate();
     	//LogicCriteria lc = new LogicCriteria("CD4 COUNT").before(new Date());
     	
@@ -142,7 +147,8 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
      */
 
     /*
-	public void testDataSetService() throws Exception {
+	@Test
+	public void shouldDataSetService() throws Exception {
 		authenticate();
 		
 		log.error("Testing");
@@ -207,7 +213,8 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testMultipleDataSets() throws Exception {
+	@Test
+	public void shouldMultipleDataSets() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/report/include/ReportTests-patients.xml");
 		authenticate();

@@ -47,9 +47,13 @@ public class SchedulerUtil {
 		}
 		
 		// TODO: do this for all services
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
-		Context.getSchedulerService().onStartup();
-		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+		try {
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+			Context.getSchedulerService().onStartup();
+		}
+		finally {
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+		}
 	}
 	
 	/**
@@ -67,12 +71,16 @@ public class SchedulerUtil {
 		}
 		
 		// TODO: Do this for all services
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
-		// doesn't attempt shutdown if there was an error getting the scheduler service
-		if (service != null) { 
-			service.onShutdown();
+		try {
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+			// doesn't attempt shutdown if there was an error getting the scheduler service
+			if (service != null) { 
+				service.onShutdown();
+			}
 		}
-		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+		finally {
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+		}
 		
 	}
 	

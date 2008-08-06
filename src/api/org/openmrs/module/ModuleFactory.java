@@ -167,37 +167,42 @@ public class ModuleFactory {
 	public static void startModules() {
 		// loop over and try starting each of the loaded modules
 		if (getLoadedModules().size() > 0) {
-			Context.addProxyPrivilege("");
-			AdministrationService as = Context.getAdministrationService();
-			// try and start the modules that should be started
 			List<Module> leftoverModules = new Vector<Module>();
-			for (Module mod : getLoadedModules()) {
-				String key = mod.getModuleId() + ".started";
-				String prop = as.getGlobalProperty(key, null);
-				
-				// if a 'moduleid.started' property doesn't exist, start the module anyway
-				// as this is probably the first time they are loading it
-				if (prop == null || prop.equals("true")) {
-					if (requiredModulesStarted(mod))
-						try {
+			
+			try {
+				Context.addProxyPrivilege("");
+				AdministrationService as = Context.getAdministrationService();
+				// try and start the modules that should be started
+				for (Module mod : getLoadedModules()) {
+					String key = mod.getModuleId() + ".started";
+					String prop = as.getGlobalProperty(key, null);
+					
+					// if a 'moduleid.started' property doesn't exist, start the module anyway
+					// as this is probably the first time they are loading it
+					if (prop == null || prop.equals("true")) {
+						if (requiredModulesStarted(mod))
+							try {
+								if (log.isDebugEnabled())
+									log.debug("starting module: " + mod.getModuleId());
+								
+								startModule(mod);
+							} catch (Exception e) {
+								log.error("Error while starting module: "
+								        + mod.getName(), e);
+								mod.setStartupErrorMessage("Error while starting module: " + e.getMessage());
+							}
+						else {
+							// if not all the modules required by this mod are loaded, save it for later
+							leftoverModules.add(mod);
 							if (log.isDebugEnabled())
-								log.debug("starting module: " + mod.getModuleId());
-							
-							startModule(mod);
-						} catch (Exception e) {
-							log.error("Error while starting module: "
-							        + mod.getName(), e);
-							mod.setStartupErrorMessage("Error while starting module: " + e.getMessage());
+								log.debug("cannot start because required modules are not started: " + mod.getModuleId());
 						}
-					else {
-						// if not all the modules required by this mod are loaded, save it for later
-						leftoverModules.add(mod);
-						if (log.isDebugEnabled())
-							log.debug("cannot start because required modules are not started: " + mod.getModuleId());
 					}
 				}
 			}
-			Context.removeProxyPrivilege("");
+			finally {
+				Context.removeProxyPrivilege("");
+			}
 
 			// loop over the leftover modules until we can't load
 			// anymore or we've loaded them all
@@ -435,13 +440,13 @@ public class ModuleFactory {
 				SortedMap<String, String> diffs = SqlDiffFileParser
 				        .getSqlDiffs(module);
 				
-				// this method must check and run queries against the database.
-				// to do this, it must be "authenticated".  Give the current 
-				// "user" the proxy privilege so this can be done. ("user" might
-				// be nobody because this is being run at startup)
-				Context.addProxyPrivilege("");
-				
 				try {
+					// this method must check and run queries against the database.
+					// to do this, it must be "authenticated".  Give the current 
+					// "user" the proxy privilege so this can be done. ("user" might
+					// be nobody because this is being run at startup)
+					Context.addProxyPrivilege("");
+				
 					for (String version : diffs.keySet()) {
 						String sql = diffs.get(version);
 						if (StringUtils.hasText(sql))
@@ -456,15 +461,19 @@ public class ModuleFactory {
 				// effectively mark this module as started successfully
 				getStartedModulesMap().put(module.getModuleId(), module);
 
-				// save the state of this module for future restarts
-				Context.addProxyPrivilege("");
-				AdministrationService as = Context.getAdministrationService();
-				GlobalProperty gp = new GlobalProperty(module.getModuleId()
-				        + ".started", "true",
-				        getGlobalPropertyStartedDescription(module
-				                .getModuleId()));
-				as.setGlobalProperty(gp);
-				Context.removeProxyPrivilege("");
+				try {
+					// save the state of this module for future restarts
+					Context.addProxyPrivilege("");
+					AdministrationService as = Context.getAdministrationService();
+					GlobalProperty gp = new GlobalProperty(module.getModuleId()
+					        + ".started", "true",
+					        getGlobalPropertyStartedDescription(module
+					                .getModuleId()));
+					as.setGlobalProperty(gp);
+				}
+				finally {
+					Context.removeProxyPrivilege("");
+				}
 
 				// (this must be done after putting the module in the started
 				// list)
@@ -649,12 +658,16 @@ public class ModuleFactory {
 			getStartedModulesMap().remove(moduleId);
 
 			if (isShuttingDown == false && !Context.isRefreshingContext()) {
-				Context.addProxyPrivilege("");
-				AdministrationService as = Context.getAdministrationService();
-				GlobalProperty gp = new GlobalProperty(moduleId + ".started",
-				        "false", getGlobalPropertyStartedDescription(moduleId));
-				as.saveGlobalProperty(gp);
-				Context.removeProxyPrivilege("");
+				try {
+					Context.addProxyPrivilege("");
+					AdministrationService as = Context.getAdministrationService();
+					GlobalProperty gp = new GlobalProperty(moduleId + ".started",
+					        "false", getGlobalPropertyStartedDescription(moduleId));
+					as.saveGlobalProperty(gp);
+				}
+				finally {
+					Context.removeProxyPrivilege("");
+				}
 			}
 
 			if (getModuleClassLoaderMap().containsKey(mod)) {

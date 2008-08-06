@@ -141,11 +141,11 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 
 	/**
-     * @see org.openmrs.api.db.PatientDAO#getPatients(java.lang.String, java.lang.String, java.util.List)
+     * @see org.openmrs.api.db.PatientDAO#getPatients(java.lang.String, java.lang.String, java.util.List, boolean)
      */
 	@SuppressWarnings("unchecked")
     public List<Patient> getPatients(String name, String identifier,
-            List<PatientIdentifierType> identifierTypes) throws DAOException {
+            List<PatientIdentifierType> identifierTypes, boolean matchIdentifierExactly) throws DAOException {
 	    
     	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
     	
@@ -201,12 +201,16 @@ public class HibernatePatientDAO implements PatientDAO {
     		if (identifier != null) {
 				AdministrationService adminService = Context.getAdministrationService();
 				String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "");
-		
-	    		// if the regex is empty, default to a simple "like" search or if 
-	    		// we're in hsql world, also only do the simple like search (because
-	    		// hsql doesn't know how to deal with 'regexp'
-	    		if (regex.equals("") || HibernateUtil.isHSQLDialect(sessionFactory)) {
-					String prefix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "");
+				
+				// if the user wants an exact search, match on that.
+	    		if (matchIdentifierExactly) {
+					criteria.add(Expression.eq("ids.identifier", identifier));
+				}
+		    		// if the regex is empty, default to a simple "like" search or if 
+		    		// we're in hsql world, also only do the simple like search (because
+		    		// hsql doesn't know how to deal with 'regexp'
+				else if (regex.equals("") || HibernateUtil.isHSQLDialect(sessionFactory)) {
+	    			String prefix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "");
 					String suffix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "");
 	    			StringBuffer likeString = new StringBuffer(prefix).append(identifier)
 	    			                                                  .append(suffix);

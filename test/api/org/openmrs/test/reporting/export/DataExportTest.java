@@ -13,10 +13,14 @@
  */
 package org.openmrs.test.reporting.export;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.reporting.export.ConceptColumn;
 import org.openmrs.reporting.export.DataExportReportObject;
@@ -37,7 +41,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testCalcuateAge() throws Exception { 
+	@Test
+	public void shouldCalcuateAge() throws Exception { 
 		
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
@@ -90,7 +95,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testFirstNObs() throws Exception {
+	@Test
+	public void shouldFirstNObs() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-obs.xml");
@@ -196,7 +202,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testFirstNObsWithZeroObsReturned() throws Exception {
+	@Test
+	public void shouldFirstNObsWithZeroObsReturned() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-obs.xml");
@@ -249,7 +256,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testFirstObs() throws Exception {
+	@Test
+	public void shouldFirstObs() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-obs.xml");
@@ -318,7 +326,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testLastNObs() throws Exception {
+	@Test
+	public void shouldLastNObs() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-obs.xml");
@@ -392,7 +401,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testDataExportKeyAddition() throws Exception {
+	@Test
+	public void shouldDataExportKeyAddition() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
 		authenticate();
@@ -433,7 +443,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testDataExportKeyRemoval() throws Exception {
+	@Test
+	public void shouldDataExportKeyRemoval() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
 		authenticate();
@@ -481,7 +492,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testDataExportKeyGetting() throws Exception {
+	@Test
+	public void shouldDataExportKeyGetting() throws Exception {
 		// add the key so that we can use it
 		DataExportUtil.putDataExportKey("bob", "joe");
 		
@@ -496,7 +508,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetNames() throws Exception {
+	@Test
+	public void shouldGetNames() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/reporting/export/include/DataExportTest-patients.xml");
 		authenticate();

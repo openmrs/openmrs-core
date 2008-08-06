@@ -441,8 +441,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 					throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
 
 			user.setUserProperty(key, value);
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 			try {
+				Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 				saveUser(user, null);
 			}
 			finally {
@@ -467,8 +467,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 
 			user.removeUserProperty(key);
 			
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 			try {
+				Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 				saveUser(user, null);
 			}
 			finally {

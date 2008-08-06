@@ -575,10 +575,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			                    String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_KEY));
 			systemVariables.put("OPERATING_SYSTEM",
 			                    String.valueOf(OpenmrsConstants.OPERATING_SYSTEM));
-			systemVariables.put("OPERATING_SYSTEM_WINDOWS_XP",
-			                    String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_WINDOWS_XP));
-			systemVariables.put("OPERATING_SYSTEM_LINUX",
-			                    String.valueOf(OpenmrsConstants.OPERATING_SYSTEM_LINUX));
 		}
 		
 		return systemVariables;

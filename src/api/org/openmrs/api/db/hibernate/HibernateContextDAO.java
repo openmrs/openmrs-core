@@ -46,7 +46,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * Hibernate session factory
 	 */
-	public SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 
 	/**
 	 * Default public constructor
@@ -258,8 +258,8 @@ public class HibernateContextDAO implements ContextDAO {
 		try {
 			Connection conn = sessionFactory.getCurrentSession().connection();
 
-			psSelect = conn
-					.prepareStatement("SELECT * FROM role WHERE UPPER(role) = UPPER(?)");
+			// Ticket #900 - Made explicit reference to columns
+			psSelect = conn.prepareStatement("SELECT role, description FROM role WHERE UPPER(role) = UPPER(?)");
 			psInsert = conn.prepareStatement("INSERT INTO role (role, description) VALUES (?, ?)");
 
 			map = OpenmrsConstants.CORE_ROLES();
@@ -282,8 +282,9 @@ public class HibernateContextDAO implements ContextDAO {
 		try {
 			Connection conn = sessionFactory.getCurrentSession().connection();
 
+			// Ticket #900 - Made explicit reference to columns
 			psSelect = conn
-					.prepareStatement("SELECT * FROM privilege WHERE UPPER(privilege) = UPPER(?)");
+					.prepareStatement("SELECT privilege, description FROM privilege WHERE UPPER(privilege) = UPPER(?)");
 			psInsert = conn
 					.prepareStatement("INSERT INTO privilege (privilege, description) VALUES (?, ?)");
 
@@ -307,8 +308,9 @@ public class HibernateContextDAO implements ContextDAO {
 		try {
 			Connection conn = sessionFactory.getCurrentSession().connection();
 
+			// Ticket #900 - Made explicit reference to columns
 			psSelect = conn
-					.prepareStatement("SELECT * FROM global_property WHERE UPPER(property) = UPPER(?)");
+					.prepareStatement("SELECT property, property_value, description FROM global_property WHERE UPPER(property) = UPPER(?)");
 			psInsert = conn
 					.prepareStatement("INSERT INTO global_property (property, property_value, description) VALUES (?, ?, ?)");
 			// this update should only be temporary until everyone has the new global property description code 

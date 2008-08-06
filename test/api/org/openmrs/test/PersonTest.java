@@ -13,12 +13,17 @@
  */
 package org.openmrs.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -31,14 +36,15 @@ import org.openmrs.PersonName;
  * This class does not touch the database, so it does not need to
  * extend the normal openmrs BaseTest
  */
-public class PersonTest extends TestCase {
+public class PersonTest {
 
 	/**
 	 * Test the add/removeAddresses method in the person object 
 	 * 
 	 * @throws Exception
 	 */
-	public void testAddRemoveAddress() throws Exception {
+	@Test
+	public void shouldAddRemoveAddress() throws Exception {
 		
 		Person p = new Person();
 		
@@ -109,7 +115,8 @@ public class PersonTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAddRemoveName() throws Exception {
+	@Test
+	public void shouldAddRemoveName() throws Exception {
 		
 		Person p = new Person();
 		
@@ -187,7 +194,8 @@ public class PersonTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAddRemoveAttribute() throws Exception {
+	@Test
+	public void shouldAddRemoveAttribute() throws Exception {
 		
 		Person p = new Person();
 		
@@ -257,7 +265,8 @@ public class PersonTest extends TestCase {
 		assertTrue("There shouldn't be any attributes in the person object now", p.getAttributes().size() == 0);
 	}
 
-	public void testAge() throws Exception {
+	@Test
+	public void shouldAge() throws Exception {
 		Person p = new Person();
 		assertNull(p.getAge());
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -266,5 +275,34 @@ public class PersonTest extends TestCase {
 		assertEquals(p.getAge(df.parse("2007-04-11")).intValue(), 29);
 		assertEquals(p.getAge(df.parse("2007-04-12")).intValue(), 29);
 		assertEquals(p.getAge(df.parse("2007-04-10")).intValue(), 28);
+	}
+	
+	/**
+	 * Test that setting a person's age correctly sets their birth date 
+	 * and records that this is inexact
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldSetInexactBirthdateFromAge() throws Exception {
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			Person p = new Person();
+			
+			// Test that default values are correct
+			assertNull(p.getAge());
+			assertFalse(p.isBirthdateEstimated());
+
+			// Test standard case and ensure estimated field is set to true
+			p.setBirthdateFromAge(10, df.parse("2008-05-20"));
+			assertEquals(p.getBirthdate(), df.parse("1998-01-01"));
+			assertTrue(p.getBirthdateEstimated());
+			
+			// Test boundary cases
+			p.setBirthdateFromAge(52, df.parse("2002-01-01"));
+			assertEquals(p.getBirthdate(), df.parse("1950-01-01"));
+			p.setBirthdateFromAge(35, df.parse("2004-12-31"));
+			assertEquals(p.getBirthdate(), df.parse("1969-01-01"));
+			p.setBirthdateFromAge(0, df.parse("2008-05-20"));
+			assertEquals(p.getBirthdate(), df.parse("2008-01-01"));
 	}
 }

@@ -9,11 +9,6 @@
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.ConceptSearch");
-	dojo.require("dojo.widget.openmrs.PatientSearch");
-	dojo.require("dojo.widget.openmrs.UserSearch");
-	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
-		
 	dojo.addOnLoad( function() {
 		toggleVisibility(document, "div", "description");
 		toggleRowVisibilityForClass("obs", "voided", true);

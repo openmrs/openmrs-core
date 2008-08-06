@@ -13,6 +13,11 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +28,8 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -43,8 +50,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/test/api/include/EncounterServiceTest-initialData.xml";
 	
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(ENC_INITIAL_DATA_XML);
 		authenticate();
@@ -57,7 +64,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testEncounterCreateUpdateDelete() throws Exception {
+	@Test
+	public void shouldEncounterCreateUpdateDelete() throws Exception {
 		authenticate();
 		
 		EncounterService es = Context.getEncounterService();
@@ -142,7 +150,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testAddObsToEncounter() throws Exception {
+	@Test
+	public void shouldAddObsToEncounter() throws Exception {
 		EncounterService es = Context.getEncounterService();
 		LocationService locationService = Context.getLocationService();
 		PatientService ps = Context.getPatientService();
@@ -181,7 +190,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testEncounterType() throws Exception {
+	@Test
+	public void shouldEncounterType() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		//testing creation
 		

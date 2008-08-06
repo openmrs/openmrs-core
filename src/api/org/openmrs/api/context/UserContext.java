@@ -165,16 +165,19 @@ public class UserContext {
 	
 	/**
 	 * Gives the given privilege to all calls to hasPrivilege. This method was
-	 * visualized as being used as follows:
+	 * visualized as being used as follows (try/finally is important):
 	 * 
-	 * <code>
-	 * Context.addProxyPrivilege("AAA");
-	 * Context.get*Service().methodRequiringAAAPrivilege();
-	 * Context.removeProxyPrivilege("AAA");
-	 * </code>
+	 * <pre>
+	 * try {
+	 *   Context.addProxyPrivilege("AAA");
+	 *   Context.get*Service().methodRequiringAAAPrivilege();
+	 * }
+	 * finally {
+	 *   Context.removeProxyPrivilege("AAA");
+	 * }
+	 * </pre>
 	 * 
-	 * @param privilege
-	 *            to give to users
+	 * @param privilege to give to users
 	 */
 	public void addProxyPrivilege(String privilege) {
 		if (log.isDebugEnabled())

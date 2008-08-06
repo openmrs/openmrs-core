@@ -13,11 +13,17 @@
  */
 package org.openmrs.test.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -25,6 +31,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
@@ -45,8 +52,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	protected AdministrationService adminService = null;
 	protected PersonService personService = null;
 
-	@Override
-	protected void onSetUpInTransaction() throws Exception {
+	@Before
+	public void onSetUpInTransaction() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 
@@ -64,7 +71,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testGetUnvoidedRelationships() throws Exception {
+	@Test
+	public void shouldGetUnvoidedRelationships() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		executeDataSet(CREATE_RELATIONSHIP_XML);
 
@@ -117,6 +125,16 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Person p = personService.getPerson(2);
 		List<Relationship> aRels = personService.getRelationshipsByPerson(p);
 		List<Relationship> bRels = personService.getRelationshipsByPerson(patient);
+		
+		//test loading relationship types real quick.
+		List<RelationshipType> rTmp = personService.getAllRelationshipTypes();
+		assertNotNull(rTmp);
+		RelationshipType rTypeTmp = personService.getRelationshipTypeByName("Doctor/Patient");
+		assertNotNull(rTypeTmp);
+		rTypeTmp = personService.getRelationshipTypeByName("booya");
+		assertNull(rTypeTmp);
+		
+
 		// Uncomment for console output.
 		//System.out.println("Relationships before voiding all:");
 		//System.out.println(aRels);
@@ -146,7 +164,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void testParseTwoPersonName() throws Exception {
+	@Test
+	public void shouldParseTwoPersonNameWithAndWithoutComma() throws Exception {
 		PersonService service = Context.getPersonService();
 		
 		PersonName pname = service.parsePersonName("Doe, John");

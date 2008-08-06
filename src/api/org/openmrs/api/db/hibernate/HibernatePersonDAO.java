@@ -25,8 +25,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.openmrs.Drug;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
+import org.hibernate.type.Type;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -214,12 +216,10 @@ public class HibernatePersonDAO implements PersonDAO {
 		}
 				
 		criteria.add(Expression.eq("personVoided", false));
-		
 		if (dead != null)
-			criteria.add(Expression.eq("dead", dead));
-		
+			criteria.add(Expression.eq("dead", dead));		
 		criteria.addOrder(Order.asc("personId"));
-		
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		return criteria.list();
 	}
 		
@@ -376,9 +376,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	@SuppressWarnings("unchecked")
     public List<RelationshipType> getRelationshipTypes(String relationshipTypeName, Boolean preferred) throws DAOException {
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class, "t");
-		criteria.add(Expression.eq("retired", false));
-		criteria.add(Expression.sql("CONCAT(t.aIsToB, CONCAT('/', t.bIsToA))", relationshipTypeName, new StringType()));
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class);
+		criteria.add(Restrictions.sqlRestriction("CONCAT(a_Is_To_B, CONCAT('/', b_Is_To_A)) like (?)", relationshipTypeName, new StringType()));
 	
 		if (preferred != null)
 			criteria.add(Expression.eq("preferred", preferred));
@@ -388,15 +387,15 @@ public class HibernatePersonDAO implements PersonDAO {
 
 	/**
 	 * @see org.openmrs.api.PatientService#getRelationshipTypes()
-	 * @see org.openmrs.api.db.PersonDAO#getAllRelationshipTypes(boolean)
+	 * @see org.openmrs.api.db.PersonDAO#getAllRelationshipTypes()
 	 */
 	@SuppressWarnings("unchecked")
-	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) throws DAOException {
+	public List<RelationshipType> getAllRelationshipTypes() throws DAOException {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class, "t");
 		
-		if (!includeRetired)
-			criteria.add(Expression.eq("retired", false));
+		/**if (!includeRetired)
+			criteria.add(Expression.eq("retired", false));*/
 		
 		criteria.addOrder(Order.asc("weight"));
 	

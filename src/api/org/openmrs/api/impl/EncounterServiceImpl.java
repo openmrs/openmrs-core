@@ -30,6 +30,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -60,7 +61,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#saveEncounter(org.openmrs.Encounter)
 	 */
-	public void saveEncounter(Encounter encounter) throws APIException {
+	public Encounter saveEncounter(Encounter encounter) throws APIException {
 		Date now = new Date();
 		User me = Context.getAuthenticatedUser();
 		
@@ -150,6 +151,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 				}
 			}
 		}
+		return encounter;
 	}
 
 	/**
@@ -210,7 +212,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#voidEncounter(org.openmrs.Encounter,
 	 *      java.lang.String)
 	 */
-	public void voidEncounter(Encounter encounter, String reason) {
+	public Encounter voidEncounter(Encounter encounter, String reason) {
 		if (reason == null)
 			reason = "";
 
@@ -220,18 +222,26 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 				os.voidObs(o, reason);
 			}
 		}
+		
+		OrderService orderService = Context.getOrderService();
+		for (Order o : encounter.getOrders()) {
+			if (!o.isVoided()) {
+				orderService.voidOrder(o, reason);
+			}
+		}
 
 		encounter.setVoided(true);
 		encounter.setVoidedBy(Context.getAuthenticatedUser());
 		encounter.setDateVoided(new Date());
 		encounter.setVoidReason(reason);
 		saveEncounter(encounter);
+		return encounter;
 	}
 
 	/**
 	 * @see org.openmrs.api.EncounterService#unvoidEncounter(org.openmrs.Encounter)
 	 */
-	public void unvoidEncounter(Encounter encounter) throws APIException {
+	public Encounter unvoidEncounter(Encounter encounter) throws APIException {
 		String voidReason = encounter.getVoidReason();
 		if (voidReason == null)
 			voidReason = "";
@@ -247,6 +257,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		encounter.setDateVoided(null);
 		encounter.setVoidReason(null);
 		saveEncounter(encounter);
+		return encounter;
 	}
 
 	/**
@@ -289,13 +300,14 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#saveEncounterType(org.openmrs.EncounterType)
 	 */
-	public void saveEncounterType(EncounterType encounterType) {
+	public EncounterType saveEncounterType(EncounterType encounterType) {
 		if (encounterType.getCreator() == null) {
 			encounterType.setCreator(Context.getAuthenticatedUser());
 			encounterType.setDateCreated(new Date());
 		}
 		
 		dao.saveEncounterType(encounterType);
+		return encounterType;
 	}
 
 	/**
@@ -339,25 +351,27 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#retireEncounterType(org.openmrs.EncounterType)
 	 */
-	public void retireEncounterType(EncounterType encounterType, String reason)
+	public EncounterType retireEncounterType(EncounterType encounterType, String reason)
 	        throws APIException {
 		encounterType.setRetired(true);
 		encounterType.setRetiredBy(Context.getAuthenticatedUser());
 		encounterType.setDateRetired(new Date());
 		encounterType.setRetireReason(reason);
-		dao.saveEncounterType(encounterType);
+		saveEncounterType(encounterType);
+		return encounterType;
 	}
 
 	/**
 	 * @see org.openmrs.api.EncounterService#unretireEncounterType(org.openmrs.EncounterType)
 	 */
-	public void unretireEncounterType(EncounterType encounterType)
+	public EncounterType unretireEncounterType(EncounterType encounterType)
 	        throws APIException {
 		encounterType.setRetired(false);
 		encounterType.setRetiredBy(null);
 		encounterType.setDateRetired(null);
 		encounterType.setRetireReason(null);
-		dao.saveEncounterType(encounterType);
+		saveEncounterType(encounterType);
+		return encounterType;
 	}
 
 	/**

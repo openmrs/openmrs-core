@@ -426,6 +426,23 @@ public class Person implements java.io.Serializable, Synchronizable {
 			if (attributes.remove(attribute))
 				attributeMap = null;
 	}
+		
+	/**
+	 * Convenience Method
+	 * Returns the first non-voided person attribute matching a person attribute type
+	 * 
+	 * @param pat
+	 * @return PersonAttribute
+	 */
+	public PersonAttribute getAttribute(PersonAttributeType pat) {
+			if (pat != null)
+				for (PersonAttribute attribute : getAttributes()) {
+					if (pat.equals(attribute.getAttributeType()) && !attribute.isVoided()) {
+						return attribute;
+					}
+				}	
+		return null;
+	}
 	
 	/**
 	 * Convenience Method
@@ -434,9 +451,9 @@ public class Person implements java.io.Serializable, Synchronizable {
 	 */
 	public PersonAttribute getAttribute(String attributeName) {
 		if (attributeName != null)
-			for (PersonAttribute attribute : getActiveAttributes()) {
+			for (PersonAttribute attribute : getAttributes()) {
 				PersonAttributeType type = attribute.getAttributeType();
-				if (type != null && attributeName.equals(type.getName())) {
+				if (type != null && attributeName.equals(type.getName()) && !attribute.isVoided()) {
 					return attribute;
 				}
 			}
@@ -451,11 +468,10 @@ public class Person implements java.io.Serializable, Synchronizable {
 	 */
 	public PersonAttribute getAttribute(Integer attributeTypeId) {
 		for (PersonAttribute attribute : getActiveAttributes()) {
-			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId())) {
+			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId()) && !attribute.isVoided()) {
 				return attribute;
 			}
-		}
-		
+		}	
 		return null;
 	}
 	
@@ -465,16 +481,16 @@ public class Person implements java.io.Serializable, Synchronizable {
 	 * @param attribute
 	 */
 	public List<PersonAttribute> getAttributes(String attributeName) {
-		List<PersonAttribute> attributes = new Vector<PersonAttribute>();
+		List<PersonAttribute> ret = new Vector<PersonAttribute>();
 		
 		for (PersonAttribute attribute : getActiveAttributes()) {
 			PersonAttributeType type = attribute.getAttributeType();
-			if (type != null && attributeName.equals(type.getName())) {
-				attributes.add(attribute);
+			if (type != null && attributeName.equals(type.getName()) && !attribute.isVoided()) {
+				ret.add(attribute);
 			}
 		}
 		
-		return attributes;
+		return ret;
 	}
 	
 	/**
@@ -483,15 +499,31 @@ public class Person implements java.io.Serializable, Synchronizable {
 	 * @param attribute
 	 */
 	public List<PersonAttribute> getAttributes(Integer attributeTypeId) {
-		List<PersonAttribute> attributes = new Vector<PersonAttribute>();
+		List<PersonAttribute> ret = new Vector<PersonAttribute>();
 		
 		for (PersonAttribute attribute : getActiveAttributes()) {
-			if (attributeTypeId.equals(attribute.getPersonAttributeId())) {
-				attributes.add(attribute);
+			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId()) && !attribute.isVoided()) {
+				ret.add(attribute);
 			}
 		}
 		
-		return attributes;
+		return ret;
+	}
+	
+	
+	/**
+	 * Convenience Method
+	 * Returns all of this person's attributes that have a PersonAttributeType equal to <code>personAttributeType</code>
+	 * @param attribute
+	 */
+	public List<PersonAttribute> getAttributes(PersonAttributeType personAttributeType) {
+		List<PersonAttribute> ret = new Vector<PersonAttribute>();	
+		for (PersonAttribute attribute : getAttributes()) {
+			if (personAttributeType.equals(attribute.getAttributeType()) && !attribute.isVoided()) {
+				ret.add(attribute);
+			}
+		}	
+		return ret;
 	}
 	
 	/**
@@ -587,7 +619,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	 * @return Returns the "preferred" person name.
 	 */
 	public PersonName getPersonName() {
-		if (names != null && names.size() > 0) {
+		if (getNames() != null && names.size() > 0) {
 			return (PersonName) names.toArray()[0];
 		} else {
 			return new PersonName();
@@ -687,6 +719,24 @@ public class Person implements java.io.Serializable, Synchronizable {
 			age = age -1;
 		
 		return age;
+	}
+	
+	/**
+	 * Convenience method: sets a person's birth date from an age as of the given date
+	 * Also sets flag indicating that the birth date is inexact.
+	 * This sets the person's birth date to January 1 of the year that matches this age and date
+	 * 
+	 * @param age (the age to set)
+	 * @param onDate (null defaults to today)
+	 */
+	public void setBirthdateFromAge(int age, Date ageOnDate) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(ageOnDate == null ? new Date() : ageOnDate);
+		c.set(Calendar.DATE, 1);
+		c.set(Calendar.MONTH, Calendar.JANUARY);
+		c.add(Calendar.YEAR, -1*age);
+		setBirthdate(c.getTime());
+		setBirthdateEstimated(true);
 	}
 	
 	public User getPersonChangedBy() {

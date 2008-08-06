@@ -92,13 +92,13 @@
 			input="${diffFileInput}"
 			regexp="${openmrs.database.version.expected.regexp}"
 			select="\1"
-			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0.0" 
+			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0.00" 
 			casesensitive="false" />
 		<propertyregex property="openmrs.database.version.expected.short"
 			input="${openmrs.database.version.expected}"
 			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.${openmrs.version.maintenance}\.([0-9][0-9]+)"
 			select="\1"
-			defaultValue="Invalid Database Version" />
+			defaultValue="00" />
 		
 		<loadfile srcfile="${openmrs.version.revision.filename}" property="repositoryFileInput" />
 		<if>
@@ -112,11 +112,11 @@
 					defaultValue="? (error with pre-1.4 revision regexp)" />
 			</then>
 			<else>
-				<!-- SVN 1.4+ does not use XML format, just grab 4th line -->
+				<!-- SVN 1.4+ does not use XML format, just grab 11th line -->
 				<propertyregex property="openmrs.version.revision"
 					input="${repositoryFileInput}"
-					regexp="^(.*)\n(.*)\n(.*)\n(.*)"
-					select="\4"
+					regexp="^(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n"
+					select="\11"
 					defaultValue="? (error in post-1.4 revision regexp)" />				
 			</else>
 		</if>
@@ -277,7 +277,9 @@
 				<include name="**/*.tag"/>
 				<include name="**/messages*.properties"/>
 				<include name="**/images/**/*" />
-			</fileset>			
+				<!-- This fileset doesn't exclude /web/test so that 
+					 developers can easily test files -->
+			</fileset>
 		</copy>
 	</target>
 
@@ -336,7 +338,7 @@
 	</target>
 	
 	<target name="package-web" depends="package-web-init" description="create webapp war file">
-		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml" webxml="${dist.dir}/web/web.xml" duplicate="add">
+		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml, **/test/" webxml="${dist.dir}/web/web.xml" duplicate="add">
 			<classes dir="${build.dir}">
 				<include name="**/web/**/*.class" />
 				<include name="log4j.xml" />
@@ -363,7 +365,7 @@
 	</target>
 	
 	<target name="package-web-without-libs" depends="package-web-init" description="create webapp war file without libs">
-		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml" webxml="${dist.dir}/web/web.xml" duplicate="add">
+		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml, **/test/" webxml="${dist.dir}/web/web.xml" duplicate="add">
 			<classes dir="${build.dir}" >
 				<include name="**/web/**/*.class" />
 				<include name="log4j.xml" />

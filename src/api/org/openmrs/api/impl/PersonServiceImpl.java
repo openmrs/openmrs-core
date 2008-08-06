@@ -586,15 +586,7 @@ public class PersonServiceImpl implements PersonService {
      * @see org.openmrs.api.PersonService#getAllRelationshipTypes()
      */
     public List<RelationshipType> getAllRelationshipTypes() throws APIException {
-	    return getAllRelationshipTypes(true);
-    }
-
-	/**
-     * @see org.openmrs.api.PersonService#getAllRelationshipTypes(boolean)
-     */
-    public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired)
-            throws APIException {
-	    return dao.getAllRelationshipTypes(includeRetired);
+	    return dao.getAllRelationshipTypes();
     }
 
 	/**

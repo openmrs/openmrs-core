@@ -313,9 +313,9 @@ public final class OpenmrsConstants {
 	/**
 	 * @deprecated replacing with ADD/EDIT/DELETE privileges
 	 */
+	public static final String PRIV_BACKUP_ENTIRE_DATABASE = "Backup Entire Database";
+	 
 	public static final String PRIV_MANAGE_RELATIONSHIPS = "Manage Relationships";
-    
-    public static final String PRIV_BACKUP_ENTIRE_DATABASE = "Backup Entire Database";
 	
 	public static final String PRIV_VIEW_RELATIONSHIPS = "View Relationships";
 	public static final String PRIV_ADD_RELATIONSHIPS = "Add Relationships";
@@ -324,6 +324,7 @@ public final class OpenmrsConstants {
 	public static final String PRIV_PURGE_RELATIONSHIPS = "Purge Relationships";
 	
 	public static final String PRIV_VIEW_DATAENTRY_STATS = "View Data Entry Statistics";
+	
 	/**
 	 * Cached list of core privileges 
 	 */
@@ -545,7 +546,7 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_GZIP_ENABLED                = "gzip.enabled";
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
 	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS           = "report.xmlMacros";
-	public static final String GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS      = "dashboard.regimen.standardRegimens";	
+	public static final String GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS      = "dashboard.regimen.standardRegimens";
 	public static final String GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR = "patient.defaultPatientIdentifierValidator";	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES = "patient_identifier.importantTypes";
 	
@@ -863,23 +864,25 @@ public final class OpenmrsConstants {
 	
 	// Used for differences between windows/linux upload capabilities)
 	// Used for determining where to find runtime properties
-	public static String OPERATING_SYSTEM_KEY = "os.name";
-	public static String OPERATING_SYSTEM = System.getProperty(OPERATING_SYSTEM_KEY);
-	public static String OPERATING_SYSTEM_WINDOWS_XP = "Windows XP";
-	public static String OPERATING_SYSTEM_WINDOWS_VISTA = "Windows Vista";
-	public static String OPERATING_SYSTEM_LINUX = "Linux";
-	public static String OPERATING_SYSTEM_FREEBSD = "FreeBSD";	
-	public static String OPERATING_SYSTEM_MAC_OSX = "Mac OS X";
-
+	public static final String OPERATING_SYSTEM_KEY = "os.name";
+	public static final String OPERATING_SYSTEM = System.getProperty(OPERATING_SYSTEM_KEY);
+	public static final String OPERATING_SYSTEM_WINDOWS_XP = "Windows XP";
+	public static final String OPERATING_SYSTEM_WINDOWS_VISTA = "Windows Vista";
+	public static final String OPERATING_SYSTEM_LINUX = "Linux";
+	public static final String OPERATING_SYSTEM_SUNOS = "SunOS";
+	public static final String OPERATING_SYSTEM_FREEBSD = "FreeBSD";
+	public static final String OPERATING_SYSTEM_OSX = "Mac OS X";
+		
     // Shortcut booleans used to make some OS specific checks
     // more generic; note the un*x flavored check is missing
     // some less obvious choices
-	public static boolean UNIX_BASED_OPERATING_SYSTEM = 
+	public static final boolean UNIX_BASED_OPERATING_SYSTEM = 
         (OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_LINUX) > -1 ||
+         OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_SUNOS) > -1 ||
          OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_FREEBSD) > -1 ||
-         OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_MAC_OSX) > -1);
-    public static boolean WINDOWS_BASED_OPERATING_SYSTEM = OPERATING_SYSTEM.indexOf("Windows") > -1;
-    public static boolean WINDOWS_VISTA_OPERATING_SYSTEM = 
+         OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_OSX) > -1);
+    public static final boolean WINDOWS_BASED_OPERATING_SYSTEM = OPERATING_SYSTEM.indexOf("Windows") > -1;
+    public static final boolean WINDOWS_VISTA_OPERATING_SYSTEM = 
 		OPERATING_SYSTEM.equals(OPERATING_SYSTEM_WINDOWS_VISTA);
 		
 	/**

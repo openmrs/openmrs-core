@@ -19,6 +19,7 @@ import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.junit.Test;
 
 /**
  * This class can be run like a junit test, but it is not actually a test. JUnit
@@ -34,7 +35,8 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	public void createInitialTestDataSetXmlFile() throws Exception {
+	@Test
+	public void shouldCreateInitialTestDataSetXmlFile() throws Exception {
 		
 		// only run this test if it is being run alone.
 		// this allows the junit-report ant target and the "right-
@@ -48,14 +50,11 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
         
         // partial database export
         QueryDataSet initialDataSet = new QueryDataSet(connection);       
-/*
         initialDataSet.addTable("concept", "SELECT * FROM concept");
         initialDataSet.addTable("concept_answer", "SELECT * FROM concept_answer");
         initialDataSet.addTable("concept_class", "SELECT * FROM concept_class");
         initialDataSet.addTable("concept_datatype", "SELECT * FROM concept_datatype");
-*/
         initialDataSet.addTable("concept_name", "SELECT * FROM concept_name");
-/*
         initialDataSet.addTable("concept_numeric", "SELECT * FROM concept_numeric");
         initialDataSet.addTable("concept_set", "SELECT * FROM concept_set");
         initialDataSet.addTable("concept_synonym", "SELECT * FROM concept_synonym");

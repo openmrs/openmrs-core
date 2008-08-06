@@ -27,6 +27,7 @@ public class DrugOrderListItem {
 	private Integer orderId;
 	private Integer orderTypeId;
 	private Integer conceptId;
+	private String conceptName;
 	private String instructions;
 	private String startDate;
 	private String autoExpireDate;
@@ -58,7 +59,10 @@ public class DrugOrderListItem {
 	public DrugOrderListItem(DrugOrder drugOrder) {
 		orderId = drugOrder.getOrderId();
 		if ( drugOrder.getOrderType() != null ) orderTypeId = drugOrder.getOrderType().getOrderTypeId();
-		if ( drugOrder.getConcept() != null ) conceptId = drugOrder.getConcept().getConceptId();
+		if ( drugOrder.getConcept() != null ) {
+			conceptId = drugOrder.getConcept().getConceptId();
+			conceptName = drugOrder.getConcept().getName().getName();
+		}
 		instructions = drugOrder.getInstructions();
 
 		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
@@ -505,5 +509,13 @@ public class DrugOrderListItem {
 	@Override
 	public int hashCode() {
 		return this.orderId;
-	}	
+	}
+
+	public String getConceptName() {
+    	return conceptName;
+    }
+
+	public void setConceptName(String conceptName) {
+    	this.conceptName = conceptName;
+    }	
 }
