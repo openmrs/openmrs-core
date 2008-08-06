@@ -312,9 +312,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
     public static URL expandURL(URL result, File folder) {
 		String extForm = result.toExternalForm();
 		// trim out "jar:file:/ and ascii spaces"
-		if (OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
-			OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
-            OpenmrsConstants.OPERATING_SYSTEM_OSX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
+		if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM)
 			extForm = extForm.replaceFirst("jar:file:", "").replaceAll("%20", " ");
 		else
 			extForm = extForm.replaceFirst("jar:file:/", "").replaceAll("%20", " ");
