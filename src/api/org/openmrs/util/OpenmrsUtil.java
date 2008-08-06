@@ -887,9 +887,7 @@ public class OpenmrsUtil {
     		filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
     	}
     	else {
-	        if (OpenmrsConstants.OPERATING_SYSTEM_LINUX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
-	                OpenmrsConstants.OPERATING_SYSTEM_FREEBSD.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM) || 
-	                OpenmrsConstants.OPERATING_SYSTEM_OSX.equalsIgnoreCase(OpenmrsConstants.OPERATING_SYSTEM))
+	        if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM)
 				filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
 			else
 				filepath = System.getProperty("user.home") + File.separator + 

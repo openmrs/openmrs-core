@@ -853,23 +853,25 @@ public final class OpenmrsConstants {
 	
 	// Used for differences between windows/linux upload capabilities)
 	// Used for determining where to find runtime properties
-	public static String OPERATING_SYSTEM_KEY = "os.name";
-	public static String OPERATING_SYSTEM = System.getProperty(OPERATING_SYSTEM_KEY);
-	public static String OPERATING_SYSTEM_WINDOWS_XP = "Windows XP";
-	public static String OPERATING_SYSTEM_WINDOWS_VISTA = "Windows Vista";
-	public static String OPERATING_SYSTEM_LINUX = "Linux";
-	public static String OPERATING_SYSTEM_FREEBSD = "FreeBSD";
-	public static String OPERATING_SYSTEM_OSX = "Mac OS X";
+	public static final String OPERATING_SYSTEM_KEY = "os.name";
+	public static final String OPERATING_SYSTEM = System.getProperty(OPERATING_SYSTEM_KEY);
+	public static final String OPERATING_SYSTEM_WINDOWS_XP = "Windows XP";
+	public static final String OPERATING_SYSTEM_WINDOWS_VISTA = "Windows Vista";
+	public static final String OPERATING_SYSTEM_LINUX = "Linux";
+	public static final String OPERATING_SYSTEM_SUNOS = "SunOS";
+	public static final String OPERATING_SYSTEM_FREEBSD = "FreeBSD";
+	public static final String OPERATING_SYSTEM_OSX = "Mac OS X";
 		
     // Shortcut booleans used to make some OS specific checks
     // more generic; note the un*x flavored check is missing
     // some less obvious choices
-	public static boolean UNIX_BASED_OPERATING_SYSTEM = 
+	public static final boolean UNIX_BASED_OPERATING_SYSTEM = 
         (OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_LINUX) > -1 ||
+         OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_SUNOS) > -1 ||
          OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_FREEBSD) > -1 ||
          OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_OSX) > -1);
-    public static boolean WINDOWS_BASED_OPERATING_SYSTEM = OPERATING_SYSTEM.indexOf("Windows") > -1;
-    public static boolean WINDOWS_VISTA_OPERATING_SYSTEM = 
+    public static final boolean WINDOWS_BASED_OPERATING_SYSTEM = OPERATING_SYSTEM.indexOf("Windows") > -1;
+    public static final boolean WINDOWS_VISTA_OPERATING_SYSTEM = 
 		OPERATING_SYSTEM.equals(OPERATING_SYSTEM_WINDOWS_VISTA);
 		
 	/**
