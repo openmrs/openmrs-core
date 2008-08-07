@@ -103,6 +103,7 @@ public class HibernateCohortDAO implements CohortDAO {
     	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
     	
    		criteria.add(Restrictions.eq("name", name));
+   		criteria.add(Restrictions.eq("voided", false));
     	
     	return (Cohort) criteria.uniqueResult();
     }
