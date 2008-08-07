@@ -13,28 +13,22 @@
  */
 package org.openmrs.test;
 
+import org.springframework.test.context.ContextConfiguration;
+
 /**
  * Modules using the unit test framework should use this class instead of
  * {@link BaseContextSensitiveTest}.
  * 
  * Developers need to fill in the {@link #getModulesToLoad()} method with their
  * current module's omod location and any dependent omods
+ * 
+ * The ContextConfiguration annotation adds in the module application context 
+ * files to the config locations and the test application context (so that 
+ * the module services are loaded from the system classloader)
  */
+@ContextConfiguration(locations={"classpath:applicationContext-service.xml", 
+								"classpath*:TestingApplicationContext.xml", 
+								"classpath*:moduleApplicationContext.xml"}, inheritLocations=false)
 public abstract class BaseModuleContextSensitiveTest extends BaseContextSensitiveTest {
-	
-    /**
-	 * Add in the module application context files to the config locations and
-	 * the test application context (so that the module services are loaded from
-	 * the system classloader)
-	 * 
-	 * @return Array of String locations for the application context files
-	 */
-	protected String[] getConfigLocations() {
-	    return new String[] {
-	    		"classpath:applicationContext-service.xml",
-	    		"classpath*:TestingApplicationContext.xml",
-	    		"classpath*:moduleApplicationContext.xml"
-	    };
-	}
 	
 }
