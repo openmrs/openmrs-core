@@ -18,8 +18,8 @@
 			not-null="true" length="1000" />
 
 		<set name="memberIds" cascade="none" lazy="true" table="cohort_member">
-			<key column="cohort_id"/>
-		    <element column="patient_id" type="integer"/>
+			<key column="cohort_id" not-null="true"/>
+		    <element column="patient_id" type="integer" not-null="true"/>
 		</set>
 
 		<property name="dateCreated" type="java.util.Date"
