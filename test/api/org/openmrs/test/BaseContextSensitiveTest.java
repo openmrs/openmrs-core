@@ -196,7 +196,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			runtimeProperties.setProperty(Environment.PASS, "");
 			
 			// these two properties need to be set in case the user has this exact
-			// phrasing in their runtime file.  If 
+			// phrasing in their runtime file.
 			runtimeProperties.setProperty("connection.username", "sa");
 			runtimeProperties.setProperty("connection.password", "");
 			
