@@ -32,6 +32,7 @@ import org.hibernate.EmptyInterceptor;
 import org.hibernate.LazyInitializationException;
 import org.hibernate.CallbackException;
 import org.hibernate.SessionFactory;
+import org.springframework.util.StringUtils;
 import org.hibernate.Transaction;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
@@ -370,15 +371,17 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		if (log.isDebugEnabled())
 			log.debug("onSave: " + state.toString());
 		
+		boolean isGuidAssigned = assignGUID((Synchronizable) entity, state, propertyNames, SyncItemState.NEW);
+
 		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
-			return false;
+			return isGuidAssigned;
 
 		// first see if entity should be written to the journal at all
 		if (!this.shouldSynchronize(entity)) {
 			if (log.isDebugEnabled())
 				log.debug("Determined entity not to be journaled, exiting onSave.");
-			return false;
+			return isGuidAssigned;
 		}
 
 		// create new flush holder if needed
@@ -417,15 +420,17 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		if (log.isDebugEnabled())
 			log.debug("onFlushDirty: " + entity.getClass().getName());
 		
+		boolean isGuidAssigned = assignGUID((Synchronizable) entity, currentState, propertyNames, SyncItemState.UPDATED);
+
 		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
-			return false;
+			return isGuidAssigned;
 
 		// first see if entity should be written to the journal at all
 		if (!this.shouldSynchronize(entity)) {
 			if (log.isDebugEnabled())
 				log.debug("Determined entity not to be journaled, exiting onSave.");
-			return false;
+			return isGuidAssigned;
 		}
 
 		/*
@@ -582,6 +587,76 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 
 		this.processPersistentSet((PersistentSet) collection, key, "update");
 	}
+	
+	/**
+	 * Populates a Serializable Entity with a new GUID if needed
+	 * GUID is assigned under the following circumstances:
+	 * - objectGuid is null or "" 
+	 *   and
+	 *     - if SyncItemState is NEW assign new GUID
+	 *     - else if SyncItemState != NEW, verify that the GUID doesn't already exist in the DB for the primary key value; 
+	 *     - if it doesn't, assign new GUID
+	 *      - else fill-in existing GUID
+	 *     
+	 * Note 1: dataChanged is also set to true to let Hibernate know we are changing a record right underneath of it.
+	 *     
+	 * Note 2: verification if GUID already exists for given primary key value is important in preventing inadvertent 
+	 * data corruption when client code does not retrieve GUID value when updating existing domain object. 
+	 * For example this following code would result in overriding the GUID for concept_id of 5089:
+	 * //update existing concept
+	 * Concept wt =  new ConceptNumeric(5089);
+	 * wt.addName(new ConceptName("WEIGHT (KG)",...)
+	 * Context.getConceptService().updateConcept(wt, true);
+	 * 
+	 * In order to avoid all client code having to perform guid retrieval in situations like above, we will do this check here.
+	 *     
+	 * @param entity The object changed.
+	 * @param currentState Array containing data for each field in the object as they will be saved.
+	 * @param propertyNames Array containing name for each field in the object, corresponding to currentState.
+	 * @param types Array containing Type of the field in the object, corresponding to currentState.
+	 * @param state SyncItemState, e.g. NEW, UPDATED, DELETED
+	 * @param id Value of the identifier for this entity
+	 * @return True if data was altered, false otherwise.
+	 */
+	protected boolean assignGUID(Synchronizable entity, Object[] currentState, String[] propertyNames, SyncItemState state) throws SyncException {
+		
+		/*
+		 * Clear GUID if it is invalid: if this is save event that is 'local' (i.e. getLastRecordGuid not
+		 * yet assigned) *and* GUID is already assigned, clear it out and get a new one: this can happen 
+		 * is someone does object copy and has incorrect constructor or if object is disconnected from
+		 * session and then saved anew; as in obs edit
+		 */
+		if (state == SyncItemState.NEW && entity.getGuid() != null && entity.getLastRecordGuid() == null) {
+			entity.setGuid(null);
+		}
+		
+		// If entity already has a GUID on this server, no need to assign a new one
+		if (StringUtils.hasText(entity.getGuid())) {
+			if (log.isDebugEnabled()) log.debug("Entity: " + entity + " already has a GUID assigned: " + entity.getGuid());
+			return false;
+		}
+
+		// Iterate over properties and identify GUID, if it exists
+		for (int i = 0; i < propertyNames.length; i++) {
+			String propName = propertyNames[i];
+			if ("guid".equalsIgnoreCase(propName)) {
+				String guidToAssign = null;
+				if (state != SyncItemState.NEW) { // attempt to fetch first
+					guidToAssign = this.fetchGuid(entity);
+				}
+				if (StringUtils.hasText(guidToAssign)) {
+					if (log.isDebugEnabled()) log.debug("Assigned GUID to entity: " + entity + " from database GUID: " + guidToAssign);
+				}
+				else {
+					guidToAssign = UUID.randomUUID().toString();
+					if (log.isDebugEnabled()) log.debug("Assigned newly generated GUID to entity: " + entity + ": " + guidToAssign);
+				}
+				currentState[i] = guidToAssign;
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Serializes and packages an intercepted change in object state.
@@ -632,21 +707,10 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		HashMap<String, PropertyClassValue> values = new HashMap<String, PropertyClassValue>();
 
 		try {
-
-			/*
-			 * Get the GUID of this object if it has one, used as SyncItemKey.
-			 * if this is save event that is 'local' (i.e. getLastRecordGuid not
-			 * yet assigned) *and* guid is already assigned, clear it out and
-			 * get a new one: this can happen is someone does object copy and
-			 * has incorrect constructor or if object is disconnected from
-			 * session and then saved anew; as in obs edit
-			 */
-			if (state == SyncItemState.NEW && entity.getGuid() != null
-			        && entity.getLastRecordGuid() == null) {
-				entity.setGuid(null);
-			} else {
-				objectGuid = entity.getGuid();
-			}
+			
+			boolean isGuidAssigned = assignGUID(entity, currentState, propertyNames, state);
+			objectGuid = entity.getGuid();
+			dataChanged = dataChanged || isGuidAssigned;
 
 			// pull-out sync-network wide change id, if one was already assigned
 			// (i.e. this change is coming from some other server)
@@ -717,52 +781,6 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 				        && log.isInfoEnabled())
 					log.warn(infoMsg + ", Id for this class: " + idPropertyName
 					        + " , value:" + currentState[i]);
-
-				/*
-				 * GUID assignment. GUID is assigned under the following circumstances:
-				 * - objectGuid is null or "" 
-				 * and
-				 * - if SyncItemState is NEW assign new GUID
-				 * - else if SyncItemState != NEW, verify that the guid doesn't already exist in the DB
-				 *   for the primary key value; 
-				 *    - if it doesn't,  assign new GUID
-				 *    - else fill-in existing GUID
-				 *    
-				 * Note 1: dataChanged is also set to true to let Hibernate know
-				 * we are changing a record right underneath of it.
-				 * 
-				 * Note 2: verification if GUID already exists for given primary key value is important in 
-				 * preventing inadvertent data corruption when client code does not retrieve
-				 * GUID value when updating existing domain object. Fro example this following code
-				 * would result in overriding the GUID for concept_id of 5089:
-				 * 		  //update existing concept
-				 *        Concept wt =  new ConceptNumeric(5089);
-        		 *	      wt.addName(new ConceptName("WEIGHT (KG)",...)
-        		 *		  Context.getConceptService().updateConcept(wt, true);
-        		 * 
-        		 *   In order to avoid all client code having to perform guid retrieval in situations like
-        		 *   above, we will do this check here.
-				 */
-				if (typeName.equals("string")
-				        && propertyNames[i].equals("guid")
-				        && (objectGuid == null || objectGuid.equals(""))) {
-					
-					String msg = "";
-					if (state != SyncItemState.NEW) { // attempt to fetch first
-						objectGuid = this.fetchGuid(entity);
-						msg = ", assigned guid for existing record from DB:";
-					}
-					
-					if (objectGuid == null || objectGuid.equals("")) {
-						objectGuid = UUID.randomUUID().toString();
-						msg = ", assigned newly generated guid:";
-					};
-					
-					currentState[i] = objectGuid;
-					dataChanged = true;
-					if (log.isInfoEnabled())
-						log.info(infoMsg + msg + currentState[i]);
-				}
 
 				if (currentState[i] != null) {
 					// is this the primary key or transient? if so, we don't
