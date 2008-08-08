@@ -16,14 +16,13 @@ package org.openmrs;
 import java.util.Date;
 
 /**
- * EncounterType 
- * @version 1.0
+ * An EncounterType defines how a certain kind of {@link Encounter}.
+ * 
+ * @see Encounter
  */
 public class EncounterType implements java.io.Serializable {
 
 	public static final long serialVersionUID = 789L;
-
-	// Fields
 
 	private Integer encounterTypeId;
 	private String name;
@@ -45,6 +44,18 @@ public class EncounterType implements java.io.Serializable {
 	public EncounterType(Integer encounterTypeId) {
 		this.encounterTypeId = encounterTypeId;
 	}
+	
+	/**
+	 * Required values constructor.  This is the minimum number of values
+	 * that must be non-null in order to have a successful save to the database
+	 * 
+	 * @param name the name of this encounter type
+	 * @param description a short description of why this encounter type exists
+	 */
+	public EncounterType(String name, String description) {
+		this.name = name;
+		this.description = description;
+	}
 
 	/** 
 	 * Compares two EncounterType objects for similarity
@@ -53,13 +64,19 @@ public class EncounterType implements java.io.Serializable {
 	 * @return boolean true/false whether or not they are the same objects
 	 */
 	public boolean equals(Object obj) {
-		if (encounterTypeId == null || obj == null || !(obj instanceof EncounterType))
+		if (obj == null || !(obj instanceof EncounterType))
 			return false;
 		
 		EncounterType encounterType = (EncounterType) obj;
-		return (this.encounterTypeId.equals(encounterType.getEncounterTypeId()));
+		if (this.encounterTypeId != null && encounterType.getEncounterTypeId() != null)
+			return (this.encounterTypeId.equals(encounterType.getEncounterTypeId()));
+		else
+			return this == encounterType;
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getEncounterTypeId() == null) return super.hashCode();
 		return this.getEncounterTypeId().hashCode();
