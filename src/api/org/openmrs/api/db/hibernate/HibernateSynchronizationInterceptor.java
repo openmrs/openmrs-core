@@ -371,7 +371,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		if (log.isDebugEnabled())
 			log.debug("onSave: " + state.toString());
 		
-		boolean isGuidAssigned = assignGUID((Synchronizable) entity, state, propertyNames, SyncItemState.NEW);
+		boolean isGuidAssigned = assignGUID(entity, state, propertyNames, SyncItemState.NEW);
 
 		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
@@ -420,7 +420,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		if (log.isDebugEnabled())
 			log.debug("onFlushDirty: " + entity.getClass().getName());
 		
-		boolean isGuidAssigned = assignGUID((Synchronizable) entity, currentState, propertyNames, SyncItemState.UPDATED);
+		boolean isGuidAssigned = assignGUID(entity, currentState, propertyNames, SyncItemState.UPDATED);
 
 		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
@@ -618,7 +618,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 	 * @param id Value of the identifier for this entity
 	 * @return True if data was altered, false otherwise.
 	 */
-	protected boolean assignGUID(Synchronizable entity, Object[] currentState, String[] propertyNames, SyncItemState state) throws SyncException {
+	protected boolean assignGUID(Object entity, Object[] currentState, String[] propertyNames, SyncItemState state) throws SyncException {
 		
 		/*
 		 * Clear GUID if it is invalid: if this is save event that is 'local' (i.e. getLastRecordGuid not
@@ -626,14 +626,17 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		 * is someone does object copy and has incorrect constructor or if object is disconnected from
 		 * session and then saved anew; as in obs edit
 		 */
-		if (state == SyncItemState.NEW && entity.getGuid() != null && entity.getLastRecordGuid() == null) {
-			entity.setGuid(null);
-		}
-		
-		// If entity already has a GUID on this server, no need to assign a new one
-		if (StringUtils.hasText(entity.getGuid())) {
-			if (log.isDebugEnabled()) log.debug("Entity: " + entity + " already has a GUID assigned: " + entity.getGuid());
-			return false;
+		if (entity instanceof Synchronizable) {
+			Synchronizable syncEntity = (Synchronizable) entity;
+			if (state == SyncItemState.NEW && syncEntity.getGuid() != null && syncEntity.getLastRecordGuid() == null) {
+				syncEntity.setGuid(null);
+			}
+			
+			// If entity already has a GUID on this server, no need to assign a new one
+			if (StringUtils.hasText(syncEntity.getGuid())) {
+				if (log.isDebugEnabled()) log.debug("Entity: " + syncEntity + " already has a GUID assigned: " + syncEntity.getGuid());
+				return false;
+			}
 		}
 
 		// Iterate over properties and identify GUID, if it exists
@@ -641,8 +644,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			String propName = propertyNames[i];
 			if ("guid".equalsIgnoreCase(propName)) {
 				String guidToAssign = null;
-				if (state != SyncItemState.NEW) { // attempt to fetch first
-					guidToAssign = this.fetchGuid(entity);
+				if (state != SyncItemState.NEW && entity instanceof Synchronizable) { // attempt to fetch first
+					guidToAssign = this.fetchGuid((Synchronizable)entity);
 				}
 				if (StringUtils.hasText(guidToAssign)) {
 					if (log.isDebugEnabled()) log.debug("Assigned GUID to entity: " + entity + " from database GUID: " + guidToAssign);
