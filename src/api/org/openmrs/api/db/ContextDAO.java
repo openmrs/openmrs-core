@@ -15,7 +15,6 @@ package org.openmrs.api.db;
 
 import java.util.Properties;
 
-import org.hibernate.Session;
 import org.openmrs.User;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,13 +80,6 @@ public interface ContextDAO {
 	 */
 	@Transactional
 	public void shutdown();
-	
-	/**
-	 * Compares core data against the current database and 
-	 * inserts data into the database where necessary
-	 */
-	@Transactional
-	public void checkCoreDataset();
 	
 	public void closeDatabaseConnection();
 	

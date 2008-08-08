@@ -463,16 +463,14 @@ public class ModuleFactory {
 
 				try {
 					// save the state of this module for future restarts
-					Context.addProxyPrivilege("");
-					AdministrationService as = Context.getAdministrationService();
-					GlobalProperty gp = new GlobalProperty(module.getModuleId()
-					        + ".started", "true",
-					        getGlobalPropertyStartedDescription(module
-					                .getModuleId()));
-					as.setGlobalProperty(gp);
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_GLOBAL_PROPERTIES);
+					GlobalProperty gp = new GlobalProperty(module.getModuleId() + ".started", "true", getGlobalPropertyStartedDescription(module.getModuleId()));
+					Context.getAdministrationService().saveGlobalProperty(gp);
 				}
 				finally {
-					Context.removeProxyPrivilege("");
+					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_GLOBAL_PROPERTIES);
 				}
 
 				// (this must be done after putting the module in the started

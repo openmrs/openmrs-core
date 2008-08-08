@@ -13,11 +13,6 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -29,11 +24,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
-import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.ContextDAO;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.Security;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
@@ -241,103 +234,6 @@ public class HibernateContextDAO implements ContextDAO {
 			// sessionFactory = null;
 		} else
 			log.error("SessionFactory is null");
-
-	}
-
-	/**
-	 * Compares core data against the current database and inserts data into the
-	 * database where necessary
-	 */
-	public void checkCoreDataset() {
-		PreparedStatement psSelect;
-		PreparedStatement psInsert;
-		PreparedStatement psUpdate;
-		Map<String, String> map;
-
-		// setting core roles
-		try {
-			Connection conn = sessionFactory.getCurrentSession().connection();
-
-			// Ticket #900 - Made explicit reference to columns
-			psSelect = conn.prepareStatement("SELECT role, description FROM role WHERE UPPER(role) = UPPER(?)");
-			psInsert = conn.prepareStatement("INSERT INTO role (role, description) VALUES (?, ?)");
-
-			map = OpenmrsConstants.CORE_ROLES();
-			for (String role : map.keySet()) {
-				psSelect.setString(1, role);
-				ResultSet result = psSelect.executeQuery();
-				if (!result.next()) {
-					psInsert.setString(1, role);
-					psInsert.setString(2, map.get(role));
-					psInsert.execute();
-				}
-			}
-
-			conn.commit();
-		} catch (Exception e) {
-			log.error("Error while setting core roles for openmrs system", e);
-		}
-
-		// setting core privileges
-		try {
-			Connection conn = sessionFactory.getCurrentSession().connection();
-
-			// Ticket #900 - Made explicit reference to columns
-			psSelect = conn
-					.prepareStatement("SELECT privilege, description FROM privilege WHERE UPPER(privilege) = UPPER(?)");
-			psInsert = conn
-					.prepareStatement("INSERT INTO privilege (privilege, description) VALUES (?, ?)");
-
-			map = OpenmrsConstants.CORE_PRIVILEGES();
-			for (String priv : map.keySet()) {
-				psSelect.setString(1, priv);
-				ResultSet result = psSelect.executeQuery();
-				if (!result.next()) {
-					psInsert.setString(1, priv);
-					psInsert.setString(2, map.get(priv));
-					psInsert.execute();
-				}
-			}
-
-			conn.commit();
-		} catch (SQLException e) {
-			log.error("Error while setting core privileges", e);
-		}
-
-		// setting core global properties
-		try {
-			Connection conn = sessionFactory.getCurrentSession().connection();
-
-			// Ticket #900 - Made explicit reference to columns
-			psSelect = conn
-					.prepareStatement("SELECT property, property_value, description FROM global_property WHERE UPPER(property) = UPPER(?)");
-			psInsert = conn
-					.prepareStatement("INSERT INTO global_property (property, property_value, description) VALUES (?, ?, ?)");
-			// this update should only be temporary until everyone has the new global property description code 
-			psUpdate = conn
-					.prepareStatement("UPDATE global_property SET description = ? WHERE UPPER(property) = UPPER(?) AND description IS null");
-
-			for (GlobalProperty gp : OpenmrsConstants.CORE_GLOBAL_PROPERTIES()) {
-				psSelect.setString(1, gp.getProperty());
-				ResultSet result = psSelect.executeQuery();
-				if (!result.next()) {
-					psInsert.setString(1, gp.getProperty());
-					psInsert.setString(2, gp.getPropertyValue());
-					psInsert.setString(3, gp.getDescription());
-					psInsert.execute();
-				}
-				else {
-					// should only be temporary 
-					psUpdate.setString(1, gp.getDescription());
-					psUpdate.setString(2, gp.getProperty());
-					psUpdate.execute();
-				}
-			}
-
-			conn.commit();
-		} catch (SQLException e) {
-			log.error("Error while setting core global properties", e);
-		}
 
 	}
 

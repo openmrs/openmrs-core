@@ -172,40 +172,40 @@ CREATE PROCEDURE sync_setup_procedure()
 	       update global_property set property_value = uuid() where property = 'synchronization.server_guid';
 	    end if;
 	 else
-	    insert into global_property (property, property_value, description)
+	    insert into global_property (property, property_value, description, guid)
 	    values ('synchronization.server_guid',
 	           uuid(),
-	           'Globally unique server id used to identify a given data source in synchronization.');
+	           'Globally unique server id used to identify a given data source in synchronization.', uuid());
 	 end if;
 
 	 # Create/fill-in server name global property
 	 if (SELECT count(*) FROM global_property where property = 'synchronization.server_name') > 0  then
        select 'server name already assigned, no change made' from dual;
 	 else
-	    insert into global_property (property, property_value, description)
-	    values ('synchronization.server_name', '', 'Display name for this server, to distinguish it from other servers.');
+	    insert into global_property (property, property_value, description, guid)
+	    values ('synchronization.server_name', '', 'Display name for this server, to distinguish it from other servers.', uuid());
 	 end if;
 
 	 # Create/fill-in admin email global property
 	 if (SELECT count(*) FROM global_property where property = 'synchronization.admin_email') > 0  then
        select 'administrator email already assigned, no change made' from dual;
 	 else
-	    insert into global_property (property, property_value, description)
-	    values ('synchronization.admin_email', '', 'Email address for administrator responsible for this server.');
+	    insert into global_property (property, property_value, description, guid)
+	    values ('synchronization.admin_email', '', 'Email address for administrator responsible for this server.', uuid());
 	 end if;
 
 	#fill out the default role for sync
 	IF( SELECT count(*) > 0 FROM global_property WHERE property = 'synchronization.default_role' ) THEN
 		UPDATE global_property SET property_value='System Developer' where property='synchronization.default_role';
 	ELSE
-		INSERT INTO global_property (property, property_value, description) values
-		('synchronization.default_role', 'System Developer', 'Server role for the synchronization scheduled task login.');	
+		INSERT INTO global_property (property, property_value, description, guid) values
+		('synchronization.default_role', 'System Developer', 'Server role for the synchronization scheduled task login.', uuid());	
 	END IF;
 
 	# -------------------------------------------------------------------------------
 	# Add primary keys to dependent concept tables (concept_name, concept_synonym) 
 	# -------------------------------------------------------------------------------
-	ALTER TABLE `concept_name` ADD COLUMN `concept_name_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT FIRST;
+	# -- already there. ALTER TABLE `concept_name` ADD COLUMN `concept_name_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT FIRST;
 	ALTER TABLE `concept_name` ADD INDEX (`concept_id`);
 	ALTER TABLE `concept_name` DROP PRIMARY KEY, ADD PRIMARY KEY (`concept_name_id`);
 	ALTER TABLE `concept_synonym` ADD COLUMN `concept_synonym_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT FIRST;
@@ -227,8 +227,8 @@ CREATE PROCEDURE sync_setup_procedure()
 	IF( SELECT count(*) > 0 FROM global_property WHERE property = 'synchronization.enable_compression' ) THEN
 		UPDATE global_property SET property_value='true' where property='synchronization.enable_compression';
 	ELSE
-		INSERT INTO global_property (property, property_value, description) values
-		('synchronization.enable_compression', 'true', 'Whether or not OpenMRS should compress data that it sends (recommend that you set this to true).');	
+		INSERT INTO global_property (property, property_value, description, guid) values
+		('synchronization.enable_compression', 'true', 'Whether or not OpenMRS should compress data that it sends (recommend that you set this to true).', uuid());	
 	END IF;
 	
 	#-----------------------------------------------------------------------------
