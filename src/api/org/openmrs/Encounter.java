@@ -20,9 +20,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Encounter 
- *
- * @version 1.0
+ * An Encounter represents one visit or interaction of a patient with a healthcare worker.
+ * 
+ * Every encounter can have 0 to n Observations associated with it
+ * Every encounter can have 0 to n Orders associated with it
+ * 
+ * The patientId attribute should be equal to patient.patientId and is
+ * only included this second time for performance increases on bulk calls. 
+ * 
+ * @see Obs 
+ * @see Order
  */
 public class Encounter implements java.io.Serializable {
 
@@ -64,6 +71,7 @@ public class Encounter implements java.io.Serializable {
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Encounter) {
@@ -76,10 +84,13 @@ public class Encounter implements java.io.Serializable {
 					this.getLocation().equals(enc.getLocation()) &&
 					this.getEncounterDatetime().equals(enc.getEncounterDatetime())); */
 		}
-		return false;
+		return this == obj;
 			
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getEncounterId() == null) return super.hashCode();
 		return this.getEncounterId().hashCode();
@@ -227,7 +238,11 @@ public class Encounter implements java.io.Serializable {
 	 * @return Returns the all Obs.
 	 */
 	public Set<Obs> getAllObs(boolean includeVoided) {
+		if (includeVoided && obs != null)
+			return obs;
+		
 		Set<Obs> ret = new HashSet<Obs>();
+		
 		if (this.obs != null) {
 			for (Obs o : this.obs) {
 				if (includeVoided)
@@ -272,14 +287,16 @@ public class Encounter implements java.io.Serializable {
 	}
 	
 	/**
-	 * Add the given Obs to the list of obs for this Encounter
-	 * @param observation
+	 * Add the given Obs to the list of obs for this Encounter.
+	 * 
+	 * @param observation the Obs to add to this encounter
 	 */
 	public void addObs(Obs observation) {
-		observation.setEncounter(this);
 		if (obs == null)
 			obs = new HashSet<Obs>();
 		if (observation != null) {
+			observation.setEncounter(this);
+			
 			if (observation.getObsDatetime() == null)
 				observation.setObsDatetime(getEncounterDatetime());
 			if (observation.getPerson() == null)
@@ -291,7 +308,7 @@ public class Encounter implements java.io.Serializable {
 	}
 
 	/**
-	 * Remove the given obervation from the list of obs for this Encounter
+	 * Remove the given observation from the list of obs for this Encounter
 	 * @param observation
 	 */
 	public void removeObs(Obs observation) {
@@ -306,7 +323,6 @@ public class Encounter implements java.io.Serializable {
 		return orders;
 	}
 
-	
 	/**
 	 * @param orders The orders to set.
 	 */
@@ -319,11 +335,12 @@ public class Encounter implements java.io.Serializable {
 	 * @param order
 	 */
 	public void addOrder(Order order) {
-		order.setEncounter(this);
 		if (orders == null)
 			orders = new HashSet<Order>();
-		if (!orders.contains(order) && order != null)
+		if (order != null) {
+			order.setEncounter(this);
 			orders.add(order);
+		}
 	}
 
 	/**
