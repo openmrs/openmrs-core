@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,11 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.LazyInitializationException;
 import org.hibernate.CallbackException;
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
-import org.hibernate.mapping.PersistentClass;
 import org.hibernate.Transaction;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
@@ -44,9 +39,6 @@ import org.hibernate.collection.PersistentSet;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Expression;
-import org.openmrs.Concept;
-import org.openmrs.ConceptName;
-import org.openmrs.ConceptNumeric;
 import org.openmrs.User;
 import org.openmrs.api.SynchronizationService;
 import org.openmrs.api.context.Context;
@@ -66,7 +58,6 @@ import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.SyncException;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -199,7 +190,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			log.debug("afterTransactionBegin: " + tx + " deactivated: "
 			        + deactivated.get());
 
-		// explicitely bailout if sync is disabled
+		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
 			return;
 
@@ -225,7 +216,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			        + deactivated.get());
 
 		try {
-			// explicitely bailout if sync is disabled
+			// explicitly bail out if sync is disabled
 			if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
 				return;
 
@@ -302,7 +293,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			        + tx.wasCommitted() + " rolledback: " + tx.wasRolledBack()
 			        + " deactivated: " + deactivated.get());
 
-		// explicitely bailout if sync is disabled
+		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
 			return;
 
@@ -327,7 +318,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			log.info("onDelete: " + entity.getClass().getName());
 		}
 
-		// explicitely bailout if sync is disabled
+		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
 			return;
 
@@ -378,8 +369,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 	        String[] propertyNames, Type[] types) {
 		if (log.isDebugEnabled())
 			log.debug("onSave: " + state.toString());
-
-		// explicitely bailout if sync is disabled
+		
+		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
 			return false;
 
@@ -425,8 +416,8 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 	        String[] propertyNames, Type[] types) {
 		if (log.isDebugEnabled())
 			log.debug("onFlushDirty: " + entity.getClass().getName());
-
-		// explicitely bailout if sync is disabled
+		
+		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
 			return false;
 
@@ -472,7 +463,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		if (log.isDebugEnabled())
 			log.debug("postFlush called.");
 
-		// explicitely bailout if sync is disabled
+		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
 			return;
 
@@ -501,7 +492,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		if (log.isDebugEnabled())
 			log.debug("onPrepareStatement. sql: " + sql);
 
-		// explicitely bailout if sync is disabled
+		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
 			return sql;
 
@@ -523,7 +514,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			log.debug("COLLECTION remove with key: " + key);
 		}
 
-		// explicitely bailout if sync is disabled
+		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
 			return;
 
@@ -549,7 +540,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			log.debug("COLLECTION recreate with key: " + key);
 		}
 
-		// explicitely bailout if sync is disabled
+		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
 			return;
 
@@ -579,7 +570,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			log.debug("COLLECTION update with key: " + key);
 		}
 
-		// explicitely bailout if sync is disabled
+		// explicitly bail out if sync is disabled
 		if (SyncUtil.getSyncStatus() == SyncStatusState.DISABLED_SYNC_AND_HISTORY)
 			return;
 
