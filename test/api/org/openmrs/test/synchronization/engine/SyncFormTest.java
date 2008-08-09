@@ -13,12 +13,20 @@
  */
 package org.openmrs.test.synchronization.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+
 import org.openmrs.Concept;
 import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.springframework.test.annotation.NotTransactional;
 
 /**
  *
@@ -33,6 +41,8 @@ public class SyncFormTest extends SyncBaseTest {
 	    return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 
+	@Test
+    @NotTransactional
 	public void testEditFormMetadata() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			String newDescription = "Awesome new description";
@@ -48,6 +58,8 @@ public class SyncFormTest extends SyncBaseTest {
 		});
 	}
 	
+	@Test
+    @NotTransactional
 	public void testDuplicateForm() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			String newName = "A new form";
@@ -78,6 +90,8 @@ public class SyncFormTest extends SyncBaseTest {
 		});
 	}
 
+	@Test
+    @NotTransactional
 	public void testAddFieldToForm() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			FormService fs = Context.getFormService();

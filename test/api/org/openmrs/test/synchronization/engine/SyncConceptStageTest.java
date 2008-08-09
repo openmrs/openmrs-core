@@ -13,6 +13,14 @@
  */
 package org.openmrs.test.synchronization.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -29,6 +37,7 @@ import org.openmrs.ConceptSynonym;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.test.annotation.NotTransactional;
 
 /**
  *
@@ -40,6 +49,8 @@ public class SyncConceptStageTest extends BaseContextSensitiveTest {
 		return false;
 	}
 
+	@Test
+    @NotTransactional
 	public void testConceptsFromStage() throws Exception {
 		authenticate();		
 		ConceptService cs = Context.getConceptService();		

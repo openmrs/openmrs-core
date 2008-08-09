@@ -13,6 +13,14 @@
  */
 package org.openmrs.test.synchronization.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -28,6 +36,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.springframework.test.annotation.NotTransactional;
 
 /**
  *
@@ -39,6 +48,8 @@ public class SyncConceptTest extends SyncBaseTest {
 	    return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 
+	@Test
+    @NotTransactional
 	public void testSaveConceptCoded() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			private int conceptId = 99999;
@@ -71,7 +82,10 @@ public class SyncConceptTest extends SyncBaseTest {
 				//assertEquals(2, answers.size());
 			}
 		});
-	}		
+	}
+	
+	@Test
+    @NotTransactional
 	public void testSaveConceptNumeric() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs;
@@ -96,8 +110,8 @@ public class SyncConceptTest extends SyncBaseTest {
 				// assertNotNull("Failed to create numeric", c);
 				assertEquals(cs.getConcept(conceptId).getName().getName(), "SOMETHING NUMERIC");
 				ConceptNumeric cn = cs.getConceptNumeric(conceptId);
-				assertEquals("Concept numeric absolute low values do not match", 0d, cn.getLowAbsolute());
-				assertEquals("Concept nuermic high critical values do not match", 100d, cn.getHiCritical());
+				assertEquals("Concept numeric absolute low values do not match", (Double)0d, cn.getLowAbsolute());
+				assertEquals("Concept nuermic high critical values do not match", (Double)100d, cn.getHiCritical());
 				assertEquals("Concept numeric datatypes does not match", "Numeric", cn.getDatatype().getName());
 				assertEquals("Concept numeric classes does not match", "Question", cn.getConceptClass().getName());
 				
@@ -105,11 +119,8 @@ public class SyncConceptTest extends SyncBaseTest {
 		});
 	}
 	
-	
-
-	
-	
-	
+	@Test
+    @NotTransactional
 	public void testSaveConceptSet() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs;
@@ -185,8 +196,8 @@ public class SyncConceptTest extends SyncBaseTest {
 				
 				
 				ConceptNumeric cn = cs.getConceptNumeric(conceptNumericId);
-				assertEquals("Concept numeric absolute low values do not match", 0d, cn.getLowAbsolute());
-				assertEquals("Concept numeric critical high values do not match", 100d, cn.getHiCritical());
+				assertEquals("Concept numeric absolute low values do not match", (Double)0d, cn.getLowAbsolute());
+				assertEquals("Concept numeric critical high values do not match", (Double)100d, cn.getHiCritical());
 				assertEquals("Concept numeric datatypes do not match", "Numeric", cn.getDatatype().getName());
 				assertEquals("Concept numeric classes do not match", "Question", cn.getConceptClass().getName());
 				
@@ -219,7 +230,8 @@ public class SyncConceptTest extends SyncBaseTest {
 		});
 	}		
 	
-
+	@Test
+    @NotTransactional
 	public void testEditConcepts() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs;
@@ -247,7 +259,7 @@ public class SyncConceptTest extends SyncBaseTest {
 			public void runOnParent() {
 				Concept wt = cs.getConceptByName("WEIGHT");
 				ConceptNumeric weight = cs.getConceptNumeric(wt.getConceptId());
-				assertEquals("Failed to change property on a numeric concept", weight.getHiCritical(), 200d);
+				assertEquals("Failed to change property on a numeric concept",(Double) 200d, weight.getHiCritical());
 				
 				Concept malaria = cs.getConceptByName("MALARIA");
 				assertNotNull("Implicit create of concept referenced in answer failed", malaria);
@@ -263,7 +275,8 @@ public class SyncConceptTest extends SyncBaseTest {
 		});
 	}
 
-	
+	@Test
+    @NotTransactional
 	public void testAddNameToConcept() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs = Context.getConceptService();

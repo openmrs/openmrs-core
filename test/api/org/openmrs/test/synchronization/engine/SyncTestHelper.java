@@ -19,7 +19,6 @@ package org.openmrs.test.synchronization.engine;
 public interface SyncTestHelper {
 
 	public void runOnChild();
-	
 	public void runOnParent();
 	
 }

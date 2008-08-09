@@ -1,5 +1,12 @@
 package org.openmrs.test.synchronization.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
+
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.annotation.NotTransactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -7,7 +14,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Session;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.api.context.Context;
 import org.openmrs.serialization.FilePackage;
@@ -19,7 +25,12 @@ import org.openmrs.synchronization.engine.*;
 import org.openmrs.synchronization.server.RemoteServer;
 
 /**
- *  to setup common routines and initialization for all sync tests.
+ *  Sets up common routines and initialization for all sync tests. Note for all sync tests:
+ *  MUST MARK AS NotTransctional so that Tx that is created in runOnChild() menthod is
+ *  committed upon exit of that method. 
+ *  
+ *  Note: org.springframework.transaction.annotation.Propagation.REQUIRES_NEW doesn't help
+ *  since on most EDBMS systems it doesn't do what spec says
  *
  */
 public abstract class SyncBaseTest extends BaseContextSensitiveTest {
@@ -30,44 +41,56 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 	
 	public abstract String getInitialDataset();
 	
-	public String getParentSetupDataset() {
-		return "org/openmrs/test/synchronization/engine/include/SyncRemoteChildServer.xml";
-	}
-
 	protected void setupSyncTestChild() throws Exception {
 		initializeInMemoryDatabase();
 		authenticate();
 		executeDataSet(getInitialDataset());
 	}
 	
-	protected void setupSyncTestParent() throws Exception {
-		deleteAllData();
-		initializeInMemoryDatabase();
-		executeDataSet(getInitialDataset());
-		executeDataSet(getParentSetupDataset());
-	}
-		
-	public void runSyncTest(SyncTestHelper testMethods) throws Exception {
-		deleteAllData();
-		Context.openSession();
-		executeDataSet("org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml");
-		authenticate();
-
+	@Transactional
+	@Rollback(false)
+	protected void runOnChild(SyncTestHelper testMethods) throws Exception {
 		log.info("\n************************************* Running On Child *************************************");
-		testMethods.runOnChild();
-		
-		this.transactionManager.commit(this.transactionStatus);
-		Context.closeSession();
-		Context.openSession();
+		testMethods.runOnChild();		
+	}
 
+	@Transactional
+	protected void runOnParent(SyncTestHelper testMethods) throws Exception {
+        //now run parent
+		log.info("\n************************************* Running on Parent *************************************");		
+		testMethods.runOnParent();		
+	}
+	
+	/**
+	 * Sets up initial data set before set of instructions simulating child changes is executed.
+	 * 
+	 * @see #runOnChild(SyncTestHelper)
+	 * @see #runSyncTest(SyncTestHelper)
+	 * 
+	 * @throws Exception
+	 */
+	@Transactional
+	@Rollback(false)
+	protected void beforeRunOnChild() throws Exception {
+		Context.openSession();
+		deleteAllData();
+		executeDataSet("org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml");
+		authenticate();		
+	}
+	
+	@Transactional
+	@Rollback(false)
+	protected void applySyncChanges() throws Exception {
+		
+		//get sync records created by child
 		List<SyncRecord> syncRecords = Context.getSynchronizationService().getSyncRecords();
-		if (syncRecords == null || syncRecords.size() == 0) { 
+		if (syncRecords == null || syncRecords.size() == 0) {
 			assertFalse("No changes found (i.e. sync records size is 0)", true);
 		}
 		
-		log.info("\n************************************* Deleting Data *************************************");
+		//now reload db from scratch
+		log.info("\n************************************* Reload Database *************************************");
 		deleteAllData();
-		
 		executeDataSet("org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml");
 		executeDataSet("org/openmrs/test/synchronization/engine/include/SyncRemoteChildServer.xml");
 		
@@ -91,12 +114,36 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 			Context.getSynchronizationIngestService().processSyncRecord(syncRecord, origin);
 		}
 		
-        Context.clearSession();
-		log.info("\n************************************* Running on Parent *************************************");
-		
-		testMethods.runOnParent();
-		Context.closeSession();
+		return;
 	}
+
+	/**
+	 * Executes the sync test workflow:
+	 * <br/>1. prepopulate DB
+	 * <br/>2. Execute set of instructions simulating sync child
+	 * <br/>3. Fetch sync records, re-initialize DB for parent and then apply the sync records
+	 * <br/>4. Execute set of instructions  simulating sync parent; typically just asserts to ensure child changes
+	 * came accross.
+	 * 
+	 *<br/>Note: The non-transactional vs. transactional behavior of helper methods: each step must be in its own Tx since sync flushes
+	 * its sync record at Tx boundry. Consequently it is required for the overall test to run as non-transactional
+	 * and each individual step to be transactional; as stated in class comments, true nested transactions are RDMS fantasy,
+	 * it mostly doesn't exist.
+	 * 
+	 * @param testMethods helper object holding methods for child and parent execution
+	 * @throws Exception
+	 */
+	@NotTransactional
+	public void runSyncTest(SyncTestHelper testMethods) throws Exception {
+
+		this.beforeRunOnChild();
+		
+		this.runOnChild(testMethods);
+		
+		this.applySyncChanges();
+		
+		this.runOnParent(testMethods);
+	}	
 }
 
 	

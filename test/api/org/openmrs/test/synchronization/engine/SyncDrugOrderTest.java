@@ -13,6 +13,14 @@
  */
 package org.openmrs.test.synchronization.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,6 +51,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 import org.openmrs.synchronization.engine.*;
+import org.springframework.test.annotation.NotTransactional;
 
 /**
  *
@@ -54,6 +63,8 @@ public class SyncDrugOrderTest extends SyncBaseTest {
 	    return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 
+	@Test
+    @NotTransactional
 	public void testCreateDrugOrder() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 			AdministrationService adminService = Context.getAdministrationService();
@@ -114,7 +125,8 @@ public class SyncDrugOrderTest extends SyncBaseTest {
 		});
 	}	
 
-	
+	@Test
+    @NotTransactional	
 	public void testUpdateDrugOrder() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 			public void runOnChild() {

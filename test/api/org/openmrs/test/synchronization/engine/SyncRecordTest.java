@@ -13,6 +13,14 @@
  */
 package org.openmrs.test.synchronization.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -28,6 +36,7 @@ import org.openmrs.serialization.Record;
 
 import org.openmrs.synchronization.engine.*;
 import org.openmrs.synchronization.SyncItemState;
+import org.springframework.test.annotation.NotTransactional;
 
 /**
  * Tests sync record serialization.
@@ -39,6 +48,8 @@ public class SyncRecordTest extends BaseContextSensitiveTest  {
      * 
      * @throws Exception
      */
+	@Test
+    @NotTransactional
     public void testSerialization() throws Exception {
 
         // 'normal' state
@@ -108,6 +119,8 @@ public class SyncRecordTest extends BaseContextSensitiveTest  {
      * 
      * @throws Exception
      */
+    @Test
+    @NotTransactional
     public void testEquality() throws Exception {
         
         //setup instance 1

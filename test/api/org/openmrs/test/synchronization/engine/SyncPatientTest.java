@@ -13,6 +13,13 @@
  */
 package org.openmrs.test.synchronization.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,7 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.Session;
+import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -29,7 +36,6 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.PatientState;
 import org.openmrs.PatientProgram;
 import org.openmrs.PersonName;
 import org.openmrs.Program;
@@ -39,6 +45,10 @@ import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
+
+import org.springframework.test.annotation.NotTransactional;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.annotation.Rollback;
 
 /**
  * Tests creating various pieces of data via synchronization
@@ -50,8 +60,9 @@ public class SyncPatientTest extends SyncBaseTest {
 	    return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 	
-	
-	public void testEnrollInProgram() throws Exception {
+	@Test
+	@NotTransactional
+	public void shouldEnrollInProgram() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			int numberEnrolledBefore = 0;
 			Date dateEnrolled = new Date(System.currentTimeMillis() - 100000);
@@ -82,7 +93,9 @@ public class SyncPatientTest extends SyncBaseTest {
 		});
 	}
 	
-	public void testEnrollInProgramAndState() throws Exception {
+	@Test
+	@NotTransactional
+	public void shouldEnrollInProgramAndState() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			int numberEnrolledBefore = 0;
 			Date dateEnrolled = new Date();
@@ -129,7 +142,9 @@ public class SyncPatientTest extends SyncBaseTest {
 		});
 	}
 	
-	public void testChangeState() throws Exception {
+	@Test
+	@NotTransactional
+	public void shouldChangeState() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			Program hivProgram;
 			ProgramWorkflow txStat;
@@ -154,6 +169,11 @@ public class SyncPatientTest extends SyncBaseTest {
 		});
 	}
 	
+	@Test
+	@NotTransactional
+	public void shouldCreateEncounterAndObs() throws Exception {
+		runSyncTest(new CreateEncounterAndObsTest());
+	}
 	private class CreateEncounterAndObsTest implements SyncTestHelper {
 		int numEncountersSoFar = 0;
 		Date dateOfNewEncounter = new Date();
@@ -165,11 +185,11 @@ public class SyncPatientTest extends SyncBaseTest {
 			Concept weight = cs.getConceptByName("WEIGHT");
 			Concept reason = cs.getConceptByName("REASON ORDER STOPPED");
 			Concept other = cs.getConceptByName("OTHER NON-CODED");
-			Location loc = Context.getEncounterService().getLocationByName("Someplace");
+			Location loc = Context.getLocationService().getLocation("Someplace");
 
 			User u = Context.getUserService().getUser(1);
 			Patient p = Context.getPatientService().getPatient(2);
-			numEncountersSoFar = Context.getEncounterService().getEncounters(p).size();
+			numEncountersSoFar = Context.getEncounterService().getEncountersByPatient(p).size();
 			
 			Encounter enc = new Encounter();
 			enc.setPatient(p);
@@ -186,7 +206,7 @@ public class SyncPatientTest extends SyncBaseTest {
 			o2.setObsDatetime(dateOfNewEncounter);
 			enc.addObs(o1);
 			enc.addObs(o2);
-			Context.getEncounterService().createEncounter(enc);
+			Context.getEncounterService().saveEncounter(enc);
 
 			Obs noEnc = new Obs();
 			noEnc.setConcept(weight);
@@ -194,20 +214,19 @@ public class SyncPatientTest extends SyncBaseTest {
 			noEnc.setObsDatetime(anotherDate);
 			noEnc.setPerson(p);
 			noEnc.setLocation(loc);
-			Context.getObsService().createObs(noEnc);
+			Context.getObsService().saveObs(noEnc,null);
 		}
-		
 		public void runOnParent() {
 			
 			ConceptService cs = Context.getConceptService();
 			Concept weight = cs.getConceptByName("WEIGHT");
 			Concept reason = cs.getConceptByName("REASON ORDER STOPPED");
 			Concept other = cs.getConceptByName("OTHER NON-CODED");
-			Location loc = Context.getEncounterService().getLocationByName("Someplace");
+			Location loc = Context.getLocationService().getLocation("Someplace");
 			Patient p = Context.getPatientService().getPatient(2);
 			
 			
-			List<Encounter> encs = Context.getEncounterService().getEncounters(p);
+			List<Encounter> encs = Context.getEncounterService().getEncountersByPatient(p);
 			assertEquals("Should now have one more encounter than before",
 			             numEncountersSoFar + 1,
 			             encs.size());
@@ -221,17 +240,21 @@ public class SyncPatientTest extends SyncBaseTest {
 			
 			assertEquals(lookAt.getLocation(), loc);
 			
-			assertEquals("Should have two obs", lookAt.getObs().size(), 2);
+			//reload lookAt
+			int lookAtId = lookAt.getEncounterId();
+			Context.evictFromSession(lookAt);
+			lookAt = Context.getEncounterService().getEncounter(lookAtId);
+			assertEquals("Should have two obs", 2,lookAt.getObs().size());
 			for (Obs o : lookAt.getObs()) {
 				if (o.getConcept().equals(weight)) {
-					assertEquals("Weight should be 74.0", o.getValueNumeric(), 74.0);
+					assertEquals("Weight should be 74.0", o.getValueNumeric(), (Double)74.0);
 				} else {
 					assertEquals("Reason should be OTHER NON-CODED", o.getValueCoded(), other);
 				}
 			}
 			
 			boolean found = false;
-			for (Obs o : Context.getObsService().getObservations(p, false)) {
+			for (Obs o : Context.getObsService().getObservationsByPerson(p)) {
 				if ( (OpenmrsUtil.compare(o.getObsDatetime(), anotherDate) == 0) && o.getConcept().equals(weight) && o.getValueNumeric().equals(12.3))
 					found = true;
 			}
@@ -239,16 +262,14 @@ public class SyncPatientTest extends SyncBaseTest {
 		}
 	}
 	
-	public void testCreateEncounterAndObs() throws Exception {
-		runSyncTest(new CreateEncounterAndObsTest());
-	}
-	
 	/**
 	 * Fails due to known bug: see ticket #934
 	 * 
 	 * @throws Exception
 	 */
-	public void testEditEncounter() throws Exception {
+	@Test
+	@NotTransactional
+	public void shouldEditEncounter() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			Date d1 = ymd.parse("1978-01-01");
 			Date d2 = ymd.parse("1978-12-31");
@@ -273,20 +294,29 @@ public class SyncPatientTest extends SyncBaseTest {
 		});
 	}
 
-	public void testEditObs() throws Exception {
+	@Test
+	@NotTransactional
+	public void shouldEditObs() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			Date d = ymd.parse("1978-04-11");
 			Concept weight = null;
+			int obsCount = 0;
 			public void runOnChild(){
 				weight = Context.getConceptService().getConceptByName("WEIGHT");
 				Patient p = Context.getPatientService().getPatient(2);
 				Obs obs = null;
-				for (Obs o : Context.getObsService().getObservations(p, weight, false)) {
-					if (OpenmrsUtil.compare(o.getObsDatetime(), d) == 0)
+				for (Obs o : Context.getObsService().getObservationsByPersonAndConcept(p, weight)) {
+					if (OpenmrsUtil.compare(o.getObsDatetime(), d) == 0) {
 						obs = o;
+					}
 				}
+				
+				obsCount = obs.getEncounter().getObs().size();
 				assertNotNull("Before test, could not find expected obs", obs);
 				Context.getObsService().voidObs(obs, "Data entry error");
+				
+				assertEquals(obsCount - 1,obs.getEncounter().getObs().size() );
+				obsCount = obs.getEncounter().getObs().size();
 				
 				Obs newObs = new Obs();
 				newObs.setPerson(obs.getPerson());
@@ -297,23 +327,35 @@ public class SyncPatientTest extends SyncBaseTest {
 				newObs.setDateCreated(new Date());
 				newObs.setValueNumeric(99.9);
 				newObs.setEncounter(obs.getEncounter());
-				Context.getObsService().createObs(newObs);
+				newObs = Context.getObsService().saveObs(newObs, null);
+				obsCount++;
+				
+				int encId = newObs.getEncounter().getEncounterId();
+				Context.evictFromSession(newObs.getEncounter());
+				assertEquals(obsCount,Context.getEncounterService().getEncounter(encId).getObs().size());
 			}
 			public void runOnParent() {
+				int encId = 0;
 				Patient p = Context.getPatientService().getPatient(2);
-				boolean found = false;
-				for (Obs o : Context.getObsService().getObservations(p, weight, false))
+				Obs obs = null;
+				for (Obs o : Context.getObsService().getObservationsByPersonAndConcept(p, weight))
 					if (OpenmrsUtil.compare(o.getObsDatetime(),d)==0) {
-						assertEquals(o.getEncounter().getObs().size(), 3);
-						assertEquals(o.getValueNumeric(), 99.9);
-						found = true;
+						obs = o;
+						break;
 					}
-				assertTrue(found);
+				assertNotNull(obs);
+				assertEquals( (Double)99.9, obs.getValueNumeric());
+				encId = obs.getEncounter().getEncounterId();				
+				Context.evictFromSession(obs.getEncounter());
+				assertEquals(obsCount,Context.getEncounterService().getEncounter(encId).getObs().size());
 			}
 		});
 	}
-
-	public void testCreatePatient() throws Exception {
+		
+	@Test
+	@NotTransactional
+	public void shouldCreatePatient() throws Exception {
+		
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {
 				Location loc = Context.getEncounterService().getLocationByName("Someplace");
@@ -352,7 +394,9 @@ public class SyncPatientTest extends SyncBaseTest {
 		});
 	}
 	
-	public void testEditPatient() throws Exception {
+	@Test
+	@NotTransactional
+	public void shouldEditPatient() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			PatientIdentifierType pit;
 			public void runOnChild() {
@@ -379,5 +423,4 @@ public class SyncPatientTest extends SyncBaseTest {
 			}
 		});
 	}
-
 }

@@ -13,17 +13,24 @@
  */
 package org.openmrs.test.synchronization.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+
 import java.util.Date;
 
-import org.openmrs.LoginCredential;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.test.annotation.NotTransactional;
 
 /**
  *
@@ -35,6 +42,8 @@ public class SyncUserTest extends SyncBaseTest {
 	    return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 	
+	@Test
+	@NotTransactional
 	public void testCreateUser() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			UserService us = Context.getUserService();
@@ -56,6 +65,8 @@ public class SyncUserTest extends SyncBaseTest {
 		});
 	}
 
+	@Test
+	@NotTransactional
 	public void testChangePwd() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			UserService us = Context.getUserService();
@@ -73,6 +84,8 @@ public class SyncUserTest extends SyncBaseTest {
 		});
 	}
 
+	@Test
+	@NotTransactional
 	public void testEditUser() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			UserService us = Context.getUserService();
@@ -95,6 +108,8 @@ public class SyncUserTest extends SyncBaseTest {
 		});
 	}
 	
+	@Test
+	@NotTransactional
 	public void testCreateRoleAndPrivilege() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {
@@ -115,6 +130,8 @@ public class SyncUserTest extends SyncBaseTest {
 		});
 	}
 	
+	@Test
+	@NotTransactional
 	public void testAddPrivilegeToRole() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			int numAtStart = 0;

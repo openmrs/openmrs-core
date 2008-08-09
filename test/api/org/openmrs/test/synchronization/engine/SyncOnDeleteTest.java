@@ -13,6 +13,14 @@
  */
 package org.openmrs.test.synchronization.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -21,6 +29,7 @@ import org.openmrs.PersonName;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.PersonAttributeType;
+import org.springframework.test.annotation.NotTransactional;
 
 /**
  * Testing of delete methods and whether that action is synchronized
@@ -32,6 +41,8 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 		return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 
+	@Test
+    @NotTransactional
 	public void testDeletePatientIdentfierType() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild(){				
@@ -52,6 +63,9 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 			}
 		});
 	}	
+	
+	@Test
+    @NotTransactional
 	public void testDeleteRelationshipType() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild(){				
@@ -71,7 +85,10 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 				assertNull("The relationship type should have been deleted!", rt);
 			}
 		});
-	}	
+	}
+	
+	@Test
+    @NotTransactional
 	public void testDeletePersonAttributeType() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild(){				
@@ -92,6 +109,9 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 			}
 		});
 	}
+	
+	@Test
+    @NotTransactional
 	public void testDeletePatientName() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			PatientIdentifierType pit;
@@ -115,6 +135,9 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 			}
 		});
 	}
+	
+	@Test
+    @NotTransactional
 	public void testDeletePatient() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {				

@@ -13,6 +13,14 @@
  */
 package org.openmrs.test.synchronization.engine;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -28,6 +36,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
+import org.springframework.test.annotation.NotTransactional;
 
 /**
  *
@@ -39,6 +48,8 @@ public class SyncAdminTest extends SyncBaseTest {
 	    return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 
+	@Test
+    @NotTransactional
 	public void testCreateProgram() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			int numBefore = 0;
@@ -93,7 +104,9 @@ public class SyncAdminTest extends SyncBaseTest {
 			}
 		});
 	}
-	
+
+	@Test
+    @NotTransactional
 	public void testEditProgram() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
@@ -120,7 +133,8 @@ public class SyncAdminTest extends SyncBaseTest {
 		});
 	}
 
-	
+	@Test
+    @NotTransactional	
 	public void testCreateLocation() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {
@@ -134,7 +148,9 @@ public class SyncAdminTest extends SyncBaseTest {
 			}
 		});
 	}
-	
+
+	@Test
+    @NotTransactional
 	public void testEditLocation() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {

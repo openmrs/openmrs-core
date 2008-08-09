@@ -13,25 +13,20 @@
  */
 package org.openmrs.test.synchronization.engine;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.UUID;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+
 import java.util.Calendar;
 
-import org.openmrs.Concept;
-import org.openmrs.ConceptAnswer;
-import org.openmrs.ConceptName;
-import org.openmrs.ConceptNumeric;
-import org.openmrs.ConceptSet;
-import org.openmrs.ConceptSynonym;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
+import org.springframework.test.annotation.NotTransactional;
 
 /**
  *
@@ -43,6 +38,8 @@ public class SyncEncounterTest extends SyncBaseTest {
 	    return "org/openmrs/test/synchronization/engine/include/SyncCreateTest.xml";
     }
 
+	@Test
+    @NotTransactional
 	public void testCreateEncounterType() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 			AdministrationService adminService = Context.getAdministrationService();
@@ -62,8 +59,8 @@ public class SyncEncounterTest extends SyncBaseTest {
 		});
 	}	
 
-	
-	
+	@Test
+    @NotTransactional
 	public void testUpdateEncounterType() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 			AdministrationService adminService = Context.getAdministrationService();
@@ -89,7 +86,8 @@ public class SyncEncounterTest extends SyncBaseTest {
 		});
 	}
 	
-	
+	@Test
+    @NotTransactional
 	public void testDeleteEncounterType() throws Exception { 
 		
 		runSyncTest(new SyncTestHelper() {			
@@ -106,6 +104,8 @@ public class SyncEncounterTest extends SyncBaseTest {
 		
 	}
 
+	@Test
+    @NotTransactional
 	public void testCreateEncounter() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 			String eid = null;
@@ -132,6 +132,8 @@ public class SyncEncounterTest extends SyncBaseTest {
 		});
 	}	
 
+	@Test
+    @NotTransactional
 	public void testDeleteEncounter() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 
