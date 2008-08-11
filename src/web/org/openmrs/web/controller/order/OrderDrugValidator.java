@@ -19,7 +19,7 @@ import org.openmrs.DrugOrder;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-public class OrderDrugValidator implements Validator {
+public class OrderDrugValidator extends OrderValidator implements Validator {
 
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -41,6 +41,8 @@ public class OrderDrugValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
+		super.validate(obj, errors);
+		
 		DrugOrder order = (DrugOrder)obj;
 		if (order == null) {
 			errors.rejectValue("order", "error.general");

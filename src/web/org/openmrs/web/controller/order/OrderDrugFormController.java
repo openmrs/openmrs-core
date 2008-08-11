@@ -40,6 +40,7 @@ import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
 import org.openmrs.propertyeditor.OrderTypeEditor;
+import org.openmrs.propertyeditor.PatientEditor;
 import org.openmrs.propertyeditor.UserEditor;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -71,6 +72,7 @@ public class OrderDrugFormController extends SimpleFormController {
         binder.registerCustomEditor(Concept.class, new ConceptEditor());
         binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale()), true));
         binder.registerCustomEditor(User.class, new UserEditor());
+        binder.registerCustomEditor(Patient.class, new PatientEditor());
         binder.registerCustomEditor(Encounter.class, new EncounterEditor());
         binder.registerCustomEditor(Drug.class, new DrugEditor());
         binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
@@ -114,19 +116,8 @@ public class OrderDrugFormController extends SimpleFormController {
 			// TODO: for now, orderType will have to be hard-coded?
 			order.setOrderType(new OrderType(new Integer(2)));
 
-			Patient thisPatient = null;
-			if ( order.getEncounter() == null ) {
-				Integer patientId = ServletRequestUtils.getIntParameter(request, "patientId");
-				if ( patientId != null ) {
-					thisPatient = Context.getPatientService().getPatient(patientId);
-				}
-			}
-
-			order.setPatient(thisPatient);
-
-			if ( order.getDateCreated() == null ) order.setDateCreated(new Date());
 			if ( order.getVoided() == null ) order.setVoided(new Boolean(false));
-			Context.getOrderService().updateOrder(order);
+			Context.getOrderService().saveOrder(order);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.drug.saved");
 		}
@@ -165,5 +156,6 @@ public class OrderDrugFormController extends SimpleFormController {
 		}
     	
         return order;
-    }   
+    }
+    
 }

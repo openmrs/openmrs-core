@@ -16,6 +16,24 @@
 <form method="post" id="orderForm">
 <table>
 	<tr>
+		<td valign="top"><spring:message code="Order.patient"/></td>
+		<td valign="top">
+			<spring:bind path="order.patient">
+				<openmrs:fieldGen type="org.openmrs.Patient" formFieldName="${status.expression}" val="${status.editor.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td valign="top"><spring:message code="Order.encounter"/></td>
+		<td valign="top">
+			<spring:bind path="order.encounter">
+				<openmrs:fieldGen type="org.openmrs.Encounter" formFieldName="${status.expression}" val="${status.editor.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
 		<td><spring:message code="Order.orderType"/></td>
 		<td>
 			<spring:bind path="order.orderType">
@@ -56,15 +74,6 @@
 		<td valign="top">
 			<spring:bind path="order.autoExpireDate">
 				<openmrs:fieldGen type="java.util.Date" formFieldName="${status.expression}" val="${status.editor.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td valign="top"><spring:message code="Order.encounter"/></td>
-		<td valign="top">
-			<spring:bind path="order.encounter">
-				<openmrs:fieldGen type="org.openmrs.Encounter" formFieldName="${status.expression}" val="${status.editor.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
