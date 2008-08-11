@@ -93,12 +93,15 @@ public class OpenmrsTestsTest {
 		
 		testClasses = getTestClassesInDirectory(directory);
 		
+		// check to see if the web layer is also included.  Skip it if its not there
 		url = classLoader.getResource("org/openmrs/web/test");
-		directory = OpenmrsUtil.url2file(url);
-		// make sure we get a directory back
-		assertTrue("org.openmrs.web.test should be a directory", directory.isDirectory());
-		
-		testClasses.addAll(getTestClassesInDirectory(directory));
+		if (url != null) {
+			directory = OpenmrsUtil.url2file(url);
+			// make sure we get a directory back
+			assertTrue("org.openmrs.web.test should be a directory", directory.isDirectory());
+			
+			testClasses.addAll(getTestClassesInDirectory(directory));
+		}
 		
 		return testClasses;
 	}

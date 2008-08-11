@@ -15,6 +15,7 @@ package org.openmrs.test.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -165,4 +166,13 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		assertTrue("Just because the date is null, doesn't make it not in the list anymore", OpenmrsUtil.collectionContains(identifiers, pi));
 	}
 	
+	/**
+	 * When given a null parameter, the {@link OpenmrsUtil#url2file(java.net.URL)} 
+	 * method should quietly fail by returning null
+	 * 
+	 * @throws Exception
+	 */
+	public void shouldReturnNullWithNullParameterToUrl2File() throws Exception {
+		assertNull(OpenmrsUtil.url2file(null));
+	}
 }
