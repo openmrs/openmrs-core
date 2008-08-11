@@ -30,9 +30,18 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
 
+/**
+ * Hibernate specific dao for the {@link EncounterService}
+ * 
+ * All calls should be made on the Context.getEncounterService() object
+ * 
+ * @see EncounterDAO
+ * @see EncounterService
+ */
 public class HibernateEncounterDAO implements EncounterDAO {
 
 	protected final Log log = LogFactory.getLog(getClass());
@@ -41,9 +50,6 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
-
-	public HibernateEncounterDAO() {
-	}
 
 	/**
 	 * Set session factory
@@ -173,19 +179,25 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getAllEncounterTypes(java.lang.Boolean)
 	 */
-	public List<EncounterType> getAllEncounterTypes(Boolean includeRetired)
+	@SuppressWarnings("unchecked")
+    public List<EncounterType> getAllEncounterTypes(Boolean includeRetired)
 	        throws DAOException {
-		return sessionFactory.getCurrentSession()
-		                     .createCriteria(EncounterType.class)
-		                     .add(Expression.eq("retired", includeRetired))
-		                     .addOrder(Order.asc("name"))
-		                     .list();
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
+
+		criteria.addOrder(Order.asc("name"));
+		
+		if (includeRetired == false)
+			criteria.add(Expression.eq("retired", false));
+		
+		return criteria.list();
 	}
 
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#findEncounterTypes(java.lang.String)
 	 */
-	public List<EncounterType> findEncounterTypes(String name)
+	@SuppressWarnings("unchecked")
+    public List<EncounterType> findEncounterTypes(String name)
 	        throws DAOException {
 		return sessionFactory.getCurrentSession()
 		                     .createCriteria(EncounterType.class)
@@ -194,6 +206,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		                                           name,
 		                                           MatchMode.START))
 		                     .addOrder(Order.asc("name"))
+		                     .addOrder(Order.asc("retired"))
 		                     .list();
 	}
 

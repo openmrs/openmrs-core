@@ -301,10 +301,10 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#saveEncounterType(org.openmrs.EncounterType)
 	 */
 	public EncounterType saveEncounterType(EncounterType encounterType) {
-		if (encounterType.getCreator() == null) {
+		if (encounterType.getCreator() == null)
 			encounterType.setCreator(Context.getAuthenticatedUser());
+		if (encounterType.getDateCreated() == null)
 			encounterType.setDateCreated(new Date());
-		}
 		
 		dao.saveEncounterType(encounterType);
 		return encounterType;
@@ -357,8 +357,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		encounterType.setRetiredBy(Context.getAuthenticatedUser());
 		encounterType.setDateRetired(new Date());
 		encounterType.setRetireReason(reason);
-		saveEncounterType(encounterType);
-		return encounterType;
+		return saveEncounterType(encounterType);
 	}
 
 	/**
@@ -370,8 +369,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		encounterType.setRetiredBy(null);
 		encounterType.setDateRetired(null);
 		encounterType.setRetireReason(null);
-		saveEncounterType(encounterType);
-		return encounterType;
+		return saveEncounterType(encounterType);
 	}
 
 	/**
