@@ -253,13 +253,10 @@ public class HibernateAdministrationDAO implements
 		return gp.getPropertyValue();
 	}
 
-	public String getGlobalPropertyByGuid(String guid) throws DAOException {
+	public GlobalProperty getGlobalPropertyByGuid(String guid) throws DAOException {
 		GlobalProperty gp = (GlobalProperty)sessionFactory.getCurrentSession().createQuery("from GlobalProperty t where t.guid = :guid").setString("guid", guid).uniqueResult();
 		
-		if (gp == null)
-			return null;
-
-		return gp.getPropertyValue();
+		return gp;
 	}
 
 	/**

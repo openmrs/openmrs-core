@@ -769,7 +769,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
     			listener.globalPropertyDeleted(propertyName);
     }
     
-    public String getGlobalPropertyByGuid(String guid) {
+    public GlobalProperty getGlobalPropertyByGuid(String guid) {
         return dao.getGlobalPropertyByGuid(guid);
     }
     

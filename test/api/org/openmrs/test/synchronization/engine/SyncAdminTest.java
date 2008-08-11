@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.openmrs.GlobalProperty;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.EncounterType;
@@ -50,7 +51,7 @@ public class SyncAdminTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testCreateProgram() throws Exception {
+	public void shouldCreateProgram() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			int numBefore = 0;
 			public void runOnChild() {
@@ -107,7 +108,7 @@ public class SyncAdminTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testEditProgram() throws Exception {
+	public void shouldEditProgram() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
 			int numStatesBefore;
@@ -135,7 +136,7 @@ public class SyncAdminTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional	
-	public void testCreateLocation() throws Exception {
+	public void shouldCreateLocation() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {
 				Location loc = new Location();
@@ -151,23 +152,47 @@ public class SyncAdminTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testEditLocation() throws Exception {
+	public void shouldEditLocation() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {
-				Location loc = Context.getEncounterService().getLocationByName("Someplace");
+				Location loc = Context.getLocationService().getLocation("Someplace");
 				loc.setName("Over the rainbow");
-				Context.getAdministrationService().updateLocation(loc);
+				Context.getLocationService().saveLocation(loc);
 			}
 			public void runOnParent() {
-				Location loc = Context.getEncounterService().getLocationByName("Someplace");
+				Location loc = Context.getLocationService().getLocation("Someplace");
 				assertNull(loc);
-				loc = Context.getEncounterService().getLocationByName("Over the rainbow");
+				loc = Context.getLocationService().getLocation("Over the rainbow");
 				assertNotNull(loc);
 			}
 		});
 	}
 	
 	
+	/**
+	 * Global props should not sync unless SynchronizableInstance.setIsSynchronizable(true) is set
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    @NotTransactional
+	public void shouldEditSaveGlobalProperty() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			public void runOnChild() {
+				GlobalProperty gp1 = Context.getAdministrationService().saveGlobalProperty(new GlobalProperty("sync.test1", "test1"));
+				assertNotNull(gp1.getGuid());
+				GlobalProperty gp2 = new GlobalProperty("sync.test2","test2");
+				gp2.setIsSynchronizable(true);
+				gp2 = Context.getAdministrationService().saveGlobalProperty(gp2);
+				gp2.setPropertyValue("test2 - changed");
+				Context.getAdministrationService().saveGlobalProperty(gp2);
+			}
+			public void runOnParent() {
+				assertNull(Context.getAdministrationService().getGlobalProperty("sync.test1"));
+				assertEquals("test2 - changed",Context.getAdministrationService().getGlobalProperty("sync.test2"));
+			}
+		});
+	}
 
 	
 }

@@ -123,7 +123,7 @@ public interface AdministrationDAO {
 	 */
 	public String getGlobalProperty(String propertyName) throws DAOException;
 
-	public String getGlobalPropertyByGuid(String guid) throws DAOException;
+	public GlobalProperty getGlobalPropertyByGuid(String guid) throws DAOException;
 
 	/**
      * @see org.openmrs.api.AdministrationService#getAllGlobalProperties()

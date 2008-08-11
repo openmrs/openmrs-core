@@ -17,6 +17,6 @@ package org.openmrs.synchronization;
  * Refinment of Synchronizble: allows users to indicate if given instance should be sync-ed. 
  */
 public interface SynchronizableInstance extends Synchronizable  {
-	void setIsSynchronizable(boolean guid);
+	void setIsSynchronizable(boolean value);
     boolean getIsSynchronizable();
 }

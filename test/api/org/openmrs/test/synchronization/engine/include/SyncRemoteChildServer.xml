@@ -35,6 +35,7 @@
   <synchronization_class class_id="30" name="PersonAttributeType" type="PERSON" default_to="1" default_from="1"/>
   <synchronization_class class_id="31" name="Order" type="MISC" default_to="1" default_from="1"/>
   <synchronization_class class_id="32" name="DrugOrder" type="MISC" default_to="1" default_from="1"/>
+  <synchronization_class class_id="33" name="GlobalProperty" type="MISC" default_to="1" default_from="1"/>
   
   <!-- <synchronization_server_class server_class_id="" server_id="" class_id="" send_to="1" receive_from="1"/> -->
   <synchronization_server_class server_class_id="1" server_id="1" class_id="1" send_to="1" receive_from="1"/>
@@ -69,4 +70,5 @@
   <synchronization_server_class server_class_id="30" server_id="1" class_id="30" send_to="1" receive_from="1"/>
   <synchronization_server_class server_class_id="31" server_id="1" class_id="31" send_to="1" receive_from="1"/>
   <synchronization_server_class server_class_id="32" server_id="1" class_id="32" send_to="1" receive_from="1"/>
+  <synchronization_server_class server_class_id="33" server_id="1" class_id="33" send_to="1" receive_from="1"/>
 </dataset>

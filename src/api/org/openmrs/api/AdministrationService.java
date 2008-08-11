@@ -405,7 +405,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @return a map from variable name to variable value
 	 */
 	@Transactional(readOnly=true)
-	public String getGlobalPropertyByGuid(String guid);
+	public GlobalProperty getGlobalPropertyByGuid(String guid);
 
 	/**
 	 * Get a listing or important variables used in openmrs 
