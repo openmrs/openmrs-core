@@ -172,6 +172,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void shouldReturnNullWithNullParameterToUrl2File() throws Exception {
 		assertNull(OpenmrsUtil.url2file(null));
 	}
