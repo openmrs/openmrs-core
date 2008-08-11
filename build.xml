@@ -221,6 +221,14 @@
 		<copy todir="${build.dir}/org/openmrs/test" file="${test.dir}/api/org/openmrs/test/TestingApplicationContext.xml" />
 		<copy todir="${build.dir}/org/openmrs/test/include" file="${test.dir}/api/org/openmrs/test/include/initialInMemoryTestDataSet.xml" />
 		
+		<!-- copy the extra files to the build dir in case an ant-clean was just done -->
+		<copy todir="${build.dir}">
+			<!-- dbunit files for db and api tests -->
+			<fileset dir="${test.dir}/api" includes="**/*.xml"/>
+			<!-- module files for module tests -->
+			<fileset dir="${test.dir}/api" includes="**/*.omod"/>
+		</copy>
+		
 	</target>
 
 	<target name="package-api-tests" depends="compile-api-tests" description="create api-tests jar">
