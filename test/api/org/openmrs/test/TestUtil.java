@@ -15,8 +15,15 @@ package org.openmrs.test;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.Properties;
 
+import org.dbunit.database.DatabaseConfig;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.database.QueryDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -123,6 +130,29 @@ public class TestUtil {
     		System.out.println("\");\\n");
     	}
     	
+    }
+    
+    /**
+     * Print the contents of the given tableName to system.out
+     * 
+     * Call this from any {@link BaseContextSensitiveTest} child by:
+     * printOutTableContents(getConnection(), "encounter");
+     * 
+     * @param sqlConnection the connection to use
+     * @param tableNames the name(s) of the table(s) to print out
+     * @throws Exception
+     */
+    public static void printOutTableContents(Connection sqlConnection, String... tableNames) throws Exception {
+    	for (String tableName : tableNames) {
+	    	System.out.println("The contents of table: " + tableName);
+			IDatabaseConnection connection = new DatabaseConnection(sqlConnection);
+			DatabaseConfig config = connection.getConfig();
+			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY,
+			                   new HsqldbDataTypeFactory());
+	        QueryDataSet outputSet = new QueryDataSet(connection);
+	        outputSet.addTable(tableName);
+	        FlatXmlDataSet.write(outputSet, System.out);
+    	}
     }
 	
 }

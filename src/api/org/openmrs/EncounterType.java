@@ -173,9 +173,16 @@ public class EncounterType implements java.io.Serializable {
     }
 
 	/**
-     * @return the retired
+     * @return the retired status
      */
     public Boolean getRetired() {
+    	return isRetired();
+    }
+    
+    /**
+     * @return the retired status
+     */
+    public Boolean isRetired() {
     	return retired;
     }
 

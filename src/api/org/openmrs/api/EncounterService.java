@@ -180,10 +180,10 @@ public interface EncounterService extends OpenmrsService {
 	        throws APIException;
 
 	/**
-	 * Get encounterType by name
+	 * Get encounterType by exact name
 	 * 
-	 * @param encounterType string
-	 * @return EncounterType
+	 * @param encounterType string to match to an Encounter.name
+	 * @return EncounterType that is not retired
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)

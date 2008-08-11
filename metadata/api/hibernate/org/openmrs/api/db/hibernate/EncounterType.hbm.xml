@@ -3,15 +3,8 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
-<hibernate-mapping>
-	<!-- 
-		Created by the Middlegen Hibernate plugin 2.1
-		
-		http://boss.bekk.no/boss/middlegen/
-		http://www.hibernate.org/
-	-->
-
-	<class name="org.openmrs.EncounterType" table="encounter_type">
+<hibernate-mapping package="org.openmrs">
+	<class name="EncounterType" table="encounter_type">
 
 		<id name="encounterTypeId" type="java.lang.Integer"
 			column="encounter_type_id" unsaved-value="0">
@@ -20,37 +13,22 @@
 		
 		<discriminator column="encounter_type_id" insert="false" />
 		
-		<property name="name" type="java.lang.String" column="name"
+		<property name="name" type="java.lang.String"
 			not-null="true" length="50" />
 		<property name="description" type="java.lang.String"
-			column="description" not-null="true" length="50" />
+			not-null="true" length="50" />
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
-    
-		<!-- Associations -->
-		<!-- bi-directional one-to-many association to Encounter -->
-		<!--
-			<set name="encounters" lazy="true" inverse="true" cascade="none" >
-			<key>
-			<column name="encounter_type" />
-			</key>
-			<one-to-many  class="org.openmrs.Encounter" />
-			</set>
-		-->
-    
-		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="creator" class="org.openmrs.User"
-			not-null="true">
-			<column name="creator" />
-		</many-to-one>
+		<many-to-one name="creator" class="User"
+			not-null="true" />
 
-		<many-to-one name="retiredBy" class="org.openmrs.User"
+		<many-to-one name="retiredBy" class="User"
 			column="retired_by" />
 		<property name="dateRetired" type="java.util.Date"
 			column="date_retired" length="19" />
 		<property name="retireReason" type="java.lang.String"
 			column="retire_reason" length="255" />
-		<property name="retired" type="boolean" column="retired"
+		<property name="retired" type="boolean"
 			length="1" not-null="true" />
 
 	</class>
