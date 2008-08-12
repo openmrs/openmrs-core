@@ -1124,8 +1124,6 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 delimiter ;
 call diff_procedure('1.3.0.14');
 
-DROP PROCEDURE IF EXISTS insert_authenticated_privilege;
-
 #----------------------------------------
 # OpenMRS Datamodel version 1.3.0.15
 # Ben Wolfe               Aug 1st, 2008
@@ -1140,9 +1138,14 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
     IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
     SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
 	
-	# Fix the incorrect privilege name from the privious update
-	update role_privilege set privilege = 'View Relationship Types' where privilege = 'View RelationshipTypes';
+	set FOREIGN_KEY_CHECKS = 0;
+
+	# Fix the incorrect privilege name from the previous update
+	delete from role_privilege where privilege = 'View RelationshipTypes';
+	call insert_authenticated_privilege('View Relationship Types');
 	
+	set FOREIGN_KEY_CHECKS = 1;
+
     UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
     
     END IF;

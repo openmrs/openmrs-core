@@ -143,7 +143,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			}
 			
 			// same goes for Orders
-			for (Order o : Context.getOrderService().getOrdersByEncounter(encounter)) {
+			for (Order o : encounter.getOrders()) {
 				if (!p.equals(o.getPatient())) {
 					o.setPatient(p);
 					Context.getOrderService().saveOrder(o);
