@@ -251,8 +251,7 @@ public class ModuleUtil {
 		// if the property wasn't a full path already, assume it was intended to be a folder in the 
 		// application directory
 		if (!folder.exists()) {
-			String filepath = OpenmrsUtil.getApplicationDataDirectory() + folderName;
-			folder = new File(filepath);
+			folder = new File(OpenmrsUtil.getApplicationDataDirectory(), folderName);
 		}
 
 		// now create the modules folder if it doesn't exist
