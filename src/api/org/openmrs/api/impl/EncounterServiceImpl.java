@@ -118,8 +118,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			// If we are changing encounter.encounterDatetime, then we need to also apply that
 			// to Obs that inherited their obsDatetime from the encounter in the first place
 			
+			ObsService obsService = Context.getObsService();
 			Patient p = encounter.getPatient();
-			for (Obs obs : encounter.getAllObs()) {
+			for (Obs obs : encounter.getAllObs(true)) {
 				boolean obsWasChanged = false;
 				
 				// if the date was changed
@@ -138,16 +139,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 					}
 					
 					if (obsWasChanged)
-						Context.getObsService().saveObs(obs, "Encounter datetime or person was changed");
+						obsService.saveObs(obs, "Encounter datetime or person was changed");
 				}
 				
 			}
 			
 			// same goes for Orders
-			for (Order o : Context.getOrderService().getOrdersByEncounter(encounter)) {
+			OrderService orderService = Context.getOrderService();
+			for (Order o : encounter.getOrders()) {
 				if (!p.equals(o.getPatient())) {
 					o.setPatient(p);
-					Context.getOrderService().saveOrder(o);
+					orderService.saveOrder(o);
 				}
 			}
 		}
@@ -166,6 +168,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public List<Encounter> getEncountersByPatient(Patient patient)
 	        throws APIException {
+		if (patient == null)
+			throw new IllegalArgumentException("The 'patient' parameter is requred and cannot be null");
 		return getEncounters(patient, null, null, null, null, null, false);
 	}
 
@@ -174,6 +178,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public List<Encounter> getEncountersByPatientId(Integer patientId)
 	        throws APIException {
+		if (patientId == null)
+			throw new IllegalArgumentException("The 'patientId' parameter is requred and cannot be null");
 		return dao.getEncountersByPatientId(patientId);
 	}
 
@@ -182,10 +188,14 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public List<Encounter> getEncountersByPatientIdentifier(String identifier)
 	        throws APIException {
+		if (identifier == null)
+			throw new IllegalArgumentException("The 'identifier' parameter is requred and cannot be null");
+		
 		List<Encounter> encs = new Vector<Encounter>();
 		for (Patient p : Context.getPatientService().getPatients(null,
 		                                                         identifier,
-		                                                         null)) {
+		                                                         null,
+		                                                         false)) {
 			encs.addAll(getEncountersByPatientId(p.getPatientId()));
 		}
 		return encs;
@@ -200,12 +210,12 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	        Date fromDate, Date toDate, Collection<Form> enteredViaForms,
 	        Collection<EncounterType> encounterTypes, boolean includeVoided) {
 		return dao.getEncounters(who,
-		                                       loc,
-		                                       fromDate,
-		                                       toDate,
-		                                       enteredViaForms,
-		                                       encounterTypes,
-		                                       includeVoided);
+	                               loc,
+	                               fromDate,
+	                               toDate,
+	                               enteredViaForms,
+	                               encounterTypes,
+	                               includeVoided);
 	}
 
 	/**
@@ -214,7 +224,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public Encounter voidEncounter(Encounter encounter, String reason) {
 		if (reason == null)
-			reason = "";
+			throw new IllegalArgumentException("The argument 'reason' is required and so cannot be null");
 
 		ObsService os = Context.getObsService();
 		for (Obs o : encounter.getObsAtTopLevel(false)) {
@@ -247,9 +257,15 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			voidReason = "";
 
 		ObsService os = Context.getObsService();
-		for (Obs o : encounter.getObsAtTopLevel(false)) {
+		for (Obs o : encounter.getObsAtTopLevel(true)) {
 			if (voidReason.equals(o.getVoidReason()))
 				os.unvoidObs(o);
+		}
+		
+		OrderService orderService = Context.getOrderService();
+		for (Order o : encounter.getOrders()) {
+			if (voidReason.equals(o.getVoidReason()))
+				orderService.unvoidOrder(o);
 		}
 
 		encounter.setVoided(false);
@@ -289,9 +305,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			                                               null,
 			                                               null,
 			                                               null,
-			                                               cascade));
+			                                               true));
 			for (Obs o : observations) {
-				obsService.purgeObs(o, cascade);
+				obsService.purgeObs(o);
 			}
 		}
 		purgeEncounter(encounter);
@@ -353,6 +369,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public EncounterType retireEncounterType(EncounterType encounterType, String reason)
 	        throws APIException {
+		if (reason == null)
+			throw new IllegalArgumentException("The 'reason' argument is required");
+		
 		encounterType.setRetired(true);
 		encounterType.setRetiredBy(Context.getAuthenticatedUser());
 		encounterType.setDateRetired(new Date());
