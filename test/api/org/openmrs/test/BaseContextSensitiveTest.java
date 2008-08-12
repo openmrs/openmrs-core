@@ -52,8 +52,6 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.HSQLDialect;
-import org.junit.After;
-import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -444,7 +442,13 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		File file = new File(datasetFilename);
 		
 		if (file.exists()) {
-			executeDataSet(new FlatXmlDataSet(new FileInputStream(datasetFilename)));
+			InputStream inputStream = new FileInputStream(datasetFilename);
+			try {
+				executeDataSet(new FlatXmlDataSet(inputStream));
+			}
+			finally {
+				inputStream.close();
+			}
 		}
 		else {
 			InputStream stream = getClass().getClassLoader().getResourceAsStream(datasetFilename);

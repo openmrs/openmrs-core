@@ -151,7 +151,8 @@ public interface PatientService extends OpenmrsService {
 	        throws APIException;
 	
 	/**
-	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)}
+	 * @deprecated replaced by a call to 
+	 * 		{@link #getPatients(String, String, List, boolean)} with "false" as the last parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS })

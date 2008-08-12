@@ -20,24 +20,29 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
- * TODO test all methods in EncounterService
+ * Tests all methods in the {@link EncounterService}
  */
 public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
@@ -149,6 +154,34 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * Make sure that purging an encounter removes the row
+	 * from the database
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldPurgeEncounterAndCascadeToObsAndOrders() throws Exception {
+		
+		EncounterService es = Context.getEncounterService();
+		
+		// fetch the encounter to delete from the db
+		Encounter encounterToDelete = es.getEncounter(1);
+		
+		es.purgeEncounter(encounterToDelete, true);
+		
+		// try to refetch the encounter. should get a null object
+		Encounter e = es.getEncounter(encounterToDelete.getEncounterId());
+		assertNull("We shouldn't find the encounter after deletion", e);
+		
+		ObsService obsService = Context.getObsService();
+		assertNull(obsService.getObs(1));
+		assertNull(obsService.getObs(2));
+		assertNull(obsService.getObs(3));
+		
+		assertNull(Context.getOrderService().getOrder(1));
+	}
+	
+	/**
 	 * You should be able to add an obs to an encounter, save the encounter,
 	 * and have the obs automatically persisted.
 	 * 
@@ -179,6 +212,596 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// the obs id should have been populated during the save
 		assertNotNull(obs.getObsId());
+	}
+	
+	/**
+	 * When the date on an encounter is modified and then saved, 
+	 * the encounterservice changes all of the obsdatetimes to 
+	 * the new datetime.
+	 * 
+	 * This test is showing error http://dev.openmrs.org/ticket/934
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldModifyEncounterDatetime() throws Exception {
+		EncounterService es = Context.getEncounterService();
+		Encounter enc = es.getEncounter(1);
+		
+		Obs o = new Obs();
+		o.setConcept(new Concept(1));
+		o.setCreator(Context.getAuthenticatedUser());
+		o.setDateCreated(new Date());
+		o.setPerson(enc.getPatient());
+		o.setObsDatetime(enc.getEncounterDatetime());
+		
+		Date newDate = new Date();
+		// sanity check to make sure the new date is different than the enc date
+		assertNotSame(enc.getEncounterDatetime(), newDate);
+		
+		enc.setEncounterDatetime(newDate);
+		
+		// save the encounter.  The obs should pick up the encounter's date
+		//enc.addObs(o);
+		es.saveEncounter(enc);
+		
+		assertEquals(enc.getEncounterDatetime(), newDate);
+		for (Obs obs : enc.getAllObs()) {
+			if (obs.getObsId().equals(3))
+				// make sure different obs datetimes from the encounter datetime
+				// are not edited to the new time
+				assertNotSame(newDate, obs.getObsDatetime());
+			else
+				// make sure all obs were changed
+				assertEquals(newDate, obs.getObsDatetime());
+		}
+	}
+	
+	/**
+	 * When the date on an encounter is modified and then saved, 
+	 * the encounterservice changes all of the obsdatetimes to 
+	 * the new datetime.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldModifyEncounterDatetimeWithNewObs() throws Exception {
+		EncounterService es = Context.getEncounterService();
+		Encounter enc = es.getEncounter(1);
+		
+		Obs o = new Obs();
+		o.setConcept(new Concept(1));
+		o.setCreator(Context.getAuthenticatedUser());
+		o.setDateCreated(new Date());
+		o.setPerson(enc.getPatient());
+		o.setObsDatetime(enc.getEncounterDatetime());
+		
+		Date newDate = new Date();
+		// sanity check to make sure the new date is different than the enc date
+		assertNotSame(enc.getEncounterDatetime(), newDate);
+		
+		enc.setEncounterDatetime(newDate);
+		
+		// save the encounter.  The obs should pick up the encounter's date
+		enc.addObs(o);
+		es.saveEncounter(enc);
+		
+		assertEquals(enc.getEncounterDatetime(), newDate);
+		assertEquals(enc.getEncounterDatetime(), o.getObsDatetime());
+	}
+	
+	/**
+	 * Make sure the creator is preserved when passed into 
+	 * {@link EncounterService#saveEncounter(Encounter)}
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCreateEncounterWithoutOverwritingCreator() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// the encounter to save without a dateCreated
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(2));
+		encounter.setCreator(new User(4));
+		
+		// make sure the logged in user isn't the user we're testing with
+		assertNotSame(encounter.getCreator(), Context.getAuthenticatedUser());
+		
+		encounterService.saveEncounter(encounter);
+		
+		// make sure an encounter id was created
+		assertNotNull(encounter.getEncounterId());
+		
+		// make sure the encounter creator is user 4 not user 1
+		assertEquals(encounter.getCreator(), new User(4));
+		assertNotSame(encounter.getCreator(), Context.getAuthenticatedUser());
+		
+		// make sure we can fetch this new encounter
+		// from the database and its values are the same as the passed in ones
+		Encounter newEncounter = encounterService.getEncounter(encounter.getEncounterId());
+		assertNotNull(newEncounter);
+		assertEquals(encounter.getCreator(), new User(4));
+		assertNotSame(encounter.getCreator(), Context.getAuthenticatedUser());
+	}
+	
+	/**
+	 * Make sure the creator and dateCreated values are preserved when 
+	 * passed into {@link EncounterService#saveEncounter(Encounter)}
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCreateEncounterWithoutOverwritingCreatorOrDateCreated() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// the encounter to save without a dateCreated
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(2));
+		encounter.setCreator(new User(4));
+		Date date = new Date(System.currentTimeMillis() - 5000); // make sure we have a date that isn't "right now"
+		encounter.setDateCreated(date);
+		
+		// make sure the logged in user isn't the user we're testing with
+		assertNotSame(encounter.getCreator(), Context.getAuthenticatedUser());
+		
+		encounterService.saveEncounter(encounter);
+		
+		// make sure an encounter id was created
+		assertNotNull(encounter.getEncounterId());
+		
+		// make sure the encounter creator is user 4 not user 1
+		assertEquals(encounter.getCreator(), new User(4));
+		assertNotSame(encounter.getCreator(), Context.getAuthenticatedUser());
+		
+		// make sure the encounter date created wasn't overwritten
+		assertEquals(date, encounter.getDateCreated());
+		
+		// make sure we can fetch this new encounter
+		// from the database and its values are the same as the passed in ones
+		Encounter newEncounter = encounterService.getEncounter(encounter.getEncounterId());
+		assertNotNull(newEncounter);
+		assertEquals(encounter.getCreator(), new User(4));
+		assertNotSame(encounter.getCreator(), Context.getAuthenticatedUser());
+		assertEquals(date, encounter.getDateCreated());
+	}
+	
+	/**
+	 * Make sure the dateCreated is preserved when 
+	 * passed into {@link EncounterService#saveEncounter(Encounter)}
+	 * and no creator is passed in
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCreateEncounterWithoutOverwritingDateCreated() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// the encounter to save without a dateCreated
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(2));
+		Date date = new Date(System.currentTimeMillis() - 5000); // make sure we have a date that isn't "right now"
+		encounter.setDateCreated(date);
+		
+		encounterService.saveEncounter(encounter);
+		
+		// make sure an encounter id was created
+		assertNotNull(encounter.getEncounterId());
+		
+		// make sure the encounter date created wasn't overwritten
+		assertEquals(date, encounter.getDateCreated());
+		
+		// make sure we can fetch this new encounter
+		// from the database and its values are the same as the passed in ones
+		Encounter newEncounter = encounterService.getEncounter(encounter.getEncounterId());
+		assertNotNull(newEncounter);
+		assertEquals(date, encounter.getDateCreated());
+	}
+	
+	/**
+	 * Make sure the obs and order creator and dateCreated is preserved when 
+	 * passed into {@link EncounterService#saveEncounter(Encounter)}
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCreateEncounterWithoutOverwritingObsAndOrdersCreatorOrDateCreated() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// the encounter to save without a dateCreated
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(2));
+		Date date = new Date(System.currentTimeMillis() - 5000); // make sure we have a date that isn't "right now"
+		encounter.setDateCreated(date);
+		User creator = new User(1);
+		encounter.setCreator(creator);
+		
+		// create and add an obs to this encounter
+		Obs obs = new Obs(new Patient(2), new Concept(1), new Date(), new Location(1));
+		obs.setDateCreated(date);
+		obs.setCreator(creator);
+		encounter.addObs(obs);
+		
+		// create and add an order to this encounter
+		Order order = new Order();
+		order.setConcept(new Concept(1));
+		order.setPatient(new Patient(2));
+		order.setDateCreated(date);
+		order.setCreator(creator);
+		encounter.addOrder(order);
+		
+		// make sure the logged in user isn't the user we're testing with
+		assertNotSame(encounter.getCreator(), Context.getAuthenticatedUser());
+		
+		encounterService.saveEncounter(encounter);
+		
+		// make sure the obs date created and creator are the same as what we set
+		Obs createdObs = Context.getObsService().getObs(obs.getObsId());
+		assertEquals(date, createdObs.getDateCreated());
+		assertEquals(creator, createdObs.getCreator());
+		
+		// make sure the order date created and creator are the same as what we set
+		Order createdOrder = Context.getOrderService().getOrder(order.getOrderId());
+		assertEquals(date, createdOrder.getDateCreated());
+		assertEquals(creator, createdOrder.getCreator());
+	}
+	
+	/**
+	 * Make sure the creator and dateCreated valueus are added when 
+	 * passed into {@link EncounterService#saveEncounter(Encounter)}
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCreateEncounterAndCascadeCreatorAndDateCreatedToOrders() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// the encounter to save without a dateCreated
+		Encounter encounter = new Encounter();
+		encounter.setLocation(new Location(1));
+		encounter.setEncounterType(new EncounterType(1));
+		encounter.setEncounterDatetime(new Date());
+		encounter.setPatient(new Patient(2));
+		
+		// create and add an order to this encounter
+		Order order = new Order();
+		order.setConcept(new Concept(1));
+		order.setPatient(new Patient(2));
+		encounter.addOrder(order);
+		
+		// make sure the logged in user isn't the user we're testing with
+		assertNotSame(encounter.getCreator(), Context.getAuthenticatedUser());
+		
+		encounterService.saveEncounter(encounter);
+		
+		// make sure the order date created and creator are the same as what we set
+		Order createdOrder = Context.getOrderService().getOrder(order.getOrderId());
+		assertNotNull(encounter.getDateCreated());
+		assertNotNull(createdOrder.getDateCreated());
+		assertEquals(encounter.getDateCreated(), createdOrder.getDateCreated());
+		
+		assertNotNull(encounter.getCreator());
+		assertNotNull(createdOrder.getCreator());
+		assertEquals(encounter.getCreator(), createdOrder.getCreator());
+	}
+	
+	/**
+	 * Should get all nonvoided encounters by the patient they
+	 * are associated to
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetNonVoidedEncountersByPatient() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		List<Encounter> encounters = encounterService.getEncountersByPatient(new Patient(3));
+		assertEquals(1, encounters.size());
+		
+		// sanity check to make sure there is a voided encounter associated with patient#3
+		Encounter voidedEncounter = encounterService.getEncounter(2);
+		assertTrue(voidedEncounter.isVoided());
+		assertEquals(new Patient(3), voidedEncounter.getPatient());
+	}
+	
+	/**
+	 * An error should be thrown when passing a null argument to
+	 * {@link EncounterService#getEncountersByPatient(Patient)}
+	 * 
+	 * @throws Exception
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void shouldThrowErrorWhenGettingEncountersByPatientWithNullParam() throws Exception {
+		Context.getEncounterService().getEncountersByPatient(null);
+	}
+	
+	/**
+	 * Should get all nonvoided encounters by the patient id they
+	 * are associated to
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetNonVoidedEncountersByPatientId() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		List<Encounter> encounters = encounterService.getEncountersByPatientId(3);
+		assertEquals(1, encounters.size());
+		
+		// sanity check to make sure there is a voided encounter associated with patient#3
+		Encounter voidedEncounter = encounterService.getEncounter(2);
+		assertTrue(voidedEncounter.isVoided());
+		assertEquals(new Patient(3), voidedEncounter.getPatient());
+	}
+	
+	/**
+	 * An error should be thrown when passing a null argument to
+	 * {@link EncounterService#getEncountersByPatientId(Integer)}
+	 * 
+	 * @throws Exception
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void shouldThrowErrorWhenGettingEncountersByPatientIdWithNullParam() throws Exception {
+		Context.getEncounterService().getEncountersByPatientId(null);
+	}
+	
+	/**
+	 * Should get all nonvoided encounters by the patient they
+	 * are associated to
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetNonVoidedEncountersByPatientIdentifier() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier("12345");
+		assertEquals(1, encounters.size());
+		
+		// sanity check to make sure there is a voided encounter associated with patient#3
+		Encounter voidedEncounter = encounterService.getEncounter(2);
+		assertTrue(voidedEncounter.isVoided());
+		assertEquals(new Patient(3), voidedEncounter.getPatient());
+	}
+	
+	/**
+	 * An error should be thrown when passing a null argument to
+	 * {@link EncounterService#getEncountersByPatientIdentifier(String)}
+	 * 
+	 * @throws Exception
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void shouldThrowErrorWhenGettingEncountersByPatientIdentifierWithNullParam() throws Exception {
+		Context.getEncounterService().getEncountersByPatientIdentifier(null);
+	}
+	
+	/**
+	 * Make sure {@link EncounterService#voidEncounter(Encounter, String)}
+	 * marks all the voided stuff correctly
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldVoidAnEncounter() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// get a nonvoided encounter
+		Encounter encounter = encounterService.getEncounter(1);
+		assertFalse(encounter.isVoided());
+		assertNull(encounter.getVoidedBy());
+		assertNull(encounter.getVoidReason());
+		assertNull(encounter.getDateVoided());
+		
+		Encounter voidedEnc = encounterService.voidEncounter(encounter, "Just Testing");
+		
+		// make sure its still the same object
+		assertEquals(voidedEnc, encounter);
+		
+		// make sure that all the values were filled in
+		assertTrue(voidedEnc.isVoided());
+		assertNotNull(voidedEnc.getDateVoided());
+		assertEquals(Context.getAuthenticatedUser(), voidedEnc.getVoidedBy());
+		assertEquals("Just Testing", voidedEnc.getVoidReason());
+	}
+	
+	/**
+	 * Obs that are on an encounter should be voided when the encounter is voided
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCascadeVoidToObsWhenVoidingAnEncounter() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// get a nonvoided encounter that has some obs
+		Encounter encounter = encounterService.getEncounter(1);
+		encounterService.voidEncounter(encounter, "Just Testing");
+		
+		Obs obs = Context.getObsService().getObs(1);
+		assertTrue(obs.isVoided());
+		assertEquals("Just Testing", obs.getVoidReason());
+	}
+	
+	/**
+	 * Orders that are on an encounter should be voided when the encounter is voided
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCascadeVoidToOrdersWhenVoidingAnEncounter() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// get a nonvoided encounter that has some obs
+		Encounter encounter = encounterService.getEncounter(1);
+		encounterService.voidEncounter(encounter, "Just Testing");
+		
+		Order order = Context.getOrderService().getOrder(1);
+		assertTrue(order.isVoided());
+		assertEquals("Just Testing", order.getVoidReason());
+	}
+	
+	/**
+	 * Obs that are on an encounter should be unvoided when the encounter is unvoided
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCascadeUnvoidToObsWhenVoidingAnEncounter() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// get a voided encounter that has some voided obs
+		Encounter encounter = encounterService.getEncounter(2);
+		encounterService.unvoidEncounter(encounter);
+		
+		Obs obs = Context.getObsService().getObs(4);
+		assertFalse(obs.isVoided());
+		assertNull(obs.getVoidReason());
+	}
+	
+	/**
+	 * Orders that are on an encounter should be unvoided when the encounter is unvoided
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCascadeUnvoidToOrdersWhenVoidingAnEncounter() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// get a voided encounter that has some voided obs
+		Encounter encounter = encounterService.getEncounter(2);
+		encounterService.unvoidEncounter(encounter);
+		
+		Order order = Context.getOrderService().getOrder(2);
+		assertFalse(order.isVoided());
+		assertNull(order.getVoidReason());
+	}
+	
+	/**
+	 * A void_reason value should be required
+	 *  
+	 * @throws Exception
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void shouldThrowErrorWhenVoidingEncounterWithNullReason() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		Encounter type = encounterService.getEncounter(1);
+		encounterService.voidEncounter(type, null);
+	}
+	
+	/**
+	 * Make sure {@link EncounterService#unvoidEncounter(Encounter)}
+	 * unmarks all the voided stuff correctly
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldUnVoidAnEncounter() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// get an already voided encounter
+		Encounter encounter = encounterService.getEncounter(2);
+		assertTrue(encounter.isVoided());
+		assertNotNull(encounter.getVoidedBy());
+		assertNotNull(encounter.getVoidReason());
+		assertNotNull(encounter.getDateVoided());
+		
+		Encounter unvoidedEnc = encounterService.unvoidEncounter(encounter);
+		
+		// make sure its still the same object
+		assertEquals(unvoidedEnc, encounter);
+		
+		// make sure that all the values were unfilled in
+		assertFalse(unvoidedEnc.isVoided());
+		assertNull(unvoidedEnc.getDateVoided());
+		assertNull(unvoidedEnc.getVoidedBy());
+		assertNull(unvoidedEnc.getVoidReason());
+	}
+	
+	
+	/**
+	 * Get encounters by their locations
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetEncountersByLocation() throws Exception {
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, new Location(1), null, null, null, null, true);
+		assertEquals(2, encounters.size());
+	}
+	
+	/**
+	 * Get encounters that are after a certain date
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetEncountersFromDate() throws Exception {
+		Date fromDate = new SimpleDateFormat("yyyy-dd-MM").parse("2006-01-01");
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, fromDate, null, null, null, true);
+		assertEquals(1, encounters.size());
+		assertEquals(2, encounters.get(0).getEncounterId().intValue());
+	}
+	
+	/**
+	 * Get encounters that are up to a certain date
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetEncountersToDate() throws Exception {
+		Date toDate = new SimpleDateFormat("yyyy-dd-MM").parse("2006-01-01");
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, toDate, null, null, true);
+		assertEquals(1, encounters.size());
+		assertEquals(1, encounters.get(0).getEncounterId().intValue());
+	}
+	
+	/**
+	 * Get encounters that are assigned to a form
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetEncountersByForm() throws Exception {
+		List<Form> forms = new Vector<Form>();
+		forms.add(new Form(1));
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, forms, null, true);
+		assertEquals(2, encounters.size());
+	}
+	
+	/**
+	 * Get encounters that have a certain type
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetEncounteersByType() throws Exception {
+		List<EncounterType> types = new Vector<EncounterType>();
+		types.add(new EncounterType(1));
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, types, true);
+		assertEquals(2, encounters.size());
+	}
+	
+	/**
+	 * Get encounters that are voided/nonvoided
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetVoidedEncounters() throws Exception {
+		assertEquals(1, Context.getEncounterService().getEncounters(null, null, null, null, null, null, false).size());
+		assertEquals(2, Context.getEncounterService().getEncounters(null, null, null, null, null, null, true).size());
 	}
 	
 	/**
@@ -588,6 +1211,18 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * A retire_reason value should be required
+	 *  
+	 * @throws Exception
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void shouldThrowErrorWhenRetiringEncounterTypeWithNullReason() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		EncounterType type = encounterService.getEncounterType(1);
+		encounterService.retireEncounterType(type, null);
+	}
+	
+	/**
 	 * Make sure {@link EncounterService#unretireEncounterType(EncounterType)}
 	 * unmarks all the retired stuff correctly
 	 * 
@@ -663,7 +1298,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void shouldGetEncounterById() throws Exception {
+	public void shouldThrowErrorWhenGettingEncounterById() throws Exception {
 		Context.getEncounterService().getEncounter(null);
 	}
 	
@@ -673,10 +1308,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test(expected=IllegalArgumentException.class)
-	public void shouldGetEncounterTypeById() throws Exception {
+	public void shouldThrowErrorWhenGettingEncounterTypeById() throws Exception {
 		Context.getEncounterService().getEncounterType((Integer)null);
 	}
-	
-	
 	
 }
