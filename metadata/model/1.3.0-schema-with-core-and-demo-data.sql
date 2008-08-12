@@ -1053,7 +1053,7 @@ SET character_set_client = @saved_cs_client;
 --
 
 /*!40000 ALTER TABLE `global_property` DISABLE KEYS */;
-INSERT INTO `global_property` VALUES ('concept.causeOfDeath','5002',NULL),('concept.reasonOrderStopped','6098',NULL),('database_version','1.3.0.14',NULL),('patient.displayAttributeTypes','Birthplace',NULL);
+INSERT INTO `global_property` VALUES ('concept.causeOfDeath','5002',NULL),('concept.reasonOrderStopped','6098',NULL),('database_version','1.3.0.15',NULL),('patient.displayAttributeTypes','Birthplace',NULL);
 /*!40000 ALTER TABLE `global_property` ENABLE KEYS */;
 
 --
