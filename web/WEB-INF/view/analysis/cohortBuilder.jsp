@@ -21,9 +21,9 @@
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
 	dojo.hostenv.writeIncludes();
-	
+
 	dojo.addOnLoad( function() {
-		dojo.event.topic.subscribe("concept_to_filter_search/select", 
+		dojo.event.topic.subscribe("concept_to_filter_search/select",
 			function(msg) {
 				if (msg) {
 					var concept = msg.objs[0];
@@ -31,10 +31,10 @@
 				}
 			}
 		);
-		
+
 		document.getElementById('concept_to_filter_search').focus();
 	})
-	
+
 	// tab ids should be searchTab_concept
 	// tab content ids should be searchTab_concept_content
 	function changeSearchTab(tabObj, focusToId) {
@@ -54,14 +54,14 @@
 					hideLayer(tabContentId);
 			}
 			addClass(tabObj, 'current');
-			
+
 			if (focusToId)
 				document.getElementById(focusToId).focus();
 			else
 				tabObj.blur();
 		}
 	}
-	
+
 	function classFilterTemplate(concept) {
 		if (concept.className == 'Program') {
 			var str = '<form method="post" action="cohortBuilder.form">';
@@ -71,7 +71,7 @@
 			str += '<input type="hidden" name="program" value="concept.' + concept.conceptId + '"/>';
 			str += 'In ' + concept.name;
 			str += ' <input type="submit" value="Search"/>';
-			str += '</form>';			
+			str += '</form>';
 			return str;
 		} else if (concept.className == 'State' || concept.className == 'Workflow')
 			return 'Workflow/State filter not yet implemented';
@@ -83,18 +83,18 @@
 			str += '<select name="groupMethod"><option value="">Taking ' + concept.name + '</option><option value="NONE">Taking nothing</option></select>';
 			str += '<input type="hidden" name="drugConcept" value="' + concept.conceptId + '"/>';
 			str += ' <input type="submit" value="Search"/>';
-			str += '</form>';			
+			str += '</form>';
 			return str;
 		}
 		return null;
 	}
-	
+
 	function obsFilterTemplate(concept) {
 		var hl7Abbrev = concept.hl7Abbreviation;
 		if (hl7Abbrev == 'ZZ')
 			//return 'Handling Datatype N/A not yet implemented. Any suggestions on how it should behave?';
 			return null;
-		if (hl7Abbrev != 'NM' && hl7Abbrev != 'ST' && hl7Abbrev != 'CWE' && hl7Abbrev != 'DT' && hl7Abbrev != 'TS') {
+		if (hl7Abbrev != 'NM' && hl7Abbrev != 'ST' && hl7Abbrev != 'CWE' && hl7Abbrev != 'DT' && hl7Abbrev != 'TS' && hl7Abbrev != 'SN') {
 			return null;
 		}
 		var lookupAnswers = false;
@@ -111,11 +111,13 @@
 		str += '<h4>Patients with observations whose <i>question</i> is ' + concept.name + '.</h4>';
 		if (hl7Abbrev == 'NM')
 			str += '<br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY">Any</option><option value="NO">None</option><option value="FIRST">Earliest</option><option value="LAST" selected="true">Most Recent</option><option value="MIN">Lowest</option><option value="MAX">Highest</option><option value="AVG">Average</option></select></span> ';
+		else if (hl7Abbrev == 'SN')
+			str += '<br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY">Any</option><option value="NO">None</option><option value="FIRST">Earliest</option><option value="LAST" selected="true">Most Recent</option><option value="MIN">Lowest</option><option value="MAX">Highest</option><option value="AVG">Average</option></select></span> ';
 		else if (hl7Abbrev == 'DT' || hl7Abbrev == 'TS')
 			str += '<br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY" selected="true">Any</option><option value="NO">None</option><option value="MIN">Earliest Value</option><option value="MAX">Most Recent Value</option><option value="FIRST">Earliest Recorded</option><option value="LAST">Most Recent Recorded</option></select></span> ';
 		else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE')
 			str += '<br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY">Any</option><option value="NO">None</option><option value="FIRST">Earliest</option><option value="LAST" selected="true">Most Recent</option></select></span> ';
-		if (hl7Abbrev == 'NM') {
+		if ((hl7Abbrev == 'NM')||(hl7Abbrev == 'SN')) {
 			str += ' <br/><br/><span style="margin-left: 40px">';
 			str += ' <small><spring:message code="CohortBuilder.optionalPrefix" /></small> <spring:message code="CohortBuilder.whatValuesQuestion" /> ';
 			str += ' <select name="modifier" id="modifier"><option value="LESS_THAN">&lt;</option><option value="LESS_EQUAL">&lt;=</option><option value="EQUAL">=</option><option value="GREATER_EQUAL">&gt;=</option><option value="GREATER_THAN">&gt;</option></select> ';
@@ -131,7 +133,7 @@
 			str += ' <input type="hidden" name="modifier" value="EQUAL" /> ';
 			str += '</span>';
 		}
-		if (hl7Abbrev == 'NM' || hl7Abbrev == 'ST') {
+		if (hl7Abbrev == 'NM' ||hl7Abbrev == 'SN' || hl7Abbrev == 'ST') {
 			str += '<input type="text" name="value" size="10"/>';
 			if (concept.units != null)
 				str += ' ' + concept.units;
@@ -159,7 +161,7 @@
 		}
 		return str;
 	}
-	
+
 	function obsValueFilterTemplate(concept) {
 		var str = '<form method="post" action="cohortBuilder.form">';
 		str += '<input type="hidden" name="method" value="addDynamicFilter"/>';
@@ -190,11 +192,11 @@
 		str += '</form>';
 		return str;
 	}
-	
+
 	function possibleFilterHelper(filter) {
 		return '<div style="background: #f6f6f6; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">' + filter + '</div>';
 	}
-		
+
 	function showPossibleFilters(concept) {
 		var div = document.getElementById('concept_filter_box');
 		var str = '';
@@ -207,11 +209,11 @@
 		filter = obsValueFilterTemplate(concept);
 		if (filter != null)
 			str += possibleFilterHelper(filter);
-		
+
 		div.innerHTML = str;
 		showLayer('concept_filter_box');
 	}
-	
+
 	function handleSaveCohort() {
 		if (currentPatientSet == null) {
 			window.alert("<spring:message code="PatientSet.stillLoading"/>");
@@ -224,9 +226,9 @@
 					function() { window.alert('Saved cohort: ' + cohortName); }
 				);
 			hideLayer('saveCohortDiv');
-		}		
+		}
 	}
-	
+
 	function handleLoadButton() {
 		if ($('loadBox').style.display == 'none') {
 			hideLayer('saveBox');
@@ -251,11 +253,11 @@
 			hideLayer('loadBox');
 		}
 	}
-	
+
 	function loadSearchHistory(id) {
 		DWRCohortBuilderService.loadSearchHistory(id, function() { refreshPage(); });
 	}
-	
+
 	function getCurrentPatientIds() {
 		if (currentPatientSet != null) {
 			return currentPatientSet.commaSeparatedPatientIds;
@@ -264,7 +266,7 @@
 			return null;
 		}
 	}
-	
+
 	function linkSubmitHelper(idPrefix) {
 		if (currentPatientSet != null) {
 			document.getElementById(idPrefix + "_ptIds").value = currentPatientSet.commaSeparatedPatientIds;
@@ -276,14 +278,14 @@
 				document.getElementById(idPrefix + "_fDate").value = fromDate.value;
 			if ( toDate )
 				document.getElementById(idPrefix + "_tDate").value = toDate.value;
-			
+
 			document.getElementById(idPrefix + "_form").submit();
 			hideLayer('_linkMenu');
 		} else {
 			window.alert("<spring:message code="PatientSet.stillLoading"/>");
 		}
 	}
-	
+
 	// linkObj is an element in the form that needs to be submitted, such as the A or INPUT element that was pressed to submit it.
 	function submitLink(linkObj) {
 		if (currentPatientSet != null) {
@@ -296,7 +298,7 @@
 			window.alert("<spring:message code="PatientSet.stillLoading"/>");
 		}
 	}
-	
+
 	function showSaveFilterDialog(index, name) {
 		var tempName = '#' + (index + 1);
 		if (name != null && name != '')
@@ -310,7 +312,7 @@
 		showLayer('saveFilterBox');
 		$('saveFilterName').focus();
 	}
-	
+
 	function handleSavedFilterMenuButton() {
 		if ($('saved_filters').style.display == 'none') {
 			$('saved_searches').innerHTML = '<li><spring:message code="general.loading"/></li>';
@@ -348,7 +350,7 @@
 			hideLayer('saved_filters');
 		}
 	}
-	
+
 	function handleSaveFilter() {
 		var index = $('saveFilterIndex').value;
 		var name = $('saveFilterName').value;
@@ -366,7 +368,7 @@
 				hideLayer('saveFilterBox');
 			});
 	}
-	
+
 	function refreshWorkflowOptions() {
 		hideDiv('workflow');
 		var program = DWRUtil.getValue('program');
@@ -383,7 +385,7 @@
 					refreshStateOptions();
 				});
 	}
-	
+
 	function refreshStateOptions() {
 		hideDiv('state');
 		var workflow = DWRUtil.getValue('workflow');
@@ -401,12 +403,12 @@
 						showDiv('state');
 				});
 	}
-	
+
 	function toggleDrugOrderDateOptions(sel) {
 		toggleLayer('drugOrderDateOption_current');
 		toggleLayer('drugOrderDateOption_other');
 	}
-	
+
 </script>
 
 <script type="text/javascript">
@@ -433,14 +435,14 @@
 			});
 	}
 	--%>
-	
+
 	function previewPageTo(index) {
 		if (index < 0)
 			index = currentPatientSet.size - patientPageSize;
 		fromPatientIndex = index;
 		refreshPreview();
 	}
-	
+
 	function previewPageBy(delta) {
 		fromPatientIndex += delta;
 		refreshPreview();
@@ -448,7 +450,7 @@
 
 	var fromPatientIndex = 0;
 	var patientPageSize = 15;
-	
+
 	function refreshPreview() {
 		var div = document.getElementById('cohort_builder_preview');
 		showLayer('cohort_builder_preview_loading_message');
@@ -464,16 +466,16 @@
 		else // should be an integer: a zero-based index into the search history
 			DWRCohortBuilderService.getResultForSearch(method, displayPreview);
 	}
-	
+
 	var currentPatientSet = null;
 	var goesUntilLast = false;
 
 	function displayPreview(ps) {
 		cohort_setPatientIds(ps.commaSeparatedPatientIds);
 		currentPatientSet = ps;
-		var ids = ps.patientIds;		
+		var ids = ps.patientIds;
 	}
-	
+
 	function removeHiddenDivs() {
 		var divs = document.getElementsByTagName("DIV");
 		var i = 0;
@@ -490,7 +492,7 @@
 
 </script>
 
-<h2><spring:message code="CohortBuilder.title"/></h2>	
+<h2><spring:message code="CohortBuilder.title"/></h2>
 
 <div id="cohort_builder_add_filter" style="padding: 4px">
 	<b><spring:message code="general.search"/></b>
@@ -549,9 +551,9 @@
 			</span>
 		</c:forEach>
 	</c:if>
-	
+
 	<br/>
-	
+
 	<div id="cohortSearchTabs">
 		<ul>
 			<li>&nbsp;</li>
@@ -563,14 +565,14 @@
 			<li><a id="searchTab_composition" href="#" onClick="changeSearchTab(this, 'composition')"><spring:message code="CohortBuilder.searchTab.composition"/></a></li>
 		</ul>
 	</div>
-	
+
 	<div id="cohortSearchTabContent" style="border: 1px black solid; border-top: none; padding: 4px 5px 2px 10px;">
-	
+
 		<div id="searchTab_concept_content" style="display: none">
 			<div dojoType="ConceptSearch" widgetId="concept_to_filter_search" conceptId="" searchLabel='<spring:message code="CohortBuilder.addConceptFilter"/>' showVerboseListing="true" includeVoided="false"></div>
 			<div id="concept_filter_box" style="display: none; border-top: 1px #aaaaaa solid"></div>
 		</div>
-		
+
 		<div id="searchTab_attribute_content" style="display: none">
 			<div style="background: #f6f6f6; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">
 				<form method="post" action="cohortBuilder.form">
@@ -620,7 +622,7 @@
 					<input type="hidden" name="method" value="addDynamicFilter"/>
 					<input type="hidden" name="filterClass" value="org.openmrs.reporting.PersonAttributeFilter" />
 					<input type="hidden" name="vars" value="attribute#org.openmrs.PersonAttributeType,value#java.lang.String" />
-					
+
 					<h4>Search by Person Attributes</h4>
 					<br/>
 					Which attribute?
@@ -638,7 +640,7 @@
 				</form>
 			</div>
 		</div>
-		
+
 		<div id="searchTab_encounter_content" style="display: none">
 			<div style="background: #f6f6f6; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">
 				<h4><spring:message code="CohortBuilder.addEncounterFilter"/></h4>
@@ -732,7 +734,7 @@
 				</form>
 				</li></ul>
 			</div>
-			
+
 			<div style="background: #f6f6f6; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">
 				<h4><spring:message code="CohortBuilder.addLocationFilter"/></h4>
 				<ul><li>
@@ -753,21 +755,21 @@
 						<option value="ANY_ENCOUNTER">Any Encounter</option>
 						<option value="LATEST_ENCOUNTER">Most Recent Encounter</option>
 						<option value="EARLIEST_ENCOUNTER">Earliest Encounter</option>
-					</select>			
+					</select>
 					<br/>
 					<input type="submit" value="<spring:message code="general.search" />"/>
 				</form>
 				</li></ul>
 			</div>
 		</div>
-	
+
 		<div id="searchTab_program_content" style="display: none">
 			<div style="background: #f6f6f6; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">
 				<form method="post" action="cohortBuilder.form">
 					<input type="hidden" name="method" value="addDynamicFilter"/>
 					<input type="hidden" name="filterClass" value="org.openmrs.reporting.ProgramStatePatientFilter" />
 					<input type="hidden" name="vars" value="program#org.openmrs.Program,stateList#*org.openmrs.ProgramWorkflowState,withinLastMonths#java.lang.Integer,withinLastDays#java.lang.Integer,sinceDate#java.util.Date,untilDate#java.util.Date" />
-		
+
 					<h4><spring:message code="CohortBuilder.addProgramFilter"/></h4>
 					<table>
 						<tr>
@@ -808,7 +810,7 @@
 				</form>
 			</div>
 		</div>
-		
+
 		<div id="searchTab_drugOrder_content" style="display: none">
 			<spring:message code="CohortBuilder.addDrugOrderFilter"/>
 			<div style="background: #f6f6f6; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">
@@ -835,7 +837,7 @@
 									<c:forEach var="drug" items="${model.drugs}">
 										<option value="${drug.drugId}"/>${drug.name}</option>
 									</c:forEach>
-								</select>			
+								</select>
 							</td>
 							<td>
 								<c:if test="${fn:length(model.drugSets) > 0}">
@@ -882,7 +884,7 @@
 							<spring:message code="CohortBuilder.fromDateToDate" arguments="sinceDate,untilDate" />
 						<br/>
 					</div>
-					
+
 					<br/>
 					<input type="submit" value="<spring:message code="general.search" />"/>
 				</form>
@@ -934,13 +936,13 @@
 							</c:forEach>
 						</select>
 					</td></tr></table>
-					
+
 					<br/>
 					<input type="submit" value="<spring:message code="general.search" />"/>
 				</form>
 			</div>
 		</div>
-		
+
 		<div id="searchTab_composition_content" style="display: none">
 			<form method="post" action="cohortBuilder.form">
 				<input type="hidden" name="method" value="addFilter"/>
@@ -956,7 +958,7 @@
 			</form>
 		</div>
 	</div>
-	
+
 </div>
 
 <div id="cohort_builder_search_history" style="padding: 4px; border: 1px black solid; background-color: #e8e8e8">
@@ -1034,8 +1036,8 @@
 			<input type="button" id="saveFilterSaveButton" value="<spring:message code="general.save"/>" onClick="handleSaveFilter()"/>
 			<input type="button" id="saveFilterCancelButton" value="<spring:message code="general.cancel"/>" onClick="toggleLayer('saveFilterBox')"/>
 		</div>
-	</div>	
-			
+	</div>
+
 	<c:if test="${model.searchHistory.size == 0}">
 		<div><spring:message code="CohortBuilder.searchHistory.none"/></div>
 	</c:if>
@@ -1052,7 +1054,7 @@
 				<a href="javascript:showLayer('fullSearchHistory'); hideLayer('showFullSearchHistoryButton')"><spring:message code="CohortBuilder.searchHistory.showFull"/></a>
 			</div>
 		</c:if>
-		
+
 		<table style="margin: 1px 4px; width: 100%; border: 1px black solid;
 			<c:if test="${item.saved}"> background-color: #c0d0ff </c:if>
 			<c:if test="${!item.saved}"> background-color: #e0ffe0 </c:if>
@@ -1197,7 +1199,7 @@
 		</c:if>
 
 		<b><spring:message code="CohortBuilder.actionsMenu"/></b>
-		
+
 		<span style="position: relative">
 			<div id="webReportPopupMenu" style="width: 35em; border: 1px solid black; background-color: #f0f0a0; position: absolute; bottom: 0px; padding-right: 1.2em; z-index: 1; display: none">
 				<div style="float: right"><a href="javascript:hideLayer('webReportPopupMenu');" >[<spring:message code="general.close"/>]</a></div>
@@ -1234,4 +1236,4 @@
 	refreshPreview();
 </script>
 
-<%@ include file="/WEB-INF/template/footer.jsp" %> 
+<%@ include file="/WEB-INF/template/footer.jsp" %>

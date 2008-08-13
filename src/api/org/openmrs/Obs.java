@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.util.Format;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Format.FORMAT_TYPE;
 
 /**
@@ -720,6 +721,35 @@ public class Obs implements java.io.Serializable {
 	 */
 	public void setValueStructuredNumeric(String valueStructuredNumeric) {
 		this.valueStructuredNumeric = valueStructuredNumeric;
+		if (valueStructuredNumeric==null)
+			return;
+		else if (valueStructuredNumeric.startsWith("<=")||valueStructuredNumeric.startsWith(">="))
+            setValueNumeric(Double.parseDouble(valueStructuredNumeric.substring(2)));
+        else if (valueStructuredNumeric.startsWith("<")||valueStructuredNumeric.startsWith(">"))
+            setValueNumeric(Double.parseDouble(valueStructuredNumeric.substring(1)));
+        else if(valueStructuredNumeric.indexOf("-")!=-1){
+            int index= valueStructuredNumeric.indexOf("-");
+            if (valueStructuredNumeric.charAt(0)!='(' && valueStructuredNumeric.charAt(0)!='['){
+                setValueStructuredNumeric("["+valueStructuredNumeric+"]");
+                Double low= Double.parseDouble(valueStructuredNumeric.substring(0,index));
+                Double high=Double.parseDouble(valueStructuredNumeric.substring(index+1, valueStructuredNumeric.length()));
+                setValueNumeric((low+high)/2);
+            }
+            else{
+                 Double low= Double.parseDouble(valueStructuredNumeric.substring(1,index));
+                 Double high=Double.parseDouble(valueStructuredNumeric.substring(index+1, valueStructuredNumeric.length()-1));
+                 setValueNumeric((low+high)/2);
+            }
+
+        }
+        else if(valueStructuredNumeric.indexOf(":")!=-1){
+            int index= valueStructuredNumeric.indexOf(":");
+            Double low=Double.parseDouble(valueStructuredNumeric.substring(0,index));
+            Double high= Double.parseDouble(valueStructuredNumeric.substring(index+1));
+            setValueNumeric(low/high);
+        }
+        else if(OpenmrsUtil.isNumeric(valueStructuredNumeric))
+            setValueNumeric(Double.parseDouble(valueStructuredNumeric));
 	}
 
 	/**

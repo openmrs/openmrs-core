@@ -582,8 +582,17 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					numericValue = (Number) value;
 				else
 					numericValue = new Double(value.toString());
+
 				valueSql = "o.value_numeric";
-			} else if (concept.getDatatype().getHl7Abbreviation().equals("ST")) {
+
+			} else if (concept.getDatatype().getHl7Abbreviation().equals("SN")) {
+				if (value instanceof Number)
+					numericValue = (Number) value;
+				else
+					numericValue = new Double(value.toString());
+				valueSql = "o.value_numeric";
+
+			}else if (concept.getDatatype().getHl7Abbreviation().equals("ST")) {
 				stringValue = value.toString();
 				valueSql = "o.value_text";
 				if (modifier == null)
@@ -629,7 +638,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				doInvert = true;
 			sb.append("select o.person_id from obs o where o.voided = false ");
 			if (conceptId != null)
-				sb.append("and concept_id = :concept_id ");
+				sb.append("and concept_id = :concept_id");
 			sb.append(dateSql);
 
 		} else if (timeModifier == TimeModifier.FIRST || timeModifier == TimeModifier.LAST) {
@@ -638,22 +647,44 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					"from obs o inner join (" +
 					"    select person_id, " + (isFirst ? "min" : "max") + "(obs_datetime) as obs_datetime" +
 					"    from obs" +
-					"    where voided = false and concept_id = :concept_id " +
+					"    where voided = false and concept_id = :concept_id"+
 					dateSqlForSubquery +
 					"    group by person_id" +
 					") subq on o.person_id = subq.person_id and o.obs_datetime = subq.obs_datetime " +
-					"where o.voided = false and o.concept_id = :concept_id ");
+					"where o.voided = false and o.concept_id = :concept_id");
 
 		} else if (doSqlAggregation) {
 			String sqlAggregator = timeModifier.toString();
 			valueSql = sqlAggregator + "(" + valueSql + ")";
 			sb.append("select o.person_id " +
-					"from obs o where o.voided = false and concept_id = :concept_id " +
+					"from obs o where o.voided = false and concept_id = :concept_id" +
 					dateSql +
 					"group by o.person_id ");
 
 		} else {
 			throw new IllegalArgumentException("TimeModifier '" + timeModifier + "' not recognized");
+		}
+
+		if (concept!=null && value!=null){
+			if (concept.getDatatype().getHl7Abbreviation().equals("SN")){
+				if(modifier.getSqlRepresentation().equals("<")){
+					sb.append(" and (o.value_structured_numeric not like '<%' or o.value_numeric < :value)");
+
+				}
+				else if(modifier.getSqlRepresentation().equals(">")){
+					sb.append(" and (o.value_structured_numeric not like '>%' or o.value_numeric > :value)");
+
+				}
+				else if(modifier.getSqlRepresentation().equals("<=")){
+					sb.append(" and (o.value_structured_numeric not like '<%' or o.value_numeric <= :value)");
+
+				}
+				else if(modifier.getSqlRepresentation().equals(">=")){
+					sb.append(" and (o.value_structured_numeric not like '>%' or o.value_numeric >= :value)");
+
+				}
+
+			}
 		}
 
 		if (useValue) {
@@ -665,6 +696,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" group by o.person_id ");
 
 		log.debug("query: " + sb);
+		for (int i=0;i<10;i++){
+			System.out.println("Query "+sb);
+		}
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
 		query.setCacheMode(CacheMode.IGNORE);
 
@@ -682,6 +716,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			else
 				throw new IllegalArgumentException("useValue is true, but numeric, coded, string, and date values are all null");
 		}
+
+
+
 		if (fromDate != null)
 			query.setDate("fromDate", fromDate);
 		if (toDate != null)
@@ -1211,8 +1248,13 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			columns.add("valueDrug");
 			columns.add("valueCoded");
 		}
-		else if (abbrev.equals("NM") || abbrev.equals("SN"))
+		else if (abbrev.equals("NM"))
 			columns.add("valueNumeric");
+		else if (abbrev.equals("SN")){
+
+			columns.add("valueNumeric");
+			columns.add("valueStructuredNumeric");
+		}
 		else if (abbrev.equals("DT") || abbrev.equals("TM") || abbrev.equals("TS"))
 			columns.add("valueDatetime");
 		else if (abbrev.equals("ST"))

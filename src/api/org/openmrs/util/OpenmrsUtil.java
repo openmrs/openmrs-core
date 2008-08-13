@@ -274,13 +274,13 @@ public class OpenmrsUtil {
 	 * @return true if structured numeric and false if not
 	 */
 	public static Boolean isNotValidStructuredNumeric(String sn){
-		if(sn.contains("<=")&& (!sn.startsWith("<=")||!isNumeric(sn.substring(1))))
+		if(sn.contains("<")&& !sn.contains("<=") && (!sn.startsWith("<")||!isNumeric(sn.substring(1))))
 			return true;
-		else if(sn.contains("<")&& (!sn.startsWith("<")||!isNumeric(sn.substring(0))))
+		else if(sn.contains("<=")&& (!sn.startsWith("<=")||!isNumeric(sn.substring(2))))
 			return true;
-		else if(sn.contains(">=")&& (!sn.startsWith(">=")||!isNumeric(sn.substring(1))))
+		else if(sn.contains(">")&& !sn.contains(">=")&& (!sn.startsWith(">")||!isNumeric(sn.substring(1))))
 			return true;
-		else if(sn.contains(">")&& (!sn.startsWith(">")||!isNumeric(sn.substring(0))))
+		else if(sn.contains(">=")&& (!sn.startsWith(">=")||!isNumeric(sn.substring(2))))
 			return true;
 		else if(sn.contains(":")){
 			int index= sn.indexOf(":");

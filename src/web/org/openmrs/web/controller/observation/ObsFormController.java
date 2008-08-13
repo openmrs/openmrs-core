@@ -33,6 +33,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+
+
+
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -47,28 +50,28 @@ import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * This controller gives the backing object and does the saving for the
- * obs.form page.  The jsp for this page is located in 
+ * obs.form page.  The jsp for this page is located in
  * /web/WEB-INF/view/admin/observations/obsForm.jsp
- * 
+ *
  */
 public class ObsFormController extends SimpleFormController {
-	
+
     /** Logger for this class and subclasses */
     protected final Log log = LogFactory.getLog(getClass());
-    
+
 	/**
-	 * 
+	 *
 	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
+	 *   Normally, only strings and lists are expected
+	 *
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		
+
         binder.registerCustomEditor(java.lang.Integer.class,
                 new CustomNumberEditor(java.lang.Integer.class, true));
-        binder.registerCustomEditor(java.util.Date.class, 
+        binder.registerCustomEditor(java.util.Date.class,
         		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true));
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(java.lang.Boolean.class,
@@ -79,21 +82,21 @@ public class ObsFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
-		
+
 		// sets the objects in case edit Reason is rejected
 		Obs obs = (Obs)obj;
 		obs = setObjects(obs, request);
-    	
+
     	String reason = request.getParameter("editReason");
     	if (obs.getObsId() != null && (reason == null || reason.length() == 0))
     		errors.reject("editReason", "Obs.edit.reason.empty");
 
     	if (obs.getConcept() == null)
     		errors.rejectValue("concept", "error.null");
-    	
+
 		return super.processFormSubmission(request, reponse, obs, errors);
 	}
-	
+
 	/**
      * @see org.springframework.web.servlet.mvc.BaseCommandController#onBind(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.BindException)
      */
@@ -105,23 +108,24 @@ public class ObsFormController extends SimpleFormController {
     	}
     }
 
-	/** 
-	 * 
+
+	/**
+	 *
 	 * The onSubmit function receives the form/command object that was modified
 	 *   by the input form and saves it to the db
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
-		
+
 		HttpSession httpSession = request.getSession();
 		String view = getFormView();
-		
+
 		if (Context.isAuthenticated()) {
 			Obs obs = (Obs)obj;
 			ObsService os = Context.getObsService();
 			String reason = request.getParameter("editReason");
-	    	
+
 			try {
 				os.saveObs(obs, reason);
 			}
@@ -131,32 +135,32 @@ public class ObsFormController extends SimpleFormController {
 			}
 
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.saved");
-			
+
 			if (obs.getEncounter() != null)
 				view = getSuccessView() + "?encounterId=" + obs.getEncounter().getEncounterId() + "&phrase=" + request.getParameter("phrase");
 		}
-		
+
 		return new ModelAndView(new RedirectView(view));
 	}
 
 	/**
-	 * 
+	 *
 	 * This is called prior to displaying a form for the first time.  It tells Spring
 	 *   the form/command object to load into the request
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
 		Obs obs = null;
-		
+
 		if (Context.isAuthenticated()) {
 			ObsService os = Context.getObsService();
 			EncounterService es = Context.getEncounterService();
-			
+
 			String obsId = request.getParameter("obsId");
 	    	String encounterId = request.getParameter("encounterId");
-	    	
+
 			if (obsId != null)
 	    		obs = os.getObs(Integer.valueOf(obsId));
 	    	else if (encounterId != null) {
@@ -168,25 +172,25 @@ public class ObsFormController extends SimpleFormController {
 	    		obs.setObsDatetime(e.getEncounterDatetime());
 	    	}
 		}
-		
+
 		if (obs == null)
 			obs = new Obs();
-    	
+
         return obs;
     }
 
 	/**
 	 * The other things shown on the obs form that are in the database
-	 * 
+	 *
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
-		
+
 		Obs obs = (Obs)obj;
-		
+
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";
-		
+
 		if (Context.isAuthenticated()) {
 			map.put("forms", Context.getFormService().getForms());
 			if (obs.getConcept() != null)
@@ -194,20 +198,20 @@ public class ObsFormController extends SimpleFormController {
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
-		
+
 		String editReason = request.getParameter("editReason");
 		if (editReason == null)
 			editReason = "";
-		
+
 		map.put("editReason", editReason);
-		
+
 		return map;
 	}
-	
+
 	/**
-	 * Convenience method used when saving the object to populate the object with 
+	 * Convenience method used when saving the object to populate the object with
 	 * full-fledged objects
-	 * 
+	 *
 	 * @param obs
 	 * @param request
 	 * @return
@@ -232,9 +236,9 @@ public class ObsFormController extends SimpleFormController {
 					obs.setEncounter(Context.getEncounterService().getEncounter(Integer.valueOf(request.getParameter("encounterId"))));
 				else
 					obs.setEncounter(null);
-				
+
 			}
-			
+
 			if (StringUtils.hasText(request.getParameter("valueCodedId")))
 				obs.setValueCoded(Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("valueCodedId"))));
 			else
@@ -244,7 +248,7 @@ public class ObsFormController extends SimpleFormController {
 			else
 				obs.setValueDrug(null);
 		}
-		
+
 		return obs;
 
 	}
