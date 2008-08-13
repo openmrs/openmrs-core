@@ -21,16 +21,20 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Encounter;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
+import org.openmrs.api.db.hibernate.HibernateEncounterDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
- * This class tests the hibernate alert data access.  
+ * This class tests the {@link EncounterDAO} linked to from the Context. 
+ * Currently that file is the {@link HibernateEncounterDAO}  
  * 
- * TODO Consider changing this and all subsequent tests to use dbunit
+ * This should only have to test methods that don't really have equivalents 
+ * at the {@link EncounterService} layer.    
  */
-public class HibernateEncounterDAOTest extends BaseContextSensitiveTest {
+public class EncounterDAOTest extends BaseContextSensitiveTest {
 	
 	private EncounterDAO dao = null;
 	
