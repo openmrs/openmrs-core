@@ -127,9 +127,10 @@ public class EncounterFormController extends SimpleFormController {
 		
 		String view = getFormView();
 
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-		Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		try {
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			
 			if (Context.isAuthenticated()) {
 				Encounter encounter = (Encounter)obj;
 				
@@ -147,7 +148,7 @@ public class EncounterFormController extends SimpleFormController {
 					// if this was just unvoided, call unvoidEncounter to unset appropriate attributes
 					Context.getEncounterService().unvoidEncounter(encounter);
 				else
-					Context.getEncounterService().updateEncounter(encounter);
+					Context.getEncounterService().saveEncounter(encounter);
 				
 				view = getSuccessView();
 				view = view + "?encounterId=" + encounter.getEncounterId();
@@ -217,8 +218,8 @@ public class EncounterFormController extends SimpleFormController {
 			// used to restrict the form field lookup
 			Form form = encounter.getForm();
 			
-			map.put("encounterTypes", es.getEncounterTypes());
-			map.put("forms", Context.getFormService().getForms());
+			map.put("encounterTypes", es.getAllEncounterTypes());
+			map.put("forms", Context.getFormService().getAllForms());
 			// loop over the encounter's observations to find the edited obs
 			String reason = "";
 			for (Obs o : encounter.getObsAtTopLevel(true)) {
