@@ -66,12 +66,12 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		fieldType.setDescription("desc");
 		fieldType.setIsSet(true);
 		
-		as.createFieldType(fieldType);
+		formService.saveFieldType(fieldType);
 		
 		FieldType newFieldType = formService.getFieldType(fieldType.getFieldTypeId());
 		assertNotNull(newFieldType);
 		
-		List<FieldType> fieldTypes = formService.getFieldTypes();
+		List<FieldType> fieldTypes = formService.getAllFieldTypes();
 		
 		//make sure we get a list
 		assertNotNull(fieldTypes);

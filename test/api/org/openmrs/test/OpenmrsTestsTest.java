@@ -74,7 +74,29 @@ public class OpenmrsTestsTest {
 	    		}
 	    	}
 		}
-		
+	}
+	
+	/**
+	 * Makes sure all "should___" methods in org.openmrs.test have an
+	 * "@Test" annotation on it.  This is to help prevent devs from 
+	 * forgetting to put the annotation and then seeing all tests pass
+	 * because the new test wasn't actually ran
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldHaveTestAnnotationWhenStartingWithShould() throws Exception {
+		// loop over all methods in all test classes
+		for (Class<TestCase> currentClass : getTestClasses()) {
+			for (Method method : currentClass.getMethods()) {
+	    		String methodName = method.getName();
+				
+				// make sure every should___ method has an @Test annotation
+				if (methodName.startsWith("should")) {
+					assertTrue(currentClass.getName() + "#" + methodName + " does not have the @Test annotation on it even though the method name starts with 'should'", method.getAnnotation(Test.class) != null);
+				}
+	    	}
+		}
 	}
 	
 	/**
@@ -93,12 +115,15 @@ public class OpenmrsTestsTest {
 		
 		testClasses = getTestClassesInDirectory(directory);
 		
+		// check to see if the web layer is also included.  Skip it if its not there
 		url = classLoader.getResource("org/openmrs/web/test");
-		directory = OpenmrsUtil.url2file(url);
-		// make sure we get a directory back
-		assertTrue("org.openmrs.web.test should be a directory", directory.isDirectory());
-		
-		testClasses.addAll(getTestClassesInDirectory(directory));
+		if (url != null) {
+			directory = OpenmrsUtil.url2file(url);
+			// make sure we get a directory back
+			assertTrue("org.openmrs.web.test should be a directory", directory.isDirectory());
+			
+			testClasses.addAll(getTestClassesInDirectory(directory));
+		}
 		
 		return testClasses;
 	}

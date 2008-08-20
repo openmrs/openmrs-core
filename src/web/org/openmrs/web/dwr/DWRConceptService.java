@@ -70,14 +70,6 @@ public class DWRConceptService {
 		
 		User currentUser = Context.getAuthenticatedUser();
 		
-		if (log.isInfoEnabled()) {
-			Integer userId = -1;
-			if (currentUser != null)
-				userId = currentUser.getUserId();
-
-			log.info(userId + "|" + phrase + "|" + includeClassNames.toString());
-		}
-		
 		Locale defaultLocale = Context.getLocale();
 		
 		// get the list of locales to search on from the user's

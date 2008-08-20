@@ -83,7 +83,7 @@ public interface EncounterService extends OpenmrsService {
 	 * Get encounters for a patientId
 	 * 
 	 * @param patientId
-	 * @return all encounters (not retired) for the given patient identifer
+	 * @return all encounters (not voided) for the given patient identifer
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -186,10 +186,10 @@ public interface EncounterService extends OpenmrsService {
 	public EncounterType getEncounterTypeByGuid(String guid) throws APIException;
 
 	/**
-	 * Get encounterType by name
+	 * Get encounterType by exact name
 	 * 
-	 * @param encounterType string
-	 * @return EncounterType
+	 * @param encounterType string to match to an Encounter.name
+	 * @return EncounterType that is not retired
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -237,11 +237,12 @@ public interface EncounterService extends OpenmrsService {
 	        throws APIException;
 
 	/**
+	 * Retire an EncounterType.  This essentially marks the given
+	 * encounter type as a non-current type that shouldn't be used 
+	 * anymore.
 	 * 
-	 * Retire an EncounterType.
-	 * 
-	 * @param encounterType
-	 * @param reason
+	 * @param encounterType the encounter type to retire
+	 * @param reason required non-null purpose for retiring this encounter type
 	 * @throws APIException
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES })
@@ -249,10 +250,10 @@ public interface EncounterService extends OpenmrsService {
 	        throws APIException;
 
 	/**
+	 * Unretire an EncounterType.  This brings back the given encounter type
+	 * and says that it can be used again
 	 * 
-	 * Unretire an EncounterType
-	 * 
-	 * @param encounterType
+	 * @param encounterType the encounter type to unretire
 	 * @throws APIException
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES })
@@ -260,7 +261,6 @@ public interface EncounterService extends OpenmrsService {
 	        throws APIException;
 
 	/**
-	 * 
 	 * Completely remove an encounter type from database.
 	 * 
 	 * @param encounterType

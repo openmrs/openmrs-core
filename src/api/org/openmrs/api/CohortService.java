@@ -101,7 +101,7 @@ public interface CohortService extends OpenmrsService {
 	public Cohort getCohort(Integer id) throws APIException;
 	
 	/**
-	 * Gets a Cohort by its name
+	 * Gets a non voided Cohort by its name
 	 * 
 	 * @param name
 	 * @return the Cohort with the given name, or null if none exists

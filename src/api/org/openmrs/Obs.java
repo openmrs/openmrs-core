@@ -657,7 +657,8 @@ public class Obs implements java.io.Serializable, Synchronizable {
 	 */
 	public void setPerson(Person person) {
 		this.person = person;
-		this.personId = person.getPersonId();
+		if (person != null)
+			this.personId = person.getPersonId();
 	}
 
 	/**

@@ -348,7 +348,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * 
 	 * @param value boolean true/false whether or not to look at the parent classloader last
 	 */
-	protected void setProbeParentLoaderLast(final boolean value) {
+	public void setProbeParentLoaderLast(final boolean value) {
 		probeParentLoaderLast = value;
 	}
 	
