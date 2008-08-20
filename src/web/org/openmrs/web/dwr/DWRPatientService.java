@@ -43,7 +43,6 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.UnallowedIdentifierException;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -65,11 +64,6 @@ public class DWRPatientService {
 		
 		Collection<Object> patientList = new Vector<Object>();
 
-		Integer userId = -1;
-		if (Context.isAuthenticated())
-			userId = Context.getAuthenticatedUser().getUserId();
-		log.info(userId + "|" + searchValue);
-		
 		PatientService ps = Context.getPatientService();
 		Collection<Patient> patients;
 		

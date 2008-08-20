@@ -31,10 +31,27 @@ import org.openmrs.api.context.Context;
 
 import uk.ltd.getahead.dwr.WebContextFactory;
 
+/**
+ * A collection of methods used by DWR for access users.
+ * 
+ * These methods are similar to the {@link UserService} methods
+ * and have been chosen to be exposed via dwr to allow for 
+ * access via javascript.
+ */
 public class DWRUserService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	/**
+	 * Find users in the database that match the given search values.
+	 * 
+	 * @see UserService#getUsers(String, List, boolean)
+	 * 
+	 * @param searchValue a query string like 'john doe'
+	 * @param rolesStrings list of role names to restrict to like '[Provider, Manager]' 
+	 * @param includeVoided true/false to include voided users in the search
+	 * @return list of {@link UserListItem}s (or String warning message if none found)
+	 */
 	@SuppressWarnings("unchecked")
 	public Collection<UserListItem> findUsers(String searchValue, List<String> rolesStrings, boolean includeVoided) {
 		
@@ -42,14 +59,6 @@ public class DWRUserService {
 
 		try {
 			UserService userService = Context.getUserService();
-			
-			String userId = "Anonymous";
-			if (Context.isAuthenticated()) {
-				User us = Context.getAuthenticatedUser();
-				userId = us.getUserId().toString();
-			}
-			
-			log.info(userId + "|" + searchValue + "|" + rolesStrings.toString());
 			
 			if (rolesStrings == null) 
 				rolesStrings = new Vector<String>();
