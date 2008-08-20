@@ -14,22 +14,16 @@
 package org.openmrs.test.synchronization.engine;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import java.util.List;
-import java.util.UUID;
 
+import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
-import org.openmrs.ConceptWord;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
@@ -50,7 +44,7 @@ public class SyncConceptTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testSaveConceptCoded() throws Exception {
+	public void shouldSaveConceptCoded() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			private int conceptId = 99999;
 			public void runOnChild() {
@@ -86,7 +80,7 @@ public class SyncConceptTest extends SyncBaseTest {
 	
 	@Test
     @NotTransactional
-	public void testSaveConceptNumeric() throws Exception {
+	public void shouldSaveConceptNumeric() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs;
 			private int conceptId=99999;
@@ -121,7 +115,7 @@ public class SyncConceptTest extends SyncBaseTest {
 	
 	@Test
     @NotTransactional
-	public void testSaveConceptSet() throws Exception {
+	public void shouldSaveConceptSet() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs;
 			private int conceptNumericId=99997;
@@ -232,7 +226,7 @@ public class SyncConceptTest extends SyncBaseTest {
 	
 	@Test
     @NotTransactional
-	public void testEditConcepts() throws Exception {
+	public void shouldEditConcepts() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs;
 			int numAnswersBefore;
@@ -277,7 +271,7 @@ public class SyncConceptTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testAddNameToConcept() throws Exception {
+	public void shouldAddNameToConcept() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs = Context.getConceptService();
 			int numNamesBefore;

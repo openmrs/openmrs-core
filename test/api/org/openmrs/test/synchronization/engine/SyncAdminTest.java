@@ -14,26 +14,19 @@
 package org.openmrs.test.synchronization.engine;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import org.openmrs.GlobalProperty;
+import org.junit.Test;
 import org.openmrs.Concept;
-import org.openmrs.ConceptName;
-import org.openmrs.EncounterType;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;

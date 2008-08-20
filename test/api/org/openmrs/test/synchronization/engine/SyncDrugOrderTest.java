@@ -13,44 +13,21 @@
  */
 package org.openmrs.test.synchronization.engine;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.UUID;
 
+import org.junit.Test;
 import org.openmrs.Concept;
-import org.openmrs.ConceptAnswer;
-import org.openmrs.ConceptName;
-import org.openmrs.ConceptNumeric;
-import org.openmrs.ConceptSet;
-import org.openmrs.ConceptSynonym;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
-import org.openmrs.EncounterType;
-import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-
-import org.openmrs.synchronization.engine.*;
 import org.springframework.test.annotation.NotTransactional;
 
 /**
@@ -65,7 +42,7 @@ public class SyncDrugOrderTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testCreateDrugOrder() throws Exception {
+	public void shouldCreateDrugOrder() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 			AdministrationService adminService = Context.getAdministrationService();
 			OrderService orderService = Context.getOrderService();
@@ -127,7 +104,7 @@ public class SyncDrugOrderTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional	
-	public void testUpdateDrugOrder() throws Exception {
+	public void shouldUpdateDrugOrder() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 			public void runOnChild() {
 				
@@ -152,7 +129,7 @@ public class SyncDrugOrderTest extends SyncBaseTest {
 	
 	/*
 	
-	public void testDeleteDrugOrder() throws Exception { 
+	public void shouldDeleteDrugOrder() throws Exception { 
 		
 		runSyncTest(new SyncTestHelper() {			
 			AdministrationService adminService = Context.getAdministrationService();
@@ -168,7 +145,7 @@ public class SyncDrugOrderTest extends SyncBaseTest {
 	*/
 	
 	/*
-	public void testVoidDrugOrder() throws Exception { 
+	public void shouldVoidDrugOrder() throws Exception { 
 		
 		runSyncTest(new SyncTestHelper() {			
 			AdministrationService adminService = Context.getAdministrationService();
@@ -185,7 +162,7 @@ public class SyncDrugOrderTest extends SyncBaseTest {
 	*/
 	
 	/*
-	public void testDiscontinueDrugOrder() throws Exception { 
+	public void shouldDiscontinueDrugOrder() throws Exception { 
 		
 		runSyncTest(new SyncTestHelper() {			
 			AdministrationService adminService = Context.getAdministrationService();
@@ -205,7 +182,7 @@ public class SyncDrugOrderTest extends SyncBaseTest {
 	*/
 	
 	/*
-	public void testVoidDrugOrder() throws Exception { 
+	public void shouldVoidDrugOrder() throws Exception { 
 		
 		runSyncTest(new SyncTestHelper() {			
 			AdministrationService adminService = Context.getAdministrationService();
@@ -222,7 +199,7 @@ public class SyncDrugOrderTest extends SyncBaseTest {
 	*/
 	
 	/*
-	public void testVoidDrugOrder() throws Exception { 
+	public void shouldVoidDrugOrder() throws Exception { 
 		
 		runSyncTest(new SyncTestHelper() {			
 			AdministrationService adminService = Context.getAdministrationService();

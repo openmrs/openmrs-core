@@ -14,13 +14,12 @@
 package org.openmrs.test.synchronization.engine;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
+import static org.junit.Assert.assertNull;
 
 import java.util.Calendar;
 
+import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.api.AdministrationService;
@@ -40,7 +39,7 @@ public class SyncEncounterTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testCreateEncounterType() throws Exception {
+	public void shouldCreateEncounterType() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 			AdministrationService adminService = Context.getAdministrationService();
 			EncounterService encounterService = Context.getEncounterService();
@@ -61,7 +60,7 @@ public class SyncEncounterTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testUpdateEncounterType() throws Exception {
+	public void shouldUpdateEncounterType() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 			AdministrationService adminService = Context.getAdministrationService();
 			EncounterService encounterService = Context.getEncounterService();
@@ -88,7 +87,7 @@ public class SyncEncounterTest extends SyncBaseTest {
 	
 	@Test
     @NotTransactional
-	public void testDeleteEncounterType() throws Exception { 
+	public void shouldDeleteEncounterType() throws Exception { 
 		
 		runSyncTest(new SyncTestHelper() {			
 			public void runOnChild() {
@@ -106,7 +105,7 @@ public class SyncEncounterTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testCreateEncounter() throws Exception {
+	public void shouldCreateEncounter() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 			String eid = null;
 			Calendar c;
@@ -134,7 +133,7 @@ public class SyncEncounterTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testDeleteEncounter() throws Exception {
+	public void shouldDeleteEncounter() throws Exception {
 		runSyncTest(new SyncTestHelper() {			
 
 			public void runOnChild() {

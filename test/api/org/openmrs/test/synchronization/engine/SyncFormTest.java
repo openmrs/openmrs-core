@@ -14,12 +14,10 @@
 package org.openmrs.test.synchronization.engine;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
+import static org.junit.Assert.assertNotSame;
 
+import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Field;
 import org.openmrs.Form;
@@ -43,7 +41,7 @@ public class SyncFormTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testEditFormMetadata() throws Exception {
+	public void shouldEditFormMetadata() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			String newDescription = "Awesome new description";
 			public void runOnChild() {
@@ -60,7 +58,7 @@ public class SyncFormTest extends SyncBaseTest {
 	
 	@Test
     @NotTransactional
-	public void testDuplicateForm() throws Exception {
+	public void shouldDuplicateForm() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			String newName = "A new form";
 			String newDescription = "Awesome new description";
@@ -92,7 +90,7 @@ public class SyncFormTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testAddFieldToForm() throws Exception {
+	public void shouldAddFieldToForm() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			FormService fs = Context.getFormService();
 			int numFieldsBefore;

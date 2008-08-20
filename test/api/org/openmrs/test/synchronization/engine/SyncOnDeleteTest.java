@@ -14,21 +14,19 @@
 package org.openmrs.test.synchronization.engine;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
-import org.openmrs.PersonAttributeType;
 import org.springframework.test.annotation.NotTransactional;
 
 /**
@@ -43,7 +41,7 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-	public void testDeletePatientIdentfierType() throws Exception {
+	public void shouldDeletePatientIdentfierType() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild(){				
 				// make sure the patient identifier type is there
@@ -66,7 +64,7 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 	
 	@Test
     @NotTransactional
-	public void testDeleteRelationshipType() throws Exception {
+	public void shouldDeleteRelationshipType() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild(){				
 				// make sure the patient identifier type is there
@@ -89,7 +87,7 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 	
 	@Test
     @NotTransactional
-	public void testDeletePersonAttributeType() throws Exception {
+	public void shouldDeletePersonAttributeType() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild(){				
 				// make sure the patient identifier type is there
@@ -112,7 +110,7 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 	
 	@Test
     @NotTransactional
-	public void testDeletePatientName() throws Exception {
+	public void shouldDeletePatientName() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			PatientIdentifierType pit;
 			public void runOnChild() {
@@ -138,7 +136,7 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 	
 	@Test
     @NotTransactional
-	public void testDeletePatient() throws Exception {
+	public void shouldDeletePatient() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {				
 				Patient p = Context.getPatientService().getPatient(2);

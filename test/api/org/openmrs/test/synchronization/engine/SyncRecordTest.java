@@ -16,10 +16,6 @@ package org.openmrs.test.synchronization.engine;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,15 +23,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.junit.Test;
 import org.openmrs.serialization.FilePackage;
 import org.openmrs.serialization.IItem;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Package;
 import org.openmrs.serialization.Record;
-
-import org.openmrs.synchronization.engine.*;
 import org.openmrs.synchronization.SyncItemState;
+import org.openmrs.synchronization.engine.SyncItem;
+import org.openmrs.synchronization.engine.SyncItemKey;
+import org.openmrs.synchronization.engine.SyncRecord;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.test.annotation.NotTransactional;
 
 /**
@@ -50,7 +48,7 @@ public class SyncRecordTest extends BaseContextSensitiveTest  {
      */
 	@Test
     @NotTransactional
-    public void testSerialization() throws Exception {
+    public void shouldSerialization() throws Exception {
 
         // 'normal' state
         String guid1 = UUID.randomUUID().toString();
@@ -121,7 +119,7 @@ public class SyncRecordTest extends BaseContextSensitiveTest  {
      */
     @Test
     @NotTransactional
-    public void testEquality() throws Exception {
+    public void shouldEquality() throws Exception {
         
         //setup instance 1
         String guid1 = UUID.randomUUID().toString();

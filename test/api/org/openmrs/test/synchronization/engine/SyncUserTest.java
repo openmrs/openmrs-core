@@ -14,15 +14,12 @@
 package org.openmrs.test.synchronization.engine;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
+import org.junit.Test;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -44,7 +41,7 @@ public class SyncUserTest extends SyncBaseTest {
 	
 	@Test
 	@NotTransactional
-	public void testCreateUser() throws Exception {
+	public void shouldCreateUser() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			UserService us = Context.getUserService();
 			public void runOnChild() {
@@ -67,7 +64,7 @@ public class SyncUserTest extends SyncBaseTest {
 
 	@Test
 	@NotTransactional
-	public void testChangePwd() throws Exception {
+	public void shouldChangePwd() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			UserService us = Context.getUserService();
 			String newPWD = "NewPassword";
@@ -86,7 +83,7 @@ public class SyncUserTest extends SyncBaseTest {
 
 	@Test
 	@NotTransactional
-	public void testEditUser() throws Exception {
+	public void shouldEditUser() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			UserService us = Context.getUserService();
 			Date d = ymd.parse("1978-04-11");
@@ -110,7 +107,7 @@ public class SyncUserTest extends SyncBaseTest {
 	
 	@Test
 	@NotTransactional
-	public void testCreateRoleAndPrivilege() throws Exception {
+	public void shouldCreateRoleAndPrivilege() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {
 				Privilege priv = new Privilege("Kitchen Use");
@@ -132,7 +129,7 @@ public class SyncUserTest extends SyncBaseTest {
 	
 	@Test
 	@NotTransactional
-	public void testAddPrivilegeToRole() throws Exception {
+	public void shouldAddPrivilegeToRole() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			int numAtStart = 0;
 			public void runOnChild() {

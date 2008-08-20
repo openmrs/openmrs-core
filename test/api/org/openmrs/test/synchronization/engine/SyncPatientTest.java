@@ -14,19 +14,15 @@
 package org.openmrs.test.synchronization.engine;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -45,10 +41,7 @@ import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
-
 import org.springframework.test.annotation.NotTransactional;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.test.annotation.Rollback;
 
 /**
  * Tests creating various pieces of data via synchronization
@@ -172,94 +165,94 @@ public class SyncPatientTest extends SyncBaseTest {
 	@Test
 	@NotTransactional
 	public void shouldCreateEncounterAndObs() throws Exception {
-		runSyncTest(new CreateEncounterAndObsTest());
-	}
-	private class CreateEncounterAndObsTest implements SyncTestHelper {
-		int numEncountersSoFar = 0;
-		Date dateOfNewEncounter = new Date();
-		
-		Date anotherDate = new Date(System.currentTimeMillis() - 20000l);
-		
-		public void runOnChild() {
-			ConceptService cs = Context.getConceptService();
-			Concept weight = cs.getConceptByName("WEIGHT");
-			Concept reason = cs.getConceptByName("REASON ORDER STOPPED");
-			Concept other = cs.getConceptByName("OTHER NON-CODED");
-			Location loc = Context.getLocationService().getLocation("Someplace");
-
-			User u = Context.getUserService().getUser(1);
-			Patient p = Context.getPatientService().getPatient(2);
-			numEncountersSoFar = Context.getEncounterService().getEncountersByPatient(p).size();
+		runSyncTest(new SyncTestHelper() {
 			
-			Encounter enc = new Encounter();
-			enc.setPatient(p);
-			enc.setLocation(loc);
-			enc.setProvider(u);
-			enc.setEncounterDatetime(dateOfNewEncounter);
-			Obs o1 = new Obs();
-			o1.setConcept(weight);
-			o1.setValueNumeric(74.0);
-			o1.setObsDatetime(dateOfNewEncounter);
-			Obs o2 = new Obs();
-			o2.setConcept(reason);
-			o2.setValueCoded(other);
-			o2.setObsDatetime(dateOfNewEncounter);
-			enc.addObs(o1);
-			enc.addObs(o2);
-			Context.getEncounterService().saveEncounter(enc);
-
-			Obs noEnc = new Obs();
-			noEnc.setConcept(weight);
-			noEnc.setValueNumeric(12.3);
-			noEnc.setObsDatetime(anotherDate);
-			noEnc.setPerson(p);
-			noEnc.setLocation(loc);
-			Context.getObsService().saveObs(noEnc,null);
-		}
-		public void runOnParent() {
+			int numEncountersSoFar = 0;
+			Date dateOfNewEncounter = new Date();
 			
-			ConceptService cs = Context.getConceptService();
-			Concept weight = cs.getConceptByName("WEIGHT");
-			Concept reason = cs.getConceptByName("REASON ORDER STOPPED");
-			Concept other = cs.getConceptByName("OTHER NON-CODED");
-			Location loc = Context.getLocationService().getLocation("Someplace");
-			Patient p = Context.getPatientService().getPatient(2);
+			Date anotherDate = new Date(System.currentTimeMillis() - 20000l);
 			
-			
-			List<Encounter> encs = Context.getEncounterService().getEncountersByPatient(p);
-			assertEquals("Should now have one more encounter than before",
-			             numEncountersSoFar + 1,
-			             encs.size());
-			Encounter lookAt = null;
-			for (Encounter e : encs) {
-				if (OpenmrsUtil.compare(e.getEncounterDatetime(), dateOfNewEncounter) == 0) {
-					lookAt = e;
-					break;
+			public void runOnChild() {
+				ConceptService cs = Context.getConceptService();
+				Concept weight = cs.getConceptByName("WEIGHT");
+				Concept reason = cs.getConceptByName("REASON ORDER STOPPED");
+				Concept other = cs.getConceptByName("OTHER NON-CODED");
+				Location loc = Context.getLocationService().getLocation("Someplace");
+	
+				User u = Context.getUserService().getUser(1);
+				Patient p = Context.getPatientService().getPatient(2);
+				numEncountersSoFar = Context.getEncounterService().getEncountersByPatient(p).size();
+				
+				Encounter enc = new Encounter();
+				enc.setPatient(p);
+				enc.setLocation(loc);
+				enc.setProvider(u);
+				enc.setEncounterDatetime(dateOfNewEncounter);
+				Obs o1 = new Obs();
+				o1.setConcept(weight);
+				o1.setValueNumeric(74.0);
+				o1.setObsDatetime(dateOfNewEncounter);
+				Obs o2 = new Obs();
+				o2.setConcept(reason);
+				o2.setValueCoded(other);
+				o2.setObsDatetime(dateOfNewEncounter);
+				enc.addObs(o1);
+				enc.addObs(o2);
+				Context.getEncounterService().saveEncounter(enc);
+	
+				Obs noEnc = new Obs();
+				noEnc.setConcept(weight);
+				noEnc.setValueNumeric(12.3);
+				noEnc.setObsDatetime(anotherDate);
+				noEnc.setPerson(p);
+				noEnc.setLocation(loc);
+				Context.getObsService().saveObs(noEnc,null);
+			}
+			public void runOnParent() {
+				
+				ConceptService cs = Context.getConceptService();
+				Concept weight = cs.getConceptByName("WEIGHT");
+				Concept reason = cs.getConceptByName("REASON ORDER STOPPED");
+				Concept other = cs.getConceptByName("OTHER NON-CODED");
+				Location loc = Context.getLocationService().getLocation("Someplace");
+				Patient p = Context.getPatientService().getPatient(2);
+				
+				
+				List<Encounter> encs = Context.getEncounterService().getEncountersByPatient(p);
+				assertEquals("Should now have one more encounter than before",
+				             numEncountersSoFar + 1,
+				             encs.size());
+				Encounter lookAt = null;
+				for (Encounter e : encs) {
+					if (OpenmrsUtil.compare(e.getEncounterDatetime(), dateOfNewEncounter) == 0) {
+						lookAt = e;
+						break;
+					}
 				}
-			}
-			
-			assertEquals(lookAt.getLocation(), loc);
-			
-			//reload lookAt
-			int lookAtId = lookAt.getEncounterId();
-			Context.evictFromSession(lookAt);
-			lookAt = Context.getEncounterService().getEncounter(lookAtId);
-			assertEquals("Should have two obs", 2,lookAt.getObs().size());
-			for (Obs o : lookAt.getObs()) {
-				if (o.getConcept().equals(weight)) {
-					assertEquals("Weight should be 74.0", o.getValueNumeric(), (Double)74.0);
-				} else {
-					assertEquals("Reason should be OTHER NON-CODED", o.getValueCoded(), other);
+				
+				assertEquals(lookAt.getLocation(), loc);
+				
+				//reload lookAt
+				int lookAtId = lookAt.getEncounterId();
+				Context.evictFromSession(lookAt);
+				lookAt = Context.getEncounterService().getEncounter(lookAtId);
+				assertEquals("Should have two obs", 2,lookAt.getObs().size());
+				for (Obs o : lookAt.getObs()) {
+					if (o.getConcept().equals(weight)) {
+						assertEquals("Weight should be 74.0", o.getValueNumeric(), (Double)74.0);
+					} else {
+						assertEquals("Reason should be OTHER NON-CODED", o.getValueCoded(), other);
+					}
 				}
+				
+				boolean found = false;
+				for (Obs o : Context.getObsService().getObservationsByPerson(p)) {
+					if ( (OpenmrsUtil.compare(o.getObsDatetime(), anotherDate) == 0) && o.getConcept().equals(weight) && o.getValueNumeric().equals(12.3))
+						found = true;
+				}
+				assertTrue("Cannot find newly created encounter-less obs", found);
 			}
-			
-			boolean found = false;
-			for (Obs o : Context.getObsService().getObservationsByPerson(p)) {
-				if ( (OpenmrsUtil.compare(o.getObsDatetime(), anotherDate) == 0) && o.getConcept().equals(weight) && o.getValueNumeric().equals(12.3))
-					found = true;
-			}
-			assertTrue("Cannot find newly created encounter-less obs", found);
-		}
+		});
 	}
 	
 	/**

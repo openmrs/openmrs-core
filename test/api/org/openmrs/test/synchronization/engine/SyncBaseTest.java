@@ -1,12 +1,7 @@
 package org.openmrs.test.synchronization.engine;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
-
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.annotation.NotTransactional;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -14,15 +9,17 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.api.context.Context;
 import org.openmrs.serialization.FilePackage;
 import org.openmrs.serialization.IItem;
 import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
-
-import org.openmrs.synchronization.engine.*;
+import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.server.RemoteServer;
+import org.openmrs.test.BaseContextSensitiveTest;
+import org.springframework.test.annotation.NotTransactional;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *  Sets up common routines and initialization for all sync tests. Note for all sync tests:

@@ -555,6 +555,7 @@
 					<exclude name="org/openmrs/test/BaseContextSensitiveTest.class" />
 					<exclude name="org/openmrs/test/BaseModuleContextSensitiveTest.class" />
 					<exclude name="org/openmrs/web/taglib/SummaryTest.class" />
+					<exclude name="org/openmrs/test/synchronization/engine/SyncBaseTest.class" />
 				</fileset>
 			</batchtest>
 		</junit>
