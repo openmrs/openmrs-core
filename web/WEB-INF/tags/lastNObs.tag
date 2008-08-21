@@ -13,7 +13,7 @@
 	<c:if test="${label != null}">
 		<span class="obsLabel"><spring:message code="${label}" />:</span>
 	</c:if>
-	<span class="obsValue">${o.valueAsString[locale]}</span>
+	<span class="obsValue"><openmrs:format obsValue="${o}"/></span>
 	<c:if test="${showUnits}">
 		<openmrs:concept conceptId="${o.concept.conceptId}" var="c" nameVar="n" numericVar="nv">
 			<c:if test="${nv != null}">
