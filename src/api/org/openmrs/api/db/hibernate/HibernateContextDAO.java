@@ -84,9 +84,9 @@ public class HibernateContextDAO implements ContextDAO {
 		if (login != null) {
 			
 			// loginWithoutDash is used to compare to the system id
-			String loginWithoutDash = login;
-			if (login.length() >= 3 && login.charAt(login.length() - 2) == '-')
-				loginWithoutDash = login.substring(0, login.length() - 2)
+			String loginWithDash = login;
+			if (login.matches("\\d{2,}"))
+				loginWithDash = login.substring(0, login.length() - 1) + "-" 
 						+ login.charAt(login.length() - 1);
 	
 			try {
@@ -95,7 +95,7 @@ public class HibernateContextDAO implements ContextDAO {
 							"from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.voided = 0")
 						.setString(0, login)
 						.setString(1, login)
-						.setString(2, loginWithoutDash)
+						.setString(2, loginWithDash)
 						.uniqueResult();
 			} catch (HibernateException he) {
 				log.error("Got hibernate exception while logging in: '" + login
