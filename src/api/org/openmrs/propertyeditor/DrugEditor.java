@@ -20,7 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Drug;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.propertyeditor.DrugEditorTest;
 import org.springframework.util.StringUtils;
 
 
