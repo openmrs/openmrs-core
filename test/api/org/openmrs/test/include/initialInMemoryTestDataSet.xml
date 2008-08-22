@@ -7,6 +7,8 @@
   <role role="System Developer" description="Developers of the OpenMRS .. have additional access to change fundamental structure of the database model."/>
   <role role="Anonymous" description="Everyone and their brother should have this role"/>
   <role role="Authenticated" description="Every person logged in automatically has this role."/>
+  <role role="Provider" description="All users with the 'Provider' role will appear as options in the default Infopath "/>
     
   <user_role user_id="1" role="System Developer"/>
 </dataset>
+ 
