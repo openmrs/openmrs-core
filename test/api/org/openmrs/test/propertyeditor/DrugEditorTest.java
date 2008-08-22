@@ -14,13 +14,9 @@
 package org.openmrs.test.propertyeditor;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Drug;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.DrugEditor;
-import org.springframework.util.StringUtils;
 
 
 /**
