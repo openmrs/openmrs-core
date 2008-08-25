@@ -28,7 +28,7 @@ import org.openmrs.report.RowPerProgramEnrollmentDataSetDefinition;
 import org.openmrs.report.impl.TsvReportRenderer;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Serializer;
 

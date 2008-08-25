@@ -39,7 +39,7 @@ import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -48,11 +48,21 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/test/api/include/EncounterServiceTest-initialData.xml";
 	
+	public static Date startTime = new Date();
+
+	/**
+	 * This method is run before all of the tests in this class
+	 * because it has the @Before annotation on it.  This will
+	 * add the contents of {@link #ENC_INITIAL_DATA_XML} to
+	 * the current database
+	 * 
+	 * @see BaseContextSensitiveTest#runBeforeAllUnitTests()
+	 * 
+	 * @throws Exception
+	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(ENC_INITIAL_DATA_XML);
-		authenticate();
 	}
 	
 	/**
@@ -729,7 +739,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNull(unvoidedEnc.getVoidReason());
 	}
 	
-	
 	/**
 	 * Get encounters by their locations
 	 * 
@@ -738,7 +747,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldGetEncountersByLocation() throws Exception {
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, new Location(1), null, null, null, null, true);
-		assertEquals(2, encounters.size());
+		assertEquals(4, encounters.size());
 	}
 	
 	/**
@@ -750,8 +759,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void shouldGetEncountersFromDate() throws Exception {
 		Date fromDate = new SimpleDateFormat("yyyy-dd-MM").parse("2006-01-01");
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, fromDate, null, null, null, true);
-		assertEquals(1, encounters.size());
+		assertEquals(4, encounters.size());
 		assertEquals(2, encounters.get(0).getEncounterId().intValue());
+		assertEquals(3, encounters.get(1).getEncounterId().intValue());
+		assertEquals(4, encounters.get(2).getEncounterId().intValue());
+		assertEquals(5, encounters.get(3).getEncounterId().intValue());
 	}
 	
 	/**
@@ -777,7 +789,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<Form> forms = new Vector<Form>();
 		forms.add(new Form(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, forms, null, true);
-		assertEquals(2, encounters.size());
+		assertEquals(5, encounters.size());
 	}
 	
 	/**
@@ -786,11 +798,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldGetEncounteersByType() throws Exception {
+	public void shouldGetEncountersByType() throws Exception {
 		List<EncounterType> types = new Vector<EncounterType>();
 		types.add(new EncounterType(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, types, true);
-		assertEquals(2, encounters.size());
+		assertEquals(4, encounters.size());
 	}
 	
 	/**
@@ -800,8 +812,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldGetVoidedEncounters() throws Exception {
-		assertEquals(1, Context.getEncounterService().getEncounters(null, null, null, null, null, null, false).size());
-		assertEquals(2, Context.getEncounterService().getEncounters(null, null, null, null, null, null, true).size());
+		assertEquals(4, Context.getEncounterService().getEncounters(null, null, null, null, null, null, false).size());
+		assertEquals(5, Context.getEncounterService().getEncounters(null, null, null, null, null, null, true).size());
 	}
 	
 	/**
@@ -1089,7 +1101,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<EncounterType> types = encounterService.getAllEncounterTypes(true);
 		
 		// there should be four types in the database
-		assertEquals(4, types.size());
+		assertEquals(5, types.size());
 		
 		for (EncounterType type : types) {
 			if (type.isRetired())
@@ -1309,6 +1321,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void shouldThrowErrorWhenGettingEncounterTypeById() throws Exception {
+		System.out.println("Time: " + (new Date().getTime() - startTime.getTime()));
 		Context.getEncounterService().getEncounterType((Integer)null);
 	}
 	

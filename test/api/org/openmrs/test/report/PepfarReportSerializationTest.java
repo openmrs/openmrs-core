@@ -32,7 +32,7 @@ import org.openmrs.report.DataSetDefinition;
 import org.openmrs.report.Parameter;
 import org.openmrs.report.ReportSchema;
 import org.openmrs.reporting.PatientSearch;
-import org.openmrs.test.TestUtil;
+import org.openmrs.test.testutil.TestUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Serializer;
 

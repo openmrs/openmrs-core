@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * TODO test all methods in LocationService

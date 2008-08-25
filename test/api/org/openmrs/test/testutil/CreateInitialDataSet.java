@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.test;
+package org.openmrs.test.testutil;
 
 import java.io.FileOutputStream;
 
@@ -31,11 +31,17 @@ import org.junit.Test;
 public class CreateInitialDataSet extends BaseContextSensitiveTest {
 	
 	/**
-	 * Do the stuff for this class (create the file)
+	 * This test creates an xml dbunit file from the current database
+	 * connection information found in the runtime properties.
+	 * 
+	 * This method has to "skip over the base setup" because it tries
+	 * to do things (like initialize the database) that shouldn't be
+	 * done to a standard mysql database.
 	 * 
 	 * @throws Exception
 	 */
 	@Test
+	@SkipBaseSetup
 	public void shouldCreateInitialTestDataSetXmlFile() throws Exception {
 		
 		// only run this test if it is being run alone.
@@ -108,6 +114,8 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
         //String[] depTableNames = TablesDependencyHelper.getAllDependentTables(connection, "X");
         //IDataSet depDataset = connection.createDataSet( depTableNames );
         //FlatXmlDataSet.write(depDataSet, new FileOutputStream("dependents.xml")); 
+        
+        //TestUtil.printOutTableContents(getConnection(), "encounter_type", "encounter");
 	}
 	
 	/**

@@ -18,7 +18,7 @@
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-page-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jstl/jstl-1.1.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="lib" path="lib/jta/jta.jar"/>
-	<classpathentry kind="lib" path="lib/junit/junit-4.4.jar"/>
+	<classpathentry kind="lib" path="lib/junit/junit-4.4.jar" sourcepath="/openmrs-source/junit-4.4-src.jar"/>
 	<classpathentry kind="lib" path="lib/junit/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/junit/dbunit-2.2.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java/mysql-connector-java-3.1.10-bin.jar"/>
@@ -37,7 +37,7 @@
 	<classpathentry kind="lib" path="lib/tomcat/naming-resources.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="lib" path="lib/dwr/dwr-1.1.3mod.jar"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-2.5.1.jar" sourcepath="/openmrs-source/spring-2.5.1-src.zip"/>
-	<classpathentry kind="lib" path="lib/spring-framework/spring-test.jar" sourcepath="/openmrs-source/spring-2.5.1-src.zip"/>
+	<classpathentry kind="lib" path="lib/spring-framework/spring-test.jar" sourcepath="/openmrs-source/spring-framework-2.5.1-with-dependencies.zip"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-webmvc.jar" sourcepath="/openmrs-source/spring-webmvc-sources.zip"/>
 	<classpathentry kind="lib" path="lib/commons-io/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/mail/activation.jar"/>

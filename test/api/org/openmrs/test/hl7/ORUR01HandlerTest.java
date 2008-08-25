@@ -32,7 +32,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.handler.ORUR01Handler;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 import ca.uhn.hl7v2.app.MessageTypeRouter;
 import ca.uhn.hl7v2.model.Message;

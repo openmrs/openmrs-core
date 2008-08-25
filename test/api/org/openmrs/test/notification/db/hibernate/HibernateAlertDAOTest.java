@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.AlertService;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * This class tests the hibernate alert data access.  

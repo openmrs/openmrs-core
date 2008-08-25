@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.openmrs.api.ReportService;
 import org.openmrs.api.context.Context;
 import org.openmrs.report.ReportSchemaXml;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * Tests the small class ReportSchemaXml and its database accesses

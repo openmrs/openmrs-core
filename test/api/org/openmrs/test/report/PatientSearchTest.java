@@ -37,7 +37,7 @@ import org.openmrs.reporting.ObsPatientFilter;
 import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.reporting.SearchArgument;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
 
 /**

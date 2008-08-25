@@ -31,7 +31,7 @@ import org.openmrs.report.EvaluationContext;
 import org.openmrs.report.RowPerObsDataSetDefinition;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * Test class that tries to run a portion of the 

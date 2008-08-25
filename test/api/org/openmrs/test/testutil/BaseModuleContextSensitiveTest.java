@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.test;
+package org.openmrs.test.testutil;
 
 import org.springframework.test.context.ContextConfiguration;
 

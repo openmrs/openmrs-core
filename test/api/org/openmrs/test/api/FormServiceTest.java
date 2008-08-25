@@ -32,7 +32,7 @@ import org.openmrs.FormField;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * TODO clean up and finish this test for all methods in FormService

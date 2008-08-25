@@ -218,7 +218,7 @@
 		</javac>
 		
 		<!-- move files over that are required for modules to use this test-openmrs-api*.jar file -->
-		<copy todir="${build.dir}/org/openmrs/test" file="${test.dir}/api/org/openmrs/test/TestingApplicationContext.xml" />
+		<copy todir="${build.dir}/org/openmrs/test/testutil" file="${test.dir}/api/org/openmrs/test/testutil/TestingApplicationContext.xml" />
 		<copy todir="${build.dir}/org/openmrs/test/include" file="${test.dir}/api/org/openmrs/test/include/initialInMemoryTestDataSet.xml" />
 		
 		<!-- copy the extra files to the build dir in case an ant-clean was just done -->
@@ -243,7 +243,7 @@
 				<include name="org/openmrs/test/include/initialInMemoryTestDataSet.xml" />
 			</fileset>
 			<!-- Put this xml in a separate fileset so that its in the root of the jar file -->
-			<fileset file="${build.dir}/org/openmrs/test/TestingApplicationContext.xml" />
+			<fileset file="${build.dir}/org/openmrs/test/testutil/TestingApplicationContext.xml" />
 		</jar>
 	</target>
 

@@ -26,7 +26,7 @@ import org.openmrs.reporting.export.ConceptColumn;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.reporting.export.DataExportUtil;
 import org.openmrs.reporting.export.SimpleColumn;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
 
 /**

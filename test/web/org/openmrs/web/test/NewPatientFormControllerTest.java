@@ -31,7 +31,8 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.web.controller.patient.NewPatientFormController;
 import org.openmrs.web.controller.patient.ShortPatientModel;
@@ -44,6 +45,7 @@ import org.springframework.web.servlet.view.RedirectView;
 /**
  * Test the methods on the org.openmrs.web.controller.encounter.EncounterDisplayController
  */
+@SkipBaseSetup
 public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 
 	protected static final String CONTROLLER_DATA = "org/openmrs/web/test/include/NewPatientFormControllerTest.xml";
