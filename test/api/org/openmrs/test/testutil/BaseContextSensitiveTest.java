@@ -87,7 +87,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	protected static final String INITIAL_XML_DATASET_PACKAGE_PATH = "org/openmrs/test/include/initialInMemoryTestDataSet.xml";
 	
-	protected static final String EXAMPLE_XML_DATASET_PACKAGE_PATH = "org/openmrs/test/include/exampleTestDataset.xml";
+	protected static final String EXAMPLE_XML_DATASET_PACKAGE_PATH = "org/openmrs/test/include/standardTestDataset.xml";
 	
 	/**
 	 * cached runtime properties
