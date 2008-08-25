@@ -20,7 +20,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.api.CohortService;
@@ -28,7 +27,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortDefinition;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
 
 /**
  * Tests methods in the CohortService class
@@ -38,18 +38,15 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class CohortServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/test/api/include/PatientServiceTest-createPatient.xml";
-	protected static CohortService service;
-
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-		service = Context.getCohortService();
-	}
+	protected static CohortService service = Context.getCohortService();
 	
 	@Test
+	@SkipBaseSetup
 	public void shouldPatientSearchCohortDefinitionProvider() throws Exception {
+		initializeInMemoryDatabase();
 		executeDataSet(CREATE_PATIENT_XML);
+		authenticate();
+		
 		CohortDefinition def = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 		Cohort result = service.evaluate(def, null);
 		assertNotNull("Should not return null", result);

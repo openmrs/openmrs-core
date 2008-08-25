@@ -27,7 +27,7 @@ import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.reporting.ProgramStatePatientFilter;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  *

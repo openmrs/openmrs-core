@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.test;
+package org.openmrs.test.testutil;
 
 import java.awt.Font;
 import java.awt.Frame;
@@ -26,6 +26,8 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -52,6 +54,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.HSQLDialect;
+import org.junit.Before;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.util.OpenmrsClassLoader;
@@ -68,12 +71,12 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * NOTE: Tests that do not need access to spring enabled services do not need
  * this class and extending this will only slow those test cases down. (because
- * spring is started before test cases are run). Normal test cases should extend
- * {@link junit.framework.TestCase}
+ * spring is started before test cases are run). Normal test cases do not need 
+ * to extend anything
  * 
  */
 @ContextConfiguration(locations={"classpath:applicationContext-service.xml"})
-@TestExecutionListeners({TransactionalTestExecutionListener.class})
+@TestExecutionListeners({TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class})
 @Transactional
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
 	
@@ -83,6 +86,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * Only the classpath/package path and filename of the initial dataset
 	 */
 	protected static final String INITIAL_XML_DATASET_PACKAGE_PATH = "org/openmrs/test/include/initialInMemoryTestDataSet.xml";
+	
+	protected static final String EXAMPLE_XML_DATASET_PACKAGE_PATH = "org/openmrs/test/include/exampleTestDataset.xml";
 	
 	/**
 	 * cached runtime properties
@@ -425,6 +430,12 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
+	 * Used by {@link #executeDataSet(String)} to cache the parsed
+	 * xml files.  This speeds up subsequent runs of the dataset
+	 */
+	private static Map<String, FlatXmlDataSet> cachedDatasets = new HashMap<String, FlatXmlDataSet>();
+	
+	/**
 	 * Runs the flat xml data file at the classpath location specified by
 	 * <code>datasetFilename</code>
 	 * 
@@ -439,36 +450,43 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	public void executeDataSet(String datasetFilename) throws Exception {
 		
-		File file = new File(datasetFilename);
+		// try to get the given filename from the cache
+		FlatXmlDataSet xmlDataSetToRun = cachedDatasets.get(datasetFilename);
 		
-		if (file.exists()) {
-			InputStream inputStream = new FileInputStream(datasetFilename);
-			try {
-				executeDataSet(new FlatXmlDataSet(inputStream));
-			}
-			finally {
-				inputStream.close();
-			}
-		}
-		else {
-			InputStream stream = getClass().getClassLoader().getResourceAsStream(datasetFilename);
-		
-			if (stream == null)
-				throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
+		// if we didn't find it in the cache, load it
+		if (xmlDataSetToRun == null) {
+			File file = new File(datasetFilename);
 			
+			InputStream fileInInputStreamFormat = null;
+			
+			// try to load the file if its a straight up path to the file or
+			// if its a classpath path to the file
+			if (file.exists())
+				fileInInputStreamFormat = new FileInputStream(datasetFilename);
+			else {
+				fileInInputStreamFormat = getClass().getClassLoader().getResourceAsStream(datasetFilename);
+				if (fileInInputStreamFormat == null)
+					throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
+			}
+				
 			try {
-				executeDataSet(new FlatXmlDataSet(stream));
+				xmlDataSetToRun = new FlatXmlDataSet(fileInInputStreamFormat);
 			}
 			finally {
-				stream.close();
+				fileInInputStreamFormat .close();
 			}
 		}
+		
+		// cache the xmldataset for future runs of this file
+		cachedDatasets.put(datasetFilename, xmlDataSetToRun);
+		
+		executeDataSet(xmlDataSetToRun);
 	}
 	
 	/**
 	 * Run the given dataset specified by the <code>dataset</code> argument
 	 * 
-	 * @param dataset IDataSet to run on the current database used by spring
+	 * @param dataset IDataSet to run on the current database used by Spring
 	 * 
 	 * @see #getConnection()
 	 */
@@ -563,6 +581,76 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// clear the (hibernate) session to make sure nothing is cached, etc
 		Context.clearSession();
 
+	}
+	
+	/**
+	 * This method is run before all test methods that extend this
+	 * {@link BaseContextSensitiveTest} unless you annotate your method with
+	 * the "@SkipBaseSetup" annotation
+	 * 
+	 * After running this method an in-memory database will be available that
+	 * has the content of the rows from {@link #INITIAL_XML_DATASET_PACKAGE_PATH} and
+	 * {@link #EXAMPLE_XML_DATASET_PACKAGE_PATH} xml files.
+	 * 
+	 * This method will also ask to be authenticated against the current Context and
+	 * database.  The {@link #initializeInMemoryDatabase()} method has a 
+	 * user of admin:test.
+	 * 
+	 * @see SkipBaseSetup
+	 * @see SkipBaseSetupAnnotationExecutionListener
+	 * @see #initializeInMemoryDatabase()
+	 * @see #authenticate()
+	 * 
+	 * @throws Exception
+	 */
+	@Before
+	public void baseSetupWithStandardDataAndAuthentication() throws Exception {
+		TestUtil.printOutTableContents(getConnection(), "concept");
+		
+		if (skipBaseSetup == false) {
+			initializeInMemoryDatabase();
+		
+			executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
+		
+			authenticate();
+			
+			System.out.println("Didn't skip");
+		}
+		else
+			System.out.println("skipped");
+	}
+	
+	/**
+	 * Instance variable used by the {@link #baseSetupWithStandardDataAndAuthentication()}
+	 * method to know whether the current "@Test" method has asked
+	 * to be _not_ do the initialize/standard data/authenticate
+	 * 
+	 * @see SkipBaseSetup
+	 * @see SkipBaseSetupAnnotationExecutionListener
+	 * @see #baseSetupWithStandardDataAndAuthentication()
+	 */
+	private boolean skipBaseSetup = false;
+	
+	/**
+	 * Don't run the {@link #setupDatabaseWithStandardData()} method. This
+	 * means that the associated "@Test" must call one of these:
+	 * <pre>
+	 *  * initializeInMemoryDatabase() ;
+	 *  * executeDataSet(EXAMPLE_DATA_SET);
+	 *  * Authenticate
+	 * </pre>
+	 * on its own if any of those results are needed.
+	 * 
+	 * This method is called before all "@Test" methods that have been
+	 * annotated with the "@SkipBaseSetup" annotation.
+	 * 
+	 * @throws Exception
+	 * @see SkipBaseSetup
+	 * @see SkipBaseSetupAnnotationExecutionListener
+	 * @see #baseSetupWithStandardDataAndAuthentication()
+	 */
+	public void skipBaseSetup() throws Exception {
+		skipBaseSetup = true;
 	}
 	
 }

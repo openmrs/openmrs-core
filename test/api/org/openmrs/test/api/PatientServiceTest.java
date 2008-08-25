@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -41,7 +40,8 @@ import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
 
 /**
  * This class tests methods in the PatientService class
@@ -56,23 +56,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	protected static final String USERS_WHO_ARE_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-usersWhoArePatients.xml";
 	protected static final String FIND_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-findPatients.xml";
 	
-	protected PatientService ps = null; 
-	protected AdministrationService adminService = null;
-	protected LocationService locationService = null;
+	protected PatientService ps = Context.getPatientService(); 
+	protected AdministrationService adminService =Context.getAdministrationService();
+	protected LocationService locationService = Context.getLocationService();
 	
-	
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-		
-		if (ps == null) {
-			ps = Context.getPatientService();
-			adminService = Context.getAdministrationService();
-			locationService = Context.getLocationService();
-		}
-	}
-
 	/**
 	 * Tests creation of a patient and then subsequent fetching of that
 	 * patient by internal id
@@ -80,9 +67,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SkipBaseSetup
 	public void shouldGetPatient() throws Exception {
-		
+		initializeInMemoryDatabase();
 		executeDataSet(CREATE_PATIENT_XML);
+		authenticate();
 		
 		List<Patient> patientList = ps.getPatients(null, "???", null);
 		assertNotNull("an empty list should be returned instead of a null object", patientList);
@@ -398,8 +387,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SkipBaseSetup
 	public void shouldGetPatientsByIdentifierAndIdentifierType() throws Exception {
+		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
+		authenticate();
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(new PatientIdentifierType(1));

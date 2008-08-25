@@ -42,9 +42,14 @@
 		<level value="WARN" />
 	</logger>
 	
-	<!-- This controls the LoggingAdvice class that wraps around the openmrs services -->
+	<!-- 
+		This controls the LoggingAdvice class that wraps around the OpenMRS services 
+		WARN == don't log anything special for the services
+		INFO == log all setters
+		DEBUG == log all setters & log all getters & log execution time
+	-->
 	<logger name="org.openmrs.api">
-		<level value="INFO" />
+		<level value="WARN" />
 	</logger>
 
 	<logger name="org.apache.fop">

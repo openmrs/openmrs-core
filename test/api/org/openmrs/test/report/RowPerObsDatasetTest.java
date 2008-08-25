@@ -30,7 +30,8 @@ import org.openmrs.report.RowPerObsDataSetDefinition;
 import org.openmrs.report.impl.TsvReportRenderer;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Serializer;
 
@@ -45,6 +46,7 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SkipBaseSetup
 	public void shouldSerialization() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/report/include/RowPerObsDatasetTest.xml");

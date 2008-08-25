@@ -16,7 +16,7 @@ package org.openmrs.test.api.arden;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * TODO Finish this arden test class?  delete this test class?

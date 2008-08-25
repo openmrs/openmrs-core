@@ -24,7 +24,7 @@ import org.openmrs.Cohort;
 import org.openmrs.DrugOrder;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  *

@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.scheduler.TaskDefinition;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * TODO test all methods in EncounterService

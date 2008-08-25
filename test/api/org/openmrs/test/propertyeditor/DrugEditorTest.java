@@ -33,8 +33,10 @@ public class DrugEditorTest {
 	@Test
 	public void setAsText_shouldSetValueToTheDrugWithTheSpecifiedIdentifier() throws Exception { 		
 		DrugEditor drugEditor = new DrugEditor();
-		drugEditor.setValue("2");
+		drugEditor.setAsText("2");
 		Drug drug = (Drug) drugEditor.getValue();
+		
+		Assert.assertNotNull(drug);
 		Assert.assertEquals("", new Integer(2), drug.getDrugId());
 	}
 

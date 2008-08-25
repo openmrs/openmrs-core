@@ -26,7 +26,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * This class tests methods in the PatientService class
@@ -56,7 +56,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	}
 
 	/**
-	 * @see org.openmrs.test.BaseContextSensitiveTest#useInMemoryDatabase()
+	 * @see org.openmrs.test.testutil.BaseContextSensitiveTest#useInMemoryDatabase()
 	 *
 	@Override
 	public Boolean useInMemoryDatabase( ) {

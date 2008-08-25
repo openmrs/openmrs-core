@@ -20,7 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
 import org.openmrs.web.controller.encounter.EncounterDisplayController;
 import org.openmrs.web.controller.encounter.EncounterDisplayController.FieldHolder;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -49,7 +50,8 @@ public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 	 */
 	@SuppressWarnings({ "unchecked" })
     @Test
-	public void shouldGetNormalEncounterPageData() throws Exception {
+    @SkipBaseSetup
+    public void shouldGetNormalEncounterPageData() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setParameter("encounterId", "3");
 		

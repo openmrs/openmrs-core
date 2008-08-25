@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.openmrs.OrderType;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * TODO clean up and test all methods in OrderService

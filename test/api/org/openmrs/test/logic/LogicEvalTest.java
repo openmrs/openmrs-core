@@ -25,7 +25,7 @@ import org.openmrs.logic.LogicException;
 import org.openmrs.logic.Rule;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.rule.ReferenceRule;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * TODO Add more tests here

@@ -29,7 +29,7 @@ import org.openmrs.report.EvaluationContext;
 import org.openmrs.report.Parameter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.reporting.PatientSearchReportObject;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * Tests backwards compatibility with org.openmrs.reporting.* framework 

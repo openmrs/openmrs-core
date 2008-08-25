@@ -15,7 +15,7 @@ import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicCriteria;
 import org.openmrs.logic.datasource.LogicDataSource;
 import org.openmrs.logic.result.Result;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * Tests the ObsDataSource functionality

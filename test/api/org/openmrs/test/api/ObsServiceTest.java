@@ -43,7 +43,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.validator.ObsValidator;
 import org.springframework.validation.BindException;
