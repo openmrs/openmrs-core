@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+<!-- Metadata -->
+  <concept concept_id="4" retired="false" datatype_id="2" class_id="10" is_set="false" creator="1" date_created="2008-08-15 15:51:39.0" version="" changed_by="1" date_changed="2008-08-15 15:52:38.0"/>
+  <concept concept_id="3" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" version=""/>
+  <concept concept_id="5" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2008-08-15 15:51:57.0" version=""/>
+  <concept concept_id="6" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2008-08-15 15:52:17.0" version=""/>
+  <concept concept_id="7" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2008-08-15 13:52:53.0" version=""/>
+  <concept concept_id="8" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2008-08-15 13:53:31.0" version=""/>
+  <concept concept_id="9" retired="false" datatype_id="4" class_id="16" is_set="false" creator="1" date_created="2008-08-15 13:57:57.0" version=""/>
+  <concept concept_id="10" retired="false" datatype_id="4" class_id="16" is_set="false" creator="1" date_created="2008-08-15 13:58:36.0" version=""/>
+  <concept concept_id="11" retired="false" datatype_id="4" class_id="16" is_set="false" creator="1" date_created="2008-08-15 16:08:18.0" version=""/>
+  <concept concept_id="12" retired="false" datatype_id="4" class_id="17" is_set="false" creator="1" date_created="2008-08-15 16:22:03.0" version=""/>
+  <concept concept_id="13" retired="false" datatype_id="4" class_id="17" is_set="false" creator="1" date_created="2008-08-15 16:57:42.0" version=""/>
+  <concept concept_id="14" retired="false" datatype_id="4" class_id="18" is_set="false" creator="1" date_created="2008-08-15 16:58:44.0" version=""/>
+  <concept concept_id="16" retired="false" datatype_id="4" class_id="18" is_set="false" creator="1" date_created="2008-08-15 16:59:19.0" version=""/>
+  <concept concept_id="17" retired="false" datatype_id="4" class_id="18" is_set="false" creator="1" date_created="2008-08-15 16:59:56.0" version=""/>
+  <concept concept_id="18" retired="false" datatype_id="10" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:31:52.0" version=""/>
+  <concept concept_id="19" retired="false" datatype_id="3" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:32:35.0" version=""/>
+  <concept concept_id="20" retired="false" datatype_id="8" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:33:37.0" version=""/>
+  <concept concept_id="21" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1" date_created="2008-08-18 12:34:26.0" version="" changed_by="1" date_changed="2008-08-18 12:34:58.0"/>
+  <concept concept_id="22" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2008-08-18 12:34:42.0" version=""/>
+  <concept concept_id="23" retired="false" datatype_id="4" class_id="10" is_set="true" creator="1" date_created="2008-08-18 12:38:58.0" version=""/>
+  <concept concept_id="88" retired="false" short_name="" description="" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2004-01-01 00:00:00.0" default_charge="40" version="" changed_by="1" date_changed="2008-08-15 14:04:20.0"/>
+  <concept concept_id="792" retired="false" short_name="" description="" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2004-04-08 00:00:00.0" version="" changed_by="1" date_changed="2008-08-15 14:05:56.0"/>
+  <concept concept_id="5089" retired="false" short_name="WT" description="" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0"/>
+  <concept concept_id="5497" retired="false" short_name="CD4" description="" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0"/>
+
+  <concept_answer concept_answer_id="1" concept_id="21" answer_concept="7" creator="1" date_created="2008-08-18 12:34:26.0"/>
+  <concept_answer concept_answer_id="2" concept_id="21" answer_concept="8" creator="1" date_created="2008-08-18 12:34:26.0"/>
+  <concept_answer concept_answer_id="3" concept_id="21" answer_concept="22" creator="1" date_created="2008-08-18 12:34:58.0"/>
+
+  <concept_class concept_class_id="1" name="Test" description="Acq. during patient encounter (vitals, labs, etc.)" creator="1" date_created="2004-02-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="2" name="Procedure" description="Describes a clinical procedure" creator="1" date_created="2004-03-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="3" name="Drug" description="Drug" creator="1" date_created="2004-02-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="4" name="Diagnosis" description="Conclusion drawn through findings" creator="1" date_created="2004-02-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="5" name="Finding" description="Practitioner observation/finding" creator="1" date_created="2004-03-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="6" name="Anatomy" description="Anatomic sites / descriptors" creator="1" date_created="2004-03-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="7" name="Question" description="Question (eg, patient history, SF36 items)" creator="1" date_created="2004-03-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="8" name="LabSet" description="Term to describe laboratory sets" creator="1" date_created="2004-03-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="9" name="MedSet" description="Term to describe medication sets" creator="1" date_created="2004-02-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="10" name="ConvSet" description="Term to describe convenience sets" creator="1" date_created="2004-03-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="11" name="Misc" description="Terms which don&apos;t fit other categories" creator="1" date_created="2004-03-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="12" name="Symptom" description="Patient-reported observation" creator="1" date_created="2004-10-04 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="13" name="Symptom/Finding" description="Observation that can be reported from patient or found on exam" creator="1" date_created="2004-10-04 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="14" name="Specimen" description="Body or fluid specimen" creator="1" date_created="2004-12-02 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="15" name="Misc Order" description="Orderable items which aren&apos;t tests or drugs" creator="1" date_created="2005-02-17 00:00:00.0" retired="false"/>
+  <concept_class concept_class_id="16" name="Program" description="A treatment program" creator="1" date_created="2008-08-15 13:55:59.0" retired="false"/>
+  <concept_class concept_class_id="17" name="Workflow" description="A workflow within a treatment program" creator="1" date_created="2008-08-15 13:56:30.0" retired="false"/>
+  <concept_class concept_class_id="18" name="State" description="A state within a workflow" creator="1" date_created="2008-08-15 13:56:55.0" retired="false"/>
+
+  <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float (e.g., creatinine, weight)" creator="1" date_created="2004-02-02 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="2" name="Coded" hl7_abbreviation="CWE" description="Value determined by term dictionary lookup (i.e., term identifier)" creator="1" date_created="2004-02-02 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="3" name="Text" hl7_abbreviation="ST" description="Free text" creator="1" date_created="2004-02-02 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="4" name="N/A" hl7_abbreviation="ZZ" description="Not associated with a datatype (e.g., term answers, sets)" creator="1" date_created="2004-02-02 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="5" name="Document" hl7_abbreviation="RP" description="Pointer to a binary or text-based document (e.g., clinical document, RTF, XML, EKG, image, etc.) stored in complex_obs table" creator="1" date_created="2004-04-15 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="6" name="Date" hl7_abbreviation="DT" description="Absolute date" creator="1" date_created="2004-07-22 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="7" name="Time" hl7_abbreviation="TM" description="Absolute time of day" creator="1" date_created="2004-07-22 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="8" name="Datetime" hl7_abbreviation="TS" description="Absolute date and time" creator="1" date_created="2004-07-22 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="10" name="Boolean" hl7_abbreviation="BIT" description="Boolean value (yes/no, true/false)" creator="1" date_created="2004-08-26 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="11" name="Rule" hl7_abbreviation="ZZ" description="Value derived from other data" creator="1" date_created="2006-09-11 13:22:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="12" name="Structured Numeric" hl7_abbreviation="SN" description="Complex numeric values possible (ie, &lt;5, 1-10, etc.)" creator="1" date_created="2005-08-06 00:00:00.0" retired="false"/>
+
+  <concept_name concept_id="5089" name="WEIGHT (KG)" short_name="WT" description="Patient&apos;s weight in kilograms." locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1439"/>
+  <concept_name concept_id="5497" name="CD4 COUNT" short_name="CD4" description="Measure of CD4 (T-helper cells) in blood" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1847"/>
+  <concept_name concept_id="7" name="YES" short_name="" description="Affirmative" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2449"/>
+  <concept_name concept_id="8" name="NO" short_name="" description="Negative" locale="en" creator="1" date_created="2008-08-15 13:53:31.0" concept_name_id="2450"/>
+  <concept_name concept_id="9" name="HIV PROGRAM" short_name="" description="An HIV treatment program" locale="en" creator="1" date_created="2008-08-15 13:57:57.0" concept_name_id="2451"/>
+  <concept_name concept_id="10" name="MDR-TB PROGRAM" short_name="" description="An MDR-TB treatment program" locale="en" creator="1" date_created="2008-08-15 13:58:36.0" concept_name_id="2452"/>
+  <concept_name concept_id="88" name="ASPIRIN" short_name="" description="Drug used for pain relief, fever, and antiplatelet actions." locale="en" creator="1" date_created="2008-08-15 14:04:20.0" concept_name_id="2453"/>
+  <concept_name concept_id="792" name="STAVUDINE LAMIVUDINE AND NEVIRAPINE" short_name="D4T+3TC+NVP" description="Combination antiretroviral drug." locale="en" creator="1" date_created="2008-08-15 14:05:56.0" concept_name_id="2454"/>
+  <concept_name concept_id="3" name="COUGH SYRUP" short_name="" description="This is used for coughs" locale="en" creator="1" date_created="2008-08-15 15:27:51.0" concept_name_id="2456"/>
+  <concept_name concept_id="4" name="CIVIL STATUS" short_name="" description="What is the person&apos;s marital state" locale="en" creator="1" date_created="2008-08-15 15:51:39.0" concept_name_id="2457"/>
+  <concept_name concept_id="5" name="SINGLE" short_name="" description="" locale="en" creator="1" date_created="2008-08-15 15:51:57.0" concept_name_id="2458"/>
+  <concept_name concept_id="6" name="MARRIED" short_name="" description="" locale="en" creator="1" date_created="2008-08-15 15:52:17.0" concept_name_id="2459"/>
+  <concept_name concept_id="11" name="MALARIA PROGRAM" short_name="" description="" locale="en" creator="1" date_created="2008-08-15 16:08:18.0" concept_name_id="2460"/>
+  <concept_name concept_id="12" name="TREATMENT STATUS" short_name="" description="A patient&apos;s status within a treatment program" locale="en" creator="1" date_created="2008-08-15 16:22:03.0" concept_name_id="2461"/>
+  <concept_name concept_id="13" name="ANTIRETROVIRAL TREATMENT GROUP" short_name="" description="" locale="en" creator="1" date_created="2008-08-15 16:57:42.0" concept_name_id="2462"/>
+  <concept_name concept_id="14" name="FOLLOWING" short_name="" description="" locale="en" creator="1" date_created="2008-08-15 16:58:44.0" concept_name_id="2463"/>
+  <concept_name concept_id="16" name="DIED" short_name="" description="" locale="en" creator="1" date_created="2008-08-15 16:59:19.0" concept_name_id="2465"/>
+  <concept_name concept_id="17" name="WAITING FOR RESULTS" short_name="" description="" locale="en" creator="1" date_created="2008-08-15 16:59:56.0" concept_name_id="2466"/>
+  <concept_name concept_id="18" name="FOOD ASSISTANCE" short_name="" description="Did the patient receive food assistance?" locale="en" creator="1" date_created="2008-08-18 12:31:52.0" concept_name_id="2467"/>
+  <concept_name concept_id="19" name="FAVORITE FOOD, NON-CODED" short_name="" description="" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_id="2468"/>
+  <concept_name concept_id="20" name="DATE OF FOOD ASSISTANCE" short_name="" description="When did the patient receive the food package?" locale="en" creator="1" date_created="2008-08-18 12:33:37.0" concept_name_id="2469"/>
+  <concept_name concept_id="21" name="FOOD ASSISTANCE FOR ENTIRE FAMILY" short_name="" description="" locale="en" creator="1" date_created="2008-08-18 12:34:26.0" concept_name_id="2470"/>
+  <concept_name concept_id="22" name="UNKNOWN" short_name="" description="" locale="en" creator="1" date_created="2008-08-18 12:34:42.0" concept_name_id="2471"/>
+  <concept_name concept_id="23" name="FOOD CONSTRUCT" short_name="" description="Holder for all things edible" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" concept_name_id="2472"/>
+
+  <concept_numeric concept_id="5497" hi_normal="1497.0" low_critical="99.0" low_normal="445.0" units="cells/mmL" precise="false"/>
+  <concept_numeric concept_id="5089" hi_normal="250.0" low_critical="0.0" units="kg" precise="true"/>
+
+  <concept_set concept_id="18" concept_set="23" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0"/>
+  <concept_set concept_id="19" concept_set="23" sort_weight="2.0" creator="1" date_created="2008-08-18 12:38:58.0"/>
+  <concept_set concept_id="20" concept_set="23" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0"/>
+
+  <concept_synonym concept_id="88" synonym="ASA" locale="en" creator="1" date_created="2008-08-15 14:04:20.0"/>
+  <concept_synonym concept_id="5497" synonym="CD3+CD4+ABS CNT" locale="en" creator="1" date_created="2006-06-06 14:03:53.0"/>
+  <concept_synonym concept_id="792" synonym="D4T+3TC+NVP" locale="en" creator="1" date_created="2008-08-15 14:05:56.0"/>
+  <concept_synonym concept_id="8" synonym="N" locale="en" creator="1" date_created="2008-08-15 13:53:31.0"/>
+  <concept_synonym concept_id="792" synonym="TRIOMUNE-30" locale="en" creator="1" date_created="2008-08-15 14:05:56.0"/>
+  <concept_synonym concept_id="7" synonym="Y" locale="en" creator="1" date_created="2008-08-15 13:52:53.0"/>
+
+  <drug drug_id="2" concept_id="792" name="Triomune-30" combination="true" dose_strength="1.0" units="tab(s)" creator="1" date_created="2005-02-24 00:00:00.0" retired="false"/>
+  <drug drug_id="3" concept_id="88" name="Aspirin" combination="false" dose_strength="325.0" units="mg" creator="1" date_created="2005-02-24 00:00:00.0" retired="false"/>
+  <drug drug_id="11" concept_id="3" name="NyQuil" combination="true" units="" creator="1" date_created="2008-08-15 15:34:03.0" retired="true"/>
+ 
+  <drug_order order_id="1" drug_inventory_id="3" dose="325.0" units="mg" frequency="1/day x 7 days/week" prn="false" complex="false"/>
+  <drug_order order_id="2" drug_inventory_id="2" dose="1.0" units="tab(s)" frequency="1/day x 7 days/week" prn="false" complex="false"/>
+  <drug_order order_id="3" drug_inventory_id="2" dose="2.0" units="tab(s)" frequency="1/day x 7 days/week" prn="false" complex="false"/>
+  <drug_order order_id="4" drug_inventory_id="3" dose="325.0" units="mg" frequency="1/day x 7 days/week" prn="false" complex="false"/>
+  <drug_order order_id="5" drug_inventory_id="3" dose="325.0" units="mg" frequency="1/day x 7 days/week" prn="false" complex="false"/>
+  
+  <encounter_type encounter_type_id="6" name="Laboratory" description="Visit to the laboratory" creator="1" date_created="2008-08-15 15:39:55.0" retired="true" retired_by="1" date_retired="2008-08-15 00:00:00.0" retire_reason="for testing"/>
+  <encounter_type encounter_type_id="1" name="Scheduled" description="Scheduled Visit" creator="1" date_created="2005-02-24 00:00:00.0" retired="false"/>
+  <encounter_type encounter_type_id="2" name="Emergency" description="Emergency visit" creator="1" date_created="2005-02-24 00:00:00.0" retired="false"/>
+ 
+  <location location_id="3" name="Never Never Land" description="This is never be found" address1="" address2="" city_village="Peter" state_province="Pan" postal_code="" country="Wendy" latitude="" longitude="" creator="1" date_created="2008-08-15 15:28:54.0" retired="true" retired_by="1" date_retired="2008-08-15 00:00:00.0" retire_reason="test"/>
+  <location location_id="1" name="Unknown Location" address1="" address2="" city_village="" state_province="" postal_code="" country="" creator="1" date_created="2005-09-22 00:00:00.0" retired="false"/>
+  <location location_id="2" name="Xanadu" description="A metaphor for opulence, most famously in the English Romantic Samuel Taylor Coleridge&apos;s poem Kubla Khan." address1="800 Boylston Street" address2="" city_village="Boston" state_province="MA" postal_code="02115" country="USA" latitude="" longitude="" creator="1" date_created="2008-08-15 13:46:50.0" retired="false"/>
+ 
+  <order_type order_type_id="1" name="Drug order" description="Order of medications for the patient" creator="1" date_created="2008-08-15 13:49:47.0" retired="false"/>
+  <order_type order_type_id="2" name="Lab test" description="An order by a clinician for a laboratory test" creator="1" date_created="2008-08-15 13:50:14.0" retired="false"/>
+  <order_type order_type_id="4" name="Lunch order" description="so hungry" creator="1" date_created="2008-08-15 15:49:04.0" retired="true"/>
+ 
+  <patient_identifier_type patient_identifier_type_id="4" name="Social Security Number" description="Soc security ID" format="" check_digit="false" creator="1" date_created="2008-08-15 15:59:20.0" required="false" format_description="" validator="" retired="true" retired_by="1" date_retired="2008-08-15 00:00:00.0" retire_reason="test"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="OpenMRS Identification Number" description="Unique number used in OpenMRS" format="" check_digit="true" creator="1" date_created="2005-09-22 00:00:00.0" required="false" validator="org.openmrs.patient.impl.LuhnIdentifierValidator" retired="false"/>
+  <patient_identifier_type patient_identifier_type_id="2" name="Old Identification Number" description="Number given out prior to the OpenMRS system (No check digit)" format="" check_digit="false" creator="1" date_created="2005-09-22 00:00:00.0" required="false" retired="false"/>
+   
+  <patient_program patient_program_id="5" patient_id="8" program_id="1" date_enrolled="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 11:55:55.0" changed_by="1" date_changed="2008-08-18 11:58:20.0" voided="true" voided_by="1" date_voided="2008-08-18 11:58:20.0" void_reason=""/>
+  <patient_program patient_program_id="1" patient_id="2" program_id="1" date_enrolled="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 11:40:48.0" changed_by="1" date_changed="2008-08-18 12:29:29.0" voided="false"/>
+  <patient_program patient_program_id="2" patient_id="2" program_id="2" date_enrolled="2008-08-02 00:00:00.0" creator="1" date_created="2008-08-18 11:41:19.0" voided="false"/>
+  <patient_program patient_program_id="4" patient_id="7" program_id="2" date_enrolled="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 11:53:00.0" voided="false"/>
+
+  <patient_state patient_state_id="1" patient_program_id="1" state="2" start_date="2008-08-08" creator="1" date_created="2008-08-18 12:29:29.0" voided="false"/>
+
+  <person_attribute_type person_attribute_type_id="1" name="Race" description="Group of persons related by common descent or heredity" format="java.lang.String" searchable="false" creator="1" date_created="2007-05-04 09:59:23.0" retired="true" retired_by="1" date_retired="2008-08-15 00:00:00.0" retire_reason="test"/>
+  <person_attribute_type person_attribute_type_id="2" name="Birthplace" description="Location of persons birth" format="java.lang.String" searchable="false" creator="1" date_created="2007-05-04 09:59:23.0" retired="false"/>
+  <person_attribute_type person_attribute_type_id="8" name="Civil Status" description="Marriage status of this person" format="org.openmrs.Concept" foreign_key="4" searchable="false" creator="1" date_created="2008-08-15 15:53:36.0" retired="false"/>
+
+  <relationship_type relationship_type_id="1" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-05-04 09:59:22.0"/>
+  <relationship_type relationship_type_id="5" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="parent and child" creator="1" date_created="2008-08-15 15:55:18.0"/>
+
+  <role role="Provider" description="General privileges held by all providers"/>
+  <user_role user_id="501" role="Provider"/>
+  <user_role user_id="502" role="Provider"/>
+  
+  <program program_id="1" concept_id="9" creator="1" date_created="2008-08-15 16:07:11.0" changed_by="1" date_changed="2008-08-15 17:04:50.0" retired="false" name="HIV Program" description="hiv program"/>
+  <program program_id="2" concept_id="10" creator="1" date_created="2008-08-15 16:07:34.0" retired="false" name="MDR program" description="MDR-TB program"/>
+  <program program_id="3" concept_id="11" creator="1" date_created="2008-08-15 16:08:51.0" changed_by="1" date_changed="2008-08-15 16:09:00.0" retired="true" name="Malaria program" description="Malaria program"/>
+ 
+  <program_workflow program_workflow_id="1" program_id="1" concept_id="13" creator="1" date_created="2008-08-15 17:01:00.0" retired="false" changed_by="1" date_changed="2008-08-15 17:04:50.0"/>
+  <program_workflow program_workflow_id="2" program_id="1" concept_id="12" creator="1" date_created="2008-08-15 17:01:00.0" retired="false" changed_by="1" date_changed="2008-08-15 17:04:50.0"/>
+ 
+  <program_workflow_state program_workflow_state_id="1" program_workflow_id="1" concept_id="16" initial="false" terminal="true" creator="1" date_created="2008-08-15 17:04:02.0" retired="false" changed_by="1" date_changed="2008-08-15 17:04:50.0"/>
+  <program_workflow_state program_workflow_state_id="2" program_workflow_id="1" concept_id="17" initial="true" terminal="false" creator="1" date_created="2008-08-15 17:04:02.0" retired="false" changed_by="1" date_changed="2008-08-15 17:04:50.0"/>
+  <program_workflow_state program_workflow_state_id="4" program_workflow_id="1" concept_id="14" initial="false" terminal="false" creator="1" date_created="2008-08-15 17:04:02.0" retired="false" changed_by="1" date_changed="2008-08-15 17:04:50.0"/>
+  <program_workflow_state program_workflow_state_id="5" program_workflow_id="2" concept_id="17" initial="false" terminal="false" creator="1" date_created="2008-08-15 17:04:50.0" retired="false"/>
+  
+  <users user_id="501" system_id="2-6" username="bruno" password="ff6d1655327d385e11a04e1632b4f33ceb8fafd2" salt="5d32c5fd9fde391c755f1f4dfd5e1d6e3debe6" secret_question="" creator="1" date_created="2008-08-15 15:46:47.0" changed_by="1" date_changed="2008-08-15 15:47:07.0" voided="true" void_reason="Test purposes"/>
+  <users user_id="502" system_id="3-4" username="butch" password="eeeda5c0cc3837151b2d61cfeab54a91fb0c27d" salt="42af4c437a47cd778a54f6564d71b3cd6e8e5ca" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
+    
+ <!-- Patient data -->
+  <encounter encounter_id="3" encounter_type="2" patient_id="7" provider_id="502" location_id="1" form_id="1" encounter_datetime="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 14:09:05.0" voided="false" void_reason=""/>
+  <encounter encounter_id="4" encounter_type="1" patient_id="7" provider_id="502" location_id="1" form_id="1" encounter_datetime="2008-08-15 00:00:00.0" creator="1" date_created="2008-08-18 14:22:17.0" voided="false" void_reason=""/>
+  <encounter encounter_id="5" encounter_type="1" patient_id="7" provider_id="502" location_id="2" form_id="1" encounter_datetime="2008-08-19 00:00:00.0" creator="1" date_created="2008-08-19 12:34:40.0" voided="false" void_reason=""/>
+ 
+  <obs obs_id="7" person_id="7" concept_id="5089" encounter_id="3" obs_datetime="2008-08-01 00:00:00.0" location_id="1" value_numeric="50.0" comments="" creator="1" date_created="2008-08-18 14:09:35.0" voided="false"/>
+  <obs obs_id="9" person_id="7" concept_id="5497" encounter_id="3" obs_datetime="2008-08-01 00:00:00.0" location_id="1" value_numeric="150.0" comments="" creator="1" date_created="2008-08-18 14:11:13.0" voided="false"/>
+  <obs obs_id="10" person_id="7" concept_id="5089" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_numeric="55.0" comments="" creator="1" date_created="2008-08-18 14:22:47.0" voided="false"/>
+  <obs obs_id="11" person_id="7" concept_id="5497" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_numeric="175.0" comments="" creator="1" date_created="2008-08-18 14:25:29.0" voided="false"/>
+  <obs obs_id="12" person_id="7" concept_id="19" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_text="Peaches" comments="" creator="1" date_created="2008-08-19 12:32:03.0" voided="false"/>
+  <obs obs_id="13" person_id="7" concept_id="18" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_numeric="1.0" comments="" creator="1" date_created="2008-08-19 12:32:20.0" voided="false"/>
+  <obs obs_id="14" person_id="7" concept_id="20" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_datetime="2008-08-07 00:00:00.0" comments="" creator="1" date_created="2008-08-19 12:32:38.0" voided="false"/>
+  <obs obs_id="15" person_id="7" concept_id="21" encounter_id="4" obs_datetime="2008-08-15 00:00:00.0" location_id="1" value_coded="7" comments="" creator="1" date_created="2008-08-19 12:32:59.0" voided="false"/>
+  <obs obs_id="16" person_id="7" concept_id="5089" encounter_id="5" obs_datetime="2008-08-19 00:00:00.0" location_id="2" value_numeric="61.0" comments="" creator="1" date_created="2008-08-19 12:35:30.0" voided="false"/>
+ 
+  <orders order_id="1" order_type_id="2" concept_id="88" instructions="" start_date="2008-08-08 00:00:00.0" discontinued="true" discontinued_date="2008-08-15 00:00:00.0" discontinued_by="1" creator="1" date_created="2008-08-19 12:20:22.0" voided="false" patient_id="7"/>
+  <orders order_id="2" order_type_id="2" concept_id="792" instructions="" start_date="2008-08-01 00:00:00.0" discontinued="true" discontinued_date="2008-08-08 00:00:00.0" discontinued_by="1" creator="1" date_created="2008-08-19 12:21:59.0" voided="false" patient_id="2"/>
+  <orders order_id="3" order_type_id="2" concept_id="792" instructions="" start_date="2008-08-08 00:00:00.0" discontinued="false" creator="1" date_created="2008-08-19 12:22:45.0" voided="false" patient_id="2"/>
+  <orders order_id="4" order_type_id="2" concept_id="88" instructions="" start_date="2007-12-03 00:00:00.0" discontinued="true" discontinued_date="2007-12-25 00:00:00.0" discontinued_by="1" creator="1" date_created="2008-08-19 12:23:21.0" voided="false" patient_id="2"/>
+  <orders order_id="5" order_type_id="2" concept_id="88" instructions="" start_date="2008-08-19 00:00:00.0" discontinued="false" creator="1" date_created="2008-08-19 12:24:10.0" voided="false" patient_id="2"/>
+  
+  <patient patient_id="2" tribe="2" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0" voided="false" void_reason=""/>
+  <patient patient_id="6" tribe="1" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:31.0" voided="false" void_reason=",,,,"/>
+  <patient patient_id="7" tribe="1" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:57.0" voided="false" void_reason=""/>
+  <patient patient_id="8" tribe="1" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:24:34.0" voided="false" void_reason=""/>
+ 
+  <patient_identifier patient_id="2" identifier="101" identifier_type="2" preferred="0" location_id="1" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" void_reason=""/>
+  <patient_identifier patient_id="2" identifier="101-6" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" void_reason=""/>
+  <patient_identifier patient_id="6" identifier="12345K" identifier_type="2" preferred="0" location_id="3" creator="1" date_created="2008-08-18 11:44:54.0" voided="false" void_reason=""/>
+  <patient_identifier patient_id="7" identifier="6TS-4" identifier_type="1" preferred="0" location_id="1" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""/>
+  <patient_identifier patient_id="8" identifier="7TU-8" identifier_type="1" preferred="0" location_id="1" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""/>
+  
+  <person person_id="1" gender="" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person person_id="2" gender="M" birthdate="1941-05-01" birthdate_estimated="false" dead="false" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0" voided="false"/>
+  <person person_id="6" gender="M" birthdate="2000-04-21" birthdate_estimated="false" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:31.0" voided="false"/>
+  <person person_id="7" gender="F" birthdate="1966-09-10" birthdate_estimated="false" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:57.0" voided="false"/>
+  <person person_id="8" gender="F" birthdate="1997-01-21" birthdate_estimated="false" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:24:34.0" voided="false"/>
+  <person person_id="9" gender="M" birthdate="1973-01-19" birthdate_estimated="false" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" voided="false"/>
+  <person person_id="501" gender="F" birthdate="1961-01-01" birthdate_estimated="true" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" changed_by="1" date_changed="2008-08-15 15:47:07.0" voided="false"/>
+  <person person_id="502" gender="M" birthdate="1989-01-01" birthdate_estimated="true" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false"/>
+
+  <person_address person_address_id="2" person_id="2" preferred="false" address1="1050 Wishard Blvd." address2="RG5" city_village="Indianapolis" state_province="IN" postal_code="46202" country="USA" latitude="" longitude="" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" void_reason=""/>
+  <person_address person_address_id="7" person_id="7" preferred="false" address1="" address2="" city_village="Kapina" state_province="" postal_code="" country="" latitude="" longitude="" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""/>
+  <person_address person_address_id="8" person_id="8" preferred="false" address1="" address2="" city_village="Jabali" state_province="" postal_code="" country="" latitude="" longitude="" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""/>
+  <person_address person_address_id="9" person_id="9" preferred="false" city_village="Gucha" creator="1" date_created="2006-01-18 00:00:00.0" voided="false"/>
+  <person_address person_address_id="9348" person_id="501" preferred="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false"/>
+  <person_address person_address_id="9349" person_id="502" preferred="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
+  <person_address person_address_id="9350" person_id="6" preferred="false" address1="" address2="" city_village="" state_province="" postal_code="" country="" latitude="" longitude="" creator="1" date_created="2008-08-18 11:44:02.0" voided="false" void_reason=""/>
+
+  <person_attribute person_attribute_id="1" person_id="501" value="" person_attribute_type_id="1" creator="1" date_created="2008-08-15 15:46:47.0" voided="false"/>
+  <person_attribute person_attribute_id="2" person_id="501" value="" person_attribute_type_id="2" creator="1" date_created="2008-08-15 15:46:47.0" voided="false"/>
+  <person_attribute person_attribute_id="3" person_id="502" value="" person_attribute_type_id="1" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
+  <person_attribute person_attribute_id="4" person_id="502" value="" person_attribute_type_id="2" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
+  <person_attribute person_attribute_id="5" person_id="502" value="" person_attribute_type_id="8" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
+  <person_attribute person_attribute_id="6" person_id="2" value="" person_attribute_type_id="1" creator="1" date_created="2008-08-15 17:14:06.0" voided="false"/>
+  <person_attribute person_attribute_id="7" person_id="2" value="" person_attribute_type_id="2" creator="1" date_created="2008-08-15 17:14:06.0" voided="false"/>
+  <person_attribute person_attribute_id="8" person_id="2" value="6" person_attribute_type_id="8" creator="1" date_created="2008-08-15 17:14:06.0" voided="false"/>
+  <person_attribute person_attribute_id="9" person_id="6" value="" person_attribute_type_id="1" creator="1" date_created="2008-08-18 11:44:02.0" voided="false"/>
+  <person_attribute person_attribute_id="10" person_id="6" value="" person_attribute_type_id="2" creator="1" date_created="2008-08-18 11:44:02.0" voided="false"/>
+  <person_attribute person_attribute_id="11" person_id="6" value="5" person_attribute_type_id="8" creator="1" date_created="2008-08-18 11:44:02.0" voided="false"/>
+  <person_attribute person_attribute_id="12" person_id="8" value="" person_attribute_type_id="1" creator="1" date_created="2008-08-18 11:56:42.0" voided="false"/>
+  <person_attribute person_attribute_id="13" person_id="8" value="" person_attribute_type_id="2" creator="1" date_created="2008-08-18 11:56:42.0" voided="false"/>
+  <person_attribute person_attribute_id="14" person_id="8" value="" person_attribute_type_id="8" creator="1" date_created="2008-08-18 11:56:42.0" voided="false"/>
+  <person_attribute person_attribute_id="15" person_id="7" value="" person_attribute_type_id="1" creator="1" date_created="2008-08-18 12:25:57.0" voided="false"/>
+  <person_attribute person_attribute_id="16" person_id="7" value="" person_attribute_type_id="2" creator="1" date_created="2008-08-18 12:25:57.0" voided="false"/>
+  <person_attribute person_attribute_id="17" person_id="7" value="" person_attribute_type_id="8" creator="1" date_created="2008-08-18 12:25:57.0" voided="false"/>
+
+  <person_name person_name_id="2" preferred="true" person_id="2" prefix="Mr." given_name="Horatio" middle_name="Test" family_name="Hornblower" family_name_suffix="Esq." creator="1" date_created="2005-09-22 00:00:00.0" voided="false" void_reason=""/>
+  <person_name person_name_id="7" preferred="false" person_id="7" given_name="Collet" middle_name="Test" family_name="Chebaskwony" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""/>
+  <person_name person_name_id="8" preferred="false" person_id="8" given_name="Anet" middle_name="Test" family_name="Oloo" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" void_reason=""/>
+  <person_name person_name_id="9" preferred="false" person_id="9" given_name="Jimmy" middle_name="Manana" family_name="Chemalit" creator="1" date_created="2006-01-18 00:00:00.0" voided="false"/>
+  <person_name person_name_id="10" preferred="false" person_id="10" given_name="Reliv" middle_name="Kipkorir" family_name="Nyogesa" creator="1" date_created="2006-01-18 00:00:00.0" voided="false"/>
+  <person_name person_name_id="11" preferred="false" person_id="11" given_name="Hellen" middle_name="Musamari" family_name="Ndeto" creator="1" date_created="2006-01-18 00:00:00.0" voided="false"/>
+  <person_name person_name_id="9348" preferred="true" person_id="1" given_name="Super" middle_name="" family_name="User" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="9349" preferred="false" person_id="501" given_name="Bruno" middle_name="" family_name="Otterbourg" creator="1" date_created="2008-08-15 15:46:47.0" voided="false"/>
+  <person_name person_name_id="9350" preferred="false" person_id="502" given_name="Hippocrates" middle_name="" family_name="of Cos" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
+  <person_name person_name_id="9351" preferred="true" person_id="6" given_name="Johnny" middle_name="Test" family_name="Doe" creator="1" date_created="2008-08-18 11:44:02.0" voided="false" void_reason=""/>
+
+  <relationship relationship_id="1" person_a="502" relationship="1" person_b="2" creator="1" date_created="2008-08-18 11:50:15.0" voided="false"/>
+  <relationship relationship_id="2" person_a="502" relationship="1" person_b="7" creator="1" date_created="2008-08-18 11:53:50.0" voided="false"/>
+</dataset>
