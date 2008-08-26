@@ -32,6 +32,19 @@ public interface ContextDAO {
 	 * @param password
 	 * @return
 	 * @throws ContextAuthenticationException
+	 * 
+	 * @should authenticate given username and password
+	 * @should authenticate given systemId and password
+	 * @should authenticate given systemId without hyphen and password
+	 * @should not authenticate given username and incorrect password
+	 * @should not authenticate given systemId and incorrect password
+	 * @should not authenticate given incorrect username
+	 * @should not authenticate given incorrect systemId
+	 * @should not authenticate given null login
+	 * @should not authenticate given empty login
+	 * @should not authenticate given null password when password in database is null
+	 * @should not authenticate given non null password when password in database is null
+	 * @should not authenticate when password in database is empty
 	 */
 	@Transactional(readOnly=true)
 	public User authenticate(String username, String password)
