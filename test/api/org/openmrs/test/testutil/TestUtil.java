@@ -16,6 +16,7 @@ package org.openmrs.test.testutil;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.Collection;
 import java.util.Properties;
 
 import org.dbunit.database.DatabaseConfig;
@@ -30,6 +31,26 @@ import org.openmrs.util.OpenmrsUtil;
  * Methods use by the Openmrs tests
  */
 public class TestUtil {
+	
+	/**
+	 * Additional assert method for testing that will test that two Collections have equal contents
+	 * The Collections must be of equal size, and each object from one Collection must equal an object in the other Collection
+	 * Order is not considered.
+	 * 
+	 * @param expected
+	 * @param actual
+	 */
+	@SuppressWarnings("unchecked")
+	public static void assertCollectionContentsEquals(Collection expected, Collection actual) throws AssertionError {
+		try {
+			if (!expected.containsAll(actual) || !actual.containsAll(expected)) {
+				throw new AssertionError("Expected " + expected + " but found " + actual);
+			}
+		}
+		catch (Exception e) {
+			throw new AssertionError(e);
+		}
+	}
 
 	/**
 	 * Mimics org.openmrs.web.Listener.getRuntimeProperties()

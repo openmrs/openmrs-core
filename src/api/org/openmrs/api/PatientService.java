@@ -613,8 +613,8 @@ public interface PatientService extends OpenmrsService {
     public IdentifierValidator getDefaultIdentifierValidator();
 
 	/**
-     * 
      * @return All registered PatientIdentifierValidators
+     * @should return all registered identifier validators
      */
     public Collection<IdentifierValidator> getAllIdentifierValidators();
     
