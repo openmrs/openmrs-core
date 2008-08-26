@@ -605,19 +605,13 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	@Before
 	public void baseSetupWithStandardDataAndAuthentication() throws Exception {
-		TestUtil.printOutTableContents(getConnection(), "concept");
-		
 		if (skipBaseSetup == false) {
 			initializeInMemoryDatabase();
 		
 			executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
 		
 			authenticate();
-			
-			System.out.println("Didn't skip");
 		}
-		else
-			System.out.println("skipped");
 	}
 	
 	/**

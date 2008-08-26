@@ -57,10 +57,7 @@ public class SkipBaseSetupAnnotationExecutionListener extends
 		// are not run.
 		if (skipBaseSetup != null) {
    			callMethod(testContext, "skipBaseSetup");
-   			System.out.println("Skipping: " + testContext.getTestMethod().getName());
    		}
-		else
-			System.out.println("Not skipping: " + testContext.getTestMethod().getName());
     	
     }
 
