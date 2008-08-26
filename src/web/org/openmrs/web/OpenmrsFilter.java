@@ -89,6 +89,8 @@ public class OpenmrsFilter implements Filter {
 			httpSession.setAttribute("username", "-anonymous user-");
 			
 			// User context is created if it doesn't already exist and added to the session
+			// note: this usercontext storage logic is copied to webinf/view/uncaughtexception.jsp to 
+			// 		 prevent stack traces being shown to non-authenticated users
 			userContext = (UserContext) httpSession.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
 			
 			// if there isn't a userContext on the session yet, create one
