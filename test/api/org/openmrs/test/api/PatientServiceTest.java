@@ -22,10 +22,13 @@ import static org.junit.Assert.fail;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
@@ -40,8 +43,10 @@ import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.test.testutil.SkipBaseSetup;
+import org.openmrs.test.testutil.TestUtil;
 
 /**
  * This class tests methods in the PatientService class
@@ -59,6 +64,20 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	protected PatientService ps = Context.getPatientService(); 
 	protected AdministrationService adminService =Context.getAdministrationService();
 	protected LocationService locationService = Context.getLocationService();
+	
+	
+	/**
+	 * @verifies {@link PatientServiceImpl#getAllIdentifierValidators()}
+	 * 	test = should return all registered identifier validators
+	 */
+	@Test
+	public void getAllIdentifierValidators_shouldReturnAllRegisteredIdentifierValidators() throws Exception {
+		Collection<IdentifierValidator> expectedValidators = new HashSet<IdentifierValidator>();
+		expectedValidators.add(ps.getIdentifierValidator("org.openmrs.patient.impl.LuhnIdentifierValidator"));
+		expectedValidators.add(ps.getIdentifierValidator("org.openmrs.patient.impl.VerhoeffIdentifierValidator"));
+		Assert.assertEquals(2, ps.getAllIdentifierValidators().size());
+		TestUtil.assertCollectionContentsEquals(expectedValidators, ps.getAllIdentifierValidators());
+	}
 	
 	/**
 	 * Tests creation of a patient and then subsequent fetching of that
