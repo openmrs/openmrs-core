@@ -48,8 +48,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/test/api/include/EncounterServiceTest-initialData.xml";
 	
-	public static Date startTime = new Date();
-
 	/**
 	 * This method is run before all of the tests in this class
 	 * because it has the @Before annotation on it.  This will
@@ -1321,7 +1319,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test(expected=IllegalArgumentException.class)
 	public void shouldThrowErrorWhenGettingEncounterTypeById() throws Exception {
-		System.out.println("Time: " + (new Date().getTime() - startTime.getTime()));
 		Context.getEncounterService().getEncounterType((Integer)null);
 	}
 	
