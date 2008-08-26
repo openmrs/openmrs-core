@@ -64,26 +64,7 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
-	 * Authenticate the user for this context.
-	 * 
-	 * @param username
-	 * @param password
-	 * 
-	 * @see org.openmrs.api.context.Context#authenticate(String, String)
-	 * @throws ContextAuthenticationException
-	 * 
-	 * @should authenticate given username and password
-	 * @should authenticate given systemId and password
-	 * @should authenticate given systemId without hyphen and password
-	 * @should not authenticate given username and incorrect password
-	 * @should not authenticate given systemId and incorrect password
-	 * @should not authenticate given incorrect username
-	 * @should not authenticate given incorrect systemId
-	 * @should not authenticate given null login
-	 * @should not authenticate given empty login
-	 * @should not authenticate given null password when password in database is null
-	 * @should not authenticate given non null password when password in database is null
-	 * @should not authenticate when password in database is empty
+	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
 	public User authenticate(String login, String password)
 			throws ContextAuthenticationException {
