@@ -15,7 +15,6 @@ package org.openmrs.test.api.db;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.User;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -167,5 +166,40 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	public void authenticate_shouldNotAuthenticateWhenPasswordInDatabaseIsEmpty() throws Exception {
 		dao.authenticate("emptypassword", "");
 	}
-
+	
+	/**
+	 * This does not use the "expected=Exception" paradigm because it 
+	 * is comparing the actual error messages thrown
+	 * 
+	 * @verifies {@link ContextDAO#authenticate(String, String)}
+	 * 	test = give identical error messages between username and password mismatch
+	 */
+	@Test()
+	public void authenticate_shouldGiveIdenticalErrorMessagesBetweenUsernameAndPasswordMismatch() throws Exception {
+		User user = dao.authenticate("admin", "test");
+		Assert.assertNotNull("This test depends on there being an admin:test user", user);
+		
+		String invalidUsernameErrorMessage = null;
+		String invalidPasswordErrorMessage = null;
+		
+		try {
+			dao.authenticate("some invalid username", "and an invalid password");
+		}
+		catch (ContextAuthenticationException authException) {
+			invalidUsernameErrorMessage = authException.getMessage();
+			invalidUsernameErrorMessage = invalidUsernameErrorMessage.replace("some invalid username", "");
+		}
+		
+		try {
+			// a valid username but an invalid password for that user
+			dao.authenticate("admin", "and an invalid password");
+		}
+		catch (ContextAuthenticationException authException) {
+			invalidPasswordErrorMessage = authException.getMessage();
+			invalidPasswordErrorMessage = invalidPasswordErrorMessage.replace("admin", "");
+		}
+		
+		Assert.assertEquals(invalidUsernameErrorMessage, invalidPasswordErrorMessage);
+	}
+	
 }

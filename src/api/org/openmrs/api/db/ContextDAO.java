@@ -28,9 +28,9 @@ public interface ContextDAO {
 	/**
 	 * Authenticate user with the given username and password.
 	 * 
-	 * @param username
-	 * @param password
-	 * @return
+	 * @param username user's username or systemId
+	 * @param password user's password
+	 * @return a valid user if authentication succeeds
 	 * @throws ContextAuthenticationException
 	 * 
 	 * @should authenticate given username and password
@@ -45,6 +45,7 @@ public interface ContextDAO {
 	 * @should not authenticate given null password when password in database is null
 	 * @should not authenticate given non null password when password in database is null
 	 * @should not authenticate when password in database is empty
+	 * @should give identical error messages between username and password mismatch
 	 */
 	@Transactional(readOnly=true)
 	public User authenticate(String username, String password)
