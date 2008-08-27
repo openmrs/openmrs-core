@@ -43,10 +43,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(CREATE_PATIENT_PROGRAMS_XML);
-
-		authenticate();
 		
 		if (pws == null) {
 			pws = Context.getProgramWorkflowService();
@@ -97,7 +94,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		patientProgram.setDateCompleted(today);
 		patientProgram.setChangedBy(Context.getAuthenticatedUser());
 		patientProgram.setDateChanged(today);
-		pws.updatePatientProgram(patientProgram);
+		pws.savePatientProgram(patientProgram);
 		
 		// Uncomment to commit to database
 		// setComplete( );

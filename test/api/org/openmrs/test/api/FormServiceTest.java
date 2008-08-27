@@ -41,12 +41,6 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String INITIAL_FIELDS_XML = "org/openmrs/test/api/include/FormServiceTest-initialFieldTypes.xml";
 	
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-	}
-	
 	/**
 	 * Creates then updates a form
 	 * 

@@ -30,18 +30,6 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	private static Log log = LogFactory.getLog(SchedulerServiceTest.class);
 	
-	
-	//protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/test/api/include/EncounterServiceTest-initialData.xml";
-	
-	/*
-	@Override
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		executeDataSet(ENC_INITIAL_DATA_XML);
-		authenticate();
-	}
-	*/
-	
 	/**
 	 * 
 	 * @throws Exception

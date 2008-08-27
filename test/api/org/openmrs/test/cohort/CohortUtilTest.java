@@ -18,7 +18,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -33,20 +32,6 @@ import org.openmrs.test.testutil.BaseContextSensitiveTest;
  *
  */
 public class CohortUtilTest extends BaseContextSensitiveTest {
-
-	/**
-	 * Set up the database with the initial dataset before every test method
-	 * in this class.
-	 * 
-	 * 
-	 */
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		// creates the basic user and give it full rights
-		initializeInMemoryDatabase();
-		authenticate();
-	}
-
 	
 	@Test
 	public void shouldParse() throws Exception {
@@ -54,14 +39,14 @@ public class CohortUtilTest extends BaseContextSensitiveTest {
 			// Create a search called "Male" 
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 			ps.addArgument("gender", "m", String.class);
-			Context.getReportObjectService().createReportObject(new PatientSearchReportObject("Male", ps));
+			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("Male", ps));
 		}
 		{
 			// Create a search called "EnrolledOnDate" with one parameter called untilDate
 			PatientSearch ps = PatientSearch.createFilterSearch(ProgramStatePatientFilter.class);
 			//ps.addArgument("program", Context.getProgramWorkflowService().getProgram("HIV PROGRAM").getProgramId().toString(), Integer.class);
 			ps.addArgument("untilDate", "${date}", Date.class);
-			Context.getReportObjectService().createReportObject(new PatientSearchReportObject("EnrolledOnDate", ps));
+			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("EnrolledOnDate", ps));
 		}
 		PatientSearch ps = (PatientSearch) CohortUtil.parse("[Male] and [EnrolledOnDate|untilDate=${report.startDate}]");
 		List<Object> list = ps.getParsedComposition();

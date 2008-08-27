@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
@@ -41,8 +42,21 @@ import org.openmrs.test.testutil.TestUtil;
  */
 public class ConceptServiceTest extends BaseContextSensitiveTest {
 	
-	protected ConceptService conceptService = Context.getConceptService();
+	protected ConceptService conceptService = null;
 	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/test/api/include/ConceptServiceTest-initialConcepts.xml";
+	
+	/**
+	 * Run this before each unit test in this class.
+	 * 
+	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method.
+	 * 
+	 * @throws Exception
+	 */
+	@Before
+	public void runBeforeAllTests() throws Exception {
+		conceptService = Context.getConceptService();
+	}
 	
 	/**
 	 * Test getting a concept by name and by partial name. 

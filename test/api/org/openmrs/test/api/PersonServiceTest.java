@@ -54,9 +54,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 
 	@Before
 	public void onSetUpInTransaction() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-
 		if (ps == null) {
 			ps = Context.getPatientService();
 			adminService = Context.getAdministrationService();

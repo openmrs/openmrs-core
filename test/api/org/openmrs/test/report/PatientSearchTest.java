@@ -53,9 +53,7 @@ public class PatientSearchTest extends BaseContextSensitiveTest {
 	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/report/include/PatientSearchTest.xml");
-		authenticate();
 	}
 	
 	/**
