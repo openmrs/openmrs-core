@@ -38,10 +38,16 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 	
 	private EncounterDAO dao = null;
 	
+	/**
+	 * Run this before each unit test in this class.
+	 * 
+	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method.
+	 * 
+	 * @throws Exception
+	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
 		executeDataSet("org/openmrs/test/api/db/include/EncounterDAOTest-initialData.xml");
 		
 		if (dao == null)

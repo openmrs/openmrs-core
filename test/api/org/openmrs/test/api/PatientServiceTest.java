@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import junit.framework.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
@@ -43,6 +44,7 @@ import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.test.testutil.SkipBaseSetup;
@@ -61,10 +63,24 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	protected static final String USERS_WHO_ARE_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-usersWhoArePatients.xml";
 	protected static final String FIND_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-findPatients.xml";
 	
-	protected PatientService ps = Context.getPatientService(); 
-	protected AdministrationService adminService =Context.getAdministrationService();
-	protected LocationService locationService = Context.getLocationService();
+	protected PatientService ps = null;
+	protected AdministrationService adminService = null;
+	protected LocationService locationService = null;
 	
+	/**
+	 * Run this before each unit test in this class.
+	 * 
+	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method.
+	 * 
+	 * @throws Exception
+	 */
+	@Before
+	public void runBeforeAllTests() throws Exception {
+		ps = Context.getPatientService(); 
+		adminService =Context.getAdministrationService();
+		locationService = Context.getLocationService();
+	}
 	
 	/**
 	 * @verifies {@link PatientServiceImpl#getAllIdentifierValidators()}

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.api.CohortService;
@@ -38,7 +39,20 @@ import org.openmrs.test.testutil.SkipBaseSetup;
 public class CohortServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/test/api/include/PatientServiceTest-createPatient.xml";
-	protected static CohortService service = Context.getCohortService();
+	protected static CohortService service = null;
+	
+	/**
+	 * Run this before each unit test in this class.
+	 * 
+	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method.
+	 * 
+	 * @throws Exception
+	 */
+	@Before
+	public void runBeforeAllTests() throws Exception {
+		service = Context.getCohortService();
+	}
 	
 	@Test
 	@SkipBaseSetup

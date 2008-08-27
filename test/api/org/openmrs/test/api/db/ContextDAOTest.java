@@ -33,6 +33,14 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 
 	private ContextDAO dao = null;
 	
+	/**
+	 * Run this before each unit test in this class.
+	 * 
+	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method.
+	 * 
+	 * @throws Exception
+	 */
 	@Before
 	public void runExtraSetup() throws Exception {
 		executeDataSet("org/openmrs/test/api/db/include/contextDAOTest.xml");

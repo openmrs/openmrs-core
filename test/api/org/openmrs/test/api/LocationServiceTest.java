@@ -36,11 +36,17 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/test/api/include/EncounterServiceTest-initialData.xml";
 
+	/**
+	 * Run this before each unit test in this class.  This adds a bit 
+	 * more data to the base data that is done in the "@Before" 
+	 * method in {@link BaseContextSensitiveTest} (which is run
+	 * right before this method).
+	 * 
+	 * @throws Exception
+	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(ENC_INITIAL_DATA_XML);
-		authenticate();
 	}
 
 	/**

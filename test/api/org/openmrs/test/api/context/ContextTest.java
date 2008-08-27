@@ -16,7 +16,6 @@ package org.openmrs.test.api.context;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
@@ -26,22 +25,9 @@ import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.springframework.test.AssertThrows;
 
 /**
- * TODO Should we separate into spring required and non-spring-required tests?
  * TODO add methods for all context tests
  */
 public class ContextTest extends BaseContextSensitiveTest {
-	
-	/**
-	 * Set up the database with the initial dataset before every test method
-	 * in this class.
-	 * 
-	 * 
-	 */
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		// creates the basic user and give it full rights
-		initializeInMemoryDatabase();
-	}
 	
 	/**
 	 * Null parameters to the authenticate method should not cause errors to be
@@ -104,7 +90,6 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldGettingUser() throws Exception {
-		authenticate();
 		
 		UserService us = Context.getUserService();
 		String username = "admin";
@@ -119,7 +104,6 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldProxyPrivilege() throws Exception {
-		authenticate();
 		
 		//create a bum user
 		

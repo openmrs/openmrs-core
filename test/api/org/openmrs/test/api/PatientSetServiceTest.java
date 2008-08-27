@@ -18,7 +18,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.DrugOrder;
@@ -32,12 +31,6 @@ import org.openmrs.test.testutil.BaseContextSensitiveTest;
 public class PatientSetServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/test/api/include/PatientServiceTest-createPatient.xml";
-	
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-	}
 	
 	@Test
 	public void shouldGetDrugOrders() throws Exception {

@@ -42,13 +42,7 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		// create the basic user and give it full rights
-		initializeInMemoryDatabase();
-		
 		executeDataSet(XML_FILENAME);
-		
-		// authenticate to the temp database
-		authenticate();
 	}
 
 	/**

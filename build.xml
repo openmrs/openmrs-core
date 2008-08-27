@@ -557,8 +557,8 @@
             <batchtest todir="${junit-tests.dir}" haltonfailure="no">
 				<fileset dir="${build.dir}">
 					<include name="**/*Test.class" />
-					<exclude name="org/openmrs/test/BaseContextSensitiveTest.class" />
-					<exclude name="org/openmrs/test/BaseModuleContextSensitiveTest.class" />
+					<exclude name="**/*BaseContextSensitiveTest.class" />
+					<exclude name="**/*BaseModuleContextSensitiveTest.class" />
 					<exclude name="org/openmrs/web/taglib/SummaryTest.class" />
 				</fileset>
 			</batchtest>

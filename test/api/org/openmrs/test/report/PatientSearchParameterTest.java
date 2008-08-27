@@ -40,19 +40,6 @@ public class PatientSearchParameterTest extends BaseContextSensitiveTest {
 
 	private static Log log = LogFactory.getLog(PatientSearchParameterTest.class);
 	protected static final String INITIAL_REPORT_OBJECTS_XML = "org/openmrs/test/report/include/PatientSearchParameterTest.xml";
-
-	/**
-	 * Set up the database with the initial dataset before every test method
-	 * in this class.
-	 * 
-	 * 
-	 */
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		// creates the basic user and give it full rights
-		initializeInMemoryDatabase();
-		authenticate();
-	}
 	     
     /**
 	 * Tests {@link PatientSearch#getParameters()} to see if parameter names evaluate to a value
