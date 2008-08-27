@@ -37,9 +37,12 @@ import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
+
+import sun.security.krb5.internal.Ticket;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -141,6 +144,44 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * You should be able to add an obs to an encounter, save the encounter,
+	 * and have the obs automatically persisted.
+	 * 
+	 * Added to test bug reported in {@link Ticket#827}
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldAddObsToNewEncounter() throws Exception {
+		EncounterService es = Context.getEncounterService();
+		LocationService locationService = Context.getLocationService();
+		
+		// First, create a new Encounter
+		Encounter enc = new Encounter();
+		Location loc1 = locationService.getAllLocations().get(0);
+		assertNotNull("We need a location", loc1);
+		EncounterType encType1 = es.getAllEncounterTypes().get(0);
+		assertNotNull("We need an encounter type", encType1);
+		Date d1 = new Date();
+		Patient pat1 = new Patient(3);
+		User pro1 = Context.getAuthenticatedUser();
+		enc.setLocation(loc1);
+		enc.setEncounterType(encType1);
+		enc.setEncounterDatetime(d1);
+		enc.setPatient(pat1);
+		enc.setProvider(pro1);
+		es.saveEncounter(enc);
+		
+		// Now add an obs to it
+		Obs newObs = new Obs();
+		Concept concept = Context.getConceptService().getConcept(1);
+		newObs.setConcept(concept);
+		newObs.setValueNumeric(50d);
+		enc.addObs(newObs);
+		es.saveEncounter(enc);
+	}
+	
+	/**
 	 * Make sure that purging an encounter removes the row
 	 * from the database
 	 * 
@@ -220,6 +261,41 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// the obs id should have been populated during the save
 		assertNotNull(obs.getObsId());
+	}
+	
+	/**
+	 * You should be able to add an obs without an obsDatetime to an encounter, save the encounter,
+	 * and have the obs automatically persisted with the same date as the encounter.
+	 * 
+	 * Added to test bug reported in {@link Ticket#827}
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCascadeObsDatetimeFromEncounter() throws Exception {
+		EncounterService es = Context.getEncounterService();
+
+		// get an encounter from the database
+		Encounter encounter = es.getEncounter(1);
+		assertNotNull(encounter.getEncounterDatetime());
+		
+		// Now add an obs to it
+		Obs obs = new Obs();
+		obs.setConcept(new Concept(1));
+		obs.setValueNumeric(50d);
+		encounter.addObs(obs);
+		
+		// make sure it was added
+		assertTrue(obs.getEncounter().equals(encounter));
+		
+		// there should not be an obs id before saving the encounter
+		assertNull(obs.getObsId());
+		
+		es.saveEncounter(encounter);
+		
+		// the obs id should have been populated during the save
+		assertNotNull(obs.getObsId());
+		assertTrue(encounter.getEncounterDatetime().equals(obs.getObsDatetime()));
 	}
 	
 	/**
