@@ -17,12 +17,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Drug;
 import org.openmrs.propertyeditor.DrugEditor;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 
 /**
  * 
  */
-public class DrugEditorTest {
+public class DrugEditorTest extends BaseContextSensitiveTest {
 		
 	/**
 	 * @verifies {@link DrugEditor#setAsText} 
