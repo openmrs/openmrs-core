@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.ConceptClass;
@@ -32,6 +33,7 @@ import org.openmrs.report.DataSetDefinition;
 import org.openmrs.report.Parameter;
 import org.openmrs.report.ReportSchema;
 import org.openmrs.reporting.PatientSearch;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.test.testutil.TestUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Serializer;
@@ -40,7 +42,16 @@ import org.simpleframework.xml.Serializer;
  * Test class that tests the serialization and deserialization of the 
  * a very simple pepfar report 
  */
-public class PepfarReportSerializationTest {
+public class PepfarReportSerializationTest extends BaseContextSensitiveTest {
+	
+	/**
+	 * Set up the database with the initial dataset before every test method
+	 * in this class.
+	 */
+	@Before
+	public void runBeforeEachTest() throws Exception {
+		executeDataSet("org/openmrs/test/report/include/ReportSchemaXmlTest-initialData.xml");
+	}
 
 	/**
 	 * Creates a basic pepfar report schema and makes sure it can be
@@ -91,32 +102,32 @@ public class PepfarReportSerializationTest {
 		serializer.write(pepfarReportSchema, writer);
 		
 		String correctOutput = "<reportSchema id=\"1\" reportSchemaId=\"123\">\n" +
-			"   <dataSets class=\"java.util.ArrayList\" id=\"2\"/>\n" +
-			"   <description id=\"3\"><![CDATA[The PEPFAR description is(n't) here.]]></description>\n" +
-			"   <name id=\"4\"><![CDATA[PEPFAR report]]></name>\n" +
-			"   <parameters class=\"java.util.ArrayList\" id=\"5\">\n" +
-			"      <parameter id=\"6\" clazz=\"java.util.Date\">\n" +
-			"         <name id=\"7\"><![CDATA[report.startDate]]></name>\n" +
-			"         <label id=\"8\"><![CDATA[When does the report period start?]]></label>\n" +
-			"      </parameter>\n" +
-			"      <parameter id=\"9\" clazz=\"java.util.Date\">\n" +
-			"         <name id=\"10\"><![CDATA[report.endDate]]></name>\n" +
-			"         <label id=\"11\"><![CDATA[When does the report period end?]]></label>\n" +
-			"      </parameter>\n" +
-			"      <parameter id=\"12\" clazz=\"org.openmrs.Location\">\n" +
-			"         <name id=\"13\"><![CDATA[report.location]]></name>\n" +
-			"         <label id=\"14\"><![CDATA[For which clinic is this report?]]></label>\n" +
-			"      </parameter>\n" +
-			"   </parameters>\n" +
-			"   <filter class=\"org.openmrs.cohort.StaticCohortDefinition\" id=\"15\">\n" +
-			"      <cohort id=\"16\" cohortId=\"1\" voided=\"false\">\n" +
-			"         <memberIds class=\"java.util.HashSet\" id=\"17\">\n" +
-			"            <integer id=\"18\">1001</integer>\n" +
-			"            <integer id=\"19\">1003</integer>\n" +
-			"            <integer id=\"20\">1002</integer>\n" +
+			"   <filter class=\"org.openmrs.cohort.StaticCohortDefinition\" id=\"2\">\n" +
+			"      <cohort id=\"3\" voided=\"false\" cohortId=\"1\">\n" +
+			"         <memberIds class=\"java.util.HashSet\" id=\"4\">\n" +
+			"            <integer id=\"5\">1002</integer>\n" +
+			"            <integer id=\"6\">1003</integer>\n" +
+			"            <integer id=\"7\">1001</integer>\n" +
 			"         </memberIds>\n" +
 			"      </cohort>\n" +
 			"   </filter>\n" +
+			"   <parameters class=\"java.util.ArrayList\" id=\"8\">\n" +
+			"      <parameter id=\"9\" clazz=\"java.util.Date\">\n" +
+			"         <label id=\"10\"><![CDATA[When does the report period start?]]></label>\n" +
+			"         <name id=\"11\"><![CDATA[report.startDate]]></name>\n" +
+			"      </parameter>\n" +
+			"      <parameter id=\"12\" clazz=\"java.util.Date\">\n" +
+			"         <label id=\"13\"><![CDATA[When does the report period end?]]></label>\n" +
+			"         <name id=\"14\"><![CDATA[report.endDate]]></name>\n" +
+			"      </parameter>\n" +
+			"      <parameter id=\"15\" clazz=\"org.openmrs.Location\">\n" +
+			"         <label id=\"16\"><![CDATA[For which clinic is this report?]]></label>\n" +
+			"         <name id=\"17\"><![CDATA[report.location]]></name>\n" +
+			"      </parameter>\n" +
+			"   </parameters>\n" +
+			"   <description id=\"18\"><![CDATA[The PEPFAR description is(n't) here.]]></description>\n" +
+			"   <dataSets class=\"java.util.ArrayList\" id=\"19\"/>\n" +
+			"   <name id=\"20\"><![CDATA[PEPFAR report]]></name>\n" +
 			"</reportSchema>";
 		assertEquals("The output is not right.", correctOutput, writer.toString());
 		
@@ -127,7 +138,6 @@ public class PepfarReportSerializationTest {
 		Cohort idsFromStaticCohort = ((StaticCohortDefinition) deserializedSchema.getFilter()).getCohort();
 		int size = idsFromStaticCohort.getMemberIds().size();
 		assertTrue("There should be 3 patients in the static cohort, not: " + size, size == 3);
-		
 	}
 
 	
