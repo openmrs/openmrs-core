@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.web.test;
+package org.openmrs.web.test.patient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -43,13 +43,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
- * Test the methods on the org.openmrs.web.controller.encounter.EncounterDisplayController
+ * Test the methods on the {@link org.openmrs.web.controller.patient.NewPatientFormController}
  */
 @SkipBaseSetup
 public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 
-	protected static final String CONTROLLER_DATA = "org/openmrs/web/test/include/NewPatientFormControllerTest.xml";
-	protected static final String CONTROLLER_PATIENTS_DATA = "org/openmrs/web/test/include/NewPatientFormControllerTest-patients.xml";
+	protected static final String CONTROLLER_DATA = "org/openmrs/web/test/patient/include/NewPatientFormControllerTest.xml";
+	protected static final String CONTROLLER_PATIENTS_DATA = "org/openmrs/web/test/patient/include/NewPatientFormControllerTest-patients.xml";
 	
 	@Before
 	public void runBeforeEachTest() throws Exception {

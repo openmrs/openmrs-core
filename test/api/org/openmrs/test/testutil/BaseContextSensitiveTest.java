@@ -422,6 +422,10 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			ps = connection.prepareStatement(sql);
 			ps.execute();
 			ps.close();
+			sql = "alter table users add column secret_answer varchar(255)";
+			ps = connection.prepareStatement(sql);
+			ps.execute();
+			ps.close();
 		   
 	        columnsAdded  = true;
 		}
