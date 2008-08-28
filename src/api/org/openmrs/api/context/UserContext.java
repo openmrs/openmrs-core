@@ -254,6 +254,17 @@ public class UserContext {
 	 * 
 	 * @param privilege
 	 * @return true if authenticated user has given privilege
+	 * 
+	 * @should authorize if authenticated user has specified privilege
+	 * @should authorize if authenticated role has specified privilege 
+	 * @should authorize if proxied user has specified privilege
+	 * @should authorize if anonymous user has specified privilege
+	 * @should not authorize if authenticated user does not have specified privilege
+	 * @should not authorize if authenticated role does not have specified privilege
+	 * @should not authorize if proxied user does not have specified privilege
+	 * @should not authorize if anonymous user does not have specified privilege
+	 * @should log message if debug is enabled [kidding]
+	 * 
 	 */
 	public boolean hasPrivilege(String privilege) {
 
