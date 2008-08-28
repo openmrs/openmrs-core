@@ -42,7 +42,7 @@ import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.reporting.ProgramStatePatientFilter;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.xml.OpenmrsCycleStrategy;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.load.Persister;
@@ -55,22 +55,6 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 	Log log = LogFactory.getLog(getClass());
 	
 	DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
-	
-	/**
-	 * Set up the database with the initial dataset before every test method
-	 * in this class.
-	 * 
-	 * Require authorization before every test method in this class
-	 */
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		
-		// create the basic user and give it full rights
-		initializeInMemoryDatabase();
-		
-		// authenticate to the temp database
-		authenticate();
-	}
 
 	Map<Parameter, Object> getUserEnteredParameters(Collection<Parameter> params) throws ParseException {
 		Map<Parameter, Object> ret = new HashMap<Parameter, Object>();

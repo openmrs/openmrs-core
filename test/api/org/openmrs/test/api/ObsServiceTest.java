@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -43,7 +42,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.validator.ObsValidator;
 import org.springframework.validation.BindException;
@@ -56,12 +55,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String INITIAL_OBS_XML = "org/openmrs/test/api/include/ObsServiceTest-initial.xml";
 	
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-	}
-
 	/**
 	 * Creates then updates an obs
 	 * 

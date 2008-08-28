@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
@@ -32,7 +31,8 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
 import org.springframework.test.annotation.Rollback;
 
 /**
@@ -41,23 +41,6 @@ import org.springframework.test.annotation.Rollback;
 public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String XML_FILENAME = "org/openmrs/test/api/include/UserServiceTest.xml";
-	
-	/**
-	 * Set up the database with the initial dataset before every test method
-	 * in this class.
-	 * 
-	 * Require authorization before every test method in this class
-	 * 
-	 * 
-	 */
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		// create the basic user and give it full rights
-		initializeInMemoryDatabase();
-		
-		// authenticate to the temp database
-		authenticate();
-	}
 
 	/**
 	 * Test that we can create a user
@@ -100,11 +83,14 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SkipBaseSetup
 	@Rollback(false)
 	public void shouldCreateUserWhoIsPatientAlready() throws Exception {
+		// create the basic user and give it full rights
+		initializeInMemoryDatabase();
 		
-		//deleteAllData();
-		//initializeInMemoryDatabase();
+		// authenticate to the temp database
+		authenticate();
 		
 		assertTrue("The context needs to be correctly authenticated to by a user", Context.isAuthenticated());
 		
@@ -153,39 +139,43 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SkipBaseSetup
 	@Rollback(false)
 	public void shouldCheckThatPatientUserWasCreatedSuccessfully() throws Exception {
+		// assumes that the previous test also skipped the base setup
+		// and so only has this limited setup
 		
-		System.out.println("Checking the boolean var");
-		
-		assertTrue("This test should not be run without first running 'shouldCreateUserWhoIsPatient' test method", 
-		           shouldCreateUserWhoIsPatientAlreadyTestWasRun);
-		
-		UserService userService = Context.getUserService();
-		
-		// get the same user we just created and make sure the user portion exists
-		User fetchedUser = userService.getUser(2);
-		User fetchedUser3 = userService.getUser(3);
-		if (fetchedUser3 != null)
-			throw new Exception("There is a user with id #3");
-		
-		assertNotNull("Uh oh, the user object was not created", fetchedUser);
-		assertNotNull("Uh oh, the username was not saved", fetchedUser.getUsername());
-		assertTrue("Uh oh, the username was not saved", fetchedUser.getUsername().equals("bwolfe"));
-		assertTrue("Uh oh, the role was not assigned", fetchedUser.hasRole("Some Role"));
-		
-		Context.clearSession();
-		
-		// there should only be 2 users in the system. (the super user that is
-		// authenticated to this test and the user we just created)
-		List<User> allUsers = userService.getAllUsers();
-		assertEquals(2, allUsers.size());
-		
-		// there should still only be the one patient we created in the xml file
-		Cohort allPatientsSet = Context.getPatientSetService().getAllPatients();
-		assertEquals(1, allPatientsSet.getSize());
-		
-		deleteAllData();
+		try {
+			assertTrue("This test should not be run without first running 'shouldCreateUserWhoIsPatient' test method", 
+			           shouldCreateUserWhoIsPatientAlreadyTestWasRun);
+			
+			UserService userService = Context.getUserService();
+			
+			// get the same user we just created and make sure the user portion exists
+			User fetchedUser = userService.getUser(2);
+			User fetchedUser3 = userService.getUser(3);
+			if (fetchedUser3 != null)
+				throw new Exception("There is a user with id #3");
+			
+			assertNotNull("Uh oh, the user object was not created", fetchedUser);
+			assertNotNull("Uh oh, the username was not saved", fetchedUser.getUsername());
+			assertTrue("Uh oh, the username was not saved", fetchedUser.getUsername().equals("bwolfe"));
+			assertTrue("Uh oh, the role was not assigned", fetchedUser.hasRole("Some Role"));
+			
+			Context.clearSession();
+			
+			// there should only be 2 users in the system. (the super user that is
+			// authenticated to this test and the user we just created)
+			List<User> allUsers = userService.getAllUsers();
+			assertEquals(2, allUsers.size());
+			
+			// there should still only be the one patient we created in the xml file
+			Cohort allPatientsSet = Context.getPatientSetService().getAllPatients();
+			assertEquals(1, allPatientsSet.getSize());
+		}
+		finally {
+			deleteAllData();
+		}
 	}
 	
 	/**

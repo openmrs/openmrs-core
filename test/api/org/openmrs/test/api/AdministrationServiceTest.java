@@ -28,7 +28,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * TODO clean up and finish this test class. Should test all methods
@@ -40,11 +40,18 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	private AdministrationService as = null;
 	private FormService formService = null;
 	
+	/**
+	 * Run this before each unit test in this class.  It simply assigns
+	 * the services used in this class to private variables
+	 * 
+	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method and sets up the initial data set
+	 * and authenticates to the Context
+	 * 
+	 * @throws Exception
+	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-		
 		ps = Context.getPatientService();
 		as = Context.getAdministrationService();
 		formService = Context.getFormService();

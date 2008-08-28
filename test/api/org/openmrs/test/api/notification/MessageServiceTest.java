@@ -22,11 +22,10 @@ import org.openmrs.api.context.Context;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessageService;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * Unit tests for the MessageService.
- * @author Chase Yarbrough
  */
 public class MessageServiceTest extends BaseContextSensitiveTest {
 
@@ -34,11 +33,17 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	
 	MessageService ms = null;
 	
+	/**
+	 * Run this before each unit test in this class.
+	 * 
+	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method.
+	 * 
+	 * @throws Exception
+	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/api/notification/include/MessageServiceTest-initial.xml");
-		authenticate();
 		
 		ms = Context.getMessageService();
 	}

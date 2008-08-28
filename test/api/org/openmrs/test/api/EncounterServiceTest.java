@@ -37,9 +37,10 @@ import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -48,11 +49,19 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/test/api/include/EncounterServiceTest-initialData.xml";
 	
+	/**
+	 * This method is run before all of the tests in this class
+	 * because it has the @Before annotation on it.  This will
+	 * add the contents of {@link #ENC_INITIAL_DATA_XML} to
+	 * the current database
+	 * 
+	 * @see BaseContextSensitiveTest#runBeforeAllUnitTests()
+	 * 
+	 * @throws Exception
+	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(ENC_INITIAL_DATA_XML);
-		authenticate();
 	}
 	
 	/**
@@ -130,6 +139,44 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertTrue("The date needs to have been set", newestEnc.getEncounterDatetime().equals(d2));
 		assertFalse("The patient should be different", origPatient.equals(pat2));
 		assertTrue("The patient should have been set", newestEnc.getPatient().equals(pat2));	
+	}
+	
+	/**
+	 * You should be able to add an obs to an encounter, save the encounter,
+	 * and have the obs automatically persisted.
+	 * 
+	 * Added to test bug reported in ticket #827
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldAddObsToNewEncounter() throws Exception {
+		EncounterService es = Context.getEncounterService();
+		LocationService locationService = Context.getLocationService();
+		
+		// First, create a new Encounter
+		Encounter enc = new Encounter();
+		Location loc1 = locationService.getAllLocations().get(0);
+		assertNotNull("We need a location", loc1);
+		EncounterType encType1 = es.getAllEncounterTypes().get(0);
+		assertNotNull("We need an encounter type", encType1);
+		Date d1 = new Date();
+		Patient pat1 = new Patient(3);
+		User pro1 = Context.getAuthenticatedUser();
+		enc.setLocation(loc1);
+		enc.setEncounterType(encType1);
+		enc.setEncounterDatetime(d1);
+		enc.setPatient(pat1);
+		enc.setProvider(pro1);
+		es.saveEncounter(enc);
+		
+		// Now add an obs to it
+		Obs newObs = new Obs();
+		Concept concept = Context.getConceptService().getConcept(1);
+		newObs.setConcept(concept);
+		newObs.setValueNumeric(50d);
+		enc.addObs(newObs);
+		es.saveEncounter(enc);
 	}
 	
 	/**
@@ -212,6 +259,35 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// the obs id should have been populated during the save
 		assertNotNull(obs.getObsId());
+	}
+	
+	/**
+	 * You should be able to add an obs without an obsDatetime to an encounter, save the encounter,
+	 * and have the obs automatically persisted with the same date as the encounter.
+	 * 
+	 * Added to test bug reported in {@link Ticket#827}
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCascadeObsDatetimeFromEncounter() throws Exception {
+		EncounterService es = Context.getEncounterService();
+
+		// get an encounter from the database
+		Encounter encounter = es.getEncounter(1);
+		assertNotNull(encounter.getEncounterDatetime());
+		
+		// Now add an obs to it
+		Obs obs = new Obs();
+		obs.setConcept(new Concept(1));
+		obs.setValueNumeric(50d);
+		encounter.addObs(obs);
+		
+		es.saveEncounter(encounter);
+		
+		// the obs id should have been populated during the save
+		assertNotNull(obs.getObsId());
+		assertTrue(encounter.getEncounterDatetime().equals(obs.getObsDatetime()));
 	}
 	
 	/**
@@ -729,7 +805,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertNull(unvoidedEnc.getVoidReason());
 	}
 	
-	
 	/**
 	 * Get encounters by their locations
 	 * 
@@ -738,7 +813,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldGetEncountersByLocation() throws Exception {
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, new Location(1), null, null, null, null, true);
-		assertEquals(2, encounters.size());
+		assertEquals(4, encounters.size());
 	}
 	
 	/**
@@ -750,8 +825,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void shouldGetEncountersFromDate() throws Exception {
 		Date fromDate = new SimpleDateFormat("yyyy-dd-MM").parse("2006-01-01");
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, fromDate, null, null, null, true);
-		assertEquals(1, encounters.size());
+		assertEquals(4, encounters.size());
 		assertEquals(2, encounters.get(0).getEncounterId().intValue());
+		assertEquals(3, encounters.get(1).getEncounterId().intValue());
+		assertEquals(4, encounters.get(2).getEncounterId().intValue());
+		assertEquals(5, encounters.get(3).getEncounterId().intValue());
 	}
 	
 	/**
@@ -777,7 +855,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<Form> forms = new Vector<Form>();
 		forms.add(new Form(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, forms, null, true);
-		assertEquals(2, encounters.size());
+		assertEquals(5, encounters.size());
 	}
 	
 	/**
@@ -786,11 +864,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldGetEncounteersByType() throws Exception {
+	public void shouldGetEncountersByType() throws Exception {
 		List<EncounterType> types = new Vector<EncounterType>();
 		types.add(new EncounterType(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, types, true);
-		assertEquals(2, encounters.size());
+		assertEquals(4, encounters.size());
 	}
 	
 	/**
@@ -800,8 +878,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldGetVoidedEncounters() throws Exception {
-		assertEquals(1, Context.getEncounterService().getEncounters(null, null, null, null, null, null, false).size());
-		assertEquals(2, Context.getEncounterService().getEncounters(null, null, null, null, null, null, true).size());
+		assertEquals(4, Context.getEncounterService().getEncounters(null, null, null, null, null, null, false).size());
+		assertEquals(5, Context.getEncounterService().getEncounters(null, null, null, null, null, null, true).size());
 	}
 	
 	/**
@@ -1089,7 +1167,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<EncounterType> types = encounterService.getAllEncounterTypes(true);
 		
 		// there should be four types in the database
-		assertEquals(4, types.size());
+		assertEquals(5, types.size());
 		
 		for (EncounterType type : types) {
 			if (type.isRetired())

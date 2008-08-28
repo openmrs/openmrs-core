@@ -25,7 +25,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * TODO add more tests to cover the methods in <code>AlertService</code>
@@ -42,13 +42,7 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		// create the basic user and give it full rights
-		initializeInMemoryDatabase();
-		
 		executeDataSet(XML_FILENAME);
-		
-		// authenticate to the temp database
-		authenticate();
 	}
 
 	/**

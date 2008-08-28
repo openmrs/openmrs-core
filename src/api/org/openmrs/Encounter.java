@@ -340,6 +340,9 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	 * @return Returns the orders
 	 */
 	public Set<Order> getOrders() {
+		if (orders == null) {
+			return new HashSet<Order>();
+		}
 		return orders;
 	}
 

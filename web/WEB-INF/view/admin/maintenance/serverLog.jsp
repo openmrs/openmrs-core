@@ -38,7 +38,7 @@
 		<table cellpadding="4" cellspacing="0">
 			<c:forEach var="logLine" varStatus="status" items="${logLines}">
 				<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
-					<td>${logLine}</td>
+					<td>${fn:escapeXml(logLine)}</td>
 				</tr>
 			</c:forEach>
 		</table>
@@ -46,7 +46,4 @@
 	</c:otherwise>
 </c:choose>
 
-
-
 <%@ include file="/WEB-INF/template/footer.jsp" %>
-

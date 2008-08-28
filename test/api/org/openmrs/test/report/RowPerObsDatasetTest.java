@@ -30,7 +30,8 @@ import org.openmrs.report.RowPerObsDataSetDefinition;
 import org.openmrs.report.impl.TsvReportRenderer;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Serializer;
 
@@ -45,6 +46,7 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SkipBaseSetup
 	public void shouldSerialization() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/test/report/include/RowPerObsDatasetTest.xml");
@@ -79,7 +81,7 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 		StringWriter writer = new StringWriter();
 		serializer.write(rs, writer);
 		
-		String expectedOutput = "<reportSchema id=\"1\">\n   <dataSets class=\"java.util.Vector\" id=\"2\">\n      <dataSetDefinition class=\"org.openmrs.report.RowPerObsDataSetDefinition\" id=\"3\" name=\"Row per Obs\">\n         <questions class=\"java.util.HashSet\" id=\"4\">\n            <concept id=\"5\" conceptId=\"5089\"/>\n         </questions>\n      </dataSetDefinition>\n   </dataSets>\n   <description id=\"6\"><![CDATA[Tesing RowPerObsDataSet*]]></description>\n   <name id=\"7\"><![CDATA[Testing row-per-obs]]></name>\n</reportSchema>";
+		String expectedOutput = "<reportSchema id=\"1\">\n   <description id=\"2\"><![CDATA[Tesing RowPerObsDataSet*]]></description>\n   <dataSets class=\"java.util.Vector\" id=\"3\">\n      <dataSetDefinition class=\"org.openmrs.report.RowPerObsDataSetDefinition\" id=\"4\" name=\"Row per Obs\">\n         <questions class=\"java.util.HashSet\" id=\"5\">\n            <concept id=\"6\" conceptId=\"5089\"/>\n         </questions>\n      </dataSetDefinition>\n   </dataSets>\n   <name id=\"7\"><![CDATA[Testing row-per-obs]]></name>\n</reportSchema>";
 		assertEquals(expectedOutput, writer.toString());
 		
 		rs = (ReportSchema) serializer.read(ReportSchema.class, writer.toString());

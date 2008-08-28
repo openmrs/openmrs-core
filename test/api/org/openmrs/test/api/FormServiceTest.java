@@ -32,7 +32,7 @@ import org.openmrs.FormField;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * TODO clean up and finish this test for all methods in FormService
@@ -40,12 +40,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class FormServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String INITIAL_FIELDS_XML = "org/openmrs/test/api/include/FormServiceTest-initialFieldTypes.xml";
-	
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-	}
 	
 	/**
 	 * Creates then updates a form

@@ -32,7 +32,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.handler.ORUR01Handler;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 import ca.uhn.hl7v2.app.MessageTypeRouter;
 import ca.uhn.hl7v2.model.Message;
@@ -53,13 +53,16 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		router.registerApplication("ORU", "R01", new ORUR01Handler());
 	}
 	
+	/**
+	 * Run this before each unit test in this class.  This adds the 
+	 * hl7 specific data to the initial and demo data done in the 
+	 * "@Before" method in {@link BaseContextSensitiveTest}.
+	 * 
+	 * @throws Exception
+	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		//deleteAllData();
-		
-		initializeInMemoryDatabase();
 		executeDataSet(ORU_INITIAL_DATA_XML);
-		authenticate();
 	}
 
 	/**

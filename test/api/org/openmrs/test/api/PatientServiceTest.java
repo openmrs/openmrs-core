@@ -22,10 +22,13 @@ import static org.junit.Assert.fail;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
+
+import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +44,11 @@ import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.api.impl.PatientServiceImpl;
+import org.openmrs.patient.IdentifierValidator;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
+import org.openmrs.test.testutil.TestUtil;
 
 /**
  * This class tests methods in the PatientService class
@@ -56,23 +63,38 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	protected static final String USERS_WHO_ARE_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-usersWhoArePatients.xml";
 	protected static final String FIND_PATIENTS_XML = "org/openmrs/test/api/include/PatientServiceTest-findPatients.xml";
 	
-	protected PatientService ps = null; 
+	protected PatientService ps = null;
 	protected AdministrationService adminService = null;
 	protected LocationService locationService = null;
 	
-	
+	/**
+	 * Run this before each unit test in this class.
+	 * 
+	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method.
+	 * 
+	 * @throws Exception
+	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-		
-		if (ps == null) {
-			ps = Context.getPatientService();
-			adminService = Context.getAdministrationService();
-			locationService = Context.getLocationService();
-		}
+	public void runBeforeAllTests() throws Exception {
+		ps = Context.getPatientService(); 
+		adminService =Context.getAdministrationService();
+		locationService = Context.getLocationService();
 	}
-
+	
+	/**
+	 * @verifies {@link PatientServiceImpl#getAllIdentifierValidators()}
+	 * 	test = should return all registered identifier validators
+	 */
+	@Test
+	public void getAllIdentifierValidators_shouldReturnAllRegisteredIdentifierValidators() throws Exception {
+		Collection<IdentifierValidator> expectedValidators = new HashSet<IdentifierValidator>();
+		expectedValidators.add(ps.getIdentifierValidator("org.openmrs.patient.impl.LuhnIdentifierValidator"));
+		expectedValidators.add(ps.getIdentifierValidator("org.openmrs.patient.impl.VerhoeffIdentifierValidator"));
+		Assert.assertEquals(2, ps.getAllIdentifierValidators().size());
+		TestUtil.assertCollectionContentsEquals(expectedValidators, ps.getAllIdentifierValidators());
+	}
+	
 	/**
 	 * Tests creation of a patient and then subsequent fetching of that
 	 * patient by internal id
@@ -80,9 +102,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SkipBaseSetup
 	public void shouldGetPatient() throws Exception {
-		
+		initializeInMemoryDatabase();
 		executeDataSet(CREATE_PATIENT_XML);
+		authenticate();
 		
 		List<Patient> patientList = ps.getPatients(null, "???", null);
 		assertNotNull("an empty list should be returned instead of a null object", patientList);
@@ -398,8 +422,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SkipBaseSetup
 	public void shouldGetPatientsByIdentifierAndIdentifierType() throws Exception {
+		initializeInMemoryDatabase();
 		executeDataSet(FIND_PATIENTS_XML);
+		authenticate();
 		
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(new PatientIdentifierType(1));

@@ -21,7 +21,6 @@ import java.util.Locale;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.HashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -70,7 +70,8 @@ public class OpenmrsTestsTest {
 	    		if (method.getAnnotation(Test.class) != null) {
 	    			String methodName = method.getName();
 		    		
-	    			assertTrue(currentClass.getName() + "#" + methodName + " is supposed to start with 'should' but it doesn't", methodName.startsWith("should"));
+	    			boolean passes = methodName.startsWith("should") || methodName.contains("_should");
+	    			assertTrue(currentClass.getName() + "#" + methodName + " is supposed to either 1) start with 'should' or 2) contain '_should' but it doesn't", passes);
 	    		}
 	    	}
 		}
@@ -92,7 +93,7 @@ public class OpenmrsTestsTest {
 	    		String methodName = method.getName();
 				
 				// make sure every should___ method has an @Test annotation
-				if (methodName.startsWith("should")) {
+				if (methodName.startsWith("should") || methodName.contains("_should")) {
 					assertTrue(currentClass.getName() + "#" + methodName + " does not have the @Test annotation on it even though the method name starts with 'should'", method.getAnnotation(Test.class) != null);
 				}
 	    	}

@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.scheduler.TaskDefinition;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * TODO test all methods in EncounterService
@@ -29,18 +29,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	private static Log log = LogFactory.getLog(SchedulerServiceTest.class);
-	
-	
-	//protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/test/api/include/EncounterServiceTest-initialData.xml";
-	
-	/*
-	@Override
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		executeDataSet(ENC_INITIAL_DATA_XML);
-		authenticate();
-	}
-	*/
 	
 	/**
 	 * 

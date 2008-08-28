@@ -29,7 +29,7 @@ import org.openmrs.report.EvaluationContext;
 import org.openmrs.report.Parameter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.reporting.PatientSearchReportObject;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * Tests backwards compatibility with org.openmrs.reporting.* framework 
@@ -40,19 +40,6 @@ public class PatientSearchParameterTest extends BaseContextSensitiveTest {
 
 	private static Log log = LogFactory.getLog(PatientSearchParameterTest.class);
 	protected static final String INITIAL_REPORT_OBJECTS_XML = "org/openmrs/test/report/include/PatientSearchParameterTest.xml";
-
-	/**
-	 * Set up the database with the initial dataset before every test method
-	 * in this class.
-	 * 
-	 * 
-	 */
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		// creates the basic user and give it full rights
-		initializeInMemoryDatabase();
-		authenticate();
-	}
 	     
     /**
 	 * Tests {@link PatientSearch#getParameters()} to see if parameter names evaluate to a value

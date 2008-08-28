@@ -25,7 +25,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.api.db.hibernate.HibernateEncounterDAO;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * This class tests the {@link EncounterDAO} linked to from the Context. 
@@ -38,10 +38,16 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 	
 	private EncounterDAO dao = null;
 	
+	/**
+	 * Run this before each unit test in this class.
+	 * 
+	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method.
+	 * 
+	 * @throws Exception
+	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
 		executeDataSet("org/openmrs/test/api/db/include/EncounterDAOTest-initialData.xml");
 		
 		if (dao == null)

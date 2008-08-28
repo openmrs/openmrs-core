@@ -28,7 +28,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortDefinition;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
 
 /**
  * Tests methods in the CohortService class
@@ -38,18 +39,28 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class CohortServiceTest extends BaseContextSensitiveTest {
 
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/test/api/include/PatientServiceTest-createPatient.xml";
-	protected static CohortService service;
-
+	protected static CohortService service = null;
+	
+	/**
+	 * Run this before each unit test in this class.
+	 * 
+	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method.
+	 * 
+	 * @throws Exception
+	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
+	public void runBeforeAllTests() throws Exception {
 		service = Context.getCohortService();
 	}
 	
 	@Test
+	@SkipBaseSetup
 	public void shouldPatientSearchCohortDefinitionProvider() throws Exception {
+		initializeInMemoryDatabase();
 		executeDataSet(CREATE_PATIENT_XML);
+		authenticate();
+		
 		CohortDefinition def = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 		Cohort result = service.evaluate(def, null);
 		assertNotNull("Should not return null", result);

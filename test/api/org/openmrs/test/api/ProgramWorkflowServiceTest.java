@@ -16,17 +16,25 @@ package org.openmrs.test.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.PatientProgram;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.TestUtil;
 
 /**
  * This class tests methods in the PatientService class
@@ -40,23 +48,70 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	protected ProgramWorkflowService pws = null; 
 	protected AdministrationService adminService = null;
 	protected EncounterService encounterService = null;
+	protected ConceptService cs = null;
 	
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet(CREATE_PATIENT_PROGRAMS_XML);
-
-		authenticate();
 		
 		if (pws == null) {
 			pws = Context.getProgramWorkflowService();
 			adminService = Context.getAdministrationService();
 			encounterService = Context.getEncounterService();
+			cs = Context.getConceptService();
 		}
+	}
+	
+	/**
+	 * Tests creating a new program containing workflows and states
+	 */
+	@Test
+	public void shouldCreateProgramWorkflows( ) throws Exception {
+		
+		int numBefore = Context.getProgramWorkflowService().getAllPrograms().size();
+		
+		Program program = new Program();
+		program.setName("TEST PROGRAM");
+		program.setDescription("TEST PROGRAM DESCRIPTION");
+		program.setConcept(cs.getConcept(3));
+		
+		ProgramWorkflow workflow = new ProgramWorkflow();
+		workflow.setConcept(cs.getConcept(4));
+		program.addWorkflow(workflow);
+		
+		ProgramWorkflowState state1 = new ProgramWorkflowState();
+		state1.setConcept(cs.getConcept(5));
+		state1.setInitial(true);
+		state1.setTerminal(false);
+		workflow.addState(state1);
+		
+		ProgramWorkflowState state2 = new ProgramWorkflowState();
+		state2.setConcept(cs.getConcept(6));
+		state2.setInitial(false);
+		state2.setTerminal(true);
+		workflow.addState(state2);
+		
+		Context.getProgramWorkflowService().saveProgram(program);
+		
+		assertEquals("Failed to create program", numBefore + 1, Context.getProgramWorkflowService().getPrograms().size());
+		Program p = Context.getProgramWorkflowService().getProgram("COUGH SYRUP");
+		System.out.println("TEST Program = " + p);
+		assertNotNull("Program is null", p);
+		assertNotNull("Workflows is null", p.getWorkflows());
+		assertEquals("Wrong number of workflows", 1, p.getWorkflows().size());
+
+		ProgramWorkflow wf = p.getWorkflowByName("CIVIL STATUS");
+		assertNotNull(wf);
+		
+		List<String> names = new ArrayList<String>();
+		for (ProgramWorkflowState s : wf.getStates()) {
+			names.add(s.getConcept().getName().getName());
+		}
+		TestUtil.assertCollectionContentsEquals(Arrays.asList(new String[] {"SINGLE","MARRIED"}), names);
 	}
 
 	/**
-	 * @see org.openmrs.test.BaseContextSensitiveTest#useInMemoryDatabase()
+	 * @see org.openmrs.test.testutil.BaseContextSensitiveTest#useInMemoryDatabase()
 	 *
 	@Override
 	public Boolean useInMemoryDatabase( ) {
@@ -97,7 +152,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		patientProgram.setDateCompleted(today);
 		patientProgram.setChangedBy(Context.getAuthenticatedUser());
 		patientProgram.setDateChanged(today);
-		pws.updatePatientProgram(patientProgram);
+		pws.savePatientProgram(patientProgram);
 		
 		// Uncomment to commit to database
 		// setComplete( );

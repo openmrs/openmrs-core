@@ -29,14 +29,16 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * This class tests methods in the PersonService class.
@@ -54,9 +56,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 
 	@Before
 	public void onSetUpInTransaction() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
-
 		if (ps == null) {
 			ps = Context.getPatientService();
 			adminService = Context.getAdministrationService();
@@ -176,5 +175,46 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Doe", pname2.getFamilyName());
 		assertEquals("John", pname2.getGivenName());
 	}
-
+	
+	/**
+	 * @verifies savePersonAttributeType
+	 * 	test = set the date created and creator on new
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void savePersonAttributeType_shouldSetTheDateCreatedAndCreatorOnNew() throws Exception {
+		PersonService service = Context.getPersonService();
+		
+		PersonAttributeType pat = new PersonAttributeType();
+		pat.setName("attr type name");
+		pat.setDescription("attr type desc");
+		
+		service.savePersonAttributeType(pat);
+		
+		assertEquals(new User(1), pat.getCreator());
+		assertNotNull(pat.getDateCreated());
+	}
+	
+	/**
+	 * @verifies savePersonAttributeType
+	 * 	test = set the date changed and changed by on update
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void savePersonAttributeType_shouldSetTheDateChangedAndChangedByOnUpdate() throws Exception {
+		PersonService service = Context.getPersonService();
+		
+		// get the type and change something about it
+		PersonAttributeType pat = service.getPersonAttributeType(2);
+		pat.setName("attr type name");
+		
+		// save the type again
+		service.savePersonAttributeType(pat);
+		
+		assertEquals(new User(1), pat.getChangedBy());
+		assertNotNull(pat.getDateChanged());
+	}
+	 
 }

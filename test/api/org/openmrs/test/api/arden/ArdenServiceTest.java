@@ -13,10 +13,9 @@
  */
 package org.openmrs.test.api.arden;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
  * TODO Finish this arden test class?  delete this test class?
@@ -24,11 +23,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class ArdenServiceTest extends BaseContextSensitiveTest {
 	int MAX_MLM = 1000;
 	
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		authenticate();
-	}
-
 	@Test
 	public void shouldClass() throws Exception {
 

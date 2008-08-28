@@ -16,7 +16,7 @@ import org.openmrs.serialization.Item;
 import org.openmrs.serialization.Record;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.server.RemoteServer;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +37,11 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 	public DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public abstract String getInitialDataset();
+	
+	@Override
+	public void baseSetupWithStandardDataAndAuthentication() throws Exception {
+		// Do nothing
+	}
 	
 	protected void setupSyncTestChild() throws Exception {
 		initializeInMemoryDatabase();

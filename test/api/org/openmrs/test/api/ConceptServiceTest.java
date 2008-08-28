@@ -29,7 +29,9 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
+import org.openmrs.test.testutil.TestUtil;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods
@@ -40,21 +42,22 @@ import org.openmrs.test.BaseContextSensitiveTest;
  */
 public class ConceptServiceTest extends BaseContextSensitiveTest {
 	
-	protected ConceptService conceptService;
+	protected ConceptService conceptService = null;
 	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/test/api/include/ConceptServiceTest-initialConcepts.xml";
 	
 	/**
-	 * Authenticate the user for all of the tests
+	 * Run this before each unit test in this class.
 	 * 
-	 * @see org.openmrs.BaseTest#runBeforeEachTest()
+	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method.
+	 * 
+	 * @throws Exception
 	 */
 	@Before
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		authenticate();
+	public void runBeforeAllTests() throws Exception {
 		conceptService = Context.getConceptService();
 	}
-
+	
 	/**
 	 * Test getting a concept by name and by partial name. 
 	 * 
@@ -84,8 +87,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	@SkipBaseSetup
 	public void shouldSaveConceptNumeric() throws Exception {
+		TestUtil.printOutTableContents(getConnection(), "concept");
+		
+		initializeInMemoryDatabase();
 		executeDataSet(INITIAL_CONCEPTS_XML);
+		authenticate();
+		
 		ConceptService conceptService = Context.getConceptService();
 		
 		// this tests saving a current concept as a newly changed conceptnumeric

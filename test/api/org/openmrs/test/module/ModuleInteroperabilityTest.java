@@ -22,7 +22,8 @@ import org.junit.Test;
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleUtil;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
 import org.openmrs.util.OpenmrsClassLoader;
 
 /**
@@ -57,6 +58,7 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SkipBaseSetup
 	public void shouldModuleALoadingModuleB() throws Exception {
 		// create the basic user and give it full rights
 		initializeInMemoryDatabase();
