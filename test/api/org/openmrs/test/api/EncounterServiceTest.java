@@ -42,8 +42,6 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
-import sun.security.krb5.internal.Ticket;
-
 /**
  * Tests all methods in the {@link EncounterService}
  */
@@ -147,7 +145,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * You should be able to add an obs to an encounter, save the encounter,
 	 * and have the obs automatically persisted.
 	 * 
-	 * Added to test bug reported in {@link Ticket#827}
+	 * Added to test bug reported in ticket #827
 	 * 
 	 * @throws Exception
 	 */
@@ -284,12 +282,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		obs.setConcept(new Concept(1));
 		obs.setValueNumeric(50d);
 		encounter.addObs(obs);
-		
-		// make sure it was added
-		assertTrue(obs.getEncounter().equals(encounter));
-		
-		// there should not be an obs id before saving the encounter
-		assertNull(obs.getObsId());
 		
 		es.saveEncounter(encounter);
 		
