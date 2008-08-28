@@ -11,13 +11,14 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.web.test;
+package org.openmrs.web.test.encounter;
 
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
@@ -33,7 +34,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 
-	protected static final String DISPLAY_CONTROLLER_DATA = "org/openmrs/web/test/include/EncounterDisplayControllerTest.xml";
+	protected static final String DISPLAY_CONTROLLER_DATA = "org/openmrs/web/test/encounter/include/EncounterDisplayControllerTest.xml";
 	
 	@Before
 	public void runBeforeEachTest() throws Exception {
@@ -63,7 +64,9 @@ public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 		
 		Map<String, Object> model = (Map<String, Object>)modelAndView.getModel().get("model");
 		
+		// make sure there is a "pages" element on the page
 		Map<Integer, List<FieldHolder>> pages = (Map<Integer, List<FieldHolder>>)model.get("pages");
+		Assert.assertNotNull(pages);
 		
 	}
 
