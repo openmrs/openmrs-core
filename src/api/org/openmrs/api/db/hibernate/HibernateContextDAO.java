@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
@@ -108,9 +109,25 @@ public class HibernateContextDAO implements ContextDAO {
 		
 		// only continue if this is a valid username and a nonempty password
 		if (candidateUser != null && password != null) {
-					
 			if (log.isDebugEnabled())
 				log.debug("Candidate user id: " + candidateUser.getUserId());
+			
+			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
+			Long lockoutTime = null;
+			if (lockoutTimeString != null)
+				lockoutTime = Long.valueOf(lockoutTimeString);
+			
+			// if they've been locked out, don't continue with the authentication
+			if (lockoutTime != null) {
+				// unlock them after 5 mins, otherwise reset the timestamp 
+				// to now and make them wait another 5 mins 
+				if (new Date().getTime() - lockoutTime > 300000)
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+				else {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(new Date().getTime()));
+					throw new ContextAuthenticationException("Invalid number of connection attempts. Please try again later.");
+				}
+			}
 			
 			String passwordOnRecord = (String) session.createSQLQuery(
 					"select password from users where user_id = ?")
@@ -132,9 +149,35 @@ public class HibernateContextDAO implements ContextDAO {
 				candidateUser.getAllRoles().size();
 				candidateUser.getUserProperties().size();
 				candidateUser.getPrivileges().size();
-				//
-	
+				
+				// only clean up if the were some login failures, otherwise all should be clean
+				Integer attempts = getUsersLoginAttempts(candidateUser);
+				if (attempts > 0) {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "0");
+					saveUserProperties(candidateUser);
+				}
+				
+				// skip out of the method early (instead of throwing the exception)
+				// to indicate that this is the valid user
 				return candidateUser;
+			}
+			else {
+				// the user failed the username/password, increment their
+				// attempts here and set the "lockout" timestamp if necessary
+				Integer attempts = getUsersLoginAttempts(candidateUser);
+				
+				attempts++;
+				
+				if (attempts >= 5) {
+					// set the user as locked out at this exact time
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(new Date().getTime()));
+				}
+				else {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
+				}
+				
+				saveUserProperties(candidateUser);
 			}
 		}
 		
@@ -144,6 +187,34 @@ public class HibernateContextDAO implements ContextDAO {
 					+ errorMsg);
 		throw new ContextAuthenticationException(errorMsg);
 		
+	}
+	
+	/**
+	 * Call the UserService to save the given user while proxying the
+	 * privileges needed to do so.
+	 * 
+	 * @param user the User to save
+	 */
+	private void saveUserProperties(User user) {
+		sessionFactory.getCurrentSession().update(user);
+	}
+	
+	/**
+	 * Get the integer stored for the given user that is their
+	 * number of login attempts
+	 * 
+	 * @param user the user to check
+	 * @return the # of login attempts for this user defaulting to zero if none defined
+	 */
+	private Integer getUsersLoginAttempts(User user) {
+		String attemptsString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+		Integer attempts = 0;
+		try {
+			attempts = Integer.valueOf(attemptsString);
+		} catch (NumberFormatException e) {
+			// skip over errors and leave the attempts at zero
+		}
+		return attempts;
 	}
 
 	/**
