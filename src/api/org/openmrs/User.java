@@ -16,6 +16,7 @@ package org.openmrs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -401,15 +402,17 @@ public class User extends Person implements java.io.Serializable {
 	 * Convenience method. Adds the given property to the user's properties
 	 */
 	public void setUserProperty(String prop, String value) {
-		if (userProperties != null)
-			userProperties.put(prop, value);
+		if (getUserProperties() == null)
+			userProperties = new HashMap<String, String>();
+		
+		userProperties.put(prop, value);
 	}
 	
 	/**
 	 * Convenience method. Removes the given property from the user's properties
 	 */
 	public void removeUserProperty(String prop) {
-		if (userProperties != null && userProperties.containsKey(prop))
+		if (getUserProperties() != null && userProperties.containsKey(prop))
 			userProperties.remove(prop);
 	}
 	
@@ -420,7 +423,7 @@ public class User extends Person implements java.io.Serializable {
 	 * @return property value
 	 */
 	public String getUserProperty(String prop) {
-		if (userProperties != null && userProperties.containsKey(prop))
+		if (getUserProperties() != null && userProperties.containsKey(prop))
 			return userProperties.get(prop);
 		
 		return "";
@@ -437,7 +440,7 @@ public class User extends Person implements java.io.Serializable {
 	 * @see getUserProperty(java.lang.String)
 	 */
 	public String getUserProperty(String prop, String defaultValue) {
-		if (userProperties != null && userProperties.containsKey(prop))
+		if (getUserProperties() != null && userProperties.containsKey(prop))
 			return userProperties.get(prop);
 		
 		return defaultValue;
