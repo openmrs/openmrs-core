@@ -23,10 +23,12 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
@@ -103,10 +105,22 @@ public class DWRPersonService {
 		return findPeopleByRoles(searchPhrase, includeVoided, null);
 	}
 	
-	public List<?> findPeopleByRoles(String searchPhrase, boolean includeVoided, String roles) {
-		Vector<Object> personList = new Vector<Object>();
+	/**
+	 * Find Person objects based on the given searchPhrase
+	 * 
+	 * @param searchPhrase partial name or partial identifier 
+	 * @param includeVoided true/false whether to include the voided objects
+	 * @param roles if not null, restricts search to only users and only users with these roles
+	 * @return list of PersonListItem s that match the given searchPhrase
+	 * 
+	 * @should match on patient identifiers
+	 * @should allow null roles parameter
+	 */
+	public List<PersonListItem> findPeopleByRoles(String searchPhrase, boolean includeVoided, String roles) {
+		Vector<PersonListItem> personList = new Vector<PersonListItem>();
 		
-		roles = roles.trim();
+		if (roles != null)
+			roles = roles.trim();
 		
 		// if roles were given, search for users with those roles
 		if (roles != null && roles.length() > 0) {
@@ -126,11 +140,22 @@ public class DWRPersonService {
 			}
 		
 		}
-		else { // if no roles were given, search for normal people
+		else { 
+			
+			// if no roles were given, search for normal people
 			PersonService ps = Context.getPersonService();
 			for (Person p : ps.getPeople(searchPhrase, null)) {
 				personList.add(new PersonListItem(p));
 			}
+			
+			// also search on patient identifier if the query contains a number
+			if (searchPhrase.matches(".*\\d+.*")) {
+				PatientService patientService = Context.getPatientService();
+				for (Patient p : patientService.getPatients(null, searchPhrase, null, false)) {
+					personList.add(new PersonListItem(p));
+				}
+			}
+			
 		}
 		
 		return personList;

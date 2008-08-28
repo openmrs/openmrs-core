@@ -24,6 +24,15 @@ import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 
+/**
+ * A mini/simplified Person object.  Used as the return object from
+ * DWR methods to allow javascript and other consumers to easily use
+ * all methods.  This class guarantees that all objects in this class
+ * will be initialized (copied) off of the Person object.
+ * 
+ * @see Person
+ * @see DWRPersonService
+ */
 public class PersonListItem {
 	
 	protected final Log log = LogFactory.getLog(getClass());
@@ -41,11 +50,29 @@ public class PersonListItem {
 	private Boolean voided = false;
 	
 	private Map<String, String> attributes = new HashMap<String, String>();
-	// private String healthCenter = "";
-	// private String mothersName;
 	
+	/**
+	 * Default empty constructor
+	 */
 	public PersonListItem() { }
 	
+	/**
+	 * Convenience constructor to create a PersonListItem that
+	 * has only this personId
+	 * 
+	 * @param personId the person id to assign
+	 */
+	public PersonListItem(Integer personId) {
+		this.personId = personId;
+	}
+	
+	/**
+	 * Convenience constructor that creates a PersonListItem
+	 * from the given Person.  All relevant attributes are pulled
+	 * off of the Person object and copied to this PersonListItem
+	 * 
+	 * @param person the Person to turn into a PersonListItem
+	 */
 	public PersonListItem(Person person) {
 
 		if (person != null) {
@@ -81,6 +108,9 @@ public class PersonListItem {
 		}
 	}
 	
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof PersonListItem) {
 			PersonListItem pi = (PersonListItem)obj;
@@ -91,6 +121,9 @@ public class PersonListItem {
 		return false;
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (personId == null)
 			return super.hashCode();
