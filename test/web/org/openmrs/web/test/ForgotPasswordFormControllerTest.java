@@ -15,6 +15,7 @@ package org.openmrs.web.test;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +42,16 @@ public class ForgotPasswordFormControllerTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/web/test/include/ForgotPasswordFormControllerTest.xml");
 		Context.logout();
 	}
-	
+
+    /**
+     * Log out the current user after all unit test cases just in 
+     * case the password was reset 
+     */
+    @After
+    public void cleanupAndLogoutUserAfterEachTest() {
+    	Context.logout();
+    }
+
 	/**
 	 * Just check for no errors on normal page load
 	 * 
@@ -186,9 +196,6 @@ public class ForgotPasswordFormControllerTest extends BaseContextSensitiveTest {
 			controller.handleRequest(request, new MockHttpServletResponse());
     	}
     	
-    	// wait for 5 seconds before trying the fifth
-    	Thread.currentThread().wait(5000);
-    	
     	// those were the first five, now the sixth request (with a valid user) should fail
     	MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
 		request.addParameter("uname", "validuser");
@@ -248,4 +255,5 @@ public class ForgotPasswordFormControllerTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(Context.isAuthenticated());
 	}
+    
 }
