@@ -46,34 +46,16 @@ public class Program implements java.io.Serializable, Synchronizable {
 	private User changedBy;
 	private Date dateChanged;
 	private Boolean retired = false; 
-	private Set<ProgramWorkflow> workflows;
+	private Set<ProgramWorkflow> allWorkflows;
 	private String guid;
 	private transient String lastRecordGuid;
-        
-	public String getLastRecordGuid() {
-	    return lastRecordGuid;
-	}
-
-	public void setLastRecordGuid(String lastRecordGuid) {
-	    this.lastRecordGuid = lastRecordGuid;
-	}
-	
-  public String getGuid() {
-      return guid;
-  }
-
-  public void setGuid(String guid) {
-      this.guid = guid;
-  }
   
 	// ******************
 	// Constructors
 	// ******************
 	
 	/** Default Constructor */
-	public Program() { 
-		workflows = new HashSet<ProgramWorkflow>();
-	}
+	public Program() { }
 	
 	/** Constructor with id */
 	public Program(Integer programId) {
@@ -224,6 +206,22 @@ public class Program implements java.io.Serializable, Synchronizable {
     public void setRetired(Boolean retired) {
     	this.retired = retired;
     }
+    
+    public String getLastRecordGuid() {
+    	return lastRecordGuid;
+    }
+    
+    public void setLastRecordGuid(String lastRecordGuid) {
+    	this.lastRecordGuid = lastRecordGuid;
+    }
+    
+    public String getGuid() {
+    	return guid;
+    }
+    
+    public void setGuid(String guid) {
+    	this.guid = guid;
+    }
 
 	/**
 	 * Get only the non-retired workflows
@@ -232,28 +230,26 @@ public class Program implements java.io.Serializable, Synchronizable {
 	 */
 	public Set<ProgramWorkflow> getWorkflows() {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
-		
-		if (this.workflows != null) {
-			for (ProgramWorkflow workflow : this.workflows) {
-				if (workflow.isRetired() == false)
-					ret.add(workflow);
-			}
-		}
-			
+		for (ProgramWorkflow workflow : getAllWorkflows()) {
+			if (workflow.isRetired() == false)
+				ret.add(workflow);
+		}	
 		return ret;
 	}
 	
 	/**
 	 * Get all workflows...including the retired ones
-	 * 
 	 * @return
 	 */
 	public Set<ProgramWorkflow> getAllWorkflows() {
-		return workflows;
+		if (allWorkflows == null) {
+			allWorkflows = new HashSet<ProgramWorkflow>();
+		}
+		return allWorkflows;
 	}
 
-	public void setWorkflows(Set<ProgramWorkflow> workflows) {
-		this.workflows = workflows;
+	public void setAllWorkflows(Set<ProgramWorkflow> allWorkflows) {
+		this.allWorkflows = allWorkflows;
 	}
 	
 }
