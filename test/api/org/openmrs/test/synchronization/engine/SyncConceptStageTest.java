@@ -27,7 +27,7 @@ import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSynonym;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.test.annotation.NotTransactional;
 
@@ -36,15 +36,9 @@ import org.springframework.test.annotation.NotTransactional;
  */
 public class SyncConceptStageTest extends BaseContextSensitiveTest {
 
-	@Override
-	public Boolean useInMemoryDatabase() {
-		return false;
-	}
-
 	@Test
-    @NotTransactional
 	public void shouldConceptsFromStage() throws Exception {
-		authenticate();		
+		
 		ConceptService cs = Context.getConceptService();		
 		
 		/* do concept update */
