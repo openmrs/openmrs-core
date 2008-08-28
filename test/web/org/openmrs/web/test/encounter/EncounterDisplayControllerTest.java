@@ -19,7 +19,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.test.testutil.SkipBaseSetup;
@@ -36,13 +35,6 @@ public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 
 	protected static final String DISPLAY_CONTROLLER_DATA = "org/openmrs/web/test/encounter/include/EncounterDisplayControllerTest.xml";
 	
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
-		executeDataSet(DISPLAY_CONTROLLER_DATA);
-		authenticate();
-	}
-
 	/**
 	 * Makes sure that the processing done in the encounter form
 	 * controller is done properly for a normal encounter
@@ -53,6 +45,10 @@ public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
     @Test
     @SkipBaseSetup
     public void shouldGetNormalEncounterPageData() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet(DISPLAY_CONTROLLER_DATA);
+		authenticate();
+		
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setParameter("encounterId", "3");
 		
