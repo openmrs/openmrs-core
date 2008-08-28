@@ -74,7 +74,7 @@
 			<td><spring:message code="general.changedBy" /></td>
 			<td>
 				${personAttributeType.changedBy.personName} -
-				<openmrs:formatDate date="${personAttributeType.dateCreated}" type="long" />
+				<openmrs:formatDate date="${personAttributeType.dateChanged}" type="long" />
 			</td>
 		</tr>
 	</c:if>

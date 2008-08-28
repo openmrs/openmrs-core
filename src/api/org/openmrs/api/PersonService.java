@@ -132,6 +132,9 @@ public interface PersonService {
 	 * @param type
 	 * @return the saved person attribute type
 	 * @throws APIException
+	 * 
+	 * @should set the date created and creator on new
+	 * @should set the date changed and changed by on update 
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException;
