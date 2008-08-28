@@ -182,11 +182,13 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void savePersonAttributeType_shouldSetTheDateCreatedAndCreatorOnNew() throws Exception {
 		PersonService service = Context.getPersonService();
 		
 		PersonAttributeType pat = new PersonAttributeType();
 		pat.setName("attr type name");
+		pat.setDescription("attr type desc");
 		
 		service.savePersonAttributeType(pat);
 		
@@ -200,10 +202,11 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void savePersonAttributeType_shouldSetTheDateChangedAndChangedByOnUpdate() throws Exception {
 		PersonService service = Context.getPersonService();
 		
-		// get the type and change its name.
+		// get the type and change something about it
 		PersonAttributeType pat = service.getPersonAttributeType(2);
 		pat.setName("attr type name");
 		
