@@ -46,7 +46,10 @@ import org.openmrs.patient.UnallowedIdentifierException;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * DWR patient methods
+ * DWR patient methods.  The methods in here are used in the webapp
+ * to get data from the database via javascript calls.
+ * 
+ * @see PatientService
  */
 public class DWRPatientService {
 
@@ -56,24 +59,35 @@ public class DWRPatientService {
 	 * Search on the <code>searchValue</code>.  If a number is in the search
 	 * string, do an identifier search.  Else, do a name search
 	 * 
+	 * @see PatientService#getPatients(String)
+	 * 
 	 * @param searchValue string to be looked for 
 	 * @param includeVoided true/false whether or not to included voided patients
 	 * @return Collection<Object> of PatientListItem or String
+	 * 
+	 * @should return only patient list items with nonnumeric search
+	 * @should return string warning if invalid patient identifier
+	 * @should not return string warning if searching with valid identifier
+	 * @should include string in results if doing extra decapitated search 
+	 * @should not return duplicate patient list items if doing decapitated search
+	 * @should not do decapitated search if numbers are in the search string
 	 */
-	public Collection findPatients(String searchValue, boolean includeVoided) {
+	public Collection<Object> findPatients(String searchValue, boolean includeVoided) {
 		
-		Collection<Object> patientList = new Vector<Object>();
+		// the list to return
+		List<Object> patientList = new Vector<Object>();
 
 		PatientService ps = Context.getPatientService();
 		Collection<Patient> patients;
 		
-		patients = ps.findPatients(searchValue, includeVoided);
+		patients = ps.getPatients(searchValue);
 		patientList = new Vector<Object>(patients.size());
 		for (Patient p : patients)
 			patientList.add(new PatientListItem(p));
 		
-		// only 2 results found and a number was not in the search
-		// decapitated search
+		// if only 2 results found and a number was not in the
+		// search, then do a decapitated search: trim each word
+		// down to the first three characters and search again
 		if (patientList.size() < 3 && !searchValue.matches(".*\\d+.*")) {
 			String[] names = searchValue.split(" ");
 			String newSearch = "";
@@ -84,8 +98,8 @@ public class DWRPatientService {
 			}
 			
 			newSearch = newSearch.trim();
-			Collection<Patient> newPatients = ps.findPatients(newSearch, includeVoided);
-			newPatients.removeAll(patients);
+			Collection<Patient> newPatients = ps.getPatients(newSearch);
+			newPatients.removeAll(patients); // remove the potential first two patients from these hits
 			if (newPatients.size() > 0) {
 				patientList.add("Minimal patients returned. Results for <b>" + newSearch + "</b>");
 				for (Patient p : newPatients) {
@@ -96,7 +110,7 @@ public class DWRPatientService {
 		}
 		//no results found and a number was in the search --
 		//should check whether the check digit is correct.
-		else if(patientList.size() == 0 && searchValue.matches(".*\\d+.*")){
+		else if (patientList.size() == 0 && searchValue.matches(".*\\d+.*")){
 			
 			//Looks through all the patient identifier validators to see if this type of identifier
 			//is supported for any of them.  If it isn't, then no need to warn about a bad check
@@ -127,10 +141,18 @@ public class DWRPatientService {
 					patientList.add("<p style=\"color:green; font-size:big;\"><b>This identifier has been entered correctly, but still no patients have been found.</b></p>");
 			}
 		}
-				
+		
 		return patientList;
 	}
 	
+	/**
+	 * Convenience method for dwr/javascript to convert 
+	 * a patient id into a Patient object (or at least
+	 * into data about the patient)
+	 * 
+	 * @param patientId the {@link Patient#getPatientId()} to match on
+	 * @return a truncated Patient object in the form of a PatientListItem
+	 */
 	public PatientListItem getPatient(Integer patientId) {
 		PatientService ps = Context.getPatientService();
 		Patient p = ps.getPatient(patientId);
@@ -201,6 +223,15 @@ public class DWRPatientService {
 	}
 
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param patientId
+	 * @param identifierType
+	 * @param identifier
+	 * @param identifierLocationId
+	 * @return
+	 */
 	public String addIdentifier(Integer patientId, String identifierType, String identifier, Integer identifierLocationId) {
 
 		String ret = "";
@@ -236,7 +267,7 @@ public class DWRPatientService {
 		p.addIdentifier(id);
 
 		try {
-			ps.updatePatient(p);
+			ps.savePatient(p);
 		} catch ( InvalidIdentifierFormatException iife ) {
 			log.error(iife);
 			ret = "PatientIdentifier.error.formatInvalid";
@@ -260,6 +291,16 @@ public class DWRPatientService {
 		return ret;
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param patientId
+	 * @param reasonForExitId
+	 * @param dateOfExit
+	 * @param causeOfDeath
+	 * @param otherReason
+	 * @return
+	 */
 	public String exitPatientFromCare(Integer patientId, Integer reasonForExitId, String dateOfExit, Integer causeOfDeath, String otherReason ) {
 		log.debug("Entering exitfromcare with [" + patientId + "] [" + reasonForExitId + "] [" + dateOfExit + "]");
 		String ret = "";
@@ -308,7 +349,7 @@ public class DWRPatientService {
 			String deathProp = Context.getAdministrationService().getGlobalProperty("concept.patientDied");
 			Concept deathConcept = null;
 			if ( deathProp != null ) {
-				deathConcept = cs.getConceptByIdOrName(deathProp);
+				deathConcept = cs.getConcept(deathProp);
 			}
 			
 			if ( deathConcept != null ) {
@@ -352,6 +393,13 @@ public class DWRPatientService {
 		return ret;
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param patientId
+	 * @param locationId
+	 * @return
+	 */
 	public String changeHealthCenter(Integer patientId, Integer locationId) {
 		log.warn("Deprecated method in 'DWRPatientService.changeHealthCenter'");
 		
