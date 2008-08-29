@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
@@ -31,6 +32,7 @@ import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
 import org.openmrs.GlobalProperty;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -39,6 +41,15 @@ import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+/**
+ * Hibernate specific implementation of the {@link ContextDAO}.
+ * 
+ * These methods should not be used directly, instead, the methods
+ * on the static {@link Context} file should be used.
+ * 
+ * @see ContextDAO
+ * @see Context
+ */
 public class HibernateContextDAO implements ContextDAO {
 
 	private static Log log = LogFactory.getLog(HibernateContextDAO.class);
@@ -49,13 +60,8 @@ public class HibernateContextDAO implements ContextDAO {
 	private SessionFactory sessionFactory;
 
 	/**
-	 * Default public constructor
-	 */
-	public HibernateContextDAO() {
-	}
-
-	/**
-	 * Set session factory
+	 * Session factory to use for this DAO.  This is usually
+	 * injected by spring and its application context.
 	 * 
 	 * @param sessionFactory
 	 */
@@ -64,13 +70,7 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 
 	/**
-	 * Authenticate the user for this context.
-	 * 
-	 * @param username
-	 * @param password
-	 * 
-	 * @see org.openmrs.api.context.Context#authenticate(String, String)
-	 * @throws ContextAuthenticationException
+	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
 	public User authenticate(String login, String password)
 			throws ContextAuthenticationException {
@@ -84,9 +84,9 @@ public class HibernateContextDAO implements ContextDAO {
 		if (login != null) {
 			
 			// loginWithoutDash is used to compare to the system id
-			String loginWithoutDash = login;
-			if (login.length() >= 3 && login.charAt(login.length() - 2) == '-')
-				loginWithoutDash = login.substring(0, login.length() - 2)
+			String loginWithDash = login;
+			if (login.matches("\\d{2,}"))
+				loginWithDash = login.substring(0, login.length() - 1) + "-" 
 						+ login.charAt(login.length() - 1);
 	
 			try {
@@ -95,7 +95,7 @@ public class HibernateContextDAO implements ContextDAO {
 							"from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.voided = 0")
 						.setString(0, login)
 						.setString(1, login)
-						.setString(2, loginWithoutDash)
+						.setString(2, loginWithDash)
 						.uniqueResult();
 			} catch (HibernateException he) {
 				log.error("Got hibernate exception while logging in: '" + login
@@ -106,48 +106,115 @@ public class HibernateContextDAO implements ContextDAO {
 						e);
 			}
 		}
-
-		if (candidateUser == null)
-			throw new ContextAuthenticationException("User not found: " + login);
 		
-		if (log.isDebugEnabled())
-			log.debug("Candidate user id: " + candidateUser.getUserId());
-		
-		if (password == null)
-			throw new ContextAuthenticationException("Password cannot be null");
-		
-		String passwordOnRecord = (String) session.createSQLQuery(
-				"select password from users where user_id = ?")
-					.addScalar("password", Hibernate.STRING)
+		// only continue if this is a valid username and a nonempty password
+		if (candidateUser != null && password != null) {
+			if (log.isDebugEnabled())
+				log.debug("Candidate user id: " + candidateUser.getUserId());
+			
+			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
+			Long lockoutTime = null;
+			if (lockoutTimeString != null)
+				lockoutTime = Long.valueOf(lockoutTimeString);
+			
+			// if they've been locked out, don't continue with the authentication
+			if (lockoutTime != null) {
+				// unlock them after 5 mins, otherwise reset the timestamp 
+				// to now and make them wait another 5 mins 
+				if (new Date().getTime() - lockoutTime > 300000)
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+				else {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(new Date().getTime()));
+					throw new ContextAuthenticationException("Invalid number of connection attempts. Please try again later.");
+				}
+			}
+			
+			String passwordOnRecord = (String) session.createSQLQuery(
+					"select password from users where user_id = ?")
+						.addScalar("password", Hibernate.STRING)
+						.setInteger(0, candidateUser.getUserId())
+						.uniqueResult();
+			
+			String saltOnRecord = (String) session.createSQLQuery(
+					"select salt from users where user_id = ?")
+					.addScalar("salt", Hibernate.STRING)
 					.setInteger(0, candidateUser.getUserId())
 					.uniqueResult();
-		
-		String saltOnRecord = (String) session.createSQLQuery(
-				"select salt from users where user_id = ?")
-				.addScalar("salt", Hibernate.STRING)
-				.setInteger(0, candidateUser.getUserId())
-				.uniqueResult();
-
-		String hashedPassword = Security.encodeString(password + saltOnRecord);
-		
-		User user = null;
-		
-		if (hashedPassword != null && hashedPassword.equals(passwordOnRecord))
-			user = candidateUser;
-
-		if (user == null) {
-			log.info("Failed login attempt (login=" + login + ") - "
-						+ errorMsg);
-			throw new ContextAuthenticationException(errorMsg);
+	
+			String hashedPassword = Security.encodeString(password + saltOnRecord);
+			
+			// if the username and password match, hydrate the user and return it
+			if (hashedPassword != null && hashedPassword.equals(passwordOnRecord)) {
+				// hydrate the user object
+				candidateUser.getAllRoles().size();
+				candidateUser.getUserProperties().size();
+				candidateUser.getPrivileges().size();
+				
+				// only clean up if the were some login failures, otherwise all should be clean
+				Integer attempts = getUsersLoginAttempts(candidateUser);
+				if (attempts > 0) {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "0");
+					saveUserProperties(candidateUser);
+				}
+				
+				// skip out of the method early (instead of throwing the exception)
+				// to indicate that this is the valid user
+				return candidateUser;
+			}
+			else {
+				// the user failed the username/password, increment their
+				// attempts here and set the "lockout" timestamp if necessary
+				Integer attempts = getUsersLoginAttempts(candidateUser);
+				
+				attempts++;
+				
+				if (attempts >= 5) {
+					// set the user as locked out at this exact time
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(new Date().getTime()));
+				}
+				else {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
+				}
+				
+				saveUserProperties(candidateUser);
+			}
 		}
-
-		// hydrate the user object
-		user.getAllRoles().size();
-		user.getUserProperties().size();
-		user.getPrivileges().size();
-		//
-
-		return user;
+		
+		// throw this exception only once in the same place with the same
+		// message regardless of username/pw combo entered
+		log.info("Failed login attempt (login=" + login + ") - "
+					+ errorMsg);
+		throw new ContextAuthenticationException(errorMsg);
+		
+	}
+	
+	/**
+	 * Call the UserService to save the given user while proxying the
+	 * privileges needed to do so.
+	 * 
+	 * @param user the User to save
+	 */
+	private void saveUserProperties(User user) {
+		sessionFactory.getCurrentSession().update(user);
+	}
+	
+	/**
+	 * Get the integer stored for the given user that is their
+	 * number of login attempts
+	 * 
+	 * @param user the user to check
+	 * @return the # of login attempts for this user defaulting to zero if none defined
+	 */
+	private Integer getUsersLoginAttempts(User user) {
+		String attemptsString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
+		Integer attempts = 0;
+		try {
+			attempts = Integer.valueOf(attemptsString);
+		} catch (NumberFormatException e) {
+			// skip over errors and leave the attempts at zero
+		}
+		return attempts;
 	}
 
 	/**

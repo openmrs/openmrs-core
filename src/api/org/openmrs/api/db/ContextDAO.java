@@ -33,7 +33,7 @@ public interface ContextDAO {
 	 * @return
 	 * @throws ContextAuthenticationException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(noRollbackFor=ContextAuthenticationException.class)
 	public User authenticate(String username, String password)
 		throws ContextAuthenticationException;
 

@@ -11,12 +11,17 @@ The following error happened somewhere on this page:<br/>
 </font>
 
 <%
-out.println("<!--");
-StringWriter sw = new StringWriter();
-PrintWriter pw = new PrintWriter(sw);
-exception.printStackTrace(pw);
-out.print(sw);
-sw.close();
-pw.close();
-out.println("-->");
+if (org.openmrs.api.context.Context.isAuthenticated() == false) {
+	out.println("<!-- There is no stack trace here because you are not authenticated -->");
+}
+else {
+	out.println("<!--");
+	StringWriter sw = new StringWriter();
+	PrintWriter pw = new PrintWriter(sw);
+	exception.printStackTrace(pw);
+	out.print(sw);
+	sw.close();
+	pw.close();
+	out.println("-->");
+}
 %>

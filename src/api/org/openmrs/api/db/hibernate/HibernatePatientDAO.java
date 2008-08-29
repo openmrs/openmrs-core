@@ -207,7 +207,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	    		// hsql doesn't know how to deal with 'regexp'
 	    		if (regex.equals("") || HibernateUtil.isHSQLDialect(sessionFactory)) {
 					String prefix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "");
-					String suffix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "");
+					String suffix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "%");
 	    			StringBuffer likeString = new StringBuffer(prefix).append(identifier)
 	    			                                                  .append(suffix);
 	    			criteria.add(Expression.like("ids.identifier", likeString.toString()));

@@ -825,15 +825,27 @@ public final class OpenmrsConstants {
 	/*
 	 * User properties 
 	 */
-	public static final String USER_PROPERTY_CHANGE_PASSWORD  		= "forcePassword";
-	public static final String USER_PROPERTY_DEFAULT_LOCALE   		= "defaultLocale";
-	public static final String USER_PROPERTY_DEFAULT_LOCATION 		= "defaultLocation";
-	public static final String USER_PROPERTY_SHOW_RETIRED 			= "showRetired";
-	public static final String USER_PROPERTY_SHOW_VERBOSE 			= "showVerbose";
-	public static final String USER_PROPERTY_NOTIFICATION 			= "notification";
-	public static final String USER_PROPERTY_NOTIFICATION_ADDRESS 	= "notificationAddress";
-	public static final String USER_PROPERTY_NOTIFICATION_FORMAT 	= "notificationFormat";		// text/plain, text/html
-
+	public static final String USER_PROPERTY_CHANGE_PASSWORD        = "forcePassword";
+	public static final String USER_PROPERTY_DEFAULT_LOCALE         = "defaultLocale";
+	public static final String USER_PROPERTY_DEFAULT_LOCATION       = "defaultLocation";
+	public static final String USER_PROPERTY_SHOW_RETIRED           = "showRetired";
+	public static final String USER_PROPERTY_SHOW_VERBOSE           = "showVerbose";
+	public static final String USER_PROPERTY_NOTIFICATION           = "notification";
+	public static final String USER_PROPERTY_NOTIFICATION_ADDRESS   = "notificationAddress";
+	public static final String USER_PROPERTY_NOTIFICATION_FORMAT    = "notificationFormat";		// text/plain, text/html
+	
+	/**
+	 * Name of the user_property that stores the number of unsuccessful 
+	 * login attempts this user has made 
+	 */
+	public static final String USER_PROPERTY_LOGIN_ATTEMPTS         = "loginAttempts";
+	
+	/**
+	 * Name of the user_property that stores the time the user was locked
+	 * out due to too many login attempts
+	 */
+	public static final String USER_PROPERTY_LOCKOUT_TIMESTAMP      = "lockoutTimestamp";
+	
 	/**
 	 * A user property name. The value should be a comma-separated ordered 
 	 * list of fully qualified locales within which the user is a proficient 

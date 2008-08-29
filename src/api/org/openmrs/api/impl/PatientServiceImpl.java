@@ -742,7 +742,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			// there is no number in the string, search on name
 			return getPatients(query, null, null);
 		}
-		}
+	}
 	
 	/**
 	 * @see org.openmrs.api.PatientService#findPatient(org.openmrs.Patient)
