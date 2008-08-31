@@ -3,14 +3,14 @@
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
 	<openmrs:hasPrivilege privilege="Manage Modules">
-		<li <c:if test="<%= request.getRequestURI().contains("modules/moduleList") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("modules/moduleList") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/modules/module.list">
 				<spring:message code="Module.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Modules">
-		<li <c:if test="<%= request.getRequestURI().contains("modules/moduleProperties") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("modules/moduleProperties") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/modules/moduleProperties.form">
 				<spring:message code="Module.manageProperties"/>
 			</a>

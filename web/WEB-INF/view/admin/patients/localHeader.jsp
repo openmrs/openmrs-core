@@ -3,7 +3,7 @@
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
 	<openmrs:hasPrivilege privilege="Add Patients,Edit Patients,Delete Patients,View Patients">
-		<li <c:if test="<%= request.getRequestURI().contains("patients/index") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("patients/index") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/patients/">
 				<spring:message code="Patient.manage"/>
 			</a>
@@ -12,7 +12,7 @@
 	<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
 	<c:if test="${showTribe == 'true'}">
 		<openmrs:hasPrivilege privilege="Manage Tribes">
-			<li <c:if test="<%= request.getRequestURI().contains("tribe") %>">class="active"</c:if>>
+			<li <c:if test='<%= request.getRequestURI().contains("tribe") %>'>class="active"</c:if>>
 				<a href="${pageContext.request.contextPath}/admin/patients/tribe.list">
 					<spring:message code="Tribe.manage"/>
 				</a>
@@ -20,7 +20,7 @@
 		</openmrs:hasPrivilege>
 	</c:if>
 	<openmrs:hasPrivilege privilege="Manage Identifier Types">
-		<li <c:if test="<%= request.getRequestURI().contains("patientIdentifierType") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("patientIdentifierType") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/patients/patientIdentifierType.list">
 				<spring:message code="PatientIdentifierType.manage"/>
 			</a>

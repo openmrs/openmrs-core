@@ -4,7 +4,7 @@
 	</li>
 	<c:if test="'Still working on this' == 'true'">
 		<openmrs:hasPrivilege privilege="Manage Relationships">
-			<li <c:if test="<%= request.getRequestURI().contains("relationship") %>">class="active"</c:if>>
+			<li <c:if test='<%= request.getRequestURI().contains("relationship") %>'>class="active"</c:if>>
 				<a href="${pageContext.request.contextPath}/admin/person/relationship.list">
 					<spring:message code="Relationship.manage"/>
 				</a>
@@ -12,14 +12,14 @@
 		</openmrs:hasPrivilege>
 	</c:if>
 	<openmrs:hasPrivilege privilege="Manage Relationship Types">
-		<li <c:if test="<%= request.getRequestURI().contains("relationshipType") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("relationshipType") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/person/relationshipType.list">
 				<spring:message code="RelationshipType.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Person Attribute Types">
-		<li <c:if test="<%= request.getRequestURI().contains("personAttribute") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("personAttribute") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/person/personAttributeType.list">
 				<spring:message code="PersonAttributeType.manage"/>
 			</a>
