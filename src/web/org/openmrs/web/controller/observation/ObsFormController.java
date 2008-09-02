@@ -159,7 +159,7 @@ public class ObsFormController extends SimpleFormController {
 	    	
 			if (obsId != null)
 	    		obs = os.getObs(Integer.valueOf(obsId));
-	    	else if (encounterId != null) {
+	    	else if (StringUtils.hasText(encounterId)) {
 	    		Encounter e = es.getEncounter(Integer.valueOf(encounterId));
 	    		obs = new Obs();
 	    		obs.setEncounter(e);
