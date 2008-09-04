@@ -103,6 +103,8 @@
 
 				<prop key="admin/reports/dataExport.list">dataExportList</prop>
 				<prop key="admin/reports/dataExport.form">dataExportForm</prop>
+				<prop key="admin/reports/rowPerObsDataExport.list">rowPerObsDataExportList</prop>
+				<prop key="admin/reports/rowPerObsDataExport.form">rowPerObsDataExportForm</prop>
 				<prop key="admin/reports/reportObject.list">reportObjectList</prop>
 				<prop key="admin/reports/reportObject.form">reportObjectForm</prop>
 				<prop key="admin/reports/cohorts.list">cohortList</prop>
@@ -853,6 +855,23 @@
 		<property name="commandName"><value>dataExport</value></property>
 		<property name="formView"><value>/admin/reports/dataExportForm</value></property>
 		<property name="successView"><value>dataExport.list</value></property>
+	</bean>
+	
+	<bean id="rowPerObsDataExportList"
+		class="org.openmrs.web.controller.report.export.RowPerObsDataExportListController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>dataExportList</value></property>
+		<property name="formView"><value>/admin/reports/rowPerObsDataExportList</value></property>
+		<property name="successView"><value>rowPerObsDataExport.list</value></property>
+	</bean>
+
+	<bean id="rowPerObsDataExportForm"
+		class="org.openmrs.web.controller.report.export.RowPerObsDataExportFormController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="validator"><ref bean="requireNameValidator" /></property>
+		<property name="commandName"><value>dataExport</value></property>
+		<property name="formView"><value>/admin/reports/rowPerObsDataExportForm</value></property>
+		<property name="successView"><value>rowPerObsDataExport.list</value></property>
 	</bean>
 	<!-- ** /DataExport ** -->
 	<bean id="cohortList"

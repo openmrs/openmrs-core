@@ -157,7 +157,7 @@ public class TestUtil {
      * Print the contents of the given tableName to system.out
      * 
      * Call this from any {@link BaseContextSensitiveTest} child by:
-     * printOutTableContents(getConnection(), "encounter");
+     * TestUtil.printOutTableContents(getConnection(), "encounter");
      * 
      * @param sqlConnection the connection to use
      * @param tableNames the name(s) of the table(s) to print out
