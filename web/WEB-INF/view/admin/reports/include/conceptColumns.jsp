@@ -1,10 +1,10 @@
 <br />
 <table>
-	<tr>
+	<tr class="conceptColumnName">
 		<td><spring:message code="DataExport.columnName"/></td>
 		<td><input type="text" name="conceptColumnName" size="30" /></td>
 	</tr>
-	<tr>
+	<tr class="conceptColumnModifier">
 		<td><spring:message code="DataExport.columnModifier"/></td>
 		<td>
 			<input type="radio" name="conceptModifier" value="any" checked="checked" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.columnModifier.any"/></span>
@@ -15,7 +15,7 @@
 			<input type="text" name="conceptModifierNum" size="3" />
 		</td>
 	</tr>
-	<tr>
+	<tr class="conceptColumnValue">
 		<td><spring:message code="DataExport.columnValue"/></td>
 		<td id="conceptSearchCell">
 			<div id="conceptSearch">
@@ -23,7 +23,7 @@
 			</div>
 		</td>
 	</tr>
-	<tr>
+	<tr class="conceptColumnExtras">
 		<td><spring:message code="DataExport.conceptExtras"/></td>
 		<td>
 			<input type="checkbox" name="conceptExtra" value="obsDatetime" checked="checked" /><span onclick="this.previousSibling.click()"><spring:message code="DataExport.conceptExtra.obsDatetime"/></span>

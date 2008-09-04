@@ -30,6 +30,13 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Add Report Objects,Edit Report Objects,Delete Report Objects,View Report Objects">
+		<li <c:if test="<%= request.getRequestURI().contains("rowPerObsDataExport") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/reports/rowPerObsDataExport.list">
+				<spring:message code="RowPerObsDataExport.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Add Cohorts,Edit Cohorts,Delete Cohorts,View Cohorts">
 		<li <c:if test='<%= request.getRequestURI().contains("cohortList") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/reports/cohorts.list">
