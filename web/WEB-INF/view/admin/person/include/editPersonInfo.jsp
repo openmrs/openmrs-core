@@ -279,7 +279,7 @@
 </tr>
 
 <spring:bind path="voidedBy">
-	<c:if test="${status.value}" >
+	<c:if test="${status.value != null}" >
 		<tr>
 			<td><spring:message code="general.voidedBy"/></td>
 			<td>
