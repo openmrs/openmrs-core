@@ -51,6 +51,7 @@ import ca.uhn.hl7v2.model.v25.datatype.DTM;
 import ca.uhn.hl7v2.model.v25.datatype.IS;
 import ca.uhn.hl7v2.model.v25.datatype.NM;
 import ca.uhn.hl7v2.model.v25.datatype.PL;
+import ca.uhn.hl7v2.model.v25.datatype.SI;
 import ca.uhn.hl7v2.model.v25.datatype.ST;
 import ca.uhn.hl7v2.model.v25.datatype.TM;
 import ca.uhn.hl7v2.model.v25.datatype.TS;
@@ -226,6 +227,13 @@ public class ORUR01Handler implements Application {
 					Obs obs = parseObs(encounter, obx, obr);
 					if (obs != null) {
 						
+						// if we're backfilling an encounter, don't use 
+						// the creator/dateCreated from the encounter
+						if (encounter.getEncounterId() != null) {
+							obs.setCreator(getEnterer(orc));
+							obs.setDateCreated(new Date());
+						}
+						
 						// set the obsGroup on this obs
 						if (obsGrouper != null)
 							// set the obs to the group.  This assumes the group is already
@@ -249,7 +257,7 @@ public class ORUR01Handler implements Application {
 					hl7InError.setErrorDetails(PipeParser.encode(obx,
 							new EncodingCharacters('|', "^~\\&")));
 					hl7InError.setHL7SourceKey(messageControlId);
-					hl7Service.createHL7InError(hl7InError);
+					hl7Service.saveHL7InError(hl7InError);
 				}
 			}
 
@@ -329,24 +337,48 @@ public class ORUR01Handler implements Application {
 	 */
 	private Encounter createEncounter(MSH msh, Patient patient, PV1 pv1, ORC orc)
 			throws HL7Exception {
-		Encounter encounter = new Encounter();
+		
+		// the encounter we will return
+		Encounter encounter = null;
 
-		Date encounterDate = getEncounterDate(pv1);
-		User provider = getProvider(pv1);
-		Location location = getLocation(pv1);
-		Form form = getForm(msh);
-		EncounterType encounterType = getEncounterType(msh, form);
-		User enterer = getEnterer(orc);
-		Date dateEntered = getDateEntered(orc); // ignore this since we have no place in the data model to store it
-
-		encounter.setEncounterDatetime(encounterDate);
-		encounter.setProvider(provider);
-		encounter.setPatient(patient);
-		encounter.setLocation(location);
-		encounter.setForm(form);
-		encounter.setEncounterType(encounterType);
-		encounter.setCreator(enterer);
-		encounter.setDateCreated(new Date());
+		// look for the encounter id in PV1-1
+		SI idType = pv1.getSetIDPV1();
+		Integer encounterId = null;
+		try {
+			encounterId = Integer.valueOf(idType.getValue());
+		}
+		catch (NumberFormatException e) {
+			// pass
+		}
+		
+		// if an encounterId was passed in, assume that these obs are
+		// going to be appended to it.  Fetch the old encounter from
+		// the database
+		if (encounterId != null) {
+			encounter = Context.getEncounterService().getEncounter(encounterId);
+		}
+		else {
+			// if no encounter_id was passed in, this is a new
+			// encounter, create the object
+			encounter = new Encounter();
+			
+			Date encounterDate = getEncounterDate(pv1);
+			User provider = getProvider(pv1);
+			Location location = getLocation(pv1);
+			Form form = getForm(msh);
+			EncounterType encounterType = getEncounterType(msh, form);
+			User enterer = getEnterer(orc);
+//			Date dateEntered = getDateEntered(orc); // ignore this since we have no place in the data model to store it
+	
+			encounter.setEncounterDatetime(encounterDate);
+			encounter.setProvider(provider);
+			encounter.setPatient(patient);
+			encounter.setLocation(location);
+			encounter.setForm(form);
+			encounter.setEncounterType(encounterType);
+			encounter.setCreator(enterer);
+			encounter.setDateCreated(new Date());
+		}
 		
 		return encounter;
 	}
@@ -715,7 +747,7 @@ public class ORUR01Handler implements Application {
 		conceptProposal.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
 		conceptProposal.setEncounter(encounter);
 		conceptProposal.setObsConcept(concept);
-		Context.getConceptService().proposeConcept(conceptProposal);
+		Context.getConceptService().saveConceptProposal(conceptProposal);
 	}
 
 	private void updateHealthCenter(Patient patient, PV1 pv1) {
@@ -750,7 +782,7 @@ public class ORUR01Handler implements Application {
 			patient = Context.getPatientService().getPatient(
 					patient.getPatientId());
 			
-			PersonAttributeType healthCenterAttrType = Context.getPersonService().getPersonAttributeType("Health Center");
+			PersonAttributeType healthCenterAttrType = Context.getPersonService().getPersonAttributeTypeByName("Health Center");
 			
 			if (healthCenterAttrType == null) {
 				log.error("A person attribute type with name 'Health Center' is not defined but patient " + 
@@ -773,7 +805,7 @@ public class ORUR01Handler implements Application {
 				patient.addAttribute(newHealthCenter);
 				
 				// save the patient and their new attribute
-				Context.getPatientService().updatePatient(patient);
+				Context.getPatientService().savePatient(patient);
 			}
 			
 		}
