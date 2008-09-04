@@ -27,12 +27,14 @@ import java.util.Vector;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.handler.ORUR01Handler;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.TestUtil;
 
 import ca.uhn.hl7v2.app.MessageTypeRouter;
 import ca.uhn.hl7v2.model.Message;
@@ -63,6 +65,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(ORU_INITIAL_DATA_XML);
+		System.out.println("Before oru tests");
 	}
 
 	/**
@@ -71,7 +74,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldBasicCreate() throws Exception {
-		authenticate();
 		ObsService obsService = Context.getObsService();
 		
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\rPID|||3^^^^||John3^Doe^||\rPV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080226102537|1^Super User\rOBR|1|||\rOBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\rOBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212";
@@ -107,7 +109,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldGroupObsCreate() throws Exception {
-		authenticate();
 		ObsService obsService = Context.getObsService();
 		
 		//System.out.println("obs size for patient #2: " + obsService.getObservations(new Patient(2), false));
@@ -165,7 +166,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		int groupedObsCount = 0;
 		for (Obs obs : obsForPatient2) {
-			System.out.println("obs: " + obs.getConcept());
+			//System.out.println("obs: " + obs.getConcept());
 			if (groupedConceptIds.contains(obs.getConcept().getConceptId())) {
 				groupedObsCount += 1;
 				assertEquals("All of the parent groups should match", obsGroup, obs.getObsGroup());
@@ -174,6 +175,35 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		// the number of obs that were grouped
 		assertEquals(3, groupedObsCount);
+		
+	}
+	
+	/**
+	 * If an hl7 message contains a pv1-1 value, then assume its
+	 * an encounter_id and that information in the hl7 message
+	 * should be appended to that encounter.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldAppendToExistingEncounter() throws Exception {
+		
+		// there should be an encounter with encounter_id == 3 for this test
+		// to append to
+		assertNotNull(Context.getEncounterService().getEncounter(3));
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080902151831||ORU^R01|yow3LEP6bycnLfoPyI31|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^||Indakasi^Testarius^Ambote||\rPV1|3|O||||||||||||||||||||||||||||||||||||||||||20080831|||||||V\rORC|RE||||||||20080902150000|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|NM|10^CD4 COUNT^99DCT||250|||||||||20080831";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		Patient patient = new Patient(7);
+		Concept question = new Concept(10);
+		// check that the CD4 count obs in the hl7 message was appended to the 
+		// encounter with encounter_id == 3 and _not_ put into a new encounter
+		// that has encounter_id == (autoincremented value)
+		List<Obs> obsForPatient = Context.getObsService().getObservationsByPersonAndConcept(patient, question);
+		assertEquals(1, obsForPatient.size()); // there should be 1 obs now for this patient
+		assertEquals(new Encounter(3), obsForPatient.get(0).getEncounter());
 		
 	}
 
