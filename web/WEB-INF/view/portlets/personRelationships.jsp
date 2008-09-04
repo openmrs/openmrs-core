@@ -126,22 +126,22 @@
 							<td style="text-align: center; white-space: nowrap" align="center" colspan="3"><a href="javascript:handlePickRelType('${relType.relationshipTypeId}', '${relType.aIsToB}')">${relType.aIsToB}</a></td>
 						</c:when>
 						<c:otherwise>
-							<td style="text-align: right; white-space: nowrap; width: 49%"><a href="javascript:handlePickRelType('${relType.relationshipTypeId}', '${relType.aIsToB}')">${relType.aIsToB}</a></td>
+							<td style="text-align: right; white-space: nowrap; width: 49%"><a onclick="handlePickRelType('${relType.relationshipTypeId}', '${relType.aIsToB}')">${relType.aIsToB}</a></td>
 							<td width="2%">:</td>
-							<td style="text-align: left; white-space: nowrap; width: 49%"><a href="javascript:handlePickRelType('${relType.relationshipTypeId}::reverse', '${relType.bIsToA}')">${relType.bIsToA}</a></td>
+							<td style="text-align: left; white-space: nowrap; width: 49%"><a onclick="handlePickRelType('${relType.relationshipTypeId}::reverse', '${relType.bIsToA}')">${relType.bIsToA}</a></td>
 						</c:otherwise>
 					</c:choose>
 				</tr>
 			</c:forEach>
 		</table>
 
-		<span id="add_rel_details" style="display: none">		
+		<span id="add_rel_details" style="display: none">
 			${model.person.personName}
 			<spring:message code="Relationship.possessive"/>
 			<i><span id="add_relationship_name"><spring:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
 			<spring:message code="Relationship.target"/>
-			<openmrs_tag:personField formFieldName="add_rel_target" searchLabel="Find a Person" callback="callbackAfterSelect" canAddNewPerson="true" />
+			<openmrs_tag:personField formFieldName="add_rel_target" searchLabel="Find a Person" useOnKeyDown="${model.useOnKeyDown}" callback="callbackAfterSelect" canAddNewPerson="true" />
 		</span>
 		
 		<br/>

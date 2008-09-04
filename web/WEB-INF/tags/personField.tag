@@ -8,6 +8,7 @@
 <%@ attribute name="linkUrl" required="false" %>
 <%@ attribute name="callback" required="false" %>
 <%@ attribute name="canAddNewPerson" required="false" %>
+<%@ attribute name="useOnKeyDown" required="false" %>
 
 <openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
@@ -56,7 +57,7 @@
 </script>
 
 <div class="personSearchLabel">${searchLabel}</div>
-<div dojoType="PersonSearch" widgetId="${formFieldName}_search" personId="${initialValue}" roles="${roles}" canAddNewPerson="${canAddNewPerson}"></div>
+<div dojoType="PersonSearch" widgetId="${formFieldName}_search" personId="${initialValue}" roles="${roles}" canAddNewPerson="${canAddNewPerson}" useOnKeyDown="${useOnKeyDown}" ></div>
 <c:if test="${not empty searchLabelCode}">
 	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" arguments="${searchLabelArguments}" />" ></div>
 </c:if> 
