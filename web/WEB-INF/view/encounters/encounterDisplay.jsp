@@ -114,9 +114,14 @@
 										<c:set var="obsGrouper" value="${matrixEntry.key}"/>
 										<c:set var="obsRow" value="${matrixEntry.value}"/>
 										<tr>
-											<c:forEach var="obs" items="${obsRow}">
+											<c:forEach var="obsList" items="${obsRow}">
 												<td>
-													<span class="encounterViewObsGroup"><openmrs:format obsValue="${obs}" /></span>
+													<span class="encounterViewObsGroup">
+														<c:forEach var="obs" items="${obsList}" varStatus="obsVarStatus">
+															<openmrs:format obsValue="${obs}" />
+															<c:if test="${!obsVarStatus.last}">--</c:if>
+														</c:forEach>
+													</span>
 												</td>
 											</c:forEach>
 										</tr>
