@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Obs;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
 import org.openmrs.test.testutil.SkipBaseSetup;
 import org.openmrs.web.controller.encounter.EncounterDisplayController;
@@ -64,6 +65,53 @@ public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 		Map<Integer, List<FieldHolder>> pages = (Map<Integer, List<FieldHolder>>)model.get("pages");
 		Assert.assertNotNull(pages);
 		
+	}
+	
+	/**
+	 * If there are multiple obs in an obs group that share the 
+	 * same concept (question), then they should each be able to
+	 * be displayed
+	 * 
+	 * Verifies fix for bug #1025
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings({ "unchecked" })
+    @Test
+    public void shouldAllowMoreThanOneObsPerConceptInObsGroup() throws Exception {
+		executeDataSet("org/openmrs/web/test/encounter/include/EncounterDisplayControllerTest-multiconceptsinobsGroup.xml");
+		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setParameter("encounterId", "5");
+		EncounterDisplayController controller = new EncounterDisplayController();
+		ModelAndView modelAndView = controller.handleRequest(request, new MockHttpServletResponse());
+		
+		Map<String, Object> model = (Map<String, Object>)modelAndView.getModel().get("model");
+		
+		// make sure there is a "pages" element on the page
+		Map<Integer, List<FieldHolder>> pages = (Map<Integer, List<FieldHolder>>)model.get("pages");
+		Assert.assertNotNull(pages);
+		
+		// this should be the only page
+		List<FieldHolder> fieldHoldersOnPage = pages.get(999);
+		
+		for (FieldHolder fieldHolder : fieldHoldersOnPage) {
+			// the first and only field holder should be an obs group
+			Assert.assertTrue(fieldHolder.isObsGrouping());
+			
+			Map<Obs, List<List<Obs>>> matrix = fieldHolder.getObsGroupMatrix();
+			Assert.assertEquals(1, matrix.keySet().size());
+			
+			List<List<Obs>> listOfCells = matrix.get(new Obs(16));
+			
+			// there should be only one column/cell
+			List<Obs> firstAndOnlyCell = listOfCells.get(0);
+			
+			// within that cell, there should be two obs: #17 and #18
+			Assert.assertEquals(2, firstAndOnlyCell.size());
+			Assert.assertTrue(firstAndOnlyCell.contains(new Obs(17)));
+			Assert.assertTrue(firstAndOnlyCell.contains(new Obs(18)));
+		}
 	}
 
 }

@@ -313,15 +313,19 @@ public class EncounterDisplayController implements Controller {
 		 * 
 		 * @return a matrix of columns
 		 */
-		public Map<Obs, LinkedList<Obs>> getObsGroupMatrix() {
-			Map<Obs, LinkedList<Obs>> matrix = new HashMap<Obs, LinkedList<Obs>>();
+		public Map<Obs, List<List<Obs>>> getObsGroupMatrix() {
+			Map<Obs, List<List<Obs>>> matrix = new HashMap<Obs, List<List<Obs>>>();
 			
 			for (Obs obsGrouper : obs) {
-				LinkedList<Obs> obsRow = new LinkedList<Obs>();
+				List<List<Obs>> obsRow = new LinkedList<List<Obs>>();
 				// create a hashmap of concept-->obs for these groupedObs
-				Map<Concept, Obs> conceptToObsMap = new HashMap<Concept, Obs>();
+				Map<Concept, List<Obs>> conceptToObsMap = new HashMap<Concept, List<Obs>>();
 				for (Obs groupedObs : obsGrouper.getGroupMembers()) {
-					conceptToObsMap.put(groupedObs.getConcept(), groupedObs);
+					List<Obs> obsMatchingThisConcept = conceptToObsMap.get(groupedObs.getConcept());
+					if (obsMatchingThisConcept == null)
+						obsMatchingThisConcept = new LinkedList<Obs>();
+					obsMatchingThisConcept.add(groupedObs);
+					conceptToObsMap.put(groupedObs.getConcept(), obsMatchingThisConcept);
 				}
 				
 				// loop over each possible concept and put the obs in the 
@@ -369,7 +373,7 @@ public class EncounterDisplayController implements Controller {
 		
 		/**
 		 * Use this row's FormField to make comparisons about where to put
-		 * it in relation to of FieldHolder's
+		 * it in relation to the FieldHolder's
 		 * 
 		 * @see org.openmrs.FormField#compareTo(org.openmrs.FormField)
 		 */
