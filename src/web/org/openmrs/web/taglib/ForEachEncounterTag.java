@@ -50,10 +50,10 @@ public class ForEachEncounterTag extends BodyTagSupport {
 
 	public int doStartTag() {
 		if (encounters == null || encounters.isEmpty()) {
-			log.error("ForEachEncounterTag skipping body due to encounters param = " + encounters);
+			log.error("ForEachEncounterTag skipping body due to 'encounters' param = " + encounters);
 			return SKIP_BODY;
 		}
-		// First retrieve all encounters matching the passed concept id, if provided.
+		// First retrieve all encounters matching the passed encounter type id, if provided.
 		// If not provided, return all encounters
 		matchingEncs = new ArrayList<Encounter>();
 		for (Iterator<Encounter> i=encounters.iterator(); i.hasNext();) {
