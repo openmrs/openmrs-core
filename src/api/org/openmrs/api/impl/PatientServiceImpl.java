@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -253,81 +254,71 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * @see org.openmrs.api.PatientService#checkPatientIdentifier(org.openmrs.PatientIdentifier)
 	 */
-	public void checkPatientIdentifier(PatientIdentifier pi)
-	        throws PatientIdentifierException {
+	public void checkPatientIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
 		
-		// skip and remove invalid/empty identifiers
-		if (pi == null)
-			throw new BlankIdentifierException("Identifier cannot be null or blank",
-			                                   pi);
-		else if (pi.getIdentifier() == null)
-			throw new BlankIdentifierException("Identifier cannot be null or blank",
-			                                   pi);
-		else if (pi.getIdentifier().length() == 0)
-			throw new BlankIdentifierException("Identifier cannot be null or blank",
-			                                   pi);
+		// Check input parameters
+		if (pi == null) {
+			throw new BlankIdentifierException("Patient Identifier cannot be null", pi);
+		}
+		if (StringUtils.isBlank(pi.getIdentifier())) {
+			throw new BlankIdentifierException("Identifier cannot be null or blank");
+		}
 		
-		// do not do any more checks if this identifier is voided
-		if (pi.isVoided() == false) {
-			
-			// check is already in use by another patient
+		// Only validate if the PatientIdentifier is not voided
+		if (!pi.isVoided()) {
+
+			// Check is already in use by another patient
 			Patient p = identifierInUse(pi);
 			if (p != null) {
-				throw new IdentifierNotUniqueException("Identifier "
-				        + pi.getIdentifier() + " already in use by patient #"
-				        + p.getPatientId(), pi);
+				throw new IdentifierNotUniqueException("Identifier " + pi.getIdentifier() + " already in use by patient #" + p.getPatientId(), pi);
 			}
+			
+			// Check that this is a identifier is valid
+			checkPatientIdentifier(pi.getIdentifierType(), pi.getIdentifier());
+		}
+	}
 	
-			// also validate regular expression - if it exists
-			PatientIdentifierType pit = pi.getIdentifierType();
-			String identifier = pi.getIdentifier();
-	
-			String regExp = pit.getFormat();
-			if ( regExp != null ) {
-				if ( regExp.length() > 0 ) {
-					// if this ID has a valid corresponding regular expression,
-					// check against it
-					log.debug("Trying to match " + identifier + " and "
-					        + regExp);
-					if ( !identifier.matches(regExp) ) {
-						log.debug("The two DO NOT match");
-						if ( pit.getFormatDescription() != null ) {
-							if (pit.getFormatDescription().length() > 0)
-								throw new InvalidIdentifierFormatException("Identifier ["
-								                                                   + identifier
-								                                                   + "] does not match required format: "
-								                                                   + pit.getFormatDescription(),
-								                                           pi);
-							else
-								throw new InvalidIdentifierFormatException("Identifier ["
-								                                                   + identifier
-								                                                   + "] does not match required format: "
-								                                                   + pit.getFormat(),
-								                                           pi);
-						} else {
-							throw new InvalidIdentifierFormatException("Identifier ["
-							                                                   + identifier
-							                                                   + "] does not match required format: "
-							                                                   + pit.getFormat(),
-							                                           pi);
-						}
-					} else {
-						log.debug("The two match!!");
-					}
-				}
+	/**
+	 * @see org.openmrs.api.PatientService#checkPatientIdentifier(org.openmrs.PatientIdentifierType, java.lang.String)
+	 */
+	public void checkPatientIdentifier(PatientIdentifierType pit, String identifier) {
+		
+		log.debug("Checking identifier: " + identifier + " for type: " + pit);
+		
+		// Validate input parameters
+		if (pit == null) {
+			throw new BlankIdentifierException("Patient Identifier Type cannot be null");
+		}
+		if (StringUtils.isBlank(identifier)) {
+			throw new BlankIdentifierException("Identifier cannot be null or blank");
+		}
+		
+		// Check identifier against regular expression format
+		String regExp = pit.getFormat();
+		if (StringUtils.isNotBlank(regExp)) {
+			log.debug("Trying to match identifier: " + identifier + " against expression: " + regExp);
+			if (!identifier.matches(regExp)) {
+				log.debug("The two DO NOT match");
+				String formatStr = StringUtils.isNotBlank(pit.getFormatDescription()) ? pit.getFormatDescription() : regExp;
+				throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + formatStr);
 			}
-	
-			// validate identifier
-			if(pit.hasValidator()){
-				IdentifierValidator piv = getIdentifierValidator(pit.getValidator());
+			log.debug("The two match!!");
+		}
+
+		// Check identifier against IdentifierValidator
+		if(pit.hasValidator()){
+			IdentifierValidator piv = getIdentifierValidator(pit.getValidator());
 			try {
-					if(!piv.isValid(identifier))
-					throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, pi);
-				}catch(UnallowedIdentifierException e){
-					throw new InvalidCheckDigitException("Identifier " + identifier +" is not appropriate for validation scheme " + piv.getName() + ".", pi);
+				if(!piv.isValid(identifier)) {
+					throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier);
 				}
+			}
+			catch(UnallowedIdentifierException e) {
+				throw new InvalidCheckDigitException("Identifier " + identifier +" is not appropriate for validation scheme " + piv.getName());
 			}
 		}
+		
+		log.debug("The identifier check was successful");
 	}
 	
 	/**
