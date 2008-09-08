@@ -31,7 +31,8 @@
 			for (var i in selects)
 				if (selects[i] && selects[i].name == "identifierType") {
 					var selectedOpt;
-					for (o in selects[i].options) {
+					var thisSelect = selects[i];
+					for (var o = 0; o < thisSelect.options.length ;o++) {
 						if (selects[i].options[o].value == type) {
 							selectedOpt = selects[i].options[o];
 							selectedOpt.selected = true;
@@ -57,7 +58,8 @@
 			for (var i in selects)
 				if (selects[i] && selects[i].name == "location") {
 					var selectedOpt;
-					for (o in selects[i].options) {
+					var thisSelect = selects[i];
+					for (var o = 0; o < thisSelect.options.length ;o++) {
 						if (selects[i].options[o].value == location) {
 							selectedOpt = selects[i].options[o];
 							selectedOpt.selected = true;
