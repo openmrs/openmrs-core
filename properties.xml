@@ -51,7 +51,6 @@
         <fileset dir="${commons-collections.dir}" includes="*.jar"/>
         <fileset dir="${commons-io.dir}" includes="*.jar"/>
         <fileset dir="${commons-httpclient.dir}" includes="*.jar" />
-    	<fileset dir="${commons-lang.dir}" includes="*.jar"/>
         <fileset dir="${commons-logging.dir}" includes="*.jar"/>
         <fileset dir="${dom4j.dir}" includes="*.jar"/>
         <fileset dir="${hibernate.dir}" includes="*.jar"/>

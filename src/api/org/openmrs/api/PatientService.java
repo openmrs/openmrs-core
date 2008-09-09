@@ -422,18 +422,6 @@ public interface PatientService extends OpenmrsService {
 	        throws PatientIdentifierException;
 
 	/**
-	 * Convenience method to validate a patient identifier.  Checks for things like blank
-	 * identifiers, invalid check digits, etc
-	 * 
-	 * @param type - the {@link PatientIdentifierType} to validate against
-	 * @param identifier - the identifier to check against the passed {@link PatientIdentifierType}
-	 * @see #checkPatientIdentifier(PatientIdentifier)
-	 * @throws PatientIdentifierException if the identifier is invalid
-	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_IDENTIFIERS })
-	public void checkPatientIdentifier(PatientIdentifierType type, String identifier) throws PatientIdentifierException;
-
-	/**
 	 * Convenience method to validate all identifiers for a given patient
 	 * 
 	 * @param patient patient for which to validate identifiers
