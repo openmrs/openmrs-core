@@ -82,16 +82,15 @@
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
 	<logger name="org.openmrs.api.db.hibernate.HibernateSynchronizationInterceptor">
-		<level value="DEBUG" />
-		<appender-ref ref="CONSOLE" />
+		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
 	<logger name="org.openmrs.api.impl.SynchronizationIngestServiceImpl">
-		<level value="DEBUG" />
+		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE"/>
 	</logger>
 	<logger name="org.openmrs.synchronization.SyncUtil">
-		<level value="DEBUG" />
+		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE"/>
 	</logger>
 	
