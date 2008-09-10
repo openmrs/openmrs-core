@@ -50,7 +50,7 @@ try {
 	
 	<br /><br />
 	
-	<a href="javascript:showOrHide()" id="toggleLink" style="font-size: 12px;">Show stack trace</a>
+	<a href="#" onclick="showOrHide()" id="toggleLink" style="font-size: 12px;">Show stack trace</a>
 	<br />
 	<div id="stackTrace">
 	<%

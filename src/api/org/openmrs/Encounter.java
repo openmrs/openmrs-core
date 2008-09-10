@@ -92,6 +92,10 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
 	 * @see java.lang.Object#equals(java.lang.Object)
+	 * 
+	 * @should equal encounter with same encounter id
+	 * @should not equal encounter with different encounter id
+	 * @should fail on null
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Encounter) {
@@ -110,6 +114,9 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	
 	/**
 	 * @see java.lang.Object#hashCode()
+	 * 
+	 * @should have same hashcode when equal
+	 * @should have different hash code when not equal
 	 */
 	public int hashCode() {
 		if (this.getEncounterId() == null) return super.hashCode();

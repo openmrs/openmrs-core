@@ -46,8 +46,9 @@ public interface ContextDAO {
 	 * @should not authenticate given non null password when password in database is null
 	 * @should not authenticate when password in database is empty
 	 * @should give identical error messages between username and password mismatch
+	 * @should lockout after five attempts
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(noRollbackFor=ContextAuthenticationException.class)
 	public User authenticate(String username, String password)
 		throws ContextAuthenticationException;
 

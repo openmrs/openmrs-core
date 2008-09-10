@@ -243,7 +243,9 @@ dojo.widget.defineWidget(
         showNewPersonForm: function( ) {
                 document.getElementById("newPersonForm").style.display = "";
                 document.getElementById("newPersonButton").style.display = "none";
-                document.getElementById("givenName").focus();
+                var givenNameInput = document.getElementById("givenName");
+            	//if (!givenNameInput.disabled && givenNameInput.display) // in case its not loaded yet (ie6)
+            	//	givenNameInput.focus();
                 var errors = document.getElementsByName("error");
                 for (var i=0; i<errors.length; i++)
                     errors[i].style.display = "none";
@@ -252,7 +254,9 @@ dojo.widget.defineWidget(
         hideNewPersonForm: function( ) {
                 document.getElementById("newPersonForm").style.display = "none";
                 document.getElementById("newPersonButton").style.display = "";
-                document.getElementById("newPersonButton").focus();
+                var newPersonButton = document.getElementById("newPersonButton");
+                //if (!newPersonButton.disabled && newPersonButton.display) // in case its not loaded yet (ie6) 
+                //	newPersonButton.focus();
         },
 
         isFutureDate: function(birthdate) {
