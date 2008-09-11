@@ -544,7 +544,8 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS           = "report.xmlMacros";
 	public static final String GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS      = "dashboard.regimen.standardRegimens";
 	public static final String GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR = "patient.defaultPatientIdentifierValidator";	
-	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES = "patient_identifier.importantTypes";
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES   = "patient_identifier.importantTypes";
+	public static final String GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER        = "encounterForm.obsSortOrder";
 	
 	/**
 	 * These properties (and default values) are set if not found in the database 
@@ -728,6 +729,8 @@ public final class OpenmrsConstants {
         props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR, LUHN_IDENTIFIER_VALIDATOR, "This property sets the default patient identifier validator.  The default validator is only used in a handful of (mostly legacy) instances.  For example, it's used to generate the isValidCheckDigit calculated column and to append the string \"(default)\" to the name of the default validator on the editPatientIdentifierType form."));
 
         props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES, "", "A comma delimited list of PatientIdentifier names : PatientIdentifier locations that will be displayed on the patient dashboard.  E.g.: TRACnet ID:Rwanda,ELDID:Kenya"));
+        
+        props.add(new GlobalProperty(GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER, "number", "The sort order for the obs listed on the encounter edit form.  'number' sorts on the associated numbering from the form schema.  'weight' sorts on the order displayed in the form schema."));
         
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
