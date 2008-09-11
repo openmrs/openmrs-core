@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
 <openmrs:require
-	privilege="Add Patient Searches,Edit Patient Searches,Delete Patient Searches,View Patient Searches"
+	privilege="View Patient Searches"
 	otherwise="/login.htm" redirect="/admin/reports/patientSearch.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
