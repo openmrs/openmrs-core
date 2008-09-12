@@ -43,7 +43,7 @@ public class SchedulerFormController extends SimpleFormController {
 	 * Logger for this class and subclasses 
 	 */
 	protected static final Log log = LogFactory.getLog(SchedulerFormController.class);
-
+	
 	// Move this to message.properties or OpenmrsConstants
 	public static String DEFAULT_DATE_PATTERN = "MM/dd/yyyy HH:mm:ss";
 	public static DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_PATTERN);

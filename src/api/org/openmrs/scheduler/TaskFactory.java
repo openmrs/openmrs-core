@@ -11,20 +11,16 @@ import org.openmrs.scheduler.tasks.*;
  */
 public class TaskFactory {
 
-	/**
-	 *  Singleton instance of the schedulable factory
-	 */
+	/** Singleton instance of the schedulable factory */
 	private final static TaskFactory factory = new TaskFactory();
 	
-	/**
-	 * Logger 
-	 */
+	/** Logger  */
 	private static Log log = LogFactory.getLog(TaskFactory.class);
 	  
-	/**
-	 * Private constructor 
-	 */
+	/** Private constructor */
 	private TaskFactory() { }
+	
+	
 	
 	/**
 	 * Gets an instance of the schedulable factory
@@ -65,7 +61,7 @@ public class TaskFactory {
 			if (log.isDebugEnabled())
 				log.debug("Full error trace of ClassNotFoundException", cnfe);
 			
-			return null;
+			throw new SchedulerException(cnfe);
 		}
 		catch (Exception e) {
 			if (log.isDebugEnabled()) {

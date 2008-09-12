@@ -13,34 +13,47 @@
  */
 package org.openmrs.scheduler.tasks;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.TaskDefinition;
 
 /**
  *  Implementation of the stateful task that sends an email.
  *
  */
-public class OpenmrsTestTask extends AbstractTask { 
+public class TestTask extends AbstractTask { 
 
+	private static int executionCount = 0;
+	
 	// Logger 
-	private Log log = LogFactory.getLog( OpenmrsTestTask.class );
+	private Log log = LogFactory.getLog( TestTask.class );
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(org.openmrs.scheduler.TaskConfig)
 	 */
-	public void initialize(TaskDefinition config) { 
-		log.info("Initializing task ...");
+	public void initialize(TaskDefinition taskDefinition) { 
+		log.info("Initializing task " + taskDefinition );
 	} 
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
-	public void execute() {		
-		log.info("Running task ...");
+	@Override
+	public void execute() { 
+		log.info("Executing task at " + new Date());
+		
+		// Throw a runtime exception once every ten executions
+		if (++executionCount % 10 == 0) { 
+			log.info("Throwing a runtime exception in an attempt to break the scheduler");
+			throw new RuntimeException();			
+		}
+		
 		if (!Context.isAuthenticated()) { 
 			log.info("Authenticating ...");
 			authenticate();

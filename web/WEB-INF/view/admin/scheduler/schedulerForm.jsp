@@ -140,6 +140,17 @@ window.onload = init;
 
 <h2><spring:message code="Scheduler.header"/></h2>
 
+
+<spring:hasBindErrors name="concept">
+	<spring:message code="fix.error"/>
+	<div class="error">
+		<c:forEach items="${errors.allErrors}" var="error">
+			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${error} -->
+		</c:forEach>
+	</div>
+	<br />
+</spring:hasBindErrors>
+
 <spring:hasBindErrors name="task">
 	<spring:message code="fix.error"/>
 	<br />
