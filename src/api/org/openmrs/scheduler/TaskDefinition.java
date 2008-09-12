@@ -68,8 +68,7 @@ public class TaskDefinition {
 	/**
 	 * Public constructor
 	 */
-	public TaskDefinition(Integer id, String name, String description,
-	        String schedulableClass) {
+	public TaskDefinition(Integer id, String name, String description, String taskClass) {
 		this();
 		log.debug("Creating taskconfig: " + id);
 		this.id = id;
@@ -78,32 +77,7 @@ public class TaskDefinition {
 		this.taskClass = taskClass;
 	}
 
-	/**
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof TaskDefinition) {
-			TaskDefinition other = (TaskDefinition) obj;
-			if (this.getId() != null) {
-				this.getId().equals(other.getId());
-			}
-		}
-		return false;
-	}
 
-	/**
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		if (this.getId() == null) {
-			return super.hashCode();
-		}
-
-		Integer hash = 5;
-		return (this.getId() * hash);
-	}
 
 	/**
 	 * Get the task identifier.
@@ -294,6 +268,30 @@ public class TaskDefinition {
 		this.properties.put(key, value);
 	}
 
+	
+	/**
+	 * Convenience method that asks SchedulerUtil for 
+	 * it's next execution time.  
+	 * 
+	 * @return
+	 */
+	public Date getNextExecutionTime() { 
+		return SchedulerUtil.getNextExecution(this);
+	}
+	
+	/**
+	 * Convenience method to calculate the seconds until the next execution time.
+	 * 
+	 * @return
+	 */
+	public long getSecondsUntilNextExecutionTime() { 
+		return (getNextExecutionTime().getTime() - System.currentTimeMillis()) / 1000;
+		
+	}
+	
+	// ==================================   Metadata ============================
+	
+	
 	/**
 	 * @return Returns the creator.
 	 */
@@ -349,5 +347,52 @@ public class TaskDefinition {
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
+	
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof TaskDefinition) {
+			TaskDefinition other = (TaskDefinition) obj;
+			if (this.getId() != null) {
+				this.getId().equals(other.getId());
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		if (this.getId() == null) {
+			return super.hashCode();
+		}
+
+		Integer hash = 5;
+		return (this.getId() * hash);
+	}	
+
+	/**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+    	return 
+    		"[TaskDefinition " + 
+    			" id=" + getId() + 
+    			" name=" + getName() + 
+    			" class=" + getTaskClass() + 
+    			" startTime=" + getStartTime() + 
+    			" repeatInterval=" + this.getRepeatInterval() + 
+    			" secondsUntilNext=" + this.getSecondsUntilNextExecutionTime() + 
+    		"]";
+    }
+	
+	
+	
+	
 
 }

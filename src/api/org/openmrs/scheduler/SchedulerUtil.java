@@ -13,8 +13,11 @@
  */
 package org.openmrs.scheduler;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -36,13 +39,13 @@ public class SchedulerUtil {
 
 		String val = p.getProperty("scheduler.username", null);
 		if (val != null) {
-			SchedulerConstants.SCHEDULER_USERNAME = val;
+			SchedulerConstants.SCHEDULER_DEFAULT_USERNAME = val;
 			log.warn("Deprecated runtime property: scheduler.username. Value set in global_property in database now.");
 		}		
 
 		val = p.getProperty("scheduler.password", null);
 		if (val != null) {
-			SchedulerConstants.SCHEDULER_PASSWORD = val;
+			SchedulerConstants.SCHEDULER_DEFAULT_PASSWORD = val;
 			log.warn("Deprecated runtime property: scheduler.username. Value set in global_property in database now.");
 		}
 		
@@ -84,6 +87,65 @@ public class SchedulerUtil {
 		
 	}
 	
+	/**
+	 * Sends an email with system information and the given exception 
+	 * 
+	 * @param error
+	 */
+	public static void sendSchedulerError(Exception error) { 
+		try { 
+			
+			Boolean emailIsEnabled = Boolean.valueOf(
+				Context.getAdministrationService().getGlobalProperty(SchedulerConstants.SCHEDULER_ADMIN_EMAIL_ENABLED_PROPERTY));
+			
+			if (emailIsEnabled) { 
+				// Email addresses seperated by commas
+				String recipients = 
+					Context.getAdministrationService().getGlobalProperty(SchedulerConstants.SCHEDULER_ADMIN_EMAIL_PROPERTY);
+				
+				// Send message if 
+				if (recipients != null) { 
+					
+					// TODO need to use the default sender for the application 
+					String sender = SchedulerConstants.SCHEDULER_DEFAULT_FROM;
+					String subject = SchedulerConstants.SCHEDULER_DEFAULT_SUBJECT + " : " + error.getClass().getName();
+					String message = new String();					
+					message += "\n\nStacktrace\n============================================\n";
+					message += SchedulerUtil.getExceptionAsString(error);
+					message += "\n\nSystem Variables\n============================================\n";
+					for(Map.Entry<String, String> entry : Context.getAdministrationService().getSystemVariables().entrySet()) { 
+						message += entry.getKey() + " = " + entry.getValue() + "\n";						
+					}	
+					
+					// TODO need to the send the IP information for the server instance that is running this task
+					
+					
+					log.info("Sending scheduler error email to [" + recipients + "] from [" + sender + "] with subject [" + subject + "]:\n" + message );
+					Context.getMessageService().sendMessage(recipients, sender, subject, message);					
+				}
+
+			}
+			
+		} catch (Exception e) { 
+			// Log, but otherwise suppress errors
+			log.warn("Could not send scheduler error email: ", e);
+		}
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param e
+	 * @return
+	 */
+	public static String getExceptionAsString(Exception e) { 
+		StringWriter stringWriter = new StringWriter();
+	    PrintWriter printWriter = new PrintWriter(stringWriter, true);
+	    e.printStackTrace(printWriter);
+	    printWriter.flush();
+	    stringWriter.flush(); 
+	    return stringWriter.toString(); 
+	}
 	
 	/**
 	 * Gets the next execution time based on the initial start time (possibly years ago, depending on when
@@ -106,8 +168,8 @@ public class SchedulerUtil {
 	 * @return	the next "future" execution time for the given task
 	 */
 	public static Date getNextExecution(TaskDefinition taskDefinition) { 
-		Calendar nextTime = Calendar.getInstance();
-
+		Calendar nextTime = Calendar.getInstance();		
+		
 		try { 
 			Date firstTime = taskDefinition.getStartTime();
 			
@@ -135,13 +197,8 @@ public class SchedulerUtil {
 												
 				nextTime.setTime(new Date(currentTime.getTime() + additional));
 
-				log.info("Start time: " + firstTime);
-				log.info("Curr time : " + currentTime);
-				log.info("Next time : " + nextTime.getTime());				
+				log.debug("The task " + taskDefinition.getName() + " will start at " + nextTime.getTime());			
 			}
-
-
-		
 		} 
 		catch (Exception e) { 
 			log.error("Failed to get next execution time for " + taskDefinition.getName());

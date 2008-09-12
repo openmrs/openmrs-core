@@ -208,12 +208,16 @@
 		<property name="formView"><value>/admin/scheduler/schedulerList</value></property>
 		<property name="successView"><value>scheduler.list</value></property>
 	</bean>
-
-	<bean id="schedulerFormController"
-		class="org.openmrs.scheduler.web.controller.SchedulerFormController">
+	
+	
+	<bean id="taskValidator" class="org.openmrs.scheduler.web.controller.SchedulerFormValidator" />
+	<bean id="schedulerFormController" class="org.openmrs.scheduler.web.controller.SchedulerFormController">
 		<property name="commandName"><value>task</value></property>
 		<property name="formView"><value>/admin/scheduler/schedulerForm</value></property>
 		<property name="successView"><value>scheduler.list</value></property>
+		<property name="validator">
+			<ref bean="taskValidator"/>
+		</property>
 	</bean>
 	<!-- ** /Scheduler ** -->
 

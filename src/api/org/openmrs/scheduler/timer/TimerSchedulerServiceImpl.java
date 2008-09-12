@@ -179,7 +179,8 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 			// TODO Do we ever want the same task definition to run more than once?
 			TimerSchedulerTask schedulerTask = scheduledTasks.get(taskDefinition.getId());			
 			if (schedulerTask != null) {
-				//schedulerTask.cancel();	
+				//schedulerTask.cancel();					
+				log.info("Shutting down the existing instance of this task to avoid conflicts!!");
 				schedulerTask.shutdown();
 			} 
 				
@@ -200,12 +201,14 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 					long repeatInterval = taskDefinition.getRepeatInterval() * SchedulerConstants.SCHEDULER_MILLIS_PER_SECOND;
                		
 					if (taskDefinition.getStartTime()!=null) {
-						// Start task at fixed rate at given future date and repeat as directed 							
-						log.info("Starting task at " + taskDefinition.getStartTime());
-						
 						// Need to calculate the "next execution time" because the scheduled time is most likely in the past
 						// and the JDK timer will run the task X number of times from the start time until now to catch up.
 						Date nextTime = SchedulerUtil.getNextExecution(taskDefinition);
+
+						// Start task at fixed rate at given future date and repeat as directed 							
+						log.info("Starting task ... the task will execute for the first time at " + nextTime);
+						
+						// Schedule the task to run at a fixed rate
 						timerScheduler.scheduleAtFixedRate(schedulerTask,
 						                                   nextTime,
 						                                   repeatInterval);	
@@ -465,6 +468,8 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 
 	/**
      * @see org.openmrs.scheduler.SchedulerService#getStatus(java.lang.Integer)
+     * 
+     * TODO internationalization of string status messages 
      */
     public String getStatus(Integer id) {
     	
