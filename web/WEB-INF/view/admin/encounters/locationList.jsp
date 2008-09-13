@@ -19,18 +19,14 @@
 	<table>
 		<tr>
 			<th> </th>
-			<th> <spring:message code="general.id" /> </th>
 			<th> <spring:message code="general.name" /> </th>
 			<th> <spring:message code="general.description" /> </th>
 		</tr>
 		<c:forEach var="location" items="${locationList}">
 			<tr>
 				<td valign="top"><input type="checkbox" name="locationId" value="${location.locationId}"></td>
-				<td valign="top">${location.id}</td>
 				<td valign="top">
-					<a href="location.form?locationId=${location.locationId}">
-					   ${location.name}
-					</a>
+					<a href="location.form?locationId=${location.locationId}">${location.name}</a> (${location.locationId})					
 				</td>
 				<td valign="top">${location.description}</td>
 			</tr>
