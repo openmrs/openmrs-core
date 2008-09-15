@@ -31,7 +31,7 @@
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Add Report Objects,Edit Report Objects,Delete Report Objects,View Report Objects">
-		<li <c:if test="<%= request.getRequestURI().contains("rowPerObsDataExport") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("rowPerObsDataExport") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/reports/rowPerObsDataExport.list">
 				<spring:message code="RowPerObsDataExport.manage"/>
 			</a>
