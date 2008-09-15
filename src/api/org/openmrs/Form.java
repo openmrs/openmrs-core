@@ -70,14 +70,15 @@ public class Form implements java.io.Serializable {
 			Form f = (Form) obj;
 			if (this.getFormId() != null && f.getFormId() != null)
 				return (this.getFormId().equals(f.getFormId()));
-			/*
-			 * return (this.getName().equals(f.getName()) &&
-			 * this.getVersion().equals(f.getVersion()));
-			 */
 		}
-		return false;
+		
+		// default to comparing the object pointers
+		return this == obj;
 	}
 
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (this.getFormId() == null)
 			return super.hashCode();
