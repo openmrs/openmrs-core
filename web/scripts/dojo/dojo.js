@@ -4683,9 +4683,9 @@ dojo.deprecated("dojo.html."+_3fb+" has been moved to "+_3fd);
 dojo["require"](_3fd);
 return dojo.html[_3fb].apply(dojo.html,args);
 };
-dojo.html.createNodesFromText=function(){
-return dojo.html._callExtrasDeprecated("createNodesFromText",arguments);
-};
+//dojo.html.createNodesFromText=function(){
+//return dojo.html._callExtrasDeprecated("createNodesFromText",arguments);
+//};
 dojo.html.gravity=function(){
 return dojo.html._callExtrasDeprecated("gravity",arguments);
 };
