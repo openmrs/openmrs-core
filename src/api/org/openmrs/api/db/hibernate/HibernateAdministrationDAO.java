@@ -421,7 +421,8 @@ public class HibernateAdministrationDAO implements
 		String sqlLower = sql.toLowerCase();
 		if (sqlLower.startsWith("insert") || sqlLower.startsWith("update") || 
 			sqlLower.startsWith("delete") || sqlLower.startsWith("alter") ||
-			sqlLower.startsWith("drop")  || sqlLower.startsWith("create")) {
+			sqlLower.startsWith("drop")  || sqlLower.startsWith("create") ||
+			sqlLower.startsWith("rename")) {
 				dataManipulation = true;
 		}
 
