@@ -661,25 +661,29 @@ function save(target, formNotUsed) {
 					data["pageNumber"] = null;
 				
 				// min occurances 
-				if (tree.minOccursInput.value && parseInt(tree.minOccursInput.value).toString().length == tree.minOccursInput.value.length) {
-					data["minOccurs"] = tree.minOccursInput.value;
-					if (data["minOccurs"].length == 0)
+				if (tree.minOccursInput.value == null || tree.minOccursInput.value.length == 0) {
 					data["minOccurs"] = null;
 				}
-				else if (tree.minOccursInput.value) {
+				else if (parseInt(tree.minOccursInput.value).toString() == "NaN" ||
+						 tree.minOccursInput.value && parseInt(tree.minOccursInput.value).toString().length != tree.minOccursInput.value.length) {
 					alert("Invalid input: '" + tree.minOccursInput.value + "'. Min occurances must be an integer");
 					return false;
 				}
+				else {
+					data["minOccurs"] = tree.minOccursInput.value;
+				}
 				
 				// max occurances
-				if (tree.maxOccursInput.value && parseInt(tree.maxOccursInput.value).toString().length == tree.maxOccursInput.value.length) {
-					data["maxOccurs"] = tree.maxOccursInput.value;
-					if (data["maxOccurs"].length == 0)
+				if (tree.maxOccursInput.value == null || tree.maxOccursInput.value.length == 0) {
 					data["maxOccurs"] = null;
 				}
-				else if (tree.maxOccursInput.value) {
+				else if (parseInt(tree.maxOccursInput.value).toString() == "NaN" ||
+						 tree.maxOccursInput.value && parseInt(tree.maxOccursInput.value).toString().length != tree.maxOccursInput.value.length) {
 					alert("Invalid input: '" + tree.maxOccursInput.value + "'. Max occurances must be an integer");
 					return false;
+				}
+				else {
+					data["maxOccurs"] = tree.maxOccursInput.value;
 				}
 				
 				data["isRequired"] = tree.isRequiredCheckbox.checked;
