@@ -139,7 +139,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 					}
 					
 					if (obsWasChanged)
-						obsService.saveObs(obs, "Encounter datetime or person was changed");
+						obsService.saveObsBypassingHistory(obs);
 				}
 				
 			}

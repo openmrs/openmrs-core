@@ -123,6 +123,13 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
     }
 
 	/**
+	 * @see org.openmrs.api.ObsService#saveObsBypassingHistory(org.openmrs.Obs)
+	 */
+	public Obs saveObsBypassingHistory(Obs obs) throws APIException {
+		return dao.saveObs(obs);
+	} 
+ 	
+ 	/**
 	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
 	public Obs getObs(Integer obsId) throws APIException {

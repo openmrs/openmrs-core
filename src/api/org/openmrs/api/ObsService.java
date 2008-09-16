@@ -166,6 +166,22 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Authorized({OpenmrsConstants.PRIV_ADD_OBS, OpenmrsConstants.PRIV_EDIT_OBS})
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException;
+	
+	/**
+	 * NOTE: DO NOT CALL THIS METHOD UNLESS YOU HAVE A VERY GOOD REASON. 
+	 * Saves the given obs to the database. Typically saving an obs is supposed to
+	 * actually void the current obs and create a new obs with the new value. This
+	 * method bypasses that behavior.  
+	 * 
+	 * @param obs the Obs to save to the database
+	 * @return Obs that was passed in and saved to the database
+	 * @throws APIException
+	 * 
+	 * @should not create a new obs if obs is already in the database
+	 * @should create a new obs if obs is not already in the database
+	 */
+	@Authorized({OpenmrsConstants.PRIV_ADD_OBS, OpenmrsConstants.PRIV_EDIT_OBS}) 
+ 	public Obs saveObsBypassingHistory(Obs obs) throws APIException; 
 
 	/**
 	 * Equivalent to deleting an observation
