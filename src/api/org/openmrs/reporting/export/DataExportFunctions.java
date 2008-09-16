@@ -857,7 +857,7 @@ public class DataExportFunctions {
 	public Object getFirstObs(Concept concept) throws Exception {
 		List<List<Object>> obs = getObsWithValues(concept, null);
 		
-		if (obs.size() > 0) {
+		if (obs != null && obs.size() > 0) {
 			List<Object> o = obs.get(obs.size() - 1);
 			return o.get(0);
 		}

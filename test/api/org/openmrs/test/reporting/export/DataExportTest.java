@@ -536,4 +536,43 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		assertEquals("The output is not right.", expectedOutput, output);
 		
 	}
+	
+	/**
+	 * Makes sure that the getFirstObs method on the DataExportFunctions
+	 * object never throws a null pointer exception if the patient
+	 * doesn't have any obs.
+	 * 
+	 * Regression test for ticket #1028
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldNotFailOnFirstObsIfPatientDoesntHaveAnObs() throws Exception {
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("FIRST WEIGHT");
+		
+		SimpleColumn patientId = new SimpleColumn("PATIENT_ID", "$!{fn.patientId}");
+		export.getColumns().add(patientId);
+		
+		ConceptColumn firstObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1, "5089", null);
+		export.getColumns().add(firstObs);
+		
+		// set the cohort to a patient hat doesn't have a weight obs
+		Cohort patients = new Cohort();
+		patients.addMember(6);		
+		
+		//System.out.println("Template String: \n" + export.generateTemplate());
+		
+		DataExportUtil.generateExport(export, patients, "\t", null);
+		File exportFile = DataExportUtil.getGeneratedFile(export);
+		
+		String expectedOutput = "PATIENT_ID\tWEIGHT\n6\t\n";
+		String output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("exportFile: \n" + output);
+		assertEquals("The output is not right.", expectedOutput, output);
+		
+	}
 }
