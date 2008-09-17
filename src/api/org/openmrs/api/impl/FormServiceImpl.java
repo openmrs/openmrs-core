@@ -104,7 +104,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			log.warn("Should probably not be searching for published forms, but including retired ones");
 			List<Form> ret = new ArrayList<Form>();
 			ret.addAll(getPublishedForms());
-			ret.addAll(getForms(null, true, null, true, null, null));
+			ret.addAll(getForms(null, true, null, true, null, null, null));
 			return ret;
 		} else {
 			if (publishedOnly)
@@ -372,7 +372,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
      * @see org.openmrs.api.FormService#findForms(java.lang.String, boolean, boolean)
      */
     public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
-	   return getForms(text, includeUnpublished, null, includeRetired, null, null);
+	   return getForms(text, includeUnpublished, null, includeRetired, null, null, null);
     }
 
 	/**
@@ -471,7 +471,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
      */
     public List<Form> getForms(String fuzzyName, boolean onlyLatestVersion) {
     	// get all forms including unpublished and including retired
-	    List<Form> forms = getForms(fuzzyName, null, null, null, null, null);
+	    List<Form> forms = getForms(fuzzyName, null, null, null, null, null, null);
 	    
 	    Set<String> namesAlreadySeen = new HashSet<String>();
 	    for (Iterator<Form> i = forms.iterator(); i.hasNext(); ) {
@@ -483,14 +483,32 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	    }
 	    return forms;
     }
-
+    
+    /**
+     * @deprecated see {@link #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)}
+     */
+    public List<Form> getForms(String partialName, Boolean published,
+            Collection<EncounterType> encounterTypes, Boolean retired,
+            Collection<FormField> containingAnyFormField,
+            Collection<FormField> containingAllFormFields) {
+	    
+    	return getForms(partialName,
+    	                published,
+		                encounterTypes,
+		                retired,
+		                containingAnyFormField,
+		                containingAllFormFields,
+		                null);
+    }
+    
     /**
      * @see org.openmrs.api.FormService#getForms(java.lang.String, java.lang.Boolean, java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection)
      */
     public List<Form> getForms(String partialName, Boolean published,
             Collection<EncounterType> encounterTypes, Boolean retired,
             Collection<FormField> containingAnyFormField,
-            Collection<FormField> containingAllFormFields) {
+            Collection<FormField> containingAllFormFields,
+            Collection<Field> fields) {
 	    
     	if (encounterTypes == null)
     		encounterTypes = Collections.emptyList();
@@ -501,19 +519,23 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
     	if (containingAnyFormField == null)
     		containingAnyFormField = Collections.emptyList();
     	
+    	if (fields == null)
+    		fields = Collections.emptyList();
+    	
     	return dao.getForms(partialName,
 		                    published,
 		                    encounterTypes,
 		                    retired,
 		                    containingAnyFormField,
-		                    containingAllFormFields);
+		                    containingAllFormFields,
+		                    fields);
     }
 
 	/**
      * @see org.openmrs.api.FormService#getPublishedForms()
      */
     public List<Form> getPublishedForms() throws APIException {
-	    return getForms(null, true, null, null, null, null);
+	    return getForms(null, true, null, null, null, null, null);
     }
 
 	/**

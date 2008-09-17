@@ -121,15 +121,7 @@ public interface FormService extends OpenmrsService {
 	public List<Form> getForms(String fuzzyName, boolean onlyLatestVersion);
 	
 	/**
-	 * Gets all forms that match all the (nullable) criteria
-	 * 
-	 * @param partialNameSearch partial search of name
-	 * @param published whether the form is published
-	 * @param encounterTypes whether the form has any of these encounter types
-	 * @param retired whether the form is retired
-	 * @param containingAnyFormField includes forms that contain any of the specified FormFields
-	 * @param containingAllFormFields includes forms that contain all of the specified FormFields
-	 * @return All forms that match the 
+	 * @deprecated use {@link #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)}
 	 */
 	@Transactional(readOnly=true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -139,6 +131,31 @@ public interface FormService extends OpenmrsService {
 	                           Boolean retired,
 	                           Collection<FormField> containingAnyFormField,
 	                           Collection<FormField> containingAllFormFields);
+	
+	/**
+	 * Gets all forms that match all the (nullable) criteria
+	 * 
+	 * @param partialNameSearch partial search of name
+	 * @param published whether the form is published
+	 * @param encounterTypes whether the form has any of these encounter types
+	 * @param retired whether the form is retired
+	 * @param containingAnyFormField includes forms that contain any of the specified FormFields
+	 * @param containingAllFormFields includes forms that contain all of the specified FormFields
+	 * @param fields whether the form has any of these fields.  If a field is used more than once
+	 * 			on a form, that form is returning more than once in this list
+	 * @return All forms that match the criteria
+	 * 
+	 * @should get multiple of the same form by field
+	 */
+	@Transactional(readOnly=true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
+	public List<Form> getForms(String partialNameSearch,
+	                           Boolean published,
+	                           Collection<EncounterType> encounterTypes,
+	                           Boolean retired,
+	                           Collection<FormField> containingAnyFormField,
+	                           Collection<FormField> containingAllFormFields,
+	                           Collection<Field> fields);
 	/**
 	 * Returns all published forms (not including retired ones)
 	 * 

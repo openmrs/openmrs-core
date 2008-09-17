@@ -426,7 +426,6 @@ function editClicked(node) {
 			tree.attributeNameInput.value = data["attributeName"];
 			tree.defaultValueInput.value = data["defaultValue"];
 			tree.selectMultipleCheckbox.checked = data["selectMultiple"] ? true : false;
-			tree.numFormsTag.innerHTML = data["numForms"];
 		}
 		else {
 			tree.fieldIdInput.value = tree.tableNameInput.value = "";
@@ -434,6 +433,8 @@ function editClicked(node) {
 			tree.selectMultipleCheckbox.checked = false;
 			tree.numFormsTag.innerHTML = "";
 		}
+		
+		tree.numFormsTag.innerHTML = data["numForms"];
 		
 		// formField info
 		tree.formFieldIdInput.value = valueExists(data["formFieldId"], "");
@@ -915,11 +916,12 @@ function getData(obj) {
 		data["label"] = "CONCEPT." + obj.name;
 		data.title = "Concept Id: " + obj.conceptId;
 		data.isSet = obj.isSet;
+		data["numForms"] = 1;
 	}
 	// or object is a fieldListItem
 	else if (obj.fieldId != null) {
 		data.id = data["fieldId"] = obj.fieldId;
-		data["numForms"] = obj.numForms;
+		data["numForms"] = obj.numForms + 1; // they are adding to this form, so count it in the group
 		data["fieldName"] = obj.name;
 		data["description"] = obj.description;
 		data["fieldType"] = obj.fieldTypeId;
