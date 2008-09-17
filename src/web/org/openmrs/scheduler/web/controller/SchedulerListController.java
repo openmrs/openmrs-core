@@ -109,6 +109,11 @@ public class SchedulerListController extends SimpleFormController {
 					TaskDefinition task = 
 						schedulerService.getTask(Integer.valueOf(taskId));
 
+					// If we can get the name, let's use it
+					if (task != null) { 
+						args = new Object[] { task.getName() };
+					}
+					
 					if ( action.equals( msa.getMessage("Scheduler.taskList.delete") ) ) {
 						schedulerService.deleteTask(Integer.valueOf(taskId));
 						success.append(msa.getMessage("Scheduler.taskList.deleted", args));

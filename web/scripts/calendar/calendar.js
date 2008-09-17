@@ -42,14 +42,9 @@ function makeCalendar(obj) {
 	}
 }
 
-if (!oldCalOnload) {
-	var oldCalOnload = window.onload;
-	if (typeof window.onload != 'function') {
-		window.onload = makeCalendar;
-	} else {
-		window.onload = function() {
-			oldCalOnload();
-			makeCalendar();
-		}
-	}
+if (addEvent) {
+	addEvent(window, "load", makeCalendar);
+}
+else {
+	makeCalendar();
 }

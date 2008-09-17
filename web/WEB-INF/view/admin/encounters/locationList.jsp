@@ -26,9 +26,7 @@
 			<tr>
 				<td valign="top"><input type="checkbox" name="locationId" value="${location.locationId}"></td>
 				<td valign="top">
-					<a href="location.form?locationId=${location.locationId}">
-					   ${location.name}
-					</a>
+					<a href="location.form?locationId=${location.locationId}">${location.name}</a> (${location.locationId})					
 				</td>
 				<td valign="top">${location.description}</td>
 			</tr>

@@ -13,6 +13,8 @@
  */
 package org.openmrs.api.impl;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -550,6 +552,18 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public SortedMap<String, String> getSystemVariables() throws APIException {
 		if (systemVariables == null) {
 			systemVariables = new TreeMap<String, String>();
+
+			
+			// Added the server's fully qualified domain name
+			try {
+				systemVariables.put("OPENMRS_HOSTNAME", 
+				                    InetAddress.getLocalHost().getCanonicalHostName());
+			} 
+			catch (UnknownHostException e) { 
+				systemVariables.put("OPENMRS_HOSTNAME", 
+				                    "Unknown host: " + e.getMessage());				
+			}
+			
 			systemVariables.put("OPENMRS_VERSION",
 			                    String.valueOf(OpenmrsConstants.OPENMRS_VERSION));
 			systemVariables.put("DATABASE_VERSION_EXPECTED",

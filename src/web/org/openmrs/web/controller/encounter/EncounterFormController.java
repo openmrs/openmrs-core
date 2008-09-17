@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller.encounter;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,7 +205,12 @@ public class EncounterFormController extends SimpleFormController {
 		// the map returned to the form
 		// This is a mapping between the formfield and a list of the Obs/ObsGroup in that field
 		// This mapping is sorted according to the comparator in FormField.java
-		SortedMap<FormField, List<Obs>> obsMapToReturn = new TreeMap<FormField, List<Obs>>();
+		SortedMap<FormField, List<Obs>> obsMapToReturn = null;
+		String sortType = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER);
+		if ("weight".equals(sortType))
+			obsMapToReturn = new TreeMap<FormField, List<Obs>>(); // use FormField.compareTo
+		else
+			obsMapToReturn = new TreeMap<FormField, List<Obs>>(new NumberingFormFieldComparator()); // use custom comparator
 		
 		// this maps the obs to form field objects for non top-level obs
 		// it is keyed on obs so that when looping over an exploded obsGroup
@@ -268,6 +274,32 @@ public class EncounterFormController extends SimpleFormController {
 		map.put("editedObs", editedObs);
 		
 		return map;
+	}
+	
+	/**
+	 * Comparator to sort the FormFields by page+fieldNumber+fieldPart/sortWeight.  This
+	 * allows obs to be sorted/displayed strictly according to numbering.  The FormField
+	 * default comparator sorts on sortWeight first, then other numbers. 
+	 * 
+	 *  @see FormField#compareTo(FormField)
+	 *  @see EncounterDisplayController
+	 */
+	public class NumberingFormFieldComparator implements Comparator<FormField> {
+		
+		/**
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        public int compare(FormField formField, FormField other) {
+			int temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getPageNumber(), other.getPageNumber());
+			if (temp == 0)
+				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFieldNumber(), other.getFieldNumber());
+			if (temp == 0)
+				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFieldPart(), other.getFieldPart());
+			if (temp == 0 && formField.getPageNumber() == null && formField.getFieldNumber() == null && formField.getFieldPart() == null)
+				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getSortWeight(), other.getSortWeight());
+			return temp;
+        }
+    
 	}
 	
 }
