@@ -548,7 +548,7 @@ public class PatientFormController extends PersonFormController {
 			boolean onlyPublishedForms = true;
 			if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS))
 				onlyPublishedForms = false;
-			forms.addAll(Context.getFormService().getForms(null, onlyPublishedForms, null, false, null, null));
+			forms.addAll(Context.getFormService().getForms(null, onlyPublishedForms, null, false, null, null, null));
 			
 			List<Encounter> encs = Context.getEncounterService().getEncountersByPatient(patient);
 			if (encs != null && encs.size() > 0)

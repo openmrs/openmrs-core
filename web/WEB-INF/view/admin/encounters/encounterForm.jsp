@@ -6,6 +6,7 @@
 <%@ include file="localHeader.jsp" %>
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">

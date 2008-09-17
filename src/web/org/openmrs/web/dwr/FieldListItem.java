@@ -13,12 +13,24 @@
  */
 package org.openmrs.web.dwr;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Field;
+import org.openmrs.api.context.Context;
 
+/**
+ * A mini/simplified Field object.  Used as the return object from
+ * DWR methods to allow javascript and other consumers to easily use
+ * all methods.  This class guarantees that all objects in this class
+ * will be initialized (copied) off of the Person object.
+ * 
+ * @see Field
+ * @see DWRFormService
+ */
 public class FieldListItem {
 	
 	protected final Log log = LogFactory.getLog(getClass());
@@ -59,7 +71,9 @@ public class FieldListItem {
 			//	creator = field.getCreator().getFirstName() + " " + field.getCreator().getLastName();
 			//if (field.getChangedBy() != null)
 			//	changedBy = field.getChangedBy().getFirstName() + " " + field.getChangedBy().getLastName();
-			numForms = field.getForms().size();
+			List<Field> fields = new Vector<Field>();
+			fields.add(field);
+			numForms = Context.getFormService().getForms(null, null, null, null, null, null, fields).size();
 			defaultValue = field.getDefaultValue();
 		}
 	}
