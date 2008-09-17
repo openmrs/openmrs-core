@@ -60,6 +60,7 @@ import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.aop.Advisor;
@@ -119,6 +120,20 @@ public class Context {
 	 */
 	public void setContextDAO(ContextDAO dao) {
 		contextDAO = dao;
+	}
+	
+	/**
+	 * Loads a class with an instance of the OpenmrsClassLoader.
+	 * Convenience method equivalent to OpenmrsClassLoader.getInstance().loadClass(className);
+	 * 
+	 * @param className the class to load
+	 * @return the class that was loaded
+	 * @throws ClassNotFoundException
+	 * 
+	 * @should load class with the OpenmrsClassLoader
+	 */
+	public static Class<?> loadClass(String className) throws ClassNotFoundException {
+		return OpenmrsClassLoader.getInstance().loadClass(className);
 	}
 
 	/**

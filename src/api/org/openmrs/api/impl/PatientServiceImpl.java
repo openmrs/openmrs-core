@@ -1413,7 +1413,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
     @SuppressWarnings("unchecked")
     public IdentifierValidator getIdentifierValidator(String pivClassName) {
 	    try {
-	        return getIdentifierValidator(((Class<IdentifierValidator>) Class.forName(pivClassName)));
+	        return getIdentifierValidator(((Class<IdentifierValidator>) Context.loadClass(pivClassName)));
         } catch (ClassNotFoundException e) {
 	        log.error("Could not find patient identifier validator " + pivClassName, e);
 	        return getDefaultIdentifierValidator();

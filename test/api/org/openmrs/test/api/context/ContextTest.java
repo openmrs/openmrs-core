@@ -16,12 +16,14 @@ package org.openmrs.test.api.context;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.test.AssertThrows;
 
 /**
@@ -115,6 +117,17 @@ public class ContextTest extends BaseContextSensitiveTest {
 		
 		// delete the user
 		
+	}
+
+	/**
+	 * @verifies {@link Context#loadClass(String)}
+	 *  test = should load class with the OpenmrsClassLoader
+	 * 
+	 * @throws Exception
+	 */
+	public void loadClass_shouldLoadClassWithOpenmrsClassLoader() throws Exception {
+		Class<?> c = Context.loadClass("org.openmrs.patient.impl.LuhnIdentifierValidator");
+		Assert.assertTrue("Should be loaded by OpenmrsClassLoader", c.getClassLoader() instanceof OpenmrsClassLoader);
 	}
 
 }
