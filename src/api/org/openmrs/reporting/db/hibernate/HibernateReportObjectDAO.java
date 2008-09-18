@@ -141,10 +141,14 @@ public class HibernateReportObjectDAO implements
 		List<ReportObjectWrapper> wrappedObjects = query.list();
 		for ( ReportObjectWrapper wrappedObject : wrappedObjects ) {
 			AbstractReportObject reportObject = wrappedObject.getReportObject();
-			if ( reportObject.getReportObjectId() == null ) {
-				reportObject.setReportObjectId(wrappedObject.getReportObjectId());
-			}
-			reportObjects.add(reportObject);
+			
+			// Added a null check - report object could be null if there's an error with XML serialization/deserialization 
+			if (reportObject != null) { 
+				if ( reportObject.getReportObjectId() == null ) {
+					reportObject.setReportObjectId(wrappedObject.getReportObjectId());
+				}
+				reportObjects.add(reportObject);
+			} 
 		}
 		return reportObjects;
 	}
