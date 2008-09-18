@@ -1,7 +1,7 @@
-<Context antiJARLocking="true" reloadable="false">
-	<!-- <loader loaderClass="org.openmrs.web.OpenmrsWebClassLoader" useSystemClassLoaderAsParent="false"></loader> -->
-	
-	<!--<Resource name="jdbc/openmrs"
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/openmrs" reloadable="false">
+  <!-- <loader loaderClass="org.openmrs.web.OpenmrsWebClassLoader" useSystemClassLoaderAsParent="false"></loader> -->
+  <!--<Resource name="jdbc/openmrs"
 			auth="Container"
 			type="javax.sql.DataSource"
 			factory="org.apache.commons.dbcp.BasicDataSourceFactory"
@@ -14,42 +14,41 @@
 			maxIdle="100"
 			maxActive="10" />
 	-->
-<!--	
-	<Resource 
-		name="mail/OpenmrsMailSession" 
-		auth="Container" 
-		type="javax.mail.Session" 
+  <!--
+	<Resource
+		name="mail/OpenmrsMailSession"
+		auth="Container"
+		type="javax.mail.Session"
 		mail.smtp.host="localhost"
         mail.smtp.port="25"
         mail.transport.protocol="smtp"
         mail.smtp.auth="true"
         mail.smtp.user="openmrs"
         password="openmrs"/>
-	
-	<Resource 
-		name="jms/ConnectionFactory" 
-		auth="Container" 
-		type="org.activemq.ActiveMQConnectionFactory" 
+
+	<Resource
+		name="jms/ConnectionFactory"
+		auth="Container"
+		type="org.activemq.ActiveMQConnectionFactory"
 		description="JMS Connection Factory"
-        factory="org.activemq.jndi.JNDIReferenceFactory" 
-        brokerURL="vm://localhost:61626" 
+        factory="org.activemq.jndi.JNDIReferenceFactory"
+        brokerURL="vm://localhost:61626"
         brokerName="LocalActiveMQBroker"/>
 
-	<Resource 
-		name="jms/someTopic" 
-		auth="Container" 
-		type="org.activemq.message.ActiveMQTopic" 
+	<Resource
+		name="jms/someTopic"
+		auth="Container"
+		type="org.activemq.message.ActiveMQTopic"
 		description="my Topic"
-        factory="org.activemq.jndi.JNDIReferenceFactory" 
+        factory="org.activemq.jndi.JNDIReferenceFactory"
         physicalName="FOO.BAR"/>
 
-  	<Resource 
-  		name="jms/someQueue" 
-  		auth="Container" 
-  		type="org.activemq.message.ActiveMQQueue" 
+  	<Resource
+  		name="jms/someQueue"
+  		auth="Container"
+  		type="org.activemq.message.ActiveMQQueue"
   		description="my Queue"
-        factory="org.activemq.jndi.JNDIReferenceFactory" 
+        factory="org.activemq.jndi.JNDIReferenceFactory"
         physicalName="FOO.BAR"/>
--->	
-	
+-->
 </Context>
