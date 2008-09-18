@@ -13,8 +13,6 @@
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
 	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	
-	dojo.hostenv.writeIncludes();
-	
 	dojo.addOnLoad( function() {
 		var eSearchWidget = dojo.widget.manager.getWidgetById("eSearch");
 		var cSearchWidget = dojo.widget.manager.getWidgetById("cSearch");

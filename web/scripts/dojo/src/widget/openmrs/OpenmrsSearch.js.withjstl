@@ -13,8 +13,8 @@ dojo.require("dojo.style");
 dojo.require("dojo.event.*");
 
 var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
-document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/engine.js'></script>");
-document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/util.js'></script>");		
+importJavascriptFile(openmrsSearchBase + "/dwr/engine.js");
+importJavascriptFile(openmrsSearchBase + "/dwr/util.js");
 
 // Add parse handler.  
 dojo.widget.tags.addParseTreeHandler("dojo:OpenmrsSearch");

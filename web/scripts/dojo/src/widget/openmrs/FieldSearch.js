@@ -7,7 +7,7 @@ dojo.provide("dojo.widget.openmrs.FieldSearch");
 dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 
 var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
-document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/interface/DWRFormService.js'></script>");
+importJavascriptFile(openmrsSearchBase + "/dwr/interface/DWRFormService.js");
 
 dojo.widget.tags.addParseTreeHandler("dojo:FieldSearch");
 
