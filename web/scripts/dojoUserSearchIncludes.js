@@ -1,4 +1,3 @@
-dojo.hostenv.writeIncludes();
 dojo.require("dojo.widget.openmrs.UserSearch");
 dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 
