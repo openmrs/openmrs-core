@@ -44,10 +44,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
-import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
-import org.openmrs.api.InvalidCheckDigitException;
-import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
@@ -59,9 +56,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.patient.IdentifierValidator;
-import org.openmrs.patient.UnallowedIdentifierException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.validator.PatientIdentifierValidator;
 
 /**
  * Default implementation of the patient service.  This class should
@@ -247,82 +244,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 	/**
 	 * @see org.openmrs.api.PatientService#checkPatientIdentifier(org.openmrs.PatientIdentifier)
+	 * @deprecated use {@link PatientIdentifierValidator.validate(PatientIdentifier)}
 	 */
-	public void checkPatientIdentifier(PatientIdentifier pi)
-	        throws PatientIdentifierException {
-		
-		// skip and remove invalid/empty identifiers
-		if (pi == null)
-			throw new BlankIdentifierException("Identifier cannot be null or blank",
-			                                   pi);
-		else if (pi.getIdentifier() == null)
-			throw new BlankIdentifierException("Identifier cannot be null or blank",
-			                                   pi);
-		else if (pi.getIdentifier().length() == 0)
-			throw new BlankIdentifierException("Identifier cannot be null or blank",
-			                                   pi);
-		
-		// do not do any more checks if this identifier is voided
-		if (pi.isVoided() == false) {
-			
-			// check is already in use by another patient
-			Patient p = identifierInUse(pi);
-			if (p != null) {
-				throw new IdentifierNotUniqueException("Identifier "
-				        + pi.getIdentifier() + " already in use by patient #"
-				        + p.getPatientId(), pi);
-			}
-	
-			// also validate regular expression - if it exists
-			PatientIdentifierType pit = pi.getIdentifierType();
-			String identifier = pi.getIdentifier();
-	
-			String regExp = pit.getFormat();
-			if ( regExp != null ) {
-				if ( regExp.length() > 0 ) {
-					// if this ID has a valid corresponding regular expression,
-					// check against it
-					log.debug("Trying to match " + identifier + " and "
-					        + regExp);
-					if ( !identifier.matches(regExp) ) {
-						log.debug("The two DO NOT match");
-						if ( pit.getFormatDescription() != null ) {
-							if (pit.getFormatDescription().length() > 0)
-								throw new InvalidIdentifierFormatException("Identifier ["
-								                                                   + identifier
-								                                                   + "] does not match required format: "
-								                                                   + pit.getFormatDescription(),
-								                                           pi);
-							else
-								throw new InvalidIdentifierFormatException("Identifier ["
-								                                                   + identifier
-								                                                   + "] does not match required format: "
-								                                                   + pit.getFormat(),
-								                                           pi);
-						} else {
-							throw new InvalidIdentifierFormatException("Identifier ["
-							                                                   + identifier
-							                                                   + "] does not match required format: "
-							                                                   + pit.getFormat(),
-							                                           pi);
-						}
-					} else {
-						log.debug("The two match!!");
-					}
-				}
-			}
-	
-			// validate identifier
-			if(pit.hasValidator()){
-				IdentifierValidator piv = getIdentifierValidator(pit.getValidator());
-				try{
-					if(!piv.isValid(identifier))
-						throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, pi);
-				}catch(UnallowedIdentifierException e){
-					throw new InvalidCheckDigitException("Identifier " + identifier +" is not appropriate for validation scheme " + piv.getName() + ".", pi);
-				}
-			}
-		}
+	public void checkPatientIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
+		PatientIdentifierValidator.validateIdentifier(pi);
 	}
 	
 	/**

@@ -403,6 +403,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientIdentifier identifier to be validated
 	 * @see #checkPatientIdentifiers(Patient)
 	 * @throws PatientIdentifierException if the identifier is invalid
+	 * @deprecated use {@link PatientIdentifierValidator.validate(PatientIdentifier)}
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_IDENTIFIERS })
 	public void checkPatientIdentifier(PatientIdentifier patientIdentifier)
