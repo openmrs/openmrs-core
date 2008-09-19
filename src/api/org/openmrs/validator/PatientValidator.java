@@ -13,15 +13,8 @@
  */
 package org.openmrs.validator;
 
-import java.util.Set;
-
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.context.Context;
-import org.openmrs.patient.IdentifierValidator;
-import org.openmrs.patient.UnallowedIdentifierException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -37,6 +30,7 @@ public class PatientValidator implements Validator {
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
 		return Patient.class.isAssignableFrom(c);
 	}
@@ -49,48 +43,13 @@ public class PatientValidator implements Validator {
 	 */
 	public void validate(Object obj, Errors errors) {
 		Patient patient = (Patient) obj;
-		checkIdentifiers(patient.getIdentifiers(), errors);
-	}
-
-	/**
-	 * Checks the given identifiers for errors.
-	 * @param identifiers
-	 * @param errors
-	 */
-	private void checkIdentifiers(Set<PatientIdentifier> identifiers,
-	        Errors errors) {
-		for (PatientIdentifier identifier : identifiers)
-			checkIdentifier(identifier, errors);
-	}
-
-	/**
-	 * Checks the given identifier for errors.
-	 * @param identifier
-	 * @param errors
-	 * 
-	 * TODO: This method should be replaced by a PatientIdentifierValidator class.
-	 */
-	private void checkIdentifier(PatientIdentifier identifier, Errors errors) {
-		PatientService ps = Context.getPatientService();
-
-		PatientIdentifierType pit = identifier.getIdentifierType();
-		if (pit.hasValidator()) {
-			IdentifierValidator piv = ps.getIdentifierValidator(pit.getValidator());
-			/**
-			 * TODO: should be using messages.properties, but can't get error arguments to work.
-			 * See http://forum.springframework.org/showthread.php?p=181265
-			 */
-			try {
-				if (!piv.isValid(identifier.getIdentifier()))
-					errors.reject("Invalid checkdigit for "
-					        + identifier.getIdentifier());
-			} catch (UnallowedIdentifierException ex) {
-				errors.reject("The identifier " + identifier.getIdentifier()
-				        + " is not allowed for validator " + piv.getName()
-				        + ".");
+		
+		// Validate PatientIdentifers
+		PatientIdentifierValidator piv = new PatientIdentifierValidator();
+		if (patient != null && patient.getIdentifiers() != null) {
+			for (PatientIdentifier identifier : patient.getIdentifiers()) {
+				piv.validate(identifier, errors);
 			}
 		}
-
 	}
-
 }
