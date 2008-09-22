@@ -70,7 +70,7 @@
 					<table width="100%">
 						<thead>
 							<tr>
-								<th><spring:message code="Obs.patient" /></th>
+								<th><spring:message code="Obs.person" /></th>
 								<th><spring:message code="Obs.form" /> (<spring:message code="Obs.encounterDate" />)</th>
 								<th><spring:message code="Obs.concept"/></th>
 								<th><spring:message code="Obs.value"/></th>
