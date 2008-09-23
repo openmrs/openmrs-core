@@ -15,6 +15,8 @@ package org.openmrs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
@@ -412,7 +414,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 			}
 		}
 		catch (Throwable t) {
-			// pass
+			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
 		}
 		
 		log.debug("Returning value: '" + getValue() + "'");

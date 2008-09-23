@@ -20,7 +20,6 @@
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
-	dojo.hostenv.writeIncludes();
 	
 	dojo.addOnLoad( function() {
 		dojo.event.topic.subscribe("concept_to_filter_search/select", 

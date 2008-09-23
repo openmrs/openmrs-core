@@ -670,6 +670,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * @see org.openmrs.Attributable#serialize()
 	 */
 	public String serialize() {
+		if (this.getConceptId() == null)
+			return "";
+		
 		return "" + this.getConceptId();
 	}
 	

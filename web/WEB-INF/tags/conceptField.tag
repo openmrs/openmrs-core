@@ -15,7 +15,6 @@
 
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
 	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
-	dojo.hostenv.writeIncludes();
 	
 	dojo.addOnLoad( function() {
 		dojo.event.topic.subscribe("${formFieldName}_search/select", 

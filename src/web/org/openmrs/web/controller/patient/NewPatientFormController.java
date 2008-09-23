@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Attributable;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -45,6 +46,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
+import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
@@ -321,11 +323,37 @@ public class NewPatientFormController extends SimpleFormController {
 				pi.setPreferred(pref.equals(pi.getIdentifier()+pi.getIdentifierType().getPatientIdentifierTypeId()));
 			}
 
-			// look for person attributes in the request and save to person
+			// look for person attributes in the request and save to patient
 			for (PersonAttributeType type : personService.getPersonAttributeTypes(PERSON_TYPE.PATIENT, ATTR_VIEW_TYPE.VIEWING)) {
-				String value = request.getParameter(type.getPersonAttributeTypeId().toString());
+				String paramName = type.getPersonAttributeTypeId().toString();
+				String value = request.getParameter(paramName);
 				
-				patient.addAttribute(new PersonAttribute(type, value));
+				// if there is an error displaying the attribute, the value will be null
+				if (value != null) {
+					PersonAttribute attribute = new PersonAttribute(type, value);
+					try {
+						Object hydratedObject = attribute.getHydratedObject();
+						if (hydratedObject == null || "".equals(hydratedObject.toString())) {
+							// if null is returned, the value should be blanked out
+							attribute.setValue("");
+						} else if (hydratedObject instanceof Attributable) {
+							attribute.setValue(((Attributable)hydratedObject).serialize());
+						}
+						else if (!hydratedObject.getClass().getName().equals(type.getFormat()))
+							// if the classes doesn't match the format, the hydration failed somehow
+							// TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
+							throw new APIException();
+					}
+					catch (APIException e) {
+						errors.rejectValue("attributeMap[" + type.getName() + "]", "Invalid value for " + type.getName() + ": '" + value + "'");
+						log.warn("Got an invalid value: " + value + " while setting personAttributeType id #" + paramName, e);
+						
+						// setting the value to empty so that the user can reset the value to something else
+						attribute.setValue("");
+						
+					}
+					patient.addAttribute(attribute);
+				}
 			}
 			
 			// add the new identifiers.  First remove them so that things like
@@ -609,18 +637,18 @@ public class NewPatientFormController extends SimpleFormController {
 	    			// continue
 	    		}
 	    	}
-		}
-		
-		if (p == null) {
-			try {
-    			Person person = Context.getPersonService().getPerson(id);
-    			if (person != null)
-    				p = new Patient(person);
-    		}
-    		catch (ObjectRetrievalFailureException noPersonEx) {
-    			log.warn("There is no patient or person with id: '" + id + "'", noPersonEx);
-    			throw new ServletException("There is no patient or person with id: '" + id + "'");
-    		}
+			
+			if (p == null) {
+				try {
+	    			Person person = Context.getPersonService().getPerson(id);
+	    			if (person != null)
+	    				p = new Patient(person);
+	    		}
+	    		catch (ObjectRetrievalFailureException noPersonEx) {
+	    			log.warn("There is no patient or person with id: '" + id + "'", noPersonEx);
+	    			throw new ServletException("There is no patient or person with id: '" + id + "'");
+	    		}
+			}
 		}
 		
 		ShortPatientModel patient = new ShortPatientModel(p);
