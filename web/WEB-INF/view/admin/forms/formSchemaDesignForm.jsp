@@ -5,10 +5,6 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<script type="text/javascript">
-	var djConfig = {debugAtAllCosts: false, isDebug: false };
-</script>
-
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 <openmrs:htmlInclude file="/admin/forms/formSchemaDesign.js" />
 

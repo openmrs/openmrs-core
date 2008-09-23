@@ -223,9 +223,9 @@ public class FieldGenTag extends TagSupport {
 		try {
 			pageContext.include(this.url);
 		} catch (ServletException e) {
-			log.error("ServletException while trying to include a file in FieldGenTag");
+			log.error("ServletException while trying to include a file in FieldGenTag", e);
 		} catch (IOException e) {
-			log.error("IOException while trying to include a file in FieldGenTag");
+			log.error("IOException while trying to include a file in FieldGenTag", e);
 		}
 
 		/*
