@@ -441,6 +441,9 @@ public class ORUR01Handler implements Application {
 				if (log.isDebugEnabled())
 					log.debug("Proposing concept");
 				proposeConcept(encounter, concept, valueName);
+				// skip out early and not returning an obs because it
+				// will be created later when the proposal is resolved
+				return null;  
 			} else {
 				log.debug("    not proposal");
 				try {
