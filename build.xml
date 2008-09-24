@@ -240,7 +240,7 @@
 			<fileset dir="${build.dir}">
 				<exclude name="**/web/test/*.class" />
 				<include name="**/test/**/*.class" />
-				<include name="org/openmrs/test/include/initialInMemoryTestDataSet.xml" />
+				<include name="org/openmrs/test/include/*.xml" />
 			</fileset>
 			<!-- Put this xml in a separate fileset so that its in the root of the jar file -->
 			<fileset file="${build.dir}/org/openmrs/test/testutil/TestingApplicationContext.xml" />
