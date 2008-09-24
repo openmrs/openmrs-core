@@ -27,6 +27,7 @@ import java.util.Vector;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptProposal;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
@@ -34,7 +35,6 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.handler.ORUR01Handler;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
-import org.openmrs.test.testutil.TestUtil;
 
 import ca.uhn.hl7v2.app.MessageTypeRouter;
 import ca.uhn.hl7v2.model.Message;
@@ -204,6 +204,27 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		List<Obs> obsForPatient = Context.getObsService().getObservationsByPersonAndConcept(patient, question);
 		assertEquals(1, obsForPatient.size()); // there should be 1 obs now for this patient
 		assertEquals(new Encounter(3), obsForPatient.get(0).getEncounter());
+		
+	}
+	
+	/**
+	 * Should create a concept proposal because of the key string in the message
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCreateConceptProposal() throws Exception {
+		
+		// there should be an encounter with encounter_id == 3 for this test
+		// to append to
+		assertNotNull(Context.getEncounterService().getEncounter(3));
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080924022306||ORU^R01|Z185fTD0YozQ5kvQZD7i|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^||Joe^S^Mith||\rPV1||O|1^Unknown Module 2||||1^Joe (1-1)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080219085345|1^Joe\rOBR|1|||\rOBX|18|DT|5096^RETURN VISIT DATE^99DCT||20080506|||||||||20080212\rOBR|19|||5096^PROBLEM LIST^99DCT\rOBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		ConceptProposal proposal = Context.getConceptService().getConceptProposal(1);
+		assertEquals("PELVIC MASS", proposal.getOriginalText());
 		
 	}
 
