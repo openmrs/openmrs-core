@@ -23,14 +23,23 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Order;
+import org.openmrs.Person;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.DrugEditor;
+import org.openmrs.propertyeditor.EncounterEditor;
 import org.openmrs.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.OrderEditor;
+import org.openmrs.propertyeditor.PersonEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
@@ -73,37 +82,13 @@ public class ObsFormController extends SimpleFormController {
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(java.lang.Boolean.class,
         		new CustomBooleanEditor(true)); //allow for an empty boolean value
+        binder.registerCustomEditor(Person.class, new PersonEditor());
+        binder.registerCustomEditor(Order.class, new OrderEditor());
+        binder.registerCustomEditor(Concept.class, new ConceptEditor());
+        binder.registerCustomEditor(Location.class, new LocationEditor());
+        binder.registerCustomEditor(Encounter.class, new EncounterEditor());
+        binder.registerCustomEditor(Drug.class, new DrugEditor());
 	}
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
-		
-		// sets the objects in case edit Reason is rejected
-		Obs obs = (Obs)obj;
-		obs = setObjects(obs, request);
-    	
-    	String reason = request.getParameter("editReason");
-    	if (obs.getObsId() != null && (reason == null || reason.length() == 0))
-    		errors.reject("editReason", "Obs.edit.reason.empty");
-
-    	if (obs.getConcept() == null)
-    		errors.rejectValue("concept", "error.null");
-    	
-		return super.processFormSubmission(request, reponse, obs, errors);
-	}
-	
-	/**
-     * @see org.springframework.web.servlet.mvc.BaseCommandController#onBind(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.BindException)
-     */
-    @Override
-    protected void onBind(HttpServletRequest request, Object command, BindException errors) throws Exception {
-    	if (Context.isAuthenticated()) {
-		    Obs obs = (Obs) command;
-		    setObjects(obs, request);
-    	}
-    }
 
 	/** 
 	 * 
@@ -120,18 +105,45 @@ public class ObsFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			Obs obs = (Obs)obj;
 			ObsService os = Context.getObsService();
-			String reason = request.getParameter("editReason");
-	    	
+			
 			try {
-				os.saveObs(obs, reason);
+				// if the user is just editing the observation
+				if (request.getParameter("saveObs") != null) {
+					String reason = request.getParameter("editReason");
+			    	if (obs.getObsId() != null && (reason == null || reason.length() == 0)) {
+			    		errors.reject("editReason", "Obs.edit.reason.empty");
+			    		return showForm(request, response, errors);
+			    	}
+			    	
+					os.saveObs(obs, reason);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.saved");
+				}
+				
+				// if the user is voiding out the observation
+				else if (request.getParameter("voidObs") != null) {
+					String voidReason = request.getParameter("voidReason");
+			    	if (obs.getObsId() != null && (voidReason == null || voidReason.length() == 0)) {
+			    		errors.reject("voidReason", "Obs.void.reason.empty");
+			    		return showForm(request, response, errors);
+			    	}
+			    	
+			    	os.voidObs(obs, voidReason);
+			    	httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.voidedSuccessfully");
+				}
+				
+				// if this obs is already voided and needs to be unvoided
+				else if (request.getParameter("unvoidObs") != null) {
+					os.unvoidObs(obs);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.unvoidedSuccessfully");
+				}
+				
 			}
 			catch (APIException e) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
 				return showForm(request, response, errors);
 			}
 
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.saved");
-			
+			// redirect to the main encounter page
 			if (obs.getEncounter() != null)
 				view = getSuccessView() + "?encounterId=" + obs.getEncounter().getEncounterId() + "&phrase=" + request.getParameter("phrase");
 		}
@@ -188,7 +200,7 @@ public class ObsFormController extends SimpleFormController {
 		String defaultVerbose = "false";
 		
 		if (Context.isAuthenticated()) {
-			map.put("forms", Context.getFormService().getForms());
+			map.put("forms", Context.getFormService().getAllForms());
 			if (obs.getConcept() != null)
 				map.put("conceptName", obs.getConcept().getName(request.getLocale()));
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
@@ -202,51 +214,6 @@ public class ObsFormController extends SimpleFormController {
 		map.put("editReason", editReason);
 		
 		return map;
-	}
-	
-	/**
-	 * Convenience method used when saving the object to populate the object with 
-	 * full-fledged objects
-	 * 
-	 * @param obs
-	 * @param request
-	 * @return
-	 */
-	private Obs setObjects(Obs obs, HttpServletRequest request) {
-
-		if (Context.isAuthenticated()) {
-			if (obs.getObsId() == null) { //patient/order/concept/encounter only change when adding a new observation
-				if (StringUtils.hasText(request.getParameter("personId")))
-					obs.setPerson(Context.getPatientService().getPatient(Integer.valueOf(request.getParameter("personId"))));
-				else
-					obs.setPerson(null);
-				if (StringUtils.hasText(request.getParameter("orderId")))
-					obs.setOrder(Context.getOrderService().getOrder(Integer.valueOf(request.getParameter("orderId"))));
-				else
-					obs.setOrder(null);
-				if (StringUtils.hasText(request.getParameter("conceptId")))
-					obs.setConcept(Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
-				else
-					obs.setConcept(null);
-				if (StringUtils.hasText(request.getParameter("encounterId")))
-					obs.setEncounter(Context.getEncounterService().getEncounter(Integer.valueOf(request.getParameter("encounterId"))));
-				else
-					obs.setEncounter(null);
-				
-			}
-			
-			if (StringUtils.hasText(request.getParameter("valueCodedId")))
-				obs.setValueCoded(Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("valueCodedId"))));
-			else
-				obs.setValueCoded(null);
-			if (StringUtils.hasText(request.getParameter("valueDrugId")))
-				obs.setValueDrug(Context.getConceptService().getDrug(Integer.valueOf(request.getParameter("valueDrugId"))));
-			else
-				obs.setValueDrug(null);
-		}
-		
-		return obs;
-
 	}
 
 }

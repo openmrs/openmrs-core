@@ -17,19 +17,19 @@ import java.beans.PropertyEditorSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Patient;
-import org.openmrs.api.PatientService;
+import org.openmrs.Person;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing a Patient object to a string 
+ * Allows for serializing/deserializing a Person object to a string 
  * so that Spring knows how to pass a Person back and forth through
  * an html form or other medium
  * 
- * @see Patient
+ * @see Person
  */
-public class PatientEditor extends PropertyEditorSupport {
+public class PersonEditor extends PropertyEditorSupport {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -37,14 +37,14 @@ public class PatientEditor extends PropertyEditorSupport {
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
-		PatientService ps = Context.getPatientService(); 
+		PersonService ps = Context.getPersonService(); 
 		if (StringUtils.hasText(text)) {
 			try {
-				setValue(ps.getPatient(Integer.valueOf(text)));
+				setValue(ps.getPerson(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
 				log.error("Error setting text: " + text, ex);
-				throw new IllegalArgumentException("Patient not found: " + ex.getMessage());
+				throw new IllegalArgumentException("Person not found: " + ex.getMessage());
 			}
 		}
 		else {
@@ -56,12 +56,12 @@ public class PatientEditor extends PropertyEditorSupport {
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
 	public String getAsText() {
-		Patient t = (Patient) getValue();
+		Person t = (Person) getValue();
 		if (t == null) {
 			return "";
 		}
 		else {
-			return t.getPatientId().toString();
+			return t.getPersonId().toString();
 		}
 	}
 	
