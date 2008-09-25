@@ -13,6 +13,10 @@
  */
 package org.openmrs.web.controller;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,6 +53,16 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		return "";
     }
     
+    /**
+     * The mapping from user's IP address to the number of attempts at logging in from that IP
+     */
+    private Map<String, Integer> loginAttemptsByIP = new HashMap<String, Integer>();
+    
+    /**
+     * The mapping from user's IP address to the time that they were locked out
+     */
+    private Map<String, Date> lockoutDateByIP = new HashMap<String, Date>();
+    
 	/**
 	 * 
 	 * This takes in the form twice.  The first time when the input their username and
@@ -62,57 +76,103 @@ public class ForgotPasswordFormController extends SimpleFormController {
 		
 		String username = request.getParameter("uname");
 		
-		Integer loginAttempts = (Integer)httpSession.getAttribute("forgotPasswordAttempts");
-		if (loginAttempts == null)
-			loginAttempts = 0;
+		String ipAddress = request.getLocalAddr();
+		Integer forgotPasswordAttempts = loginAttemptsByIP.get(ipAddress);
+		if (forgotPasswordAttempts == null)
+			forgotPasswordAttempts = 1;
 		
-		try {
+		boolean lockedOut = false;
+		
+		if (forgotPasswordAttempts > 5) {
+			lockedOut = true;
+			
+			Date lockedOutTime = lockoutDateByIP.get(ipAddress);
+			if (lockedOutTime != null && 
+				new Date().getTime() - lockedOutTime.getTime() > 300000) {
+					lockedOut = false;
+					forgotPasswordAttempts = 0;
+					lockoutDateByIP.put(ipAddress, null);
+			}
+			else {
+				// they haven't been locked out before, or they're trying again
+				// within the time limit.  Set the locked-out date to right now
+				lockoutDateByIP.put(ipAddress, new Date());
+			}
+			
+		}
+			
+		if (lockedOut) {
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.forgotPassword.tooManyAttempts");
+		}
+		else {
+			// if the previous logic didn't determine that the user should be locked out,
+			// then continue with the check
+			
+			forgotPasswordAttempts++;
+			
 			String secretAnswer = request.getParameter("secretAnswer");
 			if (secretAnswer == null) {
 				// if they are seeing this page for the first time
 				
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 				User user = null;
 				
-				// only search if they actually put in a username
-				if (username != null && username.length() > 0)
-					user = Context.getUserService().getUserByUsername(username);
+				try {
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+					
+					// only search if they actually put in a username
+					if (username != null && username.length() > 0)
+						user = Context.getUserService().getUserByUsername(username);
+				}
+				finally {
+					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+				}
 				
-				httpSession.setAttribute("loginAttempts", loginAttempts++);
 				
 				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
-					request.setAttribute("uname", username);
-					return showForm(request, response, errors);
 				}
 				else {
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
-					request.setAttribute("uname", username);
 					request.setAttribute("secretQuestion", user.getSecretQuestion());
-					return showForm(request, response, errors);
+					
+					// reset the forgotPasswordAttempts because they have a right user.
+					// they will now have 5 more chances to get the question right
+					forgotPasswordAttempts = 0;
 				}
+				
 			}
 			else if(secretAnswer != null) {
 				// if they've filled in the username and entered their secret answer
 				
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-				User user = Context.getUserService().getUserByUsername(username);
-				httpSession.setAttribute("loginAttempts", loginAttempts++);
+				User user = null;
 				
-				// check the secret question again in case the user got her "illegally"
+				try {
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+					user = Context.getUserService().getUserByUsername(username);
+				}
+				finally {
+					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+				}
+				
+				// check the secret question again in case the user got here "illegally"
 				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
-					request.setAttribute("uname", username);
-					return showForm(request, response, errors);
 				}
 				else if (user.getSecretQuestion() != null && Context.getUserService().isSecretAnswer(user, secretAnswer)) {
 					
-					Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 					String randomPassword = "";
 					for (int i=0; i<8; i++) {
 						randomPassword += String.valueOf((Math.random() * (127-48) + 48));
 					}
-					Context.getUserService().changePassword(user, randomPassword);
+					
+					try {
+						Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+						Context.getUserService().changePassword(user, randomPassword);
+					}
+					finally {
+						Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+					}
+					
 					httpSession.setAttribute("resetPassword", randomPassword);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.password.reset");
 					Context.authenticate(username, randomPassword);
@@ -122,21 +182,14 @@ public class ForgotPasswordFormController extends SimpleFormController {
 				else {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.answer.invalid");
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
-					request.setAttribute("uname", username);
 					request.setAttribute("secretQuestion", user.getSecretQuestion());
-					return showForm(request, response, errors);
 				}
 			}
+		}
 				
-		}
-		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-		}
-		
-		String view = getFormView();
-		
-		return new ModelAndView(new RedirectView(view));
+		loginAttemptsByIP.put(ipAddress, forgotPasswordAttempts);
+		request.setAttribute("uname", username);
+		return showForm(request, response, errors);
 	}
 	
 }

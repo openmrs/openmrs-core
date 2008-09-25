@@ -22,12 +22,20 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
+/**
+ * Allows for serializing/deserializing a Patient object to a string 
+ * so that Spring knows how to pass a Person back and forth through
+ * an html form or other medium
+ * 
+ * @see Patient
+ */
 public class PatientEditor extends PropertyEditorSupport {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public PatientEditor() {	}
-	
+	/**
+	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
+	 */
 	public void setAsText(String text) throws IllegalArgumentException {
 		PatientService ps = Context.getPatientService(); 
 		if (StringUtils.hasText(text)) {
@@ -36,7 +44,7 @@ public class PatientEditor extends PropertyEditorSupport {
 			}
 			catch (Exception ex) {
 				log.error("Error setting text: " + text, ex);
-				throw new IllegalArgumentException("Identifier Type not found: " + ex.getMessage());
+				throw new IllegalArgumentException("Patient not found: " + ex.getMessage());
 			}
 		}
 		else {
@@ -44,6 +52,9 @@ public class PatientEditor extends PropertyEditorSupport {
 		}
 	}
 
+	/**
+	 * @see java.beans.PropertyEditorSupport#getAsText()
+	 */
 	public String getAsText() {
 		Patient t = (Patient) getValue();
 		if (t == null) {
