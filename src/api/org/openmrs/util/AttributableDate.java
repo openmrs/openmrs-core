@@ -110,8 +110,4 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 		return new SimpleDateFormat(dateFormat).format(this);
 	}
 	
-	public String toString() {
-		System.out.println("toStringTest");
-		return super.toString();
-	}
 }

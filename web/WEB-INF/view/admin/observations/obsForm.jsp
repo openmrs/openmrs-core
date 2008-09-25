@@ -262,12 +262,27 @@
 	<br/>
 </spring:hasBindErrors>
 <form method="post" onSubmit="removeHiddenRows()">
+
+<spring:nestedPath path="obs">
+
+<c:if test="${obs.voided}">
+	<div class="retiredMessage">
+		<div>
+			<spring:message code="general.voidedBy"/>
+			${obs.voidedBy.personName}
+			<openmrs:formatDate date="${obs.dateVoided}" type="medium" />
+			-
+			${obs.voidReason}
+		</div>
+	</div>
+</c:if>
+
 <table id="obsTable">
 	<c:if test="${obs.obsId != null}">
 		<tr>
 			<th><spring:message code="general.id"/></th>
 			<td>
-				<spring:bind path="obs.obsId">
+				<spring:bind path="obsId">
 					${status.value}
 				</spring:bind>
 			</td>
@@ -277,24 +292,24 @@
 		<th><spring:message code="Obs.person"/></th>
 		<td>
 			<script type="text/javascript">$('obsTable').style.visibility = 'hidden';</script>
-			<spring:bind path="obs.person">
-				<openmrs_tag:personField formFieldName="personId" searchLabelCode="Person.findBy" initialValue="${status.value.personId}" linkUrl="" callback="" />
+			<spring:bind path="person">
+				<openmrs_tag:personField formFieldName="person" searchLabelCode="Person.findBy" initialValue="${status.editor.value.personId}" linkUrl="" callback="" />
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
 		<th><spring:message code="Obs.encounter"/></th>
 		<td>
-			<spring:bind path="obs.encounter">
+			<spring:bind path="encounter">
 				<c:choose>
 					<c:when test="${obs.encounter == null}">
 						<div dojoType="EncounterSearch" widgetId="eSearch"></div>
-						<div dojoType="OpenmrsPopup" widgetId="encounterSelection" hiddenInputName="encounterId" hiddenInputId="encounterId" searchWidget="eSearch" searchTitle='<spring:message code="Encounter.find" />'></div>
+						<div dojoType="OpenmrsPopup" widgetId="encounterSelection" hiddenInputName="encounter" hiddenInputId="encounterId" searchWidget="eSearch" searchTitle='<spring:message code="Encounter.find" />'></div>
 						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 					</c:when>
 					<c:otherwise>
-						${status.value.location.name} - <openmrs:formatDate date="${status.value.encounterDatetime}" type="medium" />
-						<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${status.value.encounterId}"><spring:message code="general.view"/>/<spring:message code="general.edit"/></a>
+						${status.editor.value.location.name} - <openmrs:formatDate date="${status.editor.value.encounterDatetime}" type="medium" />
+						<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${status.editor.value.encounterId}"><spring:message code="general.view"/>/<spring:message code="general.edit"/></a>
 					</c:otherwise>
 				</c:choose>
 			</spring:bind>
@@ -303,8 +318,8 @@
 	<tr>
 		<th><spring:message code="Obs.order"/></th>
 		<td>
-			<spring:bind path="obs.order">
-				<input type="text" name="orderId" id="order" value="${status.value.orderId}" size="7" <c:if test="${obs.obsId != null}">disabled</c:if> />
+			<spring:bind path="order">
+				<input type="text" name="order" id="order" value="${status.editor.value.orderId}" size="7" <c:if test="${obs.obsId != null}">disabled</c:if> />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -312,10 +327,10 @@
 	<tr>
 		<th><spring:message code="Obs.location"/></th>
 		<td>
-			<spring:bind path="obs.location">
+			<spring:bind path="location">
 				<select name="location" <c:if test="${obs.obsId != null}">disabled</c:if>>
 					<openmrs:forEachRecord name="location">
-						<option value="${record.locationId}" <c:if test="${status.value == record.locationId}">selected</c:if>>${record.name}</option>
+						<option value="${record.locationId}" <c:if test="${status.editor.value.locationId == record.locationId}">selected</c:if>>${record.name}</option>
 					</openmrs:forEachRecord>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -325,7 +340,7 @@
 	<tr>
 		<th><spring:message code="Obs.datetime"/></th>
 		<td>
-			<spring:bind path="obs.obsDatetime">			
+			<spring:bind path="obsDatetime">			
 				<input type="text" name="${status.expression}" size="10" 
 					   value="${status.value}" onClick="showCalendar(this)" id="${status.expression}" />
 				(<spring:message code="general.format"/>: <openmrs:datePattern />)
@@ -336,9 +351,9 @@
 	<tr>
 		<th><spring:message code="Obs.concept"/></th>
 		<td>
-			<spring:bind path="obs.concept">
-				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.value.conceptId}" showVerboseListing="true" ignoreClasses="N/A"></div>
-				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptId" hiddenInputId="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' <c:if test="${obs.obsId != null}">showChangeButton="false"</c:if> ></div>
+			<spring:bind path="concept">
+				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.editor.value.conceptId}" showVerboseListing="true" ignoreClasses="N/A"></div>
+				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="concept" hiddenInputId="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' <c:if test="${obs.obsId != null}">showChangeButton="false"</c:if> ></div>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -347,7 +362,7 @@
 		<tr>
 			<th><spring:message code="Obs.accessionNumber"/></th>
 			<td>
-				<spring:bind path="obs.accessionNumber">
+				<spring:bind path="accessionNumber">
 					<input type="text" name="${status.expression}" id="accessionNumber" value="${status.value}" size="10" <c:if test="${obs.obsId != null}">disabled</c:if> />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
@@ -355,7 +370,7 @@
 		</tr>
 		<tr>
 			<th><spring:message code="Obs.valueGroupId"/></th>
-			<spring:bind path="obs.valueGroupId">
+			<spring:bind path="valueGroupId">
 				<td>
 					<input type="text" name="${status.expression}" id="valueGroupId" value="${status.value}" size="10" <c:if test="${obs.obsId != null}">disabled</c:if> />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -365,7 +380,7 @@
 	</c:if>
 	<tr id="valueBooleanRow" class="obsValue">
 		<th><spring:message code="general.value"/></th>
-		<spring:bind path="obs.valueNumeric">
+		<spring:bind path="valueNumeric">
 			<td>
 				<select name="${status.expression}" id="valueBooleanSelect">
 					<option value="" <c:if test="${status.value == null}">selected</c:if>></option>
@@ -379,13 +394,13 @@
 	<tr id="valueCodedRow" class="obsValue">
 		<th valign="top"><spring:message code="general.value"/></th>
 		<td>
-			<spring:bind path="obs.valueCoded">
-				<div dojoType="ConceptSearch" widgetId="codedSearch" conceptId="${status.value.conceptId}" drugId="${obs.valueDrug.drugId}" showVerboseListing="true" includeDrugConcepts="true"></div>
-				<div dojoType="OpenmrsPopup" widgetId="codedSelection" hiddenInputName="valueCodedId" searchWidget="codedSearch" searchTitle='<spring:message code="Concept.find" />'></div>
+			<spring:bind path="valueCoded">
+				<div dojoType="ConceptSearch" widgetId="codedSearch" conceptId="${status.editor.value.conceptId}" drugId="${obs.valueDrug.drugId}" showVerboseListing="true" includeDrugConcepts="true"></div>
+				<div dojoType="OpenmrsPopup" widgetId="codedSelection" hiddenInputName="valueCoded" searchWidget="codedSearch" searchTitle='<spring:message code="Concept.find" />'></div>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
-			<spring:bind path="obs.valueDrug">
-				<input type="hidden" id="valueDrugId" value="${status.value.drugId}" name="valueDrugId" />
+			<spring:bind path="valueDrug">
+				<input type="hidden" id="valueDrugId" value="${status.editor.value.drugId}" name="valueDrug" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -393,7 +408,7 @@
 	<tr id="valueDatetimeRow">
 		<th><spring:message code="general.value"/></th>
 		<td>
-			<spring:bind path="obs.valueDatetime">			
+			<spring:bind path="valueDatetime">			
 				<input type="text" name="${status.expression}" size="10" 
 					   value="${status.value}" onClick="showCalendar(this)" />
 				  (<spring:message code="general.format"/>: <openmrs:datePattern />)
@@ -403,7 +418,7 @@
 	</tr>
 	<tr id="valueNumericRow" class="obsValue">
 		<th><spring:message code="general.value"/></th>
-		<spring:bind path="obs.valueNumeric">
+		<spring:bind path="valueNumeric">
 			<td>
 				<input type="text" name="${status.expression}" value="${status.value}" size="10" onKeyUp="validateNumericRange(this.value)"/>
 				<span id="numericUnits"></span>
@@ -414,7 +429,7 @@
 	</tr>
 	<tr id="valueModifierRow" class="obsValue">
 		<th><spring:message code="Obs.valueModifier"/></th>
-		<spring:bind path="obs.valueModifier">
+		<spring:bind path="valueModifier">
 			<td>
 				<input type="text" name="${status.expression}" id="valueModifierInput" value="${status.value}" size="3" maxlength="2"/>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -423,7 +438,7 @@
 	</tr>
 	<tr id="valueTextRow" class="obsValue">
 		<th><spring:message code="general.value"/></th>
-		<spring:bind path="obs.valueText">
+		<spring:bind path="valueText">
 			<td>
 				<textarea name="${status.expression}" rows="3" cols="35">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -442,7 +457,7 @@
 		<tr>
 			<th><spring:message code="Obs.dateStarted"/></th>
 			<td>
-				<spring:bind path="obs.dateStarted">			
+				<spring:bind path="dateStarted">			
 					<input type="text" name="${status.expression}" size="10" 
 						   value="${status.value}" onClick="showCalendar(this)" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
@@ -452,7 +467,7 @@
 		<tr>
 			<th><spring:message code="Obs.dateStopped"/></th>
 			<td>
-				<spring:bind path="obs.dateStopped">			
+				<spring:bind path="dateStopped">			
 					<input type="text" name="${status.expression}" size="10" 
 						   value="${status.value}" onClick="showCalendar(this)" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
@@ -463,7 +478,7 @@
 	
 	<tr>
 		<th><spring:message code="Obs.comment"/></th>
-		<spring:bind path="obs.comment">
+		<spring:bind path="comment">
 			<td>
 				<textarea name="${status.expression}" rows="2" cols="45">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -479,36 +494,8 @@
 			</td>
 		</tr>
 	</c:if>
-	<c:if test="${obs.obsId != null}">
-		<tr>
-			<th><spring:message code="general.voided"/></th>
-			<td>
-				<spring:bind path="obs.voided">
-					<input type="hidden" name="_${status.expression}">
-					<input type="checkbox" name="${status.expression}" 
-						   id="${status.expression}" 
-						   <c:if test="${status.value == true}">checked</c:if> 
-					/>
-				</spring:bind>
-			</td>
-		</tr>
-	</c:if>
-	<c:if test="${fn:length(obs.voidReason) > 0}">
-		<tr>
-			<th><spring:message code="general.voidReason"/></th>
-			<td>${obs.voidReason}</td>
-		</tr>
-	</c:if>
-	<c:if test="${obs.voided == true && obs.voidedBy != null}" >
-		<tr>
-			<th><spring:message code="general.voidedBy"/></th>
-			<td>
-				${obs.voidedBy.personName} -
-				<openmrs:formatDate date="${obs.dateVoided}" type="medium" />
-			</td>
-		</tr>
-	</c:if>
 </table>
+</spring:nestedPath>
 <input type="hidden" name="phrase" value="<request:parameter name="phrase" />"/>
 <br /><br />
 
@@ -522,9 +509,33 @@
 	<br/><br/>
 </c:if>
 
-<input type="submit" value='<spring:message code="Obs.save"/>' >
+<%-- You can't edit a voided obs --%>
+<input type="submit" name="saveObs" value='<spring:message code="Obs.save"/>' <c:if test="${obs.voided}">disabled</c:if> >
+
 &nbsp; 
 <input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1);">
+</form>
+
+<br/>
+<br/>
+
+<form action="" method="post">
+<c:choose>
+	<c:when test="${obs.voided}">
+		<input type="submit" value='<spring:message code="Obs.unvoidObs"/>' name="unvoidObs"/>
+	</c:when>
+	<c:otherwise>
+		<b><spring:message code="Obs.void.reason"/></b>
+		<input type="text" value="" size="40" name="voidReason" />
+		<spring:hasBindErrors name="obs">
+			<c:forEach items="${errors.allErrors}" var="error">
+				<c:if test="${error.code == 'voidReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+			</c:forEach>
+		</spring:hasBindErrors>
+		<br/>
+		<input type="submit" value='<spring:message code="Obs.voidObs"/>' name="voidObs"/>
+	</c:otherwise>
+</c:choose>
 </form>
 
 <script type="text/javascript">
