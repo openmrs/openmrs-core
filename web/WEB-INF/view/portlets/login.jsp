@@ -8,7 +8,7 @@
 
 <br/>
 
-<form method="post" action="loginServlet" style="padding:15px; width: 300px;">
+<form method="post" action="loginServlet" style="padding:15px; width: 300px;" autocomplete="off">
 	<table>
 		<tr>
 			<td><spring:message code="User.username"/>:</td>
