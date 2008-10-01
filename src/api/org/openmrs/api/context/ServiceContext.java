@@ -515,7 +515,7 @@ public class ServiceContext {
 	 * @return Object that is a proxy for the <code>cls</code> class 
 	 */
 	@SuppressWarnings("unchecked")
-    public Object getService(Class cls) {
+    public <T extends Object> T getService(Class<? extends T> cls) {
 		if (log.isTraceEnabled())
 			log.trace("Getting service: " + cls);
 		
@@ -537,7 +537,7 @@ public class ServiceContext {
 		if (factory == null)
 			throw new APIException("Service not found: " + cls);
 		
-		return factory.getProxy(OpenmrsClassLoader.getInstance());
+		return (T)factory.getProxy(OpenmrsClassLoader.getInstance());
 	}
 
 	/**
