@@ -434,8 +434,12 @@ public class ORUR01Handler implements Application {
 			CE value = (CE) obx5;
 			String valueIdentifier = value.getIdentifier().getValue();
 			String valueName = value.getText().getValue();
-			if (isConceptProposal(valueIdentifier))
+			if (isConceptProposal(valueIdentifier)) {
 				proposeConcept(encounter, concept, valueName);
+				// skip out early and not returning an obs because it
+				// will be created later when the proposal is resolved
+				return null;
+			}
 			else {
 				try {
 					Concept valueCoded = new Concept();
