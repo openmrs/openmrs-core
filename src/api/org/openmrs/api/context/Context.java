@@ -699,7 +699,7 @@ public class Context {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-    public static Object getService(Class cls) {
+    public static <T extends Object> T getService(Class<? extends T> cls) {
 		return getServiceContext().getService(cls);
 	}
 	
