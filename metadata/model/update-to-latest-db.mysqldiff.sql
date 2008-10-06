@@ -1156,6 +1156,35 @@ delimiter ;
 call diff_procedure('1.3.0.15');
 
 #----------------------------------------
+# OpenMRS Datamodel version 1.3.0.16
+# Ben Wolfe               Oct 6th, 2008
+# Moving hl7_in_error items to hl7_in_queue that 
+# were misprocessed due to a concept proposed bug
+#----------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+	
+	insert into hl7_in_queue (hl7_source, hl7_source_key, hl7_data, date_created)
+	(select 1, hl7_source_key, hl7_data, date_created from hl7_in_error where error_details = 'object references an unsaved transient instance - save the transient instance before flushing: org.openmrs.Encounter; nested exception is org.hibernate.TransientObjectException: object references an unsaved transient instance - save the transient instance before flushing: org.openmrs.Encounter');
+	
+	delete from hl7_in_error where error_details = 'object references an unsaved transient instance - save the transient instance before flushing: org.openmrs.Encounter; nested exception is org.hibernate.TransientObjectException: object references an unsaved transient instance - save the transient instance before flushing: org.openmrs.Encounter';
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.3.0.16');
+
+#----------------------------------------
 # OpenMRS Datamodel version 1.4.0.01
 # Mike Seaton          July 28, 2008
 # Adding accession_number to orders
