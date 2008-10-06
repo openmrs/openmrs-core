@@ -8,8 +8,6 @@ dojo.require("dojo.widget.TreeSelector");
 dojo.require("dojo.widget.TreeNode");
 dojo.require("dojo.widget.TreeContextMenu");
 
-dojo.hostenv.writeIncludes();
-
 var fieldSearch = null;		// field search widget
 var cSelection = null;		// concept search widget
 var tree;
