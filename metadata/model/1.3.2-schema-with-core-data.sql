@@ -1053,7 +1053,7 @@ SET character_set_client = @saved_cs_client;
 --
 
 /*!40000 ALTER TABLE `global_property` DISABLE KEYS */;
-INSERT INTO `global_property` VALUES ('concept.causeOfDeath','5002',NULL),('concept.reasonOrderStopped','6098',NULL),('database_version','1.3.0.15',NULL),('patient.displayAttributeTypes','Birthplace',NULL);
+INSERT INTO `global_property` VALUES ('concept.causeOfDeath','5002',NULL),('concept.reasonOrderStopped','6098',NULL),('database_version','1.3.0.16',NULL),('patient.displayAttributeTypes','Birthplace',NULL);
 /*!40000 ALTER TABLE `global_property` ENABLE KEYS */;
 
 --
@@ -2456,4 +2456,4 @@ INSERT INTO `users` VALUES (1,'admin','','4a1750c8607dfa237de36c6305715c22341518
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2008-07-25  2:12:49
+-- Dump completed on 2008-07-25  2:12:54
