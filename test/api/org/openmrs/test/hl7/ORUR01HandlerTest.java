@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -35,6 +36,7 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.handler.ORUR01Handler;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.TestUtil;
 
 import ca.uhn.hl7v2.app.MessageTypeRouter;
 import ca.uhn.hl7v2.model.Message;
@@ -65,7 +67,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(ORU_INITIAL_DATA_XML);
-		System.out.println("Before oru tests");
 	}
 
 	/**
@@ -214,6 +215,9 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldCreateConceptProposal() throws Exception {
+
+		ConceptProposal proposal = Context.getConceptService().getConceptProposal(1);
+		Assert.assertNull(proposal);
 		
 		// there should be an encounter with encounter_id == 3 for this test
 		// to append to
@@ -223,9 +227,33 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
-		ConceptProposal proposal = Context.getConceptService().getConceptProposal(1);
+		proposal = Context.getConceptService().getConceptProposal(1);
 		assertEquals("PELVIC MASS", proposal.getOriginalText());
-		
+
 	}
 
+	/**
+	 * Should create a concept proposal because of the key string in the message
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCreateConceptProposal2() throws Exception {
+		TestUtil.printOutTableContents(getConnection(), new String[] { "concept_name"});
+		ConceptProposal proposal = Context.getConceptService().getConceptProposal(1);
+		Assert.assertNull(proposal);
+		
+		// there should be an encounter with encounter_id == 3 for this test
+		// to append to
+		assertNotNull(Context.getEncounterService().getEncounter(3));
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20081006115934||ORU^R01|a1NZBpKqu54QyrWBEUKf|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^~asdf^^^^||Joe^ ^Smith||\rPV1||O|1^Bishop Muge||||1^asdf asdf (5-9)|||||||||||||||||||||||||||||||||||||20081003|||||||V\rORC|RE||||||||20081006115645|1^Super User\rOBR|1|||\rOBX|1|CWE|5096^PAY CATEGORY^99DCT||5096^PILOT^99DCT|||||||||20081003\rOBX|2|DT|5096^RETURN VISIT DATE^99DCT||20081004|||||||||20081003\rOBR|3|||5096^PROBLEM LIST^99DCT\rOBX|1|CWE|5018^PROBLEM ADDED^99DCT||5096^HUMAN IMMUNODEFICIENCY VIRUS^99DCT|||||||||20081003\rOBX|2|CWE|5089^PROBLEM ADDED^99DCT||PROPOSED^ASDFASDFASDF^99DCT|||||||||20081003";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		proposal = Context.getConceptService().getConceptProposal(1);
+		Assert.assertNotNull(proposal);
+		assertEquals("ASDFASDFASDF", proposal.getOriginalText());
+		
+	}
 }
