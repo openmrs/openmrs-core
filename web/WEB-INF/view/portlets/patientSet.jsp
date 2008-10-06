@@ -261,18 +261,5 @@
 </c:if>
 
 <script type="text/javascript">
-	function patientSetInit() {
-		refreshList();
-	}
-	<c:if test="${model.myPatientSet.size > 0}">
-		var oldonload = window.onload;
-		if (typeof window.onload != 'function') {
-			window.onload = patientSetInit;
-		} else {
-			window.onload = function() {
-				oldonload();
-				patientSetInit();
-			}
-		}
-	</c:if>
+	addEvent(window, "load", refreshList);
 </script>

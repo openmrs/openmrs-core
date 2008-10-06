@@ -8,10 +8,10 @@
 dojo.provide("dojo.widget.openmrs.PersonSearch");
 dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 
+dojo.widget.tags.addParseTreeHandler("dojo:PersonSearch");
+
 var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
 importJavascriptFile(openmrsSearchBase + "/dwr/interface/DWRPersonService.js");
-
-dojo.widget.tags.addParseTreeHandler("dojo:PersonSearch");
 
 dojo.widget.defineWidget(
 	"dojo.widget.openmrs.PersonSearch",

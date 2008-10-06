@@ -7,6 +7,8 @@
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
+	dojo.require("dojo.widget.openmrs.PersonSearch");
+	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	
 	function callbackAfterSelect(relType, person) {
 		var personPopup = dojo.widget.manager.getWidgetById("add_rel_target_selection");
