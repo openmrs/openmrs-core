@@ -216,18 +216,18 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldCreateConceptProposal() throws Exception {
 
-		ConceptProposal proposal = Context.getConceptService().getConceptProposal(1);
-		Assert.assertNull(proposal);
+		List<ConceptProposal> proposals = Context.getConceptService().getAllConceptProposals(false);
+		Assert.assertEquals(0, proposals.size());
 		
 		// there should be an encounter with encounter_id == 3 for this test
 		// to append to
 		assertNotNull(Context.getEncounterService().getEncounter(3));
 		
-		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080924022306||ORU^R01|Z185fTD0YozQ5kvQZD7i|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^||Joe^S^Mith||\rPV1||O|1^Unknown Module 2||||1^Joe (1-1)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080219085345|1^Joe\rOBR|1|||\rOBX|18|DT|5096^RETURN VISIT DATE^99DCT||20080506|||||||||20080212\rOBR|19|||5096^PROBLEM LIST^99DCT\rOBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080924022306||ORU^R01|Z185fTD0YozQ5kvQZD7i|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^||Joe^S^Mith||\rPV1||O|1^Unknown Module 2||||1^Joe (1-1)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080219085345|1^Joe\rOBR|1|||\rOBX|18|DT|5096^RETURN VISIT DATE^99DCT||20080506|||||||||20080212\rOBR|19|||5096^PROBLEM LIST^99DCT\rOBX|1|CWE|5096^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
-		proposal = Context.getConceptService().getConceptProposal(1);
+		ConceptProposal proposal = Context.getConceptService().getAllConceptProposals(false).get(0);
 		assertEquals("PELVIC MASS", proposal.getOriginalText());
 
 	}
@@ -239,9 +239,9 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldCreateConceptProposal2() throws Exception {
-		TestUtil.printOutTableContents(getConnection(), new String[] { "concept_name"});
-		ConceptProposal proposal = Context.getConceptService().getConceptProposal(1);
-		Assert.assertNull(proposal);
+		
+		List<ConceptProposal> proposals = Context.getConceptService().getAllConceptProposals(false);
+		Assert.assertEquals(0, proposals.size());
 		
 		// there should be an encounter with encounter_id == 3 for this test
 		// to append to
@@ -251,7 +251,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
-		proposal = Context.getConceptService().getConceptProposal(1);
+		ConceptProposal proposal = Context.getConceptService().getAllConceptProposals(false).get(0);
 		Assert.assertNotNull(proposal);
 		assertEquals("ASDFASDFASDF", proposal.getOriginalText());
 		

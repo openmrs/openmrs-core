@@ -18,6 +18,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Properties;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleConstants;
@@ -32,6 +34,22 @@ import org.openmrs.util.OpenmrsClassLoader;
  * 
  */
 public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
+	
+	@Before
+	public void startupBeforeEachTest() throws Exception {
+		// create the basic user and give it full rights
+		initializeInMemoryDatabase();
+		
+		ModuleUtil.startup(getRuntimeProperties());
+		
+		// authenticate to the temp database
+		authenticate();
+	}
+	
+	@After
+	public void cleanupAfterEachTest() throws Exception {
+		ModuleUtil.shutdown();
+	}
 	
 	/**
 	 * This class file uses the atd and dss modules to test the compatibility
@@ -60,13 +78,6 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	@Test
 	@SkipBaseSetup
 	public void shouldModuleALoadingModuleB() throws Exception {
-		// create the basic user and give it full rights
-		initializeInMemoryDatabase();
-		
-		ModuleUtil.startup(runtimeProperties);
-		
-		// authenticate to the temp database
-		authenticate();
 		
 		OpenmrsClassLoader loader = OpenmrsClassLoader.getInstance();
 		Class<?> atdServiceClass = loader.loadClass("org.openmrs.module.atdproducer.service.ATDService");
