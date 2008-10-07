@@ -609,7 +609,10 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	@Before
 	public void baseSetupWithStandardDataAndAuthentication() throws Exception {
-		if (skipBaseSetup == false) {
+		// the skipBaseSetup flag is controlled by the @SkipBaseSetup
+		// annotation.  If it is deflagged or if the developer has
+		// marked this class as a non-inmemory database, skip these base steps
+		if (skipBaseSetup == false && useInMemoryDatabase()) {
 			initializeInMemoryDatabase();
 		
 			executeDataSet(EXAMPLE_XML_DATASET_PACKAGE_PATH);
