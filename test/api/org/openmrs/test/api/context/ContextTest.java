@@ -16,18 +16,18 @@ package org.openmrs.test.api.context;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
-import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.test.AssertThrows;
 
 /**
  * TODO add methods for all context tests
+ * 
+ * @See {@link Context}
  */
 public class ContextTest extends BaseContextSensitiveTest {
 	
@@ -88,17 +88,14 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * TODO finish and complete
+	 * 
 	 */
 	@Test
-	public void shouldGettingUser() throws Exception {
-		
+	public void shouldGetUserByUsername() throws Exception {
 		UserService us = Context.getUserService();
 		String username = "admin";
 		User user = us.getUserByUsername(username);
 		assertNotNull("user " + username, user);
-		System.out.println("Successfully found user: " + user.getPersonName() + " (" + username + ")");
-		
 	}
 	
 	/**
@@ -107,27 +104,14 @@ public class ContextTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldProxyPrivilege() throws Exception {
 		
-		//create a bum user
+		// create a non-admin user using dbunit xml 
 		
 		// make sure they can't do High Level Task X
 		
-		// give them privileges to do High Level Task X
+		// give them proxy privileges to do High Level Task X
 		
 		// now make sure they can do High Level Task X
 		
-		// delete the user
-		
-	}
-
-	/**
-	 * @verifies {@link Context#loadClass(String)}
-	 *  test = should load class with the OpenmrsClassLoader
-	 * 
-	 * @throws Exception
-	 */
-	public void loadClass_shouldLoadClassWithOpenmrsClassLoader() throws Exception {
-		Class<?> c = Context.loadClass("org.openmrs.patient.impl.LuhnIdentifierValidator");
-		Assert.assertTrue("Should be loaded by OpenmrsClassLoader", c.getClassLoader() instanceof OpenmrsClassLoader);
 	}
 
 }

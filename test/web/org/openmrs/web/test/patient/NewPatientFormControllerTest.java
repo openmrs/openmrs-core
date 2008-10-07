@@ -53,6 +53,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	
 	@Before
 	public void runBeforeEachTest() throws Exception {
+		initializeInMemoryDatabase();
 		executeDataSet(CONTROLLER_DATA);
 	}
 	
