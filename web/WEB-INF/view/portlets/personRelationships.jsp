@@ -75,7 +75,8 @@
 	
 	function handleAddRelationship() {
 		var personIdB = ${model.personId};
-		var personIdA = DWRUtil.getValue('add_rel_target');
+		var personPopup = dojo.widget.manager.getWidgetById("add_rel_target_selection");
+		var personIdA = personPopup.hiddenInputNode.value;
 		var relType = DWRUtil.getValue('add_relationship_type');
 		if (relType == null || relType == '' || personIdA == null || personIdA == '' || personIdB == null || personIdB == '') {
 			window.alert('<spring:message code="Relationship.error.everything" javaScriptEscape="true"/>');
@@ -91,7 +92,7 @@
 			personIdA = personIdB;
 			personIdB = temp;
 		}
-		DWRUtil.setValue('add_rel_target', null);
+		personPopup.hiddenInputNode.value = "";
 		DWRUtil.setValue('add_relationship_type', null);
 		hideDiv('addRelationship');
 		showDiv('addRelationshipLink');
