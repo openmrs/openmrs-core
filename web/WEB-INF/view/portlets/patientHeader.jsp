@@ -40,7 +40,8 @@
 						<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientTribe" type="html" parameters="patientId=${model.patient.patientId}" />
 					</td>
 				</c:if>
-				<c:if test="${not empty model.patient.attributeMap['Health Center']}">
+				<openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" var="showHealthCenter"/>
+				<c:if test="${showHealthCenter && not empty model.patient.attributeMap['Health Center']}">
 					<td id="patientHeaderHealthCenter">
 						<spring:message code="PersonAttributeType.HealthCenter"/>:
 						<b>${model.patient.attributeMap['Health Center'].hydratedObject}</b>
