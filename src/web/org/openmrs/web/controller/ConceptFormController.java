@@ -413,16 +413,21 @@ public class ConceptFormController extends SimpleFormController {
 		ConceptService cs = Context.getConceptService();
 
 		for (ConceptName cn : conceptNames) {
-			for (ConceptNameTag tag : cn.getTags()) {
-				ConceptNameTag existingTag = cs.getConceptNameTagByName(tag
-				        .getTag());
-				if (existingTag == null) {
-					cs.saveConceptNameTag(tag);
-				} else {
-					cn.removeTag(tag);
-					cn.addTag(existingTag);
+			if (cn.getTags() != null) {
+				for (ConceptNameTag tag : cn.getTags()) {
+					ConceptNameTag existingTag = cs.getConceptNameTagByName(tag
+					        .getTag());
+					if (existingTag == null) {
+						// pass through and do nothing here
+						// because the concept_name_tag_id will be null
+						// a new one will be created when the concept is saved.
+					} 
+					else {
+						cn.removeTag(tag);
+						cn.addTag(existingTag);
+					}
+	
 				}
-
 			}
 		}
 	}

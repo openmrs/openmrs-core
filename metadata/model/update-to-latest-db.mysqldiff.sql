@@ -1340,7 +1340,6 @@ BEGIN
 				('preferred_ZM', 'preferred name in Zambia', 1, '2007-06-20'),
 				('preferred_ZW', 'preferred name in Zimbabwe', 1, '2007-06-20');
 
-			ALTER TABLE `concept_name_tag` MODIFY COLUMN `concept_name_tag_id` int(11) UNIQUE KEY NOT NULL default '0';
 		END IF;
 		select '***' AS '...done' from dual;
 
@@ -1752,6 +1751,26 @@ END;
 //
 delimiter ;
 call diff_procedure('1.4.0.16');
+
+#
+# update concept_name_tag to be auto increment table
+#
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		ALTER TABLE `concept_name_tag` MODIFY COLUMN `concept_name_tag_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT;
+
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.17');
+
 
 
 #-----------------------------------

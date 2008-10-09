@@ -11,7 +11,7 @@
 		
 		<id name="conceptId" type="java.lang.Integer"
 			column="concept_id">
-			<generator class="assigned" />
+			<generator class="native" />
 		</id>
 
 		<discriminator column="concept_id" insert="false" />

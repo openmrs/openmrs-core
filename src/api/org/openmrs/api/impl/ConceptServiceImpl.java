@@ -73,7 +73,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	private final String CONCEPT_WORD_UPDATE_TASK_NAME = "Update Concept Words";
 	
 	/**
-	 * Task managed by the sceduler to update concept words. May be null.
+	 * Task managed by the scheduler to update concept words. May be null.
 	 */
 	private Task conceptWordUpdateTask;
 	
@@ -1116,59 +1116,65 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		User authUser = Context.getAuthenticatedUser();
 		Date timestamp = new Date();
 		
-		if (concept.getCreator() == null) {
+		if (concept.getCreator() == null)
 			concept.setCreator(authUser);
-			if (concept.getDateCreated() == null)
-				concept.setDateCreated(timestamp);
-		}
-		else {
+		if (concept.getDateCreated() == null)
+			concept.setDateCreated(timestamp);
+		
+		// if updating a concept (instead of creating a new one)
+		if (concept.getConceptId() != null) {
 			concept.setChangedBy(authUser);
 			concept.setDateChanged(timestamp);
 		}
 
 		if (concept.getNames() != null) {
 			for (ConceptName cn : concept.getNames()) {
-				if (cn.getCreator() == null ) {
+				if (cn.getCreator() == null )
 					cn.setCreator(authUser);
-					if (cn.getDateCreated() == null)
-						cn.setDateCreated(timestamp);
-				}
+				if (cn.getDateCreated() == null)
+					cn.setDateCreated(timestamp);
+				
+				cn.setConcept(concept);
+				
 				if (cn.getTags() != null) {
-					Collection<ConceptNameTag> savedTags = new Vector<ConceptNameTag>();
-					for (ConceptNameTag cnt : cn.getTags()) {
-						savedTags.add(saveConceptNameTag(cnt));
+					for (ConceptNameTag tag : cn.getTags()) {
+						if (tag.getCreator() == null )
+							tag.setCreator(authUser);
+						if (tag.getDateCreated() == null)
+							tag.setDateCreated(timestamp);
 					}
-					cn.setTags(savedTags);
 				}
 			}
 		}
+		
 		if (concept.getConceptSets() != null) {
 			for (ConceptSet set : concept.getConceptSets()) {
-				if (set.getCreator() == null ) {
+				if (set.getCreator() == null )
 					set.setCreator(authUser);
-					if (set.getDateCreated() == null)
-						set.setDateCreated(timestamp);
-				}
+				if (set.getDateCreated() == null)
+					set.setDateCreated(timestamp);
+				
 				set.setConceptSet(concept);
 			}
 		}
 		if (concept.getAnswers(true) != null) {
 			for (ConceptAnswer ca : concept.getAnswers(true)) {
-				if (ca.getCreator() == null ) {
+				if (ca.getCreator() == null )
 					ca.setCreator(authUser);
-					if (ca.getDateCreated() == null)
-						ca.setDateCreated(timestamp);
-				}
+				if (ca.getDateCreated() == null)
+					ca.setDateCreated(timestamp);
+				
 				ca.setConcept(concept);
 			}
 		}
 		if (concept.getDescriptions() != null) {
 			for (ConceptDescription cd : concept.getDescriptions()) {
-				if (cd.getCreator() == null) {
+				if (cd.getCreator() == null)
 					cd.setCreator(authUser);
-					if (cd.getDateCreated() == null) 
-						cd.setDateCreated(timestamp);
-				}
+				if (cd.getDateCreated() == null) 
+					cd.setDateCreated(timestamp);
+				
+				cd.setConcept(concept);
 			}
 		}
 		/*
