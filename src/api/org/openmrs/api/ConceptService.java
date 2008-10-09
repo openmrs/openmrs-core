@@ -907,6 +907,7 @@ public interface ConceptService extends OpenmrsService {
      * @param tag
      * @return
      */
+	@Transactional(readOnly=true)
 	@Authorized({OpenmrsConstants.PRIV_MANAGE_CONCEPTS})
     public ConceptNameTag getConceptNameTagByName(String tag);
 
@@ -915,7 +916,8 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @return set of used Locales
 	 */
-    public Set<Locale> getLocalesOfConceptNames();
+	@Transactional(readOnly=true)
+	public Set<Locale> getLocalesOfConceptNames();
 
 	/**
 	 * Return a list of concept sources currently in the database that are not voided
@@ -968,6 +970,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @return highest concept-id
 	 */
+	@Transactional(readOnly=true)
 	public Integer getMaxConceptId();
 	
 	/**

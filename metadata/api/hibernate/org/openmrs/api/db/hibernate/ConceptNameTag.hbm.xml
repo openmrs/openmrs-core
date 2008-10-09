@@ -8,7 +8,7 @@
 	<class name="ConceptNameTag" table="concept_name_tag" batch-size="25">
 
 		<id name="conceptNameTagId" type="int" column="concept_name_tag_id">
-			<generator class="assigned" />
+			<generator class="native" />
 		</id>
 		
 		<property name="tag" type="java.lang.String" length="50" not-null="true" />
