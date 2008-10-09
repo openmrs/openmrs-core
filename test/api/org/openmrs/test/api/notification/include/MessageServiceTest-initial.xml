@@ -1,52 +1,28 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-
-    <global_property
-      property="mail.debug"
-      property_value="false"
-      description="true/false whether to print debugging information during mailing"
-    />
-    <global_property
-      property="mail.default_content_type"
-      property_value="text/plain"
-      description="Content type to append to the mail messages"
-    />
-    <global_property
-      property="mail.from"
-      property_value="info@openmrs.org"
-      description="Email address to use as the default from address"
-    />
-    <global_property
-      property="mail.password"
-      property_value="test"
-      description="Password for the SMTP user (if smtp_auth is enabled)"
-    />
-    <global_property
-      property="mail.smtp_auth"
-      property_value="false"
-      description="true/false whether the smtp host requires authentication"
-    />
-    <global_property
-      property="mail.smtp_host"
-      property_value="localhost"
-      description="SMTP host name"
-    />
-    <global_property
-      property="mail.smtp_port"
-      property_value="25"
-      description="SMTP port"
-    />
-    <global_property
-      property="mail.transport_protocol"
-      property_value="smtp"
-      description="Transport protocol for the messaging engine. Valid values: smtp"
-    />
-    <global_property
-      property="mail.user"
-      property_value="test"
-      description="Username of the SMTP user (if smtp_auth is enabled)"
-    />
-
-	
-	
+  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <global_property property="database_version" property_value="1.4.0.16"/>
+  <global_property property="mail.debug" property_value="false" description="true/false whether to print debugging information during mailing"/>
+  <global_property property="mail.default_content_type" property_value="text/plain" description="Content type to append to the mail messages"/>
+  <global_property property="mail.from" property_value="info@openmrs.org" description="Email address to use as the default from address"/>
+  <global_property property="mail.password" property_value="test" description="Password for the SMTP user (if smtp_auth is enabled)"/>
+  <global_property property="mail.smtp_auth" property_value="false" description="true/false whether the smtp host requires authentication"/>
+  <global_property property="mail.smtp_host" property_value="localhost" description="SMTP host name"/>
+  <global_property property="mail.smtp_port" property_value="25" description="SMTP port"/>
+  <global_property property="mail.transport_protocol" property_value="smtp" description="Transport protocol for the messaging engine. Valid values: smtp"/>
+  <global_property property="mail.user" property_value="test" description="Username of the SMTP user (if smtp_auth is enabled)"/>
 </dataset>

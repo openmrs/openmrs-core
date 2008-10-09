@@ -238,4 +238,16 @@ function hotkeys(event) {
 	}
 }
 
+function addMapping(btn) {
+	var newMapping = document.getElementById("newConceptMapping");
+	var clone = newMapping.cloneNode(true);
+	clone.id = "";
+	newMapping.parentNode.insertBefore(clone, btn);
+	clone.style.display = "";
+	
+}
+
+function removeMapping(btn) {
+	btn.parentNode.parentNode.removeChild(btn.parentNode);
+}
 document.onkeypress = hotkeys;

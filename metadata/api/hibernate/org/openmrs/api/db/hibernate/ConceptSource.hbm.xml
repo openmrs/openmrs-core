@@ -11,7 +11,7 @@
 			column="concept_source_id" unsaved-value="0">
 			<generator class="native" />
 		</id>
-		
+
 		<discriminator column="concept_source_id" insert="false" />
 		
 		<property name="name" type="java.lang.String"
@@ -20,6 +20,7 @@
 			column="description" length="1024" />
 		<property name="hl7Code" type="java.lang.String"
 			column="hl7_code" length="50" />
+			
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 		<property name="voided" type="boolean" column="voided" />

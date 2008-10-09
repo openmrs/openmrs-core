@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -235,13 +236,13 @@ public class OptionsFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			
-			EncounterService es = Context.getEncounterService();
+			LocationService ls = Context.getLocationService();
 			
 			// set location options
-			map.put("locations", es.getLocations());
+			map.put("locations", ls.getAllLocations());
 			
 			// set language/locale options
-			map.put("languages", OpenmrsConstants.OPENMRS_LOCALES());
+			map.put("languages", Context.getAdministrationService().getPresentationLocales());
 			
 			String resetPassword = (String)httpSession.getAttribute("resetPassword");
 			if (resetPassword==null)

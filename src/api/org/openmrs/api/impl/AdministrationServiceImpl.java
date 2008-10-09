@@ -13,11 +13,18 @@
  */
 package org.openmrs.api.impl;
 
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -27,10 +34,12 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptSource;
 import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
+import org.openmrs.ImplementationId;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.PatientIdentifierType;
@@ -48,6 +57,8 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.springframework.util.StringUtils;
 
 /**
  * Default implementation of the administration services.  This class should
@@ -57,12 +68,19 @@ import org.openmrs.util.OpenmrsConstants;
  * @see org.openmrs.api.AdministrationService
  * @see org.openmrs.api.context.Context
  */
-public class AdministrationServiceImpl extends BaseOpenmrsService implements AdministrationService {
+public class AdministrationServiceImpl extends BaseOpenmrsService 
+implements AdministrationService, GlobalPropertyListener {
 	
 	protected Log log = LogFactory.getLog(getClass());
 	
 	protected AdministrationDAO dao;
 	private EventListeners eventListeners;
+	
+
+	/**
+	 * An always up-to-date collection of the allowed locales. 
+	 */
+	private GlobalLocaleList globalLocaleList;
 	
 	/**
 	 * Default empty constructor
@@ -79,6 +97,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	public void setEventListeners(EventListeners eventListeners) {
 		this.eventListeners = eventListeners;
+		// add ourselves to the list
+		this.eventListeners.getGlobalPropertyListeners().add(this);
 	}
 
 	/**
@@ -545,6 +565,12 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * next time it is called 
 	 */
 	protected SortedMap<String, String> systemVariables = null;
+
+	/**
+	 * Set of locales which can be used to present messages
+	 * in the user interface. Created lazily as needed by {@link #getAllowedLocales()}.
+	 */
+	private HashSet<Locale> presentationLocales;
 			
 	/**
 	 * @see org.openmrs.api.AdministrationService#getSystemVariables()
@@ -782,5 +808,185 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
     		if (listener.supportsPropertyName(propertyName))
     			listener.globalPropertyDeleted(propertyName);
     }
-    
+
+	/**
+     * @see org.openmrs.api.AdministrationService#getImplementationId()
+     */
+    public ImplementationId getImplementationId() throws APIException {
+    	return dao.getImplementationId();
+    }
+
+    /**
+     * @see org.openmrs.api.AdministrationService#setImplementationId(org.openmrs.ImplementationId)
+     */
+    public void setImplementationId(ImplementationId implementationId)
+    throws APIException {
+
+    	if (implementationId == null)
+    		return;
+
+    	// check the validity of this implementation id with the server
+    	String description = implementationId.getDescription();
+    	try {
+    		// check that source id is valid
+    		description = checkImplementationIdValidity(implementationId.getImplementationId(), description, implementationId.getPassphrase());
+
+    		// save the server's description back to this concept source object
+    		implementationId.setDescription(description);
+    		
+    		boolean foundMatchingSource = false;
+    		// loop over the concept sources to make sure one exists for this hl7Code/implementationId
+    		List<ConceptSource> sources = Context.getConceptService().getAllConceptSources();
+    		if (sources != null) {
+    			for (ConceptSource source : sources) {
+    				if (implementationId.getImplementationId().equals(source.getHl7Code())) {
+    					foundMatchingSource = true;
+    				}
+    			}
+    		}
+    		
+    		// if no ConceptSource currently exists with this implementationId, save this implId
+    		// as a new ConceptSource
+    		if (!foundMatchingSource) {
+    			ConceptSource newConceptSource = new ConceptSource();
+    			newConceptSource.setName(implementationId.getName());
+    			newConceptSource.setDescription(implementationId.getDescription());
+    			newConceptSource.setHl7Code(implementationId.getImplementationId());
+    			Context.getConceptService().saveConceptSource(newConceptSource);
+    		}
+
+    		// serialize and save the ImplementationId to the global properties table
+    		StringWriter stringWriter = new StringWriter();
+    		OpenmrsUtil.getSerializer().write(implementationId, stringWriter);
+    		saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID, stringWriter.toString()));
+    	}
+    	catch (APIException e) {
+    		throw e;
+    	}
+    	catch (Exception e) {
+    		// pass any other exceptions on up the train
+    		throw new APIException(e);
+    	}
+    	finally {
+    		// save an empty concept source to the database when something fails?
+    	}	    
+    }
+
+    /**
+	 * Checks the remote server for this exact implementation id. Returns the description if 
+	 *  1) there is no implementation id or 
+	 *  2) there is a implementation id and this passphrase matches it.
+	 * 
+	 * In the case of 1), this implementation id and passphrase are saved to the remote
+	 * server's database
+	 * 
+	 * @param implementationId
+	 * @param description
+	 * @param passphrase
+	 * @return the stored description on the remote server
+	 * @throws APIException 
+     * @throws UnsupportedEncodingException 
+     */
+    private String checkImplementationIdValidity(String implementationId, String description, String passphrase) throws APIException {
+	    
+    	if (!StringUtils.hasLength(implementationId))
+    		throw new APIException("The implementationid cannot be empty");
+    	if (!StringUtils.hasLength(description))
+    		throw new APIException("The description cannot be empty");
+    	if (!StringUtils.hasLength(passphrase))
+    		throw new APIException("The passphrase cannot be empty");
+    	
+    	// set up the data map to post to the openmrs server
+    	Map<String, String> data = new HashMap<String, String>();
+    	data.put("implementationId", implementationId);
+    	data.put("description", description);
+    	data.put("passphrase", passphrase);
+    	
+    	String response = OpenmrsUtil.postToUrl(OpenmrsConstants.IMPLEMENTATION_ID_REMOTE_CONNECTION_URL, data);
+    	response = response.trim();
+    	
+    	if ("".equals(response)) {
+    		String ms = Context.getMessageSourceService().getMessage("ImplementationId.connectionError", new String[] {implementationId}, Context.getLocale());
+    		throw new APIException("Error while connecting to the implementation id server to verify implementation id: " + implementationId);
+    	}
+    	
+    	if (log.isDebugEnabled())
+    		log.debug("Response: " + response);
+    	
+    	if (response.startsWith("Success")) {
+    		response = response.replace("Success", "");
+    		return response.trim();
+    	}
+    	
+    	String ms = Context.getMessageSourceService().getMessage("ImplementationId.invalidIdorPassphrase", new String[] {description}, Context.getLocale());
+    	throw new APIException(ms);
+    }
+
+	/**
+     * @see org.openmrs.api.AdministrationService#getAllowedLocales()
+     */
+    public List<Locale> getAllowedLocales() {
+    	// lazy-load the global locale list and initialize with current global property value
+    	if (globalLocaleList == null) {
+    		globalLocaleList = new GlobalLocaleList();
+    		addGlobalPropertyListener(globalLocaleList);
+    		String currentPropertyValue = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
+    		GlobalProperty allowedLocalesProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, 
+    		                                                           currentPropertyValue);
+    		globalLocaleList.globalPropertyChanged(allowedLocalesProperty);
+    	}
+
+    	return globalLocaleList.getAllowedLocales();
+    }
+
+	/**
+     * @see org.openmrs.api.AdministrationService#getPresentationLocales()
+     */
+    public Set<Locale> getPresentationLocales() {
+    	if (presentationLocales == null) {
+    		presentationLocales = new HashSet<Locale>();
+    		Collection<Locale> messageLocales = Context.getMessageSourceService().getLocales();
+    		List<Locale> allowedLocales = getAllowedLocales();
+    		for (Locale possibleLocale : messageLocales) {
+    			if (allowedLocales.contains(possibleLocale)) {
+    				presentationLocales.add(possibleLocale);
+    			} else {
+    				// to be sure, check for language-only matches
+    				for (Locale allowedLocale : allowedLocales) {
+    					if ((allowedLocale.getCountry() == "") && (allowedLocale.getLanguage() == possibleLocale.getLanguage())) {
+    						presentationLocales.add(possibleLocale);
+    						break;
+    					}
+    				}
+    			}
+    		}
+    	}
+    	return presentationLocales;
+    }
+
+	/**
+     * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
+     */
+    public void globalPropertyChanged(GlobalProperty newValue) {
+    	if (newValue.getProperty().equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST)) {
+    		// reset the calculated locale values
+    		presentationLocales = null;
+    	}
+    }
+
+	/**
+     * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
+     */
+    public void globalPropertyDeleted(String propertyName) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+	/**
+     * @see org.openmrs.api.GlobalPropertyListener#supportsPropertyName(java.lang.String)
+     */
+    public boolean supportsPropertyName(String propertyName) {
+    	return propertyName.equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
+    }
+	
 }

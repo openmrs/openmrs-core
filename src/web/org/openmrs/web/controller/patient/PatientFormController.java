@@ -402,6 +402,7 @@ public class PatientFormController extends PersonFormController {
 									obsDeath = new Obs();
 									obsDeath.setPerson(patient);
 									obsDeath.setConcept(causeOfDeath);
+									obsDeath.setConceptName(causeOfDeath.getName()); // ABKTODO: presume current locale?
 									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
 									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
 									// TODO person healthcenter //if ( loc == null ) loc = patient.getHealthCenter();
@@ -421,6 +422,7 @@ public class PatientFormController extends PersonFormController {
 								if ( currCause != null ) {
 									log.debug("Current cause is not null, setting to value_coded");
 									obsDeath.setValueCoded(currCause);
+									obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 									
 									Date dateDeath = patient.getDeathDate();
 									if ( dateDeath == null ) dateDeath = new Date();

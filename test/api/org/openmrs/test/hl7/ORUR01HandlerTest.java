@@ -81,25 +81,30 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
+		// ABKTODO: base test has changed. Is this needed?
+		// commitTransaction(false);
+		
 		//System.out.println("obs size for pat 2: " + obsService.getObservations(new Patient(2), false));
 		
 		Patient patient = new Patient(3);
 		
 		// check for any obs
-		Set<Obs> obsForPatient3 = obsService.getObservations(patient, false);
+		List<Obs> obsForPatient3 = obsService.getObservationsByPerson(patient);
 		assertNotNull(obsForPatient3);
 		assertTrue("There should be some obs created for #3", obsForPatient3.size() > 0);
 		
 		// check for the return visit date obs 
 		Concept returnVisitDateConcept = new Concept(5096);
-		Calendar cal = new GregorianCalendar();
+		Calendar cal = Calendar.getInstance();
 		cal.set(2008, Calendar.FEBRUARY, 29, 0, 0, 0);
 		Date returnVisitDate = cal.getTime();
-		Set<Obs> returnVisitDateObsForPatient3 = obsService.getObservations(patient, returnVisitDateConcept, false);
+		List<Obs> returnVisitDateObsForPatient3 = obsService.getObservationsByPersonAndConcept(patient, returnVisitDateConcept);
 		assertEquals("There should be a return visit date", 1, returnVisitDateObsForPatient3.size());
 		
 		Obs firstObs = (Obs)returnVisitDateObsForPatient3.toArray()[0];
-		assertEquals("The date should be the 29th", returnVisitDate.toString(), firstObs.getValueDatetime().toString());
+		cal.setTime(firstObs.getValueDatetime());
+		Date firstObsValueDatetime = cal.getTime();
+		assertEquals("The date should be the 29th", returnVisitDate.toString(), firstObsValueDatetime.toString());
 	}
 	
 	/**

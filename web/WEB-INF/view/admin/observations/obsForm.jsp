@@ -39,7 +39,7 @@
 		dojo.event.topic.subscribe("cSearch/select", 
 			function(msg) {
 				var conceptSelection = dojo.widget.manager.getWidgetById("conceptSelection");
-				conceptSelection.hiddenInputNode.value = msg.objs[0].conceptId;
+				conceptSelection.hiddenInputNode.value = msg.objs[0].conceptNameId;
 				conceptSelection.displayNode.innerHTML = msg.objs[0].name;
 				conceptSelection.descriptionDisplayNode.innerHTML = msg.objs[0].description;
 				updateObsValues(msg.objs[0]);
@@ -74,8 +74,9 @@
 		);
 
 		codedSearch.doFindObjects = function(txt) {
-			var conceptId = conceptSelection.hiddenInputNode.value;
 			var codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
+			var codedSelection = dojo.widget.manager.getWidgetById("codedSelection");
+			var conceptId = codedSelection.conceptId; 
 			DWRConceptService.findConceptAnswers(codedSearch.simpleClosure(codedSearch, 'doObjectsFound'), txt, conceptId, false, true);
 		}
 		
@@ -129,6 +130,7 @@
 				$('valueCodedRow').style.visibility = "visible";
 				// clear any old values:
 				var codedSelection = dojo.widget.manager.getWidgetById("codedSelection");
+				codedSelection.conceptId = tmpConcept.conceptId;
 				codedSelection.displayNode.innerHTML = "";
 				codedSelection.descriptionDisplayNode.innerHTML = "";
 				codedSelection.hiddenInputNode.value = "";
@@ -351,9 +353,9 @@
 	<tr>
 		<th><spring:message code="Obs.concept"/></th>
 		<td>
-			<spring:bind path="concept">
+			<spring:bind path="obs.concept">
 				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.editor.value.conceptId}" showVerboseListing="true" ignoreClasses="N/A"></div>
-				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="concept" hiddenInputId="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' <c:if test="${obs.obsId != null}">showChangeButton="false"</c:if> ></div>
+				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptNameId" hiddenInputId="conceptNameId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' <c:if test="${obs.obsId != null}">showChangeButton="false"</c:if> ></div>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

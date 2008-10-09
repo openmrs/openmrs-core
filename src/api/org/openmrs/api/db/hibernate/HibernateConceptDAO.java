@@ -45,10 +45,12 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
+import org.openmrs.ConceptSource;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.api.context.Context;
@@ -79,9 +81,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#saveConcept(org.openmrs.Concept)
 	 */
 	public Concept saveConcept(Concept concept) throws DAOException {
-		if (concept.getConceptId() == null || concept.getConceptId() < 1)
-			concept.setConceptId(this.getNextAvailableId());
-		else {
+		if ((concept.getConceptId() != null) && (concept.getConceptId() > 0)) {
 			// this method checks the concept_numeric, concept_derived, etc tables
 			// to see if a row exists there or not.  This is needed because hibernate
 			// doesn't like to insert into concept_numeric but update concept in the 
@@ -159,6 +159,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return (Concept)sessionFactory.getCurrentSession().get(Concept.class, conceptId);
 	}
 
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptName(java.lang.Integer)
+	 */
+	public ConceptName getConceptName(Integer conceptNameId) throws DAOException  {
+		return (ConceptName)sessionFactory.getCurrentSession().get(ConceptName.class, conceptNameId);
+	}
+	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptAnswer(java.lang.Integer)
 	 */
@@ -549,38 +556,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 			return null;
 		return concepts.get(0);
 	}
-
-	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getNextAvailableId()
-	 */
-	@SuppressWarnings("unchecked")
-	public Integer getNextAvailableId() {
-		Query query = sessionFactory.getCurrentSession()
-		                            .createQuery("select distinct conceptId from Concept order by concept_id");
-		List<Object> conceptIds = query.list();
-		Integer maxConceptId = 0;
-		if (conceptIds.size() != 0)
-		maxConceptId = (Integer) conceptIds.get(conceptIds.size() - 1);
-		Integer ret = maxConceptId + 1;
-		boolean found = true;
-		for (Integer i = 1; i <= maxConceptId; i++) {
-			if (found = true){
-				found = false;
-				for (Object tmpObj : conceptIds) {
-					Integer tmpId = (Integer) tmpObj;
-					if (i == tmpId || i.equals(tmpId)){
-						found = true;
-						break;
-					}
-				}
-				if (found == false) {
-					ret = i;
-					break;
-				}
-			}	
-		}
-		return ret;
-	}
 	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptsWithDrugsInFormulary()
@@ -602,6 +577,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#updateConceptWord(org.openmrs.Concept)
 	 */
 	public void updateConceptWord(Concept concept) throws DAOException {
+		log.debug("updateConceptWord(" + concept + ")");
 		if (concept != null) {
 			// remove all old words
 			if (concept.getConceptId() != null && concept.getConceptId() > 0)
@@ -626,25 +602,27 @@ public class HibernateConceptDAO implements ConceptDAO {
 	
 	/**
 	 * 
-	 * Deletes all concept words for a concept.  Called by updateConceptWord()
+	 * Deletes all concept words for a concept.  Called by {@link #updateConceptWord(Concept)}
 	 * 
 	 * @param concept
 	 * @throws DAOException
 	 */
 	@SuppressWarnings("unchecked")
     private void deleteConceptWord(Concept concept) throws DAOException {
+		log.debug("deletConceptWord(" + concept + ")");
 		if (concept != null) {
-			Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class);
-			crit.add(Expression.eq("concept", concept));
-			
-			List<ConceptWord> words = crit.list();
-			
-			Integer authUserId = null;
-			if (Context.isAuthenticated())
-				authUserId = Context.getAuthenticatedUser().getUserId();
-			
-			log.debug(authUserId + "|ConceptWord|" + words);
-			
+			if (log.isDebugEnabled()) {
+				Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptWord.class);
+				crit.add(Expression.eq("concept", concept));
+				
+				List<ConceptWord> words = crit.list();
+				
+				Integer authUserId = null;
+				if (Context.isAuthenticated())
+					authUserId = Context.getAuthenticatedUser().getUserId();
+				
+				log.debug(authUserId + "|ConceptWord|" + words);
+			}			
 			sessionFactory.getCurrentSession().createQuery("delete from ConceptWord where concept_id = :c")
 					.setInteger("c", concept.getConceptId())
 					.executeUpdate();
@@ -865,4 +843,162 @@ y	 * returns a list of n-generations of parents of a concept in a concept set
 		}
 		return parents;	
 	}
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getLocalesOfConceptNames()
+     */
+    public Set<Locale> getLocalesOfConceptNames() {
+		Set<Locale> locales = new HashSet<Locale>();
+
+		Query query = sessionFactory.getCurrentSession().createQuery("select distinct locale from ConceptName");
+		
+		for (Object locale : query.list()) {
+			locales.add((Locale)locale);
+		}
+		
+		return locales;
+	}
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptNameTag(java.lang.Integer)
+     */
+    public ConceptNameTag getConceptNameTag(Integer i) {
+		return (ConceptNameTag)sessionFactory.getCurrentSession().get(ConceptNameTag.class, i);
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptNameTagByName(java.lang.String)
+     */
+    public ConceptNameTag getConceptNameTagByName(String name) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptNameTag.class)
+		.add(Expression.eq("tag", name));
+	
+		if (crit.list().size() < 1) {
+			log.warn("No concept name tag found with name: " + name);
+			return null;
+		}
+	
+		return (ConceptNameTag)crit.list().get(0);
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptNameTags()
+     */
+    public List<ConceptNameTag> getConceptNameTags() {
+		return sessionFactory.getCurrentSession().createQuery("from ConceptNameTag cnt order by cnt.tag").list();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptSource(java.lang.Integer)
+     */
+    public ConceptSource getConceptSource(Integer conceptSourceId) {
+    	return (ConceptSource)sessionFactory.getCurrentSession().get(ConceptSource.class, conceptSourceId);
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getAllConceptSources()
+     */
+    public List<ConceptSource> getAllConceptSources() {
+    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class);
+    	
+    	criteria.add(Expression.eq("voided", false));
+    	
+    	return criteria.list();
+    }
+    
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#deleteConceptSource(org.openmrs.ConceptSource)
+     */
+    public ConceptSource deleteConceptSource(ConceptSource cs)
+            throws DAOException {
+    	sessionFactory.getCurrentSession().delete(cs);
+    	return cs;
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#saveConceptSource(org.openmrs.ConceptSource)
+     */
+    public ConceptSource saveConceptSource(ConceptSource conceptSource)
+            throws DAOException {
+    	sessionFactory.getCurrentSession().saveOrUpdate(conceptSource);
+    	return conceptSource;
+    }
+
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#saveConceptNameTag(org.openmrs.ConceptNameTag)
+     */
+    public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag) {
+    	if (nameTag == null) return null;
+    	ConceptNameTag returnedTag = getConceptNameTagByName(nameTag.getTag());
+    	if (returnedTag == null) {
+    		returnedTag = nameTag;
+    		sessionFactory.getCurrentSession().saveOrUpdate(nameTag);
+    	}
+    	return returnedTag;
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getMaxConceptId()
+     */
+    public Integer getMinConceptId() {
+		Query query = sessionFactory.getCurrentSession()
+			.createQuery("select min(conceptId) from Concept");
+		return (Integer)query.uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getMaxConceptId()
+     */
+    public Integer getMaxConceptId() {
+		Query query = sessionFactory.getCurrentSession()
+			.createQuery("select max(conceptId) from Concept");
+		return (Integer)query.uniqueResult();
+    }
+    
+    /**
+     * @see org.openmrs.api.db.ConceptDAO#conceptIterator()
+     */
+    public Iterator<Concept> conceptIterator() {
+    	return new ConceptIterator();
+    }
+    
+    private class ConceptIterator implements Iterator<Concept> {
+
+    	Concept currentConcept = null;
+    	Concept nextConcept;
+    	
+    	public ConceptIterator() {
+    		final int firstConceptId = getMinConceptId();
+    		nextConcept = getConcept(firstConceptId);
+    	}
+    	
+		/**
+         * @see java.util.Iterator#hasNext()
+         */
+        public boolean hasNext() {
+        	return (nextConcept != null);
+        }
+
+		/**
+         * @see java.util.Iterator#next()
+         */
+        public Concept next() {
+        	if (currentConcept != null) {
+        		sessionFactory.getCurrentSession().evict(currentConcept);
+        	}
+        	currentConcept = nextConcept;
+        	nextConcept = getNextConcept(currentConcept);
+        	
+        	return currentConcept;
+        }
+
+		/**
+         * @see java.util.Iterator#remove()
+         */
+        public void remove() {
+        	throw new UnsupportedOperationException();
+        }
+    	
+    }
 }

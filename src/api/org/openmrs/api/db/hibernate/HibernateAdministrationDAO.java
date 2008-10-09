@@ -35,6 +35,7 @@ import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
+import org.openmrs.ImplementationId;
 import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -44,6 +45,7 @@ import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Hibernate specific database methods for the AdministrationService
@@ -72,7 +74,7 @@ public class HibernateAdministrationDAO implements
 	public void setSessionFactory(SessionFactory sessionFactory) { 
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createTribe(org.openmrs.Tribe)
 	 */
@@ -112,7 +114,7 @@ public class HibernateAdministrationDAO implements
 		tribe.setRetired(false);
 		updateTribe(tribe);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createReport(org.openmrs.reporting.Report)
 	 */
@@ -246,22 +248,22 @@ public class HibernateAdministrationDAO implements
     public List<GlobalProperty> getAllGlobalProperties() throws DAOException {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).list();
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#deleteGlobalProperty(GlobalProperty)
 	 */
 	public void deleteGlobalProperty(GlobalProperty property) throws DAOException {
 		sessionFactory.getCurrentSession().delete(property);
-	}
-	
+		}
+		
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(gp);
 		return gp;
-	}
-
+		}
+		
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getDataEntryStatistics(java.util.Date, java.util.Date, java.lang.String, java.lang.String, java.lang.String)
 	 */
@@ -470,5 +472,29 @@ public class HibernateAdministrationDAO implements
 		
 		return results;
 	}
+
+	/**
+     * @see org.openmrs.api.db.AdministrationDAO#getImplementationId()
+     */
+    public ImplementationId getImplementationId() {
+    	
+    	String property = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
+    	
+    	// fail early if no gp has been defined yet
+    	if (property == null)
+    		return null;
+    	
+    	try {
+    		ImplementationId implId = OpenmrsUtil.getSerializer().read(ImplementationId.class, property);
+    		
+    		return implId;
+    	}
+    	catch (Throwable t) {
+    		log.debug("Error while getting implementation id", t);
+    	}
+    	
+    	return null;
+    	
+    }
 	
 }

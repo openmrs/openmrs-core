@@ -137,8 +137,8 @@ public class ActiveListWidget extends TagSupport {
 				StringBuilder s = new StringBuilder();
 				s.append("<tr><th></th>");
 				for (Concept c : otherConceptList) {
-					ConceptName cn = c.getName(loc, false);
-					s.append("<th><small>" + (cn.getShortName() == null ? cn.getName() : cn.getShortName())+ "</small></th>");
+					ConceptName cn = c.getBestShortName(loc);
+					s.append("<th><small>" + cn.getName() + "</small></th>");
 				}
 				s.append("</tr>");
 				obsGroupHeader = s.toString();

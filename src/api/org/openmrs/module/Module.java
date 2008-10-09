@@ -403,10 +403,22 @@ public final class Module {
 		this.file = file;
 	}
 
+	/**
+	 * Gets a mapping from locale to properties used by this module.
+	 * The locales are represented as a string containing
+	 * language and country codes.
+	 * 
+	 * @return mapping from locales to properties
+	 */
 	public Map<String, Properties> getMessages() {
 		return messages;
 	}
 
+	/**
+	 * Sets the map from locale to properties used by this module.
+	 * 
+	 * @param messages map of locale to properties for that locale
+	 */
 	public void setMessages(Map<String, Properties> messages) {
 		this.messages = messages;
 	}

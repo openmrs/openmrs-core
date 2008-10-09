@@ -39,6 +39,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.reporting.ReportObjectService;
@@ -448,6 +449,24 @@ public class ServiceContext {
 	 */
 	public void setUserService(UserService userService) {
 		setService(UserService.class, userService);
+	}
+	
+	/**
+	 * Gets the MessageSourceService used in the context.
+	 * 
+	 * @return MessageSourceService
+	 */
+	public MessageSourceService getMessageSourceService() {
+		return (MessageSourceService)getService(MessageSourceService.class);
+	}
+	
+	/**
+	 * Sets the MessageSourceService used in the context.
+	 * 
+	 * @param messageService the MessageSourceService to use
+	 */
+	public void setMessageSourceService(MessageSourceService messageSourceService) {
+		setService(MessageSourceService.class, messageSourceService);
 	}
 	
 	/**

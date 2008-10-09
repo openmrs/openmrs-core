@@ -66,6 +66,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.springframework.aop.Advisor;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.openmrs.messagesource.MessageSourceService;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to
@@ -374,6 +375,14 @@ public class Context {
 	 */
 	public static AdministrationService getAdministrationService() {
 		return getServiceContext().getAdministrationService();
+	}
+	
+	/**
+	 * 
+	 * @return MessageSourceService
+	 */
+	public static MessageSourceService getMessageSourceService() {
+		return getServiceContext().getMessageSourceService();
 	}
  	
 	/**

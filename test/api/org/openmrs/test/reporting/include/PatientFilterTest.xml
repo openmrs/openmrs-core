@@ -1,17 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" birthdate="2000-01-01 00:00:00.0" />
-  <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
-  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
-  <patient_identifier patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" identifier="1234" identifier_type="1" preferred="1" voided="false" location_id="1" />
-  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"/> 
+  <concept concept_id="1" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
+  <concept_description concept_description_id="1" concept_id="1" description="A TB drug" locale="en" creator="1" date_created="2005-01-01 00:00:00.0"/>
+  <concept_name concept_id="1" name="Isoniazid" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false"/>
+  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
+  <drug drug_id="1" concept_id="1" name="INH 300mg" combination="false" dose_strength="300.0" units="mg" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <drug_order order_id="1" drug_inventory_id="1" dose="900.0" units="mg" frequency="1/day 2/week" prn="false" complex="false"/>
+  <global_property property="database_version" property_value="1.4.0.16"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
-
-  <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false"/>
-  <concept_name concept_name_id="1" concept_id="1" name="Isoniazid" locale="en" description="A TB drug" creator="1" date_created="2005-01-01 00:00:00.0" />
-  <drug drug_id="1" concept_id="1" name="INH 300mg" combination="0" dose_strength="300" units="mg" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" />
   <order_type order_type_id="1" name="Drug Order" description="Prescriptions" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
-  
-  <orders order_id="1" patient_id="2" order_type_id="1" concept_id="1" orderer="1" discontinued="0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" start_date="2005-01-01 00:00:00.0" auto_expire_date="2005-12-31 00:00:00.0" />
-  <drug_order order_id="1" drug_inventory_id="1" dose="900" units="mg" frequency="1/day 2/week" prn="0" complex="0" />
+  <orders order_id="1" order_type_id="1" concept_id="1" orderer="1" start_date="2005-01-01 00:00:00.0" auto_expire_date="2005-12-31 00:00:00.0" discontinued="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" patient_id="2"/>
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"/>
+  <person person_id="2" gender="M" birthdate="2000-01-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
 </dataset>

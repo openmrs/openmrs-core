@@ -25,6 +25,7 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.Form;
 import org.openmrs.FormField;
@@ -216,7 +217,10 @@ public class FormUtil {
 	 * @return String representation of the given concept
 	 */
 	public static String conceptToString(Concept concept, Locale locale) {
-		return concept.getConceptId() + "^" + concept.getName(locale).getName()
+		ConceptName localizedName = concept.getName(locale);
+		return concept.getConceptId() + "^" + localizedName.getName()
+				+ "^" + FormConstants.HL7_LOCAL_CONCEPT
+				+ "^" + localizedName.getConceptNameId() + "^" + localizedName.getName()
 				+ "^" + FormConstants.HL7_LOCAL_CONCEPT;
 	}
 	

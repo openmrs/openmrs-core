@@ -116,10 +116,18 @@ public class SampleFlowsheetServlet extends HttpServlet {
 	}
 
 	private String getName(Concept concept, Locale locale) {
-		ConceptName name = concept.getName(locale);
-		if (name.getShortName() != null && name.getShortName().length() > 0)
-			return name.getShortName();
-		return name.getName();
+		String foundName = "";
+		ConceptName shortName = concept.getBestShortName(locale);
+		if (shortName != null)
+		{
+			foundName = shortName.getName();
+		}
+		else
+		{
+			ConceptName name = concept.getName(locale);
+			if (name != null) foundName = name.getName();
+		}
+		return foundName;
 	}
 
 	private String getValue(Obs obs, Locale locale) {

@@ -3,11 +3,6 @@
 #  The diffs are ordered by datamodel version number.
 #--------------------------------------
 
-#--------------------------------------
-# USE:
-#  The diffs are ordered by datamodel version number.
-#--------------------------------------
-
 DROP PROCEDURE IF EXISTS update_user_password;
 DROP PROCEDURE IF EXISTS insert_patient_stub;
 DROP PROCEDURE IF EXISTS insert_user_stub;
@@ -1240,6 +1235,523 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 
 delimiter ;
 call diff_procedure('1.4.0.02');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.03
+# Andreas Kollegger   Sep 26th, 2008
+#
+# create concept description - creates a table to hold
+# localizable concept descriptions. This does NOT remove
+# concept_name.description, which is needed for data
+# migrations.
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	select 'Create table concept_description then migrate' AS '*** Step: ***', new_db_version from dual;
+	CREATE TABLE `concept_description` (
+	  `concept_description_id` int(11) NOT NULL AUTO_INCREMENT,
+	  `concept_id` int(11) NOT NULL default '0',
+	  `description` text NOT NULL,
+	  `locale` varchar(50) NOT NULL default '',
+	  `creator` int(11) NOT NULL default '0',
+	  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+	  `changed_by` int(11) default NULL,
+	  `date_changed` datetime default NULL,
+	  PRIMARY KEY  (`concept_description_id`),
+	  KEY `concept_being_described` (`concept_id`),
+	  KEY `user_who_created_description` (`creator`),
+	  KEY `user_who_changed_description` (`changed_by`),
+	  CONSTRAINT `description_for_concept` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`),
+	  CONSTRAINT `user_who_created_description` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+	  CONSTRAINT `user_who_changed_description` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+	INSERT INTO `concept_description` (concept_id, description, locale, creator, date_created)
+		SELECT concept_id, description, locale, creator, date_created from `concept_name` WHERE description<>'';
+	select '***' AS '...done' from dual;
+	
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+	
+	END IF;
+END;
+//
+
+delimiter ;
+call diff_procedure('1.4.0.03');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.04
+# Andreas Kollegger   Sep 26th, 2008
+#
+# create concept_name_tag table - used to "tag" concept names
+#-----------------------------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Create concept_name_tag table' AS '*** Step: ***', new_db_version from dual;
+		CREATE TABLE `concept_name_tag` (
+		  `concept_name_tag_id` int(11) NOT NULL auto_increment,
+		  `tag` VARCHAR(50) NOT NULL,
+		  `description` text NOT NULL,
+		  `creator` int(11) NOT NULL default '0',
+		  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+		  `voided` tinyint(1) NOT NULL default '0',
+		  `voided_by` int(11) default NULL,
+		  `date_voided` datetime default NULL,
+		  `void_reason` varchar(255) default NULL,
+		  PRIMARY KEY  (`concept_name_tag_id`),
+		  KEY `user_who_created_name_tag` (`creator`),
+		  KEY `user_who_voided_name_tag` (`voided_by`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		
+
+		# add some "well-known" tags
+		#
+		# NOTE: common practice also employs a "preferred_<2-letter-country-code>"
+		# to indicate that a name is preferred in a particular country. The locale
+		# of the name is expected to be compatible. For instance the tag "preferred_GB"
+		# could be attached to either the "en_GB" locale or just the "en" locale to
+		# indicate a name which is preferred by english speakers in Great Britain.
+		IF (SELECT COUNT(tag)='0' FROM concept_name_tag) THEN
+			select 'insert well-known concept_name_tag tags' AS '*** Step: ***' from dual;
+			ALTER TABLE `concept_name_tag` MODIFY COLUMN `concept_name_tag_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT;
+			insert into `concept_name_tag`  (`tag`, `description`, `creator`, `date_created`)
+				VALUES
+				('default', 'name to use when nothing else is available', 1, '2007-05-01 00:00:00'),
+				('short', 'preferred short name for a concept', 1, '2007-05-01 00:00:00'),
+				('synonym', 'a different word with similar meaning', 1, '2007-05-01 00:00:00'),
+				('preferred', 'preferred name in English', 1, '2007-05-01 00:00:00'),
+				('preferred_KE', 'preferred name in Kenya', 1, '2007-06-20'),
+				('preferred_LS', 'preferred name in Lesotho', 1, '2007-06-20'),
+				('preferred_MW', 'preferred name in Malawi', 1, '2007-06-20'),
+				('preferred_RW', 'preferred name in Rwanda', 1, '2007-06-20'),
+				('preferred_SA', 'preferred name in South Africa', 1, '2007-06-20'),
+				('preferred_TZ', 'preferred name in Tanzania', 1, '2007-06-20'),
+				('preferred_UG', 'preferred name in Uganda', 1, '2007-06-20'),
+				('preferred_UK', 'preferred name in the United Kingdom', 1, '2007-06-20'),
+				('preferred_US', 'preferred name in the United States', 1, '2007-06-20'),
+				('preferred_ZM', 'preferred name in Zambia', 1, '2007-06-20'),
+				('preferred_ZW', 'preferred name in Zimbabwe', 1, '2007-06-20');
+
+			ALTER TABLE `concept_name_tag` MODIFY COLUMN `concept_name_tag_id` int(11) UNIQUE KEY NOT NULL default '0';
+		END IF;
+		select '***' AS '...done' from dual;
+
+
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+
+delimiter ;
+call diff_procedure('1.4.0.04');
+
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.05
+# Andreas Kollegger   Sep 26th, 2008
+#
+# update concept_name -
+#
+# add fields to concept_name table, preparing for data migrations.
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Update concept_name table' AS '*** Step: ***', new_db_version from dual;
+#		ALTER TABLE `concept_name` ADD COLUMN `concept_name_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT;
+#		ALTER TABLE `concept_name` ADD INDEX (`concept_id`);
+#		ALTER TABLE `concept_name` DROP PRIMARY KEY, ADD PRIMARY KEY (`concept_name_id`);
+		ALTER TABLE `concept_name` ADD COLUMN `voided` tinyint(1) NOT NULL default '0';
+		ALTER TABLE `concept_name` ADD COLUMN `voided_by` int(11) default NULL;
+		ALTER TABLE `concept_name` ADD COLUMN `date_voided` datetime default NULL;
+		ALTER TABLE `concept_name` ADD COLUMN `void_reason` varchar(255) default NULL;
+		ALTER TABLE `concept_name` ADD INDEX user_who_voided_name (`voided_by`);
+		ALTER TABLE `concept_name` ADD CONSTRAINT `user_who_voided_this_name` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`);
+		select '***' AS '...done' from dual;
+		
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+
+delimiter ;
+call diff_procedure('1.4.0.05');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.06
+# Andreas Kollegger   Sep 26th, 2008
+#
+# create name_tag_map - allows many-to-many mapping from
+# concept_name to concept_name_tag
+# 
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Create concept_name_tag_map' AS '*** Step: ***', new_db_version from dual;
+		CREATE TABLE `concept_name_tag_map` (
+	 	  `concept_name_id` int(11) NOT NULL,
+		  `concept_name_tag_id` int(11) NOT NULL,
+		  KEY `map_name` (`concept_name_id`),
+		  KEY `map_name_tag` (`concept_name_tag_id`),
+		  CONSTRAINT `mapped_concept_name` FOREIGN KEY (`concept_name_id`) REFERENCES `concept_name` (`concept_name_id`),
+		  CONSTRAINT `mapped_concept_name_tag` FOREIGN KEY (`concept_name_tag_id`) REFERENCES `concept_name_tag` (`concept_name_tag_id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		select '***' AS '...done' from dual;
+	
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+
+delimiter ;
+call diff_procedure('1.4.0.06');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.07
+# Andreas Kollegger   Sep 26th, 2008
+#
+# tag preferred language -
+#
+# Tag existing concept names as preferred in language by
+# using an unqualified "preferred" tag.
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+		select 'Tag existing names as preferred' AS '*** Step: ***', new_db_version from dual;
+
+		# tag all concept_name entries with a non-null, non-blank locale as "preferred language"
+		SET @NAME_TAG_ID = (SELECT `concept_name_tag_id` FROM `concept_name_tag` where tag='preferred');
+		INSERT INTO `concept_name_tag_map` (`concept_name_id`, `concept_name_tag_id`)
+			SELECT `concept_name_id`, @NAME_TAG_ID FROM `concept_name`
+			WHERE locale is not null and locale<>'';
+		select '***' AS '...done' from dual;
+	
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+
+delimiter ;
+call diff_procedure('1.4.0.07');
+
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.08
+# Andreas Kollegger   Sep 26th, 2008
+#
+# migrate short names -
+#
+# Migrates concept_name.short_name fields to individual 
+# concept_name entries, tagged as short.
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Migrate concept_name.short_names.' AS '*** Step: ***', new_db_version from dual;
+	
+		SET @NAME_TAG_ID = (SELECT `concept_name_tag_id` FROM `concept_name_tag` where tag='short');
+		# make new concept_names for the short_names.
+		select 'create concept_names' AS '*** sub-step 1' from dual;
+		INSERT INTO `concept_name` (short_name, description, concept_id, name, locale, creator, date_created)
+			SELECT 'MVP-SHORT', 'deprecated', concept_id, short_name, locale, creator, date_created 
+			FROM `concept_name` 
+			LEFT JOIN `concept_name_tag_map` cntm ON cntm.concept_name_id=concept_name.concept_name_id
+			WHERE short_name<>'' AND cntm.concept_name_tag_id<>@NAME_TAG_ID;
+		# tag the newly created short_name entries
+		select 'tagging new concept_names' AS 'sub-step 2' from dual;
+		INSERT INTO `concept_name_tag_map` (`concept_name_id`, `concept_name_tag_id`)
+			SELECT `concept_name_id`, @NAME_TAG_ID FROM `concept_name` WHERE `short_name`='MVP-SHORT';
+
+		select '***' AS '...done' from dual;
+	
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.08');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.09
+# Andreas Kollegger   Sep 26th, 2008
+#
+# migrate synonyms
+#
+# Move concept_synonyms to new concept_name entries, 
+# tagged as 'synonym'.
+#
+# NOTE: requires concept_name.short_name column to
+# exist in order to perform migration.
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Migrate synonyms.' AS '*** Step: ***', new_db_version from dual;
+		# make new concept_names for the synonym
+		INSERT INTO `concept_name` (short_name, description, concept_id, name, locale, creator, date_created)
+            SELECT 'MVP-SYNONYM', 'deprecated', cs.concept_id, cs.synonym, cs.locale,
+                cs.creator, cs.date_created
+                FROM `concept_synonym` cs
+                INNER JOIN `concept` c on c.concept_id=cs.concept_id 
+                WHERE cs.synonym<>'';
+
+		# tag the newly created synonym entries
+		SET @NAME_TAG_ID = (SELECT `concept_name_tag_id` FROM `concept_name_tag` where tag='synonym');
+		INSERT INTO `concept_name_tag_map` (`concept_name_id`, `concept_name_tag_id`)
+			SELECT `concept_name_id`, @NAME_TAG_ID FROM `concept_name` WHERE `short_name`='MVP-SYNONYM';
+	
+		DROP table concept_synonym;
+		select '***' AS '...done' from dual;
+		
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.09');
+
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.10
+# Andreas Kollegger   Sep 26th, 2008
+#
+# drop deprecated -
+#
+# drops deprecated tables and columns
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Drop concept_name.short_name and concept_name.description' AS '*** Step: ***', new_db_version from dual;
+		ALTER TABLE `concept_name` DROP COLUMN `short_name`;
+
+		ALTER TABLE `concept_name` DROP COLUMN `description`;
+		select '***' AS '...done' from dual;
+
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.10');
+
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.11
+# Andreas Kollegger   Sep 26th, 2008
+#
+# upgrade concept proposal -
+#
+# upgrades concept_proposal table to add localization.
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'add concept_proposal.locale' AS '*** Step: ***', new_db_version from dual;
+		ALTER TABLE `concept_proposal` ADD COLUMN `locale` varchar(50) NOT NULL default '';
+		select '***' AS '...done' from dual;
+		
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.11');
+
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.12
+# Andreas Kollegger   Sep 26th, 2008
+#
+# create concept_proposal_tag_map -
+#
+# Adds a new concept_proposal_tag_map table
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Creating concept_proposal_tag_map table' AS '*** Step: ***', new_db_version from dual;
+		CREATE TABLE `concept_proposal_tag_map` (
+	  		`concept_proposal_id` int(11) NOT NULL,
+	  		`concept_name_tag_id` int(11) NOT NULL,
+	  		KEY `map_proposal` (`concept_proposal_id`),
+	  		KEY `map_name_tag` (`concept_name_tag_id`),
+	  		CONSTRAINT `mapped_concept_proposal` FOREIGN KEY (`concept_proposal_id`) REFERENCES `concept_proposal` (`concept_proposal_id`),
+	  		CONSTRAINT `mapped_concept_proposal_tag` FOREIGN KEY (`concept_name_tag_id`) REFERENCES `concept_name_tag` (`concept_name_tag_id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		select '***' AS '...done' from dual;
+		
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.12');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.13
+# Andreas Kollegger   Sep 26th, 2008
+#
+# update obs table -
+#
+# add concept_name_id to observations
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Updating obs' AS '*** Step: ***', new_db_version from dual;
+
+		ALTER TABLE `obs` ADD COLUMN `concept_name_id` int(11) AFTER `concept_id`;
+		ALTER TABLE `obs` ADD COLUMN `value_coded_name_id` int(11) AFTER `value_coded`;
+
+		select '***' AS '...done' from dual;
+	
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.13');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.14
+# Andreas Kollegger   Sep 26th, 2008
+#
+# constrain obs table -
+#
+# adds foreign key constraints for concept_name additions
+#
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Constraining obs' AS '*** Step: ***', new_db_version from dual;
+		
+		ALTER TABLE `obs` ADD CONSTRAINT `obs_concept_name_used` FOREIGN KEY (`concept_name_id`) 
+			REFERENCES `concept_name` (`concept_name_id`);
+		ALTER TABLE `obs` ADD CONSTRAINT `obs_name_of_coded_value` FOREIGN KEY (`value_coded_name_id`) 
+			REFERENCES `concept_name` (`concept_name_id`);
+
+		select '***' AS '...done' from dual;
+	
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.14');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.15
+# Andreas Kollegger   Sep 26th, 2008
+#
+# update concept_word table
+# delete all concept_words - forcing a rebuild
+# add concept_name columns
+#
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Updating concept_word table' AS '*** Step: ***', new_db_version from dual;
+
+		delete from `concept_word`;
+		ALTER TABLE `concept_word` ADD COLUMN `concept_name_id` INTEGER NOT NULL AFTER `locale`;
+		ALTER TABLE `concept_word` ADD CONSTRAINT `word_for_name` FOREIGN KEY `word_for_name` (`concept_name_id`)
+		    REFERENCES `concept_name` (`concept_name_id`);
+
+		select '***' AS '...done' from dual;
+
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.15');
+
+#
+# update concept source table
+#
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Updating concept_source table' AS '*** Step: ***', new_db_version from dual;
+		# Truncating data here?? First drop column and then re-add it maybe? -bwolfe (TODO)
+		#ALTER TABLE `concept_source` CHANGE COLUMN `voided` `voided` tinyint(1) NOT NULL default 0;
+		ALTER TABLE `concept_source` ADD INDEX `unique_hl7_code` (`hl7_code`, `voided`);
+		select '***' AS '...done' from dual;
+
+		select 'Updating concept_map table' AS '*** Step: ***' from dual;
+		ALTER TABLE `concept_map` DROP COLUMN `source_id`;
+		ALTER TABLE `concept_map` ADD COLUMN `source_code` varchar(255) default NULL AFTER `source`;
+#		ALTER TABLE `concept_map` ADD COLUMN `concept_id` int(11) NOT NULL AFTER `concept_map_id`;
+#		ALTER TABLE `concept_map` ADD CONSTRAINT `concept_using_this_mapping` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`);
+		select '***' AS '...done' from dual;
+
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.16');
 
 
 #-----------------------------------

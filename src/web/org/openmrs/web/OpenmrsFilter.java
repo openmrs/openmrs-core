@@ -117,7 +117,7 @@ public class OpenmrsFilter implements Filter {
         	Context.setUserContext(userContext);
         }
         
-		log.debug("before doFilter");
+        log.debug("before doFilter");
 		
 		// continue the filter chain (going on to spring, authorization, etc)
 		try {

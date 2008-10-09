@@ -23,6 +23,7 @@ import java.util.Vector;
 
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
+import org.openmrs.api.ConceptService;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
@@ -269,6 +270,10 @@ public final class OpenmrsConstants {
 	public static final String PRIV_PURGE_RELATIONSHIP_TYPES	= "Purge Relationship Types";
 	public static final String PRIV_MANAGE_ALERTS 				= "Manage Alerts";
 	
+	public static final String PRIV_MANAGE_CONCEPT_SOURCES  = "Manage Concept Sources";
+	public static final String PRIV_VIEW_CONCEPT_SOURCES    = "View Concept Sources";
+	public static final String PRIV_PURGE_CONCEPT_SOURCES   = "Purge Concept Sources";
+	
 	public static final String PRIV_VIEW_NAVIGATION_MENU	= "View Navigation Menu";
 	public static final String PRIV_VIEW_ADMIN_FUNCTIONS	= "View Administration Functions";
 	
@@ -446,6 +451,9 @@ public final class OpenmrsConstants {
 			
 			CORE_PRIVILEGES.put(PRIV_MANAGE_ALERTS, "Able to add/edit/delete user alerts");
 			
+			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_SOURCES, "Able to add/edit/delete concept sources");
+			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPT_SOURCES, "Able to view concept sources");
+			
 			CORE_PRIVILEGES.put(PRIV_VIEW_ROLES, "Able to view user roles");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_ROLES, "Able to add/edit/delete user roles");
 			
@@ -546,6 +554,8 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR = "patient.defaultPatientIdentifierValidator";	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES   = "patient_identifier.importantTypes";
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER        = "encounterForm.obsSortOrder";
+	public static final String GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST         = "locale.allowed.list";
+	public static final String GLOBAL_PROPERTY_IMPLEMENTATION_ID           = "implementation_id";
 	
 	/**
 	 * These properties (and default values) are set if not found in the database 
@@ -732,6 +742,8 @@ public final class OpenmrsConstants {
         
         props.add(new GlobalProperty(GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER, "number", "The sort order for the obs listed on the encounter edit form.  'number' sorts on the associated numbering from the form schema.  'weight' sorts on the order displayed in the form schema."));
         
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en", "Comma delimited list of locales allowed for use on system"));
+		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
@@ -767,6 +779,7 @@ public final class OpenmrsConstants {
 	
 	/**
 	 * @return Collection of locales available to openmrs
+	 * @deprecated 
 	 */
 	public static final Collection<Locale> OPENMRS_LOCALES() {
 		List<Locale> languages = new Vector<Locale>();
@@ -785,6 +798,8 @@ public final class OpenmrsConstants {
 
 	/**
 	 * @return Collection of locales that the concept dictionary should be aware of
+	 * @see ConceptService#getLocalesOfConceptNames()
+	 * @deprecated
 	 */
 	public static final Collection<Locale> OPENMRS_CONCEPT_LOCALES() {
 		List<Locale> languages = new Vector<Locale>();
@@ -826,17 +841,17 @@ public final class OpenmrsConstants {
 	}
 	
 	/*
-	 * User properties 
+	 * User property names
 	 */
-	public static final String USER_PROPERTY_CHANGE_PASSWORD        = "forcePassword";
-	public static final String USER_PROPERTY_DEFAULT_LOCALE         = "defaultLocale";
-	public static final String USER_PROPERTY_DEFAULT_LOCATION       = "defaultLocation";
-	public static final String USER_PROPERTY_SHOW_RETIRED           = "showRetired";
-	public static final String USER_PROPERTY_SHOW_VERBOSE           = "showVerbose";
-	public static final String USER_PROPERTY_NOTIFICATION           = "notification";
-	public static final String USER_PROPERTY_NOTIFICATION_ADDRESS   = "notificationAddress";
-	public static final String USER_PROPERTY_NOTIFICATION_FORMAT    = "notificationFormat";		// text/plain, text/html
-	
+	public static final String USER_PROPERTY_CHANGE_PASSWORD  		= "forcePassword";
+	public static final String USER_PROPERTY_DEFAULT_LOCALE   		= "defaultLocale";
+	public static final String USER_PROPERTY_DEFAULT_LOCATION 		= "defaultLocation";
+	public static final String USER_PROPERTY_SHOW_RETIRED 			= "showRetired";
+	public static final String USER_PROPERTY_SHOW_VERBOSE 			= "showVerbose";
+	public static final String USER_PROPERTY_NOTIFICATION 			= "notification";
+	public static final String USER_PROPERTY_NOTIFICATION_ADDRESS 	= "notificationAddress";
+	public static final String USER_PROPERTY_NOTIFICATION_FORMAT 	= "notificationFormat";		// text/plain, text/html
+		
 	/**
 	 * Name of the user_property that stores the number of unsuccessful 
 	 * login attempts this user has made 
@@ -859,7 +874,7 @@ public final class OpenmrsConstants {
 	 */
 	public static final String USER_PROPERTY_PROFICIENT_LOCALES			= "proficientLocales";
 	
-	/*
+	/**
 	 * Report object properties
 	 */
 	public static final String REPORT_OBJECT_TYPE_PATIENTFILTER 		= "Patient Filter";
@@ -876,10 +891,24 @@ public final class OpenmrsConstants {
 	public static final String OPERATING_SYSTEM_SUNOS = "SunOS";
 	public static final String OPERATING_SYSTEM_FREEBSD = "FreeBSD";
 	public static final String OPERATING_SYSTEM_OSX = "Mac OS X";
-		
-    // Shortcut booleans used to make some OS specific checks
-    // more generic; note the un*x flavored check is missing
-    // some less obvious choices
+	
+	/**
+	 * URL to the concept source id verification server
+	 */
+	public static final String IMPLEMENTATION_ID_REMOTE_CONNECTION_URL = "http://resources.openmrs.org/tools/implementationid";
+	
+	/**
+	 * Runtime property to specify the application data directory.
+	 * 
+	 * @see OpenmrsUtil#getApplicationDataDirectory()
+	 */
+	public static final String RUNTIMEPROPERTY_APPLICATION_DATA_DIR = "openmrs.application_data_dir";
+
+	/** 
+	* Shortcut booleans used to make some OS specific checks
+    * more generic; note the *nix flavored check is missing
+    * some less obvious choices
+    */
 	public static final boolean UNIX_BASED_OPERATING_SYSTEM = 
         (OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_LINUX) > -1 ||
          OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_SUNOS) > -1 ||

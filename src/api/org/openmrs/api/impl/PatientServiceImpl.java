@@ -1097,6 +1097,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 							obsExit = new Obs();
 							obsExit.setPerson(patient);
 							obsExit.setConcept(reasonForExit);
+							obsExit.setConceptName(reasonForExit.getName()); // ABKTODO: presume current locale?
 							Location loc = null; //patient.getHealthCenter();
 						if (loc == null)
 							loc = Context.getLocationService().getLocation("Unknown Location");
@@ -1113,6 +1114,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						// put the right concept and (maybe) text in this
 						// obs
 							obsExit.setValueCoded(cause);
+							obsExit.setValueCodedName(cause.getName()); // ABKTODO: presume current locale?
 							obsExit.setObsDatetime(exitDate);
 						Context.getObsService().saveObs(obsExit, null);
 						}
@@ -1220,6 +1222,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 							obsDeath = new Obs();
 							obsDeath.setPerson(patient);
 							obsDeath.setConcept(causeOfDeath);
+							obsDeath.setConceptName(causeOfDeath.getName()); // ABKTODO: presume current locale?
 							Location loc = null; //patient.getHealthCenter();
 						if (loc == null)
 							loc = Context.getLocationService()
@@ -1247,6 +1250,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						if ( currCause != null ) {
 							log.debug("Current cause is not null, setting to value_coded");
 							obsDeath.setValueCoded(currCause);
+							obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 							
 							Date dateDeath = patient.getDeathDate();
 						if (dateDeath == null)

@@ -18,6 +18,7 @@ import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptWord;
@@ -29,6 +30,7 @@ public class ConceptListItem {
 	protected final Log log = LogFactory.getLog(getClass());
 
 	private Integer conceptId;
+	private Integer conceptNameId;
 	private String name;
 	private String shortName;
 	private String description;
@@ -52,25 +54,35 @@ public class ConceptListItem {
 		if (word != null) {
 			
 			Concept concept = word.getConcept();
+			ConceptName conceptName = word.getConceptName();
 			Locale locale = word.getLocale();
-			initialize(concept, locale);
+			initialize(concept, conceptName, locale);
 			synonym = word.getSynonym();
 		}
 	}
 	
-	public ConceptListItem(Concept concept, Locale locale){
-		initialize(concept, locale);
+	public ConceptListItem(Concept concept, ConceptName conceptName, Locale locale){
+		initialize(concept, conceptName, locale);
 	}
 	
-	private void initialize(Concept concept, Locale locale) {
+	private void initialize(Concept concept, ConceptName conceptName, Locale locale) {
 		if (concept != null) {
 			conceptId = concept.getConceptId();
-			ConceptName cn = concept.getName(locale);
+			conceptNameId = conceptName.getConceptNameId();
+			ConceptName conceptShortName = concept.getBestShortName(locale);
 			name = shortName = description = "";
-			if (cn != null) {
-				name = WebUtil.escapeHTML(cn.getName());
-				shortName = WebUtil.escapeHTML(cn.getShortName());
-				description = WebUtil.escapeHTML(cn.getDescription());
+			if (conceptName != null) {
+				name = WebUtil.escapeHTML(conceptName.getName());
+			}
+			if (conceptShortName != null)
+			{
+				shortName = WebUtil.escapeHTML(conceptShortName.getName());
+			}
+			// ABK: descriptions used to allow non-exact locale match
+			ConceptDescription conceptDescription = concept.getDescription(locale, true); 
+			if (conceptDescription != null)
+			{
+				description = WebUtil.escapeHTML(conceptDescription.getDescription());
 			}
 			synonym = "";
 			retired = concept.isRetired();
@@ -112,6 +124,10 @@ public class ConceptListItem {
 	
 	public Integer getConceptId() {
 		return conceptId;
+	}
+	
+	public Integer getConceptNameId() {
+		return conceptNameId;
 	}
 
 	public void setConceptId(Integer conceptId) {

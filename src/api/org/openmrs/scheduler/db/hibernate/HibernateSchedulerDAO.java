@@ -7,7 +7,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Expression;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.scheduler.Schedule;
 import org.openmrs.scheduler.TaskDefinition;
@@ -69,6 +71,26 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 		if (task == null) {
 			log.warn("Task '" + taskId + "' not found");
 			throw new ObjectRetrievalFailureException(TaskDefinition.class, taskId);
+		}
+		return task;		
+	}
+
+	/**
+	 * Get task by public name.
+	 * 
+	 * @param name public task name
+	 * @return task with given public name
+	 * @throws DAOException
+	 */
+	public TaskDefinition getTaskByName(String name) throws DAOException { 
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(TaskDefinition.class)
+			.add(Expression.eq("name", name));
+		
+		TaskDefinition task = (TaskDefinition)crit.uniqueResult();
+		
+		if (task == null) {
+			log.warn("Task '" + name + "' not found");
+			throw new ObjectRetrievalFailureException(TaskDefinition.class, name);
 		}
 		return task;		
 	}

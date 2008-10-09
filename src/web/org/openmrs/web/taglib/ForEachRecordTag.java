@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptSource;
 import org.openmrs.Form;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Role;
@@ -84,6 +85,10 @@ public class ForEachRecordTag extends BodyTagSupport {
 		else if (name.equals("cohort")) {
 			List<Cohort> cohorts = Context.getCohortService().getCohorts();
 			records = cohorts.iterator();
+		}
+		else if (name.equals("conceptSource")) {
+			List<ConceptSource> conceptSources = Context.getConceptService().getAllConceptSources();
+			records = conceptSources.iterator();
 		}
 		else if (name.equals("form")) {
 			List<Form> forms = Context.getFormService().getForms();

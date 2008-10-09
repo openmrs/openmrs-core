@@ -17,14 +17,13 @@
 </openmrs:authentication>
 
 <c:if test="${not anyExtension}">
-	<br/>
-	<center>
-		<img src="${pageContext.request.contextPath}/images/openmrs_logo_large.gif" alt='<spring:message code="openmrs.title"/>' title='<spring:message code="openmrs.title"/>'/>
-		
-		<br/><br/><br/>
-		
-		<openmrs:portlet url="welcome" parameters="showName=true|showLogin=true" />
-	</center>
+<center>
+<img src="${pageContext.request.contextPath}<spring:theme code="image.logo.large"/>" alt='<spring:message code="openmrs.title"/>' title='<spring:message code="openmrs.title"/>'/>
+	
+	<br/><br/><br/>
+	
+	<openmrs:portlet url="welcome" parameters="showName=true|showLogin=true" />
+</center>
 </c:if>
 
 <br />

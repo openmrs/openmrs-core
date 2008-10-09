@@ -13,16 +13,22 @@
  */
 package org.openmrs.api;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
+import org.openmrs.ConceptSource;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.annotation.Authorized;
@@ -174,6 +180,18 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Concept getConcept(Integer conceptId) throws APIException;
 
+	
+	/**
+	 * Gets the concept-name with the given id
+	 * 
+	 * @param Integer conceptNameId
+	 * @return the matching Concept object
+	 * @throws APIException
+	 */
+	@Transactional(readOnly=true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public ConceptName getConceptName(Integer conceptNameId) throws APIException;
+	
 	/**
 	 * Gets the ConceptAnswer with the given id
 	 * 
@@ -246,7 +264,7 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly=true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public List<Concept> getConcepts(String sortBy, String dir) throws APIException;
-
+	
 	/**
 	 * Returns a list of concepts matching any part of a concept name
 	 * @param String name The search string
@@ -839,16 +857,6 @@ public interface ConceptService extends OpenmrsService {
 	public Concept getNextConcept(Concept concept) throws APIException;
 	
 	/**
-	 * Get the lowest concept id that is not currently in use
-	 * 
-	 * @return the next available Id
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
-	public Integer getNextAvailableId() throws APIException;
-	
-	/**
 	 * Check if the concepts are locked and if so, throw exception during 
 	 * manipulation of concept
 	 * 
@@ -892,5 +900,83 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized({OpenmrsConstants.PRIV_MANAGE_CONCEPTS})
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
+
+	/**
+     * Auto generated method comment
+     * 
+     * @param tag
+     * @return
+     */
+	@Authorized({OpenmrsConstants.PRIV_MANAGE_CONCEPTS})
+    public ConceptNameTag getConceptNameTagByName(String tag);
+
+	/**
+	 * Gets the set of unique Locales used by existing concept names.
+	 * 
+	 * @return set of used Locales
+	 */
+    public Set<Locale> getLocalesOfConceptNames();
+
+	/**
+	 * Return a list of concept sources currently in the database that are not voided
+	 * 
+	 * @return List of Concept source objects
+	 */
+	@Transactional(readOnly=true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES)
+	public List<ConceptSource> getAllConceptSources() throws APIException;
+
+	/**
+	 * Return a Concept source matching the given concept source id
+	 * 
+	 * @param i Integer conceptSourceId
+	 * @return ConceptSource
+	 */
+	@Transactional(readOnly=true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES)
+	public ConceptSource getConceptSource(Integer i) throws APIException;
+	
+	/**
+	 * Create a new ConceptSource
+	 * @param ConceptSource to create
+	 * 
+	 * @throws APIException
+	 */
+	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPT_SOURCES)
+	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws APIException;
+
+	/**
+	 * Delete ConceptSource
+	 * @param cs ConceptSource object delete
+	 * @throws APIException
+	 */
+	@Authorized(OpenmrsConstants.PRIV_PURGE_CONCEPT_SOURCES)
+	public ConceptSource purgeConceptSource(ConceptSource cs) throws APIException;
+
+	/**
+	 * Creates a new Concept name tag. 
+	 * 
+	 * @param nameTag the name tag to be saved
+	 * @return the newly created Concept name tag
+	 */
+	@Authorized({"Add Concepts"})
+	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
+
+
+	/**
+	 * Gets the highest concept-id used by a concept. 
+	 * 
+	 * @return highest concept-id
+	 */
+	public Integer getMaxConceptId();
+	
+	/**
+	 * Returns an iterator for all concepts, including retired and expired. 
+	 * 
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public Iterator<Concept> conceptIterator();
 	
 }

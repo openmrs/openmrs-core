@@ -95,6 +95,15 @@ public interface SchedulerDAO {
 	public Schedule getSchedule(Integer scheduleId) throws DAOException;
 
 	/**
+	 * Get task by public name.
+	 * 
+	 * @param name public task name
+	 * @return task with given public name
+	 * @throws DAOException
+	 */
+    public TaskDefinition getTaskByName(String name) throws DAOException;
+
+	/**
 	 * Update a schedule.
 	 * 
 	 * @param schedule to be updated

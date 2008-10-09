@@ -97,20 +97,20 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	/**
 	 * Used for username/password dialog
 	 */
-	private final Font font = new Font("Arial", Font.BOLD, 16);
+	private static final Font font = new Font("Arial", Font.BOLD, 16);
 
 	/**
 	 * Our username field is outside of the getUsernameAndPassword() method so
 	 * we can do our force-focus-on-the-username-field trick -- i.e., refer to
 	 * the field within an anonymous TimerTask method.
 	 */
-	private JTextField usernameField;
+	private static JTextField usernameField;
 
-	/*
+	/**
 	 * This frame contains the password dialog box. In order to bring the frame
 	 * to the front in the TimerTask method, we make it a private field
 	 */
-	private Frame frame;
+	private static Frame frame;
 
 	/**
 	 * Private variable defining whether or not the columns have been initialized
@@ -277,7 +277,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * @return Two-member String array containing username and password,
 	 *         respectively, or <code>null</code> if user aborts dialog
 	 */
-	public synchronized String[] askForUsernameAndPassword(String message) {
+	public static synchronized String[] askForUsernameAndPassword(String message) {
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

@@ -47,7 +47,8 @@
 			var valueText = DWRUtil.getValue(document.getElementById('value_' + conceptId));
 			var obsDate = DWRUtil.getValue(document.getElementById('date_' + conceptId));
 			var patientId = ${model.patient.patientId};
+			var conceptNameId = null;
 			//alert("Adding obs for encounter (" + encounterId + "): " + conceptId + " = " + valueText + " " + obsDate);  
-			DWRObsService.createObs(patientId, encounterId, conceptId, valueText, obsDate, refreshPage());
+			DWRObsService.createObs(patientId, encounterId, conceptId, conceptNameId, valueText, obsDate, refreshPage());
 		}
 </script>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ConceptNameTag" table="concept_name_tag" batch-size="25">
+
+		<id name="conceptNameTagId" type="int" column="concept_name_tag_id">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="tag" type="java.lang.String" length="50" not-null="true" />
+		<property name="description" type="java.lang.String" length="65535" not-null="true" />
+		
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
+		<many-to-one name="creator" class="User" column="creator" not-null="true"/>
+		
+		<property name="voided" type="java.lang.Boolean" column="voided"
+			length="1" not-null="true" />
+		<property name="dateVoided" type="java.util.Date"
+			column="date_voided" length="19" />
+		<property name="voidReason" type="java.lang.String"
+			column="void_reason" length="255" />
+		<many-to-one name="voidedBy" class="User" column="voided_by" />
+		
+	</class>
+	
+</hibernate-mapping>

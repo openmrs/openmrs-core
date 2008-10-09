@@ -41,7 +41,7 @@ public class ConceptDrugListItem {
 			drugId = drug.getDrugId();
 			if (drug.getConcept() != null) {
 				conceptId = drug.getConcept().getConceptId();
-				concept = new ConceptListItem(drug.getConcept(), locale);
+				concept = new ConceptListItem(drug.getConcept(), null, locale); // ABK: no concept-name associated with drug
 			}
 			name = drug.getName();
 			fullName = drug.getFullName(locale);

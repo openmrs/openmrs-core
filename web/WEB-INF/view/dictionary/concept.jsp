@@ -138,7 +138,7 @@
 			</th>
 			<c:forEach items="${locales}" var="loc">
 				<td class="${loc}">
-					<spring:bind path="conceptName_${loc}.shortName">
+					<spring:bind path="conceptShortName_${loc}.name">
 						${status.value}
 					</spring:bind>
 				</td>
@@ -148,7 +148,7 @@
 			<th valign="top"><spring:message code="general.description" /></th>
 			<c:forEach items="${locales}" var="loc">
 				<td valign="top" class="${loc}">
-					<spring:bind path="conceptName_${loc}.description">
+					<spring:bind path="conceptDescription_${loc}.description">
 						${status.value}
 					</spring:bind>
 				</td>
@@ -291,7 +291,7 @@
 				<th valign="top"><spring:message code="dictionary.questionsAnswered" /></th>
 				<td>
 					<c:forEach items="${questionsAnswered}" var="question">
-						<a href="concept.htm?conceptId=${question.key}">${question.value}<br/>
+						<a href="concept.htm?conceptId=${question.key}">${question.value}</a><br/>
 					</c:forEach>
 				</td>
 			</tr>
@@ -302,7 +302,7 @@
 				<th valign="top"><spring:message code="dictionary.containedInSets" /></th>
 				<td>
 					<c:forEach items="${containedInSets}" var="set">
-						<a href="concept.htm?conceptId=${set.key}">${set.value}<br/>
+						<a href="concept.htm?conceptId=${set.key}">${set.value}</a><br/>
 					</c:forEach>
 				</td>
 			</tr>
@@ -313,7 +313,7 @@
 				<th valign="top"><spring:message code="dictionary.forms" /></th>
 				<td>
 					<c:forEach items="${formsInUse}" var="form">
-						<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}<br/>
+						<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}</a><br/>
 					</c:forEach>
 				</td>
 			</tr>

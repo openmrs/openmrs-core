@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ConceptDescription" table="concept_description" batch-size="10">
+
+		<id name="conceptDescriptionId" type="int" column="concept_description_id">
+			<generator class="native" />
+		</id>
+
+		<many-to-one
+			name="concept"
+			column="concept_id"
+			class="Concept"
+		not-null="true"/>
+		
+		<property name="description" type="java.lang.String" length="65535" not-null="true" />
+		<property name="locale" type="java.util.Locale" length="50" not-null="true"/>
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
+		<many-to-one name="creator" class="User" column="creator" not-null="true"/>
+		<property name="dateChanged" type="java.util.Date" column="date_changed" not-null="false"/>
+		<many-to-one name="changedBy" class="User" column="changed_by" not-null="false"/>
+
+	</class>
+	
+</hibernate-mapping>

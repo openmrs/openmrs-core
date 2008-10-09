@@ -18,6 +18,9 @@
 		<many-to-one name="concept" column="concept_id" class="Concept" 
 					 update="false" insert="false" 
 					 outer-join="true" />
+					 
+		<many-to-one name="conceptName" column="concept_name_id" class="ConceptName"
+					outer-join="true" />
 		
 	</class>
 	
