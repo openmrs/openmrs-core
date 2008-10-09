@@ -56,16 +56,19 @@ public interface SchedulerService extends OpenmrsService {
 	public void shutdownTask(TaskDefinition task) throws SchedulerException;
 
 	/**
-	 * Start a scheduled task.
+	 * Start a scheduled task as specified in a TaskDefinition.
+	 * 
+	 * @param task definition of the task to start
+	 * @return the started task, or null if there was a problem instantiating or scheduling the task
 	 */
 	@Authorized({"Manage Scheduler"})
-	public void scheduleTask(TaskDefinition task) throws SchedulerException;
+	public Task scheduleTask(TaskDefinition task) throws SchedulerException;
 	
 	/**
 	 * Stop and start a scheduled task.
 	 */
 	@Authorized({"Manage Scheduler"})
-	public void rescheduleTask(TaskDefinition task) throws SchedulerException;
+	public Task rescheduleTask(TaskDefinition task) throws SchedulerException;
 	
 	/**
 	 * Loop over all currently started tasks and cycle them.
@@ -102,6 +105,18 @@ public interface SchedulerService extends OpenmrsService {
 	@Authorized({"Manage Scheduler"})
 	@Transactional(readOnly=true)
 	public TaskDefinition getTask(Integer id);
+	
+
+	/**
+	 * Get the task with the given name.
+	 *  
+	 * @param	name name of the task
+	 */
+	@Authorized({"Manage Scheduler"})
+	@Transactional(readOnly=true)
+	public TaskDefinition getTaskByName(String name);
+	
+	
 
 	/**
 	 * Delete the task with the given identifier.

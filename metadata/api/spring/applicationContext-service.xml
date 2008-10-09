@@ -76,6 +76,7 @@
         <property name="hl7Service"><ref bean="hL7Service"/></property>
         <property name="ardenService"><ref bean="ardenService"/></property>
         <property name="logicService"><ref bean="logicService"/></property>
+        <property name="messageSourceService"><ref bean="messageSourceService"/></property>
 	</bean>	
 	
 	<bean id="context" class="org.openmrs.api.context.Context">
@@ -314,7 +315,25 @@
 	</bean>
 	<!-- /Logic Service and Logic Data Source setup -->
 	
-
+	<bean id="messageSourceServiceTarget" class="org.openmrs.messagesource.impl.MessageSourceServiceImpl">
+		<property name="activeMessageSource"><ref bean="mutableResourceBundleMessageSource"/>
+		</property>
+	</bean>
+	
+	<bean id="mutableResourceBundleMessageSource" class="org.openmrs.messagesource.impl.MutableResourceBundleMessageSource">
+		<property name="basenames">
+			<!--  ABKTODO: Ugh. Presumes to be in a web application... -->
+			<list>
+				<value>/WEB-INF/custom_messages</value>
+				<value>/WEB-INF/module_messages</value>
+				<value>/WEB-INF/messages</value>
+			</list>
+		</property>
+		<property name="useCodeAsDefaultMessage"><value>true</value></property>
+		<property name="cacheSeconds" value="1" />
+	</bean>
+	<!-- /Logic Service and Logic Data Source setup -->
+	
 	<bean id="patientService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="patientServiceTarget"/></property>
@@ -328,7 +347,6 @@
 			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
 		</property>
 	</bean>
-	
 	<bean id="personService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="personServiceTarget"/></property>
@@ -605,6 +623,20 @@
 		</property>
 	</bean>
 	
+	<bean id="messageSourceService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="messageSourceServiceTarget"/></property>
+		<property name="preInterceptors">
+			<list>
+				<ref local="authorizationInterceptor"/>
+				<ref local="loggingInterceptor"/>
+			</list>
+		</property>
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		</property>
+	</bean>
+	
 	<!--
 		Scheduler service bean pool.
 	--><!--
@@ -626,7 +658,7 @@
 		before the transactional proxy.  
 	-->
 	<bean id="authorizationInterceptor" class="org.openmrs.aop.AuthorizationAdvice"/>
-	
+
 	<!--  **************************  LOGGING INTERCEPTOR  *************************  -->
 	<!--
 		This as an AOP "around" advisor that prints logging messages 

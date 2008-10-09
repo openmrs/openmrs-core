@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ConceptName;
 import org.openmrs.Field;
 import org.openmrs.api.context.Context;
 
@@ -62,8 +63,10 @@ public class FieldListItem {
 				fieldTypeName = field.getFieldType().getName();
 				fieldTypeId = field.getFieldType().getFieldTypeId();
 			}
-			if (field.getConcept() != null)
-				concept = new ConceptListItem(field.getConcept(), locale);
+			if (field.getConcept() != null) {
+				ConceptName cn = field.getConcept().getName(locale);
+				concept = new ConceptListItem(field.getConcept(), cn, locale);
+			}
 			table = field.getTableName();
 			attribute = field.getAttributeName();
 			selectMultiple = field.isSelectMultiple() == true ? "yes" : "no";

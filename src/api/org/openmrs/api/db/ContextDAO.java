@@ -104,5 +104,5 @@ public interface ContextDAO {
 	public void checkCoreDataset();
 	
 	public void closeDatabaseConnection();
-	
+
 }

@@ -24,6 +24,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -35,6 +36,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.ConceptNameEditor;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
 import org.openmrs.propertyeditor.LocationEditor;
@@ -88,6 +90,7 @@ public class ObsFormController extends SimpleFormController {
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(Encounter.class, new EncounterEditor());
         binder.registerCustomEditor(Drug.class, new DrugEditor());
+        binder.registerCustomEditor(ConceptName.class, new ConceptNameEditor());
 	}
 
 	/** 

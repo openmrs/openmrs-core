@@ -77,7 +77,7 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 		rs.setDescription("Tesing RowPerObsDataSet*");
 		rs.addDataSetDefinition(definition);
 		
-		Serializer serializer = OpenmrsUtil.getSerializer();
+		Serializer serializer = OpenmrsUtil.getShortSerializer();
 		StringWriter writer = new StringWriter();
 		serializer.write(rs, writer);
 		

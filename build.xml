@@ -7,7 +7,7 @@
 <!-- ** @author Burke Mamlin                                  ** -->
 <!-- ** @version 1.0                                          ** -->
 <!-- *********************************************************** -->
-<project name="OpenMRS-trunk" default="dist">
+<project name="OpenMRS-concept-name" default="dist">
 
 	<tstamp>
 		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" />
@@ -94,6 +94,7 @@
 			select="\1"
 			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0.00" 
 			casesensitive="false" />
+        <echo>openmrs.database.version.expected: ${openmrs.database.version.expected}</echo>
 		<propertyregex property="openmrs.database.version.expected.short"
 			input="${openmrs.database.version.expected}"
 			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.${openmrs.version.maintenance}\.([0-9][0-9]+)"
@@ -216,7 +217,7 @@
 		<javac srcdir="${test.dir}/api" destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.test.classpath">
 			<compilerarg line="${compile.arguments}" />
 		</javac>
-		
+
 		<!-- move files over that are required for modules to use this test-openmrs-api*.jar file -->
 		<copy todir="${build.dir}/org/openmrs/test/testutil" file="${test.dir}/api/org/openmrs/test/testutil/TestingApplicationContext.xml" />
 		<copy todir="${build.dir}/org/openmrs/test/include" file="${test.dir}/api/org/openmrs/test/include/initialInMemoryTestDataSet.xml" />
@@ -272,8 +273,7 @@
 		<echo message="Undeploying webapp from Tomcat"/>
 		<delete file="${tomcat.home}/webapps/${webapp.name}.war"/>
 		<delete dir="${tomcat.home}/webapps/${webapp.name}"/>
-	</target>		
-	
+    </target>
 	
 	<target name="deploy-web" description="standalone copy web target">
 		<copy todir="${tomcat.home}/webapps/${webapp.name}">
@@ -285,16 +285,13 @@
 				<include name="**/*.withjstl"/>
 				<include name="**/*.tag"/>
 				<include name="**/messages*.properties"/>
+				<include name="**/*_theme*.properties"/>
 				<include name="**/images/**/*" />
 				<!-- This fileset doesn't exclude /web/test so that 
 					 developers can easily test files -->
 			</fileset>
 		</copy>
 	</target>
-
-	
-
-	
 	
 	<target name="package-web-init" depends="compile-web" description="start creation of webapp. Use package-web for complete">
 		<mkdir dir="${dist.dir}/web" />
@@ -350,6 +347,9 @@
 				<include name="**/web/**/*.class" />
 				<include name="log4j.xml" />
 			</classes>
+			<classes dir="web/WEB-INF">
+				<include name="*_theme*.properties"/>
+			</classes>
 			<lib file="${dist.dir}/${openmrs.api.name}" />
 			<lib src="${libs-zipped-temp}" />
 		</war>
@@ -374,6 +374,9 @@
 			<classes dir="${build.dir}" >
 				<include name="**/web/**/*.class" />
 				<include name="log4j.xml" />
+			</classes>
+			<classes dir="web/WEB-INF">
+				<include name="*_theme*.properties"/>
 			</classes>
 		</war>
 	</target>
@@ -409,10 +412,12 @@
 	<target name="dist" depends="package-web" description="create distribution packages" />
 
 	<target name="install" description="Install application in Tomcat" depends="package-web">
+		<echo>Installing ${webapp.name} to ${tomcat.manager.url} as tomcat user named ${tomcat.username}</echo>
 		<deploy url="${tomcat.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/${webapp.name}" war="${dist.dir}/${webapp.name}.war" />
 	</target>
 
 	<target name="remove" depends="init" description="Remove application in Tomcat">
+		<echo>Removing ${webapp.name} from ${tomcat.manager.url} as tomcat user named ${tomcat.username}</echo>
 		<undeploy url="${tomcat.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/${webapp.name}" />
 	</target>
 
@@ -564,8 +569,5 @@
 			</batchtest>
 		</junit>
 	</target>
-	
-	
-
 	
 </project>

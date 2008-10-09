@@ -118,14 +118,13 @@ public class PatientIdentifier implements java.io.Serializable, Comparable<Patie
 	 * @param otherIdentifier PatientiIdentifier with which to compare
 	 * @return boolean true/false whether or not they are the same names
 	 */
-	@SuppressWarnings("unchecked")
     public boolean equalsContent(PatientIdentifier otherIdentifier) {
 		boolean returnValue = true;
 
 		// these are the methods to compare.
 		String[] methods = { "getIdentifier", "getIdentifierType", "getLocation" };
 
-		Class identifierClass = this.getClass();
+		Class<? extends PatientIdentifier> identifierClass = this.getClass();
 
 		// loop over all of the selected methods and compare this and other
 		for (String methodName : methods) {

@@ -17,10 +17,14 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * ConceptAnswer 
  */
+@Root
 public class ConceptAnswer implements java.io.Serializable {
 
 	public static final long serialVersionUID = 3744L;
@@ -93,6 +97,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	/**
 	 * @return Returns the answerConcept.
 	 */
+	@Element
 	public Concept getAnswerConcept() {
 		return answerConcept;
 	}
@@ -100,6 +105,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	/**
 	 * @param answerConcept The answerConcept to set.
 	 */
+	@Element
 	public void setAnswerConcept(Concept answerConcept) {
 		this.answerConcept = answerConcept;
 	}
@@ -121,6 +127,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	/**
 	 * @return Returns the concept.
 	 */
+	@Element
 	public Concept getConcept() {
 		return concept;
 	}
@@ -128,6 +135,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	/**
 	 * @param concept The concept to set.
 	 */
+	@Element
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
@@ -135,6 +143,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	/**
 	 * @return Returns the conceptAnswerId.
 	 */
+	@Attribute
 	public Integer getConceptAnswerId() {
 		return conceptAnswerId;
 	}
@@ -142,6 +151,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	/**
 	 * @param conceptAnswerId The conceptAnswerId to set.
 	 */
+	@Attribute
 	public void setConceptAnswerId(Integer conceptAnswerId) {
 		this.conceptAnswerId = conceptAnswerId;
 	}
@@ -149,6 +159,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	/**
 	 * @return Returns the creator.
 	 */
+	@Element
 	public User getCreator() {
 		return creator;
 	}
@@ -156,6 +167,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	/**
 	 * @param creator The creator to set.
 	 */
+	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -163,6 +175,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -170,6 +183,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
+	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}

@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.util.Format;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.Format.FORMAT_TYPE;
 
 /**
@@ -51,6 +50,7 @@ public class Obs implements java.io.Serializable {
 
 	protected Integer obsId;
 	protected Concept concept;
+	protected ConceptName conceptName;
 	protected Date obsDatetime;
 	protected String accessionNumber;
 	
@@ -69,13 +69,13 @@ public class Obs implements java.io.Serializable {
 	protected Set<Obs> groupMembers;
 	
 	protected Concept valueCoded;
+	protected ConceptName valueCodedName;
 	protected Drug valueDrug;
 	protected Integer valueGroupId;
 	protected Date valueDatetime;
 	protected Double valueNumeric;
 	protected String valueModifier;
 	protected String valueText;
-	
 	protected String comment;
 	protected Integer personId;
 	protected Person person;
@@ -267,6 +267,60 @@ public class Obs implements java.io.Serializable {
 		this.concept = concept;
 	}
 
+	/**
+	 * Gets the specific name used for the concept.
+	 * Because concepts can be presented using many names,
+	 * this identifies the name that was actually used
+	 * to make the observation.
+	 * 
+	 * @return the concept name used.
+	 */
+	public ConceptName getConceptName() {
+		
+		// if the concept name stored for this obs is null, look
+		// at the question concept and just return the default
+		// name for that.
+		if (conceptName == null && getConcept() != null) {
+			return concept.getName();
+		}
+		
+		return conceptName;
+	}
+
+	/**
+	 * Sets the specific name used to identify the concept.
+	 * 
+	 * @param conceptName the specific name of the concept
+	 */
+	public void setConceptName(ConceptName conceptName) {
+		this.conceptName = conceptName;
+	}
+	
+	/**
+	 * Get the concept description that is tied to the concept
+	 * name that was used when making this observation
+	 * 
+	 * @return ConceptDescription the description used
+	 */
+	public ConceptDescription getConceptDescription() {
+		// if we don't have a question for this concept,
+		// then don't bother looking for a description
+		if (getConcept() == null)
+			return null;
+		
+		// fetch the concept name used for this obs
+		ConceptName conceptName = getConceptName();
+		
+		// if we don't have a concept name, don't bother
+		// looking for a description
+		if (conceptName == null || concept == null)
+			return null;
+		
+		// get the description with the same locale as the name
+		// that was used to make this obs
+		return concept.getDescription(conceptName.getLocale());
+	}
+	
 	/**
 	 * @return Returns the creator.
 	 */
@@ -662,6 +716,23 @@ public class Obs implements java.io.Serializable {
 	public void setValueCoded(Concept valueCoded) {
 		this.valueCoded = valueCoded;
 	}
+
+	/**
+	 * Gets the specific name used for the coded value.
+	 * 
+	 * @return the name of the coded value
+	 */
+	public ConceptName getValueCodedName() {
+		return valueCodedName;
+	}
+
+	/**
+	 * Sets the specific name used for the coded value.
+	 * @param valueCodedName the name of the coded value
+	 */
+	public void setValueCodedName(ConceptName valueCodedName) {
+		this.valueCodedName = valueCodedName;
+	}
 	
 	/**
 	 * @return Returns the valueDrug
@@ -872,8 +943,21 @@ public class Obs implements java.io.Serializable {
 					return "";
 				if (getValueDrug() != null)
 					return getValueDrug().getFullName(locale);
-				else
-					return getValueCoded().getName(locale).getName();
+				else {
+					ConceptName valueCodedName = getValueCodedName();
+					if (valueCodedName != null) {
+						return valueCodedName.getName();
+					} else {
+						ConceptName fallbackName = getValueCoded().getName();
+						if (fallbackName != null) {
+							return fallbackName.getName();
+						}
+						else {
+							return "";
+						}
+							
+					}
+				}
 			}
 			else if (abbrev.equals("NM") || abbrev.equals("SN"))
 				return getValueNumeric() == null ? "" : getValueNumeric().toString();
@@ -893,8 +977,14 @@ public class Obs implements java.io.Serializable {
 		else if (getValueCoded() != null) {
 			if (getValueDrug() != null)
 				return getValueDrug().getFullName(locale);
-			else
-				return getValueCoded().getName(locale).getName();
+			else {
+				ConceptName valudeCodedName = getValueCodedName();
+				if (valudeCodedName != null) {
+					return valudeCodedName.getName();
+				} else {
+					return "";
+				}
+			}
 		}
 		else if (getValueDatetime() != null)
 			return Format.format(getValueDatetime(), locale, FORMAT_TYPE.DATE);
@@ -919,7 +1009,9 @@ public class Obs implements java.io.Serializable {
 	
 	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 	public void setValueAsString(String s) throws ParseException {
-		log.debug("getConcept() == " + getConcept());
+		if (log.isDebugEnabled())
+			log.debug("getConcept() == " + getConcept());
+		
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
 			if (abbrev.equals("BIT")) {
@@ -953,11 +1045,12 @@ public class Obs implements java.io.Serializable {
 	 * @deprecated 
 	 */
 	public Map<Locale, String> getValueAsString() {
-		Map<Locale, String> ret = new HashMap<Locale, String>();
-		for (Locale locale : OpenmrsConstants.OPENMRS_CONCEPT_LOCALES()) {
-			ret.put(locale, getValueAsString(locale));
+		Map<Locale, String> localeMap = new HashMap<Locale, String>();
+		Locale[] locales = Locale.getAvailableLocales(); // ABKTODO: get actual available locales
+		for (int i=0; i<locales.length; i++) {
+			localeMap.put(locales[i], getValueAsString(locales[i]));
 		}
-		return ret;
+		return localeMap;
 	}
 	
 	/**
@@ -965,7 +1058,7 @@ public class Obs implements java.io.Serializable {
 	 */
 	public String toString() {
 		if (obsId == null)
-			return "null";
+			return "obs id is null";
 		
 		return "Obs #" + obsId.toString();
 	}

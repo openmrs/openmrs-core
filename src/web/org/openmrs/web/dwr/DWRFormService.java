@@ -122,7 +122,8 @@ public class DWRFormService {
 				fieldForConceptAdded.put(concept.getConceptId(), true);
 			}
 			if (!fieldForConceptAdded.containsKey((concept.getConceptId()))) {
-				objects.add(new ConceptListItem(concept, locale));
+				ConceptName cn = concept.getName(locale);
+				objects.add(new ConceptListItem(concept, cn, locale));
 				fieldForConceptAdded.put(concept.getConceptId(), true);
 			}
 			

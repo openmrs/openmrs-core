@@ -13,7 +13,7 @@
 			column="concept_id">
 			<generator class="assigned" />
 		</id>
-		
+
 		<discriminator column="concept_id" insert="false" />
 
 		<property name="retired" type="java.lang.Boolean"
@@ -40,6 +40,12 @@
 			<one-to-many class="ConceptName" />
 		</set>
 
+		<set name="descriptions" lazy="true" inverse="true" cascade="all" 
+			order-by="concept_description_id">
+			<key column="concept_id" />
+			<one-to-many class="ConceptDescription" />
+		</set>
+		
 		<set name="answers" lazy="true" cascade="all,evict" 
 				table="concept_answer" order-by="concept_answer_id asc" access="field">
 			<key column="concept_id" not-null="true" />
@@ -58,6 +64,9 @@
 			that action via the .equals() and .hashCode() because we are using
 			a Set.
 		-->
+		<!-- ABK: explicit synonyms have been replaced. Concepts can now have
+			multiple ConceptNames, which can be tagged to indicate their role
+			within a locale (like preferred, default, etc). 
 		<set name="synonyms" lazy="true" cascade="all,evict" 
 			table="concept_synonym" order-by="synonym asc">
 			<key not-null="true">
@@ -71,6 +80,7 @@
 				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
 			</composite-element>
 		</set>
+		-->
 		
 		<set name="conceptSets" table="concept_set" lazy="true" 
 				cascade="all,evict" order-by="sort_weight asc">
@@ -84,6 +94,11 @@
 				<property name="dateCreated" type="java.util.Date" column="date_created" length="19" not-null="true" />
 				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
 			</composite-element>
+		</set>
+		
+		<set name="conceptMappings" inverse="true" cascade="all,delete-orphan,evict">
+			<key column="concept_id" not-null="true" />
+			<one-to-many class="ConceptMap" />
 		</set>
 		
 		<!-- bi-directional many-to-one association to ConceptClass -->

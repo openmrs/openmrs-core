@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.openmrs.DataEntryStatistic;
 import org.openmrs.GlobalProperty;
+import org.openmrs.ImplementationId;
 import org.openmrs.Tribe;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
@@ -147,4 +148,9 @@ public interface AdministrationDAO {
 	 * @see org.openmrs.api.db.AdministrationDAO#executeSQL(java.lang.String, boolean)
 	 */
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException;
+	
+    /**
+     * @see org.openmrs.api.AdministrationService#getImplementation()
+     */
+    public ImplementationId getImplementationId();
 }

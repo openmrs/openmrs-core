@@ -36,6 +36,7 @@ public class TaskDefinition {
 	private String description;
 	private String taskClass; // This class must implement the schedulable
 								// interface or it will fail to start
+	private Task taskInstance = null;;
 
 	// Scheduling metadata
 	private Date startTime;
@@ -200,7 +201,7 @@ public class TaskDefinition {
 	/**
 	 * Sets the number of seconds until task is executed again.
 	 * 
-	 * @param
+	 * @param repeatInterval number of seconds, or 0 to indicate to repetition
 	 */
 	public void setRepeatInterval(Long repeatInterval) {
 		this.repeatInterval = repeatInterval;
@@ -390,8 +391,25 @@ public class TaskDefinition {
     			" secondsUntilNext=" + this.getSecondsUntilNextExecutionTime() + 
     		"]";
     }
+
+	/**
+	 * Gets the runnable task instance associated with this definition. 
+     * 
+     * @return related task, or null if none instantiated (definition hasn't been scheduled)
+     */
+    public Task getTaskInstance() {
+    	return taskInstance;
+    }
 	
-	
+    /**
+     * Sets the runnable task instance associated with this definition.
+     * This should be set by the scheduler which instantiates the task.
+     * 
+     * @param tastkInstance
+     */
+	public void setTaskInstance(Task taskInstance) {
+		this.taskInstance = taskInstance;
+	}
 	
 	
 

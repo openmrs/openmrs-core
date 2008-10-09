@@ -298,15 +298,19 @@ public class NewPatientFormController extends SimpleFormController {
 			if (shortPatient.getAddress() != null && !shortPatient.getAddress().isBlank()) {
 				duplicate = false;
 				for (PersonAddress pa : patient.getAddresses()) {
-					if (pa.toString().equals(shortPatient.getAddress().toString()))
+					if (pa.toString().equals(shortPatient.getAddress().toString())) {
 						duplicate = true;
+						pa.setPreferred(true);
+					} else {
+						pa.setPreferred(false);
+					}
 				}
 				
 				if (log.isDebugEnabled())
 					log.debug("The duplicate address:  " + duplicate);
 				
 				if (!duplicate) {
-					PersonAddress newAddress = shortPatient.getAddress();
+					PersonAddress newAddress = (PersonAddress)shortPatient.getAddress().clone();
 					newAddress.setPersonAddressId(null);
 					newAddress.setPreferred(true);
 					patient.addAddress(newAddress);
@@ -531,8 +535,10 @@ public class NewPatientFormController extends SimpleFormController {
 									obsDeath = new Obs();
 									obsDeath.setPerson(patient);
 									obsDeath.setConcept(causeOfDeath);
-									Location loc = Context.getLocationService().getLocation("Unknown Location");
-									if ( loc == null ) loc = Context.getLocationService().getLocation(new Integer(1));
+									obsDeath.setConceptName(causeOfDeath.getName()); // ABKTODO: presume current locale?
+									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
+									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
+
 									// TODO person healthcenter if ( loc == null ) loc = patient.getHealthCenter();
 									if ( loc != null ) obsDeath.setLocation(loc);
 									else log.error("Could not find a suitable location for which to create this new Obs");
@@ -550,6 +556,7 @@ public class NewPatientFormController extends SimpleFormController {
 								if ( currCause != null ) {
 									log.debug("Current cause is not null, setting to value_coded");
 									obsDeath.setValueCoded(currCause);
+									obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 									
 									Date dateDeath = patient.getDeathDate();
 									if ( dateDeath == null ) dateDeath = new Date();

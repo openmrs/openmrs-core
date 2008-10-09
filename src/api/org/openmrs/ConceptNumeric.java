@@ -13,6 +13,7 @@
  */
 package org.openmrs;
 
+import org.simpleframework.xml.Attribute;
 
 /**
  * The ConceptNumeric extends upon the Concept object by adding some
@@ -67,8 +68,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		this.setDateCreated(c.getDateCreated());
 		this.setSet(c.isSet());
 		this.setNames(c.getNames());
-		this.setRetired(c.getRetired());
-		this.setSynonyms(c.getSynonyms());
+		this.setRetired(c.isRetired());
 		this.setVersion(c.getVersion());
 		
 		this.hiAbsolute  = null;
@@ -108,10 +108,12 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Attribute(required=false)
 	public Double getHiAbsolute() {
 		return this.hiAbsolute;
 	}
 
+	@Attribute(required=false)
 	public void setHiAbsolute(Double hiAbsolute) {
 		this.hiAbsolute = hiAbsolute;
 	}
@@ -119,10 +121,12 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Attribute(required=false)
 	public Double getHiCritical() {
 		return this.hiCritical;
 	}
 
+	@Attribute(required=false)
 	public void setHiCritical(Double hiCritical) {
 		this.hiCritical = hiCritical;
 	}
@@ -130,10 +134,12 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Attribute(required=false)
 	public Double getHiNormal() {
 		return this.hiNormal;
 	}
 
+	@Attribute(required=false)
 	public void setHiNormal(Double hiNormal) {
 		this.hiNormal = hiNormal;
 	}
@@ -141,10 +147,12 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Attribute(required=false)
 	public Double getLowAbsolute() {
 		return this.lowAbsolute;
 	}
 
+	@Attribute(required=false)
 	public void setLowAbsolute(Double lowAbsolute) {
 		this.lowAbsolute = lowAbsolute;
 	}
@@ -152,10 +160,12 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Attribute(required=false)
 	public Double getLowCritical() {
 		return this.lowCritical;
 	}
 
+	@Attribute(required=false)
 	public void setLowCritical(Double lowCritical) {
 		this.lowCritical = lowCritical;
 	}
@@ -163,10 +173,12 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Attribute(required=false)
 	public Double getLowNormal() {
 		return this.lowNormal;
 	}
 
+	@Attribute(required=false)
 	public void setLowNormal(Double lowNormal) {
 		this.lowNormal = lowNormal;
 	}
@@ -174,10 +186,12 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	/**
 	 * 
 	 */
+	@Attribute(required=false)
 	public String getUnits() {
 		return this.units;
 	}
 
+	@Attribute(required=false)
 	public void setUnits(String units) {
 		this.units = units;
 	}
@@ -186,14 +200,23 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		return (precise == null ? false : precise);
 	}
 	
+	@Attribute
 	public Boolean getPrecise() {
 		return isPrecise();
 	}
 
+	@Attribute
 	public void setPrecise(Boolean precise) {
 		this.precise = precise;
 	}
 	
+	/**
+	 * 
+	 * This method will <i>always</i> return true for ConceptNumeric
+	 * objects that have a datatype of Numeric
+	 * 
+	 * @see org.openmrs.Concept#isNumeric()
+	 */
 	public boolean isNumeric() {
 		return (getDatatype().getName().equals("Numeric"));
 	}

@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
@@ -413,7 +414,6 @@ public class ORUR01Handler implements Application {
 	private Obs parseObs(Encounter encounter, OBX obx, OBR obr) throws HL7Exception, ProposingConceptException {
 		if (log.isDebugEnabled())
 			log.debug("parsing observation: " + obx);
-		
 		Varies[] values = obx.getObservationValue();
 		
 		// bail out if no values were found
@@ -426,6 +426,10 @@ public class ORUR01Handler implements Application {
 		Concept concept = getConcept(obx);
 		if (log.isDebugEnabled())
 			log.debug("  concept = " + concept.getConceptId());
+		ConceptName conceptName = getConceptName(obx);
+		if (log.isDebugEnabled())
+			log.debug("  concept-name = " + conceptName);
+		
 		Date datetime = getDatetime(obx);
 		if (log.isDebugEnabled())
 			log.debug("  timestamp = " + datetime);
@@ -435,6 +439,7 @@ public class ORUR01Handler implements Application {
 		Obs obs = new Obs();
 		obs.setPerson(encounter.getPatient());
 		obs.setConcept(concept);
+		obs.setConceptName(conceptName);
 		obs.setEncounter(encounter);
 		obs.setObsDatetime(datetime);
 		obs.setLocation(encounter.getLocation());
@@ -471,6 +476,15 @@ public class ORUR01Handler implements Application {
 						valueDrug.setDrugId(new Integer(value
 								.getAlternateIdentifier().getValue()));
 						obs.setValueDrug(valueDrug);
+					} else {
+						ConceptName valueConceptName = getConceptName(value);
+						if (valueConceptName != null) {
+							if (log.isDebugEnabled()) {
+								log.debug("    value concept-name-id = " + valueConceptName.getConceptNameId());
+								log.debug("    value concept-name = " + valueConceptName.getName());
+							}
+							obs.setValueCodedName(valueConceptName);
+						}
 					}
 				} catch (NumberFormatException e) {
 					throw new HL7Exception("Invalid concept ID '"
@@ -492,6 +506,7 @@ public class ORUR01Handler implements Application {
 					Concept valueCoded = new Concept();
 					valueCoded.setConceptId(new Integer(valueIdentifier));
 					obs.setValueCoded(valueCoded);
+					obs.setValueCodedName(valueCoded.getName()); // ABKTODO: presume current locale?
 				} catch (NumberFormatException e) {
 					throw new HL7Exception("Invalid concept ID '"
 							+ valueIdentifier + "' for OBX-5 value '"
@@ -544,6 +559,59 @@ public class ORUR01Handler implements Application {
 		return obs;
 	}
 
+	/**
+	 * Derive a concept name from the CWE component of an hl7 message.
+     * 
+     * @param value
+     * @return
+	 * @throws HL7Exception 
+     */
+    private ConceptName getConceptName(CWE cwe) throws HL7Exception {
+    	ST altIdentifier = cwe.getAlternateIdentifier();
+    	String hl7ConceptNameId = (altIdentifier != null) ? altIdentifier.getValue() : null;
+    	return getConceptName(hl7ConceptNameId);
+    }
+
+	/**
+	 * Derive a concept name from the OBX component of an hl7 message.
+     * 
+     * @param obx observation segment containing the concept-name id
+     * @return
+     */
+    private ConceptName getConceptName(OBX obx) throws HL7Exception {
+    	ST altIdentifier = obx.getObservationIdentifier().getAlternateIdentifier();
+    	String hl7ConceptNameId = (altIdentifier != null) ? altIdentifier.getValue() : null;
+		return getConceptName(hl7ConceptNameId);
+    }
+
+	/**
+     * Utility method to retrieve the concept-name specified
+     * in an hl7 message observation segment. 
+     * 
+     * @param hl7ConceptNameId
+     * @param namedConcept
+     * @return
+	 * @throws HL7Exception 
+     */
+    private ConceptName getConceptName(String hl7ConceptNameId) throws HL7Exception {
+    	ConceptName specifiedConceptName = null;
+		// TODO: don't assume that all concepts are local (available in the host concept dictionary)
+		if (hl7ConceptNameId != null) {
+			// get the exact concept name specified by the id
+			try {
+				Integer conceptNameId = new Integer(hl7ConceptNameId);
+				specifiedConceptName = new ConceptName();
+				specifiedConceptName.setConceptNameId(conceptNameId);
+			} catch (NumberFormatException e) {
+				// if it is not a valid number, more than likely it is an older
+				// hl7 message that is in the format conceptid^conceptname
+				// instead of the new conceptid^conceptnameid^conceptname
+				log.debug("Invalid concept name ID '" + hl7ConceptNameId + "'", e);
+			}
+		} 
+		return specifiedConceptName;
+
+    }
 	private boolean isConceptProposal(String identifier) {
 		return identifier.equals(OpenmrsConstants.PROPOSED_CONCEPT_IDENTIFIER);
 	}

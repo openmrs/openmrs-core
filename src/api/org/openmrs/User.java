@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.util.LocaleFactory;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
@@ -640,14 +640,14 @@ public class User extends Person implements java.io.Serializable {
 			String[] proficientLocalesArray = proficientLocalesProperty.split(",");
 			for (String proficientLocaleSpec : proficientLocalesArray) {
 				if (proficientLocaleSpec.length() > 0) {
-					Locale proficientLocale = LocaleFactory.fromSpecification(proficientLocaleSpec);
+					Locale proficientLocale = LocaleUtility.fromSpecification(proficientLocaleSpec);
 					if (!proficientLocales.contains(proficientLocale)) {
 						proficientLocales.add(proficientLocale);
 						if (proficientLocale.getCountry() != "") {
 							// add the language also
-							Locale languageOnlyLocale = LocaleFactory.fromSpecification(proficientLocale.getLanguage());
+							Locale languageOnlyLocale = LocaleUtility.fromSpecification(proficientLocale.getLanguage());
 							if (!proficientLocales.contains(languageOnlyLocale)) {
-								proficientLocales.add(LocaleFactory.fromSpecification(proficientLocale.getLanguage()));
+								proficientLocales.add(LocaleUtility.fromSpecification(proficientLocale.getLanguage()));
 							}
 						}
 					}

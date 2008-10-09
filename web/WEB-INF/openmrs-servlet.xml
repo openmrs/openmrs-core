@@ -91,6 +91,8 @@
 
 				<prop key="admin/concepts/conceptClass.list">conceptClassList</prop>
 				<prop key="admin/concepts/conceptClass.form">conceptClassForm</prop>
+				<prop key="admin/concepts/conceptSource.list">conceptSourceList</prop>
+				<prop key="admin/concepts/conceptSource.form">conceptSourceForm</prop>
 				<prop key="admin/concepts/conceptDrug.list">conceptDrugList</prop>
 				<prop key="admin/concepts/conceptDrug.form">conceptDrugForm</prop>
 				<prop key="admin/concepts/conceptDatatype.list">conceptDatatypeList</prop>
@@ -156,6 +158,8 @@
 				<prop key="admin/maintenance/serverLog.form">serverLogController</prop>
 				<!--<prop key="**/calendar.list">calendarController</prop>-->
 				<prop key="admin/maintenance/dataEntryStats.list">dataEntryStatsController</prop>
+				<prop key="admin/maintenance/implementationid.form">implementationIdFormController</prop>
+				
 				<prop key="admin/modules/module.list">moduleListController</prop>
 				<prop key="admin/modules/moduleProperties.form">modulePropertiesFormController</prop>
 				
@@ -770,6 +774,24 @@
 		<property name="successView"><value>conceptProposal.list</value></property>
 	</bean>
 	<!--  ** /Concept Proposal ** -->
+	<!-- ** Concept Source ** -->
+	<bean id="conceptSourceList"
+		class="org.openmrs.web.controller.concept.ConceptSourceListController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>conceptSourceList</value></property>
+		<property name="formView"><value>/admin/concepts/conceptSourceList</value></property>
+		<property name="successView"><value>conceptSource.list</value></property>
+	</bean>
+
+	<!--  Form Controller for the add/edit concept types page -->
+	<bean id="conceptSourceForm"
+		class="org.openmrs.web.controller.concept.ConceptSourceFormController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>conceptSource</value></property>
+		<property name="formView"><value>/admin/concepts/conceptSourceForm</value></property>
+		<property name="successView"><value>conceptSource.list</value></property>
+	</bean>
+	<!--  ** /Concept Source ** -->
 	<!-- ============================ -->
 
 
@@ -1164,6 +1186,14 @@
 		<property name="formView"><value>/admin/maintenance/dataEntryStatistics</value></property>
 		<property name="successView"><value>dataEntryStats.list</value></property>
 	</bean>
+	<bean id="implementationIdFormController"
+		class="org.openmrs.web.controller.maintenance.ImplementationIdFormController">
+		<property name="sessionForm"><value>true</value></property>
+		<property name="commandName"><value>implId</value></property>
+		<property name="formView"><value>/admin/maintenance/implementationIdForm</value></property>
+		<property name="successView"><value>implementationid.form</value></property>
+	</bean>
+	
 	<bean id="moduleListController"
 		class="org.openmrs.module.web.controller.ModuleListController">
 		<property name="commandName"><value>moduleList</value></property>
@@ -1186,17 +1216,17 @@
 	<!-- ======================================== -->
 
 
-	<bean id="messageSource"
-		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-		<property name="basenames">
-			<list>
-				<value>/WEB-INF/custom_messages</value>
-				<value>/WEB-INF/module_messages</value>
-				<value>/WEB-INF/messages</value>
-			</list>
+	<!-- Use an alias to the messageSourceService (defined in applicationContext-service.xml)
+		to override the application MessageSource, which must be named "messageSource".
+	-->	
+	<alias name="messageSourceServiceTarget" alias="messageSource"/>
+	
+	<!-- Specify the default OpenMRS look and feel. -->
+	<bean id="themeSource"
+		class="org.springframework.ui.context.support.ResourceBundleThemeSource">
+		<property name="basenamePrefix">
+			<value>standard_</value>
 		</property>
-		<property name="useCodeAsDefaultMessage"><value>true</value></property>
-		<property name="cacheSeconds" value="1" />
 	</bean>
 
 	<bean id="localeResolver" class="org.openmrs.web.OpenmrsCookieLocaleResolver" />

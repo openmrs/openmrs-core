@@ -82,19 +82,19 @@ public class ConceptClassFormController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-		ConceptClass identifierType = null;
+		ConceptClass conceptClass = null;
 		
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
-			String identifierTypeId = request.getParameter("conceptClassId");
-	    	if (identifierTypeId != null)
-	    		identifierType = cs.getConceptClass(Integer.valueOf(identifierTypeId));	
+			String conceptClassId = request.getParameter("conceptClassId");
+	    	if (conceptClassId != null)
+	    		conceptClass = cs.getConceptClass(Integer.valueOf(conceptClassId));	
 		}
 		
-		if (identifierType == null)
-			identifierType = new ConceptClass();
+		if (conceptClass == null)
+			conceptClass = new ConceptClass();
     	
-        return identifierType;
+        return conceptClass;
     }
     
 }

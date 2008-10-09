@@ -3,10 +3,10 @@ package org.openmrs.util;
 import java.util.Locale;
 
 /**
- * A factory for creating Locales.
+ * A utility class for working with Locales.
  * 
  */
-public class LocaleFactory {
+public class LocaleUtility {
 
 	/**
 	 * Default internal locale.
@@ -14,6 +14,29 @@ public class LocaleFactory {
 	 * ABKTODO: this should be defined/configured somewhere else
 	 */
 	public static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
+
+	/**
+	 * Compatible is a looser matching than that provided
+	 * by Locale.equals(). Two locales are considered equal
+	 * if they are equal, or if either does not have a 
+	 * country specified and the languages match.
+	 * 
+	 * @param lhs left hand side Locale
+	 * @param rhs right hand side Locale
+	 * @return true if the two locales are compatible, false otherwise
+	 */
+	public static boolean areCompatible(Locale lhs, Locale rhs) {
+		if (lhs.equals(rhs)) {
+			return true;
+		} else if ((lhs.getCountry() == "") ||
+			(rhs.getCountry() == "")) {
+			// no country specified, so language match is good enough
+			if (lhs.getLanguage().equals(rhs.getLanguage())) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	/**
 	 * Creates a locale based on a string specification. The specification

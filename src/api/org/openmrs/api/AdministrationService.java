@@ -16,6 +16,8 @@ package org.openmrs.api;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.SortedMap;
 
 import org.openmrs.Concept;
@@ -26,6 +28,7 @@ import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
+import org.openmrs.ImplementationId;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.PatientIdentifierType;
@@ -558,5 +561,45 @@ public interface AdministrationService extends OpenmrsService {
 	 */
 	// TODO Authorization?!?
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException;
+
+	/**
+     * Get the implementation id stored for this server
+     * 
+     * Returns null if no implementation id has been successfully set yet
+     * 
+     * @return ImplementationId object that is this implementation's unique id
+     */
+	@Transactional(readOnly=true)
+	public ImplementationId getImplementationId() throws APIException;
+    
+    /**
+     * Set the given <code>implementationId</code> as this implementation's unique id 
+     * 
+     * @param implementationId the ImplementationId to save
+     * @throws APIException
+     */
+    public void setImplementationId(ImplementationId implementationId) throws APIException;
+    
+    /**
+     * Gets the list of locales which the administrator has allowed for use 
+     * on the system. This is specified with a global property named 
+     * {@link OpenmrsConstants#GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST}.
+     * 
+     * @return list of allowed locales
+     */
+    @Transactional(readOnly=true)
+	public List<Locale> getAllowedLocales();
+    
+    /**
+     * Gets the list of locales for which localized messages are available for the
+     * user interface (presentation layer).
+     *  
+     * This set includes all the available locales (as indicated by the MessageSourceService)
+     * filtered by the allowed locales (as indicated by this AdministrationService).
+     * 
+     * @return list of allowed presentation locales
+     */
+    @Transactional(readOnly=true)
+	public Set<Locale> getPresentationLocales();
 	
 }

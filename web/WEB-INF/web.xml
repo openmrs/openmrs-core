@@ -151,7 +151,11 @@
 		<servlet-name>conceptRedirectServlet</servlet-name>
 		<url-pattern>/concept/*</url-pattern>
 	</servlet-mapping>
-		
+	
+	<listener>	
+		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+
 	<listener>
 		<listener-class>org.openmrs.web.Listener</listener-class>
 		<!--  extends ContextLoaderListener -->
