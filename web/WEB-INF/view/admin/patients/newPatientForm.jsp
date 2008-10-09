@@ -451,6 +451,31 @@
 			</spring:nestedPath>
 		</td>
 	</tr>
+	
+	<c:forEach var="relationshipMap" items="${relationships}">
+		<c:choose>
+			<c:when test="${fn:contains(relationshipMap.key, 'a')}" >
+				<tr>
+					<th class="headerCell">
+						${relationshipMap.value.relationshipType.aIsToB}
+					</th>
+					<td class="inputCell">
+						<openmrs_tag:personField formFieldName="${relationshipMap.key}" searchLabelCode="Person.find" initialValue="${relationshipMap.value.personA.personId}" linkUrl="" callback="" />
+					</td>
+				</tr>
+			</c:when>
+			<c:otherwise>
+				<tr>
+					<th class="headerCell">
+						${relationshipMap.value.relationshipType.bIsToA}
+					</th>
+					<td class="inputCell">
+						<openmrs_tag:personField formFieldName="${relationshipMap.key}" searchLabelCode="Person.find" initialValue="${relationshipMap.value.personB.personId}" linkUrl="" callback="" />
+					</td>
+			</c:otherwise>
+		</c:choose>
+	</c:forEach>
+	
 	<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
 		<tr>
 			<th class="headerCell"><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></th>
