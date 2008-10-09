@@ -1,13 +1,9 @@
 <?xml version="1.0"?>
 <!-- *********************************************************** -->
-<!-- ** OpenMRS                                               ** -->
+<!-- ** Ant build script for OpenMRS                          ** -->
 <!-- **                                                       ** -->
-<!-- ** Open-Source EMR for Developing Countries              ** -->
-<!-- **                                                       ** -->
-<!-- ** @author Burke Mamlin                                  ** -->
-<!-- ** @version 1.0                                          ** -->
 <!-- *********************************************************** -->
-<project name="OpenMRS-concept-name" default="dist">
+<project name="OpenMRS-trunk" default="dist">
 
 	<tstamp>
 		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" />
