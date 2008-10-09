@@ -556,6 +556,7 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER        = "encounterForm.obsSortOrder";
 	public static final String GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST         = "locale.allowed.list";
 	public static final String GLOBAL_PROPERTY_IMPLEMENTATION_ID           = "implementation_id";
+	public static final String GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS         = "newPatientForm.relationships";
 	
 	/**
 	 * These properties (and default values) are set if not found in the database 
@@ -743,6 +744,8 @@ public final class OpenmrsConstants {
         props.add(new GlobalProperty(GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER, "number", "The sort order for the obs listed on the encounter edit form.  'number' sorts on the associated numbering from the form schema.  'weight' sorts on the order displayed in the form schema."));
         
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en", "Comma delimited list of locales allowed for use on system"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS, "", "Comma separated list of the RelationshipTypes to show on the new/short patient form.  The list is defined like '3a, 4b, 7a'.  The number is the RelationshipTypeId and the 'a' vs 'b' part is which side of the relationship is filled in by the user."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

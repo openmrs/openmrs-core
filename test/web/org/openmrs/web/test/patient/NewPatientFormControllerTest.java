@@ -28,6 +28,8 @@ import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.Person;
+import org.openmrs.Relationship;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
@@ -56,6 +58,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		initializeInMemoryDatabase();
 		authenticate();
 		executeDataSet(CONTROLLER_DATA);
+		authenticate();
 	}
 	
 	/**
@@ -281,6 +284,71 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		assertFalse(patient.getIdentifiers().isEmpty());
 		PatientIdentifier identifier = (PatientIdentifier)patient.getIdentifiers().toArray()[0]; 
 		assertEquals(2, identifier.getLocation().getLocationId().intValue());
+		
+	}
+	
+	/**
+	 * Test to make sure a new patient form can save a person relationship
+	 * 
+	 * @throws Exception
+	 */
+	@SuppressWarnings({ "unchecked" })
+    @Test
+	public void shouldAddRelationship() throws Exception {
+		executeDataSet(CONTROLLER_PATIENTS_DATA);
+		executeDataSet("org/openmrs/web/test/patient/include/NewPatientFormControllerTest-addRelationship.xml");
+		
+		PatientService ps = Context.getPatientService();
+		
+		// set up the controller
+		NewPatientFormController controller = new NewPatientFormController();
+		controller.setApplicationContext(applicationContext);
+		controller.setSuccessView("patientDashboard.form");
+		controller.setFormView("newPatient.form");
+		controller.setSessionForm(true);
+		
+		// set up the request and do an initial "get" as if the user loaded the
+		// page for the first time
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin/patients/newPatient.form?patientId=2");
+		request.setSession(new MockHttpSession(null));
+		HttpServletResponse response = new MockHttpServletResponse();
+		controller.handleRequest(request, response);
+		
+		// set this to be a page submission
+		request.setMethod("POST");
+		
+		// add all of the parameters that are expected
+		// all but the relationship "3a" should match the stored data
+		request.addParameter("patientId", "2");
+		request.addParameter("name.givenName", "Horatio");
+		request.addParameter("name.middleName", "Test");
+		request.addParameter("name.familyName", "Hornblower");
+		request.addParameter("identifier", "1234");
+		request.addParameter("identifierType", "1");
+		request.addParameter("location", "1");
+		request.addParameter("preferred", "1");
+		request.addParameter("gender", "F");
+		request.addParameter("birthdate", "05/05/1959");
+		request.addParameter("birthdateEstimated", "0");
+		request.addParameter("tribe", "");
+		
+		// the new relationship type 
+		request.addParameter("1a", "3");
+		
+		// the phone number attribute
+		request.addParameter("1", "1234");
+		Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PATIENT, ATTR_VIEW_TYPE.VIEWING);
+		
+		// send the parameters to the controller
+		controller.handleRequest(request, response);
+		
+		// make sure a relationship between John and person id 3 was created
+		Patient patient = ps.getPatient(2);
+		assertNotNull(patient);
+		List<Relationship> relationships = Context.getPersonService().getRelationships(null, patient, Context.getPersonService().getRelationshipType(1));
+		assertEquals(1, relationships.size());
+		// we submitted 1a=3, so the created relationship personA should be 3
+		assertEquals(new Person(3), relationships.get(0).getPersonA());
 		
 	}
 }
