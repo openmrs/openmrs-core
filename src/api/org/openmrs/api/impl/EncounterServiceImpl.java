@@ -101,16 +101,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		// of the way the ORM tools flush things and check for nullity
 		// This also must be done before the save encounter so we can use the orig date
 		// after the save
-		if (isNewEncounter == false)
+		if (!isNewEncounter) {
 			// fetch the datetime from the database prior to saving for this encounter
 			// to see if it has changed and change all obs after saving if so
 			originalDate = dao.getSavedEncounterDatetime(encounter);
-		
-		// do the actual saving to the database
-		dao.saveEncounter(encounter);
-		
-		// (only check for changed dates or persons if updating this encounter 
-		if (isNewEncounter == false) {
+			
 			// Our data model duplicates the patient column to allow for observations to 
 			//   not have to look up the parent Encounter to find the patient
 			// Therefore, encounter.patient must always equal encounter.observations[0-n].patient
@@ -118,41 +113,36 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			// If we are changing encounter.encounterDatetime, then we need to also apply that
 			// to Obs that inherited their obsDatetime from the encounter in the first place
 			
-			ObsService obsService = Context.getObsService();
 			Patient p = encounter.getPatient();
 			for (Obs obs : encounter.getAllObs(true)) {
-				boolean obsWasChanged = false;
-				
 				// if the date was changed
 				if (OpenmrsUtil.compare(originalDate, newDate) != 0 ) {
-					
 					// if the obs datetime is the same as the 
 					// original encounter datetime, fix it
 					if (OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
 						obs.setObsDatetime(newDate);
-						obsWasChanged = true;
 					}
 					
+					// if the Person in the obs doesn't match the Patient in the encounter, fix it
 					if (!obs.getPerson().getPersonId().equals(p.getPatientId())) {
 						obs.setPerson(p);
-						obsWasChanged = true;
 					}
-					
-					if (obsWasChanged)
-						obsService.saveObs(obs, "Encounter datetime or person was changed");
+
 				}
 				
 			}
 			
 			// same goes for Orders
-			OrderService orderService = Context.getOrderService();
 			for (Order o : encounter.getOrders()) {
 				if (!p.equals(o.getPatient())) {
 					o.setPatient(p);
-					orderService.saveOrder(o);
 				}
 			}
 		}
+		
+		// do the actual saving to the database
+		dao.saveEncounter(encounter);
+		
 		return encounter;
 	}
 
