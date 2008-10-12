@@ -51,4 +51,5 @@ public class DWRPersonServiceTest extends BaseContextSensitiveTest {
 	public void findPeopleByRoles_shouldAllNulllRolesParameter() throws Exception {
 		new DWRPersonService().findPeopleByRoles("some string", false, null);
 	}
+	
 }

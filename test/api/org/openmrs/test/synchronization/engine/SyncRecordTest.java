@@ -33,7 +33,8 @@ import org.openmrs.synchronization.SyncItemState;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncItemKey;
 import org.openmrs.synchronization.engine.SyncRecord;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.BaseContextSensitiveTest;
+import org.openmrs.test.testutil.SkipBaseSetup;
 import org.springframework.test.annotation.NotTransactional;
 
 /**
@@ -48,6 +49,7 @@ public class SyncRecordTest extends BaseContextSensitiveTest  {
      */
 	@Test
     @NotTransactional
+    @SkipBaseSetup
     public void shouldSerialization() throws Exception {
 
         // 'normal' state
@@ -119,6 +121,7 @@ public class SyncRecordTest extends BaseContextSensitiveTest  {
      */
     @Test
     @NotTransactional
+    @SkipBaseSetup
     public void shouldEquality() throws Exception {
         
         //setup instance 1

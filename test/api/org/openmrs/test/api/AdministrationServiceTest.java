@@ -16,14 +16,18 @@ package org.openmrs.test.api;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 import java.util.List;
 
+import org.openmrs.ImplementationId;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.FieldType;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.PatientService;
@@ -185,6 +189,85 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		String sql2 = "select encounter_id, count(*) from encounter encounter_id group by encounter_id";
 		as.executeSQL(sql2, true);
+	}
+	
+	/**
+	 * This test runs over the set and get methods in AdminService to make sure
+	 * that the impl id can be saved and verified correctly
+	 * 
+	 * @throws Exception
+	 */
+	public void testSetVerifyGetImplementationId() throws Exception {
+		
+		// make sure we have no impl id already
+		ImplementationId currentImplId = as.getImplementationId();
+		assertNull("There shouldn't be an impl id defined alread", currentImplId);
+		
+		// save a null impl id. no exception thrown
+		as.setImplementationId(null);
+		ImplementationId afterNull = as.getImplementationId();
+		assertNull("There shouldn't be an impl id defined after setting a null impl id", afterNull);
+		
+		// save a blank impl id. exception thrown
+		ImplementationId blankId = new ImplementationId();
+		try {
+			as.setImplementationId(blankId);
+			fail("An exception should be thrown on a blank impl id save");
+		}
+		catch (APIException e) {
+			// expected exception
+		}
+		ImplementationId afterBlank = as.getImplementationId();
+		assertNull("There shouldn't be an impl id defined after setting a blank impl id", afterBlank);
+		
+		// save an impl id with an invalid hl7 code
+		ImplementationId invalidId = new ImplementationId();
+		invalidId.setImplementationId("caret^caret");
+		invalidId.setPassphrase("some valid passphrase");
+		invalidId.setDescription("Some valid description");
+		try {
+			as.setImplementationId(invalidId);
+			fail("An exception should be thrown on an invalid impl id save");
+		}
+		catch (APIException e) {
+			// expected exception
+		}
+		ImplementationId afterInvalid = as.getImplementationId();
+		assertNull("There shouldn't be an impl id defined after setting an invalid impl id", afterInvalid);
+		
+		// save an impl id with an invalid hl7 code
+		ImplementationId invalidId2 = new ImplementationId();
+		invalidId.setImplementationId("pipe|pipe");
+		invalidId.setPassphrase("some valid passphrase");
+		invalidId.setDescription("Some valid description");
+		try {
+			as.setImplementationId(invalidId2);
+			fail("An exception should be thrown on an invalid impl id save");
+		}
+		catch (APIException e) {
+			// expected exception
+		}
+		ImplementationId afterInvalid2 = as.getImplementationId();
+		assertNull("There shouldn't be an impl id defined after setting an invalid impl id", afterInvalid2);
+		
+		// save a valid impl id
+		ImplementationId validId = new ImplementationId();
+		validId.setImplementationId("JUNIT-TEST");
+		validId.setPassphrase("This is the junit test passphrase");
+		validId.setDescription("This is the junit impl id used for testing of the openmrs API only.");
+		as.setImplementationId(validId);
+		ImplementationId afterValid = as.getImplementationId();
+		assertEquals(validId, afterValid);
+		
+		// save a second valid id
+		ImplementationId validId2 = new ImplementationId();
+		validId2.setImplementationId("JUNIT-TEST 2");
+		validId2.setPassphrase("This is the junit test passphrase 2");
+		validId2.setDescription("This is the junit impl id (2) used for testing of the openmrs API only.");
+		as.setImplementationId(validId2);
+		ImplementationId afterValid2 = as.getImplementationId();
+		assertEquals(validId2, afterValid2);
+		
 	}
 	
 }

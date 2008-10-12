@@ -36,6 +36,7 @@ import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
+import org.openmrs.ImplementationId;
 import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -45,6 +46,7 @@ import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportObjectWrapper;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Hibernate specific database methods for the AdministrationService
@@ -490,5 +492,29 @@ public class HibernateAdministrationDAO implements
 		
 		return results;
 	}
+	
+	/**
+     * @see org.openmrs.api.db.AdministrationDAO#getImplementationId()
+     */
+    public ImplementationId getImplementationId() {
+    	
+    	String property = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
+    	
+    	// fail early if no gp has been defined yet
+    	if (property == null)
+    		return null;
+    	
+    	try {
+    		ImplementationId implId = OpenmrsUtil.getSerializer().read(ImplementationId.class, property);
+    		
+    		return implId;
+    	}
+    	catch (Throwable t) {
+    		log.debug("Error while getting implementation id", t);
+    	}
+    	
+    	return null;
+    	
+    }
 	
 }

@@ -15,11 +15,18 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 import org.openmrs.synchronization.Synchronizable;
 
 /**
- * ConceptSource 
+ * A concept source is defined as any institution that keeps a concept
+ * dictionary. Examples are ICD9, ICD10, SNOMED, or any other OpenMRS
+ * implementation
+ * 
  */
+@Root
 public class ConceptSource implements java.io.Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 375L;
@@ -47,13 +54,15 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
         this.lastRecordGuid = lastRecordGuid;
     }
 	
-  public String getGuid() {
-      return guid;
-  }
+	@Attribute(required=false)
+	public String getGuid() {
+		return guid;
+	}
 
-  public void setGuid(String guid) {
-      this.guid = guid;
-  }
+	@Attribute(required=false)
+	public void setGuid(String guid) {
+		this.guid = guid;
+	}
 
 	// Constructors
 
@@ -66,22 +75,33 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 		this.conceptSourceId = conceptSourceId;
 	}
 	
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptSource) {
+			if (conceptSourceId == null) 
+				return false;
+			
 			ConceptSource c = (ConceptSource)obj;
-			return (this.conceptSourceId.equals(c.getConceptSourceId()));
+			return (conceptSourceId.equals(c.getConceptSourceId()));
 		}
 		return false;
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
-		if (this.getConceptSourceId() == null) return super.hashCode();
-		return this.getConceptSourceId().hashCode();
+		if (this.getConceptSourceId() == null)
+			return super.hashCode();
+		return conceptSourceId.hashCode();
 	}
 
 	/**
 	 * @return Returns the conceptSourceId.
 	 */
+	@Attribute
 	public Integer getConceptSourceId() {
 		return conceptSourceId;
 	}
@@ -89,6 +109,7 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @param conceptSourceId The conceptSourceId to set.
 	 */
+	@Attribute
 	public void setConceptSourceId(Integer conceptSourceId) {
 		this.conceptSourceId = conceptSourceId;
 	}
@@ -96,6 +117,7 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @return Returns the creator.
 	 */
+	@Element
 	public User getCreator() {
 		return creator;
 	}
@@ -103,6 +125,7 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @param creator The creator to set.
 	 */
+	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -110,6 +133,7 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -117,6 +141,7 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
+	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
@@ -124,6 +149,7 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @return Returns the dateVoided.
 	 */
+	@Element(required = false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
@@ -131,6 +157,7 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
+	@Element(required = false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
@@ -138,6 +165,7 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @return Returns the description.
 	 */
+	@Element(data = true)
 	public String getDescription() {
 		return description;
 	}
@@ -145,6 +173,7 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @param description The description to set.
 	 */
+	@Element(data = true)
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -152,6 +181,7 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @return Returns the hl7Code.
 	 */
+	@Attribute
 	public String getHl7Code() {
 		return hl7Code;
 	}
@@ -159,6 +189,7 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @param hl7Code The hl7Code to set.
 	 */
+	@Attribute
 	public void setHl7Code(String hl7Code) {
 		this.hl7Code = hl7Code;
 	}
@@ -166,55 +197,75 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	/**
 	 * @return Returns the name.
 	 */
+	@Element(data = true)
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * @param name The name to set.
+	 * @param name The concept source name to set.
 	 */
+	@Element(data = true)
 	public void setName(String name) {
 		this.name = name;
 	}
 
 	/**
-	 * @return Returns the voided.
+	 * 
+	 * @return the voided status
 	 */
-	public Boolean getVoided() {
+	public Boolean isVoided() {
 		return voided;
 	}
 
 	/**
-	 * @param voided The voided to set.
+	 * This method exists to satisfy spring and hibernates slightly bung use of
+	 * Boolean object getters and setters.
+	 * 
+	 * @deprecated Use the "proper" isVoided method.
+	 * @see #isVoided()
 	 */
+	@Attribute
+	public Boolean getVoided() {
+		return isVoided();
+	}
+
+	/**
+	 * @param voided The voided status
+	 */
+	@Attribute
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
 
 	/**
-	 * @return Returns the voidedBy.
+	 * @return Returns the openmrs user that voided this source
 	 */
+	@Element(required = false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
 
 	/**
-	 * @param voidedBy The voidedBy to set.
+	 * @param voidedBy The openmrs user that voided this source
 	 */
+	@Element(required = false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
 
 	/**
-	 * @return Returns the voidReason.
+	 * @return Returns the reason this source was voided
 	 */
+	@Element(data = true, required = false)
 	public String getVoidReason() {
 		return voidReason;
 	}
 
 	/**
-	 * @param voidReason The voidReason to set.
+	 * @param voidReason The reason this source is voided
 	 */
+	@Element(data = true, required = false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}

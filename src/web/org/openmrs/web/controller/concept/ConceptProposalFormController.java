@@ -207,8 +207,9 @@ public class ConceptProposalFormController extends SimpleFormController {
 		List<ConceptListItem> possibleConceptsListItems = new Vector<ConceptListItem>();
 		ConceptListItem listItem = null;
 		
-		if (cp.getObsConcept() != null)
-			listItem = new ConceptListItem(cp.getObsConcept(), locale);
+		Concept obsConcept = cp.getObsConcept();
+		if (obsConcept != null)
+			listItem = new ConceptListItem(obsConcept, obsConcept.getName(locale), locale);
 		map.put("obsConcept", listItem);
 		
 		String defaultVerbose = "false";

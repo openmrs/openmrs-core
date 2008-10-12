@@ -19,6 +19,9 @@
 
 		<property name="guid" type="java.lang.String"
 			column="guid" length="36" />
+					 
+		<many-to-one name="conceptName" column="concept_name_id" class="ConceptName"
+					outer-join="true" />
 		
 	</class>	
 </hibernate-mapping>

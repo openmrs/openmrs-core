@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -32,13 +33,14 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDerived;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
-import org.openmrs.ConceptSynonym;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
@@ -49,6 +51,10 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
+import org.openmrs.scheduler.SchedulerException;
+import org.openmrs.scheduler.SchedulerService;
+import org.openmrs.scheduler.Task;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.util.StringUtils;
 
@@ -62,6 +68,17 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	private final Log log = LogFactory.getLog(getClass());
 
 	private ConceptDAO dao;
+	
+	/*
+	 * Name of the concept word update task. A constant, because we only
+	 * manage a single task with this name. 
+	 */
+	private final String CONCEPT_WORD_UPDATE_TASK_NAME = "Update Concept Words";
+	
+	/**
+	 * Task managed by the scheduler to update concept words. May be null.
+	 */
+	private Task conceptWordUpdateTask;
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#setConceptDAO(org.openmrs.api.db.ConceptDAO)
@@ -221,6 +238,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		return dao.getConcept(conceptId);
 	}
 		
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptName(java.lang.Integer)
+	 */
+	public ConceptName getConceptName(Integer conceptNameId) throws APIException {
+		return dao.getConceptName(conceptNameId);
+	}
+	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptAnswer(java.lang.Integer)
 	 */
@@ -851,13 +875,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			checkIfLocked();
 
 			String finalText = cp.getFinalText();
-			ConceptSynonym syn = new ConceptSynonym(mappedConcept,
-			                                        finalText,
-			                                        Context.getLocale());
-			syn.setDateCreated(new Date());
-			syn.setCreator(Context.getAuthenticatedUser());
+			ConceptName conceptName = new ConceptName(finalText, null);
+			conceptName.setConcept(mappedConcept);
 
-			mappedConcept.addSynonym(syn);
+			conceptName.setDateCreated(new Date());
+			conceptName.setCreator(Context.getAuthenticatedUser());
+
+			mappedConcept.addName(conceptName);
 			mappedConcept.setChangedBy(Context.getAuthenticatedUser());
 			mappedConcept.setDateChanged(new Date());
 			updateConceptWord(mappedConcept);
@@ -950,14 +974,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Concept getNextConcept(Concept c) {
 		return dao.getNextConcept(c);
 	}
-
-	/**
-	 * @see org.openmrs.api.ConceptService#getNextAvailableId()
-	 */
-	public Integer getNextAvailableId() {
-		return dao.getNextAvailableId();
-	}
-
+	
 	/**
 	 * Convenience method
 	 * 
@@ -1031,15 +1048,36 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	public void updateConceptWords() throws APIException {
 		checkIfLocked();
-		int batchStartId = 0;
-		int endId = getNextAvailableId();
-		int batchSize = 1000;
 
-		while (batchStartId < endId)
-		{
-			updateConceptWords(batchStartId, batchStartId + batchSize);
-			Context.clearSession();
-			batchStartId += batchSize;
+		SchedulerService ss = Context.getSchedulerService();
+
+		// ABKTODO: this whole pattern should be moved into the scheduler,
+		// providing a call like scheduleThisIfNotRunning()
+		TaskDefinition conceptWordUpdateTaskDef = ss.getTaskByName(CONCEPT_WORD_UPDATE_TASK_NAME);
+		if (conceptWordUpdateTaskDef == null) {
+			conceptWordUpdateTaskDef = createConceptWordUpdateTask();
+			try {
+				ss.saveTask(conceptWordUpdateTaskDef); 
+	            conceptWordUpdateTask = ss.scheduleTask(conceptWordUpdateTaskDef);
+            } catch (SchedulerException e) {
+	            log.error("Failed to schedule concept-word update task, because:", e);
+            }
+		} else {
+			// task definition exists. get the task itself
+			conceptWordUpdateTask = conceptWordUpdateTaskDef.getTaskInstance();	
+			if (conceptWordUpdateTask == null) {
+				try {
+					ss.rescheduleTask(conceptWordUpdateTaskDef);
+	            } catch (SchedulerException e) {
+		            log.error("Failed to schedule concept-word update task, because:", e);
+	            }				
+			} else if (!conceptWordUpdateTask.isExecuting()) {
+				try {
+					ss.rescheduleTask(conceptWordUpdateTaskDef);
+	            } catch (SchedulerException e) {
+		            log.error("Failed to re-schedule concept-word update task, because:", e);
+	            }
+			}
 		}
 	}
 
@@ -1066,6 +1104,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 
 	/**
+	 * @see ConceptService#getMaxConceptId()
+	 */
+	public Integer getMaxConceptId() {
+		return dao.getMaxConceptId();
+	}
+
+	/**
 	 * 
 	 * Sets required fields for a concept before saving it.
 	 * 
@@ -1075,52 +1120,64 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		User authUser = Context.getAuthenticatedUser();
 		Date timestamp = new Date();
 		
-		if (concept.getCreator() == null) {
+		if (concept.getCreator() == null)
 			concept.setCreator(authUser);
 			if (concept.getDateCreated() == null)
 				concept.setDateCreated(timestamp);
-		}
-		else {
+		
+		// if updating a concept (instead of creating a new one)
+		if (concept.getConceptId() != null) {
 			concept.setChangedBy(authUser);
 			concept.setDateChanged(timestamp);
 		}
 
 		if (concept.getNames() != null) {
 			for (ConceptName cn : concept.getNames()) {
-				if (cn.getCreator() == null ) {
+				if (cn.getCreator() == null )
 					cn.setCreator(authUser);
 					if (cn.getDateCreated() == null)
 						cn.setDateCreated(timestamp);
+				
+				cn.setConcept(concept);
+				
+				if (cn.getTags() != null) {
+					for (ConceptNameTag tag : cn.getTags()) {
+						if (tag.getCreator() == null )
+							tag.setCreator(authUser);
+						if (tag.getDateCreated() == null)
+							tag.setDateCreated(timestamp);
 				}
 			}
 		}
-		if (concept.getSynonyms() != null)
-			for (ConceptSynonym syn : concept.getSynonyms()) {
-				if (syn.getCreator() == null ) {
-					syn.setCreator(authUser);
-					if (syn.getDateCreated() == null)
-						syn.setDateCreated(timestamp);
-				}
-				syn.setConcept(concept);
 			}
 		if (concept.getConceptSets() != null) {
 			for (ConceptSet set : concept.getConceptSets()) {
-				if (set.getCreator() == null ) {
+				if (set.getCreator() == null )
 					set.setCreator(authUser);
 					if (set.getDateCreated() == null)
 						set.setDateCreated(timestamp);
-				}
+				
 				set.setConceptSet(concept);
 			}
 		}
 		if (concept.getAnswers(true) != null) {
 			for (ConceptAnswer ca : concept.getAnswers(true)) {
-				if (ca.getCreator() == null ) {
+				if (ca.getCreator() == null )
 					ca.setCreator(authUser);
 					if (ca.getDateCreated() == null)
 						ca.setDateCreated(timestamp);
-				}
+				
 				ca.setConcept(concept);
+			}
+				}
+		if (concept.getDescriptions() != null) {
+			for (ConceptDescription cd : concept.getDescriptions()) {
+				if (cd.getCreator() == null)
+					cd.setCreator(authUser);
+				if (cd.getDateCreated() == null) 
+					cd.setDateCreated(timestamp);
+				
+				cd.setConcept(concept);
 			}
 		}
 		/*
@@ -1250,12 +1307,95 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			Concept c = set.getConcept();
 			if (c.isSet()) {
 				explodeConceptSetHelper(c, ret, alreadySeen);
-		} else {
+			} else {
 				ret.add(c);
+			}
 		}
 	}
+
+	/**
+     * @see org.openmrs.api.ConceptService#getConceptNameTagByName(java.lang.String)
+     */
+    public ConceptNameTag getConceptNameTagByName(String tagName) {
+		return dao.getConceptNameTagByName(tagName);
+    }
+
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getLocalesOfConceptNames()
+	 */
+	public Set<Locale> getLocalesOfConceptNames() {
+		return dao.getLocalesOfConceptNames();
 	}
 
+	/**
+     * @see org.openmrs.api.ConceptService#getConceptSource(java.lang.Integer)
+     */
+    public ConceptSource getConceptSource(Integer conceptSourceId) {
+    	return dao.getConceptSource(conceptSourceId);
+    }
+    
+	/**
+     * @see org.openmrs.api.ConceptService#getAllConceptSources()
+     */
+    public List<ConceptSource> getAllConceptSources() {
+    	return dao.getAllConceptSources();
+    }
+    
+	/**
+     * @see org.openmrs.api.ConceptService#purgeConceptSource(org.openmrs.ConceptSource)
+     */
+    public ConceptSource purgeConceptSource(ConceptSource cs)
+            throws APIException {
+    	
+    	return dao.deleteConceptSource(cs);
+    }
+
+	/**
+     * @see org.openmrs.api.ConceptService#saveConceptSource(org.openmrs.ConceptSource)
+     */
+    public ConceptSource saveConceptSource(ConceptSource conceptSource)
+            throws APIException {
+    	
+    	conceptSource.setCreator(Context.getAuthenticatedUser());
+    	conceptSource.setDateCreated(new Date());
+		
+		return dao.saveConceptSource(conceptSource);	    
+    }
+
+	/**
+     * @see org.openmrs.api.ConceptService#saveConceptNameTag(org.openmrs.ConceptNameTag)
+     */
+    public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag) {
+		checkIfLocked();
+		
+		if (nameTag.getDateCreated() == null) {
+			nameTag.setDateCreated(new Date());
+		}
+		if (nameTag.getCreator() == null) {
+			nameTag.setCreator(Context.getAuthenticatedUser());
+		}
+		return dao.saveConceptNameTag(nameTag);    
+	}
+	
+    /**
+     * @see org.openmrs.api.ConceptService#conceptIterator()
+     */
+    public Iterator<Concept> conceptIterator() {
+    	return dao.conceptIterator();
+    }
+    
+    private TaskDefinition createConceptWordUpdateTask() {
+    	TaskDefinition conceptWordUpdateTaskDef = new TaskDefinition();
+    	conceptWordUpdateTaskDef.setTaskClass("org.openmrs.scheduler.tasks.ConceptWordUpdateTask");
+    	conceptWordUpdateTaskDef.setRepeatInterval(0l); // zero interval means do not repeat
+    	conceptWordUpdateTaskDef.setStartOnStartup(false);
+    	conceptWordUpdateTaskDef.setStartTime(null); // to induce immediate execution
+    	conceptWordUpdateTaskDef.setName(CONCEPT_WORD_UPDATE_TASK_NAME);
+    	conceptWordUpdateTaskDef.setDescription("Iterates through the concept dictionary, re-creating concept words (which are used for searcing). This task is started when using the \"Update Concept Word Storage\" page and no range is given.");
+    	return conceptWordUpdateTaskDef;
+    }
+    
 	/**
      * @see org.openmrs.api.ConceptService#getConceptByGuid(java.lang.String)
      */
@@ -1292,10 +1432,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 
     public ConceptSource getConceptSourceByGuid(String guid) {
 		return dao.getConceptSourceByGuid(guid);
-    }
-
-    public ConceptSynonym getConceptSynonymByGuid(String guid) {
-		return dao.getConceptSynonymByGuid(guid);
     }
 
     public ConceptWord getConceptWordByGuid(String guid) {
@@ -1339,6 +1475,22 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
      */
     public Map<Integer, String> getConceptGuids() {
         return dao.getConceptGuids();
+    }
+
+
+	/**
+     * @see org.openmrs.api.ConceptService#getConceptDescriptionByGuid(java.lang.String)
+     */
+    public Object getConceptDescriptionByGuid(String guid) {
+	    return dao.getConceptDescriptionByGuid(guid);
+    }
+
+
+	/**
+     * @see org.openmrs.api.ConceptService#getConceptNameTagByGuid(java.lang.String)
+     */
+    public ConceptNameTag getConceptNameTagByGuid(String guid) {
+	    return dao.getConceptNameTagByGuid(guid);
     }
 
 }

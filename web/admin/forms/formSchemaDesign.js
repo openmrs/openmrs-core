@@ -8,8 +8,6 @@ dojo.require("dojo.widget.TreeSelector");
 dojo.require("dojo.widget.TreeNode");
 dojo.require("dojo.widget.TreeContextMenu");
 
-dojo.hostenv.writeIncludes();
-
 var fieldSearch = null;		// field search widget
 var cSelection = null;		// concept search widget
 var tree;
@@ -426,7 +424,6 @@ function editClicked(node) {
 			tree.attributeNameInput.value = data["attributeName"];
 			tree.defaultValueInput.value = data["defaultValue"];
 			tree.selectMultipleCheckbox.checked = data["selectMultiple"] ? true : false;
-			tree.numFormsTag.innerHTML = data["numForms"];
 		}
 		else {
 			tree.fieldIdInput.value = tree.tableNameInput.value = "";
@@ -434,6 +431,8 @@ function editClicked(node) {
 			tree.selectMultipleCheckbox.checked = false;
 			tree.numFormsTag.innerHTML = "";
 		}
+		
+		tree.numFormsTag.innerHTML = data["numForms"];
 		
 		// formField info
 		tree.formFieldIdInput.value = valueExists(data["formFieldId"], "");
@@ -661,25 +660,29 @@ function save(target, formNotUsed) {
 					data["pageNumber"] = null;
 				
 				// min occurances 
-				if (tree.minOccursInput.value && parseInt(tree.minOccursInput.value).toString().length == tree.minOccursInput.value.length) {
-					data["minOccurs"] = tree.minOccursInput.value;
-					if (data["minOccurs"].length == 0)
+				if (tree.minOccursInput.value == null || tree.minOccursInput.value.length == 0) {
 					data["minOccurs"] = null;
 				}
-				else if (tree.minOccursInput.value) {
+				else if (parseInt(tree.minOccursInput.value).toString() == "NaN" ||
+						 tree.minOccursInput.value && parseInt(tree.minOccursInput.value).toString().length != tree.minOccursInput.value.length) {
 					alert("Invalid input: '" + tree.minOccursInput.value + "'. Min occurances must be an integer");
 					return false;
 				}
+				else {
+					data["minOccurs"] = tree.minOccursInput.value;
+				}
 				
 				// max occurances
-				if (tree.maxOccursInput.value && parseInt(tree.maxOccursInput.value).toString().length == tree.maxOccursInput.value.length) {
-					data["maxOccurs"] = tree.maxOccursInput.value;
-					if (data["maxOccurs"].length == 0)
+				if (tree.maxOccursInput.value == null || tree.maxOccursInput.value.length == 0) {
 					data["maxOccurs"] = null;
 				}
-				else if (tree.maxOccursInput.value) {
+				else if (parseInt(tree.maxOccursInput.value).toString() == "NaN" ||
+						 tree.maxOccursInput.value && parseInt(tree.maxOccursInput.value).toString().length != tree.maxOccursInput.value.length) {
 					alert("Invalid input: '" + tree.maxOccursInput.value + "'. Max occurances must be an integer");
 					return false;
+				}
+				else {
+					data["maxOccurs"] = tree.maxOccursInput.value;
 				}
 				
 				data["isRequired"] = tree.isRequiredCheckbox.checked;
@@ -911,11 +914,12 @@ function getData(obj) {
 		data["label"] = "CONCEPT." + obj.name;
 		data.title = "Concept Id: " + obj.conceptId;
 		data.isSet = obj.isSet;
+		data["numForms"] = 1;
 	}
 	// or object is a fieldListItem
 	else if (obj.fieldId != null) {
 		data.id = data["fieldId"] = obj.fieldId;
-		data["numForms"] = obj.numForms;
+		data["numForms"] = obj.numForms + 1; // they are adding to this form, so count it in the group
 		data["fieldName"] = obj.name;
 		data["description"] = obj.description;
 		data["fieldType"] = obj.fieldTypeId;

@@ -436,17 +436,12 @@ public class PatientFormController extends PersonFormController {
 									obsDeath = new Obs();
 									obsDeath.setPerson(patient);
 									obsDeath.setConcept(causeOfDeath);
-									Location loc = Context.getEncounterService()
-									                      .getLocationByName("Unknown Location");
-									if (loc == null)
-										loc = Context.getEncounterService()
-										             .getLocation(new Integer(1));
-									// TODO person healthcenter //if ( loc ==
-									// null ) loc = patient.getHealthCenter();
-									if (loc != null)
-										obsDeath.setLocation(loc);
-									else
-										log.error("Could not find a suitable location for which to create this new Obs");
+									obsDeath.setConceptName(causeOfDeath.getName()); // ABKTODO: presume current locale?
+									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
+									if (loc == null) loc = Context.getEncounterService().getLocation(new Integer(1));
+									// TODO person healthcenter //if ( loc == null ) loc = patient.getHealthCenter();
+									if (loc != null) obsDeath.setLocation(loc);
+									else log.error("Could not find a suitable location for which to create this new Obs");
 								}
 
 								// put the right concept and (maybe) text in
@@ -464,6 +459,7 @@ public class PatientFormController extends PersonFormController {
 								if (currCause != null) {
 									log.debug("Current cause is not null, setting to value_coded");
 									obsDeath.setValueCoded(currCause);
+									obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 
 									Date dateDeath = patient.getDeathDate();
 									if (dateDeath == null)
@@ -601,7 +597,7 @@ public class PatientFormController extends PersonFormController {
 			boolean onlyPublishedForms = true;
 			if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS))
 				onlyPublishedForms = false;
-			forms.addAll(Context.getFormService().getForms(null, onlyPublishedForms, null, false, null, null));
+			forms.addAll(Context.getFormService().getForms(null, onlyPublishedForms, null, false, null, null, null));
 			
 			List<Encounter> encs = Context.getEncounterService().getEncountersByPatient(patient);
 			if (encs != null && encs.size() > 0)

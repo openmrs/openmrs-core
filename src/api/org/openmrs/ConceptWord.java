@@ -25,6 +25,9 @@ import org.openmrs.util.OpenmrsConstants;
 
 /**
  * ConceptWord
+ * 
+ * Concept words are the individual terms of which a concept name is composed. 
+ * They are case-preserving but compare case insensitively. 
  */
 public class ConceptWord implements java.io.Serializable, SynchronizableInstance,
 		Comparable<ConceptWord> {
@@ -34,6 +37,7 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 	// Fields
 	private Integer conceptWordId;
 	private Concept concept;
+	private ConceptName conceptName;
 	private String word;
 	private String synonym;
 	private Locale locale;
@@ -74,16 +78,18 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 	public ConceptWord() {
 	}
 
-	public ConceptWord(String word, Concept concept, Locale locale,
+	public ConceptWord(String word, Concept concept, ConceptName conceptName, Locale locale,
 			String synonym) {
 		this.concept = concept;
+		this.conceptName = conceptName;
 		this.word = word;
 		this.locale = locale;
 		this.synonym = synonym;
 	}
 
-	public ConceptWord(Concept c) {
+	public ConceptWord(Concept c, ConceptName conceptName) {
 		this.concept = c;
+		this.conceptName = conceptName;
 		this.word = null;
 		this.locale = null;
 		this.synonym = null;
@@ -96,7 +102,7 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 			if (concept != null && c.getConcept() != null)
 				matches = matches && concept.equals(c.getConcept());
 			if (word != null && c.getWord() != null)
-				matches = matches && word.equals(c.getWord());
+				matches = matches && word.equalsIgnoreCase(c.getWord());
 			if (locale != null && c.getLocale() != null)
 				matches = matches && locale.equals(c.getLocale());
 			if (synonym != null && c.getSynonym() != null)
@@ -111,7 +117,7 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 		if (concept != null)
 			hash = 37 * hash + this.getConcept().hashCode();
 		if (word != null)
-			hash = 37 * hash + this.getWord().hashCode();
+			hash = 37 * hash + this.getWord().toLowerCase().hashCode(); // ABKTODO: MySQL searches are case insensitive 
 		if (locale != null)
 			hash = 37 * hash + this.getLocale().hashCode();
 		if (synonym != null)
@@ -181,6 +187,24 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 	}
 
 	/**
+	 * Sets the concept name associated with this word.
+	 * 
+	 * @param conceptName 
+	 */
+	public void setConceptName(ConceptName conceptName) {
+		this.conceptName = conceptName;
+	}
+
+	/**
+     * Gets the concept name from which this word was derived.
+     * 
+     * @return
+     */
+    public ConceptName getConceptName() {
+    	return conceptName;
+    }
+
+	/**
 	 * @return Returns the weight.
 	 */
 	public Double getWeight() {
@@ -216,17 +240,7 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 		for (ConceptName name : concept.getNames()) {
 			List<String> uniqueParts = getUniqueWords(name.getName());
 			for (String part : uniqueParts) {
-				words.add(new ConceptWord(part, concept, name.getLocale(), ""));
-			}
-		}
-		
-		if (concept.getSynonyms() != null)
-			for (ConceptSynonym synonym : concept.getSynonyms()) {
-				String syn = synonym.getSynonym();
-				List<String> uniqueParts = getUniqueWords(syn);
-				for (String part : uniqueParts) {
-					words.add(new ConceptWord(part, concept, synonym.getLocale(),
-							syn));
+				words.add(new ConceptWord(part, concept, name, name.getLocale(), ""));
 				}
 			}
 
@@ -250,7 +264,7 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 			String upper = p.toUpperCase();
 			if (!p.equals("") && !OpenmrsConstants.STOP_WORDS().contains(upper)
 					&& !uniqueParts.contains(upper))
-				uniqueParts.add(p);
+				uniqueParts.add(upper);
 		}
 		return uniqueParts;
 	}

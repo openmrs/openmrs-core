@@ -20,11 +20,13 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -817,16 +819,23 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Get encounters that are after a certain date
+	 * Get encounters that are after a certain date, and ensure the comparison is INCLUSIVE of the given date
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldGetEncountersFromDate() throws Exception {
-		Date fromDate = new SimpleDateFormat("yyyy-dd-MM").parse("2006-01-01");
-		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, fromDate, null, null, null, true);
+	public void shouldGetEncountersOnOrAfterDate() throws Exception {
+		// there is only one unvoided encounter, on 2005-01-01
+		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2004-12-31"), null, null, null, false); 	
+		assertEquals(1, encounters.size());
+		assertEquals(1, encounters.get(0).getEncounterId().intValue());
+
+		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-01"), null, null, null, false);
 		assertEquals(4, encounters.size());
-		assertEquals(2, encounters.get(0).getEncounterId().intValue());
+
+		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-02"), null, null, null, false); 
+		assertEquals(0, encounters.size());
 		assertEquals(3, encounters.get(1).getEncounterId().intValue());
 		assertEquals(4, encounters.get(2).getEncounterId().intValue());
 		assertEquals(5, encounters.get(3).getEncounterId().intValue());
@@ -1389,5 +1398,20 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void shouldThrowErrorWhenGettingEncounterTypeById() throws Exception {
 		Context.getEncounterService().getEncounterType((Integer)null);
 	}
-	
+
+    /**
+     * @verifies {@link EncounterService#saveEncounter(Encounter)}
+     * test = should cascade patient to orders in the encounter
+     */
+    @Test
+    public void saveEncounter_shouldCascadePatientToOrdersInTheEncounter() throws Exception {
+        Encounter enc = Context.getEncounterService().getEncounter(1);
+        Order existing = enc.getOrders().iterator().next();
+        
+        // for some reason the xml for the existing encounter has already given this order a different patient than the encounter that it's contained in, but let's verify that:
+        Assert.assertNotSame(enc.getPatient(), existing.getPatient());
+       
+        Context.getEncounterService().saveEncounter(enc);
+        Assert.assertEquals(enc.getPatient(), existing.getPatient());
+    }
 }

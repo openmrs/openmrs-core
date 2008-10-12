@@ -11,7 +11,7 @@ dojo.provide("dojo.widget.openmrs.PatientSearch");
 dojo.require("dojo.widget.openmrs.PersonSearch");
 
 var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
-document.write("<script type='text/javascript' src='" + openmrsSearchBase + "/dwr/interface/DWRPatientService.js'></script>");
+importJavascriptFile(openmrsSearchBase + "/dwr/interface/DWRPatientService.js");
 
 dojo.widget.tags.addParseTreeHandler("dojo:PatientSearch");
 

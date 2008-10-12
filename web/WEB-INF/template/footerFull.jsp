@@ -14,7 +14,7 @@
 					if (i == -1)
 						i = qs.length();
 					pageContext.setAttribute("qs", qs.substring(0, i));
-					pageContext.setAttribute("locales", org.openmrs.util.OpenmrsConstants.OPENMRS_LOCALES());
+					pageContext.setAttribute("locales", org.openmrs.api.context.Context.getAdministrationService().getPresentationLocales());
 					pageContext.setAttribute("openmrsVersion", org.openmrs.util.OpenmrsConstants.OPENMRS_VERSION);
 					pageContext.setAttribute("databaseVersion", org.openmrs.util.OpenmrsConstants.DATABASE_VERSION);
 					pageContext.setAttribute("databaseVersionExpected", org.openmrs.util.OpenmrsConstants.DATABASE_VERSION_EXPECTED);

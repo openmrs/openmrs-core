@@ -165,7 +165,7 @@ public class NealReportController implements Controller {
 
 		List<Concept> conceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> namesForReportMaker = new HashMap<Concept, String>();
-		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "ANTIRETROVIRAL 	", Hiv.TREATMENT_GROUP);
+		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
 		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "TUBERCULOSIS TREATMENT GROUP", TB.TB_GROUP);
 		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "CURRENT WHO HIV STAGE", Hiv.WHO_STAGE);
 		
@@ -284,20 +284,16 @@ public class NealReportController implements Controller {
 		// General.HIV_POSITIVE_P
 		// General.TB_ACTIVE_P 
 		Program hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
-		Program hivPediatricProgram = Context.getProgramWorkflowService().getProgram("HIV PEDIATRIC PROGRAM");
-		if (hivProgram != null && hivPediatricProgram != null) {
+		if (hivProgram != null) {
 			Map<Integer, PatientProgram> progs = pss.getCurrentPatientPrograms(ps, hivProgram);
-			progs.putAll(pss.getCurrentPatientPrograms(ps, hivPediatricProgram));
 			for (Map.Entry<Integer, PatientProgram> e : progs.entrySet()) {
 				patientDataHolder.get(e.getKey()).put(General.HIV_POSITIVE_P, "t");
 				patientDataHolder.get(e.getKey()).put(General.ENROLL_DATE, formatDate(e.getValue().getDateEnrolled()));
 				//log.debug(e.getValue().getDateEnrolled());
 			}
 			ProgramWorkflow wf = Context.getProgramWorkflowService().getWorkflow(hivProgram, "TREATMENT STATUS");
-			ProgramWorkflow wfPeds = hivPediatricProgram.getWorkflowByName("TREATMENT STATUS");
 			log.debug("worlflow is " + wf + " and patientSet is " + ps);
 			Map<Integer, PatientState> states = pss.getCurrentStates(ps, wf);
-			states.putAll(pss.getCurrentStates(ps, wfPeds));
 			if ( states != null ) {
 				log.debug("about to loop through [" + states.size() + "] statuses");
 				for (Map.Entry<Integer, PatientState> e : states.entrySet()) {
@@ -320,11 +316,9 @@ public class NealReportController implements Controller {
 				log.debug("states is null, can't proceed");
 			}
 			
-			wf = Context.getProgramWorkflowService().getWorkflow(hivProgram, "TREATMENT GROUP");
-			wfPeds = hivPediatricProgram.getWorkflowByName("TREATMENT GROUP");
+			wf = Context.getProgramWorkflowService().getWorkflow(hivProgram, "ANTIRETROVIRAL TREATMENT GROUP");
 			log.debug("worlflow is " + wf + " and patientSet is " + ps);
 			states = pss.getCurrentStates(ps, wf);
-			states.putAll(pss.getCurrentStates(ps, wfPeds));
 			if ( states != null ) {
 				log.debug("about to loop through [" + states.size() + "] statuses");
 				for (Map.Entry<Integer, PatientState> e : states.entrySet()) {

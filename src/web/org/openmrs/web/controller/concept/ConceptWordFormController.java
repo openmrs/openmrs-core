@@ -46,6 +46,7 @@ public class ConceptWordFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			String s = request.getParameter("conceptId");
+			String successMessageKey;
 			if (s != null && !s.equals("")) {
 				try {
 					s = s.trim();
@@ -73,13 +74,16 @@ public class ConceptWordFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "ConceptWord.rangeError");
 					return showForm(request, response, errors);
 				}
+				successMessageKey = "ConceptWord.update";
 			}
 			else {
 				Context.getConceptService().updateConceptWords();
+				successMessageKey = "ConceptWord.updateInProgress";
 			}
 			
 			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptWord.updated");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, successMessageKey);
+		
 		}
 		
 		return new ModelAndView(new RedirectView(view));

@@ -25,11 +25,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Attributable;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
@@ -93,11 +95,35 @@ public class PersonFormController extends SimpleFormController {
 				
 			// look for person attributes in the request and save to person
 				for (PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PERSON, null)) {
-					String value = request.getParameter(type.getPersonAttributeTypeId().toString());
+					String paramName = type.getPersonAttributeTypeId().toString();
+					String value = request.getParameter(paramName);
 					
 					// if there is an error displaying the attribute, the value will be null
-					if (value != null)
-						person.addAttribute(new PersonAttribute(type, value));
+					if (value != null) {
+						PersonAttribute attribute = new PersonAttribute(type, value);
+						try {
+							Object hydratedObject = attribute.getHydratedObject();
+							if (hydratedObject == null || "".equals(hydratedObject.toString())) {
+								// if null is returned, the value should be blanked out
+								attribute.setValue("");
+							} else if (hydratedObject instanceof Attributable) {
+								attribute.setValue(((Attributable)hydratedObject).serialize());
+							}
+							else if (!hydratedObject.getClass().getName().equals(type.getFormat()))
+								// if the classes doesn't match the format, the hydration failed somehow
+								// TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
+								throw new APIException();
+						}
+						catch (APIException e) {
+							errors.rejectValue("attributes", "Invalid value for " + type.getName() + ": '" + value + "'");
+							log.warn("Got an invalid value: " + value + " while setting personAttributeType id #" + paramName, e);
+							
+							// setting the value to empty so that the user can reset the value to something else
+							attribute.setValue("");
+							
+						}
+						person.addAttribute(attribute);
+					}
 				}
 				
 			// check patients birthdate against future dates and really old dates

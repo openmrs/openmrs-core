@@ -37,7 +37,13 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebUtil;
 
-
+/**
+ * A collection of methods used by DWR for access forms, fields, and FormFields.
+ * 
+ * These methods are similar to the {@link FormService} methods
+ * and have been chosen to be exposed via dwr to allow for 
+ * access via javascript.
+ */
 public class DWRFormService {
 
 	protected final Log log = LogFactory.getLog(getClass());
@@ -116,7 +122,8 @@ public class DWRFormService {
 				fieldForConceptAdded.put(concept.getConceptId(), true);
 			}
 			if (!fieldForConceptAdded.containsKey((concept.getConceptId()))) {
-				objects.add(new ConceptListItem(concept, locale));
+				ConceptName cn = concept.getName(locale);
+				objects.add(new ConceptListItem(concept, cn, locale));
 				fieldForConceptAdded.put(concept.getConceptId(), true);
 			}
 			
@@ -266,6 +273,10 @@ public class DWRFormService {
 		if (log.isDebugEnabled())
 			log.debug("ff.getFormFieldId: " + ff.getFormFieldId());
 		
+		List<Field> fields = new Vector<Field>();
+		fields.add(field);
+		int size = Context.getFormService().getForms(null, null, null, null, null, null, fields).size();
+		
     	return "addNode(tree, {formFieldId: " + ff.getFormFieldId() + ", " + 
     					"parent: " + parent + ", " + 
     					"fieldId: " + field.getFieldId() + ", " + 
@@ -278,7 +289,7 @@ public class DWRFormService {
     					"attributeName: \"" + field.getAttributeName() + "\", " + 
     					"defaultValue: \"" + WebUtil.escapeQuotesAndNewlines(field.getDefaultValue()) + "\", " + 
     					"selectMultiple: " + field.getSelectMultiple() + ", " + 
-    					"numForms: " + field.getForms().size() + ", " + 
+    					"numForms: " + size + ", " + 
     					"isSet: " + isSet + ", " +
     						
     					"fieldNumber: " + ff.getFieldNumber() + ", " + 

@@ -24,9 +24,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptProposal;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
@@ -65,7 +67,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	@Before
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(ORU_INITIAL_DATA_XML);
-		System.out.println("Before oru tests");
 	}
 
 	/**
@@ -80,25 +81,30 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
+		// ABKTODO: base test has changed. Is this needed?
+		// commitTransaction(false);
+		
 		//System.out.println("obs size for pat 2: " + obsService.getObservations(new Patient(2), false));
 		
 		Patient patient = new Patient(3);
 		
 		// check for any obs
-		Set<Obs> obsForPatient3 = obsService.getObservations(patient, false);
+		List<Obs> obsForPatient3 = obsService.getObservationsByPerson(patient);
 		assertNotNull(obsForPatient3);
 		assertTrue("There should be some obs created for #3", obsForPatient3.size() > 0);
 		
 		// check for the return visit date obs 
 		Concept returnVisitDateConcept = new Concept(5096);
-		Calendar cal = new GregorianCalendar();
+		Calendar cal = Calendar.getInstance();
 		cal.set(2008, Calendar.FEBRUARY, 29, 0, 0, 0);
 		Date returnVisitDate = cal.getTime();
-		Set<Obs> returnVisitDateObsForPatient3 = obsService.getObservations(patient, returnVisitDateConcept, false);
+		List<Obs> returnVisitDateObsForPatient3 = obsService.getObservationsByPersonAndConcept(patient, returnVisitDateConcept);
 		assertEquals("There should be a return visit date", 1, returnVisitDateObsForPatient3.size());
 		
 		Obs firstObs = (Obs)returnVisitDateObsForPatient3.toArray()[0];
-		assertEquals("The date should be the 29th", returnVisitDate.toString(), firstObs.getValueDatetime().toString());
+		cal.setTime(firstObs.getValueDatetime());
+		Date firstObsValueDatetime = cal.getTime();
+		assertEquals("The date should be the 29th", returnVisitDate.toString(), firstObsValueDatetime.toString());
 	}
 	
 	/**
@@ -206,5 +212,53 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertEquals(new Encounter(3), obsForPatient.get(0).getEncounter());
 		
 	}
+	
+	/**
+	 * Should create a concept proposal because of the key string in the message
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCreateConceptProposal() throws Exception {
 
+		List<ConceptProposal> proposals = Context.getConceptService().getAllConceptProposals(false);
+		Assert.assertEquals(0, proposals.size());
+		
+		// there should be an encounter with encounter_id == 3 for this test
+		// to append to
+		assertNotNull(Context.getEncounterService().getEncounter(3));
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080924022306||ORU^R01|Z185fTD0YozQ5kvQZD7i|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^||Joe^S^Mith||\rPV1||O|1^Unknown Module 2||||1^Joe (1-1)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080219085345|1^Joe\rOBR|1|||\rOBX|18|DT|5096^RETURN VISIT DATE^99DCT||20080506|||||||||20080212\rOBR|19|||5096^PROBLEM LIST^99DCT\rOBX|1|CWE|5096^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		ConceptProposal proposal = Context.getConceptService().getAllConceptProposals(false).get(0);
+		assertEquals("PELVIC MASS", proposal.getOriginalText());
+
+	}
+
+	/**
+	 * Should create a concept proposal because of the key string in the message
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCreateConceptProposal2() throws Exception {
+		
+		List<ConceptProposal> proposals = Context.getConceptService().getAllConceptProposals(false);
+		Assert.assertEquals(0, proposals.size());
+		
+		// there should be an encounter with encounter_id == 3 for this test
+		// to append to
+		assertNotNull(Context.getEncounterService().getEncounter(3));
+		
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20081006115934||ORU^R01|a1NZBpKqu54QyrWBEUKf|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^~asdf^^^^||Joe^ ^Smith||\rPV1||O|1^Bishop Muge||||1^asdf asdf (5-9)|||||||||||||||||||||||||||||||||||||20081003|||||||V\rORC|RE||||||||20081006115645|1^Super User\rOBR|1|||\rOBX|1|CWE|5096^PAY CATEGORY^99DCT||5096^PILOT^99DCT|||||||||20081003\rOBX|2|DT|5096^RETURN VISIT DATE^99DCT||20081004|||||||||20081003\rOBR|3|||5096^PROBLEM LIST^99DCT\rOBX|1|CWE|5018^PROBLEM ADDED^99DCT||5096^HUMAN IMMUNODEFICIENCY VIRUS^99DCT|||||||||20081003\rOBX|2|CWE|5089^PROBLEM ADDED^99DCT||PROPOSED^ASDFASDFASDF^99DCT|||||||||20081003";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		
+		ConceptProposal proposal = Context.getConceptService().getAllConceptProposals(false).get(0);
+		Assert.assertNotNull(proposal);
+		assertEquals("ASDFASDFASDF", proposal.getOriginalText());
+		
+	}
 }

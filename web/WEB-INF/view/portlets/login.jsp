@@ -8,11 +8,11 @@
 
 <br/>
 
-<form method="post" action="loginServlet" style="padding:15px; width: 300px;">
+<form method="post" action="loginServlet" style="padding:15px; width: 300px;" autocomplete="off">
 	<table>
 		<tr>
 			<td><spring:message code="User.username"/>:</td>
-			<td><input type="text" name="uname" value="<request:parameter name="username" />" id="username" size="25" maxlength="50"/></td>
+			<td><input type="text" name="uname" value="<request:parameter name="username" />" id="username" size="25" maxlength="50" /></td>
 		</tr>
 		<tr>
 			<td><spring:message code="User.password"/>:</td>

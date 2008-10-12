@@ -41,6 +41,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageService;
 import org.openmrs.reporting.ReportObjectService;
@@ -453,6 +454,24 @@ public class ServiceContext {
 	}
 	
 	/**
+	 * Gets the MessageSourceService used in the context.
+	 * 
+	 * @return MessageSourceService
+	 */
+	public MessageSourceService getMessageSourceService() {
+		return (MessageSourceService)getService(MessageSourceService.class);
+	}
+	
+	/**
+	 * Sets the MessageSourceService used in the context.
+	 * 
+	 * @param messageService the MessageSourceService to use
+	 */
+	public void setMessageSourceService(MessageSourceService messageSourceService) {
+		setService(MessageSourceService.class, messageSourceService);
+	}
+	
+	/**
 	 * @return synchronization related services 
 	 */
 	public SynchronizationService getSynchronizationService() {
@@ -545,7 +564,7 @@ public class ServiceContext {
 	 * @return Object that is a proxy for the <code>cls</code> class 
 	 */
 	@SuppressWarnings("unchecked")
-    public Object getService(Class cls) {
+    public <T extends Object> T getService(Class<? extends T> cls) {
 		if (log.isTraceEnabled())
 			log.trace("Getting service: " + cls);
 		
@@ -567,7 +586,7 @@ public class ServiceContext {
 		if (factory == null)
 			throw new APIException("Service not found: " + cls);
 		
-		return factory.getProxy(OpenmrsClassLoader.getInstance());
+		return (T)factory.getProxy(OpenmrsClassLoader.getInstance());
 	}
 
 	/**

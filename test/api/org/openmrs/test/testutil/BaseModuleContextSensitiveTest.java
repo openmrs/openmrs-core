@@ -17,10 +17,11 @@ import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Modules using the unit test framework should use this class instead of
- * {@link BaseContextSensitiveTest}.
+ * the general {@link BaseContextSensitiveTest} one.
  * 
- * Developers need to fill in the {@link #getModulesToLoad()} method with their
- * current module's omod location and any dependent omods
+ * Developers just need to make sure their modules are on the classpath. The
+ * TestingApplicationContext.xml file tells spring/hibernate to look for and
+ * load all modules found on the classpath.
  * 
  * The ContextConfiguration annotation adds in the module application context 
  * files to the config locations and the test application context (so that 

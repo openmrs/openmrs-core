@@ -64,7 +64,7 @@ public class LoginServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		HttpSession httpSession = request.getSession();
 		
-		String ipAddress = request.getLocalAddr();
+		String ipAddress = request.getRemoteAddr();
 		Integer loginAttempts = loginAttemptsByIP.get(ipAddress);
 		if (loginAttempts == null)
 			loginAttempts = 1;

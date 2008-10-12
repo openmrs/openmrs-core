@@ -261,10 +261,8 @@ public class ObsTableWidget extends TagSupport {
 				ret.append("<tr>");
 				ret.append("<th></th>");
 				for (Concept c : conceptList) {
-					ConceptName cn = c.getName(loc, false); 
-					String name = cn.getShortName();
-					if (name == null || name.length() == 0)
-						name = cn.getName();
+					ConceptName cn = c.getShortestName(loc, false); 
+					String name = cn.getName();
 					ret.append("<th>");
 					if (conceptLink != null) {
 						ret.append("<a href=\"" + conceptLink + "conceptId=" + c.getConceptId() + "\">");
@@ -313,10 +311,8 @@ public class ObsTableWidget extends TagSupport {
 			for (Concept c : conceptList) {
 				ret.append("<tr>");
 				if (showConceptHeader) {
-					ConceptName cn = c.getName(loc, false); 
-					String name = cn.getShortName();
-					if (name == null || name.length() == 0)
-						name = cn.getName();
+					ConceptName cn = c.getShortestName(loc, false); 
+					String name = cn.getName();
 					ret.append("<th>");
 					if (conceptLink != null) {
 						ret.append("<a href=\"" + conceptLink + "conceptId=" + c.getConceptId() + "\">");

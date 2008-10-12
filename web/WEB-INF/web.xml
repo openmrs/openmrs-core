@@ -169,7 +169,11 @@
 		<servlet-name>conceptRedirectServlet</servlet-name>
 		<url-pattern>/concept/*</url-pattern>
 	</servlet-mapping>
-		
+	
+	<listener>	
+		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+
 	<listener>
 		<listener-class>org.openmrs.web.Listener</listener-class>
 		<!--  extends ContextLoaderListener -->
@@ -187,7 +191,7 @@
 		<!--  this off (set value to "false") in production mode        -->
 		<init-param>
 			<param-name>debug</param-name>
-			<param-value>true</param-value>
+			<param-value>false</param-value>
 		</init-param>
 		<init-param>
 			<param-name>config-base</param-name>

@@ -17,16 +17,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -49,18 +47,17 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDerived;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
-import org.openmrs.ConceptSynonym;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
-import org.openmrs.User;
-import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
@@ -167,6 +164,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	public Concept getConcept(Integer conceptId) throws DAOException  {
 		return (Concept)sessionFactory.getCurrentSession().get(Concept.class, conceptId);
+	}
+
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptName(java.lang.Integer)
+	 */
+	public ConceptName getConceptName(Integer conceptNameId) throws DAOException  {
+		return (ConceptName)sessionFactory.getCurrentSession().get(ConceptName.class, conceptNameId);
 	}
 
 	/**
@@ -878,6 +882,164 @@ y	 * returns a list of n-generations of parents of a concept in a concept set
 	}
 
 	/**
+     * @see org.openmrs.api.db.ConceptDAO#getLocalesOfConceptNames()
+     */
+    public Set<Locale> getLocalesOfConceptNames() {
+		Set<Locale> locales = new HashSet<Locale>();
+
+		Query query = sessionFactory.getCurrentSession().createQuery("select distinct locale from ConceptName");
+		
+		for (Object locale : query.list()) {
+			locales.add((Locale)locale);
+		}
+		
+		return locales;
+	}
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptNameTag(java.lang.Integer)
+     */
+    public ConceptNameTag getConceptNameTag(Integer i) {
+		return (ConceptNameTag)sessionFactory.getCurrentSession().get(ConceptNameTag.class, i);
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptNameTagByName(java.lang.String)
+     */
+    public ConceptNameTag getConceptNameTagByName(String name) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptNameTag.class)
+		.add(Expression.eq("tag", name));
+	
+		if (crit.list().size() < 1) {
+			log.warn("No concept name tag found with name: " + name);
+			return null;
+		}
+	
+		return (ConceptNameTag)crit.list().get(0);
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptNameTags()
+     */
+    public List<ConceptNameTag> getConceptNameTags() {
+		return sessionFactory.getCurrentSession().createQuery("from ConceptNameTag cnt order by cnt.tag").list();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptSource(java.lang.Integer)
+     */
+    public ConceptSource getConceptSource(Integer conceptSourceId) {
+    	return (ConceptSource)sessionFactory.getCurrentSession().get(ConceptSource.class, conceptSourceId);
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getAllConceptSources()
+     */
+    public List<ConceptSource> getAllConceptSources() {
+    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class);
+    	
+    	criteria.add(Expression.eq("voided", false));
+    	
+    	return criteria.list();
+    }
+    
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#deleteConceptSource(org.openmrs.ConceptSource)
+     */
+    public ConceptSource deleteConceptSource(ConceptSource cs)
+            throws DAOException {
+    	sessionFactory.getCurrentSession().delete(cs);
+    	return cs;
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#saveConceptSource(org.openmrs.ConceptSource)
+     */
+    public ConceptSource saveConceptSource(ConceptSource conceptSource)
+            throws DAOException {
+    	sessionFactory.getCurrentSession().saveOrUpdate(conceptSource);
+    	return conceptSource;
+    }
+
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#saveConceptNameTag(org.openmrs.ConceptNameTag)
+     */
+    public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag) {
+    	if (nameTag == null) return null;
+    	ConceptNameTag returnedTag = getConceptNameTagByName(nameTag.getTag());
+    	if (returnedTag == null) {
+    		returnedTag = nameTag;
+    		sessionFactory.getCurrentSession().saveOrUpdate(nameTag);
+    	}
+    	return returnedTag;
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getMaxConceptId()
+     */
+    public Integer getMinConceptId() {
+		Query query = sessionFactory.getCurrentSession()
+			.createQuery("select min(conceptId) from Concept");
+		return (Integer)query.uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getMaxConceptId()
+     */
+    public Integer getMaxConceptId() {
+		Query query = sessionFactory.getCurrentSession()
+			.createQuery("select max(conceptId) from Concept");
+		return (Integer)query.uniqueResult();
+    }
+    
+    /**
+     * @see org.openmrs.api.db.ConceptDAO#conceptIterator()
+     */
+    public Iterator<Concept> conceptIterator() {
+    	return new ConceptIterator();
+    }
+    
+    private class ConceptIterator implements Iterator<Concept> {
+
+    	Concept currentConcept = null;
+    	Concept nextConcept;
+    	
+    	public ConceptIterator() {
+    		final int firstConceptId = getMinConceptId();
+    		nextConcept = getConcept(firstConceptId);
+    	}
+    	
+		/**
+         * @see java.util.Iterator#hasNext()
+         */
+        public boolean hasNext() {
+        	return (nextConcept != null);
+        }
+
+		/**
+         * @see java.util.Iterator#next()
+         */
+        public Concept next() {
+        	if (currentConcept != null) {
+        		sessionFactory.getCurrentSession().evict(currentConcept);
+        	}
+        	currentConcept = nextConcept;
+        	nextConcept = getNextConcept(currentConcept);
+        	
+        	return currentConcept;
+        }
+
+		/**
+         * @see java.util.Iterator#remove()
+         */
+        public void remove() {
+        	throw new UnsupportedOperationException();
+        }
+    	
+    }
+    
+    /**
      * @see org.openmrs.api.db.ConceptDAO#getConceptByGuid(java.lang.String)
      */
     public Concept getConceptByGuid(String guid) {
@@ -913,10 +1075,6 @@ y	 * returns a list of n-generations of parents of a concept in a concept set
 
     public ConceptSource getConceptSourceByGuid(String guid) {
 		return (ConceptSource) sessionFactory.getCurrentSession().createQuery("from ConceptSource cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
-    }
-
-    public ConceptSynonym getConceptSynonymByGuid(String guid) {
-		return (ConceptSynonym) sessionFactory.getCurrentSession().createQuery("from ConceptSynonym cc where cc.guid = :guid").setString("guid", guid).uniqueResult();
     }
 
     public ConceptWord getConceptWordByGuid(String guid) {
@@ -1056,30 +1214,6 @@ y	 * returns a list of n-generations of parents of a concept in a concept set
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ConceptSynonymService#createConceptSynonym(org.openmrs.ConceptSynonym)
-	 */
-	public void createConceptSynonym(ConceptSynonym conceptSynonym) throws DAOException {
-		if (conceptSynonym.getCreator() == null)
-			conceptSynonym.setCreator(Context.getAuthenticatedUser());
-		if (conceptSynonym.getDateCreated() == null)
-			conceptSynonym.setDateCreated(new Date());
-		
-		sessionFactory.getCurrentSession().save(conceptSynonym);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.ConceptSynonymService#updateConceptSynonym(org.openmrs.ConceptSynonym)
-	 */
-	public void updateConceptSynonym(ConceptSynonym conceptSynonym) throws DAOException {
-		if (conceptSynonym.getCreator() == null)
-			conceptSynonym.setCreator(Context.getAuthenticatedUser());
-		if (conceptSynonym.getDateCreated() == null)
-			conceptSynonym.setDateCreated(new Date());
-		
-		sessionFactory.getCurrentSession().update(conceptSynonym);
-	}
-
-	/**
 	 * @see org.openmrs.api.db.ConceptWordService#createConceptWord(org.openmrs.ConceptWord)
 	 */
 	public void createConceptWord(ConceptWord conceptWord) throws DAOException {
@@ -1105,5 +1239,19 @@ y	 * returns a list of n-generations of parents of a concept in a concept set
         for (Object[] o : list)
             ret.put((Integer) o[0], (String) o[1]);
         return ret;
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptDescriptionByGuid(java.lang.String)
+     */
+    public ConceptDescription getConceptDescriptionByGuid(String guid) {
+    	return (ConceptDescription) sessionFactory.getCurrentSession().createQuery("from ConceptDescription cd where cd.guid = :guid").setString("guid", guid).uniqueResult();
+    }
+
+	/**
+     * @see org.openmrs.api.db.ConceptDAO#getConceptNameTagByGuid(java.lang.String)
+     */
+    public ConceptNameTag getConceptNameTagByGuid(String guid) {
+    	return (ConceptNameTag) sessionFactory.getCurrentSession().createQuery("from ConceptNameTag cnt where cnt.guid = :guid").setString("guid", guid).uniqueResult();
     }
 }

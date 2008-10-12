@@ -21,7 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -31,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.zip.CRC32;
@@ -54,9 +52,7 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
-import org.openmrs.ConceptSource;
 import org.openmrs.ConceptStateConversion;
-import org.openmrs.ConceptSynonym;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
@@ -89,7 +85,6 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Role;
-import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Message;
@@ -102,7 +97,7 @@ import org.openmrs.serialization.TimestampNormalizer;
 import org.openmrs.synchronization.engine.SyncItem;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.server.RemoteServer;
-import org.openmrs.util.LocaleFactory;
+import org.openmrs.util.LocaleUtility;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -245,14 +240,15 @@ public class SyncUtil {
 		else if ( "org.openmrs.ConceptClass".equals(className) ) o = (Object)(Context.getConceptService().getConceptClassByGuid(guid));
 		else if ( "org.openmrs.ConceptDatatype".equals(className) ) o = (Object)(Context.getConceptService().getConceptDatatypeByGuid(guid));
 		else if ( "org.openmrs.ConceptDerived".equals(className) ) o = (Object)(Context.getConceptService().getConceptDerivedByGuid(guid));
+		else if ( "org.openmrs.ConceptDescription".equals(className) ) o = (Object)(Context.getConceptService().getConceptDescriptionByGuid(guid));
 		else if ( "org.openmrs.ConceptName".equals(className) ) o = (Object)(Context.getConceptService().getConceptNameByGuid(guid));
+		else if ( "org.openmrs.ConceptNameTag".equals(className) ) o = (Object)(Context.getConceptService().getConceptNameTagByGuid(guid));
 		else if ( "org.openmrs.ConceptNumeric".equals(className) ) o = (Object)(Context.getConceptService().getConceptNumericByGuid(guid));
 		else if ( "org.openmrs.ConceptProposal".equals(className) ) o = (Object)(Context.getConceptService().getConceptProposalByGuid(guid));
 		else if ( "org.openmrs.ConceptSet".equals(className) ) o = (Object)(Context.getConceptService().getConceptSetByGuid(guid));
 		else if ( "org.openmrs.ConceptSetDerived".equals(className) ) o = (Object)(Context.getConceptService().getConceptSetDerivedByGuid(guid));
 		else if ( "org.openmrs.ConceptSource".equals(className) ) o = (Object)(Context.getConceptService().getConceptSourceByGuid(guid));
 		else if ( "org.openmrs.ConceptStateConversion".equals(className) ) o = (Object)(Context.getProgramWorkflowService().getConceptStateConversionByGuid(guid));
-		else if ( "org.openmrs.ConceptSynonym".equals(className) ) o = (Object)(Context.getConceptService().getConceptSynonymByGuid(guid));
 		else if ( "org.openmrs.ConceptWord".equals(className) ) o = (Object)(Context.getConceptService().getConceptWordByGuid(guid));
 		else if ( "org.openmrs.Drug".equals(className) ) o = (Object)(Context.getConceptService().getDrugByGuid(guid));
 		else if ( "org.openmrs.DrugIngredient".equals(className) ) o = (Object)(Context.getConceptService().getDrugIngredientByGuid(guid));
@@ -374,7 +370,7 @@ public class SyncUtil {
 						}
 					}
 				} else if ( "java.util.Locale".equals(className) ) {
-					o = LocaleFactory.fromSpecification(fieldVal);
+					o = LocaleUtility.fromSpecification(fieldVal);
 				}
 			}
 		}
@@ -568,6 +564,8 @@ public class SyncUtil {
 				Context.getConceptService().saveConceptDatatype((ConceptDatatype)o);
 			} else if ( "org.openmrs.ConceptDerived".equals(className) ) {
 				Context.getConceptService().saveConcept((ConceptDerived)o);
+			} else if ( "org.openmrs.ConceptDescription".equals(className) ) {
+				throw new IllegalArgumentException("Not Yet Implemented. I thought this code would never be called. -DJ");
 			} else if ( "org.openmrs.ConceptName".equals(className) ) {
 				ConceptName cn = (ConceptName) o;
 				ConceptName toRemove = (ConceptName) findByGUID(cn.getConcept().getNames(),cn);
@@ -578,6 +576,8 @@ public class SyncUtil {
 				System.out.println("Concept name " + cn.getName() + " added to concept " + cn.getConcept().getConceptId());
 				
 				Context.getConceptService().saveConcept(cn.getConcept());
+			} else if ( "org.openmrs.ConceptNameTag".equals(className) ) {
+				throw new IllegalArgumentException("Not Yet Implemented. I thought this code would never be called. -DJ");
 			} else if ( "org.openmrs.ConceptNumeric".equals(className) ) {
 				if( ((ConceptNumeric)o).getName() == null)
 					System.out.println("Concept name is NULL");
@@ -602,14 +602,6 @@ public class SyncUtil {
 				isUpdated = false;
 			} else if ( "org.openmrs.ConceptStateConversion".equals(className) ) {
 				Context.getProgramWorkflowService().saveConceptStateConversion((ConceptStateConversion)o);
-			} else if ( "org.openmrs.ConceptSynonym".equals(className) ) {
-				ConceptSynonym cs = (ConceptSynonym) o;
-				ConceptSynonym toRemove = (ConceptSynonym) findByGUID(cs.getConcept().getSynonyms(), cs);
-				if(toRemove!=null)
-					cs.getConcept().getSynonyms().remove(toRemove);
-				cs.getConcept().addSynonym(cs);
-				
-				Context.getConceptService().saveConcept(cs.getConcept());
 			} else if ( "org.openmrs.ConceptWord".equals(className) ) {
 				Context.getConceptService().saveConcept(((ConceptWord)o).getConcept());
 			} else if ( "org.openmrs.Drug".equals(className) ) {

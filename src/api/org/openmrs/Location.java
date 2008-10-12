@@ -373,7 +373,10 @@ public class Location implements java.io.Serializable, Attributable<Location>, S
 	 * @see org.openmrs.Attributable#serialize()
 	 */
 	public String serialize() {
-		return "" + getLocationId();
+		if (getLocationId() != null)
+			return "" + getLocationId();
+		else
+			return "";
 	}
 	
 	/**

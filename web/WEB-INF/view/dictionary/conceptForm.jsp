@@ -72,6 +72,9 @@
 		padding-left: 3px;
 		padding-right: 3px;
 	}
+	#newConceptMapping {
+		display: none;
+	}
 </style>
 
 <c:choose>
@@ -131,7 +134,23 @@
 	</c:if>
 </c:if>
 
+<div id="newLocaleDialog" style="display:none; border: 1px dashed gray;padding:1em;">
+	<spring:message code="Concept.newLocale" />	
+	<p>
+		<form name="newLocalForm" method="get" action="concept.form">
+			<input type="hidden" name="conceptId" value="${concept.conceptId}" />			
+			<spring:message code="Concept.newLocale.label"/>:
+			<input type="text" name="newLocale" />
+			<input type="submit" value="<spring:message code="general.submit"/>" /> |
+			<a href="#" onclick="document.getElementById('newLocaleDialog').style.display = 'none';"><spring:message code="general.cancel"/></a>
+		</form>
+	</p>
+</div>
+
 <form method="post" action="">
+<c:if test="${newLocaleProposed != null}">				
+	<input type="hidden" name="newLocaleAdded" value="${newLocaleProposed}" />
+</c:if>
 
 <table id="conceptTable" cellpadding="2" cellspacing="0">
 
@@ -146,6 +165,10 @@
 			<c:forEach items="${locales}" var="loc" varStatus="varStatus">
 				<a id="${loc}Tab" class="tab ${loc}" href="#select${loc.displayName}" onclick="return selectTab(this)">${loc.displayName}</a><c:if test="${varStatus.last==false}"> | </c:if>
 			</c:forEach>
+			<a id="newLocaleTab" class="tab newLocale" href="#" onclick="document.getElementById('newLocaleDialog').style.display = '';">
+				<spring:message code="general.add"/>
+			</a>
+			
 		</td>
 	</tr>
 	<tr class="localeSpecific">
@@ -170,8 +193,9 @@
 		</th>
 		<c:forEach items="${locales}" var="loc">
 			<td class="${loc}">
-				<spring:bind path="conceptName_${loc}.shortName">
-					<input class="smallWidth" type="text" name="${status.expression}_${loc}"
+				<spring:bind path="conceptShortName_${loc}.name">
+					<!-- input class="smallWidth" type="text" name="${status.expression}_${loc}" -->
+					<input class="smallWidth" type="text" name="shortName_${loc}"
 						value="${status.value}" size="10" />
 					<c:if test="${status.errorMessage != ''}">
 						<span class="error">${status.errorMessage}</span>
@@ -186,7 +210,7 @@
 		</th>
 		<c:forEach items="${locales}" var="loc">
 			<td valign="top" class="${loc}">
-				<spring:bind path="conceptName_${loc}.description">
+				<spring:bind path="conceptDescription_${loc}.description">
 					<textarea name="${status.expression}_${loc}" rows="4" cols="50">${status.value}</textarea>
 					<c:if test="${status.errorMessage != ''}">
 						<span class="error">${status.errorMessage}</span>
@@ -227,8 +251,6 @@
 			</td>
 		</c:forEach>
 	</tr>
-	
-	
 	
 	<tr>
 		<th title="<spring:message code="Concept.conceptClass.help"/>">
@@ -313,6 +335,47 @@
 					</td>
 				</tr>
 			</table>
+		</td>
+	</tr>
+	<tr id="conceptMapRow">
+		<th valign="top" title="<spring:message code="Concept.mappings.help"/>">
+			<spring:message code="Concept.mappings"/>
+		</th>
+		<td>
+			<c:forEach var="mapping" items="${concept.conceptMappings}" varStatus="mapStatus">
+				<span id="mapping-${mapStatus.index}">
+					<spring:nestedPath path="concept.conceptMappings[${mapStatus.index}]">
+						<spring:bind path="sourceCode">
+							<input type="text" name="${status.expression}" value="${status.value}" size="10">
+						</spring:bind>
+						<spring:bind path="source">
+							<select name="${status.expression}">
+								<openmrs:forEachRecord name="conceptSource">
+									<option value="${record.conceptSourceId}" <c:if test="${record.conceptSourceId == status.value}">selected</c:if> >
+											${record.name} (${record.hl7Code})
+									</option>
+								</openmrs:forEachRecord>
+							</select>
+						</spring:bind>
+					</spring:nestedPath>
+					<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeMapping(this)" />
+					<br/>
+				</span>
+			</c:forEach>
+			<span id="newConceptMapping">
+				<input type="text" name="newConceptMappingSourceCode" value="${status.value}" size="10">
+				<select name="newConceptMappingSource">
+					<openmrs:forEachRecord name="conceptSource">
+						<option value="${record.conceptSourceId}">
+								${record.name} (${record.hl7Code})
+						</option>
+					</openmrs:forEachRecord>
+				</select>
+				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeMapping(this)" />
+				<br/>
+			</span>
+			<input type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" onClick="addMapping(this)" />
+			<br/>
 		</td>
 	</tr>
 	<tr id="numericDatatypeRow">
@@ -478,7 +541,9 @@
 			<a href="http://dictionary.reference.com/search?submit=Go&q=${conceptName.name}"
 			       target="_blank" onclick="addName(this)">Dictionary.com&reg;</a><br/>
 			<a href="http://search.atomz.com/search/?sp-a=sp1001878c&sp-q=${conceptName.name}"
-			       target="_blank" onclick="addName(this)">Lab Tests Online</a>
+			       target="_blank" onclick="addName(this)">Lab Tests Online</a><br/>
+			<a href="http://en.wikipedia.org/wiki/${concept.name}"
+			       target="_blank"><spring:message code="Concept.wikipedia" /></a>
 		</td>
 	</tr>
 </table>

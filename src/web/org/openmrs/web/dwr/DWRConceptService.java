@@ -24,6 +24,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
@@ -67,7 +68,7 @@ public class DWRConceptService {
 		Vector<Object> objectList = new Vector<Object>();
 
 		// TODO add localization for messages
-		
+
 		User currentUser = Context.getAuthenticatedUser();
 		
 		Locale defaultLocale = Context.getLocale();
@@ -103,6 +104,7 @@ public class DWRConceptService {
 			log.debug("searching locales: " + searchLocalesString);
 		}
 		
+		
 		if (includeClassNames == null)
 			includeClassNames = new Vector<String>();
 		if (excludeClassNames == null)
@@ -120,8 +122,9 @@ public class DWRConceptService {
 				// user searched on a number. Insert concept with
 				// corresponding conceptId
 				Concept c = cs.getConcept(Integer.valueOf(phrase));
+				ConceptName cn = c.getName(defaultLocale);
 				if (c != null) {
-					ConceptWord word = new ConceptWord(phrase, c, defaultLocale, "Concept Id #" + phrase);
+					ConceptWord word = new ConceptWord(phrase, c, cn, defaultLocale, "Concept Id #" + phrase);
 					words.add(word);
 				}
 			}
@@ -154,7 +157,9 @@ public class DWRConceptService {
 						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
 
 				// perform the search
-				words.addAll(cs.getConceptWords(phrase, localesToSearchOn, includeRetired, includeClasses, excludeClasses, includeDatatypes, excludeDatatypes, null, null, null));
+				words.addAll(cs.findConcepts(phrase, localesToSearchOn, includeRetired, 
+						includeClasses, excludeClasses,
+						includeDatatypes, excludeDatatypes));
 			}
 
 			if (words.size() == 0) {
@@ -179,7 +184,7 @@ public class DWRConceptService {
 						if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
 							for (Drug d : cs.getDrugs(word.getConcept()))
 								objectList.add(new ConceptDrugListItem(d,
-										defaultLocale));
+										defaultLocale)); // ABKTODO: using the default locale here may be improper
 					}
 				}
 			}
@@ -200,8 +205,9 @@ public class DWRConceptService {
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		Concept c = cs.getConcept(conceptId);
+		ConceptName cn = c.getName(locale);
 
-		return c == null ? null : new ConceptListItem(c, locale);
+		return c == null ? null : new ConceptListItem(c, cn, locale);
 	}
 
 	public List<ConceptListItem> findProposedConcepts(String text) {
@@ -210,9 +216,10 @@ public class DWRConceptService {
 
 		List<Concept> concepts = cs.findProposedConcepts(text);
 		List<ConceptListItem> cli = new Vector<ConceptListItem>();
-		for (Concept c : concepts)
-			cli.add(new ConceptListItem(c, locale));
-
+		for (Concept c : concepts) {
+			ConceptName cn = c.getName(locale);
+			cli.add(new ConceptListItem(c, cn, locale));
+		}
 		return cli;
 	}
 
@@ -262,16 +269,17 @@ public class DWRConceptService {
 		if (concept.isSet()) {
 			for (ConceptSet set : concept.getConceptSets()) {
 				Field field = null;
+				ConceptName cn = set.getConcept().getName(locale);
+				ConceptDescription description = set.getConcept().getDescription(locale);
 				for (Field f : fs.findFields(set.getConcept())) {
-					ConceptName cn = set.getConcept().getName(locale);
 					if (f.getName().equals(cn.getName())
-							&& f.getDescription().equals(cn.getDescription())
+							&& f.getDescription().equals(description.getDescription())
 							&& f.isSelectMultiple().equals(false))
 						field = f;
 				}
-				if (field == null)
+				if (field == null) 
 					returnList
-							.add(new ConceptListItem(set.getConcept(), locale));
+							.add(new ConceptListItem(set.getConcept(), cn, locale));
 				else
 					returnList.add(new FieldListItem(field, locale));
 			}
@@ -290,7 +298,8 @@ public class DWRConceptService {
 
 		List<ConceptListItem> items = new Vector<ConceptListItem>();
 		for (Concept c : concepts) {
-			items.add(new ConceptListItem(c, locale));
+			ConceptName cn = c.getName(locale);
+			items.add(new ConceptListItem(c, cn, locale));
 		}
 
 		return items;
@@ -375,8 +384,10 @@ public class DWRConceptService {
 		// TODO: deal with concept answers (e.g. drug) whose answer concept is null. (Not sure if this actually ever happens)
 		Locale locale = Context.getLocale();
 		for (ConceptAnswer ca : answers)
-			if (ca.getAnswerConcept() != null)
-				ret.add(new ConceptListItem(ca.getAnswerConcept(), locale));
+			if (ca.getAnswerConcept() != null) {
+				ConceptName cn = ca.getAnswerConcept().getName(locale);
+				ret.add(new ConceptListItem(ca.getAnswerConcept(), cn, locale));
+			}
 		return ret;
 	}
 

@@ -65,11 +65,13 @@ import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.aop.Advisor;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.openmrs.messagesource.MessageSourceService;
 
 /**
  * Represents an OpenMRS <code>Context</code>, which may be used to
@@ -124,6 +126,20 @@ public class Context {
 	 */
 	public void setContextDAO(ContextDAO dao) {
 		contextDAO = dao;
+	}
+	
+	/**
+	 * Loads a class with an instance of the OpenmrsClassLoader.
+	 * Convenience method equivalent to OpenmrsClassLoader.getInstance().loadClass(className);
+	 * 
+	 * @param className the class to load
+	 * @return the class that was loaded
+	 * @throws ClassNotFoundException
+	 * 
+	 * @should load class with the OpenmrsClassLoader
+	 */
+	public static Class<?> loadClass(String className) throws ClassNotFoundException {
+		return OpenmrsClassLoader.getInstance().loadClass(className);
 	}
 
 	/**
@@ -378,6 +394,14 @@ public class Context {
 	 */
 	public static AdministrationService getAdministrationService() {
 		return getServiceContext().getAdministrationService();
+	}
+	
+	/**
+	 * 
+	 * @return MessageSourceService
+	 */
+	public static MessageSourceService getMessageSourceService() {
+		return getServiceContext().getMessageSourceService();
 	}
  	
 	/**
@@ -703,7 +727,7 @@ public class Context {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-    public static Object getService(Class cls) {
+    public static <T extends Object> T getService(Class<? extends T> cls) {
 		return getServiceContext().getService(cls);
 	}
 	

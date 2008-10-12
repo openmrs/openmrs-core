@@ -10,11 +10,10 @@
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections/commons-collections-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload/commons-fileupload-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang/commons-lang-2.1.jar" sourcepath="/openmrs-source/commons-lang-2.1-src.zip"/>
 	<classpathentry kind="lib" path="lib/commons-logging/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pool/commons-pool-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient/commons-httpclient-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-codec/commons-codec-1.3.jar"/> 	
+	<classpathentry kind="lib" path="lib/commons-codec/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache/ehcache-1.2.4.jar" sourcepath="/openmrs-source/ehcache-1.2.4-src.zip"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-page-1.1.jar"/>
@@ -28,7 +27,7 @@
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-bean-collections-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-core-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections/commons-collections-testframework-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate/hibernate325.jar" sourcepath="/openmrs-source/hibernate-3.2.5ga-lite.zip"/>
+	<classpathentry kind="lib" path="lib/hibernate/hibernate325.jar" sourcepath="/hibernate-325-src"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-request-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-response-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-standard-1.1.jar"/>
@@ -53,7 +52,6 @@
 	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.1.jar" sourcepath="/openmrs-source/c3p0-0.9.1-pre9.zip"/>
-	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-dev.jar" sourcepath="/openmrs-source/velocity-1.5.zip"/>
 	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5.jar" sourcepath="/openmrs-source/hapi-0.5_source_v25.zip"/>
 	<classpathentry kind="lib" path="lib/xstream/xstream-1.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/simple/simple-xml-1.6.1-mod.jar" sourcepath="/Simple-xml-stream-clean/src"/>
@@ -63,5 +61,8 @@
 	<classpathentry kind="lib" path="metadata/api/hibernate"/>
 	<classpathentry kind="lib" path="metadata/api/log4j"/>
 	<classpathentry kind="lib" path="lib/xstream/xstream-1.3.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-beta1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang/commons-lang-2.4.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

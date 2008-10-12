@@ -416,4 +416,25 @@ public class SyncPatientTest extends SyncBaseTest {
 			}
 		});
 	}
+	
+	@Test
+	@NotTransactional
+	public void shouldEditPatientName() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			int numberBefore;
+			public void runOnChild() {
+				Patient p = Context.getPatientService().getPatient(2);
+				numberBefore = p.getNames().size();
+				p.getPersonName().setGivenName("Superman");
+				Context.getPatientService().savePatient(p);
+			}
+			public void runOnParent() {
+				Patient p = Context.getPatientService().getPatient(2);
+				assertEquals("Should not have added a new name", numberBefore, p.getNames().size());
+				assertEquals("Name should be Superman", "Superman", p.getPersonName().getGivenName());
+		        Context.clearSession();
+				Context.closeSession();				
+			}
+		});
+	}
 }

@@ -22,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Vector;
 
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Field;
@@ -32,6 +32,7 @@ import org.openmrs.FormField;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.ContextDAO;
 import org.openmrs.test.testutil.BaseContextSensitiveTest;
 
 /**
@@ -315,6 +316,30 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(ff2);
 		assertNotSame(ff, ff2);
 		
+	}
+	
+	/**
+	 * Make sure that multiple forms are returned if a field is on a form
+	 * more than once
+	 * 
+	 * @verifies {@link FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
+	 * 	test = should get multiple of the same form by field
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetMultipleOfTheSameFormByField() throws Exception {
+		executeDataSet(INITIAL_FIELDS_XML);
+		executeDataSet("org/openmrs/test/api/include/FormServiceTest-formFields.xml");
+		
+		FormService formService = Context.getFormService();
+		
+		List<Field> fields = new Vector<Field>();
+		fields.add(new Field(1));
+		
+		List<Form> forms = formService.getForms(null, null, null, null, null, null, fields);
+		
+		Assert.assertEquals(3, forms.size());
 	}
 	
 }

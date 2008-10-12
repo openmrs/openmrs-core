@@ -219,13 +219,15 @@ public interface FormDAO {
 	 * @param retired whether the form is retired
 	 * @param containingAnyFormField includes forms that contain any of the specified FormFields
 	 * @param containingAllFormFields includes forms that contain all of the specified FormFields
+	 * @param fields whether the form has any of these fields
 	 * @return All forms that match the 
-     * @see org.openmrs.api.FormService#getForms(java.lang.String, java.lang.Boolean, java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection)
+     * @see org.openmrs.api.FormService#getForms(java.lang.String, java.lang.Boolean, java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
 	 */
     public List<Form> getForms(String partialName, Boolean published,
             Collection<EncounterType> encounterTypes, Boolean retired,
             Collection<FormField> containingAnyFormField,
-            Collection<FormField> containingAllFormFields) throws DAOException;
+            Collection<FormField> containingAllFormFields,
+            Collection<Field> fields) throws DAOException;
 	
 	/**
      * Delete the given field type from the database

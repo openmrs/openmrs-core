@@ -16,18 +16,22 @@ package org.openmrs;
 import java.util.Date;
 
 import org.openmrs.synchronization.Synchronizable;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * This represents a single concept within a concept set.
  */
+@Root
 public class ConceptSet implements java.io.Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 3787L;
 
 	// Fields
 	private Integer conceptSetId;
-	private Concept concept;
-	private Concept conceptSet;
+	private Concept concept;  // concept in the set
+	private Concept conceptSet; // parent concept that uses this set
 	private Double sortWeight;
 	private User creator;
 	private Date dateCreated;
@@ -42,13 +46,13 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
         this.lastRecordGuid = lastRecordGuid;
     }
 	
-  public String getGuid() {
-      return guid;
-  }
+	public String getGuid() {
+		return guid;
+	}
 
-  public void setGuid(String guid) {
-      this.guid = guid;
-  }
+	public void setGuid(String guid) {
+		this.guid = guid;
+	}
 
 	// Constructors
 
@@ -63,6 +67,9 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptSet) {
+			if (concept == null || conceptSet == null)
+				return false;
+			
 			ConceptSet c = (ConceptSet)obj;
 			return (this.concept.equals(c.getConcept()) &&
 					this.conceptSet.equals(c.getConceptSet()));
@@ -100,10 +107,12 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	/**
 	 * 
 	 */
+	@Element
 	public Concept getConcept() {
 		return concept;
 	}
 
+	@Element
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
@@ -111,10 +120,12 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	/**
 	 * 
 	 */
+	@Element
 	public Concept getConceptSet() {
 		return conceptSet;
 	}
 
+	@Element
 	public void setConceptSet(Concept set) {
 		this.conceptSet = set;
 	}
@@ -122,6 +133,7 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	/**
 	 * @return Returns the sortWeight.
 	 */
+	@Attribute
 	public Double getSortWeight() {
 		return sortWeight;
 	}
@@ -130,6 +142,7 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	 * @param sortWeight
 	 *            The sortWeight to set.
 	 */
+	@Attribute
 	public void setSortWeight(Double sortWeight) {
 		this.sortWeight = sortWeight;
 	}
@@ -137,6 +150,7 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	/**
 	 * @return Returns the creator.
 	 */
+	@Element
 	public User getCreator() {
 		return creator;
 	}
@@ -145,6 +159,7 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	 * @param creator
 	 *            The creator to set.
 	 */
+	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -152,6 +167,7 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	/**
 	 * @return Returns the dateCreated.
 	 */
+	@Element
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -160,6 +176,7 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	 * @param dateCreated
 	 *            The dateCreated to set.
 	 */
+	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}

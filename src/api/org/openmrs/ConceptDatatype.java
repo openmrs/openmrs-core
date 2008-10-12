@@ -16,10 +16,14 @@ package org.openmrs;
 import java.util.Date;
 
 import org.openmrs.synchronization.Synchronizable;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * ConceptDatatype
  */
+@Root
 public class ConceptDatatype implements java.io.Serializable, Synchronizable {
 
 	public static final long serialVersionUID = 473L;
@@ -97,10 +101,12 @@ public class ConceptDatatype implements java.io.Serializable, Synchronizable {
 	/**
 	 * 
 	 */
+	@Attribute
 	public Integer getConceptDatatypeId() {
 		return this.conceptDatatypeId;
 	}
 
+	@Attribute
 	public void setConceptDatatypeId(Integer conceptDatatypeId) {
 		this.conceptDatatypeId = conceptDatatypeId;
 	}
@@ -108,10 +114,12 @@ public class ConceptDatatype implements java.io.Serializable, Synchronizable {
 	/**
 	 * 
 	 */
+	@Attribute
 	public String getName() {
 		return this.name;
 	}
 
+	@Attribute
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -119,10 +127,12 @@ public class ConceptDatatype implements java.io.Serializable, Synchronizable {
 	/**
 	 * 
 	 */
+	@Element(data=true)
 	public String getDescription() {
 		return this.description;
 	}
 
+	@Element(data=true)
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -130,6 +140,7 @@ public class ConceptDatatype implements java.io.Serializable, Synchronizable {
 	/**
 	 * @return Returns the hl7Abbreviation.
 	 */
+	@Attribute
 	public String getHl7Abbreviation() {
 		return hl7Abbreviation;
 	}
@@ -138,6 +149,7 @@ public class ConceptDatatype implements java.io.Serializable, Synchronizable {
 	 * @param hl7Abbreviation
 	 *            The hl7Abbreviation to set.
 	 */
+	@Attribute
 	public void setHl7Abbreviation(String hl7Abbreviation) {
 		this.hl7Abbreviation = hl7Abbreviation;
 	}
@@ -145,10 +157,12 @@ public class ConceptDatatype implements java.io.Serializable, Synchronizable {
 	/**
 	 * 
 	 */
+	@Element
 	public User getCreator() {
 		return this.creator;
 	}
 
+	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
@@ -156,10 +170,12 @@ public class ConceptDatatype implements java.io.Serializable, Synchronizable {
 	/**
 	 * 
 	 */
+	@Element
 	public Date getDateCreated() {
 		return this.dateCreated;
 	}
 
+	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}

@@ -353,13 +353,14 @@ public class HibernateFormDAO implements FormDAO {
 	}
 
 	/**
-     * @see org.openmrs.api.db.FormDAO#getForms(java.lang.String, java.lang.Boolean, java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection)
+     * @see org.openmrs.api.db.FormDAO#getForms(java.lang.String, java.lang.Boolean, java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
 	 */
     @SuppressWarnings("unchecked")
     public List<Form> getForms(String partialName, Boolean published,
             Collection<EncounterType> encounterTypes, Boolean retired,
             Collection<FormField> containingAnyFormField,
-            Collection<FormField> containingAllFormFields) throws DAOException {
+            Collection<FormField> containingAllFormFields,
+            Collection<Field> fields) throws DAOException {
 
     	Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class, "form");
 		
@@ -387,6 +388,13 @@ public class HibernateFormDAO implements FormDAO {
     		detachedCrit.add(Expression.eqProperty("ff.formId", "form.formId"));
     		
     		crit.add(Subqueries.eq(containingAllFormFields.size(), detachedCrit));
+    	}
+    	
+    	// get all forms (dupes included) that have this field on them
+    	if (!fields.isEmpty()) {
+    		Criteria crit2 = crit.createCriteria("formFields", "ff");
+    		crit2.add(Expression.eqProperty("ff.form.formId", "form.formId"));
+    		crit2.add(Expression.in("ff.field", fields));
     	}
     	
 		return crit.list();

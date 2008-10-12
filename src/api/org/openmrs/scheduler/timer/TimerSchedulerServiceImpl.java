@@ -27,6 +27,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.ObjectNotFoundException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.SchedulerConstants;
@@ -39,6 +40,7 @@ import org.openmrs.scheduler.TaskFactory;
 import org.openmrs.scheduler.db.SchedulerDAO;
 import org.openmrs.util.InsertedOrderComparator;
 import org.openmrs.util.OpenmrsMemento;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
  *  Simple scheduler service that uses JDK timer to trigger and execute scheduled tasks.
@@ -171,7 +173,8 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	 *  @param  task        the task to be scheduled
 	 *  @param  schedule    the time and interval for the scheduled task
 	 */
-	public void scheduleTask(TaskDefinition taskDefinition) throws SchedulerException {				
+	public Task scheduleTask(TaskDefinition taskDefinition) throws SchedulerException {	
+		Task clientTask = null;
 		if (taskDefinition != null) { 
 			
 			// Cancel any existing timer tasks for the same task definition
@@ -187,12 +190,14 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 			try { 
 
 				// Create new task from task definition 
-				Task task = TaskFactory.getInstance().createInstance( taskDefinition );
+				clientTask = TaskFactory.getInstance().createInstance( taskDefinition );
 								
 				// if we were unable to get a class, just quit
-				if (task != null) { 
+				if (clientTask != null) { 
 		
-					schedulerTask = new TimerSchedulerTask(task);
+					schedulerTask = new TimerSchedulerTask(clientTask);
+					
+					taskDefinition.setTaskInstance(clientTask);
 				
 					// Once this method is called, the timer is set to start at the given start time.
 					// NOTE:  We need to adjust the repeat interval as the JDK Timer expects time in milliseconds and 
@@ -213,12 +218,16 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 						                                   nextTime,
 						                                   repeatInterval);	
 					} 
-					else { 
+					else if (repeatInterval > 0) { 
 						// Start task on repeating schedule, delay for SCHEDULER_DEFAULT_DELAY seconds	
 						log.info("Delaying start time by " + SchedulerConstants.SCHEDULER_DEFAULT_DELAY + " seconds");
 						timerScheduler.scheduleAtFixedRate(schedulerTask, 
 						                                   SchedulerConstants.SCHEDULER_DEFAULT_DELAY, 
 						                                   repeatInterval);
+					} else {
+						// schedule for single execution, starting now
+						log.info("Starting one-shot task");
+						timerScheduler.schedule(schedulerTask, new Date());
 					}
 			
 			
@@ -237,6 +246,7 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 				throw new SchedulerException(e);		  			
 	  		}
 		} 
+  		return clientTask;
 	} 
 	
 
@@ -280,11 +290,11 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	}	
 	
 	/**
-	 * @see org.openmrs.scheduler.SchedulerService#restartTask(org.openmrs.scheduler.TaskDefinition)
+	 * @see org.openmrs.scheduler.SchedulerService#rescheduleTask(org.openmrs.scheduler.TaskDefinition)
 	 */
-	public void rescheduleTask(TaskDefinition taskDefinition) throws SchedulerException { 
+	public Task rescheduleTask(TaskDefinition taskDefinition) throws SchedulerException { 
 		shutdownTask(taskDefinition);		
-		scheduleTask(taskDefinition);
+		return scheduleTask(taskDefinition);
 	}
 	
 	/**
@@ -333,8 +343,25 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	 * @param	id	the identifier of the task
 	 */
 	public TaskDefinition getTask(Integer id) { 
-		log.debug("get task " + id);
+		if (log.isDebugEnabled()) log.debug("get task " + id);
 		return getSchedulerDAO().getTask(id);
+	}
+	
+	
+	/**
+	 * Get the task with the given name.
+	 *  
+	 * @param	name	name of the task
+	 */
+	public TaskDefinition getTaskByName(String name) { 
+		if (log.isDebugEnabled()) log.debug("get task " + name);
+		TaskDefinition foundTask = null;
+		try {
+			foundTask = getSchedulerDAO().getTaskByName(name); 
+		} catch (ObjectRetrievalFailureException orfe) {
+			log.warn("getTaskByName(" + name + ") failed, because: " + orfe);
+		}
+		return foundTask;
 	}
 
 	/**

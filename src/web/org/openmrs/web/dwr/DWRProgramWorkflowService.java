@@ -60,7 +60,7 @@ public class DWRProgramWorkflowService {
 				ListItem li = new ListItem();
 				li.setId(wf.getProgramWorkflowId());
 				li.setName(wf.getConcept().getName().getName());
-				li.setDescription(wf.getConcept().getName().getDescription());
+				li.setDescription(wf.getConcept().getDescription().getDescription());
 				ret.add(li);
 			}
 		return ret;

@@ -13,22 +13,25 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDerived;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
-import org.openmrs.ConceptSynonym;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
@@ -66,6 +69,14 @@ public interface ConceptDAO {
 	 */
 	public Concept getConcept(Integer conceptId) throws DAOException;
 	
+
+	/**
+     * @see org.openmrs.api.ConceptService#getConceptName(java.lang.Integer)
+	 * @param conceptNameId
+     * @return
+     */
+    public ConceptName getConceptName(Integer conceptNameId) throws DAOException;
+    
 	/**
      * @see org.openmrs.api.ConceptService#getAllConcepts(java.lang.String, boolean, boolean)
 	 */
@@ -177,7 +188,7 @@ public interface ConceptDAO {
 	public void updateConceptSetDerived() throws DAOException;
 	
 	/**
-     * @see org.openmrs.api.ConceptService#getConceptSetsByConcept(org.openmrs.Concept)
+     * @see org.openmrs.api.ConceptService#getConceptSetsByConcept(org.oimport org.openmrs.DrugIngredient;penmrs.Concept)
 	 */
     public List<ConceptSet> getConceptSetsByConcept(Concept c) throws DAOException;
 	
@@ -237,11 +248,6 @@ public interface ConceptDAO {
     public void purgeConceptProposal(ConceptProposal cp) throws DAOException;
 	
     /**
-	 * @see org.openmrs.api.ConceptService#getNextAvailableId()
-	 */
-	public Integer getNextAvailableId() throws DAOException;
-	
-	/**
 	 * @see org.openmrs.api.ConceptService#getConceptsWithDrugsInFormulary()
 	 */
 	public List<Concept> getConceptsWithDrugsInFormulary() throws DAOException;
@@ -251,6 +257,50 @@ public interface ConceptDAO {
 	 */
 	public void updateConceptWord(Concept concept) throws DAOException;
 
+	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
+
+	public ConceptNameTag getConceptNameTag(Integer i);
+
+	public ConceptNameTag getConceptNameTagByName(String name);
+
+	public List<ConceptNameTag> getConceptNameTags();
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptSource(java.lang.Integer)
+	 */
+	public ConceptSource getConceptSource(Integer conceptSourceId) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getAllConceptSources()
+	 */
+	public List<ConceptSource> getAllConceptSources() throws DAOException;
+	
+	/**
+     * @see org.openmrs.api.ConceptService#saveConceptSource(org.openmrs.ConceptSource)
+     */
+    public ConceptSource saveConceptSource(ConceptSource conceptSource) throws DAOException;
+    
+    /**
+     * @see org.openmrs.api.ConceptService#purgeConceptSource(org.openmrs.ConceptSource)
+     */
+    public ConceptSource deleteConceptSource(ConceptSource cs) throws DAOException;
+    
+    /**
+	 * @see org.openmrs.api.ConceptService#getLocalesOfConceptNames()
+	 */
+	public Set<Locale> getLocalesOfConceptNames();
+	
+	/**
+     * 
+     * @see ConceptService#getMaxConceptId()
+     */
+    public Integer getMaxConceptId();
+    
+    /**
+	 * @see org.openmrs.api.ConceptService#conceptIterator()
+     */
+    public Iterator<Concept> conceptIterator();
+    
 	/**
      * Auto generated method comment
      * 
@@ -278,8 +328,6 @@ public interface ConceptDAO {
     public ConceptSetDerived getConceptSetDerivedByGuid(String guid);
 
     public ConceptSource getConceptSourceByGuid(String guid);
-
-    public ConceptSynonym getConceptSynonymByGuid(String guid);
 
     public ConceptWord getConceptWordByGuid(String guid);
 
@@ -320,5 +368,10 @@ public interface ConceptDAO {
     /**
      * @see org.openmrs.api.ConceptService#getConceptGuids() 
      */
-    public Map<Integer, String> getConceptGuids(); 
+    public Map<Integer, String> getConceptGuids();
+
+    public ConceptDescription getConceptDescriptionByGuid(String guid);
+
+    public ConceptNameTag getConceptNameTagByGuid(String guid);
+    
 }

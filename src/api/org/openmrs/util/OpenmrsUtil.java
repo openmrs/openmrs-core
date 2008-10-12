@@ -27,10 +27,14 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -1091,7 +1095,7 @@ public class OpenmrsUtil {
     	
     	// default to the "first" locale pattern
     	if (pattern == null)
-    		pattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(0);
+    		pattern = (String)OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().values().toArray()[0];
     	
     	return new SimpleDateFormat(pattern, Context.getLocale());
     }
@@ -1510,4 +1514,72 @@ public class OpenmrsUtil {
 		return generateUid(20);
 	}
 	
+    
+    /**
+     * Post the given map of variables to the given url string
+     * 
+     * @param urlString valid http url to post data to
+     * @param dataToPost Map<String, String> of key value pairs to post to urlString
+     * @return response from urlString after posting
+     */
+    public static String postToUrl(String urlString, Map<String, String> dataToPost) {
+    	OutputStreamWriter wr = null;
+    	BufferedReader rd = null;
+    	String response = "";
+    	StringBuffer data = null;
+        
+	    try {
+	        // Construct data
+	        for (Map.Entry<String, String> entry : dataToPost.entrySet()) {
+	        	
+	        	// skip over invalid post variables
+	        	if (entry.getKey() == null || entry.getValue() == null)
+	        		continue;
+	        	
+	        	// create the string buffer if this is the first variable
+	        	if (data == null)
+	        		data = new StringBuffer();
+	        	else
+	        		data.append("&"); // only append this if its _not_ the first datum
+	        	
+	        	// finally, setup the actual post string
+	        	data.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+	        	data.append("=");
+	        	data.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+	        }
+	        
+	        // Send the data
+	        URL url = new URL(urlString);
+	        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+	        conn.setDoOutput(true);
+	        conn.setDoInput(true);
+	        conn.setRequestMethod("POST");
+	        conn.setRequestProperty("Content-Length", String.valueOf(data.length()));
+	        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+	        
+	        wr = new OutputStreamWriter(conn.getOutputStream());
+	        wr.write(data.toString());
+	        wr.flush();
+	        wr.close();
+	        
+	        // Get the response
+	        rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+	        String line;
+	        while ((line = rd.readLine()) != null) {
+	            response = response + line + "\n";
+	        }
+	        
+	    } catch (Exception e) {
+	    	log.warn("Exception while posting to : " + urlString, e);
+	    	log.warn("Reponse from server was: " + response);
+	    }
+	    finally {
+	    	if (wr != null)
+	    		try { wr.close(); } catch (Exception e) { /* pass */ }
+	    	if (rd != null)
+	    		try { rd.close(); } catch (Exception e) { /* pass */ }
+	    }
+	    
+	    return response;
+    }
 }

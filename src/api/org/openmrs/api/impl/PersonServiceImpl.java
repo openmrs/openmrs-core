@@ -37,6 +37,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PersonService;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PersonDAO;
 import org.openmrs.util.OpenmrsConstants;
@@ -384,9 +385,11 @@ public class PersonServiceImpl implements PersonService {
 		person.setPersonDateVoided(new Date());
 		person.setPersonVoidReason(reason);
 		savePerson(person);
-		
 		Context.getPatientService().voidPatient(Context.getPatientService().getPatient(person.getPersonId()), reason);
-		Context.getUserService().voidUser(Context.getUserService().getUser(person.getPersonId()), reason);
+		UserService us = Context.getUserService();
+		User user = us.getUser(person.getPersonId());
+		if (user != null)
+			us.voidUser(user, reason);
 		
 		return person;
 	}

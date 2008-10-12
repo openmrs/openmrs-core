@@ -50,6 +50,8 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounter to be saved
 	 * @throws APIException
+	 * 
+	 * @should cascade patient to orders in the encounter
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_ENCOUNTERS,
 	        OpenmrsConstants.PRIV_EDIT_ENCOUNTERS })

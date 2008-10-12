@@ -13,9 +13,11 @@
  */
 package org.openmrs.api;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
@@ -23,12 +25,12 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
-import org.openmrs.ConceptSynonym;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
@@ -187,6 +189,18 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Concept getConcept(Integer conceptId) throws APIException;
 
+	
+	/**
+	 * Gets the concept-name with the given id
+	 * 
+	 * @param Integer conceptNameId
+	 * @return the matching Concept object
+	 * @throws APIException
+	 */
+	@Transactional(readOnly=true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public ConceptName getConceptName(Integer conceptNameId) throws APIException;
+	
 	/**
 	 * Gets the ConceptAnswer with the given id
 	 * 
@@ -209,6 +223,17 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Drug getDrug(Integer drugId) throws APIException;
 
+	/**
+	 * Get the ConceptNumeric with the given id
+	 * 
+	 * @param Integer conceptId The ConceptNumeric id
+	 * @return the matching ConceptNumeric object
+	 * @throws APIException
+	 */
+	@Transactional(readOnly=true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public ConceptNumeric getConceptNumeric(Integer conceptId) throws APIException;
+	
 	/**
 	 * Return a Concept class matching the given identifier
 	 * @throws APIException
@@ -282,6 +307,13 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Concept getConceptByIdOrName(String idOrName) throws APIException;
 	
+	/**
+	 * Get Concept by id or name convenience method
+	 * 
+	 * @param String conceptIdOrName
+	 * @return the found Concept
+	 * @throws APIException
+	 */
 	@Transactional(readOnly=true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Concept getConcept(String conceptIdOrName) throws APIException;
@@ -509,9 +541,6 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptSource getConceptSourceByGuid(String guid);
 
 	@Transactional(readOnly=true)
-	public ConceptSynonym getConceptSynonymByGuid(String guid);
-
-	@Transactional(readOnly=true)
 	public ConceptWord getConceptWordByGuid(String guid);
 
 	/**
@@ -585,8 +614,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	@Authorized({"View Concepts"})
-	public ConceptDatatype getConceptDatatype(Integer i);
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_DATATYPES)
+	public ConceptDatatype getConceptDatatype(Integer i) throws APIException;
 
 	@Transactional(readOnly=true)
 	public ConceptDatatype getConceptDatatypeByGuid(String guid);
@@ -680,8 +709,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly=true)
-	@Authorized({"View Concepts"})
-	public ConceptNumeric getConceptNumeric(Integer conceptId);
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_PROPOSALS)
+	public List<ConceptProposal> getAllConceptProposals(boolean includeCompleted) throws APIException;
 
 	@Transactional(readOnly=true)
 	public ConceptNumeric getConceptNumericByGuid(String guid);
@@ -870,30 +899,23 @@ public interface ConceptService extends OpenmrsService {
 	public Concept getNextConcept(Concept concept) throws APIException;
 	
 	/**
-	 * Get the lowest concept id that is not currently in use
-	 * 
-	 * @return the next available Id
-	 * @throws APIException
-	 */
-	@Transactional(readOnly=true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
-	public Integer getNextAvailableId() throws APIException;
-	
-	/**
 	 * Check if the concepts are locked and if so, throw exception during 
 	 * manipulation of concept
 	 * 
 	 * @throws ConceptsLockedException
 	 */
 	@Transactional(readOnly=true)
+	public void checkIfLocked() throws ConceptsLockedException;
+	
+	@Transactional(readOnly=true)
 	public ConceptProposal getConceptProposalByGuid(String guid);
 
 	/**
-	 * Iterates over all concepts with conceptIds between <code>conceptIdStart</code>
-	 * and <code>conceptIdEnd</code> (inclusive) and calls updateConceptWord(concept)
-	 * @param conceptIdStart starts update with this concept_id
-	 * @param conceptIdEnd ends update with this concept_id
+	 * Convenience method for finding concepts associated with drugs in formulary.
+	 * 
+	 * @return A List<Concept> object of all concepts that occur as a Drug.concept.
 	 * @throws APIException
+	 * 
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({"View Concepts"})
@@ -924,11 +946,98 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized({OpenmrsConstants.PRIV_MANAGE_CONCEPTS})
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 
-    /**
+	/**
+     * Auto generated method comment
+     * 
+     * @param tag
+     * @return
+     */
+	@Transactional(readOnly=true)
+	@Authorized({OpenmrsConstants.PRIV_MANAGE_CONCEPTS})
+    public ConceptNameTag getConceptNameTagByName(String tag);
+	
+	@Transactional(readOnly=true)
+	public ConceptNameTag getConceptNameTagByGuid(String guid);
+
+	/**
+	 * Gets the set of unique Locales used by existing concept names.
+	 * 
+	 * @return set of used Locales
+	 */
+	@Transactional(readOnly=true)
+	public Set<Locale> getLocalesOfConceptNames();
+
+	/**
+	 * Return a list of concept sources currently in the database that are not voided
+	 * 
+	 * @return List of Concept source objects
+	 */
+	@Transactional(readOnly=true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES)
+	public List<ConceptSource> getAllConceptSources() throws APIException;
+
+	/**
+	 * Return a Concept source matching the given concept source id
+	 * 
+	 * @param i Integer conceptSourceId
+	 * @return ConceptSource
+	 */
+	@Transactional(readOnly=true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES)
+	public ConceptSource getConceptSource(Integer i) throws APIException;
+	
+	/**
+	 * Create a new ConceptSource
+	 * @param ConceptSource to create
+	 * 
+	 * @throws APIException
+	 */
+	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPT_SOURCES)
+	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws APIException;
+
+	/**
+	 * Delete ConceptSource
+	 * @param cs ConceptSource object delete
+	 * @throws APIException
+	 */
+	@Authorized(OpenmrsConstants.PRIV_PURGE_CONCEPT_SOURCES)
+	public ConceptSource purgeConceptSource(ConceptSource cs) throws APIException;
+
+	/**
+	 * Creates a new Concept name tag. 
+	 * 
+	 * @param nameTag the name tag to be saved
+	 * @return the newly created Concept name tag
+	 */
+	@Authorized({"Add Concepts"})
+	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
+
+
+	/**
+	 * Gets the highest concept-id used by a concept. 
+	 * 
+	 * @return highest concept-id
+	 */
+	@Transactional(readOnly=true)
+	public Integer getMaxConceptId();
+	
+	/**
+	 * Returns an iterator for all concepts, including retired and expired. 
+	 * 
+	 * @return
+	 */
+	@Transactional(readOnly=true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public Iterator<Concept> conceptIterator();
+	
+	/**
      * @return a Map<conceptId, guid> of all concepts in the system
      */
     @Transactional(readOnly=true)
     @Authorized({"View Concepts"})
     public Map<Integer, String> getConceptGuids();
+
+    @Transactional(readOnly=true)
+    public Object getConceptDescriptionByGuid(String guid);
 
 }

@@ -15,7 +15,6 @@ package org.openmrs.test.synchronization.engine;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -24,10 +23,10 @@ import java.util.Set;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
-import org.openmrs.ConceptSynonym;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.springframework.test.annotation.NotTransactional;
@@ -56,8 +55,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				coded.setDatatype(cs.getConceptDatatypeByName("Coded"));
 				coded.setConceptClass(cs.getConceptClassByName("Question"));
 				coded.setSet(false);
-		        coded.setSynonyms(new HashSet<ConceptSynonym>());
-				coded.addName(new ConceptName("CODED", "SOME CODE", "A coded concept", Context.getLocale()));
+				coded.addName(new ConceptName("CODED", Context.getLocale()));
 				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("OTHER NON-CODED")));
 				coded.addAnswer(new ConceptAnswer(cs.getConceptByName("NONE")));
 				cs.saveConcept(coded);
@@ -90,7 +88,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				//this doesn't work with in-mem DB
 				//conceptIdNum = cs.getNextAvailableId();
 				ConceptNumeric cn = new ConceptNumeric(conceptId);
-				cn.addName(new ConceptName("SOMETHING NUMERIC", "SUM NUM", "A numeric concept", Context.getLocale()));
+				cn.addName(new ConceptName("SOMETHING NUMERIC", Context.getLocale()));
 				cn.setDatatype(cs.getConceptDatatypeByName("Numeric"));
 				cn.setConceptClass(cs.getConceptClassByName("Question"));
 				cn.setSet(false);
@@ -128,7 +126,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				cs = Context.getConceptService();
 
 				ConceptNumeric cn = new ConceptNumeric(conceptNumericId);
-				cn.addName(new ConceptName("SOMETHING NUMERIC", "SUM NUM", "A numeric concept", Context.getLocale()));
+				cn.addName(new ConceptName("SOMETHING NUMERIC", Context.getLocale()));
 				cn.setDatatype(cs.getConceptDatatypeByName("Numeric"));
 				cn.setConceptClass(cs.getConceptClassByName("Question"));
 				cn.setSet(false);
@@ -138,11 +136,10 @@ public class SyncConceptTest extends SyncBaseTest {
 				cs.saveConcept(cn);
 				
 				Concept coded = new Concept(conceptCodedId);
-				coded.addName(new ConceptName("SOMETHING CODED", "SUM CODE", "A coded concept", Context.getLocale()));
+				coded.addName(new ConceptName("SOMETHING CODED", Context.getLocale()));
 				coded.setDatatype(cs.getConceptDatatypeByName("Coded"));
 				coded.setConceptClass(cs.getConceptClassByName("Question"));
 				coded.setSet(false);
-				coded.setSynonyms(new HashSet<ConceptSynonym>());
 				
 				Concept other = cs.getConceptByName("OTHER NON-CODED");
 				assertNotNull("Failed to get concept OTHER NON-CODED", other);
@@ -163,11 +160,10 @@ public class SyncConceptTest extends SyncBaseTest {
 				
 				log.info("Locale: " + Context.getLocale());
 				
-				set.addName(new ConceptName("A CONCEPT SET", "SET", "A set of concepts", Context.getLocale()));
+				set.addName(new ConceptName("A CONCEPT SET", Context.getLocale()));
 				set.setDatatype(cs.getConceptDatatypeByName("N/A"));
 				set.setConceptClass(cs.getConceptClassByName("ConvSet"));
 				set.setSet(true);
-				set.setSynonyms(new HashSet<ConceptSynonym>());
 				Set<ConceptSet> cset = new HashSet<ConceptSet>();
 				cset.add(new ConceptSet(coded, 1d));
 				cset.add(new ConceptSet(cn, 2d));
@@ -240,14 +236,12 @@ public class SyncConceptTest extends SyncBaseTest {
 				Concept coded = cs.getConceptByName("CAUSE OF DEATH");
 				assertNotNull(coded);
 				Concept malaria = new Concept(99999);
-				malaria.addName(new ConceptName("MALARIA", null, "A disease", Context.getLocale()));
+				malaria.addName(new ConceptName("MALARIA", Context.getLocale()));
 				malaria.setDatatype(cs.getConceptDatatypeByName("N/A"));
 				malaria.setConceptClass(cs.getConceptClassByName("Diagnosis"));
-				malaria.setSynonyms(new HashSet<ConceptSynonym>());
 				cs.saveConcept(malaria);
 				numAnswersBefore = coded.getAnswers().size();
 				coded.addAnswer(new ConceptAnswer(malaria));
-				coded.addSynonym("DEATH REASON", Context.getLocale());
 				cs.saveConcept(coded);
 			}
 			public void runOnParent() {
@@ -260,11 +254,6 @@ public class SyncConceptTest extends SyncBaseTest {
 				
 				Concept coded = cs.getConceptByName("CAUSE OF DEATH");
 				assertEquals("Adding answer failed", numAnswersBefore + 1, coded.getAnswers().size());
-				boolean found = false;
-				for (ConceptSynonym syn : coded.getSynonyms())
-					if (syn.getSynonym().equals("DEATH REASON"))
-						found = true;
-				assertTrue("Synonym not created", found);
 			}
 		});
 	}
@@ -278,7 +267,7 @@ public class SyncConceptTest extends SyncBaseTest {
 			public void runOnChild() {
 				Concept wt = cs.getConceptByName("WEIGHT");
 				numNamesBefore = wt.getNames().size();
-				wt.addName(new ConceptName("POIDS", null, "Weight in french", Locale.FRENCH));
+				wt.addName(new ConceptName("POIDS", Locale.FRENCH));
 				cs.saveConcept(wt);
 			}
 			public void runOnParent() {
@@ -290,6 +279,48 @@ public class SyncConceptTest extends SyncBaseTest {
 		});
 	}
 	
-
+	@Test
+    @NotTransactional
+	public void shouldAddDescriptionToConcept() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			ConceptService cs = Context.getConceptService();
+			int numDescriptionsBefore;
+			public void runOnChild() {
+				Concept wt = cs.getConceptByName("WEIGHT");
+				numDescriptionsBefore = wt.getDescriptions().size();
+				wt.addDescription(new ConceptDescription("Everyone tries to lose this", Locale.FRENCH));
+				cs.saveConcept(wt);
+			}
+			public void runOnParent() {
+				Concept wt = cs.getConceptByName("WEIGHT");
+				assertNotNull(wt);
+				assertEquals("Should be one more description than before", numDescriptionsBefore + 1, wt.getDescriptions().size());
+				assertEquals("Incorrect french description", wt.getDescription(Locale.FRENCH).getDescription(), "Everyone tries to lose this");
+			}
+		});
+	}
 	
+	@Test
+    @NotTransactional
+	public void shouldAddTagToConceptName() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			ConceptService cs = Context.getConceptService();
+			int numTagsBefore;
+			final static String MY_TAG = "Concept of the month"; 
+			public void runOnChild() {
+				Concept wt = cs.getConceptByName("WEIGHT");
+				ConceptName cn = wt.getName();
+				numTagsBefore = cn.getTags().size();
+				cn.addTag(MY_TAG);
+				cs.saveConcept(wt);
+			}
+			public void runOnParent() {
+				Concept wt = cs.getConceptByName("WEIGHT");
+				assertNotNull(wt);
+				ConceptName cn = wt.getName();
+				assertEquals("Should be one more tag than before", numTagsBefore + 1, cn.getTags().size());
+				assertEquals("tag not added", true, cn.hasTag(MY_TAG));
+			}
+		});
+	}
 }

@@ -2,6 +2,13 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
+	<openmrs:hasPrivilege privilege="Manage Concept Sources">
+		<li <c:if test="<%= request.getRequestURI().contains("implementationid") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/maintenance/implementationid.form">
+				<spring:message code="ImplementationId.set"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Audit">
 		<li <c:if test='<%= request.getRequestURI().contains("systemInfo") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/systemInfo.htm">

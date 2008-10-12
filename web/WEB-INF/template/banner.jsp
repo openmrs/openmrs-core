@@ -1,3 +1,3 @@
-<a href="http://www.openmrs.org">
-  <img src="<%= request.getContextPath() %>/images/openmrs_logo_short.gif" alt="OpenMRS Logo" border="0"/>
+<a href="<spring:theme code="url.organization"/>">
+  <img src="<%= request.getContextPath() %><spring:theme code="image.logo.small"/>" alt="OpenMRS Logo" border="0"/>
 </a>

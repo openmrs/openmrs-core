@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Attributable;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -45,6 +47,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.Tribe;
+import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
@@ -298,15 +301,19 @@ public class NewPatientFormController extends SimpleFormController {
 			if (shortPatient.getAddress() != null && !shortPatient.getAddress().isBlank()) {
 				duplicate = false;
 				for (PersonAddress pa : patient.getAddresses()) {
-					if (pa.toString().equals(shortPatient.getAddress().toString()))
+					if (pa.toString().equals(shortPatient.getAddress().toString())) {
 						duplicate = true;
+						pa.setPreferred(true);
+					} else {
+						pa.setPreferred(false);
+					}
 				}
 				
 				if (log.isDebugEnabled())
 					log.debug("The duplicate address:  " + duplicate);
 				
 				if (!duplicate) {
-					PersonAddress newAddress = shortPatient.getAddress();
+					PersonAddress newAddress = (PersonAddress)shortPatient.getAddress().clone();
 					newAddress.setPersonAddressId(null);
 					newAddress.setPreferred(true);
 					newAddress.setGuid(null);
@@ -324,11 +331,37 @@ public class NewPatientFormController extends SimpleFormController {
 				pi.setPreferred(pref.equals(pi.getIdentifier()+pi.getIdentifierType().getPatientIdentifierTypeId()));
 			}
 
-			// look for person attributes in the request and save to person
+			// look for person attributes in the request and save to patient
 			for (PersonAttributeType type : personService.getPersonAttributeTypes(PERSON_TYPE.PATIENT, ATTR_VIEW_TYPE.VIEWING)) {
-				String value = request.getParameter(type.getPersonAttributeTypeId().toString());
+				String paramName = type.getPersonAttributeTypeId().toString();
+				String value = request.getParameter(paramName);
 				
-				patient.addAttribute(new PersonAttribute(type, value));
+				// if there is an error displaying the attribute, the value will be null
+				if (value != null) {
+					PersonAttribute attribute = new PersonAttribute(type, value);
+					try {
+						Object hydratedObject = attribute.getHydratedObject();
+						if (hydratedObject == null || "".equals(hydratedObject.toString())) {
+							// if null is returned, the value should be blanked out
+							attribute.setValue("");
+						} else if (hydratedObject instanceof Attributable) {
+							attribute.setValue(((Attributable)hydratedObject).serialize());
+						}
+						else if (!hydratedObject.getClass().getName().equals(type.getFormat()))
+							// if the classes doesn't match the format, the hydration failed somehow
+							// TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
+							throw new APIException();
+					}
+					catch (APIException e) {
+						errors.rejectValue("attributeMap[" + type.getName() + "]", "Invalid value for " + type.getName() + ": '" + value + "'");
+						log.warn("Got an invalid value: " + value + " while setting personAttributeType id #" + paramName, e);
+						
+						// setting the value to empty so that the user can reset the value to something else
+						attribute.setValue("");
+						
+					}
+					patient.addAttribute(attribute);
+				}
 			}
 			
 			// add the new identifiers.  First remove them so that things like
@@ -424,60 +457,6 @@ public class NewPatientFormController extends SimpleFormController {
 					isError = true;
 				}
 						
-				// update patient's relationships and death reason
-				String[] personAs = request.getParameterValues("personA");
-				String[] types = request.getParameterValues("relationshipType");
-				Person person = personService.getPerson(patient.getPatientId());
-				List<Relationship> relationships;
-				List<Person> newPersonAs = new Vector<Person>(); //list of all persons specifically selected in the form
-				
-				if (person != null) 
-					relationships = personService.getRelationshipsByPerson(person);
-				else
-					relationships = new Vector<Relationship>();
-				
-				if ( personAs != null ) {
-					for (int x = 0 ; x < personAs.length; x++ ) {
-						String personAString = personAs[x];
-						String typeString = types[x];
-						
-						if (personAString != null && personAString.length() > 0 && typeString != null && typeString.length() > 0) {
-							Person personA = personService.getPerson(Integer.valueOf(personAString));
-							RelationshipType type = personService.getRelationshipType(Integer.valueOf(typeString));
-							
-							newPersonAs.add(personA);
-							
-							boolean found = false;
-							// TODO this assumes that a relative can only be related in one way
-							for (Relationship rel : relationships) {
-								//skip the relationships where this patient is the object
-								if (rel.getPersonA().equals(person))
-									found = true;
-								
-								// just update the type of relationships that have the same relative
-								if (rel.getPersonA().equals(personA)) {
-									rel.setRelationshipType(type);
-									found = true;
-								}
-							}
-							if (!found) {
-								Relationship r = new Relationship(personA, person, type);
-								relationships.add(r);
-							}
-						}
-					}
-					
-				}
-	
-				for (Relationship rel : relationships) {
-					if (newPersonAs.contains(rel.getPersonA()) || 
-							person.equals(rel.getPersonA()))
-						personService.saveRelationship(rel);
-					else
-						personService.purgeRelationship(rel);
-				}
-				
-				
 				// update the death reason
 				if ( patient.getDead() ) {
 					log.debug("Patient is dead, so let's make sure there's an Obs for it");
@@ -506,8 +485,10 @@ public class NewPatientFormController extends SimpleFormController {
 									obsDeath = new Obs();
 									obsDeath.setPerson(patient);
 									obsDeath.setConcept(causeOfDeath);
-									Location loc = Context.getLocationService().getLocation("Unknown Location");
-									if ( loc == null ) loc = Context.getLocationService().getLocation(new Integer(1));
+									obsDeath.setConceptName(causeOfDeath.getName()); // ABKTODO: presume current locale?
+									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
+									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
+
 									// TODO person healthcenter if ( loc == null ) loc = patient.getHealthCenter();
 									if ( loc != null ) obsDeath.setLocation(loc);
 									else log.error("Could not find a suitable location for which to create this new Obs");
@@ -525,6 +506,7 @@ public class NewPatientFormController extends SimpleFormController {
 								if ( currCause != null ) {
 									log.debug("Current cause is not null, setting to value_coded");
 									obsDeath.setValueCoded(currCause);
+									obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 									
 									Date dateDeath = patient.getDeathDate();
 									if ( dateDeath == null ) dateDeath = new Date();
@@ -562,6 +544,17 @@ public class NewPatientFormController extends SimpleFormController {
 				
 			}
 			
+			// save the relationships to the database
+			if ( !isError && !errors.hasErrors()) {
+				Map<String, Relationship> relationships = getRelationshipsMap(patient, request);
+				for (Relationship relationship : relationships.values()) {
+					// if the user added a person to this relationship, save it 
+					if (relationship.getPersonA() != null && relationship.getPersonB() != null)
+						personService.saveRelationship(relationship);
+				}
+			}
+			
+			// redirect if an error occurred
 			if ( isError || errors.hasErrors()) {
 				log.error("Had an error during processing. Redirecting to " + this.getFormView());
 				
@@ -612,18 +605,18 @@ public class NewPatientFormController extends SimpleFormController {
 	    			// continue
 	    		}
 	    	}
-		}
-		
-		if (p == null) {
-			try {
-    			Person person = Context.getPersonService().getPerson(id);
-    			if (person != null)
-    				p = new Patient(person);
-    		}
-    		catch (ObjectRetrievalFailureException noPersonEx) {
-    			log.warn("There is no patient or person with id: '" + id + "'", noPersonEx);
-    			throw new ServletException("There is no patient or person with id: '" + id + "'");
-    		}
+			
+			if (p == null) {
+				try {
+	    			Person person = Context.getPersonService().getPerson(id);
+	    			if (person != null)
+	    				p = new Patient(person);
+	    		}
+	    		catch (ObjectRetrievalFailureException noPersonEx) {
+	    			log.warn("There is no patient or person with id: '" + id + "'", noPersonEx);
+	    			throw new ServletException("There is no patient or person with id: '" + id + "'");
+	    		}
+			}
 		}
 		
 		ShortPatientModel patient = new ShortPatientModel(p);
@@ -702,6 +695,12 @@ public class NewPatientFormController extends SimpleFormController {
 					// end get 'other' cause of death
 	    		}
 	    	}
+	    	
+	    	// set up the property for the relationships
+			
+			// {'3a':Relationship#234, '7b':Relationship#9488} 
+			Map<String, Relationship> relationships = getRelationshipsMap(patient, request); 
+			map.put("relationships", relationships);
 		}
 		
 		// give them both the just-entered identifiers and the patient's current identifiers
@@ -720,8 +719,100 @@ public class NewPatientFormController extends SimpleFormController {
 			map.put("defaultLocation", Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION));
 		map.put("identifiers", identifiers);
 		map.put("causeOfDeathOther", causeOfDeathOther);
-		
+				
 		return map;
 	}   
 	
+    /**
+     * Convenience method to fetch the relationships to display on the 
+     * page.  
+     * 
+     * First the database is queried for the user demanded relationships to
+     * show on the new patient form.  @see OpenmrsConstants#GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS
+     * 
+     * Each 3a, 6b relationship defined there is pulled from the db and put into 
+     * the map.  If one doesn't exist in the db yet, a relationship stub is created.
+     * 
+     * If '3a' or '6b' exist as parameters in the given <code>request</code>,
+     * that parameter value is put into the returned map
+     * 
+     * @param person The person to match against
+     * @param request the current request with or without 3a-named parameters in it
+     * @return Map from relation string to defined relationship object {'3a':obj, '7b':obj}
+     */
+    private Map<String, Relationship> getRelationshipsMap(Person person, HttpServletRequest request) {
+    	Map<String, Relationship> relationshipMap = new LinkedHashMap<String, Relationship>(); 
+    	
+    	// gp is in the form "3a, 7b, 4a"
+    	String relationshipsString = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS, "");
+    	relationshipsString = relationshipsString.trim();
+    	if (relationshipsString.length() > 0) {
+    		String[] showRelations = relationshipsString.split(",");
+    		// iterate over strings like "3a"
+    		for (String showRelation : showRelations) {
+    			showRelation = showRelation.trim();
+    			
+    			boolean aIsToB = true;
+    			if (showRelation.endsWith("b")) {
+    				aIsToB = false;
+    			}
+    			
+    			// trim out the trailing a or b char
+    			String showRelationId = showRelation.replace("a", "");
+    			showRelationId = showRelationId.replace("b", "");
+    			
+    			RelationshipType relationshipType = Context.getPersonService().getRelationshipType(Integer.valueOf(showRelationId));
+    			
+    			// flag to know if we need to create a stub relationship 
+    			boolean relationshipFound = false;
+    			
+    			if (person != null && person.getPersonId() != null) {
+    				if (aIsToB) {
+	    				List<Relationship> relationships = Context.getPersonService().getRelationships(null, person, relationshipType);
+	    				if (relationships.size() > 0) {
+	        				relationshipMap.put(showRelation, relationships.get(0));
+	        				relationshipFound = true;
+	    				}
+	    			}
+	    			else {
+	    				List<Relationship> relationships = Context.getPersonService().getRelationships(person, null, relationshipType);
+	    				if (relationships.size() > 0) {
+	        				relationshipMap.put(showRelation, relationships.get(0));
+	        				relationshipFound = true;
+	    				}
+	    			}
+    			}
+    			
+    			// if no relationship was found, create a stub one now
+    			if (relationshipFound == false) {
+    				Relationship relationshipStub = new Relationship();
+    				relationshipStub.setRelationshipType(relationshipType);
+    				if (aIsToB)
+    					relationshipStub.setPersonB(person);
+    				else
+    					relationshipStub.setPersonA(person);
+    				
+    				relationshipMap.put(showRelation, relationshipStub);
+    			}
+    			
+    			
+    			// check the request to see if a parameter exists in there
+    			// that matches to the user desired relation.  Overwrite
+    			// any previous data if found
+    			String submittedPersonId = request.getParameter(showRelation);
+    			if (submittedPersonId != null && submittedPersonId.length() > 0) {
+    				Person submittedPerson = Context.getPersonService().getPerson(Integer.valueOf(submittedPersonId));
+    				if (aIsToB)
+    					relationshipMap.get(showRelation).setPersonA(submittedPerson);
+					else
+						relationshipMap.get(showRelation).setPersonB(submittedPerson);
+    			}
+    				
+    		}
+    		
+    	}
+    	
+    	return relationshipMap;
+    }
+
 }
