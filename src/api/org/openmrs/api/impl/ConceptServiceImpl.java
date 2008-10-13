@@ -274,6 +274,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
      */
     public List<Concept> getAllConcepts(String sortBy, boolean asc,
             boolean includeRetired) throws APIException {
+    	if (sortBy == null)
+    		sortBy = "conceptId";
+    	
 	    return dao.getAllConcepts(sortBy, asc, includeRetired);
     }
 

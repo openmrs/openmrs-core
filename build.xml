@@ -538,6 +538,10 @@
 		<exec os="Linux" executable="firefox" spawn="true">
 			<arg value="file:///${junit-reports.dir}/index.html"/>
 		</exec>
+		<exec os="Mac OS X" executable="open" spawn="true">
+			<arg line="-a Firefox"/>
+			<arg value="file:///${junit-reports.dir}/index.html"/>
+		</exec>
 		
 	</target>
 
