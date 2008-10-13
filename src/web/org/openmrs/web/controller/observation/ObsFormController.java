@@ -92,6 +92,28 @@ public class ObsFormController extends SimpleFormController {
         binder.registerCustomEditor(Drug.class, new DrugEditor());
         binder.registerCustomEditor(ConceptName.class, new ConceptNameEditor());
 	}
+	
+	/**
+     * @see org.springframework.web.servlet.mvc.BaseCommandController#onBind(javax.servlet.http.HttpServletRequest, java.lang.Object)
+     */
+    @Override
+    protected void onBind(HttpServletRequest request, Object command)
+            throws Exception {
+	    
+    	Obs obs = (Obs)command;
+    	
+    	// set the question concept if only the question concept name is set
+    	if (obs.getConcept() == null && obs.getConceptName() != null) {
+    		obs.setConcept(obs.getConceptName().getConcept());
+    	}
+    	
+    	// set the answer concept if only the answer concept name is set
+    	if (obs.getValueCoded() == null && obs.getValueCodedName() != null) {
+    		obs.setValueCoded(obs.getValueCodedName().getConcept());
+    	}
+    	
+	    super.onBind(request, command);
+    }
 
 	/** 
 	 * 

@@ -34,7 +34,7 @@
 				</td>
 			</tr>
 			<tr class="<c:if test="${obs.voided}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>" onmouseover="mouseover(this, true)" onmouseout="mouseout(this, true)" onclick="click('${obs.obsId}')">
-				<td colspan="5" style="padding-left: ${padding}"><div class="description">${obs.concept.name.description}</div></td>
+				<td colspan="5" style="padding-left: ${padding}"><div class="description">${obs.concept.description}</div></td>
 			</tr>
 		</c:otherwise>
 	</c:choose>

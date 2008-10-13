@@ -17,18 +17,23 @@ import java.beans.PropertyEditorSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
+/**
+ * Used to get/set the ConceptName attribute of objects.
+ */
 public class ConceptNameEditor extends PropertyEditorSupport {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	public ConceptNameEditor() {	}
 	
+	/**
+	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
+	 */
 	public void setAsText(String text) throws IllegalArgumentException {
 		ConceptService cs = Context.getConceptService(); 
 		if (StringUtils.hasText(text)) {
@@ -45,6 +50,9 @@ public class ConceptNameEditor extends PropertyEditorSupport {
 		}
 	}
 
+	/**
+	 * @see java.beans.PropertyEditorSupport#getAsText()
+	 */
 	public String getAsText() {
 		ConceptName cn = (ConceptName) getValue();
 		if (cn == null) {
