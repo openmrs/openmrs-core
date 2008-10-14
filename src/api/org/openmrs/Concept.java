@@ -346,16 +346,22 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		ConceptNameTag preferredCountry = ConceptNameTag.preferredCountryTagFor(locale);
 		
 		ConceptName currentPreferredNameInLanguage = getPreferredNameInLanguage(locale.getLanguage());
-		if ((preferredCountry == null) && (currentPreferredNameInLanguage == null)) {
-			preferredName.addTag(preferredLanguage);
-		} 
-
+ 
 		if (preferredCountry != null) {
+			if (currentPreferredNameInLanguage == null) {
+				preferredName.addTag(preferredLanguage);
+			}
+			
 			ConceptName currentPreferredForCountry  = getPreferredNameForCountry(locale.getCountry());
 			if (currentPreferredForCountry != null) {
 				currentPreferredForCountry.removeTag(preferredCountry);
 			}
 			preferredName.addTag(preferredCountry);
+		} else {
+			if (currentPreferredNameInLanguage != null) {
+				currentPreferredNameInLanguage.removeTag(preferredLanguage);
+			}
+			preferredName.addTag(preferredLanguage);
 		}
 
 		addName(preferredName);
@@ -805,16 +811,21 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		ConceptNameTag shortCountry = ConceptNameTag.shortCountryTagFor(locale);
 		
 		ConceptName currentShortNameInLanguage = getShortNameInLanguage(locale.getLanguage());
-		if ((shortCountry == null) && (currentShortNameInLanguage == null)) {
-			shortName.addTag(shortLanguage);
-		} 
-
 		if (shortCountry != null) {
+			if (currentShortNameInLanguage == null) {
+				shortName.addTag(shortLanguage);
+			} 
+
 			ConceptName currentPreferredForCountry  = getPreferredNameForCountry(locale.getCountry());
 			if (currentPreferredForCountry != null) {
 				currentPreferredForCountry.removeTag(shortCountry);
 			}
 			shortName.addTag(shortCountry);
+		} else {
+			if (currentShortNameInLanguage != null) {
+				currentShortNameInLanguage.removeTag(shortLanguage);
+			}
+			shortName.addTag(shortLanguage);
 		}
 
 		addName(shortName);
@@ -839,6 +850,29 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
      */
     public ConceptName getShortNameInLanguage(String language) {
     	return findNameTaggedWith(ConceptNameTag.shortLanguageTagFor(language));
+    }
+    
+	/**
+	 * Gets the explicitly specified short name for a locale.
+	 * The name returned depends on the specificity of the locale. 
+	 * If country is indicated, then the name must be tagged as
+	 * short in that country, otherwise the name must be tagged 
+	 * as short in that language. 
+     * 
+     * @param l locale for which to return a short name
+     * @return the short name, or null if none has been explicitly set
+     */
+    public ConceptName getShortNameInLocale(Locale l) {
+    	ConceptName shortName = null;
+    	// ABK: country will always be non-null. Empty string (instead 
+    	// of null) indicates no country was specified
+    	String country = l.getCountry(); 
+    	if (country.length() != 0) {
+    		shortName = getShortNameForCountry(country);
+    	} else {
+    		shortName = getShortNameInLanguage(l.getLanguage());
+    	}
+    	return shortName;
     }
 
 	/**
