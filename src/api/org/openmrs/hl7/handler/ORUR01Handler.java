@@ -439,7 +439,6 @@ public class ORUR01Handler implements Application {
 		Obs obs = new Obs();
 		obs.setPerson(encounter.getPatient());
 		obs.setConcept(concept);
-		obs.setConceptName(conceptName);
 		obs.setEncounter(encounter);
 		obs.setObsDatetime(datetime);
 		obs.setLocation(encounter.getLocation());

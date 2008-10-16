@@ -1097,7 +1097,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 							obsExit = new Obs();
 							obsExit.setPerson(patient);
 							obsExit.setConcept(reasonForExit);
-							obsExit.setConceptName(reasonForExit.getName()); // ABKTODO: presume current locale?
 							Location loc = null; //patient.getHealthCenter();
 						if (loc == null)
 							loc = Context.getLocationService().getLocation("Unknown Location");
@@ -1222,7 +1221,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 							obsDeath = new Obs();
 							obsDeath.setPerson(patient);
 							obsDeath.setConcept(causeOfDeath);
-							obsDeath.setConceptName(causeOfDeath.getName()); // ABKTODO: presume current locale?
 							Location loc = null; //patient.getHealthCenter();
 						if (loc == null)
 							loc = Context.getLocationService()

@@ -103,9 +103,10 @@ public class ObsFormController extends SimpleFormController {
     	Obs obs = (Obs)command;
     	
     	// set the question concept if only the question concept name is set
-    	if (obs.getConcept() == null && obs.getConceptName() != null) {
-    		obs.setConcept(obs.getConceptName().getConcept());
-    	}
+    	// ABK: Obs.getConceptName() has been removed 
+    	//if (obs.getConcept() == null && obs.getConceptName() != null) {
+    	//	obs.setConcept(obs.getConceptName().getConcept());
+    	//}
     	
     	// set the answer concept if only the answer concept name is set
     	if (obs.getValueCoded() == null && obs.getValueCodedName() != null) {

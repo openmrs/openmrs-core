@@ -50,7 +50,6 @@ public class Obs implements java.io.Serializable {
 
 	protected Integer obsId;
 	protected Concept concept;
-	protected ConceptName conceptName;
 	protected Date obsDatetime;
 	protected String accessionNumber;
 	
@@ -266,35 +265,6 @@ public class Obs implements java.io.Serializable {
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-
-	/**
-	 * Gets the specific name used for the concept.
-	 * Because concepts can be presented using many names,
-	 * this identifies the name that was actually used
-	 * to make the observation.
-	 * 
-	 * @return the concept name used.
-	 */
-	public ConceptName getConceptName() {
-		
-		// if the concept name stored for this obs is null, look
-		// at the question concept and just return the default
-		// name for that.
-		if (conceptName == null && getConcept() != null) {
-			return concept.getName();
-		}
-		
-		return conceptName;
-	}
-
-	/**
-	 * Sets the specific name used to identify the concept.
-	 * 
-	 * @param conceptName the specific name of the concept
-	 */
-	public void setConceptName(ConceptName conceptName) {
-		this.conceptName = conceptName;
-	}
 	
 	/**
 	 * Get the concept description that is tied to the concept
@@ -307,18 +277,9 @@ public class Obs implements java.io.Serializable {
 		// then don't bother looking for a description
 		if (getConcept() == null)
 			return null;
-		
-		// fetch the concept name used for this obs
-		ConceptName conceptName = getConceptName();
-		
-		// if we don't have a concept name, don't bother
-		// looking for a description
-		if (conceptName == null || concept == null)
-			return null;
-		
-		// get the description with the same locale as the name
-		// that was used to make this obs
-		return concept.getDescription(conceptName.getLocale());
+
+		// ABKTOD: description in which locale?
+		return concept.getDescription();
 	}
 	
 	/**

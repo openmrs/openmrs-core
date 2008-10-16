@@ -101,8 +101,8 @@ public class DWRObsService {
 	 * @param valueText
 	 * @param obsDateStr
 	 */
-	public void createObs(Integer personId, Integer encounterId, Integer conceptId, Integer conceptNameId, String valueText, String obsDateStr) { 
-		createNewObs(personId, encounterId, null, conceptId, conceptNameId, valueText, obsDateStr);
+	public void createObs(Integer personId, Integer encounterId, Integer conceptId, String valueText, String obsDateStr) { 
+		createNewObs(personId, encounterId, null, conceptId, valueText, obsDateStr);
 	}
 	
 	/**
@@ -115,7 +115,7 @@ public class DWRObsService {
 	 * @param valueText
 	 * @param obsDateStr
 	 */
-	public void createNewObs(Integer personId, Integer encounterId, Integer locationId, Integer conceptId, Integer conceptNameId, String valueText, String obsDateStr) { 
+	public void createNewObs(Integer personId, Integer encounterId, Integer locationId, Integer conceptId, String valueText, String obsDateStr) { 
 		
 		log.info("Create new observation ");
 	
@@ -134,17 +134,10 @@ public class DWRObsService {
 		Person person = Context.getPersonService().getPerson(personId);
 		Concept concept = Context.getConceptService().getConcept(conceptId);
 		Encounter encounter = (encounterId == null) ? null : Context.getEncounterService().getEncounter(encounterId);
-		ConceptName conceptName = (conceptNameId == null) ? null : Context.getConceptService().getConceptName(conceptNameId);
 		
 		Obs obs = new Obs();
 		obs.setPerson(person);
 		obs.setConcept(concept);
-
-		if ((conceptName != null) && (conceptName.getConcept().equals(concept))) {
-			obs.setConceptName(conceptName);
-		} else {
-			obs.setConceptName(null);
-		}
 		
 		obs.setObsDatetime(obsDate);
 		if (encounter != null) {

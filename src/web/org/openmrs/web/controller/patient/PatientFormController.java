@@ -402,7 +402,6 @@ public class PatientFormController extends PersonFormController {
 									obsDeath = new Obs();
 									obsDeath.setPerson(patient);
 									obsDeath.setConcept(causeOfDeath);
-									obsDeath.setConceptName(causeOfDeath.getName()); // ABKTODO: presume current locale?
 									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
 									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
 									// TODO person healthcenter //if ( loc == null ) loc = patient.getHealthCenter();
