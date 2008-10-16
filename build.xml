@@ -327,7 +327,7 @@
 			<zipfileset dir="${neal-reporting.dir}" includes="*.jar" />
 			<zipfileset dir="${saxon.dir}" includes="*.jar" />
 			<zipfileset dir="${simple.dir}" includes="*.jar" />
-			<zipfileset dir="${spring.dir}" includes="*.jar" excludes="*Test*.jar"/>
+			<zipfileset dir="${spring.dir}" includes="*.jar" excludes="*test*.jar"/>
 			<zipfileset dir="${stax.dir}" includes="*.jar" />
 			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
