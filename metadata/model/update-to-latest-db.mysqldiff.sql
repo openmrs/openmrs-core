@@ -1645,6 +1645,7 @@ BEGIN
 
 		select 'Updating obs' AS '*** Step: ***', new_db_version from dual;
 
+		ALTER TABLE `obs` ADD COLUMN `concept_name_id` int(11) AFTER `concept_id`;
 		ALTER TABLE `obs` ADD COLUMN `value_coded_name_id` int(11) AFTER `value_coded`;
 
 		select '***' AS '...done' from dual;
@@ -1674,6 +1675,8 @@ BEGIN
 
 		select 'Constraining obs' AS '*** Step: ***', new_db_version from dual;
 		
+		ALTER TABLE `obs` ADD CONSTRAINT `obs_concept_name_used` FOREIGN KEY (`concept_name_id`) 
+			REFERENCES `concept_name` (`concept_name_id`);
 		ALTER TABLE `obs` ADD CONSTRAINT `obs_name_of_coded_value` FOREIGN KEY (`value_coded_name_id`) 
 			REFERENCES `concept_name` (`concept_name_id`);
 
@@ -1769,6 +1772,33 @@ delimiter ;
 call diff_procedure('1.4.0.17');
 
 
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.18
+# Andreas Kollegger   Oct 16th, 2008
+#
+# drop concept_name_id from obs
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Updating concept_word table' AS '*** Step: ***', new_db_version from dual;
+
+		ALTER TABLE `concept_name` DROP COLUMN `concept_name_id`;
+		
+		ALTER TABLE `concept_name` DROP FOREIGN KEY `concept_name_id`;
+
+		select '***' AS '...done' from dual;
+
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.18');
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
