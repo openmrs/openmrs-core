@@ -53,7 +53,6 @@
 
 		<many-to-one name="person" class="Person" not-null="true" column="person_id" />
 		<many-to-one name="concept" class="Concept" not-null="true" column="concept_id" />
-		<many-to-one name="conceptName" class="ConceptName" column="concept_name_id" />
 		<many-to-one name="valueCoded" class="Concept" column="value_coded" />
 		<many-to-one name="valueCodedName" class="ConceptName" column="value_coded_name_id" />
 		<many-to-one name="valueDrug" class="Drug" column="value_drug" />

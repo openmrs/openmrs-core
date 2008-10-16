@@ -1635,7 +1635,7 @@ call diff_procedure('1.4.0.12');
 #
 # update obs table -
 #
-# add concept_name_id to observations
+# add concept_name_id to observation answers
 #-----------------------------------------------------------
 DROP PROCEDURE IF EXISTS diff_procedure;
 delimiter //
@@ -1645,7 +1645,6 @@ BEGIN
 
 		select 'Updating obs' AS '*** Step: ***', new_db_version from dual;
 
-		ALTER TABLE `obs` ADD COLUMN `concept_name_id` int(11) AFTER `concept_id`;
 		ALTER TABLE `obs` ADD COLUMN `value_coded_name_id` int(11) AFTER `value_coded`;
 
 		select '***' AS '...done' from dual;
@@ -1675,8 +1674,6 @@ BEGIN
 
 		select 'Constraining obs' AS '*** Step: ***', new_db_version from dual;
 		
-		ALTER TABLE `obs` ADD CONSTRAINT `obs_concept_name_used` FOREIGN KEY (`concept_name_id`) 
-			REFERENCES `concept_name` (`concept_name_id`);
 		ALTER TABLE `obs` ADD CONSTRAINT `obs_name_of_coded_value` FOREIGN KEY (`value_coded_name_id`) 
 			REFERENCES `concept_name` (`concept_name_id`);
 

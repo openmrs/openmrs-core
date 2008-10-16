@@ -249,7 +249,7 @@
 			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
 			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
 			DWRObsService.getObservations(Integer encounterId);
-			DWRObsService.createObs(Integer patientId, Integer encounterId, Integer conceptId, Integer conceptNameId, String valueText, Date obsDate);
+			DWRObsService.createObs(Integer patientId, Integer encounterId, Integer conceptId, String valueText, Date obsDate);
 			DWRMessageService.sendFeedback(String sender, String subject, String content);
 			DWRMessageService.sendMessage( String recipients, String sender, String subject, String content );
 		]]>
