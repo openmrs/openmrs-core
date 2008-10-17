@@ -189,7 +189,7 @@ public class ModuleFactory {
 							} catch (Exception e) {
 								log.error("Error while starting module: "
 								        + mod.getName(), e);
-								mod.setStartupErrorMessage("Error while starting module: " + e.getMessage());
+								mod.setStartupErrorMessage("Error while starting module", e);
 							}
 						else {
 							// if not all the modules required by this mod are loaded, save it for later
@@ -511,7 +511,7 @@ public class ModuleFactory {
 			} catch (Exception e) {
 				log.warn("Error while trying to start module: "
 				        + module.getModuleId(), e);
-				module.setStartupErrorMessage("Error while trying to start module: " + e.getMessage());
+				module.setStartupErrorMessage("Error while trying to start module", e);
 
 				// undo all of the actions in startup
 				try {
@@ -665,6 +665,9 @@ public class ModuleFactory {
 					        "false", getGlobalPropertyStartedDescription(moduleId));
 					as.saveGlobalProperty(gp);
 				}
+				catch (Throwable t) {
+					log.warn("Unable to save the global property while shutting down", t);
+				}
 				finally {
 					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 				}
@@ -688,9 +691,9 @@ public class ModuleFactory {
 								        + aopObject.getClass());
 								Context.removeAdvice(cls, (Advice) aopObject);
 							}
-						} catch (ClassNotFoundException e) {
+						} catch (Throwable t) {
 							log.warn("Could not remove advice point: "
-							        + advice.getPoint(), e);
+							        + advice.getPoint(), t);
 						}
 					}
 				} catch (Throwable t) {
@@ -741,13 +744,11 @@ public class ModuleFactory {
 				File folder = OpenmrsClassLoader.getLibCacheFolder();
 				File tmpModuleDir = new File(folder, moduleId);
 				try {
-					System.gc();
 					OpenmrsUtil.deleteDirectory(tmpModuleDir);
 				} catch (IOException e) {
 					log.warn("Unable to delete libcachefolder for " + moduleId);
 				}
 			}
-			System.gc();
 		}
 	}
 
@@ -774,11 +775,6 @@ public class ModuleFactory {
 		getLoadedModules().remove(mod);
 
 		if (mod != null) {
-			// run the garbage collector before deleting in case a stream hasn't
-			// been cleaned up yet
-			System.gc();
-			System.gc();
-
 			// remove the file from the module repository
 			File file = mod.getFile();
 
