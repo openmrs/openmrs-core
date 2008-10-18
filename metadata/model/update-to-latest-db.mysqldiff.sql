@@ -3,11 +3,6 @@
 #  The diffs are ordered by datamodel version number.
 #--------------------------------------
 
-#--------------------------------------
-# USE:
-#  The diffs are ordered by datamodel version number.
-#--------------------------------------
-
 DROP PROCEDURE IF EXISTS update_user_password;
 DROP PROCEDURE IF EXISTS insert_patient_stub;
 DROP PROCEDURE IF EXISTS insert_user_stub;
@@ -1103,6 +1098,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	#-- If a role can View Patients...add the new View Patient Identifiers privilege to that role
 	insert into role_privilege (role, privilege) select distinct role, 'View Patient Identifiers' from role_privilege rp where privilege = 'View Patients' and not exists (select * from role_privilege where role = rp.role and privilege = 'View Patient Identifiers');	
 	
+	# THIS IS INCORRECT, BUT DOES NOT GET FIXED UNTIL 1.3.3.0 and 1.4.0.20
 	#-- Convert Manage Encounter Types
 	insert into role_privilege (role, privilege) select distinct role, 'Add Encounter Types' from role_privilege rp where privilege = 'Manage Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Add Encounter Types');
 	insert into role_privilege (role, privilege) select distinct role, 'Edit Encounter Types' from role_privilege rp where privilege = 'Manage Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Edit Encounter Types');
@@ -1183,6 +1179,36 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 
 delimiter ;
 call diff_procedure('1.3.0.16');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.3.3.0
+# Darius Jazayeri     Oct 17th, 2008
+#
+# Convert from Add/Edit/Delete Encounter Types to Manage Encounter Types
+# (this was done incorrectly in 1.3.0.14)
+# This sqldiff is identical to 1.4.0.20, but is here as a backport
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		#-- Convert Manage Encounter Types
+		insert into role_privilege (role, privilege) select distinct role, 'Manage Encounter Types' from role_privilege rp where privilege = 'Add Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Manage Encounter Types');
+		insert into role_privilege (role, privilege) select distinct role, 'Manage Encounter Types' from role_privilege rp where privilege = 'Edit Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Manage Encounter Types');
+		insert into role_privilege (role, privilege) select distinct role, 'Manage Encounter Types' from role_privilege rp where privilege = 'Delete Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Manage Encounter Types');
+		delete from role_privilege where privilege = 'Add Encounter Types';
+		delete from role_privilege where privilege = 'Edit Encounter Types';
+		delete from role_privilege where privilege = 'Delete Encounter Types';
+			
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.3.3.0');
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
