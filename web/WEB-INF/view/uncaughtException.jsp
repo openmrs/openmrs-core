@@ -58,44 +58,48 @@ try {
 	// this logic copied from the OpenmrsFilter because this
 	// page isn't passed through that filter like all other pages
 	UserContext userContext = (UserContext) session.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
-	if (userContext == null || userContext.getAuthenticatedUser() == null) {
-		out.println("You must be logged in to view the stack trace");
-	}
-	else {
-		if (exception != null) {
-			if (exception instanceof APIAuthenticationException) {
-				// If they are not authorized to use a function
-				session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, exception.getMessage());
-				session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getAttribute("javax.servlet.error.request_uri"));
-				response.sendRedirect(request.getContextPath() + "/login.htm");
+	if (exception != null) {
+		if (exception instanceof APIAuthenticationException) {
+			// If they are not authorized to use a function
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, exception.getMessage());
+			String uri = (String)request.getAttribute("javax.servlet.error.request_uri");
+			if (request.getQueryString() != null) {
+				uri = uri + "?" + request.getQueryString();
+			}
+			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, uri);
+			response.sendRedirect(request.getContextPath() + "/login.htm");
+		}
+		else if (userContext == null || userContext.getAuthenticatedUser() == null) {
+			out.println("You must be logged in to view the stack trace");
+			// print the stack trace to the servlet container's error logs
+			exception.printStackTrace();
+		}
+		else {
+			java.lang.StackTraceElement[] elements;
+			
+			if (exception instanceof ServletException) {
+				// It's a ServletException: we should extract the root cause
+				ServletException sEx = (ServletException) exception;
+				Throwable rootCause = sEx.getRootCause();
+				if (rootCause == null)
+					rootCause = sEx;
+				out.println("<br/><br/>** Root cause is: "+ rootCause.getMessage());
+				elements = rootCause.getStackTrace();
 			}
 			else {
-				java.lang.StackTraceElement[] elements;
-				
-				if (exception instanceof ServletException) {
-					// It's a ServletException: we should extract the root cause
-					ServletException sEx = (ServletException) exception;
-					Throwable rootCause = sEx.getRootCause();
-					if (rootCause == null)
-						rootCause = sEx;
-					out.println("<br/><br/>** Root cause is: "+ rootCause.getMessage());
-					elements = rootCause.getStackTrace();
-				}
-				else {
-					// It's not a ServletException, so we'll just show it
-					elements = exception.getStackTrace(); 
-				}
-				for (StackTraceElement element : elements) {
-					if (element.getClassName().contains("openmrs"))
-						out.println("<b>" + element + "</b><br/>");
-					else
-						out.println(element + "<br/>");
-				}
+				// It's not a ServletException, so we'll just show it
+				elements = exception.getStackTrace(); 
 			}
-		} 
-		else  {
-	    	out.println("<br>No error information available");
+			for (StackTraceElement element : elements) {
+				if (element.getClassName().contains("openmrs"))
+					out.println("<b>" + element + "</b><br/>");
+				else
+					out.println(element + "<br/>");
+			}
 		}
+	} 
+	else  {
+    	out.println("<br>No error information available");
 	}
 	
 	// Display current version
