@@ -22,12 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Interface for a service which expands on the basic capabilities 
  * of a message source. 
  * 
- * ABKTODO: move this into a different package. This is part of the
- * application framework or presentation layer, not the domain. But, 
- * the module support presumes to manipulate the application context
- * (the file system), so this needs to be somewhere above the module's 
- * package dependency path. Luckily, the package dependency graph is
- * thoroughly cyclic, so it can probably go anywhere.
  */
 @Transactional
 public interface MessageSourceService extends MutableMessageSource {

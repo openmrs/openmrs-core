@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Properties;
 
+import org.springframework.context.HierarchicalMessageSource;
 import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,14 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
  * Extended MessageSource interface, which provides more information
  * about the available messages and can be changed.
  *  
- * ABKTODO: move this into a different package. This is part of the
- * application framework or presentation layer, not the domain. But, 
- * the module support presumes to manipulate the application context
- * (the file system), so this needs to be somewhere above the module's 
- * package dependency path.
  */
 @Transactional
-public interface MutableMessageSource extends MessageSource {
+public interface MutableMessageSource extends MessageSource, HierarchicalMessageSource {
 	
 
 	/**
@@ -44,14 +40,12 @@ public interface MutableMessageSource extends MessageSource {
 	/**
 	 * Makes a collection of properties available as messages.
 	 * 
-	 * ABKTODO: upgrade this to use the new PresentationMessages.
-	 * ABKTODO: actually, deprecate this and use merge instead
-     * 
      * @param props key/value properties for the messages
      * @param locale locale in which the messages are expressed
      * @param namespace namespace within which the properties are valid ("" for generic, "module" for modules, etc)
      * @param name unique name for the properties within the namespace
      * @param version version of the properties
+     * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
      */
     public void publishProperties(Properties props, String locale, String namespace, 
     		String name, String version);
@@ -62,6 +56,14 @@ public interface MutableMessageSource extends MessageSource {
      * @return collection of presentation messages
      */
     public Collection<PresentationMessage> getPresentations();
+    
+    /**
+     * Gets alll the available messages in a particular locale, packaged as PresentationMessages.
+     * 
+     * @param locale locale for which to get the messages
+     * @return collection of PresentationMessages in the locale
+     */
+    public Collection<PresentationMessage> getPresentationsInLocale(Locale locale);
 	
     /**
      * Adds a presentation message to the source. This operation should 
@@ -71,6 +73,15 @@ public interface MutableMessageSource extends MessageSource {
      * @param message message to add to the source
      */
     public void addPresentation(PresentationMessage message);
+    
+    /**
+     * Gets the PresentationMessage for a particular locale.
+     * 
+     * @param key textual key for the message
+     * @param forLocale locale for which to get the message
+     * @return corresponding PresentationMessage, or null if not available
+     */
+    public PresentationMessage getPresentation(String key, Locale forLocale);
     
     /**
      * Removes a presentation message from the source. 

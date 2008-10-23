@@ -72,6 +72,7 @@
 		<fileset dir="${junit.dir}" includes="*.jar" />
 		<fileset dir="${test.dir}/api" includes="**/*.java" />
 		<fileset dir="${tomcat.dir}" includes="*.jar" />
+        <fileset dir="${benerator.dir}" includes="*.jar" />
     </path>
         
     <!-- Web -->

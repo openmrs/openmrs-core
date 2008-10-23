@@ -38,7 +38,6 @@
 	<classpathentry kind="lib" path="lib/spring-framework/spring-2.5.1.jar" sourcepath="/openmrs-source/spring-2.5.1-src.zip"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-test.jar" sourcepath="/openmrs-source/spring-framework-2.5.1-with-dependencies.zip"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-webmvc.jar" sourcepath="/openmrs-source/spring-webmvc-sources.zip"/>
-	<classpathentry kind="lib" path="lib/commons-io/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/mail/activation.jar"/>
 	<classpathentry kind="lib" path="lib/mail/mail.jar"/>
 	<classpathentry kind="lib" path="lib/saxon/saxon8.jar" sourcepath="/openmrs-source/saxon8.zip"/>
@@ -61,5 +60,9 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-beta1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/benerator/databene-benerator-0.5.5.jar"/>
+	<classpathentry kind="lib" path="lib/benerator/databene-commons-0.4.5.jar"/>
+	<classpathentry kind="lib" path="lib/benerator/databene-webdecs-0.4.5.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io/commons-io-1.4.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

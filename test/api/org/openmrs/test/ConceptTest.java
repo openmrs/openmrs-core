@@ -132,6 +132,74 @@ public class ConceptTest {
 	}
 	
 	/**
+	 * The deprecated getName(Locale) should support getting a name that is only
+	 * tagged as "preferred" -- with no language or country indicated -- even
+	 * when searching for a specific language_country locale.
+	 */
+	@Test public void shouldSupportPlainPreferredWhenAskingForName() {
+		Locale testLocale = Locale.ENGLISH;
+    	Concept testConcept = new Concept();
+    	testConcept.setConceptId(1);
+    	
+    	ConceptName preferredName = ConceptNameTest.createMockConceptName(1, testLocale);
+    	preferredName.addTag(ConceptNameTag.PREFERRED);
+    	testConcept.addName(preferredName);
+
+    	ConceptName shortName = ConceptNameTest.createMockConceptName(2, testLocale);
+    	shortName.addTag(ConceptNameTag.SHORT);
+    	testConcept.addName(shortName);
+    	
+		ConceptName actualName = testConcept.getName(Locale.US);
+		assertEquals(preferredName, actualName);
+		
+	}
+	
+	/**
+	 * getPreferredName(Locale) should support getting a name that is only
+	 * tagged as "preferred" -- with no language or country indicated -- even
+	 * when searching for a specific language_country locale.
+	 */
+	@Test public void shouldSupportPlainPreferredWhenAskingForPreferredName() {
+		Locale testLocale = Locale.ENGLISH;
+    	Concept testConcept = new Concept();
+    	testConcept.setConceptId(1);
+    	
+    	ConceptName preferredName = ConceptNameTest.createMockConceptName(1, testLocale);
+    	preferredName.addTag(ConceptNameTag.PREFERRED);
+    	testConcept.addName(preferredName);
+
+    	ConceptName shortName = ConceptNameTest.createMockConceptName(2, testLocale);
+    	shortName.addTag(ConceptNameTag.SHORT);
+    	testConcept.addName(shortName);
+    	
+		ConceptName actualName = testConcept.getPreferredName(Locale.US);
+		assertEquals(preferredName, actualName);
+		
+	}
+	
+	/**
+	 * getBestName(Locale) should support getting a name that is only
+	 * tagged as "preferred" -- with no language or country indicated -- even
+	 * when searching for a specific language_country locale.
+	 */
+	@Test public void shouldSupportPlainPreferredWhenAskingForBestName() {
+		Locale testLocale = Locale.ENGLISH;
+    	Concept testConcept = new Concept();
+    	testConcept.setConceptId(1);
+    	
+    	ConceptName preferredName = ConceptNameTest.createMockConceptName(1, testLocale);
+    	preferredName.addTag(ConceptNameTag.PREFERRED);
+    	testConcept.addName(preferredName);
+
+    	ConceptName shortName = ConceptNameTest.createMockConceptName(2, testLocale);
+    	shortName.addTag(ConceptNameTag.SHORT);
+    	testConcept.addName(shortName);
+    	
+		ConceptName actualName = testConcept.getBestName(Locale.US);
+		assertEquals(preferredName, actualName);
+	}
+	
+	/**
 	 * Convenient factory method to create a populated Concept.
      * 
      * @return

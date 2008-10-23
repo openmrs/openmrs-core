@@ -412,6 +412,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * 
 	 * @param locale
 	 * @return ConceptName attributed to the Concept in the given locale
+	 * @deprecated use either {@link Concept#getNames(Locale)} to get all the names for a locale, 
+	 * 	{@link Concept#getPreferredName(Locale)} for the preferred name (if any), or 
+	 *  {@link Concept#getBestName(Locale) to get the best match for a locale.
 	 */
 	public ConceptName getName(Locale locale) {
 		return getName(locale, false);
@@ -423,6 +426,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * 
 	 * @param locale
 	 * @return ConceptName attributed to the Concept in the given locale
+	 * @deprecated use either {@link Concept#getNames(Locale)} to get all the names for a locale, 
+	 * 	{@link Concept#getPreferredName(Locale)} for the preferred name (if any), or 
+	 *  {@link Concept#getBestName(Locale) to get the best match for a locale.
 	 */
 	public ConceptName getName() {
 		return getName(Context.getLocale());
@@ -472,6 +478,8 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 					break;
 				} else if (possibleName.hasTag(desiredLanguageTag)) {
 					bestMatch = possibleName;
+				} else if (possibleName.hasTag(ConceptNameTag.PREFERRED)) {
+					bestMatch = possibleName;						
 				} else if (bestMatch == null) { // ABK: verbose, but clear
 					bestMatch = possibleName;
 				}
@@ -480,6 +488,8 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 				if (possibleName.hasTag(desiredLanguageTag)) {
 					exactMatch = possibleName;
 					break;
+				} else if (possibleName.hasTag(ConceptNameTag.PREFERRED)) {
+					bestMatch = possibleName;
 				} else if (bestMatch == null) {
 					bestMatch = possibleName;
 				}
@@ -566,6 +576,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 					break;
 				}
 			}
+			if ((preferredName == null) && possibleName.hasTag(ConceptNameTag.PREFERRED)) {
+				preferredName = possibleName;
+			}
 		}
 
 		if (log.isDebugEnabled()) {
@@ -634,6 +647,8 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 						break; // can't get any better than this match
 					} else if (possibleName.hasTag(desiredLanguageTag)) {
 						bestMatch = possibleName;
+					} else if (possibleName.hasTag(ConceptNameTag.PREFERRED)) {
+						bestMatch = possibleName;
 					} else if (bestMatch == null) {
 						bestMatch = possibleName;
 					}
@@ -642,6 +657,8 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 					if (possibleName.hasTag(desiredLanguageTag)) {
 						bestMatch = possibleName;
 						break;
+					} else if (possibleName.hasTag(ConceptNameTag.PREFERRED)) {
+						bestMatch = possibleName;
 					} else if (bestMatch == null) {
 						bestMatch = possibleName;
 					}
