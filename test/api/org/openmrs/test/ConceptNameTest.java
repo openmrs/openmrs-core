@@ -15,6 +15,8 @@ package org.openmrs.test;
 
 import java.util.Locale;
 
+import org.databene.benerator.Generator;
+import org.databene.benerator.factory.GeneratorFactory;
 import org.openmrs.ConceptName;
 
 /**
@@ -23,6 +25,12 @@ import org.openmrs.ConceptName;
  */
 public class ConceptNameTest {
 
+	final static String NAME_PATTERN = "[a-z]*";
+	final static Generator<String> nameGenerator;
+	
+	static {
+		nameGenerator = GeneratorFactory.getUniqueRegexStringGenerator(NAME_PATTERN, 2, 12, Locale.ENGLISH);
+	}
 	/**
 	 * Convenient factory method to create a populated Concept.
      * 
@@ -33,6 +41,7 @@ public class ConceptNameTest {
     	
     	mockConceptName.setConceptNameId(conceptNameId);
     	mockConceptName.setLocale(locale);
+    	mockConceptName.setName(nameGenerator.generate());
     	
     	return mockConceptName;
     }

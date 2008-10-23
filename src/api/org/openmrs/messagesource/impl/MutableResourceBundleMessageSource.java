@@ -397,6 +397,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
             	propList = new ArrayList<File>();
             	localeToFilesMap.put(propsLocale, propList);
             }
+            propList.add(propertiesFile);
             
     		try {
 	            props.load(new FileInputStream(propertiesFile));
@@ -414,25 +415,26 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
     	for (PresentationMessage message : fromSource.getPresentations()) {
     		Locale messageLocale = message.getLocale();
     		
-    		Properties existingPropSource = null;
-    		
     		List<File> filelist = localeToFilesMap.get(messageLocale);
     		if (filelist != null) {
-    			for (File propertiesFile : filelist) {
-    				Properties props = fileToPropertiesMap.get(propertiesFile);
-    				if (props.containsKey(message.getCode())) {
-    					existingPropSource = props;
-    					if (overwrite) {
-    						props.put(message.getCode(), message.getMessage());
-    					}
+        		Properties propertyDestination = null;
+        		boolean propExists = false;
+        		for (File propertiesFile : filelist) {
+    				Properties possibleDestination = fileToPropertiesMap.get(propertiesFile);
+    				
+    				if (possibleDestination.containsKey(message.getCode())) {
+    					propertyDestination = possibleDestination;
+    					propExists = true;
     					break;
-    				}
+    				} else if (propertyDestination == null) propertyDestination = possibleDestination;
     			}
-    		} 
+				if ((propExists && overwrite) || !propExists) {
+					propertyDestination.put(message.getCode(), message.getMessage());
+				}
 
-    		if (existingPropSource == null) {
+    		} else {
     			// no properties files for this locale, create one
-    			File newPropertiesFile = new File(basenames[0] + "_" + messageLocale.toString());
+    			File newPropertiesFile = new File(basenames[0] + "_" + messageLocale.toString() + ".properties");
     			Properties newProperties = new Properties();
     			fileToPropertiesMap.put(newPropertiesFile, newProperties);
     			newProperties.put(message.getCode(), message.getMessage());
@@ -441,9 +443,25 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
     			localeToFilesMap.put(messageLocale, newFilelist);
     		}
     		
-    		
     		message.getCode();
     	}
+    }
+
+	/**
+     * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String, java.util.Locale)
+     */
+    public PresentationMessage getPresentation(String key, Locale forLocale) {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+
+	/**
+     * @see org.openmrs.messagesource.MutableMessageSource#getPresentationsInLocale(java.util.Locale)
+     */
+    public Collection<PresentationMessage> getPresentationsInLocale(
+            Locale locale) {
+	    // TODO Auto-generated method stub
+	    return null;
     }
 
 }

@@ -25,6 +25,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.PresentationMessage;
+import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
@@ -101,6 +102,7 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 * 
 	 * @see org.openmrs.message.MessageSourceService#publishProperties(java.util.Properties,
 	 *      java.lang.String, java.lang.String, java.lang.String)
+	 * @deprecated use {@link #merge(MutableMessageSource, boolean)} instead
 	 */
 	public void publishProperties(Properties props, String locale,
 	        String namespace, String name, String version) {
@@ -186,6 +188,34 @@ public class MessageSourceServiceImpl implements MessageSourceService {
      */
     public void merge(MutableMessageSource fromSource, boolean overwrite) {
     	activeMessageSource.merge(fromSource, overwrite);
+    }
+
+	/**
+     * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String, java.util.Locale)
+     */
+    public PresentationMessage getPresentation(String key, Locale forLocale) {
+    	return activeMessageSource.getPresentation(key, forLocale);
+    }
+
+	/**
+     * @see org.openmrs.messagesource.MutableMessageSource#getPresentationsInLocale(java.util.Locale)
+     */
+    public Collection<PresentationMessage> getPresentationsInLocale(Locale locale) {
+    	return activeMessageSource.getPresentationsInLocale(locale);
+    }
+
+	/**
+     * @see org.springframework.context.HierarchicalMessageSource#getParentMessageSource()
+     */
+    public MessageSource getParentMessageSource() {
+    	return activeMessageSource.getParentMessageSource();
+    }
+
+	/**
+     * @see org.springframework.context.HierarchicalMessageSource#setParentMessageSource(org.springframework.context.MessageSource)
+     */
+    public void setParentMessageSource(MessageSource parent) {
+    	activeMessageSource.setParentMessageSource(parent);
     }
 
 }
