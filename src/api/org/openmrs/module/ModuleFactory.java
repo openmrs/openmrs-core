@@ -471,6 +471,12 @@ public class ModuleFactory {
 					                .getModuleId()));
 					as.setGlobalProperty(gp);
 				}
+				catch (Exception e) {
+					// pass over errors because this doesn't really concern startup
+					// passing over this also allows for multiple of the same-named modules
+					// to be loaded in junit tests that are run within one session
+					log.debug("Got an error when trying to set the global property on module startup", e);
+				}
 				finally {
 					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 				}

@@ -23,6 +23,11 @@
         <fileset refid="lib.files" />
 	</path>
 	
+	<!-- Every java and xml file in the test directory -->
+	<fileset id="test.files" dir="${test.dir}" description="All files in /test/">
+		<include name="**/*" />
+	</fileset>
+	
 	<!-- Base definitions (cannot be overwritten by user property file) -->
 	<property file="build.properties" />
 
@@ -162,6 +167,7 @@
 	<target name="package-all" depends="package-api,package-api-tests,package-web-src"
 		description="packages api, test, and web jars for use in modules"/>
 	
+	<!-- the api package will contain test classes unless a "ant clean" is done right before -->
 	<target name="package-api" depends="compile-api" description="create api jar">
 		<mkdir dir="${dist.dir}" />
 		<jar destfile="${dist.dir}/${openmrs.api.name}">
@@ -184,8 +190,11 @@
 			<fileset dir="${build.dir}">
 				<include name="**/*"/>
 				<exclude name="**/web/**" />
-				<exclude name="**/test/**" />
-				<exclude name="log4j.xml" />
+				<exclude name="junit*/" /> <!-- the junit built files -->
+				<exclude name="**/*Test.class" />
+				<exclude name="**/include/" /> <!-- to skip all xml and omod files -->
+				<exclude name="**/test/" />
+				<exclude name="log4j*" />
 			</fileset>
 		</jar>
 	</target>
@@ -215,8 +224,8 @@
 		</javac>
 
 		<!-- move files over that are required for modules to use this test-openmrs-api*.jar file -->
-		<copy todir="${build.dir}/org/openmrs/test/testutil" file="${test.dir}/api/org/openmrs/test/testutil/TestingApplicationContext.xml" />
-		<copy todir="${build.dir}/org/openmrs/test/include" file="${test.dir}/api/org/openmrs/test/include/initialInMemoryTestDataSet.xml" />
+		<copy todir="${build.dir}/org/openmrs/test/" file="${test.dir}/api/org/openmrs/test/TestingApplicationContext.xml" />
+		<copy todir="${build.dir}/org/openmrs/include" file="${test.dir}/api/org/openmrs/include/initialInMemoryTestDataSet.xml" />
 		
 		<!-- copy the extra files to the build dir in case an ant-clean was just done -->
 		<copy todir="${build.dir}">
@@ -235,12 +244,12 @@
 				<attribute name="Class-Path" value="tests-${openmrs.api.name}" />
 			</manifest>
 			<fileset dir="${build.dir}">
-				<exclude name="**/web/test/*.class" />
-				<include name="**/test/**/*.class" />
-				<include name="org/openmrs/test/include/*.xml" />
+				<exclude name="**/web/*" />
+				<include name="**/**/*Test.class" />
+				<include name="org/openmrs/include/*.xml" />
 			</fileset>
 			<!-- Put this xml in a separate fileset so that its in the root of the jar file -->
-			<fileset file="${build.dir}/org/openmrs/test/testutil/TestingApplicationContext.xml" />
+			<fileset file="${build.dir}/org/openmrs/test/TestingApplicationContext.xml" />
 		</jar>
 	</target>
 
@@ -555,16 +564,16 @@
 			<pathelement location="${dist.dir}/${openmrs.api.name}"/>
 		</path>
 		
-        <junit printsummary="yes" dir="${junit-tests.dir}" maxmemory="256M" fork="yes" forkmode="perBatch">
+        <junit dir="${junit-tests.dir}" maxmemory="256M" fork="yes" forkmode="perBatch" newenvironment="true">
 			<classpath refid="junit-path"/>
-			<formatter type="plain"/>
-			<formatter type="xml"/>
+        	<sysproperty key="diffFileInput" value="--"/> <!-- put here so this property isn't printed and wasting space -->
+			<formatter type="brief"/>
+        	<formatter type="xml"/>
             <batchtest todir="${junit-tests.dir}" haltonfailure="no">
 				<fileset dir="${build.dir}">
 					<include name="**/*Test.class" />
-					<exclude name="**/*BaseContextSensitiveTest.class" />
-					<exclude name="**/*BaseModuleContextSensitiveTest.class" />
-					<exclude name="org/openmrs/web/taglib/SummaryTest.class" />
+					<exclude name="**/SummaryTest.class" />
+					<exclude name="**/test/*" /> <!-- util classes used by junit -->
 				</fileset>
 			</batchtest>
 		</junit>
