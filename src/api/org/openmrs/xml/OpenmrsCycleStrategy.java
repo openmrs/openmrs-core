@@ -52,7 +52,7 @@ public class OpenmrsCycleStrategy extends CycleStrategy {
 	 * @param isShortSerialization
 	 */
 	public OpenmrsCycleStrategy(boolean isShortSerialization) {
-		super();
+		this();
 		this.shortSerialization = isShortSerialization;
 	}
 
