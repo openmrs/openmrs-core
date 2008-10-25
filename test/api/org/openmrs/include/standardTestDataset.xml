@@ -170,6 +170,8 @@
   <encounter_type encounter_type_id="1" name="Scheduled" description="Scheduled Visit" creator="1" date_created="2005-02-24 00:00:00.0" retired="false"/>
   <encounter_type encounter_type_id="2" name="Emergency" description="Emergency visit" creator="1" date_created="2005-02-24 00:00:00.0" retired="false"/>
   <encounter_type encounter_type_id="6" name="Laboratory" description="Visit to the laboratory" creator="1" date_created="2008-08-15 15:39:55.0" retired="true" retired_by="1" date_retired="2008-08-15 00:00:00.0" retire_reason="for testing"/>
+  <field_type field_type_id="1" name="some field type" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
+  <field_type field_type_id="2" name="some field type 2" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
   <field field_id="1" name="Some concept" description="This is a test field" field_type="1" concept_id="1" table_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:03:31.0" retired="false"/>
   <form form_id="1" name="Basic Form" version="0.1" build="0" published="0" description="Test form" template="" xslt="" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false" retired_reason=""/>
   <form_field form_field_id="2" form_id="1" field_id="1" field_number="1" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:11:53.0" creator="1" date_created="2006-07-18 11:04:36.0" sort_weight="10.0"/>

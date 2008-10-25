@@ -391,6 +391,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param site
 	 * @param start
 	 * @param count
+	 * @deprecated use the mrngen module now
 	 */
 	public void mrnGeneratorLog(String site, Integer start, Integer count);
 
@@ -398,6 +399,8 @@ public interface AdministrationService extends OpenmrsService {
 	 * To be deprecated when the mrn generator module is completed
 	 * 
 	 * @return
+	 * 
+	 * @deprecated use the mrngen module now
 	 */
 	@Transactional(readOnly=true)
 	public Collection<?> getMRNGeneratorLog();
@@ -422,6 +425,9 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param propertyName property key to look for
 	 * @return value of property returned or null if none
 	 * @see #getGlobalProperty(String, String)
+	 * 
+	 * @should not fail with null propertyName
+	 * @should get property value given valid property name
 	 */
 	@Transactional(readOnly=true)
 	public String getGlobalProperty(String propertyName) throws APIException;
@@ -437,6 +443,9 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param propertyName property key to look for
 	 * @param defaultValue value to return if propertyName is not found
 	 * @return value of propertyName property or defaultValue if none
+	 * 
+	 * @should return default value if property name does not exist
+	 * @should not fail with null default value
 	 */
 	@Transactional(readOnly=true)
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException;
@@ -445,6 +454,8 @@ public interface AdministrationService extends OpenmrsService {
 	 * Get a list of all global properties in the system
 	 * 
 	 * @return list of global properties
+	 * 
+	 * @should return all global properties in the database
 	 */
 	@Transactional(readOnly=true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_GLOBAL_PROPERTIES)
@@ -464,6 +475,10 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param props GlobalProperty objects to save
 	 * @return the saved global properties
+	 * 
+	 * @should save all global properties to the database
+	 * @should not fail with empty list
+	 * @should delete property from database if not in list
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props) throws APIException;
@@ -478,6 +493,8 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param globalProperty the global property to delete/remove from the database
 	 * @throws APIException
+	 * 
+	 * @should delete global property from database
 	 */
 	@Authorized(OpenmrsConstants.PRIV_PURGE_GLOBAL_PROPERTIES)
 	public void purgeGlobalProperty(GlobalProperty globalProperty) throws APIException;
@@ -500,6 +517,9 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param gp global property to save
 	 * @return the saved global property
 	 * @throws APIException
+	 * 
+	 * @should create global property in database
+	 * @should overwrite global property if exists
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES)
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException;
@@ -514,6 +534,9 @@ public interface AdministrationService extends OpenmrsService {
 	 */
 	public void addGlobalProperty(String propertyName, String propertyValue);
 
+	/**
+	 * @deprecated use {@link #saveGlobalProperty(GlobalProperty)}
+	 */
 	public void addGlobalProperty(GlobalProperty gp);
 	
 	/**
@@ -558,6 +581,8 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param selectOnly
 	 * @return ResultSet
 	 * @throws APIException
+	 * 
+	 * @should execute sql containing group by
 	 */
 	// TODO Authorization?!?
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException;
@@ -568,6 +593,8 @@ public interface AdministrationService extends OpenmrsService {
      * Returns null if no implementation id has been successfully set yet
      * 
      * @return ImplementationId object that is this implementation's unique id
+     * 
+     * @should return null if no implementation id is defined yet
      */
 	@Transactional(readOnly=true)
 	public ImplementationId getImplementationId() throws APIException;
@@ -577,6 +604,9 @@ public interface AdministrationService extends OpenmrsService {
      * 
      * @param implementationId the ImplementationId to save
      * @throws APIException
+     * 
+     * @should create implementation id in database
+     * @should overwrite implementation id in database if exists
      */
     public void setImplementationId(ImplementationId implementationId) throws APIException;
     
@@ -586,6 +616,8 @@ public interface AdministrationService extends OpenmrsService {
      * {@link OpenmrsConstants#GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST}.
      * 
      * @return list of allowed locales
+     * 
+     * @should return at least one locale if no locales defined in database yet
      */
     @Transactional(readOnly=true)
 	public List<Locale> getAllowedLocales();
@@ -598,6 +630,11 @@ public interface AdministrationService extends OpenmrsService {
      * filtered by the allowed locales (as indicated by this AdministrationService).
      * 
      * @return list of allowed presentation locales
+     * 
+     * TODO change this return type to list?
+     * 
+     * @should return at least one locale if no locales defined in database yet
+     * @should not return more locales than message source service locales
      */
     @Transactional(readOnly=true)
 	public Set<Locale> getPresentationLocales();

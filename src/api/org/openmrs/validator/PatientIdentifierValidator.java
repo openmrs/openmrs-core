@@ -70,7 +70,7 @@ public class PatientIdentifierValidator implements Validator {
 	 * @should fail validation if PatientIdentifier is null
 	 * @should pass validation if PatientIdentifier is voided
 	 * @should fail validation if another patient has a matching identifier of the same type
-	 * @should see validateIdentifier(PatientIdentifierType, String)
+	 * @see #validateIdentifier(String, PatientIdentifierType)
 	 */
 	public static void validateIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
 
@@ -105,8 +105,8 @@ public class PatientIdentifierValidator implements Validator {
 	 * 
 	 * @should fail validation if PatientIdentifierType is null
 	 * @should fail validation if identifier is blank
-	 * @should see checkIdentifierAgainstFormat(String, String)
-	 * @should see checkIdentifierAgainstValidator(String, IdentifierValidator);
+	 * @see #checkIdentifierAgainstFormat(String, String)
+	 * @see #checkIdentifierAgainstValidator(String, IdentifierValidator)
 	 */
 	public static void validateIdentifier(String identifier, PatientIdentifierType pit) throws PatientIdentifierException {
 		

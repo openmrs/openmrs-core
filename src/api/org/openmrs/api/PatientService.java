@@ -276,6 +276,9 @@ public interface PatientService extends OpenmrsService {
 	 * @param PatientIdentifierType identifier type to create or update
 	 * @return the saved type
 	 * @throws APIException
+	 * 
+	 * @should create new type 
+	 * @should update existing type
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType savePatientIdentifierType(
@@ -391,6 +394,8 @@ public interface PatientService extends OpenmrsService {
 	 * 
 	 * @param PatientIdentifierType to purge from the database
 	 * @throws APIException
+	 * 
+	 * @should delete type from database
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_IDENTIFIER_TYPES })
 	public void purgePatientIdentifierType(

@@ -27,9 +27,9 @@ public class PatientIdentifierType implements java.io.Serializable {
 	private Integer patientIdentifierTypeId;
 	private String name;
 	private String format;
-	private Boolean required;
+	private Boolean required = Boolean.FALSE;
 	private String formatDescription;
-	private Boolean checkDigit;
+	private Boolean checkDigit = Boolean.FALSE;
 	private String description;
 	private Date dateCreated;
 	private User creator;

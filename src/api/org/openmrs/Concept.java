@@ -27,6 +27,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.simpleframework.xml.Attribute;
@@ -35,13 +36,35 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 /**
- * Concept
+ * A Concept object can represent either a question or an answer
+ * to a data point.  That data point is usually an {@link Obs}.
+ * 
+ * A Concept can have multiple names and multiple descriptions 
+ * within one locale and across multiple locales.
+ * 
+ * To save a Concept to the database, first build up the Concept
+ * object in java, then pass that object to the {@link ConceptService}
+ * 
+ * To get a Concept that is stored in the database, call a method
+ * in the {@link ConceptService} to fetch an object.  To get child
+ * objects off of that Concept, further calls to the {@link ConceptService}
+ * or the database are not needed.  e.g. To get the list of answers
+ * that are stored to a concept, get the concept, then call 
+ * {@link Concept#getAnswers()}
+ *   
+ * @see ConceptName
+ * @see ConceptNameTag
+ * @see ConceptDescription
+ * @see ConceptAnswer
+ * @see ConceptSet
+ * @see ConceptMap
+ * @see ConceptService
  */
 @Root
 public class Concept implements java.io.Serializable, Attributable<Concept> {
 
 	public static final long serialVersionUID = 57332L;
-	public Log log = LogFactory.getLog(this.getClass());
+	public static final Log log = LogFactory.getLog(Concept.class);
 
 	// Fields
 
@@ -70,8 +93,6 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 */
 	private Map<Locale, List<ConceptName>> compatibleCache;
 
-	// Constructors
-
 	/** default constructor */
 	public Concept() {
 		names = new HashSet<ConceptName>();
@@ -79,10 +100,21 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		conceptSets = new HashSet<ConceptSet>();
 		descriptions = new HashSet<ConceptDescription>();
 		conceptMappings = new HashSet<ConceptMap>();
-		// conceptNumeric = new ConceptNumeric();
 	}
 
-	/** constructor with id */
+	/** 
+	/**
+	 * Convenience constructor with conceptid to 
+	 * save to {@link #setConceptId(Integer)}.  This 
+	 * effectively creates a concept stub that can be used
+	 * to make other calls.  Because the {@link #equals(Object)}
+	 * and {@link #hashCode()} methods rely on conceptId,
+	 * this allows a stub to masquerade as a full concept
+	 * as long as other objects like {@link #getAnswers()} and
+	 * {@link #getNames()} are not needed/called.
+	 *  
+	 * @param conceptId the concept id to set
+	 */
 	public Concept(Integer conceptId) {
 		this.conceptId = conceptId;
 	}
@@ -109,6 +141,14 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		conceptMappings = cn.getConceptMappings();
 	}
 
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 * 
+	 * @should not fail if given obj has null conceptid
+	 * @should not fail if given obj is null
+	 * @should not fail if concept id is null
+	 * @should confirm two new concept objects are equal
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Concept) {
 			Concept c = (Concept) obj;
@@ -117,6 +157,11 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		return false;
 	}
 
+	/**
+	 * @see java.lang.Object#hashCode()
+	 * 
+	 * @should not fail if concept id is null
+	 */
 	public int hashCode() {
 		if (this.getConceptId() == null)
 			return super.hashCode();
@@ -127,6 +172,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 
 	/**
 	 * @return Returns the non-retired answers.
+	 * 
+	 * @should not return retired answers
+	 * @should not return null if no answers defined
 	 */
 	@ElementList
 	public Collection<ConceptAnswer> getAnswers() {
@@ -138,6 +186,12 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		return newAnswers;
 	}
 
+	/**
+	 * TODO describe use cases
+	 * 
+	 * @param locale
+	 * @return
+	 */
 	public Collection<ConceptAnswer> getSortedAnswers(Locale locale) {
 		Vector<ConceptAnswer> sortedAnswers = new Vector<ConceptAnswer>(
 		        getAnswers());
@@ -146,7 +200,15 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	}
 
 	/**
-	 * @return Returns the answers.
+	 * If <code>includeRetired</code> is true, then the returned
+	 * object is the actual stored list of {@link ConceptAnswer}s
+	 * (which may be null.)
+	 * 
+	 * @param includeRetired true/false whether to also include
+	 * 		the retired answers
+	 * @return Returns the answers for this Concept
+	 * 
+	 * @should return actual answers object if given includeRetired is true
 	 */
 	public Collection<ConceptAnswer> getAnswers(boolean includeRetired) {
 		if (includeRetired == false)
@@ -155,6 +217,8 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	}
 
 	/**
+	 * Set this Concept as having the given <code>answers</code>
+	 * 
 	 * @param answers The answers to set.
 	 */
 	@ElementList
@@ -166,6 +230,10 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * Add the given ConceptAnswer to the list of answers for this Concept
 	 * 
 	 * @param conceptAnswer
+	 * 
+	 * @should add the ConceptAnswer to Concept
+	 * @should not fail if answers list is null
+	 * @should not fail if answers contains ConceptAnswer already
 	 */
 	public void addAnswer(ConceptAnswer conceptAnswer) {
 		if (conceptAnswer != null) {
@@ -185,6 +253,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * 
 	 * @param conceptAnswer answer to remove
 	 * @return true if the entity was removed, false otherwise
+	 * 
+	 * @should not fail if answers is empty
+	 * @should not fail if given answer does not exist in list
 	 */
 	public boolean removeAnswer(ConceptAnswer conceptAnswer) {
 		if (answers != null)
