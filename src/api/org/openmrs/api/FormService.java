@@ -640,6 +640,9 @@ public interface FormService extends OpenmrsService {
 	 * @param fieldType the field type to save
 	 * @return the saved field type
 	 * @throws APIException
+	 * 
+	 * @should create new field type 
+	 * @should update existing field type
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FIELD_TYPES)
 	public FieldType saveFieldType(FieldType fieldType) throws APIException;

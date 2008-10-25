@@ -69,7 +69,7 @@ public class Encounter implements java.io.Serializable {
 	/** 
 	 * Compares two Encounter objects for similarity
 	 * 
-	 * @param obj
+	 * @param obj Encounter object to compare to
 	 * @return boolean true/false whether or not they are the same objects
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 * 

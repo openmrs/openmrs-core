@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <global_property property="a_valid_gp_key" property_value="correct-value"/>
+  <global_property property="another-global-property" property_value="anothervalue"/>
+</dataset>

@@ -113,9 +113,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 		} else {
 			if (!StringUtils.hasText(reason))
 				throw new APIException("Reason is required");
-		cohort.setVoided(true);
-		cohort.setVoidedBy(Context.getAuthenticatedUser());
-		cohort.setVoidReason(reason);
+			cohort.setVoided(true);
+			cohort.setVoidedBy(Context.getAuthenticatedUser());
+			cohort.setVoidReason(reason);
 			return saveCohort(cohort);
 		}
 	}
@@ -125,7 +125,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
      */
     public Cohort addPatientToCohort(Cohort cohort, Patient patient) {
     	if (!cohort.contains(patient)) {
-	    cohort.getMemberIds().add(patient.getPatientId());
+    		cohort.getMemberIds().add(patient.getPatientId());
     		saveCohort(cohort);
     	}
     	return cohort;
@@ -261,10 +261,10 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
     public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
     	
 	    List<CohortDefinitionItemHolder> ret = new ArrayList<CohortDefinitionItemHolder>();
-	    for (CohortDefinitionProvider p : cohortDefinitionProviders.values()) {
+	    for (CohortDefinitionProvider provider : cohortDefinitionProviders.values()) {
 	    	
-	    	log.info("Getting cohort definitions from " + p.getClass());
-	    	ret.addAll(p.getAllCohortDefinitions());
+	    	log.info("Getting cohort definitions from " + provider.getClass());
+	    	ret.addAll(provider.getAllCohortDefinitions());
 	    }
 	    return ret;
     }

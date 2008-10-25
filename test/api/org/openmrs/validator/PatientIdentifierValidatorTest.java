@@ -16,6 +16,7 @@ package org.openmrs.validator;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.openmrs.Location;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.BlankIdentifierException;
@@ -83,11 +84,11 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#validateIdentifier(String, PatientIdentifierType)}
-	 * 		tests that validation fails if the identifier is blank
+	 * @verifies {@link PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)}
+	 * test = should fail validation if identifier is blank
 	 */
 	@Test(expected=BlankIdentifierException.class)
-	public void validateIdentifier_shouldFailValidationIfIdentifierIsBlank() throws Exception {
+	public void checkIdentifierAgainstFormat_shouldFailValidationIfIdentifierIsBlank() throws Exception {
 		PatientIdentifierValidator.validateIdentifier("", new PatientIdentifierType(1));
 	}
 	
@@ -151,6 +152,17 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	 */	@Test
 	public void checkIdentifierAgainstValidator_shouldPassValidationIfValidatorIsNull() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstValidator("7TU-4", null);
+	}
+
+	/**
+	 * @verifies {@link PatientIdentifierValidator#validateIdentifier(String,PatientIdentifierType)}
+	 * test = should fail validation if identifier is blank
+	 */
+	 @Test(expected=BlankIdentifierException.class)
+	public void validateIdentifier_shouldFailValidationIfIdentifierIsBlank()
+			throws Exception {
+		 PatientIdentifier identifier = new PatientIdentifier("", new PatientIdentifierType(1), new Location(1));
+		 PatientIdentifierValidator.validateIdentifier(identifier);
 	}
 
 }

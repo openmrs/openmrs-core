@@ -29,8 +29,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * API methods related to Cohorts and CohortDefinitions
- * A Cohort is a list of patient ids.
- * A CohortDefinition is a search strategy which can be used to arrive at a cohort.
+ * <ul>
+ *   <li>A Cohort is a list of patient ids.</li>
+ *   <li>A CohortDefinition is a search strategy which can be used to arrive at a cohort.
+ *       Therefore, the patients returned by running a CohortDefinition can be different
+ *       depending on the data that is stored elsewhere in the database. 
+ *   </li>
+ * </ul>
  * @see org.openmrs.Cohort
  * @see org.openmrs.cohort.CohortDefinition
  * @see org.openmrs.api.CohortDefinitionProvider
@@ -52,6 +57,9 @@ public interface CohortService extends OpenmrsService {
 	 * @param cohort the cohort to be saved to the database
 	 * @return The cohort that was passed in
 	 * @throws APIException
+	 * 
+	 * @should create new cohorts
+	 * @should update an existing cohort
 	 */
 	@Authorized({OpenmrsConstants.PRIV_ADD_COHORTS, OpenmrsConstants.PRIV_EDIT_COHORTS})
 	public Cohort saveCohort(Cohort cohort) throws APIException;
@@ -77,6 +85,10 @@ public interface CohortService extends OpenmrsService {
 	 * @param reason the reason this cohort is being retired
 	 * @return The cohort that was passed in
 	 * @throws APIException
+	 * 
+	 * @should fail with if reason is null or empty
+	 * @should void cohort
+	 * @should not change an already voided cohort
 	 */
 	@Authorized({OpenmrsConstants.PRIV_DELETE_COHORTS})
 	public Cohort voidCohort(Cohort cohort, String reason) throws APIException;
@@ -86,6 +98,8 @@ public interface CohortService extends OpenmrsService {
 	 * 
 	 * @param cohort the Cohort to completely remove from the database
 	 * @throws APIException
+	 * 
+	 * @should delete cohort from database
 	 */
 	public Cohort purgeCohort(Cohort cohort) throws APIException;
 	
@@ -95,6 +109,8 @@ public interface CohortService extends OpenmrsService {
 	 * @param id
 	 * @return the Cohort with the given primary key, or null if none exists
 	 * @throws APIException
+	 * 
+	 * @should get cohort by id
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS})
@@ -106,6 +122,9 @@ public interface CohortService extends OpenmrsService {
 	 * @param name
 	 * @return the Cohort with the given name, or null if none exists
 	 * @throws APIException
+	 * 
+	 * @should get cohort given a name
+	 * @should get the nonvoided cohort if two exist with same name
 	 */
 	@Authorized({OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS})
 	public Cohort getCohort(String name) throws APIException;
@@ -115,6 +134,9 @@ public interface CohortService extends OpenmrsService {
 	 * 
 	 * @return All Cohorts in the database (not including voided ones)
 	 * @throws APIException
+	 * 
+	 * @should get all cohorts in database
+	 * @should not return any voided cohorts
 	 */
 	@Authorized({OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS})
 	public List<Cohort> getAllCohorts() throws APIException;
@@ -125,6 +147,8 @@ public interface CohortService extends OpenmrsService {
 	 * @param includeVoided whether or not to include voided Cohorts
 	 * @return All Cohorts, maybe including the voided ones
 	 * @throws APIException
+	 * 
+	 * @should return all cohorts and voided
 	 */
 	@Authorized({OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS})
 	public List<Cohort> getAllCohorts(boolean includeVoided) throws APIException;
@@ -142,8 +166,11 @@ public interface CohortService extends OpenmrsService {
 	 * Returns all Cohorts in the case of null or empty input 
 	 * 
 	 * @param nameFragment
-	 * @return
+	 * @return list of cohorts matching the name fragment
 	 * @throws APIException
+	 * 
+	 * @should never return null
+	 * @should match cohorts by partial name
 	 */
 	public List<Cohort> getCohorts(String nameFragment) throws APIException;
 	
@@ -153,6 +180,9 @@ public interface CohortService extends OpenmrsService {
 	 * @param patient
 	 * @return All non-voided Cohorts that contain the given patient
 	 * @throws APIException
+	 * 
+	 * @should not return voided cohorts
+	 * @should return cohorts that have given patient
 	 */
 	@Authorized({OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS})
 	public List<Cohort> getCohortsContainingPatient(Patient patient) throws APIException;
@@ -171,10 +201,14 @@ public interface CohortService extends OpenmrsService {
 	 * Adds a new patient to a Cohort.
 	 * If the patient is not already in the Cohort, then they are added, and the Cohort is saved, marking it as changed.
 	 * 
-	 * @param cohort
-	 * @param patient
-	 * @return The cohort that was passed in
+	 * @param cohort the cohort to receive the given patient
+	 * @param patient the patient to insert into the cohort
+	 * @return The cohort that was passed in with the new patient in it
 	 * @throws APIException
+	 * 
+	 * @should add a patient and save the cohort
+	 * @should add a patient and insert the cohort to database
+	 * @should not fail if cohort already contains patient
 	 */
 	@Authorized({OpenmrsConstants.PRIV_EDIT_COHORTS})
 	public Cohort addPatientToCohort(Cohort cohort, Patient patient) throws APIException;
@@ -183,10 +217,13 @@ public interface CohortService extends OpenmrsService {
 	 * Removes a patient from a Cohort.
 	 * If the patient is in the Cohort, then they are removed, and the Cohort is saved, marking it as changed.
 	 * 
-	 * @param cohort
-	 * @param patient
-	 * @return The cohort that was passed in
+	 * @param cohort the cohort containing the given patient
+	 * @param patient the patient to remove from the given cohort
+	 * @return The cohort that was passed in with the patient removed
 	 * @throws APIException
+	 * 
+	 * @should not fail if cohort doesn't contain patient
+	 * @should save cohort after removing patient
 	 */
 	@Authorized({OpenmrsConstants.PRIV_EDIT_COHORTS})
 	public Cohort removePatientFromCohort(Cohort cohort, Patient patient) throws APIException;
@@ -194,58 +231,93 @@ public interface CohortService extends OpenmrsService {
 	/**
 	 * Set the given CohortDefinitionProviders as the providers for
 	 * this service.  These are set via spring injection in 
-	 * /metadata/spring/applicationContext-service.xml
+	 * /metadata/spring/applicationContext-service.xml .
 	 * 
-	 * @param providerClassMap
+	 * This method acts more like an "add" than a "set".  All entries in
+	 * the <code>providerClassMap</code> are added to the already
+	 * set list of providers.  This allows multiple Spring application
+	 * context files to call this method with their own providers
+	 * 
+	 * @param providerClassMap mapping from CohortDefinition to its provider
+	 * 
+	 * @should not overwrite previously set providers if called twice
 	 */
 	@Transactional(readOnly=true)
-	public void setCohortDefinitionProviders(Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap);
+	public void setCohortDefinitionProviders(Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap) throws APIException;
 	
 	/**
-	 * Adds the given cohort definition to this service's providers
+	 * Adds the given cohort definition provider to this service's 
+	 * list of providers
 	 * 
-	 * @param cohortDefClass
-	 * @param cohortDef
+	 * @param cohortDefClass the type of cohort  definition that this provider works on
+	 * @param cohortDef the provider
 	 * @throws APIException
+	 * 
+	 * @should overwrite provider if duplicate CcohortDefinition class
 	 */
 	@Transactional(readOnly=true)
 	public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> cohortDefClass, CohortDefinitionProvider cohortDef) throws APIException;
 	
 	/**
-	 * Gets all the providers registered to this service
+	 * Gets all the providers registered to this service.  Will return
+	 * an empty list instead of null.
 	 * 
 	 * @return this service's providers
+	 * @throws APIException
 	 * 
 	 * @see #setCohortDefinitionProviders(Map)
+	 * 
+	 * @should not return null if not providers have been set
 	 */
 	@Transactional(readOnly=true)
-	public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders();
+	public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders() throws APIException;
+	
+	/**
+	 * Removing any mapping from CohortDefinition to provider in
+	 * this server where the given <code>providerClass</class> is the
+	 * CohortDefinitionProvider
+	 * 
+	 * @param providerClass the provider to remove 
+	 * @throws APIException
+	 * 
+	 * @should not fail if providerClass not set
+	 */
+	@Transactional(readOnly=true)
+	public void removeCohortDefinitionProvider(Class<? extends CohortDefinitionProvider> providerClass) throws APIException;
+	
+	/**
+	 * Get every cohort definition that every registered 
+	 * provider knows about. 
+	 * 
+	 * This is typically used for selection by an end user, and so 
+	 * a list of Holders are returned instead of a list of definitions
+	 * so that the system knows which provider the definition came from
+	 * 
+	 * @return a list of CohortDefinitionItemHolder defined
+	 * @throws APIException
+	 */
+	@Transactional(readOnly=true)
+	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() throws APIException;
 	
 	@Transactional(readOnly=true)
-	public void removeCohortDefinitionProvider(Class<? extends CohortDefinitionProvider> providerClass);
+	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class<? extends CohortDefinitionProvider> providerClass) throws APIException;
 	
 	@Transactional(readOnly=true)
-	public List<CohortDefinitionItemHolder> getAllCohortDefinitions();
-	
-	@Transactional(readOnly=true)
-	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class<? extends CohortDefinitionProvider> providerClass);
-	
-	@Transactional(readOnly=true)
-	public CohortDefinition getCohortDefinition(Class<CohortDefinition> clazz, Integer id);
+	public CohortDefinition getCohortDefinition(Class<CohortDefinition> clazz, Integer id) throws APIException;
 
 	@Transactional(readOnly=true)
-	public CohortDefinition getCohortDefinition(String cohortKey);
+	public CohortDefinition getCohortDefinition(String cohortKey) throws APIException;
 
 	@Transactional(readOnly=true)
-	public CohortDefinition saveCohortDefinition(CohortDefinition definition);
+	public CohortDefinition saveCohortDefinition(CohortDefinition definition) throws APIException;
 	
 	@Transactional
-	public void purgeCohortDefinition(CohortDefinition definition);
+	public void purgeCohortDefinition(CohortDefinition definition) throws APIException;
 	
 	@Transactional(readOnly=true)
-	public Cohort evaluate(CohortDefinition definition, EvaluationContext evalContext);
+	public Cohort evaluate(CohortDefinition definition, EvaluationContext evalContext) throws APIException;
 	
 	@Transactional(readOnly=true)
-	public CohortDefinition getAllPatientsCohortDefinition();
+	public CohortDefinition getAllPatientsCohortDefinition() throws APIException;
 
 }

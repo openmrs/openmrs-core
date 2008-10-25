@@ -625,6 +625,9 @@ implements AdministrationService, GlobalPropertyListener {
 	 */
 	public String getGlobalProperty(String propertyName) throws APIException {
 		// This method should not have any authorization check
+		if (propertyName == null)
+			return null;
+		
 		return dao.getGlobalProperty(propertyName);
 	}
 		

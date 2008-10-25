@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Locale;
 
 import org.junit.Test;
-import org.openmrs.test.ConceptNameTest;
 
 
 /**

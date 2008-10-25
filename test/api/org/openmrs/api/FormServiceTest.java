@@ -34,6 +34,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
  * TODO clean up and finish this test for all methods in FormService
+ * 
+ * @see FormService
  */
 public class FormServiceTest extends BaseContextSensitiveTest {
 	
@@ -60,7 +62,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		form1.setVersion(version1);
 		form1.setDescription(descript1);
 		
-		formService.createForm(form1);
+		formService.saveForm(form1);
 		
 		//testing get form 
 		
@@ -74,7 +76,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		form2.setVersion(version2);
 		form2.setDescription(descript2);
 		
-		formService.updateForm(form2);
+		formService.saveForm(form2);
 		
 		//testing correct updation
 		
@@ -98,7 +100,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		//testing deletion
 		
-		formService.deleteForm(form2);
+		formService.purgeForm(form2);
 		//formService.deleteForm(form1); //deleting a deleted form
 	}
 	
@@ -114,11 +116,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		//testing creation
 		
-		List<Form> forms = formService.getForms();
+		List<Form> forms = formService.getAllForms();
 		assertNotNull(forms);
 		assertTrue(forms.size() > 2);
 		
-		List<Field> fields = formService.getFields();
+		List<Field> fields = formService.getAllFields();
 		assertNotNull(fields);
 		assertTrue(fields.size() > 2);
 		
@@ -214,7 +216,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Concept concept1  = conceptService.getConcept(1);
 		String  name1     = "name1";
 		String  descript1 = "descript1";
-		FieldType fieldtype1 = formService.getFieldTypes().get(0);
+		FieldType fieldtype1 = formService.getAllFieldTypes().get(0);
 		String table1 = "table1";
 		String attr1 = "attr1";
 		Boolean multi1 = true;
@@ -229,7 +231,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		field1.setAttributeName(attr1);
 		field1.setSelectMultiple(multi1);
 		
-		formService.updateField(field1);
+		formService.saveField(field1);
 		
 		//testing update
 		
@@ -238,7 +240,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Concept concept2  = conceptService.getConcept(2);
 		String  name2     = "name2";
 		String  descript2 = "descript2";
-		FieldType fieldtype2 = formService.getFieldTypes().get(1);
+		FieldType fieldtype2 = formService.getAllFieldTypes().get(1);
 		String table2 = "table2";
 		String attr2 = "attr2";
 		Boolean multi2 = false;
@@ -251,7 +253,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		field2.setAttributeName(attr2);
 		field2.setSelectMultiple(multi2);
 		
-		formService.updateField(field2);
+		formService.saveField(field2);
 		
 		//testing differences
 		
@@ -269,8 +271,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		//testing deletion
 		
-		formService.deleteField(field3);
-		//formService.deleteField(field1);
+		formService.saveField(field3);
+		formService.purgeField(field3);
 		
 		assertNull(formService.getField(field3.getFieldId()));
 	}
@@ -319,13 +321,12 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * Make sure that multiple forms are returned if a field is on a form
 	 * more than once
 	 * 
-	 * @verifies {@link FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
-	 * 	test = should get multiple of the same form by field
-	 * 
-	 * @throws Exception
+	 * @verifies {@link FormService#getForms(String,Boolean,Collection<QEncounterType;>,Boolean,Collection<QFormField;>,Collection<QFormField;>,Collection<QField;>)}
+	 * test = should get multiple of the same form by field
 	 */
 	@Test
-	public void shouldGetMultipleOfTheSameFormByField() throws Exception {
+	public void getForms_shouldGetMultipleOfTheSameFormByField()
+			throws Exception {
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
 		
@@ -338,5 +339,43 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(3, forms.size());
 	}
-	
+
+	/**
+	 * @verifies {@link FormService#saveFieldType(FieldType)}
+	 * test = should create new field type
+	 */
+	@Test
+	public void saveFieldType_shouldCreateNewFieldType() throws Exception {
+		FieldType fieldType = new FieldType();
+		
+		fieldType.setName("testing");
+		fieldType.setDescription("desc");
+		fieldType.setIsSet(true);
+		
+		FormService formService = Context.getFormService();
+		
+		formService.saveFieldType(fieldType);
+		
+		Assert.assertNotNull(formService.getFieldType(fieldType.getFieldTypeId()));
+	}
+
+	/**
+	 * @verifies {@link FormService#saveFieldType(FieldType)}
+	 * test = should update existing field type
+	 */
+	@Test
+	public void saveFieldType_shouldUpdateExistingFieldType() throws Exception {
+		FormService formService = Context.getFormService();
+		
+		FieldType fieldType = formService.getFieldType(1);
+		Assert.assertNotNull(fieldType);
+		
+		fieldType.setName("SOME OTHER NEW NAME");
+		
+		formService.saveFieldType(fieldType);
+		
+		FieldType refetchedFieldType = formService.getFieldType(1);
+		Assert.assertEquals("SOME OTHER NEW NAME", refetchedFieldType.getName());
+	}
+
 }
