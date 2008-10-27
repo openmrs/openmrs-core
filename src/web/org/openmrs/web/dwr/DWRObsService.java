@@ -148,11 +148,8 @@ public class DWRObsService {
 			if (locationId != null)
 				Context.getLocationService().getLocation(locationId);
 			if ( location == null ) {
-				location = Context.getLocationService().getLocation("Unknown Location");
-				if (location == null)
-					location = Context.getLocationService().getLocation("Unknown");
-				if (location == null)
-					location = Context.getLocationService().getLocation(1);
+				location = Context.getLocationService().getDefaultLocation();
+
 			}
 			obs.setLocation(location);
 		}

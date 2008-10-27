@@ -347,7 +347,7 @@ public class PatientFormController extends PersonFormController {
 				boolean isError = false;
 				
 				try {
-					Context.getPatientService().updatePatient(patient);	
+					Context.getPatientService().savePatient(patient);	
 				} catch ( InvalidIdentifierFormatException iife ) {
 					log.error(iife);
 					patient.removeIdentifier(iife.getPatientIdentifier());
@@ -375,12 +375,14 @@ public class PatientFormController extends PersonFormController {
 					isError = true;
 				}
 				
+				
+				// If patient is dead 
 				if ( patient.getDead() && !isError ) {
 					log.debug("Patient is dead, so let's make sure there's an Obs for it");
 					// need to make sure there is an Obs that represents the patient's cause of death, if applicable
 
-					String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-					Concept causeOfDeath = Context.getConceptService().getConceptByIdOrName(codProp);
+					String causeOfDeathConceptId = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+					Concept causeOfDeath = Context.getConceptService().getConcept(causeOfDeathConceptId);
 
 					if ( causeOfDeath != null ) {
 						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath, false);
@@ -395,17 +397,17 @@ public class PatientFormController extends PersonFormController {
 									
 									obsDeath = obssDeath.iterator().next();
 									
-								} else {
+								} 
+								else {
 									// no cause of death obs yet, so let's make one
 									log.debug("No cause of death yet, let's create one.");
 									
 									obsDeath = new Obs();
 									obsDeath.setPerson(patient);
 									obsDeath.setConcept(causeOfDeath);
-									Location loc = Context.getEncounterService().getLocationByName("Unknown Location");
-									if ( loc == null ) loc = Context.getEncounterService().getLocation(new Integer(1));
+									Location location = Context.getLocationService().getDefaultLocation();
 									// TODO person healthcenter //if ( loc == null ) loc = patient.getHealthCenter();
-									if ( loc != null ) obsDeath.setLocation(loc);
+									if ( location != null ) obsDeath.setLocation(location);
 									else log.error("Could not find a suitable location for which to create this new Obs");
 								}
 								
@@ -558,7 +560,9 @@ public class PatientFormController extends PersonFormController {
 
 		String patientVariation = "";
 		
-		Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
+		Concept reasonForExitConcept = 
+			Context.getConceptService().getConceptByIdOrName(Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
+		
 		if ( reasonForExitConcept != null && patient.getPatientId() != null) {
 			Set<Obs> patientExitObs = Context.getObsService().getObservations(patient, reasonForExitConcept, false);
 			if ( patientExitObs != null ) {
@@ -570,7 +574,8 @@ public class PatientFormController extends PersonFormController {
 					if ( exitReason != null && exitDate != null ) {
 						patientVariation = "Exited";
 					}
-				} else {
+				} 
+				else {
 					log.error("Too many reasons for exit - not putting data into model");
 				}
 			}

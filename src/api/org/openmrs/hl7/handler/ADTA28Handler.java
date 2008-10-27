@@ -232,18 +232,19 @@ public class ADTA28Handler implements Application {
 					pi.setIdentifierType(pit);
 					pi.setIdentifier(hl7PatientId);
 					
-					// Add location of "Unknown Location"				
-					String unknownLocation = "Unknown Location" ;
-					Location location = 
-						Context.getEncounterService().getLocationByName(unknownLocation);
+					// Get default location
+					Location location = Context.getLocationService().getDefaultLocation();
 					if (location == null) {
-						throw new HL7Exception("Cannot find location: " + unknownLocation);
+						throw new HL7Exception("Cannot find default location");
 					}
 					pi.setLocation(location);
+
+					
 					try {
 						Context.getPatientService().checkPatientIdentifier(pi);
 						goodIdentifiers.add(pi);
-					} catch (PatientIdentifierException ex) {
+					} 
+					catch (PatientIdentifierException ex) {
 						log.warn("Patient identifier in PID is invalid: " + pi, ex);
 					}
 
@@ -252,7 +253,9 @@ public class ADTA28Handler implements Application {
 							+ hl7PatientId + "' for assigning authority '"
 							+ assigningAuthority + "'", e);
 				}
-			} else {
+			} 
+			
+			else {
 				log.debug("PID contains identifier with no assigning authority");
 				continue;
 			}
