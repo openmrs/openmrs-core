@@ -3,7 +3,7 @@
 <!-- ** Ant build script for OpenMRS                          ** -->
 <!-- **                                                       ** -->
 <!-- *********************************************************** -->
-<project name="OpenMRS-trunk" default="dist">
+<project name="OpenMRS-malawi" default="dist">
 
 	<tstamp>
 		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" />
@@ -270,8 +270,13 @@
 	-->
     <target name="deploy" depends="package-web" if="tomcat.home" description="Move war into the tomcat's webapps directory - ">
 		<echo message="Deploying webapp to Tomcat.  NOTE: The 'deploy' target is not working as expected yet."/>
-        <war src="${dist.dir}/${webapp.name}.war"
+    	<!--
+        <unwar src="${dist.dir}/${webapp.name}.war"
             dest="${tomcat.home}/webapps/${webapp.name}"/>
+    	-->
+    	<copy todir="${tomcat.home}/webapps" file="${dist.dir}/${webapp.name}.war"/>
+    	
+    	
     </target>
 	
 	<target name="undeploy" if="tomcat.home" description="undeploy war file to servlet container's deployment dir">
