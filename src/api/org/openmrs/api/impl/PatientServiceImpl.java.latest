@@ -44,7 +44,10 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
+import org.openmrs.api.InvalidCheckDigitException;
+import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.MissingRequiredIdentifierException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
@@ -56,9 +59,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.patient.IdentifierValidator;
+import org.openmrs.patient.UnallowedIdentifierException;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.validator.PatientIdentifierValidator;
 
 /**
  * Default implementation of the patient service.  This class should
@@ -244,10 +247,82 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 	/**
 	 * @see org.openmrs.api.PatientService#checkPatientIdentifier(org.openmrs.PatientIdentifier)
-	 * @deprecated use {@link PatientIdentifierValidator.validate(PatientIdentifier)}
 	 */
-	public void checkPatientIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
-		PatientIdentifierValidator.validateIdentifier(pi);
+	public void checkPatientIdentifier(PatientIdentifier pi)
+	        throws PatientIdentifierException {
+		
+		// skip and remove invalid/empty identifiers
+		if (pi == null)
+			throw new BlankIdentifierException("Identifier cannot be null or blank",
+			                                   pi);
+		else if (pi.getIdentifier() == null)
+			throw new BlankIdentifierException("Identifier cannot be null or blank",
+			                                   pi);
+		else if (pi.getIdentifier().length() == 0)
+			throw new BlankIdentifierException("Identifier cannot be null or blank",
+			                                   pi);
+		
+		// do not do any more checks if this identifier is voided
+		if (pi.isVoided() == false) {
+			
+			// check is already in use by another patient
+			Patient p = identifierInUse(pi);
+			if (p != null) {
+				throw new IdentifierNotUniqueException("Identifier "
+				        + pi.getIdentifier() + " already in use by patient #"
+				        + p.getPatientId(), pi);
+			}
+	
+			// also validate regular expression - if it exists
+			PatientIdentifierType pit = pi.getIdentifierType();
+			String identifier = pi.getIdentifier();
+	
+			String regExp = pit.getFormat();
+			if ( regExp != null ) {
+				if ( regExp.length() > 0 ) {
+					// if this ID has a valid corresponding regular expression,
+					// check against it
+					log.debug("Trying to match " + identifier + " and "
+					        + regExp);
+					if ( !identifier.matches(regExp) ) {
+						log.debug("The two DO NOT match");
+						if ( pit.getFormatDescription() != null ) {
+							if (pit.getFormatDescription().length() > 0)
+								throw new InvalidIdentifierFormatException("Identifier ["
+								                                                   + identifier
+								                                                   + "] does not match required format: "
+								                                                   + pit.getFormatDescription(),
+								                                           pi);
+							else
+								throw new InvalidIdentifierFormatException("Identifier ["
+								                                                   + identifier
+								                                                   + "] does not match required format: "
+								                                                   + pit.getFormat(),
+								                                           pi);
+						} else {
+							throw new InvalidIdentifierFormatException("Identifier ["
+							                                                   + identifier
+							                                                   + "] does not match required format: "
+							                                                   + pit.getFormat(),
+							                                           pi);
+						}
+					} else {
+						log.debug("The two match!!");
+					}
+				}
+			}
+	
+			// validate identifier
+			if(pit.hasValidator()){
+				IdentifierValidator piv = getIdentifierValidator(pit.getValidator());
+				try{
+					if(!piv.isValid(identifier))
+						throw new InvalidCheckDigitException("Invalid check digit for identifier: " + identifier, pi);
+				}catch(UnallowedIdentifierException e){
+					throw new InvalidCheckDigitException("Identifier " + identifier +" is not appropriate for validation scheme " + piv.getName() + ".", pi);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -1027,29 +1102,24 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 *        has been declared as exited
 	 * @throws APIException
 	 */
-	public void exitFromCare(Patient patient, Date dateExited,
-	        Concept reasonForExit) throws APIException {
+	public void exitFromCare(Patient patient, Date date, Concept reason) throws APIException {
 			
 		if ( patient == null )
 				throw new APIException("Attempting to exit from care an invalid patient. Cannot proceed");
-			if ( dateExited == null ) 
+		if ( date == null ) 
 				throw new APIException("Must supply a valid dateExited when indicating that a patient has left care");
-			if ( reasonForExit == null ) 
+		if ( reason == null ) 
 				throw new APIException("Must supply a valid reasonForExit (even if 'Unknown') when indicating that a patient has left care");
 		
 		
-		// need to create an observation to represent this (otherwise how
-		// will we know?)
-		saveReasonForExitObs(patient, dateExited, reasonForExit);
+		// need to create an observation to represent this (otherwise how will we know?)
+		saveExitReason(patient, date, reason);
 
 		// need to terminate any applicable programs
-		Context.getProgramWorkflowService()
-		       .triggerStateConversion(patient, reasonForExit, dateExited);
+		Context.getProgramWorkflowService().triggerStateConversion(patient, reason, date);
 
 		// need to discontinue any open orders for this patient
-		OrderUtil.discontinueAllOrders(patient,
-                                       reasonForExit,
-                                       dateExited);
+		OrderUtil.discontinueAllOrders(patient, reason, date);
 	}
 
 	/**
@@ -1062,71 +1132,78 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @param exitDate
 	 * @param cause
 	 */
-	// TODO: Patients should actually be allowed to exit multiple times 
-	private void saveReasonForExitObs(Patient patient, Date exitDate,
-	        Concept cause) throws APIException {
+	private void saveExitReason(Patient patient, Date date, Concept cause) throws APIException {
 		
 		if (patient == null)
 			throw new APIException("Patient supplied to method is null");
-		if (exitDate == null)
+		if (date == null)
 			throw new APIException("Exit date supplied to method is null");
 		if (cause == null)
 			throw new APIException("Cause supplied to method is null");
 			
-		// need to make sure there is an Obs that represents the patient's
-		// exit
+		// need to make sure there is an Obs that represents the patient's exit
 		log.debug("Patient is exiting, so let's make sure there's an Obs for it");
+		saveObservation(patient, "concept.reasonExitedCare", date, cause);
 		
-		String codProp = Context.getAdministrationService()
-		                        .getGlobalProperty("concept.reasonExitedCare");
-		Concept reasonForExit = Context.getConceptService()
-		                               .getConcept(codProp);
+		
+	}
+		
 
-			if ( reasonForExit != null ) {
-			List<Obs> obssExit = Context.getObsService()
-			                           .getObservationsByPersonAndConcept(patient,
-			                                            reasonForExit);
-				if ( obssExit != null ) {
-					if ( obssExit.size() > 1 ) {
-					log.error("Multiple reasons for exit ("
-					        + obssExit.size() + ")?  Shouldn't be...");
-					} else {
-						Obs obsExit = null;
-						if ( obssExit.size() == 1 ) {
-							// already has a reason for exit - let's edit it.
-							log.debug("Already has a reason for exit, so changing it");
+	
+	/**
+	 * Saves a new observation for the 
+	 * 
+	 * 
+	 * @param patient	the patient 
+	 * @param property	the global property name used to identify the concept 
+	 * @param date		the observation date
+	 * @param value		the value of the observations
+	 */
+	private void saveObservation(Patient patient, String property, Date date, Concept value) { 
+		
+
+		// Get the reason for the patient's exist (defaulted, transferred, died, etc)
+		String conceptId = 
+			Context.getAdministrationService().getGlobalProperty(property);		
+		
+		
+		Concept concept = 
+			Context.getConceptService().getConcept(conceptId);
+
+		if ( concept != null ) {
 			
-							obsExit = obssExit.iterator().next();
+			List<Obs> observations = 
+				Context.getObsService().getObservationsByPersonAndConcept(patient, concept);
 			
-						} else {
-							// no reason for exit obs yet, so let's make one
-							log.debug("No reason for exit yet, let's create one.");
+			if ( observations != null ) {
 				
-							obsExit = new Obs();
-							obsExit.setPerson(patient);
-							obsExit.setConcept(reasonForExit);
-							
-							
-						Location loc = Context.getLocationService().getDefaultLocation();
-						
-						if (loc != null)
-							obsExit.setLocation(loc);
-						else
-							log.error("Could not find a suitable location for which to create this new Obs");
+				// More than one reason 
+				if ( observations.size() > 1 ) {
+					log.warn("Multiple observations (" + observations.size() + ").");
 				} 
-						
-						if ( obsExit != null ) {
-						// put the right concept and (maybe) text in this
-						// obs
-							obsExit.setValueCoded(cause);
-							obsExit.setValueCodedName(cause.getName()); // ABKTODO: presume current locale?
-							obsExit.setObsDatetime(exitDate);
-						Context.getObsService().saveObs(obsExit, null);
-				} 
+				
+				//  reason 
+				else {
+					// Create a new 					
+					Obs newObs = new Obs();
+					newObs.setPerson(patient);
+					newObs.setConcept(concept);						
+					newObs.setLocation(Context.getLocationService().getDefaultLocation());											
+					newObs.setValueCoded(value);
+					newObs.setObsDatetime(date);
+					Context.getObsService().saveObs(newObs, null);
+					
+					
+					// Already has an existing reason for exit, so let's edit it.
+					if ( observations.size() == 1 ) {
+						Obs existingObs = observations.get(0);
+						Context.getObsService().voidObs(existingObs, "(new obsId: " + newObs.getObsId() + ")");
+					} 
+				}
 			}
 		} 
-			} else {
-				log.debug("Reason for exit is null - should not have gotten here without throwing an error on the form.");
+		else {
+			log.debug("Reason for exit is null - should not have gotten here without throwing an error on the form.");
 		}		
 		
 	}
@@ -1146,37 +1223,88 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 *        store more info
 	 * @throws APIException
 	 */
-	public void processDeath(Patient patient, Date dateDied,
-	        Concept causeOfDeath, String otherReason) throws APIException {
-		//SQLStateConverter s = null;
+	public void processDeath(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason) throws APIException {
 
-		if ( patient != null && dateDied != null && causeOfDeath != null ) {
+		if ( patient == null )
+			throw new APIException("Attempting to set an invalid patient's status to 'dead'");
+		if ( dateDied == null ) 
+			throw new APIException("Must supply a valid dateDied when indicating that a patient has died");
+		if ( causeOfDeath == null ) 
+			throw new APIException("Must supply a valid causeOfDeath (even if 'Unknown') when indicating that a patient has died");
+		
+
 		// set appropriate patient characteristics
 		patient.setDead(true);
 		patient.setDeathDate(dateDied);
 		patient.setCauseOfDeath(causeOfDeath);
-			this.updatePatient(patient);
+		
+		// Save the new patient state
+		savePatient(patient);
+		
+		// Save cause of death
 		saveCauseOfDeathObs(patient, dateDied, causeOfDeath, otherReason);
 		
 		// exit from program
 		// first, need to get Concept for "Patient Died"
-			String strPatientDied = Context.getAdministrationService()
+		String patientDiedConceptId = Context.getAdministrationService()
 		                               .getGlobalProperty("concept.patientDied");
-		Concept conceptPatientDied = Context.getConceptService()
-			                                    .getConcept(strPatientDied);
 		
-			if (conceptPatientDied == null)
+		
+		Concept patientDied = Context.getConceptService()
+		                                    .getConcept(patientDiedConceptId);
+		
+		if (patientDied == null) { 
+			log.debug("Concept for 'Patient Died' does not exist");
+		}
+		
+		// Exit the patient from programs
+		exitFromCare(patient, dateDied, patientDied);
+	}
+	
+	
+	/**
+	 * This is the way to establish that a patient has died. In addition to
+	 * exiting the patient from care (see above), this method will also set the
+	 * appropriate patient characteristics to indicate that they have died, when
+	 * they died, etc.
+	 * 
+	 * @param patient - the patient who has died
+	 * @param dateDied - the declared date/time of the patient's death
+	 * @param causeOfDeath - the concept that corresponds with the reason the
+	 *        patient died
+	 * @param otherReason - in case the causeOfDeath is 'other', a place to
+	 *        store more info
+	 * @throws APIException
+	 */
+	public void rollbackDeath(Patient patient, Date dateDied,
+	        Concept causeOfDeath, String otherReason) throws APIException {
+
+		if ( patient == null )
+			throw new APIException("Attempting to set an invalid patient's status to 'not dead'");
+
+		// set appropriate patient characteristics
+		patient.setDead(false);
+		patient.setDeathDate(null);
+		patient.setCauseOfDeath(null);
+		savePatient(patient);
+		
+		// TODO Need to reverse
+		//voidCauseOfDeathObs(patient, dateDied, causeOfDeath, otherReason);
+		
+		// exit from program
+		// first, need to get Concept for "Patient Died"
+		String conceptPatientDiedStr = Context.getAdministrationService().getGlobalProperty("concept.patientDied");
+		Concept conceptPatientDied = Context.getConceptService()
+		                                    .getConcept(conceptPatientDiedStr);
+		
+		if (conceptPatientDied == null) { 
 			log.debug("ConceptPatientDied is null");
+		}
+		
+		// TODO Need to reverse operation
 		exitFromCare(patient, dateDied, conceptPatientDied);
 
-		} else {
-			if ( patient == null )
-					throw new APIException("Attempting to set an invalid patient's status to 'dead'");
-			if ( dateDied == null ) 
-					throw new APIException("Must supply a valid dateDied when indicating that a patient has died");
-			if ( causeOfDeath == null ) 
-					throw new APIException("Must supply a valid causeOfDeath (even if 'Unknown') when indicating that a patient has died");
-	}
+		
 	}
 	
 	
@@ -1195,7 +1323,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (cause == null)
 			throw new APIException("Cause supplied to method is null");
 		
-		if (!patient.getDead()) {
+		// Ensure that the patient is dead
+		if (!patient.getDead()) { 
 			patient.setDead(true);
 			patient.setDeathDate(deathDate);
 			patient.setCauseOfDeath(cause);
@@ -1205,36 +1334,42 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// need to make sure there is an Obs that represents the patient's
 		// cause of death, if applicable
 
-		String codProp = Context.getAdministrationService()
+		String causeOfDeathConceptId = Context.getAdministrationService()
 		                        .getGlobalProperty("concept.causeOfDeath");
 		
 		Concept causeOfDeath = Context.getConceptService()
-		                              .getConcept(codProp);
+		                              .getConcept(causeOfDeathConceptId);
 
 			if ( causeOfDeath != null ) {
-			List<Obs> obssDeath = Context.getObsService()
+				List<Obs> causeOfDeathObsList = Context.getObsService()
 			                            .getObservationsByPersonAndConcept(patient,
 			                                             causeOfDeath);
-				if ( obssDeath != null ) {
-					if ( obssDeath.size() > 1 ) {
+				if ( causeOfDeathObsList != null ) {
+					if ( causeOfDeathObsList.size() > 1 ) {
 					log.error("Multiple causes of death ("
-					        + obssDeath.size() + ")?  Shouldn't be...");
-					} else {
+					        + causeOfDeathObsList.size() + ")?  Shouldn't be...");
+					} 
+					
+					else {
 						Obs obsDeath = null;
-						if ( obssDeath.size() == 1 ) {
+						if ( causeOfDeathObsList.size() == 1 ) {
 							// already has a cause of death - let's edit it.
 							log.debug("Already has a cause of death, so changing it");							
+							obsDeath = causeOfDeathObsList.get(0);
 							
-							obsDeath = obssDeath.iterator().next();
-							
-						} else {
+						} 
+						
+						else {
 							// no cause of death obs yet, so let's make one
 							log.debug("No cause of death yet, let's create one.");
 							
 							obsDeath = new Obs();
 							obsDeath.setPerson(patient);
 							obsDeath.setConcept(causeOfDeath);
+							
+							
 							Location location = Context.getLocationService().getDefaultLocation();
+							
 							if (location != null) { 
 								obsDeath.setLocation(location);
 							}
@@ -1248,18 +1383,17 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						if ( currCause == null ) {
 							// set to NONE
 							log.debug("Current cause is null, attempting to set to NONE");
-							String noneConcept = Context.getAdministrationService()
+							String noneConceptId = Context.getAdministrationService()
 						                            .getGlobalProperty("concept.none");
 							currCause = Context.getConceptService()
-						                   .getConcept(noneConcept);
+						                   .getConcept(noneConceptId);
 						}
 						
 						if ( currCause != null ) {
 							log.debug("Current cause is not null, setting to value_coded");
-							obsDeath.setValueCoded(currCause);	
-							obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
+							obsDeath.setValueCoded(currCause);							
+							Date dateDeath = patient.getDeathDate();
 							
-						Date dateDeath = patient.getDeathDate();
 						if (dateDeath == null)
 							dateDeath = new Date();
 							obsDeath.setObsDatetime(dateDeath);
@@ -1274,10 +1408,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 								if ( conceptOther.equals(currCause) ) {
 									// seems like this is an other concept -
 									// let's try to get the "other" field info
-								log.debug("Setting value_text as "
-								        + otherReason);
+									log.debug("Setting value_text as " + otherReason);
 										obsDeath.setValueText(otherReason);
-								} else {
+								} 
+								else {
 									log.debug("New concept is NOT the OTHER concept, so setting to blank");
 									obsDeath.setValueText("");
 								}
