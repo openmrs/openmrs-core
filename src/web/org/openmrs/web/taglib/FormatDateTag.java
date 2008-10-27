@@ -118,9 +118,9 @@ public class FormatDateTag extends TagSupport {
 		
 		String datestr = "";
 		
-		try {
-			if (date != null && !date.equals("")) {
-				datestr = dateFormat.format(date).toString();
+		try {			
+			if (date != null) {
+				datestr = dateFormat.format(date);
 			}
 		}
 		catch (IllegalArgumentException e) {

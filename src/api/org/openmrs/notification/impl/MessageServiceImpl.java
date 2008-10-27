@@ -341,7 +341,7 @@ public class MessageServiceImpl implements MessageService {
      * @see org.openmrs.notification.MessageService#send(org.openmrs.notification.Message, org.openmrs.User)
      */
     public void send(Message message, User user) throws MessageException {
-	    send(message,user);
+    	sendMessage(message,user);
     }
 
 	/**
