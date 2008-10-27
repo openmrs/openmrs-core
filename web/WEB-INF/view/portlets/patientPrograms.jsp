@@ -159,142 +159,167 @@
 	}
 </script>
 
-<div id="editPatientProgramPopup" style="position: absolute; background-color: #e0e0e0; z-index: 5; border: 2px black solid; display: none">
+<div id="editPatientProgramPopup" style="position: absolute; background-color: #e0e0e0; z-index: 5; padding: 10px; border: 1px black dashed; display: none">
 	<table>
-	<tr>
-		<td><spring:message code="Program.program"/>:</td>
-		<td><b><span id="programNameElement"></span></b></td>
-	</tr>
-	<tr>
-		<td><spring:message code="Program.dateEnrolled"/>:</td>
-		<td><input type="text" id="enrollmentDateElement" size="10" onClick="showCalendar(this)" />
-	</tr>
-	<tr>
-		<td><spring:message code="Program.dateCompleted"/>:</td>
-		<td><input type="text" id="completionDateElement" size="10" onClick="showCalendar(this)" />
-	</tr>
+		<tr>
+			<td><spring:message code="Program.program"/>:</td>
+			<td><b><span id="programNameElement"></span></b></td>
+		</tr>
+		<tr>
+			<td><spring:message code="Program.dateEnrolled"/>:</td>
+			<td><input type="text" id="enrollmentDateElement" size="10" onClick="showCalendar(this)" />
+		</tr>
+		<tr>
+			<td><spring:message code="Program.dateCompleted"/>:</td>
+			<td><input type="text" id="completionDateElement" size="10" onClick="showCalendar(this)" />
+		</tr>
 	</table>
-	<table width="400"><tr>
-		<td align="center">
-			<input type="button" value="<spring:message code="general.save"/>" onClick="handleSaveProgram()" />
-		</td>
-		<td align="center">
-			<input type="button" value="<spring:message code="general.cancel"/>" onClick="currentProgramBeingEdited = null; hideLayer('editPatientProgramPopup')" />
-		</td>
-		<td align="center">
-			<input type="button" value="<spring:message code="general.delete"/>" onClick="handleDeleteProgram()" />
-		</td>
-	</tr></table>
+	<table width="400">
+		<tr>
+			<td align="center">
+				<input type="button" value="<spring:message code="general.save"/>" onClick="handleSaveProgram()" />
+			</td>
+			<td align="center">
+				<input type="button" value="<spring:message code="general.cancel"/>" onClick="currentProgramBeingEdited = null; hideLayer('editPatientProgramPopup')" />
+			</td>
+			<td align="center">
+				<input type="button" value="<spring:message code="general.delete"/>" onClick="handleDeleteProgram()" />
+			</td>
+		</tr>
+	</table>
 </div>
-
+					<div id="editWorkflowPopup" style="position: absolute; background-color: #e0e0e0; z-index: 5; padding: 10px; border: 1px black dashed; display: none">
+						<b><u><span id="workflowPopupTitle"></span></u></b>
+						<table id="workflowTable">
+						</table>
+						
+						Change to 
+							<select id="changeToState"><option value=""><spring:message code="general.loading"/></option></select>
+						on 
+							<input type="text" id="changeStateOnDate" size="10" onClick="showCalendar(this)" />
+			
+						<input type="button" value="<spring:message code="general.change"/>" onClick="handleChangeWorkflowState()" />
+						<input type="button" value="<spring:message code="general.close"/>" onClick="currentWorkflowBeingEdited = null; hideLayer('editWorkflowPopup')" />
+					</div>						
+	
 <c:choose>
 	<c:when test="${fn:length(model.patientPrograms) == 0}">
 		<spring:message code="Program.notEnrolledInAny"/>
 	</c:when>
 	<c:otherwise>
-		<table>
-		<tr>
-			<td><spring:message code="Program.program"/></td>
-			<td><spring:message code="Program.dateEnrolled"/></td>
-			<td><spring:message code="Program.dateCompleted"/></td>
-			<td style="width: 150px;">
-				<spring:message code="Program.workflow"/>
-				<div id="editWorkflowPopup" style="position: absolute; background-color: #e0e0e0; z-index: 5; border: 2px black solid; display: none">
-					<b><u><span id="workflowPopupTitle"></span></u></b>
-					<table id="workflowTable">
-					</table>
-					Change to
-						<select id="changeToState"><option value=""><spring:message code="general.loading"/></option></select>
-					on
-						<input type="text" id="changeStateOnDate" size="10" onClick="showCalendar(this)" />
-					&nbsp;&nbsp;&nbsp;
-					<input type="button" value="<spring:message code="general.change"/>" onClick="handleChangeWorkflowState()" />
-					<br/>
-					<input type="button" value="<spring:message code="general.close"/>" onClick="currentWorkflowBeingEdited = null; hideLayer('editWorkflowPopup')" />
-				</div>		
-			</td>
-			<td style="width: 200px;"><spring:message code="Program.state"/></td>
-			<td style="width: 70px;"><!-- edit column -->&nbsp;</td>
-		</tr>
-		<c:set var="bgColor" value="whitesmoke" />
-		<c:forEach var="program" items="${model.patientPrograms}">
-			<c:if test="${!program.voided}">
-				<c:choose><c:when test="${bgColor == 'white'}"><c:set var="bgColor" value="whitesmoke" /></c:when><c:otherwise><c:set var="bgColor" value="white" /></c:otherwise></c:choose>
-				<tr style="background-color: ${bgColor}">
-					<td>
-						<c:if test="${program.dateCompleted != null}">
-							<small><i>[<spring:message code="Program.completed"/>]</i></small>
-						</c:if>
-						<a href="javascript:showEditPatientProgramPopup(${program.patientProgramId})">
-						<openmrs_tag:concept conceptId="${program.program.concept.conceptId}"/>
-						</a>
-					</td>
-					<td align="center">
-						<openmrs:formatDate date="${program.dateEnrolled}" type="medium" />
-					</td>
-					<td align="center">
-						<openmrs:formatDate date="${program.dateCompleted}" type="medium" />
-					</td>
-					<td colspan="3">
-						<table width="420">
-							<c:forEach var="workflow" items="${program.program.workflows}">
-								<tr>
-									<td style="width: 150px;"><small><openmrs_tag:concept conceptId="${workflow.concept.conceptId}"/>:</small></td>
-									<td style="width: 200px;">
-										<c:set var="stateId" value="" />
-										<c:set var="stateStart" value="" />
-										<c:forEach var="state" items="${program.states}">
-											<c:if test="${!state.voided && state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active}">
-												<c:set var="stateId" value="${state.state.concept.conceptId}" />
-												<c:set var="stateStart" value="${state.startDate}" />
-											</c:if>
-										</c:forEach>
-										<c:choose>
-											<c:when test="${not empty stateId}">
-												<b><openmrs_tag:concept conceptId="${stateId}"/></b>
-												<br /><i>(<spring:message code="general.since" /> <openmrs:formatDate date="${stateStart}" type="medium" />)</i>
-											</c:when>
-											<c:otherwise>
-												<i>(<spring:message code="general.none" />)</i>
-											</c:otherwise>
-										</c:choose>
-									</td>
-									<td style="width: 70px;">
-										<a href="javascript:showEditWorkflowPopup('<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>', ${program.patientProgramId}, ${workflow.programWorkflowId})">[<spring:message code="general.edit"/>]</a>
-									</td>
-								</tr>
-							</c:forEach>
-						</table>
-					</td>
-				</tr>
-			</c:if>
-		</c:forEach>
-		</table>			
-	</c:otherwise>
-</c:choose>
 
+
+
+
+		<table width="100%" border="0">
+			<tr bgcolor="whitesmoke">
+				<td><spring:message code="Program.program"/></td>
+				<td><spring:message code="Program.dateEnrolled"/>
+				
+			
+				</td>
+				<td><spring:message code="Program.dateCompleted"/></td>
+				<td><spring:message code="Program.state"/></td>
+			</tr>
+			<c:set var="bgColor" value="whitesmoke" />
+			<c:forEach var="program" items="${model.patientPrograms}">
+				<c:if test="${!program.voided}">
+					<c:choose>
+						<c:when test="${bgColor == 'white'}"><c:set var="bgColor" value="whitesmoke" /></c:when>
+						<c:otherwise><c:set var="bgColor" value="white" /></c:otherwise>
+					</c:choose>
+					<tr style="background-color: ${bgColor}">
+						<td valign="top">
+							<c:if test="${program.dateCompleted != null}">
+								<small><i>[<spring:message code="Program.completed"/>]</i></small>
+							</c:if>
+							<a href="javascript:showEditPatientProgramPopup(${program.patientProgramId})">
+							<openmrs_tag:concept conceptId="${program.program.concept.conceptId}"/>
+							</a>
+						</td>
+						<td align="left" valign="top">
+							<openmrs:formatDate date="${program.dateEnrolled}" type="medium" />
+						</td>
+						<td align="left" valign="top">
+							
+							<c:choose>
+								<c:when test="${not empty program.dateCompleted}">
+									<openmrs:formatDate date="${program.dateCompleted}" type="medium" />
+								</c:when>
+								<c:otherwise>
+									<i><spring:message code="Program.stillEnrolled"/></i>
+								</c:otherwise>								
+							</c:choose>
+						</td>
+						<td>
+							<table width="100%">
+								<c:forEach var="workflow" items="${program.program.workflows}">
+									<tr>
+										<td style="" valign="top">
+										
+											<small><openmrs_tag:concept conceptId="${workflow.concept.conceptId}"/>:</small>
+											<br/>
+											
+											<c:set var="stateId" value="" />
+											<c:set var="stateStart" value="" />
+											<c:forEach var="state" items="${program.states}">
+												<c:if test="${!state.voided && state.state.programWorkflow.programWorkflowId == workflow.programWorkflowId && state.active}">
+													<c:set var="stateId" value="${state.state.concept.conceptId}" />
+													<c:set var="stateStart" value="${state.startDate}" />
+												</c:if>
+											</c:forEach>
+											<c:choose>
+												<c:when test="${not empty stateId}">
+													<b><openmrs_tag:concept conceptId="${stateId}"/></b>
+													<i>(<spring:message code="general.since" /> 
+													<openmrs:formatDate date="${stateStart}" type="medium" />)</i>
+												</c:when>
+												<c:otherwise>
+													<i>(<spring:message code="general.none" />)</i>
+												</c:otherwise>
+											</c:choose>
+
+											<a href="javascript:showEditWorkflowPopup('<openmrs:concept conceptId="${workflow.concept.conceptId}" nameVar="n" var="v" numericVar="nv">${n.name}</openmrs:concept>', ${program.patientProgramId}, ${workflow.programWorkflowId})">[<spring:message code="general.edit"/>]</a>
+										</td>
+									</tr>
+								</c:forEach>
+							</table>
+						</td>
+					</tr>
+				</c:if>
+			</c:forEach>
+			
 <c:if test="${model.allowEdits == 'true' && fn:length(model.programs) > 0}">
 	<openmrs:hasPrivilege privilege="Edit Patient Programs">
-		<div id="newProgramEnroll">
 		<form method="post" action="${pageContext.request.contextPath}/admin/programs/patientProgram.form">
 			<input type="hidden" name="method" value="enroll"/>
 			<input type="hidden" name="patientId" value="${model.patientId}"/>
 			<input type="hidden" name="returnPage" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${model.patientId}"/>
-			
-			<spring:message code="Program.enrollIn"/>
-			<select name="programId" onChange="document.getElementById('enrollSubmitButton').disabled = (this.selectedIndex == 0)">
-				<option value=""><spring:message code="Program.choose"/></option>
-				<c:forEach var="program" items="${model.programs}">
-					<c:if test="${!program.retired}">
-					  <option value="${program.programId}"><openmrs_tag:concept conceptId="${program.concept.conceptId}"/></option>
-					</c:if>
-				</c:forEach>
-			</select>
-			<spring:message code="general.onDate"/>
-			<input type="text" id="programDateEnrolled" name="dateEnrolled" size="10" onClick="showCalendar(this)" />
-		
-			<input id="enrollSubmitButton" type="submit" value="<spring:message code="Program.enrollButton"/>" disabled="true"/>
+			<tr style="border-top: 1px solid black;">		
+				<td>
+					<!--<spring:message code="Program.enrollIn"/>-->
+					<select name="programId" onChange="document.getElementById('enrollSubmitButton').disabled = (this.selectedIndex == 0)">
+						<option value=""><spring:message code="Program.choose"/></option>
+						<c:forEach var="program" items="${model.programs}">
+							<c:if test="${!program.retired}">
+							  <option value="${program.programId}"><openmrs_tag:concept conceptId="${program.concept.conceptId}"/></option>
+							</c:if>
+						</c:forEach>
+					</select>
+				</td>
+				<td align="center">				
+					<!--<spring:message code="general.onDate"/>-->
+					<input type="text" id="programDateEnrolled" name="dateEnrolled" size="10" onClick="showCalendar(this)" />
+				</td>
+				<td align="center">								
+					<input id="enrollSubmitButton" type="submit" value="<spring:message code="Program.enrollButton"/>" disabled="true"/>
+				</td>
+			</tr>
 		</form>
-		</div>
 	</openmrs:hasPrivilege>
-</c:if>
+</c:if>			
+			
+		</table>			
+	</c:otherwise>
+</c:choose>
+
