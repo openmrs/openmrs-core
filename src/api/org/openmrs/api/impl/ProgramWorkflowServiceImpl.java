@@ -444,13 +444,32 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 			Set<ProgramWorkflow> workflows = patientProgram.getProgram().getWorkflows();
 			for (ProgramWorkflow workflow : workflows) {
 				// (getWorkflows() is only returning over nonretired workflows)
-				ProgramWorkflowState currentState = patientProgram.getCurrentState(workflow).getState();
+				PatientState patientState = patientProgram.getCurrentState(workflow);
+				
+				// #1080 cannot exit patient from care  
+				// Should allow a transition from a null state to a terminal state
+				// Or we should require a user to ALWAYS add an initial workflow/state when a patient is added to a program
+				ProgramWorkflowState currentState = (patientState != null) ? patientState.getState() : null;
 				ProgramWorkflowState transitionState = workflow.getState(trigger);
+				
+			
+				log.debug("Transitioning from current state [" + currentState + "]" );
+				log.debug("|---> Transitioning to final state [" + transitionState + "]" );
+				
 				if (transitionState != null && workflow.isLegalTransition(currentState, transitionState)) {
 					patientProgram.transitionToState(transitionState, dateConverted);
-					log.info("State Conversion Triggered: patientProgram=" + patientProgram + " transition from " + currentState + " to " + transitionState + " on " + dateConverted);
+					log.debug("State Conversion Triggered: patientProgram=" + patientProgram + " transition from " + currentState + " to " + transitionState + " on " + dateConverted);
 				}
 			}
+			
+			
+			// #1068 - Exiting a patient from care causes "not-null property references
+			// a null or transient value: org.openmrs.PatientState.dateCreated". Explicitly
+			// calling the savePatientProgram() method will populate the metadata properties.
+			// 
+			// #1067 - We should explicitly save the patient program rather than let 
+			// Hibernate do so when it flushes the session.
+			Context.getProgramWorkflowService().savePatientProgram(patientProgram);
 		}
 	}
 	
