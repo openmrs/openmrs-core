@@ -212,7 +212,7 @@ public class PersonFormController extends SimpleFormController {
 					log.debug("obssDeath is wrong size: " + obssDeath.size());
 				}
 			} else {
-				*/log.warn("No concept death cause found");/*
+				log.warn("No concept death cause found");
 			}
 			*/
 		}

@@ -170,10 +170,12 @@ public class PatientProgram implements java.io.Serializable {
 		if (lastState != null) {
 			lastState.setEndDate(onDate);
 		}
+		
 		PatientState newState = new PatientState();
 		newState.setPatientProgram(this);
 		newState.setState(programWorkflowState);
-		newState.setStartDate(onDate);
+		newState.setStartDate(onDate);		
+		
 		getStates().add(newState);
 	}
 	
@@ -213,9 +215,12 @@ public class PatientProgram implements java.io.Serializable {
 	}
 
 	/**
-	 * Returns the current {@link PatientState} for the passed {@link ProgramWorkflow} within this {@link PatientProgram}
-	 * @param programWorkflow - The ProgramWorkflow whose current {@link PatientState} we want to retrieve
-	 * @return PatientState - The current {@link PatientState} for the passed {@link ProgramWorkflow} within this {@link PatientProgram}
+	 * Returns the current {@link PatientState} for the passed {@link ProgramWorkflow} within this {@link PatientProgram}.
+	 * 
+	 * @param programWorkflow
+	 * 				The ProgramWorkflow whose current {@link PatientState} we want to retrieve
+	 * @return PatientState 
+	 * 				The current {@link PatientState} for the passed {@link ProgramWorkflow} within this {@link PatientProgram}
 	 */
 	public PatientState getCurrentState(ProgramWorkflow programWorkflow) {
 		Date now = new Date();

@@ -197,18 +197,27 @@ public class ProgramWorkflow implements java.io.Serializable {
 	
 	/**
 	 * Returns a {@link List<ProgramWorkflowState>} including all possible next ProgramWorkflowStates, 
-	 * for the passed {@link PatientProgram} ordered by {@link ConceptName}
-	 * @param fromState - {@link ProgramWorkflowState} to check transition from
-	 * @param toState - {@link ProgramWorkflowState} to check transition to
-	 * @return boolean - true if it is allowable to transition from <code>fromState</code> to <code>toState</code>
+	 * for the passed {@link PatientProgram} ordered by {@link ConceptName}.
+	 * 
+	 * @param fromState 
+	 * 			{@link ProgramWorkflowState} to check transition from
+	 * @param toState 
+	 * 			{@link ProgramWorkflowState} to check transition to
+	 * @return boolean 
+	 * 			true if it is allowable to transition from <code>fromState</code> to <code>toState</code>
 	 */
 	public boolean isLegalTransition(ProgramWorkflowState fromState, ProgramWorkflowState toState) {
+		// If there's no current state then we need tom move into an initial state
 		if (fromState == null) {
 			return toState.getInitial();
 		}
+		
+		// Does not allow patient to move into the same state
 		if (fromState.equals(toState)) {
 			return false;
 		}
+		
+		// Otherwise all other state transitions are legal
 		return true;
 	}
 

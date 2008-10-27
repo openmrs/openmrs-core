@@ -301,88 +301,115 @@ public class DWRPatientService {
 	 * @param otherReason
 	 * @return
 	 */
-	public String exitPatientFromCare(Integer patientId, Integer reasonForExitId, String dateOfExit, Integer causeOfDeath, String otherReason ) {
-		log.debug("Entering exitfromcare with [" + patientId + "] [" + reasonForExitId + "] [" + dateOfExit + "]");
+	public String exitPatientFromCare(Integer patientId, Integer exitReasonId, String exitDateStr, Integer causeOfDeathConceptId, String otherReason ) {
+		log.debug("Entering exitfromcare with [" + patientId + "] [" + exitReasonId + "] [" + exitDateStr + "]");
 		String ret = "";
 		
 		PatientService ps = Context.getPatientService();
 		ConceptService cs = Context.getConceptService();
 		
-		Patient p = null;
+		Patient patient = null;
 		try {
-			p = ps.getPatient(patientId);
-		} catch ( Exception e ) {
-			p = null;
+			patient = ps.getPatient(patientId);
+		} 
+		catch ( Exception e ) {
+			patient = null;
 		}
 		
-		if ( p == null ) {
+		if ( patient == null ) {
 			ret = "Unable to find valid patient with the supplied identification information - cannot exit patient from care";
 		}
 		
-		Concept c = null;
+		// Get the exit reason concept (if possible)
+		Concept exitReasonConcept = null;
 		try {
-			c = cs.getConcept(reasonForExitId);
-		} catch ( Exception e ) {
-			c = null;
+			exitReasonConcept = cs.getConcept(exitReasonId);
+		} 
+		catch ( Exception e ) {
+			exitReasonConcept = null;
 		}
 		
-		if ( c == null ) {
+		// Exit reason error handling
+		if ( exitReasonConcept == null ) {
 			ret = "Unable to locate reason for exit in dictionary - cannot exit patient from care";
 		}
 		
+		// Parse the exit date 
 		Date exitDate = null;
-		if ( dateOfExit != null ) {
+		if ( exitDateStr != null ) {
 			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
 			try {
-				exitDate = sdf.parse(dateOfExit);
+				exitDate = sdf.parse(exitDateStr);
 			} catch (ParseException e) {
 				exitDate = null;
 			}
 		}
 
+		// Exit date error handling
 		if ( exitDate == null ) {
 			ret = "Invalid date supplied - cannot exit patient from care without a valid date.";
 		}
 		
-		if ( p != null && c != null && exitDate != null ) {
+		// If all data is provided as expected
+		if ( patient != null && exitReasonConcept != null && exitDate != null ) {
+			
 			// need to check first if this is death or not
-			String deathProp = Context.getAdministrationService().getGlobalProperty("concept.patientDied");
-			Concept deathConcept = null;
-			if ( deathProp != null ) {
-				deathConcept = cs.getConcept(deathProp);
+			String patientDiedConceptId = 
+				Context.getAdministrationService().getGlobalProperty("concept.patientDied");
+			
+			Concept patientDiedConcept = null;
+			if ( patientDiedConceptId != null ) {
+				patientDiedConcept = cs.getConcept(patientDiedConceptId);
 			}
 			
-			if ( deathConcept != null ) {
-				if ( c.equals(deathConcept) ) {
-					Concept causeConcept = null;
-					try {
-						causeConcept = cs.getConcept(causeOfDeath);
-					} catch ( Exception e ) {
-						causeConcept = null;
-					}
+			// If there is a concept for death in the dictionary
+			if ( patientDiedConcept != null ) {
+				
+				// If the exist reason == patient died 
+				if ( exitReasonConcept.equals(patientDiedConcept) ) {
 					
-					if ( causeConcept == null ) {
-						ret = "Unable to locate cause of death in dictionary - cannot proceed";
-					} else {
+					Concept causeOfDeathConcept = null;
+					try {
+						causeOfDeathConcept = cs.getConcept(causeOfDeathConceptId);
+					} 
+					catch ( Exception e ) {
+						causeOfDeathConcept = null;
+					}
+
+					// Cause of death concept exists
+					if ( causeOfDeathConcept != null ) {
 						try {
-							ps.processDeath(p, exitDate, causeConcept, otherReason);
-						} catch ( Exception e ) {
+							ps.processDeath(patient, exitDate, causeOfDeathConcept, otherReason);
+						} 
+						catch ( Exception e ) {
 							log.debug("Caught error", e);
 							ret = "Internal error while trying to process patient death - unable to proceed.";
 						}
 					}
-				} else {
+					// cause of death concept does not exist
+					else { 
+						ret = "Unable to locate cause of death in dictionary - cannot proceed";						
+					}
+				} 
+				
+				// Otherwise, we process this as an exit 
+				else {
 					try {
-						ps.exitFromCare(p, exitDate, c);
-					} catch ( Exception e ) {
+						ps.exitFromCare(patient, exitDate, exitReasonConcept);
+					} 
+					catch ( Exception e ) {
 						log.debug("Caught error", e);
 						ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time.";
 					}
 				}
-			} else {
+			} 
+			
+			// If the system does not recognize death as a concept, then we exit from care
+			else {
 				try {
-					ps.exitFromCare(p, exitDate, c);
-				} catch ( Exception e ) {
+					ps.exitFromCare(patient, exitDate, exitReasonConcept);
+				} 
+				catch ( Exception e ) {
 					log.debug("Caught error", e);
 					ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time.";
 				}
