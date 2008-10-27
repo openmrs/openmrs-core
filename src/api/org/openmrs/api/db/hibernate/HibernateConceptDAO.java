@@ -286,7 +286,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptClass> getAllConceptClasses(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
 		
-		if (includeRetired = false)	
+		// Minor bug - was assigning includeRetired instead of evaluating 
+		if (includeRetired == false)	
 			crit.add(Expression.eq("retired", false));
 		
 		return crit.list();
