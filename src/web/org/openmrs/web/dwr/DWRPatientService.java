@@ -266,40 +266,45 @@ public class DWRPatientService {
 		return ret;
 	}
 	
-	public String exitPatientFromCare(Integer patientId, Integer reasonForExitId, String dateOfExit, Integer causeOfDeath, String otherReason ) {
-		log.debug("Entering exitfromcare with [" + patientId + "] [" + reasonForExitId + "] [" + dateOfExit + "]");
+	public String exitPatientFromCare(Integer patientId, Integer exitReasonId, String exitDateStr, Integer causeOfDeathConceptId, String otherReason ) {
+		log.debug("Entering exitfromcare with [" + patientId + "] [" + exitReasonId + "] [" + exitDateStr + "]");
 		String ret = "";
 		
 		PatientService ps = Context.getPatientService();
 		ConceptService cs = Context.getConceptService();
 		
-		Patient p = null;
+		Patient patient = null;
 		try {
-			p = ps.getPatient(patientId);
-		} catch ( Exception e ) {
-			p = null;
+			patient = ps.getPatient(patientId);
+		} 
+		catch ( Exception e ) {
+			patient = null;
 		}
 		
-		if ( p == null ) {
+		if ( patient == null ) {
 			ret = "Unable to find valid patient with the supplied identification information - cannot exit patient from care";
 		}
 		
-		Concept c = null;
+		// Get the exit reason concept (if possible)
+		Concept exitReasonConcept = null;
 		try {
-			c = cs.getConcept(reasonForExitId);
-		} catch ( Exception e ) {
-			c = null;
+			exitReasonConcept = cs.getConcept(exitReasonId);
+		} 
+		catch ( Exception e ) {
+			exitReasonConcept = null;
 		}
 		
-		if ( c == null ) {
+		// Exit reason error handling
+		if ( exitReasonConcept == null ) {
 			ret = "Unable to locate reason for exit in dictionary - cannot exit patient from care";
 		}
 		
+		// Parse the exit date 
 		Date exitDate = null;
-		if ( dateOfExit != null ) {
+		if ( exitDateStr != null ) {
 			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
 			try {
-				exitDate = sdf.parse(dateOfExit);
+				exitDate = sdf.parse(exitDateStr);
 			} catch (ParseException e) {
 				exitDate = null;
 			}
@@ -309,7 +314,7 @@ public class DWRPatientService {
 			ret = "Invalid date supplied - cannot exit patient from care without a valid date.";
 		}
 		
-		if ( p != null && c != null && exitDate != null ) {
+		if ( patient != null && exitReasonConcept != null && exitDate != null ) {
 			// need to check first if this is death or not
 			String deathProp = Context.getAdministrationService().getGlobalProperty("concept.patientDied");
 			Concept deathConcept = null;
@@ -318,19 +323,19 @@ public class DWRPatientService {
 			}
 			
 			if ( deathConcept != null ) {
-				if ( c.equals(deathConcept) ) {
-					Concept causeConcept = null;
+				if ( exitReasonConcept.equals(deathConcept) ) {
+					Concept causeOfDeathConcept = null;
 					try {
-						causeConcept = cs.getConcept(causeOfDeath);
+						causeOfDeathConcept = cs.getConcept(causeOfDeathConceptId);
 					} catch ( Exception e ) {
-						causeConcept = null;
+						causeOfDeathConcept = null;
 					}
 					
-					if ( causeConcept == null ) {
+					if ( causeOfDeathConcept == null ) {
 						ret = "Unable to locate cause of death in dictionary - cannot proceed";
 					} else {
 						try {
-							ps.processDeath(p, exitDate, causeConcept, otherReason);
+							ps.processDeath(patient, exitDate, causeOfDeathConcept, otherReason);
 						} catch ( Exception e ) {
 							log.debug("Caught error", e);
 							ret = "Internal error while trying to process patient death - unable to proceed.";
@@ -338,7 +343,7 @@ public class DWRPatientService {
 					}
 				} else {
 					try {
-						ps.exitFromCare(p, exitDate, c);
+						ps.exitFromCare(patient, exitDate, exitReasonConcept);
 					} catch ( Exception e ) {
 						log.debug("Caught error", e);
 						ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time.";
@@ -346,7 +351,7 @@ public class DWRPatientService {
 				}
 			} else {
 				try {
-					ps.exitFromCare(p, exitDate, c);
+					ps.exitFromCare(patient, exitDate, exitReasonConcept);
 				} catch ( Exception e ) {
 					log.debug("Caught error", e);
 					ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time.";
