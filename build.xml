@@ -3,7 +3,7 @@
 <!-- ** Ant build script for OpenMRS                          ** -->
 <!-- **                                                       ** -->
 <!-- *********************************************************** -->
-<project name="OpenMRS" default="dist">
+<project name="OpenMRS-trunk" default="dist">
 
 	<tstamp>
 		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" />
@@ -244,8 +244,9 @@
 				<attribute name="Class-Path" value="tests-${openmrs.api.name}" />
 			</manifest>
 			<fileset dir="${build.dir}">
-				<exclude name="**/web/*" />
-				<include name="**/**/*Test.class" />
+				<exclude name="**/web/" />
+				<include name="**/test/*.class" /> <!-- include the helper files -->
+				<include name="**/*Test*.class" /> <!-- include all junit tests and inner classes -->
 				<include name="org/openmrs/include/*.xml" />
 			</fileset>
 			<!-- Put this xml in a separate fileset so that its in the root of the jar file -->
@@ -270,13 +271,7 @@
 	-->
     <target name="deploy" depends="package-web" if="tomcat.home" description="Move war into the tomcat's webapps directory - ">
 		<echo message="Deploying webapp to Tomcat.  NOTE: The 'deploy' target is not working as expected yet."/>
-    	<!--
-        <unwar src="${dist.dir}/${webapp.name}.war"
-            dest="${tomcat.home}/webapps/${webapp.name}"/>
-    	-->
-    	<copy todir="${tomcat.home}/webapps" file="${dist.dir}/${webapp.name}.war"/>
-    	
-    	
+        <copy todir="${tomcat.home}/webapps" file="${dist.dir}/${webapp.name}.war"/>
     </target>
 	
 	<target name="undeploy" if="tomcat.home" description="undeploy war file to servlet container's deployment dir">
