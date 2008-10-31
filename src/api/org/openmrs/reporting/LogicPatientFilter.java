@@ -41,6 +41,14 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 		this.criteria = criteria;
 	}
 	
+	public LogicCriteria getCriteria() {
+    	return criteria;
+    }
+
+	public void setCriteria(LogicCriteria criteria) {
+    	this.criteria = criteria;
+    }
+
 	/**
 	 * @see org.openmrs.reporting.PatientFilter#filter(org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
 	 */
@@ -91,5 +99,28 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 	    return new Vector<Parameter>();
     }
 
+    /**
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o instanceof LogicPatientFilter) {
+			LogicPatientFilter other = (LogicPatientFilter) o;
+			return equals(criteria, other.getCriteria());
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.reporting.AbstractReportObject#getDescription()
+	 */
+	public String getDescription() {
+	    if (getCriteria() == null)
+	    	return "criteria==NULL";
+	    return getCriteria().toString();
+	}
 
 }

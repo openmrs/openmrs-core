@@ -78,7 +78,7 @@ public class ServiceContext {
 	 */
 	private boolean useSystemClassLoader = false;
 	
-	// proxy factories used for programatically adding spring AOP  
+	// proxy factories used for programmatically adding spring AOP  
 	@SuppressWarnings("unchecked")
     Map<Class, ProxyFactory> proxyFactories = new HashMap<Class, ProxyFactory>();
 

@@ -28,6 +28,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicCriteria;
 import org.openmrs.logic.result.Result;
+import org.openmrs.logic.util.Util;
 
 /**
  * Provides access to patient program data
@@ -71,7 +72,7 @@ public class ProgramDataSource implements LogicDataSource {
 		
 		for (PatientProgram patientProgram : patientPrograms) {
 			//log.info("PatientProgram: " + patientProgram.getDateEnrolled());
-			String token = (String) criteria.getRightOperand();
+			String token = criteria.getRootToken();
 			Integer personId = patientProgram.getPatient().getPersonId();
 
 			Result result = null;
@@ -100,6 +101,7 @@ public class ProgramDataSource implements LogicDataSource {
 			}					
 		}
 		
+		Util.applyAggregators(resultSet, criteria,patients);
 		return resultSet;
     }
 

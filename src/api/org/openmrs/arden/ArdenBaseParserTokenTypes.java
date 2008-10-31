@@ -1,16 +1,3 @@
-/**
- * The contents of this file are subject to the OpenMRS Public License
- * Version 1.0 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://license.openmrs.org
- *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
- * License for the specific language governing rights and limitations
- * under the License.
- *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
- */
 // $ANTLR 2.7.6 (2005-12-22): "ArdenRecognizer.g" -> "ArdenBaseParser.java"$
 
 package org.openmrs.arden;
@@ -22,6 +9,10 @@ import antlr.*;
 import org.openmrs.arden.MLMObject;
 import org.openmrs.arden.MLMObjectElement;
 import java.lang.Integer;
+import org.openmrs.logic.*;
+import org.openmrs.logic.op.*;
+import java.util.GregorianCalendar;
+
 
 public interface ArdenBaseParserTokenTypes {
 	int EOF = 1;
@@ -106,107 +97,111 @@ public interface ArdenBaseParserTokenTypes {
 	int LINKS = 81;
 	int TYPE = 82;
 	int DATE = 83;
-	int OF = 84;
-	int TIME = 85;
-	int WITHIN = 86;
-	int CALL = 87;
-	int WITH = 88;
-	int TO = 89;
-	int ANY = 90;
-	int LITERAL_end = 91;
-	int COLON = 92;
-	int ENDBLOCK = 93;
-	int DOT = 94;
-	int MINUS = 95;
-	int UNDERSCORE = 96;
-	int LITERAL_arden = 97;
-	// "ASTM-E" = 98
-	int INTLIT = 99;
-	int DIGIT = 100;
-	int SEMI = 101;
-	int LITERAL_validation = 102;
-	int LITERAL_production = 103;
-	int LITERAL_research = 104;
-	int LITERAL_testing = 105;
-	int LITERAL_expired = 106;
-	int TIMES = 107;
-	int ID = 108;
-	int LPAREN = 109;
-	int RPAREN = 110;
-	// ":" = 111
-	int LITERAL_T = 112;
-	int LITERAL_t = 113;
-	// "." = 114
-	// "+" = 115
-	// "-" = 116
-	int LITERAL_Z = 117;
-	int LITERAL_z = 118;
-	int LITERAL_SUPPORT = 119;
-	int LITERAL_REFUTE = 120;
-	int SINGLE_QUOTE = 121;
-	// "data-driven" = 122
-	int LITERAL_data_driven = 123;
-	int COMMENT = 124;
-	int ML_COMMENT = 125;
-	int BECOMES = 126;
-	int COMMA = 127;
-	int LITERAL_EVENT = 128;
-	int LITERAL_Event = 129;
-	int ARDEN_CURLY_BRACKETS = 130;
-	int LITERAL_PRESENT = 131;
-	int LITERAL_NULL = 132;
-	int LITERAL_BOOLEAN = 133;
-	int LITERAL_NUMBER = 134;
-	int LITERAL_DURATION = 135;
-	int LITERAL_STRING = 136;
-	int LITERAL_LIST = 137;
-	int LITERAL_OBJECT = 138;
-	int EQUAL = 139;
-	int LITERAL_hour = 140;
-	int LITERAL_hours = 141;
-	int LITERAL_minute = 142;
-	int LITERAL_minutes = 143;
-	int LITERAL_second = 144;
-	int LITERAL_seconds = 145;
-	int LITERAL_OCCUR = 146;
-	int LITERAL_Occur = 147;
-	int LITERAL_occur = 148;
-	int LITERAL_OCCURS = 149;
-	int LITERAL_Occurs = 150;
-	int LITERAL_occurs = 151;
-	int LITERAL_OCCURRED = 152;
-	int LITERAL_Occurred = 153;
-	int LITERAL_evoke = 154;
-	int LITERAL_CALL = 155;
-	int EQUALS = 156;
-	int LITERAL_EQ = 157;
-	int LT = 158;
-	int LITERAL_LT = 159;
-	int GT = 160;
-	int LITERAL_GT = 161;
-	int LTE = 162;
-	int LITERAL_LE = 163;
-	int GTE = 164;
-	int LITERAL_GE = 165;
-	int NE = 166;
-	int LITERAL_NE = 167;
-	int ACTION_OP = 168;
-	int LITERAL_urgency = 169;
-	int LITERAL_MERGE = 170;
-	int LITERAL_SORT = 171;
-	int LITERAL_DATA = 172;
-	int LITERAL_SEQTO = 173;
-	// "*" = 174
-	// "/" = 175
-	int STRING_LITERAL = 176;
-	int TERM_LITERAL = 177;
-	int WS = 178;
-	int LBRACKET = 179;
-	int RBRACKET = 180;
-	int DOTDOT = 181;
-	int NOT_EQUALS = 182;
-	int PLUS = 183;
-	int DIV = 184;
-	int LCURLY = 185;
-	int RCURLY = 186;
+	int AGE_MIN = 84;
+	int AGE_MAX = 85;
+	int OF = 86;
+	int TIME = 87;
+	int WITHIN = 88;
+	int CALL = 89;
+	int WITH = 90;
+	int TO = 91;
+	int ANY = 92;
+	int RESEARCH = 93;
+	int SECOND = 94;
+	int OCCUR = 95;
+	int PRESENT = 96;
+	int NUMBER = 97;
+	int HTTP = 98;
+	int NULL = 99;
+	int LITERAL_end = 100;
+	int COLON = 101;
+	int ENDBLOCK = 102;
+	int DOT = 103;
+	int MINUS = 104;
+	int UNDERSCORE = 105;
+	int LITERAL_arden = 106;
+	// "ASTM-E" = 107
+	int INTLIT = 108;
+	int DIGIT = 109;
+	int SEMI = 110;
+	int LITERAL_validation = 111;
+	int LITERAL_production = 112;
+	int LITERAL_testing = 113;
+	int LITERAL_expired = 114;
+	int TIMES = 115;
+	int ID = 116;
+	int APOSTROPHE = 117;
+	int AMPERSAND = 118;
+	int PERCENT = 119;
+	int GT = 120;
+	int GTE = 121;
+	int LT = 122;
+	int LTE = 123;
+	int POUND = 124;
+	int COMMA = 125;
+	int DIV = 126;
+	int STRING_LITERAL = 127;
+	int LPAREN = 128;
+	int RPAREN = 129;
+	int PLUS = 130;
+	int LITERAL_SUPPORT = 131;
+	int LITERAL_REFUTE = 132;
+	int NOT_COMMENT = 133;
+	int SINGLE_QUOTE = 134;
+	// "data-driven" = 135
+	int LITERAL_data_driven = 136;
+	int COMMENT = 137;
+	int ML_COMMENT = 138;
+	int BECOMES = 139;
+	int ARDEN_CURLY_BRACKETS = 140;
+	int LITERAL_PRESENT = 141;
+	int LITERAL_NULL = 142;
+	int LITERAL_BOOLEAN = 143;
+	int LITERAL_NUMBER = 144;
+	int LITERAL_DURATION = 145;
+	int LITERAL_STRING = 146;
+	int LITERAL_LIST = 147;
+	int LITERAL_OBJECT = 148;
+	int EQUAL = 149;
+	int LITERAL_hour = 150;
+	int LITERAL_hours = 151;
+	int LITERAL_minute = 152;
+	int LITERAL_minutes = 153;
+	int LITERAL_seconds = 154;
+	int LITERAL_OCCUR = 155;
+	int LITERAL_Occur = 156;
+	int LITERAL_OCCURS = 157;
+	int LITERAL_Occurs = 158;
+	int LITERAL_occurs = 159;
+	int LITERAL_OCCURRED = 160;
+	int LITERAL_Occurred = 161;
+	int LITERAL_evoke = 162;
+	int LITERAL_CALL = 163;
+	int EQUALS = 164;
+	int LITERAL_EQ = 165;
+	int LITERAL_LT = 166;
+	int LITERAL_GT = 167;
+	int LITERAL_LE = 168;
+	int LITERAL_GE = 169;
+	int NE = 170;
+	int LITERAL_NE = 171;
+	int ACTION_OP = 172;
+	int LITERAL_urgency = 173;
+	int LITERAL_MERGE = 174;
+	int LITERAL_SORT = 175;
+	int LITERAL_DATA = 176;
+	int LITERAL_SEQTO = 177;
+	// "+" = 178
+	// "-" = 179
+	// "*" = 180
+	// "/" = 181
+	int TERM_LITERAL = 182;
+	int WS = 183;
+	int LBRACKET = 184;
+	int RBRACKET = 185;
+	int DOTDOT = 186;
+	int NOT_EQUALS = 187;
+	int QUESTION = 188;
+	int LCURLY = 189;
+	int RCURLY = 190;
 }

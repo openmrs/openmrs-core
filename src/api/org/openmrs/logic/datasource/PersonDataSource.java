@@ -24,9 +24,8 @@ import org.openmrs.Person;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicCriteria;
 import org.openmrs.logic.db.LogicPersonDAO;
-import org.openmrs.logic.op.AsOf;
-import org.openmrs.logic.op.Operator;
 import org.openmrs.logic.result.Result;
+import org.openmrs.logic.util.Util;
 
 /**
  * Provides access to person demographic data.
@@ -85,7 +84,7 @@ public class PersonDataSource implements LogicDataSource {
 
         // put in the result map
         for (Person person : personList) {
-            String token = (String) criteria.getRightOperand();
+            String token = criteria.getRootToken();
             if (token.equalsIgnoreCase("GENDER"))
                 resultMap.put(person.getPersonId(), new Result(person
                         .getGender()));
@@ -100,7 +99,7 @@ public class PersonDataSource implements LogicDataSource {
             else if (token.equalsIgnoreCase("cause of death")) {
             	Result deathResult;
             	if (person.isDead())
-            		deathResult = new Result(person.getDeathDate(), person.getCauseOfDeath());
+            		deathResult = new Result(person.getDeathDate(), person.getCauseOfDeath(),person);
             	else
             		deathResult = Result.emptyResult();
                 resultMap.put(person.getPersonId(), deathResult);
@@ -110,6 +109,7 @@ public class PersonDataSource implements LogicDataSource {
             // TODO more keys to be added
         }
 
+        Util.applyAggregators(resultMap, criteria,who);
         return resultMap;
     }
 

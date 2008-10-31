@@ -87,6 +87,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortSearchHistory;
+import org.openmrs.logic.LogicCriteria;
 import org.openmrs.module.ModuleException;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.propertyeditor.CohortEditor;
@@ -95,6 +96,7 @@ import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.propertyeditor.FormEditor;
 import org.openmrs.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.LogicCriteriaEditor;
 import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
@@ -1313,6 +1315,8 @@ public class OpenmrsUtil {
 							CustomDateEditor ed = new CustomDateEditor(df, true, 10);
 							ed.setAsText(valueAsString);
 							value = ed.getValue();
+			        	} else if (LogicCriteria.class.equals(valueClass)) {
+			        		value = Context.getLogicService().parseString(valueAsString);
 			        	} else {
 			        		// TODO: Decide whether this is a hack. Currently setting Object arguments with a String
 		        			value = valueAsString;

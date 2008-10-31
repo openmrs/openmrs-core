@@ -13,6 +13,7 @@
  */
 package org.openmrs.logic;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.api.context.Context;
+import org.openmrs.logic.datasource.ObsDataSource;
 import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.AgeRule;
 import org.openmrs.logic.rule.HIVPositiveRule;
@@ -67,7 +69,7 @@ public class RuleFactory {
     public RuleFactory() {
     }
 
-    private Map<String, Rule> getRuleMap() {
+    private synchronized Map<String, Rule> getRuleMap() {
     	if (ruleMap == null) {
     		ruleMap = new HashMap<String, Rule>();
     		init();
@@ -85,43 +87,32 @@ public class RuleFactory {
     public void init() {
         // TODO: temporary cheat to get some stuff loaded
         try {
+        	ObsDataSource obsdatasource = (ObsDataSource) Context.getLogicService().getLogicDataSource("obs");
             // TODO this is temporary; it should be read from persistent storage
-            ConceptClass cc = Context.getConceptService()
-                    .getConceptClassByName("Test");
-            List<Concept> testConcepts = Context.getConceptService()
-                    .getConceptsByClass(cc);
-            for (Concept c : testConcepts) {
-                String name = c.getName().getName();
-                ruleMap.put(name, new ReferenceRule("obs." + name));
-            }
-        	cc = Context.getConceptService()
-            .getConceptClassByName("Finding");
-            List<Concept> findingConcepts = Context.getConceptService()
-            .getConceptsByClass(cc);
-		    for (Concept c : findingConcepts) {
-		        String name = c.getName().getName();
-		        ruleMap.put(name, new ReferenceRule("obs." + name));
-		    }
-    
-		    cc = Context.getConceptService()
-            .getConceptClassByName("Question");
-            List<Concept> questionConcepts = Context.getConceptService()
-            .getConceptsByClass(cc);
-		    for (Concept c : questionConcepts) {
-		        String name = c.getName().getName();
-		        ruleMap.put(name, new ReferenceRule("obs." + name));
-		    }
+        	ArrayList<String> classes = new ArrayList<String>();
+        	classes.add("Test");
+        	classes.add("Finding");
+        	classes.add("Question");
+        	
+        	for (String currClass : classes) {
+				ConceptClass cc = Context.getConceptService()
+				                         .getConceptClassByName(currClass);
+				List<Concept> classConcepts = Context.getConceptService()
+				                                    .getConceptsByClass(cc);
+				for (Concept c : classConcepts) {
+					String name = c.getBestName(Context.getLocale()).getName();
+					obsdatasource.addKey(name);
+					ruleMap.put(name, new ReferenceRule("obs." + name));
+				}
+			}
 		   
             ruleMap.put("HIV POSITIVE", new HIVPositiveRule());
-
             ruleMap.put("GENDER", getRule("%%person.gender"));
             ruleMap.put("BIRTHDATE", getRule("%%person.birthdate"));
-            ruleMap.put("BIRTHDATE ESTIMATED",
-                    getRule("%%person.birthdate estimated"));
+            ruleMap.put("BIRTHDATE ESTIMATED", getRule("%%person.birthdate estimated"));
             ruleMap.put("DEAD", getRule("%%person.dead"));
             ruleMap.put("DEATH DATE", getRule("%%person.death date"));
             ruleMap.put("CAUSE OF DEATH", getRule("%%person.cause of death"));
-
             ruleMap.put("AGE", new AgeRule());
         } catch (LogicException e) {
             log.error("Error during RuleFactory initialization", e);
@@ -198,10 +189,8 @@ public class RuleFactory {
      * @throws LogicException
      */
     public void updateRule(String token, Rule rule) throws LogicException {
-        if (!getRuleMap().containsKey(token))
-            throw new LogicException("Cannot update missing token \"" + token
-                    + "\"");
-        getRuleMap().put(token, rule);
+    	//don't throw an error when updating the rule
+    	getRuleMap().put(token, rule);
     }
 
     /**

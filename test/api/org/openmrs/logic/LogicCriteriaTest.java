@@ -24,6 +24,9 @@ import org.junit.Test;
  */
 public class LogicCriteriaTest {
 
+	/**
+	 * TODO break this test into a lot of smaller tests
+	 */
 	@Test
 	public void shouldLogicCriteria() {
 		LogicCriteria criteria = new LogicCriteria("CD4 COUNT").within(Duration.months(6))

@@ -20,7 +20,9 @@ import org.openmrs.api.APIException;
  */
 public class ImmutableResultException extends APIException {
 
-    public ImmutableResultException() {
+    private static final long serialVersionUID = 7182777087671695215L;
+
+	public ImmutableResultException() {
         super();
     }
 
