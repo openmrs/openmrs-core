@@ -377,4 +377,8 @@ public interface LogicService {
 	 */
 	public void removeLogicDataSource(String name);
 
+    public void loadRule(String tokenName,String ruleClassName) throws Exception;
+    
+    public LogicCriteria parseString(String inStr);
+
 }

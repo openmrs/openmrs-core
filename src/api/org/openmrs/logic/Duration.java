@@ -17,11 +17,12 @@ package org.openmrs.logic;
  * 
  * Represents a duration of time &mdash; e.g., one year, two weeks, or 18 months.  Used within criteria
  * 
+ * @see org.openmrs.logic.LogicCriteria
  */
 public class Duration {
 
     public static enum Units {
-        SECONDS, MINUTES, DAYS, WEEKS, MONTHS, YEARS
+        SECONDS, MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS
     }
 
     private Double duration;
@@ -53,10 +54,14 @@ public class Duration {
             return duration / 86400;
         case MINUTES:
             return duration / 1440;
+        case HOURS:
+        	return duration / 24;
         case DAYS:
             return duration;
         case WEEKS:
             return duration * 7;
+        case MONTHS:
+        	return duration * 30;
         case YEARS:
             return duration * 365;
         default:
@@ -77,6 +82,8 @@ public class Duration {
             return d * 1000;
         case MINUTES:
             return d * 60000;
+        case HOURS:
+        	return d * 3600000;
         case DAYS:
             return d * 86400000;
         case WEEKS:
@@ -132,6 +139,28 @@ public class Duration {
      */
     public static Duration minutes(int duration) {
         return minutes(new Double(duration));
+    }
+
+    /**
+     * 
+     * Returns a duration for the given number of hours
+     * 
+     * @param duration number of hours for duration
+     * @return
+     */
+    public static Duration hours(Double duration) {
+        return new Duration(duration, Units.HOURS);
+    }
+
+    /**
+     * 
+     * Returns a duration for the given number of hours
+     * 
+     * @param duration number of hours for duration
+     * @return
+     */
+    public static Duration hours(int duration) {
+        return hours(new Double(duration));
     }
 
     /**

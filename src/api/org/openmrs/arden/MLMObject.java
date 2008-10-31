@@ -13,15 +13,17 @@
  */
 package org.openmrs.arden;
 import java.io.Writer;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import org.openmrs.Patient;
-import org.openmrs.api.context.Context;
 
 /*
  *  This class represents the complete mlm sections
@@ -32,16 +34,7 @@ public class MLMObject {
 	public static int NOLIST = 0;
 	public static int LIST = 1;
 	
-	private HashMap<String, MLMObjectElement> conceptMap ;
-	private String ConceptVar;   // These 3 variables are used when parsing. Cache to keep the concept name.
-	private String readType;
-	private int howMany;
-	
-	private boolean IsVarAdded;
-	private int InNestedIf ;       // counting semaphore
-	private boolean IsComplexIf;
-	private LinkedList<MLMEvaluateElement> evaluateList;
-	private HashMap<String, String> userVarMapFinal ;
+	//metadata
 	private String className;
 	private String title;
 	private String author;
@@ -56,223 +49,173 @@ public class MLMObject {
 	private String links;
 	private String date;
 	private String specialist;
-	private int priority;
-	private double version;
+	private Integer priority;
+	private Double version;
 	private String type;
-	private String actionStr;
+	private Integer ageMax;
+	private Integer ageMin;
+	private String ageMaxUnits;
+	private String ageMinUnits;
+	
+	private HashMap<String, MLMObjectElement> conceptMap; //maps logic variables to query that assigned them
+	private HashMap<String,LinkedList<MLMEvaluateElement>> evaluateList; //tokens to evaluate
+	
+	private ArrayList<Action> actions; //print action strings
+	private ArrayList<LogicAssignment> logicAssignments = null;
+	private LinkedHashMap<String,LinkedHashMap<String,Comparison>> comparisons = null;
+	private ArrayList<Conclude> concludes = null;
+	private ArrayList<MLMObjectElement> objElements = null;
+	private HashMap<String,ArrayList<Call>> calls = null;
+
+	static int keyId = 1;
+	static int compKeyId = 1;
+	static boolean compKeyIdUsed = false;
 	
 	// default constructor
 	public MLMObject(){
 		conceptMap = new HashMap <String, MLMObjectElement>();
-		IsVarAdded = false;
-		InNestedIf = 0;
-		IsComplexIf = false;
-		userVarMapFinal = new HashMap <String, String>();
+		actions = new ArrayList<Action>();
+		evaluateList = new HashMap<String,LinkedList<MLMEvaluateElement>>();
+		logicAssignments = new ArrayList<LogicAssignment>();
+		comparisons = new LinkedHashMap<String,LinkedHashMap<String,Comparison>>();
+		concludes = new ArrayList<Conclude>();
+		objElements = new ArrayList<MLMObjectElement>();
+		calls = new HashMap<String,ArrayList<Call>>();
 	}
 	
 	public MLMObject(Locale l, Patient p)
 	{
-		conceptMap = new HashMap <String, MLMObjectElement>();
-		IsVarAdded = false;
-		evaluateList = new LinkedList <MLMEvaluateElement>();
-		userVarMapFinal = new HashMap <String, String>();
+		this();
+	}
+	
+	public void addLogicAssignment(String variableName,String variableValue){
+		LogicAssignment logicAssignment = 
+			new LogicAssignment(variableName,variableValue);
+		this.logicAssignments.add(logicAssignment);
 	}
 
 	public void AddConcept(String s)
 	{
-		int index = 0, nindex = 0, endindex = 0, startindex = 0, index2=0, nindex2=0, endindex2 = 0, startindex2 = 0;
-		String tempstr, variable, varVal;
-		String inStr = ConceptVar;
-
-		tempstr = inStr;
-
-		index = tempstr.indexOf(",", nindex);
-		index2 = s.indexOf(",", nindex);
-		if(index != -1 && index2 != -1) {
-			while(index > 0 && index2 > 0){
-				if(nindex == 0 && nindex2 == 0){ // Are we starting now
-					startindex = nindex;
-					endindex = index;
-					startindex2 = nindex2;
-					endindex2 = index2;
-					variable = tempstr.substring(startindex, endindex);
-					varVal = s.substring(startindex2, endindex2);
-					ConceptVar = variable;
-					IsVarAdded = true; // so that the following statement completes
-					CreateElement(varVal, readType, howMany);
-				}
-				else {
-					startindex = nindex + 1;
-					startindex2 = nindex2 + 1;
-					endindex = index;
-					endindex2 = index2;
-					variable = tempstr.substring(startindex, endindex);
-					varVal = s.substring(startindex2, endindex2);
-					ConceptVar = variable;
-					IsVarAdded = true; // so that the following statement completes
-					CreateElement(varVal, readType, howMany);
-				}
-				nindex = index;
-				nindex2 = index2;
-				index = tempstr.indexOf(",", nindex+1);
-				index2 = s.indexOf(",", nindex2+1);
-			}
-			
-		}
-		else {
-			CreateElement(s, readType, howMany);
-		}
-		
+		this.objElements.get(this.objElements.size()-1).setConceptName(s);
 	}
-	
-	private void CreateElement (String s, String readType, Integer howMany){
-		int n = 1;
-		
-		if(IsVarAdded == true && !conceptMap.containsKey(ConceptVar)) {
-			if(s == "false" || s == "true") {
-				MLMObjectElement  mObjElem = new MLMObjectElement("", readType, n, "");
-				conceptMap.put(ConceptVar, mObjElem);
-				mObjElem.addUserVarVal(ConceptVar,s);
-				
-			}
-			else {
-				if(howMany != null){
-					n = howMany.intValue(); 
-				}
-				
-				conceptMap.put(ConceptVar, new MLMObjectElement(s, readType, n, ""));
-			}
-			IsVarAdded = false;    // for next time
-			ConceptVar = "";
-		}
-	}
-	
 	
 	public void SetConceptVar(String s)
 	{
-		ConceptVar = s;
-		IsVarAdded = true;
+		MLMObjectElement objElement = new MLMObjectElement();
+
+		if (!conceptMap.containsKey(s)) {
+
+			conceptMap.put(s, objElement);
+		}
+		
+		this.objElements.add(objElement);
 	}
 	
-	public void ResetConceptVar()
-	{
-		ConceptVar = "";
-		howMany = 0;
-		readType = "";
-		IsVarAdded = false;
-	}
-	
-	public void setReadType(String s){
-		readType = s;
+	public void setReadType(String readType){
+		this.objElements.get(this.objElements.size()-1).setReadType(readType);
 	}
 	
 	public void setHowMany(String s){
-		howMany = Integer.valueOf(s).intValue();
+		int howMany = Integer.valueOf(s).intValue();
+		this.objElements.get(this.objElements.size()-1).
+			setHowMany(howMany);
 	}
 	
-	public void PrintConceptMap()
-	{
-		System.out.println("__________________________________");
-	     Collection<MLMObjectElement> collection = conceptMap.values();
-	     for(MLMObjectElement mo : collection) {
-	       System.out.println(mo.getConceptName()  + 
-	    		   "\n Answer = " + mo.getAnswers() + 
-	    		   "\n Operator = " + mo.getCompOps() +
-	    		   "\n Conclude Val = " + mo.getConcludeVal() +
-	    		   "\n User Vars = " + mo.getUserVarVal()
-	    		   );
-	    System.out.println("__________________________________");
-	     }
-	}
-	
-	public void PrintEvaluateList(){
+	public void PrintEvaluateList(String section){
 		System.out.println("\n Evaluate order list is  - ");
-		ListIterator<MLMEvaluateElement> thisList = evaluateList.listIterator(0);
+		LinkedList<MLMEvaluateElement> evalListBySection = evaluateList.get(section);
+		if(evalListBySection == null){
+			evalListBySection = new LinkedList<MLMEvaluateElement>();
+			this.evaluateList.put(section, evalListBySection);
+		}
+		ListIterator<MLMEvaluateElement> thisList = evalListBySection.listIterator(0);
 		while (thisList.hasNext()){
 		     thisList.next().printThisList();
 		}
 	}
-	
-/*	public boolean Evaluate(){
-		boolean retVal = false;
-		String key;
-		ListIterator<MLMEvaluateElement> thisList = evaluateList.listIterator(0);
-		while (thisList.hasNext()){
-			Iterator iter = thisList.next().iterator();
-			while (iter.hasNext()) {
-			    key = (String) iter.next();
-				if(RetrieveConcept(key)){
-					PrintConcept(key);
-					if(EvaluateConcept(key)){ 
-						if(isConclude(key)) {
-						  retVal = conclude(key);	
-						  break;  // concluded true or false
-						}
-						else {
-								// set all the user defined variables
-							addUserVarValFinal(key);
-						}
-					}
-				}
-			}
-		}
-		return retVal;
-	}
-*/	
-	public void WriteAction(String str, Writer w) throws Exception {
+
+	public void WriteAction(Writer w) throws Exception {
 		try{
-			 w.write("public void initAction() {\n");
-		     w.append("\t\tuserVarMap.put(\"ActionStr\", \"" +  str + "\");\n");
+			 w.append("\tpublic void initAction() {\n");
+			 w.append("\t\tthis.actions = new ArrayList<String>();\n");
+			 
+			 int pos = 1;
+			 for(Action action:this.actions){
+				 w.append("\t\tactions.add(\""+action.getActionString());
+				 if(action.getAtVar()!=null){
+					 w.append("@"+action.getAtVar());
+				 }
+				 w.append("\");\n");
+				 pos++;
+			 }
 				   
-		     w.write("}\n\n");	// End of this function
+		     w.append("\t}\n\n");	// End of this function
 		     w.flush();
 		
-			 w.write("public String doAction() {\n");
-		     w.write("\tint index = 0, nindex = 0, endindex = 0, startindex = 0;\n");
-		     w.write("\tString tempstr, variable, outStr = \"\";\n");
-		     w.write("\tString inStr = userVarMap.get(\"ActionStr\");\n\n");
-		     w.write("\ttempstr = inStr;\n\n");
-		     w.write("\tindex = tempstr.indexOf(\"||\", nindex);\n");
-		     w.write("\tif(index != -1) {\n");
-		     w.write("\t\tif(index == 0) { // At the beginning\n");
-		     w.write("\t\t\tnindex = tempstr.indexOf(\"||\", index+1);\n");
-		     w.write("\t\t\tstartindex = index + 2;\n");
-		     w.write("\t\t\tendindex = nindex;\n");
-		     w.write("\t\t\tvariable = inStr.substring(startindex, endindex).trim();\n");
-		     w.write("\t\t\toutStr += userVarMap.get(variable);\n");
-		     w.write("\t\t\tindex = tempstr.indexOf(\"||\", nindex+2);\n");
-		     w.write("\t\t}\n");
+			 w.append("\tpublic String doAction(String inStr) {\n");
+		     w.append("\t\tint index = 0, nindex = 0, endindex = 0, startindex = 0;\n");
+		     w.append("\t\tString value = null;\n");
+		     w.append("\t\tString tempstr, variable, outStr = \"\";\n");
+		     w.append("\t\ttempstr = inStr;\n\n");
+		     w.append("\t\tindex = tempstr.indexOf(\"||\", nindex);\n");
+		     w.append("\t\tif(index != -1) {\n");
+		     w.append("\t\t\tif(index == 0) { // At the beginning\n");
+		     w.append("\t\t\t\tnindex = tempstr.indexOf(\"||\", index+1);\n");
+		     w.append("\t\t\t\tstartindex = index + 2;\n");
+		     w.append("\t\t\t\tendindex = nindex;\n");
+		     w.append("\t\t\t\tvariable = inStr.substring(startindex, endindex).trim();\n");
+		     w.append("\t\t\t\tvalue=userVarMap.get(variable);\n");
+		     w.append("\t\t\t\tif(value != null){\n");
+		     w.append("\t\t\t\t\toutStr += value;\n");
+		     w.append("\t\t\t\t}\n");
+		     w.append("\t\t\t\tindex = tempstr.indexOf(\"||\", nindex+2);\n");
+		     w.append("\t\t\t}\n");
 		     
-		     w.write("\t\twhile(index > 0){\n");
-		     w.write("\t\t\tif(nindex == 0){ // Are we starting now\n");
-		     w.write("\t\t\t\tstartindex = nindex;\n");
-		     w.write("\t\t\t\tendindex = index;\n");
-		     w.write("\t\t\t\toutStr += tempstr.substring(startindex, endindex);\n");
-		     w.write("\t\t\t}\n");
+		     w.append("\t\t\twhile(index > 0){\n");
+		     w.append("\t\t\t\tif(nindex == 0){ // Are we starting now\n");
+		     w.append("\t\t\t\t\tstartindex = nindex;\n");
+		     w.append("\t\t\t\t\tendindex = index;\n");
+		     w.append("\t\t\t\t\tvalue=tempstr.substring(startindex, endindex);\n");
+		     w.append("\t\t\t\t\tif(value != null){\n");
+		     w.append("\t\t\t\t\t\toutStr += value;\n");
+		     w.append("\t\t\t\t\t}\n");
+		     w.append("\t\t\t\t}\n");
 		     
-		     w.write("\t\t\telse {\n");
-		     w.write("\t\t\t\tstartindex = nindex + 2;\n");
-		     w.write("\t\t\t\tendindex = index;\n");
-		     w.write("\t\t\t\toutStr += tempstr.substring(startindex, endindex);\n");
-		     w.write("\t\t\t}\n");
+		     w.append("\t\t\t\telse {\n");
+		     w.append("\t\t\t\t\tstartindex = nindex + 2;\n");
+		     w.append("\t\t\t\t\tendindex = index;\n");
+		     w.append("\t\t\t\t\tvalue=tempstr.substring(startindex, endindex);\n");
+		     w.append("\t\t\t\t\tif(value != null){\n");
+		     w.append("\t\t\t\t\t\toutStr += value;\n");
+		     w.append("\t\t\t\t\t}\n");
+		     w.append("\t\t\t\t}\n");
 		     
 		     
-		     w.write("\t\t\tnindex = tempstr.indexOf(\"||\", index+2);\n");
-		     w.write("\t\t\tstartindex = index + 2;\n");
-		     w.write("\t\t\tendindex = nindex;\n");
-		     w.write("\t\t\tvariable = inStr.substring(startindex, endindex).trim();\n");
-		     w.write("\t\t\toutStr += userVarMap.get(variable);\n");
-		     w.write("\t\t\tindex = tempstr.indexOf(\"||\", nindex+2);\n");
-		     w.write("\t\t}\n");
-		     w.write("\t\toutStr += tempstr.substring(nindex+2);\n");
-		     w.write("\t}\n");
+		     w.append("\t\t\t\tnindex = tempstr.indexOf(\"||\", index+2);\n");
+		     w.append("\t\t\t\tstartindex = index + 2;\n");
+		     w.append("\t\t\t\tendindex = nindex;\n");
+		     w.append("\t\t\t\tvariable = inStr.substring(startindex, endindex).trim();\n");
+		     w.append("\t\t\t\tvalue=userVarMap.get(variable);\n");
+		     w.append("\t\t\t\tif(value != null){\n");
+		     w.append("\t\t\t\t\toutStr += value;\n");
+		     w.append("\t\t\t\t}\n");
+		     w.append("\t\t\t\tindex = tempstr.indexOf(\"||\", nindex+2);\n");
+		     w.append("\t\t\t}\n");
+		     w.append("\t\t\tvalue=tempstr.substring(nindex+2);\n");
+		     w.append("\t\t\tif(value != null){\n");
+		     w.append("\t\t\t\toutStr += value;\n");
+		     w.append("\t\t\t}\n");
+		     w.append("\t\t}\n");
 		     
-		     w.write("\telse {\n");
-		     w.write("\t\toutStr += tempstr;\n");
-		     w.write("\t}\n");
+		     w.append("\t\telse {\n");
+		     w.append("\t\t\tvalue=tempstr;\n");
+		     w.append("\t\t\tif(value != null){\n");
+		     w.append("\t\t\t\toutStr += value;\n");
+		     w.append("\t\t\t}\n");
+		     w.append("\t\t}\n");
 		     
-		     w.write("\treturn outStr;\n");
-		     w.write("}\n");
+		     w.append("\t\treturn outStr;\n");
+		     w.append("\t}\n");
 		     
 		    
 		     w.flush();
@@ -287,433 +230,434 @@ public class MLMObject {
 	try{
 		String key;
 		ListIterator<MLMEvaluateElement> thisList;
-		thisList = evaluateList.listIterator(0);
-		
-		
+		LinkedList<MLMEvaluateElement> evalListBySection = evaluateList.get("data");
+		if(evalListBySection == null){
+			evalListBySection = new LinkedList<MLMEvaluateElement>();
+			this.evaluateList.put("data", evalListBySection);
+		}
+		thisList = evalListBySection.listIterator(0);
 		
 		if(retValEval == false) {
 			return false;
 		}
 			
-		 w.append("\npublic Result eval(LogicContext context, Patient patient,\n" +
-		 		"Map<String, Object> parameters) throws LogicException {\n");
-		 w.append("\tString actionStr = \"\";\n");
-		 w.append("\tResult ruleResult = new Result();\n");
-		 w.append("\tBoolean ageOK = null;\n\n\n\ttry {\n");
+		 w.append("\n\tpublic Result eval(LogicContext context, Patient patient,\n" +
+		 		"\t\t\tMap<String, Object> parameters) throws LogicException {\n\n");
+		 w.append("\t\tString actionStr = \"\";\n");
+		 w.append("\t\tHashMap resultLookup = new HashMap();\n");
+		 w.append("\t\tBoolean ageOK = null;\n\n\t\ttry {\n");
 		 
+		 w.append("\t\t\tthis.patient=patient;\n");
+		 w.append("\t\t\tuserVarMap = new HashMap <String, String>();\n");
+		 w.append("\t\t\tfirstname = patient.getPersonName().getGivenName();\n");
+		 w.append("\t\t\tuserVarMap.put(\"firstname\", toProperCase(firstname));\n");
+		 w.append("\t\t\tString lastName = patient.getFamilyName();\n");
+		 w.append("\t\t\tuserVarMap.put(\"lastName\", lastName);\n"); 	 
+		 w.append("\t\t\tString gender = patient.getGender();\n");
+		 w.append("\t\t\tuserVarMap.put(\"Gender\", gender);\n");
+		 w.append("\t\t\tif(gender.equalsIgnoreCase(\"M\")){\n");
+		 w.append("\t\t\t\tuserVarMap.put(\"gender\",\"his\");\n");
+		 w.append("\t\t\t\tuserVarMap.put(\"hisher\",\"his\");\n");
+		 w.append("\t\t\t}else{\n");
+		 w.append("\t\t\t\tuserVarMap.put(\"gender\",\"her\");\n");
+		 w.append("\t\t\t\tuserVarMap.put(\"hisher\",\"her\");\n");
+		 w.append("\t\t\t}\n");
 		 
-		 w.append("\tuserVarMap = new HashMap <String, String>();\n");
-		 w.append("\tfirstname = patient.getPersonName().getGivenName();\n");
-		 w.append("\tuserVarMap.put(\"firstname\", firstname);\n");
-		 w.append("\tinitAction();\n");		     
+		 w.append("\t\t\tinitAction();\n");		     
 		 /************************************************************************************************
 		  *   Do the LogicCriteria here 
 		  */
+
+		 Iterator<Map.Entry<String, Comparison>> comparisonIterator = null;  
+		   if (this.comparisons.get("data") != null) {
+				comparisonIterator = this.comparisons.get("data").entrySet().iterator();
+		   }
+			while (thisList.hasNext()) {
+
+				WriteData(thisList.next(),
+		        w,
+		        comparisonIterator); 
+				w.flush();
+				
+		    }
+		 //get all the distinct keys
+		 Set<String> uniqueKeys = this.conceptMap.keySet();
+		 uniqueKeys.remove("Gender");
 		 
-		 while (thisList.hasNext()){		// Writes individual evaluate functions
-				Iterator iter1 = thisList.next().iterator();
-				while (iter1.hasNext()) {
-				    key = (String) iter1.next();	// else if
-				    retVal = writeEvaluateConcept(key, w);
-				    if(retVal == false){
-				    	retValEval = false;	   // Atleast 1 error
-				    }
-				}
-			}
 		 /***********************************************************************************************/
 		 
-		 w.append("\n\tif(evaluate_logic(ruleResult)){\n");	
-		 w.append("\t\tactionStr = doAction();\n");
-		 w.append("\t\truleResult.clear();\n");
-		 w.append("\t\truleResult.add(new Result(actionStr));\n");
-		 w.append("\t\treturn ruleResult;\n");
-		 w.append("\n\t}\n\n");
-		
-		 w.append("\n} catch (LogicException e) {\n");
-		 w.append("\t\treturn Result.emptyResult();");
-		 w.append("\n}\n\treturn ruleResult;\n}\n\n");
-		 
-		 w.append("\n");
-	     w.append("private boolean evaluate_logic(Result valueMap) {\n");
+		 w.append("\n\n\t\t\tif(evaluate_logic(resultLookup,parameters)){\n");	
+		 w.append("\t\t\t\tResult ruleResult = new Result();\n");
+		 if (this.calls.get("action") != null) {
+				for (Call currCall : this.calls.get("action")) {
+					currCall.write(w);
+				}
+			}
+		 w.append("\t\t\t\tfor(String currAction:actions){\n");
+		 w.append("\t\t\t\t\tcurrAction = doAction(currAction);\n");
+		 w.append("\t\t\t\t\truleResult.add(new Result(currAction));\n");
+		 w.append("\t\t\t\t}\n");
+			
+			w.append("\t\t\t\treturn ruleResult;\n");
+			w.append("\t\t\t}\n");
 
-	     w.append("\tboolean retVal = false;\n");
-	     w.append("\tif(valueMap.exists())\n\t{\n");
-	     w.append("\t\t//conclude here\n\t\tretVal = true;\n\t\treturn retVal;\n\t}\n\t\treturn retVal;");
-	   //  thisList = evaluateList.listIterator(0);   // Start the Big Evaluate()
-	   //  while (thisList.hasNext()){
-	   // 	 Iterator iter = thisList.next().iterator();
-	   // 	 retVal = WriteLogic(iter, w);
-	   // 	 w.flush();
-	   //  }
-	    //if(retVal){				// The WriteLogic function did not find a standalone conclude
-	   // 	w.append("\t\treturn retVal;\n");
-	   // }
-	    w.append("\n\t}");
-	 	w.append("\n");
-	}
-	catch (Exception e) {
-	      System.err.println("Write Evaluate: "+e);
-	      e.printStackTrace();   // so we can get stack trace		
-	    }
-	return retValEval;
-    }
-	
-/*	
-	private void WriteIf (Iterator iter, Writer w) {
-	  
-		try {
-		
-		String key = "", nextKey = "", tmpStr = "";
-		
-		boolean startIterFlag = false;
-		boolean boolFlag = false;
-		
-				
-			if(iter.hasNext()) {		// IF 
-					key = (String) iter.next();
-					if(key.equals("tmp_conclude")){
-				    	w.append("\n //conclude here\n");
-				    	writeActionConcept(key, w);
-					//	w.append("\n\t}");
-				    }
-				    else if(key.equals("ELSE")){
-				    	w.append("\n\telse {\n");
-				    	writeActionConcept(key, w);
-						w.append("\n\t}");
-				    }
-				    else if(key.equals("IF")){ 
-				    	//tmpStr = "\n\tif(evaluate_" + key + "()";
-				    	if(iter.hasNext()) {
-				    		startIterFlag = true;
-				           	while(iter.hasNext()) {		// IF  followed by else if, else, etc
-								nextKey = (String) iter.next();
-								if(nextKey.equals("THEN")) {
-									tmpStr += " ) {\n\t\t";
-									w.append(tmpStr);
-									InNestedIf++;
-									WriteIf(iter, w);   // recurse, because If then if ...
-									// reset the following as starting fresh
-									InNestedIf--;
-									startIterFlag = false; 
-									boolFlag = false;
-									tmpStr = "";
-							    }
-								else if(nextKey.equals("AND")){
-									tmpStr += " && ";
-									boolFlag = true;
-									
-								}
-								else if(boolFlag) {
-									tmpStr += complexBool(nextKey);
-									boolFlag = false;
-								}
-								else if(startIterFlag && !boolFlag){
-									tmpStr += " ) {\n";
-									w.append(tmpStr);
-									startIterFlag = false;
-									writeActionConcept(key, w);
-									w.append("\n\t}");
-									tmpStr = complexIf(nextKey);
-									key = nextKey;					// store the previous key
-									nextKey = "";
-									w.append(tmpStr);
-								}
-								else {
-									writeActionConcept(key, w);
-									if(InNestedIf == 0) {
-										w.append("\n\t}");
-									}
-									tmpStr = complexIf(nextKey);
-									key = nextKey;					// store the previous key
-									nextKey = "";
-									w.append(tmpStr);
-								}
-								
-					       	}
-				           	if(nextKey.equals("") && !key.equals("")) {       // end of loop
-				           		writeActionConcept(key, w);
-				           		w.append("\n\t}");
-				           	}
-					    }	
-					    else {      // If we do not have a complex if
-					       	tmpStr += " ) {\n";
-						    w.append(tmpStr);
-							writeActionConcept(key, w);
-							w.append("\n\t}");
-					    }
-				    }
+			w.append("\t\t} catch (Exception e) {\n");
+			w.append("\t\t\treturn Result.emptyResult();");
+			w.append("\n\t\t}\n\t\treturn Result.emptyResult();\n\t}\n\n");
+
+			/***********************************************************Added to write List forming private methods ***********************/
+			LinkedHashMap<String,Comparison> compListBySection = comparisons.get("logic");
+			Iterator<Map.Entry<String,Comparison>> comparisonIteratorLogic = compListBySection.entrySet().iterator();
+			
+			while( comparisonIteratorLogic.hasNext()){
+				Comparison comparison = comparisonIteratorLogic.next().getValue();
+				comparison.writeComparisonList(w);		// write a list helper method only if the operator is IN
+			}
+			/******************************************************************************************************************************/
+			
+			w.append("\tprivate boolean evaluate_logic(HashMap resultLookup,Map<String, Object> parameters) throws LogicException {\n\n");
+			evalListBySection = evaluateList.get("logic");
+			if(evalListBySection == null){
+				evalListBySection = new LinkedList<MLMEvaluateElement>();
+				this.evaluateList.put("logic", evalListBySection);
+			}
+			thisList = evalListBySection.listIterator(0); // Start the Big
+			  
+			
+			w.append("\t\tResult Gender = new Result(userVarMap.get(\"Gender\"));\n");
+			for (String uniqueKey : uniqueKeys) {
+				w.append("\t\tResult "+uniqueKey+" = (Result) resultLookup.get(\"" + uniqueKey + "\");\n");
+			}
+			w.append("\n");		
+			// Evaluate()
+			boolean skipReturn = false;
+			Iterator<LogicAssignment> logicIterator = this.logicAssignments.iterator();
+			
+			if(compListBySection == null){
+				compListBySection = new LinkedHashMap<String, Comparison>();
+				this.comparisons.put("logic", compListBySection);
 			}
 			
-		
-		
-		
-   //	w.append("}\n");	// End of this function
-		w.append("\n");
-		}
-		catch (Exception e) {
-		      System.err.println("Write Evaluate: "+e);
-		      e.printStackTrace();   // so we can get stack trace		
-		    }
-	}
-*/	
+			ArrayList<Call> callBySection = this.calls.get("logic");
+			Iterator<Call> callIterator = null;
+			
+			if(callBySection != null){
+				callIterator = callBySection.iterator();
+			}
+			Iterator<Conclude> concludeIterator = this.concludes.iterator();
+			comparisonIteratorLogic = compListBySection.entrySet().iterator();
 	
-	private boolean WriteLogic (Iterator iter, Writer w) {
-		boolean retVal = true;   // Have the calling function add the statement - return retVal;  
-		try {
-		
-		String key = "", nextKey = "", tmpStr = "";
-		
-		boolean startIterFlag = false;
-		boolean boolFlag = false;
-		boolean funcFlag = false;
-		MLMObjectElement mObjElem;
+			
+			while (thisList.hasNext() ) {
+					skipReturn = WriteLogic(thisList.next(), w,
+				                        logicIterator,comparisonIteratorLogic,
+				                        concludeIterator,callIterator);
+				w.flush();
 				
-			if(iter.hasNext()) {		// IF 
-			key = (String) iter.next();
-			if(key.equals("IF")){ 
-		    	tmpStr = complexIf(key,null);
-		    	w.append (tmpStr);
-		    	
-		    	       	while(iter.hasNext()) {		// IF  followed by else if, else, etc
-		    	       	w.flush();
-		    	       	tmpStr = "";
-		           		nextKey = (String) iter.next();
-		           		if(nextKey.equals("THEN")) {
-							tmpStr += " ) {\n\t";
-							tmpStr += "\tvalueMap.add(val);\n";
-							w.append(tmpStr);
-							
-							
-		           		}
-		           		else if (nextKey.equals("IF")) {
-							InNestedIf++;
-							WriteLogic(iter, w);   // recurse, because If then if ...
-							// reset the following as starting fresh
-							InNestedIf--;
-							startIterFlag = false; 
-							boolFlag = false;
-							tmpStr = "";
-					    }
-						else if(nextKey.equals("AND")){
-							tmpStr += " && ";
-							w.append(tmpStr);
-							w.flush();
-							boolFlag = true;
-							
-						}
-						else if(nextKey.equals("OR")){
-							tmpStr += " || ";
-							w.append(tmpStr);
-							w.flush();
-							boolFlag = true;
-							
-						}
-						else if(boolFlag) {
-						//	tmpStr += complexBool(nextKey);
-							mObjElem = GetMLMObjectElement(nextKey);
-							tmpStr += complexBool(nextKey, mObjElem);
-							w.append(tmpStr);
-							boolFlag = false;
-						}
-						else if(startIterFlag && !boolFlag && !funcFlag){
-							tmpStr += complexIf(nextKey, null);
-							w.append(tmpStr);
-							startIterFlag = false;
-							writeActionConcept(key, w);
-							key = nextKey;					// store the previous key
-							nextKey = "";
-							
-						}
-						else if (nextKey.equals("Logic_Assignment")) {
-							writeActionConcept(key, w);
-							if(InNestedIf == 0 && IsComplexIf) {
-								IsComplexIf = false;
-								w.append("\n\t}\n\t}\n");
-							}
-							
-							nextKey = "";
-						}
-						else if (nextKey.equals("Conclude")){
-							w.append("\n\t //conclude here\n");
-					    	writeActionConcept(key, w);
-					    	if(InNestedIf == 0) {
-					    		if(!IsComplexIf) {
-					    			w.append("\n\t}\n");
-					    			
-					    		}
-					    		else {
-					    			w.append("\n\t}\n\t}\n");
-					    			IsComplexIf = false;
-					    		}
-					    		
-					    		if(key.startsWith("ELSE_"))
-					    		{
-					    			retVal = false;	// Since we are conclude unconditionally, we do not want calling function to add the return statement
-					    		}
-							}
-							
-							nextKey = "";
-						}
-						
-						else if(nextKey.equals("EXIST") || (nextKey.equals("ANY"))){
-		    		    	funcFlag = true;
-		    		    	key = nextKey;
-		           		}
-						else if(funcFlag){
-							mObjElem = GetMLMObjectElement(nextKey);
-							tmpStr += complexFunc(nextKey, mObjElem,key);
-							w.append(tmpStr);
-							key = nextKey;
-							funcFlag = false;
-						}
-						else {
-							mObjElem = GetMLMObjectElement(nextKey);
-							tmpStr += complexIf(nextKey, mObjElem);
-							w.append(tmpStr);
-							key = nextKey;  // store the current key
-						}
-						
-			       	}
-		         
-			    }
-			else if(key.startsWith("Conclude")) { // Conclude by itself
-				w.append("\n\t //conclude here\n");
-		    	writeActionConcept(key, w);
-		    	retVal = false;	// Since we are conclude unconditionally, we do not want calling function to add the return statement
-		   	  }
-			    
-		    }
-			w.append("\n");
+			}
+			if(!skipReturn){
+				w.append("\treturn false;");
+			}
+
+			w.append("\t}");
+			w.append("\n\n");
+		} catch (Exception e) {
+			System.err.println("Write Evaluate: " + e);
+			e.printStackTrace(); // so we can get stack trace
 		}
-		catch (Exception e) {
-		      System.err.println("Write Evaluate: "+e);
-		      e.printStackTrace();   // so we can get stack trace		
-		    }
-		return retVal;
+		return retValEval;
+	}
+	
+	private void WriteData(MLMEvaluateElement el, Writer w, 
+	//		Comparison comparison
+			Iterator<Map.Entry<String,Comparison>> comparisonIterator
+			)
+	{
+
+		LinkedList<Integer> openParens = new LinkedList<Integer>();
+		LinkedList<Integer> openBrackets = new LinkedList<Integer>();
+		Integer openParen = 0;
+		Integer openBracket = 0;
+		
+		try {
+
+			String key = "";
+			Iterator iter = el.iterator();
+			
+			while (iter.hasNext()) { // IF
+				key = (String) iter.next();
+				if(openParens.size()>0){
+					openParen = openParens.getLast();
+				}
+				if(openBrackets.size()>0){
+					openBracket = openBrackets.getLast();
+					if(!(key.equalsIgnoreCase("ELSEIF")||key.startsWith("ELSE"))){
+						if(openBracket == 0){
+							openBrackets.removeLast();
+							if(openBrackets.size()>0){
+								openBracket = openBrackets.getLast();
+							}
+						}
+					}
+				}			
+				if (key.equalsIgnoreCase("IF")) {
+					w.append("\t\tif(");
+					openParen = 1;
+					openParens.add(openParen);
+				} else if (key.equalsIgnoreCase("ELSEIF")) {
+				
+					while (openBracket > 0) {
+						w.append("}");
+						openBracket--;
+					}
+					if(openBrackets.size()>0){
+						openBrackets.removeLast();
+					}
+					w.append("\t\telse if(");
+					openParen = 1;
+					openParens.add(openParen);
+				}else if (key.startsWith("ENDIF")) {
+					while (openBracket > 0) {
+						w.append("}");
+						openBracket--;
+					}
+					if(openBrackets.size()>0){
+						openBrackets.removeLast();
+					}
+				}else if (key.startsWith("ELSE")) {
+
+					while (openBracket > 0) {
+						w.append("}");
+						openBracket--;
+					}
+					if(openBrackets.size()>0){
+						openBrackets.removeLast();
+					}
+					openBracket=1;
+					openBrackets.add(openBracket);
+					w.append("\t\telse{\n");
+					
+				} else if (key.equalsIgnoreCase("THEN")) {
+					while (openParen > 0) {
+						w.append(")");
+						openParen--;
+					}
+					if(openParens.size()>0){
+						openParens.removeLast();
+					}
+					w.append("{\n");
+					openBracket=1;
+					openBrackets.add(openBracket);
+				} else if (key.equalsIgnoreCase("AND")) {
+					w.append("&&\n\t\t\t");
+				} else if (key.equalsIgnoreCase("OR")) {
+					w.append("||\n\t\t\t");
+				} else if (key.equalsIgnoreCase("NOT")) {
+					w.append("!");
+				} else {
+
+					MLMObjectElement objElement = this.conceptMap.get(key);
+					if (openParen > 0) {
+						if (comparisonIterator != null && comparisonIterator.hasNext()) {
+								Comparison comparison = comparisonIterator.next().getValue();;
+								if (comparison != null) {
+									comparison.write(w,objElement);
+								}
+							}
+					}else{
+						if (!key.equalsIgnoreCase("gender")) {
+							writeEvaluateConcept(key, w);
+						}
+					}
+				}
+			}
+			while(openBrackets.size()>0&&openBrackets.getLast() != null)
+			{
+				openBracket = openBrackets.removeLast();
+				while (openBracket > 0) {
+					w.append("}");
+					openBracket--;
+				}
+			}	
+		} catch (Exception e) {
+			System.err.println("Write Evaluate: " + e);
+			e.printStackTrace(); // so we can get stack trace
+		}
 	}	
 	
-	private String complexIf(String nextKey, MLMObjectElement mObjElem) {
-		String tmpStr = "";
-	
-   try{
-	   if(nextKey.equals("ELSE") || nextKey.startsWith("ELSE_")){
-	    	if(InNestedIf > 0) {
-				tmpStr = "\n\t}\n\telse {\n";
-			}
-	    	else {
-	    		tmpStr = "\n\telse {\n";
-	    	}
-	    }
-	    else if(nextKey.equals("ELSEIF")){
-	    	if(InNestedIf > 0) {
-				tmpStr = "\n\t}\n\telse if (";
-			}
-	    	else {
-	    		tmpStr = "\n\telse if (";
-	    	}
-	        
-	    }
-	    else if(nextKey.equals("IF")){
-	    	if(InNestedIf > 0) {
-				tmpStr = "\n\t}\n\tif (";
-			}
-	    	else {
-	    		tmpStr = "\n\tif (";
-	    	}
-	        
-	    }
-	   else if(!nextKey.equals("ENDIF")){
-			tmpStr = " (val = " + nextKey + "()) != null ) {\n\t";
-			IsComplexIf = true;
-			if(mObjElem != null ){
-				tmpStr += "\tif (";
-				tmpStr += mObjElem.getCompOpCode(nextKey,NOLIST);
+	private boolean WriteLogic(MLMEvaluateElement el, Writer w, 
+			Iterator<LogicAssignment> logicIterator, 
+			//Comparison comparison,
+			Iterator<Map.Entry<String,Comparison>> comparisonIterator,
+			Iterator<Conclude> concludeIterator, Iterator<Call> callIterator) {
+
+		boolean skipReturn = false;
+		LinkedList<Integer> openParens = new LinkedList<Integer>();
+		LinkedList<Integer> openBrackets = new LinkedList<Integer>();
+		Integer openParen = 0;
+		Integer openBracket = 0;
+		
+		try {
+
+			String key = "";
+			Iterator iter = el.iterator();
+			Comparison comparison;
+			
+			while (iter.hasNext()) { // IF
+				key = (String) iter.next();				
 				
-			}
-			 
-		}
-   	} catch (Exception e){
-	      System.err.println("ComplexIf: "+e);
-	      e.printStackTrace();   // so we can get stack trace		
-	    }
-		return tmpStr;
-	}
-	
-	private String complexFunc(String nextKey, MLMObjectElement mObjElem, String Key) {
-		String tmpStr = "";
-     try {		
-		if(Key.equals("EXIST") && !nextKey.equals("")){       // Not blank
-		    	tmpStr = "userVarMap.containsKey(\""+ nextKey+ "\") && !userVarMap.get(\"" + nextKey + "\").equals(\"\")  ";
-		}
-		else if(Key.equals("ANY") && !nextKey.equals("")){
-			tmpStr = " (val = " + nextKey + "()) != null ) {\n\t";
-			IsComplexIf = true;
-			if(mObjElem != null ){
-				tmpStr += "\tif (";
-				tmpStr += mObjElem.getCompOpCode(nextKey, LIST);
-			}
+					
+				if(openParens.size()>0){
+					openParen = openParens.getLast();
+				}
+				if(openBrackets.size()>0){
+					openBracket = openBrackets.getLast();
+					if(!(key.equalsIgnoreCase("ELSEIF")||key.startsWith("ELSE"))){
+						if(openBracket == 0){
+							openBrackets.removeLast();
+							if(openBrackets.size()>0){
+								openBracket = openBrackets.getLast();
+							}
+						}
+					}
+				}
 				
-		}
-		else {
-			if(mObjElem != null ){
-				tmpStr += mObjElem.getCompOpCode(nextKey, NOLIST);
+				if (key.equalsIgnoreCase("IF")) {
+					w.append("\t\tif(");
+					openParen = 1;
+					openParens.add(openParen);
+				} else if (key.equalsIgnoreCase("ELSEIF")) {
 				
+					while (openBracket > 0) {
+						w.append("}");
+						openBracket--;
+					}
+					if(openBrackets.size()>0){
+						openBrackets.removeLast();
+					}
+					w.append("\t\telse if(");
+					openParen = 1;
+					openParens.add(openParen);
+				}else if (key.startsWith("ENDIF")) {
+					while (openBracket > 0) {
+						w.append("}");
+						openBracket--;
+					}
+					if(openBrackets.size()>0){
+						openBrackets.removeLast();
+					}
+				}else if (key.startsWith("ELSE")) {
+					
+					while (openBracket > 0) {
+						w.append("}");
+						openBracket--;
+					}
+					if(openBrackets.size()>0){
+						openBrackets.removeLast();
+					}
+					if(openBrackets.size()>0){
+						openBracket = openBrackets.getLast();
+						if(openBracket==0){
+							skipReturn = true;
+						}
+					}else{
+						skipReturn = true;
+					}
+					openBracket=1;
+					openBrackets.add(openBracket);
+					w.append("\t\telse{\n");
+					
+				} else if (key.equalsIgnoreCase("THEN")) {
+					while (openParen > 0) {
+						w.append(")");
+						openParen--;
+					}
+					if(openParens.size()>0){
+						openParens.removeLast();
+					}
+					w.append("{\n");
+					openBracket=1;
+					openBrackets.add(openBracket);
+				} else if (key.equalsIgnoreCase("AND")) {
+					w.append("&&\n\t\t\t");
+				} else if (key.equalsIgnoreCase("OR")) {
+					w.append("||\n\t\t\t");
+				} else if (key.equalsIgnoreCase("NOT")) {
+					w.append("!");
+				} else if (key.equalsIgnoreCase("Logic_Assignment")) {
+					if (logicIterator.hasNext()) {
+						LogicAssignment logicAssignment = logicIterator.next();
+						logicAssignment.write(w);
+						
+						//make sure to close the open bracket here
+						//we do NOT want to conclude from a logic_assignment
+						if(openBracket>0){
+							w.append("\t\t}\n");
+							if(openBrackets.size()>0){
+								openBrackets.removeLast();
+							}
+							openBrackets.add(--openBracket);
+						}
+					}
+				} else if (key.startsWith("Conclude")) {
+					if(concludeIterator.hasNext()){
+						Conclude conclude = concludeIterator.next();
+						conclude.write(w);
+					}
+					
+					//if we conclude with no open brackets
+					//then it is the final return of the 
+					//logic method
+					if(openBracket == 0){
+						skipReturn = true;
+					}
+					
+					if(openBracket>0){
+						w.append("\t\t}\n");
+						if(openBrackets.size()>0){
+							openBrackets.removeLast();
+						}
+						openBrackets.add(--openBracket);
+					}
+					
+				}else if (key.equalsIgnoreCase("Call")) {
+					Call call = callIterator.next();
+					call.write(w);
+				}else{
+
+					MLMObjectElement objElement = this.conceptMap.get(key);
+						if( comparisonIterator.hasNext() ) {	
+						 comparison = comparisonIterator.next().getValue();
+						}   
+						else
+						{
+							comparison = null;
+						}	
+							if(comparison != null){
+								comparison.write(w, objElement);
+							}
+					
+				}
 			}
+			
+			while(openBrackets.size()>0&&openBrackets.getLast() != null)
+			{
+				openBracket = openBrackets.removeLast();
+				while (openBracket > 0) {
+					w.append("}");
+					openBracket--;
+				}
+			}	
+		} catch (Exception e) {
+			System.err.println("Write Evaluate: " + e);
+			e.printStackTrace(); // so we can get stack trace
 		}
-     } catch (Exception e){
-	      System.err.println("ComplexFunc: "+e);
-	      e.printStackTrace();   // so we can get stack trace		
-	    }
-		return tmpStr;
-	}
-	
-	
-	private String complexBool(String nextKey, MLMObjectElement mObjElem) {
-		String tmpStr = "";
-     try {		
-		if(nextKey.equals("tmp_conclude")){
-	    	//TODO error
-	    }
-	    else if(nextKey.equals("tmp_01")){
-	    	//TODO error
-	    }
-		else {
-			if(mObjElem != null ){
-				tmpStr += mObjElem.getCompOpCode(nextKey, NOLIST);
-				
-			}
-		}
-     } catch (Exception e){
-	      System.err.println("ComplexBool: "+e);
-	      e.printStackTrace();   // so we can get stack trace		
-	    }
-		return tmpStr;
-	}
-	
+		
+		return skipReturn;
+	}	
 	
 	public int GetSize(){
 		return conceptMap.size();
-	}
-	//public void InitIterator() {
-	//	iter = conceptMap.keySet().iterator();
-	//}
-	//public String GetNextConceptVar(){
-	//	if(iter.hasNext()) { 
-	//		return iter.next();
-	//	}
-	//	else {
-	//		return null;
-	//	}
-	//}
-	
-	public String GetConceptName(String key){
-		if(conceptMap.containsKey(key)) {
-			return conceptMap.get(key).getConceptName();
-		}
-		else {
-			return null;
-		}
-				
 	}
 	
 	public MLMObjectElement GetMLMObjectElement(String key) {
@@ -725,56 +669,67 @@ public class MLMObject {
 		}
 				
 	}
-	public void InitEvaluateList() {
-	//	ResetConceptVar();
-		if(!evaluateList.isEmpty()){
-			MLMEvaluateElement mEvalElem = evaluateList.getLast();
-			if(mEvalElem != null && mEvalElem.getLast().equals("ELSEIF")){
+	public void InitEvaluateList(String section,String keyToAdd) {
+		if (!evaluateList.isEmpty()) {
+			LinkedList<MLMEvaluateElement> evalListBySection = evaluateList.get(section);
+			MLMEvaluateElement mEvalElem = null;
+			if (evalListBySection == null) {
+				evalListBySection = new LinkedList<MLMEvaluateElement>();
+				this.evaluateList.put(section, evalListBySection);
+			} else {
+				mEvalElem = evalListBySection.getLast();
+			}
+			if (mEvalElem != null && mEvalElem.getLast().equals("ELSEIF")) {
 				// Nested if
 				return;
-			}
-			else if (mEvalElem != null && mEvalElem.getLast().equals("ELSE")){
+			} else if (mEvalElem != null && mEvalElem.getLast().equals("ELSE")) {
 				// Nested if
 				return;
-			} 
-			else {
-				MLMEvaluateElement mEvalElemNew = new MLMEvaluateElement();
-				evaluateList.add(mEvalElemNew);
+			} else{
+				if (openIf(mEvalElem)) {
+					return;
+				} else {
+					MLMEvaluateElement mEvalElemNew = new MLMEvaluateElement();
+					evalListBySection.add(mEvalElemNew);
+				}
 			}
-		}
-		else {
+		} else {
 			MLMEvaluateElement mEvalElemNew = new MLMEvaluateElement();
-			evaluateList.add(mEvalElemNew);
+			LinkedList<MLMEvaluateElement> evalListBySection = new LinkedList<MLMEvaluateElement>();
+			this.evaluateList.put(section, evalListBySection);
+			evalListBySection.add(mEvalElemNew);
 		}
-		
-	}
-/*	public boolean RetrieveConcept(String key) {
-		
-		//TODO check to see if user authenticated
-		boolean retVal = false;
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null ){
-			mObjElem.setServicesContext(Context.getConceptService(), Context.getObsService());
-			if(mObjElem.getDBAccessRequired()){
-				retVal = mObjElem.getConceptForPatient(locale, patient);
-			}
-			else {
-				retVal = true; // No DB access required like else or simply conclude
-			}
-		}
-		return retVal;
+
 	}
 	
+	private boolean openIf(MLMEvaluateElement mEvalElem){
 		
-	public boolean EvaluateConcept(String key) {
-		boolean retVal = false;
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null && !mObjElem.isElementEvaluated()){
-			retVal = mObjElem.evaluate();
+		if(mEvalElem == null){
+			return false;
 		}
-		return retVal;
+		Iterator iter = mEvalElem.iterator();
+		int numOpen = 0;
+		int numClosed = 0;
+		
+		while(iter.hasNext()){
+			String currKey = (String) iter.next();
+			if(currKey.equalsIgnoreCase("If")||currKey.startsWith("Else")){
+				numOpen++;
+			}
+			
+			if(currKey.startsWith("Conclude")||
+					currKey.equalsIgnoreCase("endif")||
+					currKey.equalsIgnoreCase("logic_assignment")){
+				numClosed++;
+			}
+		}
+		
+		if(numOpen>numClosed){
+			return true;
+		}
+		return false;
 	}
-*/	
+	
 	public boolean writeEvaluateConcept(String key, Writer w) throws Exception{
 		boolean retVal = true;
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
@@ -785,167 +740,18 @@ public class MLMObject {
 		return retVal;
 	}
 
-	public boolean writeActionConcept(String key, Writer w) throws Exception{
-		boolean retVal = false;
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null ){
-			retVal = mObjElem.writeAction(key, w);
-			w.flush();
+	public void AddToEvaluateList(String section,String key){
+		LinkedList<MLMEvaluateElement> evalListBySection = evaluateList.get(section);
+		if(evalListBySection == null){
+			evalListBySection = new LinkedList<MLMEvaluateElement>();
+			this.evaluateList.put(section, evalListBySection);
 		}
-		else {
-			// Must be conclude not attached to a read statement variable, and attached to a function like EXIST
-			mObjElem = GetMLMObjectElement("Func_1");
-			retVal = mObjElem.writeAction(key, w);
-			w.flush();
-		}
-		return retVal;
-	}
-	
-	
-/*	public boolean Evaluated(String key){
-		boolean retVal = false;
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			retVal = mObjElem.getEvaluated();
-		}
-		return retVal;
-	}
-	
-	public Iterator <String> iterator(){
-		Iterator iter;
-		return iter = conceptMap.keySet().iterator();
-	}
-*/	
-	public void AddToEvaluateList(String key){
-
-		MLMEvaluateElement mEvalElem = evaluateList.getLast();
+		MLMEvaluateElement mEvalElem = evalListBySection.getLast();
 		if(mEvalElem != null){
 			mEvalElem.add(key);
 		}
-	//	SetConceptVar(key);
-	}
-	
-	public void SetCompOperator(Integer op, String key) {
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			mObjElem.setCompOp(op);
-		}
-	}
-	
-	public void SetAnswer (String val, String key) {
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			mObjElem.setAnswer(val);
-		}
-	}
-	
-	public void SetAnswer (int val, String key) {
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			mObjElem.setAnswer(val);
-		}
-	}
-	public void SetAnswer (boolean val, String key) {
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			mObjElem.setAnswer(val);
-		}
-	}
-	
-	public void SetConcludeVal (boolean val, String key){
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			mObjElem.setConcludeVal(val);
-		}
-//		 remove it as no nested IFs anymore
-//		if(!evaluateList.isEmpty()){
-//			MLMEvaluateElement mEvalElem = evaluateList.getLast();
-//			if(mEvalElem != null && mEvalElem.getLast().equals("THEN")){
-//				// Nested if
-//				mEvalElem.removeThen();
-//			}
-//		}
-		
 	}
 		
-	public void SetUserVarVal (String var, String val, String key) {
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			mObjElem.addUserVarVal(var, val);
-		}
-	
-	}
-	
-	public void SetDBAccess(boolean val, String key ) {
-		MLMObjectElement mObjElem;
-		if(key.equals("")) {
-				mObjElem = GetMLMObjectElement(ConceptVar);
-		}
-		else {	
-				mObjElem = GetMLMObjectElement(key);
-		}
-		if(mObjElem != null){
-			mObjElem.setDBAccessRequired(val);
-		}
-	}
-	
-	public boolean GetDBAccess(String key ) {
-		boolean retVal = false;
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			retVal = mObjElem.getDBAccessRequired();
-		}
-		return retVal;
-	}
-	
-	public void addUserVarValFinal(String key) {
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			String var = "", val = "";
-		    Iterator iter = mObjElem.iterator();
-			while(iter.hasNext()) {
-				var = (String) iter.next();
-				val = mObjElem.getUserVarVal(var);
-				if(!userVarMapFinal.containsKey(var)) {
-					userVarMapFinal.put(var, val);
-				}
-				else
-				{
-					//TODO either an error or overwrite previous one
-				}
-			}
-		}
-	}
-	public boolean isConclude(String key) {
-		boolean retVal = false;
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			retVal = mObjElem.isConclude();
-		}
-		return retVal;
-	}
-	
-	public boolean conclude(String key) {
-		boolean retVal = false;
-		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			retVal = mObjElem.conclude();
-		}
-		return retVal;
-	}
-	
-	
-/*	public String getUserVarVal(String key) {
-		String retVal = "";
-		if(userVarMapFinal.containsKey(key)) {
-			retVal = userVarMapFinal.get(key);
-		}
-		else if(key.equals("firstname")) {
-			retVal = patient.getPersonName().getGivenName();
-		}
-		return retVal;
-	}
-*/	
 	public void setWhere(String type, String key) {
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
 		if(mObjElem != null){
@@ -1070,10 +876,248 @@ public class MLMObject {
 	public String getType() {
 		return type;
     }
-	public void setActionStr(String s) {
-		 actionStr = s.trim();
+	public void addAction(String actionString) {
+		this.actions.add(new Action(actionString.trim()));
 	}
-	public String getActionStr() {
-		return actionStr;
-   }
+
+	public void addCall(String section,String var,String method){
+		ArrayList<Call> callsBySection = this.calls.get(section);
+		if(callsBySection == null){
+			callsBySection = new ArrayList<Call>();
+			this.calls.put(section, callsBySection);
+		}
+		callsBySection.add(new Call(var,method));
+	}
+	
+	public void addParameter(String section,String parameter){
+		ArrayList<Call> callBySection = this.calls.get(section);
+		
+		if(callBySection == null){
+			return;
+		}
+		
+		Call lastCall = callBySection.get(callBySection.size()-1);
+		lastCall.addParameter(parameter);
+	}
+	
+	public void addCompOperator(String section,Integer operator,String key){
+		
+		LinkedHashMap<String, Comparison> compBySection = this.comparisons.get(section);
+		if(compBySection == null){
+			compBySection = new LinkedHashMap<String,Comparison>();
+			this.comparisons.put(section, compBySection);
+		}
+		Comparison thisComparison = compBySection.get(key);
+		if(thisComparison != null)
+		{
+			if(operator != null && operator == org.openmrs.arden.ArdenBaseParserTokenTypes.IN)
+			{
+				thisComparison.setOperator(operator);
+				// Always make new Comparison object example -  if(key = A) OR (key > 2)
+				// but if key exists, modify it with __number for the hashmap only
+			}
+			else
+			{
+				compBySection.put(key + "__" +compKeyId, new Comparison(key,operator));
+				compKeyIdUsed = true;
+			}
+		}
+		else
+		{
+			compBySection.put(key, new Comparison(key,operator));
+		}
+	}
+	
+	public void SetAnswer(String section,Object answer, String key){
+		HashMap<String, Comparison> compBySection = this.comparisons.get(section);
+		
+		if(compBySection == null){
+			return;
+		}
+		
+		//Comparison lastComparison = compBySection.get(compBySection.size()-1);
+		Comparison lastComparison; 
+		if(compKeyIdUsed == true)
+		{
+			lastComparison = compBySection.get(key+"__"+compKeyId);
+			lastComparison.setAnswer(answer);
+			compKeyIdUsed = false;
+			compKeyId++;	// for next use
+		}
+		else
+		{
+			lastComparison = compBySection.get(key);
+			lastComparison.setAnswer(answer);
+		}
+	}
+	
+	public String SetAnswerList(String section,Object answer, String key)
+	{
+		String retStr = "";
+		
+		LinkedHashMap<String,Comparison> compBySection = this.comparisons.get(section);
+		
+		
+		
+		if(compBySection == null){
+			compBySection = new LinkedHashMap<String,Comparison>();
+			this.comparisons.put(section, compBySection);
+		}
+		
+		//Comparison lastComparison = compBySection.get(compBySection.size()-1);
+		if(key.compareTo("") == 0)
+		{
+			Comparison thisComparison = compBySection.get("__Temp__"+keyId);
+			if(thisComparison == null)
+			{
+				// Create a temp key
+				Comparison c = new Comparison("__Temp__"+keyId, null);
+				c.addAnswerToList(answer);
+				compBySection.put("__Temp__"+keyId, c);
+				retStr = "__Temp__"+keyId;
+			}
+			else
+			{
+				// Temp key found, add answers to it as no key known yet
+				thisComparison.addAnswerToList(answer);
+				retStr = key;
+			}
+		}
+		else
+		{
+			Comparison lastComparison = compBySection.get(key);
+			lastComparison.setAnswer(answer);
+			retStr = key;
+		}
+		return retStr;
+	}
+	
+	public boolean SetAnswerListKey(String section, String key){
+		LinkedHashMap<String,Comparison> compBySection = this.comparisons.get(section);
+		
+		boolean retVal = false;  // indicates if several comparisons for the same key
+		
+		if(compBySection == null){
+			compBySection = new LinkedHashMap<String,Comparison>();
+			this.comparisons.put(section, compBySection);
+			
+			// This should be an error
+		}
+		
+		
+		if(key.compareTo("") != 0)
+		{
+			Comparison keyComparison = compBySection.get(key);
+			
+			// get Last temp key if any
+			Comparison thisComparison = compBySection.get("__Temp__"+keyId);
+			
+			if(keyComparison != null)
+			{
+				// Already a key with ID, we need to move all the TempKey into this key
+				if(thisComparison != null)
+				{
+				//	Iterator<Object> iterator = thisComparison.getAnswerList().iterator();
+				//	while (iterator.hasNext()) {
+				//		keyComparison.addAnswerToList(iterator.next());
+				//	}
+					retVal = true;
+					thisComparison.setKey(key,key + "__" + keyId);
+					compBySection.put(key + "__" + keyId, thisComparison);
+						
+					compBySection.remove("__Temp__"+keyId);
+					if(keyId > 100)			// At most 100 Temp Keys
+						keyId = 1;
+					else
+						keyId++;
+				}
+			}
+			else  if(thisComparison != null)
+			{
+				
+				// Temp key found, add answers to it as no key known yet
+				thisComparison.setKey(key,null);
+		
+				compBySection.put(key, thisComparison);
+				compBySection.remove("__Temp__"+keyId);
+				retVal = false;
+				if(keyId > 100)			// At most 100 Temp Keys
+					keyId = 1;
+				else
+					keyId++;
+				
+			}
+		}
+		return retVal;		
+	}
+	
+	public void addConcludeVal(boolean concludeVal){
+		this.concludes.add(new Conclude(concludeVal));
+	}
+	
+	public void setAt(String atVar){
+		Action lastAction = this.actions.get(actions.size()-1);
+		lastAction.setAtVar(atVar);
+	}
+
+    public void setAgeMax(String ageMax) {
+
+    	int unitIndex = ageMax.indexOf("days");
+		if(unitIndex < 0){
+			unitIndex = ageMax.indexOf("weeks");
+		}
+		if(unitIndex < 0){
+			unitIndex = ageMax.indexOf("months");
+		}
+		if(unitIndex < 0){
+			unitIndex = ageMax.indexOf("years");
+		}
+		
+		if(unitIndex > 0){
+			this.ageMaxUnits = ageMax.substring(unitIndex,ageMax.length());
+			this.ageMax = Integer.parseInt(ageMax.substring(0,unitIndex));
+		}else
+		{
+			this.ageMax = Integer.parseInt(ageMax);
+		}
+	}
+
+	public void setAgeMin(String ageMin) {
+		
+		int unitIndex = ageMin.indexOf("days");
+		if(unitIndex < 0){
+			unitIndex = ageMin.indexOf("weeks");
+		}
+		if(unitIndex < 0){
+			unitIndex = ageMin.indexOf("months");
+		}
+		if(unitIndex < 0){
+			unitIndex = ageMin.indexOf("years");
+		}
+		
+		if(unitIndex > 0){
+			this.ageMinUnits = ageMin.substring(unitIndex,ageMin.length());
+			this.ageMin = Integer.parseInt(ageMin.substring(0,unitIndex));
+		}else
+		{
+			this.ageMin = Integer.parseInt(ageMin);
+		}
+		
+	}
+
+	public Integer getAgeMax() {
+    	return ageMax;
+    }
+
+	public Integer getAgeMin() {
+    	return ageMin;
+    }
+
+	public String getAgeMaxUnits() {
+    	return ageMaxUnits;
+    }
+
+	public String getAgeMinUnits() {
+    	return ageMinUnits;
+    }
 }

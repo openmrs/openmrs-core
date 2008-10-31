@@ -23,12 +23,11 @@ import org.openmrs.Concept;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.rule.ReferenceRule;
-import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
  * TODO Add more tests here
  */
-public class LogicEvalTest extends BaseContextSensitiveTest {
+public class LogicEvalTest extends LogicBaseContextSensitiveTest {
 
 	@Before
 	public void runBeforeEachTest() throws Exception {
@@ -52,8 +51,8 @@ public class LogicEvalTest extends BaseContextSensitiveTest {
 		// RuleFactory needs to be cleaned up so that it picks up the new concepts
 		
 		// register temperature as a rule if needed
-		Concept temperature = Context.getConceptService().getConcept(1);
-        String name = temperature.getName().getName();
+		Concept temperature = Context.getConceptService().getConcept(12232);
+        String name = temperature.getBestName(Context.getLocale()).getName();
         try {
         	Context.getLogicService().getRule(name);
         }

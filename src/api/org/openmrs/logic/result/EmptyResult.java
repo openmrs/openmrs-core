@@ -21,7 +21,9 @@ import java.util.Collection;
  */
 public class EmptyResult extends Result {
 
-    /**
+    private static final long serialVersionUID = 6317773013593085780L;
+
+	/**
      * @see org.openmrs.logic.result.Result#add(int, org.openmrs.logic.result.Result)
      */
     @Override
@@ -70,6 +72,14 @@ public class EmptyResult extends Result {
     }
 
     /**
+     * @see org.openmrs.logic.result.Result#toBoolean()
+     */
+	@Override
+    public Boolean toBoolean() {
+	    return Boolean.FALSE;
+    }
+
+	/**
      * @see org.openmrs.logic.result.Result#isNull()
      */
     @Override
@@ -97,7 +107,7 @@ public class EmptyResult extends Result {
      * @see org.openmrs.logic.result.Result#removeAll(java.util.Collection)
      */
     @Override
-    public boolean removeAll(Collection c) {
+    public boolean removeAll(Collection<?> c) {
         throw new ImmutableResultException("Cannot add to EmptyResult");
     }
 

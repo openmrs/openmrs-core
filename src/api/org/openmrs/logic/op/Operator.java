@@ -32,5 +32,8 @@ public interface Operator {
 	public static final Operator EXISTS = new Exists();
 	public static final Operator NOT_EXISTS = new NotExists();
 	public static final Operator WITHIN = new Within();
+	public static final Operator DISTINCT = new Distinct();
+	public static final Operator COUNT = new Count();
+	public static final Operator AVERAGE = new Average();
 
 }

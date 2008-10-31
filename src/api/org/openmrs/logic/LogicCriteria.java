@@ -16,7 +16,6 @@ package org.openmrs.logic;
 import java.util.Date;
 import java.util.Map;
 
-import org.openmrs.Concept;
 import org.openmrs.logic.op.Operator;
 
 /**
@@ -50,11 +49,7 @@ public class LogicCriteria {
 
     private Map<String, Object> logicParameters = null;
 
-    private Operator operator = null;
-
-    private Object leftOperand = null;
-
-    private Object rightOperand = null;
+    private LogicExpression expression = null;
 
     /**
      * Used for creating a simple token-based criteria, which can later be
@@ -63,7 +58,7 @@ public class LogicCriteria {
      * @param token
      */
     public LogicCriteria(String token) {
-        rightOperand = token;
+    	this(null,token);
     }
 
     /**
@@ -73,204 +68,264 @@ public class LogicCriteria {
      * @param args
      */
     public LogicCriteria(String token, Map<String, Object> logicParameters) {
-        rightOperand = token;
+        this(token);
         this.logicParameters = logicParameters;
     }
+    
+    public LogicCriteria(Operator operator, Object operand)
+    {       
+        if(operator==Operator.NOT){
+            this.expression = new LogicExpressionUnary(operand,operator);
 
-    // shouldn't be used outside of Logic Service
-    public LogicCriteria(Operator operator) {
-        this.operator = operator;
+        }else{
+            this.expression = new LogicExpressionBinary(null, operand,operator);
+        }
     }
     
-    private LogicCriteria(Object leftOperand, Operator operator, Object rightOperand)
+    public LogicCriteria(Operator operator, Object operand,
+    		Map<String, Object> logicParameters)
     {
-    	this.leftOperand = leftOperand;
-    	this.operator = operator;
-    	this.rightOperand = rightOperand;
+    	this(operator,operand);
+    	this.logicParameters = logicParameters;
     }
     
-    private LogicCriteria createAndCriteria(Operator operator,Object rightOperand)
+    public LogicCriteria appendExpression(Operator operator,Object operand) 
     {
-    	return new LogicCriteria(this,Operator.AND,
-                          new LogicCriteria(null, operator, rightOperand));
+        this.expression = new LogicExpressionBinary(this.expression,operand,operator);
+       
+    	return this;
     }
     
-    //--Logic Operators
+    private LogicCriteria appendExpression(Operator operator, LogicExpression expression) 
+    {
+    	if(expression != null){
+    		this.expression = new LogicExpressionBinary(this.expression,expression,operator);
+    	}else{
+    		this.expression = new LogicExpressionUnary(this.expression,operator);
+    	}
+		
+    	return this;
+    }
+    
+    private LogicCriteria appendTransform(Operator operator,Integer numResults,String sortColumn) {
+
+    	LogicTransform transform = new LogicTransform(operator);
+    	if(numResults != null){
+    		transform.setNumResults(numResults);
+    	}
+    	if(sortColumn != null){
+    		transform.setSortColumn(sortColumn);
+    	}
+		this.expression.setTransform(transform);
+
+		return this;
+	}
+    
+    public LogicCriteria applyTransform(Operator operator)
+    {
+    	if (operator == Operator.LAST) {
+			return last();
+		} else if (operator == Operator.FIRST) {
+			return first();
+		} else if (operator == Operator.EXISTS) {
+			return exists();
+		} else if (operator == Operator.NOT_EXISTS) {
+			return notExists();
+		} else if (operator == Operator.COUNT) {
+			return count();
+		} else if (operator == Operator.AVERAGE){
+			return average();
+		}
+
+		return this; // no valid transform
+    	
+     }
+    
+    // --Logic Operators joining criteria
+    public LogicCriteria appendCriteria(Operator operator,
+	        LogicCriteria logicCriteria) {
+		return appendExpression( operator,logicCriteria.getExpression());
+	}
+    
     public LogicCriteria and(LogicCriteria logicCriteria)
     {
-    	return new LogicCriteria(this,Operator.AND,logicCriteria);
+		return appendExpression( Operator.AND,logicCriteria.getExpression());
     }
     
     public LogicCriteria or(LogicCriteria logicCriteria)
     {
-    	return new LogicCriteria(this,Operator.OR,logicCriteria);
+		return appendExpression( Operator.OR,logicCriteria.getExpression());
+    }
+    
+    public LogicCriteria not() {
+		return appendExpression( Operator.NOT,null);
     }
     
     //--Transform Operators
+    public LogicCriteria count() {
+    	return this.appendTransform(Operator.COUNT,null,null);
+    }
+    public LogicCriteria average() {
+    	return this.appendTransform(Operator.AVERAGE,null,null);
+    }
     public LogicCriteria last() {
-    	return new LogicCriteria(null,Operator.LAST,this);
+    	return this.appendTransform(Operator.LAST,null,null);
+    }
+    public LogicCriteria last(Integer numResults) {
+    	return this.appendTransform(Operator.LAST,numResults,null);
     }
     
-    public LogicCriteria first() {
-    	return new LogicCriteria(null,Operator.FIRST,this);
+    //TODO implement this method
+    //after implementing switch to public
+    private LogicCriteria last(String sortComponent) {
+    	return this.appendTransform(Operator.LAST,null,sortComponent);
+    }
+    
+    //TODO implement this method
+    //after implementing switch to public
+    private LogicCriteria last(Integer numResults,String sortComponent) {
+    	return this.appendTransform(Operator.LAST,numResults,sortComponent);
+    }
+    
+    public LogicCriteria first(){
+    	return this.appendTransform(Operator.FIRST,null,null);
+    }
+    
+    public LogicCriteria first(Integer numResults) {
+    	return this.appendTransform(Operator.FIRST,numResults,null);
+    }
+    
+    public LogicCriteria first(String sortComponent) {
+    	return this.appendTransform(Operator.FIRST,null,sortComponent);
+    }
+    
+    public LogicCriteria first(Integer numResults,String sortComponent) {
+    	return this.appendTransform(Operator.FIRST,numResults,sortComponent);
+    }
+    
+    public LogicCriteria distinct() {
+    	return this.appendTransform(Operator.DISTINCT,null,null);
     }
     
     public LogicCriteria exists() {
-        return new LogicCriteria(null,Operator.EXISTS, this);
+        return this.appendTransform(Operator.EXISTS,null,null);
     }
 
     public LogicCriteria notExists() {
-        return new LogicCriteria(null,Operator.NOT_EXISTS, this);
-    }
-
-    public LogicCriteria not() {
-        return new LogicCriteria(null,Operator.NOT, this);
+        return this.appendTransform(Operator.NOT_EXISTS,null,null);
     }
     
     //--Comparison Operators
     public LogicCriteria asOf(Date value) {
-        return createAndCriteria(Operator.ASOF, value);
+        return appendExpression(Operator.ASOF, value);
     }
 
     public LogicCriteria before(Date value) {
         	
-        return createAndCriteria(Operator.BEFORE,value);
+        return appendExpression(Operator.BEFORE,value);
     }
 
     public LogicCriteria after(Date value) {
-        return createAndCriteria(Operator.AFTER, value);
+        return appendExpression(Operator.AFTER, value);
     }
 
-    public LogicCriteria contains(Integer value) {
-        return createAndCriteria(Operator.CONTAINS, value);
-    }
-
-    public LogicCriteria contains(Float value) {
-        return createAndCriteria(Operator.CONTAINS, value);
-    }
-    public LogicCriteria contains(Double value) {
-        return createAndCriteria(Operator.CONTAINS, value);
-    }
-
-    public LogicCriteria contains(String value) {
-        return createAndCriteria(Operator.CONTAINS, value);
-    }
-
-    public LogicCriteria contains(Date value) {
-        return createAndCriteria(Operator.CONTAINS, value);
-    }
-
-    public LogicCriteria contains(Concept value) {
-        return createAndCriteria(Operator.CONTAINS, value);
-    }
-
-    public LogicCriteria equalTo(Integer value) {
-        return createAndCriteria(Operator.EQUALS, value);
-    }
-
-    public LogicCriteria equalTo(Float value) {
-        return createAndCriteria(Operator.EQUALS, value);
+    public LogicCriteria contains(Object value) {
+        return appendExpression(Operator.CONTAINS, value);
     }
     
-    public LogicCriteria equalTo(Double value) {
-        return createAndCriteria(Operator.EQUALS, value);
+    public LogicCriteria contains(int value) {
+        return appendExpression(Operator.CONTAINS, value);
     }
 
-    public LogicCriteria equalTo(String value) {
-        return createAndCriteria(Operator.EQUALS, value);
+    public LogicCriteria contains(float value) {
+        return appendExpression(Operator.CONTAINS, value);
+    }
+    public LogicCriteria contains(double value) {
+        return appendExpression(Operator.CONTAINS, value);
     }
 
-    public LogicCriteria equalTo(Date value) {
-        return createAndCriteria(Operator.EQUALS, value);
-    }
-
-    public LogicCriteria equalTo(Concept value) {
-        return createAndCriteria(Operator.EQUALS, value);
-    }
-
-    public LogicCriteria gte(Integer value) {
-        return createAndCriteria(Operator.GTE, value);
-    }
-
-    public LogicCriteria gte(Float value) {
-        return createAndCriteria(Operator.GTE, value);
+    public LogicCriteria equalTo(Object value) {
+        return appendExpression(Operator.EQUALS, value);
     }
     
-    public LogicCriteria gte(Double value) {
-        return createAndCriteria(Operator.GTE, value);
+    public LogicCriteria equalTo(int value) {
+        return appendExpression(Operator.EQUALS, value);
     }
 
-    public LogicCriteria gte(String value) {
-        return createAndCriteria(Operator.GTE, value);
-    }
-
-    public LogicCriteria gte(Date value) {
-        return createAndCriteria(Operator.GTE, value);
-    }
-
-
-    public LogicCriteria gt(Integer value) {
-        return createAndCriteria(Operator.GT, value);
-    }
-
-    public LogicCriteria gt(Float value) {
-        return createAndCriteria(Operator.GT, value);
+    public LogicCriteria equalTo(float value) {
+        return appendExpression(Operator.EQUALS, value);
     }
     
-    public LogicCriteria gt(Double value) {
-        return createAndCriteria(Operator.GT, value);
+    public LogicCriteria equalTo(double value) {
+        return appendExpression(Operator.EQUALS, value);
     }
 
-    public LogicCriteria gt(String value) {
-        return createAndCriteria(Operator.GT, value);
-    }
-
-    public LogicCriteria gt(Date value) {
-        return createAndCriteria(Operator.GT, value);
-    }
-
-    public LogicCriteria lt(Integer value) {
-        return createAndCriteria(Operator.LT, value);
-    }
-
-    public LogicCriteria lt(Float value) {
-        return createAndCriteria(Operator.LT, value);
+    public LogicCriteria gte(Object value) {
+        return appendExpression(Operator.GTE, value);
     }
     
-    public LogicCriteria lt(Double value) {
-        return createAndCriteria(Operator.LT, value);
+    public LogicCriteria gte(int value) {
+        return appendExpression(Operator.GTE, value);
     }
 
-    public LogicCriteria lt(String value) {
-        return createAndCriteria(Operator.LT, value);
-    }
-
-    public LogicCriteria lt(Date value) {
-        return createAndCriteria(Operator.LT, value);
-    }
-
-    public LogicCriteria lte(Integer value) {
-        return createAndCriteria(Operator.LTE, value);
-    }
-
-    public LogicCriteria lte(Float value) {
-        return createAndCriteria(Operator.LTE, value);
+    public LogicCriteria gte(float value) {
+        return appendExpression(Operator.GTE, value);
     }
     
-    public LogicCriteria lte(Double value) {
-        return createAndCriteria(Operator.LTE, value);
+    public LogicCriteria gte(double value) {
+        return appendExpression(Operator.GTE, value);
     }
 
-    public LogicCriteria lte(String value) {
-        return createAndCriteria(Operator.LTE, value);
-    }
-
-    public LogicCriteria lte(Date value) {
-        return createAndCriteria(Operator.LTE, value);
+    public LogicCriteria gt(Object value) {
+        return appendExpression(Operator.GT, value);
     }
     
-    public LogicCriteria within(Duration duration) {
-        return createAndCriteria(Operator.WITHIN, duration);
+    public LogicCriteria gt(int value) {
+        return appendExpression(Operator.GT, value);
+    }
+
+    public LogicCriteria gt(float value) {
+        return appendExpression(Operator.GT, value);
+    }
+    
+    public LogicCriteria gt(double value) {
+        return appendExpression(Operator.GT, value);
+    }
+
+    public LogicCriteria lt(Object value) {
+        return appendExpression(Operator.LT, value);
+    }
+    
+    public LogicCriteria lt(int value) {
+        return appendExpression(Operator.LT, value);
+    }
+
+    public LogicCriteria lt(float value) {
+        return appendExpression(Operator.LT, value);
+    }
+    
+    public LogicCriteria lt(double value) {
+        return appendExpression(Operator.LT, value);
+    }
+
+    public LogicCriteria lte(Object value) {
+        return appendExpression(Operator.LTE, value);
+    }
+    
+    public LogicCriteria lte(int value) {
+        return appendExpression(Operator.LTE, value);
+    }
+
+    public LogicCriteria lte(float value) {
+        return appendExpression(Operator.LTE, value);
+    }
+    
+    public LogicCriteria lte(double value) {
+        return appendExpression(Operator.LTE, value);
+    }
+    
+    public LogicCriteria within(Duration duration)  {
+        return appendExpression(Operator.WITHIN, duration);
     }    
 
     public Map<String, Object> getLogicParameters() {
@@ -281,79 +336,52 @@ public class LogicCriteria {
         this.logicParameters = logicParameters;
     }
 
-    public Operator getOperator() {
-        return operator;
-    }
-
-    public void setOperator(Operator operator) {
-        this.operator = operator;
-    }
-
-    public Object getLeftOperand() {
-        return leftOperand;
-    }
-
-    public void setLeftOperand(Object leftOperand) {
-        this.leftOperand = leftOperand;
-    }
-
-    public Object getRightOperand() {
-        return rightOperand;
-    }
-
-    public void setRightOperand(Object rightOperand) {
-        this.rightOperand = rightOperand;
-    }
-
     public String toString() {
-        return "[" + leftOperand + " " + operator + " " + rightOperand + "]";
+    	return this.expression.toString();
     }
     
     public String getRootToken() {
-		Operator currOperator = null;
-		Object currLogicNode = this;
-
-		//we are looking for the base string token for this Logic Criteria
-		while (currLogicNode instanceof LogicCriteria) {
-			currOperator = ((LogicCriteria) currLogicNode).getOperator();
-			//keep going left down the logic criteria tree if
-			//AND/OR is the operator
-			if (currOperator == Operator.AND || currOperator == Operator.OR) {
-				currLogicNode = ((LogicCriteria) currLogicNode).getLeftOperand();
-			}else
-			{
-				//look right down the tree for all other operators
-				currLogicNode = ((LogicCriteria) currLogicNode).getRightOperand();
-			}
-		}
-		
-		if(currLogicNode instanceof String)
-		{
-			return (String) currLogicNode;
-		}
-
-		return null;
+		return this.expression.getRootToken();
 	}
     
-    
+    /**
+     * Parses a query string into a LogicCriteria object.  For example, a phrase like <em>"LAST
+     * {CD4 COUNT} > 200"</em> is parsed into a LogicCriteria object equivalent to:
+     * <code>new LogicCriteria("CD4 COUNT").gt(200).last()</code>.
+     * 
+     * This function will fail quietly.  If an exception occurs during parsing, then this method
+     * will return a LogicCriteria constructed with the given query string without any parsing.
+     * The actual work of parsing is performed by the LogicQueryParser class.
+     * 
+     * @param query a logic query to be parsed
+     * @return the equivalent LogicCriteria to the given query string
+     * @throws LogicException 
+     * @see org.openmrs.logic.LogicQueryParser
+     */
+    public static LogicCriteria parse(String query) throws LogicException {
+    	try {
+    		return LogicQueryParser.parse(query);
+    	} catch (LogicQueryParseException e) {
+    		return new LogicCriteria(query);
+    	}
+    }
 
 	/**
      * @see java.lang.Object#hashCode()
      */
     @Override
-    public int hashCode() {
-	    final int prime = 31;
-	    int result = 1;
-	    result = prime * result
-	            + ((leftOperand == null) ? 0 : leftOperand.hashCode());
-	    result = prime * result
-	            + ((operator == null) ? 0 : operator.hashCode());
-	    result = prime * result
-	            + ((logicParameters == null) ? 0 : logicParameters.hashCode());
-	    result = prime * result
-	            + ((rightOperand == null) ? 0 : rightOperand.hashCode());
-	    return result;
-    }
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+
+		result = prime
+		        * result
+		        + ((this.expression == null) ? 0
+		                : this.expression.hashCode());
+		result = prime * result
+		        + ((logicParameters == null) ? 0 : logicParameters.hashCode());
+		return result;
+	}
 
 	/**
      * @see java.lang.Object#equals(java.lang.Object)
@@ -368,37 +396,13 @@ public class LogicCriteria {
     	
     	LogicCriteria compCriteria = (LogicCriteria) obj;
     	
-    	//see if left operands are equal
-    	if(leftOperand == null && 
-    			compCriteria.getLeftOperand() != null)
-    	{
-    		return false;
-    	}
-    	if(!safeEquals(leftOperand,compCriteria.getLeftOperand()))
-    	{
+    	if(!safeEquals(this.expression,
+    	               compCriteria.getExpression())){
     		return false;
     	}
     	
-    	//see if right operands are equal
-    	if(rightOperand == null && 
-    			compCriteria.getRightOperand() != null)
-    	{
-    		return false;
-    	}
-    	if(!safeEquals(rightOperand,compCriteria.getRightOperand()))
-    	{
-    		return false;
-    	}
-    	
-    	//see if operators are equal
-    	if(operator == null && 
-    			compCriteria.getOperator() != null)
-    	{
-    		return false;
-    	}
-    	
-    	if(!safeEquals(operator,compCriteria.getOperator()))
-    	{
+    	if(!safeEquals(this.logicParameters,
+    	               compCriteria.getLogicParameters())){
     		return false;
     	}
 	    
@@ -413,4 +417,7 @@ public class LogicCriteria {
 		return a.equals(b);
 	}
 
+	public LogicExpression getExpression() {
+    	return expression;
+    }
 }

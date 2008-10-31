@@ -17,6 +17,7 @@
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <openmrs:globalProperty var="SHOW_LAST_N" defaultValue="5" key="cohort.cohortBuilder.showLastSearches"/>
+<openmrs:globalProperty var="ENABLE_LOGIC_TAB" defaultValue="false" key="cohortBuilder.enableLogicTab"/>
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
@@ -555,6 +556,9 @@
 		<ul>
 			<li>&nbsp;</li>
 			<li><a id="searchTab_concept" href="#" onClick="changeSearchTab(this, 'concept_to_filter_search')"><spring:message code="CohortBuilder.searchTab.concept"/></a></li>
+			<c:if test="${ENABLE_LOGIC_TAB == 'true'}">
+				<li><a id="searchTab_logic" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.logic"/></a></li>
+			</c:if>
 			<li><a id="searchTab_attribute" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.personAttribute"/></a></li>
 			<li><a id="searchTab_encounter" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.encounter"/></a></li>
 			<li><a id="searchTab_program" href="#" onClick="changeSearchTab(this)"><spring:message code="CohortBuilder.searchTab.program"/></a></li>
@@ -569,6 +573,25 @@
 			<div dojoType="ConceptSearch" widgetId="concept_to_filter_search" conceptId="" searchLabel='<spring:message code="CohortBuilder.addConceptFilter"/>' showVerboseListing="true" includeVoided="false"></div>
 			<div id="concept_filter_box" style="display: none; border-top: 1px #aaaaaa solid"></div>
 		</div>
+		
+		<c:if test="${ENABLE_LOGIC_TAB == 'true'}">
+			<div id="searchTab_logic_content" style="display: none">
+				<div style="background: #f6f6f6; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">
+					<form method="post" action="cohortBuilder.form">
+						<input type="hidden" name="method" value="addDynamicFilter"/>
+						<input type="hidden" name="filterClass" value="org.openmrs.reporting.LogicPatientFilter" />
+						<input type="hidden" name="vars" value="criteria#org.openmrs.logic.LogicCriteria" />
+						<spring:message code="CohortBuilder.logicCriteria"/>:
+						<br/>
+						<small><spring:message code="CohortBuilder.logicCriteria.help"/></small>
+						<br/>
+						<textarea name="criteria" rows="4" cols="72"></textarea>
+						<br/>
+						<input type="submit" value="<spring:message code="general.search"/>" />
+					</form>
+				</div>
+			</div>
+		</c:if>
 		
 		<div id="searchTab_attribute_content" style="display: none">
 			<div style="background: #f6f6f6; border: 1px #808080 solid; padding: 0.5em; margin: 0.5em">

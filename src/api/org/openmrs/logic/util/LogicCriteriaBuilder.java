@@ -141,18 +141,7 @@ public class LogicCriteriaBuilder {
 	 * @return
 	 */
 	public static String deserialize(LogicCriteria criteria) { 
-		StringBuffer buffer = new StringBuffer();
-		
-		//String rightOp = deserialize(criteria.getRightOperand());
-		//String leftOp = deserialize(criteria.getRightOperand());
-		
-		buffer.append("Root Token: ").append(criteria.getLeftOperand());
-		buffer.append("Left Operand: ").append(criteria.getLeftOperand());
-		buffer.append("Operator: ").append(criteria.getLeftOperand());
-		buffer.append("Right Operand: ").append(criteria.getRightOperand());
-		
-		return buffer.toString();
-		
+		return criteria.toString();
 	}
 
 	/**

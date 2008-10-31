@@ -27,6 +27,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.datasource.LogicDataSource;
 import org.openmrs.logic.result.Result;
+import org.openmrs.logic.rule.ReferenceRule;
 
 /**
  * The context within which logic rule and data source evaluations are made. The
@@ -149,19 +150,24 @@ public class LogicContext {
 			Map<Integer, Result> resultMap = new Hashtable<Integer, Result>();
 			for (Integer pid : patients.getMemberIds()) {
 				Patient currPatient = patientService.getPatient(pid);
-				Result r = rule.eval(this, currPatient, parameters);
-				resultMap.put(pid, r);
+				Result r = Result.emptyResult();
+				if (rule instanceof ReferenceRule) {
+					r = ((ReferenceRule) rule).eval(this, currPatient, criteria);
+				} else {
+					r = rule.eval(this, currPatient, parameters);
+					r = applyCriteria(r, criteria);
+				}
+				
+		        resultMap.put(pid, r);
 				if (pid.equals(targetPatientId))
-					result = r;
+					result = resultMap.get(pid);
 			}
 			getCache().put(criteria,
 			               parameters,
 			               rule.getTTL(),
 			               resultMap);
 		}
-		result = applyCriteria(result, criteria);
-		if (result == null)
-			result = Result.emptyResult();
+		
 		return result;
 	}
 
@@ -196,19 +202,36 @@ public class LogicContext {
 	 * @param dataSource
 	 * @param key
 	 * @return
+	 * @throws LogicException 
 	 */
-	public Result read(Patient patient, LogicDataSource dataSource, String key) {
+	public Result read(Patient patient, LogicDataSource dataSource, String key) throws LogicException {
 		return read(patient, dataSource, new LogicCriteria(key));
 	}
 
-	public Result read(Patient patient, String key) {
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param patient
+	 * @param key
+	 * @return
+	 * @throws LogicException
+	 */
+	public Result read(Patient patient, String key) throws LogicException {
 
 		LogicService logicService = Context.getLogicService();
 		LogicDataSource dataSource = logicService.getLogicDataSource("obs");
 		return read(patient, dataSource, key);
 	}
 
-	public Result read(Patient patient, LogicCriteria criteria) {
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param patient
+	 * @param criteria
+	 * @return
+	 * @throws LogicException
+	 */
+	public Result read(Patient patient, LogicCriteria criteria) throws LogicException {
 		LogicService logicService = Context.getLogicService();
 		LogicDataSource dataSource = logicService.getLogicDataSource("obs");
 		return read(patient, dataSource, criteria);
@@ -221,9 +244,10 @@ public class LogicContext {
 	 * @param dataSource
 	 * @param criteria
 	 * @return
+	 * @throws LogicException 
 	 */
 	public Result read(Patient patient, LogicDataSource dataSource,
-	        LogicCriteria criteria) {
+	        LogicCriteria criteria) throws LogicException {
 		Result result = getCache().get(patient, dataSource, criteria);
 		log.debug("Reading from data source: " + criteria.getRootToken() + " ("
 		        + (result == null ? "NOT" : "") + " cached)");
