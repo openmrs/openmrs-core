@@ -103,17 +103,8 @@ try {
 	}
 	
 	// Display current version
-	out.println("<br/><br/>Version: " + OpenmrsConstants.OPENMRS_VERSION);
+	out.println("<br/><br/>OpenMRS Version: " + OpenmrsConstants.OPENMRS_VERSION);
 	out.println("<br/>Database Version: " + OpenmrsConstants.DATABASE_VERSION);
-	
-	// Display cookies
-	out.println("<br/><br/>Cookies:<br/>");
-	Cookie[] cookies = request.getCookies();
-	if (cookies != null) {
-    	for (int i = 0; i < cookies.length; i++) {
-      		out.println(cookies[i].getName() + "=[" + cookies[i].getValue() + "]");
-		}
-	}
 	    
 } catch (Exception ex) { 
 	ex.printStackTrace(new java.io.PrintWriter(out));
