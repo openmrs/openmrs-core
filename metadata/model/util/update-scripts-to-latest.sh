@@ -8,7 +8,7 @@
 
 # user defined variables
 export currentversion=1.3.0
-export newversion=1.3.0
+export newversion=1.4.0
 export dbuser=root
 
 # Ask for the user's database password
