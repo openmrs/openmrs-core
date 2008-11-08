@@ -65,6 +65,27 @@ public interface PatientSetService {
 	public Cohort getPatientsByCharacteristics(String gender,
 			Date minBirthdate, Date maxBirthdate) throws DAOException;
 
+	/**
+	 * Get patients by specified gender birthdate range, age range, and alive status (all optional)
+	 * 
+	 * @param gender
+	 * @param minBirthdate
+	 * @param maxBirthdate
+	 * @param minAge
+	 * @param maxAge
+	 * @param aliveOnly
+	 * @param deadOnly
+	 * @return
+	 * @throws DAOException
+	 * 
+	 * @should get all patients when no parameters given
+	 * @should get patients of given gender
+	 * @should get patients born before date
+	 * @should get patients born after date
+	 * @should get patients born between dates
+	 * @should get patients who are alive
+	 * @should get patients who are dead
+	 */
 	@Transactional(readOnly=true)
 	public Cohort getPatientsByCharacteristics(String gender,
 			Date minBirthdate, Date maxBirthdate, Integer minAge,
@@ -89,10 +110,52 @@ public interface PatientSetService {
 	
 	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount);
-	
+
+	/**
+	 * Gets patients who have encounters as described by the parameters specified (all optional)
+	 * 
+	 * @param encounterTypeList
+	 * @param location
+	 * @param form
+	 * @param fromDate
+	 * @param toDate
+	 * @param minCount
+	 * @param maxCount
+	 * @return
+	 * 
+	 * @should get all patients with encounters when no parameters specified
+	 * @should get patients with encounters of type
+	 * @should get patients with encounters at location
+	 * @should get patients with encounters from form
+	 * @should get patients with encounters before date
+	 * @should get patients with encounters after date
+	 * @should get patients with encounters between dates
+	 * @should get patients with at least n encounters
+	 * @should get patients with at most n encounters
+	 */
 	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount);
 	
+	/**
+	 * Gets patients who are enrolled in the given program or in the given state(s) at the specified time 
+	 * 
+	 * @param program
+	 * @param stateList
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 * 
+	 * @should get all patients in any program given null parameters
+	 * @should get patients in program
+	 * @should get patients in program from date
+	 * @should get patients in program to date
+	 * @should get patients in program between dates
+	 * @should get patients in state
+	 * @should get patients in states
+	 * @should get patients in state from date
+	 * @should get patients in state to date
+	 * @should get patients in state between dates
+	 */
 	@Transactional(readOnly=true)
 	public Cohort getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate);
 
@@ -140,6 +203,14 @@ public interface PatientSetService {
 	 * @param groupMethod whether to do NONE, ALL, or ANY of the list of specified ids.
 	 * @param fromDate Beginning of date range to look at (NULL defaults to toDate if that isn't null, or now() if it is.) 
 	 * @param toDate End of date range to look at (NULL defaults to fromDate if that isn't null, or now() if it is.)
+	 * 
+	 * @should get all patients with drug orders given null parameters
+	 * @should get patients with no drug orders
+	 * @should get patients with drug orders for drugs
+	 * @should get patients with no drug orders for drugs
+	 * @should get patients with drug orders from date
+	 * @should get patients with drug orders to date
+	 * @should get patients with drug order for drug between dates
 	 */
 	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingDrugOrder(
