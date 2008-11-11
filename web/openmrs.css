@@ -287,7 +287,7 @@ table td#patientActionsOutcomeReason,table td#patientActionsOutcomeDate {
 	width: 35%;
 }
 
-#patientHeaderPatientAge, #patientHeaderPatientTribe, #patientHeaderHealthCenter, #patientHeaderShowMoreIdentifiers, #patientDashboardHeaderExtension {
+#patientHeaderPatientAge, #patientHeaderHealthCenter, #patientHeaderShowMoreIdentifiers, #patientDashboardHeaderExtension {
 	width: 1%;
 	white-space: nowrap;
 	line-height: 25px;

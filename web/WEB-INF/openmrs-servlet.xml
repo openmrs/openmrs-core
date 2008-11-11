@@ -50,8 +50,9 @@
 				<prop key="admin/patients/patient.form">patientForm</prop>
 				<prop key="admin/patients/newPatient.form">newPatientForm</prop>
 				<prop key="admin/patients/mergePatients.form">mergePatientsForm</prop>
+				
 				<prop key="admin/patients/tribe.list">tribeList</prop>
-				<prop key="admin/patients/tribe.form">tribeForm</prop>
+								
 				<prop key="admin/patients/patientIdentifierType.list">patientIdentifierTypeList</prop>
 				<prop key="admin/patients/patientIdentifierType.form">patientIdentifierTypeForm</prop>
 
@@ -388,25 +389,12 @@
 		<property name="successView"><value>../../patientDashboard.form</value></property>
 	</bean>
 	<!-- ** /New Patient ** -->
-
-	<!-- **  Tribe   ** -->
-	<bean id="tribeList" class="org.openmrs.web.controller.patient.TribeListController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>tribeList</value></property>
+	
+	<bean id="tribeList" class="org.openmrs.web.controller.patient.TribeFormController">
+		<property name="commandName"><value>tribeForm</value></property>
 		<property name="formView"><value>/admin/patients/tribeList</value></property>
 		<property name="successView"><value>tribe.list</value></property>
 	</bean>
-	<bean id="tribeValidator" class="org.openmrs.web.controller.patient.TribeValidator" />
-	<bean id="tribeForm" class="org.openmrs.web.controller.patient.TribeFormController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>tribe</value></property>
-		<property name="validator">
-			<ref bean="tribeValidator" />
-		</property>
-		<property name="formView"><value>/admin/patients/tribeForm</value></property>
-		<property name="successView"><value>tribe.list</value></property>
-	</bean>
-	<!-- ** /Tribe   ** -->
 
 	<!-- **  Patient Identifier Type   ** -->
 	<bean id="patientIdentifierTypeList"

@@ -43,7 +43,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Patient.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifier.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientIdentifierType.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/Tribe.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Relationship.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/RelationshipType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderType.hbm.xml" />

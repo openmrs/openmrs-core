@@ -39,7 +39,6 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
-import org.openmrs.Tribe;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
@@ -56,7 +55,6 @@ import org.openmrs.web.controller.person.PersonFormController;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PatientIdentifierTypeEditor;
-import org.openmrs.propertyeditor.TribeEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -94,7 +92,6 @@ public class PatientFormController extends PersonFormController {
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
         		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
-        binder.registerCustomEditor(Tribe.class, new TribeEditor());
         binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(Concept.class, "civilStatus", new ConceptEditor());

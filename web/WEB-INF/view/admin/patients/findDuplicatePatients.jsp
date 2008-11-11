@@ -7,8 +7,6 @@
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
-<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false1" var="showTribe"/>
-
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.PatientSearch");
 
@@ -114,9 +112,6 @@
 <spring:message code="Patient.merge.search_on"/>: <br/>
 <input type="checkbox" name="attr" id="identifier" value="identifier" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="identifier"><spring:message code="Patient.identifier"/></label> <br/>
 <input type="checkbox" name="attr" id="gender" value="gender" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="gender"><spring:message code="Person.gender"/></label> <br/>
-<c:if test="${showTribe == 'true'}">
-	<input type="checkbox" name="attr" id="tribe" value="tribe" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="tribe"><spring:message code="Patient.tribe"/></label> <br/>
-</c:if>
 <input type="checkbox" name="attr" id="birthdate" value="birthdate" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="birthdate"><spring:message code="Person.birthdate"/></label> <br/>
 <input type="checkbox" name="attr" id="givenName" value="givenName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="givenName"><spring:message code="PersonName.givenName"/></label> <br/>
 <input type="checkbox" name="attr" id="middleName" value="middleName" onclick="selectAttribute(this)" onactivate="selectAttribute(this)"/><label for="middleName"><spring:message code="PersonName.middleName"/></label> <br/>

@@ -230,12 +230,6 @@ public final class OpenmrsConstants {
 	public static final String PRIV_EDIT_REPORT_OBJECTS		= "Edit Report Objects";
 	public static final String PRIV_DELETE_REPORT_OBJECTS	= "Delete Report Objects";
 
-	/** @deprecated we plan to move tribe to a person attribute */
-	public static final String PRIV_VIEW_TRIBES				= "View Tribes";
-	/** @deprecated we plan to move tribe to a person attribute */
-	public static final String PRIV_MANAGE_TRIBES			= "Manage Tribes";
-	/** @deprecated we plan to move tribe to a person attribute */
-	public static final String PRIV_PURGE_TRIBES			= "Purge Tribes";
 	public static final String PRIV_MANAGE_IDENTIFIER_TYPES	= "Manage Identifier Types";
 	public static final String PRIV_VIEW_IDENTIFIER_TYPES   = "View Identifier Types";
 	public static final String PRIV_PURGE_IDENTIFIER_TYPES  = "Purge Identifier Types";
@@ -417,8 +411,6 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_EDIT_REPORT_OBJECTS, "Able to edit report objects");
 			CORE_PRIVILEGES.put(PRIV_DELETE_REPORT_OBJECTS, "Able to delete report objects");
 			
-			CORE_PRIVILEGES.put(PRIV_VIEW_TRIBES, "Able to view tribes");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_TRIBES, "Able to add/edit/delete tribes");
 			CORE_PRIVILEGES.put(PRIV_VIEW_IDENTIFIER_TYPES, "Able to view patient identifier types");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_RELATIONSHIPS, "Able to add/edit/delete relationships");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_IDENTIFIER_TYPES, "Able to add/edit/delete patient identifier types");
@@ -567,7 +559,6 @@ public final class OpenmrsConstants {
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
 		List<GlobalProperty> props = new Vector<GlobalProperty>();
 		
-		props.add(new GlobalProperty("use_patient_attribute.tribe", "true", "Indicates whether or not the 'tribe' attribute is shown when viewing/searching for patients"));
 		props.add(new GlobalProperty("use_patient_attribute.healthCenter", "false", "Indicates whether or not the 'health center' attribute is shown when viewing/searching for patients"));
 		props.add(new GlobalProperty("use_patient_attribute.mothersName", "false", "Indicates whether or not mother's name is able to be added/viewed for a patient"));
 

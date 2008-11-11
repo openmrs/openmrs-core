@@ -46,7 +46,6 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.Tribe;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
@@ -60,7 +59,6 @@ import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
-import org.openmrs.propertyeditor.TribeEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
@@ -110,7 +108,6 @@ public class NewPatientFormController extends SimpleFormController {
                 new CustomNumberEditor(java.lang.Integer.class, nf, true));
         binder.registerCustomEditor(java.util.Date.class, 
         		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
-        binder.registerCustomEditor(Tribe.class, new TribeEditor());
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
 	}
@@ -393,12 +390,6 @@ public class NewPatientFormController extends SimpleFormController {
 			patient.setBirthdate(shortPatient.getBirthdate());
 			patient.setBirthdateEstimated(shortPatient.getBirthdateEstimated());
 			patient.setGender(shortPatient.getGender());
-			if (shortPatient.getTribe() == "" || shortPatient.getTribe() == null)
-				patient.setTribe(null);
-			else {
-				Tribe t = ps.getTribe(Integer.valueOf(shortPatient.getTribe()));
-				patient.setTribe(t);
-			}
 			
 			patient.setDead(shortPatient.getDead());
 			if (patient.isDead()) {

@@ -60,6 +60,21 @@
 			</spring:bind>
 		</td>
 	</tr>
+	<tr>
+		<td><spring:message code="PersonAttributeType.editPrivilege"/></td>
+		<td>
+			<spring:bind path="personAttributeType.editPrivilege">
+				<select name="editPrivilege">
+					<option value=""></option>
+					<c:forEach items="${privileges}" var="privilege">
+						<option value="${privilege.privilege}" <c:if test="${privilege.privilege == status.value}">selected</c:if>>${privilege.privilege}</option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+		<td><i><spring:message code="PersonAttributeType.editPrivilege.help"/></i></td>
+	</tr>	
 	<c:if test="${personAttributeType.creator != null}">
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>

@@ -12,8 +12,6 @@
 		<property name="patientId" type="int" not-null="true"
 			column="patient_id" update="false" insert="false" />
 
-		<many-to-one name="tribe" class="Tribe" />
-
 		<many-to-one name="creator" class="User" lazy="no-proxy" />
 
 		<property name="dateCreated" type="java.util.Date"

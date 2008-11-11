@@ -21,13 +21,6 @@
 		<th align="left"><spring:message code="Person.birthdate"/></th>
 		<td><openmrs:formatDate date="${patient.birthdate}" type="short" /></td>
 	</tr>
-	<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
-	<c:if test="${showTribe == 'true'}">
-		<tr>
-			<th align="left"><spring:message code="Patient.tribe"/></th>
-			<td>${patient.tribe.name}</td>
-		</tr>
-	</c:if>
 	<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
 		<tr>
 			<th align="left"><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></th>

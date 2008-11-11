@@ -45,7 +45,9 @@
 			column="retire_reason" length="255" />
 		<property name="retired" type="boolean" column="retired"
 			length="1" not-null="true" />
-
+			
+		<many-to-one name="editPrivilege" class="Privilege" column="edit_privilege" />
+		
 	</class>
 	
 </hibernate-mapping>

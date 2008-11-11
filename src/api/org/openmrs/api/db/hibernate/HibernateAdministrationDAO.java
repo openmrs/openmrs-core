@@ -36,7 +36,6 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
-import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
@@ -75,46 +74,6 @@ public class HibernateAdministrationDAO implements
 		this.sessionFactory = sessionFactory;
 	}
 
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#createTribe(org.openmrs.Tribe)
-	 */
-	public void createTribe(Tribe tribe) throws DAOException {
-		sessionFactory.getCurrentSession().save(tribe);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#updateTribe(org.openmrs.Tribe)
-	 */
-	public void updateTribe(Tribe tribe) throws DAOException {
-		if (tribe.getTribeId() == null)
-			createTribe(tribe);
-		else
-			sessionFactory.getCurrentSession().saveOrUpdate(tribe);
-	}	
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#deleteTribe(org.openmrs.Tribe)
-	 */
-	public void deleteTribe(Tribe tribe) throws DAOException {
-		sessionFactory.getCurrentSession().delete(tribe);
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#retireTribe(org.openmrs.Tribe)
-	 */
-	public void retireTribe(Tribe tribe) throws DAOException {
-		tribe.setRetired(true);
-		updateTribe(tribe);
-	}
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationService#unretireTribe(org.openmrs.Tribe)
-	 */
-	public void unretireTribe(Tribe tribe) throws DAOException {
-		tribe.setRetired(false);
-		updateTribe(tribe);
-	}
-	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createReport(org.openmrs.reporting.Report)
 	 */
