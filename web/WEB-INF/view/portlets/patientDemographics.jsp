@@ -1,7 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
-
 <div class="boxHeader${model.patientVariation}"><spring:message code="Patient.title"/></div>
 <div class="box${model.patientVariation}">
 	<table class="personName">

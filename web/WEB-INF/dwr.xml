@@ -26,7 +26,6 @@
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientProgramItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientStateItem"/>
 		<convert converter="bean" match="org.openmrs.PatientAddress"/>
-		<convert converter="bean" match="org.openmrs.Tribe"/>
 		<convert converter="bean" match="org.openmrs.notification.web.dwr.AlertListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.EnteredField"/>
 		<convert converter="bean" match="org.openmrs.Cohort" >
@@ -42,8 +41,6 @@
 			<include method="findPatients"/>
 			<include method="getPatient"/>
 			<include method="getSimilarPatients"/>
-			<include method="getTribes" />
-			<include method="findTribes" />
 			<include method="findDuplicatePatients" />
 			<include method="addIdentifier" />
 			<include method="exitPatientFromCare" />

@@ -30,7 +30,6 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
-import org.openmrs.Tribe;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
@@ -163,34 +162,6 @@ public class DWRPatientService {
 			pli.setAddress2(pa.getAddress2());
 		}
 		return pli;
-	}
-	
-	public Vector findTribes(String search) {
-		Vector<Object> tribeList = new Vector<Object>();
-		
-		try {
-			tribeList.addAll(Context.getPatientService().findTribes(search));
-		} catch (Exception e) {
-			log.error(e);
-			tribeList.add("Error while attempting to find tribe - " + e.getMessage());
-		}
-		
-		return tribeList;
-			
-	}
-	
-	@SuppressWarnings("unchecked")
-	public Vector<Tribe> getTribes() {
-		Vector tribeList = new Vector();
-		
-		try {
-			tribeList.addAll(Context.getPatientService().getTribes());
-		} catch (Exception e) {
-			log.error(e);
-			tribeList.add("Error while attempting to find tribe - " + e.getMessage());
-		}
-		
-		return tribeList;
 	}
 	
 	/**

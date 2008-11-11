@@ -20,6 +20,7 @@
 			<th> <spring:message code="PersonAttributeType.format"/> </th>
 			<th> <spring:message code="PersonAttributeType.searchable"/> </th>
 			<th> <spring:message code="general.description"/> </th>
+			<th> <spring:message code="PersonAttributeType.editPrivilege"/> </th>
 		</tr>
 		<c:forEach var="personAttributeType" items="${personAttributeTypeList}">
 			<tr>
@@ -31,6 +32,7 @@
 				<td valign="top">${personAttributeType.format}</td>
 				<td valign="top"><c:if test="${personAttributeType.searchable == true}"><spring:message code="general.yes"/></c:if></td>
 				<td valign="top">${personAttributeType.description}</td>
+				<td valign="top">${personAttributeType.editPrivilege}</td>
 			</tr>
 		</c:forEach>
 	</table>

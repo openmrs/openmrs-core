@@ -39,7 +39,7 @@
 				</div>
 			</openmrs:hasPrivilege>
 			
-			<openmrs:hasPrivilege privilege="View Patients,Manage Tribes,Manage Identifier Types">
+			<openmrs:hasPrivilege privilege="View Patients,Manage Identifier Types">
 				<div class="adminMenuList">
 					<h4><spring:message code="Patient.header"/></h4>
 						<%@ include file="patients/localHeader.jsp" %>

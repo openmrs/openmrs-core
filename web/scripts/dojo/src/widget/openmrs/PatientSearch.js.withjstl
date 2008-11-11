@@ -1,7 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-var showTribe = '<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" />';
-
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
 	All Rights Reserved.
@@ -101,7 +99,6 @@ dojo.widget.defineWidget(
 			
 			return td;
 		},
-		getTribe : function(p) { return p.tribe == null ? this.noCell() : p.tribe; },
 		
 		getCellFunctions: function() {
 			var arr = new Array();
@@ -112,8 +109,6 @@ dojo.widget.defineWidget(
 			arr.push(this.simpleClosure(this, "getFamily"));
 			arr.push(this.simpleClosure(this, "getAge"));
 			arr.push(this.simpleClosure(this, "getGender"));
-			if (showTribe == 'true')
-				arr.push(this.simpleClosure(this, "getTribe"));
 			arr.push(this.simpleClosure(this, "getBirthdayEstimated"));
 			arr.push(this.simpleClosure(this, "getBirthday"));
 			<openmrs:forEachDisplayAttributeType personType="patient" displayType="listing" var="attrType">
@@ -132,8 +127,6 @@ dojo.widget.defineWidget(
 			arr.push('<spring:message code="PersonName.familyName" javaScriptEscape="true"/>');
 			arr.push('<spring:message code="Person.age" javaScriptEscape="true"/>');
 			arr.push('<spring:message code="Person.gender" javaScriptEscape="true"/>');
-			if (showTribe == 'true')
-				arr.push('<spring:message code="Patient.tribe" javaScriptEscape="true"/>');
 			arr.push('');
 			arr.push('<spring:message code="Person.birthdate" javaScriptEscape="true"/>');
 			<openmrs:forEachDisplayAttributeType personType="patient" displayType="listing" var="attrType">

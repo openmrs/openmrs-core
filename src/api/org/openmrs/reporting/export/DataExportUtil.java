@@ -27,6 +27,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
 import org.apache.velocity.app.event.MethodExceptionEventHandler;
 import org.openmrs.Cohort;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
@@ -178,6 +179,12 @@ public class DataExportUtil {
 		velocityContext.put("patientSet", patientSet);
 		
 		String template = dataExport.generateTemplate();
+		
+		// check if some deprecated columns are being used in this export
+		// warning: hacky.
+		if (template.contains("fn.getPatientAttr('Patient', 'tribe')")) {
+			throw new APIException("Unable to generate export: " + dataExport.getName() + " because it contains a reference to an outdated 'tribe' column.  You must install the 'Tribe Module' into OpenMRS to continue to reference tribes in OpenMRS.");
+		}
 		
 		if (log.isDebugEnabled())
 			log.debug("Template: " + template.substring(0, template.length() < 3500 ? template.length() : 3500) + "...");

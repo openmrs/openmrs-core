@@ -23,7 +23,6 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Tribe;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.patient.IdentifierValidator;
@@ -426,40 +425,6 @@ public interface PatientService extends OpenmrsService {
 	        throws PatientIdentifierException;
 
 	/**
-	 * Get tribe by internal tribe identifier
-	 * 
-	 * @return Tribe
-	 * @param tribeId
-	 * @deprecated tribe will be moved to patient attribute
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_TRIBES })
-	public Tribe getTribe(Integer tribeId) throws APIException;
-
-	/**
-	 * Get list of tribes that are not retired
-	 * 
-	 * @return non-retired Tribe list
-	 * @deprecated tribe will be moved to patient attributes
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_TRIBES })
-	public List<Tribe> getTribes() throws APIException;
-
-	/**
-	 * Find tribes by partial name lookup
-	 * 
-	 * @return non-retired Tribe list
-	 * @deprecated tribe will be moved to patient attributes
-	 * @throws APIException
-	 */
-	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_TRIBES })
-	public List<Tribe> findTribes(String search) throws APIException;
-
-	/**
 	 * @see #getPatients(String)
 	 * @deprecated use #getPatients(String)
 	 */
@@ -518,7 +483,7 @@ public interface PatientService extends OpenmrsService {
 	 * attribute that is passed in must be identical to what is stored for at least one 
 	 * other patient for both patients to be returned.  
 	 * 
-	 * @param attributes attributes on a Person or Patient object.  similar to: [gender, tribe, 
+	 * @param attributes attributes on a Person or Patient object.  similar to: [gender, 
 	 * 			givenName, middleName, familyName]
 	 * @return list of patients that match other patients
 	 * @throws APIException

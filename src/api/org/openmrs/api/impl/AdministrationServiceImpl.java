@@ -45,7 +45,6 @@ import org.openmrs.MimeType;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
-import org.openmrs.Tribe;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -158,75 +157,7 @@ implements AdministrationService, GlobalPropertyListener {
 		Context.getPatientService().purgePatientIdentifierType(patientIdentifierType);
 	}
 
-	/**
-	 * Create a new Tribe
-	 * 
-	 * @param Tribe to create
-	 * @throws APIException
-	 */
-	public void createTribe(Tribe tribe) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
-			throw new APIAuthenticationException("Privilege required: "
-			        + OpenmrsConstants.PRIV_MANAGE_TRIBES);
 
-		dao.createTribe(tribe);
-	}
-
-	/**
-	 * Update Tribe
-	 * 
-	 * @param Tribe to update
-	 * @throws APIException
-	 */
-	public void updateTribe(Tribe tribe) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
-			throw new APIAuthenticationException("Privilege required: "
-			        + OpenmrsConstants.PRIV_MANAGE_TRIBES);
-
-		dao.updateTribe(tribe);
-	}
-
-	/**
-	 * Delete Tribe
-	 * 
-	 * @param Tribe to delete
-	 * @throws APIException
-	 */
-	public void deleteTribe(Tribe tribe) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
-			throw new APIAuthenticationException("Privilege required: "
-			        + OpenmrsConstants.PRIV_MANAGE_TRIBES);
-
-		dao.deleteTribe(tribe);
-	}
-	
-	/**
-	 * Retire Tribe
-	 * 
-	 * @param Tribe to retire
-	 * @throws APIException
-	 */
-	public void retireTribe(Tribe tribe) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
-			throw new APIAuthenticationException("Privilege required: "
-			        + OpenmrsConstants.PRIV_MANAGE_TRIBES);
-
-		dao.retireTribe(tribe);
-	}
-
-	/**
-	 * Unretire Tribe
-	 * 
-	 * @param Tribe to unretire
-	 * @throws APIException
-	 */
-	public void unretireTribe(Tribe tribe) throws APIException {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_TRIBES))
-			throw new APIAuthenticationException("Privilege required: "
-			        + OpenmrsConstants.PRIV_MANAGE_TRIBES);
-
-		dao.unretireTribe(tribe);
-	}
 	
 	/**
 	 * @deprecated

@@ -46,6 +46,8 @@ public class PersonAttributeType implements java.io.Serializable {
 	private Date dateRetired;
 	private String retireReason;
 	
+	private Privilege editPrivilege;
+	
 	/** default constructor */
 	public PersonAttributeType() {}
 
@@ -308,5 +310,26 @@ public class PersonAttributeType implements java.io.Serializable {
 	public String toString() {
 		return this.name;
 	}
+
+	/**
+	 * The privilege required in order to edit this attribute
+	 * 
+	 * @return
+	 */
+	public Privilege getEditPrivilege() {
+    	return editPrivilege;
+    }
+
+	/**
+	 * The privilege required in order to edit this attribute
+	 * 
+	 * If <code>editPrivilege</code> is null, no extra permissions
+	 * are required to edit this type
+	 * 
+	 * @param editPrivilege
+	 */
+	public void setEditPrivilege(Privilege editPrivilege) {
+		this.editPrivilege = editPrivilege;
+    }
 	
 }

@@ -20,7 +20,6 @@ import java.util.List;
 import org.openmrs.DataEntryStatistic;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
-import org.openmrs.Tribe;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 
@@ -30,43 +29,7 @@ import org.openmrs.reporting.Report;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.AdministrationService
  */
-public interface AdministrationDAO {
-	
-	/**
-	 * Create a new Tribe
-	 * @param Tribe to create
-	 * @throws DAOException
-	 */
-	public void createTribe(Tribe tribe) throws DAOException;
-
-	/**
-	 * Update Tribe
-	 * @param Tribe to update
-	 * @throws DAOException
-	 */
-	public void updateTribe(Tribe tribe) throws DAOException;
-
-	/**
-	 * Delete Tribe
-	 * @param Tribe to delete
-	 * @throws DAOException
-	 */
-	public void deleteTribe(Tribe tribe) throws DAOException;	
-	
-	/**
-	 * Retire Tribe
-	 * @param Tribe to retire
-	 * @throws DAOException
-	 */
-	public void retireTribe(Tribe tribe) throws DAOException;	
-
-	/**
-	 * Unretire Tribe
-	 * @param Tribe to unretire
-	 * @throws DAOException
-	 */
-	public void unretireTribe(Tribe tribe) throws DAOException;	
-	
+public interface AdministrationDAO {	
 	/**
 	 * Create a new Report
 	 * @param Report to create

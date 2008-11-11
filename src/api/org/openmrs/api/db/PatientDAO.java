@@ -19,7 +19,6 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Tribe;
 
 /**
  * Database methods for the PatientService
@@ -101,35 +100,6 @@ public interface PatientDAO {
 	public void deletePatientIdentifierType(
 	        PatientIdentifierType patientIdentifierType) throws DAOException;
 
-	/**
-	 * Get tribe by internal tribe identifier
-	 * 
-	 * @return Tribe
-	 * @param tribeId 
-	 * @throws DAOException
-	 * @deprecated tribe will be moved to patient attribute
-	 */
-	public Tribe getTribe(Integer tribeId) throws DAOException;
-	
-	/**
-	 * Get list of tribes that are not retired
-	 * 
-	 * @return non-retired Tribe list
-	 * @throws DAOException
-	 * @deprecated tribe will be moved to patient attribute
-	 */
-	public List<Tribe> getTribes() throws DAOException;
-	
-	/**
-	 * Get tribes by partial name lookup
-	 * 
-	 * @param Search string
-	 * @return non-retired Tribe list
-	 * @throws DAOException
-	 * @deprecated tribe will be moved to patient attribute
-	 */
-	public List<Tribe> findTribes(String s) throws DAOException;
-	
 	/**
      * @see org.openmrs.api.PatientService#getDuplicatePatientsByAttributes(java.util.List)
 	 */

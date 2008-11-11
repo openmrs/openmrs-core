@@ -32,14 +32,11 @@
 					<c:if test="${model.patient.age == 0}">< 1 <spring:message code="Person.age.year"/></c:if>
 					<span id="patientHeaderPatientBirthdate"><c:if test="${not empty model.patient.birthdate}">(<c:if test="${model.patient.birthdateEstimated}">~</c:if><openmrs:formatDate date="${model.patient.birthdate}" type="medium" />)</c:if><c:if test="${empty model.patient.birthdate}"><spring:message code="Person.age.unknown"/></c:if></span>
 				</td>
-				<openmrs:globalProperty key="use_patient_attribute.tribe" defaultValue="false" var="showTribe"/>
-				<c:if test="${showTribe}">
-					<td id="patientHeaderPatientTribe">
-						<spring:message code="Patient.tribe"/>:
-						<b>${model.patient.tribe.name}</b>
-						<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientTribe" type="html" parameters="patientId=${model.patient.patientId}" />
-					</td>
-				</c:if>
+				<%-- 	TODO: Patient.tribe moved to a person attribute. 
+						This is kept for backward compatibility. --%>
+				<td id="patientHeaderPatientTribe">
+					<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.afterPatientHeaderPatientTribe" type="html" parameters="patientId=${model.patient.patientId}" />
+				</td>
 				<openmrs:globalProperty key="use_patient_attribute.healthCenter" defaultValue="false" var="showHealthCenter"/>
 				<c:if test="${showHealthCenter && not empty model.patient.attributeMap['Health Center']}">
 					<td id="patientHeaderHealthCenter">
@@ -118,7 +115,7 @@
 				<th id="patientHeaderObsWeight">
 					<spring:message code="Patient.bmi"/>: ${model.patientBmiAsString}
 				</th>
-				<td> 
+				<th> 
 					<small>
 						(
 						<spring:message code="Patient.weight"/>:

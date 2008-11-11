@@ -39,7 +39,6 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
-import org.openmrs.Tribe;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -389,44 +388,6 @@ public class HibernatePatientDAO implements PatientDAO {
 		return criteria.list();
 	}
 
-	/**
-	 * @see org.openmrs.api.PatientService#getTribe()
-	 * @deprecated tribe will be moved to patient attribute
-	 */
-	public Tribe getTribe(Integer tribeId) throws DAOException {
-		Tribe tribe = (Tribe) sessionFactory.getCurrentSession()
-		                                    .get(Tribe.class, tribeId);
-		
-		return tribe;
-	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService#getTribes()
-	 * @deprecated tribe will be moved to patient attribute
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Tribe> getTribes() throws DAOException {
-		List<Tribe> tribes = sessionFactory.getCurrentSession()
-		                                   .createQuery("from Tribe t order by t.name asc")
-		                                   .list();
-		
-		return tribes;
-	}
-	
-	/**
-	 * @see org.openmrs.api.PatientService#findTribes()
-	 * @deprecated tribe will be moved to patient attribute
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Tribe> findTribes(String s) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession()
-		                              .createCriteria(Tribe.class);
-		crit.add(Expression.like("name", s, MatchMode.START));
-		crit.addOrder(Order.asc("name"));
-		
-		return crit.list();
-	}
-	
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getDuplicatePatientsByAttributes(java.util.List)
 	 */

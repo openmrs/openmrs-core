@@ -38,7 +38,6 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
-import org.openmrs.Tribe;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.BlankIdentifierException;
@@ -617,36 +616,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	// end patient identifier _type_ section
-	
-	
-	// tribe section
-
-	/**
-	 * @deprecated tribe will be moved to patient attribute
-	 * @see org.openmrs.api.PatientService#getTribe(java.lang.Integer)
-	 */
-	public Tribe getTribe(Integer tribeId) throws APIException {
-		return dao.getTribe(tribeId);
-	}
-	
-	/**
-	 * @deprecated tribe will be moved to patient attributes
-	 * @see org.openmrs.api.PatientService#getTribes()
-	 */
-	public List<Tribe> getTribes() throws APIException {
-		return dao.getTribes();
-	}
-		
-	/**
-	 * @deprecated tribe will be moved to patient attributes
-	 * @see org.openmrs.api.PatientService#findTribes(java.lang.String)
-	 */
-	public List<Tribe> findTribes(String search) throws APIException {
-		return dao.findTribes(search);
-	}
-	
-	// end tribe section
-	
 
 	/**
 	 * @see org.openmrs.api.PatientService#findPatients(java.lang.String, boolean)
@@ -910,9 +879,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			preferred.setBirthdate(notPreferred.getBirthdate());
 			preferred.setBirthdateEstimated(notPreferred.getBirthdateEstimated());
 		}
-		
-		if (preferred.getTribe() == null)
-			preferred.setTribe(notPreferred.getTribe());
 		
 		/*
 		 * if (preferred.getBirthplace() == null ||

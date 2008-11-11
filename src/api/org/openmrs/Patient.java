@@ -39,7 +39,6 @@ public class Patient extends Person implements java.io.Serializable {
 	//private Person person;
 
 	private Integer patientId;
-	private Tribe tribe;
 	private Set<PatientIdentifier> identifiers;
 
 	private User creator; 
@@ -130,21 +129,6 @@ public class Patient extends Person implements java.io.Serializable {
 	public void setPersonId(Integer personId) {
 		super.setPersonId(personId);
 		this.patientId = personId;
-	}
-
-	/**
-	 * @return patient's tribe
-	 */
-	public Tribe getTribe() {
-		return tribe;
-	}
-
-	/**
-	 * @param tribe
-	 *            patient's tribe
-	 */
-	public void setTribe(Tribe tribe) {
-		this.tribe = tribe;
 	}
 
 	/**

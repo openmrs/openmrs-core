@@ -1883,6 +1883,34 @@ END;
 delimiter ;
 call diff_procedure('1.4.0.20');
 
+#----------------------------------------
+# OpenMRS Datamodel version 1.5.0.01
+# Upul Godage               July 4, 2008
+# Adding edit_privilege column to PersonAttributeType
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+	ALTER TABLE `person_attribute_type` ADD COLUMN `edit_privilege` varchar(255) AFTER `searchable` default NULL ;
+
+	ALTER TABLE `person_attribute_type` ADD CONSTRAINT `privilege_which_can_edit` FOREIGN KEY (`edit_privilege`) REFERENCES `privilege` (`privilege`);
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+    
+    END IF;
+ END;
+//
+
+delimiter ;
+call diff_procedure('1.5.0.01');
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

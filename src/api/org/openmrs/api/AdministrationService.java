@@ -34,7 +34,6 @@ import org.openmrs.MimeType;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
-import org.openmrs.Tribe;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.reporting.AbstractReportObject;
@@ -105,35 +104,6 @@ public interface AdministrationService extends OpenmrsService {
 	public void deletePatientIdentifierType(
 			PatientIdentifierType patientIdentifierType) throws APIException;
 
-	/**
-	 * @deprecated tribe will be moved to patient attribute
-	 */
-	public void createTribe(Tribe tribe) throws APIException;
-
-	/**
-	 * Update Tribe
-	 * @deprecated tribe will be moved to patient attribute
-	 */
-	public void updateTribe(Tribe tribe) throws APIException;
-
-	/**
-	 * Delete Tribe
-	 * @deprecated tribe will be moved to patient attribute
-	 */
-	public void deleteTribe(Tribe tribe) throws APIException;
-
-	/**
-	 * Retire Tribe
-	 * @deprecated tribe will be moved to patient attribute
-	 */
-	public void retireTribe(Tribe tribe) throws APIException;
-
-	/**
-	 * Unretire Tribe
-	 * @deprecated tribe will be moved to patient attribute
-	 */
-	public void unretireTribe(Tribe tribe) throws APIException;
-	
 	/**
 	 * @deprecated use {@link FormService#saveFieldType(FieldType)}
 	 */

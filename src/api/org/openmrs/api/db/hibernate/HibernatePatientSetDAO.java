@@ -290,9 +290,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				patientNode.setAttribute("citizenship", p.getCitizenship());
 			}
 			*/
-			if (p.getTribe() != null) {
-				patientNode.setAttribute("tribe", p.getTribe().getName());
-			}
 			/*
 			if (p.getMothersName() != null) {
 				patientNode.setAttribute("mothers_name", p.getMothersName());

@@ -80,106 +80,41 @@
 	</td>
 </tr>
 
-<c:if test="${showTribe == 'true'}">
-	<tr>
-		<td><spring:message code="Patient.tribe"/></td>
-		<td>
-			
-			<%-- 							
-				===========================================================================================
-											START RESTRICT PERSON TRIBE permission check
-				===========================================================================================
-				 -  If the "restrict_patient_attribute.tribe" global property is NOT set or set to 'false' 
-					then we display the field as a select box (per usual).
-				
-				 -  If the "restrict_patient_attribute.tribe" global property is set to 'true', then we 
-					check whether the user is authorized to view or edit the tribe attribute.
-				  
-				NOTE:  	The following code could have been cleaner, but I wanted to separate the logic for 
-						restricting tribes from the default behavior in order to make sure that systems 
-						that don't care about the tribe permission were	not adversely affected by a bug 
-						in the edit tribe restriction code.			
-			--%>		
-			
-			<openmrs:globalProperty key="restrict_patient_attribute.tribe" defaultValue="false" var="restrictTribe"/>
-			<!-- Restrict tribe:  	${restrictTribe} -->
-			
-			<c:choose>
-				<%-- The "restrict_patient_attribute.tribe" global property is NOT set or is set to false. --%>
-				<c:when test="${!restrictTribe}">
-					<spring:bind path="tribe">
-						<select name="tribe">
-							<option value=""></option>
-							<openmrs:forEachRecord name="tribe">
-								<option value="${record.tribeId}" <c:catch><c:if test="${record.name == status.value || status.value == record.tribeId}">selected</c:if></c:catch>>
-									${record.name}
-								</option>
-							</openmrs:forEachRecord>
-						</select>
-						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-					</spring:bind>
-				</c:when>
-				
-				<%-- The "restrict_patient_attribute.tribe" global property is set. --%>
-				<c:otherwise>
-					<%-- Check if the user is authorized to edit the tribe or just view the tribe  --%>
-					<c:set var="authorized" value="false"/>
-					<openmrs:hasPrivilege privilege="Edit Person Tribe">
-						<c:set var="authorized" value="true"/>
-					</openmrs:hasPrivilege>
-					<!--  Authorized to edit tribe: 	${authorized} -->	
-
-
-					<c:choose>		
-						<%-- The user is authorized to EDIT the tribe attribute.--%>
-						<c:when test="${authorized}">										
-							<spring:bind path="tribe">
-								<select name="tribe">
-									<option value=""></option>
-									<openmrs:forEachRecord name="tribe">
-										<option value="${record.tribeId}" <c:catch><c:if test="${record.name == status.value || status.value == record.tribeId}">selected</c:if></c:catch>>
-											${record.name}
-										</option>
-									</openmrs:forEachRecord>
-								</select>
-								<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
-						</c:when>
-						<%-- The user is NOT authorized to EDIT the tribe attribute.--%>
-						<c:otherwise>						
-							${patient.tribe.name}
-						</c:otherwise>
-					</c:choose>										
-				</c:otherwise>
-			</c:choose>		
-			<%-- 							
-				===========================================================================================
-											END RESTRICT PERSON TRIBE permission check
-				===========================================================================================
-			--%>							
-
-
-
-
-
-	
-		</td>
-	</tr>
-</c:if>
 <openmrs:forEachDisplayAttributeType personType="" displayType="all" var="attrType">
+	<c:set var="authorized" value="false" />
+	<c:choose>
+		<c:when test="${not empty attrType.editPrivilege}">
+			<openmrs:hasPrivilege privilege="${attrType.editPrivilege.privilege}">
+				<c:set var="authorized" value="true" />
+			</openmrs:hasPrivilege>
+		</c:when>
+		<c:otherwise>
+			<c:set var="authorized" value="true" />
+		</c:otherwise>
+	</c:choose>
+
 	<tr>
 		<td><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></td>
 		<td>
-			<spring:bind path="attributeMap">
-				<openmrs:fieldGen 
-					type="${attrType.format}" 
-					formFieldName="${attrType.personAttributeTypeId}" 
-					val="${status.value[attrType.name].hydratedObject}" 
-					parameters="optionHeader=[blank]|showAnswers=${attrType.foreignKey}" />
-			</spring:bind>
+			<c:choose>
+				<c:when test="${authorized == true}">
+					<spring:bind path="attributeMap">
+						<openmrs:fieldGen 
+							type="${attrType.format}" 
+							formFieldName="${attrType.personAttributeTypeId}" 
+							val="${status.value[attrType.name].hydratedObject}" 
+							parameters="optionHeader=[blank]|showAnswers=${attrType.foreignKey}" />
+					</spring:bind>
+				</c:when>
+				<c:otherwise>
+					<spring:bind path="attributeMap">${status.value[attrType.name].hydratedObject}</spring:bind>
+				</c:otherwise>
+			</c:choose>
 		</td>
 	</tr>
+
 </openmrs:forEachDisplayAttributeType>
+
 <tr>
 	<td><spring:message code="Person.dead"/></td>
 	<td>
