@@ -139,11 +139,11 @@
 								<c:choose>
 									<c:when test="${fn:startsWith(link.key, 'module/')}">
 										<%-- Added for backwards compatibility for most links --%>
-										<li><a href="${pageContext.request.contextPath}/${link.key}"><spring:message code="${link.value}"/></a>y</li>
+										<li><a href="${pageContext.request.contextPath}/${link.key}"><spring:message code="${link.value}"/></a></li>
 									</c:when>
 									<c:otherwise>
 										<%-- Allows for external absolute links  --%>
-										<li><a href='<c:url value="${link.key}"/>'><spring:message code='${link.value}'/></a>x</li>
+										<li><a href='<c:url value="${link.key}"/>'><spring:message code='${link.value}'/></a></li>
 									</c:otherwise>
 								</c:choose>
 							</c:forEach>
