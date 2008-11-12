@@ -205,14 +205,11 @@ CREATE PROCEDURE sync_setup_procedure()
 	END IF;
 
 	# -------------------------------------------------------------------------------
-	# Add primary keys to dependent concept tables (concept_name, concept_synonym) 
+	# Add primary keys to dependent concept tables (concept_name, concept_word, concept_set) 
 	# -------------------------------------------------------------------------------
 	# -- already there. ALTER TABLE `concept_name` ADD COLUMN `concept_name_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT FIRST;
 	ALTER TABLE `concept_name` ADD INDEX (`concept_id`);
 	ALTER TABLE `concept_name` DROP PRIMARY KEY, ADD PRIMARY KEY (`concept_name_id`);
-	ALTER TABLE `concept_synonym` ADD COLUMN `concept_synonym_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT FIRST;
-	ALTER TABLE `concept_synonym` ADD INDEX (`concept_id`);
-	ALTER TABLE `concept_synonym` DROP PRIMARY KEY, ADD PRIMARY KEY (`concept_synonym_id`);
 	ALTER TABLE `concept_set` ADD COLUMN `concept_set_id` int(11) UNIQUE KEY NOT NULL AUTO_INCREMENT FIRST;
 	ALTER TABLE `concept_set` ADD INDEX (`concept_id`);
 	ALTER TABLE `concept_set` DROP PRIMARY KEY, ADD PRIMARY KEY (`concept_set_id`);
