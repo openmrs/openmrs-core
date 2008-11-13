@@ -86,6 +86,11 @@ public interface AdministrationDAO {
      * @see org.openmrs.api.AdministrationService#getGlobalProperty(String)
 	 */
 	public String getGlobalProperty(String propertyName) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
+	 */
+    public GlobalProperty getGlobalPropertyObject(String propertyName);
 
 	/**
      * @see org.openmrs.api.AdministrationService#getAllGlobalProperties()

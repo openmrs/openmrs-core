@@ -421,6 +421,15 @@ public interface AdministrationService extends OpenmrsService {
 	public String getGlobalProperty(String propertyName, String defaultValue) throws APIException;
 	
 	/**
+	 * 
+	 * Gets the global property that has the given <code>propertyName</code>
+	 * 
+	 * @param propertyName property key to look for
+	 * @return the global property that matches the given <code>propertyName</code>
+	 */
+	public GlobalProperty getGlobalPropertyObject(String propertyName);
+	
+	/**
 	 * Get a list of all global properties in the system
 	 * 
 	 * @return list of global properties

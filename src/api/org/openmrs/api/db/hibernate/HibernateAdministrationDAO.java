@@ -201,6 +201,20 @@ public class HibernateAdministrationDAO implements
 	}
 	
 	/**
+	 * 
+	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertyObject(java.lang.String)
+	 */
+	public GlobalProperty getGlobalPropertyObject(String propertyName) {
+		GlobalProperty gp = (GlobalProperty)sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
+		
+		// if no gp exists, return a null value
+		if (gp == null)
+			return null;
+		
+		return gp;
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getAllGlobalProperties()
 	 */
 	@SuppressWarnings("unchecked")
