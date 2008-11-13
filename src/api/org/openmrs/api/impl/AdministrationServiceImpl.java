@@ -561,7 +561,7 @@ implements AdministrationService, GlobalPropertyListener {
 		
 		return dao.getGlobalProperty(propertyName);
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(java.lang.String, java.lang.String)
 	 */
@@ -572,6 +572,14 @@ implements AdministrationService, GlobalPropertyListener {
 		return s;
 	}
 
+	/**
+	 * 
+	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
+	 */
+	public GlobalProperty getGlobalPropertyObject(String propertyName) {
+		return dao.getGlobalPropertyObject(propertyName);
+	}
+	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalProperties()
 	 * @deprecated
