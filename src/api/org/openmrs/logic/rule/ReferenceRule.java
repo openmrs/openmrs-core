@@ -78,6 +78,11 @@ public class ReferenceRule implements Rule {
     	log.info("Evaluating " + key + " ... ");
         return context.read(patient, dataSource, new LogicCriteria(key));
     }
+    
+    public Result eval(LogicContext context, Patient patient, LogicCriteria criteria) throws LogicException {
+
+        return context.read(patient, dataSource, criteria);
+    }
 
     /**
      * @see org.openmrs.logic.rule.Rule#getParameterList()

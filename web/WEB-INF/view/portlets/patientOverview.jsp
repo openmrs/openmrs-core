@@ -37,12 +37,12 @@
 		<tr>
 		<c:if test="${empty model.patientReasonForExit}">
 			<td id="patientActionsOutcome">
-				<div id="patientActionsOutcomeLink">
-					<a href="javascript:showExitForm();"><spring:message code="Patient.outcome.exitFromCare" /></a>
+				<div id="patientActionsOutcomeLink">					
+					<button id="cancelExitButton" onClick="return showExitForm();"><spring:message code="Patient.outcome.exitFromCare"/></button>
 				</div>
-				<div id="patientActionsOutcomeForm" style="display:none;">
+				<div id="patientActionsOutcomeForm" style="display:none; padding: 3px; border: 1px black dashed">
 					<form method="post" id="exitForm">
-												<table id="outcomeFormTable">
+						<table id="outcomeFormTable">
 							<tr>
 								<td id="patientActionsOutcomeReason">
 									<span id="patientOutcomeTextReason"><spring:message code="Patient.outcome.exitType" /></span>
@@ -141,7 +141,7 @@
 				function handleCancelExit() {
 					var reason = DWRUtil.getValue('cancelExitReason');
 					if (reason == '') {
-						alert("<spring:message code="general.required" arguments="${reasonText}"/>");
+						alert("<spring:message code="Patient.outcome.resumeCareReason.required" arguments="${reasonText}"/>");
 						return;
 					} else {
 						DWRObsService.voidObservation(${model.patientReasonForExit.obsId}, reason,
@@ -150,14 +150,20 @@
 				}
 			</script>
 			<td id="patientActionsOutcome">
-				<span id="reasonForExit"><spring:message code="Patient.outcome.exitType" />: <b><openmrs_tag:concept conceptId="${model.patientReasonForExit.valueCoded.conceptId}"/> (<openmrs:formatDate date="${model.patientReasonForExit.obsDatetime}"/>)</b></span>
-				<a id="cancelExitButton" href="javascript:showDiv('cancelExit'); hideDiv('cancelExitButton')">[X]</a>
-				<span id="cancelExit" style="display: none; border: 1px black dashed">
-					<spring:message code="Patient.outcome.exit.cancelReason"/>:
-					<input type="text" id="cancelExitReason" value="<spring:message code="general.dataEntryError"/>"/>
-					<input type="button" value="<spring:message code="general.delete"/>" onClick="handleCancelExit()" />
-					<input type="button" value="<spring:message code="general.cancel"/>" onClick="hideDiv('cancelExit'); showDiv('cancelExitButton')"/>
+				<span id="reasonForExit"><spring:message code="Patient.outcome.exitType" />: 
+					<b><openmrs_tag:concept conceptId="${model.patientReasonForExit.valueCoded.conceptId}"/> 
+					(<openmrs:formatDate date="${model.patientReasonForExit.obsDatetime}"/>)</b>
 				</span>
+				
+				<input type="button" id="cancelExitButton" value="<spring:message code="Patient.outcome.resumeCare"/>" onClick="showDiv('cancelExit'); hideDiv('cancelExitButton');"/>
+
+				<br/><br/>
+				<div id="cancelExit" style="display: none; padding: 3px; border: 1px black dashed">
+					<spring:message code="Patient.outcome.exit.cancelReason"/>:
+					<input type="text" id="cancelExitReason" name="cancelExitReason" value="<spring:message code="general.dataEntryError"/>"/>
+					<input type="button" value="<spring:message code="general.save"/>" onClick="handleCancelExit()" />
+					<input type="button" value="<spring:message code="general.cancel"/>" onClick="hideDiv('cancelExit'); showDiv('cancelExitButton')"/>
+				</div>
 			</td>
 		</c:if>
 		</tr>

@@ -48,11 +48,12 @@ public class OpenmrsLabelLogic implements LabelLogic {
 				realClassName = getHibernateInstanceClass(type.getName());
 			
 			// if we're cglib enhanced, ignore putting this class on the node
-			if (!realClassName.contains("CGLIB"))
+			if (!realClassName.contains("CGLIB")) {
 				
 				// don't have to return the classes for basic things
 				if (type != field)
 					return realClassName;
+			}
 			else {
 				// check for each of the overriding pojo types
 				for (String objectName : new String[] { "User", "Patient", "ComplexObs", "ConceptNumeric" }) {
@@ -63,6 +64,8 @@ public class OpenmrsLabelLogic implements LabelLogic {
 					    	return className;
 					}
 				}
+				
+				return realClassName.substring(0, realClassName.indexOf("$$EnhancerByCGLIB"));
 			}
 		}
 		

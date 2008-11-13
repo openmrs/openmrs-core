@@ -39,7 +39,7 @@ public class TestTask extends AbstractTask {
 	 */
 	public void initialize(TaskDefinition taskDefinition) { 
 		log.info("Initializing task " + taskDefinition );
-	} 
+	} 
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()

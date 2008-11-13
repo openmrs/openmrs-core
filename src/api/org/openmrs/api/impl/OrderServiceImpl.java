@@ -249,23 +249,27 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#createOrdersAndEncounter(org.openmrs.Patient, java.util.Collection)
 	 */
 	public void createOrdersAndEncounter(Patient p, Collection<Order> orders) throws APIException {
+
+		// Get unknown user (or the authenticated user)
 		User unknownUser = Context.getUserService().getUserByUsername("Unknown");
-		Location unknownLocation = Context.getLocationService().getLocation("Unknown Location");
-		if (unknownLocation == null)
-			unknownLocation = Context.getLocationService().getLocation("Unknown");
-		
 		// TODO: fix this hack
 		if (unknownUser == null) {
 			unknownUser = Context.getAuthenticatedUser();
 		}
+		
+		// Get unknown location
+		Location unknownLocation = Context.getLocationService().getDefaultLocation();
+		
 		if (unknownUser == null || unknownLocation == null) {
 			throw new APIException("Couldn't find a Location and a User named 'Unknown'.");
 		}
 		
 		EncounterType encounterType = Context.getEncounterService().getEncounterType("Regimen Change"); 
- 	 	if (encounterType == null) 
+ 	 	if (encounterType == null) {
  	 		throw new APIException("Couldn't find an encounter type 'Regimen Change'"); 
-		
+ 	 	}
+ 	 	
+ 	 	
 		Encounter e = new Encounter();
 		e.setPatient(p);
 		e.setProvider(unknownUser);

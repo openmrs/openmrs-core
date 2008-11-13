@@ -84,11 +84,9 @@ public class ModuleUtil {
 							try {
 								// get and make a temp directory if necessary
 								String tmpDir = System.getProperty("java.io.tmpdir");
-								File tmpDirFile = new File(tmpDir, "openmrs-mod-startup");
-								tmpDirFile.mkdirs();
+								File expandedFile = File.createTempFile(file.getName() + "-", ".omod", new File(tmpDir));
 								
 								// pull the name from the absolute path load attempt
-								File expandedFile = new File(tmpDirFile, file.getName());
 								FileOutputStream outStream = new FileOutputStream(expandedFile, false);
 								
 								// do the actual file copying

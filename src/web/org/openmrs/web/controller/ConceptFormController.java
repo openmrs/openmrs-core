@@ -219,7 +219,6 @@ public class ConceptFormController extends SimpleFormController {
 					originalSynsCopy.addAll(originalSyns);
 					for (ConceptName o : originalSynsCopy) {
 						if (o.getLocale().equals(l)
-//						        l.getLanguage().substring(0, 2)) ABKTODO -- FIX THIS!!!
 						        && !parameterSyns.contains(o)) { // .contains()
 																	// is only
 																	// usable
@@ -277,7 +276,7 @@ public class ConceptFormController extends SimpleFormController {
 				for (Locale l : conceptLocales) {
 					String localeName = l.toString();
 					String conceptName = request.getParameter(
-					        "name_" + localeName).toUpperCase();
+					        "name_" + localeName);
 					String shortName = request.getParameter("shortName_"
 					        + localeName);
 					String description = request.getParameter("description_"
@@ -286,7 +285,7 @@ public class ConceptFormController extends SimpleFormController {
 					        && conceptName.length() < 1) {
 						errors.reject("dictionary.error.needName");
 					}
-					ConceptName preferredName = concept.getName(l, true);
+					ConceptName preferredName = concept.getPreferredName(l);
 					if (preferredName != null) {
 						if (conceptName.length() > 0) {
 							++numberOfNamesSpecified;
@@ -391,8 +390,6 @@ public class ConceptFormController extends SimpleFormController {
 					concept.getConceptMappings().removeAll(conceptMappingsToDelete);
 				}
 				
-				/** Resolve any new tags which may have been added. */
-				resolveConceptNameTags(originalSyns);
 
 			} // end "if action != delete"
 		} else {
@@ -400,36 +397,6 @@ public class ConceptFormController extends SimpleFormController {
 		}
 
 		return super.processFormSubmission(request, response, concept, errors);
-	}
-
-	/**
-	 * Reviews all the tags applied to a set of concept names, assigning the
-	 * correct id for existing tags, and creating new tags.
-	 * 
-	 * @param conceptNames
-	 */
-	private void resolveConceptNameTags(Collection<ConceptName> conceptNames) {
-
-		ConceptService cs = Context.getConceptService();
-
-		for (ConceptName cn : conceptNames) {
-			if (cn.getTags() != null) {
-				for (ConceptNameTag tag : cn.getTags()) {
-					ConceptNameTag existingTag = cs.getConceptNameTagByName(tag
-					        .getTag());
-					if (existingTag == null) {
-						// pass through and do nothing here
-						// because the concept_name_tag_id will be null
-						// a new one will be created when the concept is saved.
-					} 
-					else {
-						cn.removeTag(tag);
-						cn.addTag(existingTag);
-					}
-	
-				}
-			}
-		}
 	}
 
 	/**
@@ -592,7 +559,7 @@ public class ConceptFormController extends SimpleFormController {
 
 				// get conceptShortNames for all locales
 				for (Locale l : conceptLocales) {
-					ConceptName cn = concept.getBestShortName(l);
+					ConceptName cn = concept.getShortNameInLocale(l);
 					if (cn == null) {
 						cn = new ConceptName();
 					}

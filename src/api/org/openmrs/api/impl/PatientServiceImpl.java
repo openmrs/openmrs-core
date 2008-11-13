@@ -1024,9 +1024,14 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 
 	/**
 	 * This is the way to establish that a patient has left the care center.
-	 * This API call is responsible for: 1) Closing workflow statuses 2)
-	 * Terminating programs 3) Discontinuing orders 4) Flagging patient table
-	 * (if applicable) 5) Creating any relevant observations about the patient
+	 * This API call is responsible for: 
+	 * <ol>
+	 * 	<li>Closing workflow statuses</li>
+	 *  <li>Terminating programs</li>
+	 *  <li>Discontinuing orders</li>
+	 *  <li>Flagging patient table</li>
+	 *  <li>Creating any relevant observations about the patient (if applicable)</li>
+	 * </ol>
 	 * 
 	 * @param patient - the patient who has exited care
 	 * @param dateExited - the declared date/time of the patient's exit
@@ -1037,12 +1042,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public void exitFromCare(Patient patient, Date dateExited,
 	        Concept reasonForExit) throws APIException {
 			
-			if ( patient == null )
-					throw new APIException("Attempting to exit from care an invalid patient. Cannot proceed");
+		if ( patient == null )
+				throw new APIException("Attempting to exit from care an invalid patient. Cannot proceed");
 			if ( dateExited == null ) 
-					throw new APIException("Must supply a valid dateExited when indicating that a patient has left care");
+				throw new APIException("Must supply a valid dateExited when indicating that a patient has left care");
 			if ( reasonForExit == null ) 
-					throw new APIException("Must supply a valid reasonForExit (even if 'Unknown') when indicating that a patient has left care");
+				throw new APIException("Must supply a valid reasonForExit (even if 'Unknown') when indicating that a patient has left care");
 		
 		
 		// need to create an observation to represent this (otherwise how
@@ -1057,10 +1062,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		OrderUtil.discontinueAllOrders(patient,
                                        reasonForExit,
                                        dateExited);
-		}
+	}
 
 	/**
-	 * Auto generated method comment
+	 * 
+	 * 
+	 * 
+	 * TODO: Patients should actually be allowed to exit multiple times
 	 * 
 	 * @param patient
 	 * @param exitDate
@@ -1079,8 +1087,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			
 		// need to make sure there is an Obs that represents the patient's
 		// exit
-			log.debug("Patient is exiting, so let's make sure there's an Obs for it");
-
+		log.debug("Patient is exiting, so let's make sure there's an Obs for it");
+		
 		String codProp = Context.getAdministrationService()
 		                        .getGlobalProperty("concept.reasonExitedCare");
 		Concept reasonForExit = Context.getConceptService()
@@ -1099,28 +1107,25 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						if ( obssExit.size() == 1 ) {
 							// already has a reason for exit - let's edit it.
 							log.debug("Already has a reason for exit, so changing it");
-							
+			
 							obsExit = obssExit.iterator().next();
-							
+			
 						} else {
 							// no reason for exit obs yet, so let's make one
 							log.debug("No reason for exit yet, let's create one.");
-							
+				
 							obsExit = new Obs();
 							obsExit.setPerson(patient);
 							obsExit.setConcept(reasonForExit);
-							obsExit.setConceptName(reasonForExit.getName()); // ABKTODO: presume current locale?
-							Location loc = null; //patient.getHealthCenter();
-						if (loc == null)
-							loc = Context.getLocationService().getLocation("Unknown Location");
-						if (loc == null)
-							loc = Context.getLocationService()
-							             .getLocation(new Integer(1));
+							
+							
+						Location loc = Context.getLocationService().getDefaultLocation();
+						
 						if (loc != null)
 							obsExit.setLocation(loc);
 						else
 							log.error("Could not find a suitable location for which to create this new Obs");
-						}
+				} 
 						
 						if ( obsExit != null ) {
 						// put the right concept and (maybe) text in this
@@ -1129,14 +1134,16 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 							obsExit.setValueCodedName(cause.getName()); // ABKTODO: presume current locale?
 							obsExit.setObsDatetime(exitDate);
 						Context.getObsService().saveObs(obsExit, null);
-						}
-					}
-				}
+				} 
+			}
+		} 
 			} else {
 				log.debug("Reason for exit is null - should not have gotten here without throwing an error on the form.");
-			}
-		}
+		}		
 		
+	}
+	
+	
 	/**
 	 * This is the way to establish that a patient has died. In addition to
 	 * exiting the patient from care (see above), this method will also set the
@@ -1154,25 +1161,25 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public void processDeath(Patient patient, Date dateDied,
 	        Concept causeOfDeath, String otherReason) throws APIException {
 		//SQLStateConverter s = null;
-		
+
 		if ( patient != null && dateDied != null && causeOfDeath != null ) {
-			// set appropriate patient characteristics
-			patient.setDead(true);
-			patient.setDeathDate(dateDied);
-			patient.setCauseOfDeath(causeOfDeath);
+		// set appropriate patient characteristics
+		patient.setDead(true);
+		patient.setDeathDate(dateDied);
+		patient.setCauseOfDeath(causeOfDeath);
 			this.updatePatient(patient);
-			saveCauseOfDeathObs(patient, dateDied, causeOfDeath, otherReason);
-			
-			// exit from program
-			// first, need to get Concept for "Patient Died"
+		saveCauseOfDeathObs(patient, dateDied, causeOfDeath, otherReason);
+		
+		// exit from program
+		// first, need to get Concept for "Patient Died"
 			String strPatientDied = Context.getAdministrationService()
-			                               .getGlobalProperty("concept.patientDied");
-			Concept conceptPatientDied = Context.getConceptService()
+		                               .getGlobalProperty("concept.patientDied");
+		Concept conceptPatientDied = Context.getConceptService()
 			                                    .getConcept(strPatientDied);
-			
+		
 			if (conceptPatientDied == null)
-				log.debug("ConceptPatientDied is null");
-			exitFromCare(patient, dateDied, conceptPatientDied);
+			log.debug("ConceptPatientDied is null");
+		exitFromCare(patient, dateDied, conceptPatientDied);
 
 		} else {
 			if ( patient == null )
@@ -1181,8 +1188,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 					throw new APIException("Must supply a valid dateDied when indicating that a patient has died");
 			if ( causeOfDeath == null ) 
 					throw new APIException("Must supply a valid causeOfDeath (even if 'Unknown') when indicating that a patient has died");
-		}
 	}
+	}
+	
+	
+	
 
 	/**
 	 * @see org.openmrs.api.PatientService#saveCauseOfDeathObs(org.openmrs.Patient, java.util.Date, org.openmrs.Concept, java.lang.String)
@@ -1197,17 +1207,19 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (cause == null)
 			throw new APIException("Cause supplied to method is null");
 		
-		if (!patient.getDead())
+		if (!patient.getDead()) {
 			patient.setDead(true);
 			patient.setDeathDate(deathDate);
 			patient.setCauseOfDeath(cause);
-			
-			log.debug("Patient is dead, so let's make sure there's an Obs for it");
+		}
+		
+		log.debug("Patient is dead, so let's make sure there's an Obs for it");
 		// need to make sure there is an Obs that represents the patient's
 		// cause of death, if applicable
 
 		String codProp = Context.getAdministrationService()
 		                        .getGlobalProperty("concept.causeOfDeath");
+		
 		Concept causeOfDeath = Context.getConceptService()
 		                              .getConcept(codProp);
 
@@ -1223,7 +1235,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						Obs obsDeath = null;
 						if ( obssDeath.size() == 1 ) {
 							// already has a cause of death - let's edit it.
-							log.debug("Already has a cause of death, so changing it");
+							log.debug("Already has a cause of death, so changing it");							
 							
 							obsDeath = obssDeath.iterator().next();
 							
@@ -1234,18 +1246,13 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 							obsDeath = new Obs();
 							obsDeath.setPerson(patient);
 							obsDeath.setConcept(causeOfDeath);
-							obsDeath.setConceptName(causeOfDeath.getName()); // ABKTODO: presume current locale?
-							Location loc = null; //patient.getHealthCenter();
-						if (loc == null)
-							loc = Context.getLocationService()
-							             .getLocation("Unknown Location");
-						if (loc == null)
-							loc = Context.getLocationService()
-							             .getLocation(new Integer(1));
-						if (loc != null)
-							obsDeath.setLocation(loc);
-						else
-							log.error("Could not find a suitable location for which to create this new Obs");
+							Location location = Context.getLocationService().getDefaultLocation();
+							if (location != null) { 
+								obsDeath.setLocation(location);
+							}
+							else { 
+								log.error("Could not find a suitable location for which to create this new Obs");
+							}
 						}
 						
 						// put the right concept and (maybe) text in this obs
@@ -1253,18 +1260,18 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						if ( currCause == null ) {
 							// set to NONE
 							log.debug("Current cause is null, attempting to set to NONE");
-						String noneConcept = Context.getAdministrationService()
+							String noneConcept = Context.getAdministrationService()
 						                            .getGlobalProperty("concept.none");
-						currCause = Context.getConceptService()
+							currCause = Context.getConceptService()
 						                   .getConcept(noneConcept);
 						}
 						
 						if ( currCause != null ) {
 							log.debug("Current cause is not null, setting to value_coded");
-							obsDeath.setValueCoded(currCause);
+							obsDeath.setValueCoded(currCause);	
 							obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 							
-							Date dateDeath = patient.getDeathDate();
+						Date dateDeath = patient.getDeathDate();
 						if (dateDeath == null)
 							dateDeath = new Date();
 							obsDeath.setObsDatetime(dateDeath);
@@ -1277,11 +1284,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						                              .getConcept(otherConcept);
 							if ( conceptOther != null ) {
 								if ( conceptOther.equals(currCause) ) {
-								// seems like this is an other concept -
-								// let's try to get the "other" field info
+									// seems like this is an other concept -
+									// let's try to get the "other" field info
 								log.debug("Setting value_text as "
 								        + otherReason);
-									obsDeath.setValueText(otherReason);
+										obsDeath.setValueText(otherReason);
 								} else {
 									log.debug("New concept is NOT the OTHER concept, so setting to blank");
 									obsDeath.setValueText("");

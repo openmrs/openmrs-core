@@ -76,6 +76,17 @@ public interface LocationService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
 	public Location getLocation(String name) throws APIException;
 
+	
+	/**
+	 * Returns the default location for this implementation.
+	 * 
+	 * @returns The default location for this implementation.
+	 */
+	@Transactional(readOnly = true) 
+	@Authorized({OpenmrsConstants.PRIV_VIEW_LOCATIONS})
+	public Location getDefaultLocation() throws APIException;
+	
+	
 	/**
 	 * Returns a location by guid TODO: Not yet implemented.
 	 * 

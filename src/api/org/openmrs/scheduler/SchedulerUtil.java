@@ -120,7 +120,7 @@ public class SchedulerUtil {
 					// TODO need to the send the IP information for the server instance that is running this task
 					
 					
-					log.info("Sending scheduler error email to [" + recipients + "] from [" + sender + "] with subject [" + subject + "]:\n" + message );
+					log.debug("Sending scheduler error email to [" + recipients + "] from [" + sender + "] with subject [" + subject + "]:\n" + message );
 					Context.getMessageService().sendMessage(recipients, sender, subject, message);					
 				}
 

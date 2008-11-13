@@ -43,6 +43,8 @@ import org.openmrs.util.OpenmrsUtil;
  */
 public class Result extends ArrayList<Result> {
 
+    private static final long serialVersionUID = -5587574403423820797L;
+
 	/**
 	 * Core datatypes for a result. Each result is one of these datatypes, but
 	 * can be easily coerced into the other datatypes. To promote flexibility
@@ -69,6 +71,8 @@ public class Result extends ArrayList<Result> {
 	private Double valueNumeric;
 
 	private String valueText;
+	
+	private Object resultObject;
 
 	private static final Result emptyResult = new EmptyResult();
 
@@ -103,7 +107,7 @@ public class Result extends ArrayList<Result> {
 	 * @param valueBoolean
 	 */
 	public Result(Boolean valueBoolean) {
-		this(new Date(), valueBoolean);
+		this(new Date(), valueBoolean,null);
 	}
 
 	/**
@@ -112,8 +116,8 @@ public class Result extends ArrayList<Result> {
 	 * @param resultDate
 	 * @param valueBoolean
 	 */
-	public Result(Date resultDate, Boolean valueBoolean) {
-		this(resultDate, Datatype.BOOLEAN, valueBoolean, null, null, null, null);
+	public Result(Date resultDate, Boolean valueBoolean,Object obj) {
+		this(resultDate, Datatype.BOOLEAN, valueBoolean, null, null, null, null,obj);
 	}
 
 	/**
@@ -122,7 +126,7 @@ public class Result extends ArrayList<Result> {
 	 * @param valueCoded
 	 */
 	public Result(Concept valueCoded) {
-		this(new Date(), valueCoded);
+		this(new Date(), valueCoded,null);
 	}
 
 	/**
@@ -131,8 +135,8 @@ public class Result extends ArrayList<Result> {
 	 * @param resultDate
 	 * @param valueCoded
 	 */
-	public Result(Date resultDate, Concept valueCoded) {
-		this(resultDate, Datatype.CODED, null, valueCoded, null, null, null);
+	public Result(Date resultDate, Concept valueCoded,Object obj) {
+		this(resultDate, Datatype.CODED, null, valueCoded, null, null, null,obj);
 	}
 
 	/**
@@ -147,7 +151,7 @@ public class Result extends ArrayList<Result> {
 		     obs.getValueCoded(),
 		     obs.getValueDatetime(),
 		     obs.getValueNumeric(),
-		     obs.getValueText());
+		     obs.getValueText(),obs);
 		
 		Concept concept = obs.getConcept();
 		ConceptDatatype conceptDatatype = null;
@@ -155,10 +159,8 @@ public class Result extends ArrayList<Result> {
 		if (concept != null) {
 			conceptDatatype = concept.getDatatype();
 		
-			if (conceptDatatype == null) {
-				concept = Context.getConceptService()
-				                    .getConcept(concept.getConceptId());
-				conceptDatatype = concept.getDatatype();
+			if(conceptDatatype == null){
+				return;
 			}
 			if (conceptDatatype.isCoded())
 				this.datatype = Datatype.CODED;
@@ -179,7 +181,7 @@ public class Result extends ArrayList<Result> {
 	 * @param valueDatetime
 	 */
 	public Result(Date valueDatetime) {
-		this(new Date(), valueDatetime);
+		this(new Date(), valueDatetime,null);
 	}
 
 	/**
@@ -188,14 +190,14 @@ public class Result extends ArrayList<Result> {
 	 * @param resultDate
 	 * @param valueDatetime
 	 */
-	public Result(Date resultDate, Date valueDatetime) {
+	public Result(Date resultDate, Date valueDatetime,Object obj) {
 		this(resultDate,
 		     Datatype.DATETIME,
 		     null,
 		     null,
 		     valueDatetime,
 		     null,
-		     null);
+		     null,obj);
 	}
 
 	/**
@@ -204,7 +206,7 @@ public class Result extends ArrayList<Result> {
 	 * @param valueNumeric
 	 */
 	public Result(Double valueNumeric) {
-		this(new Date(), valueNumeric);
+		this(new Date(), valueNumeric,null);
 	}
 
 	/**
@@ -213,8 +215,8 @@ public class Result extends ArrayList<Result> {
 	 * @param resultDate
 	 * @param valueNumeric
 	 */
-	public Result(Date resultDate, Double valueNumeric) {
-		this(resultDate, Datatype.NUMERIC, null, null, null, valueNumeric, null);
+	public Result(Date resultDate, Double valueNumeric,Object obj) {
+		this(resultDate, Datatype.NUMERIC, null, null, null, valueNumeric, null,obj);
 	}
 
 	/**
@@ -223,7 +225,7 @@ public class Result extends ArrayList<Result> {
 	 * @param valueNumeric
 	 */
 	public Result(Integer valueNumeric) {
-		this(new Date(), valueNumeric);
+		this(new Date(), valueNumeric,null);
 	}
 
 	/**
@@ -232,14 +234,14 @@ public class Result extends ArrayList<Result> {
 	 * @param resultDate
 	 * @param valueNumeric
 	 */
-	public Result(Date resultDate, Integer valueNumeric) {
+	public Result(Date resultDate, Integer valueNumeric, Object obj) {
 		this(resultDate,
 		     Datatype.NUMERIC,
 		     null,
 		     null,
 		     null,
 		     valueNumeric.doubleValue(),
-		     null);
+		     null,obj);
 	}
 
 	/**
@@ -248,7 +250,7 @@ public class Result extends ArrayList<Result> {
 	 * @param valueText
 	 */
 	public Result(String valueText) {
-		this(new Date(), valueText);
+		this(new Date(), valueText,null);
 	}
 
 	/**
@@ -257,8 +259,8 @@ public class Result extends ArrayList<Result> {
 	 * @param resultDate
 	 * @param valueText
 	 */
-	public Result(Date resultDate, String valueText) {
-		this(resultDate, Datatype.TEXT, null, null, null, null, valueText);
+	public Result(Date resultDate, String valueText,Object obj) {
+		this(resultDate, Datatype.TEXT, null, null, null, null, valueText,obj);
 	}
 
 	/**
@@ -293,7 +295,7 @@ public class Result extends ArrayList<Result> {
 	 */
 	public Result(Date resultDate, Datatype datatype, Boolean valueBoolean,
 	        Concept valueCoded, Date valueDatetime, Double valueNumeric,
-	        String valueText) {
+	        String valueText,Object object) {
 		this.resultDatetime = resultDate;
 		this.valueNumeric = valueNumeric;
 		this.valueDatetime = valueDatetime;
@@ -301,6 +303,7 @@ public class Result extends ArrayList<Result> {
 		this.valueText = valueText;
 		this.valueBoolean = valueBoolean;
 		this.datatype = datatype;	
+		this.resultObject = object;
 	}
 
 	@Deprecated
@@ -425,6 +428,14 @@ public class Result extends ArrayList<Result> {
 		if (isSingleResult())
 			return resultDatetime;
 		return this.get(0).getResultDate();
+	}
+	
+	public Object getResultObject(){
+		return this.resultObject;
+	}
+	
+	public void setResultObject(Object object){
+		this.resultObject = object;
 	}
 
 	/**
@@ -627,7 +638,7 @@ public class Result extends ArrayList<Result> {
 				return (valueBoolean ? "true" : "false");
 			case CODED:
 				return (valueCoded == null ? ""
-				        : valueCoded.getName(Context.getLocale()).getName());
+				        : valueCoded.getBestName(Context.getLocale()).getName());
 			case DATETIME:
 				return (valueDatetime == null ? ""
 				        : OpenmrsUtil.getDateFormat().format(valueDatetime));
@@ -826,6 +837,9 @@ public class Result extends ArrayList<Result> {
 		if (isSingleResult())
 			return (index == 0 ? this : emptyResult);
 
+		if(index>=this.size()){
+			return emptyResult;
+		}
 		return super.get(index);
 	}
 

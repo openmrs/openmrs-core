@@ -116,7 +116,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	 * Return true if this user has the specified privilege
 	 * 
 	 * @param privilege
-	 * @return true/false
+	 * @return true/false depending on whether user has specified privilege
 	 */
 	public boolean hasPrivilege(String privilege) {
 

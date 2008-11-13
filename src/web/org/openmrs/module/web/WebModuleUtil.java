@@ -302,7 +302,7 @@ public class WebModuleUtil {
 				}
 				catch (Exception e) {
 					String msg = "Unable to refresh the WebApplicationContext"; 
-					mod.setStartupErrorMessage(msg + " : " + e.getMessage());
+					mod.setStartupErrorMessage(msg, e);
 					
 					if (log.isWarnEnabled())
 						log.warn(msg + " for module: " + mod.getModuleId(), e);
@@ -316,14 +316,15 @@ public class WebModuleUtil {
 						if (log.isWarnEnabled())
 							log.warn("Error while stopping a module that had an error on refreshWAC", e2);
 					}
-					System.gc();
 					
 					// try starting the application context again
 					refreshWAC(servletContext);
 				}
 				
-				// find and cache the module's servlets
-				loadServlets(mod);
+				// find and cache the module's servlets 
+				//(only if the module started successfully previously)
+				if (ModuleFactory.isModuleStarted(mod))
+					loadServlets(mod);
 				
 				return false;
 			}
@@ -510,44 +511,6 @@ public class WebModuleUtil {
 			}
 			catch (IOException io) {
 				log.warn("Couldn't delete: " + moduleWebFolder.getAbsolutePath(), io);
-			}
-		}
-		
-		// delete the xml files for this module
-		JarFile jarFile = null;
-		try {
-			File modFile = mod.getFile();
-			jarFile = new JarFile(modFile);
-			Enumeration<JarEntry> entries = jarFile.entries();
-			while (entries.hasMoreElements()) {
-				JarEntry entry = entries.nextElement();
-				log.debug("Entry name: " + entry.getName());
-				if (entry.getName().endsWith(".xml") && 
-						!entry.getName().equals("config.xml") &&
-						!entry.getName().endsWith("moduleApplicationContext.xml")) { //mod.getModuleId() + "context.xml")) {
-					absPath = realPath + "/WEB-INF/" + entry.getName();
-					File moduleXmlFile = new File(absPath.replace("/", File.separator));
-					if (moduleXmlFile.exists()) {
-						System.gc();
-						if (!moduleXmlFile.delete()) {
-							moduleXmlFile.deleteOnExit();
-							log.warn("Unable to delete xml file: " + moduleXmlFile.getAbsolutePath());
-						}
-					}
-				}
-			}
-		}
-		catch (IOException io) {
-			log.warn("Unable to delete files from module " + moduleId + " in the web layer", io);
-		}
-		finally {
-			if (jarFile != null) {
-				try {
-					jarFile.close();
-				}
-				catch (IOException io) {
-					log.warn("Couldn't close jar file: " + jarFile.getName(), io);
-				}
 			}
 		}
 			

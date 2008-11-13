@@ -232,6 +232,11 @@ public class UserContext {
 	 * 
 	 * @param user
 	 * @return all expanded roles for a user
+	 * 
+	 * @should not fail with null user
+	 * @should add anonymous role to all users
+	 * @should add authenticated role to all authenticated users
+	 * @should return same roles as user getAllRoles method
 	 */
 	public Set<Role> getAllRoles(User user) throws Exception {
 		Set<Role> roles = new HashSet<Role>();
@@ -263,7 +268,6 @@ public class UserContext {
 	 * @should not authorize if authenticated role does not have specified privilege
 	 * @should not authorize if proxied user does not have specified privilege
 	 * @should not authorize if anonymous user does not have specified privilege
-	 * @should log message if debug is enabled [kidding]
 	 * 
 	 */
 	public boolean hasPrivilege(String privilege) {
@@ -300,6 +304,8 @@ public class UserContext {
 	 * be given to all users
 	 * 
 	 * @return Role
+	 * 
+	 * @should fail if database doesn't contain anonymous role
 	 */
 	private Role getAnonymousRole() {
 		if (anonymousRole != null)
@@ -319,6 +325,8 @@ public class UserContext {
 	 * be given to all users that have authenticated in some manner
 	 * 
 	 * @return Role
+	 * 
+	 * @should fail if database doesn't contain authenticated role
 	 */
 	private Role getAuthenticatedRole() {
 		if (authenticatedRole != null)

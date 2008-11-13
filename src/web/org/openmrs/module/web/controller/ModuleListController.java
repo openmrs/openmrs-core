@@ -47,6 +47,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * Controller that backs the /admin/modules/modules.list page.
+ * This controller makes a list of modules available and lets the 
+ * user start, stop, and unload modules one at a time.
+ */
 public class ModuleListController extends SimpleFormController {
 
 	/**
@@ -182,8 +187,10 @@ public class ModuleListController extends SimpleFormController {
 							error = msa.getMessage("Module.not.started", args);
 					}
 					else if ("unload".equals(action)) {
-						ModuleFactory.stopModule(mod); // stop the module so that when the web stop is done properly
-						WebModuleUtil.stopModule(mod, getServletContext());
+						if (ModuleFactory.isModuleStarted(mod)) {
+							ModuleFactory.stopModule(mod); // stop the module so that when the web stop is done properly
+							WebModuleUtil.stopModule(mod, getServletContext());
+						}
 						ModuleFactory.unloadModule(mod);
 						success = msa.getMessage("Module.unloaded", args);
 					}

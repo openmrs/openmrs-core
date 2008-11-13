@@ -13,6 +13,7 @@
  */
 package org.openmrs.logic.impl;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -29,11 +30,17 @@ import org.openmrs.logic.LogicCriteria;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.LogicService;
 import org.openmrs.logic.Rule;
+import org.openmrs.logic.RuleClassLoader;
 import org.openmrs.logic.RuleFactory;
 import org.openmrs.logic.datasource.LogicDataSource;
+import org.openmrs.logic.queryparser.LogicQueryBaseParser;
+import org.openmrs.logic.queryparser.LogicQueryLexer;
+import org.openmrs.logic.queryparser.LogicQueryTreeParser;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;
+
+import antlr.BaseAST;
 
 /**
  * Default implementation of the LogicService.
@@ -292,4 +299,65 @@ public class LogicServiceImpl implements LogicService {
     public void removeLogicDataSource(String name) {
         dataSources.remove(name);
     }
+    
+    /**
+     * @see org.openmrs.logic.LogicService#loadRule(java.lang.String, java.lang.String)
+     */
+    public void loadRule(String tokenName,String ruleClassName) throws Exception {
+		RuleClassLoader ccl = new RuleClassLoader();
+
+		Class<?> clas = ccl.loadClass(ruleClassName);
+
+		if (clas == null) {
+			throw new Exception("Could not load class for rule: " + ruleClassName);
+		}
+		
+		Object obj = clas.newInstance();
+		
+		if(!(obj instanceof Rule)){
+			throw new Exception("Could not load class for rule: " + 
+			                    ruleClassName+". The rule must implement the Rule interface.");
+		}
+
+		this.updateRule(tokenName, (Rule) obj);
+	}
+    
+    /**
+     * @see org.openmrs.logic.LogicService#parseString(java.lang.String)
+     */
+    public LogicCriteria parseString(String inStr) {
+		
+		 try {
+			 if(!inStr.endsWith(";")){
+				 inStr += ";";
+			 }
+			 byte currentBytes[] = inStr.getBytes();
+		
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(currentBytes); 
+		
+		
+		  // Create a scanner that reads from the input stream passed to us
+	      LogicQueryLexer lexer = new LogicQueryLexer(byteArrayInputStream);
+
+	      // Create a parser that reads from the scanner
+	      LogicQueryBaseParser parser = new LogicQueryBaseParser(lexer);
+	      
+	      // start parsing at the compilationUnit rule
+	      parser.query_parse();
+	      
+	      BaseAST t = (BaseAST) parser.getAST();
+	      
+	      //System.out.println(t.toStringTree());     // prints Abstract Syntax Tree
+	     
+	      LogicQueryTreeParser treeParser = new LogicQueryTreeParser();
+	     
+	 	  LogicCriteria lc = treeParser.query_AST(t);
+	     // System.out.println(lc.toString());
+	      return lc;
+		 }
+		 catch(Exception e) {
+		    	log.error(e.getStackTrace());
+		    	return null;
+		    }	
+	}
 }

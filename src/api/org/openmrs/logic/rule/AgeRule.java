@@ -43,6 +43,9 @@ public class AgeRule implements Rule {
         Date birthdate = context.read(patient,
                 context.getLogicDataSource("person"), "BIRTHDATE").toDatetime();
 
+        if(birthdate == null){
+        	return Result.emptyResult();
+        }
         Calendar bdate = Calendar.getInstance();
         bdate.setTime(birthdate);
 

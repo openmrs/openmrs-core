@@ -26,6 +26,7 @@ import org.openmrs.logic.LogicCriteria;
 import org.openmrs.logic.db.LogicEncounterDAO;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
+import org.openmrs.logic.util.Util;
 
 /**
  * Provides access to encounter data. The keys for this data source are the
@@ -84,8 +85,9 @@ public class EncounterDataSource implements LogicDataSource {
 			                      null,
 			                      encounter.getEncounterDatetime(),
 			                      null,
-			                      null));
+			                      null,encounter));
 		}
+		Util.applyAggregators(finalResult, criteria,patients);
 
 		return finalResult;
 	}

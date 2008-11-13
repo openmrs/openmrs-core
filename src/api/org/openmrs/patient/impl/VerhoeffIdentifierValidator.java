@@ -69,7 +69,7 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
     		throw new UnallowedIdentifierException("Check digit can not be numeric.");
     	if(identifier.length() != VERHOEFF_ID_LENGTH)
     		throw new UnallowedIdentifierException("Identifier must be " + VERHOEFF_ID_LENGTH + " digits long.");
-    	    	    		
+    		
     	return super.isValid(identifier);
     }
     /**

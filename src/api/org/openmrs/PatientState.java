@@ -140,7 +140,7 @@ public class PatientState implements Synchronizable, java.io.Serializable {
 
 	/** @see Object#toString() */
 	public String toString() {
-		return "PatientState(id=" + getPatientStateId() + ", patientProgram=" + getPatientProgram() + ", state=" + getState() + ", startDate=" + getStartDate() + ", endDate=" + getEndDate();
+		return "id=" + getPatientStateId() + ", patientProgram=" + getPatientProgram() + ", state=" + getState() + ", startDate=" + getStartDate() + ", endDate=" + getEndDate() + ", dateCreated=" + getDateCreated() + ", dateChanged=" + getDateChanged();
 	}
 	
 	// ******************

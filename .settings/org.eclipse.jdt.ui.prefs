@@ -1,8 +1,7 @@
-#Sat Nov 03 13:38:35 CAT 2007
+#Mon Jul 14 21:37:15 CDT 2008
 eclipse.preferences.version=1
 formatter_profile=_OpenMRS Formatter
 formatter_settings_version=11
-internal.default.compliance=default
 org.eclipse.jdt.ui.exception.name=e
 org.eclipse.jdt.ui.gettersetter.use.is=true
 org.eclipse.jdt.ui.javadoc=true

@@ -19,6 +19,7 @@ import java.util.Map;
 import org.openmrs.Cohort;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicCriteria;
+import org.openmrs.logic.LogicException;
 import org.openmrs.logic.result.Result;
 
 /**
@@ -111,7 +112,7 @@ public interface LogicDataSource {
 	 * @see org.openmrs.logic.LogicDataElement
 	 */
 	public Map<Integer, Result> read(LogicContext context, Cohort patients,
-	        LogicCriteria criteria);
+	        LogicCriteria criteria) throws LogicException;
 
 	public abstract Collection<String> getKeys();
 

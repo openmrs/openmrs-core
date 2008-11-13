@@ -1099,7 +1099,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 	#-- If a role can View Patients...add the new View Patient Identifiers privilege to that role
 	insert into role_privilege (role, privilege) select distinct role, 'View Patient Identifiers' from role_privilege rp where privilege = 'View Patients' and not exists (select * from role_privilege where role = rp.role and privilege = 'View Patient Identifiers');	
 	
-	# THIS IS INCORRECT, BUT DOES NOT GET FIXED UNTIL 1.4.0.18
+	# THIS IS INCORRECT, BUT DOES NOT GET FIXED UNTIL 1.3.3.0 and 1.4.0.20
 	#-- Convert Manage Encounter Types
 	insert into role_privilege (role, privilege) select distinct role, 'Add Encounter Types' from role_privilege rp where privilege = 'Manage Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Add Encounter Types');
 	insert into role_privilege (role, privilege) select distinct role, 'Edit Encounter Types' from role_privilege rp where privilege = 'Manage Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Edit Encounter Types');
@@ -1179,6 +1179,37 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 
 delimiter ;
 call diff_procedure('1.3.0.16');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.3.3.0
+# Darius Jazayeri     Oct 17th, 2008
+#
+# Convert from Add/Edit/Delete Encounter Types to Manage Encounter Types
+# (this was done incorrectly in 1.3.0.14)
+# This sqldiff is identical to 1.4.0.20, but is here as a backport
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		#-- Convert Manage Encounter Types
+		insert into role_privilege (role, privilege) select distinct role, 'Manage Encounter Types' from role_privilege rp where privilege = 'Add Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Manage Encounter Types');
+		insert into role_privilege (role, privilege) select distinct role, 'Manage Encounter Types' from role_privilege rp where privilege = 'Edit Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Manage Encounter Types');
+		insert into role_privilege (role, privilege) select distinct role, 'Manage Encounter Types' from role_privilege rp where privilege = 'Delete Encounter Types' and not exists (select * from role_privilege where role = rp.role and privilege = 'Manage Encounter Types');
+		delete from role_privilege where privilege = 'Add Encounter Types';
+		delete from role_privilege where privilege = 'Edit Encounter Types';
+		delete from role_privilege where privilege = 'Delete Encounter Types';
+			
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.3.3.0');
+
 
 #----------------------------------------
 # OpenMRS Datamodel version 1.4.0.01
@@ -1636,7 +1667,7 @@ call diff_procedure('1.4.0.12');
 #
 # update obs table -
 #
-# add concept_name_id to observations
+# add concept_name_id to observation answers
 #-----------------------------------------------------------
 DROP PROCEDURE IF EXISTS diff_procedure;
 delimiter //
@@ -1646,7 +1677,6 @@ BEGIN
 
 		select 'Updating obs' AS '*** Step: ***', new_db_version from dual;
 
-		ALTER TABLE `obs` ADD COLUMN `concept_name_id` int(11) AFTER `concept_id`;
 		ALTER TABLE `obs` ADD COLUMN `value_coded_name_id` int(11) AFTER `value_coded`;
 
 		select '***' AS '...done' from dual;
@@ -1676,8 +1706,6 @@ BEGIN
 
 		select 'Constraining obs' AS '*** Step: ***', new_db_version from dual;
 		
-		ALTER TABLE `obs` ADD CONSTRAINT `obs_concept_name_used` FOREIGN KEY (`concept_name_id`) 
-			REFERENCES `concept_name` (`concept_name_id`);
 		ALTER TABLE `obs` ADD CONSTRAINT `obs_name_of_coded_value` FOREIGN KEY (`value_coded_name_id`) 
 			REFERENCES `concept_name` (`concept_name_id`);
 
@@ -1775,10 +1803,62 @@ call diff_procedure('1.4.0.17');
 
 #-----------------------------------------------------------
 # OpenMRS Datamodel version 1.4.0.18
-# Darius Jazayeri     Oct 11th, 2008
+# Andreas Kollegger   Oct 16th, 2008
+#
+# drop concept_name_id from obs
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Dropping concept_name_id from obs table (this may fail, which is ok)' AS '*** Step: ***', new_db_version from dual;
+
+		ALTER TABLE `obs` DROP COLUMN `concept_name_id`;
+		
+		ALTER TABLE `obs` DROP FOREIGN KEY `concept_name_id`;
+
+		select '***' AS '...done' from dual;
+
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.18');
+
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.19
+# Andreas Kollegger   Oct 16th, 2008
+#
+# a dummy update to ensure that the db version bumps up
+# after the previous call possibly failed
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.19');
+
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.20
+# Darius Jazayeri     Oct 17th, 2008
 #
 # Convert from Add/Edit/Delete Encounter Types to Manage Encounter Types
 # (this was done incorrectly in 1.3.0.14)
+# This is identical to 1.3.3.0 which is there as a backport
 #-----------------------------------------------------------
 DROP PROCEDURE IF EXISTS diff_procedure;
 delimiter //
@@ -1800,8 +1880,7 @@ BEGIN
 END;
 //
 delimiter ;
-call diff_procedure('1.4.0.18');
-
+call diff_procedure('1.4.0.20');
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script

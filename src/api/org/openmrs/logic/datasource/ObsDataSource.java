@@ -20,14 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Cohort;
-import org.openmrs.Concept;
-import org.openmrs.ConceptClass;
 import org.openmrs.Obs;
-import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicCriteria;
+import org.openmrs.logic.LogicException;
 import org.openmrs.logic.db.LogicObsDAO;
 import org.openmrs.logic.result.Result;
+import org.openmrs.logic.util.Util;
 
 /**
  * Provides access to clinical observations.  The keys for this data source are the primary
@@ -51,10 +50,11 @@ public class ObsDataSource implements LogicDataSource {
 	
     /**
      * 
+     * @throws LogicException 
      * @see org.openmrs.logic.datasource.LogicDataSource#read(org.openmrs.logic.LogicContext, org.openmrs.Cohort, org.openmrs.logic.LogicCriteria)
      */
     public Map<Integer, Result> read(LogicContext context, Cohort patients,
-            LogicCriteria criteria) {
+            LogicCriteria criteria) throws LogicException {
 
         Map<Integer, Result> finalResult = new HashMap<Integer, Result>();
         // TODO: make the obs service method more efficient (so we don't have to re-organize
@@ -74,7 +74,9 @@ public class ObsDataSource implements LogicDataSource {
             
             result.add(new Result(ob));
         }
-
+        
+        Util.applyAggregators(finalResult, criteria,patients);
+        
         return finalResult;
     }
 
@@ -89,33 +91,6 @@ public class ObsDataSource implements LogicDataSource {
      * @see org.openmrs.logic.datasource.LogicDataSource#getKeys()
      */
     public Collection<String> getKeys() {
-
-		if (this.keys.size() == 0) {
-			ConceptClass cc = Context.getConceptService()
-			                         .getConceptClassByName("Test");
-			List<Concept> testConcepts = Context.getConceptService()
-			                                    .getConceptsByClass(cc);
-			for (Concept c : testConcepts) {
-				keys.add(c.getName().getName());
-			}
-
-			cc = Context.getConceptService()
-			                         .getConceptClassByName("Finding");
-			testConcepts = Context.getConceptService()
-			                                    .getConceptsByClass(cc);
-			for (Concept c : testConcepts) {
-				keys.add(c.getName().getName());
-			}
-
-			cc = Context.getConceptService()
-			                         .getConceptClassByName("Question");
-			testConcepts = Context.getConceptService()
-			                                    .getConceptsByClass(cc);
-			for (Concept c : testConcepts) {
-				keys.add(c.getName().getName());
-			}
-		}
-
 		return keys;
 	}
 
@@ -124,6 +99,10 @@ public class ObsDataSource implements LogicDataSource {
      */
     public boolean hasKey(String key) {
         return getKeys().contains(key);
+    }
+    
+    public void addKey(String key){
+    	getKeys().add(key);
     }
 
 }

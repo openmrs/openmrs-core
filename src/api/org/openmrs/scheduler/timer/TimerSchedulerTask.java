@@ -22,18 +22,18 @@ import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.scheduler.Task;
 
 public class TimerSchedulerTask extends TimerTask { 
-		/** The task that will be executed by the JDK timer. */
+		/** The task that will be executed by the JDK timer. */
 	private Task task; 
 
 	/** Logger */
 	private static Log log = LogFactory.getLog(TimerSchedulerTask.class);
-	/**	 *  Public constructor	 */	public TimerSchedulerTask(Task task) { 
-		this.task = task;	}
+	/**	 *  Public constructor	 */	public TimerSchedulerTask(Task task) { 
+		this.task = task;	}
 
-	/**	 * Executes the action to be performed by this timer task.  
+	/**	 * Executes the action to be performed by this timer task.  
 	 *  
      * @see java.util.TimerTask#run()
-	 */	public void run() { 
+	 */	public void run() { 
 		try { 
 			
 			task.execute();
@@ -43,7 +43,7 @@ public class TimerSchedulerTask extends TimerTask {
 			// Suppress error in order to keep the scheduler's Timer from completely failing.  
 			log.error("FATAL ERROR: Task [" + task.getClass() + "] failed due to exception [" + e.getClass().getName() + "]", e);
 			SchedulerUtil.sendSchedulerError(e);
-		}	}
+		}	}
 
 	/**
 	 * Shutdown the timer task and invoke the task's shutdown() callback method.
