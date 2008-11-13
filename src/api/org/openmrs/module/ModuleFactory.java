@@ -580,7 +580,7 @@ public class ModuleFactory {
 		String key = module.getModuleId() + ".database_version";
 		String select = "select property_value from global_property where property = '"
 		        + key + "'";
-
+		
 		List<List<Object>> results = as.executeSQL(select, true);
 
 		boolean executeSQL = false;
@@ -596,9 +596,6 @@ public class ModuleFactory {
 					executeSQL = true;
 			}
 		} else {
-			String insert = "insert into global_property (property, property_value) values ('"
-			        + key + "', '0')";
-			as.executeSQL(insert, false);
 			executeSQL = true;
 		}
 
@@ -611,12 +608,31 @@ public class ModuleFactory {
 				if (sqlStatement.trim().length() > 0)
 					as.executeSQL(sqlStatement, false);
 			}
-			String description = "DO NOT MODIFY.  Current database version number for the "
-			        + module.getModuleId() + " module.";
-			String update = "update global_property set property_value = '"
-			        + version + "', description = '" + description
-			        + "' where property = '" + key + "'";
-			as.executeSQL(update, false);
+			
+			try {
+				Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+
+				String description = "DO NOT MODIFY.  Current database version number for the "
+					+ module.getModuleId() + " module.";
+				
+				GlobalProperty gp = as.getGlobalPropertyObject(key);
+				
+				System.out.println("Global property key is " + key);
+				
+				if(gp==null) {
+					gp = new GlobalProperty(key,version,description);
+					System.out.println("Global property not found!!");
+				} else {
+					gp.setDescription(description);
+					gp.setPropertyValue(version);
+				}
+				
+				if(gp != null && ! (gp.getPropertyValue().equals(version)))
+					as.saveGlobalProperty(gp);
+			} finally {
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);			
+			}
+			
 		}
 		
 	}
