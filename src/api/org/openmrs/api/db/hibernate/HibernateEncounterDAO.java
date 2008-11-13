@@ -35,9 +35,8 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
 
 /**
- * Hibernate specific dao for the {@link EncounterService}
- * 
- * All calls should be made on the Context.getEncounterService() object
+ * Hibernate specific dao for the {@link EncounterService} All calls should be made on the Context.getEncounterService()
+ * object
  * 
  * @see EncounterDAO
  * @see EncounterService
@@ -79,39 +78,30 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterService#getEncounter(java.lang.Integer)
 	 */
 	public Encounter getEncounter(Integer encounterId) throws DAOException {
-		return (Encounter) sessionFactory.getCurrentSession()
-		                                 .get(Encounter.class, encounterId);
+		return (Encounter) sessionFactory.getCurrentSession().get(Encounter.class, encounterId);
 	}
 
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByPatientId(java.lang.Integer,
-	 *      boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByPatientId(java.lang.Integer, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Encounter> getEncountersByPatientId(Integer patientId)
-	        throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession()
-		                              .createCriteria(Encounter.class)
-		                              .createAlias("patient", "p")
-		                              .add(Expression.eq("p.patientId",
-		                                                 patientId))
-		                              .add(Expression.eq("voided", false))
-		                              .addOrder(Order.desc("encounterDatetime"));
+	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createAlias("patient", "p").add(
+		    Expression.eq("p.patientId", patientId)).add(Expression.eq("voided", false)).addOrder(
+		    Order.desc("encounterDatetime"));
 
 		return crit.list();
 	}
 
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(org.openmrs.Patient,
-	 *      org.openmrs.Location, java.util.Date, java.util.Date,
-	 *      java.util.Collection, java.util.Collection, boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(org.openmrs.Patient, org.openmrs.Location, java.util.Date,
+	 *      java.util.Date, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Encounter> getEncounters(Patient patient, Location location,
-	        Date fromDate, Date toDate, Collection<Form> enteredViaForms,
-	        Collection<EncounterType> encounterTypes, boolean includeVoided) {
-		Criteria crit = sessionFactory.getCurrentSession()
-		                              .createCriteria(Encounter.class);
+	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     boolean includeVoided) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		if (patient != null && patient.getPatientId() != null) {
 			crit.add(Expression.eq("patient", patient));
 		}
@@ -148,27 +138,22 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#deleteEncounterType(org.openmrs.EncounterType)
 	 */
-	public void deleteEncounterType(EncounterType encounterType)
-	        throws DAOException {
+	public void deleteEncounterType(EncounterType encounterType) throws DAOException {
 		sessionFactory.getCurrentSession().delete(encounterType);
 	}
 
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getEncounterType(java.lang.Integer)
 	 */
-	public EncounterType getEncounterType(Integer encounterTypeId)
-	        throws DAOException {
-		return (EncounterType) sessionFactory.getCurrentSession()
-		                                     .get(EncounterType.class,
-		                                          encounterTypeId);
+	public EncounterType getEncounterType(Integer encounterTypeId) throws DAOException {
+		return (EncounterType) sessionFactory.getCurrentSession().get(EncounterType.class, encounterTypeId);
 	}
 
 	/**
 	 * @see org.openmrs.api.db.EncounterService#getEncounterType(java.lang.String)
 	 */
 	public EncounterType getEncounterType(String name) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession()
-		                              .createCriteria(EncounterType.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
 		crit.add(Expression.eq("retired", false));
 		crit.add(Expression.eq("name", name));
 		EncounterType encounterType = (EncounterType) crit.uniqueResult();
@@ -180,16 +165,14 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterDAO#getAllEncounterTypes(java.lang.Boolean)
 	 */
 	@SuppressWarnings("unchecked")
-    public List<EncounterType> getAllEncounterTypes(Boolean includeRetired)
-	        throws DAOException {
-		
+	public List<EncounterType> getAllEncounterTypes(Boolean includeRetired) throws DAOException {
+
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
 
 		criteria.addOrder(Order.asc("name"));
-		
-		if (includeRetired == false)
-			criteria.add(Expression.eq("retired", false));
-		
+
+		if (includeRetired == false) criteria.add(Expression.eq("retired", false));
+
 		return criteria.list();
 	}
 
@@ -197,26 +180,21 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @see org.openmrs.api.db.EncounterDAO#findEncounterTypes(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-    public List<EncounterType> findEncounterTypes(String name)
-	        throws DAOException {
-		return sessionFactory.getCurrentSession()
-		                     .createCriteria(EncounterType.class)
-		                     // 'ilike' case insensitive search
-		                     .add(Expression.ilike("name",
-		                                           name,
-		                                           MatchMode.START))
-		                     .addOrder(Order.asc("name"))
-		                     .addOrder(Order.asc("retired"))
-		                     .list();
+	public List<EncounterType> findEncounterTypes(String name) throws DAOException {
+		return sessionFactory.getCurrentSession().createCriteria(EncounterType.class)
+		// 'ilike' case insensitive search
+		        .add(Expression.ilike("name", name, MatchMode.START)).addOrder(Order.asc("name")).addOrder(
+		            Order.asc("retired")).list();
 	}
 
 	/**
-     * @see org.openmrs.api.db.EncounterDAO#getSavedEncounterDatetime(org.openmrs.Encounter)
-     */
-    public Date getSavedEncounterDatetime(Encounter encounter) {
-	    SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery("select encounter_datetime from encounter where encounter_id = :encounterId");
-	    sql.setInteger("encounterId", encounter.getEncounterId());
-	    return (Date) sql.uniqueResult();
-    }
-	
+	 * @see org.openmrs.api.db.EncounterDAO#getSavedEncounterDatetime(org.openmrs.Encounter)
+	 */
+	public Date getSavedEncounterDatetime(Encounter encounter) {
+		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
+		    "select encounter_datetime from encounter where encounter_id = :encounterId");
+		sql.setInteger("encounterId", encounter.getEncounterId());
+		return (Date) sql.uniqueResult();
+	}
+
 }
