@@ -165,7 +165,7 @@ public class NealReportController implements Controller {
 
 		List<Concept> conceptsToGet = new ArrayList<Concept>();
 		Map<Concept, String> namesForReportMaker = new HashMap<Concept, String>();
-		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
+		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "TREATMENT GROUP", Hiv.TREATMENT_GROUP);
 		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "TUBERCULOSIS TREATMENT GROUP", TB.TB_GROUP);
 		//conceptHelper(cs, conceptsToGet, namesForReportMaker, "CURRENT WHO HIV STAGE", Hiv.WHO_STAGE);
 		
@@ -177,7 +177,7 @@ public class NealReportController implements Controller {
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "HEIGHT (CM)", "height");
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CD4 COUNT", Hiv.CD4COUNT);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CD4%", Hiv.CD4PERCENT);
-		//dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "ANTIRETROVIRAL TREATMENT GROUP", Hiv.TREATMENT_GROUP);
+		//dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TREATMENT GROUP", Hiv.TREATMENT_GROUP);
 		//dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "TUBERCULOSIS TREATMENT GROUP", TB.TB_GROUP);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "CURRENT WHO HIV STAGE", Hiv.WHO_STAGE);
 		dynamicConceptHelper(cs, dynamicConceptsToGet, obsTypesForDynamicConcepts, "REASON FOR EXITING CARE", General.OUTCOME);
@@ -316,7 +316,7 @@ public class NealReportController implements Controller {
 				log.debug("states is null, can't proceed");
 			}
 			
-			wf = Context.getProgramWorkflowService().getWorkflow(hivProgram, "ANTIRETROVIRAL TREATMENT GROUP");
+			wf = Context.getProgramWorkflowService().getWorkflow(hivProgram, "TREATMENT GROUP");
 			log.debug("worlflow is " + wf + " and patientSet is " + ps);
 			states = pss.getCurrentStates(ps, wf);
 			if ( states != null ) {
