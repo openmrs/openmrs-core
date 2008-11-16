@@ -657,9 +657,9 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 					// if this is synchornizable, attempt to fetch first to make sure we are not overriding values
 					guidToAssign = this.fetchGuid((Synchronizable)entity);
 					String temp = ((Synchronizable)entity).getGuid();
-					if ( (guidToAssign == null && temp != null)|| 
-						 (guidToAssign != null && !guidToAssign.equalsIgnoreCase(temp))
-						) {
+					if (guidToAssign == null & temp != null) {
+						guidToAssign = temp; //db had a value and we didn't, so use the value from DB
+					} else if ( guidToAssign != null && temp != null && !guidToAssign.equalsIgnoreCase(temp)) {
 						if (log.isWarnEnabled()) { 
 							log.warn("Resetting GUID on entity: " + entity + " with assigned GUID: " + temp + ", from database with GUID: " + guidToAssign);
 						}
@@ -963,6 +963,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			syncItem.setKey(new SyncItemKey<String>(objectGuid, String.class));
 			syncItem.setState(state);
 			syncItem.setContent(xml.toStringAsDocumentFragement());
+			syncItem.setContainedType(entity.getClass());
 
 			if (log.isDebugEnabled())
 				log.debug("Adding SyncItem to SyncRecord");

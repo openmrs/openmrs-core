@@ -157,29 +157,33 @@ public class SyncRecord implements Serializable, IItem {
 
     //list of sync items
     public Collection<SyncItem> getItems() {
-        return ((items == null) ? null : items.values());
+        if (items == null) return null;
+                
+        return items.values();
     }
 
     public void addItem(SyncItem syncItem) {
         if (items == null) {
             items = new LinkedHashMap<String,SyncItem>();
         }
-        items.put(syncItem.getKey().getKeyValue().toString() + syncItem.getState().toString(),syncItem);
+        
+        items.put(SyncRecord.deriveMapKey(syncItem),syncItem);
     }
 
     /**
      * If there is already an item with same key, replace it with passed in value, else add it.
      * It will be added as LAST in insert order.
      * 
+     * Note: internally key for the LinkedHashMap is guid + action + contained type
+     * 
      * @param syncItem
      */
     public void addOrRemoveAndAddItem(SyncItem syncItem) {
-    	String itemMapKey = null;
     	if (syncItem == null) {
     		return;
     	};
     	
-    	itemMapKey = syncItem.getKey().getKeyValue().toString() + syncItem.getState().toString();
+    	String itemMapKey = SyncRecord.deriveMapKey(syncItem);
     	if (items == null) {
             items = new LinkedHashMap<String,SyncItem>();
         } else {
@@ -302,13 +306,14 @@ public class SyncRecord implements Serializable, IItem {
         if (itemsCollection.isEmpty()) {
             items = null;
         } else {
+        	//re-create linked hashmap entries with appropriate keys
             items = new LinkedHashMap<String,SyncItem>();
             List<Item> serItems = xml.getItems(itemsCollection);
             for (int i = 0; i < serItems.size(); i++) {
                 Item serItem = serItems.get(i);
                 SyncItem syncItem = new SyncItem();
                 syncItem.load(xml, serItem);
-                items.put(syncItem.getKey().getKeyValue().toString(),syncItem);
+                items.put(SyncRecord.deriveMapKey(syncItem),syncItem);
             }
         }
     }
@@ -393,5 +398,18 @@ public class SyncRecord implements Serializable, IItem {
     	}
     	
     	return ret;
+    }
+
+    /**
+     * Internally, sync items are stored as LinkedHashMap, the key into it is: guid + action + contained type
+     * 
+     * @param item SyncItem for which to derive map key
+     * @return string value of the key
+     */
+    private static String deriveMapKey(SyncItem item) {
+        return item.getKey().getKeyValue().toString() 
+        	+ item.getState().toString() 
+        	+ ((item.getContainedType() == null) ? "null" : item.getContainedType().getSimpleName()); 
+    	
     }
 }

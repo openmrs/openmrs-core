@@ -57,9 +57,9 @@ public class SyncStrategyFile {
         
         String sourceGuid = source.getSyncSourceGuid();
         
-        //pack it into transmission
+        //pack it into transmission, don't write temp file
         SyncTransmission syncTx = new SyncTransmission(sourceGuid,changeset);
-        syncTx.create(true);
+        syncTx.create(false);
         
         //set new SyncPoint
         source.setLastSyncLocal(lastSyncLocalNew);
