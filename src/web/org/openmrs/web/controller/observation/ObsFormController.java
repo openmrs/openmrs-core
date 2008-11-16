@@ -36,7 +36,6 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
-import org.openmrs.propertyeditor.ConceptNameEditor;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
 import org.openmrs.propertyeditor.LocationEditor;
@@ -90,7 +89,6 @@ public class ObsFormController extends SimpleFormController {
         binder.registerCustomEditor(Location.class, new LocationEditor());
         binder.registerCustomEditor(Encounter.class, new EncounterEditor());
         binder.registerCustomEditor(Drug.class, new DrugEditor());
-        binder.registerCustomEditor(ConceptName.class, new ConceptNameEditor());
 	}
 	
 	/**
@@ -101,12 +99,6 @@ public class ObsFormController extends SimpleFormController {
             throws Exception {
 	    
     	Obs obs = (Obs)command;
-    	
-    	// set the question concept if only the question concept name is set
-    	// ABK: Obs.getConceptName() has been removed 
-    	//if (obs.getConcept() == null && obs.getConceptName() != null) {
-    	//	obs.setConcept(obs.getConceptName().getConcept());
-    	//}
     	
     	// set the answer concept if only the answer concept name is set
     	if (obs.getValueCoded() == null && obs.getValueCodedName() != null) {
