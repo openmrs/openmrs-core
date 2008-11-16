@@ -198,10 +198,10 @@
   <orders order_id="3" order_type_id="2" concept_id="792" orderer="0" instructions="" start_date="2008-08-08 00:00:00.0" discontinued="false" creator="1" date_created="2008-08-19 12:22:45.0" voided="false" patient_id="2"/>
   <orders order_id="4" order_type_id="2" concept_id="88" orderer="0" instructions="" start_date="2007-12-03 00:00:00.0" discontinued="true" discontinued_date="2007-12-25 00:00:00.0" discontinued_by="1" creator="1" date_created="2008-08-19 12:23:21.0" voided="false" patient_id="2"/>
   <orders order_id="5" order_type_id="2" concept_id="88" orderer="0" instructions="" start_date="2008-08-19 00:00:00.0" discontinued="false" creator="1" date_created="2008-08-19 12:24:10.0" voided="false" patient_id="2"/>
-  <patient patient_id="2" tribe="2" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0" voided="false" void_reason=""/>
-  <patient patient_id="6" tribe="1" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:31.0" voided="false" void_reason=",,,,"/>
-  <patient patient_id="7" tribe="1" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:57.0" voided="false" void_reason=""/>
-  <patient patient_id="8" tribe="1" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:24:34.0" voided="false" void_reason=""/>
+  <patient patient_id="2" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0" voided="false" void_reason=""/>
+  <patient patient_id="6" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:31.0" voided="false" void_reason=",,,,"/>
+  <patient patient_id="7" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:57.0" voided="false" void_reason=""/>
+  <patient patient_id="8" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:24:34.0" voided="false" void_reason=""/>
   <patient_identifier patient_id="2" identifier="101" identifier_type="2" preferred="0" location_id="1" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" void_reason=""/>
   <patient_identifier patient_id="2" identifier="101-6" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" void_reason=""/>
   <patient_identifier patient_id="6" identifier="12345K" identifier_type="2" preferred="0" location_id="3" creator="1" date_created="2008-08-18 11:44:54.0" voided="false" void_reason=""/>
