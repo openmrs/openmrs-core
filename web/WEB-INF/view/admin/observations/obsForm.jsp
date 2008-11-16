@@ -39,7 +39,7 @@
 		dojo.event.topic.subscribe("cSearch/select", 
 			function(msg) {
 				var conceptSelection = dojo.widget.manager.getWidgetById("conceptSelection");
-				conceptSelection.hiddenInputNode.value = msg.objs[0].conceptNameId;
+				conceptSelection.hiddenInputNode.value = msg.objs[0].conceptId;
 				conceptSelection.displayNode.innerHTML = msg.objs[0].name;
 				conceptSelection.descriptionDisplayNode.innerHTML = msg.objs[0].description;
 				updateObsValues(msg.objs[0]);
@@ -355,7 +355,7 @@
 		<td>
 			<spring:bind path="obs.concept">
 				<div dojoType="ConceptSearch" widgetId="cSearch" conceptId="${status.editor.value.conceptId}" showVerboseListing="true" ignoreClasses="N/A"></div>
-				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="conceptName" hiddenInputId="conceptNameId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' <c:if test="${obs.obsId != null}">showChangeButton="false"</c:if> ></div>
+				<div dojoType="OpenmrsPopup" widgetId="conceptSelection" hiddenInputName="concept" hiddenInputId="conceptId" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find" />' <c:if test="${obs.obsId != null}">showChangeButton="false"</c:if> ></div>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
