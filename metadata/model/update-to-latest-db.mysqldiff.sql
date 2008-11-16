@@ -1528,6 +1528,47 @@ END;
 delimiter ;
 call diff_procedure('1.4.0.08');
 
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.08.1
+# Chase Yarbrough   Nov 16th, 2008
+#
+# Fix for ticket #1124
+#
+# Duplicate of above procedure, except correctly adds GUIDs
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Migrate concept_name.short_names.' AS '*** Step: ***', new_db_version from dual;
+	
+		SET @NAME_TAG_ID = (SELECT `concept_name_tag_id` FROM `concept_name_tag` where tag='short');
+		# make new concept_names for the short_names.
+		select 'create concept_names' AS '*** sub-step 1' from dual;
+		INSERT INTO `concept_name` (short_name, description, concept_id, name, locale, creator, date_created, guid)
+			SELECT 'MVP-SHORT', 'deprecated', concept_id, short_name, locale, creator, date_created, UUID()
+			FROM `concept_name` 
+			LEFT JOIN `concept_name_tag_map` cntm ON cntm.concept_name_id=concept_name.concept_name_id
+			WHERE short_name<>'' AND cntm.concept_name_tag_id<>@NAME_TAG_ID;
+		# tag the newly created short_name entries
+		select 'tagging new concept_names' AS 'sub-step 2' from dual;
+		INSERT INTO `concept_name_tag_map` (`concept_name_id`, `concept_name_tag_id`)
+			SELECT `concept_name_id`, @NAME_TAG_ID FROM `concept_name` WHERE `short_name`='MVP-SHORT';
+
+		select '***' AS '...done' from dual;
+	
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.08.1');
+
+
 #-----------------------------------------------------------
 # OpenMRS Datamodel version 1.4.0.09
 # Andreas Kollegger   Sep 26th, 2008
@@ -1570,6 +1611,45 @@ END;
 //
 delimiter ;
 call diff_procedure('1.4.0.09');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.09.1
+# Chase Yarbrough   Nov 16th, 2008
+#
+# Fix for ticket #1124
+#
+# Duplicate of above procedure, except correctly adds GUIDs
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Migrate synonyms.' AS '*** Step: ***', new_db_version from dual;
+		# make new concept_names for the synonym
+		INSERT INTO `concept_name` (short_name, description, concept_id, name, locale, creator, date_created, guid)
+            SELECT 'MVP-SYNONYM', 'deprecated', cs.concept_id, cs.synonym, cs.locale,
+                cs.creator, cs.date_created, UUID()
+                FROM `concept_synonym` cs
+                INNER JOIN `concept` c on c.concept_id=cs.concept_id 
+                WHERE cs.synonym<>'';
+
+		# tag the newly created synonym entries
+		SET @NAME_TAG_ID = (SELECT `concept_name_tag_id` FROM `concept_name_tag` where tag='synonym');
+		INSERT INTO `concept_name_tag_map` (`concept_name_id`, `concept_name_tag_id`)
+			SELECT `concept_name_id`, @NAME_TAG_ID FROM `concept_name` WHERE `short_name`='MVP-SYNONYM';
+	
+		DROP table concept_synonym;
+		select '***' AS '...done' from dual;
+		
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.09.1');
 
 
 #-----------------------------------------------------------
