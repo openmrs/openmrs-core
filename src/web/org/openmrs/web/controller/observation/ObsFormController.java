@@ -118,7 +118,6 @@ public class ObsFormController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
 			Obs obs = (Obs)obj;
@@ -162,11 +161,13 @@ public class ObsFormController extends SimpleFormController {
 			}
 
 			// redirect to the main encounter page
-			if (obs.getEncounter() != null)
-				view = getSuccessView() + "?encounterId=" + obs.getEncounter().getEncounterId() + "&phrase=" + request.getParameter("phrase");
+			if (obs.getEncounter() != null) {
+				String view = getSuccessView() + "?encounterId=" + obs.getEncounter().getEncounterId() + "&phrase=" + request.getParameter("phrase");
+				return new ModelAndView(new RedirectView(view));
+			}
 		}
 		
-		return new ModelAndView(new RedirectView(view));
+		return showForm(request, response, errors);
 	}
 
 	/**
