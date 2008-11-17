@@ -218,10 +218,14 @@ public class FormUtil {
 	 */
 	public static String conceptToString(Concept concept, Locale locale) {
 		ConceptName localizedName = concept.getName(locale);
+		//Temporary fix: rollback the change bellow to presereve existing forms
+		//proper fix under discussion
 		return concept.getConceptId() + "^" + localizedName.getName()
+		+ "^" + FormConstants.HL7_LOCAL_CONCEPT;
+		/*return concept.getConceptId() + "^" + localizedName.getName()
 				+ "^" + FormConstants.HL7_LOCAL_CONCEPT
 				+ "^" + localizedName.getConceptNameId() + "^" + localizedName.getName()
-				+ "^" + FormConstants.HL7_LOCAL_CONCEPT;
+				+ "^" + FormConstants.HL7_LOCAL_CONCEPT; */
 	}
 	
 	/**
