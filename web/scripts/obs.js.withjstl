@@ -2,7 +2,12 @@
 	
 	var obsCellFuncs = [
 		function(data) { return "" + data.personName; },
-		function(data) { return "<a href=\""+openmrsContextPath+"/admin/encounters/encounter.form?encounterId=" + data.encounter + "\">" + data.encounterName + " (" + data.encounterDate + ")</a>"; },
+		function(data) { 
+			if (data.encounter == null || data.encounter == '') {
+				return "";
+			}
+			return "<a href=\""+openmrsContextPath+"/admin/encounters/encounter.form?encounterId=" + data.encounter + "\">" + data.encounterName + " (" + data.encounterDate + ")</a>"; 
+		},
 		function(data) { return "" + data.conceptName; },
 		function(data) { return "<a href=\"obs.form?obsId=" + data.obsId + "\">" + data.value + "</a>"; },
 		function(data) { return "" + data.obsDate; }
