@@ -68,7 +68,7 @@ public class RegimenPortletController extends PortletController {
 						setIdToUse = "*";
 					if (setIdToUse != null) {
 						helper(patientDrugOrderSets, setIdToUse, order);
-						if (order.isCurrent())
+						if (order.isCurrent() || order.isFuture())
 							helper(currentDrugOrderSets, setIdToUse, order);
 						else
 							helper(completedDrugOrderSets, setIdToUse, order);
