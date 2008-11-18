@@ -232,8 +232,7 @@ public class FormUtil {
 	public static String conceptToString(Concept concept, ConceptName localizedName) {
 		//Temporary fix: rollback the change bellow to presereve existing forms
 		//proper fix under discussion
-		return concept.getConceptId() + "^" + localizedName.getName()
-		+ "^" + FormConstants.HL7_LOCAL_CONCEPT;
+		return concept.getConceptId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT;
 		/*return concept.getConceptId() + "^" + localizedName.getName()
 				+ "^" + FormConstants.HL7_LOCAL_CONCEPT
 				+ "^" + localizedName.getConceptNameId() + "^" + localizedName.getName()
