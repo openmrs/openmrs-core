@@ -521,7 +521,13 @@ public class SyncUtil {
 		} else {
 			log.warn("Will not update OpenMRS object that is NULL");
 		}
+    	
+    	//for forms, we need to rebuild XSN, do it here
+    	if ("org.openmrs.Form".equals(className)) {
+    		SyncUtil.rebuildXSN((Form)o);
+    	}
     }
+    
     
     /**
      * 
@@ -976,8 +982,47 @@ public class SyncUtil {
 		return buffer.toString();
 	}
 	
-	
-
-	
-
+	/**
+	 * Rebuilds XSN form. This is needed for ingest when form is received from remote server; template files that are contained in xsn
+	 * in fromentry_xsn table need to be updated. Supported way to do this is to ask formentry module to rebuild XSN. Invoking method via
+	 * reflection is temporary workaround until sync is in trunk: at that point advice point should be registered on sync service that 
+	 * formentry could respond to by calling rebuild. 
+	 * 
+	 * @param form form to rebuild xsn for
+	 */
+	private static void rebuildXSN(Form form) {
+		Object o = null;
+		Method m = null;
+		String msg = null;
+		
+		if (form == null) {
+			return;
+		}
+		
+		try {
+			msg = "Processing form with id: " + form.getFormId().toString();
+			Class c = Context.loadClass("org.openmrs.module.formentry.FormEntryUtil");
+			if (c==null) {
+				throw new SyncException("Failed to retrieve handle to FormEntryUtil in formentry module; is module loaded? " + msg);
+			}
+			
+		    m = c.getDeclaredMethod("rebuildXSN", new Class[]{form.getClass()});
+		    if (m==null) {
+		    	throw new SyncException("Failed to retrieve handle to rebuildXSN method in FormEntryUtil; is module loaded? " + msg);
+		    }
+		    
+		    //finally execute it
+		    m.invoke(null, form);
+					
+		}	
+		catch (SyncException e) {
+			//pass it on
+			throw(e);
+		}
+		catch (Exception e) {
+			log.error("Failed to rebuild XSN, see stack for error detail." + msg,e);
+			throw new SyncException("Failed to rebuild XSN, see stack for error detail" + msg,e);
+		}
+		return;
+	}
 }
