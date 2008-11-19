@@ -75,14 +75,7 @@ public class ConnectionRequest {
 				IOUtils.closeQuietly(baos);
 			}
 			this.checksum = cos.getChecksum().getValue();
-			
-			
-			log.info("Request compressed: " + useCompression);
-			//log.info("Request input: " + content);
-			//log.info("Request data: " + this.baos.toString());
-			log.info("Request checksum: " + this.checksum);
-			
-			
+						
 		} catch (IOException e) { 
 			throw new SyncException(e);			
 		}		

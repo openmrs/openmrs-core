@@ -306,4 +306,6 @@ public interface SynchronizationDAO {
      * @throws DAOException 
      */
     public void saveOrUpdate(Object object) throws DAOException;
+    
+    public boolean checkGuidsForClass(Class clazz) throws DAOException;
 }

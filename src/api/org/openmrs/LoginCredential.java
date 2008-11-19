@@ -28,7 +28,6 @@ public class LoginCredential implements Synchronizable {
 
 	private Integer userId;
 	private String guid;
-	private String userGuid; //stored so that we can refer back to same user object; userids maybe different accross the sync
 	private String hashedPassword;
 	private String salt;
 	private String secretQuestion;
@@ -174,13 +173,4 @@ public class LoginCredential implements Synchronizable {
 	    String test = Security.encodeString(pw + getSalt());
 	    return test.equals(getHashedPassword());
     }
-
-	public String getUserGuid() {
-    	return userGuid;
-    }
-
-	public void setUserGuid(String userGuid) {
-    	this.userGuid = userGuid;
-    }
-
 }

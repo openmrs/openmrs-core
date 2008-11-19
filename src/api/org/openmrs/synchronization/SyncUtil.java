@@ -146,7 +146,7 @@ public class SyncUtil {
 		
 		if ( propVal !=  null ) {
 			SyncUtil.setProperty(o, propName, propVal);
-			log.info("Successfully called set" + SyncUtil.propCase(propName) + "(" + propVal + ")" );
+			log.debug("Successfully called set" + SyncUtil.propCase(propName) + "(" + propVal + ")" );
 		}
 	}
 
@@ -311,7 +311,7 @@ public class SyncUtil {
 		for ( Field f : allFields ) {
 			//log.debug("field is " + f.getName());
 			if ( f.getName().equals(fieldName) ) {
-				log.info("found Field " + fieldName + " with type is " + f.getGenericType());
+				log.debug("found Field " + fieldName + " with type is " + f.getGenericType());
 
 				String className = f.getGenericType().toString();
 				if ( className.startsWith("class ") ) className = className.substring("class ".length());
@@ -507,13 +507,14 @@ public class SyncUtil {
     	//first handle weird stuff
     	if ( "org.openmrs.LoginCredential".equals(className) ) {
 			LoginCredential lc = (LoginCredential)o;
-			
-			//This is really tricky.  the userId won't be the same as it was in the previous system, 
-			//we have to circumvent with user_guid
-			User thisUser = Context.getUserService().getUserByGuid(lc.getUserGuid());
-			log.warn("In system, User has id: " + thisUser.getUserId() + ", but in tx, user has id: " + lc.getUserId());
+						
+			//The fetch by guid may or may not work since the record may have been created using User object in the
+			// current Tx, if so hibernate will not realize that it has User object in cache pointing to the same row and consequently it
+			// will issue insert
+			//to avoid this we will pre-fetch the corresponding *local* PK for login_credential: user_id
+			//this will force udpate vs. insert
+			User thisUser = Context.getUserService().getUserByGuid(lc.getGuid());
 			lc.setUserId(thisUser.getUserId());
-			
 			Context.getSynchronizationService().saveOrUpdate(lc); 
     	} //now do the 'normal' save or update
     	else if ( o != null ) {
@@ -527,7 +528,6 @@ public class SyncUtil {
     		SyncUtil.rebuildXSN((Form)o);
     	}
     }
-    
     
     /**
      * 
@@ -841,35 +841,14 @@ public class SyncUtil {
 	public static synchronized void deleteOpenmrsObject(Synchronizable o) {
 		Context.getSynchronizationService().deleteSynchronizable(o);
 	}
-
-	
-	
-    public static String getLocalServerGuid() {
-        return Context.getSynchronizationService().getGlobalProperty(SyncConstants.SERVER_GUID);        
-    }
-    
-    public static void setLocalServerGuid(String guid) {
-        Context.getSynchronizationService().setGlobalProperty(SyncConstants.SERVER_GUID, guid);
         
-        return;   
-    }
-
-    public static String getLocalServerName() {
-        return Context.getSynchronizationService().getGlobalProperty(SyncConstants.SERVER_NAME);        
-    }
-    
-    public static void setLocalServerName(String name) {
-        Context.getSynchronizationService().setGlobalProperty(SyncConstants.SERVER_NAME, name);
-        
-        return;   
-    }
 
     public static String getAdminEmail() {
-        return Context.getSynchronizationService().getGlobalProperty(SyncConstants.SYNC_ADMIN_EMAIL);        
+        return Context.getSynchronizationService().getGlobalProperty(SyncConstants.PROPERTY_SYNC_ADMIN_EMAIL);        
     }
     
     public static void setAdminEmail(String email) {
-        Context.getSynchronizationService().setGlobalProperty(SyncConstants.SYNC_ADMIN_EMAIL, email);
+        Context.getSynchronizationService().setGlobalProperty(SyncConstants.PROPERTY_SYNC_ADMIN_EMAIL, email);
         
         return;   
     }
@@ -882,7 +861,7 @@ public class SyncUtil {
 			String adminEmail = SyncUtil.getAdminEmail();
 			
 			if (adminEmail == null || adminEmail.length() == 0 ) { 
-				log.warn("Sync error message could not be sent because " + SyncConstants.SYNC_ADMIN_EMAIL + " is not configured.");
+				log.warn("Sync error message could not be sent because " + SyncConstants.PROPERTY_SYNC_ADMIN_EMAIL + " is not configured.");
 			} 
 			else if (adminEmail != null) { 
 				log.info("Preparing to send sync error message via email to " + adminEmail);
@@ -900,7 +879,7 @@ public class SyncUtil {
 			
 				content.
 					append("ALERT: Synchronization has stopped between\n").
-					append("local server (").append(SyncUtil.getLocalServerName()).
+					append("local server (").append(Context.getSynchronizationService().getServerName()).
 					append(") and remote server ").append(server.getNickname()).append("\n\n").
 					append("Summary of failing record\n").
 					append("Original GUID:          " + syncRecord.getOriginalGuid()).

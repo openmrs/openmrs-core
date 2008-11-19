@@ -27,6 +27,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -35,8 +36,11 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.metadata.ClassMetadata;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -51,6 +55,7 @@ import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.openmrs.synchronization.server.RemoteServer;
 import org.openmrs.synchronization.server.RemoteServerType;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 public class HibernateSynchronizationDAO implements SynchronizationDAO {
 
@@ -62,6 +67,9 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
     private SessionFactory sessionFactory;
     
     private HibernateSynchronizationInterceptor synchronizationInterceptor;
+    
+    private static org.hibernate.cfg.Configuration configuration = null;
+    private Object configurationLock = new Object();
     
     public HibernateSynchronizationDAO() { }
     
@@ -495,7 +503,9 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
 
     /**
      * @see org.openmrs.api.db.SynchronizationDAO#createDatabaseForChild(java.lang.String, java.io.Writer)
+     * NOTE: THIS IS WORK IN PROGRESS *DO NOT* USE
      */
+    @Deprecated
     public void createDatabaseForChild(String guidForChild, OutputStream os) throws DAOException {
         PrintStream out = new PrintStream(os);
         Set<String> tablesToSkip = new HashSet<String>();
@@ -527,7 +537,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
         }
         log.warn("tables to dump: " + tablesToDump);
         
-        String thisServerGuid = getGlobalProperty(SyncConstants.SERVER_GUID);
+        String thisServerGuid = getGlobalProperty(SyncConstants.PROPERTY_SERVER_GUID);
        
         { // write a header
             out.println("-- ------------------------------------------------------");
@@ -673,8 +683,7 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
             out.println("-- Now mark this as a child database");
             if (guidForChild == null)
                 guidForChild = SyncUtil.generateGuid();
-            out.println("update global_property set property_value = '" + guidForChild + "' where property = '" + SyncConstants.SERVER_GUID + "';");
-            out.println("update global_property set property_value = '" + thisServerGuid + "' where property = '" + SyncConstants.PARENT_GUID + "';");
+            out.println("update global_property set property_value = '" + guidForChild + "' where property = '" + SyncConstants.PROPERTY_SERVER_GUID + "';");
             
             {
             	// TODO: Write a footer to undo the following two lines
@@ -743,5 +752,69 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
      */
 	public void saveOrUpdate(Object object) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(object);
+	}
+	
+	
+	public boolean checkGuidsForClass(Class clazz) {
+		
+		//TODO: work in progres
+
+		boolean ret = false;
+		/*
+		try {
+			//now build the sql based on the hibernate mappings; to do this we need to load (at least once) the config
+			if (HibernateSynchronizationDAO.configuration == null) {
+				synchronized (configurationLock) {
+					HibernateSynchronizationDAO.configuration = new org.hibernate.cfg.Configuration().configure();
+				}
+			}
+			
+			String selectSql = null;
+			String columnName = null;
+			String tableName = null;
+			String catalogName = null;
+	
+			org.hibernate.mapping.PersistentClass pc = HibernateSynchronizationDAO.configuration.getClassMapping(clazz.getName());
+			
+			if (pc == null) {
+				log.error("cannot get hibernate class mapping for " + clazz.getName());
+				return ret;
+			}
+			
+			tableName = pc.getTable().getName();
+			org.hibernate.mapping.Property p = pc.getProperty("guid");
+			if (p == null) {
+				log.error("cannot get hibernate guid column mapping for " + clazz.getName());
+				return ret;			
+			}
+			
+			java.util.Iterator<org.hibernate.mapping.Column> columns = p.getColumnIterator();
+			if (columns.hasNext()) {
+				columnName = columns.next().getName();
+			} else {
+				log.info("column mapping not found for property guid.");
+				return ret;
+			}
+			
+			//now compare this to database metadata
+			java.sql.DatabaseMetaData meta = sessionFactory.getCurrentSession().connection().getMetaData();
+			java.sql.ResultSet rs = meta.getColumns(null, null,tableName, columnName);
+			ResultSetMetaData rmd = rs.getMetaData();
+			
+			if (!rs.first()) {
+				log.error("didn't find guid in database!");
+				return ret;
+			}
+			
+			log.debug("done");
+		}
+		catch (Exception e) {
+			//TODO
+			log.error("Ouch: ", e);
+			ret = false;
+		} */
+		
+		return ret;
+
 	}
 }

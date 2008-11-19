@@ -189,12 +189,14 @@ public class SynchronizationConfigListController extends SimpleFormController {
         } else if ( "saveClasses".equals(action) ) {
         	// save guid, server name, and admin email first
         	String serverGuid = ServletRequestUtils.getStringParameter(request, "serverGuid", "");
+        	String serverId = ServletRequestUtils.getStringParameter(request, "serverId", "");
         	String serverName = ServletRequestUtils.getStringParameter(request, "serverName", "");
         	String adminEmail = ServletRequestUtils.getStringParameter(request, "serverAdminEmail", "");
         	
-        	if ( serverGuid.length() > 0 ) SyncUtil.setLocalServerGuid(serverGuid);
-        	SyncUtil.setLocalServerName(serverName);
-        	SyncUtil.setAdminEmail(adminEmail);
+        	if ( serverGuid.length() > 0 ) Context.getSynchronizationService().setServerGuid(serverGuid);
+        	if ( serverId.length() > 0 ) Context.getSynchronizationService().setServerId(serverId);
+        	if (serverName.length() > 0 ) Context.getSynchronizationService().setServerName(serverName);
+        	if (adminEmail.length() > 0 ) SyncUtil.setAdminEmail(adminEmail);
         	
             String[] classIdsTo = ServletRequestUtils.getRequiredStringParameters(request, "toDefault");
             String[] classIdsFrom = ServletRequestUtils.getRequiredStringParameters(request, "fromDefault");
@@ -302,10 +304,7 @@ public class SynchronizationConfigListController extends SimpleFormController {
             
             SyncSource source = new SyncSourceJournal();
             obj.put("localServerGuid",source.getSyncSourceGuid());
-            obj.put("localServerSyncStatus", source.getSyncStatus());
-            //obj.put("localServerName", SyncUtil.getLocalServerName());
-            //obj.put("localServerAdminEmail",SyncUtil.getAdminEmail());
-            
+            obj.put("localServerSyncStatus", source.getSyncStatus());           
         }
 
         return obj;
@@ -428,11 +427,10 @@ public class SynchronizationConfigListController extends SimpleFormController {
             ret.put("localServerSyncStatusValue",SyncUtil.getSyncStatus());
 	        ret.put("localServerSyncStatusText", msa.getMessage("SynchronizationConfig.syncStatus.status." + ref.get("localServerSyncStatus").toString()));
             ret.put("localServerSyncStatusMsg", msa.getMessage("SynchronizationConfig.syncStatus.status." + ref.get("localServerSyncStatus").toString() + ".info" , new String[] {SyncConstants.RUNTIMEPROPERTY_SYNC_STATUS}));
-	        ret.put("localServerGuid", ref.get("localServerGuid"));           
-	        ret.put("localServerName", SyncUtil.getLocalServerName());           
+	        ret.put("localServerGuid", ref.get("localServerGuid"));
+	        ret.put("localServerId", Context.getSynchronizationService().getServerId());
+	        ret.put("localServerName", Context.getSynchronizationService().getServerName());           
 	        ret.put("localServerAdminEmail", SyncUtil.getAdminEmail());           
-            ret.put("localServerGuidMsg", msa.getMessage("SynchronizationConfig.syncStatus.guid.info", new String[] {SyncConstants.SERVER_GUID}));
-            
 		}
         
 	    return ret;

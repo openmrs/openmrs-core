@@ -144,9 +144,9 @@ public interface UserDAO {
 	public boolean isSecretAnswer(User u, String answer) throws DAOException;
 
 	/**
-	 * @see org.openmrs.api.UserService#generateSystemId()
+	 * Returns max of currently assigned user_ids.
 	 */
-	public Integer generateSystemId() throws DAOException;
+	public Integer getMaxUserId() throws DAOException;
 
 	/**
      * Auto generated method comment

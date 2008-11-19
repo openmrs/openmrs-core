@@ -359,9 +359,6 @@ public class SynchronizationImportListController extends SimpleFormController {
 				log.error("Could not get output while writing file.  In case problem writing file, trying again to just get output.");
 			}
 		}
-		
-		System.out.println("RESPONSE IS: " + content);
-
 	
         // If the file was uploaded manually, we'll send back an XML response
 		if (isUpload) {			
@@ -375,14 +372,13 @@ public class SynchronizationImportListController extends SimpleFormController {
 		// We need to check the local server about whether we should apply compression.
 		boolean useCompression = 
 			Boolean.parseBoolean(Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_ENABLE_COMPRESSION, "true"));
-		log.info("Global property sychronization.enable_compression = " + useCompression);
+		log.debug("Global property sychronization.enable_compression = " + useCompression);
 
 		// Otherwise, all other requests are compressed and sent back to the client 
 		ConnectionRequest syncRequest = new ConnectionRequest(content, useCompression);				
-        log.info("Content to send: " + content);
-        log.info("Compressed content: " + syncRequest.getBytes());
+        log.info("Compressed content length: " + syncRequest.getContentLength());
         log.info("Compression Checksum: "+ syncRequest.getChecksum());    
-
+        log.info("Full Content to send: " + content);
         
         response.setContentLength((int)syncRequest.getContentLength());
         response.addHeader("Enable-Compression", String.valueOf(useCompression));

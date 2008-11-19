@@ -121,7 +121,7 @@ public class SyncUtilTransmission {
             SyncStrategyFile strategy = new SyncStrategyFile();
 
             try {
-                tx = strategy.createStateBasedSyncTransmission(source, true, server);
+                tx = strategy.createStateBasedSyncTransmission(source, false, server);
             } catch (Exception e) {
                 e.printStackTrace();
 

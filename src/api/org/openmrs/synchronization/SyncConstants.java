@@ -69,15 +69,19 @@ public class SyncConstants {
     
 	public static final String SYNC_DATA_FILE_PARAM = "syncDataFile";
 	
-    public static final String SERVER_GUID = "synchronization.server_guid";
-    public static final String RUNTIMEPROPERTY_SYNC_STATUS = "synchronization.sync_status"; //SyncStatusState enum
-    public static final String PARENT_GUID = "synchronization.parent_guid";
+	//global props
+    public static final String PROPERTY_SERVER_GUID = "synchronization.server_guid"; //used internally in sync
+    public static final String PROPERTY_SERVER_ID = "synchronization.server_id"; //numeric value used for scoping any local values (such as user_ids)
+    public static final String PROPERTY_SERVER_NAME = "synchronization.server_name"; //used for display purposes, nickname
     public static final String PROPERTY_NAME_MAX_RETRY_COUNT = "synchronization.max_retry_count";
-    public static final String SERVER_NAME = "synchronization.server_name";
-    public static final String SYNC_ADMIN_EMAIL = "synchronization.admin_email";
+    public static final String PROPERTY_SYNC_ADMIN_EMAIL = "synchronization.admin_email";
     public static final String PROPERTY_NAME_MAX_RECORDS = "synchronization.max_records";
     public static final String PROPERTY_NAME_MAX_RECORDS_DEFAULT = "50";
     public static final String PROPERTY_ENABLE_COMPRESSION = "synchronization.enable_compression";
+    public static final String PROPERTY_VERSION = "synchronization.version";
+
+    //runtime prop
+    public static final String RUNTIMEPROPERTY_SYNC_STATUS = "synchronization.sync_status"; //SyncStatusState enum
 
 	public static final String RESPONSE_SUFFIX = "_response";
 

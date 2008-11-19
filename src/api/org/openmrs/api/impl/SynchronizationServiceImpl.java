@@ -343,11 +343,60 @@ public class SynchronizationServiceImpl implements SynchronizationService {
         return getSynchronizationDAO().getParentServer();
     }
 
-    public String getServerGuid() {   
-        return Context.getAdministrationService().getGlobalProperty(SyncConstants.SERVER_GUID);
+    /**
+     * Returns globally unique identifier of the local server. This value uniquely indentifies server in all
+     * data exchanges with other servers.
+     */
+    public String getServerGuid() throws APIException{   
+        return Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_SERVER_GUID);
     }
 
-    
+    /**
+     * Updates globally unique identifier of the local server.
+     */
+    public void setServerGuid(String guid) throws APIException{   
+    	Context.getSynchronizationService().setGlobalProperty(SyncConstants.PROPERTY_SERVER_GUID, guid);
+    }
+
+    /**
+     * Returns server friendly name for sync purposes. It should be assigned by convention to be unique in the synchronization network
+     * of servers. This value can be used to scope values that are otherwise unique only locally (such as integer primary keys).
+     */
+    public String getServerName() throws APIException{   
+        return Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_SERVER_NAME);
+    }
+
+    /**
+     * Updates/saves the friendly server name for sync purposes. 
+     */
+    public void setServerName(String name) throws APIException{   
+    	Context.getSynchronizationService().setGlobalProperty(SyncConstants.PROPERTY_SERVER_NAME, name);
+    }
+
+    /**
+     * Returns unique id of the server within its sync network. 
+     * 
+     * Note: the id is used to scope values and local identifier that are unique locally only. 
+     * Thus the provided server id must be unique within a server sync network by convention.   
+     */
+    public String getServerId() throws APIException{   
+        return Context.getAdministrationService().getGlobalProperty(SyncConstants.PROPERTY_SERVER_ID);
+    }
+
+
+    /**
+     * Updates sync server id.
+     * 
+     * Note: the id is used to scope values and local identifier that are unique locally only. 
+     * Thus the provided server id must be unique within a server sync network by convention.  
+     * 
+     * @param id ID to update. Short numerics are recommented (01, 02, etc.)
+     * @throws APIException
+     */
+    public void setServerId(String id) throws APIException{   
+    	Context.getSynchronizationService().setGlobalProperty(SyncConstants.PROPERTY_SERVER_ID, id);
+    }
+
     /**
      * @see org.openmrs.api.SynchronizationService#createSyncClass(org.openmrs.synchronization.engine.SyncClass)
      */
@@ -431,6 +480,10 @@ public class SynchronizationServiceImpl implements SynchronizationService {
     //@Authorized({"Manage Synchronization Records"})
     public void saveOrUpdate(Synchronizable object)  throws APIException {
     	getSynchronizationDAO().saveOrUpdate(object);
+    }
+    
+    public boolean checkGuidsForClass(Class clazz) throws APIException {
+    	return getSynchronizationDAO().checkGuidsForClass(clazz);
     }
 }
 

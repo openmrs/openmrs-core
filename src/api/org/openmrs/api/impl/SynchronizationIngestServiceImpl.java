@@ -108,7 +108,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 boolean isUpdateNeeded = false;
                 
                 if ( importRecord == null ) {
-                	log.warn("ImportRecord does not exist, so creating new one");
+                	log.info("ImportRecord does not exist, so creating new one");
                     isUpdateNeeded = true;
                     importRecord = new SyncImportRecord(record);
                     importRecord.setGuid(record.getOriginalGuid());
@@ -427,16 +427,16 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 							}
 						}
 						if (toBeRemoved == null) {
-							log.error("Was not able to process collection entry delete.");
-				    		log.error("Owner info: " +
+							//the item to be removed was not located in the collection: log it for reference and continue
+							log.warn("Was not able to process collection entry delete.");
+				    		log.warn("Owner info: " +
 				      				"\nownerClassName:" + ownerClassName + 
 				      				"\nownerCollectionPropertyName:" + ownerCollectionPropertyName +
 				      				"\nownerCollectionAction:" + ownerCollectionAction +
 				      				"\nownerGuid:" + ownerGuid);
-				    		log.error("entry info: " +
+				    		log.warn("entry info: " +
 					      				"\nentryClassName:" + entryClassName + 
 					      				"\nentryGuid:" + entryGuid);							
-							throw new SyncIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, ownerClassName, incoming,null);
 						} else {
 							//finally, remove it from the collection
 							entries.remove(toBeRemoved);
@@ -552,7 +552,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         	        
 	        // now try to commit this fully inflated object
 	        try {
-	        	log.warn("About to update or create a " + className + " object");
+	        	log.warn("About to update or create a " + className + " object, guid: " + guid);
 	            SyncUtil.updateOpenmrsObject2(o, className, guid);
 	            Context.getSynchronizationService().flushSession();
 	        } catch ( Exception e ) {

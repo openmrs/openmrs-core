@@ -480,27 +480,33 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 
 	/**
+	 * Generates system ids based on the following algorithm scheme: <server name>-user_id-check digit
 	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
 	public String generateSystemId() {
 		//Hardcoding Luhn algorithm since all existing openmrs user ids have had check digits generated this way.
 		LuhnIdentifierValidator liv = new LuhnIdentifierValidator();
 		
-		String systemId;
+		String systemId = null;
 		Integer offset = 0;
-		do {
-			// generate and increment the system id if necessary
-			Integer generatedId = dao.generateSystemId() + offset++;
+		String serverId = Context.getSynchronizationService().getServerId();
 		
-			systemId = generatedId.toString();
+		do {
+			//generate and increment the system id if necessary
+			Integer generatedId = dao.getMaxUserId() + offset++;
 		
 			try {
-				systemId = liv.getValidIdentifier(systemId);
+				if (serverId == null || serverId.equals(""))
+					systemId = liv.getValidIdentifier(generatedId.toString());
+				else
+					systemId =  serverId + "-" + liv.getValidIdentifier(generatedId.toString());
+						
 			}
 			catch ( Exception e ) {
 				log.error("error getting check digit", e);
-				return systemId;
+				throw new APIException ("Error calculating check digit for the new system id.", e);
 			}
+			
 			
 			// loop until we find a system id that no one has 
 		} while (dao.hasDuplicateUsername(null, systemId, null));

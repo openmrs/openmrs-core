@@ -65,15 +65,19 @@
 	</logger>
 	
 	<!-- Sync-related logging setup -->
+	<logger name="org.openmrs.synchronization">
+		<level value="INFO" />
+		<appender-ref ref="SYNCHRONIZATION_FILE" />
+	</logger>
+	<logger name="org.openmrs.web.controller.synchronization">
+		<level value="INFO" />
+		<appender-ref ref="SYNCHRONIZATION_FILE" />
+	</logger>
 	<logger name="org.openmrs.api.SynchronizationIngestService">
 		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
 	<logger name="org.openmrs.api.SynchronizationService">
-		<level value="INFO" />
-		<appender-ref ref="SYNCHRONIZATION_FILE" />
-	</logger>
-	<logger name="org.openmrs.synchronization">
 		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>

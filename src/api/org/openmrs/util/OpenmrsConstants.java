@@ -743,10 +743,12 @@ public final class OpenmrsConstants {
         
         props.add(new GlobalProperty(SyncConstants.LAST_SYNC_LOCAL, "", "Timestamp of the last sucessful sync push from child to parent."));
         props.add(new GlobalProperty(SyncConstants.LAST_SYNC_REMOTE, "", "Timestamp of the last sucessful sync pull from parent."));
-        props.add(new GlobalProperty(SyncConstants.SERVER_GUID, "", "Globally unique server id used to identify a given data source in synchronization."));
-        props.add(new GlobalProperty(SyncConstants.PARENT_GUID, "", "Globally unique id of this server's parent."));
+        props.add(new GlobalProperty(SyncConstants.PROPERTY_SERVER_GUID, "", "Globally unique server id used to identify a given data source in synchronization."));
         props.add(new GlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RETRY_COUNT, "10", "Number of times server attempts to apply received synchronization changes before giving up."));
         props.add(new GlobalProperty(SyncConstants.PROPERTY_NAME_MAX_RECORDS, SyncConstants.PROPERTY_NAME_MAX_RECORDS_DEFAULT, "Maximum number of change records that will be send to the server at one time."));
+        props.add(new GlobalProperty(SyncConstants.PROPERTY_SERVER_NAME, "", "The short and user friendly nickname for this server. Should clearly identify this server from other servers. May be used in informational and error messages."));
+        props.add(new GlobalProperty(SyncConstants.PROPERTY_SERVER_ID, "", "The short numeric id for this server. Should clearly identify this server from other servers. May be used as prefix for assigning user system ids."));
+        props.add(new GlobalProperty(SyncConstants.PROPERTY_VERSION, "", "Synchronization version number. Do not edit, it is populated automatically during database upgrade process."));
         
         props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR, LUHN_IDENTIFIER_VALIDATOR, "This property sets the default patient identifier validator.  The default validator is only used in a handful of (mostly legacy) instances.  For example, it's used to generate the isValidCheckDigit calculated column and to append the string \"(default)\" to the name of the default validator on the editPatientIdentifierType form."));
 

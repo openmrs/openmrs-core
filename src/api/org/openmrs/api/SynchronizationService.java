@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.annotation.Authorized;
+import org.openmrs.api.context.Context;
+import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.filter.SyncClass;
@@ -296,14 +298,67 @@ public interface SynchronizationService {
     public RemoteServer getParentServer() throws APIException;
     
     /**
-     *  Retrieve globally unique id of the server.
-     * @return guid of the server.
+     *  Retrieves globally unique id of the server.
+     *  
+     * @return guid of the server. String representation of java.util.UUID.
      * @throws APIException
      */
-    //@Authorized({"View Synchronization Servers"})
     @Transactional(readOnly=true)
     public String getServerGuid() throws APIException;
 
+    /**
+     * Sets globally unique id of the server. WARNING: Use only during initial server setup.
+     * 
+     * WARNING: DO NOT CALL this method unless you fully understand the implication of
+     * this action. Specifically, changing already assigned GUID for a server will cause
+     * it to loose its link to history of changes that may be designated for this server.
+     * 
+     * @param guid unique GUID of the server. String representation of java.util.UUID.
+     * @throws APIException
+     */
+    public void setServerGuid(String guid) throws APIException;
+    
+    /**
+     *  Retrieve user friendly nickname for the server that is (by convention) unique for the given sync network of servers.
+     * @return name of the server.
+     * @throws APIException
+     */
+    @Transactional(readOnly=true)
+    public String getServerName() throws APIException;
+
+    /**
+     * Sets friendly server name. WARNING: Use only during initial server setup.
+     * 
+     * WARNING: DO NOT CALL this method unless you fully understand the implication of
+     * this action. Similarly to {@link #setServerGuid(String)} some data loss may occur if called
+     * while server is functioning as part of the sync network.
+     * 
+     * @param name new server name
+     * @throws APIException
+     */
+    public void setServerName(String name) throws APIException;
+
+    /**
+     *  Retrieve user friendly nickname for the server that is (by convention) unique for the given sync network of servers.
+     * @return name of the server.
+     * @throws APIException
+     */
+    @Transactional(readOnly=true)
+    public String getServerId() throws APIException;
+
+    /**
+     * Sets server id for sync network. WARNING: Use only during initial server setup.
+     * 
+     * WARNING: DO NOT CALL this method unless you fully understand the implication of
+     * this action. Similarly to {@link #setServerGuid(String)} some data loss may occur if called
+     * while server is functioning as part of the sync network.
+     * 
+     * @param id new server id for the network of sync servers
+     * @throws APIException
+     */
+    public void setServerId(String id) throws APIException;
+    
+    
     /**
      * Create a new SyncClass
      * @param SyncClass The SyncClass to create
@@ -400,5 +455,7 @@ public interface SynchronizationService {
      * @return
      * @throws APIException
      */
-    public void saveOrUpdate(Synchronizable object)  throws APIException;    
+    public void saveOrUpdate(Synchronizable object)  throws APIException;
+    
+    public boolean checkGuidsForClass(Class clazz) throws APIException;
 }

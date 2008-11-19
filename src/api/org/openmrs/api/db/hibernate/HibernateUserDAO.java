@@ -329,10 +329,8 @@ public class HibernateUserDAO implements UserDAO {
     	credentials.setSalt(salt);
     	credentials.setChangedBy(changedByUser);
     	credentials.setDateChanged(dateChanged);
-    	
-    	// IMPORTANT: we MUST have the user's guid - otherwise we have no way to reconstitute this on other end of a sync
-    	credentials.setUserGuid(changeForUser.getGuid());
-    	
+    	credentials.setGuid(changeForUser.getGuid());
+    	    	
     	sessionFactory.getCurrentSession().merge(credentials);
 	}	
 
@@ -463,24 +461,21 @@ public class HibernateUserDAO implements UserDAO {
 	/**
 	 * @see org.openmrs.api.api.UserService#generateSystemId()
 	 */
-	public Integer generateSystemId() {
-		
-		// TODO this algorithm will fail if someone deletes a user that is not the last one.
-		
-		String sql = "select count(user_id) as user_id from users";
-		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql);
-		
-		Object object = query.uniqueResult();
+	@SuppressWarnings("unchecked")
+	public Integer getMaxUserId() throws DAOException {
 		
 		Integer id = null;
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery("select max(user_id) as user_id from users");
+		Object object = query.uniqueResult();
+		
 		if (object instanceof BigInteger) 
-			id = ((BigInteger)query.uniqueResult()).intValue() + 1;
+			id = ((BigInteger)object).intValue();
 		else if (object instanceof Integer)
-			id = ((Integer)query.uniqueResult()).intValue() + 1;
+			id = ((Integer)object).intValue();
 		else {
-			log.warn("What is being returned here? Definitely nothing expected object value: '" + object + "' of class: " + object.getClass());
-			id = 1;
+			log.error("Unexpected value for max of user_id: object value: '" + object + "' of class: " + object.getClass());
+			throw new DAOException("Couldn't retrieve max of user ids as integer. Object value: '" + object + "' of class: " + object.getClass());
 		}
 		
 		return id;
