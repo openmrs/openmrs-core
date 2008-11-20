@@ -1898,7 +1898,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
     IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
     SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
 
-	ALTER TABLE `person_attribute_type` ADD COLUMN `edit_privilege` varchar(255) AFTER `searchable` default NULL ;
+	ALTER TABLE `person_attribute_type` ADD COLUMN `edit_privilege` varchar(255) default NULL AFTER `searchable`;
 
 	ALTER TABLE `person_attribute_type` ADD CONSTRAINT `privilege_which_can_edit` FOREIGN KEY (`edit_privilege`) REFERENCES `privilege` (`privilege`);
 

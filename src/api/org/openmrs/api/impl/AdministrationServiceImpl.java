@@ -45,6 +45,7 @@ import org.openmrs.MimeType;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
+import org.openmrs.Tribe;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -157,8 +158,57 @@ implements AdministrationService, GlobalPropertyListener {
 		Context.getPatientService().purgePatientIdentifierType(patientIdentifierType);
 	}
 
+	/**
+	 * Create a new Tribe
+	 * 
+	 * @param Tribe to create
+	 * @throws APIException
+	 */
+	public void createTribe(Tribe tribe) throws APIException {
+		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+	}
 
+	/**
+	 * Update Tribe
+	 * 
+	 * @param Tribe to update
+	 * @throws APIException
+	 */
+	public void updateTribe(Tribe tribe) throws APIException {
+		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+	}
+
+	/**
+	 * Delete Tribe
+	 * 
+	 * @param Tribe to delete
+	 * @throws APIException
+	 */
+	public void deleteTribe(Tribe tribe) throws APIException {
+		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+	}
 	
+	/**
+	 * Retire Tribe
+	 * 
+	 * @param Tribe to retire
+	 * @throws APIException
+	 */
+	public void retireTribe(Tribe tribe) throws APIException {
+		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+	}
+
+	/**
+	 * Unretire Tribe
+	 * 
+	 * @param Tribe to unretire
+	 * @throws APIException
+	 */
+	public void unretireTribe(Tribe tribe) throws APIException {
+		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
+	}
+	
+
 	/**
 	 * @deprecated
 	 */
