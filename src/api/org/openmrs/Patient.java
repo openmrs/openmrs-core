@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -129,6 +130,23 @@ public class Patient extends Person implements java.io.Serializable {
 	public void setPersonId(Integer personId) {
 		super.setPersonId(personId);
 		this.patientId = personId;
+	}
+
+	/**
+	 * @return patient's tribe
+	 * @deprecated Tribe is not long a value on Patient.  Install the Tribe module
+	 */
+	public Tribe getTribe() {
+		throw new APIException("The Patient.getTribe method is no longer supported.  Install the Tribe module");
+	}
+
+	/**
+	 * @param tribe
+	 *            patient's tribe
+	 * @deprecated Tribe is not long a value on Patient.  Install the Tribe module
+	 */
+	public void setTribe(Tribe tribe) {
+		throw new APIException("The Patient.setTribe(Tribe) method is no longer supported.  Install the Tribe module");
 	}
 
 	/**
