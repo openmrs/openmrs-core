@@ -288,6 +288,8 @@
 					</tr>
 				</c:if>
 			</c:forEach>
+	</c:otherwise>
+</c:choose>
 			
 <c:if test="${model.allowEdits == 'true' && fn:length(model.programs) > 0}">
 	<openmrs:hasPrivilege privilege="Edit Patient Programs">
@@ -320,6 +322,4 @@
 </c:if>			
 			
 		</table>			
-	</c:otherwise>
-</c:choose>
 
