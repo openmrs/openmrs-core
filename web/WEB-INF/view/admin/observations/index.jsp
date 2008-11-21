@@ -12,7 +12,7 @@
 <br/>
 <br/>
 
-<openmrs:portlet url="findObservation" patientId="" size="full" />
+<openmrs:portlet url="findObservation" size="full" />
 
 <%--
 <a href="${pageContext.request.contextPath}/admin/encounters/"><spring:message code="Obs.edit"/></a>
