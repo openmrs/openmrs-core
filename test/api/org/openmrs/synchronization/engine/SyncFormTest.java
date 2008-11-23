@@ -42,7 +42,6 @@ public class SyncFormTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-    @Ignore //needs formentry module to run
 	public void shouldEditFormMetadata() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			String newDescription = "Awesome new description";
@@ -60,7 +59,6 @@ public class SyncFormTest extends SyncBaseTest {
 	
 	@Test
     @NotTransactional
-    @Ignore //needs formentry module to run
 	public void shouldDuplicateForm() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			String newName = "A new form";
@@ -93,7 +91,6 @@ public class SyncFormTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-    @Ignore //needs formentry module to run
 	public void shouldAddFieldToForm() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			FormService fs = Context.getFormService();

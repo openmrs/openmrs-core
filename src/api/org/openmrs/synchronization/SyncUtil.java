@@ -516,8 +516,11 @@ public class SyncUtil {
 			User thisUser = Context.getUserService().getUserByGuid(lc.getGuid());
 			lc.setUserId(thisUser.getUserId());
 			Context.getSynchronizationService().saveOrUpdate(lc); 
-    	} //now do the 'normal' save or update
-    	else if ( o != null ) {
+    	}
+    	else if ("org.openmrs.Concept".equals(className)) { //for concepts, call API: it does extra things like update concept words
+			Context.getConceptService().saveConcept((Concept)o);
+    	}
+    	else if ( o != null ) {  //now do the 'normal' save or update
 			Context.getSynchronizationService().saveOrUpdate(o);
 		} else {
 			log.warn("Will not update OpenMRS object that is NULL");
@@ -971,6 +974,7 @@ public class SyncUtil {
 	 */
 	private static void rebuildXSN(Form form) {
 		Object o = null;
+		Class c = null;
 		Method m = null;
 		String msg = null;
 		
@@ -979,28 +983,30 @@ public class SyncUtil {
 		}
 		
 		try {
-			msg = "Processing form with id: " + form.getFormId().toString();
-			Class c = Context.loadClass("org.openmrs.module.formentry.FormEntryUtil");
+			try {
+				msg = "Processing form with id: " + form.getFormId().toString();
+				c = Context.loadClass("org.openmrs.module.formentry.FormEntryUtil");
+			} catch(Exception e){}
 			if (c==null) {
-				throw new SyncException("Failed to retrieve handle to FormEntryUtil in formentry module; is module loaded? " + msg);
+				log.warn("Failed to retrieve handle to FormEntryUtil in formentry module; is module loaded? " + msg);
+				return;
 			}
 			
-		    m = c.getDeclaredMethod("rebuildXSN", new Class[]{form.getClass()});
+			try {
+			    m = c.getDeclaredMethod("rebuildXSN", new Class[]{form.getClass()});
+			} catch(Exception e) {}
 		    if (m==null) {
-		    	throw new SyncException("Failed to retrieve handle to rebuildXSN method in FormEntryUtil; is module loaded? " + msg);
+		    	log.warn("Failed to retrieve handle to rebuildXSN method in FormEntryUtil; is module loaded? " + msg);
+		    	return;
 		    }
 		    
 		    //finally execute it
 		    m.invoke(null, form);
 					
 		}	
-		catch (SyncException e) {
-			//pass it on
-			throw(e);
-		}
 		catch (Exception e) {
-			log.error("Failed to rebuild XSN, see stack for error detail." + msg,e);
-			throw new SyncException("Failed to rebuild XSN, see stack for error detail" + msg,e);
+			log.error("FormEntry module present but failed to rebuild XSN, see stack for error detail." + msg,e);
+			throw new SyncException("FormEntry module present but failed to rebuild XSN, see stack for error detail" + msg,e);
 		}
 		return;
 	}

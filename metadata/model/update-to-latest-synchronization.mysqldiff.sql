@@ -310,6 +310,41 @@ CREATE PROCEDURE sync_diff_procedure (IN new_sync_version VARCHAR(10))
 delimiter ;
 call sync_diff_procedure('1.0.1');
 
+
+#----------------------------------------
+# OpenMRS Datamodel version 1.0.2
+# removing guid from concept_word table.
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS sync_diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE sync_diff_procedure (IN new_sync_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_sync_version, '.', '0') FROM global_property WHERE property = 'synchronization.version') THEN
+	SELECT CONCAT('Updating synchronization to ', new_sync_version) AS 'Synchronization Datamodel Update:' FROM dual;
+
+	# ----------------------------------------------------------------------------------------
+	# Remove guid from concept_word; there is no need for it; concept_word is local table only
+	# ----------------------------------------------------------------------------------------
+	IF ( SELECT count(*) > 0 FROM INFORMATION_SCHEMA.Columns WHERE table_schema = schema() AND table_name = 'concept_word' AND column_name = 'guid' ) THEN
+		ALTER TABLE `concept_word` DROP COLUMN `guid`;
+		DELETE ssc, sc FROM synchronization_server_class ssc inner join synchronization_class sc
+		where ssc.class_id = sc.class_id
+		and sc.name = 'ConceptWord';
+	END IF;
+	
+	UPDATE `global_property` SET property_value=new_sync_version WHERE property = 'synchronization.version';	
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call sync_diff_procedure('1.0.2');
+
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

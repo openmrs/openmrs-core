@@ -29,8 +29,7 @@ import org.openmrs.util.OpenmrsConstants;
  * Concept words are the individual terms of which a concept name is composed. 
  * They are case-preserving but compare case insensitively. 
  */
-public class ConceptWord implements java.io.Serializable, SynchronizableInstance,
-		Comparable<ConceptWord> {
+public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord> {
 
 	public static final long serialVersionUID = 888677L;
 
@@ -41,11 +40,7 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 	private String word;
 	private String synonym;
 	private Locale locale;
-	private Double weight = 0.0;
-	private String guid;
-    private boolean isSynchronizable = false;
-    private transient String lastRecordGuid;
-    
+	private Double weight = 0.0;    
     
     public Integer getConceptWordId(){ 
     	return conceptWordId;
@@ -56,22 +51,6 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
     }
     
     
-    public String getLastRecordGuid() {
-        return lastRecordGuid;
-    }
-
-    public void setLastRecordGuid(String lastRecordGuid) {
-        this.lastRecordGuid = lastRecordGuid;
-    }
-	
-  public String getGuid() {
-      return guid;
-  }
-
-  public void setGuid(String guid) {
-      this.guid = guid;
-  }
-
 	// Constructors
 
 	/** default constructor */
@@ -307,19 +286,4 @@ public class ConceptWord implements java.io.Serializable, SynchronizableInstance
 		return Double.compare(word.getWeight(), weight);
 
 	}
-
-	/**
-     * @see org.openmrs.synchronization.SynchronizableInstance#getIsSynchronizable()
-     */
-    public boolean getIsSynchronizable() {
-	    return this.isSynchronizable;
-    }
-
-	/**
-     * @see org.openmrs.synchronization.SynchronizableInstance#setIsSynchronizable(boolean)
-     */
-    public void setIsSynchronizable(boolean isSynchronizable) {
-	    this.isSynchronizable = isSynchronizable;
-    }
-
 }

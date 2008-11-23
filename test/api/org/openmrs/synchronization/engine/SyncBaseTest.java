@@ -57,11 +57,21 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 	}
 
 	@Transactional
+	@Rollback(false)
 	protected void runOnParent(SyncTestHelper testMethods) throws Exception {
         //now run parent
 		log.info("\n************************************* Running on Parent *************************************");		
 		testMethods.runOnParent();		
 	}
+
+	//this is final step so do rollback and let the test finish
+	@Transactional
+	protected void runOnChild2(SyncTestHelper testMethods) throws Exception {
+        //now run parent
+		log.info("\n************************************* Running on Child2 *************************************");		
+		testMethods.runOnParent();		
+	}
+	
 	
 	/**
 	 * Sets up initial data set before set of instructions simulating child changes is executed.
@@ -84,7 +94,7 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 	@Rollback(false)
 	protected void applySyncChanges() throws Exception {
 		
-		//get sync records created by child
+		//get sync records created
 		List<SyncRecord> syncRecords = Context.getSynchronizationService().getSyncRecords();
 		if (syncRecords == null || syncRecords.size() == 0) {
 			assertFalse("No changes found (i.e. sync records size is 0)", true);
@@ -145,6 +155,13 @@ public abstract class SyncBaseTest extends BaseContextSensitiveTest {
 		this.applySyncChanges();
 		
 		this.runOnParent(testMethods);
+		
+		//now that parent is committed; replay the parent's log against child #2
+		//after that is done, the data should be the same again
+		this.applySyncChanges();
+		
+		//now finish by checking the changes record on parent against the target state
+		this.runOnChild2(testMethods);
 	}	
 }
 
