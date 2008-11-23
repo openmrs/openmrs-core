@@ -330,9 +330,9 @@ CREATE PROCEDURE sync_diff_procedure (IN new_sync_version VARCHAR(10))
 	# ----------------------------------------------------------------------------------------
 	IF ( SELECT count(*) > 0 FROM INFORMATION_SCHEMA.Columns WHERE table_schema = schema() AND table_name = 'concept_word' AND column_name = 'guid' ) THEN
 		ALTER TABLE `concept_word` DROP COLUMN `guid`;
-		DELETE ssc, sc FROM synchronization_server_class ssc inner join synchronization_class sc
-		where ssc.class_id = sc.class_id
-		and sc.name = 'ConceptWord';
+		DELETE FROM ssc USING synchronization_server_class ssc inner join synchronization_class sc
+		where ssc.class_id = sc.class_id and sc.name = 'ConceptWord';
+		DELETE FROM synchronization_class where name = 'ConceptWord';
 	END IF;
 	
 	UPDATE `global_property` SET property_value=new_sync_version WHERE property = 'synchronization.version';	
