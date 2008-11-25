@@ -211,6 +211,7 @@ public class ConceptTest {
     	mockConcept.setConceptId(conceptId);
     	
     	ConceptName primaryName = ConceptNameTest.createMockConceptName(1, primaryLocale);
+    	mockConcept.addName(primaryName);
     	mockConcept.setPreferredName(primaryLocale, primaryName);
 
     	Locale generalLocale = new Locale(primaryLocale.getLanguage());

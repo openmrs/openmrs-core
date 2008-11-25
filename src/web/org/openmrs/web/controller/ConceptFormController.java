@@ -167,40 +167,46 @@ public class ConceptFormController extends SimpleFormController {
 					concept.setSet(false);
 				else
 					concept.setSet(true);
-				log.debug("isSet: '" + isSet + "' ");
-				log.debug("concept.set: '" + concept.isSet() + "'");
+				
+				if (log.isDebugEnabled()) {
+					log.debug("isSet: '" + isSet + "' ");
+					log.debug("concept.set: '" + concept.isSet() + "'");
+				}
 
 				int numberOfNewConceptNames = 0;
 				
 				// ==== Concept Synonyms ====
-				Collection<ConceptName> originalSyns = concept.getNames();
-				if (originalSyns == null)
-					originalSyns = new HashSet<ConceptName>();
+				Collection<ConceptName> originalNames = concept.getNames();
+				if (originalNames == null)
+					originalNames = new HashSet<ConceptName>();
 
 				for (Locale l : conceptLocales) {
 					// the attribute *must* be named differently than the
 					// property, otherwise
 					// spring will modify the property as a text array
 					String localeName = l.toString();
-					log
-					        .debug("newSynonyms: "
-					                + request.getParameter("newSynonyms_"
-					                        + localeName));
+					if (log.isDebugEnabled()) {
+						log.debug("newSynonyms: "
+						                + request.getParameter("newSynonyms_"
+						                        + localeName));
+					}
 					String[] tempSyns = request.getParameter(
 					        "newSynonyms_" + localeName).split(",");
-					log.debug("tempSyns: ");
-					for (String s : tempSyns)
-						log.debug(s);
+					if (log.isDebugEnabled()) {
+						log.debug("tempSyns: ");
+						for (String s : tempSyns)
+							log.debug(s);
+					}
 					Set<ConceptName> parameterSyns = new HashSet<ConceptName>();
 
+					// first, add all the "synonyms"
 					// set up parameter Synonym Set for easier add/delete
 					// functions
 					// and removal of duplicates
 					for (String syn : tempSyns) {
 						syn = syn.trim();
 						if (!syn.equals("")) {
-							ConceptName anotherSynonym = new ConceptName(syn
-							        .toUpperCase(), l);
+							ConceptName anotherSynonym = new ConceptName(syn, l);
 							anotherSynonym.setConcept(concept);
 							parameterSyns.add(anotherSynonym);
 						}
@@ -208,15 +214,15 @@ public class ConceptFormController extends SimpleFormController {
 					
 					if (log.isDebugEnabled()) {
 						log.debug("initial originalSyns: ");
-						for (ConceptName s : originalSyns)
+						for (ConceptName s : originalNames)
 							log.debug(s);
 					}
-					// Union the originalSyns and parameterSyns to get the
-					// 'clean' synonyms
-					// remove synonym from originalSynonym if 'clean' (already
+					// Union the originalNames and parameterNames to get the
+					// 'clean' names
+					// remove name from originalNames if 'clean' (already
 					// in db)
 					Set<ConceptName> originalSynsCopy = new HashSet<ConceptName>();
-					originalSynsCopy.addAll(originalSyns);
+					originalSynsCopy.addAll(originalNames);
 					for (ConceptName o : originalSynsCopy) {
 						if (o.getLocale().equals(l)
 						        && !parameterSyns.contains(o)) { // .contains()
@@ -226,7 +232,7 @@ public class ConceptFormController extends SimpleFormController {
 																	// we
 																	// overrode
 																	// .equals()
-							originalSyns.remove(o);
+							originalNames.remove(o);
 						}
 						
 						if (log.isDebugEnabled()) {
@@ -235,7 +241,7 @@ public class ConceptFormController extends SimpleFormController {
 								log.debug(s);
 							
 							log.debug("evaluated originalSyns: ");
-							for (ConceptName s : originalSyns)
+							for (ConceptName s : originalNames)
 								log.debug(s);
 						}
 						
@@ -244,26 +250,28 @@ public class ConceptFormController extends SimpleFormController {
 					
 					// add all new syns from parameter set
 					for (ConceptName p : parameterSyns) {
-						if (!originalSyns.contains(p)) { // .contains() is
+						if (!originalNames.contains(p)) { // .contains() is
 															// only usable
 															// because we
 															// overrode
 															// .equals()
-							originalSyns.add(p);
+							originalNames.add(p);
 							++numberOfNewConceptNames;
 						}
 					}
 
-					log.debug("evaluated parameterSyns: ");
-					for (ConceptName s : parameterSyns)
-						log.debug(s);
-
-					log.debug("evaluated originalSyns: ");
-					for (ConceptName s : originalSyns)
-						log.debug(s);
+					if (log.isDebugEnabled()) {
+						log.debug("evaluated parameterSyns: ");
+						for (ConceptName s : parameterSyns)
+							log.debug(s);
+	
+						log.debug("evaluated originalSyns: ");
+						for (ConceptName s : originalNames)
+							log.debug(s);
+					}
 
 				}
-				concept.setNames(originalSyns);
+				concept.setNames(originalNames);
 
 				// ====zero out conceptSets====
 				String conceptSets = request.getParameter("conceptSets");
@@ -281,6 +289,7 @@ public class ConceptFormController extends SimpleFormController {
 					        + localeName);
 					String description = request.getParameter("description_"
 					        + localeName);
+					System.out.println("concept description parameter from request: " + description);
 					if ((shortName.length() > 0 || description.length() > 0)
 					        && conceptName.length() < 1) {
 						errors.reject("dictionary.error.needName");
@@ -326,6 +335,8 @@ public class ConceptFormController extends SimpleFormController {
 							cd = new ConceptDescription(description, l);
 							concept.addDescription(cd);
 						}
+					} else {
+						System.err.println("no description provided with form submission.");
 					}
 				} // end loop over concept locales
 
