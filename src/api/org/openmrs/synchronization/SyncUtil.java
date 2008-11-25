@@ -510,17 +510,27 @@ public class SyncUtil {
 						
 			//The fetch by guid may or may not work since the record may have been created using User object in the
 			// current Tx, if so hibernate will not realize that it has User object in cache pointing to the same row and consequently it
-			// will issue insert
-			//to avoid this we will pre-fetch the corresponding *local* PK for login_credential: user_id
-			//this will force udpate vs. insert
-			User thisUser = Context.getUserService().getUserByGuid(lc.getGuid());
-			lc.setUserId(thisUser.getUserId());
+			// will issue insert, to avoid this we will pre-fetch the corresponding *local* PK for login_credential: user_id
+			//this will force udpate vs. insert: this can be done one of two ways: by fetching lc with guid (for existing records)
+			//or for new users by fetching User by guid (this will be loaded from HB cache)
+			LoginCredential lcTemp = Context.getUserService().getLoginCredentialByGuid(lc.getGuid());
+			if (lcTemp != null){
+				lc.setUserId(lcTemp.getUserId());
+			}
+			else {
+				User uTemp = Context.getUserService().getUserByGuid(lc.getGuid());
+				if (uTemp != null){
+					lc.setUserId(uTemp.getUserId());
+				}
+			}
+			
+
 			Context.getSynchronizationService().saveOrUpdate(lc); 
     	}
     	else if ("org.openmrs.Concept".equals(className)) { //for concepts, call API: it does extra things like update concept words
 			Context.getConceptService().saveConcept((Concept)o);
     	}
-    	else if ( o != null ) {  //now do the 'normal' save or update
+    	else if ( o != null ) {  //now do 	the 'normal' save or update
 			Context.getSynchronizationService().saveOrUpdate(o);
 		} else {
 			log.warn("Will not update OpenMRS object that is NULL");
