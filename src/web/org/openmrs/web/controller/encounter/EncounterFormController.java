@@ -297,6 +297,8 @@ public class EncounterFormController extends SimpleFormController {
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFieldPart(), other.getFieldPart());
 			if (temp == 0 && formField.getPageNumber() == null && formField.getFieldNumber() == null && formField.getFieldPart() == null)
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getSortWeight(), other.getSortWeight());
+			if (temp == 0) // to prevent ties
+				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFormFieldId(), other.getFormFieldId());
 			return temp;
         }
     
