@@ -1395,6 +1395,20 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
     	conceptWordUpdateTaskDef.setDescription("Iterates through the concept dictionary, re-creating concept words (which are used for searcing). This task is started when using the \"Update Concept Word Storage\" page and no range is given.");
     	return conceptWordUpdateTaskDef;
     }
+
+    /**
+     * @see org.openmrs.api.ConceptService#getAllConceptNameTags()
+     */
+    public List<ConceptNameTag> getAllConceptNameTags() {
+	    return dao.getConceptNameTags();
+    }
+
+	/**
+     * @see org.openmrs.api.ConceptService#getConceptNameTag(java.lang.Integer)
+     */
+    public ConceptNameTag getConceptNameTag(Integer id) {
+	    return dao.getConceptNameTag(id);
+    }
     
 }
 

@@ -21,6 +21,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Locale;
 
+import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -39,8 +41,9 @@ import org.openmrs.test.TestUtil;
  * 
  * @see org.openmrs.api.ConceptService
  */
+@SkipBaseSetup
 public class ConceptServiceTest extends BaseContextSensitiveTest {
-	
+		
 	protected ConceptService conceptService = null;
 	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/api/include/ConceptServiceTest-initialConcepts.xml";
 	
@@ -54,6 +57,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Before
 	public void runBeforeAllTests() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		authenticate();
 		conceptService = Context.getConceptService();
 	}
 	
@@ -67,8 +73,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldGetConceptByName() throws Exception {
-		
-		executeDataSet(INITIAL_CONCEPTS_XML);
 		
 		// get the first concept in the dictionary
 		Concept firstConcept = conceptService.getConcept(1);
@@ -91,8 +95,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		TestUtil.printOutTableContents(getConnection(), "concept");
 		
 		initializeInMemoryDatabase();
-		executeDataSet(INITIAL_CONCEPTS_XML);
-		authenticate();
 		
 		ConceptService conceptService = Context.getConceptService();
 		
@@ -146,5 +148,45 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(50.0, thirdConceptNumeric.getHiAbsolute().doubleValue(), 0);
 		
 	}
+
+    /**
+     * @verifies {@link ConceptService#saveConcept(Concept)}
+     * test = should generate id for new concept if none is specified
+     */
+    @Test
+    public void saveConcept_shouldGenerateIdForNewConceptIfNoneIsSpecified()
+            throws Exception {
+    	Concept concept = new Concept();
+    	concept.addName(new ConceptName("Weight", Locale.US));
+    	concept.setConceptId(null);
+    	concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
+    	concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
+    	
+    	concept = Context.getConceptService().saveConcept(concept);
+    	assertFalse(concept.getConceptId().equals(5089));
+    }
+
+    /**
+     * @verifies {@link ConceptService#saveConcept(Concept)}
+     * test = should keep id for new concept if one is specified
+     */
+    @Test
+    public void saveConcept_shouldKeepIdForNewConceptIfOneIsSpecified()
+            throws Exception {
+    	for (Concept c : Context.getConceptService().getAllConcepts())
+    		System.out.println(c.getConceptId() + " -> " + c.getName().getName());
+    	Assert.assertNull("There should be no concept with id 5089", Context.getConceptService().getConcept(5089));
+    	
+    	Concept concept = new Concept();
+    	concept.addName(new ConceptName("Weight", Locale.US));
+    	concept.setConceptId(5089);
+    	concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
+    	concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
+    	
+    	concept = Context.getConceptService().saveConcept(concept);
+    	for (Concept c : Context.getConceptService().getAllConcepts())
+    		System.out.println(c.getConceptId() + " -> " + c.getName().getName());
+    	assertTrue(concept.getConceptId().equals(5089));
+    }
 
 }
