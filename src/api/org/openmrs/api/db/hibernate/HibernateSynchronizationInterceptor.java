@@ -626,6 +626,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 	 */
 	protected boolean assignGUID(Object entity, Object[] currentState, String[] propertyNames, SyncItemState state) throws SyncException {
 
+		boolean guidReset = false; //indicate that we are resetting guid
 		//if not synchronizable, don't bother
 		if (entity instanceof Synchronizable) {
 			Synchronizable syncEntity = (Synchronizable) entity;
@@ -639,6 +640,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			if (state == SyncItemState.NEW && syncEntity.getGuid() != null && syncEntity.getLastRecordGuid() == null) {
 				log.info("Clearing out guid for sync entity " + entity + ", guid was: " + syncEntity.getGuid());
 				syncEntity.setGuid(null);
+				guidReset = true;
 			} 
 		} else {
 			return false;
@@ -651,10 +653,15 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 		 */
 		for (int i = 0; i < propertyNames.length; i++) {
 			String propName = propertyNames[i];
+			String guidToAssign = null;
+			// start with what it there, unless we are resetting guid
 			if ("guid".equalsIgnoreCase(propName)) {
-				String guidToAssign = (String)currentState[i]; //start with what it there
-				if (state != SyncItemState.NEW && entity instanceof Synchronizable) { 
-					// if this is synchornizable, attempt to fetch first to make sure we are not overriding values
+				if (!guidReset) {
+					guidToAssign = (String)currentState[i];
+				}
+				//if this is synchronizable and we are not in confirmed guid reset situation,
+				//attempt to fetch first to make sure we are not overriding values
+				if (!guidReset && state != SyncItemState.NEW && entity instanceof Synchronizable) { 
 					guidToAssign = this.fetchGuid((Synchronizable)entity);
 					String temp = ((Synchronizable)entity).getGuid();
 					if (guidToAssign == null & temp != null) {
@@ -802,7 +809,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 
 				if (propertyNames[i].equals(idPropertyName)
 				        && log.isInfoEnabled())
-					log.warn(infoMsg + ", Id for this class: " + idPropertyName
+					log.info(infoMsg + ", Id for this class: " + idPropertyName
 					        + " , value:" + currentState[i]);
 
 				if (currentState[i] != null) {
@@ -813,7 +820,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 					        || ("personId".equals(idPropertyName) && "userId".equals(propertyNames[i]))
 					        || transientProps.contains(propertyNames[i])) {
 						// if (log.isInfoEnabled())
-						log.warn("Skipping property ("
+						log.info("Skipping property ("
 						        + propertyNames[i]
 						        + ") because it's either the primary key or it's transient.");
 

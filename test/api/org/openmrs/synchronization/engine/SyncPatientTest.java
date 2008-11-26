@@ -42,6 +42,8 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.test.annotation.NotTransactional;
+import java.util.TreeSet;
+import java.util.Set;
 
 /**
  * Tests creating various pieces of data via synchronization
@@ -437,4 +439,60 @@ public class SyncPatientTest extends SyncBaseTest {
 			}
 		});
 	}
+	
+	@Test
+	@NotTransactional
+	public void shouldMergePatients() throws Exception {
+		runSyncTest(new SyncTestHelper() {
+			Set<PatientIdentifier> pis = null;
+			int p1AddressCount = 0;
+			int p1EncounterCount = 0;
+			int p1ObsCount = 0;
+			int p2AddressCount = 0;
+			int p2EncounterCount = 0;
+			int p2IdentifiersCount = 0;
+			int p2ObsCount = 0;
+			public void runOnChild() {
+								
+				Patient p1 = Context.getPatientService().getPatient(2);
+				Patient p2 = Context.getPatientService().getPatient(3);
+				p1AddressCount = p1.getAddresses().size();
+				p1EncounterCount = Context.getEncounterService().getEncountersByPatient(p1).size();
+				p1ObsCount = Context.getObsService().getObservationsByPerson(p1).size();
+				p2AddressCount = p2.getAddresses().size();
+				p2EncounterCount = Context.getEncounterService().getEncountersByPatient(p2).size();
+				p2ObsCount = Context.getObsService().getObservationsByPerson(p2).size();
+				pis = new TreeSet<PatientIdentifier>();
+				pis.addAll(p1.getIdentifiers());
+				pis.addAll(p2.getIdentifiers());
+				
+				Context.getPatientService().mergePatients(p2, p1);
+			}
+			public void runOnParent() {
+				int compare = 0;
+				Patient p1 = Context.getPatientService().getPatient(2);
+				Patient p2 = Context.getPatientService().getPatient(3);
+				Set<PatientIdentifier> pis2 = p2.getIdentifiers();
+				for(PatientIdentifier pi : pis) {
+					boolean matched = false;
+					for (PatientIdentifier pi2 : pis2) {
+						if (pi.getIdentifier().equalsIgnoreCase(pi2.getIdentifier())) {
+							matched = true;
+							break;
+						}
+					}
+					if (!matched) {
+						assertEquals("patient identifier not found after merge: " + pi.toString(), false);
+					}
+				}
+				assertEquals("Patient not voided after merge",true, p1.isVoided());
+				assertEquals("Encounters count wrong",p1EncounterCount+p2EncounterCount, Context.getEncounterService().getEncountersByPatient(p2).size());
+				assertEquals("Address count wrong",p1AddressCount+p2AddressCount, p2.getAddresses().size());
+				assertEquals("Obs count wrong",p1ObsCount+p2ObsCount, Context.getObsService().getObservationsByPerson(p2).size());
+				
+			}
+		});
+	}
+	
+	
 }
