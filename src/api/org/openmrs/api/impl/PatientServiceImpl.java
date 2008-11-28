@@ -839,7 +839,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		for (Obs obs : obsService.getObservationsByPerson(notPreferred)) {
 			if (obs.getEncounter() == null && !obs.isVoided()) {
 				obs.setPerson(preferred);
-				obsService.saveObs(obs, null);
+				obsService.saveObs(obs, "Merged from patient #" + notPreferred.getPatientId() );
 			}
 		}
 		
