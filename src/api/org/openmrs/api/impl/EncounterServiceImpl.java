@@ -123,11 +123,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 						obs.setObsDatetime(newDate);
 					}
 					
-					// if the Person in the obs doesn't match the Patient in the encounter, fix it
-					if (!obs.getPerson().getPersonId().equals(p.getPatientId())) {
-						obs.setPerson(p);
-					}
-
+				}
+				
+				// if the Person in the obs doesn't match the Patient in the encounter, fix it
+				if (!obs.getPerson().getPersonId().equals(p.getPatientId())) {
+					obs.setPerson(p);
 				}
 				
 			}
