@@ -115,6 +115,7 @@ public class ConceptSourceListController extends SimpleFormController {
 	/**
      * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
      */
+    @SuppressWarnings("unchecked")
     @Override
     protected Map<String, Object> referenceData(HttpServletRequest request, Object command,
             Errors errors) throws Exception {

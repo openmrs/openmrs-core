@@ -21,7 +21,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
-import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -65,7 +65,7 @@ public class LocationFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			Location location = (Location)obj;
-			Context.getAdministrationService().updateLocation(location);
+			Context.getLocationService().saveLocation(location);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Location.saved");
 		}
@@ -85,10 +85,10 @@ public class LocationFormController extends SimpleFormController {
 		Location location = null;
 		
 		if (Context.isAuthenticated()) {
-			EncounterService os = Context.getEncounterService();
+			LocationService ls = Context.getLocationService();
 			String locationId = request.getParameter("locationId");
 	    	if (locationId != null)
-	    		location = os.getLocation(Integer.valueOf(locationId));	
+	    		location = ls.getLocation(Integer.valueOf(locationId));	
 		}
 		
 		if (location == null)

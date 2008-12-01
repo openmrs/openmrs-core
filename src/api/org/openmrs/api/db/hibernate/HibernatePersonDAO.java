@@ -25,10 +25,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
-import org.hibernate.type.Type;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -270,6 +268,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.PersonService#getAllPersonAttributeTypes(boolean)
      * @see org.openmrs.api.db.PersonDAO#getAllPersonAttributeTypes(boolean)
      */
+    @SuppressWarnings("unchecked")
     public List<PersonAttributeType> getAllPersonAttributeTypes(
             boolean includeRetired) throws DAOException {
     	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
@@ -286,6 +285,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
      * @see org.openmrs.api.db.PersonDAO#getPersonAttributeTypes(java.lang.String, java.lang.String, java.lang.Integer, java.lang.Boolean)
 	 */
+    @SuppressWarnings("unchecked")
     public List<PersonAttributeType> getPersonAttributeTypes(String exactName,
             String format, Integer foreignKey, Boolean searchable)
             throws DAOException {
@@ -324,6 +324,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.PersonService#getAllRelationships(boolean)
      * @see org.openmrs.api.db.PersonDAO#getAllRelationships(boolean)
 	 */
+    @SuppressWarnings("unchecked")
     public List<Relationship> getAllRelationships(boolean includeVoided)
             throws DAOException {
     	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
@@ -339,6 +340,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person, org.openmrs.RelationshipType)
      * @see org.openmrs.api.db.PersonDAO#getRelationships(org.openmrs.Person, org.openmrs.Person, org.openmrs.RelationshipType)
      */
+    @SuppressWarnings("unchecked")
     public List<Relationship> getRelationships(Person fromPerson,
             Person toPerson, RelationshipType relType) {
     	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");

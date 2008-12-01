@@ -13,8 +13,6 @@
  */
 package org.openmrs.module.web.extension.provider;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**

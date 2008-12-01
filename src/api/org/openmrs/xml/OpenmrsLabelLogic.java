@@ -33,7 +33,8 @@ public class OpenmrsLabelLogic implements LabelLogic {
 	/**
 	 * @see org.simpleframework.xml.graph.LabelLogic#getLabel(java.lang.Class, java.lang.Object, java.lang.Class, org.simpleframework.xml.stream.NodeMap)
 	 */
-	public String getLabel(Class field, Object value, Class real, NodeMap node) {
+	@SuppressWarnings("unchecked")
+    public String getLabel(Class field, Object value, Class real, NodeMap node) {
     	String simpleName = real.getSimpleName();
 		simpleName = Introspector.decapitalize(simpleName);
 		Class type = value.getClass();

@@ -13,40 +13,31 @@
  */
 package org.openmrs.scheduler.tasks;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
- *  Implementation of a task that writes "Hello World" to a log file.
- *
- *  @author Justin Miranda
- *  @version 1.0
+ * Implementation of a task that writes "Hello World" to a log file.
+ * 
+ * @author Justin Miranda
+ * @version 1.0
  */
-public class HelloWorldTask extends AbstractTask { 
-
-	// Logger 
-	private static Log log = LogFactory.getLog( HelloWorldTask.class );
-
+public class HelloWorldTask extends AbstractTask {
+	
 	// Thread
 	private Thread thread;
 	
 	/**
 	 * Public constructor.
 	 */
-	public HelloWorldTask() { 
-		thread = new Thread( new HelloWorldThread() );
+	public HelloWorldTask() {
+		thread = new Thread(new HelloWorldThread());
 	}
 	
-
 	/**
-	 * Illustrates stateless functionality as simply as possible.  Not very 
-	 * useful in our system, except maybe as a polling thread that checks internet
-	 * connectivity by opening a connection to an external URL. 
-	 *
-	 * But even that isn't very useful unless it tells someone or something 
-	 *  about the connectivity (i.e. calls another service method)    
+	 * Illustrates stateless functionality as simply as possible. Not very useful in our system,
+	 * except maybe as a polling thread that checks internet connectivity by opening a connection to
+	 * an external URL. But even that isn't very useful unless it tells someone or something about
+	 * the connectivity (i.e. calls another service method)
 	 */
-	public void execute() { 
+	public void execute() {
 		thread.start();
 	}
 }

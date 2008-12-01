@@ -200,7 +200,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 		Set<Integer> ret = new HashSet<Integer>();
 
 		if (drugIds == null)
-			drugIds = new ArrayList();
+			drugIds = new ArrayList<Integer>();
 
 		if (drugIds.size() == 0) {
 			if (groupMethod == GroupMethod.NONE) {
@@ -440,7 +440,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(Cohort ps, Concept drugSet) {
 		List<Concept> drugConcepts = null;
 		if (drugSet != null) {
-			List<ConceptSet> concepts = Context.getConceptService().getConceptSets(drugSet);
+			List<ConceptSet> concepts = Context.getConceptService().getConceptSetsByConcept(drugSet);
 			drugConcepts = new ArrayList<Concept>();
 			for (ConceptSet cs : concepts) {
 				drugConcepts.add(cs.getConcept());
@@ -457,7 +457,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	public Map<Integer, List<DrugOrder>> getDrugOrders(Cohort ps, Concept drugSet) {
 		List<Concept> drugConcepts = null;
 		if (drugSet != null) {
-			List<ConceptSet> concepts = Context.getConceptService().getConceptSets(drugSet);
+			List<ConceptSet> concepts = Context.getConceptService().getConceptSetsByConcept(drugSet);
 			drugConcepts = new ArrayList<Concept>();
 			for (ConceptSet cs : concepts) {
 				drugConcepts.add(cs.getConcept());

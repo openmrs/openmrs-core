@@ -96,7 +96,7 @@ public class ProposeConceptFormController extends SimpleFormController {
 			cp.setCreator(Context.getAuthenticatedUser());
 			cp.setDateCreated(new Date());
 			
-			cs.proposeConcept(cp);
+			cs.saveConceptProposal(cp);
 			
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptProposal.proposed");
@@ -132,7 +132,10 @@ public class ProposeConceptFormController extends SimpleFormController {
         return cp;
     }
     
-	protected Map referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		ConceptProposal cp = (ConceptProposal)object;

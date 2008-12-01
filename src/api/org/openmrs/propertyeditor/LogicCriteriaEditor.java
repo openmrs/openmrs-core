@@ -4,9 +4,6 @@ import java.beans.PropertyEditorSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Location;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicCriteria;
 import org.openmrs.logic.util.LogicCriteriaBuilder;
 import org.springframework.util.StringUtils;

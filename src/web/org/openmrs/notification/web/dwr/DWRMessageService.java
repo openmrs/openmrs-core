@@ -50,7 +50,7 @@ public class DWRMessageService {
 				content += "\n\n This email sent from: " + referer + " by: "
 						+ userName;
 
-				messageService.send(recipients, sender, subject, content);
+				messageService.sendMessage(recipients, sender, subject, content);
 
 				return true;
 
@@ -62,7 +62,7 @@ public class DWRMessageService {
 		return false;
 	}	
 	
-	public Vector sendMessage( String recipients, String sender, String subject, String content ) {
+	public Vector<Object> sendMessage( String recipients, String sender, String subject, String content ) {
 
 		// List to return
 		// Object type gives ability to return error strings
@@ -77,7 +77,7 @@ public class DWRMessageService {
 		else {
 			try {
 				MessageService messageService = Context.getMessageService();
-				messageService.send(recipients, sender, subject, content);
+				messageService.sendMessage(recipients, sender, subject, content);
 				objectList.add("Message has been sent successfully.");				
 			} catch (Exception e) {
 				log.error(e);

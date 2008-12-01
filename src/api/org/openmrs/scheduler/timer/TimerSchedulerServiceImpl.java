@@ -27,7 +27,6 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.ObjectNotFoundException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.SchedulerConstants;
@@ -470,7 +469,8 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	/**
 	 * 
 	 */
-	public void restoreFromMemento(OpenmrsMemento memento) {
+	@SuppressWarnings("unchecked")
+    public void restoreFromMemento(OpenmrsMemento memento) {
 		
 		if (memento != null && memento instanceof TimerSchedulerMemento) {
 			TimerSchedulerMemento timerMemento = (TimerSchedulerMemento)memento;

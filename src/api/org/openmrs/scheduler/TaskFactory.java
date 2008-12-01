@@ -3,7 +3,6 @@ package org.openmrs.scheduler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.scheduler.tasks.*;
 
 /**
  * 
@@ -40,7 +39,7 @@ public class TaskFactory {
 		try {
 			
 			// Retrieve the appropriate class
-			Class taskClass = 
+			Class<?> taskClass = 
 				OpenmrsClassLoader.getInstance().loadClass( taskDefinition.getTaskClass() );
 			
 			// Create a new instance of the schedulable class 

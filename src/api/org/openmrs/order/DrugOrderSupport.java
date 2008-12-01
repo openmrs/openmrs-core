@@ -107,6 +107,7 @@ public class DrugOrderSupport implements GlobalPropertyListener {
 	    }
     }
     
+    @SuppressWarnings("unchecked")
     private void setStandardRegimens(String xml) {
     	List<RegimenSuggestion> list = (List<RegimenSuggestion>) xstream.fromXML(xml);
     	setStandardRegimens(list);

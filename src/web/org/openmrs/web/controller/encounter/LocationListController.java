@@ -25,8 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -69,8 +68,7 @@ public class LocationListController extends SimpleFormController {
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
 			String[] locationList = request.getParameterValues("locationId");
-			AdministrationService as = Context.getAdministrationService();
-			EncounterService es = Context.getEncounterService();
+			LocationService ls = Context.getLocationService();
 			
 			String success = "";
 			String error = "";
@@ -81,7 +79,7 @@ public class LocationListController extends SimpleFormController {
 			for (String p : locationList) {
 				//TODO convenience method deleteLocation(Integer) ??
 				try {
-					as.deleteLocation(es.getLocation(Integer.valueOf(p)));
+					ls.purgeLocation(ls.getLocation(Integer.valueOf(p)));
 					if (!success.equals("")) success += "<br/>";
 					success += p + " " + deleted;
 				}
@@ -116,8 +114,8 @@ public class LocationListController extends SimpleFormController {
 		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
-			EncounterService os = Context.getEncounterService();
-	    	locationList = os.getLocations();
+			LocationService ls = Context.getLocationService();
+	    	locationList = ls.getAllLocations();
 		}
     	
         return locationList;

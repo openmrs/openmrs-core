@@ -58,7 +58,7 @@ public class StaticCohortDefinitionProvider implements CohortDefinitionProvider 
 	 */
 	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
 		List<CohortDefinitionItemHolder> ret = new Vector<CohortDefinitionItemHolder>();
-		for (Cohort cohort : Context.getCohortService().getCohorts()) {
+		for (Cohort cohort : Context.getCohortService().getAllCohorts()) {
 			CohortDefinitionItemHolder item = new CohortDefinitionItemHolder();			
 			CohortDefinition cohortDefinition = new StaticCohortDefinition(cohort);
 			item.setKey(cohort.getCohortId() + ":" + cohortDefinition.getClass().getCanonicalName());
@@ -90,10 +90,7 @@ public class StaticCohortDefinitionProvider implements CohortDefinitionProvider 
 	public CohortDefinition saveCohortDefinition(CohortDefinition cohortDefinition) {
 		StaticCohortDefinition def = (StaticCohortDefinition) cohortDefinition;
 		Cohort c = def.getCohort();
-		if (c.getCohortId() == null)
-			Context.getCohortService().createCohort(c);
-		else
-			Context.getCohortService().updateCohort(c);
+		Context.getCohortService().saveCohort(c);
 		return def;
 	}
 

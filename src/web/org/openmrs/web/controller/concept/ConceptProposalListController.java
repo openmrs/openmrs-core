@@ -56,7 +56,7 @@ public class ConceptProposalListController extends SimpleFormController {
 			log.debug("tmp value: " + request.getParameter("includeCompleted"));
 			boolean b = new Boolean(request.getParameter("includeCompleted"));
 			log.debug("b value: " + b);
-	    	cpList = cs.getConceptProposals(b);
+	    	cpList = cs.getAllConceptProposals(b);
 		}
 		
 		// create map of distinct OriginalText->#occurences
@@ -88,8 +88,11 @@ public class ConceptProposalListController extends SimpleFormController {
         return cpMap;
     }
 
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
 	@Override
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		
@@ -99,7 +102,7 @@ public class ConceptProposalListController extends SimpleFormController {
 		return map;
 	}
 	
-	private class CompareListSize implements Comparator<List> {
+	private class CompareListSize implements Comparator<List<?>> {
 
 		private boolean asc = true;
 		
@@ -107,7 +110,7 @@ public class ConceptProposalListController extends SimpleFormController {
 			this.asc = asc;
 		}
 		
-		public int compare(List list1, List list2) throws ClassCastException {
+		public int compare(List<?> list1, List<?> list2) throws ClassCastException {
 			
 			int value = list2.size() - list1.size();
 			

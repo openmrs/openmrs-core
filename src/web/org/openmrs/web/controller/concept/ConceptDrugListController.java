@@ -18,7 +18,6 @@ import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,7 +49,7 @@ public class ConceptDrugListController extends SimpleFormController {
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
-		   	conceptDrugList = cs.getDrugs();
+		   	conceptDrugList = cs.getAllDrugs();
 		}
     	
 		return conceptDrugList;

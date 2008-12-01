@@ -79,7 +79,7 @@ public class AlertListController extends SimpleFormController {
 				Integer alertId = Integer.parseInt(alertIdString);
 				Alert a = as.getAlert(alertId);
 				a.setDateToExpire(new Date());
-				as.updateAlert(a);
+				as.saveAlert(a);
 			}
 			
 			// set the success message and return
@@ -102,9 +102,6 @@ public class AlertListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-    	HttpSession httpSession = request.getSession();
-		
-		
 		//map containing the privilege and true/false whether the privilege is core or not
 		List<Alert> alertList = new Vector<Alert>();
 		
@@ -118,7 +115,10 @@ public class AlertListController extends SimpleFormController {
         return alertList;
     }
     
-	protected Map referenceData(HttpServletRequest request, Object object,
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object object,
 			Errors errors) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 
