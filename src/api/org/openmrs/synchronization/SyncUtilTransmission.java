@@ -261,7 +261,7 @@ public class SyncUtilTransmission {
         response.setErrorMessage(SyncConstants.ERROR_SEND_FAILED.toString());
         response.setFileName(SyncConstants.FILENAME_SEND_FAILED);
         response.setGuid(SyncConstants.GUID_UNKNOWN);
-        response.setState(SyncTransmissionState.SEND_FAILED);
+        response.setState(SyncTransmissionState.FAILED);
         
         try {
         	//handle the case of getting to too many retries
@@ -272,6 +272,8 @@ public class SyncUtilTransmission {
         	
             if ( server != null ) {
                 String toTransmit = null;
+                server.setLastSyncState(SyncTransmissionState.PENDING);
+                Context.getSynchronizationService().updateRemoteServer(server);
                 if ( responseInstead != null ) {
                     toTransmit = responseInstead.getFileOutput();
                     log.info("Sending a response (with tx inside): " + toTransmit);
@@ -296,21 +298,43 @@ public class SyncUtilTransmission {
                             connResponse = ServerConnection.sendExportedData(server, toTransmit, isResponse);
                         } catch ( Exception e ) {
                             e.printStackTrace();
-                            // no need to change state or error message - it's already set properly
+                            // no need to change state or error message - it's already set properly; just update last sync state
+                            server.setLastSyncState(SyncTransmissionState.FAILED);
+                            Context.getSynchronizationService().updateRemoteServer(server);
                         }
 
                         if ( connResponse != null ) {
                             // constructor for SyncTransmissionResponse is null-safe
                             response = new SyncTransmissionResponse(connResponse);
                             
+                            //if we got something back, mark status appropriately
+                            if (response.getState() == SyncTransmissionState.FAILED) {
+                            	server.setLastSyncState(SyncTransmissionState.FAILED);
+                            } else {
+                            	server.setLastSyncState(SyncTransmissionState.OK);
+                            };
+                            
                             if ( response.getSyncImportRecords() == null ) {
                                 log.debug("No records to process in response");
                             } else {
-                                // process each incoming syncImportRecord
+                                // process each incoming syncImportRecord; if any records failed, mark last send as failed
+                            	boolean allOK = true;
                                 for ( SyncImportRecord importRecord : response.getSyncImportRecords() ) {
                                     Context.getSynchronizationIngestService().processSyncImportRecord(importRecord, server);
+                                    if (importRecord.getState() != SyncRecordState.COMMITTED && 
+                                    		importRecord.getState() != SyncRecordState.ALREADY_COMMITTED ||
+                                    		importRecord.getState() != SyncRecordState.NOT_SUPPOSED_TO_SYNC) {
+                                    	allOK = false;
+                                    }
+                                }
+                                
+                                //now if some records failed, record it in lastSyncState
+                                if (allOK == false) {
+                                	server.setLastSyncState(SyncTransmissionState.FAILED_RECORDS);
                                 }
                             }
+                            //update lastSyncState
+                            Context.getSynchronizationService().updateRemoteServer(server);
                         }
                     }
                 } else {
@@ -334,6 +358,10 @@ public class SyncUtilTransmission {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            if (server != null) {
+            	server.setLastSyncState(SyncTransmissionState.FAILED);
+            	Context.getSynchronizationService().updateRemoteServer(server);
+            }
         }
         
         return response;
@@ -399,6 +427,9 @@ public class SyncUtilTransmission {
         
         try {
             if ( parent != null ) {
+            	
+            	//set the date
+            	parent.setLastSync(new Date());
             	
             	//this is the initial handshake only; no state sent
                 SyncTransmission tx = SyncUtilTransmission.createSyncTransmissionRequest(parent);
@@ -503,8 +534,14 @@ public class SyncUtilTransmission {
             else log.warn("ORIGIN SERVER IS STILL NULL");
         }
         
-        List<SyncImportRecord> importRecords = new ArrayList<SyncImportRecord>();
+        //update timestamp for origin server, set the status to processing
+        origin.setLastSync(new Date());
+        origin.setLastSyncState(SyncTransmissionState.PENDING); //set it failed to start with
+        Context.getSynchronizationService().updateRemoteServer(origin);
         
+        //now start processing
+        boolean success = true;
+        List<SyncImportRecord> importRecords = new ArrayList<SyncImportRecord>();
         if ( st.getSyncRecords() != null ) {
         	SyncImportRecord importRecord = null;
             for ( SyncRecord record : st.getSyncRecords() ) {
@@ -531,12 +568,15 @@ public class SyncUtilTransmission {
                 
                 //if the record update failed for any reason, do not continue on, stop now
                 if (importRecord.getState() != SyncRecordState.COMMITTED && importRecord.getState() != SyncRecordState.ALREADY_COMMITTED) {
+                	success = false;
                 	break;
                 }
             }
         }
+        
+        //what ever happened here, send the status for the import records back
         if ( importRecords.size() > 0 ) str.setSyncImportRecords(importRecords);
-
+                
         // now we're ready to see if we need to fire back a response transmission
         if ( origin != null ) {
             if ( !origin.getDisabled() && st.getIsRequestingTransmission() ) {
@@ -546,6 +586,14 @@ public class SyncUtilTransmission {
                 }
             }
         }
+        
+        //update the last sync status appropriately
+        if (success) {
+        	origin.setLastSyncState(SyncTransmissionState.OK); //set it failed to start with	
+        } else {
+        	origin.setLastSyncState(SyncTransmissionState.FAILED); //set it failed to start with
+        }
+        Context.getSynchronizationService().updateRemoteServer(origin);
         
         return str;
     }

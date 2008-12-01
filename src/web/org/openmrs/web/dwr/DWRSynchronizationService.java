@@ -52,7 +52,7 @@ public class DWRSynchronizationService {
     	transmissionResponse.setErrorMessage(SyncConstants.ERROR_SEND_FAILED.toString());
     	transmissionResponse.setFileName(SyncConstants.FILENAME_SEND_FAILED);
     	transmissionResponse.setGuid(SyncConstants.GUID_UNKNOWN);
-    	transmissionResponse.setTransmissionState(SyncTransmissionState.SEND_FAILED.toString());
+    	transmissionResponse.setTransmissionState(SyncTransmissionState.FAILED.toString());
 
     	SyncTransmissionResponse response = SyncUtilTransmission.doFullSynchronize();
     	

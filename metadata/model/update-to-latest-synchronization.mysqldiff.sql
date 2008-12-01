@@ -344,6 +344,33 @@ CREATE PROCEDURE sync_diff_procedure (IN new_sync_version VARCHAR(10))
 delimiter ;
 call sync_diff_procedure('1.0.2');
 
+#----------------------------------------
+# OpenMRS Datamodel version 1.0.3
+# adding lastSyncState to synchronization_server table.
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS sync_diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE sync_diff_procedure (IN new_sync_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_sync_version, '.', '0') FROM global_property WHERE property = 'synchronization.version') THEN
+	SELECT CONCAT('Updating synchronization to ', new_sync_version) AS 'Synchronization Datamodel Update:' FROM dual;
+
+	# ----------------------------------------------------------------------------------------
+	# add column to synchronization_server
+	# ----------------------------------------------------------------------------------------
+	ALTER TABLE `synchronization_server` ADD COLUMN `last_sync_state` varchar(50) AFTER `last_sync`;
+	
+	UPDATE `global_property` SET property_value=new_sync_version WHERE property = 'synchronization.version';	
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call sync_diff_procedure('1.0.3');
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script

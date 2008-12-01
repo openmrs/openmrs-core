@@ -280,7 +280,7 @@ table td#patientHeaderPatientGender {
 	width: 25px;
 }
 
-table td#syncChangesTable {
+table td#syncChangesTable,table td#syncStatus {
 	padding: 5px;
 	text-align: left;
 }
@@ -1236,6 +1236,27 @@ table td#summaryHeaderPatientGender {
 }
 
 .syncStatusEnabled {
+	color: #33aa33;
+	font-weight: bold;
+	font-size: 1.1em;
+	font-family: arial, verdana, sans-serif;
+}
+
+.syncStatsWarning {
+	color: #dd0022;
+	font-weight: bold;
+	font-size: 1.1em;
+	font-family: arial, verdana, sans-serif;
+}
+
+.syncStatsAttention {
+	color: #ffa500;
+	font-weight: bold;
+	font-size: 1.1em;
+	font-family: arial, verdana, sans-serif;
+}
+
+.syncStatsOK {
 	color: #33aa33;
 	font-weight: bold;
 	font-size: 1.1em;

@@ -52,7 +52,7 @@ public class SyncTransmissionResponseItem {
     		}
     		this.guid = transmissionResponse.getGuid();
     		if ( transmissionResponse.getState() != null ) this.transmissionState = transmissionResponse.getState().toString();
-    		else this.transmissionState = SyncTransmissionState.SEND_FAILED.toString();
+    		else this.transmissionState = SyncTransmissionState.FAILED.toString();
     		this.errorMessage = transmissionResponse.getErrorMessage();
     	} else {
     		this.fileName = SyncConstants.FILENAME_NO_CONNECTION;

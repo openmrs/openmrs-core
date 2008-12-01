@@ -18,7 +18,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -31,6 +34,8 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
+import org.openmrs.synchronization.SyncStatistic;
+import org.openmrs.synchronization.server.RemoteServer;
 import org.openmrs.test.SkipBaseSetup;
 import org.springframework.test.annotation.NotTransactional;
 
@@ -173,7 +178,6 @@ public class SyncAdminTest extends SyncBaseTest {
 	 */
 	@Test
     @NotTransactional
-    @Ignore
 	public void shouldEditSaveGlobalProperty() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {
@@ -192,5 +196,11 @@ public class SyncAdminTest extends SyncBaseTest {
 		});
 	}
 
-	
+	@Test
+	public void shouldGetSyncStatistics() throws Exception {
+		executeDataSet("org/openmrs/synchronization/engine/include/SyncRemoteChildServer.xml");
+		Map<RemoteServer,Set<SyncStatistic>> stats = Context.getSynchronizationService().getSyncStatistics(null, null);
+		
+		return;
+	}	
 }

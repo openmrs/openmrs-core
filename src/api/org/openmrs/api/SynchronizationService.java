@@ -16,10 +16,12 @@ package org.openmrs.api;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.openmrs.annotation.Authorized;
-import org.openmrs.api.context.Context;
-import org.openmrs.synchronization.SyncConstants;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.synchronization.SyncStatistic;
 import org.openmrs.synchronization.SyncRecordState;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.filter.SyncClass;
@@ -456,6 +458,17 @@ public interface SynchronizationService {
      * @throws APIException
      */
     public void saveOrUpdate(Synchronizable object)  throws APIException;
+    
+
+    /**
+     * Performs generic save of openmrs object using persistance api.
+     * 
+     * @param fromDate start date
+     * @param toDate end date
+     * @return
+     * @throws DAOException
+     */
+    public Map<RemoteServer,Set<SyncStatistic>> getSyncStatistics(Date fromDate, Date toDate) throws DAOException;
     
     public boolean checkGuidsForClass(Class clazz) throws APIException;
 }

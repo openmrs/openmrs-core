@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openmrs.synchronization.SyncTransmissionState;
 import org.openmrs.synchronization.filter.SyncServerClass;
 
 /**
@@ -31,6 +32,7 @@ public class RemoteServer {
 	private String username;
 	private String password;
     private Date lastSync;
+    private SyncTransmissionState lastSyncState;
     private Set<SyncServerClass> serverClasses;
     private Set<SyncServerRecord> serverRecords;
     private String guid;
@@ -67,6 +69,14 @@ public class RemoteServer {
 
     public void setLastSync(Date lastSync) {
         this.lastSync = lastSync;
+    }
+
+    public SyncTransmissionState getLastSyncState() {
+        return lastSyncState;
+    }
+
+    public void setLastSyncState(SyncTransmissionState value) {
+        this.lastSyncState = value;
     }
 
     public String getAddress() {

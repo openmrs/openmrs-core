@@ -88,17 +88,14 @@ public class SynchronizationImportListController extends SimpleFormController {
 		// 3) remote connection (with username + password, also posting data) (results in pure XML)
 		// none of these result in user-friendly - so no comfy, user-friendly stuff needed here
 		
-		
 		//outputing statistics: debug only!
-		log.warn("HttpServletRequest INFO:");
-		log.warn("ContentType: " + request.getContentType());
-		log.warn("CharacterEncoding: " + request.getCharacterEncoding());
-		log.warn("ContentLength: " + request.getContentLength());
-		log.warn("checksum: " + request.getParameter("checksum"));
-		log.warn("syncData: " + request.getParameter("syncData"));
-		log.warn("syncDataResponse: " + request.getParameter("syncDataResponse"));
-
-		// All requests should be multipart requests
+		log.info("HttpServletRequest INFO:");
+		log.info("ContentType: " + request.getContentType());
+		log.info("CharacterEncoding: " + request.getCharacterEncoding());
+		log.info("ContentLength: " + request.getContentLength());
+		log.info("checksum: " + request.getParameter("checksum"));
+		log.info("syncData: " + request.getParameter("syncData"));
+		log.info("syncDataResponse: " + request.getParameter("syncDataResponse"));
 		
     	long checksum = 0;
     	Integer serverId = 0;
@@ -111,7 +108,7 @@ public class SynchronizationImportListController extends SimpleFormController {
         String password = "";
         
 
-        //file-based upload and form submission
+        //file-based upload, and multi-part form submission
 		if (request instanceof MultipartHttpServletRequest) {
         	log.info("Processing contents of syncDataFile multipart request parameter");
         	MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;        	
@@ -127,19 +124,13 @@ public class SynchronizationImportListController extends SimpleFormController {
             log.info("upload = " + isUpload);
             log.info("compressed = " + useCompression);
             log.info("response = " + isResponse);
-            log.info("username = " + username);
-            log.info("password = " + password);
-            
-            
-            
+            log.info("username = " + username);            
             
         	log.info("Request content length: " + request.getContentLength());
 			MultipartFile multipartFile = multipartRequest.getFile("syncDataFile");
 			if (multipartFile != null && !multipartFile.isEmpty()) {
 				InputStream inputStream = null;
-
 				try {
-
 					// Decompress content in file
 					ConnectionResponse syncResponse = 
 						new ConnectionResponse(new ByteArrayInputStream(multipartFile.getBytes()), useCompression);
@@ -166,7 +157,7 @@ public class SynchronizationImportListController extends SimpleFormController {
 			log.debug("seems we DO NOT have a file object");
 		}
 
-		// prepare to process the input
+		// prepare to process the input: contents now contains decompressed request ready to be processed
 		SyncTransmissionResponse str = new SyncTransmissionResponse();		
     	str.setErrorMessage(SyncConstants.ERROR_TX_NOT_UNDERSTOOD);
     	str.setFileName(SyncConstants.FILENAME_TX_NOT_UNDERSTOOD);
@@ -176,153 +167,146 @@ public class SynchronizationImportListController extends SimpleFormController {
     	str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);        
         str.setTimestamp(new Date()); //set the timestamp of the response
 
-    	System.out.println("CONTENT IN IMPORT CONTROLLER: " + contents);
+    	if (log.isInfoEnabled()) {
+    		log.info("CONTENT IN IMPORT CONTROLLER: " + contents);
+    	}
     	
-		if ( contents.length() > 0 ) {
+
+    	//if no content, nothing to process just send back response
+		if ( contents == null || contents.length() < 0 ) {
+			log.info("returning from ingest: nothing to process.");
+			this.sendResponse(str, isUpload, response);
+			return null;			
+		}
 			
-			// if this is option 3 (posting from remote server), we need to authenticate
-			if ( !Context.isAuthenticated() ) {
-				try {
-					Context.authenticate(username, password);
-				} catch ( Exception e ) {
-					// nothing to do - we'll have to respond saying no authentication
-					//TODO - clean this up
-				}
-			}
-
-			if ( Context.isAuthenticated() ) {
-
-                //fill-in the server guid for the response
-                str.setSyncTargetGuid(Context.getSynchronizationService().getServerGuid());
-
-	        	// TODO Will deal with checksum earlier when we first get the sync transmission
-                //checksum check before doing anything at all
-                long checksumReceived = ServletRequestUtils.getLongParameter(request, "checksum", -1);
-	        	log.info("checksum value received in POST: " + checksumReceived );
-	        	log.info("checksum value of payload: " + checksum);
-
-	        	System.out.println("SIZE of payload: " + contents.length());
-                if (checksumReceived > 0 && (checksumReceived != checksum)) {
-    	        	log.error("ERROR: FAILED CHECKSUM!");
-    	        	str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);
-    	        	this.sendResponse(str, isUpload, response);
-    	        	return null;	            
-                }
-                
-                                
-                if ( SyncConstants.TEST_MESSAGE.equals(contents) ) {
-					str.setErrorMessage("");
-					str.setState(SyncTransmissionState.OK);
-					str.setGuid("");
-			    	str.setFileName(SyncConstants.FILENAME_TEST);
-
-				} else {
-                    SyncTransmission st = null;
-
-                    if ( isResponse ) {
-                        log.info("Processing a response, not a transmission");
-                        SyncTransmissionResponse priorResponse = null;
-                        
-                        try {
-                            priorResponse = SyncDeserializer.xmlToSyncTransmissionResponse(contents);
-                            log.info("This is a response from a previous transmission.  Guid is: " + priorResponse.getGuid());
-                        } catch ( Exception e ) {
-                            log.error("Unable to deserialize the following: " + contents);
-                            e.printStackTrace();
-                        }
-                        
-                        //figure out where this came from
-                        //for responses, the target ID contains the server that generated the response
-                        String sourceGuid = priorResponse.getSyncTargetGuid();
-                        log.info("SyncTransmissionResponse has a sourceGuid of " + sourceGuid);
-                        RemoteServer origin = Context.getSynchronizationService().getRemoteServer(sourceGuid);
-                        if ( origin == null ) log.warn("Unable to find source server by guid.  Will still try to get by serverId and username if possible.");
-                        else log.info("Found source server by guid: " + sourceGuid + " = " + origin.getNickname());
-                        
-                        // if that didn't do it, we should be able to get by serverId, if this is a file-based upload
-                        if ( origin == null && serverId > 0 ) {
-                            // make a last-ditch effort to try to figure out what server this is coming from, so we can behave appropriately.
-                            log.info("Trying to identify source server by serverId " +  serverId);
-                            origin = Context.getSynchronizationService().getRemoteServer(serverId);
-                            if ( origin != null && sourceGuid != null && sourceGuid.length() > 0 ) {
-                                // take this opportunity to save the guid, now we've identified which server this is
-                                origin.setGuid(sourceGuid);
-                                Context.getSynchronizationService().updateRemoteServer(origin);
-                            } else {
-                                log.warn("Still unable to get username " + username + " and sourceguid " + sourceGuid);
-                            }
-                        } else {
-                            if ( origin == null ) log.warn("Still can't figure out source server after checking source guid and trying serverId (serverId wasnt' present, meaning this is likely a post from a remote server)");
-                            else log.info("Source server is " + origin.getNickname());
-                        }
-
-                        if ( origin == null ) {
-                            // make a last-ditch effort to try to figure out what server this is coming from, so we can behave appropriately.
-                            User authenticatedUser = Context.getAuthenticatedUser();
-                            if ( authenticatedUser != null ) {
-                                username = authenticatedUser.getUsername();
-                                log.info("Trying to get source server using authenticated username instead: " + username);
-                                origin = Context.getSynchronizationService().getRemoteServerByUsername(username);
-                                if ( origin != null && sourceGuid != null && sourceGuid.length() > 0 ) {
-                                    // take this opportunity to save the guid, now we've identified which server this is
-                                    origin.setGuid(sourceGuid);
-                                    Context.getSynchronizationService().updateRemoteServer(origin);
-                                } else {
-                                    log.warn("Still unable to get source server after trying username " + username + ", serverId, and sourceguid " + sourceGuid);
-                                }
-                            } else {
-                                log.warn("Still unable to get source server after trying username, serverId, and sourceguid " + sourceGuid + ". Check that server was configured properly.");
-                            }
-                        } else {
-                            log.info("Source server is " + origin.getNickname());
-                        }
-                        
-                        if ( priorResponse != null ) {
-                            // process response
-                            if ( priorResponse.getSyncImportRecords() == null ) {
-                                log.debug("No records to process in response");
-                            } else {
-                                // process each incoming syncImportRecord
-                                for ( SyncImportRecord importRecord : priorResponse.getSyncImportRecords() ) {
-                                    Context.getSynchronizationIngestService().processSyncImportRecord(importRecord, origin);
-                                }
-                            }
-                            
-                            // now set the syncTransmission
-                            st = priorResponse.getSyncTransmission();
-                        } else {
-                            // don't need to do anything because the default Error values capture it all
-                        }
-
-                    } else {
-                        try {
-                            st = SyncDeserializer.xmlToSyncTransmission(contents);
-                        } catch ( Exception e ) {
-                            log.error("Unable to deserialize the following: " + contents);
-                            e.printStackTrace();
-                        }
-                    }
-
-                    // now process the syncTransmission                    
-                    if ( st != null ) {
-                        str = SyncUtilTransmission.processSyncTransmission(st);
-                    } else {
-                        // don't need to do anything because the default Error values capture it all
-                    }
-				}
-
-			} 
-			// Could not authenticate user
-			else {
-		    	str.setErrorMessage(SyncConstants.ERROR_AUTH_FAILED);
-		    	str.setFileName(SyncConstants.FILENAME_AUTH_FAILED);
-		    	str.setGuid(SyncConstants.GUID_UNKNOWN);
-                str.setSyncSourceGuid(SyncConstants.GUID_UNKNOWN);
-		    	str.setState(SyncTransmissionState.AUTH_FAILED);
-			}
+		// if this is option 3 (posting from remote server), we need to authenticate
+		if ( !Context.isAuthenticated() ) {
+			try {
+				Context.authenticate(username, password);
+			} catch ( Exception e ) {}
+		}
+		// Could not authenticate user: send back error
+		if ( !Context.isAuthenticated() ) {
+	    	str.setErrorMessage(SyncConstants.ERROR_AUTH_FAILED);
+	    	str.setFileName(SyncConstants.FILENAME_AUTH_FAILED);
+	    	str.setState(SyncTransmissionState.AUTH_FAILED);
+			
+			this.sendResponse(str, isUpload, response);
+			return null;
 		}
 		
+        //Fill-in the server guid for the response: since request was authenticated we can start letting callers
+		//know about us
+        str.setSyncTargetGuid(Context.getSynchronizationService().getServerGuid());
+
+        //Checksum check before doing anything at all: on unreliable networks we can get seemingly
+        //valid HTTP POST but content is messed up, defend against it with custom checksums
+        long checksumReceived = ServletRequestUtils.getLongParameter(request, "checksum", -1);
+    	log.info("checksum value received in POST: " + checksumReceived );
+    	log.info("checksum value of payload: " + checksum);
+    	log.info("SIZE of payload: " + contents.length());
+        if (checksumReceived > 0 && (checksumReceived != checksum)) {
+        	log.error("ERROR: FAILED CHECKSUM!");
+        	str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);
+
+        	this.sendResponse(str, isUpload, response);
+        	return null;	            
+        }
+                     
+        //Test message. Test message was sent (i.e. using 'test connection' button on server screen)
+    	//just send empty ackowledgment
+        if ( SyncConstants.TEST_MESSAGE.equals(contents) ) {
+			str.setErrorMessage("");
+			str.setState(SyncTransmissionState.OK);
+			str.setGuid("");
+	    	str.setFileName(SyncConstants.FILENAME_TEST);
+
+	    	this.sendResponse(str, isUpload, response);
+        	return null;	            
+		}
+
+        /*************************************************************************************************************************
+         * This is a real transmission: 
+         * - user was properly authenticated
+         * - checksums match
+         * - it is not a test transmission
+         * 
+         * Start processing!
+         * 1. Deserialize what was sent; it can be either SyncTransmssion, or SyncTransmissionResponse
+         * 2. If it is a respose,  
+         *************************************************************************************************************************/
+        SyncTransmission st = null;
+
+        if ( !isResponse ) {
+        	//this is not 'response' to something we sent out; thus the contents should contain plan SyncTransmission 
+        	try {
+            st = SyncDeserializer.xmlToSyncTransmission(contents);
+        	} catch ( Exception e ) {
+        		log.error("Unable to deserialize the following: " + contents, e);
+    			str.setErrorMessage("Unable to deserialize transmission contents into SyncTansmission.");
+    			str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);
+    	    	this.sendResponse(str, isUpload, response);
+    	    	return null;
+        	}
+        } else {
+            log.info("Processing a response, not a transmission");
+            SyncTransmissionResponse priorResponse = null;
+                
+            try {
+                priorResponse = SyncDeserializer.xmlToSyncTransmissionResponse(contents);
+                log.info("This is a response from a previous transmission.  Guid is: " + priorResponse.getGuid());
+            } catch ( Exception e ) {
+                log.error("Unable to deserialize the following: " + contents, e);
+                str.setErrorMessage("Unable to deserialize transmission contents into SyncTransmissionResponse.");
+                str.setState(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD);
+                this.sendResponse(str, isUpload, response);
+    	    	return null;
+            }
+                
+            //figure out where this came from:
+            //for responses, the target ID contains the server that generated the response
+            String sourceGuid = priorResponse.getSyncTargetGuid();
+            log.info("SyncTransmissionResponse has a sourceGuid of " + sourceGuid);
+            RemoteServer origin = Context.getSynchronizationService().getRemoteServer(sourceGuid);
+            if ( origin == null ) {
+            	log.error("Source server not registered locally. Unable to find source server by guid: " + sourceGuid);
+                str.setErrorMessage("Source server not registered locally. Unable to find source server by guid " + sourceGuid);
+                str.setState(SyncTransmissionState.INVALID_SERVER);
+                this.sendResponse(str, isUpload, response);            	
+            	return null;
+            } else {
+            	log.info("Found source server by guid: " + sourceGuid + " = " + origin.getNickname());
+            	log.info("Source server is " + origin.getNickname());
+            }
+                                        
+            if (priorResponse == null) {
+            }
+            
+            // process response that was sent to us; the sync response normally contains:
+            //a) results of the records that we sent out
+            //b) new records from 'source' to be applied against this server
+            if ( priorResponse.getSyncImportRecords() == null ) {
+                log.debug("No records to process in response");
+            } else {
+                // now process each incoming syncImportRecord, this is just status update
+                for ( SyncImportRecord importRecord : priorResponse.getSyncImportRecords() ) {
+                    Context.getSynchronizationIngestService().processSyncImportRecord(importRecord, origin);
+                }
+            }
+            
+            // now set pull out the data that originated on the 'source' server and try to process it
+            st = priorResponse.getSyncTransmission();
+
+        }
+                        
+        // now process the syncTransmission if one was received                    
+        if ( st != null ) {
+            str = SyncUtilTransmission.processSyncTransmission(st);
+        }
+        
+        //send response
 		this.sendResponse(str, isUpload, response);
+		
         // never a situation where we want to actually use the model/view - either file download or http request
         return null;
 	}

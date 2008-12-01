@@ -24,9 +24,14 @@ public enum SyncTransmissionState {
     OK,
 
     /**
-     * Unable to send to the specified server - possible network failure.  OK to try again, as this is likely temporary or configuration problem.
+     * Unable to send/receive to the specified server - possible network failure.  OK to try again, as this is likely temporary or configuration problem.
      */
-    SEND_FAILED,
+    FAILED,
+
+    /**
+     * Transmission was sent/received ok, but some records in it failed.
+     */
+    FAILED_RECORDS,
 
     /**
      * Unable to authorize connection to server when trying to sync
@@ -81,5 +86,9 @@ public enum SyncTransmissionState {
     /**
      * Transmission to be sent would contain records that have been retried too many times (see global property SyncConstants.PROPERTY_NAME_MAX_RETRY_COUNT)
      */
-    MAX_RETRY_REACHED
+    MAX_RETRY_REACHED,
+    /**
+     * Send/receive of data has been initiated however not yet completed with fail or success.
+     */
+    PENDING    
 }

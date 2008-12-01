@@ -35,6 +35,12 @@
 		<property name="lastSync" type="java.util.Date"
 			column="last_sync" length="19" />
 
+		<property name="lastSyncState" column="last_sync_state">
+			<type name="org.openmrs.api.db.hibernate.usertype.GenericEnumUserType">
+				<param name="enumClassName">org.openmrs.synchronization.SyncTransmissionState</param>
+			</type>
+		</property>
+
 		<set name="serverClasses" lazy="true" inverse="true" cascade="all-delete-orphan">
 			<key>
 				<column name="server_id" />

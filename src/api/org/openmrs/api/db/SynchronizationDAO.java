@@ -15,10 +15,14 @@ package org.openmrs.api.db;
 
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.openmrs.api.APIException;
 import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.SyncStatistic;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.filter.SyncClass;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
@@ -306,6 +310,14 @@ public interface SynchronizationDAO {
      * @throws DAOException 
      */
     public void saveOrUpdate(Object object) throws DAOException;
+
+    /**
+     * retrieves statistics about sync servers
+     * 
+     * @throws DAOException 
+     */
+    public Map<RemoteServer,Set<SyncStatistic>> getSyncStatistics(Date fromDate, Date toDate) throws DAOException;
+    
     
     public boolean checkGuidsForClass(Class clazz) throws DAOException;
 }

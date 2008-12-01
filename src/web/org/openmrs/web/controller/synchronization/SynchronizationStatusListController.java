@@ -339,7 +339,7 @@ public class SynchronizationStatusListController extends SimpleFormController {
         state.put(SyncTransmissionState.MALFORMED_URL.toString(), msa.getMessage("SynchronizationStatus.transmission.badUrl"));
         state.put(SyncTransmissionState.NO_PARENT_DEFINED.toString(), msa.getMessage("SynchronizationStatus.transmission.noParentError"));
         state.put(SyncTransmissionState.RESPONSE_NOT_UNDERSTOOD.toString(), msa.getMessage("SynchronizationStatus.transmission.corruptResponseError"));
-        state.put(SyncTransmissionState.SEND_FAILED.toString(), msa.getMessage("SynchronizationStatus.transmission.sendError"));
+        state.put(SyncTransmissionState.FAILED.toString(), msa.getMessage("SynchronizationStatus.transmission.sendError"));
         state.put(SyncTransmissionState.TRANSMISSION_CREATION_FAILED.toString(), msa.getMessage("SynchronizationStatus.transmission.createError"));
         state.put(SyncTransmissionState.TRANSMISSION_NOT_UNDERSTOOD.toString(), msa.getMessage("SynchronizationStatus.transmission.corruptTxError"));
         state.put(SyncTransmissionState.OK_NOTHING_TO_DO.toString(), msa.getMessage("SynchronizationStatus.transmission.okNoSyncNeeded"));

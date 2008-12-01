@@ -2,33 +2,17 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
-	<%--
-	<openmrs:hasPrivilege privilege="View Synchronization Status">
-		<li <c:if test="<%= request.getRequestURI().contains("synchronizationStatus") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/synchronization/synchronizationStatus.list">
-				<spring:message code="Synchronization.status.title"/>
+	<openmrs:hasPrivilege privilege="Manage Synchronization">
+		<li <c:if test="<%= request.getRequestURI().contains("synchronizationStats") %>">class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/synchronization/synchronizationStats.list">
+				<spring:message code="Synchronization.stats.title"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="View Synchronization Status">
-		<li <c:if test="<%= request.getRequestURI().contains("synchronizationImport") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/synchronization/synchronizationImport.list">
-				<spring:message code="Synchronization.import.title"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
-	--%>
 	<openmrs:hasPrivilege privilege="Manage Synchronization">
 		<li <c:if test="<%= request.getRequestURI().contains("synchronizationConfig") %>">class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/synchronization/synchronizationConfig.list">
 				<spring:message code="Synchronization.config.title"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="View Synchronization Status">
-		<li <c:if test="<%= request.getRequestURI().contains("synchronizationHistory") %>">class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/synchronization/synchronizationHistory.list">
-				<spring:message code="Synchronization.history.title"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>

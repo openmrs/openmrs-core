@@ -111,6 +111,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                 	log.info("ImportRecord does not exist, so creating new one");
                     isUpdateNeeded = true;
                     importRecord = new SyncImportRecord(record);
+                    importRecord.setState(SyncRecordState.FAILED);
                     importRecord.setGuid(record.getOriginalGuid());
                     Context.getSynchronizationService().createSyncImportRecord(importRecord);
                 } else {
@@ -123,7 +124,8 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                         // committed, so let's remind by sending back this import record with already_committed
                         importRecord.setState(SyncRecordState.ALREADY_COMMITTED);
                     } else if (state.equals(SyncRecordState.FAILED)) {
-                		//retry next time 
+                		//mark as failed and retry next time
+                    	importRecord.setState(SyncRecordState.FAILED);
                 		importRecord.setRetryCount(importRecord.getRetryCount() + 1);
                 		isUpdateNeeded = true;
                     }else {
@@ -216,12 +218,16 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         } catch (SyncIngestException e) {
 	        e.printStackTrace();
         	//fill in sync import record and rethrow to abort tx
+	        importRecord.setState(SyncRecordState.FAILED);
+	        importRecord.setErrorMessage(e.getMessage());
         	e.setSyncImportRecord(importRecord);
         	throw (e);
         }
         catch (Exception e ) {
             e.printStackTrace();
             //fill in sync import record and rethrow to abort tx
+            importRecord.setState(SyncRecordState.FAILED);
+            importRecord.setErrorMessage(e.getMessage());
             SyncIngestException sie = new SyncIngestException(e,SyncConstants.ERROR_RECORD_UNEXPECTED,null,null,importRecord);
             throw(sie);
         } finally {

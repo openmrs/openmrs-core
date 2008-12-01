@@ -127,7 +127,7 @@ public class SyncTransmissionResponse implements IItem {
             	this.guid = SyncConstants.GUID_UNKNOWN;
                 this.syncSourceGuid = SyncConstants.GUID_UNKNOWN;
                 this.syncTargetGuid = SyncConstants.GUID_UNKNOWN;
-            	this.state = SyncTransmissionState.SEND_FAILED;
+            	this.state = SyncTransmissionState.FAILED;
             	if ( connResponse.getState().equals(ServerConnectionState.MALFORMED_URL)) this.state = SyncTransmissionState.MALFORMED_URL;
             	if ( connResponse.getState().equals(ServerConnectionState.CERTIFICATE_FAILED)) this.state = SyncTransmissionState.CERTIFICATE_FAILED;
     		}
@@ -137,7 +137,7 @@ public class SyncTransmissionResponse implements IItem {
         	this.guid = SyncConstants.GUID_UNKNOWN;
             this.syncSourceGuid = SyncConstants.GUID_UNKNOWN;
             this.syncTargetGuid = SyncConstants.GUID_UNKNOWN;
-        	this.state = SyncTransmissionState.SEND_FAILED;
+        	this.state = SyncTransmissionState.FAILED;
     	}
     }
 

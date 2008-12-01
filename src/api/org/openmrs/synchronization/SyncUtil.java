@@ -147,6 +147,8 @@ public class SyncUtil {
 		if ( propVal !=  null ) {
 			SyncUtil.setProperty(o, propName, propVal);
 			log.debug("Successfully called set" + SyncUtil.propCase(propName) + "(" + propVal + ")" );
+		} else {
+			throw new SyncException("Property " + SyncUtil.propCase(propName) + " not found on object type " + o.getClass().getName());
 		}
 	}
 

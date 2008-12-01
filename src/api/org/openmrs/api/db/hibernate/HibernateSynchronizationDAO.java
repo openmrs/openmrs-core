@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -27,20 +28,18 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.metadata.ClassMetadata;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -54,6 +53,7 @@ import org.openmrs.synchronization.filter.SyncClass;
 import org.openmrs.synchronization.ingest.SyncImportRecord;
 import org.openmrs.synchronization.server.RemoteServer;
 import org.openmrs.synchronization.server.RemoteServerType;
+import org.openmrs.synchronization.SyncStatistic;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -754,6 +754,51 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
 		sessionFactory.getCurrentSession().saveOrUpdate(object);
 	}
 	
+	
+
+	/**
+	 * @see org.openmrs.api.db.SynchronizationDAO#getSyncStatistics(java.util.Date, java.util.Date)
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<RemoteServer,Set<SyncStatistic>> getSyncStatistics(Date fromDate, Date toDate) throws DAOException {
+				
+		
+		//first get the list of remote servers and make map out of it
+		List<RemoteServer> servers = this.getRemoteServers();
+		
+		Map<RemoteServer,Set<SyncStatistic>> map = new HashMap<RemoteServer,Set<SyncStatistic>>();
+
+		String hqlChild = "select rs.nickname, ssr.state, count(*) " +
+		"from RemoteServer rs join rs.serverRecords as ssr where rs.serverId = :server_id group by rs.serverId,rs.nickname, ssr.state";
+		String hqlParent = "select count(*) from SyncRecord where originalGuid = guid and state <> '" + SyncRecordState.COMMITTED.toString() + "'";
+		
+		//for each server configured, get its stats
+		for(RemoteServer r : servers) {
+			if (r.getServerType() == RemoteServerType.CHILD) {
+				Query q = sessionFactory.getCurrentSession().createQuery(hqlChild);
+				q.setParameter("server_id", r.getServerId());
+				List<Object[]> rows = q.list();
+				Set<SyncStatistic> props = new HashSet<SyncStatistic>();
+				if (rows.size()>0) {
+					SyncStatistic stat = new SyncStatistic(SyncStatistic.Type.SYNC_RECORD_COUNT_BY_STATE,rows.get(0)[1].toString(),rows.get(0)[2]); //state/count
+					props.add(stat); 
+				}
+				map.put(r,props);
+			}
+			else {
+				//for parent servers, get the number of records in sync journal
+				Query q = sessionFactory.getCurrentSession().createQuery(hqlParent);
+				Long count = (Long)q.uniqueResult();
+				Set<SyncStatistic> props = new HashSet<SyncStatistic>();
+				if (count != null) {
+					props.add(new SyncStatistic(SyncStatistic.Type.SYNC_RECORD_COUNT_BY_STATE,"AWAITING",count)); //count
+				}
+				map.put(r,props);
+			}
+		}
+						
+		return map;
+	}	
 	
 	public boolean checkGuidsForClass(Class clazz) {
 		

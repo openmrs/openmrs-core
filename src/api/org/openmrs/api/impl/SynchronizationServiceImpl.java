@@ -16,8 +16,11 @@ package org.openmrs.api.impl;
 import java.util.ArrayList;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -29,6 +32,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.SynchronizationDAO;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.SyncStatistic;
 import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.filter.SyncClass;
@@ -481,7 +485,50 @@ public class SynchronizationServiceImpl implements SynchronizationService {
     public void saveOrUpdate(Synchronizable object)  throws APIException {
     	getSynchronizationDAO().saveOrUpdate(object);
     }
-    
+
+    /**
+     * Gets stats for the server:
+     * 1. Sync Records count by server by state
+     * 2. If any sync records are in 'pending'/failed state and it has been > 24hrs, add statistic for it
+     * 3. count of 'pending' sync records (i.e. the ones that are not in complete or error state
+     * 
+     * @param fromDate start date
+     * @param toDate end date
+     * @return
+     * @throws DAOException
+     */
+    public Map<RemoteServer,Set<SyncStatistic>> getSyncStatistics(Date fromDate, Date toDate) throws DAOException {
+    	
+    	Map<RemoteServer,Set<SyncStatistic>> stats = getSynchronizationDAO().getSyncStatistics(fromDate, toDate);
+    	
+    	//check out the info for the servers: if any records are pending and are older than 1 day, add flag to stats
+    	for(Map.Entry<RemoteServer,Set<SyncStatistic>> entry1 : stats.entrySet()) {
+    		Long pendingCount = 0L;
+    		for(SyncStatistic entry2 : entry1.getValue()) {
+    			if (entry2.getType() == SyncStatistic.Type.SYNC_RECORD_COUNT_BY_STATE) {
+    				if (entry2.getName() != SyncRecordState.ALREADY_COMMITTED.toString() 
+    						&& entry2.getName() != SyncRecordState.COMMITTED.toString()
+    						&& entry2.getName() != SyncRecordState.NOT_SUPPOSED_TO_SYNC.toString()
+    						) {
+    					pendingCount = pendingCount + ((entry2.getValue() == null) ? 0L : Long.parseLong(entry2.getValue().toString()));
+    				}
+    			}
+    		}
+    		
+    		//add pending count
+    		entry1.getValue().add(new SyncStatistic(SyncStatistic.Type.SYNC_RECORDS_PENDING_COUNT,SyncStatistic.Type.SYNC_RECORDS_PENDING_COUNT.toString(),pendingCount)); //careful, manipulating live collection
+    		
+    		//if some 'stale' records found see if it has been 24hrs since last sync
+    		if (pendingCount > 0 && entry1.getKey().getLastSync() != null) {
+    			Long lastSyncPlus24hrs = entry1.getKey().getLastSync().getTime() + 24*60*60*1000;
+    			if (lastSyncPlus24hrs < new Date().getTime()) {
+    				entry1.getValue().add(new SyncStatistic(SyncStatistic.Type.SYNC_RECORDS_OLDER_THAN_24HRS,SyncStatistic.Type.SYNC_RECORDS_OLDER_THAN_24HRS.toString(),true)); //careful, manipulating live collection
+    			}
+    		}
+    	}
+    		
+    	return stats;
+    }
     public boolean checkGuidsForClass(Class clazz) throws APIException {
     	return getSynchronizationDAO().checkGuidsForClass(clazz);
     }
