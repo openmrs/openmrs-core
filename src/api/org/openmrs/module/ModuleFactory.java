@@ -469,7 +469,7 @@ public class ModuleFactory {
 					        + ".started", "true",
 					        getGlobalPropertyStartedDescription(module
 					                .getModuleId()));
-					as.setGlobalProperty(gp);
+					as.saveGlobalProperty(gp);
 				}
 				catch (Exception e) {
 					// pass over errors because this doesn't really concern startup
@@ -568,37 +568,33 @@ public class ModuleFactory {
 	}
 
 	/**
-	 * Execute the given sql diff for the given module
+	 * Execute the given sql diff section for the given module
 	 * 
-	 * @param module
-	 * @param version
-	 * @param sql
+	 * @param module the module being executed on
+	 * @param version the version of this sql diff
+	 * @param sql the actual sql statements to run (separated by semi colons)
 	 */
 	private static void runDiff(Module module, String version, String sql) {
 		AdministrationService as = Context.getAdministrationService();
-
-		String key = module.getModuleId() + ".database_version";
-		String select = "select property_value from global_property where property = '"
-		        + key + "'";
 		
-		List<List<Object>> results = as.executeSQL(select, true);
-
+		String key = module.getModuleId() + ".database_version";
+		GlobalProperty gp = as.getGlobalPropertyObject(key);
+		
 		boolean executeSQL = false;
-
+		
 		// check given version against current version
-		if (results.size() > 0) {
-			for (List<Object> row : results) {
-				String column = (String) row.get(0);
-				log.debug("version:column " + version + ":" + column);
-				log.debug("compare: "
-				        + ModuleUtil.compareVersion(version, column));
-				if (ModuleUtil.compareVersion(version, column) > 0)
-					executeSQL = true;
+		if (gp != null && StringUtils.hasLength(gp.getPropertyValue())) {
+			String currentDbVersion = gp.getPropertyValue();
+			if (log.isDebugEnabled()) {
+				log.debug("version:column " + version + ":" + currentDbVersion);
+				log.debug("compare: " + ModuleUtil.compareVersion(version, currentDbVersion));
 			}
+			if (ModuleUtil.compareVersion(version, currentDbVersion) > 0)
+				executeSQL = true;
 		} else {
 			executeSQL = true;
 		}
-
+		
 		// version is greater than the currently installed version. execute this
 		// update.
 		if (executeSQL) {
@@ -609,28 +605,29 @@ public class ModuleFactory {
 					as.executeSQL(sqlStatement, false);
 			}
 			
+			// save the global property
 			try {
 				Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
-
-				String description = "DO NOT MODIFY.  Current database version number for the "
-					+ module.getModuleId() + " module.";
 				
-				GlobalProperty gp = as.getGlobalPropertyObject(key);
+				String description = "DO NOT MODIFY.  Current database version number for the " + module.getModuleId()
+				        + " module.";
 				
-				System.out.println("Global property key is " + key);
-				
-				if(gp==null) {
-					gp = new GlobalProperty(key,version,description);
-					System.out.println("Global property not found!!");
-				} else {
+				if (gp == null) {
+					log.info("Global property " + key + " was not found. Creating one now.");
+					gp = new GlobalProperty(key, version, description);
+					as.saveGlobalProperty(gp);
+				} else if (gp.getPropertyValue().equals(version) == false) {
+					log.info("Updating global property " + key + " to version: " + version);
 					gp.setDescription(description);
 					gp.setPropertyValue(version);
+					as.saveGlobalProperty(gp);
+				} else {
+					log.error("Should not be here. GP property valueand sqldiff version should not be equal");
 				}
 				
-				if(gp != null && ! (gp.getPropertyValue().equals(version)))
-					as.saveGlobalProperty(gp);
-			} finally {
-				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);			
+			}
+			finally {
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 			}
 			
 		}

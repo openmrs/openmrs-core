@@ -453,6 +453,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param propertyName property key to look for
 	 * @return the global property that matches the given <code>propertyName</code>
 	 */
+	@Transactional(readOnly=true)
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
 	
 	/**
