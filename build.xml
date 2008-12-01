@@ -360,8 +360,6 @@
 			<lib file="${dist.dir}/${openmrs.api.name}" />
 			<lib src="${libs-zipped-temp}" />
 		</war>
-		<!--<copy file="${dist.dir}/${webapp.name}.war" tofile="${dist.dir}/${webapp.name}-parent.war"/>-->
-		
 	</target>
 	
 	<target name="package-web-src" depends="compile-web" description="Create jar file containing web java src">
@@ -436,7 +434,7 @@
 		<antcall target="install" />
 		<antcall target="growl" />
 	</target>
-		
+	
 	<target name="growl">
 		<exec executable="/usr/local/bin/growlnotify" os="Mac OS X" logError="true">
 			<arg line="-m 'OpenMRS is ready' Build completed -a Eclipse" />

@@ -146,6 +146,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @should put generated concept id onto returned concept
 	 * @should create new concept in database 
 	 * @should update concept already existing in database
+	 * @should generate id for new concept if none is specified
+	 * @should keep id for new concept if one is specified 
 	 */
 	@Authorized({OpenmrsConstants.PRIV_MANAGE_CONCEPTS})
 	public Concept saveConcept(Concept concept) throws APIException;
@@ -254,7 +256,7 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly=true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Drug getDrug(Integer drugId) throws APIException;
-
+	
 	/**
 	 * Get the ConceptNumeric with the given id
 	 * 
@@ -950,9 +952,9 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 */
 	@Transactional(readOnly=true)
-	@Authorized({"View Concepts"})
-	public List<Concept> getConceptsWithDrugsInFormulary();
-	
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public List<Concept> getConceptsWithDrugsInFormulary() throws APIException;
+
 	/**
 	 * Iterates over the words in names and synonyms (for each locale) and updates the concept_word table
 	 * @param Concept concept
@@ -979,17 +981,36 @@ public interface ConceptService extends OpenmrsService {
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 
 	/**
-     * Auto generated method comment
+     * Gets the {@link ConceptNameTag} with the given tag
      * 
      * @param tag
      * @return
      */
 	@Transactional(readOnly=true)
-	@Authorized({OpenmrsConstants.PRIV_MANAGE_CONCEPTS})
+	@Authorized({OpenmrsConstants.PRIV_VIEW_CONCEPTS})
     public ConceptNameTag getConceptNameTagByName(String tag);
 	
 	@Transactional(readOnly=true)
 	public ConceptNameTag getConceptNameTagByGuid(String guid);
+
+	/**
+     * Gets the {@link ConceptNameTag} with the given database primary key
+     * 
+     * @param id
+     * @return
+     */
+	@Transactional(readOnly=true)
+	@Authorized({OpenmrsConstants.PRIV_VIEW_CONCEPTS})
+    public ConceptNameTag getConceptNameTag(Integer id);
+	
+	/**
+     * Gets all {@link ConceptNameTag}s, including voided ones
+     *  
+     * @return
+     */
+	@Transactional(readOnly=true)
+	@Authorized({OpenmrsConstants.PRIV_VIEW_CONCEPTS})
+    public List<ConceptNameTag> getAllConceptNameTags();
 
 	/**
 	 * Gets the set of unique Locales used by existing concept names.

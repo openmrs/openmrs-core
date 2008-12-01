@@ -322,7 +322,7 @@ public class SyncUtilTransmission {
                                 for ( SyncImportRecord importRecord : response.getSyncImportRecords() ) {
                                     Context.getSynchronizationIngestService().processSyncImportRecord(importRecord, server);
                                     if (importRecord.getState() != SyncRecordState.COMMITTED && 
-                                    		importRecord.getState() != SyncRecordState.ALREADY_COMMITTED ||
+                                    		importRecord.getState() != SyncRecordState.ALREADY_COMMITTED &&
                                     		importRecord.getState() != SyncRecordState.NOT_SUPPOSED_TO_SYNC) {
                                     	allOK = false;
                                     }

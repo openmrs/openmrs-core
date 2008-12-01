@@ -2,6 +2,7 @@
 <dataset>
   <concept concept_id="1" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
   <concept concept_id="2" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
+  <concept_class concept_class_id="5" name="Finding" description="Practitioner observation/finding" creator="1" date_created="2004-03-02 00:00:00.0" retired="false"/>
   <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
   <concept_datatype concept_datatype_id="3" name="Text" hl7_abbreviation="ST" description="Structured text" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
   <concept_description concept_description_id="1" concept_id="1" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0"/>

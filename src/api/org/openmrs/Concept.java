@@ -419,8 +419,8 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 
 	/**
 	 * Sets the preferred name for a locale. This sets tags on the concept name
-	 * to indicate that it is preferred for the language and country. Also,  
-	 * the name is added to the concept.
+	 * to indicate that it is preferred for the language and country. Also, the
+	 * name is added to this Concept.
 	 * 
 	 * If the country is specified in the locale, then the language is considered
 	 * to be only implied as preferred &mdash; it will only get set if there is
@@ -434,11 +434,16 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 	 * @param preferredName name which is preferred in the locale
 	 */
 	public void setPreferredName(Locale locale, ConceptName preferredName) {
+		ConceptName existingName = getNameKnownAs(preferredName.getName(), locale);
+		if (existingName != null) {
+			preferredName = existingName;
+		}
+		
 		ConceptNameTag preferredLanguage = ConceptNameTag.preferredLanguageTagFor(locale);
 		ConceptNameTag preferredCountry = ConceptNameTag.preferredCountryTagFor(locale);
 		
 		ConceptName currentPreferredNameInLanguage = getPreferredNameInLanguage(locale.getLanguage());
- 
+
 		if (preferredCountry != null) {
 			if (currentPreferredNameInLanguage == null) {
 				preferredName.addTag(preferredLanguage);
@@ -456,8 +461,32 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 			preferredName.addTag(preferredLanguage);
 		}
 
-		addName(preferredName);
+		if (!addName(preferredName)) {
+			// name must already exist in concept
+		}
+		
 	}
+
+	/**
+	 * Gets the first concept-name in a locale whose name
+	 * matches the given term.
+     * 
+     * @param term name of the concept-name
+     * @param inLocale
+     * @return matching concept-name, or null if none found
+     */
+    public ConceptName getNameKnownAs(String term, Locale inLocale) {
+    	ConceptName foundName = null;
+    	for (ConceptName possibleName : names) {
+    		if (possibleName.getName().equals(term) &&
+    				possibleName.getLocale().equals(inLocale))
+    		{
+    			foundName = possibleName;
+    			break;
+    		}
+    	}
+	    return foundName;
+    }
 
 	/**
 	 * Gets the explicitly preferred name for a country.
@@ -916,6 +945,10 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 	 * @param shortName name which is preferred in the locale
 	 */
 	public void setShortName(Locale locale, ConceptName shortName) {
+		ConceptName existingName = getNameKnownAs(shortName.getName(), locale);
+		if (existingName != null) {
+			shortName = existingName;
+		}
 		ConceptNameTag shortLanguage = ConceptNameTag.shortLanguageTagFor(locale);
 		ConceptNameTag shortCountry = ConceptNameTag.shortCountryTagFor(locale);
 		
@@ -1067,16 +1100,18 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 	 * 
 	 * @param conceptName
 	 */
-	public void addName(ConceptName conceptName) {
+	public boolean addName(ConceptName conceptName) {
+		boolean nameListWasModified = false;
 		conceptName.setConcept(this);
 		if (names == null)
 			names = new HashSet<ConceptName>();
 		if (!names.contains(conceptName) && conceptName != null) {
-			names.add(conceptName);
+			nameListWasModified = names.add(conceptName);
 			if (compatibleCache != null) {
 				compatibleCache.clear(); // clear the locale cache, forcing it to be rebuilt
 			}
-		}
+		} 
+		return nameListWasModified;
 	}
 
 	/**
@@ -1111,7 +1146,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 	 * @return ConceptDescription attributed to the Concept in the given locale
 	 */
 	public ConceptDescription getDescription(Locale locale) {
-		return getDescription(locale, false);
+		return getDescription(locale, true);
 	}
 
 	/**
@@ -1147,14 +1182,14 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 			// no description with the given locale was found.
 			// return null if exact match desired
 			if (exact) {
-				log.warn("No concept name found for concept id " + conceptId
+				log.warn("No concept description found for concept id " + conceptId
 				        + " for locale " + desiredLocale.toString());
 			} else {
 				// returning default description locale ("en") if exact match
 				// not desired
 				if (defaultDescription == null)
 					log
-					        .warn("No concept name found for default locale for concept id "
+					        .warn("No default concept description found for default locale for concept id "
 					                + conceptId);
 				else {
 					foundDescription = defaultDescription;
