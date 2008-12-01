@@ -17,7 +17,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -207,9 +206,7 @@ public class HibernateAdministrationDAO implements
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
 		GlobalProperty gp = (GlobalProperty)sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
 		
-		// if no gp exists, return a null value
-		if (gp == null)
-			return null;
+		// if no gp exists, hibernate returns a null value
 		
 		return gp;
 	}
@@ -438,7 +435,7 @@ public class HibernateAdministrationDAO implements
 				}
 			}
 		}
-		catch (SQLException e) {
+		catch (Exception e) {
 			log.error("Error while running sql: " + sql, e);
 			throw new DAOException("Error while running sql: " + sql + " . Message: " + e.getMessage(), e); 
 		}
