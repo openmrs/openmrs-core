@@ -243,7 +243,6 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
     public CohortDefinition getCohortDefinition(String key) { 
     	try { 
     		
-    		Cohort cohort;
     		String [] keyValues = key.split(":");
     		Integer id = Integer.parseInt((keyValues[0]!=null)?keyValues[0]:"0");
     		String className = (keyValues[1]!=null)?keyValues[1]:"";

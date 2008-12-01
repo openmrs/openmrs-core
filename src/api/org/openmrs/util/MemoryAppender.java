@@ -54,7 +54,7 @@ public class MemoryAppender extends AppenderSkeleton {
     public List<String> getLogLines() {
     	List<String> logLines = new ArrayList<String>(buffer.size());
 		Layout layout = this.getLayout();
-		for (Iterator iterBuffer = buffer.iterator(); iterBuffer.hasNext(); ) {
+		for (Iterator<?> iterBuffer = buffer.iterator(); iterBuffer.hasNext(); ) {
 			LoggingEvent loggingEvent = (LoggingEvent) iterBuffer.next();
 			logLines.add(layout.format(loggingEvent));
 		}    	

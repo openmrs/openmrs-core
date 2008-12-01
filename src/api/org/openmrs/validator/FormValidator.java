@@ -36,7 +36,8 @@ public class FormValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	public boolean supports(Class c) {
+	@SuppressWarnings("unchecked")
+    public boolean supports(Class c) {
 		return c.equals(Form.class);
 	}
 

@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.EncounterType;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -69,8 +68,7 @@ public class EncounterTypeListController extends SimpleFormController {
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
 			String[] encounterTypeList = request.getParameterValues("encounterTypeId");
-			AdministrationService as = Context.getAdministrationService();
-			EncounterService os = Context.getEncounterService();
+			EncounterService es = Context.getEncounterService();
 			
 			String success = "";
 			String error = "";
@@ -81,7 +79,7 @@ public class EncounterTypeListController extends SimpleFormController {
 			for (String p : encounterTypeList) {
 				//TODO convenience method deleteEncounterType(Integer) ??
 				try {
-					as.deleteEncounterType(os.getEncounterType(Integer.valueOf(p)));
+					es.purgeEncounterType(es.getEncounterType(Integer.valueOf(p)));
 					if (!success.equals("")) success += "<br/>";
 					success += p + " " + deleted;
 				}
@@ -116,8 +114,8 @@ public class EncounterTypeListController extends SimpleFormController {
 		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
-			EncounterService os = Context.getEncounterService();
-	    	encounterTypeList = os.getEncounterTypes();
+			EncounterService es = Context.getEncounterService();
+	    	encounterTypeList = es.getAllEncounterTypes();
 		}
     	
         return encounterTypeList;

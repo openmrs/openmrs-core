@@ -96,7 +96,6 @@ import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.propertyeditor.FormEditor;
 import org.openmrs.propertyeditor.LocationEditor;
-import org.openmrs.propertyeditor.LogicCriteriaEditor;
 import org.openmrs.propertyeditor.PersonAttributeTypeEditor;
 import org.openmrs.propertyeditor.ProgramEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
@@ -637,7 +636,7 @@ public class OpenmrsUtil {
 			}
 			if (c != null) {
 				if (isSet) {
-					List<Concept> inSet = cs.getConceptsInSet(c);
+					List<Concept> inSet = cs.getConceptsByConceptSet(c);
 					ret.addAll(inSet);
 				} else {
 					ret.add(c);
@@ -740,7 +739,7 @@ public class OpenmrsUtil {
 			}
 			if (c != null) {
 				if (isSet) {
-					List<Concept> inSet = cs.getConceptsInSet(c);
+					List<Concept> inSet = cs.getConceptsByConceptSet(c);
 					ret.addAll(inSet);
 				} else {
 					ret.add(c);
@@ -1138,7 +1137,7 @@ public class OpenmrsUtil {
             		ed.setAsText(string);
             		return ed.getValue();
     			} catch (NumberFormatException ex) {
-    				return Context.getEncounterService().getLocationByName(string);
+    				return Context.getLocationService().getLocation(string);
     			}
         	} else if (Concept.class.equals(clazz)) {
         		ConceptEditor ed = new ConceptEditor();

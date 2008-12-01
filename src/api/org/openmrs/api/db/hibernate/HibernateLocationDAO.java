@@ -56,7 +56,8 @@ public class HibernateLocationDAO implements LocationDAO {
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocation(java.lang.String)
 	 */
-	public Location getLocation(String name) {
+	@SuppressWarnings("unchecked")
+    public Location getLocation(String name) {
     	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class)
     	.add(Expression.eq("name", name));
     	

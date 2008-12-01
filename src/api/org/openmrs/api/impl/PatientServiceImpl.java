@@ -250,19 +250,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * checks if the given PatientIdentifer is in use by any other patient
-	 * 
-	 * @param pi PatientIdentifier
-	 * @return true/false whether or not this PatientIdentifier is in use
-	 * @deprecated use {@link #getPatientsByIdentifier(String, boolean)}yIdentifier(String) instead
-	 */
-	private Patient identifierInUse(PatientIdentifier pi) {
-		return identifierInUse(pi.getIdentifier(),
-		                       pi.getIdentifierType(),
-		                       pi.getPatient());
-	}
-	
-	/**
 	 * @see org.openmrs.api.PatientService#identifierInUse(java.lang.String,
 	 *      org.openmrs.PatientIdentifierType, org.openmrs.Patient)
 	 * @deprecated use getPatientByIdentifier(String) instead
@@ -565,7 +552,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public PatientIdentifierType getPatientIdentifierType(String name)
 	        throws APIException {
 		return getPatientIdentifierTypeByName(name);
-			}
+	}
 
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifierTypeByName(java.lang.String)

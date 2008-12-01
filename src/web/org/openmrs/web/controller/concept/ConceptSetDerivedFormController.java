@@ -50,10 +50,10 @@ public class ConceptSetDerivedFormController extends SimpleFormController {
 			if (s != null && !s.equals("")) {
 				Concept c = Context.getConceptService().getConcept(Integer.valueOf(s));
 				if (c != null)
-					Context.getAdministrationService().updateConceptSetDerived(c);
+					Context.getConceptService().updateConceptSetDerived(c);
 			}
 			else {
-				Context.getAdministrationService().updateConceptSetDerived();
+				Context.getConceptService().updateConceptSetDerived();
 			}
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptSetDerived.updated");

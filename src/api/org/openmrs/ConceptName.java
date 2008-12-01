@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;

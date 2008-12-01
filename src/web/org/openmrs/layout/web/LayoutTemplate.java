@@ -39,7 +39,7 @@ public abstract class LayoutTemplate {
 	public abstract String getNonLayoutToken();
 	
 	private String replaceTokens(String line) {
-		LayoutSupport as = getLayoutSupportInstance();
+		LayoutSupport<?> as = getLayoutSupportInstance();
 		List<String> specialTokens = as.getSpecialTokens();
 		
 		for ( String token : specialTokens ) {
@@ -281,6 +281,6 @@ public abstract class LayoutTemplate {
 		this.sizeMappings = sizeMappings;
 	}
 	
-	public abstract LayoutSupport getLayoutSupportInstance();
+	public abstract LayoutSupport<?> getLayoutSupportInstance();
 	
 }

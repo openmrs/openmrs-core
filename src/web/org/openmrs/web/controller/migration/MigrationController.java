@@ -43,7 +43,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
-import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
@@ -68,10 +68,10 @@ public class MigrationController implements Controller {
 				message = "Paste some xml";
 			}
 			
-			EncounterService es = Context.getEncounterService();
-			List<Location> locations = es.getLocations();
+			LocationService ls = Context.getLocationService();
+			List<Location> locations = ls.getAllLocations();
 			UserService us = Context.getUserService();
-			List<User> users = us.getUsers();
+			List<User> users = us.getAllUsers();
 			
 			
 			myModel.put("message", message);
@@ -145,15 +145,15 @@ public class MigrationController implements Controller {
 			HL7InQueue hl7InQueue = new HL7InQueue();
 			hl7InQueue.setHL7Data(oneMessage);
 			HL7Service hs = Context.getHL7Service();
-			if (hs.getHL7Sources().isEmpty()) {
+			if (hs.getAllHL7Sources().isEmpty()) {
 				HL7Source hl7Source = new HL7Source();
 				hl7Source.setName("MigrationTestTool");
 				hl7Source.setDescription("Testing migrating data, from MigrationController.");
-				hs.createHL7Source(hl7Source);
+				hs.saveHL7Source(hl7Source);
 			}
 			hl7InQueue.setHL7Source(Context.getHL7Service().getHL7Source(1));
 			log.debug("hl7InQueue.hl7Data: " + hl7InQueue.getHL7Data());
-			Context.getHL7Service().createHL7InQueue(hl7InQueue);
+			Context.getHL7Service().saveHL7InQueue(hl7InQueue);
 		}
 
 		return new ModelAndView(new RedirectView("migration.form"));
@@ -226,7 +226,7 @@ public class MigrationController implements Controller {
 	 * @return The number of regimens added
 	 */
 	public int importRegimens(String csv) throws IOException, ParseException {
-		PatientIdentifierType pihIdentifierType = Context.getPatientService().getPatientIdentifierType("HIVEMR-V1");
+		PatientIdentifierType pihIdentifierType = Context.getPatientService().getPatientIdentifierTypeByName("HIVEMR-V1");
 		OrderType orderType = Context.getOrderService().getOrderType(1);
 		if (!orderType.getName().equals("Drug Order")) {
 			throw new RuntimeException("ERROR! ASSUMED THAT ORDER TYPE 1 IS DRUG ORDER, BUT IT'S NOT");
@@ -237,7 +237,7 @@ public class MigrationController implements Controller {
 		for (String s = r.readLine(); s != null; s = r.readLine()) {
 			String[] st = s.split(",");
 			Integer patientId = Integer.valueOf(st[0]);
-			String drugName = st[1]; // ignored for now
+			//String drugName = st[1]; // ignored for now
 			String formulationName = st[2];
 			Date startDate = parseDate(st[3]);
 			Date autoExpireDate = parseDate(st[4]);

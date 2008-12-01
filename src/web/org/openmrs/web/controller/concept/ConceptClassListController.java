@@ -115,7 +115,7 @@ public class ConceptClassListController extends SimpleFormController {
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
-	    	conceptClassList = cs.getConceptClasses();
+	    	conceptClassList = cs.getAllConceptClasses();
 		}
     	
         return conceptClassList;

@@ -65,7 +65,7 @@ public class EncounterTypeFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			EncounterType encounterType = (EncounterType)obj;
-			Context.getAdministrationService().updateEncounterType(encounterType);
+			Context.getEncounterService().saveEncounterType(encounterType);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.saved");
 		}

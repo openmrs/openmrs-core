@@ -35,30 +35,31 @@ import org.openmrs.util.OpenmrsUtil;
  * Extension point tag. Loops over all extensions defined for point "pointId".
  * Makes the variable "extension"
  * 
- * @see org.openmrs.module.Extension available in the loop.
- * 
  * Usage:
  * 
  * <pre>
  *  &lt;openmrs:extensionPoint pointId=&quot;org.openmrs.cohortbuilder.links&quot; type=&quot;html&quot; varStatus=&quot;stat&quot;&gt;
  *     &lt;c:if test=&quot;${stat.first}&quot;&gt;
  *       &lt;br/&gt;
- *  &lt;b&gt;Module Links:&lt;/b&gt;
- * <ul>
- *  &lt;/c:if&gt;
- *     &lt;openmrs:hasPrivilege privilege=&quot;${extension.requiredPrivilege}&quot;&gt;
- *         &lt;form method=&quot;post&quot; action=&quot;${pageContext.request.contextPath}/${extension.url}&quot;&gt;
- *            &lt;input type=&quot;hidden&quot; name=&quot;patientIds&quot; value=&quot;&quot;/&gt;
- * <li>
- *               &lt;a href=&quot;#&quot; onClick=&quot;javascript:submitLink(this)&quot;&gt;&lt;spring:message code=&quot;${extension.label}&quot;/&gt;&lt;/a&gt;
- * </li>
- *         &lt;/form&gt;
- *     &lt;/openmrs:hasPrivilege&gt;
- *     &lt;c:if test=&quot;${stat.last}&quot;&gt;
- * </ul>
+ *       &lt;b&gt;Module Links:&lt;/b&gt;
  *     &lt;/c:if&gt;
+ *  &lt;ul>
+ *    &lt;openmrs:hasPrivilege privilege=&quot;${extension.requiredPrivilege}&quot;&gt;
+ *        &lt;form method=&quot;post&quot; action=&quot;${pageContext.request.contextPath}/${extension.url}&quot;&gt;
+ *           &lt;input type=&quot;hidden&quot; name=&quot;patientIds&quot; value=&quot;&quot;/&gt;
+ *           &lt;li>
+ *              &lt;a href=&quot;#&quot; onClick=&quot;javascript:submitLink(this)&quot;&gt;&lt;spring:message code=&quot;${extension.label}&quot;/&gt;&lt;/a&gt;
+ *           &lt;/li>
+ *        &lt;/form&gt;
+ *    &lt;/openmrs:hasPrivilege&gt;
+ *    &lt;c:if test=&quot;${stat.last}&quot;&gt;
+ *      &lt;/ul>
+ *    &lt;/c:if&gt;
  *  &lt;/openmrs:extensionPoint&gt;
  * </pre>
+ * 
+ * @see org.openmrs.module.Extension available in the loop.
+ * 
  */
 public class ExtensionPointTag extends TagSupport implements BodyTag {
 
@@ -125,7 +126,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 			log.debug("Found " + extensionList.size() + " extensions");
 			if (requiredClass != null) {
 				try {
-					Class clazz = Class.forName(requiredClass);
+					Class<?> clazz = Class.forName(requiredClass);
 					for (Extension ext : extensionList) {
 						if (!clazz.isAssignableFrom(ext.getClass())) {
 							throw new ClassCastException("Extensions at this point (" + pointId + ") are " +

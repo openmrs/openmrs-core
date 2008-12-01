@@ -38,7 +38,7 @@ public class ForEachAlertTag extends LoopTagSupport  {
 
 	private Boolean includeExpired = false;
 
-	private Iterator alerts;
+	private Iterator<?> alerts;
 
 	public void prepare() throws JspTagException {
 
@@ -47,7 +47,7 @@ public class ForEachAlertTag extends LoopTagSupport  {
 		try {
 			AlertService as = Context.getAlertService();
 			if (user == null) {
-				List<Alert> alertList = as.getAlerts();
+				List<Alert> alertList = as.getAlertsByUser(null);
 				log.debug("alertList.size: " + alertList.size());
 				alerts = alertList.iterator();
 			}

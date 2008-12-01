@@ -18,9 +18,8 @@ import java.beans.PropertyEditorSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
-import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.springframework.util.StringUtils;
 
 public class LocationEditor extends PropertyEditorSupport {
@@ -30,10 +29,10 @@ public class LocationEditor extends PropertyEditorSupport {
 	public LocationEditor() {	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		EncounterService es = Context.getEncounterService(); 
+		LocationService ls = Context.getLocationService(); 
 		if (StringUtils.hasText(text)) {
 			try {
-				setValue(es.getLocation(Integer.valueOf(text)));
+				setValue(ls.getLocation(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
 				log.error("Error setting text: " + text, ex);

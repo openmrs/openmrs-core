@@ -75,7 +75,7 @@ public class ConceptDrugFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			Drug drug = (Drug)obj;
 			drug.setConcept(Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
-			Context.getConceptService().updateDrug(drug);
+			Context.getConceptService().saveDrug(drug);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.saved");
 		}
@@ -108,7 +108,10 @@ public class ConceptDrugFormController extends SimpleFormController {
         return drug;
     }
     
-    protected Map referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
+    /**
+     * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+     */
+    protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
 		
 		Drug drug = (Drug)obj;
 		
