@@ -1815,14 +1815,14 @@ BEGIN
 
 		select 'Dropping concept_name_id from obs table (this may fail, which is ok)' AS '*** Step: ***', new_db_version from dual;
 
-		ALTER TABLE `obs` DROP COLUMN `concept_name_id`;
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 		
 		ALTER TABLE `obs` DROP FOREIGN KEY `concept_name_id`;
-
+		
+		ALTER TABLE `obs` DROP COLUMN `concept_name_id`;
+		
 		select '***' AS '...done' from dual;
-
-		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
-
+		
 	END IF;
 END;
 //
