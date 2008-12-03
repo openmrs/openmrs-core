@@ -168,6 +168,31 @@ public class MLMObject {
 		     w.append("\t\t\t\tif(value != null){\n");
 		     w.append("\t\t\t\t\toutStr += value;\n");
 		     w.append("\t\t\t\t}\n");
+		     
+		     
+		     w.append("\t\t\t\t// It must be a result value or date\n");
+			 w.append("\t\t\t\telse if(variable.endsWith(\"_value\"))\n");
+			 w.append("\t\t\t\t{\n");
+			 w.append("\t\t\t\t\tvariable = inStr.substring(startindex, endindex-6); // -6 for _value\n");
+			 w.append("\t\t\t\t\tvalue = resultLookup.get(variable).toString();\n");
+			 w.append("\t\t\t\t}\n");
+			 w.append("\t\t\t\telse if(variable.endsWith(\"_date\"))\n");
+			 w.append("\t\t\t\t{\n");
+			 w.append("\t\t\t\t\tvariable = inStr.substring(startindex, endindex-5); // -5 for _date\n");
+			 w.append("\t\t\t\t\tvalue = resultLookup.get(variable).getResultDate().toString();\n");
+			 w.append("\t\t\t\t}\n");
+			 w.append("\t\t\t\tif(value != null){\n");
+		     w.append("\t\t\t\t\toutStr += value;\n");
+		     w.append("\t\t\t\t}\n");
+		     w.append("\t\t\t\telse\n");
+			 w.append("\t\t\t\t{\n");
+			 w.append("\t\t\t\t\tvalue = resultLookup.get(variable).toString();\n");
+			 w.append("\t\t\t\t}\n");
+			 w.append("\t\t\t\tif(value != null){\n");
+		     w.append("\t\t\t\t\toutStr += value;\n");
+		     w.append("\t\t\t\t}\n");
+		     
+		      
 		     w.append("\t\t\t\tindex = tempstr.indexOf(\"||\", nindex+2);\n");
 		     w.append("\t\t\t}\n");
 		     
@@ -199,6 +224,30 @@ public class MLMObject {
 		     w.append("\t\t\t\tif(value != null){\n");
 		     w.append("\t\t\t\t\toutStr += value;\n");
 		     w.append("\t\t\t\t}\n");
+		     
+		     
+		     w.append("\t\t\t\t// It must be a result value or date\n");
+			 w.append("\t\t\t\telse if(variable.endsWith(\"_value\"))\n");
+			 w.append("\t\t\t\t{\n");
+			 w.append("\t\t\t\t\tvariable = inStr.substring(startindex, endindex-6); // -6 for _value\n");
+			 w.append("\t\t\t\t\tvalue = resultLookup.get(variable).toString();\n");
+			 w.append("\t\t\t\t}\n");
+			 w.append("\t\t\t\telse if(variable.endsWith(\"_date\"))\n");
+			 w.append("\t\t\t\t{\n");
+			 w.append("\t\t\t\t\tvariable = inStr.substring(startindex, endindex-5); // -5 for _date\n");
+			 w.append("\t\t\t\t\tvalue = resultLookup.get(variable).getResultDate().toString();\n");
+			 w.append("\t\t\t\t}\n");
+			 w.append("\t\t\t\tif(value != null){\n");
+		     w.append("\t\t\t\t\toutStr += value;\n");
+		     w.append("\t\t\t\t}\n");
+		     w.append("\t\t\t\telse\n");
+			 w.append("\t\t\t\t{\n");
+			 w.append("\t\t\t\t\tvalue = resultLookup.get(variable).toString();\n");
+			 w.append("\t\t\t\t}\n");
+			 w.append("\t\t\t\tif(value != null){\n");
+		     w.append("\t\t\t\t\toutStr += value;\n");
+		     w.append("\t\t\t\t}\n");
+		     
 		     w.append("\t\t\t\tindex = tempstr.indexOf(\"||\", nindex+2);\n");
 		     w.append("\t\t\t}\n");
 		     w.append("\t\t\tvalue=tempstr.substring(nindex+2);\n");
@@ -244,7 +293,7 @@ public class MLMObject {
 		 w.append("\n\tpublic Result eval(LogicContext context, Patient patient,\n" +
 		 		"\t\t\tMap<String, Object> parameters) throws LogicException {\n\n");
 		 w.append("\t\tString actionStr = \"\";\n");
-		 w.append("\t\tHashMap resultLookup = new HashMap();\n");
+		 w.append("\t\tresultLookup = new HashMap <String, Result>();\n");
 		 w.append("\t\tBoolean ageOK = null;\n\n\t\ttry {\n");
 		 
 		 w.append("\t\t\tthis.patient=patient;\n");
@@ -286,7 +335,7 @@ public class MLMObject {
 		 
 		 /***********************************************************************************************/
 		 
-		 w.append("\n\n\t\t\tif(evaluate_logic(resultLookup,parameters)){\n");	
+		 w.append("\n\n\t\t\tif(evaluate_logic(parameters)){\n");	
 		 w.append("\t\t\t\tResult ruleResult = new Result();\n");
 		 if (this.calls.get("action") != null) {
 				for (Call currCall : this.calls.get("action")) {
@@ -315,7 +364,7 @@ public class MLMObject {
 			}
 			/******************************************************************************************************************************/
 			
-			w.append("\tprivate boolean evaluate_logic(HashMap resultLookup,Map<String, Object> parameters) throws LogicException {\n\n");
+			w.append("\tprivate boolean evaluate_logic(Map<String, Object> parameters) throws LogicException {\n\n");
 			evalListBySection = evaluateList.get("logic");
 			if(evalListBySection == null){
 				evalListBySection = new LinkedList<MLMEvaluateElement>();
