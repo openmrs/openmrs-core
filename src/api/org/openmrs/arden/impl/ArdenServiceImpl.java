@@ -185,6 +185,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     w.write("\tprivate Patient patient;\n\tprivate String firstname;\n");
 		     w.write("\tprivate ArrayList<String> actions;\n");
 		     w.write("\tprivate HashMap<String, String> userVarMap;\n\n");
+		     w.write("\tprivate HashMap <String, Result> resultLookup;\n\n");
 		     
 		     w.write("\tprivate Log log = LogFactory.getLog(this.getClass());\n");
 		     w.write("\tprivate LogicService logicService = Context.getLogicService();\n\n");
