@@ -560,7 +560,10 @@ public class DataExportFunctions {
 		StringBuilder ret = new StringBuilder();
 		for (Iterator<DrugOrder> i = patientOrders.iterator(); i.hasNext(); ) {
 			DrugOrder o = i.next();
-			ret.append(o.getDrug().getName());
+			if (o.getDrug() != null)
+				ret.append(o.getDrug().getName());
+			else
+				ret.append(o.getConcept().getBestName(Context.getLocale()));
 			if (i.hasNext())
 				ret.append(" ");
 		}
