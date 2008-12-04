@@ -67,7 +67,7 @@ public class HibernateReportDAO implements ReportDAO {
 	 * @see org.openmrs.report.db.ReportDAO#saveReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 */
 	public void saveReportSchemaXml(ReportSchemaXml reportSchemaXml) {
-		sessionFactory.getCurrentSession().save(reportSchemaXml);
+		sessionFactory.getCurrentSession().saveOrUpdate(reportSchemaXml);
 	}
 
 	/**
