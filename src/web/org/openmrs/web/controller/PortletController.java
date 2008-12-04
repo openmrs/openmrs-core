@@ -69,9 +69,9 @@ public class PortletController implements Controller {
 	 *        	(Patient) patient
 	 *         	(Set<Obs>) patientObs
 	 *          (Set<Encounter>) patientEncounters
-	 *          (Set<DrugOrder>) patientDrugOrders
-	 *          (Set<DrugOrder>) currentDrugOrders
-	 *          (Set<DrugOrder>) completedDrugOrders
+	 *          (List<DrugOrder>) patientDrugOrders
+	 *          (List<DrugOrder>) currentDrugOrders
+	 *          (List<DrugOrder>) completedDrugOrders
 	 *          (Obs) patientWeight // most recent weight obs
 	 *          (Obs) patientHeight // most recent height obs
 	 *          (Double) patientBmi // BMI derived from most recent weight and most recent height
