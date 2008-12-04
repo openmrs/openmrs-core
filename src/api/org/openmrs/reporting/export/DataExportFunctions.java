@@ -563,7 +563,7 @@ public class DataExportFunctions {
 			if (o.getDrug() != null)
 				ret.append(o.getDrug().getName());
 			else
-				ret.append(o.getConcept().getBestName(Context.getLocale()));
+				ret.append(o.getConcept().getBestName(Context.getLocale()).getName());
 			if (i.hasNext())
 				ret.append(" ");
 		}
