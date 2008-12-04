@@ -28,6 +28,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DataSetService;
 import org.openmrs.api.ReportService;
@@ -78,7 +79,6 @@ public class ReportServiceImpl implements ReportService {
 	 * 
 	 * @param dao The ReportDAO to use in this service
 	 */
-	@SuppressWarnings("unused")
     public void setReportDAO(ReportDAO dao) {
 		this.dao = dao;
 	}
@@ -95,6 +95,7 @@ public class ReportServiceImpl implements ReportService {
 	 *      org.openmrs.Cohort,
 	 *      org.openmrs.report.EvaluationContext)
 	 */
+	@SuppressWarnings("unchecked")
 	public ReportData evaluate(ReportSchema reportSchema, Cohort inputCohort, EvaluationContext evalContext) {
 		ReportData ret = new ReportData();
 		Map<String, DataSet> data = new HashMap<String, DataSet>();
@@ -256,19 +257,28 @@ public class ReportServiceImpl implements ReportService {
 	public ReportSchemaXml getReportSchemaXml(Integer reportSchemaXmlId) {
 		return dao.getReportSchemaXml(reportSchemaXmlId);
 	}
-
+	
+	/**
+	 * @see org.openmrs.api.ReportService#saveReportSchemaXml(org.openmrs.report.ReportSchemaXml)
+	 */
+	public void saveReportSchemaXml(ReportSchemaXml reportSchemaXml) {
+		dao.saveReportSchemaXml(reportSchemaXml);
+	}
+	
 	/**
 	 * @see org.openmrs.api.ReportService#createReportSchemaXml(org.openmrs.report.ReportSchemaXml)
+	 * @deprecated use saveReportSchemaXml(reportSchemaXml)
 	 */
 	public void createReportSchemaXml(ReportSchemaXml reportSchemaXml) {
-		dao.saveReportSchemaXml(reportSchemaXml);
+		saveReportSchemaXml(reportSchemaXml);
 	}
 
 	/**
 	 * @see org.openmrs.api.ReportService#updateReportSchemaXml(org.openmrs.report.ReportSchemaXml)
+	 * @deprecated use saveReportSchemaXml(reportSchemaXml)
 	 */
 	public void updateReportSchemaXml(ReportSchemaXml reportSchemaXml) {
-		dao.saveReportSchemaXml(reportSchemaXml);
+		saveReportSchemaXml(reportSchemaXml);
 	}
 
 	/**
@@ -308,7 +318,8 @@ public class ReportServiceImpl implements ReportService {
     	try {
     		ByteArrayOutputStream out = new ByteArrayOutputStream();
     		macros.store(out, null);
-    		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS, out.toString());
+    		GlobalProperty prop = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS, out.toString());
+    		Context.getAdministrationService().saveGlobalProperty(prop);
     	} catch (Exception ex) {
     		throw new APIException(ex);
     	}

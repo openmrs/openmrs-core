@@ -224,6 +224,7 @@ public final class OpenmrsConstants {
 	public static final String PRIV_ADD_REPORTS		= "Add Reports";
 	public static final String PRIV_EDIT_REPORTS	= "Edit Reports";
 	public static final String PRIV_DELETE_REPORTS	= "Delete Reports";
+    public static final String PRIV_RUN_REPORTS     = "Run Reports";
 	
 	public static final String PRIV_VIEW_REPORT_OBJECTS		= "View Report Objects";
 	public static final String PRIV_ADD_REPORT_OBJECTS		= "Add Report Objects";
@@ -405,6 +406,7 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_ADD_REPORTS, "Able to add reports");
 			CORE_PRIVILEGES.put(PRIV_EDIT_REPORTS, "Able to edit reports");
 			CORE_PRIVILEGES.put(PRIV_DELETE_REPORTS, "Able to delete reports");
+            CORE_PRIVILEGES.put(PRIV_RUN_REPORTS, "Able to run reports");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_REPORT_OBJECTS, "Able to view report objects");
 			CORE_PRIVILEGES.put(PRIV_ADD_REPORT_OBJECTS, "Able to add report objects");
