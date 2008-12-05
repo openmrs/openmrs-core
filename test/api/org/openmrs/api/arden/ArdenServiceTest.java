@@ -14,6 +14,7 @@
 package org.openmrs.api.arden;
 
 import org.junit.Test;
+import java.io.File;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
@@ -26,47 +27,18 @@ public class ArdenServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldClass() throws Exception {
 
-	//	Integer pid = 1;
-	//	Patient patient;
-	//	ArdenDataSource dataSource;
-		String [] mlmNames = {
-			//	"directexphiriskcountry.mlm",
-			//	"directtbcontact.mlm",
-			//	"indirectexphiriskcountry.mlm",
-			//	"indirecttbcontact.mlm",
-			//	"HiRiskLeadScreen.mlm",
-				"leadspecpws2.mlm"
-		};
-		String defaultPath = "asd fasdf asdf test/arden test/";
+		String mlmDirectory = "c:\\mlm\\"; //"C:\\WORKSPACE\\chica\\ruleLibrary\\"; //"C:\\Documents and Settings\\tmdugan\\workspace\\chica\\ruleLibrary\\test\\";
+		String javaDirectory = "c:\\mlm\\"; //"C:\\WORKSPACE\\chica\\ruleLibrary\\New\\";  //"C:\\Documents and Settings\\tmdugan\\workspace\\chica\\ruleLibrary\\test\\";
 		
-		for (int i = 0; i<mlmNames.length; i++) {
-			Context.getArdenService().compileFile(defaultPath + mlmNames[i], "output");
-		}
-			
-	//	Context.getArdenService().compileFile("test/arden test/directexphiriskcountry.mlm");
-	
-
- /*		patient = Context.getPatientService().getPatient(pid);
-		dataSource = new DefaultArdenDataSource(); 
-
- 		
-		ArdenRule [] mlms = {
-				 new HiRiskLeadScreen(patient ,dataSource)
-//				,new directtbcontact(patient, dataSource)
-					
-		};
-		for (int i = 0; i < mlms.length; i++){
-			
-			ArdenRule mlm = mlms[i].getInstance();
-			if(mlm != null) {
-				if(mlm.evaluate()) {
-					System.out.println(mlm.doAction());
-					mlm.printDebug();
-				}
-				
-			}
-		}
-*/	
+		File mlmDir = new File(mlmDirectory);
+		
+		String[] mlmFiles = mlmDir.list();
+		
+		for (String mlmFile:mlmFiles) {
+			if(mlmFile.endsWith(".mlm")){
+			System.out.println("Parsing: "+mlmFile);
+			Context.getArdenService().compileFile(mlmDirectory+mlmFile, javaDirectory);
+		}}
 	}
 	
 }
