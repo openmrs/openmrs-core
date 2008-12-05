@@ -76,7 +76,7 @@ public class Call {
 				 w.append("\t\t\t\t}\n");
 				 w.append("\t\t\t\telse\n");
 				 w.append("\t\t\t\t{\n");
-				 w.append("\t\t\t\t\tvalue = resultLookup.get(variable).toString();\n");
+				 w.append("\t\t\t\t\tvalue = resultLookup.get(" +"\"" + currParam + "\""  + ").toString();\n");
 				 w.append("\t\t\t\t}\n");
 				 w.append("\t\t\t\tif(value != null){\n");
 				 w.append("\t\t\t\t\tparameters.put(\"param" + (i+1) + "\"," + "value);\n"); 
