@@ -89,7 +89,7 @@ public class ReportSchemaXmlFormController extends SimpleFormController implemen
     		reportSchemaXml.populateFromReportSchema(schema);
     		
     		// save the xml to the database
-    		reportService.updateReportSchemaXml(reportSchemaXml);
+    		reportService.saveReportSchemaXml(reportSchemaXml);
 
     	} catch (Exception ex) {
     		log.warn("Exception building ReportSchema from XML", ex);
@@ -117,7 +117,8 @@ public class ReportSchemaXmlFormController extends SimpleFormController implemen
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	public boolean supports(Class c) {
+	@SuppressWarnings("unchecked")
+    public boolean supports(Class c) {
 	    return c == ReportSchemaXml.class;
     }
 

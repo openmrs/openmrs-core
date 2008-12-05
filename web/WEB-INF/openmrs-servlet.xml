@@ -120,6 +120,7 @@
                 <prop key="admin/reports/reportSchemaXml.form">reportSchemaXmlForm</prop>
                 <prop key="admin/reports/reportSchemaXml.list">reportSchemaXmlList</prop>
                 <prop key="admin/reports/reportMacros.form">reportMacrosForm</prop>
+                <prop key="admin/reports/cohortReport.form">cohortReportForm</prop>
 
 				<prop key="cohortBuilder.list">cohortBuilderController</prop>
 				<prop key="cohortBuilder.form">cohortBuilderActionController</prop>
@@ -830,6 +831,14 @@
         <property name="commandName"><value>command</value></property>
         <property name="formView"><value>/admin/reports/reportMacrosForm</value></property>
         <property name="successView"><value>reportMacros.form</value></property>
+    </bean>
+    <bean id="cohortReportForm" class="org.openmrs.web.controller.report.CohortReportFormController">
+        <property name="commandName"><value>command</value></property>
+        <property name="formView"><value>/admin/reports/cohortReportForm</value></property>
+        <property name="successView"><value>cohortReport.form</value></property>
+        <property name="validator">
+			<ref bean="cohortReportForm" />
+		</property>
     </bean>
     
 	<!-- ReportObject -->
