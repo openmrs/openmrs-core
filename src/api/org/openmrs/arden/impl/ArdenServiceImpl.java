@@ -179,6 +179,7 @@ public class ArdenServiceImpl implements ArdenService {
              w.write("import org.openmrs.logic.Duration;\n");
              w.write("import java.util.StringTokenizer;\n\n");
              w.write("import org.openmrs.api.ConceptService;\n");
+             w.write("import java.text.SimpleDateFormat;\n");
 		     
 		     String classname = ardObj.getClassName();
 		     w.write("public class " + classname + " implements Rule, DssRule{\n\n"); // Start of class
