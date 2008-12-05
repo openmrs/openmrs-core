@@ -553,6 +553,13 @@ table.patientTreatmentPrograms td {
 		color: darkred;
 	}
 	
+.tooltip {
+	border: 1px solid darkgrey;
+	background-color: #ffff80;
+	margin: 2px;
+	padding: 3px;
+}
+	
 .button {
 	border: 1px solid darkgrey;
 	background-color: whitesmoke;
@@ -1196,9 +1203,4 @@ table td#summaryHeaderPatientGender {
 }
 .forgotPasswordLink {
 	font-size: small;
-}
-
-#saved_filters {
-	max-height: 500px;
-	overflow-y: scroll;
 }

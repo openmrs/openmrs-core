@@ -31,9 +31,7 @@
 		<convert converter="bean" match="org.openmrs.Cohort" >
 			<param name="exclude" value="patients"/>
 		</convert>
-        <convert converter="bean" match="org.openmrs.cohort.Cohort" >
-            <param name="exclude" value="patients"/>
-        </convert>
+		<convert converter="bean" match="org.openmrs.report.Parameter"/>
 		<convert converter="bean" match="org.openmrs.cohort.CohortSearchHistory"/>
 	
 		<create creator="new" javascript="DWRPatientService">
@@ -192,6 +190,8 @@
 			<include method="removePatientFromCohort"/>
 			<include method="getCohorts"/>
 			<include method="getCohortsContainingPatient"/>
+			<include method="getMissingParameters"/>
+			<include method="evaluateCohortDefinition"/>
 		</create>
 		
 		<create creator="new" javascript="DWRCohortBuilderService">
