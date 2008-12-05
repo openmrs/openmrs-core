@@ -124,10 +124,13 @@
 		</if>
 		<property 
 			name="openmrs.version.long" 
-			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}.${openmrs.database.version.expected.short} ${openmrs.version.suffix} Build ${openmrs.version.revision}"/>
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance} ${openmrs.version.suffix} Build ${openmrs.version.revision}"/>
 		<property 
 			name="openmrs.version.short" 
-			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}.${openmrs.database.version.expected.short}.${openmrs.version.revision}"/>
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}.${openmrs.version.revision}-${openmrs.version.suffix}"/>
+		<property 
+			name="openmrs.version.shortnumericonly" 
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}.${openmrs.version.revision}-${openmrs.version.suffix}"/>
 		<echo message="version: ${openmrs.version.long}"/>
 		<property 
 			name="openmrs.api.name" 
@@ -181,7 +184,7 @@
 					
 					<attribute name="Specification-Title" value="OpenMRS Build Version and Short Version"/>
 					<attribute name="Specification-Vendor" value="${openmrs.version.long}"/>
-					<attribute name="Specification-Version" value="${openmrs.version.short}"/>
+					<attribute name="Specification-Version" value="${openmrs.version.shortnumericonly}"/>
 					
 					<attribute name="Implementation-Title" value="OpenMRS Expected Database Version"/>
 					<attribute name="Implementation-Version" value="${openmrs.database.version.expected}"/>
