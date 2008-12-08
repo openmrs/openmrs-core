@@ -1813,15 +1813,15 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
 
-        # update the db version no matter what happens
+        # update the db version no matter what happens so that this procedure is skipped during the next run
 		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
-
-		select 'Dropping concept_name_id from obs table (this may fail, which is ok. just re-run the update)' AS '*** Step: ***', new_db_version from dual;
-
-		ALTER TABLE `obs` DROP COLUMN `concept_name_id`;
+		
+		select 'Dropping concept_name_id from obs table (this may fail, which is ok. If it does fail, run this file again.)' AS '*** Step: ***', new_db_version from dual;
 		
 		ALTER TABLE `obs` DROP FOREIGN KEY `concept_name_id`;
-
+		
+		ALTER TABLE `obs` DROP COLUMN `concept_name_id`;
+		
 		select '***' AS '...done' from dual;
 
 	END IF;
