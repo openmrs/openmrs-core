@@ -27,8 +27,8 @@ public class ArdenServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldClass() throws Exception {
 
-		String mlmDirectory = "c:\\mlm\\"; //"C:\\WORKSPACE\\chica\\ruleLibrary\\"; //"C:\\Documents and Settings\\tmdugan\\workspace\\chica\\ruleLibrary\\test\\";
-		String javaDirectory = "c:\\mlm\\"; //"C:\\WORKSPACE\\chica\\ruleLibrary\\New\\";  //"C:\\Documents and Settings\\tmdugan\\workspace\\chica\\ruleLibrary\\test\\";
+		String mlmDirectory = System.getProperty("user.dir") + "\\mlm_to_test\\"; 
+		String javaDirectory = System.getProperty("user.dir")+ "\\mlm_to_test\\"; 
 		
 		File mlmDir = new File(mlmDirectory);
 		
