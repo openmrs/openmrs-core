@@ -167,7 +167,7 @@ public class MLMObject {
 			w.append("// It must be a result date\n");
 			w.append("else if (variable.contains(\"_date\"))\n");
 			w.append("{\n");
-			w.append("String pattern = \"yyyy-MM-dd\";\n");
+			w.append("String pattern = \"MM/dd/yy\";\n");
 			w.append("SimpleDateFormat dateForm = new SimpleDateFormat(pattern);\n");
 			w.append("variable = variable.replace(\"_date\",\"\").trim();\n");
 			w.append("value = dateForm.format(resultLookup.get(variable).getResultDate());\n");
