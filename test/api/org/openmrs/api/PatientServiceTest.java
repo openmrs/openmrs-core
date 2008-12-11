@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import junit.framework.Assert;
 
@@ -40,6 +41,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.patient.IdentifierValidator;
@@ -446,7 +448,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// make sure we get back only patient #2 and patient #5
 		patients = patientService.getPatients(null, null, types);
 		assertEquals(2, patients.size());
-		
+
+        // make sure we can search a padded identifier
+        patients = patientService.getPatients(null, "00000001234", null, false);
+        assertEquals(1, patients.size());
 	}
 
 	/**
