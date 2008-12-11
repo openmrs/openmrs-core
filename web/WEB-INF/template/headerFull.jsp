@@ -17,7 +17,7 @@
 	<head>
 		<openmrs:htmlInclude file="/openmrs.js" />
 		<openmrs:htmlInclude file="/openmrs.css" />
-		<openmrs:htmlInclude file="/style.css" />		
+		<openmrs:htmlInclude file="/style.css" />
 		<openmrs:htmlInclude file="/dwr/engine.js" />
 		<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
 
@@ -29,12 +29,19 @@
 				<title><spring:message code="openmrs.title"/></title>
 			</c:otherwise>
 		</c:choose>
-		
-		
+
+
 		<script type="text/javascript">
 			/* variable used in js to know the context path */
 			var openmrsContextPath = '${pageContext.request.contextPath}';
 		</script>
+
+		<openmrs:extensionPoint pointId="org.openmrs.headerFullIncludeExt" type="html" requiredClass="org.openmrs.module.web.extension.HeaderIncludeExt">
+			<c:forEach var="file" items="${extension.headerFiles}">
+				<openmrs:htmlInclude file="${file}" />
+			</c:forEach>
+		</openmrs:extensionPoint>
+
 	</head>
 
 <body>
@@ -70,20 +77,20 @@
 		<div id="banner">
 			<%@ include file="/WEB-INF/template/banner.jsp" %>
 		</div>
-		
+
 		<div id="popupTray">
 			&nbsp;
 			<c:if test="${empty OPENMRS_DO_NOT_SHOW_PATIENT_SET}">
 				<openmrs:portlet url="patientSet" id="patientSetPortlet" size="compact" parameters="selectedPatientId=|linkUrl=patientDashboard.form|allowRemove=true|allowClear=true|mutable=true|droppable=true|allowBatchEntry=true|allowActions=true"/>
 			</c:if>
 		</div>
-		
+
 		<openmrs:hasPrivilege privilege="View Navigation Menu">
 			<div id="gutter">
 				<%@ include file="/WEB-INF/template/gutter.jsp" %>
 			</div>
 		</openmrs:hasPrivilege>
-		
+
 		<div id="content">
 
 			<script type="text/javascript">
@@ -95,7 +102,7 @@
 				DWREngine.setErrorHandler(handler);
 				DWREngine.setWarningHandler(handler);
 			</script>
-								
+
 			<openmrs:forEachAlert>
 				<c:if test="${varStatus.first}"><div id="alertOuterBox"><div id="alertInnerBox"></c:if>
 					<div class="alert">
