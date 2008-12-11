@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -205,22 +206,30 @@ public class HibernatePatientDAO implements PatientDAO {
 	    		if (matchIdentifierExactly) {
 					criteria.add(Expression.eq("ids.identifier", identifier));
 				}
+                else {
+                    // remove padding from identifier search string
+                    if (Pattern.matches("^\\^.{1}\\*.*$", regex)) {
+                       String padding = regex.substring(regex.indexOf("^")+1,regex.indexOf("*"));
+                       Pattern pattern = Pattern.compile("^"+padding+"+");
+                       identifier = pattern.matcher(identifier).replaceFirst("");
+                    }
 		    		// if the regex is empty, default to a simple "like" search or if 
 		    		// we're in hsql world, also only do the simple like search (because
 		    		// hsql doesn't know how to deal with 'regexp'
-				else if (regex.equals("") || HibernateUtil.isHSQLDialect(sessionFactory)) {
-	    			String prefix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "");
-					String suffix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "%");
-	    			StringBuffer likeString = new StringBuffer(prefix).append(identifier)
-	    			                                                  .append(suffix);
-	    			criteria.add(Expression.like("ids.identifier", likeString.toString()));
-				}
-				// if the regex is present, search on that
-				else {
-					regex = regex.replace("@SEARCH@", identifier);
-	    			criteria.add(Restrictions.sqlRestriction("identifier regexp ?", regex, Hibernate.STRING));
-				}
-			}
+				    if (regex.equals("") || HibernateUtil.isHSQLDialect(sessionFactory)) {
+	    			    String prefix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "");
+					    String suffix = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "%");
+	    			    StringBuffer likeString = new StringBuffer(prefix).append(identifier)
+	    			                                                      .append(suffix);
+	    			    criteria.add(Expression.like("ids.identifier", likeString.toString()));
+				    }
+				    // if the regex is present, search on that
+				    else {
+					    regex = regex.replace("@SEARCH@", identifier);
+	    			    criteria.add(Restrictions.sqlRestriction("identifier regexp ?", regex, Hibernate.STRING));
+				    }
+			    }
+            }
 		
     		// TODO add a junit test for patientIdentifierType restrictions
 		
