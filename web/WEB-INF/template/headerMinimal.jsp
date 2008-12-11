@@ -18,13 +18,13 @@
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
 		<openmrs:htmlInclude file="/openmrs.js" />
-		
+
 		<script type="text/javascript">
 			/* variable used in js to know the context path */
 			var openmrsContextPath = '${pageContext.request.contextPath}';
 		</script>
-		
-		<!--  Page Title : '${pageTitle}' 
+
+		<!--  Page Title : '${pageTitle}'
 			OpenMRS Title: <spring:message code="openmrs.title"/>
 		-->
 		<c:choose>
@@ -34,8 +34,14 @@
 			<c:otherwise>
 				<title><spring:message code="openmrs.title"/></title>
 			</c:otherwise>
-		</c:choose>		
-		
+		</c:choose>
+
+		<openmrs:extensionPoint pointId="org.openmrs.headerMinimalIncludeExt" type="html" requiredClass="org.openmrs.module.web.extension.HeaderIncludeExt">
+			<c:forEach var="file" items="${extension.headerFiles}">
+				<openmrs:htmlInclude file="${file}" />
+			</c:forEach>
+		</openmrs:extensionPoint>
+
 	</head>
 
 <body>
@@ -47,4 +53,4 @@
 			<c:if test="${err != null}">
 				<div id="openmrs_error"><spring:message code="${err}" text="${err}" arguments="${errArgs}"/></div>
 			</c:if>
-	
+
