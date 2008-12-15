@@ -130,7 +130,7 @@
 			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}.${openmrs.version.revision}-${openmrs.version.suffix}"/>
 		<property 
 			name="openmrs.version.shortnumericonly" 
-			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}.${openmrs.version.revision}-${openmrs.version.suffix}"/>
+			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance}.${openmrs.version.revision}"/>
 		<echo message="version: ${openmrs.version.long}"/>
 		<property 
 			name="openmrs.api.name" 
