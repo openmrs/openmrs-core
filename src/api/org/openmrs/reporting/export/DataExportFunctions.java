@@ -287,21 +287,24 @@ public class DataExportFunctions {
 		this.separator = separator;
 	}
 	
-	public String getCohortMembership(Integer cohortId, String valueIfTrue, String valueIfFalse, EvaluationContext context) {
-		return getCohortHelper("C." + cohortId, context) ? valueIfTrue : valueIfFalse;
+	public String getCohortMembership(Integer cohortId, String valueIfTrue, String valueIfFalse) {
+		return getCohortHelper("C." + cohortId) ? valueIfTrue : valueIfFalse;
 	}
 	
-	public String getCohortDefinitionMembership(Integer filterId, String valueIfTrue, String valueIfFalse, EvaluationContext context) {
-		return getCohortHelper("F." + filterId, context) ? valueIfTrue : valueIfFalse;
+	public String getCohortDefinitionMembership(Integer filterId, String valueIfTrue, String valueIfFalse) {
+		return getCohortHelper("F." + filterId) ? valueIfTrue : valueIfFalse;
 	}
 	
-	public String getPatientSearchMembership(Integer searchId, String valueIfTrue, String valueIfFalse, EvaluationContext context) {
-		return getCohortHelper("S." + searchId, context) ? valueIfTrue : valueIfFalse;
+	public String getPatientSearchMembership(Integer searchId, String valueIfTrue, String valueIfFalse) {
+		return getCohortHelper("S." + searchId) ? valueIfTrue : valueIfFalse;
 	}
 	
-	protected Boolean getCohortHelper(String key, EvaluationContext context) {
+	protected Boolean getCohortHelper(String key) {
 		if (cohortMap.containsKey(key))
 			return cohortMap.get(key).contains(getPatientId());
+		
+		//TODO try to cache the evaluation context
+		EvaluationContext context = new EvaluationContext();
 		
 		log.debug("getting cohort/definition for key: " + key);
 		//PatientSet ps = null;
