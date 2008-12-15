@@ -22,6 +22,7 @@ import java.util.GregorianCalendar;
 
 import org.junit.Test;
 import org.openmrs.Cohort;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -570,5 +571,47 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		//System.out.println("exportFile: \n" + output);
 		assertEquals("The output is not right.", expectedOutput, output);
 		
+	}
+	
+	/**
+	 * Tests the "Cohort" column on data exports to make sure
+	 * that they are exporting the right data
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldExportCohortColumns() throws Exception {
+		// First create a cohort. TODO maybe move this to xml
+		Cohort cohort = new Cohort();
+		cohort.setName("A Cohort");
+		cohort.setDescription("Just for testing");
+		cohort.addMember(2);
+		cohort = Context.getCohortService().saveCohort(cohort);
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("Cohort column");
+		
+		SimpleColumn patientId = new SimpleColumn("PATIENT_ID", "$!{fn.patientId}");
+		export.getColumns().add(patientId);
+		
+		CohortColumn cohortCol = new CohortColumn("InCohort", cohort.getCohortId(), null, null, "Yes", "No");
+		export.getColumns().add(cohortCol);
+			
+		// set the cohort to two patients, one of which is in the specified cohort
+		Cohort patients = new Cohort();
+		patients.addMember(2);
+		patients.addMember(6);
+		
+		//System.out.println("Template String: \n" + export.generateTemplate());
+		
+		DataExportUtil.generateExport(export, patients, "\t", null);
+		File exportFile = DataExportUtil.getGeneratedFile(export);
+		
+		String expectedOutput = "PATIENT_ID\tInCohort\n2\tYes\n6\tNo\n";
+		String output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		//System.out.println("exportFile: \n" + output);
+		assertEquals("The output is not right.", expectedOutput, output);
 	}
 }
