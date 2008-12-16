@@ -192,6 +192,7 @@ function changeSetStatus(obj) {
 var customDatatypes = new Array();
 customDatatypes.push("numeric");
 customDatatypes.push("coded");
+customDatatypes.push("complex");
 
 function changeDatatype(obj) {
 	for (var i=0; i < customDatatypes.length; i++) {

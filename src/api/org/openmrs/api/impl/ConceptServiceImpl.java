@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
@@ -262,6 +263,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		return dao.getConceptNumeric(conceptId);
 	}
 
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptComplex(java.lang.Integer)
+	 */
+	public ConceptComplex getConceptComplex(Integer conceptId) {
+			return dao.getConceptComplex(conceptId);
+	}
+		
 	/**
      * @see org.openmrs.api.ConceptService#getAllConcepts()
 	 */

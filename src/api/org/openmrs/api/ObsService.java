@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openmrs.Cohort;
@@ -26,9 +27,11 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ObsDAO;
+import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.springframework.transaction.annotation.Transactional;
+
 
 /**
  * The ObsService deals with saving and getting Obs to/from the
@@ -156,6 +159,9 @@ public interface ObsService extends OpenmrsService {
 	 * 		it is being updated, it would be required
 	 * @return Obs that was saved to the database
 	 * @throws APIException
+	 * 
+	 * @should create new file from complex data for new obs
+	 * @should not overwrite file when updating a complex obs
 	 */
 	@Authorized({OpenmrsConstants.PRIV_ADD_OBS, OpenmrsConstants.PRIV_EDIT_OBS})
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException;
@@ -232,6 +238,8 @@ public interface ObsService extends OpenmrsService {
 	 * @return list of MimeTypes in the system
 	 * @see #getAllMimeTypes(boolean)
 	 * @throws APIException
+	 * 
+	 * @deprecated MimeTypes are no longer used.  See ConceptComplex and its use of handlers 
 	 */
 	@Authorized(OpenmrsConstants.PRIV_VIEW_MIME_TYPES)
 	public List<MimeType> getAllMimeTypes() throws APIException;
@@ -243,6 +251,8 @@ public interface ObsService extends OpenmrsService {
 	 * @param includeRetired true/false of whether to also return the retired ones
 	 * @return list of MimeTypes lll
 	 * @throws APIException
+	 * 
+	 * @deprecated MimeTypes are no longer used.  See ConceptComplex and its use of handlers
 	 */
 	@Authorized(OpenmrsConstants.PRIV_VIEW_MIME_TYPES)
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws APIException;
@@ -253,6 +263,8 @@ public interface ObsService extends OpenmrsService {
 	 * @param mimeType id
 	 * @return mimeType with given internal identifier
 	 * @throws APIException
+	 * 
+	 * @deprecated MimeTypes are no longer used.  See ConceptComplex and its use of handlers
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_MIME_TYPES)
@@ -266,6 +278,8 @@ public interface ObsService extends OpenmrsService {
 	 * @param mimeType mimeType
 	 * @return mimeType that was saved/updated in the database
 	 * @throws APIException
+	 * 
+	 * @deprecated MimeTypes are no longer used.  See ConceptComplex and its use of handlers
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_MIME_TYPES)
 	public MimeType saveMimeType(MimeType mimeType) throws APIException;
@@ -280,6 +294,8 @@ public interface ObsService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 * @see {@link #createObs(Obs)}
+	 * 
+	 * @deprecated MimeTypes are no longer used.  See ConceptComplex and its use of handlers
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_MIME_TYPES)
 	public MimeType voidMimeType(MimeType mimeType, String reason) throws APIException;
@@ -292,6 +308,8 @@ public interface ObsService extends OpenmrsService {
 	 * @param mimeType the MimeType to remove
 	 * @throws APIException
 	 * @see {@link #purgeMimeType(MimeType)
+	 * 
+	 * @deprecated MimeTypes are no longer used.  See ConceptComplex and its use of handlers
 	 */
 	@Authorized(OpenmrsConstants.PRIV_PURGE_MIME_TYPES)
 	public void purgeMimeType(MimeType mimeType) throws APIException;
@@ -480,5 +498,100 @@ public interface ObsService extends OpenmrsService {
 	@Transactional(readOnly=true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate);
+
+	/**
+	 * Get a complex observation. If obs.isComplex() is true, then returns an
+	 * Obs with its ComplexData. Otherwise returns a simple Obs.
+	 * 
+	 * TODO: Possibly remove this method. It is confusing because you may have a
+	 * complexObs, but not want the complexData attached at the time.
+	 * Nevertheless, you may think that this method is necessary to use, when
+	 * you could just call getObs(). This will attach the complexData onto the
+	 * obs.
+	 * 
+	 * @param obsId
+	 * @return Obs with a ComplexData
+	 * 
+	 * @should fill in complex data object for complex obs
+	 * @should return normal obs for non complex obs
+	 * @should not fail with null view
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_OBS })
+	public Obs getComplexObs(Integer obsId, String view) throws APIException;
+
+	/**
+	 * Get the ComplexObsHandler that has been registered with the given key
+	 * 
+	 * @param key that has been registered with a handler class
+	 * @return Object representing the handler for the given key
+	 * 
+	 * @see #getHandler(Class)
+	 * 
+	 * @should get handler with matching key
+	 */
+	@Transactional(readOnly = true)
+	public ComplexObsHandler getHandler(String key) throws APIException;
+
+	/**
+	 * <u>Add</u> the given map to this service's handlers.
+	 * 
+	 * This method registers each ComplexObsHandler to this service.  If the given
+	 * String key exists, that handler is overwritten with the given handler 
+	 * 
+	 * For most situations, this map is set via spring, see the applicationContext-service.xml 
+	 * file to add more handlers.
+	 * 
+	 * @param handlers Map of class to handler object
+	 * @throws APIException
+	 * 
+	 * @should override handlers with same key
+	 * @should add new handlers with new keys
+	 */
+	public void setHandlers(Map<String, ComplexObsHandler> handlers) throws APIException;
+
+	/**
+	 * Gets the handlers map registered 
+	 * 
+	 * @return map of keys to handlers
+	 * @throws APIException
+	 * 
+	 * @should never return null
+	 */
+	public Map<String, ComplexObsHandler> getHandlers() throws APIException;
+
+	/**
+	 * Registers the given handler with the given key
+	 * 
+	 * If the given String key exists, that handler is overwritten with the given handler
+	 * 
+	 * @param key the key name to use for this handler
+	 * @param handler the class to register with this key
+	 * @throws APIException
+	 * 
+	 * @should register handler with the given key
+	 */
+	public void registerHandler(String key, ComplexObsHandler handler) throws APIException;
+
+	/**
+	 * Convenience method for {@link #registerHandler(Class, ComplexObsHandler)}
+	 * 
+	 * @param key the key name to use for this handler
+	 * @param handlerClass the class to register with this key
+	 * @throws APIException
+	 * 
+	 * @should load handler and register key
+	 */
+	public void registerHandler(String key, String handlerClass) throws APIException;
+
+	/**
+	 * Remove the handler associated with the key from list of available handlers
+	 * 
+	 * @param key the key of the handler to unregister
+	 * 
+	 * @should remove handler with matching key
+	 * @should not fail with invalid key 
+	 */
+	public void removeHandler(String key) throws APIException;
 	
 }

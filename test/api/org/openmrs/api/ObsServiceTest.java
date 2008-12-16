@@ -20,25 +20,35 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collection;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
-import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.ObsServiceImpl;
+import org.openmrs.obs.ComplexData;
+import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.obs.handler.ImageHandler;
+import org.openmrs.obs.handler.TextHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.validator.ObsValidator;
 import org.springframework.validation.BindException;
@@ -50,6 +60,8 @@ import org.springframework.validation.Errors;
 public class ObsServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String INITIAL_OBS_XML = "org/openmrs/api/include/ObsServiceTest-initial.xml";
+	
+	protected static final String COMPLEX_OBS_XML = "org/openmrs/api/include/ObsServiceTest-complex.xml";
 	
 	/**
 	 * Creates then updates an obs
@@ -65,18 +77,17 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		LocationService locationService = Context.getLocationService();
 		ObsService obsService = Context.getObsService();
 		ConceptService conceptService = Context.getConceptService();
-
+		
 		Obs o = new Obs();
 		
 		//testing creation
 		
 		Order order1 = null;
 		Concept concept1 = conceptService.getConcept(1);
-		Patient patient1 = new Patient(2);  
-		Encounter encounter1 = (Encounter)es.getEncounter(1);
+		Patient patient1 = new Patient(2);
+		Encounter encounter1 = (Encounter) es.getEncounter(1);
 		Date datetime1 = new Date();
 		Location location1 = locationService.getLocation(1);
-		Integer groupId1 = new Integer(1);
 		Integer valueGroupId1 = new Integer(5);
 		Date valueDatetime1 = new Date();
 		Concept valueCoded1 = conceptService.getConcept(2);
@@ -116,9 +127,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Order order2 = null;
 		Concept concept2 = conceptService.getConcept(2);
-		Patient patient2 = new Patient(1); 
+		Patient patient2 = new Patient(1);
 		System.out.println("patient2: " + patient2.getPatientId());
-		Encounter encounter2 = (Encounter)es.getEncounter(2);
+		Encounter encounter2 = (Encounter) es.getEncounter(2);
 		Date datetime2 = new Date();
 		Location location2 = locationService.getLocation(1);
 		Integer valueGroupId2 = new Integer(3);
@@ -157,12 +168,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		  object is pointed to by the o1ToUpdate parameter that was passed in) */
 		// the saved obs should NOT have the new values
 		//assertFalse(o1ToUpdate.getValueNumeric().equals(valueNumeric2));
-		
 		// make sure the dateCreated 
-		
-		
 		Obs o3 = obsService.getObs(o1ToUpdateSaved.getObsId());
-		System.out.println("o3.isComplex? " + o3.isComplexObs());
 		
 		//o1ToUpdateSaved should equal o3 and neither should equal o1
 		assertTrue(o1ToUpdateSaved.equals(o3));
@@ -222,7 +229,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		// should have failed early when it saw we were voiding a voided obs
 		assertFalse(reason.equals(obs.getVoidReason()));
 		
-		
 		// now do a valid voiding
 		obs.setVoided(Boolean.FALSE);
 		Obs voidedObs = obsService.voidObs(obs, reason);
@@ -239,95 +245,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertTrue(voidedObs.getObsId().equals(obs.getObsId()));
 		assertTrue(voidedObs.getObsId().equals(voidedObs.getObsId()));
 		
-	}	
-	
-	/**
-	 * Creates then updates a complex obs
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldComplexObsCreateUpdateDelete() throws Exception {
-		
-		// we don't have any complex obs in the system yet
-	}	
-	
-	/**
-	 * TODO 
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldMimeType() throws Exception {
-		
-		ObsService obsService = Context.getObsService();
-		
-		//testing equals()/hashcode() for mimetype /////////// 
-		
-		Collection<MimeType> mimeTypes = new HashSet<MimeType>();
-		
-		MimeType m1 = new MimeType();
-		MimeType m2 = new MimeType();
-		m1.setMimeType("test1");
-		m2.setMimeType("test2");
-		mimeTypes.add(m1);
-		mimeTypes.add(m2);
-		
-		assertTrue("Both types should have been added", mimeTypes.size() == 2);
-		assertTrue("The first mimetype should be in the list", mimeTypes.contains(m1));
-		////////////////////////////////////////
-		
-		
-		//testing creation
-		
-		MimeType mimeType = new MimeType();
-		
-		mimeType.setMimeType("testing");
-		mimeType.setDescription("desc");
-		
-		obsService.saveMimeType(mimeType);
-		
-		MimeType newMimeType = obsService.getMimeType(mimeType.getMimeTypeId());
-		assertNotNull(newMimeType);
-		
-		mimeTypes = obsService.getAllMimeTypes();
-		
-		//make sure we get a list
-		assertNotNull(mimeTypes);
-		
-		boolean found = false;
-		for(Iterator<MimeType> i = mimeTypes.iterator(); i.hasNext();) {
-			MimeType mimeType2 = i.next();
-			assertNotNull(mimeType);
-			//check .equals function
-			assertTrue(mimeType.equals(mimeType2) == (mimeType.getMimeTypeId().equals(mimeType2.getMimeTypeId())));
-			//mark found flag
-			if (mimeType.equals(mimeType2))
-				found = true;
-		}
-		
-		//assert that the new mimeType was returned in the list
-		assertTrue(found);
-		
-		
-		//check update
-		newMimeType.setMimeType("another test");
-		obsService.saveMimeType(newMimeType);
-		
-		MimeType newerMimeType = obsService.getMimeType(newMimeType.getMimeTypeId());
-		assertTrue(newerMimeType.getMimeType().equals(newMimeType.getMimeType()));
-		
-		
-		//check deletion
-		obsService.purgeMimeType(newerMimeType);
-		
-		assertNull(obsService.getMimeType(newMimeType.getMimeTypeId()));
-
 	}
 	
 	/**
-	 * Tests the auto updating of the creator and dateCreated attrs 
-	 * when saving an obs
+	 * Tests the auto updating of the creator and dateCreated attrs when saving an obs
 	 * 
 	 * @throws Exception
 	 */
@@ -376,7 +297,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ConceptService conceptService = Context.getConceptService();
 		Concept numeric = conceptService.getConcept(1);
 		ObsValidator validator = new ObsValidator();
-
+		
 		Obs obs = new Obs();
 		
 		// set the required properties
@@ -386,22 +307,22 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(obs, "obs");
 		validator.validate(obs, errors);
 		assertTrue("Should have errors: no question", errors.hasErrors());
-
+		
 		obs.setConcept(numeric);
 		errors = new BindException(obs, "obs");
 		validator.validate(obs, errors);
 		assertTrue("Should have errors: no value", errors.hasErrors());
-
+		
 		obs.setValueText("This is text");
 		errors = new BindException(obs, "obs");
 		validator.validate(obs, errors);
 		assertTrue("Should have errors: no numeric value", errors.hasErrors());
-
+		
 		obs.setValueNumeric(350d);
 		errors = new BindException(obs, "obs");
 		validator.validate(obs, errors);
 		assertFalse("Should have no errors.  But has: " + errors, errors.hasErrors());
-
+		
 		Person p = new Person(1);
 		
 		Obs parent = new Obs();
@@ -439,8 +360,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This tests certain aspects of saving obs that are obsGroups or are
-	 * members of other obsGroups
+	 * This tests certain aspects of saving obs that are obsGroups or are members of other obsGroups
 	 * 
 	 * @throws Exception
 	 */
@@ -500,16 +420,15 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(groupMember2.getDateCreated());
 		
 		// make sure the api didn't change the obsId of the first group member
-		Obs firstMember = (Obs)(obsGroup.getGroupMembers().toArray()[0]);
-		Obs secondMember = (Obs)(obsGroup.getGroupMembers().toArray()[1]);
+		Obs firstMember = (Obs) (obsGroup.getGroupMembers().toArray()[0]);
+		Obs secondMember = (Obs) (obsGroup.getGroupMembers().toArray()[1]);
 		if (firstMember.getConcept().equals(new Concept(1))) {
 			// the set of members gets jumpbled after save.  The first one
 			// we added above had a concept with id 1.
 			assertEquals(groupMember1OriginalObsId, firstMember.getObsId());
 			// make sure the second group member is still there
 			assertEquals(groupMember2, secondMember);
-		}
-		else {
+		} else {
 			assertEquals(groupMember1OriginalObsId, secondMember.getObsId());
 			// make sure the second group member is still there
 			assertEquals(groupMember2, firstMember);
@@ -518,18 +437,18 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * 
-	 * This test tests multi-level heirarchy obsGroup cascades for create, delete, update, void, and unvoid
+	 * This test tests multi-level heirarchy obsGroup cascades for create, delete, update, void, and
+	 * unvoid
 	 * 
 	 * @throws Exception
 	 */
 	@Test
 	public void shouldSaveUpdateDeleteVoidObsGroupCascades() throws Exception {
 		executeDataSet(INITIAL_OBS_XML);
-
+		
 		ObsService os = Context.getObsService();
 		ConceptService cs = Context.getConceptService();
-
+		
 		//create an obs
 		Obs o = new Obs();
 		o.setConcept(cs.getConcept(1));
@@ -539,7 +458,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o.setObsDatetime(new Date());
 		o.setPerson(new Patient(2));
 		o.setValueText("original obs value text");
-
+		
 		//create a second obs
 		Obs o2 = new Obs();
 		o2.setConcept(cs.getConcept(1));
@@ -549,7 +468,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o2.setObsDatetime(new Date());
 		o2.setValueText("second obs value text");
 		o2.setPerson(new Patient(2));
-
+		
 		//create a parent obs
 		Obs oParent = new Obs();
 		oParent.setConcept(cs.getConcept(2)); //in the concept set table as a set
@@ -558,7 +477,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oParent.setLocation(new Location(1));
 		oParent.setObsDatetime(new Date());
 		oParent.setPerson(new Patient(2));
-
+		
 		//add o and o2 to the parent obs
 		oParent.addGroupMember(o2);
 		oParent.addGroupMember(o);
@@ -572,9 +491,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGP.setObsDatetime(new Date());
 		oGP.setPerson(new Patient(2));
 		oGP.setValueText("grandparent obs value text");
-
+		
 		oGP.addGroupMember(oParent);
-
+		
 		//create a leaf observation
 		Obs o3 = new Obs();
 		o3.setConcept(cs.getConcept(1));
@@ -584,7 +503,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o3.setObsDatetime(new Date());
 		o3.setValueText("leaf obs value text");
 		o3.setPerson(new Patient(2));
-
+		
 		//and add it to the grandparent
 		oGP.addGroupMember(o3);
 		
@@ -609,13 +528,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGGGP.setObsDatetime(new Date());
 		oGGGP.setValueText("great great grandparent value text");
 		oGGGP.setPerson(new Patient(2));
-
+		
 		oGGGP.addGroupMember(oGGP);
-
+		
 		//Create the great great grandparent
 		os.saveObs(oGGGP, null);
 		int oGGGPId = oGGGP.getObsId();
-
+		
 		//now navigate the tree and make sure that all tree members have obs_ids
 		//indicating that they've been saved (unsaved_value in the hibernate mapping set to null so
 		// the notNull assertion is sufficient):		
@@ -635,23 +554,23 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 					if (parent.isObsGrouping()) {
 						assertEquals(parent.getGroupMembers().size(), 2);
 						assertNotNull(parent.getObsId());
-						for (Obs child:parent.getGroupMembers()){
+						for (Obs child : parent.getGroupMembers()) {
 							assertNotNull(child.getObsId());
 							//make an edit to a value so that we can save the great great grandfather
 							//and see if the changes have been reflected:
 							child.setValueText("testingUpdate");
 						}
 					}
-
+					
 				}
-
+				
 			}
 		}
 		
 		Obs oGGGPThatWasUpdated = os.saveObs(oGGGP, "Updating obs group parent");
 		
 		//now, re-walk the tree to verify that the bottom-level leaf obs have the new text value:
-	
+		
 		int childOneId = 0;
 		int childTwoId = 0;
 		assertTrue(oGGGPThatWasUpdated.isObsGrouping());
@@ -670,22 +589,22 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 						assertEquals(parent.getGroupMembers().size(), 2);
 						assertNotNull(parent.getObsId());
 						int i = 0;
-						for (Obs child : parent.getGroupMembers()){
+						for (Obs child : parent.getGroupMembers()) {
 							assertEquals("testingUpdate", child.getValueText());
 							//set childIds, so that we can test voids/unvoids/delete
 							if (i == 0)
 								childOneId = child.getObsId();
-							else 
+							else
 								childTwoId = child.getObsId();
 							i++;
 						}
 					}
-
+					
 				}
-
+				
 			}
 		}
-	
+		
 		//check voiding:
 		//first, just create an Obs, and void it, and verify:
 		Obs oVoidTest = new Obs();
@@ -713,7 +632,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Obs childLeafObs = os.getObs(childOneId);
 		assertTrue(childLeafObs.isVoided());
-	
+		
 		//now test the un-void:
 		os.unvoidObs(oGGGPThatWasUpdated);
 		assertFalse(oGGGPThatWasUpdated.isVoided());
@@ -729,7 +648,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		childLeafObs = os.getObs(childOneId);
 		assertFalse(childLeafObs.isVoided());
 		
-		
 		//now, test the feature that unvoid doesn't happen unless child obs has the same dateVoided as
 		// the Obj argument that gets passed into unvoid:
 		
@@ -737,7 +655,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		childLeafObs = os.getObs(childOneId);
 		assertTrue(childLeafObs.isVoided());
 		
-		childLeafObs.setDateVoided(new Date(childLeafObs.getDateVoided().getTime() - 5000)); 
+		childLeafObs.setDateVoided(new Date(childLeafObs.getDateVoided().getTime() - 5000));
 		//os.saveObs(childLeafObs, "saving child leaf obs");
 		os.unvoidObs(oGGGPThatWasUpdated);
 		
@@ -764,10 +682,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Creates a simple Obs Group consisting of one parent and one child.
-	 * Assumes INITIAL_OBS_XML is being used.
+	 * Creates a simple Obs Group consisting of one parent and one child. Assumes INITIAL_OBS_XML is
+	 * being used.
 	 */
-	private void createObsGroup(Obs parent, Obs child, ConceptService cs, ObsService os){
+	private void createObsGroup(Obs parent, Obs child, ConceptService cs, ObsService os) {
 		child.setConcept(cs.getConcept(1));
 		child.setDateCreated(new Date());
 		child.setCreator(Context.getAuthenticatedUser());
@@ -775,8 +693,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		child.setObsDatetime(new Date());
 		child.setValueText("test");
 		child.setPerson(new Patient(2));
-
-
+		
 		parent.setConcept(cs.getConcept(2)); //in the concept set table as a set
 		parent.setDateCreated(new Date());
 		parent.setCreator(Context.getAuthenticatedUser());
@@ -790,8 +707,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This test makes sure that child obs on a parent obs are given an obs group id when the 
-	 * parent obs is created
+	 * This test makes sure that child obs on a parent obs are given an obs group id when the parent
+	 * obs is created
 	 * 
 	 * @throws Throwable
 	 */
@@ -799,13 +716,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void shouldCreateObsGroupId() throws Throwable {
 		
 		executeDataSet(INITIAL_OBS_XML);
-
+		
 		ConceptService cs = Context.getConceptService();
 		ObsService os = Context.getObsService();
 		
 		Obs child = new Obs();
 		Obs oParent = new Obs();
-
+		
 		createObsGroup(oParent, child, cs, os);
 		
 		// save the obs ids
@@ -826,18 +743,16 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertTrue(fetchedParent.isObsGrouping());
 		assertEquals(1, fetchedParent.getGroupMembers().size());
 		
-		
 	}
-		
+	
 	/**
-	 * 
-	 * Unit test for findObsByGroupId... yeah, it's deprecated, but doesn't hurt to check
-	 * that it's doing what we want it to be doing.
+	 * Unit test for findObsByGroupId... yeah, it's deprecated, but doesn't hurt to check that it's
+	 * doing what we want it to be doing.
 	 * 
 	 * @throws Throwable
 	 */
 	@Test
-	public void shouldFindObsByGroupId() throws Throwable{
+	public void shouldFindObsByGroupId() throws Throwable {
 		executeDataSet(INITIAL_OBS_XML);
 		
 		ConceptService cs = Context.getConceptService();
@@ -868,14 +783,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obs4 = os.findObsByGroupId(oParent.getObsId());
 		
 		assertTrue(obs.equals(obs2));
-		assertTrue(obs3.size()==0);
+		assertTrue(obs3.size() == 0);
 		assertTrue(obs4.contains(child));
 		assertTrue(obs4.contains(child2));
 	}
 	
 	/**
-	 * This method gets observations and only fetches obs
-	 * that are for patients
+	 * This method gets observations and only fetches obs that are for patients
 	 * 
 	 * @throws Exception
 	 */
@@ -899,8 +813,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This method gets observations and only fetches obs
-	 * that are for users
+	 * This method gets observations and only fetches obs that are for users
 	 * 
 	 * @throws Exception
 	 */
@@ -921,5 +834,301 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		assertEquals(2, obs.size());
 		//os.getObservations(null, null, questions, null, personTypes, null, "obs.valueDatetime asc", null, null, null, null, false);
+	}
+	
+	/**
+	 * @verifies {@link ObsService#getComplexObs(Integer,String)} test = should fill in complex data
+	 *           object for complex obs
+	 */
+	@Test
+	public void getComplexObs_shouldFillInComplexDataObjectForComplexObs() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+		
+		ObsService os = Context.getObsService();
+		
+		Obs complexObs = os.getComplexObs(44, OpenmrsConstants.RAW_VIEW);
+		
+		Assert.assertNotNull(complexObs);
+		Assert.assertTrue(complexObs.isComplex());
+		Assert.assertNotNull(complexObs.getValueComplex());
+		Assert.assertNotNull(complexObs.getComplexData());
+	}
+	
+	/**
+	 * @verifies {@link ObsService#getComplexObs(Integer,String)} test = should not fail with null
+	 *           view
+	 */
+	@Test
+	public void getComplexObs_shouldNotFailWithNullView() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+		
+		ObsService os = Context.getObsService();
+		
+		os.getComplexObs(44, null);
+	}
+	
+	/**
+	 * @verifies {@link ObsService#getComplexObs(Integer,String)} test = should return normal obs
+	 *           for non complex obs
+	 */
+	@Test
+	public void getComplexObs_shouldReturnNormalObsForNonComplexObs() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+		
+		ObsService os = Context.getObsService();
+		
+		Obs normalObs = os.getComplexObs(7, OpenmrsConstants.RAW_VIEW);
+		
+		Assert.assertFalse(normalObs.isComplex());
+	}
+	
+	/**
+	 * @verifies {@link ObsService#getHandler(Class)} test = should have default image and text
+	 *           handlers registered by spring
+	 */
+	@Test
+	public void getHandler_shouldHaveDefaultImageAndTextHandlersRegisteredBySpring() throws Exception {
+		ObsService os = Context.getObsService();
+		ComplexObsHandler imgHandler = os.getHandler("ImageHandler");
+		Assert.assertNotNull(imgHandler);
+		
+		ComplexObsHandler textHandler = os.getHandler("TextHandler");
+		Assert.assertNotNull(textHandler);
+	}
+	
+	/**
+	 * @verifies {@link ObsService#getHandler(String)} test = should get handler with matching class
+	 *           name
+	 */
+	@Test
+	public void getHandler_shouldGetHandlerWithMatchingClassName() throws Exception {
+		ObsService os = Context.getObsService();
+		ComplexObsHandler handler = os.getHandler("ImageHandler");
+		Assert.assertNotNull(handler);
+		Assert.assertTrue(handler instanceof ImageHandler);
+	}
+	
+	/**
+	 * @verifies {@link ObsService#getHandlers()} test = should never return null
+	 */
+	@Test
+	public void getHandlers_shouldNeverReturnNull() throws Exception {
+		Assert.assertNotNull(Context.getObsService().getHandlers());
+		
+		// test our current implementation without it being initialized by spring
+		Assert.assertNotNull(new ObsServiceImpl().getHandlers());
+	}
+	
+	/**
+	 * @verifies {@link ObsService#registerHandler(String,ComplexObsHandler)} test = should register
+	 *           handler with the given key
+	 */
+	@Test
+	public void registerHandler_shouldRegisterHandlerWithTheGivenKey() throws Exception {
+		ObsService os = Context.getObsService();
+		
+		os.registerHandler("DummyHandler", new ImageHandler());
+		
+		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler");
+		Assert.assertNotNull(dummyHandler);
+	}
+	
+	/**
+	 * @verifies {@link ObsService#registerHandler(String,String)} test = should load handler and
+	 *           register key
+	 */
+	@Test
+	public void registerHandler_shouldLoadHandlerAndRegisterKey() throws Exception {
+		ObsService os = Context.getObsService();
+		
+		// name it something other than what we used in the previous test
+		os.registerHandler("DummyHandler2", "org.openmrs.obs.handler.ImageHandler");
+		
+		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler2");
+		Assert.assertNotNull(dummyHandler);
+	}
+	
+	/**
+	 * @verifies {@link ObsService#removeHandler(String)} test = should not fail with invalid key
+	 */
+	@Test
+	public void removeHandler_shouldNotFailWithInvalidKey() throws Exception {
+		Context.getObsService().removeHandler("SomeRandomHandler");
+	}
+	
+	/**
+	 * @verifies {@link ObsService#removeHandler(String)} test = should remove handler with matching
+	 *           key
+	 */
+	@Test
+	public void removeHandler_shouldRemoveHandlerWithMatchingKey() throws Exception {
+		ObsService os = Context.getObsService();
+		
+		// add the handler and make sure its there
+		os.registerHandler("DummyHandler3", "org.openmrs.obs.handler.ImageHandler");
+		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler3");
+		Assert.assertNotNull(dummyHandler);
+		
+		// now remove the handler and make sure its gone
+		os.removeHandler("DummyHandler3");
+		ComplexObsHandler dummyHandlerAgain = os.getHandler("DummyHandler3");
+		Assert.assertNull(dummyHandlerAgain);
+	}
+	
+	/**
+	 * @verifies {@link ObsService#saveObs(Obs,String)} test = should create new file from complex
+	 *           data for new obs
+	 */
+	@Test
+	public void saveObs_shouldCreateNewFileFromComplexDataForNewObs() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+		AdministrationService as = Context.getAdministrationService();
+		
+		// make sure the file isn't there to begin with
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		File createdFile = new File(complexObsDir, "nameOfFile.txt");
+		Assert.assertFalse(createdFile.exists());
+		
+		// the complex data to put onto an obs that will be saved
+		InputStream inputStream = new ByteArrayInputStream("This is a string to save to a file".getBytes());
+		ComplexData complexData = new ComplexData("nameOfFile.txt", inputStream);
+		
+		// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
+		// this is a concept mapped to the text handler
+		Concept questionConcept = cs.getConcept(8474);
+		
+		Obs obsToSave = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+		obsToSave.setComplexData(complexData);
+		
+		try {
+			os.saveObs(obsToSave, null);
+			
+			// make sure the file appears now after the save
+			Assert.assertTrue(createdFile.exists());
+		}
+		finally {
+			// we always have to delete this inside the same unit test because it is outside the
+			// database and hence can't be "rolled back" like everything else
+			createdFile.delete();
+		}
+	}
+	
+	/**
+	 * @verifies {@link ObsService#saveObs(Obs,String)} test = should not overwrite file when
+	 *           updating a complex obs
+	 */
+	@Test
+	public void saveObs_shouldNotOverwriteFileWhenUpdatingAComplexObs() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+		AdministrationService as = Context.getAdministrationService();
+		
+		// Create the file that was supposedly put there by another obs
+		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+		File previouslyCreatedFile = new File(complexObsDir, "nameOfFile.txt");
+		InputStream inputStream = new ByteArrayInputStream("a string to save to a file".getBytes());
+		OpenmrsUtil.copyFile(inputStream, new FileOutputStream(previouslyCreatedFile));
+		inputStream.close();
+		
+		// the file we'll be creating...defining it here so we can delete it in a finally block
+		File newComplexFile = null;
+		try {
+			
+			long oldFileSize = previouslyCreatedFile.length();
+			
+			// now add a new file to this obs and update it
+			// ...then make sure the original file is still there
+			
+			// the complex data to put onto an obs that will be saved
+			InputStream inputStream2 = new ByteArrayInputStream("diff string to save to a file with the same name"
+			        .getBytes());
+			ComplexData complexData = new ComplexData("nameOfFile.txt", inputStream2);
+			
+			// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
+			// this is a concept mapped to the text handler
+			Concept questionConcept = cs.getConcept(8474);
+			
+			Obs obsToSave = new Obs(new Person(1), questionConcept, new Date(), new Location(1));
+			
+			obsToSave.setComplexData(complexData);
+			
+			os.saveObs(obsToSave, null);
+			
+			// make sure the old file still appears now after the save
+			Assert.assertEquals(oldFileSize, previouslyCreatedFile.length());
+			
+			String valueComplex = obsToSave.getValueComplex();
+			String filename = valueComplex.substring(valueComplex.indexOf("|") + 1).trim();
+			newComplexFile = new File(complexObsDir, filename);
+			// make sure the file appears now after the save
+			Assert.assertTrue(newComplexFile.length() > oldFileSize);
+		}
+		finally {
+			// clean up the files we created
+			newComplexFile.delete();
+			try {
+				previouslyCreatedFile.delete();
+			}
+			catch (Throwable t) {
+				// pass 
+			}
+		}
+		
+	}
+	
+	/**
+	 * @verifies {@link ObsService#setHandlers(Map<QString;QComplexObsHandler;>)} test = should add
+	 *           new handlers with new keys
+	 */
+	@Test
+	public void setHandlers_shouldAddNewHandlersWithNewKeys() throws Exception {
+		ObsService os = Context.getObsService();
+		
+		Map<String, ComplexObsHandler> handlers = new HashMap<String, ComplexObsHandler>();
+		handlers.put("DummyHandler4", new ImageHandler());
+		handlers.put("DummyHandler5", new TextHandler());
+		
+		// set the handlers and make sure they're there
+		os.setHandlers(handlers);
+		
+		ComplexObsHandler dummyHandler4 = os.getHandler("DummyHandler4");
+		Assert.assertNotNull(dummyHandler4);
+		
+		ComplexObsHandler dummyHandler5 = os.getHandler("DummyHandler5");
+		Assert.assertNotNull(dummyHandler5);
+	}
+	
+	/**
+	 * @verifies {@link ObsService#setHandlers(Map<QString;QComplexObsHandler;>)} test = should
+	 *           override handlers with same key
+	 */
+	@Test
+	public void setHandlers_shouldOverrideHandlersWithSameKey() throws Exception {
+		ObsService os = Context.getObsService();
+		
+		Map<String, ComplexObsHandler> handlers = new HashMap<String, ComplexObsHandler>();
+		handlers.put("DummyHandlerToOverride", new ImageHandler());
+		
+		// set the handlers and make sure they're there
+		os.setHandlers(handlers);
+		
+		ComplexObsHandler dummyHandlerToOverride = os.getHandler("DummyHandlerToOverride");
+		Assert.assertTrue(dummyHandlerToOverride instanceof ImageHandler);
+		
+		// now override that key and make sure the new class is stored
+		
+		Map<String, ComplexObsHandler> handlersAgain = new HashMap<String, ComplexObsHandler>();
+		handlersAgain.put("DummyHandlerToOverride", new TextHandler());
+		
+		os.setHandlers(handlersAgain);
+		
+		ComplexObsHandler dummyHandlerToOverrideAgain = os.getHandler("DummyHandlerToOverride");
+		Assert.assertTrue(dummyHandlerToOverrideAgain instanceof TextHandler);
+		
 	}
 }

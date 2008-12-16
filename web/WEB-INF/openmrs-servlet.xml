@@ -66,8 +66,6 @@
 				<prop key="admin/person/addPerson.htm">addPerson</prop>
 
 				<prop key="admin/observations/obs.form">obsForm</prop>
-				<prop key="admin/observations/mimeType.list">mimeTypeList</prop>
-				<prop key="admin/observations/mimeType.form">mimeTypeForm</prop>
 				<prop key="admin/observations/personObs.form">personObsForm</prop>
 
 				<prop key="admin/users/user.list">userList</prop>
@@ -232,8 +230,6 @@
 	<!-- ====== Observation Sector ====== -->
 	<!-- ================================ -->
 
-	<!-- ** Mime Type ** -->
-
 	<bean id="obsValidator" class="org.openmrs.validator.ObsValidator" />
 	<bean id="obsForm" class="org.openmrs.web.controller.observation.ObsFormController">
 		<property name="commandName"><value>obs</value></property>
@@ -250,31 +246,7 @@
 		<property name="successView"><value>personObs.form</value></property>
 	</bean>
 
-	<!--this is the optional method of declaring values in the constructor -->
-	<!--<bean id="mimeTypeList" class="org.openmrs.web.controller.observation.MimeTypeListController" />-->
-	<!--<bean id="mimeTypeForm" class="org.openmrs.web.controller.observation.MimeTypeFormController" />-->
-
-	<bean id="mimeTypeList" class="org.openmrs.web.controller.observation.MimeTypeListController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>mimeTypeList</value></property>
-		<property name="formView"><value>/admin/observations/mimeTypeList</value></property>
-		<property name="successView"><value>mimeType.list</value></property>
-	</bean>
-
-	<!--  Validator and Form Controller for the add/edit order types page -->
-	<bean id="mimeTypeValidator" class="org.openmrs.web.controller.observation.MimeTypeValidator" />
-	<bean id="mimeTypeForm" class="org.openmrs.web.controller.observation.MimeTypeFormController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>mimeType</value></property>
-		<property name="validator">
-			<ref bean="mimeTypeValidator" />
-		</property>
-		<property name="formView"><value>/admin/observations/mimeTypeForm</value></property>
-		<property name="successView"><value>mimeType.list</value></property>
-	</bean>
-	<!-- ** /Mime Type ** -->
-
-	<!-- ====== /Observation Sector ====== -->
+   	<!-- ====== /Observation Sector ====== -->
 
 	<!-- ========================== -->
 	<!-- ====== Order Sector ====== -->
@@ -1941,7 +1913,20 @@
 			</list>
 		</property>
 	</bean>
-	
+
+    <!--  COMPLEX OBS HANDLER SECTION -->
+    <bean parent="obsServiceTarget" >
+        <property name="handlers">
+            <map>
+                <entry>
+                    <key><value>ImageHandler</value></key>
+                    <bean class="org.openmrs.web.controller.observation.handler.WebImageHandler"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+    
+	<!-- REPORT RENDERER SECTION -->
 	<!-- Add the web specific report renderers to the list of renderers available to the ReportService -->
 	<!-- A module adding renderers must this exact parent id --> 
 	<bean parent="reportServiceTarget">

@@ -30,7 +30,6 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Form.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/FormField.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/GlobalProperty.hbm.xml" />
-		<mapping resource="org/openmrs/api/db/hibernate/MimeType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Obs.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Person.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAttribute.hbm.xml" />

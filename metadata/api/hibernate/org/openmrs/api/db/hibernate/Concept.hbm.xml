@@ -136,7 +136,11 @@
 			<property name="compileStatus" type="java.lang.String" column="compile_status" length="255" />
 			<property name="className" type="java.lang.String" column="class_name" length="1024" />
 		</joined-subclass>
-		
+	
+	   <joined-subclass name="org.openmrs.ConceptComplex" table="concept_complex" extends="org.openmrs.Concept" lazy="false">
+	        <key column="concept_id" not-null="true" on-delete="cascade" />
+	        <property name="handler" type="java.lang.String" column="handler" length="255"/>
+	    </joined-subclass>	
 		
 	</class>
 

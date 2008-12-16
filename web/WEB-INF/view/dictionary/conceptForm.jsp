@@ -337,47 +337,6 @@
 			</table>
 		</td>
 	</tr>
-	<tr id="conceptMapRow">
-		<th valign="top" title="<spring:message code="Concept.mappings.help"/>">
-			<spring:message code="Concept.mappings"/>
-		</th>
-		<td>
-			<c:forEach var="mapping" items="${concept.conceptMappings}" varStatus="mapStatus">
-				<span id="mapping-${mapStatus.index}">
-					<spring:nestedPath path="concept.conceptMappings[${mapStatus.index}]">
-						<spring:bind path="sourceCode">
-							<input type="text" name="${status.expression}" value="${status.value}" size="10">
-						</spring:bind>
-						<spring:bind path="source">
-							<select name="${status.expression}">
-								<openmrs:forEachRecord name="conceptSource">
-									<option value="${record.conceptSourceId}" <c:if test="${record.conceptSourceId == status.value}">selected</c:if> >
-											${record.name} (${record.hl7Code})
-									</option>
-								</openmrs:forEachRecord>
-							</select>
-						</spring:bind>
-					</spring:nestedPath>
-					<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeMapping(this)" />
-					<br/>
-				</span>
-			</c:forEach>
-			<span id="newConceptMapping">
-				<input type="text" name="newConceptMappingSourceCode" value="${status.value}" size="10">
-				<select name="newConceptMappingSource">
-					<openmrs:forEachRecord name="conceptSource">
-						<option value="${record.conceptSourceId}">
-								${record.name} (${record.hl7Code})
-						</option>
-					</openmrs:forEachRecord>
-				</select>
-				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeMapping(this)" />
-				<br/>
-			</span>
-			<input type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" onClick="addMapping(this)" />
-			<br/>
-		</td>
-	</tr>
 	<tr id="numericDatatypeRow">
 		<th valign="top"><spring:message code="ConceptNumeric.name"/></th>
 		<td>
@@ -433,6 +392,75 @@
 					</td>
 				</tr>
 			</table>
+		</td>
+	</tr>
+    <tr id="complexDatatypeRow">
+        <th valign="top"><spring:message code="ConceptComplex.handler"/></th>
+        <td>
+            <select name="handlerSelect"> 
+             <option value=""><spring:message code="general.select"/>...</option>
+             <c:forEach var="handler" items="${handlers}">
+             	<option value="${handler.key}" <c:if test="${concept.complex && handler.key == concept.handler}">selected="selected"</c:if>>
+                     ${handler.key}
+                 </option>
+             </c:forEach>
+            </select>
+                 
+            <!-- All handler key to class mappings
+            <table>
+             <c:forEach var="h" items="${handlers }">
+                <tr name="handlerRow" id="handler_${h.key}">
+                    <th >
+                        <spring:message code="general.class"/>
+                    </th>
+                    <td>
+                        ${h.value.class.name }
+                    </td>
+                </tr>
+             </c:forEach>
+            </table>
+            -->
+        </td>
+    </tr>
+	<tr id="conceptMapRow">
+		<th valign="top" title="<spring:message code="Concept.mappings.help"/>">
+			<spring:message code="Concept.mappings"/>
+		</th>
+		<td>
+			<c:forEach var="mapping" items="${concept.conceptMappings}" varStatus="mapStatus">
+				<span id="mapping-${mapStatus.index}">
+					<spring:nestedPath path="concept.conceptMappings[${mapStatus.index}]">
+						<spring:bind path="sourceCode">
+							<input type="text" name="${status.expression}" value="${status.value}" size="10">
+						</spring:bind>
+						<spring:bind path="source">
+							<select name="${status.expression}">
+								<openmrs:forEachRecord name="conceptSource">
+									<option value="${record.conceptSourceId}" <c:if test="${record.conceptSourceId == status.value}">selected</c:if> >
+											${record.name} (${record.hl7Code})
+									</option>
+								</openmrs:forEachRecord>
+							</select>
+						</spring:bind>
+					</spring:nestedPath>
+					<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeMapping(this)" />
+					<br/>
+				</span>
+			</c:forEach>
+			<span id="newConceptMapping">
+				<input type="text" name="newConceptMappingSourceCode" value="${status.value}" size="10">
+				<select name="newConceptMappingSource">
+					<openmrs:forEachRecord name="conceptSource">
+						<option value="${record.conceptSourceId}">
+								${record.name} (${record.hl7Code})
+						</option>
+					</openmrs:forEachRecord>
+				</select>
+				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeMapping(this)" />
+				<br/>
+			</span>
+			<input type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" onClick="addMapping(this)" />
+			<br/>
 		</td>
 	</tr>
 	<tr>

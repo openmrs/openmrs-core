@@ -133,6 +133,15 @@
 		<servlet-name>dataExportServlet</servlet-name>
 		<url-pattern>/dataExportServlet</url-pattern>
 	</servlet-mapping>
+
+    <servlet>
+        <servlet-name>complexObsServlet</servlet-name>
+        <servlet-class>org.openmrs.web.servlet.ComplexObsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>complexObsServlet</servlet-name>
+        <url-pattern>/complexObsServlet</url-pattern>
+    </servlet-mapping>
 	
 	<servlet>
 		<servlet-name>sampleFlowsheetServlet</servlet-name>

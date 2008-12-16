@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 
 import java.util.Date;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.APIException;
 
@@ -207,5 +208,24 @@ public class ObsTest {
 
 		
 	}
+
+		/**
+         * @verifies {@link Obs#isComplex()}
+         * test = should return true if the concept is complex
+         */
+        @Test
+        public void isComplex_shouldReturnTrueIfTheConceptIsComplex() throws Exception {
+        	ConceptDatatype cd = new ConceptDatatype();
+        	cd.setName("Complex");
+        	cd.setHl7Abbreviation("ED");
+        	
+        	ConceptComplex complexConcept = new ConceptComplex();
+        	complexConcept.setDatatype(cd);
+        	
+	        Obs obs = new Obs();
+	        obs.setConcept(complexConcept);
+	        
+	        Assert.assertTrue(obs.isComplex());
+        }
 	
 }

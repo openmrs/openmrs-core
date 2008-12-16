@@ -189,7 +189,10 @@ public final class OpenmrsConstants {
 	public static final String PRIV_DELETE_OBS	= "Delete Observations";
 	public static final String PRIV_PURGE_OBS	= "Purge Observations";
 
+	@Deprecated
 	public static final String PRIV_VIEW_MIME_TYPES	 = "View Mime Types";
+	
+	@Deprecated
 	public static final String PRIV_PURGE_MIME_TYPES = "Purge Mime Types";
 
 	public static final String PRIV_VIEW_PATIENTS   = "View Patients";
@@ -234,6 +237,8 @@ public final class OpenmrsConstants {
 	public static final String PRIV_MANAGE_IDENTIFIER_TYPES	= "Manage Identifier Types";
 	public static final String PRIV_VIEW_IDENTIFIER_TYPES   = "View Identifier Types";
 	public static final String PRIV_PURGE_IDENTIFIER_TYPES  = "Purge Identifier Types";
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_MIME_TYPES		= "Manage Mime Types";
 	
 	public static final String PRIV_VIEW_CONCEPT_CLASSES	= "View Concept Classes";
@@ -377,8 +382,6 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_EDIT_OBS, "Able to edit patient observations");
 			CORE_PRIVILEGES.put(PRIV_DELETE_OBS, "Able to delete patient observations");
 			
-			CORE_PRIVILEGES.put(PRIV_VIEW_MIME_TYPES, "Able to view complex observation mime types");
-			
 			CORE_PRIVILEGES.put(PRIV_VIEW_PATIENTS, "Able to view patients");
 			CORE_PRIVILEGES.put(PRIV_ADD_PATIENTS, "Able to add patients");
 			CORE_PRIVILEGES.put(PRIV_EDIT_PATIENTS, "Able to edit patients");
@@ -419,7 +422,6 @@ public final class OpenmrsConstants {
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_LOCATIONS, "Able to view locations");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_LOCATIONS, "Able to add/edit/delete locations");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_MIME_TYPES, "Able to add/edit/delete obs mime types");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPT_CLASSES, "Able to view concept classes");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_CLASSES, "Able to add/edit/retire concept classes");
@@ -551,7 +553,8 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST         = "locale.allowed.list";
 	public static final String GLOBAL_PROPERTY_IMPLEMENTATION_ID           = "implementation_id";
 	public static final String GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS         = "newPatientForm.relationships";
-	
+	public static final String GLOBAL_PROPERTY_COMPLEX_OBS_DIR = "obs.complex_obs_dir";
+		
 	/**
 	 * These properties (and default values) are set if not found in the database 
 	 * when OpenMRS is started if they do not exist yet
@@ -734,6 +737,8 @@ public final class OpenmrsConstants {
 
         props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES, "", "A comma delimited list of PatientIdentifier names : PatientIdentifier locations that will be displayed on the patient dashboard.  E.g.: TRACnet ID:Rwanda,ELDID:Kenya"));
         
+        props.add(new GlobalProperty(GLOBAL_PROPERTY_COMPLEX_OBS_DIR, "complex_obs", "Default directory for storing complex obs."));
+		
         props.add(new GlobalProperty(GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER, "number", "The sort order for the obs listed on the encounter edit form.  'number' sorts on the associated numbering from the form schema.  'weight' sorts on the order displayed in the form schema."));
         
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en", "Comma delimited list of locales allowed for use on system"));
@@ -945,4 +950,8 @@ public final class OpenmrsConstants {
     //Patient Identifier Validators
 	public static final String LUHN_IDENTIFIER_VALIDATOR = LuhnIdentifierValidator.class.getName();
     
+    // ComplexObsHandler views
+    public static final String RAW_VIEW = "RAW_VIEW";
+    public static final String TEXT_VIEW = "TEXT_VIEW";
+
 }

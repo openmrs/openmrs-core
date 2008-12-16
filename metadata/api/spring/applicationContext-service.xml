@@ -207,6 +207,18 @@
 	</bean>
 	<bean id="obsServiceTarget" class="org.openmrs.api.impl.ObsServiceImpl">
 		<property name="obsDAO"><ref bean="obsDAO"/></property>	
+        <property name="handlers">
+            <map>
+                <entry>
+                    <key><value>ImageHandler</value></key>
+                    <bean class="org.openmrs.obs.handler.ImageHandler"/>
+                </entry>
+                <entry>
+                    <key><value>TextHandler</value></key>
+                    <bean class="org.openmrs.obs.handler.TextHandler"/>
+                </entry>
+            </map>
+        </property>
 	</bean>
 	<bean id="encounterServiceTarget" class="org.openmrs.api.impl.EncounterServiceImpl">
 		<property name="encounterDAO"><ref bean="encounterDAO"/></property>	

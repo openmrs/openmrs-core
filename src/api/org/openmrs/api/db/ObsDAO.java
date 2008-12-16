@@ -79,11 +79,4 @@ public interface ObsDAO {
 	                                 Integer mostRecentN, Integer obsGroupId, Date fromDate,
 	                                 Date toDate, boolean includeVoidedObs) throws DAOException;
 
-	/**
-     * Auto generated method comment
-	 * 
-	 * @see org.openmrs.api.ObsService#getObservations(String)
-	 */
-    //public List<Obs> getObservations(String searchString) throws DAOException;
-
 }

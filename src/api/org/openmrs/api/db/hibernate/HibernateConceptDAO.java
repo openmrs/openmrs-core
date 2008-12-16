@@ -42,6 +42,7 @@ import org.hibernate.criterion.Subqueries;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptName;
@@ -80,7 +81,28 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
+		
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptComplex(java.lang.Integer)
+	 */
+	public ConceptComplex getConceptComplex(Integer conceptId) {
+		ConceptComplex cc;
+		Object obj = sessionFactory.getCurrentSession().get(ConceptComplex.class, conceptId);
+		// If Concept has already been read & cached, we may get back a Concept instead of
+		// ConceptComplex.  If this happens, we need to clear the object from the cache
+		// and re-fetch it as a ConceptComplex
+		if (obj != null && !obj.getClass().equals(ConceptComplex.class)) {
+			sessionFactory.getCurrentSession().evict(obj); // remove from cache
+			// session.get() did not work here, we need to perform a query to get a ConceptComplex
+			Query query = sessionFactory.getCurrentSession().createQuery("from ConceptComplex where conceptId = :conceptId")
+				.setParameter("conceptId", conceptId);
+			obj = query.uniqueResult();
+		}
+		cc = (ConceptComplex)obj;
 
+		return cc;
+	}
+		
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConcept(org.openmrs.Concept)
 	 */
@@ -137,10 +159,39 @@ public class HibernateConceptDAO implements ConceptDAO {
 			catch (SQLException e) {
 				log.error("Error while trying to see if this ConceptNumeric is in the concept_numeric table already", e);
 			}
-		} else if (concept instanceof ConceptDerived) {
-			// check the concept_derived table
-		}
-	}
+    	}
+    	else if (concept instanceof ConceptComplex) {
+    		
+    		try {
+				PreparedStatement ps = connection.prepareStatement("SELECT * FROM concept WHERE concept_id = ? and not exists (select * from concept_complex WHERE concept_id = ?)");
+				ps.setInt(1, concept.getConceptId());
+				ps.setInt(2, concept.getConceptId());
+				ps.execute();
+		
+				if (ps.getResultSet().next()) {
+					// we have to evict the current concept out of the session because
+					// the user probably had to change the class of this object to get it 
+					// to now be a numeric
+					// (must be done before the "insert into...")
+					sessionFactory.getCurrentSession().clear();
+					
+					ps = connection.prepareStatement("INSERT INTO concept_complex (concept_id, precise) VALUES (?, false)");
+					ps.setInt(1, concept.getConceptId());
+					ps.executeUpdate();
+				}
+				else {
+					// no stub insert is needed because either a concept row 
+					// doesn't exist or a concept_numeric row does exist
+				}
+				
+			}
+			catch (SQLException e) {
+				log.error("Error while trying to see if this ConceptComplex is in the concept_complex table already", e);
+			}
+    	} else if (concept instanceof ConceptDerived) {
+    		// check the concept_derived table
+    	}
+    }
 
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#purgeConcept(org.openmrs.Concept)
@@ -808,8 +859,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 
 	/**
-	 * y * returns a list of n-generations of parents of a concept in a concept
-	 * set
+	 * returns a list of n-generations of parents of a concept in a concept set
 	 * 
 	 * @param Concept current
 	 * @return List<Concept>
