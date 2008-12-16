@@ -14,6 +14,7 @@
 package org.openmrs.module;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -51,7 +52,7 @@ public final class Module {
 	
 	private String requireOpenmrsVersion;
 	private String requireDatabaseVersion;
-	private List<String> requiredModules;
+	private Map<String,String> requiredModulesMap;
 	
 	private List<AdvicePoint> advicePoints = new Vector<AdvicePoint>();
 	
@@ -213,17 +214,61 @@ public final class Module {
 	}
 
 	/**
-	 * @return the requiredModules
+	 * This list of strings is just what is included in the config.xml file, 
+	 * the full package names:  e.g. org.openmrs.module.formentry
+	 * 
+	 * @return the list of requiredModules
 	 */
 	public List<String> getRequiredModules() {
-		return requiredModules;
+		return requiredModulesMap == null ? null : new ArrayList<String>(requiredModulesMap.keySet());
 	}
+	
+	/**
+	 * Convenience method to get the version of this given module
+	 * that is required 
+	 * 
+	 * @return the version of the given required module, or null if there are no version constraints
+	 * 
+	 * @should return null if no required modules exist
+	 * @should return null if no required module by given name exists
+	 */
+	public String getRequiredModuleVersion(String moduleName) {
+		return requiredModulesMap == null ? null : requiredModulesMap.get(moduleName);
+	}	
 
+	/**
+	 * This is a convenience method to set all the required modules without
+	 * any version requirements
+	 * 
+	 * @param requireModules the requiredModules to set for this module
+	 * 
+	 * @should set modules when there is a null required modules map
+	 */
+	public void setRequiredModules(List<String> requiredModules) {
+		if (requiredModulesMap == null)
+			requiredModulesMap = new HashMap<String, String>();
+		
+		for (String module : requiredModules) {
+			requiredModulesMap.put(module, null);
+		}
+	}
+	
 	/**
 	 * @param requireModules the requiredModules to set
 	 */
-	public void setRequiredModules(List<String> requiredModules) {
-		this.requiredModules = requiredModules;
+	public void setRequiredModulesMap(Map<String, String> requiredModulesMap) {
+		this.requiredModulesMap = requiredModulesMap;
+	}
+	
+	/**
+	 * Get the modules that are required for this module.  The keys in this 
+	 * map are the module package names.  The values in the map are the
+	 * required version.  If no specific version is required, it will be null.
+	 * 
+	 * @return a map from required module to the version that is required
+	 */
+	public Map<String, String> setRequiredModulesMap() {
+		return requiredModulesMap;
 	}
 
 	/**
