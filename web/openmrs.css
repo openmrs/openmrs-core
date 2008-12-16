@@ -785,10 +785,14 @@ fieldset {
 	padding: 0 3px 0 3px;
 	text-decoration: none;
 	}
+.markAlertText {
+	font-size: .8em;
+	}	
 	.markAlertRead img {
 		border-width: 0px;
 		height: 1em;
 		margin: 1px 1px 0 1px;
+		vertical-align: middle;
 	}
 .smallWidth {
 	width: 140px;
