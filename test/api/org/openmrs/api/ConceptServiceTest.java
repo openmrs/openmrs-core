@@ -21,9 +21,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.Locale;
 
+import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
@@ -146,5 +149,16 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		assertEquals(50.0, thirdConceptNumeric.getHiAbsolute().doubleValue(), 0);
 		
 	}
+
+	/**
+     * @see {@link ConceptService#getConceptComplex(Integer)}
+     */
+    @Test
+    //@Verifies(value = "should return a concept complex object", method = "getConceptComplex(Integer)")
+    public void getConceptComplex_shouldReturnAConceptComplexObject() throws Exception {
+    	executeDataSet("org/openmrs/api/include/ObsServiceTest-complex.xml");
+	    ConceptComplex concept = Context.getConceptService().getConceptComplex(8473);
+	    Assert.assertNotNull(concept);
+    }
 
 }

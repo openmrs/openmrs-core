@@ -248,7 +248,15 @@
 						</tr>
 					</table>
 				</td>
+			</tr>
 		</c:if>
+	 
+        <c:if test="${concept.complex}">
+            <tr>
+                <th valign="top"><spring:message code="ConceptComplex.handler"/></th>
+                <td valign="middle">${concept.handler}</td>
+            </tr>
+        </c:if>
 		<tr>
 			<th><spring:message code="Concept.version" /></th>
 			<td>

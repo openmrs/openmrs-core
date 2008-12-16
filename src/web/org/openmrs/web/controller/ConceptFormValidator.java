@@ -16,6 +16,7 @@ package org.openmrs.web.controller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptNumeric;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -32,7 +33,7 @@ public class ConceptFormValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	public boolean supports(Class c) {
-		return c.equals(Concept.class) || c.equals(ConceptNumeric.class);
+		return c.equals(Concept.class) || c.equals(ConceptNumeric.class) || c.equals(ConceptComplex.class);
 	}
 
 	/**

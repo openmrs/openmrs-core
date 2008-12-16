@@ -29,6 +29,8 @@
 			column="value_modifier" length="2" />
 		<property name="valueText" type="java.lang.String"
 			column="value_text" length="50" />
+		<property name="valueComplex" type="java.lang.String"
+		    column="value_complex" length="255" />
 			
 		<property name="comment" type="java.lang.String"
 			column="comments" length="255" />
@@ -72,28 +74,6 @@
 			<one-to-many class="Obs" />
 		</set> 
 		
-		<!-- Complex Obs Joined Subclass -->
-		<joined-subclass name="ComplexObs" table="complex_obs">
-		
-			<key column="obs_id" />
-
-			<property name="urn" type="java.lang.String" column="urn" length="65535" />
-			
-			<property name="complexValue" type="java.lang.String"
-				column="complex_value" length="2147483647" />
-	
-			<!-- Association -->
-		    <!-- bi-directional many-to-one association to MimeType -->
-		    <many-to-one
-		        name="mimeType"
-		        class="org.openmrs.MimeType"
-		        not-null="true"
-		   	>
-		        <column name="mime_type_id" />
-		    </many-to-one>
-		
-		</joined-subclass>
-
 	</class>
 	
 </hibernate-mapping>

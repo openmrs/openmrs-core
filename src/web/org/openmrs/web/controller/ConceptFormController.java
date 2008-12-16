@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
+import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
@@ -414,11 +415,9 @@ public class ConceptFormController extends SimpleFormController {
 
 		HttpSession httpSession = request.getSession();
 		ConceptService cs = Context.getConceptService();
-
 		if (Context.isAuthenticated()) {
-
-			Concept concept = (Concept) obj;
-
+			
+			Concept concept = (Concept)obj;
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 
@@ -451,13 +450,18 @@ public class ConceptFormController extends SimpleFormController {
 						if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Numeric")) {
 							concept = getConceptNumeric(concept, request);
 						}
+						else if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Complex")) {
+							concept = getConceptComplex(concept, request);
+						}
 						cs.saveConcept(concept);
 					}
 					else {
 						if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Numeric")) {
 							concept = getConceptNumeric(concept, request);
 						}
-
+						else if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Complex")) {
+							concept = getConceptComplex(concept, request);
+						}
 						cs.saveConcept(concept);
 					}
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
@@ -683,6 +687,9 @@ public class ConceptFormController extends SimpleFormController {
 		map.put("classes", cs.getAllConceptClasses());
 		map.put("datatypes", cs.getAllConceptDatatypes());
 		
+		//get complex handlers
+		map.put("handlers", Context.getObsService().getHandlers());
+		
 		// make spring locale available to jsp
 		map.put("locale", locale.getLanguage().substring(0, 2));
 
@@ -738,5 +745,30 @@ public class ConceptFormController extends SimpleFormController {
 		cn.setPrecise(precise);
 
 		return cn;
+	}
+	
+	/**
+	 * Creates a ConceptComplex from the concept, attaches the 
+	 * ComplexObsHandler from the request, and returns the 
+	 * ConceptComplex
+	 * 
+	 * @param concept
+	 * @param request
+	 * @return
+	 */
+	private ConceptComplex getConceptComplex(Concept concept, HttpServletRequest request) {
+		ConceptComplex cc = null;
+		if (concept instanceof ConceptComplex) {
+			cc = (ConceptComplex)concept;
+		}
+		else {
+			cc = new ConceptComplex(concept);
+		}
+		
+		String handler = null;
+		handler = request.getParameter("handlerSelect");
+		cc.setHandler(handler);
+		
+		return cc;
 	}
 }

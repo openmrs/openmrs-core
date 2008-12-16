@@ -21,6 +21,7 @@ import java.util.Set;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
@@ -932,6 +933,19 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized({OpenmrsConstants.PRIV_MANAGE_CONCEPTS})
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 
+	/**
+	 * Get a ComplexConcept with the given conceptId
+	 * 
+	 * @param conceptId of the ComplexConcept
+	 * @return a ConceptComplex object
+	 * 
+	 * @should return a concept complex object
+	 */
+    @Transactional(readOnly=true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public ConceptComplex getConceptComplex(Integer conceptId);
+	
+	
 	/**
      * Auto generated method comment
      * 

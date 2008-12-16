@@ -58,4 +58,9 @@ public class WebConstants {
 	// these vars filled in by org.openmrs.web.Listener at webapp start time
 	public static String BUILD_TIMESTAMP = "";
 	public static String WEBAPP_NAME = "openmrs";
+	
+	// ComplexObsHandler views specific to the web layer:
+	public static final String HTML_VIEW = "html_view";
+	public static final String HYPERLINK_VIEW = "hyperlink_view";
+	
 }

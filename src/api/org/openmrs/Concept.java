@@ -1357,7 +1357,18 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		if (newConceptMap != null && !conceptMappings.contains(newConceptMap))
 			conceptMappings.add(newConceptMap);
 	}
-	
+
+	/**
+	 * Child Class ConceptComplex overrides this method and returns true. See
+	 * {@link org.openmrs.ConceptComplex#isComplex()}. Otherwise this method
+	 * returns false.
+	 * 
+	 * @return false
+	 */
+	public boolean isComplex() {
+		return false;
+	}
+		
 	/**
 	 * Remove the given ConceptMap from the list of mappings for this Concept
 	 * 

@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller.observation;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -35,6 +35,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
+import org.openmrs.obs.ComplexData;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
@@ -51,6 +52,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -132,7 +135,28 @@ public class ObsFormController extends SimpleFormController {
 			    		return showForm(request, response, errors);
 			    	}
 			    	
-					os.saveObs(obs, reason);
+			    	if (obs.getConcept().isComplex()) {
+			    		if (request instanceof MultipartHttpServletRequest) {
+							MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+							MultipartFile complexDataFile = multipartRequest.getFile("complexDataFile");
+							if (complexDataFile != null && !complexDataFile.isEmpty()) {
+								InputStream complexDataInputStream = complexDataFile.getInputStream();
+
+								ComplexData complexData = new ComplexData(complexDataFile.getOriginalFilename(), complexDataInputStream);
+								
+								obs.setComplexData(complexData);
+								
+								// the handler on the obs.concept is called with the given complex data
+								os.saveObs(obs, reason);
+
+								complexDataInputStream.close();
+							}
+						}
+			    	}
+			    	else {
+			    		os.saveObs(obs, reason);
+			    	}
+			    	
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.saved");
 				}
 				
@@ -220,9 +244,25 @@ public class ObsFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			map.put("forms", Context.getFormService().getAllForms());
-			if (obs.getConcept() != null)
+			
+			if (obs.getConcept() != null) {
 				map.put("conceptName", obs.getConcept().getName(request.getLocale()));
+				
+				ObsService os = Context.getObsService();
+				Integer obsId = obs.getObsId();
+				if (obsId != null && obs.getConcept().isComplex()) {
+					Obs complexObs = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HTML_VIEW);
+					ComplexData complexData = complexObs.getComplexData();
+					map.put("htmlView", complexData.getData());
+					
+					Obs complexObs2 = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HYPERLINK_VIEW);
+					ComplexData complexData2 = complexObs2.getComplexData();
+					map.put("hyperlinkView", complexData2.getData());
+				}
+			}
+			
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+			
 		}
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		

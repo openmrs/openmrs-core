@@ -14,8 +14,12 @@
 package org.openmrs;
 
 /**
- * MimeType 
+ * MimeType
+ * 
+ * @deprecated This class is no longer used. Mimetypes are determined by the handler for a
+ *             ConceptComplex now.
  */
+@Deprecated
 public class MimeType implements java.io.Serializable {
 
 	public static final long serialVersionUID = 8765L;

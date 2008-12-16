@@ -56,6 +56,7 @@
   <concept_datatype concept_datatype_id="10" name="Boolean" hl7_abbreviation="BIT" description="Boolean value (yes/no, true/false)" creator="1" date_created="2004-08-26 00:00:00.0" retired="false"/>
   <concept_datatype concept_datatype_id="11" name="Rule" hl7_abbreviation="ZZ" description="Value derived from other data" creator="1" date_created="2006-09-11 13:22:00.0" retired="false"/>
   <concept_datatype concept_datatype_id="12" name="Structured Numeric" hl7_abbreviation="SN" description="Complex numeric values possible (ie, &lt;5, 1-10, etc.)" creator="1" date_created="2005-08-06 00:00:00.0" retired="false"/>
+  <concept_datatype concept_datatype_id="13" name="Complex" hl7_abbreviation="ED" description="Complex value.  Analogous to HL7 Embedded Datatype" creator="1" date_created="2008-06-11 13:22:00.0" retired="false"/>
   <concept_description concept_description_id="1" concept_id="5089" description="Patient&apos;s weight in kilograms." locale="en" creator="1" date_created="2004-08-12 00:00:00.0"/>
   <concept_description concept_description_id="2" concept_id="5497" description="Measure of CD4 (T-helper cells) in blood" locale="en" creator="1" date_created="2004-08-12 00:00:00.0"/>
   <concept_description concept_description_id="3" concept_id="7" description="Affirmative" locale="en" creator="1" date_created="2008-08-15 13:52:53.0"/>

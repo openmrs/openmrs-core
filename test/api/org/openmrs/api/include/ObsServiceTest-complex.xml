@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <global_property property="obs.complex_obs_dir" property_value="complex_obs" />
+
+  <concept concept_id="8473" retired="false" datatype_id="13" class_id="5" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
+  <concept_complex concept_id="8473" handler="ImageHandler" />
+  
+  <concept concept_id="8474" retired="false" datatype_id="13" class_id="5" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
+  <concept_complex concept_id="8474" handler="TextHandler" />
+  
+  <obs obs_id="44" person_id="2" concept_id="8473" obs_datetime="2008-02-09 00:00:00.0" location_id="1" value_complex="gif image |openmrs_logo_small.gif" creator="1" date_created="2006-02-10 15:57:35.0" voided="false"/>
+  <obs obs_id="45" person_id="2" concept_id="8474" obs_datetime="2008-02-09 00:00:00.0" location_id="1" value_complex="txt image |sometext.txt" creator="1" date_created="2006-02-10 15:57:35.0" voided="false"/>
+  
+</dataset>

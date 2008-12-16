@@ -106,7 +106,7 @@
 	}
 	
 	function updateObsValues(tmpConcept) {
-		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow'];
+		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow', 'valueComplex'];
 		for (var i=0; i<values.length; i++) {
 			$(values[i]).style.display = "none";
 		}
@@ -144,6 +144,10 @@
 				$('valueDatetimeRow').style.visibility = "visible";
 			}
 			// TODO move datatype 'TM' to own time box.  How to have them select?
+			else if (datatype == 'ED') {
+				$('valueComplex').style.display = "";
+				$('valueComplex').style.visibility = "visible";
+			}
 			else {
 				$('valueInvalidRow').style.display = "";
 				$('valueInvalidRow').style.visibility = "visible";
@@ -263,7 +267,7 @@
 	</div>
 	<br/>
 </spring:hasBindErrors>
-<form method="post" onSubmit="removeHiddenRows()">
+<form method="post" onSubmit="removeHiddenRows()" enctype="multipart/form-data">
 
 <spring:nestedPath path="obs">
 
@@ -447,6 +451,19 @@
 			</td>
 		</spring:bind>
 	</tr>
+	<tr id="valueComplex" class="obsValue">
+		<th><spring:message code="general.value"/></th>
+		<spring:bind path="valueComplex">
+			<td>
+				${status.value}<br/>
+				<a href="${hyperlinkView}" target="_blank"><spring:message code="Obs.viewCurrentComplexValue"/></a><br/>
+				${htmlView}<br/><br/>
+				<spring:message code="Obs.valueComplex.uploadNew"/>
+				<input type="file" name="complexDataFile" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</td>
+		</spring:bind>
+	</tr>
 	<tr id="valueInvalidRow" class="obsValue">
 		<th><spring:message code="general.value"/></th>
 		<td>
@@ -455,7 +472,7 @@
 		</td>
 	</tr>
 	
-	<c:if test="${1 == 2}">
+	<%--
 		<tr>
 			<th><spring:message code="Obs.dateStarted"/></th>
 			<td>
@@ -476,7 +493,7 @@
 				</spring:bind>
 			</td>
 		</tr>
-	</c:if>
+	--%>
 	
 	<tr>
 		<th><spring:message code="Obs.comment"/></th>
