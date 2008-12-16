@@ -84,6 +84,10 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
 	 */
 	public AttributableDate hydrate(String s) {
+		// don't do anything to empty dates
+		if (s == null || s.equals(""))
+			return null;
+		
 		try {
 			// try to parse as the current user (
 			return new AttributableDate(((Date)Context.getDateFormat().parseObject(s)).getTime());
