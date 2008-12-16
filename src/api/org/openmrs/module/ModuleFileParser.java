@@ -37,6 +37,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
@@ -224,7 +225,7 @@ public class ModuleFileParser {
 			module
 			        .setUpdateURL(getElement(rootNode, configVersion,
 			                "updateURL"));
-			module.setRequiredModules(getRequiredModules(rootNode,
+			module.setRequiredModulesMap(getRequiredModules(rootNode,
 			        configVersion));
 
 			module.setAdvicePoints(getAdvice(rootNode, configVersion, module));
@@ -280,15 +281,15 @@ public class ModuleFileParser {
 	/**
 	 * load in required modules list
 	 * 
-	 * @param root
-	 * @param version
-	 * @return
+	 * @param root element in the xml doc object
+	 * @param version of the config file
+	 * @return map from module package name to required version
 	 */
-	private List<String> getRequiredModules(Element root, String version) {
+	private Map<String,String> getRequiredModules(Element root, String version) {
 		NodeList requiredModulesParents = root
 		        .getElementsByTagName("require_modules");
 
-		List<String> packageNames = new Vector<String>();
+		Map<String,String> packageNamesToVersion = new HashMap<String,String>();
 
 		// TODO test require_modules section
 		if (requiredModulesParents.getLength() > 0) {
@@ -299,14 +300,16 @@ public class ModuleFileParser {
 			int i = 0;
 			while (i < requiredModules.getLength()) {
 				Node n = requiredModules.item(i);
-				if (n != null && "require_module".equals(n.getNodeName()))
-					packageNames.add(n.getTextContent());
-
+				if (n != null && "require_module".equals(n.getNodeName())) {
+					NamedNodeMap attributes = n.getAttributes();
+					Node versionNode = attributes.getNamedItem("version");
+					String reqVersion = versionNode == null ? null : versionNode.getNodeValue();
+					packageNamesToVersion.put(n.getTextContent(), reqVersion);
+				}
 				i++;
 			}
 		}
-
-		return packageNames;
+		return packageNamesToVersion;
 	}
 
 	/**
