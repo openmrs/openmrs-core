@@ -217,7 +217,19 @@ public class FormUtil {
 	 * @return String representation of the given concept
 	 */
 	public static String conceptToString(Concept concept, Locale locale) {
-		ConceptName localizedName = concept.getName(locale);
+		ConceptName localizedName = concept.getBestName(locale);
+		return conceptToString(concept, localizedName);
+	}
+	
+	/**
+	 * Turn the given concept/concept-name pair into a string acceptable to for hl7 and forms 
+	 * 
+	 * @param concept Concept to convert to a string
+	 * @param localizedName specific localized concept-name
+	 * 
+	 * @return String representation of the given concept
+	 */
+	public static String conceptToString(Concept concept, ConceptName localizedName) {
 		return concept.getConceptId() + "^" + localizedName.getName()
 				+ "^" + FormConstants.HL7_LOCAL_CONCEPT
 				+ "^" + localizedName.getConceptNameId() + "^" + localizedName.getName()
