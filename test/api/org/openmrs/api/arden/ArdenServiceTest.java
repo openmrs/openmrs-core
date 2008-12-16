@@ -13,8 +13,10 @@
  */
 package org.openmrs.api.arden;
 
-import org.junit.Test;
 import java.io.File;
+
+import org.junit.Ignore;
+import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
@@ -24,8 +26,9 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class ArdenServiceTest extends BaseContextSensitiveTest {
 	int MAX_MLM = 1000;
 	
+	@Ignore
 	@Test
-	public void shouldClass() throws Exception {
+	public void shouldGetAndParseMLMs() throws Exception {
 
 		String mlmDirectory = System.getProperty("user.dir") + "\\mlm_to_test\\"; 
 		String javaDirectory = System.getProperty("user.dir")+ "\\mlm_to_test\\"; 
