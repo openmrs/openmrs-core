@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: openmrs
 -- ------------------------------------------------------
--- Server version	5.0.51a-3ubuntu5.2
+-- Server version	5.0.67-0ubuntu6
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -1912,11 +1912,11 @@ CREATE TABLE `users` (
 SET character_set_client = @saved_cs_client;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-INSERT INTO global_property VALUES ('database_version','1.3.0.14',NULL);
+INSERT INTO global_property VALUES ('database_version','1.3.3.0',NULL);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2008-07-25  2:12:42
+-- Dump completed on 2008-12-18 21:11:57

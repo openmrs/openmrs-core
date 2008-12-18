@@ -6,9 +6,14 @@
 # WARNING: This will drop and recreate the mysql database named 'openmrs'
 #
 
-# user defined variables
-export currentversion=1.3.0
-export newversion=1.3.0
+# Ask for the current version of the files
+echo -n "Current version of the files (e.g: 1.3.2): "
+read currentversion
+
+# Ask for the current version of the files
+echo -n "New version of the files (e.g: 1.3.3): "
+read newversion
+
 export dbuser=root
 
 # Ask for the user's database password
