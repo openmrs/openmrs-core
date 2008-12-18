@@ -7,10 +7,16 @@
 #
 
 # user defined variables
-export currentversion=1.3.0
-export newversion=1.4.0
 export dbuser=root
 export dbname=openmrs
+
+# Ask for the current version of the files
+echo -n "Current version of the files (e.g: 1.3.2): "
+read currentversion
+
+# Ask for the current version of the files
+echo -n "New version of the files (e.g: 1.3.3): "
+read newversion
 
 # Ask for the user's database password
 echo -n "MySQL $dbuser password: "
