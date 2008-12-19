@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +40,6 @@ import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
-import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
@@ -62,6 +60,7 @@ import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -424,16 +423,16 @@ public class ConceptFormController extends SimpleFormController {
 			if (action.equals(msa.getMessage("Concept.delete"))) {
 				try {
 					cs.purgeConcept(concept);
-					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
-					        "Concept.deleted");
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.deleted");
 					return new ModelAndView(new RedirectView("index.htm"));
-				} catch (APIException e) {
-					log.error(e);
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-					        "Concept.cannot.delete");
-					return new ModelAndView(
-					        new RedirectView(getSuccessView() + "?conceptId="
-					                + concept.getConceptId().toString()));
+				} catch (DataIntegrityViolationException e) {
+					log.error("Unable to delete a concept because it is in use: " + concept, e);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.delete");
+					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
+				} catch (Exception e) {
+					log.error("Unable to delete concept because an error occurred: " + concept, e);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.delete");
+					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 				}
 			} else {
 				String isSet = ServletRequestUtils.getStringParameter(request,
@@ -466,7 +465,8 @@ public class ConceptFormController extends SimpleFormController {
 					}
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 					        "Concept.saved");
-				} catch (APIException e) {
+				}
+				catch (APIException e) {
 					log.error("Error while trying to save concept", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
 					        "Concept.cannot.save");
@@ -771,4 +771,5 @@ public class ConceptFormController extends SimpleFormController {
 		
 		return cc;
 	}
+	
 }
