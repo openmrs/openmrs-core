@@ -105,7 +105,7 @@
 			DWRPatientSetService.getMyPatientSetSize(function(sz) { PS_totalPatients = sz; document.getElementById("PS_totalNumber").innerHTML = sz; });
 		}
 		<%-- TODO: this is commented out because it breaks the page in IE. Find the right place to put it.
-		DWRUtil.useLoadingMessage();
+		dwr.util.useLoadingMessage();
 		--%>
 		if (localList != null) {
 			var ptIds = new Array();
@@ -134,7 +134,7 @@
 				showLayer('${model.id}');
 			}
 		</c:if>
-		DWRUtil.removeAllRows("${tableBodyId}");
+		dwr.util.removeAllRows("${tableBodyId}");
 		if (PS_fromIndex > 0) {
 			var row = document.getElementById("${tableBodyId}").insertRow(0);
 			var cell = row.insertCell(0);
@@ -163,7 +163,7 @@
 			function(patient) { return patient.age; },
 			function(patient) { return '<c:if test="${model.mutable}"><a href="javascript:remove(' + patient.patientId + ')" style="color: red">[x]<a></c:if>'; }
 		];
-		DWRUtil.addRows("${tableBodyId}", patients, cellFuncs);
+		dwr.util.addRows("${tableBodyId}", patients, cellFuncs, { escapeHtml:false });
 		if (PS_fromIndex + PS_pageSize < PS_totalPatients) {
 			var tbl = document.getElementById("${tableBodyId}");
 			var row = tbl.insertRow(tbl.rows.length);

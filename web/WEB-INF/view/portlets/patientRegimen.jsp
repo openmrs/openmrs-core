@@ -151,14 +151,14 @@
 		//alert("hasOrders starting as " + hasOrders);
 		
 		function updateAddFields(drugFieldId, unitsFieldId, frequencyDayFieldId, frequencyWeekFieldId) {
-			var drugId = DWRUtil.getValue(drugFieldId);
+			var drugId = dwr.util.getValue(drugFieldId);
 			gUnitsFieldId = unitsFieldId;
 			DWROrderService.getUnitsByDrugId(drugId, setUnitsField);
 		}
 		
 		function setUnitsField(unitsText) {
-			DWRUtil.setValue(gUnitsFieldId + "Span", unitsText);
-			DWRUtil.setValue(gUnitsFieldId, unitsText);
+			dwr.util.setValue(gUnitsFieldId + "Span", unitsText);
+			dwr.util.setValue(gUnitsFieldId, unitsText);
 			hideOtherStandards("New");
 			showAppropriateActions("New");
 		}
@@ -170,7 +170,7 @@
 				showDiv('action' + codeName);
 			} else {
 				hideDiv('action' + codeName);
-				DWRUtil.setValue('actionSelect' + codeName, 'add');
+				dwr.util.setValue('actionSelect' + codeName, 'add');
 				showDiv('add' + codeName);
 			}
 			showDiv('cancel' + codeName);
@@ -220,7 +220,7 @@
 				showHideDiv('stDt' + codeName);
 				showHideDiv('submit' + codeName);
 				hideDiv('action' + codeName);
-				DWRUtil.setValue('actionSelect' + codeName, '');
+				dwr.util.setValue('actionSelect' + codeName, '');
 				hideDiv('reas' + codeName);
 				hideDiv('replace' + codeName);
 				hideDiv('add' + codeName);
@@ -229,13 +229,13 @@
 			<c:forEach var="standardRegimen" items="${model.standardRegimens}">
 
 				function addStandard${standardRegimen.codeName}(canReplace) {
-					var startDate = DWRUtil.getValue('startDate${standardRegimen.codeName}');
+					var startDate = dwr.util.getValue('startDate${standardRegimen.codeName}');
 					if ( startDate && startDate != '' ) {
 						if ( canReplace ) {
-							var action = DWRUtil.getValue('actionSelect${standardRegimen.codeName}');
-							var reason = DWRUtil.getValue('reason${standardRegimen.codeName}');
-							DWRUtil.setValue('actionSelect${standardRegimen.codeName}', '');
-							DWRUtil.setValue('reason${standardRegimen.codeName}', '');
+							var action = dwr.util.getValue('actionSelect${standardRegimen.codeName}');
+							var reason = dwr.util.getValue('reason${standardRegimen.codeName}');
+							dwr.util.setValue('actionSelect${standardRegimen.codeName}', '');
+							dwr.util.setValue('reason${standardRegimen.codeName}', '');
 							if ( action == 'void' ) {
 								//alert('voiding with [${model.patientId}] [${standardRegimen.canReplace}] [' + reason + ']');
 								DWROrderService.voidCurrentDrugSet(${model.patientId}, '${standardRegimen.canReplace}', reason, addComponents${standardRegimen.codeName});
@@ -257,8 +257,8 @@
 				}
 				
 				function addComponents${standardRegimen.codeName}() {
-					var startDate = DWRUtil.getValue('startDate${standardRegimen.codeName}');
-					DWRUtil.setValue('startDate${standardRegimen.codeName}', '');
+					var startDate = dwr.util.getValue('startDate${standardRegimen.codeName}');
+					dwr.util.setValue('startDate${standardRegimen.codeName}', '');
 					<c:forEach var="drugComponent" items="${standardRegimen.drugComponents}">
 						addStack.push("DWROrderService.createDrugOrder(${drugComponent.drugId})");
 					</c:forEach>
@@ -280,17 +280,17 @@
 			}
 			
 			function handleStandardActionChange(codeName) {
-				var action = DWRUtil.getValue('actionSelect' + codeName);
+				var action = dwr.util.getValue('actionSelect' + codeName);
 				if ( action == 'void' || action == 'discontinue' ) {
 					showDiv('reas' + codeName);
 					showDiv('replace' + codeName);
 					hideDiv('add' + codeName);
 					if ( action == 'void' ) {
-						DWRUtil.removeAllOptions('reason' + codeName);
-						DWRUtil.addOptions('reason' + codeName, voidReasons, 'val', 'display');
+						dwr.util.removeAllOptions('reason' + codeName);
+						dwr.util.addOptions('reason' + codeName, voidReasons, 'val', 'display');
 					} else if ( action == 'discontinue') {
-						DWRUtil.removeAllOptions('reason' + codeName);
-						DWRUtil.addOptions('reason' + codeName, discReasons, 'val', 'display');
+						dwr.util.removeAllOptions('reason' + codeName);
+						dwr.util.addOptions('reason' + codeName, discReasons, 'val', 'display');
 					}
 				} else if ( action == 'add' ) {
 					hideDiv('reas' + codeName);
@@ -306,17 +306,17 @@
 		}
 
 		function addNewDrugOrder() {
-			var action = DWRUtil.getValue('actionSelectNew');
-			var reason = DWRUtil.getValue('reasonNew');
-			var startDate = DWRUtil.getValue('startDate');
-			var drugId = DWRUtil.getValue('drug');
-			var dose = DWRUtil.getValue('dose');
-			var units = DWRUtil.getValue('units');
-			var freqDay = DWRUtil.getValue('frequencyDay');
-			var freqWeek = DWRUtil.getValue('frequencyWeek');
+			var action = dwr.util.getValue('actionSelectNew');
+			var reason = dwr.util.getValue('reasonNew');
+			var startDate = dwr.util.getValue('startDate');
+			var drugId = dwr.util.getValue('drug');
+			var dose = dwr.util.getValue('dose');
+			var units = dwr.util.getValue('units');
+			var freqDay = dwr.util.getValue('frequencyDay');
+			var freqWeek = dwr.util.getValue('frequencyWeek');
 			if ( validateNewOrder(drugId, dose, units, freqDay, freqWeek, startDate) ) {
-				DWRUtil.setValue('actionSelectNew', '');
-				DWRUtil.setValue('reasonNew', '');
+				dwr.util.setValue('actionSelectNew', '');
+				dwr.util.setValue('reasonNew', '');
 				if ( action == 'void' ) {
 					DWROrderService.voidCurrentDrugOrders(${model.patientId}, reason, addNewComponent);
 					showHideDiv('reasNew');

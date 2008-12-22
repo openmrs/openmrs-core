@@ -23,14 +23,14 @@ dojo.widget.defineWidget(
 			
 			var closure = function(thisObj, method) { return function(obj) { return thisObj[method]({"obj":obj}); }; };
 			if (this.fieldId != "")
-				DWRFormService.findFields(closure(this, "select"), this.fieldId);
+				DWRFormService.findFields(this.fieldId, closure(this, "select"));
 		},
 		
 		doFindObjects: function(text) {
 			if (this.alsoSearchConcepts == true)
-				DWRFormService.findFieldsAndConcepts(this.simpleClosure(this, "doObjectsFound"), text);
+				DWRFormService.findFieldsAndConcepts(text, this.simpleClosure(this, "doObjectsFound"));
 			else
-				DWRFormService.findFields(this.simpleClosure(this, "doObjectsFound"), text);
+				DWRFormService.findFields(text, this.simpleClosure(this, "doObjectsFound"));
 				
 			return false;
 		},

@@ -24,17 +24,17 @@
 	});
 
 	function refreshStateTable() {
-		DWRUtil.removeAllRows('stateTable');
+		dwr.util.removeAllRows('stateTable');
 		if (states.length != 0) {
-			DWRUtil.addRows('stateTable', states, [
+			dwr.util.addRows('stateTable', states, [
 					function (st) { return idToNameMap[st[0]]; },
 					function (st) { return '<input type="checkbox" id="initial_' + st[0] + '" ' + (st[1] ? 'checked' : '') + '/>'; },
 					function (st) { return '<input type="checkbox" id="terminal_' + st[0] + '" ' + (st[2] ? 'checked' : '') + '/>'; }
-				]);
+				], { escapeHtml:false });
 		} else {
-			DWRUtil.addRows('stateTable', ['<spring:message code="general.none"/>'], [
+			dwr.util.addRows('stateTable', ['<spring:message code="general.none"/>'], [
 					function(s) { return s;}
-				]);
+				], { escapeHtml:false });
 		}
 	}
 	

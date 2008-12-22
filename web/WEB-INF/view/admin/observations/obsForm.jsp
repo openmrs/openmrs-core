@@ -50,7 +50,7 @@
 			function() {
 				var codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
 				var conceptId = conceptSelection.hiddenInputNode.value;
-				DWRConceptService.findConceptAnswers(codedSearch.simpleClosure(codedSearch, 'doObjectsFound'), '', conceptId, false, true);
+				DWRConceptService.findConceptAnswers('', conceptId, false, true, codedSearch.simpleClosure(codedSearch, 'doObjectsFound'));
 			}
 		);
 		
@@ -77,7 +77,7 @@
 			var codedSearch = dojo.widget.manager.getWidgetById("codedSearch");
 			var codedSelection = dojo.widget.manager.getWidgetById("codedSelection");
 			var conceptId = codedSelection.conceptId; 
-			DWRConceptService.findConceptAnswers(codedSearch.simpleClosure(codedSearch, 'doObjectsFound'), txt, conceptId, false, true);
+			DWRConceptService.findConceptAnswers(txt, conceptId, false, true, codedSearch.simpleClosure(codedSearch, 'doObjectsFound'));
 		}
 		
 		dojo.event.topic.subscribe("codedSearch/objectsFound", 
@@ -123,7 +123,7 @@
 			else if (datatype == 'NM' || datatype == 'SN') {
 				$('valueNumericRow').style.display = "";
 				$('valueNumericRow').style.visibility = "visible";
-				DWRConceptService.getConceptNumericUnits(fillNumericUnits, tmpConcept.conceptId);
+				DWRConceptService.getConceptNumericUnits(tmpConcept.conceptId, fillNumericUnits);
 			}
 			else if (datatype == 'CWE') {
 				$('valueCodedRow').style.display = "";
@@ -151,7 +151,7 @@
 			else {
 				$('valueInvalidRow').style.display = "";
 				$('valueInvalidRow').style.visibility = "visible";
-				DWRConceptService.getQuestionsForAnswer(fillValueInvalidPossible(tmpConcept), tmpConcept.conceptId);
+				DWRConceptService.getQuestionsForAnswer(tmpConcept.conceptId, fillValueInvalidPossible(tmpConcept));
 			}
 		}
 	}
@@ -171,7 +171,7 @@
 				else
 					errorTag.innerHTML = errorTag.className = "";
 			}
-			DWRConceptService.isValidNumericValue(numericErrorMessage, value, conceptId);
+			DWRConceptService.isValidNumericValue(value, conceptId, numericErrorMessage);
 		}
 	}
 	

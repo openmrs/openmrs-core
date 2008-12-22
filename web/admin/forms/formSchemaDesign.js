@@ -43,7 +43,7 @@ dojo.addOnLoad( function(){
 	fieldSearch = dojo.widget.manager.getWidgetById('fieldSearch');
 	cSelection = dojo.widget.manager.getWidgetById('cSelection');
 	
-	DWRFormService.getJSTree(evalTreeJS, formId);
+	DWRFormService.getJSTree(formId, evalTreeJS);
 	
 	dojo.event.topic.subscribe(tree.eventNames.moveTo, new nodeMoved(), "execute");
 	dojo.event.topic.subscribe(tree.eventNames.removeNode, new nodeRemoved(), "execute");
@@ -261,7 +261,7 @@ var nodeMoved = function() {
 			msg.newTree.containerNode.style.display = "";
 			
 			if (msg.child.data.isSet)
-				DWRConceptService.getConceptSet(addConceptSet(msg.child), msg.child.data.conceptId);
+				DWRConceptService.getConceptSet(msg.child.data.conceptId, addConceptSet(msg.child));
 			
 			if (msg.skipEdit) {
 				updateSortWeight(msg.child);
@@ -307,9 +307,9 @@ var addConceptSet = function(newParent) {
 var nodeRemoved = function(val) {
 	this.value = val;
 	this.execute = function(msg) {
-		DWREngine.setAsync(false);
+		dwr.engine.setAsync(false);
 		removeNode(msg.child);
-		DWREngine.setAsync(true);
+		dwr.engine.setAsync(true);
 	};
 }
 
@@ -701,9 +701,9 @@ function save(target, formNotUsed) {
 			
 			// save the field to the database
 			selectedNode = target;
-			DWRFormService.saveFormField(endSaveFormField(target), data.fieldId, data.fieldName, data.description, data.fieldType,
+			DWRFormService.saveFormField(data.fieldId, data.fieldName, data.description, data.fieldType,
 				data.conceptId, data.tableName, data.attributeName, data.defaultValue, data.selectMultiple, 
-				data.formFieldId, formId, data.parent, data.fieldNumber, data.fieldPart, data.pageNumber, data.minOccurs, data.maxOccurs, data.isRequired, data.sortWeight);
+				data.formFieldId, formId, data.parent, data.fieldNumber, data.fieldPart, data.pageNumber, data.minOccurs, data.maxOccurs, data.isRequired, data.sortWeight, endSaveFormField(target));
 			
 			// update the field label in the tree
 			target.titleNode.innerHTML = target.title = getFieldLabel(data);

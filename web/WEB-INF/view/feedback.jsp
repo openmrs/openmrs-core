@@ -14,7 +14,7 @@
 	var from = document.getElementById("feedbackFrom").value;
 	var subj = document.getElementById("feedbackSubject").value;
 	var content = document.getElementById("feedbackContent").value;
-	DWRMessageService.sendFeedback(complete, from, subj, content);
+	DWRMessageService.sendFeedback(from, subj, content, complete);
  }
  
  var complete = function(success) {

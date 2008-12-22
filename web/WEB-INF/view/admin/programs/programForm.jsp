@@ -74,8 +74,8 @@
 		var value = $('workflowsValue').value;
 		value = value.substring(value.indexOf(":") + 1);
 		values = helper(value);
-		DWRUtil.removeAllRows(tableId);
-		DWRUtil.addRows(tableId, values, [
+		dwr.util.removeAllRows(tableId);
+		dwr.util.addRows(tableId, values, [
 				function(id) { return idToNameMap[id]; },
 				function(id) { return '<a href="javascript:removeWorkflow(' + id + ')">[x]</a>';},
 			]);

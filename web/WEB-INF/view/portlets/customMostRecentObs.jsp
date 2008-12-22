@@ -44,8 +44,8 @@
 <script type="text/javascript">
 	function handleAddCustomObs(conceptId) {
 			var encounterId = null;
-			var valueText = DWRUtil.getValue(document.getElementById('value_' + conceptId));
-			var obsDate = DWRUtil.getValue(document.getElementById('date_' + conceptId));
+			var valueText = dwr.util.getValue(document.getElementById('value_' + conceptId));
+			var obsDate = dwr.util.getValue(document.getElementById('date_' + conceptId));
 			var patientId = ${model.patient.patientId};
 			DWRObsService.createObs(patientId, encounterId, conceptId, valueText, obsDate, refreshPage());
 		}

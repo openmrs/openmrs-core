@@ -16,7 +16,7 @@
 	
 	var selectConceptId = function(id) {
 		var closure = function(thisObj, method) { return function(obj) { return thisObj[method]({"obj":obj}); }; };
-		DWRConceptService.getConcept(closure(cSearch, "select"), id);
+		DWRConceptService.getConcept(id, closure(cSearch, "select"));
 		return false;
 	}
 	

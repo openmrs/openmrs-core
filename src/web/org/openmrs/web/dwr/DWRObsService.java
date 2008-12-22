@@ -33,7 +33,7 @@ import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
-import uk.ltd.getahead.dwr.WebContextFactory;
+import org.directwebremoting.WebContextFactory;
 
 /**
  *

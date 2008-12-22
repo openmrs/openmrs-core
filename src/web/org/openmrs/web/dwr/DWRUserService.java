@@ -29,7 +29,7 @@ import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 
-import uk.ltd.getahead.dwr.WebContextFactory;
+import org.directwebremoting.WebContextFactory;
 
 /**
  * A collection of methods used by DWR for access users.

@@ -46,31 +46,33 @@
 	
 	function obsSearch( patientField, conceptField, encounterField, obsTable, obsDiv ) {
 		showDiv(obsDiv);
-		var patientId = patientField.length == 0 ? "" : DWRUtil.getValue(patientField);
-		var conceptId = conceptField.length == 0 ? "" : DWRUtil.getValue(conceptField);
-		var encounterId = encounterField.length == 0 ? "" : DWRUtil.getValue(encounterField);
+		var patientId = patientField.length == 0 ? "" : dwr.util.getValue(patientField);
+		var conceptId = conceptField.length == 0 ? "" : dwr.util.getValue(conceptField);
+		var encounterId = encounterField.length == 0 ? "" : dwr.util.getValue(encounterField);
 		obsTableToRefresh = obsTable;
 		DWRObsService.getObsByPatientConceptEncounter(patientId, conceptId, encounterId, refreshObsTable);
 	}
 	
 	function refreshObsTable(obss) {
 		if ( document.getElementById(obsTableToRefresh) ) {
-			DWRUtil.removeAllRows(obsTableToRefresh);
+			dwr.util.removeAllRows(obsTableToRefresh);
 			if ( obss && obss.length > 0 ) {
-				DWRUtil.addRows(obsTableToRefresh, obss, obsCellFuncs, {
+				dwr.util.addRows(obsTableToRefresh, obss, obsCellFuncs, {
 					cellCreator:function(options) {
 					    var td = document.createElement("td");
 					    return td;
-					}
+					},
+					escapeHtml:false
 				});
 			} else {
 				var noObsMsg = "<spring:message code="ObsSearch.noneFound" />";
 				var obsMsgs = [noObsMsg, ""];
-				DWRUtil.addRows(obsTableToRefresh, obsMsgs, obsNoneCellFuncs, {
+				dwr.util.addRows(obsTableToRefresh, obsMsgs, obsNoneCellFuncs, {
 					cellCreator:function(options) {
 					    var td = document.createElement("td");
 					    return td;
-					}
+					},
+					escapeHtml:false
 				});
 			}
 		} else {
@@ -80,7 +82,7 @@
 
 	function obsSearchClear( patientField, conceptField, encounterField ) {
 		if ( patientField.length > 0 ) {
-			DWRUtil.setValue(patientField, "");
+			dwr.util.setValue(patientField, "");
 			var patPopup = dojo.widget.manager.getWidgetById("patientId_selection");
 			if ( patPopup ) {
 				patPopup.displayNode.innerHTML = "";
@@ -88,7 +90,7 @@
 			}
 		}
 		if ( conceptField.length > 0 ) {
-			DWRUtil.setValue(conceptField, "");
+			dwr.util.setValue(conceptField, "");
 			var conPopup = dojo.widget.manager.getWidgetById("conceptId_selection");
 			if ( conPopup ) {
 				conPopup.displayNode.innerHTML = "";
@@ -96,7 +98,7 @@
 			}
 		}
 		if ( encounterField.length > 0 ) {
-			DWRUtil.setValue(encounterField, "");
+			dwr.util.setValue(encounterField, "");
 			var encPopup = dojo.widget.manager.getWidgetById("encounterId_selection");
 			if ( encPopup ) {
 				encPopup.displayNode.innerHTML = "";

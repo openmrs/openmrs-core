@@ -104,8 +104,8 @@ dojo.widget.defineWidget(
 			if (typeof ex == "string")
 				window.status = "DWR warning/error: " + ex;
 		};
-		DWREngine.setErrorHandler(handler);
-		DWREngine.setWarningHandler(handler);
+		dwr.engine.setErrorHandler(handler);
+		dwr.engine.setWarningHandler(handler);
 	},
 		
 	fillInTemplate: function(args, frag){
@@ -405,7 +405,7 @@ dojo.widget.defineWidget(
 		// override this method to make the necessary DWR calls 
 		
 		// e.g.:
-		// DWREncounterService.findEncounters(this.simpleClosure(this, "doObjectsFound"), text, this.includeVoided.checked);
+		// DWREncounterService.findEncounters(text, this.includeVoided.checked, this.simpleClosure(this, "doObjectsFound"));
 			
 	},
 	
@@ -425,6 +425,7 @@ dojo.widget.defineWidget(
 			this.displayHeaderRow();
 		}
 		
+	    dojo.debug("in doObjectsFound");
 		this.fillTable(objs);
 	},
 	
@@ -564,7 +565,7 @@ dojo.widget.defineWidget(
 	},
 	
 	cellCreator: function(options) {
-		if (DWRUtil._isHTMLElement(options.data, "td") == true)
+		if (dwr.util._isHTMLElement(options.data, "td") == true)
 			return options.data;
 		
 		return document.createElement("td");
@@ -572,10 +573,10 @@ dojo.widget.defineWidget(
 
 
 	fillTable: function(objects, cells) {
-		if (objects.length > 1 || typeof objects[0] != 'string')
+	    if (objects.length > 1 || typeof objects[0] != 'string')
 			dojo.event.topic.publish(this.eventNames.fillTable, {"objects": objects} );
 		
-		// If we get only one result and the enter key was pressed jump to that object
+	    // If we get only one result and the enter key was pressed jump to that object
 		if (objects.length == 1 && ((this.event && this.key == dojo.event.browser.keys.KEY_ENTER) || 
 			(this.event == null && !(this.key)))) { 
 				//alert("type: " (typeof objects[0]));
@@ -594,17 +595,17 @@ dojo.widget.defineWidget(
 		
 		this.updatePagingNumbers();
 		
-		// signal to the using script that we've cleared the rows
+        // signal to the using script that we've cleared the rows
 		this.onRemoveAllRows(this.objHitsTableBody);
-	    DWRUtil.removeAllRows(this.objHitsTableBody);	//clear out the current rows
+	    dwr.util.removeAllRows(this.objHitsTableBody);	//clear out the current rows
 		
 	    var objs = objects.slice(this.firstItemDisplayed - 1, (this.firstItemDisplayed - 1) + this.numItemsDisplayed);
 	    
-	    DWRUtil.addRows(this.objHitsTableBody, objs, this.getCellFunctions(), this.getRowOptions());
+        dwr.util.addRows(this.objHitsTableBody, objs, this.getCellFunctions(), this.getRowOptions());
 		
-	    setTimeout(this.simpleClosure(this, "updatePagingBars"), 0);
+		setTimeout(this.simpleClosure(this, "updatePagingBars"), 0);
 	    
-	    if (this.event && this.key == dojo.event.browser.keys.KEY_ENTER) {
+        if (this.event && this.key == dojo.event.browser.keys.KEY_ENTER) {
 	    	// showHighlighting must be called here to assure it occurs after 
 	    	// objects are returned. Must be called with Timeout because 
 	    	// DWRUtil.addRows uses setTimeout
@@ -614,13 +615,15 @@ dojo.widget.defineWidget(
 	    if (this.event)
 		    dojo.debug("ending fillTable(). Keycode was: " + this.key);
 	    
-	    this.postFillTable();
+        this.postFillTable();
 	},
 	
 	
 	getRowOptions: function() {
 		var arr = { 'rowCreator': this.simpleClosure(this, "rowCreator"),
-					'cellCreator': this.simpleClosure(this, "cellCreator")};
+					'cellCreator': this.simpleClosure(this, "cellCreator"),
+					'escapeHtml': false
+					};
 		return arr;
 	},
 	
@@ -653,7 +656,7 @@ dojo.widget.defineWidget(
 		this.hideHeaderRow();
 		// signal to the using script that we've cleared the rows
 		this.onRemoveAllRows(this.objHitsTableBody);
-	    DWRUtil.removeAllRows(this.objHitsTableBody);	//clear out the current rows
+	    dwr.util.removeAllRows(this.objHitsTableBody);	//clear out the current rows
 		this.inputNode.value = this.text = this.lastPhraseSearch = "";
 	},
 
@@ -738,6 +741,7 @@ dojo.widget.defineWidget(
 		if (this.numItemsDisplayed + 1 == this.allObjectsFound.length) {
 			this.numItemsDisplayed = this.numItemsDisplayed + 1;
 		}
+		dojo.debug("end update paging");
 	},
 	
 	getTableBodySize: function() {
