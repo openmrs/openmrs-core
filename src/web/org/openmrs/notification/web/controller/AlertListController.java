@@ -73,18 +73,24 @@ public class AlertListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			AlertService as = Context.getAlertService();
 			
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			String msg = "";
+			
 			// expire the selected alerts
 			String[] alertIds = request.getParameterValues("alertId");
-			for (String alertIdString : alertIds) {
-				Integer alertId = Integer.parseInt(alertIdString);
-				Alert a = as.getAlert(alertId);
-				a.setDateToExpire(new Date());
-				as.saveAlert(a);
+			if(alertIds != null){
+				for (String alertIdString : alertIds) {
+					Integer alertId = Integer.parseInt(alertIdString);
+					Alert a = as.getAlert(alertId);
+					a.setDateToExpire(new Date());
+					as.saveAlert(a);
+				}
+				
+				msg = msa.getMessage("Alert.expired", new Object[] {alertIds.length}, locale);
 			}
-			
-			// set the success message and return
-			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String msg = msa.getMessage("Alert.expired", new Object[] {alertIds.length}, locale);
+			else
+				msg = msa.getMessage("Alert.select");
+					
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, msg);
 			return new ModelAndView(new RedirectView(getSuccessView()));
 		}

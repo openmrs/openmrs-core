@@ -15,7 +15,6 @@ package org.openmrs.web.controller.user;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -27,13 +26,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -70,32 +69,36 @@ public class RoleListController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 		
-		Locale locale = request.getLocale();
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			String[] roleList = ServletRequestUtils.getStringParameters(request, "roleId");
-			AdministrationService as = Context.getAdministrationService();
-			UserService us = Context.getUserService();
-			
 			String success = "";
 			String error = "";
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String deleted = msa.getMessage("general.deleted");
-			String notDeleted = msa.getMessage("general.cannot.delete");
-			for (String p : roleList) {
-				//TODO convenience method deleteRole(String) ??
-				try {
-					as.deleteRole(us.getRole(p));
-					if (!success.equals("")) success += "<br/>";
-					success += p + " " + deleted;
-				}
-				catch (APIException e) {
-					log.warn(e);
-					if (!error.equals("")) error += "<br/>";
-					error += p + " " + notDeleted;
+
+			String[] roleList = ServletRequestUtils.getStringParameters(request, "roleId");
+			if(roleList.length > 0) {
+				UserService us = Context.getUserService();
+				
+				String deleted = msa.getMessage("general.deleted");
+				String notDeleted = msa.getMessage("Role.cannot.delete");
+				for (String p : roleList) {
+					//TODO convenience method deleteRole(String) ??
+					try {
+						us.purgeRole(us.getRole(p));
+						if (!success.equals("")) success += "<br/>";
+						success += p + " " + deleted;
+					}
+					catch(DataIntegrityViolationException e){
+						error = handleRoleIntegrityException(e,error,notDeleted);
+					}
+					catch (APIException e) {
+						error = handleRoleIntegrityException(e,error,notDeleted);
+					}
 				}
 			}
+			else
+				error = msa.getMessage("Role.select");
 			
 			view = getSuccessView();
 			if (!success.equals(""))
@@ -105,6 +108,23 @@ public class RoleListController extends SimpleFormController {
 		}
 			
 		return new ModelAndView(new RedirectView(view));
+	}
+	
+	/**
+	 * 
+	 * Logs a role delete data integrity violation exception and 
+	 * returns a user friedly message of the problem that occured.
+	 * 
+	 * @param e the exception.
+	 * @param error the error message.
+	 * @param notDeleted the role not deleted error message.
+	 * @return the formatted error message.
+	 */
+	private String handleRoleIntegrityException(Exception e,String error,String notDeleted){
+		log.warn("Error deleting role", e);
+		if (!error.equals("")) error += "<br/>";
+		error += notDeleted;
+		return error;
 	}
 
 	/**
@@ -116,8 +136,6 @@ public class RoleListController extends SimpleFormController {
 	 */
     protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 
-    	HttpSession httpSession = request.getSession();
-		
 		
 		//default empty Object
 		// Object = the role
@@ -127,7 +145,7 @@ public class RoleListController extends SimpleFormController {
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			UserService us = Context.getUserService();
-	    	for (Role r : us.getRoles()) {
+	    	for (Role r : us.getAllRoles()) {
 	    		if (OpenmrsConstants.CORE_ROLES().keySet().contains(r.getRole()))
 	    			roleList.put(r, true);
 	    		else
@@ -138,12 +156,12 @@ public class RoleListController extends SimpleFormController {
         return roleList;
     }
     
-	protected Map referenceData(HttpServletRequest request) throws Exception {
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		
-		HttpSession httpSession = request.getSession();
-		
 		
 		if (Context.isAuthenticated()) {
 			map.put("superuser", OpenmrsConstants.SUPERUSER_ROLE);

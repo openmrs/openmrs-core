@@ -25,12 +25,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -68,29 +68,33 @@ public class PatientIdentifierTypeListController extends SimpleFormController {
 		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			
-			String[] identifierTypeList = request.getParameterValues("patientIdentifierTypeId");
-			AdministrationService as = Context.getAdministrationService();
-			PatientService ps = Context.getPatientService();
-			
 			String success = "";
 			String error = "";
 
 			MessageSourceAccessor msa = getMessageSourceAccessor();
+
+			String[] identifierTypeList = request.getParameterValues("patientIdentifierTypeId");
+			if(identifierTypeList != null){
+			PatientService ps = Context.getPatientService();
+			
 			String deleted = msa.getMessage("general.deleted");
-			String notDeleted = msa.getMessage("general.cannot.delete");
+			String notDeleted = msa.getMessage("PatientIdentifierType.cannot.delete");
 			for (String p : identifierTypeList) {
 				try {
-					as.deletePatientIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(p)));
+					ps.purgePatientIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(p)));
 					if (!success.equals("")) success += "<br/>";
 					success += p + " " + deleted;
 				}
+				catch(DataIntegrityViolationException e){
+					error = handleIdentifierIntegrityException(e,error,notDeleted);
+				}
 				catch (APIException e) {
-					log.warn("Error deleting patient identifier type", e);
-					if (!error.equals("")) error += "<br/>";
-					error += p + " " + notDeleted;
+					error = handleIdentifierIntegrityException(e,error,notDeleted);
 				}
 			}
+			}
+			else
+				error = msa.getMessage("PatientIdentifierType.select");
 			
 			view = getSuccessView();
 			if (!success.equals(""))
@@ -100,6 +104,23 @@ public class PatientIdentifierTypeListController extends SimpleFormController {
 		}
 		
 		return new ModelAndView(new RedirectView(view));
+	}
+	
+	/**
+	 * 
+	 * Logs a Patient Identifier Type delete data integrity violation exception and 
+	 * returns a user friedly message of the problem that occured.
+	 * 
+	 * @param e the exception.
+	 * @param error the error message.
+	 * @param notDeleted the role not deleted error message.
+	 * @return the formatted error message.
+	 */
+	private String handleIdentifierIntegrityException(Exception e,String error,String notDeleted){
+		log.warn("Error deleting patient identifier type", e);
+		if (!error.equals("")) error += "<br/>";
+		error += notDeleted;
+		return error;
 	}
 
 	/**
@@ -117,7 +138,7 @@ public class PatientIdentifierTypeListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
-	    	identifierTypeList = ps.getPatientIdentifierTypes();
+	    	identifierTypeList = ps.getAllPatientIdentifierTypes();
 		}
     	
         return identifierTypeList;

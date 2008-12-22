@@ -30,6 +30,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -67,28 +68,33 @@ public class RelationshipTypeListController extends SimpleFormController {
 		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			
-			String[] identifierTypeList = request.getParameterValues("relationshipTypeId");
-			PersonService ps = Context.getPersonService();
-			
 			String success = "";
 			String error = "";
 
 			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String deleted = msa.getMessage("general.deleted");
-			String notDeleted = msa.getMessage("general.cannot.delete");
-			for (String p : identifierTypeList) {
-				try {
-					ps.deleteRelationshipType(ps.getRelationshipType(Integer.valueOf(p)));
-					if (!success.equals("")) success += "<br/>";
-					success += p + " " + deleted;
-				}
-				catch (APIException e) {
-					log.warn("Error deleting relationship type", e);
-					if (!error.equals("")) error += "<br/>";
-					error += p + " " + notDeleted;
+
+			String[] relationshipTypeList = request.getParameterValues("relationshipTypeId");
+			if(relationshipTypeList != null){
+				PersonService ps = Context.getPersonService();
+				
+				String deleted = msa.getMessage("general.deleted");
+				String notDeleted = msa.getMessage("RelationshipType.cannot.delete");
+				for (String p : relationshipTypeList) {
+					try {
+						ps.purgeRelationshipType(ps.getRelationshipType(Integer.valueOf(p)));
+						if (!success.equals("")) success += "<br/>";
+						success += p + " " + deleted;
+					}
+					catch(DataIntegrityViolationException e){
+						error = handleRelationshipTypeIntegrityException(e,error,notDeleted);
+					}
+					catch (APIException e) {
+						error = handleRelationshipTypeIntegrityException(e,error,notDeleted);
+					}
 				}
 			}
+			else
+				error = msa.getMessage("RelationshipType.select");
 			
 			view = getSuccessView();
 			if (!success.equals(""))
@@ -98,6 +104,23 @@ public class RelationshipTypeListController extends SimpleFormController {
 		}
 		
 		return new ModelAndView(new RedirectView(view));
+	}
+	
+	/**
+	 * 
+	 * Logs a relationship type delete data integrity violation exception and 
+	 * returns a user friedly message of the problem that occured.
+	 * 
+	 * @param e the exception.
+	 * @param error the error message.
+	 * @param notDeleted the not deleted error message.
+	 * @return the formatted error message.
+	 */
+	private String handleRelationshipTypeIntegrityException(Exception e,String error,String notDeleted){
+		log.warn("Error deleting relationship type", e);
+		if (!error.equals("")) error += "<br/>";
+		error += notDeleted;
+		return error;
 	}
 
 	/**
@@ -115,7 +138,7 @@ public class RelationshipTypeListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			PersonService ps = Context.getPersonService();
-	    	relationshipTypeList = ps.getRelationshipTypes();
+	    	relationshipTypeList = ps.getAllRelationshipTypes();
 		}
     	
         return relationshipTypeList;

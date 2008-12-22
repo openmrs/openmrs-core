@@ -25,13 +25,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Privilege;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -70,28 +70,33 @@ public class PrivilegeListController extends SimpleFormController {
 		//Locale locale = request.getLocale();
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			String[] privilegeList = request.getParameterValues("privilegeId");
-			AdministrationService as = Context.getAdministrationService();
-			UserService us = Context.getUserService();
 			String success = "";
 			String error = "";
 
 			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String deleted = msa.getMessage("general.deleted");
-			String notDeleted = msa.getMessage("general.cannot.delete");
-			for (String p : privilegeList) {
-				//TODO convenience method deletePrivilege(String) ??
-				try {
-					as.deletePrivilege(us.getPrivilege(p));
-					if (!success.equals("")) success += "<br/>";
-					success += p + " " + deleted;
-				}
-				catch (APIException e) {
-					log.warn("Error deleting privielge", e);
-					if (!error.equals("")) error += "<br/>";
-					error += p + " " + notDeleted;
+
+			String[] privilegeList = request.getParameterValues("privilegeId");
+			if(privilegeList != null){
+				UserService us = Context.getUserService();
+				String deleted = msa.getMessage("general.deleted");
+				String notDeleted = msa.getMessage("Privilege.cannot.delete");
+				for (String p : privilegeList) {
+					//TODO convenience method deletePrivilege(String) ??
+					try {
+						us.purgePrivilege(us.getPrivilege(p));
+						if (!success.equals("")) success += "<br/>";
+						success += p + " " + deleted;
+					}
+					catch(DataIntegrityViolationException e){
+						error = handlePrivilegeIntegrityException(e,error,notDeleted);
+					}
+					catch (APIException e) {
+						error = handlePrivilegeIntegrityException(e,error,notDeleted);
+					}
 				}
 			}
+			else
+				error = msa.getMessage("Privilege.select");
 			
 			view = getSuccessView();
 			if (!success.equals(""))
@@ -101,6 +106,23 @@ public class PrivilegeListController extends SimpleFormController {
 		}
 			
 		return new ModelAndView(new RedirectView(view));
+	}
+	
+	/**
+	 * 
+	 * Logs a privielge delete data integrity violation exception and 
+	 * returns a user friedly message of the problem that occured.
+	 * 
+	 * @param e the exception.
+	 * @param error the error message.
+	 * @param notDeleted the not deleted error message.
+	 * @return the formatted error message.
+	 */
+	private String handlePrivilegeIntegrityException(Exception e,String error,String notDeleted){
+		log.warn("Error deleting privilege", e);
+		if (!error.equals("")) error += "<br/>";
+		error += notDeleted;
+		return error;
 	}
 
 	/**
@@ -118,7 +140,7 @@ public class PrivilegeListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			UserService us = Context.getUserService();
-	    	for (Privilege p : us.getPrivileges()) {
+	    	for (Privilege p : us.getAllPrivileges()) {
 	    		if (OpenmrsConstants.CORE_PRIVILEGES().keySet().contains(p.getPrivilege()))
 	    			privilegeList.put(p, true);
 	    		else
