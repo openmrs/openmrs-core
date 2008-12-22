@@ -137,6 +137,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @should put generated concept id onto returned concept
 	 * @should create new concept in database 
 	 * @should update concept already existing in database
+	 * @should generate id for new concept if none is specified
+	 * @should keep id for new concept if one is specified 
 	 */
 	@Authorized({OpenmrsConstants.PRIV_MANAGE_CONCEPTS})
 	public Concept saveConcept(Concept concept) throws APIException;

@@ -161,4 +161,38 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	    Assert.assertNotNull(concept);
     }
 
+    /**
+     * @verifies {@link ConceptService#saveConcept(Concept)}
+     * test = should generate id for new concept if none is specified
+     */
+    @Test
+    public void saveConcept_shouldGenerateIdForNewConceptIfNoneIsSpecified()
+            throws Exception {
+    	Concept concept = new Concept();
+    	concept.addName(new ConceptName("Weight", Locale.US));
+    	concept.setConceptId(null);
+    	concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
+    	concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
+    	
+    	concept = Context.getConceptService().saveConcept(concept);
+    	assertFalse(concept.getConceptId().equals(5089));
+    }
+
+    /**
+     * @verifies {@link ConceptService#saveConcept(Concept)}
+     * test = should keep id for new concept if one is specified
+     */
+    @Test
+    public void saveConcept_shouldKeepIdForNewConceptIfOneIsSpecified()
+            throws Exception {
+    	Concept concept = new Concept();
+    	concept.addName(new ConceptName("Weight", Locale.US));
+    	concept.setConceptId(5089);
+    	concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
+    	concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
+    	
+    	concept = Context.getConceptService().saveConcept(concept);
+    	assertTrue(concept.getConceptId().equals(5089));
+    }
+
 }
