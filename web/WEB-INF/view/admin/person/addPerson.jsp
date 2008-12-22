@@ -52,7 +52,7 @@
 				var birthdate = "${param.addBirthdate}";
 				var age = "${param.addAge}";
 				var gender = "${param.addGender}";
-				DWRPersonService.getSimilarPeople(searchWidget.simpleClosure(searchWidget, "doObjectsFound"), personName, birthdate, age, gender);
+				DWRPersonService.getSimilarPeople(personName, birthdate, age, gender, searchWidget.simpleClosure(searchWidget, "doObjectsFound"));
 				
 				searchWidget.allowAutoJump = function() { return false; };
 			});

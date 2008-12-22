@@ -1,6 +1,6 @@
 
 function markAlertRead(self, alertId) {
-	DWRAlertService.markAlertRead(null, alertId);
+	DWRAlertService.markAlertRead(alertId, null);
 	var parent = self.parentNode;
 	parent.style.display = "none";
 	var unreadAlertSizeBox = document.getElementById('unreadAlertSize');
@@ -139,7 +139,7 @@ useLoadingMessage = function(message) {
 	if (message) loadingMessage = message;
 	else loadingMessage = "Loading";
 
-	DWREngine.setPreHook(function() {
+	dwr.engine.setPreHook(function() {
 		var disabledZone = $('disabledZone');
 		if (!disabledZone) {
 			disabledZone = document.createElement('div');
@@ -157,7 +157,7 @@ useLoadingMessage = function(message) {
 		}
 	});
 
-	DWREngine.setPostHook(function() {
+	dwr.engine.setPostHook(function() {
 		$('disabledZone').style.display = 'none';
 	});
 }

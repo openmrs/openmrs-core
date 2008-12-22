@@ -70,7 +70,7 @@
 				function findObjects(text) {
 					if (text.length > 2) {
 						savedText = text;
-						DWRPatientService.findPatients(preFillTable, text, includeRetired);
+						DWRPatientService.findPatients(text, includeRetired, preFillTable);
 					}
 					else {
 						var msg = new Array();
@@ -106,7 +106,7 @@
 				var findPatientForm = document.getElementById("findPatientForm");
 				
 				function init() {
-					DWRUtil.useLoadingMessage();
+					dwr.util.useLoadingMessage();
 				
 					<request:existsParameter name="patientId">
 						<!-- User has 'patientId' in the request params -- selecting that patient -->

@@ -122,18 +122,18 @@ dojo.widget.defineWidget(
 		
 		postCreate: function() {
 			if (this.patientId != "" || this.encounterId != "" || this.conceptId != "") {
-				DWRObsService.getObsByPatientConceptEncounter(this.simpleClosure(this, "doObjectsFound"), this.patientId, this.encounterId, this.conceptId, false);
+				DWRObsService.getObsByPatientConceptEncounter(this.patientId, this.encounterId, this.conceptId, false, this.simpleClosure(this, "doObjectsFound"));
 			}
 		},
 		
 		selectObs: function(obsId) {
-			DWRObsService.getObs(this.simpleClosure(this, "select"), obsId);
+			DWRObsService.getObs(obsId, this.simpleClosure(this, "select"));
 		},
 		
 		doFindObjects: function(patientId, encounterId, conceptId) {
 
 			if (this.patientId != "" || this.encounterId != "" || this.conceptId != "") {
-				DWRObsService.getObsByPatientConceptEncounter(this.simpleClosure(this, "doObjectsFound"), this.patientId, this.encounterId, this.conceptId, false);
+				DWRObsService.getObsByPatientConceptEncounter(this.patientId, this.encounterId, this.conceptId, false, this.simpleClosure(this, "doObjectsFound"));
 			}
 			
 			return false;

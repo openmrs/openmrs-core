@@ -23,7 +23,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.notification.MessageService;
 import org.openmrs.notification.NotificationConstants;
 
-import uk.ltd.getahead.dwr.WebContextFactory;
+import org.directwebremoting.WebContextFactory;;
 
 public class DWRMessageService {
 

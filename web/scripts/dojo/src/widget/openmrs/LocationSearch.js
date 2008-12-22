@@ -20,7 +20,7 @@ dojo.widget.defineWidget(
 		postCreate: function(){
 			dojo.debug("postCreate in LocationSearch");
 			if (this.locationId)
-				DWREncounterService.getLocation(this.simpleClosure(this, "select"), this.locationId);
+				DWREncounterService.getLocation(this.locationId, this.simpleClosure(this, "select"));
 		},
 		
 		showAll: function() {
@@ -28,7 +28,7 @@ dojo.widget.defineWidget(
 		},
 		
 		doFindObjects: function(text) {
-			DWREncounterService.findLocations(this.simpleClosure(this, "doObjectsFound"), text);
+			DWREncounterService.findLocations(text, this.simpleClosure(this, "doObjectsFound"));
 			return false;
 		},
 		

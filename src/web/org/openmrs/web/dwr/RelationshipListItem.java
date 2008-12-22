@@ -15,10 +15,8 @@ package org.openmrs.web.dwr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
-import org.openmrs.api.context.Context;
 
 public class RelationshipListItem {
 	

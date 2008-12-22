@@ -72,7 +72,7 @@
 					<!--
 						
 						function updateCauseField() {
-							var outcomeType = DWRUtil.getValue("reasonForExit");
+							var outcomeType = dwr.util.getValue("reasonForExit");
 							<openmrs:globalProperty key="concept.patientDied" var="conceptPatientDied" />
 
 							if ( outcomeType == '${conceptPatientDied}' ) {
@@ -93,10 +93,10 @@
 						}
 					
 						function exitFormValidate() {
-							var outcomeType = DWRUtil.getValue("reasonForExit");
-							var outcomeDate = DWRUtil.getValue("dateOfExit");
-							var outcomeCauseOfDeath = DWRUtil.getValue("causeOfDeath");
-							var outcomeCauseOther = DWRUtil.getValue("causeOfDeath_other");
+							var outcomeType = dwr.util.getValue("reasonForExit");
+							var outcomeDate = dwr.util.getValue("dateOfExit");
+							var outcomeCauseOfDeath = dwr.util.getValue("causeOfDeath");
+							var outcomeCauseOther = dwr.util.getValue("causeOfDeath_other");
 							
 							if ( outcomeType == '' ) {
 								alert("<spring:message code="Patient.outcome.error.noType" />");
@@ -139,7 +139,7 @@
 			<script type="text/javascript">
 				<spring:message code="general.voidReasonQuestion" var="reasonText"/>
 				function handleCancelExit() {
-					var reason = DWRUtil.getValue('cancelExitReason');
+					var reason = dwr.util.getValue('cancelExitReason');
 					if (reason == '') {
 						alert("<spring:message code="Patient.outcome.resumeCareReason.required" arguments="${reasonText}"/>");
 						return;

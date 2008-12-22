@@ -42,9 +42,9 @@
 	}
 	
 	function refreshRelationshipsCallback(rels) {
-		DWRUtil.removeAllOptions('new_relationships');
+		dwr.util.removeAllOptions('new_relationships');
 		if (rels.length == 0) {
-			DWRUtil.addOptions('new_relationships', [ '<spring:message code="general.none" javaScriptEscape="true" />' ]);
+			dwr.util.addOptions('new_relationships', [ '<spring:message code="general.none" javaScriptEscape="true" />' ]);
 		}
 		for (var i = 0; i < rels.length; ++i) {
 			var rel = rels[i];
@@ -69,7 +69,7 @@
 			str += ' <input type="button" value="<spring:message code="general.delete" javaScriptEscape="true"/>" onClick="handleDeleteRelationship(' + relId + ')"/>';
 			str += ' <input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv(\'del_rel_' + relId + '\'); hideDiv(\'voidRel' + relId + '\')"/>';
 			str += '</span>';
-			DWRUtil.addOptions('new_relationships', [ str ]);
+			dwr.util.addOptions('new_relationships', [ str ]);
 		}
 	}
 	
@@ -77,7 +77,7 @@
 		var personIdB = ${model.personId};
 		var personPopup = dojo.widget.manager.getWidgetById("add_rel_target_selection");
 		var personIdA = personPopup.hiddenInputNode.value;
-		var relType = DWRUtil.getValue('add_relationship_type');
+		var relType = dwr.util.getValue('add_relationship_type');
 		if (relType == null || relType == '' || personIdA == null || personIdA == '' || personIdB == null || personIdB == '') {
 			window.alert('<spring:message code="Relationship.error.everything" javaScriptEscape="true"/>');
 			return;
@@ -93,21 +93,21 @@
 			personIdB = temp;
 		}
 		personPopup.hiddenInputNode.value = "";
-		DWRUtil.setValue('add_relationship_type', null);
+		dwr.util.setValue('add_relationship_type', null);
 		hideDiv('addRelationship');
 		showDiv('addRelationshipLink');
 		DWRRelationshipService.createRelationship(personIdA, personIdB, relType, refreshRelationships);
 	}
 	
 	function handleDeleteRelationship(relationshipId) {
-		var reason = DWRUtil.getValue('void_reason_' + relationshipId);
+		var reason = dwr.util.getValue('void_reason_' + relationshipId);
 		if (reason != null && reason != '') {
 			DWRRelationshipService.voidRelationship(relationshipId, reason, refreshRelationships);
 		}
 	}
 	
 	function handlePickRelType(value, label) {
-		DWRUtil.setValue('add_relationship_type', value);
+		dwr.util.setValue('add_relationship_type', value);
 		document.getElementById('add_relationship_name').innerHTML = label;
 		showDiv('add_rel_details');
 	}

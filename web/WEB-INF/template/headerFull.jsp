@@ -99,8 +99,8 @@
 					if (typeof ex == "string")
 						window.status = "DWR warning/error: " + ex;
 				};
-				DWREngine.setErrorHandler(handler);
-				DWREngine.setWarningHandler(handler);
+				dwr.engine.setErrorHandler(handler);
+				dwr.engine.setWarningHandler(handler);
 			</script>
 
 			<openmrs:forEachAlert>

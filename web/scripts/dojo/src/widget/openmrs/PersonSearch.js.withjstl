@@ -38,7 +38,7 @@ dojo.widget.defineWidget(
 		},
 		
 		selectPerson: function(personId) {
-			DWRPersonService.getPerson(this.simpleClosure(this, "select"), personId);
+			DWRPersonService.getPerson(personId, this.simpleClosure(this, "select"));
 		},
 
 		
@@ -54,7 +54,7 @@ dojo.widget.defineWidget(
 
 		doFindObjects: function(text) {
 			var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
-			var newPersonId = DWRPersonService.findPeopleByRoles(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedVoided, this.roles);
+			var newPersonId = DWRPersonService.findPeopleByRoles(text, tmpIncludedVoided, this.roles, this.simpleClosure(this, "doObjectsFound"));
             if (this.canAddNewPerson == 'true') {
                 if (this.initialized == 'true') {
                     document.getElementById("newPersonButton").disabled = false;
@@ -222,7 +222,7 @@ dojo.widget.defineWidget(
             var gender = (ipGender[0].checked ? "M" : "F");
             var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
             var format = document.getElementById('datepattern');
-            DWRPersonService.createPerson(this.simpleClosure(this, "selectPersonListItem"), ipName[0].value, ipName[1].value, ipName[2].value, ipDate[0].value, format.value, ipDate[1].value, gender);
+            DWRPersonService.createPerson(ipName[0].value, ipName[1].value, ipName[2].value, ipDate[0].value, format.value, ipDate[1].value, gender, this.simpleClosure(this, "selectPersonListItem"));
             this.hideNewPersonForm( );
             return false;
         },

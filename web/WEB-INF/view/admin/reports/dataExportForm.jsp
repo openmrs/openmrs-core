@@ -150,15 +150,15 @@
 	
 	function setValueHelper(htmlEl, val) {
 		if (htmlEl.id != null && htmlEl.id != '')
-			DWRUtil.setValue(htmlEl.id, val);
+			dwr.util.setValue(htmlEl.id, val);
 		else
-			DWRUtil.setValue(htmlEl.name, val);
+			dwr.util.setValue(htmlEl.name, val);
 	}
 	
 	function updateCohortColumn(sel) {
 		if (sel.value != "") {
 			var count = sel.name.substr(sel.name.indexOf("_")+1, 3);
-			var val = DWRUtil.getValue(sel.name);
+			var val = dwr.util.getValue(sel.name);
 			var temp = val.split(".");
 			var opt = sel.options[sel.selectedIndex];
 			var tbl = getParentByTagName(sel, "table");
@@ -424,7 +424,7 @@
 	}
 	
 	function ensureName() {
-		var name = DWRUtil.getValue('dataExportName');
+		var name = dwr.util.getValue('dataExportName');
 		if (name == null || name == '') {
 			window.alert('<spring:message code="error.name" />');
 			return false;
@@ -743,7 +743,7 @@
 					var widget = dojo.widget.manager.getWidgetById("cSelection_" + count);
 					if ("${column.conceptId}" != "") {
 						widget.hiddenInputNode.value = "${column.conceptId}";
-						DWRConceptService.getConcept(widget.searchWidget.simpleClosure(new cSelect(widget), "select"), "${column.conceptId}");
+						DWRConceptService.getConcept("${column.conceptId}", widget.searchWidget.simpleClosure(new cSelect(widget), "select"));
 					}
 					else { 
 						// left for backwards compatibility to pre 1.0.43
@@ -771,12 +771,12 @@
 				</c:if>
 			</c:forEach>
 			
-			DWREngine.setOrdered(true);
+			dwr.engine.setOrdered(true);
 			var btn = $('newPatientButton');
 			<c:forEach items="${dataExport.patientIds}" var="id">
 				addNew(btn, "newPatient", '${id}');
 			</c:forEach>
-			DWREngine.setOrdered(false);
+			dwr.engine.setOrdered(false);
 		</c:if>
 	}
 </script>

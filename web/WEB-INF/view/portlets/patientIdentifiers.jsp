@@ -24,10 +24,10 @@ highlightMissing=true/false (defaults to true)
 
 	function handleSaveIdentifier(index) {
 		currIndex = index;
-		var identifierType = DWRUtil.getValue('identifierType_' + index);
-		var identifier = DWRUtil.getValue('identifier_' + index);
+		var identifierType = dwr.util.getValue('identifierType_' + index);
+		var identifier = dwr.util.getValue('identifier_' + index);
 		//alert("id is " + identifier + " and type is " + identifierType);
-		var identifierLocationId = DWRUtil.getValue('identifierLocationId_' + index);
+		var identifierLocationId = dwr.util.getValue('identifierLocationId_' + index);
 		oldId = identifier;
 		oldLocation = identifierLocationId;
 		if (identifierType != null && identifierType != '' && identifier != null && identifier != '')
@@ -50,7 +50,7 @@ highlightMissing=true/false (defaults to true)
 	}
 	
 	function displayIdError(index, msg) {
-		DWRUtil.setValue("msg_" + index, getMessage(msg));
+		dwr.util.setValue("msg_" + index, getMessage(msg));
 		if ( msg.length > 0 ) {
 			document.getElementById("msg_" + index).style.display = "";
 		} else {
@@ -72,7 +72,7 @@ highlightMissing=true/false (defaults to true)
 	}
 	
 	function identifierFieldChanged(index) {
-		var id = DWRUtil.getValue('identifier_' + index);
+		var id = dwr.util.getValue('identifier_' + index);
 		if (id == null || id == '') {
 			document.getElementById('idSaveButton_' + index).disabled = true;
 		} else {

@@ -206,12 +206,13 @@ Parameters
 		--%>
 
 		function handleRefreshTable(id, data, func) {
-			DWRUtil.removeAllRows(id);
-			DWRUtil.addRows(id, data, func, {
+			dwr.util.removeAllRows(id);
+			dwr.util.addRows(id, data, func, {
 				cellCreator:function(options) {
 				    var td = document.createElement("td");
 				    return td;
-				}
+				},
+				escapeHtml:false
 			});
 		}
 
@@ -227,10 +228,10 @@ Parameters
 		}
 		
 		function handleAddObs(encounterField, conceptField, valueTextField, obsDateField) {
-			var encounterId = DWRUtil.getValue($(encounterField));
-			var conceptId = DWRUtil.getValue($(conceptField));
-			var valueText = DWRUtil.getValue($(valueTextField));
-			var obsDate = DWRUtil.getValue($(obsDateField));
+			var encounterId = dwr.util.getValue($(encounterField));
+			var conceptId = dwr.util.getValue($(conceptField));
+			var valueText = dwr.util.getValue($(valueTextField));
+			var obsDate = dwr.util.getValue($(obsDateField));
 			var patientId = ${model.patient.patientId};			
 			//alert("Adding obs for encounter (" + encounterId + "): " + conceptId + " = " + valueText + " " + obsDate);  
 			DWRObsService.createObs(patientId, encounterId, conceptId, valueText, obsDate);

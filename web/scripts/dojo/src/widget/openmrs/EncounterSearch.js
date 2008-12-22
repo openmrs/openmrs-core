@@ -21,14 +21,14 @@ dojo.widget.defineWidget(
 			dojo.debug("postCreate in encounterSearch");
 			
 			if (this.encounterId)
-				DWREncounterService.getEncounter(this.simpleClosure(this, "select"), this.encounterId);
+				DWREncounterService.getEncounter(this.encounterId, this.simpleClosure(this, "select"));
 		},
 		
 		
 		doFindObjects: function(text) {
 
 			var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
-			DWREncounterService.findEncounters(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedVoided);
+			DWREncounterService.findEncounters(text, tmpIncludedVoided, this.simpleClosure(this, "doObjectsFound"));
 			
 			return false;
 		},

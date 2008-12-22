@@ -152,9 +152,9 @@
 		str += '</form>';
 		if (lookupAnswers) {
 			DWRConceptService.getAnswersForQuestion(concept.conceptId, function(list) {
-					DWRUtil.removeAllOptions('replace_with_answer_options');
-					DWRUtil.addOptions('replace_with_answer_options', [" "]);
-					DWRUtil.addOptions('replace_with_answer_options', list, 'conceptId', 'name');
+					dwr.util.removeAllOptions('replace_with_answer_options');
+					dwr.util.addOptions('replace_with_answer_options', [" "]);
+					dwr.util.addOptions('replace_with_answer_options', list, 'conceptId', 'name');
 				});
 		}
 		return str;
@@ -369,15 +369,15 @@
 	
 	function refreshWorkflowOptions() {
 		hideDiv('workflow');
-		var program = DWRUtil.getValue('program');
+		var program = dwr.util.getValue('program');
 		if (program == null || program == '') {
-			DWRUtil.removeAllOptions('workflow');
+			dwr.util.removeAllOptions('workflow');
 			refreshStateOptions();
 		} else
 			DWRProgramWorkflowService.getWorkflowsByProgram(program, function(wfs) {
-					DWRUtil.removeAllOptions('workflow');
-					DWRUtil.addOptions('workflow', [" "]);
-					DWRUtil.addOptions('workflow', wfs, 'id', 'name');
+					dwr.util.removeAllOptions('workflow');
+					dwr.util.addOptions('workflow', [" "]);
+					dwr.util.addOptions('workflow', wfs, 'id', 'name');
 					if (wfs.length > 0)
 						showDiv('workflow');
 					refreshStateOptions();
@@ -386,13 +386,13 @@
 	
 	function refreshStateOptions() {
 		hideDiv('state');
-		var workflow = DWRUtil.getValue('workflow');
+		var workflow = dwr.util.getValue('workflow');
 		if (workflow == null || workflow == '') {
-			DWRUtil.removeAllOptions('state');
+			dwr.util.removeAllOptions('state');
 		} else
 			DWRProgramWorkflowService.getStatesByWorkflow(workflow, function (states) {
-					DWRUtil.removeAllOptions('state');
-					DWRUtil.addOptions('state', states, 'id', 'name');
+					dwr.util.removeAllOptions('state');
+					dwr.util.addOptions('state', states, 'id', 'name');
 					if (states.length < 10)
 						$('state').size = states.length;
 					else
@@ -1085,7 +1085,7 @@
 					<c:if test="${iter.last}">
 						<c:set var="temp" value="last"/>
 					</c:if>
-					<a href="#" onClick="DWRUtil.setValue('cohort_builder_preview_method', '${temp}'); refreshPreview();">
+					<a href="#" onClick="dwr.util.setValue('cohort_builder_preview_method', '${temp}'); refreshPreview();">
 						${iter.count}.
 					</a>
 				</td>

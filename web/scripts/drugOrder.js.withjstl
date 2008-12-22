@@ -156,20 +156,20 @@
 		var gUnitsFieldId = '';
 
 		function handleVoidCurrentDrugSet(drugSetId, voidReasonField) {
-			var voidReason = DWRUtil.getValue($(voidReasonField));
+			var voidReason = dwr.util.getValue($(voidReasonField));
 			var drugSetIdParam = '' + drugSetId;
 			DWROrderService.voidCurrentDrugSet(patientId, drugSetIdParam, voidReason, refreshCurrentRegimenTable);
 		}
 
 		function handleVoidCompletedDrugSet(drugSetId, voidReasonField) {
-			var voidReason = DWRUtil.getValue($(voidReasonField));
+			var voidReason = dwr.util.getValue($(voidReasonField));
 			var drugSetIdParam = '' + drugSetId;
 			DWROrderService.voidCompletedDrugSet(patientId, drugSetIdParam, voidReason, refreshCompletedRegimenTable);
 		}
 
 		function handleDiscontinueDrugSet(drugSetId, discDateField, discReasonField) {
-			var discDate = DWRUtil.getValue($(discDateField));
-			var discReason = DWRUtil.getValue($(discReasonField));
+			var discDate = dwr.util.getValue($(discDateField));
+			var discReason = dwr.util.getValue($(discReasonField));
 			var drugSetIdParam = '' + drugSetId;
 			if ( discDate == null || discDate == '' ) {
 				alert("<spring:message code="DrugOrder.drugSet.discontinue.error.noDate" />");
@@ -190,11 +190,11 @@
 		}
 		
 		function handleAddDrugOrder( patientId, drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {
-			var drugId = DWRUtil.getValue($(drugField));
-			var dose = DWRUtil.getValue($(doseField));
-			var units = DWRUtil.getValue($(unitsField));
-			var frequency = DWRUtil.getValue($(frequencyDayField)) + " x " + DWRUtil.getValue($(frequencyWeekField));
-			var startDate = DWRUtil.getValue($(startDateField));
+			var drugId = dwr.util.getValue($(drugField));
+			var dose = dwr.util.getValue($(doseField));
+			var units = dwr.util.getValue($(unitsField));
+			var frequency = dwr.util.getValue($(frequencyDayField)) + " x " + dwr.util.getValue($(frequencyWeekField));
+			var startDate = dwr.util.getValue($(startDateField));
 			var instructions = "";
 			if ( drugId != '' && dose != '' && units != '' && frequency != '' && startDate != '' ) {
 				blankAddNewOrder(drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField);
@@ -209,27 +209,27 @@
 		}
 
 		function blankAddNewOrder(drugField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField) {
-				DWRUtil.setValue($(drugField),"");
-				DWRUtil.setValue($(doseField),"");
-				DWRUtil.setValue($(unitsField),"");
-				DWRUtil.setValue($(frequencyDayField),"");
-				DWRUtil.setValue($(frequencyWeekField),"");
-				DWRUtil.setValue($(startDateField),"");
+				dwr.util.setValue($(drugField),"");
+				dwr.util.setValue($(doseField),"");
+				dwr.util.setValue($(unitsField),"");
+				dwr.util.setValue($(frequencyDayField),"");
+				dwr.util.setValue($(frequencyWeekField),"");
+				dwr.util.setValue($(startDateField),"");
 		}
 		
 		function handleVoidCurrentDrugOrder(orderId, voidReasonField) {
-			var voidReason = DWRUtil.getValue($(voidReasonField));
+			var voidReason = dwr.util.getValue($(voidReasonField));
 			DWROrderService.voidOrder(orderId, voidReason, refreshCurrentRegimenTable);
 		}
 
 		function handleVoidCompletedDrugOrder(orderId, voidReasonField) {
-			var voidReason = DWRUtil.getValue($(voidReasonField));
+			var voidReason = dwr.util.getValue($(voidReasonField));
 			DWROrderService.voidOrder(orderId, voidReason, refreshCompletedRegimenTable);
 		}
 
 		function handleDiscontinueDrugOrder(orderId, discDateField, discReasonField) {
-			var discDate = DWRUtil.getValue($(discDateField));
-			var discReason = DWRUtil.getValue($(discReasonField));
+			var discDate = dwr.util.getValue($(discDateField));
+			var discReason = dwr.util.getValue($(discReasonField));
 			if ( discDate && discDate != '' ) {
 				DWROrderService.discontinueOrder(orderId, discReason, discDate, refreshRegimenTables);
 			} else {
@@ -306,19 +306,20 @@
 			var tableId = 'regimenTableCurrent_header_' + drugSetLabel;
 			
 			if ( document.getElementById(tableId) ) {
-				DWRUtil.addRows(tableId, drugSet, currentRegimenTableHeaderCells, {
+				dwr.util.addRows(tableId, drugSet, currentRegimenTableHeaderCells, {
 					cellCreator:function(options) {
 					    var td = document.createElement("td");
 					    var cSpan = regimenMode == "view" ? "6" : "8";
 					    td.setAttribute("colspan", cSpan);
 					    return td;
-					}
+					},
+					escapeHtml:false
 				});
 				//alert("about to try to populate " + "closegp_" + drugSetId + "_reason");
 				if ( document.getElementById("closegp_" + drugSetId + "_reason") ) 
-					DWRUtil.addOptions("closegp_" + drugSetId + "_reason", discReasons, "val", "display");
+					dwr.util.addOptions("closegp_" + drugSetId + "_reason", discReasons, "val", "display");
 				if ( document.getElementById("voidgp_" + drugSetId + "_reason") ) 
-					DWRUtil.addOptions("voidgp_" + drugSetId + "_reason", voidReasons, "val", "display");
+					dwr.util.addOptions("voidgp_" + drugSetId + "_reason", voidReasons, "val", "display");
 			}
 		}
 
@@ -332,12 +333,13 @@
 			var tableId = 'regimenTableCompleted_header_' + drugSetId;
 			
 			if ( document.getElementById(tableId) ) {
-				DWRUtil.addRows(tableId, drugSet, completedRegimenTableHeaderCells, {
+				dwr.util.addRows(tableId, drugSet, completedRegimenTableHeaderCells, {
 					cellCreator:function(options) {
 					    var td = document.createElement("td");
 					    td.setAttribute("colspan", "8");
 					    return td;
-					}
+					}, 
+					escapeHtml:false
 				});
 			}
 		}
@@ -353,18 +355,19 @@
 					}
 				}
 				if ( document.getElementById(tableName) ) {
-					DWRUtil.addRows(tableName, drugOrders, currentRegimenTableCellFuncs, {
+					dwr.util.addRows(tableName, drugOrders, currentRegimenTableCellFuncs, {
 						cellCreator:function(options) {
 						    var td = document.createElement("td");
 						    return td;
-						}
+						},
+						escapeHtml:false
 					});
 					for ( var i = 0; i < drugOrders.length; i++ ) {
 						var orderId = drugOrders[i].orderId;
 						if ( document.getElementById("close_" + orderId + "_reason") ) 
-							DWRUtil.addOptions("close_" + orderId + "_reason", discReasons, "val", "display");
+							dwr.util.addOptions("close_" + orderId + "_reason", discReasons, "val", "display");
 						if ( document.getElementById("void_" + orderId + "_reason") ) 
-							DWRUtil.addOptions("void_" + orderId + "_reason", voidReasons, "val", "display");
+							dwr.util.addOptions("void_" + orderId + "_reason", voidReasons, "val", "display");
 					}
 				}
 			}
@@ -381,16 +384,17 @@
 				}
 				
 				if ( document.getElementById(tableName) ) {
-					DWRUtil.addRows(tableName, drugOrders, completedRegimenTableCellFuncs, {
+					dwr.util.addRows(tableName, drugOrders, completedRegimenTableCellFuncs, {
 						cellCreator:function(options) {
 						    var td = document.createElement("td");
 						    return td;
-						}
+						},
+						escapeHtml:false
 					});
 					for ( var i = 0; i < drugOrders.length; i++ ) {
 						var orderId = drugOrders[i].orderId;
 						if ( document.getElementById("voidcp_" + orderId + "_reason") ) 
-							DWRUtil.addOptions("voidcp_" + orderId + "_reason", voidReasons, "val", "display");
+							dwr.util.addOptions("voidcp_" + orderId + "_reason", voidReasons, "val", "display");
 					}
 				}
 			}
@@ -407,14 +411,14 @@
 						var headerId = tableName + "_header_" + currDrugSet;
 						var tableId = tableName + "_" + currDrugSet;
 						if ( document.getElementById(headerId) )
-							DWRUtil.removeAllRows(tableName + '_header_' + currDrugSet);
+							dwr.util.removeAllRows(tableName + '_header_' + currDrugSet);
 						if ( document.getElementById(tableId) )
-							DWRUtil.removeAllRows(tableName + '_' + currDrugSet);
+							dwr.util.removeAllRows(tableName + '_' + currDrugSet);
 					}
 				}
 			} else {
 				if ( document.getElementById(tableName) ) 
-					DWRUtil.removeAllRows(tableName);
+					dwr.util.removeAllRows(tableName);
 			}
 		}
 

@@ -95,7 +95,7 @@
 		
 		searchWidget.findObjects = function(phrase) {
 			if (searchOn.length > 1)
-				DWRPatientService.findDuplicatePatients(searchWidget.simpleClosure(searchWidget, "doObjectsFound"), searchOn);
+				DWRPatientService.findDuplicatePatients(searchOn, searchWidget.simpleClosure(searchWidget, "doObjectsFound"));
 		}
 		
 	});

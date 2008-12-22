@@ -54,10 +54,10 @@
 	}
 
 	function populateStates(states) {
-		DWRUtil.removeAllOptions("programWorkflowState");
-		DWRUtil.addOptions("programWorkflowState", states, "id", "name");
+		dwr.util.removeAllOptions("programWorkflowState");
+		dwr.util.addOptions("programWorkflowState", states, "id", "name");
 		<c:if test="${not empty conversion.programWorkflowState}">
-			DWRUtil.setValue("programWorkflowState", ${conversion.programWorkflowState.programWorkflowStateId});
+			dwr.util.setValue("programWorkflowState", ${conversion.programWorkflowState.programWorkflowStateId});
 		</c:if>
 	}
 	

@@ -115,16 +115,16 @@
 		patientProgramForWorkflowEdited = patientProgramId;
 		showLayer('editWorkflowPopup');
 		$('workflowPopupTitle').innerHTML = wfName;
-		DWRUtil.removeAllRows('workflowTable');
-		DWRUtil.addRows('workflowTable', ['<spring:message code="general.loading" javaScriptEscape="true"/>'], [ function(s) { return s; } ]);
-		DWRUtil.removeAllOptions('changeToState');
-		DWRUtil.addOptions('changeToState', ['<spring:message code="general.loading" javaScriptEscape="true"/>']);
+		dwr.util.removeAllRows('workflowTable');
+		dwr.util.addRows('workflowTable', ['<spring:message code="general.loading" javaScriptEscape="true"/>'], [ function(s) { return s; } ], { escapeHtml:false });
+		dwr.util.removeAllOptions('changeToState');
+		dwr.util.addOptions('changeToState', ['<spring:message code="general.loading" javaScriptEscape="true"/>']);
 		$('changeStateOnDate').value = '';
 		DWRProgramWorkflowService.getPatientStates(patientProgramId, programWorkflowId, function(states) {
-				DWRUtil.removeAllRows('workflowTable');
+				dwr.util.removeAllRows('workflowTable');
 				var count = 0;
 				var goUntil = states.length;
-				DWRUtil.addRows('workflowTable', states, [
+				dwr.util.addRows('workflowTable', states, [
 						function(state) { return state.stateName; },
 						function(state) {
 							++count;
@@ -135,12 +135,12 @@
 								str += ' <a href="javascript:handleVoidLastState()" style="color: red">[x]</a>';
 							return str;
 						}
-					]);
+					], { escapeHtml:false });
 			});
 		DWRProgramWorkflowService.getPossibleNextStates(patientProgramId, programWorkflowId, function(items) {
-				DWRUtil.removeAllOptions('changeToState');
-				DWRUtil.addOptions('changeToState', {'': '<spring:message code="State.select" javaScriptEscape="true"/>' });
-				DWRUtil.addOptions('changeToState', items, 'id', 'name');
+				dwr.util.removeAllOptions('changeToState');
+				dwr.util.addOptions('changeToState', {'': '<spring:message code="State.select" javaScriptEscape="true"/>' });
+				dwr.util.addOptions('changeToState', items, 'id', 'name');
 			});
 	}
 	

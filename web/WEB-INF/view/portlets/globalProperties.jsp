@@ -35,14 +35,14 @@
 							onClick='
 								hideDiv("gp_${ind}_actions");
 								showDiv("gp_${ind}_saving");
-								DWRAdministrationService.setGlobalProperty("${prop.property}", DWRUtil.getValue("gp_${ind}"),
+								DWRAdministrationService.setGlobalProperty("${prop.property}", dwr.util.getValue("gp_${ind}"),
 									function() { hideDiv("gp_${ind}_saving") });
 							'
 						/>
 						<input type="button" value="<spring:message code="general.cancel"/>"
 							onClick='
 								hideDiv("gp_${ind}_actions");
-								DWRUtil.setValue("gp_${ind}", "${prop.propertyValue}");
+								dwr.util.setValue("gp_${ind}", "${prop.propertyValue}");
 						'/>
 					</span>
 					<span id="gp_${ind}_saving" style="display: none; background-color: #e0e0e0">
@@ -60,7 +60,7 @@
 			</c:if>
 			<script type="text/javascript">
 				var gpVal = "<spring:message text="${prop.propertyValue}" javaScriptEscape="true"/>";
-				DWRUtil.setValue('gp_${ind}', gpVal);
+				dwr.util.setValue('gp_${ind}', gpVal);
 			</script>
 		</c:forEach>
 	</table>

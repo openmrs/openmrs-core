@@ -32,18 +32,19 @@ dojo.widget.defineWidget(
 				this.selectPatient(this.patientId);
 			}
 			else if (this.searchPhrase) {
-				DWRPatientService.findPatients(this.simpleClosure(this, "doObjectsFound"), this.searchPhrase, false);
+				DWRPatientService.findPatients(this.searchPhrase, false, this.simpleClosure(this, "doObjectsFound"));
 			}
 		},
 		
 		selectPatient: function(patientId) {
-			DWRPatientService.getPatient(this.simpleClosure(this, "select"), patientId);
+			DWRPatientService.getPatient(patientId, this.simpleClosure(this, "select"));
 		},
 		
 		doFindObjects: function(text) {
+		    dojo.debug("finding patient with: " + text);
 
 			var tmpIncludedVoided = (this.showIncludeVoided && this.includeVoided.checked);
-			DWRPatientService.findPatients(this.simpleClosure(this, "doObjectsFound"), text, tmpIncludedVoided);
+			DWRPatientService.findPatients(text, tmpIncludedVoided, this.simpleClosure(this, "doObjectsFound"));
 			
 			return false;
 		},
