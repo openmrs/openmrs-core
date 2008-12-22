@@ -30,6 +30,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -67,28 +68,35 @@ public class LocationListController extends SimpleFormController {
 		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			String[] locationList = request.getParameterValues("locationId");
-			LocationService ls = Context.getLocationService();
-			
 			String success = "";
 			String error = "";
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String deleted = msa.getMessage("general.deleted");
-			String notDeleted = msa.getMessage("general.cannot.delete");
-			for (String p : locationList) {
-				//TODO convenience method deleteLocation(Integer) ??
-				try {
-					ls.purgeLocation(ls.getLocation(Integer.valueOf(p)));
-					if (!success.equals("")) success += "<br/>";
-					success += p + " " + deleted;
-				}
-				catch (APIException e) {
-					log.warn("Error deleting location", e);
-					if (!error.equals("")) error += "<br/>";
-					error += p + " " + notDeleted;
+
+			String[] locationList = request.getParameterValues("locationId");
+			if(locationList != null){
+				LocationService ls = Context.getLocationService();
+				
+				String deleted = msa.getMessage("general.deleted");
+				String notDeleted = msa.getMessage("Location.cannot.delete");
+				for (String p : locationList) {
+					//TODO convenience method deleteLocation(Integer) ??
+					try {
+						ls.purgeLocation(ls.getLocation(Integer.valueOf(p)));
+						if (!success.equals("")) success += "<br/>";
+						success += p + " " + deleted;
+					}
+					catch(DataIntegrityViolationException e){
+						error = handleLocationIntegrityException(e,error,notDeleted);
+					}
+					catch (APIException e) {
+						error = handleLocationIntegrityException(e,error,notDeleted);
+					}
 				}
 			}
+			else
+				error = msa.getMessage("Location.select");
+			
 			
 			view = getSuccessView();
 			if (!success.equals(""))
@@ -98,6 +106,23 @@ public class LocationListController extends SimpleFormController {
 		}
 			
 		return new ModelAndView(new RedirectView(view));
+	}
+	
+	/**
+	 * 
+	 * Logs a location delete data integrity violation exception and 
+	 * returns a user friedly message of the problem that occured.
+	 * 
+	 * @param e the exception.
+	 * @param error the error message.
+	 * @param notDeleted the not deleted error message.
+	 * @return the formatted error message.
+	 */
+	private String handleLocationIntegrityException(Exception e,String error,String notDeleted){
+		log.warn("Error deleting location", e);
+		if (!error.equals("")) error += "<br/>";
+		error += notDeleted;
+		return error;
 	}
 
 	/**

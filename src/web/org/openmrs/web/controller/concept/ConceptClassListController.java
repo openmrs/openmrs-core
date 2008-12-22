@@ -30,6 +30,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -67,28 +68,33 @@ public class ConceptClassListController extends SimpleFormController {
 		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			
-			String[] conceptClassList = request.getParameterValues("conceptClassId");
-			ConceptService cs = Context.getConceptService();
-			
 			String success = "";
 			String error = "";
 
 			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String deleted = msa.getMessage("general.deleted");
-			String notDeleted = msa.getMessage("general.cannot.delete");
-			for (String cc : conceptClassList) {
-				try {
-					cs.purgeConceptClass(cs.getConceptClass(Integer.valueOf(cc)));
-					if (!success.equals("")) success += "<br/>";
-					success += cc + " " + deleted;
-				}
-				catch (APIException e) {
-					log.warn("Error deleting concept class", e);
-					if (!error.equals("")) error += "<br/>";
-					error += cc + " " + notDeleted;
+
+			String[] conceptClassList = request.getParameterValues("conceptClassId");
+			if(conceptClassList != null){
+				ConceptService cs = Context.getConceptService();
+				
+				String deleted = msa.getMessage("general.deleted");
+				String notDeleted = msa.getMessage("ConceptClass.cannot.delete");
+				for (String cc : conceptClassList) {
+					try {
+						cs.purgeConceptClass(cs.getConceptClass(Integer.valueOf(cc)));
+						if (!success.equals("")) success += "<br/>";
+						success += cc + " " + deleted;
+					}
+					catch(DataIntegrityViolationException e){
+						error = handleConceptClassIntegrityException(e,error,notDeleted);
+					}
+					catch (APIException e) {
+						error = handleConceptClassIntegrityException(e,error,notDeleted);
+					}
 				}
 			}
+			else
+				error = msa.getMessage("ConceptClass.select");
 			
 			view = getSuccessView();
 			if (!success.equals(""))
@@ -98,6 +104,23 @@ public class ConceptClassListController extends SimpleFormController {
 		}
 		
 		return new ModelAndView(new RedirectView(view));
+	}
+	
+	/**
+	 * 
+	 * Logs a concept class delete data integrity violation exception and 
+	 * returns a user friedly message of the problem that occured.
+	 * 
+	 * @param e the exception.
+	 * @param error the error message.
+	 * @param notDeleted the not deleted error message.
+	 * @return the formatted error message.
+	 */
+	private String handleConceptClassIntegrityException(Exception e,String error,String notDeleted){
+		log.warn("Error deleting concept class", e);
+		if (!error.equals("")) error += "<br/>";
+		error += notDeleted;
+		return error;
 	}
 
 	/**
