@@ -1000,6 +1000,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return new ConceptIterator();
 	}
 
+	/**
+	 * An iterator that loops over all concepts in the dictionary
+	 * one at a time
+	 */
 	private class ConceptIterator implements Iterator<Concept> {
 
 		Concept currentConcept = null;
@@ -1024,8 +1028,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 		public Concept next() {
 			if (currentConcept != null) {
 				sessionFactory.getCurrentSession().evict(currentConcept);
-			} else
-				currentConcept = nextConcept;
+			}
+			
+			currentConcept = nextConcept;
+			
 			nextConcept = getNextConcept(currentConcept);
 
 			return currentConcept;

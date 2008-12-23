@@ -1024,6 +1024,9 @@ public interface ConceptService extends OpenmrsService {
 	 * Returns an iterator for all concepts, including retired and expired. 
 	 * 
 	 * @return
+	 * 
+	 * @should start with the smallest concept id
+	 * @should iterate over all concepts
 	 */
 	@Transactional(readOnly=true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
