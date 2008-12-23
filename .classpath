@@ -26,7 +26,7 @@
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-bean-collections-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-core-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections/commons-collections-testframework-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate/hibernate325.jar" sourcepath="/openmrs-source/hibernate-3.2.5ga-lite.zip"/>
+	<classpathentry kind="lib" path="lib/hibernate/hibernate325-mod.jar" sourcepath="/openmrs-source/hibernate-3.2.5ga-lite.zip"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-request-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-response-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-standard-1.1.jar"/>
