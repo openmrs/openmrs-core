@@ -18,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,6 +35,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
+import org.openmrs.test.Verifies;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods
@@ -193,6 +195,46 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
     	
     	concept = Context.getConceptService().saveConcept(concept);
     	assertTrue(concept.getConceptId().equals(5089));
+    }
+
+	/**
+     * @see {@link ConceptService#conceptIterator()}
+     */
+    @Test
+    @Verifies(value = "should iterate over all concepts", method = "conceptIterator()")
+    public void conceptIterator_shouldIterateOverAllConcepts() throws Exception {
+	    Iterator<Concept> iterator = Context.getConceptService().conceptIterator();
+	    
+	    Assert.assertTrue(iterator.hasNext());
+	    Assert.assertEquals(3, iterator.next().getConceptId().intValue());
+    }
+
+	/**
+	 * This test will fail if it takes more than 15 seconds to run.  (Checks for an error 
+	 * with the iterator looping forever)
+	 * 
+	 * The @Timed annotation is used as an alternative to @Test(timeout=15000) so that the Spring transactions work correctly. Junit
+	 * has a "feature" where it executes the befores/afters in a thread separate from the one that
+	 * the actual test ends up running in when timed.
+     * @see {@link ConceptService#conceptIterator()}
+     */
+    @Test()
+    @Verifies(value = "should start with the smallest concept id", method = "conceptIterator()")
+    public void conceptIterator_shouldStartWithTheSmallestConceptId() throws Exception {
+    	List<Concept> allConcepts = Context.getConceptService().getAllConcepts();
+    	int numberofconcepts = allConcepts.size();
+    	
+    	// sanity check
+    	Assert.assertTrue(numberofconcepts > 0);
+    	
+    	// now count up the number of concepts the iterator returns
+    	int iteratorCount = 0;
+    	Iterator<Concept> iterator = Context.getConceptService().conceptIterator();
+	    while (iterator.hasNext() && iteratorCount < numberofconcepts + 5) { // the lt check is in case of infinite loops 
+	    	iterator.next();
+	    	iteratorCount++;
+	    }
+    	Assert.assertEquals(numberofconcepts, iteratorCount);
     }
 
 }
