@@ -24,6 +24,9 @@
 		<property name="HL7Data" type="java.lang.String" 
 			column="hl7_data" not-null="true" length="16777215" />
 			
+		<property name="messageState" type="java.lang.Integer" 
+			column="message_state" not-null="false" length="4" />
+		
 		<property name="dateCreated" type="java.util.Date" 
 			column="date_created" not-null="true" length="19" />
 

@@ -226,7 +226,16 @@ public interface HL7Service extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId);
-
+	
+	/**
+	 * Get the archive items given a state (deleted, error, pending, processing, processed).
+	 * 
+	 * @return list of archive item that actually were deleted
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
+	public List<HL7InArchive> getHL7InArchiveByState(Integer state)throws APIException;;
+	
 	/**
 	 * Get all archive hl7 queue items from the database
 	 * 

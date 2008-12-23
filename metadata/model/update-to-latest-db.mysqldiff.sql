@@ -1999,6 +1999,31 @@ delimiter ;
 
 call diff_procedure('1.5.0.03');
 
+
+#---------------------------------------- 
+# OpenMRS Datamodel version 1.5.0.04
+# Samuel Mbugua             Sep 19, 2008 
+# Adding a column to flag archived Hl7 Messages State
+# Modify state column to message_state in the hl7_inQueue
+#----------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+ BEGIN
+    IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+    SELECT CONCAT('Updating to ', new_db_version) AS 'Datamodel Update:' FROM dual;
+
+	ALTER TABLE `hl7_in_archive` ADD COLUMN `message_state` tinyint(1) default '0' COMMENT '2=processed, 4=deleted'; 
+	ALTER TABLE `hl7_in_queue` CHANGE `state` `message_state` int(11) NOT NULL default '0' COMMENT '0=pending, 1=processing, 2=processed, 3=error';
+	
+END;
+//
+
+delimiter ; 
+call diff_procedure('1.5.0.04'); 
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------

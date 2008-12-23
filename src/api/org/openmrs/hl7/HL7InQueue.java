@@ -24,8 +24,39 @@ public class HL7InQueue implements Serializable {
 	private HL7Source hl7Source;
 	private String hl7SourceKey;
 	private String hl7Data;
+	private String errorMessage; 
+	private Integer messageState; 
 	private Date dateCreated;
+
+	/**
+	 * Default constructor
+	 */
+	public HL7InQueue() {}
+
+	/**
+	 * Convenience constructor to build queue from a previously deleted queue entry
+	 * @param hl7InArchive
+	 * 				deleted entry from which queue entry will be constructed
+	 */
+	public HL7InQueue(HL7InArchive hl7InArchive) {
+		setHL7Source(hl7InArchive.getHL7Source());
+		setHL7SourceKey(hl7InArchive.getHL7SourceKey());
+		setHL7Data(hl7InArchive.getHL7Data());
+		setMessageState(HL7Constants.HL7_STATUS_PENDING);
+	}
 	
+	/**
+	 * Convenience constructor to build queue from a previously erred queue entry
+	 * @param hl7InError
+	 * 				erred entry from which queue entry will be constructed
+	 */
+	public HL7InQueue(HL7InError hl7InError) {
+		setHL7Source(hl7InError.getHL7Source());
+		setHL7SourceKey(hl7InError.getHL7SourceKey());
+		setHL7Data(hl7InError.getHL7Data());
+
+	}
+
 	public boolean equals(Object obj) {
 		if (obj instanceof HL7InQueue) {
 			HL7InQueue hl7InQueue = (HL7InQueue)obj;
@@ -34,7 +65,7 @@ public class HL7InQueue implements Serializable {
 		}
 		return false;
 	}
-	
+
 	public int hashCode() {
 		if (this.getHL7InQueueId() == null)
 			return super.hashCode();
@@ -118,4 +149,33 @@ public class HL7InQueue implements Serializable {
 		this.hl7SourceKey = hl7SourceKey;
 	}
 
+	/**
+	 * @return Returns the errorMessage.
+	 */
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	/**
+	 * @param errorMessage
+	 *            The errorMessage to set.
+	 */
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
+	/**
+	 * @return Returns the message State.
+	 */
+	public Integer getMessageState() {
+		return messageState;
+	}
+
+	/**
+	 * @param messageState
+	 *            The message State to set.
+	 */
+	public void setMessageState(Integer messageState) {
+		this.messageState = messageState;
+	}
 }

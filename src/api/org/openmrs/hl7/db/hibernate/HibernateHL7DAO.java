@@ -23,6 +23,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.hl7.HL7InQueue;
@@ -31,10 +32,10 @@ import org.openmrs.hl7.db.HL7DAO;
 
 /**
  * OpenMRS HL7 API database default hibernate implementation
- * 
+ *
  * This class shouldn't be instantiated by itself. Use the
  * {@link org.openmrs.api.context.Context}
- * 
+ *
  * @see org.openmrs.hl7.HL7Service
  * @see org.openmrs.hl7.db.HL7DAO
  */
@@ -52,7 +53,7 @@ public class HibernateHL7DAO implements HL7DAO {
 
 	/**
 	 * Set session factory
-	 * 
+	 *
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
@@ -124,7 +125,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	@SuppressWarnings("unchecked")
 	public List<HL7InQueue> getAllHL7InQueues() throws DAOException {
 		return sessionFactory.getCurrentSession()
-		                     .createQuery("from HL7InQueue order by hL7InQueueId")
+		                     .createQuery("from HL7InQueue order by HL7InQueueId")
 		                     .list();
 	}
 
@@ -166,14 +167,23 @@ public class HibernateHL7DAO implements HL7DAO {
 		                                    .get(HL7InArchive.class,
 		                                         hl7InArchiveId);
 	}
-
+	
 	/**
-	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InArchives()
+	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InArchiveByState(Integer stateId)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<HL7InArchive> getHL7InArchiveByState(Integer state) throws DAOException {
+		return sessionFactory.getCurrentSession()
+		                     .createQuery("from HL7InArchive where messageState=" + state)
+		                     .list();
+	}
+	/**
+	 * @see org.openmrs.hl7.db.HL7DAO#getAllHL7InArchives()
 	 */
 	@SuppressWarnings("unchecked")
 	public List<HL7InArchive> getAllHL7InArchives() throws DAOException {
 		return sessionFactory.getCurrentSession()
-		                     .createQuery("from HL7InArchive order by hL7InArchiveId")
+		                     .createQuery("from HL7InArchive order by HL7InArchiveId")
 		                     .list();
 	}
 
@@ -207,7 +217,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	@SuppressWarnings("unchecked")
 	public List<HL7InError> getAllHL7InErrors() throws DAOException {
 		return sessionFactory.getCurrentSession()
-		                     .createQuery("from HL7InError order by hL7InErrorId")
+		                     .createQuery("from HL7InError order by HL7InErrorId")
 		                     .list();
 	}
 

@@ -113,6 +113,13 @@
 				</div>
 			</openmrs:hasPrivilege>
 			
+			<openmrs:hasPrivilege privilege="View HL7 Inbound Messages">
+				<div class="adminMenuList">
+					<h4><spring:message code="Hl7Messages.header"/></h4>
+						<%@ include file="hl7/localHeader.jsp" %>
+				</div>
+			</openmrs:hasPrivilege>
+			
 			<openmrs:hasPrivilege privilege="Edit Patients,Audit,View Patients">
 				<div class="adminMenuList">
 					<h4><spring:message code="Maintenance.header"/></h4>

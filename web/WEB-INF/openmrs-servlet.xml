@@ -144,7 +144,10 @@
 				<prop key="admin/scheduler/scheduler.form">schedulerFormController</prop>
 
 				<prop key="remotecommunication/postHl7.form">postHl7FormController</prop>
-
+				<prop key="admin/hl7/hl7InError.list">hl7InErrorListController</prop>
+				<prop key="admin/hl7/hl7InQueue.list">hl7InQueueListController</prop>
+				<prop key="admin/hl7/hl7Deleted.form">hl7DeletedFormController</prop>
+				
 				<prop key="admin/programs/program.list">programList</prop>
 				<prop key="admin/programs/program.form">programForm</prop>
 				<prop key="admin/programs/conversion.list">stateConversionList</prop>
@@ -225,6 +228,34 @@
 	</bean>
 	<!-- ** /Scheduler ** -->
 
+
+	<!-- =============================== -->
+		<!-- =====      HL7 Messages Section     ===== -->
+		<!-- =============================== -->
+	
+		<!-- ** HL7 in Error List Controller ** -->
+		<bean id="hl7InErrorListController"
+			class="org.openmrs.hl7.web.controller.Hl7InErrorListController">
+			<property name="commandName"><value>errorList</value></property>
+			<property name="formView"><value>/admin/hl7/hl7InErrorList</value></property>
+			<property name="successView"><value>hl7InError.list</value></property>
+		</bean>
+		
+		<!-- ** HL7 in Queue List Controller ** -->
+		<bean id="hl7InQueueListController"
+			class="org.openmrs.hl7.web.controller.Hl7InQueueListController">
+			<property name="commandName"><value>queueList</value></property>
+			<property name="formView"><value>/admin/hl7/hl7InQueueList</value></property>
+			<property name="successView"><value>hl7InQueue.list</value></property>
+		</bean>
+		
+		<bean id="hl7DeletedFormController"
+			class="org.openmrs.hl7.web.controller.Hl7DeletedFormController">
+			<property name="commandName"><value>queueForm</value></property>
+			<property name="formView"><value>/admin/hl7/hl7DeletedForm</value></property>
+			<property name="successView"><value>hl7Deleted.form</value></property>
+		</bean>
+		<!-- ** /HL7 Messages Section** -->
 
 	<!-- ================================ -->
 	<!-- ====== Observation Sector ====== -->
