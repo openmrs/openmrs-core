@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.ServletException;
@@ -31,6 +30,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptSet;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 
@@ -68,7 +68,7 @@ public class DownloadDictionaryServlet extends HttpServlet {
 			response.setHeader("Content-Type", "text/csv;charset=UTF-8");
 			response.setHeader("Content-Disposition", "attachment; filename=conceptDictionary" + s + ".csv");
 			
-			String line = "Concept Id,Name,Description,Synonyms,Answers,Class,Datatype,Changed By,Creator\n";
+			String line = "Concept Id,Name,Description,Synonyms,Answers,Set Members,Class,Datatype,Changed By,Creator\n";
 			response.getWriter().write(line);
 			
 			int listIndex = 0;
@@ -111,7 +111,15 @@ public class DownloadDictionaryServlet extends HttpServlet {
 					}
 					line += '"' + tmp.trim() + "\",";
 					
-					
+					tmp = ""; 
+				 	for (ConceptSet set : c.getConceptSets()) { 
+				 		if (set.getConcept() != null) {
+				 			name = set.getConcept().getName().toString();
+				 			tmp += name.replace("\"", "\"\"") + "\n";
+				 		}
+				 	} 
+				 	line += '"' + tmp.trim() + "\","; 
+				 	
 					line += '"';
 					if (c.getConceptClass() != null)
 						line += c.getConceptClass().getName();
