@@ -964,6 +964,10 @@ y	 * returns a list of n-generations of parents of a concept in a concept set
     	return new ConceptIterator();
     }
     
+	/**
+	 * An iterator that loops over all concepts in the dictionary
+	 * one at a time
+	 */
     private class ConceptIterator implements Iterator<Concept> {
 
     	Concept currentConcept = null;
@@ -988,7 +992,9 @@ y	 * returns a list of n-generations of parents of a concept in a concept set
         	if (currentConcept != null) {
         		sessionFactory.getCurrentSession().evict(currentConcept);
         	}
+        	
         	currentConcept = nextConcept;
+        	
         	nextConcept = getNextConcept(currentConcept);
         	
         	return currentConcept;

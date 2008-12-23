@@ -18,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,7 +33,7 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
-import org.openmrs.test.TestUtil;
+import org.openmrs.test.Verifies;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods
@@ -41,7 +42,6 @@ import org.openmrs.test.TestUtil;
  * 
  * @see org.openmrs.api.ConceptService
  */
-@SkipBaseSetup
 public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 	protected ConceptService conceptService = null;
@@ -57,9 +57,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Before
 	public void runBeforeAllTests() throws Exception {
-		initializeInMemoryDatabase();
-		executeDataSet(INITIAL_CONCEPTS_XML);
-		authenticate();
 		conceptService = Context.getConceptService();
 	}
 	
@@ -75,8 +72,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void shouldGetConceptByName() throws Exception {
 		
 		// get the first concept in the dictionary
-		Concept firstConcept = conceptService.getConcept(1);
-		assertNotNull("There should be a concept with id of 1", firstConcept);
+		Concept firstConcept = conceptService.getConcept(3);
+		assertNotNull("There should be a concept with id of 3", firstConcept);
 		
 		// get the concept by its name
 		String name = firstConcept.getName().getName();
@@ -92,11 +89,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@SkipBaseSetup
 	public void shouldSaveConceptNumeric() throws Exception {
-		TestUtil.printOutTableContents(getConnection(), "concept");
-		
+		authenticate();
 		initializeInMemoryDatabase();
-		
-		ConceptService conceptService = Context.getConceptService();
+		executeDataSet(INITIAL_CONCEPTS_XML);
 		
 		// this tests saving a current concept as a newly changed conceptnumeric
 		// assumes there is already a concept in the database  
@@ -162,8 +157,49 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
     	concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
     	concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
     	
-    	concept = Context.getConceptService().saveConcept(concept);
+    	concept = conceptService.saveConcept(concept);
     	assertFalse(concept.getConceptId().equals(5089));
+    }
+
+	/**
+     * @see {@link ConceptService#conceptIterator()}
+     */
+    @Test
+    @Verifies(value = "should iterate over all concepts", method = "conceptIterator()")
+    public void conceptIterator_shouldIterateOverAllConcepts() throws Exception {
+	    Iterator<Concept> iterator = Context.getConceptService().conceptIterator();
+	    
+	    Assert.assertTrue(iterator.hasNext());
+	    
+	    Assert.assertEquals(3, iterator.next().getConceptId().intValue());
+    }
+
+	/**
+	 * This test will fail if it takes more than 15 seconds to run.  (Checks for an error 
+	 * with the iterator looping forever)
+	 * 
+	 * The @Timed annotation is used as an alternative to @Test(timeout=15000) so that the Spring transactions work correctly. Junit
+	 * has a "feature" where it executes the befores/afters in a thread separate from the one that
+	 * the actual test ends up running in when timed.
+     * @see {@link ConceptService#conceptIterator()}
+     */
+    @Test()
+    @Verifies(value = "should start with the smallest concept id", method = "conceptIterator()")
+    public void conceptIterator_shouldStartWithTheSmallestConceptId() throws Exception {
+    	List<Concept> allConcepts = Context.getConceptService().getAllConcepts();
+    	int numberofconcepts = allConcepts.size();
+    	
+    	// sanity check
+    	Assert.assertTrue(numberofconcepts > 0);
+    	
+    	// now count up the number of concepts the iterator returns
+    	int iteratorCount = 0;
+    	Iterator<Concept> iterator = Context.getConceptService().conceptIterator();
+	    while (iterator.hasNext() && iteratorCount < numberofconcepts + 5) { // the lt check is in case of infinite loops 
+	    	iterator.next();
+	    	iteratorCount++;
+	    }
+    	Assert.assertEquals(numberofconcepts, iteratorCount);
     }
 
     /**
@@ -173,20 +209,18 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
     @Test
     public void saveConcept_shouldKeepIdForNewConceptIfOneIsSpecified()
             throws Exception {
-    	for (Concept c : Context.getConceptService().getAllConcepts())
-    		System.out.println(c.getConceptId() + " -> " + c.getName().getName());
-    	Assert.assertNull("There should be no concept with id 5089", Context.getConceptService().getConcept(5089));
+    	int unusedConceptId = 343434;
+    	
+    	Assert.assertNull("There should be no concept with id " + unusedConceptId, Context.getConceptService().getConcept(unusedConceptId));
     	
     	Concept concept = new Concept();
     	concept.addName(new ConceptName("Weight", Locale.US));
-    	concept.setConceptId(5089);
+    	concept.setConceptId(unusedConceptId);
     	concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
     	concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
     	
     	concept = Context.getConceptService().saveConcept(concept);
-    	for (Concept c : Context.getConceptService().getAllConcepts())
-    		System.out.println(c.getConceptId() + " -> " + c.getName().getName());
-    	assertTrue(concept.getConceptId().equals(5089));
+    	assertTrue(concept.getConceptId().equals(unusedConceptId));
     }
 
 }
