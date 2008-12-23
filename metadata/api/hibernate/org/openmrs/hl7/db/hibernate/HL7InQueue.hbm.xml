@@ -26,6 +26,12 @@
 			
  		<property name="dateCreated" type="java.util.Date" 
 			column="date_created" not-null="true" length="19" />
+		
+		<property name="errorMessage" type="java.lang.String" 
+			column="error_msg" not-null="false" length="16777215" />
+			
+		<property name="messageState" type="java.lang.Integer" 
+			column="message_state" not-null="false" length="4" />
 
 	</class>
 </hibernate-mapping>

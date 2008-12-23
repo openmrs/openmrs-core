@@ -215,7 +215,14 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	public void deleteHL7InQueue(HL7InQueue hl7InQueue) {
 		purgeHL7InQueue(hl7InQueue);
 	}
-
+	
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveByState(java.lang.Integer)
+	 */
+	public List<HL7InArchive> getHL7InArchiveByState(Integer state) throws APIException {
+		return dao.getHL7InArchiveByState(state);
+	}
+	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getAllHL7InArchives()
 	 */

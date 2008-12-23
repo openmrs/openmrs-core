@@ -21,6 +21,7 @@ public class HL7InArchive {
 	private HL7Source hl7Source;
 	private String hl7SourceKey;
 	private String hl7Data;
+	private Integer messageState;
 	private Date dateCreated;
 
 	/**
@@ -36,6 +37,7 @@ public class HL7InArchive {
 		setHL7Source(hl7InQueue.getHL7Source());
 		setHL7SourceKey(hl7InQueue.getHL7SourceKey());
 		setHL7Data(hl7InQueue.getHL7Data());
+		setMessageState(HL7Constants.HL7_STATUS_PROCESSING);
 	}
 	
 	/**
@@ -111,6 +113,19 @@ public class HL7InArchive {
 	 */
 	public void setHL7SourceKey(String hl7SourceKey) {
 		this.hl7SourceKey = hl7SourceKey;
+	}
+	/**
+	 * @return Returns message state.
+	 */
+	public Integer getMessageState() {
+		return messageState;
+	}
+	/**
+	 * @param messageState
+	 *            The message source to set.
+	 */
+	public void setMessageState(Integer messageState) {
+		this.messageState = messageState;
 	}
 
 }

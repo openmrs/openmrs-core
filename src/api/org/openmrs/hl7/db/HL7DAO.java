@@ -101,7 +101,12 @@ public interface HL7DAO {
 	        throws DAOException;
 
 	/**
-	 * @see org.openmrs.hl7.HL7Service#getAllHL7InArchive()
+	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveByState(Integer stateId)
+	 */
+	public List<HL7InArchive> getHL7InArchiveByState(Integer stateId) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getAllHL7InArchives()
 	 */
 	public List<HL7InArchive> getAllHL7InArchives() throws DAOException;
 
