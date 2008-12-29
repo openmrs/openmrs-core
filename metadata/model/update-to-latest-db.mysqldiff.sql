@@ -2017,7 +2017,10 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 
 	ALTER TABLE `hl7_in_archive` ADD COLUMN `message_state` tinyint(1) default '0' COMMENT '2=processed, 4=deleted'; 
 	ALTER TABLE `hl7_in_queue` CHANGE `state` `message_state` int(11) NOT NULL default '0' COMMENT '0=pending, 1=processing, 2=processed, 3=error';
-	
+
+    UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
 END;
 //
 
