@@ -90,8 +90,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Hibernate specific implementation of the PatientSetDAO. This class should not be instatiated.
- * Rather, it is injected into the PatientSetService by Spring.
+ * Hibernate specific implementation of the PatientSetDAO. <br/>
+ * <br/>
+ * This class should not be instantiated. Rather, it is injected into the PatientSetService by
+ * Spring.
  * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.PatientSetService

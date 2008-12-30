@@ -34,8 +34,9 @@ import org.openmrs.api.db.OrderDAO;
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
  * is used by the OrderService. This class is injected by spring into the desired OrderService
  * class. This injection is determined by the xml mappings and elements in the spring application
- * context: /metadata/api/spring/applicationContext.xml The OrderService should be used for all
- * Order related database manipulation.
+ * context: /metadata/api/spring/applicationContext.xml.<br/>
+ * <br/>
+ * The OrderService should be used for all Order related database manipulation.
  * 
  * @see org.openmrs.api.OrderService
  * @see org.openmrs.api.db.OrderDAO
