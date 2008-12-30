@@ -32,7 +32,6 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptWord;
 import org.openmrs.User;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
@@ -50,41 +49,41 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class ConceptProposalFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-
-    /**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                             BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		ConceptProposal cp = (ConceptProposal)obj;
+		ConceptProposal cp = (ConceptProposal) obj;
 		String action = request.getParameter("action");
 		
 		Concept c = null;
 		if (StringUtils.hasText(request.getParameter("conceptId")))
 			c = Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId")));
 		cp.setMappedConcept(c);
-	
+		
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 		if (action.equals(msa.getMessage("general.cancel"))) {
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "general.canceled");
 			return new ModelAndView(new RedirectView(getSuccessView()));
-		}
-		else if (action.equals(msa.getMessage("ConceptProposal.ignore"))) {
+		} else if (action.equals(msa.getMessage("ConceptProposal.ignore"))) {
 			cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);
-		}
-		else {
+		} else {
 			// Set the state of the concept according to the button pushed
 			if (cp.getMappedConcept() == null)
 				errors.rejectValue("mappedConcept", "ConceptProposal.mappedConcept.error");
 			else {
-				if (action.equals(msa.getMessage("ConceptProposal.saveAsConcept")) ) {
+				if (action.equals(msa.getMessage("ConceptProposal.saveAsConcept"))) {
 					cp.setState(OpenmrsConstants.CONCEPT_PROPOSAL_CONCEPT);
-				}
-				else if (action.equals(msa.getMessage("ConceptProposal.saveAsSynonym"))) {
+				} else if (action.equals(msa.getMessage("ConceptProposal.saveAsSynonym"))) {
 					if (cp.getMappedConcept() == null)
 						errors.rejectValue("mappedConcept", "ConceptProposal.mappedConcept.error");
 					if (!StringUtils.hasText(cp.getFinalText()))
@@ -96,15 +95,17 @@ public class ConceptProposalFormController extends SimpleFormController {
 		
 		return super.processFormSubmission(request, response, cp, errors);
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -115,7 +116,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			// this concept proposal
-			ConceptProposal cp = (ConceptProposal)obj;
+			ConceptProposal cp = (ConceptProposal) obj;
 			
 			// this proposal's final text
 			String finalText = cp.getFinalText();
@@ -145,11 +146,10 @@ public class ConceptProposalFormController extends SimpleFormController {
 			String msg = "";
 			if (c != null) {
 				String mappedName = c.getName(locale).getName();
-				String[] args = new String[] {cp.getOriginalText(), mappedName, cp.getComments()};
+				String[] args = new String[] { cp.getOriginalText(), mappedName, cp.getComments() };
 				msg = msa.getMessage("ConceptProposal.alert.mappedTo", args, locale);
-			}
-			else {
-				String[] args = new String[] {cp.getOriginalText(), cp.getComments()};
+			} else {
+				String[] args = new String[] { cp.getOriginalText(), cp.getComments() };
 				msg = msa.getMessage("ConceptProposal.alert.ignored", args, locale);
 			}
 			
@@ -168,39 +168,39 @@ public class ConceptProposalFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		ConceptProposal cp = null;
 		
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
 			String id = request.getParameter("conceptProposalId");
-	    	if (id != null)
-	    		cp = cs.getConceptProposal(Integer.valueOf(id));	
+			if (id != null)
+				cp = cs.getConceptProposal(Integer.valueOf(id));
 		}
 		
 		if (cp == null)
 			cp = new ConceptProposal();
-    	
-        return cp;
-    }
-    
+		
+		return cp;
+	}
+	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		ConceptProposal cp = (ConceptProposal)object;
+		ConceptProposal cp = (ConceptProposal) object;
 		Locale locale = Context.getLocale();
 		List<ConceptProposal> matchingProposals = new Vector<ConceptProposal>();
 		List<ConceptListItem> possibleConceptsListItems = new Vector<ConceptListItem>();
@@ -212,7 +212,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 		map.put("obsConcept", listItem);
 		
 		String defaultVerbose = "false";
-		if (Context.isAuthenticated() && cp.getConceptProposalId() != null){
+		if (Context.isAuthenticated() && cp.getConceptProposalId() != null) {
 			ConceptService cs = Context.getConceptService();
 			// optional user property for default verbose display in concept search
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
@@ -240,5 +240,5 @@ public class ConceptProposalFormController extends SimpleFormController {
 		
 		return map;
 	}
-    
+	
 }

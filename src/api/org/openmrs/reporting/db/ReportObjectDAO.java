@@ -22,7 +22,7 @@ import org.openmrs.reporting.AbstractReportObject;
  *
  */
 public interface ReportObjectDAO {
-
+	
 	/**
 	 * Auto generated method comment
 	 * 

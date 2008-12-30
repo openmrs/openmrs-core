@@ -20,31 +20,38 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * The concept map object represents a mapping of Concept to ConceptSource.   
- * A concept can have 0 to N mappings to any and all concept sources in the database.
+ * The concept map object represents a mapping of Concept to ConceptSource. A concept can have 0 to
+ * N mappings to any and all concept sources in the database.
  */
 @Root
 public class ConceptMap implements java.io.Serializable {
-
+	
 	public static final long serialVersionUID = 754677L;
-
+	
 	// Fields
-
+	
 	private Integer conceptMapId;
+	
 	private Concept concept;
+	
 	private ConceptSource source;
+	
 	private Integer sourceId;
+	
 	private String sourceCode;
+	
 	private String comment;
+	
 	private User creator;
+	
 	private Date dateCreated;
-
+	
 	// Constructors
-
+	
 	/** default constructor */
 	public ConceptMap() {
 	}
-
+	
 	/** constructor with concept map id */
 	public ConceptMap(Integer conceptMapId) {
 		this.conceptMapId = conceptMapId;
@@ -55,7 +62,7 @@ public class ConceptMap implements java.io.Serializable {
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptMap) {
-			ConceptMap c = (ConceptMap)obj;
+			ConceptMap c = (ConceptMap) obj;
 			
 			if (getConceptMapId() == null)
 				return false;
@@ -69,42 +76,43 @@ public class ConceptMap implements java.io.Serializable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getConceptMapId() == null) return super.hashCode();
+		if (this.getConceptMapId() == null)
+			return super.hashCode();
 		return this.getConceptMapId().hashCode();
 	}
 	
 	/**
-     * @return the concept
-     */
+	 * @return the concept
+	 */
 	@Element
 	public Concept getConcept() {
-    	return concept;
-    }
-
+		return concept;
+	}
+	
 	/**
-     * @param concept the concept to set
-     */
+	 * @param concept the concept to set
+	 */
 	@Element
 	public void setConcept(Concept concept) {
-    	this.concept = concept;
-    }
-
+		this.concept = concept;
+	}
+	
 	/**
 	 * @return Returns the comment.
 	 */
-    @Element(data=true, required=false)
+	@Element(data = true, required = false)
 	public String getComment() {
 		return comment;
 	}
-
+	
 	/**
 	 * @param comment The comment to set.
 	 */
-	@Element(data=true, required=false)
+	@Element(data = true, required = false)
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-
+	
 	/**
 	 * @return Returns the conceptMapId.
 	 */
@@ -112,7 +120,7 @@ public class ConceptMap implements java.io.Serializable {
 	public Integer getConceptMapId() {
 		return conceptMapId;
 	}
-
+	
 	/**
 	 * @param conceptMapId The conceptMapId to set.
 	 */
@@ -120,7 +128,7 @@ public class ConceptMap implements java.io.Serializable {
 	public void setConceptMapId(Integer conceptMapId) {
 		this.conceptMapId = conceptMapId;
 	}
-
+	
 	/**
 	 * @return Returns the creator.
 	 */
@@ -128,7 +136,7 @@ public class ConceptMap implements java.io.Serializable {
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	/**
 	 * @param creator The creator to set.
 	 */
@@ -136,7 +144,7 @@ public class ConceptMap implements java.io.Serializable {
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	/**
 	 * @return Returns the dateCreated.
 	 */
@@ -144,7 +152,7 @@ public class ConceptMap implements java.io.Serializable {
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
@@ -152,7 +160,7 @@ public class ConceptMap implements java.io.Serializable {
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 	/**
 	 * @return Returns the source.
 	 */
@@ -160,7 +168,7 @@ public class ConceptMap implements java.io.Serializable {
 	public ConceptSource getSource() {
 		return source;
 	}
-
+	
 	/**
 	 * @param source The source to set.
 	 */
@@ -168,7 +176,7 @@ public class ConceptMap implements java.io.Serializable {
 	public void setSource(ConceptSource source) {
 		this.source = source;
 	}
-
+	
 	/**
 	 * @return Returns the sourceCode.
 	 */
@@ -176,7 +184,7 @@ public class ConceptMap implements java.io.Serializable {
 	public String getSourceCode() {
 		return sourceCode;
 	}
-
+	
 	/**
 	 * @param sourceCode The sourceCode to set.
 	 */
@@ -184,14 +192,14 @@ public class ConceptMap implements java.io.Serializable {
 	public void setSourceCode(String sourceCode) {
 		this.sourceCode = sourceCode;
 	}
-
+	
 	/**
 	 * @return Returns the sourceId.
 	 */
 	public Integer getSourceId() {
 		return sourceId;
 	}
-
+	
 	/**
 	 * @param sourceId The sourceId to set.
 	 */

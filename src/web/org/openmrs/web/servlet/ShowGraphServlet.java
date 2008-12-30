@@ -13,7 +13,6 @@
  */
 package org.openmrs.web.servlet;
 
-
 import java.awt.Font;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -46,43 +45,48 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 
 public class ShowGraphServlet extends HttpServlet {
-
+	
 	public static final long serialVersionUID = 1231231L;
+	
 	private Log log = LogFactory.getLog(ShowGraphServlet.class);
+	
 	//private static final DateFormat Formatter = new SimpleDateFormat("MM/dd/yyyy");
-
+	
 	// Supported mime types
 	private static final String PNG_MIME_TYPE = "image/png";
+	
 	private static final String JPG_MIME_TYPE = "image/jpeg";
 	
-		
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	
-		try { 
+		
+		try {
 			// TODO (jmiranda) Need better error handling
 			Integer patientId = Integer.parseInt(request.getParameter("patientId"));
 			Integer conceptId = Integer.parseInt(request.getParameter("conceptId"));
-			Integer width = request.getParameter("width")!=null?Integer.parseInt(request.getParameter("width")):new Integer(500);
-			Integer height = request.getParameter("width")!=null?Integer.parseInt(request.getParameter("height")) : new Integer(300);
-			String mimeType = request.getParameter("mimeType")!=null?request.getParameter("mimeType"):PNG_MIME_TYPE;
+			Integer width = request.getParameter("width") != null ? Integer.parseInt(request.getParameter("width"))
+			        : new Integer(500);
+			Integer height = request.getParameter("width") != null ? Integer.parseInt(request.getParameter("height"))
+			        : new Integer(300);
+			String mimeType = request.getParameter("mimeType") != null ? request.getParameter("mimeType") : PNG_MIME_TYPE;
 			
-			boolean userSpecifiedMaxRange = request.getParameter("maxRange")!=null;
-			boolean userSpecifiedMinRange = request.getParameter("minRange")!=null;
-			double maxRange = request.getParameter("maxRange")!=null?Double.parseDouble(request.getParameter("maxRange")):0.0;  
-			double minRange = request.getParameter("minRange")!=null?Double.parseDouble(request.getParameter("minRange")):0.0;
+			boolean userSpecifiedMaxRange = request.getParameter("maxRange") != null;
+			boolean userSpecifiedMinRange = request.getParameter("minRange") != null;
+			double maxRange = request.getParameter("maxRange") != null ? Double
+			        .parseDouble(request.getParameter("maxRange")) : 0.0;
+			double minRange = request.getParameter("minRange") != null ? Double
+			        .parseDouble(request.getParameter("minRange")) : 0.0;
 			
 			Patient patient = Context.getPatientService().getPatient(patientId);
 			Concept concept = Context.getConceptService().getConcept(conceptId);
 			
 			Set<Obs> observations = new HashSet<Obs>();
 			String chartTitle, rangeAxisTitle, domainAxisTitle, titleFontSize = "";
-			if (concept != null ) { 
+			if (concept != null) {
 				// Get observations
-				observations = Context.getObsService().getObservations(patient, concept, false);				
+				observations = Context.getObsService().getObservations(patient, concept, false);
 				chartTitle = concept.getName(request.getLocale()).getName();
 				rangeAxisTitle = chartTitle;
-			}
-			else { 
+			} else {
 				chartTitle = "Concept " + conceptId + " not found";
 				rangeAxisTitle = "Value";
 				
@@ -93,10 +97,11 @@ public class ShowGraphServlet extends HttpServlet {
 			TimeSeries series = new TimeSeries(rangeAxisTitle, Day.class);
 			TimeSeriesCollection dataset = new TimeSeriesCollection();
 			Calendar calendar = Calendar.getInstance();
-			for( Obs obs : observations ) { 
-				if (obs.getValueNumeric() != null) {		// Shouldn't be needed but just in case
+			for (Obs obs : observations) {
+				if (obs.getValueNumeric() != null) { // Shouldn't be needed but just in case
 					calendar.setTime(obs.getObsDatetime());
-					log.debug("Adding value: " + obs.getValueNumeric() + " for " + calendar.get(Calendar.MONTH) + "/" + calendar.get(Calendar.YEAR) );
+					log.debug("Adding value: " + obs.getValueNumeric() + " for " + calendar.get(Calendar.MONTH) + "/"
+					        + calendar.get(Calendar.YEAR));
 					
 					// Set range
 					//if (obs.getValueNumeric().doubleValue() < minRange) 
@@ -104,28 +109,17 @@ public class ShowGraphServlet extends HttpServlet {
 					
 					//if (obs.getValueNumeric().doubleValue() > maxRange) 
 					//	maxRange = obs.getValueNumeric().doubleValue();
-								
+					
 					// Add data point to series
-					Day day = new Day(
-						calendar.get(Calendar.DAY_OF_MONTH),
-						calendar.get(Calendar.MONTH)+1,			// January = 0 
-						calendar.get(Calendar.YEAR)
-					);
+					Day day = new Day(calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, // January = 0 
+					        calendar.get(Calendar.YEAR));
 					series.addOrUpdate(day, obs.getValueNumeric());
 				}
 			}
 			// Add series to dataset
 			dataset.addSeries(series);
-
-	        JFreeChart chart = ChartFactory.createTimeSeriesChart(
-               chartTitle,
-               null,
-               null,
-               dataset,
-               false, 
-               false, 
-               false
-	        );
+			
+			JFreeChart chart = ChartFactory.createTimeSeriesChart(chartTitle, null, null, dataset, false, false, false);
 			
 			// Customize title font
 			Font font = new Font("Arial", Font.BOLD, 12);
@@ -134,80 +128,79 @@ public class ShowGraphServlet extends HttpServlet {
 			chart.setTitle(title);
 			
 			// Customize the plot (range and domain axes)
-	        XYPlot plot = (XYPlot) chart.getPlot();		        
-	        plot.setNoDataMessage("No Data Available");
-	        // Add filled data points
+			XYPlot plot = (XYPlot) chart.getPlot();
+			plot.setNoDataMessage("No Data Available");
+			// Add filled data points
 			XYItemRenderer r = plot.getRenderer();
 			if (r instanceof XYLineAndShapeRenderer) {
 				XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
-
+				
 				renderer.setBaseShapesFilled(true);
 				renderer.setBaseShapesVisible(true);
 				
 				// Only works with image maps (requires some work to support) 
 				/*
-		        StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(
-		            StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
-		            new SimpleDateFormat("MMM-yy"), 
-		            new DecimalFormat("0.0")
-		        );
-		        renderer.setToolTipGenerator(g);
-		        */
-			}		
-	        
-	        // Modify x-axis (datetime)
-	        DateAxis axis = (DateAxis) plot.getDomainAxis();
-	        axis.setDateFormatOverride(new SimpleDateFormat("MMM-yy"));
-
-	        // Set y-axis range (values)
-	        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-	        
-	        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-	        
-	        if (userSpecifiedMinRange) { 
-	        	minRange = ( rangeAxis.getLowerBound() < minRange ) ? rangeAxis.getLowerBound() : minRange; 
-	        }
-	        
-	        if (userSpecifiedMaxRange) { // otherwise we just use default range
-	        	maxRange = ( rangeAxis.getUpperBound() > maxRange ) ? rangeAxis.getUpperBound() : maxRange; 
-		        //maxRange = maxRange + ((maxRange - minRange) * 0.1);	// add a buffer to the max
+				StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(
+				    StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
+				    new SimpleDateFormat("MMM-yy"), 
+				    new DecimalFormat("0.0")
+				);
+				renderer.setToolTipGenerator(g);
+				*/
 			}
-	        rangeAxis.setRange(minRange, maxRange);
-
+			
+			// Modify x-axis (datetime)
+			DateAxis axis = (DateAxis) plot.getDomainAxis();
+			axis.setDateFormatOverride(new SimpleDateFormat("MMM-yy"));
+			
+			// Set y-axis range (values)
+			NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+			
+			rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+			
+			if (userSpecifiedMinRange) {
+				minRange = (rangeAxis.getLowerBound() < minRange) ? rangeAxis.getLowerBound() : minRange;
+			}
+			
+			if (userSpecifiedMaxRange) { // otherwise we just use default range
+				maxRange = (rangeAxis.getUpperBound() > maxRange) ? rangeAxis.getUpperBound() : maxRange;
+				//maxRange = maxRange + ((maxRange - minRange) * 0.1);	// add a buffer to the max
+			}
+			rangeAxis.setRange(minRange, maxRange);
+			
 			// Modify response to disable caching
-			response.setHeader("Pragma", "No-cache"); 
-			response.setDateHeader("Expires", 0); 
+			response.setHeader("Pragma", "No-cache");
+			response.setDateHeader("Expires", 0);
 			response.setHeader("Cache-Control", "no-cache");
 			
 			// Write chart out to response as image 
-			try { 
-				if ( JPG_MIME_TYPE.equalsIgnoreCase(mimeType) ) { 
+			try {
+				if (JPG_MIME_TYPE.equalsIgnoreCase(mimeType)) {
 					response.setContentType(JPG_MIME_TYPE);
 					ChartUtilities.writeChartAsJPEG(response.getOutputStream(), chart, width, height);
-				} 
-				else if ( PNG_MIME_TYPE.equalsIgnoreCase(mimeType)) { 
+				} else if (PNG_MIME_TYPE.equalsIgnoreCase(mimeType)) {
 					response.setContentType(PNG_MIME_TYPE);
-					ChartUtilities.writeChartAsPNG(response.getOutputStream(), chart, width, height);	
-				} 
-				else { 
+					ChartUtilities.writeChartAsPNG(response.getOutputStream(), chart, width, height);
+				} else {
 					// Throw exception: unsupported mime type
 				}
-			} catch (IOException e) { 
+			}
+			catch (IOException e) {
 				log.error(e);
 			}
-		
-		} 
+			
+		}
 		// Add error handling above and remove this try/catch 
-		catch (Exception e) { 
+		catch (Exception e) {
 			log.error(e);
 		}
-	}	
+	}
 	
 	/**
 	 * 
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
-		doGet(request,response);		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
-
+	
 }

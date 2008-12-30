@@ -14,7 +14,6 @@
 package org.openmrs.report;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -28,10 +27,11 @@ import org.openmrs.api.context.Context;
  *
  */
 public class RowPerProgramEnrollmentDataSetProvider implements DataSetProvider {
-
+	
 	protected Log log = LogFactory.getLog(this.getClass());
 	
-	public RowPerProgramEnrollmentDataSetProvider() { }
+	public RowPerProgramEnrollmentDataSetProvider() {
+	}
 	
 	/**
 	 * @see org.openmrs.report.DataSetProvider#canEvaluate(org.openmrs.report.DataSetDefinition)
@@ -39,22 +39,23 @@ public class RowPerProgramEnrollmentDataSetProvider implements DataSetProvider {
 	public boolean canEvaluate(DataSetDefinition dataSetDefinition) {
 		return dataSetDefinition instanceof RowPerProgramEnrollmentDataSetDefinition;
 	}
-
+	
 	/**
-	 * @see org.openmrs.report.DataSetProvider#evaluate(org.openmrs.report.DataSetDefinition, org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
+	 * @see org.openmrs.report.DataSetProvider#evaluate(org.openmrs.report.DataSetDefinition,
+	 *      org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
 	 */
-	public DataSet evaluate(DataSetDefinition dataSetDefinition,
-	        Cohort inputCohort, EvaluationContext evalContext) {
+	public DataSet evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {
 		
 		RowPerProgramEnrollmentDataSetDefinition definition = (RowPerProgramEnrollmentDataSetDefinition) dataSetDefinition;
 		Cohort patients = inputCohort;
 		if (definition.getFilter() != null) {
 			if (patients != null)
-				patients = Cohort.intersect(patients, Context.getCohortService().evaluate(definition.getFilter(), evalContext));
+				patients = Cohort.intersect(patients, Context.getCohortService().evaluate(definition.getFilter(),
+				    evalContext));
 			else
 				patients = Context.getCohortService().evaluate(definition.getFilter(), evalContext);
 		}
-
+		
 		RowPerProgramEnrollmentDataSet ret = new RowPerProgramEnrollmentDataSet();
 		ret.setDefinition(definition);
 		ret.setEvaluationContext(evalContext);
@@ -63,5 +64,5 @@ public class RowPerProgramEnrollmentDataSetProvider implements DataSetProvider {
 		ret.setData(list);
 		return ret;
 	}
-
+	
 }

@@ -27,6 +27,8 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
+import org.openmrs.reporting.PatientSearch;
+import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.reporting.ReportObject;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
@@ -37,30 +39,24 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
-import org.openmrs.reporting.PatientSearchReportObject;
-import org.openmrs.reporting.PatientSearch;
 
 /**
  * 
  */
 public class PatientSearchListController extends SimpleFormController {
-
+	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
-	protected void initBinder(HttpServletRequest request,
-	        ServletRequestDataBinder binder) throws Exception {
+	
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-
-		binder.registerCustomEditor(java.lang.Integer.class,
-		                            new CustomNumberEditor(java.lang.Integer.class,
-		                                                   true));
+		
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-
-	protected ModelAndView onSubmit(HttpServletRequest request,
-	        HttpServletResponse response, Object obj, BindException errors)
-	        throws Exception {
-
+	
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
+		
 		HttpSession httpSession = request.getSession();
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
@@ -75,35 +71,29 @@ public class PatientSearchListController extends SimpleFormController {
 			String textPatientSearch = msa.getMessage("Patient.search");
 			String noneDeleted = msa.getMessage("PatientSearch.nonedeleted");
 			String isInComp = msa.getMessage("PatientSearch.isAnElementInSavedComposition");
-
+			
 			if (msa.getMessage("PatientSearch.delete").equals(action)) {
 				if (reportList != null) {
-					List<AbstractReportObject> savedSearches = Context.getReportObjectService()
-					                                                  .getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
+					List<AbstractReportObject> savedSearches = Context.getReportObjectService().getReportObjectsByType(
+					    OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
 					for (String p : reportList) {
 						int compositeTest = 0;
 						String psUsedInTheseCompositeSearches = "";
 						for (ReportObject ro : savedSearches) {
 							PatientSearchReportObject psro = (PatientSearchReportObject) ro;
 							if (psro.getPatientSearch().isComposition()) {
-								List<Object> psList = psro.getPatientSearch()
-								                          .getParsedComposition();
+								List<Object> psList = psro.getPatientSearch().getParsedComposition();
 								for (Object psObj : psList) {
-									if (psObj.getClass()
-									         .getName()
-									         .contains("org.openmrs.reporting.PatientSearch")) {
+									if (psObj.getClass().getName().contains("org.openmrs.reporting.PatientSearch")) {
 										PatientSearch psInner = (PatientSearch) psObj;
 										if (psInner.getSavedSearchId() != null) {
-											if (psInner.getSavedSearchId() == Integer.valueOf(p)
-											                                         .intValue()) {
+											if (psInner.getSavedSearchId() == Integer.valueOf(p).intValue()) {
 												compositeTest = 1;
 												if (!psUsedInTheseCompositeSearches.equals(""))
 													psUsedInTheseCompositeSearches += ", ";
 												psUsedInTheseCompositeSearches += "'"
-												        + Context.getReportObjectService()
-												                 .getReportObject(Integer.valueOf(psro.getReportObjectId()))
-												                 .getName()
-												        + "'";
+												        + Context.getReportObjectService().getReportObject(
+												            Integer.valueOf(psro.getReportObjectId())).getName() + "'";
 											}
 										}
 									}
@@ -115,20 +105,18 @@ public class PatientSearchListController extends SimpleFormController {
 								as.deleteReportObject(Integer.valueOf(p));
 								if (!success.equals(""))
 									success += "<br/>";
-								success += textPatientSearch + " " + p + " "
-								        + deleted;
-							} catch (APIException e) {
+								success += textPatientSearch + " " + p + " " + deleted;
+							}
+							catch (APIException e) {
 								log.warn("Error deleting report object", e);
 								if (!error.equals(""))
 									error += "<br/>";
-								error += textPatientSearch + " " + p + " "
-								        + notDeleted;
+								error += textPatientSearch + " " + p + " " + notDeleted;
 							}
 						} else {
 							if (!error.equals(""))
 								error += "<br/>";
-							error += textPatientSearch + " " + p + " "
-							        + notDeleted + ", " + isInComp + " "
+							error += textPatientSearch + " " + p + " " + notDeleted + ", " + isInComp + " "
 							        + psUsedInTheseCompositeSearches;
 						}
 					}
@@ -142,21 +130,20 @@ public class PatientSearchListController extends SimpleFormController {
 			if (!error.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
-
+		
 		return new ModelAndView(new RedirectView(view));
 	}
-
-	protected Object formBackingObject(HttpServletRequest request)
-	        throws ServletException {
-
+	
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		List<AbstractReportObject> searches = new Vector<AbstractReportObject>();
-
+		
 		if (Context.isAuthenticated()) {
-			searches = Context.getReportObjectService()
-			                  .getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
-
+			searches = Context.getReportObjectService().getReportObjectsByType(
+			    OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
+			
 		}
 		return searches;
 	}
-
+	
 }

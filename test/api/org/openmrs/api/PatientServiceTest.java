@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 import junit.framework.Assert;
 
@@ -41,7 +40,6 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.patient.IdentifierValidator;
@@ -50,27 +48,30 @@ import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
 
 /**
- * This class tests methods in the PatientService class
- * 
- * TODO Add methods to test all methods in PatientService class
+ * This class tests methods in the PatientService class TODO Add methods to test all methods in
+ * PatientService class
  */
 public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
+	
 	protected static final String CREATE_PATIENT_VALID_IDENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatientValidIdent.xml";
+	
 	protected static final String JOHN_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-lotsOfJohns.xml";
+	
 	protected static final String USERS_WHO_ARE_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-usersWhoArePatients.xml";
+	
 	protected static final String FIND_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-findPatients.xml";
 	
 	protected static PatientService patientService = null;
+	
 	protected static AdministrationService adminService = null;
+	
 	protected static LocationService locationService = null;
 	
 	/**
-	 * Run this before each unit test in this class.
-	 * 
-	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
-	 * right before this method.
+	 * Run this before each unit test in this class. The "@Before" method in
+	 * {@link BaseContextSensitiveTest} is run right before this method.
 	 * 
 	 * @throws Exception
 	 */
@@ -84,25 +85,22 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientServiceImpl#getAllIdentifierValidators()}
-	 * 	test = should return all registered identifier validators
+	 * @verifies {@link PatientServiceImpl#getAllIdentifierValidators()} test = should return all
+	 *           registered identifier validators
 	 */
 	@Test
 	public void getAllIdentifierValidators_shouldReturnAllRegisteredIdentifierValidators() throws Exception {
 		Collection<IdentifierValidator> expectedValidators = new HashSet<IdentifierValidator>();
 		expectedValidators.add(patientService.getIdentifierValidator("org.openmrs.patient.impl.LuhnIdentifierValidator"));
-		expectedValidators.add(patientService.getIdentifierValidator("org.openmrs.patient.impl.VerhoeffIdentifierValidator"));
+		expectedValidators
+		        .add(patientService.getIdentifierValidator("org.openmrs.patient.impl.VerhoeffIdentifierValidator"));
 		Assert.assertEquals(2, patientService.getAllIdentifierValidators().size());
 		TestUtil.assertCollectionContentsEquals(expectedValidators, patientService.getAllIdentifierValidators());
 	}
 	
 	/**
-	 * Tests creation of a patient and then subsequent fetching of that
-	 * patient by internal id
-	 * 
-	 * 
-	 * TODO: Split this into multiple tests, then un-ignore this
-	 * 
+	 * Tests creation of a patient and then subsequent fetching of that patient by internal id TODO:
+	 * Split this into multiple tests, then un-ignore this
 	 * 
 	 * @throws Exception
 	 */
@@ -137,17 +135,15 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient = patientService.getPatient(2);
 		assertNotNull("There should be a patient with patient_id of 2", patient);
 		
-		
 		patient.setGender("F");
 		patientService.savePatient(patient);
 		Patient patient2 = patientService.getPatient(patient.getPatientId());
 		assertTrue("The updated patient and the orig patient should still be equal", patient.equals(patient2));
 		
-		assertTrue("The gender should be new", patient2.getGender().equals("F"));	
+		assertTrue("The gender should be new", patient2.getGender().equals("F"));
 	}
 	
-		
-	private Patient createBasicPatient(){
+	private Patient createBasicPatient() {
 		Patient patient = new Patient();
 		
 		PersonName pName = new PersonName();
@@ -171,14 +167,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//patient.setCauseOfDeath("air");
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
-		patient.setGender("male");	
+		patient.setGender("male");
 		
 		return patient;
 	}
 	
 	/**
-	 * 
-	 * Tests creating a patient 
+	 * Tests creating a patient
 	 * 
 	 * @throws Exception
 	 */
@@ -234,12 +229,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
-		/**
+	/**
 	 * Tests creating patients with identifiers that are or are not validated.
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 */
 	@Test
-	public void shouldCreatePatientWithValidatedIdentifier() throws Exception{
+	public void shouldCreatePatientWithValidatedIdentifier() throws Exception {
 		executeDataSet(CREATE_PATIENT_VALID_IDENT_XML);
 		Patient patient = createBasicPatient();
 		Patient patient2 = createBasicPatient();
@@ -250,31 +246,35 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifier ident3 = new PatientIdentifier("123-0", pit, locationService.getLocation(0));
 		PatientIdentifier ident4 = new PatientIdentifier("123-A", pit, locationService.getLocation(0));
 		
-		try{
+		try {
 			patient.addIdentifier(ident1);
 			patientService.savePatient(patient);
-			fail("Patient creation should have failed with identifier " + ident1.getIdentifier()	);
-		}catch(InvalidCheckDigitException ex){		}
-
+			fail("Patient creation should have failed with identifier " + ident1.getIdentifier());
+		}
+		catch (InvalidCheckDigitException ex) {}
+		
 		patient.removeIdentifier(ident1);
 		
-		try{
+		try {
 			patient.addIdentifier(ident2);
 			patientService.savePatient(patient);
-			fail("Patient creation should have failed with identifier " + ident2.getIdentifier()	);
-		}catch(InvalidCheckDigitException ex){		}
+			fail("Patient creation should have failed with identifier " + ident2.getIdentifier());
+		}
+		catch (InvalidCheckDigitException ex) {}
 		
 		patient.removeIdentifier(ident2);
-
-		try{
+		
+		try {
 			patient.addIdentifier(ident3);
 			patientService.savePatient(patient);
 			patientService.purgePatient(patient);
 			patient.removeIdentifier(ident3);
 			patient2.addIdentifier(ident4);
 			patientService.savePatient(patient2);
-		}catch(InvalidCheckDigitException ex){
-			fail("Patient creation should have worked with identifiers " + ident3.getIdentifier() + " and " + ident4.getIdentifier());
+		}
+		catch (InvalidCheckDigitException ex) {
+			fail("Patient creation should have worked with identifiers " + ident3.getIdentifier() + " and "
+			        + ident4.getIdentifier());
 		}
 	}
 	
@@ -299,28 +299,29 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		String identifier = firstJohnPatient.getPatientIdentifier().getIdentifier();
 		assertNotNull("Uh oh, the patient doesn't have an identifier", identifier);
 		List<Patient> patients = patientService.getPatients(null, identifier, null);
-		assertTrue("Odd. The firstJohnPatient isn't in the list of patients for this identifier", patients.contains(firstJohnPatient));
+		assertTrue("Odd. The firstJohnPatient isn't in the list of patients for this identifier", patients
+		        .contains(firstJohnPatient));
 		
 	}
 	
-//	/**
-//	 * This method should be uncommented when you want to examine the actual hibernate
-//	 * sql calls being made.  The calls that should be limiting the number of returned
-//	 * patients should show a "top" or "limit" in the sql -- this proves hibernate's
-//	 * use of a native sql limit as opposed to a java-only limit.  
-//	 * 
-//	 * Note: if enabled, this test will be considerably slower
-//     * 
-//     * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
-//     */
-//    @Override
-//    public Properties getRuntimeProperties() {
-//	    Properties props = super.getRuntimeProperties();
-//	    props.setProperty("hibernate.show_sql", "true");
-//	    
-//    	return props;
-//    }
-
+	//	/**
+	//	 * This method should be uncommented when you want to examine the actual hibernate
+	//	 * sql calls being made.  The calls that should be limiting the number of returned
+	//	 * patients should show a "top" or "limit" in the sql -- this proves hibernate's
+	//	 * use of a native sql limit as opposed to a java-only limit.  
+	//	 * 
+	//	 * Note: if enabled, this test will be considerably slower
+	//     * 
+	//     * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
+	//     */
+	//    @Override
+	//    public Properties getRuntimeProperties() {
+	//	    Properties props = super.getRuntimeProperties();
+	//	    props.setProperty("hibernate.show_sql", "true");
+	//	    
+	//    	return props;
+	//    }
+	
 	/**
 	 * Check that the patient list is kept under the max for getPatientsByName
 	 * 
@@ -332,7 +333,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		Collection<Patient> patients = patientService.getPatients("John", null, null);
 		
-		assertTrue("The patient list size should be restricted to under the max (1000). its " + patients.size(), patients.size() == 1000);
+		assertTrue("The patient list size should be restricted to under the max (1000). its " + patients.size(), patients
+		        .size() == 1000);
 		
 		/* Temporary code to create lots of johns file
 		 * 
@@ -361,7 +363,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * 
 	 * Tests the findPatients method.
 	 * 
 	 * @throws Exception
@@ -378,14 +379,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		boolean jeanClaudeFound1 = false;
 		boolean jeanClaudeFound2 = false;
 		boolean jeannetteClaudentFound = false;
-		for(Patient patient : pset){
-			if(patient.getFamilyName().equals("Claudio"))
+		for (Patient patient : pset) {
+			if (patient.getFamilyName().equals("Claudio"))
 				claudioFound = true;
-			if(patient.getGivenName().equals("Jean Claude"))
+			if (patient.getGivenName().equals("Jean Claude"))
 				jeanClaudeFound1 = true;
-			if(patient.getGivenName().equals("Jean"))
+			if (patient.getGivenName().equals("Jean"))
 				jeanClaudeFound2 = true;
-			if(patient.getGivenName().equals("Jeannette"))
+			if (patient.getGivenName().equals("Jeannette"))
 				jeannetteClaudentFound = true;
 		}
 		assertFalse(claudioFound);
@@ -401,21 +402,21 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		jeanClaudeFound1 = false;
 		jeanClaudeFound2 = false;
 		jeannetteClaudentFound = false;
-		for(Patient patient : pset){
-			if(patient.getFamilyName().equals("Claudio"))
+		for (Patient patient : pset) {
+			if (patient.getFamilyName().equals("Claudio"))
 				claudioFound = true;
-			if(patient.getGivenName().equals("Jean Claude"))
+			if (patient.getGivenName().equals("Jean Claude"))
 				jeanClaudeFound1 = true;
-			if(patient.getGivenName().equals("Jean"))
+			if (patient.getGivenName().equals("Jean"))
 				jeanClaudeFound2 = true;
-			if(patient.getGivenName().equals("Jeannette"))
+			if (patient.getGivenName().equals("Jeannette"))
 				jeannetteClaudentFound = true;
 		}
 		assertFalse(claudioFound);
 		assertTrue(jeanClaudeFound1);
 		assertTrue(jeanClaudeFound2);
 		assertTrue(jeannetteClaudentFound);
-				
+		
 		pset = patientService.getPatients("I am voided", null, null);
 		assertEquals(pset.size(), 0);
 		
@@ -448,32 +449,30 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// make sure we get back only patient #2 and patient #5
 		patients = patientService.getPatients(null, null, types);
 		assertEquals(2, patients.size());
-
-        // make sure we can search a padded identifier
-        patients = patientService.getPatients(null, "00000001234", null, false);
-        assertEquals(1, patients.size());
+		
+		// make sure we can search a padded identifier
+		patients = patientService.getPatients(null, "00000001234", null, false);
+		assertEquals(1, patients.size());
 	}
-
+	
 	/**
-	 * @verifies {@link PatientService#purgePatientIdentifierType(PatientIdentifierType)}
-	 * test = should delete type from database
+	 * @verifies {@link PatientService#purgePatientIdentifierType(PatientIdentifierType)} test =
+	 *           should delete type from database
 	 */
 	@Test
-	public void purgePatientIdentifierType_shouldDeleteTypeFromDatabase()
-			throws Exception {
+	public void purgePatientIdentifierType_shouldDeleteTypeFromDatabase() throws Exception {
 		PatientIdentifierType type = patientService.getPatientIdentifierType(1);
 		
 		patientService.purgePatientIdentifierType(type);
 		assertNull(patientService.getPatientIdentifierType(1));
 	}
-
+	
 	/**
-	 * @verifies {@link PatientService#savePatientIdentifierType(PatientIdentifierType)}
-	 * test = should create new type
+	 * @verifies {@link PatientService#savePatientIdentifierType(PatientIdentifierType)} test =
+	 *           should create new type
 	 */
 	@Test
-	public void savePatientIdentifierType_shouldCreateNewType()
-			throws Exception {
+	public void savePatientIdentifierType_shouldCreateNewType() throws Exception {
 		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
 		
 		patientIdentifierType.setName("testing");
@@ -482,17 +481,17 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		patientService.savePatientIdentifierType(patientIdentifierType);
 		
-		PatientIdentifierType newPatientIdentifierType = patientService.getPatientIdentifierType(patientIdentifierType.getPatientIdentifierTypeId());
+		PatientIdentifierType newPatientIdentifierType = patientService.getPatientIdentifierType(patientIdentifierType
+		        .getPatientIdentifierTypeId());
 		assertNotNull(newPatientIdentifierType);
 	}
-
+	
 	/**
-	 * @verifies {@link PatientService#savePatientIdentifierType(PatientIdentifierType)}
-	 * test = should update existing type
+	 * @verifies {@link PatientService#savePatientIdentifierType(PatientIdentifierType)} test =
+	 *           should update existing type
 	 */
 	@Test
-	public void savePatientIdentifierType_shouldUpdateExistingType()
-			throws Exception {
+	public void savePatientIdentifierType_shouldUpdateExistingType() throws Exception {
 		
 		PatientIdentifierType type = patientService.getPatientIdentifierType(1);
 		type.setName("SOME NEW NAME");

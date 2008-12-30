@@ -34,15 +34,16 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 public class ComplexObsServlet extends HttpServlet {
-
+	
 	public static final long serialVersionUID = 1234432L;
+	
 	private static final Log log = LogFactory.getLog(ComplexObsServlet.class);
 	
 	/**
-	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse)
 	 */
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String obsId = request.getParameter("obsId");
 		String view = request.getParameter("view");
@@ -50,33 +51,35 @@ public class ComplexObsServlet extends HttpServlet {
 		
 		HttpSession session = request.getSession();
 		
-		if (obsId == null || obsId.length()==0 ) {
+		if (obsId == null || obsId.length() == 0) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.null");
 			return;
 		}
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS)) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + OpenmrsConstants.PRIV_VIEW_OBS);
-			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?" + request.getQueryString());
+			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?"
+			        + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 			return;
 		}
 		
 		ObsService service = Context.getObsService();
 		Obs complexObs = service.getObs(Integer.valueOf(obsId));
-
+		
 		/*
 		 * TODO: Should extracting the filename, etc. be done by the handler?
 		 */
 		// Extract the url from the Obs.valueComplex and create a file.
 		String[] valComplex = complexObs.getValueComplex().split("\\|");
-		String url = (valComplex.length < 2) ? valComplex[0] : valComplex[valComplex.length-1];
+		String url = (valComplex.length < 2) ? valComplex[0] : valComplex[valComplex.length - 1];
 		File file = new File(url);
 		
 		if (!file.exists()) {
 			// Try searching in the Application Data Directory.
 			String fileName = file.getName();
-			File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));	
-			file = new File(dir, fileName );
+			File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService()
+			        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
+			file = new File(dir, fileName);
 		}
 		if (!file.exists()) {
 			throw new ServletException("The file: " + file + " does not exist.");
@@ -88,17 +91,20 @@ public class ComplexObsServlet extends HttpServlet {
 			response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 			response.setHeader("Pragma", "no-cache");
 		}
-
+		
 		log.debug("Copying file stream to outputstream: " + file.getAbsolutePath());
 		
 		InputStream inStream = null;
-		try { 
+		try {
 			inStream = new FileInputStream(file);
 			OpenmrsUtil.copyFile(inStream, response.getOutputStream());
 		}
 		finally {
 			if (inStream != null)
-				try { inStream.close(); } catch (Exception e) {}
+				try {
+					inStream.close();
+				}
+				catch (Exception e) {}
 		}
 		
 	}

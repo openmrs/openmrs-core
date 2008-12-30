@@ -26,10 +26,11 @@ import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 
 public class ModuleServlet extends HttpServlet {
-
+	
 	private static final long serialVersionUID = 1239820102030303L;
+	
 	private Log log = LogFactory.getLog(this.getClass());
-
+	
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		log.debug("In service method for module servlet: " + request.getPathInfo());

@@ -40,10 +40,8 @@ import org.openmrs.validator.FormValidator;
 import org.springframework.validation.BindException;
 
 /**
- * Default implementation of the {@link FormService}
- * 
- * This class should not be instantiated alone, get a service class
- * from the Context: Context.getFormService();
+ * Default implementation of the {@link FormService} This class should not be instantiated alone,
+ * get a service class from the Context: Context.getFormService();
  * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.FormService
@@ -53,6 +51,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private FormDAO dao;
+	
 	private FormValidator formValidator;
 	
 	/**
@@ -78,7 +77,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public Form createForm(Form form) throws APIException {
 		return saveForm(form);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.FormService#getForm(java.lang.Integer)
 	 */
@@ -133,7 +132,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		// Map of /Old FormFieldId/ to /New FormField Object/
 		//TreeMap<Integer, FormField> formFieldMap = new TreeMap<Integer, FormField>();
 		//formFieldMap.put(null, null); //for parentless formFields
-
+		
 		for (FormField formField : form.getFormFields()) {
 			//formFieldMap.put(formField.getFormFieldId(), formField);
 			formField.setFormFieldId(null);
@@ -141,7 +140,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		}
 		// this is required because Hibernate would recognize the original collection
 		form.setFormFields(new HashSet<FormField>(form.getFormFields()));
-
+		
 		form.setFormId(null);
 		
 		Context.clearSession();
@@ -150,7 +149,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		
 		return newForm;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.FormService#retireForm(org.openmrs.Form, java.lang.String)
 	 */
@@ -202,7 +201,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public List<FieldType> getAllFieldTypes(boolean includeRetired) throws APIException {
 		return dao.getAllFieldTypes(includeRetired);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.FormService#getFieldType(java.lang.Integer)
 	 */
@@ -225,7 +224,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public Set<Form> getForms(Concept c) throws APIException {
 		return new HashSet<Form>(getFormsContainingConcept(c));
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.FormService#getFormFields(org.openmrs.Form)
 	 * @deprecated
@@ -277,7 +276,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public void createField(Field field) throws APIException {
 		saveField(field);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.FormService#updateField(org.openmrs.Field)
 	 * @deprecated
@@ -311,9 +310,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept, java.util.Collection, boolean)
+	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept,
+	 *      java.util.Collection, boolean)
 	 */
-	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force) throws APIException {
+	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
+	                                                                                                                throws APIException {
 		// create an empty ignoreFormFields list if none was passed in
 		if (ignoreFormFields == null)
 			ignoreFormFields = Collections.emptyList();
@@ -338,8 +339,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * Set the change time and (conditionally) creation time attributes for all
-	 * of this form's formfields and for fields of those formfields
+	 * Set the change time and (conditionally) creation time attributes for all of this form's
+	 * formfields and for fields of those formfields
+	 * 
 	 * @param form Form to update FormFields for
 	 */
 	private void updateFormFieldProperties(FormField formField, Date ts) {
@@ -367,368 +369,354 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	public void deleteFormField(FormField formField) throws APIException {
 		purgeFormField(formField);
 	}
-
+	
 	/**
-     * @see org.openmrs.api.FormService#findForms(java.lang.String, boolean, boolean)
-     */
-    public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
-	   return getForms(text, includeUnpublished, null, includeRetired, null, null, null);
-    }
-
+	 * @see org.openmrs.api.FormService#findForms(java.lang.String, boolean, boolean)
+	 */
+	public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
+		return getForms(text, includeUnpublished, null, includeRetired, null, null, null);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getAllFields()
-     */
-    public List<Field> getAllFields() throws APIException {
-	    return getAllFields(true);
-    }
-
+	 * @see org.openmrs.api.FormService#getAllFields()
+	 */
+	public List<Field> getAllFields() throws APIException {
+		return getAllFields(true);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getAllFields(boolean)
-     */
-    public List<Field> getAllFields(boolean includeRetired) throws APIException {
-	    return dao.getAllFields(includeRetired);
-    }
-
+	 * @see org.openmrs.api.FormService#getAllFields(boolean)
+	 */
+	public List<Field> getAllFields(boolean includeRetired) throws APIException {
+		return dao.getAllFields(includeRetired);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getAllFormFields()
-     */
-    public List<FormField> getAllFormFields() throws APIException {
-	    return dao.getAllFormFields();
-    }
-
+	 * @see org.openmrs.api.FormService#getAllFormFields()
+	 */
+	public List<FormField> getAllFormFields() throws APIException {
+		return dao.getAllFormFields();
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getAllForms()
-     */
-    public List<Form> getAllForms() throws APIException {
-	    return getAllForms(true);
-    }
-
+	 * @see org.openmrs.api.FormService#getAllForms()
+	 */
+	public List<Form> getAllForms() throws APIException {
+		return getAllForms(true);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getAllForms(boolean)
-     */
-    public List<Form> getAllForms(boolean includeRetired) throws APIException {
-    	return dao.getAllForms(includeRetired);
-    }
-
+	 * @see org.openmrs.api.FormService#getAllForms(boolean)
+	 */
+	public List<Form> getAllForms(boolean includeRetired) throws APIException {
+		return dao.getAllForms(includeRetired);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getFields(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection, java.lang.Boolean)
-     */
-    public List<Field> getFields(Collection<Form> forms,
-            Collection<FieldType> fieldTypes, Collection<Concept> concepts,
-            Collection<String> tableNames, Collection<String> attributeNames,
-            Boolean selectMultiple, Collection<FieldAnswer> containsAllAnswers,
-            Collection<FieldAnswer> containsAnyAnswer, Boolean retired)
-            throws APIException {
-    	
-    	if (forms == null)
-    		forms = Collections.emptyList();
-    	
-    	if (fieldTypes == null)
-    		fieldTypes = Collections.emptyList();
-    	
-    	if (concepts == null)
-    		concepts = Collections.emptyList();
-    	
-    	if (tableNames == null)
-    		tableNames = Collections.emptyList();
-    	
-    	if (attributeNames == null)
-    		attributeNames = Collections.emptyList();
-    	
-    	if (containsAllAnswers == null)
-    		containsAllAnswers = Collections.emptyList();
-    	
-    	if (containsAnyAnswer == null)
-    		containsAnyAnswer = Collections.emptyList();
-    	
-	    return dao.getFields(forms,
-                              fieldTypes, concepts,
-                              tableNames, attributeNames,
-                              selectMultiple, containsAllAnswers,
-                              containsAnyAnswer, retired);
-    }
-
+	 * @see org.openmrs.api.FormService#getFields(java.util.Collection, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.lang.Boolean,
+	 *      java.util.Collection, java.util.Collection, java.lang.Boolean)
+	 */
+	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
+	                             Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
+	                             Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer,
+	                             Boolean retired) throws APIException {
+		
+		if (forms == null)
+			forms = Collections.emptyList();
+		
+		if (fieldTypes == null)
+			fieldTypes = Collections.emptyList();
+		
+		if (concepts == null)
+			concepts = Collections.emptyList();
+		
+		if (tableNames == null)
+			tableNames = Collections.emptyList();
+		
+		if (attributeNames == null)
+			attributeNames = Collections.emptyList();
+		
+		if (containsAllAnswers == null)
+			containsAllAnswers = Collections.emptyList();
+		
+		if (containsAnyAnswer == null)
+			containsAnyAnswer = Collections.emptyList();
+		
+		return dao.getFields(forms, fieldTypes, concepts, tableNames, attributeNames, selectMultiple, containsAllAnswers,
+		    containsAnyAnswer, retired);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getForm(java.lang.String)
-     */
-    public Form getForm(String name) throws APIException {
-    	List<Form> forms = dao.getFormsByName(name);
-    	if (forms == null || forms.size() == 0)
-    		return null;
-    	else
-    		return forms.get(0); // TODO junit test that this returns the latest (highest version)
-    }
-
+	 * @see org.openmrs.api.FormService#getForm(java.lang.String)
+	 */
+	public Form getForm(String name) throws APIException {
+		List<Form> forms = dao.getFormsByName(name);
+		if (forms == null || forms.size() == 0)
+			return null;
+		else
+			return forms.get(0); // TODO junit test that this returns the latest (highest version)
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getForm(java.lang.String, java.lang.String)
-     */
-    public Form getForm(String name, String version) throws APIException {
-	    return dao.getForm(name, version);
-    }
-
+	 * @see org.openmrs.api.FormService#getForm(java.lang.String, java.lang.String)
+	 */
+	public Form getForm(String name, String version) throws APIException {
+		return dao.getForm(name, version);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getForms(java.lang.String, boolean)
-     */
-    public List<Form> getForms(String fuzzyName, boolean onlyLatestVersion) {
-    	// get all forms including unpublished and including retired
-	    List<Form> forms = getForms(fuzzyName, null, null, null, null, null, null);
-	    
-	    Set<String> namesAlreadySeen = new HashSet<String>();
-	    for (Iterator<Form> i = forms.iterator(); i.hasNext(); ) {
-	    	Form form = i.next();
-	    	if (namesAlreadySeen.contains(form.getName()))
-	    		i.remove();
-	    	else
-	    		namesAlreadySeen.add(form.getName());
-	    }
-	    return forms;
-    }
-    
-    /**
-     * @deprecated see {@link #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)}
-     */
-    public List<Form> getForms(String partialName, Boolean published,
-            Collection<EncounterType> encounterTypes, Boolean retired,
-            Collection<FormField> containingAnyFormField,
-            Collection<FormField> containingAllFormFields) {
-	    
-    	return getForms(partialName,
-    	                published,
-		                encounterTypes,
-		                retired,
-		                containingAnyFormField,
-		                containingAllFormFields,
-		                null);
-    }
-    
-    /**
-     * @see org.openmrs.api.FormService#getForms(java.lang.String, java.lang.Boolean, java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection)
-     */
-    public List<Form> getForms(String partialName, Boolean published,
-            Collection<EncounterType> encounterTypes, Boolean retired,
-            Collection<FormField> containingAnyFormField,
-            Collection<FormField> containingAllFormFields,
-            Collection<Field> fields) {
-	    
-    	if (encounterTypes == null)
-    		encounterTypes = Collections.emptyList();
-    	
-    	if (containingAllFormFields == null)
-    		containingAllFormFields = Collections.emptyList();
-    	
-    	if (containingAnyFormField == null)
-    		containingAnyFormField = Collections.emptyList();
-    	
-    	if (fields == null)
-    		fields = Collections.emptyList();
-    	
-    	return dao.getForms(partialName,
-		                    published,
-		                    encounterTypes,
-		                    retired,
-		                    containingAnyFormField,
-		                    containingAllFormFields,
-		                    fields);
-    }
-
+	 * @see org.openmrs.api.FormService#getForms(java.lang.String, boolean)
+	 */
+	public List<Form> getForms(String fuzzyName, boolean onlyLatestVersion) {
+		// get all forms including unpublished and including retired
+		List<Form> forms = getForms(fuzzyName, null, null, null, null, null, null);
+		
+		Set<String> namesAlreadySeen = new HashSet<String>();
+		for (Iterator<Form> i = forms.iterator(); i.hasNext();) {
+			Form form = i.next();
+			if (namesAlreadySeen.contains(form.getName()))
+				i.remove();
+			else
+				namesAlreadySeen.add(form.getName());
+		}
+		return forms;
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getPublishedForms()
-     */
-    public List<Form> getPublishedForms() throws APIException {
-	    return getForms(null, true, null, null, null, null, null);
-    }
-
+	 * @deprecated see
+	 *             {@link #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)}
+	 */
+	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
+	                           Boolean retired, Collection<FormField> containingAnyFormField,
+	                           Collection<FormField> containingAllFormFields) {
+		
+		return getForms(partialName, published, encounterTypes, retired, containingAnyFormField, containingAllFormFields,
+		    null);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#purgeField(org.openmrs.Field)
-     */
-    public void purgeField(Field field) throws APIException {
-    	purgeField(field, false);
-    }
-
+	 * @see org.openmrs.api.FormService#getForms(java.lang.String, java.lang.Boolean,
+	 *      java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection)
+	 */
+	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
+	                           Boolean retired, Collection<FormField> containingAnyFormField,
+	                           Collection<FormField> containingAllFormFields, Collection<Field> fields) {
+		
+		if (encounterTypes == null)
+			encounterTypes = Collections.emptyList();
+		
+		if (containingAllFormFields == null)
+			containingAllFormFields = Collections.emptyList();
+		
+		if (containingAnyFormField == null)
+			containingAnyFormField = Collections.emptyList();
+		
+		if (fields == null)
+			fields = Collections.emptyList();
+		
+		return dao.getForms(partialName, published, encounterTypes, retired, containingAnyFormField,
+		    containingAllFormFields, fields);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#purgeField(org.openmrs.Field, boolean)
-     */
-    public void purgeField(Field field, boolean cascade) throws APIException {
-	    if (cascade == true)
-	    	throw new APIException("Not Yet Implemented");
-	    else
-	    	dao.deleteField(field);
-    }
-
+	 * @see org.openmrs.api.FormService#getPublishedForms()
+	 */
+	public List<Form> getPublishedForms() throws APIException {
+		return getForms(null, true, null, null, null, null, null);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#purgeForm(org.openmrs.Form)
-     */
-    public void purgeForm(Form form) throws APIException {
-	    purgeForm(form, false);
-    }
-
+	 * @see org.openmrs.api.FormService#purgeField(org.openmrs.Field)
+	 */
+	public void purgeField(Field field) throws APIException {
+		purgeField(field, false);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#purgeForm(org.openmrs.Form, boolean)
-     */
-    public void purgeForm(Form form, boolean cascade) throws APIException {
-	    if (cascade == true)
-	    	throw new APIException("Not Yet Implemented");
-	    else
-	    	dao.deleteForm(form);
-    }
-
+	 * @see org.openmrs.api.FormService#purgeField(org.openmrs.Field, boolean)
+	 */
+	public void purgeField(Field field, boolean cascade) throws APIException {
+		if (cascade == true)
+			throw new APIException("Not Yet Implemented");
+		else
+			dao.deleteField(field);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#purgeFormField(org.openmrs.FormField)
-     */
-    public void purgeFormField(FormField formField) throws APIException {
-	    dao.deleteFormField(formField);
-    }
-
+	 * @see org.openmrs.api.FormService#purgeForm(org.openmrs.Form)
+	 */
+	public void purgeForm(Form form) throws APIException {
+		purgeForm(form, false);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#retireField(org.openmrs.Field)
-     */
-    public Field retireField(Field field) throws APIException {
-    	if (field.getRetired() == false) {
-    		field.setRetired(true);
-    		return saveField(field);
-    	} else {
-    		return field;
-    	}
-    }
-
+	 * @see org.openmrs.api.FormService#purgeForm(org.openmrs.Form, boolean)
+	 */
+	public void purgeForm(Form form, boolean cascade) throws APIException {
+		if (cascade == true)
+			throw new APIException("Not Yet Implemented");
+		else
+			dao.deleteForm(form);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#saveField(org.openmrs.Field)
-     */
-    public Field saveField(Field field) throws APIException {
-    	Date now = new Date();
-
-    	if (field.getCreator() == null)
-    		field.setCreator(Context.getAuthenticatedUser());
-    	if (field.getDateCreated() == null)
-    		field.setDateCreated(now);
-
-    	if (field.getFieldId() != null) {
-	    	field.setChangedBy(Context.getAuthenticatedUser());
-	    	field.setDateChanged(now);
-	    }
-    	
-	    return dao.saveField(field);
-    }
-
+	 * @see org.openmrs.api.FormService#purgeFormField(org.openmrs.FormField)
+	 */
+	public void purgeFormField(FormField formField) throws APIException {
+		dao.deleteFormField(formField);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#saveForm(org.openmrs.Form)
-     */
-    public Form saveForm(Form form) throws APIException {
-    	if (!form.isRetired()) {
-    		form.setRetiredBy(null);
-    		form.setRetiredReason(null);
-    	}
-    	
-    	BindException errors = new BindException(form, "form");
-    	formValidator.validate(form, errors);
-    	if (errors.hasErrors()) {
-    		throw new APIException(errors);
-    	}
-    	
-    	Date now = new Date();
-
-    	if (form.getCreator() == null)
+	 * @see org.openmrs.api.FormService#retireField(org.openmrs.Field)
+	 */
+	public Field retireField(Field field) throws APIException {
+		if (field.getRetired() == false) {
+			field.setRetired(true);
+			return saveField(field);
+		} else {
+			return field;
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#saveField(org.openmrs.Field)
+	 */
+	public Field saveField(Field field) throws APIException {
+		Date now = new Date();
+		
+		if (field.getCreator() == null)
+			field.setCreator(Context.getAuthenticatedUser());
+		if (field.getDateCreated() == null)
+			field.setDateCreated(now);
+		
+		if (field.getFieldId() != null) {
+			field.setChangedBy(Context.getAuthenticatedUser());
+			field.setDateChanged(now);
+		}
+		
+		return dao.saveField(field);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#saveForm(org.openmrs.Form)
+	 */
+	public Form saveForm(Form form) throws APIException {
+		if (!form.isRetired()) {
+			form.setRetiredBy(null);
+			form.setRetiredReason(null);
+		}
+		
+		BindException errors = new BindException(form, "form");
+		formValidator.validate(form, errors);
+		if (errors.hasErrors()) {
+			throw new APIException(errors);
+		}
+		
+		Date now = new Date();
+		
+		if (form.getCreator() == null)
 			form.setCreator(Context.getAuthenticatedUser());
 		if (form.getDateCreated() == null)
 			form.setDateCreated(now);
-
-    	if (form.getFormId() != null) {
-    		form.setChangedBy(Context.getAuthenticatedUser());
-    		form.setDateChanged(now);
-    	}
-
-    	if (form.getFormFields() != null) {
-    		for (FormField ff : form.getFormFields()) {
-    			if (ff.getForm() == null)
-    				ff.setForm(form);
-    			else if (!ff.getForm().equals(form))
-    				throw new APIException("Form contains FormField " + ff + " that already belongs to a different form");
-    			updateFormFieldProperties(ff, now);
-    		}
-    	}
-    	
-	    return dao.saveForm(form);
-    }
-
+		
+		if (form.getFormId() != null) {
+			form.setChangedBy(Context.getAuthenticatedUser());
+			form.setDateChanged(now);
+		}
+		
+		if (form.getFormFields() != null) {
+			for (FormField ff : form.getFormFields()) {
+				if (ff.getForm() == null)
+					ff.setForm(form);
+				else if (!ff.getForm().equals(form))
+					throw new APIException("Form contains FormField " + ff + " that already belongs to a different form");
+				updateFormFieldProperties(ff, now);
+			}
+		}
+		
+		return dao.saveForm(form);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#saveFormField(org.openmrs.FormField)
-     */
-    public FormField saveFormField(FormField formField) throws APIException {
-    	Date now = new Date();
-
-    	if (formField.getCreator() == null)
+	 * @see org.openmrs.api.FormService#saveFormField(org.openmrs.FormField)
+	 */
+	public FormField saveFormField(FormField formField) throws APIException {
+		Date now = new Date();
+		
+		if (formField.getCreator() == null)
 			formField.setCreator(Context.getAuthenticatedUser());
 		if (formField.getDateCreated() == null)
 			formField.setDateCreated(now);
 		
 		if (formField.getFormFieldId() != null) {
-    		formField.setChangedBy(Context.getAuthenticatedUser());
-    		formField.setDateChanged(now);
-    	}
+			formField.setChangedBy(Context.getAuthenticatedUser());
+			formField.setDateChanged(now);
+		}
 		
 		Field field = formField.getField();
 		if (field.getCreator() == null)
 			field.setCreator(Context.getAuthenticatedUser());
 		if (field.getDateCreated() == null)
 			field.setDateCreated(new Date());
-			// don't change the changed by and date changed on field for 
-			// form field updates
+		// don't change the changed by and date changed on field for 
+		// form field updates
 		
-	    return dao.saveFormField(formField);
-    }
-
+		return dao.saveFormField(formField);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#unretireField(org.openmrs.Field)
-     */
-    public Field unretireField(Field field) throws APIException {
-    	if (field.getRetired() == true) {
-    		field.setRetired(false);
-    		return saveField(field);
-    	} else {
-    		return field;
-    	}
-    }
-
+	 * @see org.openmrs.api.FormService#unretireField(org.openmrs.Field)
+	 */
+	public Field unretireField(Field field) throws APIException {
+		if (field.getRetired() == true) {
+			field.setRetired(false);
+			return saveField(field);
+		} else {
+			return field;
+		}
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getFields(java.lang.String)
-     */
-    public List<Field> getFields(String fuzzySearchPhrase) throws APIException {
-	    return dao.getFields(fuzzySearchPhrase);
-    }
-
+	 * @see org.openmrs.api.FormService#getFields(java.lang.String)
+	 */
+	public List<Field> getFields(String fuzzySearchPhrase) throws APIException {
+		return dao.getFields(fuzzySearchPhrase);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getFieldsByConcept(org.openmrs.Concept)
-     */
-    public List<Field> getFieldsByConcept(Concept concept) throws APIException {
-	    return getFields(null, null, Collections.singleton(concept), null, null, null, null, null, null);
-    }
-
+	 * @see org.openmrs.api.FormService#getFieldsByConcept(org.openmrs.Concept)
+	 */
+	public List<Field> getFieldsByConcept(Concept concept) throws APIException {
+		return getFields(null, null, Collections.singleton(concept), null, null, null, null, null, null);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#getFormsContainingConcept(org.openmrs.Concept)
-     */
-    public List<Form> getFormsContainingConcept(Concept concept) throws APIException {
-	    return dao.getFormsContainingConcept(concept);
-    }
-
+	 * @see org.openmrs.api.FormService#getFormsContainingConcept(org.openmrs.Concept)
+	 */
+	public List<Form> getFormsContainingConcept(Concept concept) throws APIException {
+		return dao.getFormsContainingConcept(concept);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#purgeFieldType(org.openmrs.FieldType)
-     */
-    public void purgeFieldType(FieldType fieldType) throws APIException {
-	    dao.deleteFieldType(fieldType);
-    }
-
+	 * @see org.openmrs.api.FormService#purgeFieldType(org.openmrs.FieldType)
+	 */
+	public void purgeFieldType(FieldType fieldType) throws APIException {
+		dao.deleteFieldType(fieldType);
+	}
+	
 	/**
-     * @see org.openmrs.api.FormService#saveFieldType(org.openmrs.FieldType)
-     */
-    public FieldType saveFieldType(FieldType fieldType) throws APIException {
-    	
-    	if (fieldType.getCreator() == null)
-    		fieldType.setCreator(Context.getAuthenticatedUser());
-    	
-    	if (fieldType.getDateCreated() == null)
-    		fieldType.setDateCreated(new Date());
-    	
-    	return dao.saveFieldType(fieldType);
-    }
-    
+	 * @see org.openmrs.api.FormService#saveFieldType(org.openmrs.FieldType)
+	 */
+	public FieldType saveFieldType(FieldType fieldType) throws APIException {
+		
+		if (fieldType.getCreator() == null)
+			fieldType.setCreator(Context.getAuthenticatedUser());
+		
+		if (fieldType.getDateCreated() == null)
+			fieldType.setDateCreated(new Date());
+		
+		return dao.saveFieldType(fieldType);
+	}
+	
 }

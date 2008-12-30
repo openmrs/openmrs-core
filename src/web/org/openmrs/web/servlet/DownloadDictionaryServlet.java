@@ -35,36 +35,33 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 
 /**
- * This servlet will package all non retired concepts into a comma delimited file.
- * 
- * Retired concepts are ignored.
+ * This servlet will package all non retired concepts into a comma delimited file. Retired concepts
+ * are ignored.
  */
 public class DownloadDictionaryServlet extends HttpServlet {
-
+	
 	public static final long serialVersionUID = 1231231L;
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	/**
-	 * Maximum size of query results, when retrieved in batches.
-	 * 
-	 * ABKTODO: should probably be configurable somewhere
+	 * Maximum size of query results, when retrieved in batches. ABKTODO: should probably be
+	 * configurable somewhere
 	 */
 	public int batchSize = 1000;
-
+	
 	/**
-	 * 
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse)
 	 */
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		try {
 			Locale locale = Context.getLocale();
 			
 			ConceptService cs = Context.getConceptService();
 			String s = new SimpleDateFormat("dMy_Hm").format(new Date());
-	
+			
 			response.setHeader("Content-Type", "text/csv;charset=UTF-8");
 			response.setHeader("Content-Disposition", "attachment; filename=conceptDictionary" + s + ".csv");
 			
@@ -76,11 +73,11 @@ public class DownloadDictionaryServlet extends HttpServlet {
 			while (conceptIterator.hasNext()) {
 				Concept c = conceptIterator.next();
 				if (c.isRetired() == false) {
-				
-					line = c.getConceptId()+ ",";
+					
+					line = c.getConceptId() + ",";
 					String name, description;
 					ConceptName cn = c.getName(locale);
-					if (cn == null)	
+					if (cn == null)
 						name = "";
 					else
 						name = cn.getName();
@@ -93,7 +90,8 @@ public class DownloadDictionaryServlet extends HttpServlet {
 					
 					line += '"' + name.replace("\"", "\"\"") + "\",";
 					
-					if (description == null) description = "";
+					if (description == null)
+						description = "";
 					line = line + '"' + description.replace("\"", "\"\"") + "\",";
 					
 					String tmp = "";
@@ -111,15 +109,15 @@ public class DownloadDictionaryServlet extends HttpServlet {
 					}
 					line += '"' + tmp.trim() + "\",";
 					
-					tmp = ""; 
-				 	for (ConceptSet set : c.getConceptSets()) { 
-				 		if (set.getConcept() != null) {
-				 			name = set.getConcept().getName().toString();
-				 			tmp += name.replace("\"", "\"\"") + "\n";
-				 		}
-				 	} 
-				 	line += '"' + tmp.trim() + "\","; 
-				 	
+					tmp = "";
+					for (ConceptSet set : c.getConceptSets()) {
+						if (set.getConcept() != null) {
+							name = set.getConcept().getName().toString();
+							tmp += name.replace("\"", "\"\"") + "\n";
+						}
+					}
+					line += '"' + tmp.trim() + "\",";
+					
 					line += '"';
 					if (c.getConceptClass() != null)
 						line += c.getConceptClass().getName();
@@ -150,8 +148,7 @@ public class DownloadDictionaryServlet extends HttpServlet {
 		}
 	}
 	
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
 }

@@ -18,20 +18,17 @@ import org.junit.Test;
 import org.openmrs.Drug;
 import org.openmrs.test.BaseContextSensitiveTest;
 
-
 /**
  * 
  */
 public class DrugEditorTest extends BaseContextSensitiveTest {
-		
+	
 	/**
-	 * @verifies {@link DrugEditor#setAsText} 
-	 * 		set value to the drug with the specified identifier 
-	 * 
+	 * @verifies {@link DrugEditor#setAsText} set value to the drug with the specified identifier
 	 * @throws Exception
 	 */
 	@Test
-	public void setAsText_shouldSetValueToTheDrugWithTheSpecifiedIdentifier() throws Exception { 		
+	public void setAsText_shouldSetValueToTheDrugWithTheSpecifiedIdentifier() throws Exception {
 		DrugEditor drugEditor = new DrugEditor();
 		drugEditor.setAsText("2");
 		Drug drug = (Drug) drugEditor.getValue();
@@ -39,7 +36,7 @@ public class DrugEditorTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(drug);
 		Assert.assertEquals("", new Integer(2), drug.getDrugId());
 	}
-
+	
 	/*
 	@should set value to null if given empty string 
 	@should set value to null if given null value

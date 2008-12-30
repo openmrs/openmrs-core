@@ -41,17 +41,18 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class MergePatientsFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
+	                                             BindException errors) throws Exception {
 		//ModelAndView view = super.processFormSubmission(request, response, object, errors);
 		
 		log.debug("Number of errors: " + errors.getErrorCount());
 		
 		for (Object o : errors.getAllErrors()) {
 			ObjectError e = (ObjectError) o;
-			log.debug("Error name: " + e.getObjectName());	
+			log.debug("Error name: " + e.getObjectName());
 			log.debug("Error code: " + e.getCode());
 			log.debug("Error message: " + e.getDefaultMessage());
 			log.debug("Error args: " + e.getArguments());
@@ -62,18 +63,19 @@ public class MergePatientsFormController extends SimpleFormController {
 		// super.processFormSubmission()
 		return onSubmit(request, response, object, errors);
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		
 		
 		if (Context.isAuthenticated()) {
 			String view = getSuccessView();
@@ -81,7 +83,7 @@ public class MergePatientsFormController extends SimpleFormController {
 			
 			String patient1Id = ServletRequestUtils.getRequiredStringParameter(request, "patient1");
 			String patient2Id = ServletRequestUtils.getRequiredStringParameter(request, "patient2");
-			String preferredId  = ServletRequestUtils.getRequiredStringParameter(request, "preferred");
+			String preferredId = ServletRequestUtils.getRequiredStringParameter(request, "preferred");
 			
 			Patient preferred = null;
 			Patient notPreferred = null;
@@ -89,8 +91,7 @@ public class MergePatientsFormController extends SimpleFormController {
 			if (patient1Id.equals(preferredId)) {
 				preferred = ps.getPatient(Integer.valueOf(patient1Id));
 				notPreferred = ps.getPatient(Integer.valueOf(patient2Id));
-			} 
-			else {
+			} else {
 				notPreferred = ps.getPatient(Integer.valueOf(patient1Id));
 				preferred = ps.getPatient(Integer.valueOf(patient2Id));
 			}
@@ -106,16 +107,15 @@ public class MergePatientsFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(getFormView()));
 	}
-    
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		Patient p1 = new Patient();
 		
 		if (Context.isAuthenticated()) {
@@ -127,21 +127,19 @@ public class MergePatientsFormController extends SimpleFormController {
 			}
 		}
 		
-        return p1;
-    }
-
+		return p1;
+	}
+	
 	/**
-	 * 
-	 * Called prior to form display.  Allows for data to be put 
-	 * 	in the request to be used in the view
+	 * Called prior to form display. Allows for data to be put in the request to be used in the view
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-
-		Patient p1 = (Patient)obj;
+		
+		Patient p1 = (Patient) obj;
 		Patient p2 = new Patient();
 		Collection<Encounter> patient1Encounters = new Vector<Encounter>();
 		Collection<Encounter> patient2Encounters = new Vector<Encounter>();
@@ -155,7 +153,7 @@ public class MergePatientsFormController extends SimpleFormController {
 				String patientId = patientIds[1];
 				Integer pId = Integer.valueOf(patientId);
 				p2 = Context.getPatientService().getPatient(pId);
-				patient2Encounters = es.getEncounters(p2); 
+				patient2Encounters = es.getEncounters(p2);
 			}
 		}
 		
@@ -164,6 +162,6 @@ public class MergePatientsFormController extends SimpleFormController {
 		map.put("patient2", p2);
 		
 		return map;
-	}   
+	}
 	
 }

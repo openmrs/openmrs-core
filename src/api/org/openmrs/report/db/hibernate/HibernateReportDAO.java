@@ -27,14 +27,14 @@ import org.openmrs.report.db.ReportDAO;
  * Hibernate specific database access methods for objects in the report package
  */
 public class HibernateReportDAO implements ReportDAO {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
-
+	
 	/**
 	 * Set session factory
 	 * 
@@ -43,14 +43,14 @@ public class HibernateReportDAO implements ReportDAO {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.db.ReportDAO#deleteReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 */
 	public void deleteReportSchemaXml(ReportSchemaXml reportSchemaXml) {
 		sessionFactory.getCurrentSession().delete(reportSchemaXml);
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.db.ReportDAO#getReportSchemaXml(java.lang.Integer)
 	 */
@@ -58,24 +58,24 @@ public class HibernateReportDAO implements ReportDAO {
 		//return (ReportSchemaXml) sessionFactory.getCurrentSession()
 		//                                       .get(ReportSchemaXml.class, reportSchemaXmlId);
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ReportSchemaXml.class, "rsx")
-		.add(Expression.eq("rsx.reportSchemaId", reportSchemaXmlId));
-		return (ReportSchemaXml)criteria.uniqueResult();
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ReportSchemaXml.class, "rsx").add(
+		    Expression.eq("rsx.reportSchemaId", reportSchemaXmlId));
+		return (ReportSchemaXml) criteria.uniqueResult();
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.db.ReportDAO#saveReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 */
 	public void saveReportSchemaXml(ReportSchemaXml reportSchemaXml) {
 		sessionFactory.getCurrentSession().saveOrUpdate(reportSchemaXml);
 	}
-
+	
 	/**
-     * @see org.openmrs.report.db.ReportDAO#getReportSchemaXmls()
-     */
-    @SuppressWarnings("unchecked")
-    public List<ReportSchemaXml> getReportSchemaXmls() {
-	   return sessionFactory.getCurrentSession().createQuery("from ReportSchemaXml").list();
-    }
-
+	 * @see org.openmrs.report.db.ReportDAO#getReportSchemaXmls()
+	 */
+	@SuppressWarnings("unchecked")
+	public List<ReportSchemaXml> getReportSchemaXmls() {
+		return sessionFactory.getCurrentSession().createQuery("from ReportSchemaXml").list();
+	}
+	
 }

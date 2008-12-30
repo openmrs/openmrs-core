@@ -25,109 +25,108 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 import org.openmrs.notification.MessageSender;
-public class MailMessageSender implements MessageSender { 
+
+public class MailMessageSender implements MessageSender {
 	
-	protected static final Log log = LogFactory.getLog( MailMessageSender.class );
+	protected static final Log log = LogFactory.getLog(MailMessageSender.class);
 	
 	/**
-	 * JavaMail session 
+	 * JavaMail session
 	 */
 	private Session session;
 	
 	/**
 	 * Default public constructor.
 	 */
-	public MailMessageSender() { }
-
+	public MailMessageSender() {
+	}
 	
 	/**
 	 * Public constructor.
 	 * 
 	 * @param session
 	 */
-	public MailMessageSender(Session session) { 
+	public MailMessageSender(Session session) {
 		this.session = session;
 	}
-
 	
 	/**
 	 * Set javamail session.
 	 * 
 	 * @param session
 	 */
-	public void setMailSession(Session session) { 
+	public void setMailSession(Session session) {
 		this.session = session;
 	}
 	
 	/**
 	 * Send the message.
 	 * 
-	 * @param	message 	the message to be sent
+	 * @param message the message to be sent
 	 */
 	public void send(Message message) throws MessageException {
-		try { 
-			MimeMessage mimeMessage = createMimeMessage( message );
-			Transport.send(mimeMessage);					
-		} 
+		try {
+			MimeMessage mimeMessage = createMimeMessage(message);
+			Transport.send(mimeMessage);
+		}
 		catch (Exception e) {
 			log.error("failed to send message", e);
-
+			
 			// catch mail-specific exception and re-throw it as app-specific exception
 			throw new MessageException(e);
 		}
-	}	
+	}
 	
 	/**
-	 *  Converts the message object to a mime message in order to prepare it to be sent.
-	 *  
-	 *   @param 	message
-	 *   @return	MimeMessage 	
+	 * Converts the message object to a mime message in order to prepare it to be sent.
+	 * 
+	 * @param message
+	 * @return MimeMessage
 	 */
-	public MimeMessage createMimeMessage( Message message ) throws Exception {
-
-		if ( message.getRecipients() == null ) 
+	public MimeMessage createMimeMessage(Message message) throws Exception {
+		
+		if (message.getRecipients() == null)
 			throw new MessageException("Message must contain at least one recipient");
 		
 		MimeMessage mimeMessage = new MimeMessage(session);
 		
 		// TODO Need to test the null case.  
 		// Transport should use default mail.from value defined in properties.
-		if ( message.getSender() != null )
-			mimeMessage.setSender( new InternetAddress( message.getSender() ) );
+		if (message.getSender() != null)
+			mimeMessage.setSender(new InternetAddress(message.getSender()));
 		
-		mimeMessage.setRecipients( javax.mail.Message.RecipientType.TO, 
-				InternetAddress.parse( message.getRecipients(), false ));
-		mimeMessage.setSubject( message.getSubject() );
+		mimeMessage
+		        .setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(message.getRecipients(), false));
+		mimeMessage.setSubject(message.getSubject());
 		
-		if(!message.hasAttachment())
-			mimeMessage.setContent( message.getContent(), "text/plain");
+		if (!message.hasAttachment())
+			mimeMessage.setContent(message.getContent(), "text/plain");
 		else
 			mimeMessage.setContent(createMultipart(message));
 		
 		return mimeMessage;
 	}
-
-
+	
 	/**
-     * Creates a MimeMultipart, so that we can have an attachment.
-     * 
-     * @param message
-     * @return
-     */
-    private MimeMultipart createMultipart(Message message) throws Exception {
-	    MimeMultipart toReturn = new MimeMultipart();
-	    
-	    MimeBodyPart textContent = new MimeBodyPart();
-	    textContent.setText(message.getContent());
-	    
-	    MimeBodyPart attachment = new MimeBodyPart();
-	    attachment.setContent(message.getAttachment(), message.getAttachmentContentType());
-	    attachment.setFileName(message.getAttachmentFileName());
-	    
-	    toReturn.addBodyPart(textContent);
-	    toReturn.addBodyPart(attachment);
-	    
-	    return toReturn;
-    }
+	 * Creates a MimeMultipart, so that we can have an attachment.
+	 * 
+	 * @param message
+	 * @return
+	 */
+	private MimeMultipart createMultipart(Message message) throws Exception {
+		MimeMultipart toReturn = new MimeMultipart();
+		
+		MimeBodyPart textContent = new MimeBodyPart();
+		textContent.setText(message.getContent());
+		
+		MimeBodyPart attachment = new MimeBodyPart();
+		attachment.setContent(message.getAttachment(), message.getAttachmentContentType());
+		attachment.setFileName(message.getAttachmentFileName());
+		
+		toReturn.addBodyPart(textContent);
+		toReturn.addBodyPart(attachment);
+		
+		return toReturn;
+	}
 	
 }

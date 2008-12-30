@@ -24,19 +24,17 @@ import org.openmrs.logic.impl.LogicServiceImpl;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
- *  All logic tests should extend this class so that concepts are re-registered
- *  correctly for each test method.
+ * All logic tests should extend this class so that concepts are re-registered correctly for each
+ * test method.
  */
-@Ignore // so that junit doesn't try to run this like a test
+@Ignore
+// so that junit doesn't try to run this like a test
 public abstract class LogicBaseContextSensitiveTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * This is run before every test method in every class that extends
-	 * this class.
-	 * 
-	 * This is slightly hacky, but it empties out the LogicService class
-	 * so that the RuleFactory is rebuilt so it can register new concepts
-	 * as tokens.
+	 * This is run before every test method in every class that extends this class. This is slightly
+	 * hacky, but it empties out the LogicService class so that the RuleFactory is rebuilt so it can
+	 * register new concepts as tokens.
 	 * 
 	 * @throws Exception
 	 */
@@ -51,5 +49,5 @@ public abstract class LogicBaseContextSensitiveTest extends BaseContextSensitive
 		newLogicService.setLogicDataSources(datasources);
 		ServiceContext.getInstance().setLogicService(newLogicService);
 	}
-
+	
 }

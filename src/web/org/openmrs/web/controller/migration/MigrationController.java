@@ -55,14 +55,14 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class MigrationController implements Controller {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public ModelAndView handleRequest(HttpServletRequest request,
-    		HttpServletResponse response) throws ServletException, IOException {
-
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                           IOException {
+		
 		Map<String, Object> myModel = new HashMap<String, Object>();
-		if (Context.isAuthenticated()) {	
+		if (Context.isAuthenticated()) {
 			String message = request.getParameter("message");
 			if (message == null || message.length() == 0) {
 				message = "Paste some xml";
@@ -73,7 +73,6 @@ public class MigrationController implements Controller {
 			UserService us = Context.getUserService();
 			List<User> users = us.getAllUsers();
 			
-			
 			myModel.put("message", message);
 			myModel.put("locations", locations);
 			myModel.put("users", users);
@@ -82,21 +81,29 @@ public class MigrationController implements Controller {
 		return new ModelAndView("/migration/migration", "model", myModel);
 	}
 	
-	public ModelAndView uploadUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParserConfigurationException, ParseException {
+	public ModelAndView uploadUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                         IOException,
+	                                                                                         ParserConfigurationException,
+	                                                                                         ParseException {
 		String xml = request.getParameter("user_xml");
 		log.debug("xml to upload = " + xml);
 		int numAdded = MigrationHelper.importUsers(MigrationHelper.parseXml(xml));
-		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode("Added " + numAdded + " users", "UTF-8")));
+		return new ModelAndView(new RedirectView("migration.form?message="
+		        + URLEncoder.encode("Added " + numAdded + " users", "UTF-8")));
 	}
 	
-	public ModelAndView uploadLocations(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParserConfigurationException {
+	public ModelAndView uploadLocations(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                             IOException,
+	                                                                                             ParserConfigurationException {
 		String xml = request.getParameter("location_xml");
 		log.debug("xml to upload = " + xml);
-		int numAdded = MigrationHelper.importLocations(MigrationHelper.parseXml(xml));	
-		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode("Uploaded " + numAdded + " locations", "UTF-8")));
+		int numAdded = MigrationHelper.importLocations(MigrationHelper.parseXml(xml));
+		return new ModelAndView(new RedirectView("migration.form?message="
+		        + URLEncoder.encode("Uploaded " + numAdded + " locations", "UTF-8")));
 	}
 	
-	public ModelAndView runHl7(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public ModelAndView runHl7(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                    IOException {
 		List<String> messages = new ArrayList<String>();
 		
 		String filename = request.getParameter("filename");
@@ -121,7 +128,8 @@ public class MigrationController implements Controller {
 					}
 					thisMessage.append(line).append('\r');
 				}
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				log.error("Failed to read hl7 input file " + filename, ex);
 				throw new RuntimeException(ex);
 			}
@@ -155,22 +163,27 @@ public class MigrationController implements Controller {
 			log.debug("hl7InQueue.hl7Data: " + hl7InQueue.getHL7Data());
 			Context.getHL7Service().saveHL7InQueue(hl7InQueue);
 		}
-
+		
 		return new ModelAndView(new RedirectView("migration.form"));
 	}
-
+	
 	// Hardcoded for PIH v1-v2 migration. Sorry about that.
-	public ModelAndView uploadRegimens(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException {
+	public ModelAndView uploadRegimens(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                            IOException, ParseException {
 		String csv = request.getParameter("regimen_csv");
 		int numAdded = importRegimens(csv);
-	
-		return new ModelAndView(new RedirectView("migration.form?message=" + URLEncoder.encode("Uploaded " + numAdded + " regimens", "UTF-8")));
+		
+		return new ModelAndView(new RedirectView("migration.form?message="
+		        + URLEncoder.encode("Uploaded " + numAdded + " regimens", "UTF-8")));
 	}
 	
 	/**
 	 * TODO: DOCUMENT THIS
 	 */
-	public ModelAndView uploadMigrationFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParseException {
+	public ModelAndView uploadMigrationFile(HttpServletRequest request, HttpServletResponse response)
+	                                                                                                 throws ServletException,
+	                                                                                                 IOException,
+	                                                                                                 ParseException {
 		String filename = request.getParameter("filename");
 		if (filename == null || filename.length() == 0)
 			throw new IllegalArgumentException("Must specify a 'filename' parameter");
@@ -179,10 +192,12 @@ public class MigrationController implements Controller {
 		boolean autoAddRole = false;
 		try {
 			autoCreateUsers = request.getParameter("auto_create_users").toLowerCase().startsWith("t");
-		} catch (Exception ex) { }
+		}
+		catch (Exception ex) {}
 		try {
 			autoAddRole = request.getParameter("add_role_when_creating_users").toLowerCase().startsWith("t");
-		} catch (Exception ex) { }
+		}
+		catch (Exception ex) {}
 		
 		List<String> relationships = new ArrayList<String>();
 		List<String> programWorkflow = new ArrayList<String>();
@@ -219,10 +234,11 @@ public class MigrationController implements Controller {
 			username = username.substring(ind + 1);
 		return Context.getUserService().getUserByUsername(username);
 	}
-
+	
 	/**
-	 * Takes CSV like:
-	 *   patientId,drugName,formulationName,startDate,autoExpireDate,discontinuedDate,discontinuedReason,doseStrength,doseUnit,dosesPerDay,daysPerWeek,prn
+	 * Takes CSV like: patientId,drugName,formulationName,startDate,autoExpireDate,discontinuedDate,
+	 * discontinuedReason,doseStrength,doseUnit,dosesPerDay,daysPerWeek,prn
+	 * 
 	 * @return The number of regimens added
 	 */
 	public int importRegimens(String csv) throws IOException, ParseException {
@@ -257,7 +273,7 @@ public class MigrationController implements Controller {
 			String discontinuedBy = st.length > 14 ? st[14] : null;
 			
 			if (dosesPerDay == null || dosesPerDay == 0) {
-				throw new IllegalArgumentException("Doses per day must be a positive integer");					
+				throw new IllegalArgumentException("Doses per day must be a positive integer");
 			}
 			Drug drug = Context.getConceptService().getDrug(formulationName);
 			if (drug == null)
@@ -289,9 +305,11 @@ public class MigrationController implements Controller {
 			pat.add(reg);
 		}
 		for (Map.Entry<Integer, List<Order>> e : patientRegimens.entrySet()) {
-			List<PatientIdentifier> pil = Context.getPatientService().getPatientIdentifiers(e.getKey().toString(), pihIdentifierType);
+			List<PatientIdentifier> pil = Context.getPatientService().getPatientIdentifiers(e.getKey().toString(),
+			    pihIdentifierType);
 			if (pil.size() != 1) {
-				throw new RuntimeException("Found " + pil.size() + " PatientIdentifiers for " + pihIdentifierType + " of " + e.getKey());
+				throw new RuntimeException("Found " + pil.size() + " PatientIdentifiers for " + pihIdentifierType + " of "
+				        + e.getKey());
 			}
 			Patient p = pil.get(0).getPatient();
 			List<Order> list = e.getValue();
@@ -301,7 +319,8 @@ public class MigrationController implements Controller {
 		return numAdded;
 	}
 	
-    static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	public static Date parseDate(String s) throws ParseException {
 		if (s == null || s.length() == 0) {
 			return null;
@@ -312,5 +331,5 @@ public class MigrationController implements Controller {
 			return df.parse(s);
 		}
 	}
-
+	
 }

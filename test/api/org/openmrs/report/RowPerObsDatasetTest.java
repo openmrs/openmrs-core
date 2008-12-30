@@ -40,7 +40,7 @@ import org.simpleframework.xml.Serializer;
 public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 	
 	private Log log = LogFactory.getLog(getClass());
-
+	
 	/**
 	 * TODO: fix this so it uses asserts instead of printing to the screen
 	 * 
@@ -66,7 +66,7 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 		Integer maxAge = today.get(Calendar.YEAR) - 2007 + 1;
 		kids.addArgument("maxAge", maxAge.toString(), Integer.class);
 		Cohort kidsCohort = Context.getCohortService().evaluate(kids, evalContext);
-
+		
 		RowPerObsDataSetDefinition definition = new RowPerObsDataSetDefinition();
 		definition.setName("Row per Obs");
 		//commenting this out because serializing PatientSearches is not yet implemented
@@ -85,8 +85,8 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 		String expectedOutput = "<reportSchema id=\"1\">\n   <description id=\"2\"><![CDATA[Tesing RowPerObsDataSet*]]></description>\n   <dataSets class=\"java.util.Vector\" id=\"3\">\n      <dataSetDefinition class=\"org.openmrs.report.RowPerObsDataSetDefinition\" id=\"4\" name=\"Row per Obs\">\n         <questions class=\"java.util.HashSet\" id=\"5\">\n            <concept id=\"6\" conceptId=\"5089\"/>\n         </questions>\n      </dataSetDefinition>\n   </dataSets>\n   <name id=\"7\"><![CDATA[Testing row-per-obs]]></name>\n</reportSchema>";
 		String xmlOutput = writer.toString();
 		
-		XMLAssert.assertXpathEvaluatesTo("5089", "//reportSchema/dataSets/dataSetDefinition/questions/concept/@conceptId", xmlOutput);
-		
+		XMLAssert.assertXpathEvaluatesTo("5089", "//reportSchema/dataSets/dataSetDefinition/questions/concept/@conceptId",
+		    xmlOutput);
 		
 		log.error("xmlOutput: " + xmlOutput);
 		
@@ -105,7 +105,6 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 		// TestUtil.printAssignableToSingleString(w.toString());
 		
 		assertEquals(expectedOutput, w.toString());
-		
 		
 	}
 	

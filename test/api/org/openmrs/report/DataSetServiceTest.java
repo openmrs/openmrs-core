@@ -30,119 +30,87 @@ import org.openmrs.reporting.PatientSearch;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
- * Test class that tries to run a portion of the 
+ * Test class that tries to run a portion of the
  */
 public class DataSetServiceTest extends BaseContextSensitiveTest {
-
+	
 	private static Log log = LogFactory.getLog(DataSetServiceTest.class);
 	
-   	/**
+	/**
    	 * 
    	 */
-   	String [] expressions = {
-			// "TOKEN(CD4 COUNT).AND()", 
-			"TOKEN(CD4 COUNT).ASOF(30/10/2007)", 
-			"TOKEN(CD4 COUNT).AFTER(20/10/2007)", 
-			"TOKEN(CD4 COUNT).BEFORE(20/10/2007)", 
-			"TOKEN(CD4 COUNT).CONTAINS(something)", 
-			"TOKEN(CD4 COUNT).EQUALS(something)", 
-			"TOKEN(CD4 COUNT).EXISTS()", 
-			"TOKEN(CD4 COUNT).FIRST()", 
-			"TOKEN(CD4 COUNT).GT(something)", 
-			"TOKEN(CD4 COUNT).LAST()", 
-			"TOKEN(CD4 COUNT).LT(something)", 
-			//"TOKEN(CD4 COUNT).NOT()", 
-			//"TOKEN(CD4 COUNT).OR()", 
-			"TOKEN(CD4 COUNT).WITHIN()"
-   	};
-    
-    /**
-     * Auto generated method comment
-     * 
-     * @throws Exception
-     */
-    @Test
-	public void shouldLogicCriteriaBuilder() throws Exception { 
-    	
-		for(int i=0; i<expressions.length; i++) { 	
+	String[] expressions = {
+	        // "TOKEN(CD4 COUNT).AND()", 
+	        "TOKEN(CD4 COUNT).ASOF(30/10/2007)", "TOKEN(CD4 COUNT).AFTER(20/10/2007)",
+	        "TOKEN(CD4 COUNT).BEFORE(20/10/2007)", "TOKEN(CD4 COUNT).CONTAINS(something)",
+	        "TOKEN(CD4 COUNT).EQUALS(something)", "TOKEN(CD4 COUNT).EXISTS()", "TOKEN(CD4 COUNT).FIRST()",
+	        "TOKEN(CD4 COUNT).GT(something)", "TOKEN(CD4 COUNT).LAST()", "TOKEN(CD4 COUNT).LT(something)",
+	        //"TOKEN(CD4 COUNT).NOT()", 
+	        //"TOKEN(CD4 COUNT).OR()", 
+	        "TOKEN(CD4 COUNT).WITHIN()" };
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldLogicCriteriaBuilder() throws Exception {
+		
+		for (int i = 0; i < expressions.length; i++) {
 			log.info("Expression: " + expressions[i]);
-			String expression = expressions[i];			
-			String [] criterion = expression.split("\\.");			
+			String expression = expressions[i];
+			String[] criterion = expression.split("\\.");
 			String token = criterion[0];
-			String operatorOperand = criterion[1];			
+			String operatorOperand = criterion[1];
 			log.info("Token: " + token);
-			log.info("Operand: " + LogicCriteriaBuilder.extractOperand(operatorOperand));			
+			log.info("Operand: " + LogicCriteriaBuilder.extractOperand(operatorOperand));
 		}
-    }
-    
-    
-    /**
-     * Auto generated method comment
-     * 
-     * @throws Exception
-     */
-    @Test
-	public void shouldSerialize() throws Exception { 
-    	LogicCriteriaBuilder.serialize("TOKEN(CD4 COUNT).AFTER(04/12/2006).LAST()");
-    	
-    }
-    
-    /**
-     * Auto generated method comment
-     * 
-     * @throws Exception
-     */
-    @Test
-	public void shouldDeserialize() throws Exception { 
-    	
-    	LogicCriteria criteria = new LogicCriteria("CD4 COUNT");
-    	criteria.after(new Date()).last();
-    	
-    	log.info("Deserialized: " + LogicCriteriaBuilder.deserialize(criteria));
-    }
-    
-    /**
-     * 
-     * Auto generated method comment
-     * 
-     * @throws Exception
-    @Test
-	public void shouldLogicCriteriaParser() throws Exception { 
-    	authenticate();
-    	//LogicCriteria lc = new LogicCriteria("CD4 COUNT").before(new Date());
-    	
-    	String [] criterias = { 
-			//"TOKEN(CD4 COUNT).AND()", 
-			"TOKEN(CD4 COUNT).ASOF(10/30/2007)", 
-			"TOKEN(CD4 COUNT).AFTER(10/20/2007)", 
-			"TOKEN(CD4 COUNT).BEFORE(10/30/2007)", 
-			"TOKEN(CD4 COUNT).CONTAINS(something)", 
-			"TOKEN(CD4 COUNT).EQUALS(something)", 
-			"TOKEN(CD4 COUNT).EXISTS()", 
-			"TOKEN(CD4 COUNT).FIRST()", 
-			"TOKEN(CD4 COUNT).GT(something)", 
-			"TOKEN(CD4 COUNT).LAST()", 
-			"TOKEN(CD4 COUNT).LT(something)", 
-			//"TOKEN(CD4 COUNT).NOT()", 
-			//"TOKEN(CD4 COUNT).OR()", 
-			"TOKEN(CD4 COUNT).WITHIN()"		
-    	};
-    	
-    	LogicCriteria criteria = new LogicCriteria("CD4 COUNT");
-    	
-    	
-    	
-    	// Cannot handle AND, OR, NOT
-    	for (int i=0; i<criterias.length; i++) { 
-    		LogicCriteriaParser.serialize(criterias[i]);
-    	}
-    
-    	
-    	
-    }
-     */
-
-    /*
+	}
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldSerialize() throws Exception {
+		LogicCriteriaBuilder.serialize("TOKEN(CD4 COUNT).AFTER(04/12/2006).LAST()");
+		
+	}
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldDeserialize() throws Exception {
+		
+		LogicCriteria criteria = new LogicCriteria("CD4 COUNT");
+		criteria.after(new Date()).last();
+		
+		log.info("Deserialized: " + LogicCriteriaBuilder.deserialize(criteria));
+	}
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @throws Exception
+	 * @Test public void shouldLogicCriteriaParser() throws Exception { authenticate();
+	 *       //LogicCriteria lc = new LogicCriteria("CD4 COUNT").before(new Date()); String []
+	 *       criterias = { //"TOKEN(CD4 COUNT).AND()", "TOKEN(CD4 COUNT).ASOF(10/30/2007)",
+	 *       "TOKEN(CD4 COUNT).AFTER(10/20/2007)", "TOKEN(CD4 COUNT).BEFORE(10/30/2007)",
+	 *       "TOKEN(CD4 COUNT).CONTAINS(something)", "TOKEN(CD4 COUNT).EQUALS(something)",
+	 *       "TOKEN(CD4 COUNT).EXISTS()", "TOKEN(CD4 COUNT).FIRST()",
+	 *       "TOKEN(CD4 COUNT).GT(something)", "TOKEN(CD4 COUNT).LAST()",
+	 *       "TOKEN(CD4 COUNT).LT(something)", //"TOKEN(CD4 COUNT).NOT()",
+	 *       //"TOKEN(CD4 COUNT).OR()", "TOKEN(CD4 COUNT).WITHIN()" }; LogicCriteria criteria = new
+	 *       LogicCriteria("CD4 COUNT"); // Cannot handle AND, OR, NOT for (int i=0;
+	 *       i<criterias.length; i++) { LogicCriteriaParser.serialize(criterias[i]); } }
+	 */
+	
+	/*
 	@Test
 	public void shouldDataSetService() throws Exception {
 		authenticate();
@@ -165,21 +133,20 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
 		
 		
 	}*/
-	
-	
+
 	/**
 	 * Auto generated method comment
 	 * 
 	 * @param results
 	 */
-	public void printResults(Map<Integer, Result> results) { 
+	public void printResults(Map<Integer, Result> results) {
 		
 		log.error("Results: " + results);
 		
-		for(Integer id : results.keySet()) { 
+		for (Integer id : results.keySet()) {
 			Result result = results.get(id);
 			log.info("Id: " + id + " " + result.get(id) + " " + result.getDatatype());
-		}		
+		}
 	}
 	
 	/**
@@ -187,19 +154,19 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @return
 	 */
-	public Cohort getPatients() { 
+	public Cohort getPatients() {
 		Cohort patients = new Cohort();
 		
 		patients.addMember(new Integer(13015));
 		patients.addMember(new Integer(13648));
-//		patients.add(new Integer(13863));
-//		patients.add(new Integer(13932));
-//		patients.add(new Integer(13968));
-//		patients.add(new Integer(14449));
-//		patients.add(new Integer(14698));
-//		patients.add(new Integer(14755));
-//		patients.add(new Integer(14804));
-//		patients.add(new Integer(15919));
+		//		patients.add(new Integer(13863));
+		//		patients.add(new Integer(13932));
+		//		patients.add(new Integer(13968));
+		//		patients.add(new Integer(14449));
+		//		patients.add(new Integer(14698));
+		//		patients.add(new Integer(14755));
+		//		patients.add(new Integer(14804));
+		//		patients.add(new Integer(15919));
 		
 		return patients;
 	}
@@ -219,7 +186,7 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
 		PatientSearch kids = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 		// TODO: fix this so that it won't fail in 10 years
 		kids.addArgument("maxAge", "10", Integer.class);
-
+		
 		CohortDataSetDefinition def1 = new CohortDataSetDefinition();
 		def1.setName("Cohorts");
 		def1.addStrategy("kids", kids);

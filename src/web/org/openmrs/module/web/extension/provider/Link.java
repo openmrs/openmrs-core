@@ -19,44 +19,48 @@ import java.util.Map;
  *
  */
 public class Link {
-
+	
 	private String label;
+	
 	private String description;
+	
 	private String url;
+	
 	private Map<String, String> queryParameters;
 	
-	public Link() { }
-
+	public Link() {
+	}
+	
 	public String getDescription() {
-    	return description;
-    }
-
+		return description;
+	}
+	
 	public void setDescription(String description) {
-    	this.description = description;
-    }
-
+		this.description = description;
+	}
+	
 	public String getLabel() {
-    	return label;
-    }
-
+		return label;
+	}
+	
 	public void setLabel(String label) {
-    	this.label = label;
-    }
-
+		this.label = label;
+	}
+	
 	public String getUrl() {
-    	return url;
-    }
-
+		return url;
+	}
+	
 	public void setUrl(String url) {
-    	this.url = url;
-    }
-
+		this.url = url;
+	}
+	
 	public Map<String, String> getQueryParameters() {
-    	return queryParameters;
-    }
-
+		return queryParameters;
+	}
+	
 	public void setQueryParameters(Map<String, String> queryParameters) {
-    	this.queryParameters = queryParameters;
-    }
+		this.queryParameters = queryParameters;
+	}
 	
 }

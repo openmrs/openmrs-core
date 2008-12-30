@@ -30,52 +30,47 @@ import org.openmrs.logic.result.Result;
 import org.openmrs.logic.rule.ReferenceRule;
 
 /**
- * The context within which logic rule and data source evaluations are made. The
- * logic context is responsible for maintaining context-sensitive information
- * &mdash; e.g., the index date and global parameters &mdash; as well as
- * handling caching of results.
- * 
- * <strong>Index date</strong> is the date used as "today" for any calculations
- * or queries. This allows the same rule to be evaluated retrospectively. For
- * example, a rule calculating the "maximum CD4 count in the past six months"
+ * The context within which logic rule and data source evaluations are made. The logic context is
+ * responsible for maintaining context-sensitive information &mdash; e.g., the index date and global
+ * parameters &mdash; as well as handling caching of results. <strong>Index date</strong> is the
+ * date used as "today" for any calculations or queries. This allows the same rule to be evaluated
+ * retrospectively. For example, a rule calculating the "maximum CD4 count in the past six months"
  * can be calculated as if it were 4-July-2005.
- * 
  */
 public class LogicContext {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
-	 * Hold the index date for this context, representing the value for "today"
-	 * and thereby allowing the same rules to be run today as well as
-	 * retrospectively
+	 * Hold the index date for this context, representing the value for "today" and thereby allowing
+	 * the same rules to be run today as well as retrospectively
 	 */
 	private Date indexDate;
-
+	
 	/**
-	 * Globally available parameters within this logic context. Global
-	 * parameters are available to all evaluations performed within this context
+	 * Globally available parameters within this logic context. Global parameters are available to
+	 * all evaluations performed within this context
 	 */
 	private Map<String, Object> globalParameters;
-
+	
 	/**
-	 * If this context was constructed from another logic context, this
-	 * references the original context; otherwise, this is null
+	 * If this context was constructed from another logic context, this references the original
+	 * context; otherwise, this is null
 	 */
 	private LogicContext parentContext = null;
-
+	
 	/**
 	 * Patients being processed within this logic context
 	 */
 	private Cohort patients;
-
+	
 	/**
 	 * Cache used by this log context
 	 * 
 	 * @see org.openmrs.logic.LogicCache
 	 */
 	private LogicCache cache;
-
+	
 	/**
 	 * Constructs a logic context applied to a single patient
 	 * 
@@ -83,11 +78,11 @@ public class LogicContext {
 	 */
 	public LogicContext(Patient patient) {
 		this.patients = new Cohort();
-		this.globalParameters = new HashMap<String,Object>();
+		this.globalParameters = new HashMap<String, Object>();
 		patients.addMember(patient.getPatientId());
 		setIndexDate(new Date());
 	}
-
+	
 	/**
 	 * Constructs a logic context applied to a cohort of patients
 	 * 
@@ -95,10 +90,10 @@ public class LogicContext {
 	 */
 	public LogicContext(Cohort patients) {
 		this.patients = patients;
-		this.globalParameters = new HashMap<String,Object>();
+		this.globalParameters = new HashMap<String, Object>();
 		setIndexDate(new Date());
 	}
-
+	
 	/**
 	 * Evaluate a rule for a single patient
 	 * 
@@ -111,7 +106,7 @@ public class LogicContext {
 	public Result eval(Patient patient, String token) throws LogicException {
 		return eval(patient, new LogicCriteria(token), null);
 	}
-
+	
 	/**
 	 * Evaluate a rule with parameters for a single patient
 	 * 
@@ -122,11 +117,10 @@ public class LogicContext {
 	 * @throws LogicException
 	 * @see {@link org.openmrs.logic.LogicService#eval(Patient, String, Map)}
 	 */
-	public Result eval(Patient patient, String token,
-	        Map<String, Object> parameters) throws LogicException {
+	public Result eval(Patient patient, String token, Map<String, Object> parameters) throws LogicException {
 		return eval(patient, new LogicCriteria(token), parameters);
 	}
-
+	
 	/**
 	 * Evaluate a rule with criteria and parameters for a single patient
 	 * 
@@ -137,16 +131,14 @@ public class LogicContext {
 	 * @throws LogicException
 	 * @see {@link org.openmrs.logic.LogicService#eval(Patient, LogicCriteria, Map)}
 	 */
-	public Result eval(Patient patient, LogicCriteria criteria,
-	        Map<String, Object> parameters) throws LogicException {
+	public Result eval(Patient patient, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException {
 		Result result = getCache().get(patient, criteria, parameters);
 		PatientService patientService = Context.getPatientService();
 		
 		if (result == null) {
 			Integer targetPatientId = patient.getPatientId();
 			log.debug("Context database read (pid = " + targetPatientId + ")");
-			Rule rule = Context.getLogicService()
-			                   .getRule(criteria.getRootToken());
+			Rule rule = Context.getLogicService().getRule(criteria.getRootToken());
 			Map<Integer, Result> resultMap = new Hashtable<Integer, Result>();
 			for (Integer pid : patients.getMemberIds()) {
 				Patient currPatient = patientService.getPatient(pid);
@@ -158,23 +150,19 @@ public class LogicContext {
 					r = applyCriteria(r, criteria);
 				}
 				
-		        resultMap.put(pid, r);
+				resultMap.put(pid, r);
 				if (pid.equals(targetPatientId))
 					result = resultMap.get(pid);
 			}
-			getCache().put(criteria,
-			               parameters,
-			               rule.getTTL(),
-			               resultMap);
+			getCache().put(criteria, parameters, rule.getTTL(), resultMap);
 		}
 		
 		return result;
 	}
-
+	
 	/**
-	 * Criteria are applied to results of rules <em>after</em> the rule has
-	 * been evaluated, since rules are not expected to interpret all possible
-	 * criteria
+	 * Criteria are applied to results of rules <em>after</em> the rule has been evaluated, since
+	 * rules are not expected to interpret all possible criteria
 	 * 
 	 * @param result
 	 * @param criteria
@@ -184,7 +172,7 @@ public class LogicContext {
 		// TODO: apply criteria to result
 		return result;
 	}
-
+	
 	/**
 	 * Fetches a logic data source by name
 	 * 
@@ -194,7 +182,7 @@ public class LogicContext {
 	public LogicDataSource getLogicDataSource(String name) {
 		return Context.getLogicService().getLogicDataSource(name);
 	}
-
+	
 	/**
 	 * Reads a key from a logic data source
 	 * 
@@ -202,12 +190,12 @@ public class LogicContext {
 	 * @param dataSource
 	 * @param key
 	 * @return
-	 * @throws LogicException 
+	 * @throws LogicException
 	 */
 	public Result read(Patient patient, LogicDataSource dataSource, String key) throws LogicException {
 		return read(patient, dataSource, new LogicCriteria(key));
 	}
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -217,12 +205,12 @@ public class LogicContext {
 	 * @throws LogicException
 	 */
 	public Result read(Patient patient, String key) throws LogicException {
-
+		
 		LogicService logicService = Context.getLogicService();
 		LogicDataSource dataSource = logicService.getLogicDataSource("obs");
 		return read(patient, dataSource, key);
 	}
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -244,17 +232,15 @@ public class LogicContext {
 	 * @param dataSource
 	 * @param criteria
 	 * @return
-	 * @throws LogicException 
+	 * @throws LogicException
 	 */
-	public Result read(Patient patient, LogicDataSource dataSource,
-	        LogicCriteria criteria) throws LogicException {
+	public Result read(Patient patient, LogicDataSource dataSource, LogicCriteria criteria) throws LogicException {
 		Result result = getCache().get(patient, dataSource, criteria);
-		log.debug("Reading from data source: " + criteria.getRootToken() + " ("
-		        + (result == null ? "NOT" : "") + " cached)");
+		log
+		        .debug("Reading from data source: " + criteria.getRootToken() + " (" + (result == null ? "NOT" : "")
+		                + " cached)");
 		if (result == null) {
-			Map<Integer, Result> resultMap = dataSource.read(this,
-			                                                 patients,
-			                                                 criteria);
+			Map<Integer, Result> resultMap = dataSource.read(this, patients, criteria);
 			getCache().put(dataSource, criteria, resultMap);
 			result = resultMap.get(patient.getPatientId());
 		}
@@ -262,24 +248,23 @@ public class LogicContext {
 			result = Result.emptyResult();
 		return result;
 	}
-
+	
 	/**
 	 * Changes the index date for this logic context
 	 * 
-	 * @param indexDate the new value for "today" to be used by rules within
-	 *        this logic context
+	 * @param indexDate the new value for "today" to be used by rules within this logic context
 	 */
 	public void setIndexDate(Date indexDate) {
 		this.indexDate = indexDate;
 	}
-
+	
 	/**
 	 * @return the value of "today" within this logic context
 	 */
 	public Date getIndexDate() {
 		return indexDate;
 	}
-
+	
 	/**
 	 * @return the index date for the logic context (effective value of "today")
 	 * @see #getIndexDate()
@@ -287,7 +272,7 @@ public class LogicContext {
 	public Date today() {
 		return getIndexDate();
 	}
-
+	
 	/**
 	 * Assigns a value to a global parameters within this logic context
 	 * 
@@ -298,7 +283,7 @@ public class LogicContext {
 	public Object setGlobalParameter(String id, Object value) {
 		return globalParameters.put(id, value);
 	}
-
+	
 	/**
 	 * Fetches a global parameter value by name
 	 * 
@@ -308,14 +293,14 @@ public class LogicContext {
 	public Object getGlobalParameter(String id) {
 		return globalParameters.get(id);
 	}
-
+	
 	/**
 	 * @return all global parameters defined within this logic context
 	 */
 	public Collection<String> getGlobalParameters() {
 		return globalParameters.keySet();
 	}
-
+	
 	/**
 	 * @return the cache for this logic context
 	 */
@@ -324,5 +309,5 @@ public class LogicContext {
 			cache = new LogicCache();
 		return cache;
 	}
-
+	
 }

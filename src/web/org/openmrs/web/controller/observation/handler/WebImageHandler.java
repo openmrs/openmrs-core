@@ -22,33 +22,31 @@ import org.openmrs.web.WebConstants;
  * Extends functionality of {@link ImageHandler} for web specific views.
  */
 public class WebImageHandler extends ImageHandler {
-
+	
 	/**
 	 * Default Constructor
 	 */
 	public WebImageHandler() {
 		super();
 	}
-
+	
 	/**
-	 * Returns the ComplexData for an Obs depending on the view. Currently
-	 * supported views are listed in WebConstants.*_VIEW. <br>
+	 * Returns the ComplexData for an Obs depending on the view. Currently supported views are
+	 * listed in WebConstants.*_VIEW. <br>
 	 * Currently the only implemented views are
 	 * <ul>
-	 * <li>{@link WebConstants#HYPERLINK_VIEW}: a lightweight alternative to
-	 * returning the ComplexData from the parent class since this does not
-	 * require access to the service layer. Gives a link to the ComplexServlet
-	 * for this obs
-	 * <li>{@link WebConstants#HTML_VIEW}: An html tag that will display this
-	 * complex data.  For this ImageHandler, its an html img tag.
+	 * <li>{@link WebConstants#HYPERLINK_VIEW}: a lightweight alternative to returning the
+	 * ComplexData from the parent class since this does not require access to the service layer.
+	 * Gives a link to the ComplexServlet for this obs
+	 * <li>{@link WebConstants#HTML_VIEW}: An html tag that will display this complex data. For this
+	 * ImageHandler, its an html img tag.
 	 * </ul>
 	 * 
-	 * @see org.openmrs.obs.handler.ImageHandler#getComplexData(org.openmrs.Obs,
-	 *      java.lang.String)
+	 * @see org.openmrs.obs.handler.ImageHandler#getComplexData(org.openmrs.Obs, java.lang.String)
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
-
+		
 		if (WebConstants.HYPERLINK_VIEW.equals(view)) {
 			ComplexData cd = new ComplexData(obs.getValueAsString(null), getHyperlink(obs));
 			obs.setComplexData(cd);
@@ -61,19 +59,20 @@ public class WebImageHandler extends ImageHandler {
 		} else {
 			// fall through to default parent ImageHandler action
 		}
-
+		
 		return super.getObs(obs, view);
 	}
-
+	
 	/**
-	 * Return the link to the complex obs servlet that will write out the contents
-	 * of the complex obs to the response
+	 * Return the link to the complex obs servlet that will write out the contents of the complex
+	 * obs to the response
 	 * 
 	 * @param obs
-	 * @return String url that will render the image file object (in this case, this rendering is done by the ComplexObsServlet)
+	 * @return String url that will render the image file object (in this case, this rendering is
+	 *         done by the ComplexObsServlet)
 	 */
 	private String getHyperlink(Obs obs) {
 		return "/" + WebConstants.WEBAPP_NAME + "/complexObsServlet?obsId=" + obs.getObsId();
 	}
-
+	
 }

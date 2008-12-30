@@ -22,28 +22,34 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * ConceptAnswer 
+ * ConceptAnswer
  */
 @Root
 public class ConceptAnswer implements java.io.Serializable {
-
+	
 	public static final long serialVersionUID = 3744L;
+	
 	public Log log = LogFactory.getLog(this.getClass());
-
+	
 	// Fields
 	private Integer conceptAnswerId;
-	private Concept concept;		// concept to answer
-	private Concept answerConcept;	// answer for <code>concept</code>
-	private Drug answerDrug;		// answer in drug form for <code>concept</code>
+	
+	private Concept concept; // concept to answer
+	
+	private Concept answerConcept; // answer for <code>concept</code>
+	
+	private Drug answerDrug; // answer in drug form for <code>concept</code>
+	
 	private User creator;
+	
 	private Date dateCreated;
-
+	
 	// Constructors
-
+	
 	/** default constructor */
 	public ConceptAnswer() {
 	}
-
+	
 	/** constructor with id */
 	public ConceptAnswer(Integer conceptAnswerId) {
 		this.conceptAnswerId = conceptAnswerId;
@@ -60,7 +66,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptAnswer) {
-			ConceptAnswer c = (ConceptAnswer)obj;
+			ConceptAnswer c = (ConceptAnswer) obj;
 			if (this.conceptAnswerId != null && c.getConceptAnswerId() != null)
 				return (this.conceptAnswerId.equals(c.getConceptAnswerId()));
 			else {
@@ -74,7 +80,7 @@ public class ConceptAnswer implements java.io.Serializable {
 				//log.debug("asdf " + getAnswerConcept().getConceptId() + "=" + c.getAnswerConcept().getConceptId() + "?" + ret);
 				return ret;
 			}
-						
+			
 		}
 		return false;
 	}
@@ -91,9 +97,9 @@ public class ConceptAnswer implements java.io.Serializable {
 			hash = hash * answerDrug.hashCode() + 31;
 		
 		return hash;
-
+		
 	}
-
+	
 	/**
 	 * @return Returns the answerConcept.
 	 */
@@ -101,7 +107,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	public Concept getAnswerConcept() {
 		return answerConcept;
 	}
-
+	
 	/**
 	 * @param answerConcept The answerConcept to set.
 	 */
@@ -109,21 +115,21 @@ public class ConceptAnswer implements java.io.Serializable {
 	public void setAnswerConcept(Concept answerConcept) {
 		this.answerConcept = answerConcept;
 	}
-
+	
 	/**
 	 * @return Returns the answerDrug.
 	 */
 	public Drug getAnswerDrug() {
 		return answerDrug;
 	}
-
+	
 	/**
 	 * @param answerDrug The answerDrug to set.
 	 */
 	public void setAnswerDrug(Drug answerDrug) {
 		this.answerDrug = answerDrug;
 	}
-
+	
 	/**
 	 * @return Returns the concept.
 	 */
@@ -131,7 +137,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	public Concept getConcept() {
 		return concept;
 	}
-
+	
 	/**
 	 * @param concept The concept to set.
 	 */
@@ -139,7 +145,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-
+	
 	/**
 	 * @return Returns the conceptAnswerId.
 	 */
@@ -147,7 +153,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	public Integer getConceptAnswerId() {
 		return conceptAnswerId;
 	}
-
+	
 	/**
 	 * @param conceptAnswerId The conceptAnswerId to set.
 	 */
@@ -155,7 +161,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	public void setConceptAnswerId(Integer conceptAnswerId) {
 		this.conceptAnswerId = conceptAnswerId;
 	}
-
+	
 	/**
 	 * @return Returns the creator.
 	 */
@@ -163,7 +169,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	/**
 	 * @param creator The creator to set.
 	 */
@@ -171,7 +177,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	/**
 	 * @return Returns the dateCreated.
 	 */
@@ -179,7 +185,7 @@ public class ConceptAnswer implements java.io.Serializable {
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */

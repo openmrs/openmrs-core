@@ -31,14 +31,14 @@ import org.springframework.web.servlet.ModelAndView;
  * Test the methods on the {@link ConceptFormController}
  */
 public class ConceptFormControllerTest extends BaseContextSensitiveTest {
-
+	
 	/**
 	 * Checks that the conceptId query param gets a concept from the database
 	 * 
 	 * @throws Exception
 	 */
-    @Test
-    public void shouldGetConcept() throws Exception {
+	@Test
+	public void shouldGetConcept() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "");
 		request.setParameter("conceptId", "3");
 		
@@ -49,7 +49,7 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		ModelAndView modelAndView = controller.handleRequest(request, response);
 		
 		// make sure there is an "conceptId" filled in on the concept
-		Concept commandConcept = (Concept)modelAndView.getModel().get("command");
+		Concept commandConcept = (Concept) modelAndView.getModel().get("command");
 		Assert.assertNotNull(commandConcept.getConceptId());
 		
 	}
@@ -59,12 +59,12 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-    @Test
+	@Test
 	public void shouldNotDeleteConceptsWhenConceptsAreLocked() throws Exception {
 		// this dataset should lock the concepts
-    	executeDataSet("org/openmrs/web/include/ConceptFormControllerTest.xml");
+		executeDataSet("org/openmrs/web/include/ConceptFormControllerTest.xml");
 		
-    	ConceptService cs = Context.getConceptService();
+		ConceptService cs = Context.getConceptService();
 		
 		// set up the controller
 		ConceptFormController controller = new ConceptFormController();
@@ -91,5 +91,5 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(cs.getConcept(3));
 		
 	}
-
+	
 }

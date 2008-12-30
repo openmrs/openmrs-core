@@ -42,16 +42,19 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class ProposeConceptFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-
-    /**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                             BindException errors) throws Exception {
 		
-		ConceptProposal cp = (ConceptProposal)obj;
+		ConceptProposal cp = (ConceptProposal) obj;
 		
 		Concept c = cp.getObsConcept();
 		String id = ServletRequestUtils.getStringParameter(request, "conceptId", null);
@@ -72,15 +75,17 @@ public class ProposeConceptFormController extends SimpleFormController {
 		
 		return super.processFormSubmission(request, response, cp, errors);
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -88,7 +93,7 @@ public class ProposeConceptFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			// this concept proposal
-			ConceptProposal cp = (ConceptProposal)obj;
+			ConceptProposal cp = (ConceptProposal) obj;
 			
 			// this proposal's final text
 			ConceptService cs = Context.getConceptService();
@@ -104,45 +109,45 @@ public class ProposeConceptFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		ConceptProposal cp = new ConceptProposal();
 		
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
 			EncounterService es = Context.getEncounterService();
 			String id = ServletRequestUtils.getStringParameter(request, "encounterId");
-	    	if (id != null)
-	    		cp.setEncounter(es.getEncounter(Integer.valueOf(id)));
-	    	
-	    	id = ServletRequestUtils.getStringParameter(request, "obsConceptId");
-	    	if (id != null)
-	    		cp.setObsConcept(cs.getConcept(Integer.valueOf(id)));
-	    	
+			if (id != null)
+				cp.setEncounter(es.getEncounter(Integer.valueOf(id)));
+			
+			id = ServletRequestUtils.getStringParameter(request, "obsConceptId");
+			if (id != null)
+				cp.setObsConcept(cs.getConcept(Integer.valueOf(id)));
+			
 		}
 		
-        return cp;
-    }
-    
+		return cp;
+	}
+	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		ConceptProposal cp = (ConceptProposal)object;
+		ConceptProposal cp = (ConceptProposal) object;
 		Locale locale = Context.getLocale();
 		
 		String defaultVerbose = "false";
-		if (Context.isAuthenticated()){
+		if (Context.isAuthenticated()) {
 			// optional user property for default verbose display in concept search
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 			
@@ -154,5 +159,5 @@ public class ProposeConceptFormController extends SimpleFormController {
 		
 		return map;
 	}
-    
+	
 }

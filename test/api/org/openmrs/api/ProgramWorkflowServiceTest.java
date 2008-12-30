@@ -33,17 +33,19 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
 
 /**
- * This class tests methods in the PatientService class
- * 
- * TODO Add methods to test all methods in PatientService class
+ * This class tests methods in the PatientService class TODO Add methods to test all methods in
+ * PatientService class
  */
 public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String CREATE_PATIENT_PROGRAMS_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-createPatientProgram.xml";
 	
-	protected ProgramWorkflowService pws = null; 
+	protected ProgramWorkflowService pws = null;
+	
 	protected AdministrationService adminService = null;
+	
 	protected EncounterService encounterService = null;
+	
 	protected ConceptService cs = null;
 	
 	@Before
@@ -57,29 +59,22 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			cs = Context.getConceptService();
 		}
 	}
-
+	
 	/**
 	 * @see org.openmrs.testutil.BaseContextSensitiveTest#useInMemoryDatabase()
-	 *
-	@Override
-	public Boolean useInMemoryDatabase( ) {
-		return false;
-	}
-	 */
-		
-	/**
-	 * Tests fetching a PatientProgram, updating and saving it, and 
-	 * subsequently fetching the updated value.
 	 * 
-	 * To use in MySQL database:
-	 * Uncomment method useInMemoryDatabase() and comment out 
-	 * call to initializeInMemoryDatabase() and executeDataSet()
-	 * within onSetupTransaction() .
+	 @Override public Boolean useInMemoryDatabase( ) { return false; }
+	 */
+	
+	/**
+	 * Tests fetching a PatientProgram, updating and saving it, and subsequently fetching the
+	 * updated value. To use in MySQL database: Uncomment method useInMemoryDatabase() and comment
+	 * out call to initializeInMemoryDatabase() and executeDataSet() within onSetupTransaction() .
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldUpdatePatientProgram( ) throws Exception {
+	public void shouldUpdatePatientProgram() throws Exception {
 		
 		Date today = new Date();
 		
@@ -109,7 +104,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Date dateCompleted2 = patientProgram.getDateCompleted();
 		Date dateChanged2 = patientProgram.getDateChanged();
 		User changedBy2 = patientProgram.getChangedBy();
-
+		
 		if (null != dateCompleted2) {
 			System.out.println("Date Completed: " + dateCompleted2);
 		}
@@ -129,7 +124,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * Tests creating a new program containing workflows and states
 	 */
 	@Test
-	public void shouldCreateProgramWorkflows( ) throws Exception {
+	public void shouldCreateProgramWorkflows() throws Exception {
 		
 		int numBefore = Context.getProgramWorkflowService().getAllPrograms().size();
 		
@@ -162,7 +157,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		assertNotNull("Program is null", p);
 		assertNotNull("Workflows is null", p.getWorkflows());
 		assertEquals("Wrong number of workflows", 1, p.getWorkflows().size());
-
+		
 		ProgramWorkflow wf = p.getWorkflowByName("CIVIL STATUS");
 		assertNotNull(wf);
 		
@@ -170,27 +165,25 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		for (ProgramWorkflowState s : wf.getStates()) {
 			names.add(s.getConcept().getName().getName());
 		}
-		TestUtil.assertCollectionContentsEquals(Arrays.asList(new String[] {"SINGLE","MARRIED"}), names);
+		TestUtil.assertCollectionContentsEquals(Arrays.asList(new String[] { "SINGLE", "MARRIED" }), names);
 	}
-		
-//	/**
-//	 * This method should be uncommented when you want to examine the actual hibernate
-//	 * sql calls being made.  The calls that should be limiting the number of returned
-//	 * patients should show a "top" or "limit" in the sql -- this proves hibernate's
-//	 * use of a native sql limit as opposed to a java-only limit.  
-//	 * 
-//	 * Note: if enabled, this test will be considerably slower
-//     * 
-//     * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
-//     */
-//    @Override
-//    public Properties getRuntimeProperties() {
-//	    Properties props = super.getRuntimeProperties();
-//	    props.setProperty("hibernate.show_sql", "true");
-//	    
-//    	return props;
-//    }
-
 	
+	//	/**
+	//	 * This method should be uncommented when you want to examine the actual hibernate
+	//	 * sql calls being made.  The calls that should be limiting the number of returned
+	//	 * patients should show a "top" or "limit" in the sql -- this proves hibernate's
+	//	 * use of a native sql limit as opposed to a java-only limit.  
+	//	 * 
+	//	 * Note: if enabled, this test will be considerably slower
+	//     * 
+	//     * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
+	//     */
+	//    @Override
+	//    public Properties getRuntimeProperties() {
+	//	    Properties props = super.getRuntimeProperties();
+	//	    props.setProperty("hibernate.show_sql", "true");
+	//	    
+	//    	return props;
+	//    }
 	
 }

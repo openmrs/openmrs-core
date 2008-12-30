@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class Average implements Operator {
-
-    public String toString() {
-        return "Average";
-    }
-    
+	
+	public String toString() {
+		return "Average";
+	}
+	
 }

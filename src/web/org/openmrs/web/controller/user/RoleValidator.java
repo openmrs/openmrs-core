@@ -21,12 +21,11 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class RoleValidator implements Validator {
-
+	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
-	 * 
 	 * Determines if the command object being submitted is a valid type
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -34,22 +33,21 @@ public class RoleValidator implements Validator {
 	public boolean supports(Class c) {
 		return c.equals(Role.class);
 	}
-
+	
 	/**
-	 * 
 	 * Checks the form object for any inconsistencies/errors
 	 * 
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
-		Role role = (Role)obj;
+		Role role = (Role) obj;
 		if (role == null) {
 			errors.rejectValue("role", "error.general");
-		}
-		else {
+		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "role", "error.role");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
 	}
-
+	
 }

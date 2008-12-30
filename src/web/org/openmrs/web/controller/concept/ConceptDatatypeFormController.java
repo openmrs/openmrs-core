@@ -33,38 +33,39 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class ConceptDatatypeFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
+		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
-			ConceptDatatype cd = (ConceptDatatype)obj;
+			ConceptDatatype cd = (ConceptDatatype) obj;
 			Context.getConceptService().saveConceptDatatype(cd);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDatatype.saved");
@@ -72,29 +73,28 @@ public class ConceptDatatypeFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		ConceptDatatype cd = null;
 		
 		if (Context.isAuthenticated()) {
 			ConceptService ps = Context.getConceptService();
 			String id = request.getParameter("conceptDatatypeId");
-	    	if (id != null)
-	    		cd = ps.getConceptDatatype(Integer.valueOf(id));	
+			if (id != null)
+				cd = ps.getConceptDatatype(Integer.valueOf(id));
 		}
 		
 		if (cd == null)
 			cd = new ConceptDatatype();
-    	
-        return cd;
-    }
-    
+		
+		return cd;
+	}
+	
 }

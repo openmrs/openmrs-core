@@ -28,20 +28,19 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 
 public class ConceptDrugListController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
- 
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
-    	//HttpSession httpSession = request.getSession();
+	
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
+		//HttpSession httpSession = request.getSession();
 		
 		// default empty Object
 		List<Drug> conceptDrugList = new Vector<Drug>();
@@ -49,9 +48,9 @@ public class ConceptDrugListController extends SimpleFormController {
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
-		   	conceptDrugList = cs.getAllDrugs();
+			conceptDrugList = cs.getAllDrugs();
 		}
-    	
+		
 		return conceptDrugList;
-    }   
+	}
 }

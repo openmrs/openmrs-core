@@ -26,80 +26,74 @@ import org.openmrs.notification.Message;
 import org.openmrs.notification.MessageException;
 
 /**
- *  Sample implementation of task that shows how to send emails to users/roles via message service.
- *
+ * Sample implementation of task that shows how to send emails to users/roles via message service.
  */
-public class AlertReminderTask extends AbstractTask { 
-
+public class AlertReminderTask extends AbstractTask {
+	
 	// Logger 
-	private Log log = LogFactory.getLog( AlertReminderTask.class );
+	private Log log = LogFactory.getLog(AlertReminderTask.class);
 	
-	
-	/** 
+	/**
 	 * Send alert reminder email to user(s) associated with the alert.
 	 */
 	public void execute() {
-		try { 
+		try {
 			// Authenticate
-			if (!Context.isAuthenticated()) { 
+			if (!Context.isAuthenticated()) {
 				authenticate();
 			}
 			
 			// Get all unread alerts
 			// TODO Change to getAllAlerts(Boolean includeRead, Boolean includeExpired);
-			Collection<Alert> alerts = 
-				Context.getAlertService().getAllAlerts(false);
+			Collection<Alert> alerts = Context.getAlertService().getAllAlerts(false);
 			
 			// Send alert notifications to users who have unread alerts
 			sendAlertNotifications(alerts);
-						
 			
-		} 
-		catch (Exception e) { 
+		}
+		catch (Exception e) {
 			log.error(e);
 		}
 	}
 	
-	
 	/**
-	 * Send alerts 
+	 * Send alerts
 	 * 
-	 * @param alerts  the unread alerts
-	 * @param users		the users who have not read the alerts
+	 * @param alerts the unread alerts
+	 * @param users the users who have not read the alerts
 	 */
-	private void sendAlertNotifications(Collection<Alert> alerts) { 
-
-		try { 
+	private void sendAlertNotifications(Collection<Alert> alerts) {
+		
+		try {
 			
 			// Create a new message
-			Message message = 
-				Context.getMessageService().createMessage("Alert Reminder", "You have unread alerts.");
-
+			Message message = Context.getMessageService().createMessage("Alert Reminder", "You have unread alerts.");
+			
 			// Get all recipients
-			Collection<User> users = 
-				getRecipients(alerts);
+			Collection<User> users = getRecipients(alerts);
 			
 			// Send a message to each person only once
 			Context.getMessageService().sendMessage(message, users);
 			
-		} catch (MessageException e) { 
+		}
+		catch (MessageException e) {
 			log.error(e);
 		}
 	}
 	
 	/**
 	 * Get the recipients of all unread alerts.
-	 * 	  
+	 * 
 	 * @param alerts
 	 * @return
 	 */
-	private Collection<User> getRecipients(Collection<Alert> alerts) { 
+	private Collection<User> getRecipients(Collection<Alert> alerts) {
 		Collection<User> users = new HashSet<User>();
-		for (Alert alert : alerts) { 
+		for (Alert alert : alerts) {
 			log.debug("Send email to alert recipient(s) ...");
 			if (!alert.isAlertRead() && alert.getRecipients() != null) {
 				for (AlertRecipient recipient : alert.getRecipients()) {
-					if (!recipient.isAlertRead() && recipient.getRecipient() != null) { 							
+					if (!recipient.isAlertRead() && recipient.getRecipient() != null) {
 						users.add(recipient.getRecipient());
 					}
 				}
@@ -108,7 +102,4 @@ public class AlertReminderTask extends AbstractTask {
 		return users;
 	}
 	
-	
-	
-
 }

@@ -55,39 +55,40 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
- * This class controls the encounter.form jsp page.
- * See /web/WEB-INF/view/admin/encounters/encounterForm.jsp
+ * This class controls the encounter.form jsp page. See
+ * /web/WEB-INF/view/admin/encounters/encounterForm.jsp
  */
 public class EncounterFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
-        binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true));
-        binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor());
-        binder.registerCustomEditor(Location.class, new LocationEditor());
-        binder.registerCustomEditor(Form.class, new FormEditor());
-	}
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
 		
-		Encounter encounter = (Encounter)obj;
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(OpenmrsUtil.getDateFormat(), true));
+		binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor());
+		binder.registerCustomEditor(Location.class, new LocationEditor());
+		binder.registerCustomEditor(Form.class, new FormEditor());
+	}
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
+	 */
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
+	                                             BindException errors) throws Exception {
+		
+		Encounter encounter = (Encounter) obj;
 		
 		try {
 			if (Context.isAuthenticated()) {
@@ -95,9 +96,11 @@ public class EncounterFormController extends SimpleFormController {
 				Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 				
 				if (StringUtils.hasText(request.getParameter("patientId")))
-					encounter.setPatient(Context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
+					encounter.setPatient(Context.getPatientService().getPatient(
+					    Integer.valueOf(request.getParameter("patientId"))));
 				if (StringUtils.hasText(request.getParameter("providerId")))
-					encounter.setProvider(Context.getUserService().getUser(Integer.valueOf(request.getParameter("providerId"))));
+					encounter.setProvider(Context.getUserService().getUser(
+					    Integer.valueOf(request.getParameter("providerId"))));
 				if (encounter.isVoided())
 					ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 				
@@ -107,37 +110,41 @@ public class EncounterFormController extends SimpleFormController {
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "error.null");
 				
 			}
-		} finally {
+		}
+		finally {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		
 		return super.processFormSubmission(request, reponse, encounter, errors);
 	}
-
-	/** 
+	
+	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
-
+		
 		try {
 			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 			
 			if (Context.isAuthenticated()) {
-				Encounter encounter = (Encounter)obj;
+				Encounter encounter = (Encounter) obj;
 				
 				// if this is a new encounter, they can specify a patient.  add it
 				if (request.getParameter("patientId") != null)
-					encounter.setPatient(Context.getPatientService().getPatient(Integer.valueOf(request.getParameter("patientId"))));
+					encounter.setPatient(Context.getPatientService().getPatient(
+					    Integer.valueOf(request.getParameter("patientId"))));
 				
 				// set the provider if they changed it
 				encounter.setProvider(Context.getUserService().getUser(Integer.valueOf(request.getParameter("providerId"))));
@@ -156,62 +163,64 @@ public class EncounterFormController extends SimpleFormController {
 				
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Encounter.saved");
 			}
-		} finally {
+		}
+		finally {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
 		}
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		Encounter encounter = null;
 		
 		if (Context.isAuthenticated()) {
 			EncounterService es = Context.getEncounterService();
 			String encounterId = request.getParameter("encounterId");
-	    	if (encounterId != null) {
-	    		encounter = es.getEncounter(Integer.valueOf(encounterId));
-	    	}
+			if (encounterId != null) {
+				encounter = es.getEncounter(Integer.valueOf(encounterId));
+			}
 		}
 		
 		if (encounter == null)
 			encounter = new Encounter();
-    	
-        return encounter;
-    }
-
+		
+		return encounter;
+	}
+	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors error) throws Exception {
 		
-		Encounter encounter = (Encounter)obj;
+		Encounter encounter = (Encounter) obj;
 		
 		// the generic returned key-value pair mapping
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		// obsIds of obs that were edited
 		List<Integer> editedObs = new Vector<Integer>();
-
+		
 		// the map returned to the form
 		// This is a mapping between the formfield and a list of the Obs/ObsGroup in that field
 		// This mapping is sorted according to the comparator in FormField.java
 		SortedMap<FormField, List<Obs>> obsMapToReturn = null;
-		String sortType = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER);
+		String sortType = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER);
 		if ("weight".equals(sortType))
 			obsMapToReturn = new TreeMap<FormField, List<Obs>>(); // use FormField.compareTo
 		else
 			obsMapToReturn = new TreeMap<FormField, List<Obs>>(new NumberingFormFieldComparator()); // use custom comparator
-		
+			
 		// this maps the obs to form field objects for non top-level obs
 		// it is keyed on obs so that when looping over an exploded obsGroup
 		// the formfield can be fetched easily (in order to show the field numbers etc)
@@ -230,7 +239,7 @@ public class EncounterFormController extends SimpleFormController {
 			String reason = "";
 			for (Obs o : encounter.getObsAtTopLevel(true)) {
 				// only the voided obs have been edited
-				if (o.isVoided()){
+				if (o.isVoided()) {
 					// assumes format of: ".* (new obsId: \d*)"
 					reason = o.getVoidReason();
 					int start = reason.lastIndexOf(" ") + 1;
@@ -238,12 +247,14 @@ public class EncounterFormController extends SimpleFormController {
 					try {
 						reason = reason.substring(start, end);
 						editedObs.add(Integer.valueOf(reason));
-					} catch (Exception e) {}
+					}
+					catch (Exception e) {}
 				}
 				
 				// get the formfield for this obs
 				FormField ff = fs.getFormField(form, o.getConcept(), obsMapToReturn.keySet(), false);
-				if (ff == null) ff = new FormField();
+				if (ff == null)
+					ff = new FormField();
 				
 				// we only put the top-level obs in the obsMap.  Those would
 				// be the obs that don't have an obs grouper 
@@ -255,8 +266,7 @@ public class EncounterFormController extends SimpleFormController {
 						obsMapToReturn.put(ff, list);
 					}
 					list.add(o);
-				}
-				else {
+				} else {
 					// this is not a top-level obs, just put the formField
 					// in a separate list and be done with it
 					otherFormFields.put(o, ff);
@@ -277,32 +287,32 @@ public class EncounterFormController extends SimpleFormController {
 	}
 	
 	/**
-	 * Comparator to sort the FormFields by page+fieldNumber+fieldPart/sortWeight.  This
-	 * allows obs to be sorted/displayed strictly according to numbering.  The FormField
-	 * default comparator sorts on sortWeight first, then other numbers. 
+	 * Comparator to sort the FormFields by page+fieldNumber+fieldPart/sortWeight. This allows obs
+	 * to be sorted/displayed strictly according to numbering. The FormField default comparator
+	 * sorts on sortWeight first, then other numbers.
 	 * 
-	 *  @see FormField#compareTo(FormField)
-	 *  @see EncounterDisplayController
+	 * @see FormField#compareTo(FormField)
+	 * @see EncounterDisplayController
 	 */
 	public class NumberingFormFieldComparator implements Comparator<FormField> {
 		
 		/**
-         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-         */
-        public int compare(FormField formField, FormField other) {
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
+		public int compare(FormField formField, FormField other) {
 			int temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getPageNumber(), other.getPageNumber());
 			if (temp == 0)
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFieldNumber(), other.getFieldNumber());
 			if (temp == 0)
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFieldPart(), other.getFieldPart());
-			if (temp == 0 && formField.getPageNumber() == null && formField.getFieldNumber() == null && formField.getFieldPart() == null)
+			if (temp == 0 && formField.getPageNumber() == null && formField.getFieldNumber() == null
+			        && formField.getFieldPart() == null)
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getSortWeight(), other.getSortWeight());
 			if (temp == 0) // to prevent ties
 				temp = OpenmrsUtil.compareWithNullAsGreatest(formField.getFormFieldId(), other.getFormFieldId());
 			return temp;
-        }
-    
+		}
+		
 	}
 	
 }
-	

@@ -13,12 +13,11 @@
  */
 package org.openmrs.report;
 
-
 /**
  *
  */
 public interface DataSetTransform {
-
+	
 	/**
 	 * Auto generated method comment
 	 * 

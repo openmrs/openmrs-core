@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class Or implements Operator {
-
-    public String toString() {
-        return "OR";
-    }
-    
+	
+	public String toString() {
+		return "OR";
+	}
+	
 }

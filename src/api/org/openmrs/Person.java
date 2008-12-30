@@ -33,64 +33,77 @@ import org.simpleframework.xml.Root;
 import org.simpleframework.xml.load.Replace;
 
 /**
- * A Person in the system. This can be either a small person stub, or 
- * indicative of an actual Patient or User in the system as well.
- * 
- * This class holds the generic person things that both users and patients
- * share.  Things like birthdate, names, addresses, and attributes are all 
- * generified into the person table (and hence this super class)
+ * A Person in the system. This can be either a small person stub, or indicative of an actual
+ * Patient or User in the system as well. This class holds the generic person things that both users
+ * and patients share. Things like birthdate, names, addresses, and attributes are all generified
+ * into the person table (and hence this super class)
  * 
  * @see org.openmrs.Patient
  * @see org.openmrs.User
  */
-@Root(strict=false)
+@Root(strict = false)
 public class Person implements java.io.Serializable {
-
+	
 	public static final Log log = LogFactory.getLog(Person.class);
 	
 	public static final long serialVersionUID = 13533L;
-
+	
 	protected Integer personId;
 	
 	private Set<PersonAddress> addresses = null;
+	
 	private Set<PersonName> names = null;
+	
 	private Set<PersonAttribute> attributes = null;
 	
 	private String gender;
+	
 	private Date birthdate;
+	
 	private Boolean birthdateEstimated = false;
+	
 	private Boolean dead = false;
+	
 	private Date deathDate;
+	
 	private Concept causeOfDeath;
-
+	
 	private User personCreator;
+	
 	private Date dateCreated;
+	
 	private User changedBy;
+	
 	private Date dateChanged;
+	
 	private Boolean voided = false;
+	
 	private User voidedBy;
+	
 	private Date dateVoided;
+	
 	private String voidReason;
 	
 	private boolean isPatient;
+	
 	private boolean isUser;
 	
-	/** 
-	 * Convenience map from PersonAttributeType.name to PersonAttribute
-	 * This is "cached" for each user upon first load.  When an 
-	 * attribute is changed, the cache is cleared and rebuilt on next
-	 * access. 
+	/**
+	 * Convenience map from PersonAttributeType.name to PersonAttribute This is "cached" for each
+	 * user upon first load. When an attribute is changed, the cache is cleared and rebuilt on next
+	 * access.
 	 */
 	Map<String, PersonAttribute> attributeMap = null;
 	
 	/**
 	 * default empty constructor
 	 */
-	public Person() { }
+	public Person() {
+	}
 	
 	/**
-	 * This constructor is used to build a person object from another
-	 * person object (usually a patient or a user subobject).
+	 * This constructor is used to build a person object from another person object (usually a
+	 * patient or a user subobject).
 	 * 
 	 * @param person Person to create this person object from
 	 */
@@ -117,18 +130,18 @@ public class Person implements java.io.Serializable {
 		voided = person.isPersonVoided();
 		voidedBy = person.getPersonVoidedBy();
 		dateVoided = person.getPersonDateVoided();
-		voidReason=  person.getPersonVoidReason();
+		voidReason = person.getPersonVoidReason();
 	}
-
+	
 	/**
 	 * Default constructor taking in the primary key personId value
-	 *  
+	 * 
 	 * @param personId Integer internal id for this person
 	 */
 	public Person(Integer personId) {
 		this.personId = personId;
 	}
-
+	
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -144,7 +157,7 @@ public class Person implements java.io.Serializable {
 		// two objects must be the same
 		return this == obj;
 	}
-
+	
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -153,22 +166,21 @@ public class Person implements java.io.Serializable {
 			return super.hashCode();
 		return this.getPersonId().hashCode();
 	}
-
+	
 	// Property accessors
-
+	
 	/**
 	 * @return Returns the personId.
 	 */
-	@Attribute(required=true)
+	@Attribute(required = true)
 	public Integer getPersonId() {
 		return personId;
 	}
-
+	
 	/**
-	 * @param personId
-	 *            The personId to set.
+	 * @param personId The personId to set.
 	 */
-	@Attribute(required=true)
+	@Attribute(required = true)
 	public void setPersonId(Integer personId) {
 		this.personId = personId;
 	}
@@ -176,16 +188,15 @@ public class Person implements java.io.Serializable {
 	/**
 	 * @return person's gender
 	 */
-	@Attribute(required=false)
+	@Attribute(required = false)
 	public String getGender() {
 		return this.gender;
 	}
-
+	
 	/**
-	 * @param gender
-	 *            person's gender
+	 * @param gender person's gender
 	 */
-	@Attribute(required=false)
+	@Attribute(required = false)
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
@@ -193,20 +204,19 @@ public class Person implements java.io.Serializable {
 	/**
 	 * @return person's date of birth
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public Date getBirthdate() {
 		return this.birthdate;
 	}
-
+	
 	/**
-	 * @param birthdate
-	 *            person's date of birth
+	 * @param birthdate person's date of birth
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
 	}
-
+	
 	/**
 	 * @return true if person's birthdate is estimated
 	 */
@@ -216,17 +226,16 @@ public class Person implements java.io.Serializable {
 		// }
 		return this.birthdateEstimated;
 	}
-
-	@Attribute(required=true)
+	
+	@Attribute(required = true)
 	public Boolean getBirthdateEstimated() {
 		return isBirthdateEstimated();
 	}
-
+	
 	/**
-	 * @param birthdateEstimated
-	 *            true if person's birthdate is estimated
+	 * @param birthdateEstimated true if person's birthdate is estimated
 	 */
-	@Attribute(required=true)
+	@Attribute(required = true)
 	public void setBirthdateEstimated(Boolean birthdateEstimated) {
 		this.birthdateEstimated = birthdateEstimated;
 	}
@@ -241,49 +250,47 @@ public class Person implements java.io.Serializable {
 	/**
 	 * @return Returns the death status.
 	 */
-	@Attribute(required=true)
+	@Attribute(required = true)
 	public Boolean getDead() {
 		return isDead();
 	}
-
+	
 	/**
 	 * @param dead The dead to set.
 	 */
-	@Attribute(required=true)
+	@Attribute(required = true)
 	public void setDead(Boolean dead) {
 		this.dead = dead;
 	}
-
+	
 	/**
 	 * @return date of person's death
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public Date getDeathDate() {
 		return this.deathDate;
 	}
-
+	
 	/**
-	 * @param deathDate
-	 *            date of person's death
+	 * @param deathDate date of person's death
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
 	}
-
+	
 	/**
 	 * @return cause of person's death
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public Concept getCauseOfDeath() {
 		return this.causeOfDeath;
 	}
-
+	
 	/**
-	 * @param causeOfDeath
-	 *            cause of person's death
+	 * @param causeOfDeath cause of person's death
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setCauseOfDeath(Concept causeOfDeath) {
 		this.causeOfDeath = causeOfDeath;
 	}
@@ -292,23 +299,22 @@ public class Person implements java.io.Serializable {
 	 * @return list of known addresses for person
 	 * @see org.openmrs.PersonAddress
 	 */
-	@ElementList(required=false)
+	@ElementList(required = false)
 	public Set<PersonAddress> getAddresses() {
 		if (addresses == null)
 			addresses = new TreeSet<PersonAddress>();
 		return this.addresses;
 	}
-
+	
 	/**
-	 * @param personAddresses
-	 *            list of known addresses for person
+	 * @param personAddresses list of known addresses for person
 	 * @see org.openmrs.PersonAddress
 	 */
-	@ElementList(required=false)
+	@ElementList(required = false)
 	public void setAddresses(Set<PersonAddress> addresses) {
 		this.addresses = addresses;
 	}
-
+	
 	/**
 	 * @return all known names for person
 	 * @see org.openmrs.PersonName
@@ -319,17 +325,16 @@ public class Person implements java.io.Serializable {
 			names = new TreeSet<PersonName>();
 		return this.names;
 	}
-
+	
 	/**
-	 * @param names
-	 *            update all known names for person
+	 * @param names update all known names for person
 	 * @see org.openmrs.PersonName
 	 */
 	@ElementList
 	public void setNames(Set<PersonName> names) {
 		this.names = names;
 	}
-
+	
 	/**
 	 * @return all known attributes for person
 	 * @see org.openmrs.PersonAttribute
@@ -340,7 +345,7 @@ public class Person implements java.io.Serializable {
 			attributes = new TreeSet<PersonAttribute>();
 		return this.attributes;
 	}
-
+	
 	/**
 	 * Returns only the non-voided attributes for this person
 	 * 
@@ -356,8 +361,7 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param attributes
-	 *            update all known attributes for person
+	 * @param attributes update all known attributes for person
 	 * @see org.openmrs.PersonAttribute
 	 */
 	@ElementList
@@ -366,15 +370,13 @@ public class Person implements java.io.Serializable {
 		attributeMap = null;
 	}
 	
-	
 	// Convenience methods
 	
 	/**
-	 * Convenience Method
-	 * Adds the <code>attribute</code> to this person's attribute list if the attribute doesn't exist already
-	 * Voids any current attribute with type = <code>newAttribute.getAttributeType()</code>
-	 * 
-	 * ** NOTE: This effectively limits persons to only one attribute of any given type **
+	 * Convenience Method Adds the <code>attribute</code> to this person's attribute list if the
+	 * attribute doesn't exist already Voids any current attribute with type =
+	 * <code>newAttribute.getAttributeType()</code> ** NOTE: This effectively limits persons to only
+	 * one attribute of any given type **
 	 * 
 	 * @param name
 	 */
@@ -403,10 +405,11 @@ public class Person implements java.io.Serializable {
 		if (!OpenmrsUtil.collectionContains(attributes, newAttribute))
 			attributes.add(newAttribute);
 	}
-
+	
 	/**
-	 * Convenience Method
-	 * Removes the <code>attribute</code> from this person's attribute list if the attribute exists already
+	 * Convenience Method Removes the <code>attribute</code> from this person's attribute list if
+	 * the attribute exists already
+	 * 
 	 * @param attribute
 	 */
 	public void removeAttribute(PersonAttribute attribute) {
@@ -414,27 +417,28 @@ public class Person implements java.io.Serializable {
 			if (attributes.remove(attribute))
 				attributeMap = null;
 	}
-		
+	
 	/**
-	 * Convenience Method
-	 * Returns the first non-voided person attribute matching a person attribute type
+	 * Convenience Method Returns the first non-voided person attribute matching a person attribute
+	 * type
 	 * 
 	 * @param pat
 	 * @return PersonAttribute
 	 */
 	public PersonAttribute getAttribute(PersonAttributeType pat) {
-			if (pat != null)
-				for (PersonAttribute attribute : getAttributes()) {
-					if (pat.equals(attribute.getAttributeType()) && !attribute.isVoided()) {
-						return attribute;
-					}
-				}	
+		if (pat != null)
+			for (PersonAttribute attribute : getAttributes()) {
+				if (pat.equals(attribute.getAttributeType()) && !attribute.isVoided()) {
+					return attribute;
+				}
+			}
 		return null;
 	}
 	
 	/**
-	 * Convenience Method
-	 * Returns this person's first attribute that has a PersonAttributeType.name equal to <code>attributeName</code>
+	 * Convenience Method Returns this person's first attribute that has a PersonAttributeType.name
+	 * equal to <code>attributeName</code>
+	 * 
 	 * @param attribute
 	 */
 	public PersonAttribute getAttribute(String attributeName) {
@@ -450,8 +454,9 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * Returns this person's first attribute that has a PersonAttributeType.id equal to <code>attributeTypeId</code>
+	 * Convenience Method Returns this person's first attribute that has a PersonAttributeType.id
+	 * equal to <code>attributeTypeId</code>
+	 * 
 	 * @param attribute
 	 */
 	public PersonAttribute getAttribute(Integer attributeTypeId) {
@@ -459,13 +464,14 @@ public class Person implements java.io.Serializable {
 			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId()) && !attribute.isVoided()) {
 				return attribute;
 			}
-		}	
+		}
 		return null;
 	}
 	
 	/**
-	 * Convenience Method
-	 * Returns all of this person's attributes that have a PersonAttributeType.name equal to <code>attributeName</code>
+	 * Convenience Method Returns all of this person's attributes that have a
+	 * PersonAttributeType.name equal to <code>attributeName</code>
+	 * 
 	 * @param attribute
 	 */
 	public List<PersonAttribute> getAttributes(String attributeName) {
@@ -482,8 +488,9 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * Returns all of this person's attributes that have a PersonAttributeType.id equal to <code>attributeTypeId</code>
+	 * Convenience Method Returns all of this person's attributes that have a PersonAttributeType.id
+	 * equal to <code>attributeTypeId</code>
+	 * 
 	 * @param attribute
 	 */
 	public List<PersonAttribute> getAttributes(Integer attributeTypeId) {
@@ -498,25 +505,25 @@ public class Person implements java.io.Serializable {
 		return ret;
 	}
 	
-	
 	/**
-	 * Convenience Method
-	 * Returns all of this person's attributes that have a PersonAttributeType equal to <code>personAttributeType</code>
+	 * Convenience Method Returns all of this person's attributes that have a PersonAttributeType
+	 * equal to <code>personAttributeType</code>
+	 * 
 	 * @param attribute
 	 */
 	public List<PersonAttribute> getAttributes(PersonAttributeType personAttributeType) {
-		List<PersonAttribute> ret = new Vector<PersonAttribute>();	
+		List<PersonAttribute> ret = new Vector<PersonAttribute>();
 		for (PersonAttribute attribute : getAttributes()) {
 			if (personAttributeType.equals(attribute.getAttributeType()) && !attribute.isVoided()) {
 				ret.add(attribute);
 			}
-		}	
+		}
 		return ret;
 	}
 	
 	/**
-	 * Convenience Method
-	 * Returns all of this person's attributes in map form: <String, PersonAttribute>
+	 * Convenience Method Returns all of this person's attributes in map form: <String,
+	 * PersonAttribute>
 	 * 
 	 * @param attribute
 	 */
@@ -549,8 +556,9 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * Adds the <code>name</code> to this person's name list if the name doesn't exist already
+	 * Convenience Method Adds the <code>name</code> to this person's name list if the name doesn't
+	 * exist already
+	 * 
 	 * @param name
 	 */
 	public void addName(PersonName name) {
@@ -562,20 +570,22 @@ public class Person implements java.io.Serializable {
 				names.add(name);
 		}
 	}
-
+	
 	/**
-	 * Convenience Method
-	 * Removes the <code>name</code> from this person's name list if the name exists already
+	 * Convenience Method Removes the <code>name</code> from this person's name list if the name
+	 * exists already
+	 * 
 	 * @param name
 	 */
 	public void removeName(PersonName name) {
 		if (names != null)
 			names.remove(name);
 	}
-
+	
 	/**
-	 * Convenience Method
-	 * Adds the <code>address</code> to this person's address list if the address doesn't exist already
+	 * Convenience Method Adds the <code>address</code> to this person's address list if the address
+	 * doesn't exist already
+	 * 
 	 * @param address
 	 */
 	public void addAddress(PersonAddress address) {
@@ -587,10 +597,11 @@ public class Person implements java.io.Serializable {
 				addresses.add(address);
 		}
 	}
-
+	
 	/**
-	 * Convenience Method
-	 * Removes the <code>address</code> from this person's address list if the address exists already
+	 * Convenience Method Removes the <code>address</code> from this person's address list if the
+	 * address exists already
+	 * 
 	 * @param address
 	 */
 	public void removeAddress(PersonAddress address) {
@@ -599,10 +610,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method 
-	 * Get the "preferred" name for the person.
-	 * 
-	 * Returns a blank PersonName object if no names are given
+	 * Convenience Method Get the "preferred" name for the person. Returns a blank PersonName object
+	 * if no names are given
 	 * 
 	 * @return Returns the "preferred" person name.
 	 */
@@ -615,8 +624,7 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to get the given name attribute on this
-	 * person's preferred PersonName
+	 * Convenience method to get the given name attribute on this person's preferred PersonName
 	 * 
 	 * @return String given name of the person
 	 */
@@ -629,8 +637,7 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to get the middle name attribute on this
-	 * person's preferred PersonName
+	 * Convenience method to get the middle name attribute on this person's preferred PersonName
 	 * 
 	 * @return String middle name of the person
 	 */
@@ -643,8 +650,7 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to get the family name attribute on this
-	 * person's preferred PersonName
+	 * Convenience method to get the family name attribute on this person's preferred PersonName
 	 * 
 	 * @return String family name of the person
 	 */
@@ -657,8 +663,7 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * To get the "preferred" address for person.
+	 * Convenience Method To get the "preferred" address for person.
 	 * 
 	 * @return Returns the "preferred" person address.
 	 */
@@ -671,8 +676,7 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * Calculates person's age based on the birthdate
+	 * Convenience Method Calculates person's age based on the birthdate
 	 * 
 	 * @return integer age
 	 */
@@ -704,15 +708,15 @@ public class Person implements java.io.Serializable {
 		// if the current date is less that the new 'birthday', subtract a year
 		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
 		if (today.before(bday))
-			age = age -1;
+			age = age - 1;
 		
 		return age;
 	}
 	
 	/**
-	 * Convenience method: sets a person's birth date from an age as of the given date
-	 * Also sets flag indicating that the birth date is inexact.
-	 * This sets the person's birth date to January 1 of the year that matches this age and date
+	 * Convenience method: sets a person's birth date from an age as of the given date Also sets
+	 * flag indicating that the birth date is inexact. This sets the person's birth date to January
+	 * 1 of the year that matches this age and date
 	 * 
 	 * @param age (the age to set)
 	 * @param onDate (null defaults to today)
@@ -722,7 +726,7 @@ public class Person implements java.io.Serializable {
 		c.setTime(ageOnDate == null ? new Date() : ageOnDate);
 		c.set(Calendar.DATE, 1);
 		c.set(Calendar.MONTH, Calendar.JANUARY);
-		c.add(Calendar.YEAR, -1*age);
+		c.add(Calendar.YEAR, -1 * age);
 		setBirthdate(c.getTime());
 		setBirthdateEstimated(true);
 	}
@@ -730,122 +734,119 @@ public class Person implements java.io.Serializable {
 	public User getPersonChangedBy() {
 		return changedBy;
 	}
-
+	
 	public void setPersonChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-
+	
 	public Date getPersonDateChanged() {
 		return dateChanged;
 	}
-
+	
 	public void setPersonDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
-
+	
 	public User getPersonCreator() {
 		return personCreator;
 	}
-
+	
 	public void setPersonCreator(User creator) {
 		this.personCreator = creator;
 	}
-
+	
 	public Date getPersonDateCreated() {
 		return dateCreated;
 	}
-
+	
 	public void setPersonDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 	public Date getPersonDateVoided() {
 		return dateVoided;
 	}
-
+	
 	public void setPersonDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
-
+	
 	public void setPersonVoided(Boolean voided) {
 		this.voided = voided;
 	}
-
+	
 	public Boolean getPersonVoided() {
 		return isPersonVoided();
 	}
-
+	
 	public Boolean isPersonVoided() {
 		return voided;
 	}
-
+	
 	public User getPersonVoidedBy() {
 		return voidedBy;
 	}
-
+	
 	public void setPersonVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
-
+	
 	public String getPersonVoidReason() {
 		return voidReason;
 	}
-
+	
 	public void setPersonVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
 	
 	/**
-     * @return true/false whether this person is a patient or not
-     */
-    public boolean isPatient() {
-    	return isPatient;
-    }
-
+	 * @return true/false whether this person is a patient or not
+	 */
+	public boolean isPatient() {
+		return isPatient;
+	}
+	
 	/**
-	 * This should only be set by the database layer by looking
-	 * at whether a row exists in the patient table
+	 * This should only be set by the database layer by looking at whether a row exists in the
+	 * patient table
 	 * 
-     * @param isPatient whether this person is a patient or not
-     */
-    @SuppressWarnings("unused")
-    private void setPatient(boolean isPatient) {
-    	this.isPatient = isPatient;
-    }
-    
-    /**
-     * @return true/false whether this person is a user or not
-     */
-    public boolean isUser() {
-    	return isUser;
-    }
-
+	 * @param isPatient whether this person is a patient or not
+	 */
+	@SuppressWarnings("unused")
+	private void setPatient(boolean isPatient) {
+		this.isPatient = isPatient;
+	}
+	
 	/**
-	 * This should only be set by the database layer by looking
-	 * at whether a row exists in the user table
+	 * @return true/false whether this person is a user or not
+	 */
+	public boolean isUser() {
+		return isUser;
+	}
+	
+	/**
+	 * This should only be set by the database layer by looking at whether a row exists in the user
+	 * table
 	 * 
-     * @param isUser whether this person is a user or not
-     */
-    @SuppressWarnings("unused")
-    private void setUser(boolean isUser) {
-    	this.isUser = isUser;
-    }
-    
-
+	 * @param isUser whether this person is a user or not
+	 */
+	@SuppressWarnings("unused")
+	private void setUser(boolean isUser) {
+		this.isUser = isUser;
+	}
+	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
 		return "Person(personId=" + personId + ")";
 	}
-
+	
 	/**
-	 * If the serializer wishes, don't serialize this entire object, just the important
-	 * parts
+	 * If the serializer wishes, don't serialize this entire object, just the important parts
 	 * 
 	 * @param sessionMap serialization session information
-	 * @return Person object to serialize 
-	 * 
+	 * @return Person object to serialize
 	 * @see OpenmrsUtil#isShortSerialization(Map)
 	 */
 	@Replace
@@ -858,5 +859,5 @@ public class Person implements java.io.Serializable {
 		// don't do short serialization
 		return this;
 	}
-
+	
 }

@@ -18,14 +18,14 @@ import java.util.List;
 import org.openmrs.Cohort;
 
 /**
- * Database methods for cohort objects. 
+ * Database methods for cohort objects.
  * 
  * @see org.openmrs.Cohort
  * @see org.openmrs.api.CohortService
  * @see org.openmrs.api.context.Context
  */
 public interface CohortDAO {
-		
+	
 	/**
 	 * Finds the cohort with the given primary key
 	 * 
@@ -36,12 +36,12 @@ public interface CohortDAO {
 	public Cohort getCohort(Integer id) throws DAOException;
 	
 	/**
-     * Finds a cohort by name
-     * 
-     * @param name
-     * @return The Cohort with the given name, or null if none exists
-     */
-    public Cohort getCohort(String name);
+	 * Finds a cohort by name
+	 * 
+	 * @param name
+	 * @return The Cohort with the given name, or null if none exists
+	 */
+	public Cohort getCohort(String name);
 	
 	/**
 	 * Gets all cohorts in the database
@@ -53,7 +53,7 @@ public interface CohortDAO {
 	public List<Cohort> getAllCohorts(boolean includeVoided) throws DAOException;
 	
 	/**
-	 * Finds all cohorts that contain the given patientId 
+	 * Finds all cohorts that contain the given patientId
 	 * 
 	 * @param patientId
 	 * @return
@@ -62,27 +62,27 @@ public interface CohortDAO {
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException;
 	
 	/**
-     * Saves a Cohort to the database
-     * 
-     * @param cohort
-     * @return
-     */
-    public Cohort saveCohort(Cohort cohort) throws DAOException;
-
+	 * Saves a Cohort to the database
+	 * 
+	 * @param cohort
+	 * @return
+	 */
+	public Cohort saveCohort(Cohort cohort) throws DAOException;
+	
 	/**
-     * Finds all Cohorts with matching names
-     * 
-     * @param nameFragment
-     * @return
-     */
-    public List<Cohort> getCohorts(String nameFragment) throws DAOException;
-
+	 * Finds all Cohorts with matching names
+	 * 
+	 * @param nameFragment
+	 * @return
+	 */
+	public List<Cohort> getCohorts(String nameFragment) throws DAOException;
+	
 	/**
-     * Removes a cohort from the database
-     * 
-     * @param cohort
-     * @return
-     */
-    public Cohort deleteCohort(Cohort cohort) throws DAOException;
-
+	 * Removes a cohort from the database
+	 * 
+	 * @param cohort
+	 * @return
+	 */
+	public Cohort deleteCohort(Cohort cohort) throws DAOException;
+	
 }

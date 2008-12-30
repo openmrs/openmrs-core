@@ -34,41 +34,53 @@ public class ReportMacrosFormController extends SimpleFormController {
 	Log log = LogFactory.getLog(getClass());
 	
 	class CommandObject {
+		
 		private String macros;
-		public CommandObject() { }
-        public String getMacros() {
-        	return macros;
-        }
-        public void setMacros(String macros) {
-        	this.macros = macros;
-        }
+		
+		public CommandObject() {
+		}
+		
+		public String getMacros() {
+			return macros;
+		}
+		
+		public void setMacros(String macros) {
+			this.macros = macros;
+		}
 	}
 	
 	/**
 	 * Returns the string representation of the macro properties
+	 * 
 	 * @param request
 	 * @return String containing macro properties
 	 * @throws Exception
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws Exception {
-    	CommandObject command = new CommandObject();
-    	
-    	if (!isFormSubmission(request))
-    		command.setMacros(Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS));
-    	
+	protected Object formBackingObject(HttpServletRequest request) throws Exception {
+		CommandObject command = new CommandObject();
+		
+		if (!isFormSubmission(request))
+			command.setMacros(Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS));
+		
 		return command;
-    }
+	}
 	
 	/**
 	 * The onSubmit function receives the modified macro property string and saves it
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * 
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
 			CommandObject command = (CommandObject) obj;
-			Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS, command.getMacros()));
+			Context.getAdministrationService().saveGlobalProperty(
+			    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS, command.getMacros()));
 			view = getSuccessView();
 		}
 		return new ModelAndView(new RedirectView(view));

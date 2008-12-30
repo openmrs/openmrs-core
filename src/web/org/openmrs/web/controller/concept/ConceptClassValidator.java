@@ -21,36 +21,34 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class ConceptClassValidator implements Validator {
-
+	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
-	 * 
 	 * Determines if the command object being submitted is a valid type
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-    public boolean supports(Class c) {
+	public boolean supports(Class c) {
 		return c.equals(ConceptClass.class);
 	}
-
+	
 	/**
-	 * 
 	 * Checks the form object for any inconsistencies/errors
 	 * 
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
-		ConceptClass cc = (ConceptClass)obj;
+		ConceptClass cc = (ConceptClass) obj;
 		if (cc == null) {
 			errors.rejectValue("conceptClass", "error.general");
-		}
-		else {
+		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
 	}
-
+	
 }

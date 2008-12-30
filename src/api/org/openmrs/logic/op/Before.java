@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class Before implements Operator {
-    
-    public String toString() {
-        return "BEFORE";
-    }
-    
+	
+	public String toString() {
+		return "BEFORE";
+	}
+	
 }

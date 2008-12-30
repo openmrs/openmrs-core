@@ -33,11 +33,11 @@ public class TimerSchedulerMemento extends OpenmrsMemento {
 	public Object getState() {
 		return startedTasks;
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void setState(Object state) {
-		this.startedTasks = (Set<TaskDefinition>)state;
+		this.startedTasks = (Set<TaskDefinition>) state;
 	}
 	
 	public Boolean addErrorTask(TaskDefinition task) {
@@ -51,7 +51,7 @@ public class TimerSchedulerMemento extends OpenmrsMemento {
 	public static Set<TaskDefinition> getErrorTasks() {
 		return errorTasks;
 	}
-
+	
 	public void saveErrorTasks() {
 		this.startedTasks.addAll(errorTasks);
 	}

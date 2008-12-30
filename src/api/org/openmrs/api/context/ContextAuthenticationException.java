@@ -16,8 +16,8 @@ package org.openmrs.api.context;
 import org.openmrs.api.APIException;
 
 /**
- * This exception is thrown when a user attempts to access a service
- * or object that they do not have rights to.  
+ * This exception is thrown when a user attempts to access a service or object that they do not have
+ * rights to.
  */
 public class ContextAuthenticationException extends APIException {
 	
@@ -34,5 +34,5 @@ public class ContextAuthenticationException extends APIException {
 	public ContextAuthenticationException(Throwable cause) {
 		super(cause);
 	}
-
+	
 }

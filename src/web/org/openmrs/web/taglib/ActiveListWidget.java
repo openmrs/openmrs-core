@@ -40,36 +40,41 @@ import org.openmrs.api.context.UserContext;
 import org.openmrs.util.OpenmrsUtil;
 
 public class ActiveListWidget extends TagSupport {
-
+	
 	private static final long serialVersionUID = 14352322222L;
-
+	
 	private final Log log = LogFactory.getLog(getClass());
 	
 	private Collection<Obs> observations;
+	
 	private Boolean showDate = false;
+	
 	private String displayStyle = "ol";
+	
 	private Date onDate;
-
+	
 	// pipe-separated lists of "conceptId" or "name:CONCEPT NAME". starting with "set:" means treat this as a set.
 	private String addConcept;
+	
 	private String removeConcept;
 	
 	private String otherGroupedConcepts;
-
-	public ActiveListWidget() { }
-
+	
+	public ActiveListWidget() {
+	}
+	
 	public int doStartTag() {
 		UserContext userContext = Context.getUserContext();
 		
 		Locale loc = userContext.getLocale();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, loc);
-
+		
 		Set<Concept> addConceptList = OpenmrsUtil.conceptSetHelper(addConcept);
 		Set<Concept> removeConceptList = OpenmrsUtil.conceptSetHelper(removeConcept);
 		List<Concept> otherConceptList = OpenmrsUtil.conceptListHelper(otherGroupedConcepts);
 		
 		boolean doObsGroups = otherConceptList.size() > 0;
-
+		
 		if (onDate == null)
 			onDate = new Date();
 		
@@ -95,10 +100,11 @@ public class ActiveListWidget extends TagSupport {
 		}
 		List<Map.Entry<Concept, Obs>> ordered = new ArrayList<Map.Entry<Concept, Obs>>(activeList.entrySet());
 		Collections.sort(ordered, new Comparator<Map.Entry<Concept, Obs>>() {
-				public int compare(Map.Entry<Concept, Obs> left, Map.Entry<Concept, Obs> right) {
-					return left.getValue().getObsDatetime().compareTo(right.getValue().getObsDatetime());
-				}
-			});
+			
+			public int compare(Map.Entry<Concept, Obs> left, Map.Entry<Concept, Obs> right) {
+				return left.getValue().getObsDatetime().compareTo(right.getValue().getObsDatetime());
+			}
+		});
 		
 		Map<Obs, Collection<Obs>> obsGroups = new HashMap<Obs, Collection<Obs>>();
 		if (doObsGroups) {
@@ -114,7 +120,7 @@ public class ActiveListWidget extends TagSupport {
 		String obsGroupHeader = "";
 		String beforeItem = "";
 		String afterItem = "";
-		String obsGroupItemSeparator = ""; 
+		String obsGroupItemSeparator = "";
 		
 		if ("ol".equals(displayStyle) || "ul".equals(displayStyle)) {
 			before = "<" + displayStyle + ">";
@@ -122,7 +128,7 @@ public class ActiveListWidget extends TagSupport {
 			beforeItem = "<li>";
 			afterItem = "</li>";
 			obsGroupItemSeparator = ", ";
-
+			
 		} else if (displayStyle.startsWith("separator:")) {
 			afterItem = displayStyle.substring(displayStyle.indexOf(":") + 1);
 			obsGroupItemSeparator = " ";
@@ -143,11 +149,11 @@ public class ActiveListWidget extends TagSupport {
 				s.append("</tr>");
 				obsGroupHeader = s.toString();
 			}
-
+			
 		} else {
 			throw new RuntimeException("Unknown displayStyle: " + displayStyle);
 		}
-
+		
 		if (ordered.size() > 0) {
 			sb.append(before);
 			sb.append(obsGroupHeader);
@@ -174,11 +180,12 @@ public class ActiveListWidget extends TagSupport {
 			}
 			sb.append(after);
 		}
-				
+		
 		try {
 			JspWriter w = pageContext.getOut();
 			w.println(sb);
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			log.error("Error while writing to JSP", ex);
 		}
 		
@@ -201,60 +208,64 @@ public class ActiveListWidget extends TagSupport {
 	public String getAddConcept() {
 		return addConcept;
 	}
-
+	
 	public void setAddConcept(String addConcept) {
 		this.addConcept = addConcept;
 	}
-
+	
 	public String getRemoveConcept() {
 		return removeConcept;
 	}
-
+	
 	public void setRemoveConcept(String removeConcept) {
 		this.removeConcept = removeConcept;
 	}
-
+	
 	public String getDisplayStyle() {
 		return displayStyle;
 	}
-
+	
 	public void setDisplayStyle(String displayStyle) {
-		if (displayStyle == null || displayStyle.length() == 0) return;
+		if (displayStyle == null || displayStyle.length() == 0)
+			return;
 		this.displayStyle = displayStyle;
 	}
-
+	
 	public Collection<Obs> getObservations() {
 		return observations;
 	}
-
+	
 	public void setObservations(Collection<Obs> observations) {
 		this.observations = observations;
 	}
-
+	
 	public Boolean getShowDate() {
 		return showDate;
 	}
-
+	
 	public void setShowDate(Boolean showDate) {
-		if (showDate == null) return;
+		if (showDate == null)
+			return;
 		this.showDate = showDate;
 	}
 	
 	public Date getOnDate() {
 		return onDate;
 	}
-
+	
 	public void setOnDate(Date onDate) {
-		if (onDate == null) return;
+		if (onDate == null)
+			return;
 		this.onDate = onDate;
 	}
-
+	
 	public String getOtherGroupedConcepts() {
 		return otherGroupedConcepts;
 	}
-
+	
 	public void setOtherGroupedConcepts(String otherGroupedConcepts) {
-		if (otherGroupedConcepts == null || otherGroupedConcepts.length() == 0) return;
+		if (otherGroupedConcepts == null || otherGroupedConcepts.length() == 0)
+			return;
 		this.otherGroupedConcepts = otherGroupedConcepts;
 	}
 	

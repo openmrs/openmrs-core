@@ -31,71 +31,83 @@ import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
- * Controller for the page that shows an administrator's view of all a patients
- * observations (possibly only for a specified concept)
+ * Controller for the page that shows an administrator's view of all a patients observations
+ * (possibly only for a specified concept)
  */
 public class PersonObsFormController extends SimpleFormController {
-
+	
 	/** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-   
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	@Override
-    protected CommandObject formBackingObject(HttpServletRequest request) throws Exception {
+	protected CommandObject formBackingObject(HttpServletRequest request) throws Exception {
 		if (!Context.isAuthenticated())
 			return new CommandObject();
-
+		
 		Person person = Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("personId")));
 		Concept concept = null;
 		if (request.getParameter("conceptId") != null)
 			concept = Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId")));
-
+		
 		ObsService os = Context.getObsService();
-		List<Obs> ret = new ArrayList<Obs>( concept == null ?
-								os.getObservations(person, true) :
-								os.getObservations(person, concept, true) );
+		List<Obs> ret = new ArrayList<Obs>(concept == null ? os.getObservations(person, true) : os.getObservations(person,
+		    concept, true));
 		Collections.sort(ret, new Comparator<Obs>() {
+			
 			public int compare(Obs left, Obs right) {
 				int temp = left.getConcept().getName().getName().compareTo(right.getConcept().getName().getName());
 				if (temp == 0)
 					temp = OpenmrsUtil.compareWithNullAsGreatest(left.getVoided(), right.getVoided());
-	            if (temp == 0)
-	            	temp = OpenmrsUtil.compareWithNullAsLatest(left.getObsDatetime(), right.getObsDatetime());
-	            return temp;
-            }
+				if (temp == 0)
+					temp = OpenmrsUtil.compareWithNullAsLatest(left.getObsDatetime(), right.getObsDatetime());
+				return temp;
+			}
 			
 		});
 		return new CommandObject(person, concept, ret);
-    }
-
-	public class CommandObject {
-		private Person person;
-		private Concept concept;
-		private List<Obs> observations;
-		public CommandObject() { }
-		public CommandObject(Person person, Concept concept, List<Obs> observations) {
-	        super();
-	        this.person = person;
-	        this.concept = concept;
-	        this.observations = observations;
-        }
-		public Person getPerson() {
-        	return person;
-        }
-		public void setPerson(Person person) {
-        	this.person = person;
-        }
-		public Concept getConcept() {
-        	return concept;
-        }
-		public void setConcept(Concept concept) {
-        	this.concept = concept;
-        }
-		public List<Obs> getObservations() {
-        	return observations;
-        }
-		public void setObservations(List<Obs> observations) {
-        	this.observations = observations;
-        }
 	}
-    
+	
+	public class CommandObject {
+		
+		private Person person;
+		
+		private Concept concept;
+		
+		private List<Obs> observations;
+		
+		public CommandObject() {
+		}
+		
+		public CommandObject(Person person, Concept concept, List<Obs> observations) {
+			super();
+			this.person = person;
+			this.concept = concept;
+			this.observations = observations;
+		}
+		
+		public Person getPerson() {
+			return person;
+		}
+		
+		public void setPerson(Person person) {
+			this.person = person;
+		}
+		
+		public Concept getConcept() {
+			return concept;
+		}
+		
+		public void setConcept(Concept concept) {
+			this.concept = concept;
+		}
+		
+		public List<Obs> getObservations() {
+			return observations;
+		}
+		
+		public void setObservations(List<Obs> observations) {
+			this.observations = observations;
+		}
+	}
+	
 }

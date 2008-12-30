@@ -42,9 +42,9 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 
 public class ObsTableWidget extends TagSupport {
-
+	
 	private static final long serialVersionUID = 14352344444L;
-
+	
 	private final Log log = LogFactory.getLog(getClass());
 	
 	/*
@@ -54,119 +54,172 @@ public class ObsTableWidget extends TagSupport {
 	 *   a concept set, by id or name (e.g. "set:5089" or "set.en:LAB TESTS")
 	 */
 	private String concepts;
+	
 	private Collection<Obs> observations;
+	
 	private boolean sortDescending = true;
+	
 	private boolean orientVertical = true;
+	
 	private Boolean showEmptyConcepts = true;
+	
 	private Boolean showConceptHeader = true;
+	
 	private Boolean showDateHeader = true;
+	
 	private Boolean combineEqualResults = true;
+	
 	private String id;
+	
 	private String cssClass;
+	
 	private Date fromDate;
+	
 	private Date toDate;
+	
 	private Integer limit = 0;
+	
 	private String conceptLink = null;
+	
 	//private String combineBy = "day";
 	
-	public ObsTableWidget() { }
+	public ObsTableWidget() {
+	}
 	
 	public String getConcepts() {
 		return concepts;
 	}
+	
 	public void setConcepts(String concepts) {
-		if (concepts == null || concepts.length() == 0) return;
+		if (concepts == null || concepts.length() == 0)
+			return;
 		this.concepts = concepts;
 	}
+	
 	public String getConceptLink() {
-    	return conceptLink;
-    }
+		return conceptLink;
+	}
+	
 	public void setConceptLink(String conceptLink) {
-    	this.conceptLink = conceptLink;
-    }
+		this.conceptLink = conceptLink;
+	}
+	
 	public String getCssClass() {
 		return cssClass;
 	}
+	
 	public void setCssClass(String cssClass) {
-		if (cssClass == null || cssClass.length() == 0) return;
+		if (cssClass == null || cssClass.length() == 0)
+			return;
 		this.cssClass = cssClass;
 	}
+	
 	public String getId() {
 		return id;
 	}
+	
 	public void setId(String id) {
-		if (id == null || id.length() == 0) return;
+		if (id == null || id.length() == 0)
+			return;
 		this.id = id;
 	}
+	
 	public Boolean getShowEmptyConcepts() {
 		return showEmptyConcepts;
 	}
+	
 	public void setShowEmptyConcepts(Boolean showEmptyConcepts) {
-		if (showEmptyConcepts == null) return;
-		this.showEmptyConcepts= showEmptyConcepts;
+		if (showEmptyConcepts == null)
+			return;
+		this.showEmptyConcepts = showEmptyConcepts;
 	}
+	
 	public Boolean getShowConceptHeader() {
 		return showConceptHeader;
 	}
+	
 	public void setShowConceptHeader(Boolean showHeader) {
-		if (showHeader == null) return;
+		if (showHeader == null)
+			return;
 		this.showConceptHeader = showHeader;
 	}
+	
 	public Boolean getShowDateHeader() {
 		return showDateHeader;
 	}
+	
 	public void setShowDateHeader(Boolean showDateHeader) {
-		if (showDateHeader == null) return;
+		if (showDateHeader == null)
+			return;
 		this.showDateHeader = showDateHeader;
 	}
+	
 	public String getSort() {
 		return sortDescending ? "desc" : "asc";
 	}
+	
 	public void setSort(String sort) {
-		if (sort == null || sort.length() == 0) return;
+		if (sort == null || sort.length() == 0)
+			return;
 		sortDescending = !sort.equals("asc");
 	}
+	
 	public String getOrientation() {
 		return orientVertical ? "vertical" : "horizontal";
 	}
+	
 	public void setOrientation(String orientation) {
-		if (orientation == null || orientation.length() == 0) return;
+		if (orientation == null || orientation.length() == 0)
+			return;
 		orientVertical = !orientation.equals("horizontal");
 	}
+	
 	public Collection<Obs> getObservations() {
 		return observations;
 	}
+	
 	public void setObservations(Collection<Obs> observations) {
 		this.observations = observations;
 	}
+	
 	public Date getFromDate() {
 		return fromDate;
 	}
+	
 	public void setFromDate(Date fromDate) {
-		if (fromDate == null) return;
+		if (fromDate == null)
+			return;
 		this.fromDate = fromDate;
 	}
+	
 	public Date getToDate() {
 		return toDate;
 	}
+	
 	public void setToDate(Date toDate) {
-		if (toDate == null) return;
+		if (toDate == null)
+			return;
 		this.toDate = toDate;
 	}
+	
 	public Integer getLimit() {
 		return limit;
 	}
+	
 	public void setLimit(Integer limit) {
-		if (limit == null) return;
+		if (limit == null)
+			return;
 		this.limit = limit;
 	}
+	
 	public Boolean getCombineEqualResults() {
-    	return combineEqualResults;
-    }
+		return combineEqualResults;
+	}
+	
 	public void setCombineEqualResults(Boolean combineEqualResults) {
-    	this.combineEqualResults = combineEqualResults;
-    }
-
+		this.combineEqualResults = combineEqualResults;
+	}
+	
 	public int doStartTag() {
 		Locale loc = Context.getLocale();
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, loc);
@@ -175,7 +228,7 @@ public class ObsTableWidget extends TagSupport {
 		List<Concept> conceptList = new ArrayList<Concept>();
 		Set<Integer> conceptIds = new HashSet<Integer>();
 		ConceptService cs = Context.getConceptService();
-		for (StringTokenizer st = new StringTokenizer(concepts, "|"); st.hasMoreTokens(); ) {
+		for (StringTokenizer st = new StringTokenizer(concepts, "|"); st.hasMoreTokens();) {
 			String s = st.nextToken().trim();
 			log.debug("looking at " + s);
 			boolean isSet = s.startsWith("set:");
@@ -188,7 +241,8 @@ public class ObsTableWidget extends TagSupport {
 			} else {
 				try {
 					c = cs.getConcept(Integer.valueOf(s.trim()));
-				} catch (Exception ex) { }
+				}
+				catch (Exception ex) {}
 			}
 			if (c != null) {
 				if (isSet) {
@@ -218,7 +272,8 @@ public class ObsTableWidget extends TagSupport {
 			if (conceptIds.contains(conceptId)) {
 				Date thisDate = o.getObsDatetime();
 				// TODO: allow grouping by day/week/month/etc
-				if ( (fromDate != null && thisDate.compareTo(fromDate) < 0) || (toDate != null && thisDate.compareTo(toDate) > 0) ) {
+				if ((fromDate != null && thisDate.compareTo(fromDate) < 0)
+				        || (toDate != null && thisDate.compareTo(toDate) > 0)) {
 					continue;
 				}
 				dates.add(thisDate);
@@ -234,17 +289,17 @@ public class ObsTableWidget extends TagSupport {
 		}
 		
 		if (!showEmptyConcepts) {
-			for (Iterator<Concept> i = conceptList.iterator(); i.hasNext(); ) {
+			for (Iterator<Concept> i = conceptList.iterator(); i.hasNext();) {
 				if (!conceptsWithObs.contains(i.next().getConceptId()))
 					i.remove();
 			}
 		}
-			
+		
 		List<Date> dateOrder = new ArrayList<Date>(dates);
 		if (sortDescending)
 			Collections.reverse(dateOrder);
 		
-		if ( limit > 0 && limit < dateOrder.size() ) {
+		if (limit > 0 && limit < dateOrder.size()) {
 			dateOrder = dateOrder.subList(0, limit);
 		}
 		
@@ -255,13 +310,13 @@ public class ObsTableWidget extends TagSupport {
 		if (cssClass != null)
 			ret.append(" class=\"" + cssClass + "\"");
 		ret.append(">");
-
+		
 		if (orientVertical) {
 			if (showConceptHeader) {
 				ret.append("<tr>");
 				ret.append("<th></th>");
 				for (Concept c : conceptList) {
-					ConceptName cn = c.getShortestName(loc, false); 
+					ConceptName cn = c.getShortestName(loc, false);
 					String name = cn.getName();
 					ret.append("<th>");
 					if (conceptLink != null) {
@@ -299,7 +354,7 @@ public class ObsTableWidget extends TagSupport {
 				}
 				ret.append("</tr>");
 			}
-
+			
 		} else { // horizontal
 			if (showDateHeader) {
 				ret.append("<tr>");
@@ -311,7 +366,7 @@ public class ObsTableWidget extends TagSupport {
 			for (Concept c : conceptList) {
 				ret.append("<tr>");
 				if (showConceptHeader) {
-					ConceptName cn = c.getShortestName(loc, false); 
+					ConceptName cn = c.getShortestName(loc, false);
 					String name = cn.getName();
 					ret.append("<th>");
 					if (conceptLink != null) {
@@ -345,16 +400,17 @@ public class ObsTableWidget extends TagSupport {
 			}
 		}
 		ret.append("</table>");
-
+		
 		try {
 			JspWriter w = pageContext.getOut();
 			w.println(ret);
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			log.error("Error while starting ObsTableWidget tag", ex);
 		}
 		return SKIP_BODY;
 	}
-
+	
 	public int doEndTag() {
 		concepts = null;
 		observations = null;

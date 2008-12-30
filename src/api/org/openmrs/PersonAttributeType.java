@@ -20,37 +20,47 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * PersonAttributeType 
+ * PersonAttributeType
  */
-@Root(strict=false)
+@Root(strict = false)
 public class PersonAttributeType implements java.io.Serializable {
-
+	
 	public static final long serialVersionUID = 2112313431211L;
-
+	
 	private Integer personAttributeTypeId;
+	
 	private String name;
+	
 	private String format;
+	
 	private Integer foreignKey;
+	
 	private String description;
 	
 	private Boolean searchable = false;
 	
 	private User creator;
+	
 	private Date dateCreated;
 	
 	private User changedBy;
+	
 	private Date dateChanged;
-
+	
 	private Boolean retired = false;
+	
 	private User retiredBy;
+	
 	private Date dateRetired;
+	
 	private String retireReason;
 	
 	private Privilege editPrivilege;
 	
 	/** default constructor */
-	public PersonAttributeType() {}
-
+	public PersonAttributeType() {
+	}
+	
 	/** constructor with id */
 	public PersonAttributeType(Integer PersonAttributeTypeId) {
 		this.personAttributeTypeId = PersonAttributeTypeId;
@@ -60,11 +70,12 @@ public class PersonAttributeType implements java.io.Serializable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getPersonAttributeTypeId() == null) return super.hashCode();
+		if (this.getPersonAttributeTypeId() == null)
+			return super.hashCode();
 		return 7 * this.getPersonAttributeTypeId().hashCode();
 	}
-
-	/** 
+	
+	/**
 	 * Compares two objects for similarity
 	 * 
 	 * @param obj
@@ -72,7 +83,7 @@ public class PersonAttributeType implements java.io.Serializable {
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof PersonAttributeType) {
-			PersonAttributeType p = (PersonAttributeType)obj;
+			PersonAttributeType p = (PersonAttributeType) obj;
 			if (p != null)
 				return (personAttributeTypeId.equals(p.getPersonAttributeTypeId()));
 		}
@@ -80,115 +91,115 @@ public class PersonAttributeType implements java.io.Serializable {
 	}
 	
 	// Property accessors
-
+	
 	/**
 	 * @return Returns the creator.
 	 */
-	@Element(required=true)
+	@Element(required = true)
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	/**
 	 * @param creator The creator to set.
 	 */
-	@Element(required=true)
+	@Element(required = true)
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element(required=true)
+	@Element(required = true)
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element(required=true)
+	@Element(required = true)
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 	/**
 	 * @return Returns the description.
 	 */
-	@Element(data=true,required=false)
+	@Element(data = true, required = false)
 	public String getDescription() {
 		return description;
 	}
-
+	
 	/**
 	 * @param description The description to set.
 	 */
-	@Element(data=true,required=false)
+	@Element(data = true, required = false)
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
 	/**
 	 * @return Returns the name.
 	 */
-	@Element(data=true,required=false)
+	@Element(data = true, required = false)
 	public String getName() {
 		return name;
 	}
-
+	
 	/**
 	 * @param name The name to set.
 	 */
-	@Element(data=true,required=false)
+	@Element(data = true, required = false)
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	/**
 	 * @return Returns the format.
 	 */
-	@Element(data=true,required=false)
+	@Element(data = true, required = false)
 	public String getFormat() {
 		return format;
 	}
-
+	
 	/**
 	 * @param format The format to set.
 	 */
-	@Element(data=true,required=false)
+	@Element(data = true, required = false)
 	public void setFormat(String format) {
 		this.format = format;
 	}
-
+	
 	/**
 	 * @return the foreignKey
 	 */
-	@Attribute(required=false)
+	@Attribute(required = false)
 	public Integer getForeignKey() {
 		return foreignKey;
 	}
-
+	
 	/**
 	 * @param foreignKey the foreignKey to set
 	 */
-	@Attribute(required=false)
+	@Attribute(required = false)
 	public void setForeignKey(Integer foreignKey) {
 		this.foreignKey = foreignKey;
 	}
-
+	
 	/**
 	 * @return Returns the PersonAttributeTypeId.
 	 */
-	@Attribute(required=false)
+	@Attribute(required = false)
 	public Integer getPersonAttributeTypeId() {
 		return personAttributeTypeId;
 	}
-
+	
 	/**
 	 * @param PersonAttributeTypeId The PersonAttributeTypeId to set.
 	 */
-	@Attribute(required=false)
+	@Attribute(required = false)
 	public void setPersonAttributeTypeId(Integer PersonAttributeTypeId) {
 		this.personAttributeTypeId = PersonAttributeTypeId;
 	}
@@ -196,31 +207,31 @@ public class PersonAttributeType implements java.io.Serializable {
 	/**
 	 * @return the changedBy
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public User getChangedBy() {
 		return changedBy;
 	}
-
+	
 	/**
 	 * @param changedBy the changedBy to set
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-
+	
 	/**
 	 * @return the dateChanged
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
-
+	
 	/**
 	 * @param dateChanged the dateChanged to set
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
@@ -235,101 +246,99 @@ public class PersonAttributeType implements java.io.Serializable {
 	/**
 	 * @return the searchable status
 	 */
-	@Attribute(required=false)
+	@Attribute(required = false)
 	public Boolean getSearchable() {
 		return searchable;
 	}
-
+	
 	/**
 	 * @param searchable the searchable to set
 	 */
-	@Attribute(required=false)
+	@Attribute(required = false)
 	public void setSearchable(Boolean searchable) {
 		this.searchable = searchable;
 	}
 	
 	/**
-     * @return the retired
-     */
-    public Boolean getRetired() {
-    	return retired;
-    }
-
+	 * @return the retired
+	 */
+	public Boolean getRetired() {
+		return retired;
+	}
+	
 	/**
-     * @param retired the retired to set
-     */
-    public void setRetired(Boolean retired) {
-    	this.retired = retired;
-    }
-
+	 * @param retired the retired to set
+	 */
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
+	}
+	
 	/**
-     * @return the retiredBy
-     */
-    public User getRetiredBy() {
-    	return retiredBy;
-    }
-
+	 * @return the retiredBy
+	 */
+	public User getRetiredBy() {
+		return retiredBy;
+	}
+	
 	/**
-     * @param retiredBy the retiredBy to set
-     */
-    public void setRetiredBy(User retiredBy) {
-    	this.retiredBy = retiredBy;
-    }
-
+	 * @param retiredBy the retiredBy to set
+	 */
+	public void setRetiredBy(User retiredBy) {
+		this.retiredBy = retiredBy;
+	}
+	
 	/**
-     * @return the dateRetired
-     */
-    public Date getDateRetired() {
-    	return dateRetired;
-    }
-
+	 * @return the dateRetired
+	 */
+	public Date getDateRetired() {
+		return dateRetired;
+	}
+	
 	/**
-     * @param dateRetired the dateRetired to set
-     */
-    public void setDateRetired(Date dateRetired) {
-    	this.dateRetired = dateRetired;
-    }
-
+	 * @param dateRetired the dateRetired to set
+	 */
+	public void setDateRetired(Date dateRetired) {
+		this.dateRetired = dateRetired;
+	}
+	
 	/**
-     * @return the retireReason
-     */
-    public String getRetireReason() {
-    	return retireReason;
-    }
-
+	 * @return the retireReason
+	 */
+	public String getRetireReason() {
+		return retireReason;
+	}
+	
 	/**
-     * @param retireReason the retiredReason to set
-     */
-    public void setRetireReason(String retiredReason) {
-    	this.retireReason = retiredReason;
-    }
-
+	 * @param retireReason the retiredReason to set
+	 */
+	public void setRetireReason(String retiredReason) {
+		this.retireReason = retiredReason;
+	}
+	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
 		return this.name;
 	}
-
+	
 	/**
 	 * The privilege required in order to edit this attribute
 	 * 
 	 * @return
 	 */
 	public Privilege getEditPrivilege() {
-    	return editPrivilege;
-    }
-
+		return editPrivilege;
+	}
+	
 	/**
-	 * The privilege required in order to edit this attribute
-	 * 
-	 * If <code>editPrivilege</code> is null, no extra permissions
-	 * are required to edit this type
+	 * The privilege required in order to edit this attribute If <code>editPrivilege</code> is null,
+	 * no extra permissions are required to edit this type
 	 * 
 	 * @param editPrivilege
 	 */
 	public void setEditPrivilege(Privilege editPrivilege) {
 		this.editPrivilege = editPrivilege;
-    }
+	}
 	
 }

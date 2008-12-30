@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class Contains implements Operator {
-
-    public String toString() {
-        return "CONTAINS";
-    }
-    
+	
+	public String toString() {
+		return "CONTAINS";
+	}
+	
 }

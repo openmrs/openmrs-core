@@ -17,7 +17,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.web.servlet.LoginServlet;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -25,14 +24,14 @@ import org.springframework.mock.web.MockHttpServletResponse;
  * Tests the {@link LoginServlet}
  */
 public class LoginServletTest extends BaseContextSensitiveTest {
-
+	
 	/**
-	 * The servlet should send the user back to the login box
-	 * if the user enters the wrong username or password.
+	 * The servlet should send the user back to the login box if the user enters the wrong username
+	 * or password.
 	 * 
 	 * @throws Exception
 	 */
-    @Test
+	@Test
 	public void shouldRedirectBackToLoginScreenOnBadUsernameAndPassword() throws Exception {
 		LoginServlet loginServlet = new LoginServlet();
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/loginServlet");
@@ -46,21 +45,21 @@ public class LoginServletTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals("/somecontextpath/login.htm", response.getRedirectedUrl());
 	}
-    
-    /**
-	 * If a user logs in correctly, they should never be redirected back
-	 * to the login screen because this would cause confusion
+	
+	/**
+	 * If a user logs in correctly, they should never be redirected back to the login screen because
+	 * this would cause confusion
 	 * 
 	 * @throws Exception
 	 */
-    @Test
+	@Test
 	public void shouldNotRedirectBackToLoginScreenWithCorrectUsernameAndPassword() throws Exception {
-    	// this test depends on being able to log in as "admin:test".
-    	Context.logout();
-    	Context.authenticate("admin", "test");
-    	Assert.assertTrue(Context.isAuthenticated());
-    	
-    	// do the test now
+		// this test depends on being able to log in as "admin:test".
+		Context.logout();
+		Context.authenticate("admin", "test");
+		Assert.assertTrue(Context.isAuthenticated());
+		
+		// do the test now
 		LoginServlet loginServlet = new LoginServlet();
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/loginServlet");
 		request.setContextPath("/somecontextpath");
@@ -73,23 +72,23 @@ public class LoginServletTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNotSame("/somecontextpath/login.htm", response.getRedirectedUrl());
 	}
-    
-    /**
+	
+	/**
 	 * The lockout value is set to five
 	 * 
 	 * @throws Exception
 	 */
-    @Test
+	@Test
 	public void shouldLockUserOutAfterFiveFailedLoginAttempts() throws Exception {
-    	// this test depends on being able to log in as "admin:test".
-    	Context.logout();
-    	Context.authenticate("admin", "test");
-    	Assert.assertTrue(Context.isAuthenticated());
-    	
-    	// do the test now
-    	LoginServlet loginServlet = new LoginServlet();
-    	
-    	for (int x = 1; x < 4; x++) {
+		// this test depends on being able to log in as "admin:test".
+		Context.logout();
+		Context.authenticate("admin", "test");
+		Assert.assertTrue(Context.isAuthenticated());
+		
+		// do the test now
+		LoginServlet loginServlet = new LoginServlet();
+		
+		for (int x = 1; x < 4; x++) {
 			MockHttpServletRequest request = new MockHttpServletRequest("POST", "/loginServlet");
 			request.setContextPath("/somecontextpath");
 			MockHttpServletResponse response = new MockHttpServletResponse();
@@ -100,10 +99,10 @@ public class LoginServletTest extends BaseContextSensitiveTest {
 			request.setParameter("pw", "wrong password");
 			
 			loginServlet.service(request, response);
-    	}
-    	
-    	// now attempting to log in the fifth time should fail 
-    	MockHttpServletRequest request = new MockHttpServletRequest("POST", "/loginServlet");
+		}
+		
+		// now attempting to log in the fifth time should fail 
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/loginServlet");
 		request.setContextPath("/somecontextpath");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		request.setParameter("uname", "admin");

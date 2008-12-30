@@ -17,23 +17,21 @@ import org.openmrs.report.ReportRenderer;
 import org.openmrs.report.ReportSchema;
 
 /**
- * Renders report schemas for the web.  The web renderer can render using the render method, but will 
- * most likely be used to redirect to another URL (which, in most cases, delegates to another 
+ * Renders report schemas for the web. The web renderer can render using the render method, but will
+ * most likely be used to redirect to another URL (which, in most cases, delegates to another
  * rendering engine).
- * 
  */
 public interface WebReportRenderer extends ReportRenderer {
-
+	
 	/**
-	 * If this method returns a value, then this renderer should be called by redirecting to that link,
-	 * rather than with the render(ReportData, OutputStream) method.
-	 * In this situation, the ReportData to be displayed will be passed to that page via the session
-	 * attribute called WebConstants.OPENMRS_REPORT_DATA 
+	 * If this method returns a value, then this renderer should be called by redirecting to that
+	 * link, rather than with the render(ReportData, OutputStream) method. In this situation, the
+	 * ReportData to be displayed will be passed to that page via the session attribute called
+	 * WebConstants.OPENMRS_REPORT_DATA
 	 * 
 	 * @param schema
 	 * @return
 	 */
 	public String getLinkUrl(ReportSchema schema);
-	
 	
 }

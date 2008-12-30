@@ -29,14 +29,11 @@ import org.openmrs.test.BaseContextSensitiveTest;
  * Tests the small class ReportSchemaXml and its database accesses
  */
 public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
-
+	
 	Log log = LogFactory.getLog(getClass());
-
+	
 	/**
-	 * Set up the database with the initial dataset before every test method
-	 * in this class.
-	 * 
-	 * 
+	 * Set up the database with the initial dataset before every test method in this class.
 	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
@@ -46,13 +43,12 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		
 		authenticate();
 	}
-	 
+	
 	/**
-	 * Saves a new ReportSchemaXml in database.  Gets it.  Then Deletes it.
-	 * Tests for successful save, get, and delete.
+	 * Saves a new ReportSchemaXml in database. Gets it. Then Deletes it. Tests for successful save,
+	 * get, and delete.
 	 * 
 	 * @throws Exception
-	 *
 	 */
 	@Test
 	public void shouldSaveGetDeleteReportSchema() throws Exception {
@@ -64,9 +60,12 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		xml.append("		Sample monthly PEPFAR report, modeled after the lesotho one\n");
 		xml.append("	</description>\n");
 		xml.append("	<parameters class=\"java.util.ArrayList\">\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
-		xml.append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
 		xml.append("	</parameters>\n");
 		xml.append("	<dataSets class=\"java.util.ArrayList\">\n");
 		xml.append("		<dataSetDefinition class=\"org.openmrs.dataset.CohortDataSetDefinition\" name=\"Cohorts\">\n");
@@ -80,7 +79,8 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		xml.append("				<entry>\n");
 		xml.append("					<string>1.b</string>\n");
 		xml.append("					<cohort class=\"org.openmrs.reporting.PatientSearch\">\n");
-		xml.append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate - 1d}]</specification>\n");
+		xml
+		        .append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate - 1d}]</specification>\n");
 		xml.append("					</cohort>\n");
 		xml.append("				</entry>\n");
 		xml.append("			</strategies>\n");
@@ -94,18 +94,18 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		
 		//assertEquals(new Integer(1), reportSchemaXml.getReportSchemaId());
 		assertEquals(xml.toString(), reportSchemaXml.getXml());
-
+		
 		ReportService rs = (ReportService) Context.getService(ReportService.class);
 		rs.saveReportSchemaXml(reportSchemaXml);
 		
 		Context.clearSession();
 		
 		ReportSchemaXml reportSchemaXmlFromDB = rs.getReportSchemaXml(1);
-
+		
 		assertNotNull("The schema xml was not saved correctly, none found in the db", reportSchemaXmlFromDB);
 		
 		assertEquals(xml.toString(), reportSchemaXmlFromDB.getXml());
-
+		
 		assertEquals(new Integer(1), reportSchemaXmlFromDB.getReportSchemaId());
 		
 		// assertTrue("The saved object and the actual object are not calling themselves equal", reportSchemaXml.equals(reportSchemaXmlFromDB));
@@ -120,8 +120,8 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Creates a ReportSchemaXml such as in {@link #testSaveGetDeleteReportSchema()}, 
-	 * then changes it, updates it in the database, and tests to see if the update is successful.
+	 * Creates a ReportSchemaXml such as in {@link #testSaveGetDeleteReportSchema()}, then changes
+	 * it, updates it in the database, and tests to see if the update is successful.
 	 * 
 	 * @throws Exception
 	 */
@@ -135,9 +135,12 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		xml.append("		Sample monthly PEPFAR report, modeled after the lesotho one\n");
 		xml.append("	</description>\n");
 		xml.append("	<parameters class=\"java.util.ArrayList\">\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
-		xml.append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
 		xml.append("	</parameters>\n");
 		xml.append("	<dataSets class=\"java.util.ArrayList\">\n");
 		xml.append("		<dataSetDefinition class=\"org.openmrs.dataset.CohortDataSetDefinition\" name=\"Cohorts\">\n");
@@ -163,20 +166,18 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		ReportSchemaXml reportSchemaXml = new ReportSchemaXml();
 		reportSchemaXml.setXml(xml.toString());
 		assertEquals(xml.toString(), reportSchemaXml.getXml());
-
+		
 		ReportService rs = (ReportService) Context.getService(ReportService.class);
 		rs.saveReportSchemaXml(reportSchemaXml);
-
 		
 		ReportSchemaXml reportSchemaXmlFromDB = rs.getReportSchemaXml(2);
 		// Get an extra object with the same id just to mess things up.
 		ReportSchemaXml reportSchemaXmlJodion = rs.getReportSchemaXml(2);
-
 		
 		//assertTrue("The saved object and the actual object are not calling themselves equal", reportSchemaXml.equals(reportSchemaXmlFromDB));
-
+		
 		assertEquals(xml.toString(), reportSchemaXmlFromDB.getXml());
-
+		
 		// Create a slightly different xml.
 		StringBuilder xml2 = new StringBuilder();
 		xml2.append("<reportSchema id=\"2\" reportSchemaId=\"2\">\n");
@@ -185,9 +186,12 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		xml2.append("		Sample monthly PEPFAR report changed again\n");
 		xml2.append("	</description>\n");
 		xml2.append("	<parameters class=\"java.util.ArrayList\">\n");
-		xml2.append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
-		xml2.append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
-		xml2.append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
+		xml2
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
+		xml2
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
+		xml2
+		        .append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
 		xml2.append("	</parameters>\n");
 		xml2.append("	<dataSets class=\"java.util.ArrayList\">\n");
 		xml2.append("		<dataSetDefinition class=\"org.openmrs.dataset.CohortDataSetDefinition\" name=\"Cohorts\">\n");
@@ -224,7 +228,7 @@ public class ReportSchemaXmlTest extends BaseContextSensitiveTest {
 		reportSchemaXmlFromDB.setName(newName);
 		reportSchemaXmlFromDB.setDescription(newDescription);
 		rs.saveReportSchemaXml(reportSchemaXmlFromDB);
-
+		
 		// Retrieve the updated ReportSchemaXml from database.
 		ReportSchemaXml reportSchemaXmlUpdateFromDB = rs.getReportSchemaXml(reportSchemaXmlFromDB.getReportSchemaId());
 		

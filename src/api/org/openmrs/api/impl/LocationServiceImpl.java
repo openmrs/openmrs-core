@@ -25,19 +25,17 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LocationDAO;
 
 /**
- * Default implementation of the {@link LocationService}
- * 
- * This class should not be instantiated alone, get a service class
- * from the Context: Context.getLocationService();
+ * Default implementation of the {@link LocationService} This class should not be instantiated
+ * alone, get a service class from the Context: Context.getLocationService();
  * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.LocationService
  * @see org.openmrs.Location
-*/
+ */
 public class LocationServiceImpl extends BaseOpenmrsService implements LocationService {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
-
+	
 	private LocationDAO dao;
 	
 	/**
@@ -46,7 +44,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public void setLocationDAO(LocationDAO dao) {
 		this.dao = dao;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.LocationService#saveLocation(org.openmrs.Location)
 	 */
@@ -62,36 +60,36 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		}
 		return dao.saveLocation(location);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.LocationService#getLocation(java.lang.Integer)
 	 */
 	public Location getLocation(Integer locationId) throws APIException {
 		return dao.getLocation(locationId);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.LocationService#getLocation(java.lang.String)
 	 */
 	public Location getLocation(String name) throws APIException {
 		return dao.getLocation(name);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.LocationService#getDefaultLocation()
 	 */
-	public Location getDefaultLocation() throws APIException { 
+	public Location getDefaultLocation() throws APIException {
 		
 		// TODO The name of the default location should be configured using global properties 
 		Location location = getLocation("Unknown Location");
 		
 		// If Unknown Location does not exist, try Unknown
-		if (location == null) { 
+		if (location == null) {
 			location = getLocation("Unknown");
 		}
 		
 		// If neither exist, get the first available location
-		if ( location == null ) {
+		if (location == null) {
 			location = getLocation(Integer.valueOf(1));
 		}
 		
@@ -101,12 +99,12 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		//	throw new APIException("Default location does not exist");
 		//}
 		
-		
 		return location;
 	}
 	
 	/**
 	 * TODO: Not yet implemented for guid.
+	 * 
 	 * @see org.openmrs.api.LocationService#getLocationByGuid(java.lang.String)
 	 */
 	public Location getLocationByGuid(String guid) throws APIException {
@@ -115,28 +113,28 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		//return dao.getLocationByGuid(guid);
 		return null;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.LocationService#getLocations()
 	 */
 	public List<Location> getAllLocations() throws APIException {
 		return dao.getAllLocations(true);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.LocationService#getLocations(boolean)
 	 */
 	public List<Location> getAllLocations(boolean includeRetired) throws APIException {
 		return dao.getAllLocations(includeRetired);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.LocationService#getLocations(java.lang.String)
 	 */
 	public List<Location> getLocations(String nameFragment) throws APIException {
 		return dao.getLocations(nameFragment);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.LocationService#retireLocation(org.openmrs.Location)
 	 */
@@ -164,12 +162,12 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		location.setDateRetired(null);
 		return saveLocation(location);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.LocationService#purgeLocation(org.openmrs.Location)
 	 */
 	public void purgeLocation(Location location) throws APIException {
 		dao.deleteLocation(location);
 	}
-
+	
 }

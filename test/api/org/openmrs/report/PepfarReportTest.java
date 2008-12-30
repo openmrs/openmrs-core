@@ -45,11 +45,11 @@ import org.simpleframework.xml.Serializer;
  * Test class that tries to run a portion of the Pepfar monthly report
  */
 public class PepfarReportTest extends BaseContextSensitiveTest {
-
+	
 	Log log = LogFactory.getLog(getClass());
 	
 	DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -70,7 +70,6 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 		return ret;
 	}
 	
-	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -87,7 +86,7 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 		
 		Parameter startDateParam = new Parameter("report.startDate", "Report Start Date", java.util.Date.class, null);
 		Parameter endDateParam = new Parameter("report.endDate", "Report End Date", java.util.Date.class, null);
-
+		
 		log.info("Creating basic PatientSearches");
 		PatientSearch male = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 		male.addArgument("gender", "m", String.class);
@@ -97,7 +96,7 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 		adult.addArgument("minAge", "15", Integer.class);
 		PatientSearch child = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 		child.addArgument("maxAge", "15", Integer.class);
-
+		
 		Program hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
 		if (hivProgram == null) {
 			List<Program> programs = Context.getProgramWorkflowService().getPrograms();
@@ -132,21 +131,20 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 		artBeforeDate.addArgument("sinceDate", "${fromDate}", Date.class);
 		artBeforeDate.addArgument("untilDate", "${toDate}", Date.class);
 		*/
-		
+
 		log.info("Creating DataSets");
 		List<DataSetDefinition> dataSets = new ArrayList<DataSetDefinition>();
 		CohortDataSetDefinition dataSetDef = new CohortDataSetDefinition();
 		dataSetDef.setName("Cohorts");
-		dataSetDef.addStrategy("Cumulative ever enrolled before start of period",
-		                       enrolledBeforeDate);
-		dataSetDef.addStrategy("Male adults ever enrolled before start of period",
-		                       PatientSearch.createCompositionSearch(new Object[] { male, "and", adult, "and", enrolledBeforeDate }));
-		dataSetDef.addStrategy("Feale adults ever enrolled before start of period",
-		                       PatientSearch.createCompositionSearch(new Object[] { female, "and", adult, "and", enrolledBeforeDate }));
-		dataSetDef.addStrategy("Male children ever enrolled before start of period",
-		                       PatientSearch.createCompositionSearch(new Object[] { male, "and", child, "and", enrolledBeforeDate }));
-		dataSetDef.addStrategy("Female children ever enrolled before start of period",
-		                       PatientSearch.createCompositionSearch(new Object[] { female, "and", child, "and", enrolledBeforeDate }));
+		dataSetDef.addStrategy("Cumulative ever enrolled before start of period", enrolledBeforeDate);
+		dataSetDef.addStrategy("Male adults ever enrolled before start of period", PatientSearch
+		        .createCompositionSearch(new Object[] { male, "and", adult, "and", enrolledBeforeDate }));
+		dataSetDef.addStrategy("Feale adults ever enrolled before start of period", PatientSearch
+		        .createCompositionSearch(new Object[] { female, "and", adult, "and", enrolledBeforeDate }));
+		dataSetDef.addStrategy("Male children ever enrolled before start of period", PatientSearch
+		        .createCompositionSearch(new Object[] { male, "and", child, "and", enrolledBeforeDate }));
+		dataSetDef.addStrategy("Female children ever enrolled before start of period", PatientSearch
+		        .createCompositionSearch(new Object[] { female, "and", child, "and", enrolledBeforeDate }));
 		dataSets.add(dataSetDef);
 		
 		List<Parameter> parameters = new ArrayList<Parameter>();
@@ -160,10 +158,9 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 		schema.setDescription("desc");
 		schema.setDataSetDefinitions(dataSets);
 		schema.setReportParameters(parameters);
-
+		
 		// todo
 		// set the xml file on the schema
-		
 		
 		log.info("Creating EvaluationContext");
 		EvaluationContext evalContext = new EvaluationContext();
@@ -172,20 +169,20 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 			log.info("adding parameter value " + e.getKey());
 			evalContext.addParameterValue(e.getKey(), e.getValue());
 		}
-
+		
 		// TODO figure out about the non-top-level parameters
-				
+		
 		// run the report
 		ReportService rs = (ReportService) Context.getService(ReportService.class);
 		ReportData data = rs.evaluate(schema, inputCohort, evalContext);
 		
 		Serializer serializer = OpenmrsUtil.getSerializer();
-	    StringWriter writer = new StringWriter();
-	    serializer.write(data, writer);
-	    System.out.println("Serialized report:\n" + writer.toString());
-	    
+		StringWriter writer = new StringWriter();
+		serializer.write(data, writer);
+		System.out.println("Serialized report:\n" + writer.toString());
+		
 		TsvReportRenderer renderer = new TsvReportRenderer();
-
+		
 		System.out.println("Rendering results:");
 		renderer.render(data, null, System.out);
 	}

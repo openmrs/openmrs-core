@@ -29,30 +29,31 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class ConceptSourceListController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -64,19 +65,21 @@ public class ConceptSourceListController extends SimpleFormController {
 			
 			String success = "";
 			String error = "";
-
+			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
 			String notDeleted = msa.getMessage("general.cannot.delete");
 			for (String conceptSourceId : conceptSourceIdList) {
 				try {
 					cs.purgeConceptSource(new ConceptSource(Integer.valueOf(conceptSourceId)));
-					if (!success.equals("")) success += "<br>";
+					if (!success.equals(""))
+						success += "<br>";
 					success += conceptSourceId + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting concept source", e);
-					if (!error.equals("")) error += "<br>";
+					if (!error.equals(""))
+						error += "<br>";
 					error += conceptSourceId + " " + notDeleted;
 				}
 			}
@@ -90,37 +93,36 @@ public class ConceptSourceListController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		//default empty Object
 		List<ConceptSource> conceptSourceList = new Vector<ConceptSource>();
 		
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
-	    	conceptSourceList = cs.getAllConceptSources();
+			conceptSourceList = cs.getAllConceptSources();
 		}
-    	
-        return conceptSourceList;
-    }
-
+		
+		return conceptSourceList;
+	}
+	
 	/**
-     * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    protected Map<String, Object> referenceData(HttpServletRequest request, Object command,
-            Errors errors) throws Exception {
-    	List<ConceptSource> conceptSources = (List<ConceptSource>) command;
-    	Map<String, Object> map = new HashMap<String, Object>();
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
+		List<ConceptSource> conceptSources = (List<ConceptSource>) command;
+		Map<String, Object> map = new HashMap<String, Object>();
 		
 		ImplementationId implId = Context.getAdministrationService().getImplementationId();
 		
@@ -132,7 +134,7 @@ public class ConceptSourceListController extends SimpleFormController {
 			}
 		}
 		
-	    return map;
-    }
-    
+		return map;
+	}
+	
 }

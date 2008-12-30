@@ -35,11 +35,10 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
 public class DWRPersonService {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
-	 * 
 	 * @param name
 	 * @param birthyear
 	 * @param age
@@ -48,7 +47,7 @@ public class DWRPersonService {
 	 */
 	public List<?> getSimilarPeople(String name, String birthdate, String age, String gender) {
 		Vector<Object> personList = new Vector<Object>();
-
+		
 		Integer userId = Context.getAuthenticatedUser().getUserId();
 		log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
 		
@@ -72,8 +71,7 @@ public class DWRPersonService {
 				c.setTime(dateObject);
 				d = c.get(Calendar.YEAR);
 			}
-		}
-		else if (age.length() > 0) {
+		} else if (age.length() > 0) {
 			// calculate their birth year from the given age string
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
@@ -92,11 +90,10 @@ public class DWRPersonService {
 		}
 		
 		return personList;
-
+		
 	}
 	
 	/**
-	 * 
 	 * @param searchPhrase
 	 * @param includeVoided
 	 * @return
@@ -108,11 +105,10 @@ public class DWRPersonService {
 	/**
 	 * Find Person objects based on the given searchPhrase
 	 * 
-	 * @param searchPhrase partial name or partial identifier 
+	 * @param searchPhrase partial name or partial identifier
 	 * @param includeVoided true/false whether to include the voided objects
 	 * @param roles if not null, restricts search to only users and only users with these roles
 	 * @return list of PersonListItem s that match the given searchPhrase
-	 * 
 	 * @should match on patient identifiers
 	 * @should allow null roles parameter
 	 */
@@ -128,19 +124,19 @@ public class DWRPersonService {
 			
 			List<Role> roleList = new Vector<Role>();
 			
-			if ( roles != null ) if ( roles.length() > 0 ) {
-				String[] splitRoles = roles.split(",");
-				for ( String role : splitRoles ) {
-					roleList.add(new Role(role));
+			if (roles != null)
+				if (roles.length() > 0) {
+					String[] splitRoles = roles.split(",");
+					for (String role : splitRoles) {
+						roleList.add(new Role(role));
+					}
 				}
-			}
 			
 			for (Person p : us.getUsers(searchPhrase, roleList, includeVoided)) {
 				personList.add(new PersonListItem(p));
 			}
-		
-		}
-		else { 
+			
+		} else {
 			
 			// if no roles were given, search for normal people
 			PersonService ps = Context.getPersonService();
@@ -162,7 +158,8 @@ public class DWRPersonService {
 	}
 	
 	/**
-	 * Creates a new person stub.  
+	 * Creates a new person stub.
+	 * 
 	 * @param given
 	 * @param middle
 	 * @param family
@@ -172,7 +169,8 @@ public class DWRPersonService {
 	 * @param gender
 	 * @return PersonListItem person stub created
 	 */
-	public Object createPerson(String given, String middle, String family, String birthdate, String dateformat, String age, String gender) {
+	public Object createPerson(String given, String middle, String family, String birthdate, String dateformat, String age,
+	                           String gender) {
 		log.error(given + " " + middle + " " + family + " " + birthdate + " " + dateformat + " " + age + " " + gender);
 		User user = Context.getAuthenticatedUser();
 		Person p = new Person();
@@ -183,9 +181,10 @@ public class DWRPersonService {
 		if ("".equals(gender)) {
 			log.error("Gender cannot be null.");
 			return new String("Gender cannot be null.");
-		}
-		else if (gender.toUpperCase().contains("M")) p.setGender("M");
-		else if (gender.toUpperCase().contains("F")) p.setGender("F");
+		} else if (gender.toUpperCase().contains("M"))
+			p.setGender("M");
+		else if (gender.toUpperCase().contains("F"))
+			p.setGender("F");
 		else {
 			log.error("Gender must be 'M' or 'F'.");
 			return new String("Gender must be 'M' or 'F'.");
@@ -199,12 +198,12 @@ public class DWRPersonService {
 		name.setDateCreated(new Date());
 		name.setChangedBy(user);
 		name.setDateChanged(new Date());
-		p.addName(name);		
+		p.addName(name);
 		try {
 			Date d = updateAge(birthdate, dateformat, age);
 			p.setBirthdate(d);
 		}
-		catch(java.text.ParseException pe) {
+		catch (java.text.ParseException pe) {
 			log.error(pe);
 			return new String("Birthdate cannot be parsed.");
 		}
@@ -214,7 +213,6 @@ public class DWRPersonService {
 	}
 	
 	/**
-	 * 
 	 * @param patientId
 	 * @return
 	 */
@@ -224,7 +222,6 @@ public class DWRPersonService {
 	}
 	
 	/**
-	 * 
 	 * Private method to handle birth date and age input.
 	 * 
 	 * @param birthdate
@@ -237,8 +234,8 @@ public class DWRPersonService {
 		SimpleDateFormat df = new SimpleDateFormat();
 		if (!"".equals(dateformat)) {
 			dateformat = dateformat.toLowerCase().replaceAll("m", "M");
-		}
-		else dateformat = new String("MM/dd/yyyy");
+		} else
+			dateformat = new String("MM/dd/yyyy");
 		df.applyPattern(dateformat);
 		Calendar cal = new GregorianCalendar();
 		cal.clear(Calendar.HOUR);
@@ -246,15 +243,16 @@ public class DWRPersonService {
 		cal.clear(Calendar.SECOND);
 		cal.clear(Calendar.MILLISECOND);
 		if ("".equals(birthdate)) {
-			if("".equals(age)) return cal.getTime();
+			if ("".equals(age))
+				return cal.getTime();
 			try {
 				cal.add(Calendar.YEAR, -(Integer.parseInt(age)));
 			}
-			catch (NumberFormatException nfe) { }
+			catch (NumberFormatException nfe) {}
 			return cal.getTime();
-		}
-		else cal.setTime(df.parse(birthdate));
+		} else
+			cal.setTime(df.parse(birthdate));
 		return cal.getTime();
-	}	
-
+	}
+	
 }

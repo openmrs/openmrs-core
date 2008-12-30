@@ -19,20 +19,19 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 /**
- * This controller is left around only so that a message can be 
- * displayed where the old Manage Tribe link was.  This controller
- * will be removed in the next version.
+ * This controller is left around only so that a message can be displayed where the old Manage Tribe
+ * link was. This controller will be removed in the next version.
  */
 public class TribeFormController extends SimpleFormController {
 	
 	/**
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-        return new Object();
-    }
-    
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		return new Object();
+	}
+	
 }

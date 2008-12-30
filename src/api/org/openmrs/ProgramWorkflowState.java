@@ -20,7 +20,7 @@ import java.util.Date;
  * ProgramWorkflowState
  */
 public class ProgramWorkflowState implements Serializable {
-
+	
 	private static final long serialVersionUID = 1L;
 	
 	// ******************
@@ -28,14 +28,23 @@ public class ProgramWorkflowState implements Serializable {
 	// ******************
 	
 	private Integer programWorkflowStateId;
+	
 	private ProgramWorkflow programWorkflow;
+	
 	private Concept concept;
+	
 	private Boolean initial;
+	
 	private Boolean terminal;
-	private User creator; 
-	private Date dateCreated; 
+	
+	private User creator;
+	
+	private Date dateCreated;
+	
 	private User changedBy;
+	
 	private Date dateChanged;
+	
 	private Boolean retired = false;
 	
 	// ******************
@@ -43,13 +52,14 @@ public class ProgramWorkflowState implements Serializable {
 	// ******************
 	
 	/** Default Constructor */
-	public ProgramWorkflowState() { }
-
+	public ProgramWorkflowState() {
+	}
+	
 	/** Constructor with id */
 	public ProgramWorkflowState(Integer programWorkflowStateId) {
 		setProgramWorkflowStateId(programWorkflowStateId);
 	}
-
+	
 	// ******************
 	// Instance methods
 	// ******************
@@ -57,7 +67,7 @@ public class ProgramWorkflowState implements Serializable {
 	/** @see Object#equals(Object) */
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof ProgramWorkflowState) {
-			ProgramWorkflowState p = (ProgramWorkflowState)obj;
+			ProgramWorkflowState p = (ProgramWorkflowState) obj;
 			if (this.getProgramWorkflowStateId() == null) {
 				return p.getProgramWorkflowStateId() == null;
 			}
@@ -68,94 +78,94 @@ public class ProgramWorkflowState implements Serializable {
 	
 	/** @see Object#toString() */
 	public String toString() {
-		return("State " + getConcept().getName() + " initial=" + getInitial() + " terminal=" + getTerminal());
+		return ("State " + getConcept().getName() + " initial=" + getInitial() + " terminal=" + getTerminal());
 	}
 	
 	// ******************
 	// Property Access
 	// ******************
-
+	
 	public Concept getConcept() {
 		return concept;
 	}
-
+	
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-
+	
 	public Boolean getInitial() {
 		return initial;
 	}
-
+	
 	public void setInitial(Boolean initial) {
 		this.initial = initial;
 	}
-
+	
 	public Boolean getTerminal() {
 		return terminal;
 	}
-
+	
 	public void setTerminal(Boolean terminal) {
 		this.terminal = terminal;
 	}
-
+	
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 	public ProgramWorkflow getProgramWorkflow() {
 		return programWorkflow;
 	}
-
+	
 	public void setProgramWorkflow(ProgramWorkflow programWorkflow) {
 		this.programWorkflow = programWorkflow;
 	}
-
+	
 	public Integer getProgramWorkflowStateId() {
 		return programWorkflowStateId;
 	}
-
+	
 	public void setProgramWorkflowStateId(Integer programWorkflowStateId) {
 		this.programWorkflowStateId = programWorkflowStateId;
 	}
-
-    public Boolean getRetired() {
-    	return retired;
+	
+	public Boolean getRetired() {
+		return retired;
 	}
-
-    public Boolean isRetired() {
-    	return getRetired();
+	
+	public Boolean isRetired() {
+		return getRetired();
 	}
-
-    public void setRetired(Boolean retired) {
-    	this.retired = retired;
+	
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
 	}
-
-    public User getChangedBy() {
-    	return changedBy;
+	
+	public User getChangedBy() {
+		return changedBy;
 	}
-
-    public void setChangedBy(User changedBy) {
-    	this.changedBy = changedBy;
+	
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
 	}
-
-    public Date getDateChanged() {
-    	return dateChanged;
+	
+	public Date getDateChanged() {
+		return dateChanged;
 	}
-
-    public void setDateChanged(Date dateChanged) {
-    	this.dateChanged = dateChanged;
-		}
+	
+	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
+	}
 }

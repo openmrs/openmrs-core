@@ -27,45 +27,56 @@ import org.openmrs.User;
  * @author Justin Miranda
  */
 public class TaskDefinition {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
-
+	
 	// Task metadata
 	private Integer id;
+	
 	private String name;
+	
 	private String description;
+	
 	private String taskClass; // This class must implement the schedulable
-								// interface or it will fail to start
+	
+	// interface or it will fail to start
 	private Task taskInstance = null;;
-
+	
 	// Scheduling metadata
 	private Date startTime;
+	
 	private Long repeatInterval; // NOW in seconds to give us ability to
-									// support longer intervals (years, decades,
-									// milleniums)
+	
+	// support longer intervals (years, decades,
+	// milleniums)
 	private Boolean startOnStartup;
+	
 	private String startTimePattern;
+	
 	private Boolean started;
-
+	
 	// Relationships
 	private Map<String, String> properties;
-
+	
 	// Metadata fields
 	private User createdBy;
+	
 	private Date dateCreated;
+	
 	private User changedBy;
+	
 	private Date dateChanged;
-
+	
 	/**
 	 * Default no-arg public constructor
 	 */
 	public TaskDefinition() {
 		this.started = new Boolean(false); // default
 		this.startTime = new Date(); // makes it easier during task creation
-										// as we have a default date populated
+		// as we have a default date populated
 		this.properties = new HashMap<String, String>();
 	}
-
+	
 	/**
 	 * Public constructor
 	 */
@@ -77,9 +88,7 @@ public class TaskDefinition {
 		this.description = description;
 		this.taskClass = taskClass;
 	}
-
-
-
+	
 	/**
 	 * Get the task identifier.
 	 * 
@@ -88,7 +97,7 @@ public class TaskDefinition {
 	public Integer getId() {
 		return this.id;
 	}
-
+	
 	/**
 	 * Set the task identifier.
 	 * 
@@ -97,7 +106,7 @@ public class TaskDefinition {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-
+	
 	/**
 	 * Get the name of the task.
 	 * 
@@ -106,7 +115,7 @@ public class TaskDefinition {
 	public String getName() {
 		return this.name;
 	}
-
+	
 	/**
 	 * Set the name of the task.
 	 * 
@@ -115,7 +124,7 @@ public class TaskDefinition {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	/**
 	 * Get the description of the task.
 	 * 
@@ -124,7 +133,7 @@ public class TaskDefinition {
 	public String getDescription() {
 		return this.description;
 	}
-
+	
 	/**
 	 * Set the name of the task.
 	 * 
@@ -133,7 +142,7 @@ public class TaskDefinition {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
 	/**
 	 * Get the data map used to provide the task with runtime data.
 	 * 
@@ -142,7 +151,7 @@ public class TaskDefinition {
 	public Map<String, String> getProperties() {
 		return this.properties;
 	}
-
+	
 	/**
 	 * Set the name of the task.
 	 * 
@@ -151,7 +160,7 @@ public class TaskDefinition {
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
 	}
-
+	
 	/**
 	 * Get the schedulable object to be executed.
 	 * 
@@ -160,7 +169,7 @@ public class TaskDefinition {
 	public String getTaskClass() {
 		return this.taskClass;
 	}
-
+	
 	/**
 	 * Set the schedulable object to be executed.
 	 * 
@@ -169,7 +178,7 @@ public class TaskDefinition {
 	public void setTaskClass(String taskClass) {
 		this.taskClass = taskClass;
 	}
-
+	
 	/**
 	 * Get the start time for when the task should be executed.
 	 * 
@@ -178,17 +187,17 @@ public class TaskDefinition {
 	public Date getStartTime() {
 		return startTime;
 	}
-
+	
 	/**
-	 * Set the start time for when the task should be executed. For instance,
-	 * use "new Date()", if you want it to start now.
+	 * Set the start time for when the task should be executed. For instance, use "new Date()", if
+	 * you want it to start now.
 	 * 
 	 * @param startTime start time for the task
 	 */
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
-
+	
 	/**
 	 * Gets the number of seconds until task is executed again.
 	 * 
@@ -197,7 +206,7 @@ public class TaskDefinition {
 	public Long getRepeatInterval() {
 		return repeatInterval;
 	}
-
+	
 	/**
 	 * Sets the number of seconds until task is executed again.
 	 * 
@@ -206,49 +215,49 @@ public class TaskDefinition {
 	public void setRepeatInterval(Long repeatInterval) {
 		this.repeatInterval = repeatInterval;
 	}
-
+	
 	/**
 	 * Get the date format used to set the start time.
 	 */
 	public String getStartTimePattern() {
 		return this.startTimePattern;
 	}
-
+	
 	/**
 	 * Sets the date format used to set the start time.
 	 */
 	public void setStartTimePattern(String pattern) {
 		this.startTimePattern = pattern;
 	}
-
+	
 	/**
 	 * Gets the flag that indicates whether we start on scheduler startup.
 	 */
 	public Boolean getStartOnStartup() {
 		return this.startOnStartup;
 	}
-
+	
 	/**
 	 * Sets the flag that indicates whether we start on scheduler startup.
 	 */
 	public void setStartOnStartup(Boolean startOnStartup) {
 		this.startOnStartup = startOnStartup;
 	}
-
+	
 	/**
 	 * Gets the flag that indicates whether the task has been started.
 	 */
 	public Boolean getStarted() {
 		return this.started;
 	}
-
+	
 	/**
 	 * Sets the flag that indicates whether the task has been started.
 	 */
 	public void setStarted(Boolean started) {
 		this.started = started;
 	}
-
+	
 	/**
 	 * Get task configuration property.
 	 * 
@@ -258,7 +267,7 @@ public class TaskDefinition {
 	public String getProperty(String key) {
 		return this.properties.get(key);
 	}
-
+	
 	/**
 	 * Set task configuration property. Only supports strings at the moment.
 	 * 
@@ -268,15 +277,13 @@ public class TaskDefinition {
 	public void setProperty(String key, String value) {
 		this.properties.put(key, value);
 	}
-
 	
 	/**
-	 * Convenience method that asks SchedulerUtil for 
-	 * it's next execution time.  
+	 * Convenience method that asks SchedulerUtil for it's next execution time.
 	 * 
 	 * @return
 	 */
-	public Date getNextExecutionTime() { 
+	public Date getNextExecutionTime() {
 		return SchedulerUtil.getNextExecution(this);
 	}
 	
@@ -285,13 +292,12 @@ public class TaskDefinition {
 	 * 
 	 * @return
 	 */
-	public long getSecondsUntilNextExecutionTime() { 
+	public long getSecondsUntilNextExecutionTime() {
 		return (getNextExecutionTime().getTime() - System.currentTimeMillis()) / 1000;
 		
 	}
 	
 	// ==================================   Metadata ============================
-	
 	
 	/**
 	 * @return Returns the creator.
@@ -299,49 +305,49 @@ public class TaskDefinition {
 	public User getCreatedBy() {
 		return this.createdBy;
 	}
-
+	
 	/**
 	 * @param creator The creator to set.
 	 */
 	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
 	}
-
+	
 	/**
 	 * @return Returns the dateCreated.
 	 */
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 	/**
 	 * @return Returns the changedBy.
 	 */
 	public User getChangedBy() {
 		return changedBy;
 	}
-
+	
 	/**
 	 * @param changedBy The changedBy to set.
 	 */
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-
+	
 	/**
 	 * @return Returns the dateChanged.
 	 */
 	public Date getDateChanged() {
 		return this.dateChanged;
 	}
-
+	
 	/**
 	 * @param dateChanged The dateChanged to set.
 	 */
@@ -362,7 +368,7 @@ public class TaskDefinition {
 		}
 		return false;
 	}
-
+	
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -371,46 +377,38 @@ public class TaskDefinition {
 		if (this.getId() == null) {
 			return super.hashCode();
 		}
-
+		
 		Integer hash = 5;
 		return (this.getId() * hash);
-	}	
-
-	/**
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-    	return 
-    		"[TaskDefinition " + 
-    			" id=" + getId() + 
-    			" name=" + getName() + 
-    			" class=" + getTaskClass() + 
-    			" startTime=" + getStartTime() + 
-    			" repeatInterval=" + this.getRepeatInterval() + 
-    			" secondsUntilNext=" + this.getSecondsUntilNextExecutionTime() + 
-    		"]";
-    }
-
-	/**
-	 * Gets the runnable task instance associated with this definition. 
-     * 
-     * @return related task, or null if none instantiated (definition hasn't been scheduled)
-     */
-    public Task getTaskInstance() {
-    	return taskInstance;
-    }
+	}
 	
-    /**
-     * Sets the runnable task instance associated with this definition.
-     * This should be set by the scheduler which instantiates the task.
-     * 
-     * @param tastkInstance
-     */
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "[TaskDefinition " + " id=" + getId() + " name=" + getName() + " class=" + getTaskClass() + " startTime="
+		        + getStartTime() + " repeatInterval=" + this.getRepeatInterval() + " secondsUntilNext="
+		        + this.getSecondsUntilNextExecutionTime() + "]";
+	}
+	
+	/**
+	 * Gets the runnable task instance associated with this definition.
+	 * 
+	 * @return related task, or null if none instantiated (definition hasn't been scheduled)
+	 */
+	public Task getTaskInstance() {
+		return taskInstance;
+	}
+	
+	/**
+	 * Sets the runnable task instance associated with this definition. This should be set by the
+	 * scheduler which instantiates the task.
+	 * 
+	 * @param tastkInstance
+	 */
 	public void setTaskInstance(Task taskInstance) {
 		this.taskInstance = taskInstance;
 	}
 	
-	
-
 }

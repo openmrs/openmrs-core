@@ -34,18 +34,17 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 
 public class ConceptProposalListController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
-    /**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	/**
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		//default empty Object
 		List<ConceptProposal> cpList = new Vector<ConceptProposal>();
 		Map<String, List<ConceptProposal>> origText = new HashMap<String, List<ConceptProposal>>();
@@ -56,7 +55,7 @@ public class ConceptProposalListController extends SimpleFormController {
 			log.debug("tmp value: " + request.getParameter("includeCompleted"));
 			boolean b = new Boolean(request.getParameter("includeCompleted"));
 			log.debug("b value: " + b);
-	    	cpList = cs.getAllConceptProposals(b);
+			cpList = cs.getAllConceptProposals(b);
 		}
 		
 		// create map of distinct OriginalText->#occurences
@@ -65,7 +64,7 @@ public class ConceptProposalListController extends SimpleFormController {
 			if (matchingProposals == null)
 				matchingProposals = new Vector<ConceptProposal>();
 			matchingProposals.add(cp);
-	    	origText.put(cp.getOriginalText(), matchingProposals);
+			origText.put(cp.getOriginalText(), matchingProposals);
 		}
 		
 		boolean asc = new Boolean("asc".equals(request.getParameter("sortOrder")));
@@ -77,23 +76,25 @@ public class ConceptProposalListController extends SimpleFormController {
 		
 		if (sortOn.equals("occurences"))
 			cpMap = new TreeMap<List<ConceptProposal>, Integer>(new CompareListSize(asc));
-		else //if (sortOn.equals("text"))
+		else
+			//if (sortOn.equals("text"))
 			cpMap = new TreeMap<List<ConceptProposal>, Integer>(new CompareListText(asc));
 		
 		// loop over that map to sort on size or text
 		for (List<ConceptProposal> matchingProposals : origText.values()) {
 			cpMap.put(matchingProposals, matchingProposals.size());
 		}
-    	
-        return cpMap;
-    }
-
+		
+		return cpMap;
+	}
+	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
-
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		map.put("unmapped", OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
@@ -103,7 +104,7 @@ public class ConceptProposalListController extends SimpleFormController {
 	}
 	
 	private class CompareListSize implements Comparator<List<?>> {
-
+		
 		private boolean asc = true;
 		
 		public CompareListSize(boolean asc) {
@@ -115,16 +116,18 @@ public class ConceptProposalListController extends SimpleFormController {
 			int value = list2.size() - list1.size();
 			
 			// no items are equal
-			if (value == 0) value = -1;
+			if (value == 0)
+				value = -1;
 			
-			if (asc) value = value * -1;
+			if (asc)
+				value = value * -1;
 			
 			return value;
 		}
 	}
 	
 	private class CompareListText implements Comparator<List<ConceptProposal>> {
-
+		
 		private boolean asc = true;
 		
 		public CompareListText(boolean asc) {
@@ -132,19 +135,21 @@ public class ConceptProposalListController extends SimpleFormController {
 		}
 		
 		public int compare(List<ConceptProposal> list1, List<ConceptProposal> list2) throws ClassCastException {
-
-			ConceptProposal cp1 = list1.get(0); ConceptProposal cp2 = list2.get(0);
+			
+			ConceptProposal cp1 = list1.get(0);
+			ConceptProposal cp2 = list2.get(0);
 			
 			int value = cp2.getOriginalText().compareToIgnoreCase(cp1.getOriginalText());
 			
 			// no items are equal
-			if (value == 0) value = -1;
+			if (value == 0)
+				value = -1;
 			
-			if (asc) value = value * -1;
+			if (asc)
+				value = value * -1;
 			
 			return value;
 		}
 	}
-    
+	
 }
-

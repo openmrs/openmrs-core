@@ -26,7 +26,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
  *
  */
 public class PersonDashboardController extends SimpleFormController {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
@@ -34,5 +34,5 @@ public class PersonDashboardController extends SimpleFormController {
 			return new Person();
 		else
 			return Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("personId")));
-    }
+	}
 }

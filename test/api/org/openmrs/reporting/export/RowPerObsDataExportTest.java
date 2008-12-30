@@ -23,14 +23,13 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Tests the {@link RowPerObsDataExportReportObject} class
- * 
- * TODO clean up, finish, add methods to this test class
+ * Tests the {@link RowPerObsDataExportReportObject} class TODO clean up, finish, add methods to
+ * this test class
  */
 public class RowPerObsDataExportTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * Make sure that more than one row is printed out for each patient 
+	 * Make sure that more than one row is printed out for each patient
 	 * 
 	 * @throws Exception
 	 */
@@ -46,7 +45,7 @@ public class RowPerObsDataExportTest extends BaseContextSensitiveTest {
 		
 		export.addSimpleColumn("Name", "$!{fn.getPatientAttr('PersonName', 'givenName')}");
 		
-		export.setRowPerObsColumn("Weight (KG)", "5089", new String[] {"location"});
+		export.setRowPerObsColumn("Weight (KG)", "5089", new String[] { "location" });
 		
 		Cohort patients = new Cohort();
 		patients.addMember(2);
@@ -83,7 +82,7 @@ public class RowPerObsDataExportTest extends BaseContextSensitiveTest {
 		
 		export.addSimpleColumn("Name", "$!{fn.getPatientAttr('PersonName', 'givenName')}");
 		
-		export.setRowPerObsColumn("Weight (KG)", "5089", new String[] {"location"});
+		export.setRowPerObsColumn("Weight (KG)", "5089", new String[] { "location" });
 		
 		Cohort patients = new Cohort();
 		patients.addMember(2);

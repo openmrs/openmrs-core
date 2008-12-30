@@ -14,12 +14,12 @@
 package org.openmrs.notification;
 
 public class MessageException extends Exception {
-
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -5421053761024878322L;
-
+	
 	public MessageException() {
 		super();
 	}
@@ -35,5 +35,5 @@ public class MessageException extends Exception {
 	public MessageException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
+	
 }

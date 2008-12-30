@@ -41,22 +41,22 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.core.io.Resource;
 
 /**
- * ResourceBundleMessageSource extends ReloadableResourceBundleMessageSource to 
- * provide the additional features of a MutableMessageSource.  
- * 
+ * ResourceBundleMessageSource extends ReloadableResourceBundleMessageSource to provide the
+ * additional features of a MutableMessageSource.
  */
-public class MutableResourceBundleMessageSource extends ReloadableResourceBundleMessageSource
-	implements MutableMessageSource, ApplicationContextAware {
+public class MutableResourceBundleMessageSource extends ReloadableResourceBundleMessageSource implements MutableMessageSource, ApplicationContextAware {
 	
 	private static final String PROPERTIES_FILE_COMMENT = "OpenMRS Application Messages";
-
+	
 	private static Log log = LogFactory.getLog(MutableResourceBundleMessageSource.class);
+	
 	private ApplicationContext applicationContext;
 	
-	/** Local reference to basenames used to search for properties files.
+	/**
+	 * Local reference to basenames used to search for properties files.
 	 */
 	private String[] basenames = new String[0];
-
+	
 	/** Cached list of available locales. */
 	private Collection<Locale> locales;
 	
@@ -64,15 +64,15 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * @see org.openmrs.message.MessageSourceService#getLocalesOfConceptNames()
 	 */
 	public Collection<Locale> getLocales() {
-		if (locales == null) 
+		if (locales == null)
 			locales = findLocales();
 		
 		return locales;
 	}
 	
 	/**
-	 * This method looks at the current property files and deduces what
-	 * locales are available from those
+	 * This method looks at the current property files and deduces what locales are available from
+	 * those
 	 * 
 	 * @see #getLocales()
 	 * @see #findPropertiesFiles()
@@ -92,7 +92,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			String filename = propertiesFile.getName();
 			
 			Locale parsedLocale = parseLocaleFrom(filename);
-						
+			
 			foundLocales.add(parsedLocale);
 			
 		}
@@ -102,33 +102,28 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		}
 		return foundLocales;
 	}
-
+	
 	/**
-     * Utility method for deriving a locale from a filename, presumed
-     * to have an embedded locale specification near the end.
-     * 
-     * For instance messages_it.properties
-     * 
-     * if the filename is messages.properties, the Locale is presumed to 
-     * be the default set for Java
-     * 
-     * @param filename the name to parse
-     * @return Locale derived from the given string
-     */
-    private Locale parseLocaleFrom(String filename) {
-    	Locale parsedLocale = null;
-    	
-    	// trim off leading basename
-		for (String basename : basenames)
-		{
+	 * Utility method for deriving a locale from a filename, presumed to have an embedded locale
+	 * specification near the end. For instance messages_it.properties if the filename is
+	 * messages.properties, the Locale is presumed to be the default set for Java
+	 * 
+	 * @param filename the name to parse
+	 * @return Locale derived from the given string
+	 */
+	private Locale parseLocaleFrom(String filename) {
+		Locale parsedLocale = null;
+		
+		// trim off leading basename
+		for (String basename : basenames) {
 			File basefilename = new File(basename);
 			basename = basefilename.getPath();
 			
 			int indexOfLastPart = basename.lastIndexOf(File.separatorChar) + 1;
-			if (indexOfLastPart > 0) basename = basename.substring(indexOfLastPart);
+			if (indexOfLastPart > 0)
+				basename = basename.substring(indexOfLastPart);
 			
-			if (filename.startsWith(basename))
-			{
+			if (filename.startsWith(basename)) {
 				filename = filename.substring(basename.length());
 			}
 		}
@@ -138,218 +133,208 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		
 		if (localespec.equals("")) {
 			parsedLocale = Locale.getDefault();
-		}
-		else
-		{
+		} else {
 			localespec = localespec.substring(1); // trim off leading '_'
 			parsedLocale = LocaleUtility.fromSpecification(localespec);
 		}
 		return parsedLocale;
-    }
-
+	}
+	
 	/**
-	 * Presumes to append the messages to a message.properties file which is
-	 * already being monitored by the super
-	 * ReloadableResourceBundleMessageSource.
-	 * 
-	 * This is a blind, trusting hack.
+	 * Presumes to append the messages to a message.properties file which is already being monitored
+	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
 	 * 
 	 * @see org.openmrs.message.MessageSourceService#publishProperties(java.util.Properties,
 	 *      java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public void publishProperties(Properties props, String locale,
-	        String namespace, String name, String version) {
-
+	public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
+		
 		String filePrefix = (namespace.length() > 0) ? (namespace + "_") : "";
-		String propertiesPath = "/WEB-INF/" + filePrefix + "messages" + locale
-		        + ".properties";
-
+		String propertiesPath = "/WEB-INF/" + filePrefix + "messages" + locale + ".properties";
+		
 		OutputStream outStream = null;
 		try {
-
-			Resource propertiesResource = applicationContext
-			        .getResource(propertiesPath);
+			
+			Resource propertiesResource = applicationContext.getResource(propertiesPath);
 			File propertiesFile = propertiesResource.getFile();
-
+			
 			if (!propertiesFile.exists())
 				propertiesFile.createNewFile();
-
+			
 			outStream = new FileOutputStream(propertiesFile, true);
-
+			
 			// append the properties to the appropriate messages file
 			props.store(outStream, namespace + ": " + name + " v" + version);
-
-		} catch (IOException e) {
-			log.error("Unable to load in locale: '" + locale
-			        + "' properties for " + namespace + ": " + name, e);
-		} finally {
+			
+		}
+		catch (IOException e) {
+			log.error("Unable to load in locale: '" + locale + "' properties for " + namespace + ": " + name, e);
+		}
+		finally {
 			if (outStream != null) {
 				try {
 					outStream.close();
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					log.warn("Couldn't close outStream", e);
 				}
 			}
 		}
-
+		
 	}
-
+	
 	/**
 	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
 	 */
-	public void setApplicationContext(ApplicationContext applicationContext)
-	        throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
-
+		
 	}
-
+	
 	/**
 	 * Returns all available messages.
 	 * 
-     * @see org.openmrs.message.MessageSourceService#getPresentations()
-     */
-    public Collection<PresentationMessage> getPresentations() {
-    	Collection<PresentationMessage> presentations = new Vector<PresentationMessage>();
-    	
-    	for (File propertiesFile : findPropertiesFiles())
-    	{
-    		Locale currentLocale = parseLocaleFrom(propertiesFile.getName());
-    		Properties props = new Properties();
-    		try {
-	            props.load(new FileInputStream(propertiesFile));
-	            for (Map.Entry<Object, Object> property : props.entrySet()) {
-	            	presentations.add(new PresentationMessage(property.getKey().toString(), 
-	            			currentLocale,
-	            			property.getValue().toString(), 
-	            			""));
-	            }
-            } catch (FileNotFoundException e) {
-	            // TODO Auto-generated catch block
-	            log.error("Error generated", e);
-            } catch (IOException e) {
-	            // TODO Auto-generated catch block
-	            log.error("Error generated", e);
-            }
-    		
-    	}
-    	return presentations;
-    }
-    
-    
-    
-    /**
-     * Override to obtain a local reference to the basenames.
-     * @see org.springframework.context.support.ReloadableResourceBundleMessageSource#setBasename(java.lang.String)
-     */
-    @Override
-    public void setBasename(String basename) {
-	    super.setBasename(basename);
-	    this.basenames = new String[] {basename};
-    }
-
+	 * @see org.openmrs.message.MessageSourceService#getPresentations()
+	 */
+	public Collection<PresentationMessage> getPresentations() {
+		Collection<PresentationMessage> presentations = new Vector<PresentationMessage>();
+		
+		for (File propertiesFile : findPropertiesFiles()) {
+			Locale currentLocale = parseLocaleFrom(propertiesFile.getName());
+			Properties props = new Properties();
+			try {
+				props.load(new FileInputStream(propertiesFile));
+				for (Map.Entry<Object, Object> property : props.entrySet()) {
+					presentations.add(new PresentationMessage(property.getKey().toString(), currentLocale, property
+					        .getValue().toString(), ""));
+				}
+			}
+			catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				log.error("Error generated", e);
+			}
+			catch (IOException e) {
+				// TODO Auto-generated catch block
+				log.error("Error generated", e);
+			}
+			
+		}
+		return presentations;
+	}
+	
 	/**
-     * Override to obtain a local reference to the basenames.
-     * @see org.springframework.context.support.ReloadableResourceBundleMessageSource#setBasenames(java.lang.String[])
-     */
-    @Override
-    public void setBasenames(String[] basenames) {
-    	super.setBasenames(basenames);
-    	this.basenames = basenames;
-    }
-
+	 * Override to obtain a local reference to the basenames.
+	 * 
+	 * @see org.springframework.context.support.ReloadableResourceBundleMessageSource#setBasename(java.lang.String)
+	 */
+	@Override
+	public void setBasename(String basename) {
+		super.setBasename(basename);
+		this.basenames = new String[] { basename };
+	}
+	
 	/**
-     * @see org.openmrs.message.MutableMessageSource#addPresentation(org.openmrs.messagesource.PresentationMessage)
-     */
-    public void addPresentation(PresentationMessage message) {
-	    File propertyFile = findPropertiesFileFor(message.getCode());
-	    if (propertyFile != null)
-	    {
-	    	Properties props = new Properties();
-	    	try {
-	    		FileInputStream fis = new FileInputStream(propertyFile);
-	            props.load(fis);
-	            fis.close();
-	            props.setProperty(message.getCode(), message.getMessage());
-	            FileOutputStream fos = new FileOutputStream(propertyFile);
-	            props.store(fos, "OpenMRS Application Messages");
-	            fos.close();
-            } catch (FileNotFoundException e) {
-	            log.error("Error generated", e);
-            } catch (IOException e) {
-	            log.error("Error generated", e);
-            }
-	    }
-    }
-    
-
+	 * Override to obtain a local reference to the basenames.
+	 * 
+	 * @see org.springframework.context.support.ReloadableResourceBundleMessageSource#setBasenames(java.lang.String[])
+	 */
+	@Override
+	public void setBasenames(String[] basenames) {
+		super.setBasenames(basenames);
+		this.basenames = basenames;
+	}
+	
 	/**
-     * @see org.openmrs.message.MutableMessageSource#removePresentation(org.openmrs.messagesource.PresentationMessage)
-     */
-    public void removePresentation(PresentationMessage message) {
-	    File propertyFile = findPropertiesFileFor(message.getCode());
-	    if (propertyFile != null)
-	    {
-	    	Properties props = new Properties();
-	    	try {
-	    		FileInputStream fis = new FileInputStream(propertyFile);
-	            props.load(fis);
-	            fis.close();
-	            props.remove(message.getCode());
-	            FileOutputStream fos = new FileOutputStream(propertyFile);
-	            props.store(fos, PROPERTIES_FILE_COMMENT);
-	            fos.close();
-            } catch (FileNotFoundException e) {
-	            log.error("Error generated", e);
-            } catch (IOException e) {
-	            log.error("Error generated", e);
-            }
-	    }
-    }
-    
+	 * @see org.openmrs.message.MutableMessageSource#addPresentation(org.openmrs.messagesource.PresentationMessage)
+	 */
+	public void addPresentation(PresentationMessage message) {
+		File propertyFile = findPropertiesFileFor(message.getCode());
+		if (propertyFile != null) {
+			Properties props = new Properties();
+			try {
+				FileInputStream fis = new FileInputStream(propertyFile);
+				props.load(fis);
+				fis.close();
+				props.setProperty(message.getCode(), message.getMessage());
+				FileOutputStream fos = new FileOutputStream(propertyFile);
+				props.store(fos, "OpenMRS Application Messages");
+				fos.close();
+			}
+			catch (FileNotFoundException e) {
+				log.error("Error generated", e);
+			}
+			catch (IOException e) {
+				log.error("Error generated", e);
+			}
+		}
+	}
+	
 	/**
-	 * Convenience method to scan the available properties files,
-	 * looking for the one that has a definition for the given code.
-     * 
-     * @param code
-     * @return the file which defines the code, or null if not found
-     */
-    private File findPropertiesFileFor(String code) {
-    	Properties props = new Properties();
-    	File foundFile = null;
-    	
-    	for (File propertiesFile : findPropertiesFiles())
-    	{
-    		props.clear();
-    		try {
-	            props.load(new FileInputStream(propertiesFile));
-            } catch (FileNotFoundException e) {
-	            log.error("Error generated", e);
-            } catch (IOException e) {
-	            log.error("Error generated", e);
-            }
-    		if (props.containsKey(code))
-    		{
-    			foundFile = propertiesFile;
-    			break;
-    		}
-    	}
-    	return foundFile;
-    }
-
+	 * @see org.openmrs.message.MutableMessageSource#removePresentation(org.openmrs.messagesource.PresentationMessage)
+	 */
+	public void removePresentation(PresentationMessage message) {
+		File propertyFile = findPropertiesFileFor(message.getCode());
+		if (propertyFile != null) {
+			Properties props = new Properties();
+			try {
+				FileInputStream fis = new FileInputStream(propertyFile);
+				props.load(fis);
+				fis.close();
+				props.remove(message.getCode());
+				FileOutputStream fos = new FileOutputStream(propertyFile);
+				props.store(fos, PROPERTIES_FILE_COMMENT);
+				fos.close();
+			}
+			catch (FileNotFoundException e) {
+				log.error("Error generated", e);
+			}
+			catch (IOException e) {
+				log.error("Error generated", e);
+			}
+		}
+	}
+	
 	/**
-     * Searches the filesystem for message properties files. 
-     * 
-     * ABKTODO: consider caching this, rather than searching every time
-     * 
-     * @return collection of property file names
-     */
-    private Collection<File> findPropertiesFiles()
-    {
-    	Collection<File> propertiesFiles = new Vector<File>();
-
+	 * Convenience method to scan the available properties files, looking for the one that has a
+	 * definition for the given code.
+	 * 
+	 * @param code
+	 * @return the file which defines the code, or null if not found
+	 */
+	private File findPropertiesFileFor(String code) {
+		Properties props = new Properties();
+		File foundFile = null;
+		
+		for (File propertiesFile : findPropertiesFiles()) {
+			props.clear();
+			try {
+				props.load(new FileInputStream(propertiesFile));
+			}
+			catch (FileNotFoundException e) {
+				log.error("Error generated", e);
+			}
+			catch (IOException e) {
+				log.error("Error generated", e);
+			}
+			if (props.containsKey(code)) {
+				foundFile = propertiesFile;
+				break;
+			}
+		}
+		return foundFile;
+	}
+	
+	/**
+	 * Searches the filesystem for message properties files. ABKTODO: consider caching this, rather
+	 * than searching every time
+	 * 
+	 * @return collection of property file names
+	 */
+	private Collection<File> findPropertiesFiles() {
+		Collection<File> propertiesFiles = new Vector<File>();
+		
 		try {
-			for (String basename : basenames)
-			{
+			for (String basename : basenames) {
 				File basefilename = new File(basename);
 				basename = basefilename.getPath();
 				int nameIndex = basename.lastIndexOf(File.separatorChar) + 1;
@@ -357,11 +342,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				String namePrefix = basename.substring(nameIndex);
 				Resource propertiesDir = applicationContext.getResource(basedir);
 				boolean filesFound = false;
-				for (File possibleFile : propertiesDir.getFile().listFiles())
-				{
-					if (possibleFile.getName().startsWith(namePrefix) &&
-							possibleFile.getName().endsWith(".properties"))
-					{
+				for (File possibleFile : propertiesDir.getFile().listFiles()) {
+					if (possibleFile.getName().startsWith(namePrefix) && possibleFile.getName().endsWith(".properties")) {
 						propertiesFiles.add(possibleFile);
 						filesFound = true;
 					}
@@ -370,98 +352,102 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 					log.debug("No messages for basename " + basename);
 				}
 			}
-        } catch (IOException e) {
-	        log.error("Error generated", e);
-        }
-        if (log.isWarnEnabled() && (propertiesFiles.size() == 0)) {
-        	log.warn("No properties files found.");
-        }
+		}
+		catch (IOException e) {
+			log.error("Error generated", e);
+		}
+		if (log.isWarnEnabled() && (propertiesFiles.size() == 0)) {
+			log.warn("No properties files found.");
+		}
 		return propertiesFiles;
-    }
-
+	}
+	
 	/**
-     * @see org.openmrs.message.MutableMessageSource#merge(org.openmrs.message.MutableMessageSource)
-     */
-    public void merge(MutableMessageSource fromSource, boolean overwrite) {
-    	
-    	// collect all existing properties
-    	Collection<File> propertiesFiles = findPropertiesFiles();
-    	Map<Locale, List<File>> localeToFilesMap = new HashMap<Locale, List<File>>();
-    	Map<File, Properties> fileToPropertiesMap = new HashMap<File, Properties>();
-    	
-    	for (File propertiesFile : propertiesFiles) {
-    		Properties props = new Properties();
-    		Locale propsLocale = parseLocaleFrom(propertiesFile.getName());
-            List<File> propList = localeToFilesMap.get(propsLocale);
-            if (propList == null) {
-            	propList = new ArrayList<File>();
-            	localeToFilesMap.put(propsLocale, propList);
-            }
-            propList.add(propertiesFile);
-            
-    		try {
-	            props.load(new FileInputStream(propertiesFile));
-	            fileToPropertiesMap.put(propertiesFile, props);
-            } catch (FileNotFoundException e) {
-	            // TODO Auto-generated catch block
-	            log.error("Error generated", e);
-            } catch (IOException e) {
-	            // TODO Auto-generated catch block
-	            log.error("Error generated", e);
-            }
-    	}
-    	
-    	// merge in the new properties
-    	for (PresentationMessage message : fromSource.getPresentations()) {
-    		Locale messageLocale = message.getLocale();
-    		
-    		List<File> filelist = localeToFilesMap.get(messageLocale);
-    		if (filelist != null) {
-        		Properties propertyDestination = null;
-        		boolean propExists = false;
-        		for (File propertiesFile : filelist) {
-    				Properties possibleDestination = fileToPropertiesMap.get(propertiesFile);
-    				
-    				if (possibleDestination.containsKey(message.getCode())) {
-    					propertyDestination = possibleDestination;
-    					propExists = true;
-    					break;
-    				} else if (propertyDestination == null) propertyDestination = possibleDestination;
-    			}
+	 * @see org.openmrs.message.MutableMessageSource#merge(org.openmrs.message.MutableMessageSource)
+	 */
+	public void merge(MutableMessageSource fromSource, boolean overwrite) {
+		
+		// collect all existing properties
+		Collection<File> propertiesFiles = findPropertiesFiles();
+		Map<Locale, List<File>> localeToFilesMap = new HashMap<Locale, List<File>>();
+		Map<File, Properties> fileToPropertiesMap = new HashMap<File, Properties>();
+		
+		for (File propertiesFile : propertiesFiles) {
+			Properties props = new Properties();
+			Locale propsLocale = parseLocaleFrom(propertiesFile.getName());
+			List<File> propList = localeToFilesMap.get(propsLocale);
+			if (propList == null) {
+				propList = new ArrayList<File>();
+				localeToFilesMap.put(propsLocale, propList);
+			}
+			propList.add(propertiesFile);
+			
+			try {
+				props.load(new FileInputStream(propertiesFile));
+				fileToPropertiesMap.put(propertiesFile, props);
+			}
+			catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				log.error("Error generated", e);
+			}
+			catch (IOException e) {
+				// TODO Auto-generated catch block
+				log.error("Error generated", e);
+			}
+		}
+		
+		// merge in the new properties
+		for (PresentationMessage message : fromSource.getPresentations()) {
+			Locale messageLocale = message.getLocale();
+			
+			List<File> filelist = localeToFilesMap.get(messageLocale);
+			if (filelist != null) {
+				Properties propertyDestination = null;
+				boolean propExists = false;
+				for (File propertiesFile : filelist) {
+					Properties possibleDestination = fileToPropertiesMap.get(propertiesFile);
+					
+					if (possibleDestination.containsKey(message.getCode())) {
+						propertyDestination = possibleDestination;
+						propExists = true;
+						break;
+					} else if (propertyDestination == null)
+						propertyDestination = possibleDestination;
+				}
 				if ((propExists && overwrite) || !propExists) {
 					propertyDestination.put(message.getCode(), message.getMessage());
 				}
-
-    		} else {
-    			// no properties files for this locale, create one
-    			File newPropertiesFile = new File(basenames[0] + "_" + messageLocale.toString() + ".properties");
-    			Properties newProperties = new Properties();
-    			fileToPropertiesMap.put(newPropertiesFile, newProperties);
-    			newProperties.put(message.getCode(), message.getMessage());
-    			List<File> newFilelist = new ArrayList<File>();
-    			newFilelist.add(newPropertiesFile);
-    			localeToFilesMap.put(messageLocale, newFilelist);
-    		}
-    		
-    		message.getCode();
-    	}
-    }
-
+				
+			} else {
+				// no properties files for this locale, create one
+				File newPropertiesFile = new File(basenames[0] + "_" + messageLocale.toString() + ".properties");
+				Properties newProperties = new Properties();
+				fileToPropertiesMap.put(newPropertiesFile, newProperties);
+				newProperties.put(message.getCode(), message.getMessage());
+				List<File> newFilelist = new ArrayList<File>();
+				newFilelist.add(newPropertiesFile);
+				localeToFilesMap.put(messageLocale, newFilelist);
+			}
+			
+			message.getCode();
+		}
+	}
+	
 	/**
-     * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String, java.util.Locale)
-     */
-    public PresentationMessage getPresentation(String key, Locale forLocale) {
-	    // TODO Auto-generated method stub
-	    return null;
-    }
-
+	 * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String,
+	 *      java.util.Locale)
+	 */
+	public PresentationMessage getPresentation(String key, Locale forLocale) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	/**
-     * @see org.openmrs.messagesource.MutableMessageSource#getPresentationsInLocale(java.util.Locale)
-     */
-    public Collection<PresentationMessage> getPresentationsInLocale(
-            Locale locale) {
-	    // TODO Auto-generated method stub
-	    return null;
-    }
-
+	 * @see org.openmrs.messagesource.MutableMessageSource#getPresentationsInLocale(java.util.Locale)
+	 */
+	public Collection<PresentationMessage> getPresentationsInLocale(Locale locale) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

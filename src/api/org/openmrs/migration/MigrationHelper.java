@@ -64,9 +64,10 @@ public class MigrationHelper {
 	
 	protected final static Log log = LogFactory.getLog(MigrationHelper.class);
 	
-    static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	
-    static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	public static Date parseDate(String s) throws ParseException {
 		if (s == null || s.length() == 0) {
 			return null;
@@ -82,13 +83,15 @@ public class MigrationHelper {
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		try {
 			return builder.parse(new InputSource(new StringReader(xml)));
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			return null;
-		} catch (SAXException e) {
+		}
+		catch (SAXException e) {
 			return null;
 		}
 	}
-
+	
 	private static void findNodesNamed(Node node, String lookForName, Collection<Node> ret) {
 		if (node.getNodeName().equals(lookForName)) {
 			ret.add(node);
@@ -101,16 +104,9 @@ public class MigrationHelper {
 	}
 	
 	/**
-	 * Takes XML like:
-	 * <something>
-	 *   <user date_changed="2001-03-06 08:46:53.0"
-	 *         date_created="2001-03-06 08:46:53.0"
-	 *         username="hamish@mit.edu"
-	 *         first_name="Hamish"
-	 *         last_name="Fraser" 
-	 *         user_id="2001"/>
-	 * </something> 
-	 * Returns the number of users added
+	 * Takes XML like: <something> <user date_changed="2001-03-06 08:46:53.0"
+	 * date_created="2001-03-06 08:46:53.0" username="hamish@mit.edu" first_name="Hamish"
+	 * last_name="Fraser" user_id="2001"/> </something> Returns the number of users added
 	 */
 	public static int importUsers(Document document) throws ParseException {
 		int ret = 0;
@@ -134,7 +130,7 @@ public class MigrationHelper {
 			user.setUsername(username);
 			user.setDateCreated(parseDate(e.getAttribute("date_created")));
 			user.setDateChanged(parseDate(e.getAttribute("date_changed")));
-
+			
 			// Generate a temporary password: 8-12 random characters
 			String pass = null;
 			{
@@ -151,13 +147,10 @@ public class MigrationHelper {
 		}
 		return ret;
 	}
-		
+	
 	/**
-	 * Takes XML like:
-	 * <something>
-	 *   <location name="Cerca-la-Source"/>
-	 * </something> 
-	 * returns the number of locations added
+	 * Takes XML like: <something> <location name="Cerca-la-Source"/> </something> returns the
+	 * number of locations added
 	 */
 	public static int importLocations(Document document) {
 		int ret = 0;
@@ -174,8 +167,8 @@ public class MigrationHelper {
 				continue;
 			}
 			Location location = new Location();
-			location.setName(name);			
-
+			location.setName(name);
+			
 			ls.saveLocation(location);
 			++ret;
 		}
@@ -183,13 +176,14 @@ public class MigrationHelper {
 	}
 	
 	/**
-	 * Takes a list of Strings of the format
-	 *   RELATIONSHIP:<user last name>,<user first name>,<relationship type name>,<patient identifier type name>,<identifier>
-	 * so if user hfraser if the cardiologist of the patient with patient_id 8039 in PIH's old emr, then:
-	 *   RELATIONSHIP:hfraser,Cardiologist,HIV-EMRV1,8039
-	 * (the "RELATIONSHIP:" is not actually necessary. Anything before and including the first : will be dropped
-	 * If autoCreateUsers is true, and no user exists with the given username, one will be created.
-	 * If autoAddRole is true, then whenever a user is auto-created, if a role exists with the same name as relationshipType.name, then the user will be added to that role
+	 * Takes a list of Strings of the format RELATIONSHIP:<user last name>,<user first
+	 * name>,<relationship type name>,<patient identifier type name>,<identifier> so if user hfraser
+	 * if the cardiologist of the patient with patient_id 8039 in PIH's old emr, then:
+	 * RELATIONSHIP:hfraser,Cardiologist,HIV-EMRV1,8039 (the "RELATIONSHIP:" is not actually
+	 * necessary. Anything before and including the first : will be dropped If autoCreateUsers is
+	 * true, and no user exists with the given username, one will be created. If autoAddRole is
+	 * true, then whenever a user is auto-created, if a role exists with the same name as
+	 * relationshipType.name, then the user will be added to that role
 	 */
 	public static int importRelationships(Collection<String> relationships, boolean autoCreateUsers, boolean autoAddRole) {
 		PatientService ps = Context.getPatientService();
@@ -215,7 +209,8 @@ public class MigrationHelper {
 				if (users.size() == 1)
 					user = users.get(0);
 				else if (users.size() > 1) {
-					throw new IllegalArgumentException("Found " + users.size() + " users named '" + userLastName + ", " + userFirstName + "'");
+					throw new IllegalArgumentException("Found " + users.size() + " users named '" + userLastName + ", "
+					        + userFirstName + "'");
 				}
 			}
 			if (user == null) {
@@ -224,8 +219,9 @@ public class MigrationHelper {
 				if (users.size() == 1)
 					user = users.get(0);
 				else if (users.size() > 1) {
-					throw new IllegalArgumentException("Found " + users.size() + " voided users named '" + userLastName + ", " + userFirstName + "'");
-				}				
+					throw new IllegalArgumentException("Found " + users.size() + " voided users named '" + userLastName
+					        + ", " + userFirstName + "'");
+				}
 			}
 			if (user == null && autoCreateUsers) {
 				user = new User();
@@ -248,17 +244,18 @@ public class MigrationHelper {
 					if (role != null)
 						user.addRole(role);
 				}
-				us.saveUser(user, pass);					
+				us.saveUser(user, pass);
 			}
 			if (user == null)
-				throw new IllegalArgumentException("Can't find user '" + userLastName + ", " + userFirstName + "'"); 
-			Person person = personService.getPerson(user.getUserId());			
+				throw new IllegalArgumentException("Can't find user '" + userLastName + ", " + userFirstName + "'");
+			Person person = personService.getPerson(user.getUserId());
 			
 			RelationshipType relationship = personService.getRelationshipTypeByName(relationshipType);
 			PatientIdentifierType pit = ps.getPatientIdentifierTypeByName(identifierType);
 			List<PatientIdentifier> found = ps.getPatientIdentifiers(identifier, pit);
 			if (found.size() != 1)
-				throw new IllegalArgumentException("Found " + found.size() + " patients with identifier '" + identifier + "' of type " + identifierType);
+				throw new IllegalArgumentException("Found " + found.size() + " patients with identifier '" + identifier
+				        + "' of type " + identifierType);
 			Person relative = personService.getPerson(found.get(0).getPatient().getPatientId());
 			Relationship rel = new Relationship();
 			rel.setPersonA(person);
@@ -273,7 +270,7 @@ public class MigrationHelper {
 		}
 		return addedSoFar;
 	}
-
+	
 	public static int importProgramsAndStatuses(List<String> programWorkflow) throws ParseException {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		PatientService ps = Context.getPatientService();
@@ -294,7 +291,8 @@ public class MigrationHelper {
 				String identifier = temp[1];
 				List<PatientIdentifier> pis = ps.getPatientIdentifiers(identifier, pit);
 				if (pis.size() != 1)
-					throw new IllegalArgumentException("Found " + pis.size() + " instances of identifier " + identifier + " of type " + pit);
+					throw new IllegalArgumentException("Found " + pis.size() + " instances of identifier " + identifier
+					        + " of type " + pit);
 				Patient p = pis.get(0).getPatient();
 				Program program = programsByName.get(temp[2]);
 				if (program == null)
@@ -326,11 +324,13 @@ public class MigrationHelper {
 				//ProgramWorkflow wf = pws.getWorkflow(program, temp[3]);
 				ProgramWorkflow wf = program.getWorkflowByName(temp[3]);
 				if (wf == null)
-					throw new RuntimeException("Couldn't find workflow \"" + temp[3] + "\" for program " + program + " (in " + program.getAllWorkflows() + ")");
+					throw new RuntimeException("Couldn't find workflow \"" + temp[3] + "\" for program " + program + " (in "
+					        + program.getAllWorkflows() + ")");
 				//ProgramWorkflowState st = pws.getState(wf, temp[4]);
 				ProgramWorkflowState st = wf.getStateByName(temp[4]);
 				if (st == null)
-					throw new RuntimeException("Couldn't find state \"" + temp[4] + "\" for workflow " + wf + " (in " + wf.getStates() + ")");
+					throw new RuntimeException("Couldn't find state \"" + temp[4] + "\" for workflow " + wf + " (in "
+					        + wf.getStates() + ")");
 				Date startDate = temp.length < 6 ? null : parseDate(temp[5]);
 				Date endDate = temp.length < 7 ? null : parseDate(temp[6]);
 				PatientState state = new PatientState();
@@ -343,13 +343,12 @@ public class MigrationHelper {
 			}
 		}
 		int numAdded = 0;
-
+		
 		for (PatientProgram pp : knownPatientPrograms.values()) {
 			pws.savePatientProgram(pp);
-			++ numAdded;
+			++numAdded;
 		}
 		return numAdded;
 	}
-
-}
 	
+}

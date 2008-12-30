@@ -19,23 +19,19 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
 /**
- * Implementations of this interface describe the metadata that can be evaluated to produce a {@link DataSet}.
- *
- * This is one of three interfaces that work together to define and evaluate an OpenMRS DataSet.
- * You need to implement all three of DataSetProvider, {@link DataSetDefinition}, and {@link DataSet}
- * in order to get useful behavior. For example: {@link RowPerObsDataSetProvider},
- * {@link RowPerObsDataSetDefinition}, and {@link RowPerObsDataSet}
+ * Implementations of this interface describe the metadata that can be evaluated to produce a
+ * {@link DataSet}. This is one of three interfaces that work together to define and evaluate an
+ * OpenMRS DataSet. You need to implement all three of DataSetProvider, {@link DataSetDefinition},
+ * and {@link DataSet} in order to get useful behavior. For example:
+ * {@link RowPerObsDataSetProvider}, {@link RowPerObsDataSetDefinition}, and
+ * {@link RowPerObsDataSet} The metadata that describes what data will be produced is defined in
+ * this interface The logic that evaluates that metadata goes in an implementation of
+ * {@link DataSetProvider}. After evaluation, the data is represented by a {@link DataSet}.
  * 
- * The metadata that describes what data will be produced is defined in this interface
- * 
- * The logic that evaluates that metadata goes in an implementation of {@link DataSetProvider}.
- * 
- * After evaluation, the data is represented by a {@link DataSet}.
- *
  * @see DataSetProvider
  * @see DataSet
  */
-@Root(strict=false)
+@Root(strict = false)
 public interface DataSetDefinition extends Parameterizable {
 	
 	/**
@@ -43,7 +39,7 @@ public interface DataSetDefinition extends Parameterizable {
 	 * 
 	 * @return
 	 */
-	@Attribute(required=true)
+	@Attribute(required = true)
 	public String getName();
 	
 	/**
@@ -51,7 +47,7 @@ public interface DataSetDefinition extends Parameterizable {
 	 * 
 	 * @param name the descriptive name of this definition
 	 */
-	@Attribute(required=true)
+	@Attribute(required = true)
 	public void setName(String name);
 	
 	/**

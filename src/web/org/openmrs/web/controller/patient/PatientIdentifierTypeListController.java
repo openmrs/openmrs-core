@@ -39,30 +39,31 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class PatientIdentifierTypeListController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -70,30 +71,30 @@ public class PatientIdentifierTypeListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			String success = "";
 			String error = "";
-
-			MessageSourceAccessor msa = getMessageSourceAccessor();
-
-			String[] identifierTypeList = request.getParameterValues("patientIdentifierTypeId");
-			if(identifierTypeList != null){
-			PatientService ps = Context.getPatientService();
 			
-			String deleted = msa.getMessage("general.deleted");
-			String notDeleted = msa.getMessage("PatientIdentifierType.cannot.delete");
-			for (String p : identifierTypeList) {
-				try {
-					ps.purgePatientIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(p)));
-					if (!success.equals("")) success += "<br/>";
-					success += p + " " + deleted;
+			MessageSourceAccessor msa = getMessageSourceAccessor();
+			
+			String[] identifierTypeList = request.getParameterValues("patientIdentifierTypeId");
+			if (identifierTypeList != null) {
+				PatientService ps = Context.getPatientService();
+				
+				String deleted = msa.getMessage("general.deleted");
+				String notDeleted = msa.getMessage("PatientIdentifierType.cannot.delete");
+				for (String p : identifierTypeList) {
+					try {
+						ps.purgePatientIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(p)));
+						if (!success.equals(""))
+							success += "<br/>";
+						success += p + " " + deleted;
+					}
+					catch (DataIntegrityViolationException e) {
+						error = handleIdentifierIntegrityException(e, error, notDeleted);
+					}
+					catch (APIException e) {
+						error = handleIdentifierIntegrityException(e, error, notDeleted);
+					}
 				}
-				catch(DataIntegrityViolationException e){
-					error = handleIdentifierIntegrityException(e,error,notDeleted);
-				}
-				catch (APIException e) {
-					error = handleIdentifierIntegrityException(e,error,notDeleted);
-				}
-			}
-			}
-			else
+			} else
 				error = msa.getMessage("PatientIdentifierType.select");
 			
 			view = getSuccessView();
@@ -107,41 +108,40 @@ public class PatientIdentifierTypeListController extends SimpleFormController {
 	}
 	
 	/**
-	 * 
-	 * Logs a Patient Identifier Type delete data integrity violation exception and 
-	 * returns a user friedly message of the problem that occured.
+	 * Logs a Patient Identifier Type delete data integrity violation exception and returns a user
+	 * friedly message of the problem that occured.
 	 * 
 	 * @param e the exception.
 	 * @param error the error message.
 	 * @param notDeleted the role not deleted error message.
 	 * @return the formatted error message.
 	 */
-	private String handleIdentifierIntegrityException(Exception e,String error,String notDeleted){
+	private String handleIdentifierIntegrityException(Exception e, String error, String notDeleted) {
 		log.warn("Error deleting patient identifier type", e);
-		if (!error.equals("")) error += "<br/>";
+		if (!error.equals(""))
+			error += "<br/>";
 		error += notDeleted;
 		return error;
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		//default empty Object
 		List<PatientIdentifierType> identifierTypeList = new Vector<PatientIdentifierType>();
 		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
-	    	identifierTypeList = ps.getAllPatientIdentifierTypes();
+			identifierTypeList = ps.getAllPatientIdentifierTypes();
 		}
-    	
-        return identifierTypeList;
-    }
-    
+		
+		return identifierTypeList;
+	}
+	
 }

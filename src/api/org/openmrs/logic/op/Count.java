@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class Count implements Operator {
-
-    public String toString() {
-        return "Count";
-    }
-    
+	
+	public String toString() {
+		return "Count";
+	}
+	
 }

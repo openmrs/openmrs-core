@@ -27,9 +27,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Tests the {@link DataExportReportObject} class
- * 
- * TODO clean up, finish, add methods to this test class
+ * Tests the {@link DataExportReportObject} class TODO clean up, finish, add methods to this test
+ * class
  */
 public class DataExportTest extends BaseContextSensitiveTest {
 	
@@ -39,7 +38,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldCalcuateAge() throws Exception { 
+	public void shouldCalcuateAge() throws Exception {
 		
 		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
@@ -47,7 +46,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("TEST_EXPORT");
-
+		
 		SimpleColumn patientId = new SimpleColumn();
 		patientId.setColumnName("PATIENT_ID");
 		patientId.setReturnValue("$!{fn.patientId}");
@@ -62,7 +61,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		birthdate.setColumnName("BIRTHDATE");
 		birthdate.setReturnValue("$!{fn.formatDate('short', $fn.getPatientAttr('Person', 'birthdate'))}");
 		export.getColumns().add(birthdate);
-
+		
 		SimpleColumn age = new SimpleColumn();
 		age.setColumnName("AGE");
 		age.setReturnValue("$!{fn.calculateAge($fn.getPatientAttr('Person', 'birthdate'))}");
@@ -72,7 +71,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		patients.addMember(2);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
-		File exportFile = DataExportUtil.getGeneratedFile(export);		
+		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		String expectedOutput = "PATIENT_ID	GENDER	BIRTHDATE	AGE\n2	M	01/01/2000	XXX\n";
 		// adjust expected output for every year
@@ -112,7 +111,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		firstNObs.setColumnType("concept");
 		firstNObs.setConceptId(5089);
 		firstNObs.setConceptName("Weight (KG)");
-		firstNObs.setExtras(new String[] {"location"});
+		firstNObs.setExtras(new String[] { "location" });
 		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
 		firstNObs.setModifierNum(2);
 		export.getColumns().add(firstNObs);
@@ -131,9 +130,6 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		//System.out.println("exportFile: \n" + output);
 		assertEquals("The output is not right.", expectedOutput, output);
 		
-		
-		
-		
 		// test 1 as the number of obs to fetch
 		export = new DataExportReportObject();
 		export.setName("FIRST 1 WEIGHTS");
@@ -145,7 +141,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		firstNObs.setColumnType("concept");
 		firstNObs.setConceptId(5089);
 		firstNObs.setConceptName("Weight (KG)");
-		firstNObs.setExtras(new String[] {"location"});
+		firstNObs.setExtras(new String[] { "location" });
 		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
 		firstNObs.setModifierNum(1);
 		export.getColumns().add(firstNObs);
@@ -161,9 +157,6 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		//System.out.println("exportFile: " + output);
 		assertEquals("The output is not what was expected", expectedOutput, output);
 		
-		
-		
-		
 		// test -1 as the number of obs to fetch
 		export = new DataExportReportObject();
 		export.setName("FIRST -1 WEIGHTS");
@@ -175,7 +168,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		firstNObs.setColumnType("concept");
 		firstNObs.setConceptId(5089);
 		firstNObs.setConceptName("Weight (KG)");
-		firstNObs.setExtras(new String[] {"location"});
+		firstNObs.setExtras(new String[] { "location" });
 		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
 		firstNObs.setModifierNum(-1);
 		export.getColumns().add(firstNObs);
@@ -194,8 +187,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * test first N function when there are no obs for it.  Make sure that it returns
-	 * blank cells instead of null cells 
+	 * test first N function when there are no obs for it. Make sure that it returns blank cells
+	 * instead of null cells
 	 * 
 	 * @throws Exception
 	 */
@@ -217,7 +210,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		firstNObs.setColumnType("concept");
 		firstNObs.setConceptId(5090);
 		firstNObs.setConceptName("OTHER CONCEPT");
-		firstNObs.setExtras(new String[] {"obsDatetime"});
+		firstNObs.setExtras(new String[] { "obsDatetime" });
 		firstNObs.setModifier(DataExportReportObject.MODIFIER_FIRST_NUM);
 		firstNObs.setModifierNum(2);
 		export.getColumns().add(firstNObs);
@@ -227,7 +220,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		lastNObs.setColumnType("concept");
 		lastNObs.setConceptId(5089);
 		lastNObs.setConceptName("Weight (KG)");
-		lastNObs.setExtras(new String[] {"obsDatetime"});
+		lastNObs.setExtras(new String[] { "obsDatetime" });
 		lastNObs.setModifier(DataExportReportObject.MODIFIER_LAST_NUM);
 		lastNObs.setModifierNum(2);
 		export.getColumns().add(lastNObs);
@@ -301,7 +294,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		firstObs.setColumnType("concept");
 		firstObs.setConceptId(5089);
 		firstObs.setConceptName("Weight (KG)");
-		firstObs.setExtras(new String[] {"location"});
+		firstObs.setExtras(new String[] { "location" });
 		firstObs.setModifier(DataExportReportObject.MODIFIER_FIRST);
 		export.getColumns().add(firstObs);
 		
@@ -313,7 +306,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		expectedOutput = "PATIENT_ID\tWEIGHT\tWEIGHT_location\n2\t1.0\tTest Location\n";
 		output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
-
+		
 		//System.out.println("exportFile: \n" + output);
 		assertEquals("The output is not right.", expectedOutput, output);
 	}
@@ -343,7 +336,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		lastNObs.setColumnType("concept");
 		lastNObs.setConceptId(5089);
 		lastNObs.setConceptName("Weight (KG)");
-		lastNObs.setExtras(new String[] {"location"});
+		lastNObs.setExtras(new String[] { "location" });
 		lastNObs.setModifier(DataExportReportObject.MODIFIER_LAST_NUM);
 		lastNObs.setModifierNum(2);
 		export.getColumns().add(lastNObs);
@@ -352,7 +345,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		patients.addMember(2);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
-		File exportFile = DataExportUtil.getGeneratedFile(export);		
+		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		String expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location 	WEIGHT_(1)	WEIGHT_location_(1)\n2	10.0	Test Location	9.0	Test Location\n";
 		String output = OpenmrsUtil.getFileAsString(exportFile);
@@ -360,8 +353,6 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		
 		//System.out.println("exportFile: " + output);
 		assertEquals("The output is not right.", expectedOutput, output);
-		
-		
 		
 		export = new DataExportReportObject();
 		export.setName("Last 1 weights");
@@ -376,13 +367,13 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		lastNObs.setColumnType("concept");
 		lastNObs.setConceptId(5089);
 		lastNObs.setConceptName("Weight (KG)");
-		lastNObs.setExtras(new String[] {"location"});
+		lastNObs.setExtras(new String[] { "location" });
 		lastNObs.setModifier(DataExportReportObject.MODIFIER_LAST_NUM);
 		lastNObs.setModifierNum(1);
 		export.getColumns().add(lastNObs);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
-		exportFile = DataExportUtil.getGeneratedFile(export);		
+		exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		System.out.println("Template String: \n" + export.generateTemplate());
 		expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location\n2	10.0	Test Location\n";
@@ -425,7 +416,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		DataExportUtil.putDataExportKey("bob", "joe");
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
-		File exportFile = DataExportUtil.getGeneratedFile(export);		
+		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		String expectedOutput = "PATIENT_ID	bobkey\n2	joe\n";
 		String output = OpenmrsUtil.getFileAsString(exportFile);
@@ -474,7 +465,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		DataExportUtil.removeDataExportKey("asdfasdf");
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
-		File exportFile = DataExportUtil.getGeneratedFile(export);		
+		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		String expectedOutput = "PATIENT_ID	bobkey\n2	\n";
 		String output = OpenmrsUtil.getFileAsString(exportFile);
@@ -501,7 +492,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test the name option for data exports 
+	 * Test the name option for data exports
 	 * 
 	 * @throws Exception
 	 */
@@ -535,11 +526,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Makes sure that the getFirstObs method on the DataExportFunctions
-	 * object never throws a null pointer exception if the patient
-	 * doesn't have any obs.
-	 * 
-	 * Regression test for ticket #1028
+	 * Makes sure that the getFirstObs method on the DataExportFunctions object never throws a null
+	 * pointer exception if the patient doesn't have any obs. Regression test for ticket #1028
 	 * 
 	 * @throws Exception
 	 */
@@ -557,7 +545,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		
 		// set the cohort to a patient hat doesn't have a weight obs
 		Cohort patients = new Cohort();
-		patients.addMember(6);		
+		patients.addMember(6);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
 		
@@ -574,8 +562,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Tests the "Cohort" column on data exports to make sure
-	 * that they are exporting the right data
+	 * Tests the "Cohort" column on data exports to make sure that they are exporting the right data
 	 * 
 	 * @throws Exception
 	 */
@@ -596,7 +583,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		
 		CohortColumn cohortCol = new CohortColumn("InCohort", cohort.getCohortId(), null, null, "Yes", "No");
 		export.getColumns().add(cohortCol);
-			
+		
 		// set the cohort to two patients, one of which is in the specified cohort
 		Cohort patients = new Cohort();
 		patients.addMember(2);

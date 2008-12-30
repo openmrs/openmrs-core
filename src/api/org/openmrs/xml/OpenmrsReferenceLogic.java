@@ -18,9 +18,8 @@ import org.apache.commons.logging.LogFactory;
 import org.simpleframework.xml.graph.ReferenceLogic;
 
 /**
- * This reference logic class allows openmrs to call serialize multiple times
- * on separate objects and carry the reference ids over
- * 
+ * This reference logic class allows openmrs to call serialize multiple times on separate objects
+ * and carry the reference ids over
  */
 public class OpenmrsReferenceLogic implements ReferenceLogic {
 	
@@ -29,15 +28,15 @@ public class OpenmrsReferenceLogic implements ReferenceLogic {
 	private long key = 0L;
 	
 	/**
-     * @see org.simpleframework.xml.graph.ReferenceLogic#getReferenceKey(java.lang.Object)
-     */
-    public String getReferenceKey(Object arg0) {
-	   if (++key >= Long.MAX_VALUE) {
-		   log.warn("We reached the max long value.");
-		   key = 0L;
-	   }
-	   
-	   return Long.toString(key);
-    }
-
+	 * @see org.simpleframework.xml.graph.ReferenceLogic#getReferenceKey(java.lang.Object)
+	 */
+	public String getReferenceKey(Object arg0) {
+		if (++key >= Long.MAX_VALUE) {
+			log.warn("We reached the max long value.");
+			key = 0L;
+		}
+		
+		return Long.toString(key);
+	}
+	
 }

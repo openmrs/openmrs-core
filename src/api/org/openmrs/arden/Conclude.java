@@ -13,7 +13,6 @@
  */
 package org.openmrs.arden;
 
-import java.io.IOException;
 import java.io.Writer;
 
 /**
@@ -23,7 +22,7 @@ public class Conclude {
 	
 	private Boolean concludeVal = null;
 	
-	public Conclude(boolean concludeVal){
+	public Conclude(boolean concludeVal) {
 		this.concludeVal = concludeVal;
 	}
 	
@@ -33,16 +32,16 @@ public class Conclude {
 			retVal = "true";
 		else
 			retVal = "false";
-
+		
 		return retVal;
 	}
 	
-	public void write(Writer w){
+	public void write(Writer w) {
 		try {
-	        w.append("\t\t\treturn ");
-	        w.append(getConcludeVal());
-	        w.append(";\n");
-        } catch (Exception e) {
-        }
+			w.append("\t\t\treturn ");
+			w.append(getConcludeVal());
+			w.append(";\n");
+		}
+		catch (Exception e) {}
 	}
 }

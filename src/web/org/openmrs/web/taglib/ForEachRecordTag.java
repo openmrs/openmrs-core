@@ -45,20 +45,24 @@ import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
-
 public class ForEachRecordTag extends BodyTagSupport {
-
+	
 	public static final long serialVersionUID = 1232300L;
 	
 	private final Log log = LogFactory.getLog(getClass());
-
+	
 	private String name;
+	
 	private Object select;
+	
 	private String reportObjectType;
+	
 	private String concept;
+	
 	private String conceptSet;
+	
 	private Iterator<?> records;
-
+	
 	public int doStartTag() {
 		
 		records = null;
@@ -68,44 +72,35 @@ public class ForEachRecordTag extends BodyTagSupport {
 		if (name.equals("patientIdentifierType")) {
 			PatientService ps = Context.getPatientService();
 			records = ps.getAllPatientIdentifierTypes().iterator();
-		}
-		else if (name.equals("relationshipType")) {
+		} else if (name.equals("relationshipType")) {
 			PersonService ps = Context.getPersonService();
 			records = ps.getAllRelationshipTypes().iterator();
-		}
-		else if (name.equals("encounterType")) {
+		} else if (name.equals("encounterType")) {
 			EncounterService es = Context.getEncounterService();
 			records = es.getAllEncounterTypes().iterator();
-		}
-		else if (name.equals("location")) {
+		} else if (name.equals("location")) {
 			LocationService locServ = Context.getLocationService();
 			records = locServ.getAllLocations().iterator();
-		}
-		else if (name.equals("cohort")) {
+		} else if (name.equals("cohort")) {
 			List<Cohort> cohorts = Context.getCohortService().getAllCohorts();
 			records = cohorts.iterator();
-		}
-		else if (name.equals("conceptSource")) {
+		} else if (name.equals("conceptSource")) {
 			List<ConceptSource> conceptSources = Context.getConceptService().getAllConceptSources();
 			records = conceptSources.iterator();
-		}
-		else if (name.equals("form")) {
+		} else if (name.equals("form")) {
 			List<Form> forms = Context.getFormService().getAllForms();
 			records = forms.iterator();
-		}
-		else if (name.equals("reportSchemaXml")) {
+		} else if (name.equals("reportSchemaXml")) {
 			List<ReportSchemaXml> list = Context.getReportService().getReportSchemaXmls();
 			records = list.iterator();
-		}
-		else if (name.equals("reportObject")) {
+		} else if (name.equals("reportObject")) {
 			List<AbstractReportObject> ret = null;
 			if (reportObjectType != null)
-				ret = Context.getReportObjectService().getReportObjectsByType(reportObjectType); 
+				ret = Context.getReportObjectService().getReportObjectsByType(reportObjectType);
 			else
 				ret = Context.getReportObjectService().getAllReportObjects();
 			records = ret.iterator();
-		}
-		else if (name.equals("civilStatus")) {
+		} else if (name.equals("civilStatus")) {
 			ConceptService cs = Context.getConceptService();
 			Concept civilStatus = cs.getConcept(OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID);
 			if (civilStatus == null)
@@ -120,26 +115,21 @@ public class ForEachRecordTag extends BodyTagSupport {
 			records = opts.entrySet().iterator();
 			if (select != null)
 				select = select.toString() + "=" + opts.get(select);
-		}
-		else if (name.equals("gender")) {
+		} else if (name.equals("gender")) {
 			Map<String, String> opts = OpenmrsConstants.GENDER();
 			records = opts.entrySet().iterator();
 			if (select != null)
 				select = select.toString() + "=" + opts.get(select);
-		}
-		else if (name.equals("workflowStatus")) {
+		} else if (name.equals("workflowStatus")) {
 			List<ProgramWorkflowState> ret = Context.getProgramWorkflowService().getStates();
 			records = ret.iterator();
-		}
-		else if (name.equals("workflowProgram")) {
+		} else if (name.equals("workflowProgram")) {
 			List<org.openmrs.Program> ret = Context.getProgramWorkflowService().getAllPrograms();
 			records = ret.iterator();
-		}
-		else if (name.equals("role")) {
+		} else if (name.equals("role")) {
 			List<Role> ret = Context.getUserService().getAllRoles();
 			records = ret.iterator();
-		}
-		else if (name.equals("conceptSet")) {
+		} else if (name.equals("conceptSet")) {
 			if (conceptSet == null)
 				throw new IllegalArgumentException("Must specify conceptSet");
 			Concept c = OpenmrsUtil.getConceptByIdOrName(conceptSet);
@@ -147,8 +137,7 @@ public class ForEachRecordTag extends BodyTagSupport {
 				throw new IllegalArgumentException("Can't find conceptSet " + conceptSet);
 			List<Concept> list = Context.getConceptService().getConceptsByConceptSet(c);
 			records = list.iterator();
-		}
-		else if (name.equals("answer")) {
+		} else if (name.equals("answer")) {
 			if (concept == null)
 				throw new IllegalArgumentException("Must specify concept");
 			Concept c = OpenmrsUtil.getConceptByIdOrName(concept);
@@ -158,28 +147,27 @@ public class ForEachRecordTag extends BodyTagSupport {
 				records = c.getAnswers().iterator();
 			else
 				records = new ArrayList<Concept>().iterator();
-		}
-		else {
+		} else {
 			try {
-	            Class<?> cls = Context.loadClass(name);
+				Class<?> cls = Context.loadClass(name);
 				Constructor<?> ct = cls.getConstructor();
-				Iterable<?> iterable = (Iterable<?>)ct.newInstance();
+				Iterable<?> iterable = (Iterable<?>) ct.newInstance();
 				records = iterable.iterator();
 				
-            } catch (Exception e) {
-    			log.error(name + " not found in ForEachRecord list " + e);
-            }
+			}
+			catch (Exception e) {
+				log.error(name + " not found in ForEachRecord list " + e);
+			}
 		}
 		
 		if (records == null || records.hasNext() == false) {
 			records = null;
 			return SKIP_BODY;
-		}
-		else
+		} else
 			return EVAL_BODY_BUFFERED;
 		
 	}
-
+	
 	/**
 	 * @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
 	 */
@@ -189,25 +177,24 @@ public class ForEachRecordTag extends BodyTagSupport {
 			iterate(obj);
 		}
 	}
-
+	
 	/**
 	 * @see javax.servlet.jsp.tagext.IterationTag#doAfterBody()
 	 */
 	public int doAfterBody() throws JspException {
-        if(records.hasNext()) {
-        	Object obj = records.next();
+		if (records.hasNext()) {
+			Object obj = records.next();
 			iterate(obj);
-            return EVAL_BODY_BUFFERED;
-        }
-        else
-            return SKIP_BODY;
+			return EVAL_BODY_BUFFERED;
+		} else
+			return SKIP_BODY;
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void iterate(Object obj) {
 		if (obj != null) {
 			if (name.equals("gender")) {
-				Map.Entry<String, String> e = (Map.Entry<String, String>)obj;
+				Map.Entry<String, String> e = (Map.Entry<String, String>) obj;
 				e.setValue(e.getValue().toLowerCase());
 				obj = e;
 			}
@@ -217,73 +204,70 @@ public class ForEachRecordTag extends BodyTagSupport {
 				String str = obj.toString();
 				pageContext.setAttribute("selected", str.equals(select) ? "selected" : "");
 			}
-		}
-		else {
+		} else {
 			pageContext.removeAttribute("record");
 			pageContext.removeAttribute("selected");
 		}
 	}
-
+	
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	 */
 	public int doEndTag() throws JspException {
-		try
-        {
-			if(getBodyContent() != null && records != null)
-            	getBodyContent().writeOut(getBodyContent().getEnclosingWriter());
-        }
-        catch(java.io.IOException e)
-        {
-            throw new JspTagException("IO Error: " + e.getMessage());
-        }
-        return EVAL_PAGE;
+		try {
+			if (getBodyContent() != null && records != null)
+				getBodyContent().writeOut(getBodyContent().getEnclosingWriter());
+		}
+		catch (java.io.IOException e) {
+			throw new JspTagException("IO Error: " + e.getMessage());
+		}
+		return EVAL_PAGE;
 	}
 	
 	public String getName() {
 		return name;
 	}
-
+	
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	/**
 	 * @return Returns the select.
 	 */
 	public Object getSelect() {
 		return select;
 	}
-
+	
 	/**
 	 * @param select The select to set.
 	 */
 	public void setSelect(Object select) {
 		this.select = select;
 	}
-
+	
 	public String getReportObjectType() {
 		return reportObjectType;
 	}
-
+	
 	public void setReportObjectType(String reportObjectType) {
 		this.reportObjectType = reportObjectType;
 	}
-
+	
 	public String getConcept() {
-    	return concept;
-    }
-
+		return concept;
+	}
+	
 	public void setConcept(String concept) {
-    	this.concept = concept;
-    }
-
+		this.concept = concept;
+	}
+	
 	public String getConceptSet() {
-    	return conceptSet;
-    }
-
+		return conceptSet;
+	}
+	
 	public void setConceptSet(String conceptSet) {
-    	this.conceptSet = conceptSet;
-    }
+		this.conceptSet = conceptSet;
+	}
 	
 }

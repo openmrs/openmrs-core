@@ -24,45 +24,60 @@ import org.simpleframework.xml.Root;
  */
 @Root
 public class ConceptDatatype implements java.io.Serializable {
-
+	
 	public static final long serialVersionUID = 473L;
-
+	
 	// HL7 abbreviations (along with our own boolean creature)
-
+	
 	public static final String BOOLEAN = "BIT";
+	
 	public static final String CODED = "CWE";
+	
 	public static final String DATE = "DT";
+	
 	public static final String DATETIME = "TS";
+	
 	public static final String DOCUMENT = "RP";
+	
 	public static final String NUMERIC = "NM";
+	
 	public static final String TEXT = "ST";
+	
 	public static final String TIME = "TM";
-
+	
 	// Fields
-
+	
 	private Integer conceptDatatypeId;
+	
 	private String name;
+	
 	private String description;
+	
 	private String hl7Abbreviation;
+	
 	private Date dateCreated;
+	
 	private User creator;
 	
 	private User retiredBy;
+	
 	private Boolean retired = Boolean.FALSE;
+	
 	private Date dateRetired;
+	
 	private String retireReason;
-
+	
 	// Constructors
-
+	
 	/** default constructor */
 	public ConceptDatatype() {
 	}
-
+	
 	/** constructor with id */
 	public ConceptDatatype(Integer conceptDatatypeId) {
 		this.conceptDatatypeId = conceptDatatypeId;
 	}
-
+	
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptDatatype) {
 			ConceptDatatype c = (ConceptDatatype) obj;
@@ -70,15 +85,15 @@ public class ConceptDatatype implements java.io.Serializable {
 		}
 		return false;
 	}
-
+	
 	public int hashCode() {
 		if (this.getConceptDatatypeId() == null)
 			return super.hashCode();
 		return this.getConceptDatatypeId().hashCode();
 	}
-
+	
 	// Property accessors
-
+	
 	/**
 	 * 
 	 */
@@ -86,12 +101,12 @@ public class ConceptDatatype implements java.io.Serializable {
 	public Integer getConceptDatatypeId() {
 		return this.conceptDatatypeId;
 	}
-
+	
 	@Attribute
 	public void setConceptDatatypeId(Integer conceptDatatypeId) {
 		this.conceptDatatypeId = conceptDatatypeId;
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -99,25 +114,25 @@ public class ConceptDatatype implements java.io.Serializable {
 	public String getName() {
 		return this.name;
 	}
-
+	
 	@Attribute
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	/**
 	 * 
 	 */
-	@Element(data=true)
+	@Element(data = true)
 	public String getDescription() {
 		return this.description;
 	}
-
-	@Element(data=true)
+	
+	@Element(data = true)
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
 	/**
 	 * @return Returns the hl7Abbreviation.
 	 */
@@ -125,16 +140,15 @@ public class ConceptDatatype implements java.io.Serializable {
 	public String getHl7Abbreviation() {
 		return hl7Abbreviation;
 	}
-
+	
 	/**
-	 * @param hl7Abbreviation
-	 *            The hl7Abbreviation to set.
+	 * @param hl7Abbreviation The hl7Abbreviation to set.
 	 */
 	@Attribute
 	public void setHl7Abbreviation(String hl7Abbreviation) {
 		this.hl7Abbreviation = hl7Abbreviation;
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -142,12 +156,12 @@ public class ConceptDatatype implements java.io.Serializable {
 	public User getCreator() {
 		return this.creator;
 	}
-
+	
 	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -155,12 +169,12 @@ public class ConceptDatatype implements java.io.Serializable {
 	public Date getDateCreated() {
 		return this.dateCreated;
 	}
-
+	
 	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 	/*
 	 * Convenience methods for resolving common data types
 	 */
@@ -171,31 +185,27 @@ public class ConceptDatatype implements java.io.Serializable {
 	public boolean isNumeric() {
 		return NUMERIC.equals(getHl7Abbreviation());
 	}
-
+	
 	/**
-	 * @return <code>true</code> if datatype is coded (i.e., an identifier
-	 *         from a vocabulary)
+	 * @return <code>true</code> if datatype is coded (i.e., an identifier from a vocabulary)
 	 */
 	public boolean isCoded() {
 		return CODED.equals(getHl7Abbreviation());
 	}
-
+	
 	/**
-	 * @return <code>true</code> if datatype is some representation of date or
-	 *         time
+	 * @return <code>true</code> if datatype is some representation of date or time
 	 */
 	public boolean isDate() {
-		return DATE.equals(getHl7Abbreviation())
-				|| DATETIME.equals(getHl7Abbreviation())
-				|| TIME.equals(getHl7Abbreviation());
+		return DATE.equals(getHl7Abbreviation()) || DATETIME.equals(getHl7Abbreviation())
+		        || TIME.equals(getHl7Abbreviation());
 	}
-
+	
 	/**
 	 * @return <code>true</code> if datatype is text-based
 	 */
 	public boolean isText() {
-		return TEXT.equals(getHl7Abbreviation())
-				|| DOCUMENT.equals(getHl7Abbreviation());
+		return TEXT.equals(getHl7Abbreviation()) || DOCUMENT.equals(getHl7Abbreviation());
 	}
 	
 	/**
@@ -204,61 +214,61 @@ public class ConceptDatatype implements java.io.Serializable {
 	public boolean isBoolean() {
 		return BOOLEAN.equals(getHl7Abbreviation());
 	}
-
+	
 	/**
-     * @return the retiredBy
-     */
-    public User getRetiredBy() {
-    	return retiredBy;
-    }
-
+	 * @return the retiredBy
+	 */
+	public User getRetiredBy() {
+		return retiredBy;
+	}
+	
 	/**
-     * @param retiredBy the retiredBy to set
-     */
-    public void setRetiredBy(User retiredBy) {
-    	this.retiredBy = retiredBy;
-    }
-
+	 * @param retiredBy the retiredBy to set
+	 */
+	public void setRetiredBy(User retiredBy) {
+		this.retiredBy = retiredBy;
+	}
+	
 	/**
-     * @return the retired
-     */
-    public Boolean getRetired() {
-    	return retired;
-    }
-
+	 * @return the retired
+	 */
+	public Boolean getRetired() {
+		return retired;
+	}
+	
 	/**
-     * @param retired the retired to set
-     */
-    public void setRetired(Boolean retired) {
-    	this.retired = retired;
-    }
-
+	 * @param retired the retired to set
+	 */
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
+	}
+	
 	/**
-     * @return the dateRetired
-     */
-    public Date getDateRetired() {
-    	return dateRetired;
-    }
-
+	 * @return the dateRetired
+	 */
+	public Date getDateRetired() {
+		return dateRetired;
+	}
+	
 	/**
-     * @param dateRetired the dateRetired to set
-     */
-    public void setDateRetired(Date dateRetired) {
-    	this.dateRetired = dateRetired;
-    }
-
+	 * @param dateRetired the dateRetired to set
+	 */
+	public void setDateRetired(Date dateRetired) {
+		this.dateRetired = dateRetired;
+	}
+	
 	/**
-     * @return the retireReason
-     */
-    public String getRetireReason() {
-    	return retireReason;
-    }
-
+	 * @return the retireReason
+	 */
+	public String getRetireReason() {
+		return retireReason;
+	}
+	
 	/**
-     * @param retireReason the retireReason to set
-     */
-    public void setRetireReason(String retireReason) {
-    	this.retireReason = retireReason;
-    }
+	 * @param retireReason the retireReason to set
+	 */
+	public void setRetireReason(String retireReason) {
+		this.retireReason = retireReason;
+	}
 	
 }

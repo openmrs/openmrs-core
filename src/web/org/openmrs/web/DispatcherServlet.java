@@ -24,18 +24,14 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.beans.BeansException;
 
 /**
- * This class is only used to get access to the DispatcherServlet. After
- * creation, this objext is saved to WebUtil for later use.
- *  
- * When Spring's webApplicationContext is refreshed, the DispatcherServlet 
- * needs to be refreshed too.
- * 
+ * This class is only used to get access to the DispatcherServlet. After creation, this objext is
+ * saved to WebUtil for later use. When Spring's webApplicationContext is refreshed, the
+ * DispatcherServlet needs to be refreshed too.
  */
-public class DispatcherServlet extends
-		org.springframework.web.servlet.DispatcherServlet {
-
+public class DispatcherServlet extends org.springframework.web.servlet.DispatcherServlet {
+	
 	private static final long serialVersionUID = -6925172744402818729L;
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	@Override
@@ -50,7 +46,7 @@ public class DispatcherServlet extends
 		WebModuleUtil.setDispatcherServlet(this);
 		
 		super.initFrameworkServlet();
-
+		
 		// the spring context gets reset by the framework servlet, so we need to 
 		// reload the advice points that were lost when refreshing Spring
 		for (Module module : ModuleFactory.getStartedModules()) {
@@ -62,11 +58,9 @@ public class DispatcherServlet extends
 	public void reInitFrameworkServlet() throws ServletException {
 		log.debug("Framework being REinitialized");
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-
+		
 		// reset bean info and framework servlet
 		init();
 	}
-
-	
 	
 }

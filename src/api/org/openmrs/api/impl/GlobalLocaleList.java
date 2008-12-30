@@ -23,57 +23,57 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * A utility class which caches the current list of allowed locales,
- * rebuilding the list whenever the global properties are updated.
- * 
+ * A utility class which caches the current list of allowed locales, rebuilding the list whenever
+ * the global properties are updated.
  */
 public class GlobalLocaleList implements GlobalPropertyListener {
-
+	
 	private List<Locale> allowedLocales = null;
 	
 	/**
-     * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
-     */
-    public void globalPropertyChanged(GlobalProperty newValue) {
-    	allowedLocales = new ArrayList<Locale>();
-    	for (String allowedLocaleString : newValue.getPropertyValue().split(",")) {
-    		try {
-    			Locale allowedLocale = LocaleUtility.fromSpecification(allowedLocaleString.trim());
-    			if (allowedLocale != null) {
-    				allowedLocales.add(allowedLocale);
-    			}
-    		} catch (Exception e) {
-    			// bad locale spec? just ignore it. the UI should take care of
-    			// guiding the user.
-    		}
-    	}
-    }
-
+	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
+	 */
+	public void globalPropertyChanged(GlobalProperty newValue) {
+		allowedLocales = new ArrayList<Locale>();
+		for (String allowedLocaleString : newValue.getPropertyValue().split(",")) {
+			try {
+				Locale allowedLocale = LocaleUtility.fromSpecification(allowedLocaleString.trim());
+				if (allowedLocale != null) {
+					allowedLocales.add(allowedLocale);
+				}
+			}
+			catch (Exception e) {
+				// bad locale spec? just ignore it. the UI should take care of
+				// guiding the user.
+			}
+		}
+	}
+	
 	/**
-     * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
-     */
-    public void globalPropertyDeleted(String propertyName) {
-    	allowedLocales = new ArrayList<Locale>();
-    }
-
+	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
+	 */
+	public void globalPropertyDeleted(String propertyName) {
+		allowedLocales = new ArrayList<Locale>();
+	}
+	
 	/**
-     * @see org.openmrs.api.GlobalPropertyListener#supportsPropertyName(java.lang.String)
-     */
-    public boolean supportsPropertyName(String propertyName) {
-    	return OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST.equals(propertyName);
-    }
-
+	 * @see org.openmrs.api.GlobalPropertyListener#supportsPropertyName(java.lang.String)
+	 */
+	public boolean supportsPropertyName(String propertyName) {
+		return OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST.equals(propertyName);
+	}
+	
 	/**
-	 * Gets the current list of allowed locales. 
-     * 
-     * @return
-     */
-    public List<Locale> getAllowedLocales() {
-    	if (allowedLocales == null) {
-    		allowedLocales = new ArrayList<Locale>();
-    		allowedLocales.add(Locale.ENGLISH);
-    	}
-    	return allowedLocales;
-    }
-
+	 * Gets the current list of allowed locales.
+	 * 
+	 * @return
+	 */
+	public List<Locale> getAllowedLocales() {
+		if (allowedLocales == null) {
+			allowedLocales = new ArrayList<Locale>();
+			allowedLocales.add(Locale.ENGLISH);
+		}
+		return allowedLocales;
+	}
+	
 }

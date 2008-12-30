@@ -18,26 +18,25 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * Every installation of OpenMRS should get a unique implementation id.  If
- * multiple sites use the same dictionary/form setup, than those sites
- * should share the same implementation id.
- * 
- * The ImplementationId is stored and verified on the openmrs
- * servers.
- * 
+ * Every installation of OpenMRS should get a unique implementation id. If multiple sites use the
+ * same dictionary/form setup, than those sites should share the same implementation id. The
+ * ImplementationId is stored and verified on the openmrs servers.
  */
 @Root
 public class ImplementationId implements java.io.Serializable {
-
+	
 	public static final long serialVersionUID = 3752234110L;
-
+	
 	// Fields
-
+	
 	private String name;
+	
 	private String description;
+	
 	private String implementationId;
+	
 	private String passphrase;
-
+	
 	/**
 	 * @return Returns the description.
 	 */
@@ -45,7 +44,7 @@ public class ImplementationId implements java.io.Serializable {
 	public String getDescription() {
 		return description;
 	}
-
+	
 	/**
 	 * @param description The description to set.
 	 */
@@ -53,45 +52,45 @@ public class ImplementationId implements java.io.Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
 	/**
-	 * The implementation id corresponds to the hl7Code
-	 * of the ConceptSource that this corresponds to
+	 * The implementation id corresponds to the hl7Code of the ConceptSource that this corresponds
+	 * to
 	 * 
-     * @return the implementationId
-     */
+	 * @return the implementationId
+	 */
 	@Attribute
 	public String getImplementationId() {
-    	return implementationId;
-    }
-
+		return implementationId;
+	}
+	
 	/**
-	 * The implementation id corresponds to the hl7Code
-	 * of the ConceptSource that this corresponds to
+	 * The implementation id corresponds to the hl7Code of the ConceptSource that this corresponds
+	 * to
 	 * 
-     * @param implementationId the implementationId to set
-     */
-    @Attribute
-    public void setImplementationId(String implementationId) {
-    	this.implementationId = implementationId;
-    }
-
+	 * @param implementationId the implementationId to set
+	 */
+	@Attribute
+	public void setImplementationId(String implementationId) {
+		this.implementationId = implementationId;
+	}
+	
 	/**
 	 * @return the passphrase
 	 */
-	@Element(data = true, required=false)
+	@Element(data = true, required = false)
 	public String getPassphrase() {
 		return passphrase;
 	}
-
+	
 	/**
 	 * @param passphrase the passphrase to set
 	 */
-	@Element(data = true, required=false)
+	@Element(data = true, required = false)
 	public void setPassphrase(String passphrase) {
 		this.passphrase = passphrase;
 	}
-
+	
 	/**
 	 * @return Returns the name.
 	 */
@@ -99,7 +98,7 @@ public class ImplementationId implements java.io.Serializable {
 	public String getName() {
 		return name;
 	}
-
+	
 	/**
 	 * @param name The concept source name to set.
 	 */
@@ -107,5 +106,5 @@ public class ImplementationId implements java.io.Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 }

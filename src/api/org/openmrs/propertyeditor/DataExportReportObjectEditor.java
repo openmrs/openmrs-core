@@ -22,14 +22,14 @@ import org.openmrs.reporting.export.DataExportReportObject;
 import org.springframework.util.StringUtils;
 
 public class DataExportReportObjectEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	/**
 	 * Public constructor
-	 *
 	 */
-	public DataExportReportObjectEditor() {	}
+	public DataExportReportObjectEditor() {
+	}
 	
 	/**
 	 * 
@@ -45,19 +45,17 @@ public class DataExportReportObjectEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Report object not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-	
 	
 	/**
 	 * 
 	 */
 	public String getAsText() {
 		log.debug("Getting cohort text " + getValue());
-		String text = "";		
+		String text = "";
 		DataExportReportObject obj = (DataExportReportObject) getValue();
 		if (obj != null && obj.getReportObjectId() != null) {
 			text = String.valueOf(obj.getReportObjectId());
@@ -65,7 +63,5 @@ public class DataExportReportObjectEditor extends PropertyEditorSupport {
 		log.debug("Text: " + text);
 		return text;
 	}
-
-	
 	
 }

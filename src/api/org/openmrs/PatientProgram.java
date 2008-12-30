@@ -21,10 +21,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openmrs.util.OpenmrsUtil;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PatientProgram
@@ -32,25 +31,39 @@ import org.apache.commons.logging.LogFactory;
 public class PatientProgram implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 0L;
+	
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	// ******************
 	// Properties
 	// ******************
 	
 	private Integer patientProgramId;
+	
 	private Patient patient;
+	
 	private Program program;
+	
 	private Date dateEnrolled;
+	
 	private Date dateCompleted;
+	
 	private Set<PatientState> states = new HashSet<PatientState>();
-	private User creator; 
-	private Date dateCreated; 
+	
+	private User creator;
+	
+	private Date dateCreated;
+	
 	private User changedBy;
+	
 	private Date dateChanged;
+	
 	private Boolean voided = false;
+	
 	private User voidedBy;
+	
 	private Date dateVoided;
+	
 	private String voidReason;
 	
 	// ******************
@@ -58,16 +71,17 @@ public class PatientProgram implements java.io.Serializable {
 	// ******************
 	
 	/** Default Constructor */
-	public PatientProgram() { }
+	public PatientProgram() {
+	}
 	
 	/** Constructor with id */
 	public PatientProgram(Integer patientProgramId) {
 		setPatientProgramId(patientProgramId);
 	}
 	
-		/**
-	 * Does a mostly-shallow copy of this PatientProgram. Does not copy patientProgramId.
-	 * The 'states' property will be deep-copied.
+	/**
+	 * Does a mostly-shallow copy of this PatientProgram. Does not copy patientProgramId. The
+	 * 'states' property will be deep-copied.
 	 * 
 	 * @return a shallow copy of this PatientProgram
 	 */
@@ -77,7 +91,7 @@ public class PatientProgram implements java.io.Serializable {
 	
 	/**
 	 * The purpose of this method is to allow subclasses of PatientProgram to delegate a portion of
-	 * their copy() method back to the superclass, in case the base class implementation changes. 
+	 * their copy() method back to the superclass, in case the base class implementation changes.
 	 * 
 	 * @param target a PatientProgram that will have the state of <code>this</code> copied into it
 	 * @return the PatientProgram that was passed in, with state copied into it
@@ -105,36 +119,45 @@ public class PatientProgram implements java.io.Serializable {
 		target.setDateVoided(this.getDateVoided());
 		target.setVoidReason(this.getVoidReason());
 		return target;
-	}	
+	}
 	
 	// ******************
 	// Instance methods
 	// ******************
 	
 	/**
-	 * Returns true if the associated {@link Patient} is enrolled in the associated {@link Program} on the passed {@link Date}
+	 * Returns true if the associated {@link Patient} is enrolled in the associated {@link Program}
+	 * on the passed {@link Date}
+	 * 
 	 * @param onDate - Date to check for PatientProgram enrollment
-	 * @return boolean - true if the associated {@link Patient} is enrolled in the associated {@link Program} on the passed {@link Date}
+	 * @return boolean - true if the associated {@link Patient} is enrolled in the associated
+	 *         {@link Program} on the passed {@link Date}
 	 */
 	public boolean getActive(Date onDate) {
 		if (onDate == null) {
 			onDate = new Date();
 		}
-		return !getVoided() && (getDateEnrolled() == null || OpenmrsUtil.compare(getDateEnrolled(), onDate) <= 0) && (getDateCompleted() == null || OpenmrsUtil.compare(getDateCompleted(), onDate) > 0); 
+		return !getVoided() && (getDateEnrolled() == null || OpenmrsUtil.compare(getDateEnrolled(), onDate) <= 0)
+		        && (getDateCompleted() == null || OpenmrsUtil.compare(getDateCompleted(), onDate) > 0);
 	}
 	
 	/**
-	 * Returns true if the associated {@link Patient} is currently enrolled in the associated {@link Program}
-	 * @return boolean - true if the associated {@link Patient} is currently enrolled in the associated {@link Program}
+	 * Returns true if the associated {@link Patient} is currently enrolled in the associated
+	 * {@link Program}
+	 * 
+	 * @return boolean - true if the associated {@link Patient} is currently enrolled in the
+	 *         associated {@link Program}
 	 */
 	public boolean getActive() {
 		return getActive(null);
 	}
 	
 	/**
-	 * Returns the {@link PatientState} associated with this PatientProgram that has an id that matches the passed <code>patientStateId</code> 
+	 * Returns the {@link PatientState} associated with this PatientProgram that has an id that
+	 * matches the passed <code>patientStateId</code>
+	 * 
 	 * @param patientStateId - The identifier to use to lookup a {@link PatientState}
-	 * @return PatientState that has an id that matches the passed <code>patientStateId</code> 
+	 * @return PatientState that has an id that matches the passed <code>patientStateId</code>
 	 */
 	public PatientState getPatientState(Integer patientStateId) {
 		for (PatientState s : getStates()) {
@@ -146,9 +169,11 @@ public class PatientProgram implements java.io.Serializable {
 	}
 	
 	/**
-	 * Attempts to transition the PatientProgram to the passed {@link ProgramWorkflowState} on the passed {@link Date}
-	 * by ending the most recent {@link PatientState} in the {@link PatientProgram} and creating a new one with the passed {@link ProgramWorkflowState}
+	 * Attempts to transition the PatientProgram to the passed {@link ProgramWorkflowState} on the
+	 * passed {@link Date} by ending the most recent {@link PatientState} in the
+	 * {@link PatientProgram} and creating a new one with the passed {@link ProgramWorkflowState}
 	 * This will throw an IllegalArgumentException if the transition is invalid
+	 * 
 	 * @param programWorkflowState - The {@link ProgramWorkflowState} to transition to
 	 * @param onDate - The {@link Date} of the transition
 	 * @throws IllegalArgumentException
@@ -161,11 +186,14 @@ public class PatientProgram implements java.io.Serializable {
 		if (lastState != null && lastState.getEndDate() != null) {
 			throw new IllegalArgumentException("You can't change out of a state that has an end date already");
 		}
-		if (lastState != null && lastState.getStartDate() != null && OpenmrsUtil.compare(lastState.getStartDate(), onDate) > 0) {
+		if (lastState != null && lastState.getStartDate() != null
+		        && OpenmrsUtil.compare(lastState.getStartDate(), onDate) > 0) {
 			throw new IllegalArgumentException("You can't change out of a state before that state started");
 		}
-		if (lastState != null && !programWorkflowState.getProgramWorkflow().isLegalTransition(lastState.getState(), programWorkflowState)) {
-			throw new IllegalArgumentException("You can't change from state " + lastState.getState() + " to " + programWorkflowState);
+		if (lastState != null
+		        && !programWorkflowState.getProgramWorkflow().isLegalTransition(lastState.getState(), programWorkflowState)) {
+			throw new IllegalArgumentException("You can't change from state " + lastState.getState() + " to "
+			        + programWorkflowState);
 		}
 		if (lastState != null) {
 			lastState.setEndDate(onDate);
@@ -174,16 +202,18 @@ public class PatientProgram implements java.io.Serializable {
 		PatientState newState = new PatientState();
 		newState.setPatientProgram(this);
 		newState.setState(programWorkflowState);
-		newState.setStartDate(onDate);		
+		newState.setStartDate(onDate);
 		
 		getStates().add(newState);
 	}
 	
 	/**
-	 * Attempts to void the latest {@link PatientState} in the {@link PatientProgram}
-	 * If earlier PatientStates exist, it will try to reset the endDate to null so that
-	 * the next latest state becomes the current {@link PatientState}
-	 * @param workflow - The {@link ProgramWorkflow} whose last {@link PatientState} within the current {@link PatientProgram} we want to void
+	 * Attempts to void the latest {@link PatientState} in the {@link PatientProgram} If earlier
+	 * PatientStates exist, it will try to reset the endDate to null so that the next latest state
+	 * becomes the current {@link PatientState}
+	 * 
+	 * @param workflow - The {@link ProgramWorkflow} whose last {@link PatientState} within the
+	 *            current {@link PatientProgram} we want to void
 	 * @param voidBy - The user who is voiding the {@link PatientState}
 	 * @param voidDate - The date to void the {@link PatientState}
 	 * @param voidReason - The reason for voiding the {@link PatientState}
@@ -213,19 +243,21 @@ public class PatientProgram implements java.io.Serializable {
 			nextToLast.setChangedBy(voidBy);
 		}
 	}
-
+	
 	/**
-	 * Returns the current {@link PatientState} for the passed {@link ProgramWorkflow} within this {@link PatientProgram}.
+	 * Returns the current {@link PatientState} for the passed {@link ProgramWorkflow} within this
+	 * {@link PatientProgram}.
 	 * 
-	 * @param programWorkflow
-	 * 				The ProgramWorkflow whose current {@link PatientState} we want to retrieve
-	 * @return PatientState 
-	 * 				The current {@link PatientState} for the passed {@link ProgramWorkflow} within this {@link PatientProgram}
+	 * @param programWorkflow The ProgramWorkflow whose current {@link PatientState} we want to
+	 *            retrieve
+	 * @return PatientState The current {@link PatientState} for the passed {@link ProgramWorkflow}
+	 *         within this {@link PatientProgram}
 	 */
 	public PatientState getCurrentState(ProgramWorkflow programWorkflow) {
 		Date now = new Date();
 		for (PatientState state : getStates()) {
-			if ( ( programWorkflow == null || state.getState().getProgramWorkflow().equals(programWorkflow) ) && state.getActive(now) ) {
+			if ((programWorkflow == null || state.getState().getProgramWorkflow().equals(programWorkflow))
+			        && state.getActive(now)) {
 				return state;
 			}
 		}
@@ -238,27 +270,33 @@ public class PatientProgram implements java.io.Serializable {
 	public PatientState getCurrentState() {
 		return getCurrentState(null);
 	}
-
+	
 	/**
-	 * Returns a Set<PatientState> of all current {@link PatientState}s for the {@link PatientProgram}
+	 * Returns a Set<PatientState> of all current {@link PatientState}s for the
+	 * {@link PatientProgram}
+	 * 
 	 * @return Set<PatientState> of all current {@link PatientState}s for the {@link PatientProgram}
 	 */
 	public Set<PatientState> getCurrentStates() {
 		Set<PatientState> ret = new HashSet<PatientState>();
 		Date now = new Date();
-		for ( PatientState state : getStates() ) {
+		for (PatientState state : getStates()) {
 			if (state.getActive(now)) {
 				ret.add(state);
 			}
 		}
 		return ret;
 	}
-
+	
 	/**
-	 * Returns a List<PatientState> of all {@link PatientState}s in the passed {@link ProgramWorkflow} for the {@link PatientProgram}
+	 * Returns a List<PatientState> of all {@link PatientState}s in the passed
+	 * {@link ProgramWorkflow} for the {@link PatientProgram}
+	 * 
 	 * @param programWorkflow - The {@link ProgramWorkflow} to check
-	 * @param includeVoided - If true, return voided {@link PatientState}s in the returned {@link List}
-	 * @return List<PatientState> of all {@link PatientState}s in the passed {@link ProgramWorkflow} for the {@link PatientProgram}
+	 * @param includeVoided - If true, return voided {@link PatientState}s in the returned
+	 *            {@link List}
+	 * @return List<PatientState> of all {@link PatientState}s in the passed {@link ProgramWorkflow}
+	 *         for the {@link PatientProgram}
 	 */
 	public List<PatientState> statesInWorkflow(ProgramWorkflow programWorkflow, boolean includeVoided) {
 		List<PatientState> ret = new ArrayList<PatientState>();
@@ -268,6 +306,7 @@ public class PatientProgram implements java.io.Serializable {
 			}
 		}
 		Collections.sort(ret, new Comparator<PatientState>() {
+			
 			public int compare(PatientState left, PatientState right) {
 				return OpenmrsUtil.compareWithNullAsEarliest(left.getStartDate(), right.getStartDate());
 			}
@@ -278,7 +317,7 @@ public class PatientProgram implements java.io.Serializable {
 	/** @see Object#equals(Object) */
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof PatientProgram) {
-			PatientProgram p = (PatientProgram)obj;
+			PatientProgram p = (PatientProgram) obj;
 			if (this.getPatientProgramId() == null) {
 				return p.getPatientProgramId() == null;
 			}
@@ -286,92 +325,93 @@ public class PatientProgram implements java.io.Serializable {
 		}
 		return false;
 	}
-
+	
 	/** @see Object#toString() */
 	public String toString() {
-		return "PatientProgram(id=" + getPatientProgramId() + ", patient=" + getPatient() + ", program=" + getProgram() + ")";
+		return "PatientProgram(id=" + getPatientProgramId() + ", patient=" + getPatient() + ", program=" + getProgram()
+		        + ")";
 	}
 	
 	// ******************
 	// Property Access
 	// ******************
-
+	
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	public Date getDateCompleted() {
 		return dateCompleted;
 	}
-
+	
 	public void setDateCompleted(Date dateCompleted) {
 		this.dateCompleted = dateCompleted;
 	}
-
+	
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 	public Date getDateEnrolled() {
 		return dateEnrolled;
 	}
-
+	
 	public void setDateEnrolled(Date dateEnrolled) {
 		this.dateEnrolled = dateEnrolled;
 	}
-
+	
 	public Patient getPatient() {
 		return patient;
 	}
-
+	
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
-
+	
 	public Integer getPatientProgramId() {
 		return patientProgramId;
 	}
-
+	
 	public void setPatientProgramId(Integer patientProgramId) {
 		this.patientProgramId = patientProgramId;
 	}
-
+	
 	public Program getProgram() {
 		return program;
 	}
-
+	
 	public void setProgram(Program program) {
 		this.program = program;
 	}
-
+	
 	public User getChangedBy() {
 		return changedBy;
 	}
-
+	
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-
+	
 	public Date getDateChanged() {
 		return dateChanged;
 	}
-
+	
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
-
+	
 	public Set<PatientState> getStates() {
 		return states;
 	}
-
+	
 	public void setStates(Set<PatientState> states) {
 		this.states = states;
 	}
@@ -379,31 +419,31 @@ public class PatientProgram implements java.io.Serializable {
 	public Date getDateVoided() {
 		return dateVoided;
 	}
-
+	
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
-
+	
 	public Boolean getVoided() {
 		return voided;
 	}
-
+	
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
-
+	
 	public User getVoidedBy() {
 		return voidedBy;
 	}
-
+	
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
-
+	
 	public String getVoidReason() {
 		return voidReason;
 	}
-
+	
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}

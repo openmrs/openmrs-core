@@ -24,19 +24,16 @@ public abstract class AdministrationSectionExt extends Extension {
 	}
 	
 	/**
-	 * The title is used as the larger text above the links on the admin
-	 * screen.  The returned String can be either straight up plain
-	 * text or a Spring message code.
+	 * The title is used as the larger text above the links on the admin screen. The returned String
+	 * can be either straight up plain text or a Spring message code.
 	 * 
 	 * @return String title
 	 */
 	public abstract String getTitle();
 	
 	/**
-	 * Returns the required privilege in order to see this section.  Can be a 
-	 * comma delimited list of privileges.  
-	 * If the default empty string is returned, only an authenticated 
-	 * user is required
+	 * Returns the required privilege in order to see this section. Can be a comma delimited list of
+	 * privileges. If the default empty string is returned, only an authenticated user is required
 	 * 
 	 * @return Privilege string
 	 */
@@ -54,5 +51,5 @@ public abstract class AdministrationSectionExt extends Extension {
 	 * @return Map<String, String> of <link, title>
 	 */
 	public abstract Map<String, String> getLinks();
-		
+	
 }

@@ -43,30 +43,31 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class PersonAttributeTypeListController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -75,7 +76,7 @@ public class PersonAttributeTypeListController extends SimpleFormController {
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
-
+			
 			String success = "";
 			String error = "";
 			
@@ -83,33 +84,37 @@ public class PersonAttributeTypeListController extends SimpleFormController {
 				PersonService ps = Context.getPersonService();
 				
 				String[] attrTypeList = request.getParameterValues("personAttributeTypeId");
-					if(attrTypeList != null){
+				if (attrTypeList != null) {
 					String type = msa.getMessage("PersonAttributeType.title");
 					String deleted = msa.getMessage("general.deleted");
 					String notDeleted = msa.getMessage("general.cannot.delete");
 					for (String p : attrTypeList) {
 						try {
 							ps.deletePersonAttributeType(Integer.valueOf(p));
-							if (!success.equals("")) success += "<br/>";
+							if (!success.equals(""))
+								success += "<br/>";
 							success += type + " #" + p + " " + deleted;
 						}
 						catch (Exception e) {
 							log.warn("Error deleting person attribute type", e);
-							if (!error.equals("")) error += "<br/>";
+							if (!error.equals(""))
+								error += "<br/>";
 							error += type + " #" + p + " " + notDeleted;
 						}
 					}
-				}
-				else
+				} else
 					error = msa.getMessage("PersonAttributeType.select");
-			}
-			else if ("attrs".equals(action)) {
+			} else if ("attrs".equals(action)) {
 				AdministrationService as = Context.getAdministrationService();
 				
-				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, request.getParameter("patient.listingAttributeTypes")));
-				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, request.getParameter("patient.viewingAttributeTypes")));
-				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, request.getParameter("user.listingAttributeTypes")));
-				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, request.getParameter("user.viewingAttributeTypes")));
+				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES,
+				        request.getParameter("patient.listingAttributeTypes")));
+				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES,
+				        request.getParameter("patient.viewingAttributeTypes")));
+				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, request
+				        .getParameter("user.listingAttributeTypes")));
+				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, request
+				        .getParameter("user.viewingAttributeTypes")));
 				
 				success = msa.getMessage("PersonAttributeType.viewingListing.saved");
 			}
@@ -123,46 +128,46 @@ public class PersonAttributeTypeListController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		//default empty Object
 		List<PersonAttributeType> attributeTypeList = new Vector<PersonAttributeType>();
 		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			PersonService ps = Context.getPersonService();
-	    	attributeTypeList = ps.getAllPersonAttributeTypes();
+			attributeTypeList = ps.getAllPersonAttributeTypes();
 		}
-    	
-        return attributeTypeList;
-    }
-
-
-    /**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+		
+		return attributeTypeList;
+	}
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
-
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		AdministrationService as = Context.getAdministrationService();
 		
-		map.put("patientListingAttributeTypes", as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES));
-		map.put("patientViewingAttributeTypes", as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES));
+		map.put("patientListingAttributeTypes", as
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES));
+		map.put("patientViewingAttributeTypes", as
+		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES));
 		map.put("userListingAttributeTypes", as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES));
 		map.put("userViewingAttributeTypes", as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES));
 		
 		return map;
 	}
-    
-    
+	
 }

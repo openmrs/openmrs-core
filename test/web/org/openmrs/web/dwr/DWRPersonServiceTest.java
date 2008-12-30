@@ -18,18 +18,14 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.web.dwr.DWRPersonService;
-import org.openmrs.web.dwr.PersonListItem;
 
 /**
  * Test the different aspects of {@link DWRPersonServiceTest}
  */
 public class DWRPersonServiceTest extends BaseContextSensitiveTest {
-
+	
 	/**
-	 * @verifies findPeopleByRoles
-	 * test = on patient identifiers
-	 * 
+	 * @verifies findPeopleByRoles test = on patient identifiers
 	 */
 	@Test
 	public void findPeopleByRoles_shouldMatchOnPatientIdentifier() throws Exception {
@@ -42,9 +38,7 @@ public class DWRPersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies findPeopleByRoles
-	 *  test = allow null roles parameter
-	 * 
+	 * @verifies findPeopleByRoles test = allow null roles parameter
 	 * @throws Exception
 	 */
 	@Test

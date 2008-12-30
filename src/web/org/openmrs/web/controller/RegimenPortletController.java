@@ -33,7 +33,7 @@ public class RegimenPortletController extends PortletController {
 		String drugSetIds = (String) model.get("displayDrugSetIds");
 		String cachedDrugSetIds = (String) model.get("cachedDrugSetIds");
 		if (cachedDrugSetIds == null || !cachedDrugSetIds.equals(drugSetIds)) {
-			if ( drugSetIds != null && drugSetIds.length() > 0 ) {
+			if (drugSetIds != null && drugSetIds.length() > 0) {
 				Map<String, List<DrugOrder>> patientDrugOrderSets = new HashMap<String, List<DrugOrder>>();
 				Map<String, List<DrugOrder>> currentDrugOrderSets = new HashMap<String, List<DrugOrder>>();
 				Map<String, List<DrugOrder>> completedDrugOrderSets = new HashMap<String, List<DrugOrder>>();
@@ -55,8 +55,8 @@ public class RegimenPortletController extends PortletController {
 				}
 				for (DrugOrder order : ((List<DrugOrder>) model.get("patientDrugOrders"))) {
 					String setIdToUse = null;
-					if (order.getDrug() != null){
-					Concept orderConcept = order.getDrug().getConcept();
+					if (order.getDrug() != null) {
+						Concept orderConcept = order.getDrug().getConcept();
 						for (Map.Entry<String, Collection<Concept>> e : drugConceptsBySetId.entrySet()) {
 							if (e.getValue().contains(orderConcept)) {
 								setIdToUse = e.getKey();
@@ -83,17 +83,17 @@ public class RegimenPortletController extends PortletController {
 			} // else do nothing - we already have orders in the model
 		}
 	}
-
+	
 	/**
-     * Null-safe version of "drugOrderSets.get(setIdToUse).add(order)" 
-     */
-    private void helper(Map<String, List<DrugOrder>> drugOrderSets, String setIdToUse, DrugOrder order) {
-	    List<DrugOrder> list = drugOrderSets.get(setIdToUse);
-	    if (list == null) {
-	    	list = new ArrayList<DrugOrder>();
-	    	drugOrderSets.put(setIdToUse, list);
-	    }
-	    list.add(order);
-    }
-
+	 * Null-safe version of "drugOrderSets.get(setIdToUse).add(order)"
+	 */
+	private void helper(Map<String, List<DrugOrder>> drugOrderSets, String setIdToUse, DrugOrder order) {
+		List<DrugOrder> list = drugOrderSets.get(setIdToUse);
+		if (list == null) {
+			list = new ArrayList<DrugOrder>();
+			drugOrderSets.put(setIdToUse, list);
+		}
+		list.add(order);
+	}
+	
 }

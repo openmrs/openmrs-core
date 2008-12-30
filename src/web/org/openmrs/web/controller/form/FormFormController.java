@@ -34,9 +34,9 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebConstants;
-import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
@@ -49,81 +49,69 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class FormFormController extends SimpleFormController {
-
+	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
-	protected void initBinder(HttpServletRequest request,
-			ServletRequestDataBinder binder) throws Exception {
+	
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		// NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
-		binder.registerCustomEditor(java.lang.Integer.class,
-				new CustomNumberEditor(java.lang.Integer.class, true));
-		binder.registerCustomEditor(EncounterType.class,
-				new EncounterTypeEditor());
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor());
 	}
-
+	
 	/**
-	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 * by the input form and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request,
-			HttpServletResponse response, Object obj, BindException errors)
-			throws Exception {
-
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
+		
 		HttpSession httpSession = request.getSession();
 		String view = getFormView();
-
+		
 		if (Context.isAuthenticated()) {
 			Form form = (Form) obj;
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 			if (action == null) {
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-						"Form.not.saved");
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
 			} else {
 				if (action.equals(msa.getMessage("Form.save"))) {
 					try {
 						// retrieve xslt from request if it was uploaded
 						if (request instanceof MultipartHttpServletRequest) {
 							MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-							MultipartFile xsltFile = multipartRequest
-									.getFile("xslt_file");
+							MultipartFile xsltFile = multipartRequest.getFile("xslt_file");
 							if (xsltFile != null && !xsltFile.isEmpty()) {
-								String xslt = IOUtils.toString(xsltFile
-										.getInputStream());
+								String xslt = IOUtils.toString(xsltFile.getInputStream());
 								form.setXslt(xslt);
 							}
 						}
-
+						
 						// save form
 						Context.getFormService().updateForm(form);
-						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
-								"Form.saved");
-					} catch (Exception e) {
-						log.error("Error while saving form " +  form.getFormId() , e);
+						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
+					}
+					catch (Exception e) {
+						log.error("Error while saving form " + form.getFormId(), e);
 						errors.reject(e.getMessage());
-						httpSession.setAttribute(
-								WebConstants.OPENMRS_ERROR_ATTR,
-								"Form.not.saved");
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.not.saved");
 						return showForm(request, response, errors);
 					}
 				} else if (action.equals(msa.getMessage("Form.delete"))) {
 					try {
 						Context.getFormService().deleteForm(form);
-						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
-								"Form.deleted");
-					} catch (Exception e) {
+						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.deleted");
+					}
+					catch (Exception e) {
 						log.error("Error while deleting form " + form.getFormId(), e);
 						errors.reject(e.getMessage());
-						httpSession.setAttribute(
-								WebConstants.OPENMRS_ERROR_ATTR,
-								"Form.cannot.delete");
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
 						throw e;
 						//return new ModelAndView(new RedirectView(getSuccessView()));
 					}
@@ -144,66 +132,61 @@ public class FormFormController extends SimpleFormController {
 				} else {
 					try {
 						Context.getFormService().duplicateForm(form);
-						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
-								"Form.duplicated");
-					} catch (Exception e) {
+						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.duplicated");
+					}
+					catch (Exception e) {
 						log.error("Error while duplicating form " + form.getFormId(), e);
 						errors.reject(e.getMessage());
-						httpSession.setAttribute(
-								WebConstants.OPENMRS_ERROR_ATTR,
-								"Form.cannot.duplicate");
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.duplicate");
 						return showForm(request, response, errors);
 					}
 				}
-
+				
 				view = getSuccessView();
 			}
 		}
-
+		
 		return new ModelAndView(new RedirectView(view));
 	}
 	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time. It tells
-	 * Spring the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request)
-			throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		Form form = null;
-
+		
 		if (Context.isAuthenticated()) {
 			FormService fs = Context.getFormService();
 			String formId = request.getParameter("formId");
 			if (formId != null)
 				form = fs.getForm(Integer.valueOf(formId));
 		}
-
+		
 		if (form == null)
 			form = new Form();
-
+		
 		return form;
 	}
-
-	protected Map referenceData(HttpServletRequest request, Object obj,
-			Errors errors) throws Exception {
-
+	
+	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+		
 		Map<String, Object> map = new HashMap<String, Object>();
-
+		
 		List<FieldType> fieldTypes = new Vector<FieldType>();
 		List<EncounterType> encTypes = new Vector<EncounterType>();
-
+		
 		if (Context.isAuthenticated()) {
 			fieldTypes = Context.getFormService().getFieldTypes();
 			encTypes = Context.getEncounterService().getEncounterTypes();
 		}
-
+		
 		map.put("fieldTypes", fieldTypes);
 		map.put("encounterTypes", encTypes);
-
+		
 		return map;
 	}
 }

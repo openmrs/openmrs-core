@@ -40,7 +40,6 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.TestUtil;
 
 /**
  * Tests all methods in the {@link EncounterService}
@@ -50,13 +49,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-initialData.xml";
 	
 	/**
-	 * This method is run before all of the tests in this class
-	 * because it has the @Before annotation on it.  This will
-	 * add the contents of {@link #ENC_INITIAL_DATA_XML} to
-	 * the current database
+	 * This method is run before all of the tests in this class because it has the @Before
+	 * annotation on it. This will add the contents of {@link #ENC_INITIAL_DATA_XML} to the current
+	 * database
 	 * 
 	 * @see BaseContextSensitiveTest#runBeforeAllUnitTests()
-	 * 
 	 * @throws Exception
 	 */
 	@Before
@@ -65,15 +62,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test to make sure that a simple save to a new 
-	 * encounter gets persisted to the database
+	 * Test to make sure that a simple save to a new encounter gets persisted to the database
 	 * 
 	 * @throws Exception
 	 */
 	@Test
 	public void shouldSaveEncounterSuccessfully() throws Exception {
 		Encounter encounter = new Encounter();
-
+		
 		Location loc1 = new Location(1);
 		EncounterType encType1 = new EncounterType(1);
 		Date d1 = new Date();
@@ -85,7 +81,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounter.setEncounterDatetime(d1);
 		encounter.setPatient(pat1);
 		encounter.setProvider(pro1);
-
+		
 		EncounterService es = Context.getEncounterService();
 		es.saveEncounter(encounter);
 		
@@ -96,8 +92,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test a simple update to an encounter that is already in the 
-	 * database.  
+	 * Test a simple update to an encounter that is already in the database.
 	 * 
 	 * @throws Exception
 	 */
@@ -124,13 +119,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounter.setEncounterType(encType2);
 		encounter.setEncounterDatetime(d2);
 		encounter.setPatient(pat2);
-
+		
 		// save to the db
 		es.saveEncounter(encounter);
 		
 		// fetch that encounter from the db
 		Encounter newestEnc = es.getEncounter(encounter.getEncounterId());
-
+		
 		assertFalse("The location should be different", origLocation.equals(loc2));
 		assertTrue("The location should be different", newestEnc.getLocation().equals(loc2));
 		assertFalse("The enc should have changed", origEncType.equals(encType2));
@@ -138,14 +133,12 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertFalse("Make sure the dates changed slightly", origDate.equals(d2));
 		assertTrue("The date needs to have been set", newestEnc.getEncounterDatetime().equals(d2));
 		assertFalse("The patient should be different", origPatient.equals(pat2));
-		assertTrue("The patient should have been set", newestEnc.getPatient().equals(pat2));	
+		assertTrue("The patient should have been set", newestEnc.getPatient().equals(pat2));
 	}
 	
 	/**
-	 * You should be able to add an obs to an encounter, save the encounter,
-	 * and have the obs automatically persisted.
-	 * 
-	 * Added to test bug reported in ticket #827
+	 * You should be able to add an obs to an encounter, save the encounter, and have the obs
+	 * automatically persisted. Added to test bug reported in ticket #827
 	 * 
 	 * @throws Exception
 	 */
@@ -180,8 +173,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure that purging an encounter removes the row
-	 * from the database
+	 * Make sure that purging an encounter removes the row from the database
 	 * 
 	 * @throws Exception
 	 */
@@ -201,8 +193,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure that purging an encounter removes the row
-	 * from the database
+	 * Make sure that purging an encounter removes the row from the database
 	 * 
 	 * @throws Exception
 	 */
@@ -229,15 +220,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * You should be able to add an obs to an encounter, save the encounter,
-	 * and have the obs automatically persisted.
+	 * You should be able to add an obs to an encounter, save the encounter, and have the obs
+	 * automatically persisted.
 	 * 
 	 * @throws Exception
 	 */
 	@Test
 	public void shouldCascadeSaveToObsFromEncounter() throws Exception {
 		EncounterService es = Context.getEncounterService();
-
+		
 		// get an encounter from the database
 		Encounter encounter = es.getEncounter(1);
 		assertNotNull(encounter.getEncounterDatetime());
@@ -263,16 +254,15 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * You should be able to add an obs without an obsDatetime to an encounter, save the encounter,
-	 * and have the obs automatically persisted with the same date as the encounter.
-	 * 
-	 * Added to test bug reported in {@link Ticket#827}
+	 * and have the obs automatically persisted with the same date as the encounter. Added to test
+	 * bug reported in {@link Ticket#827}
 	 * 
 	 * @throws Exception
 	 */
 	@Test
 	public void shouldCascadeObsDatetimeFromEncounter() throws Exception {
 		EncounterService es = Context.getEncounterService();
-
+		
 		// get an encounter from the database
 		Encounter encounter = es.getEncounter(1);
 		assertNotNull(encounter.getEncounterDatetime());
@@ -291,11 +281,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * When the date on an encounter is modified and then saved, 
-	 * the encounterservice changes all of the obsdatetimes to 
-	 * the new datetime.
-	 * 
-	 * This test is showing error http://dev.openmrs.org/ticket/934
+	 * When the date on an encounter is modified and then saved, the encounterservice changes all of
+	 * the obsdatetimes to the new datetime. This test is showing error
+	 * http://dev.openmrs.org/ticket/934
 	 * 
 	 * @throws Exception
 	 */
@@ -334,9 +322,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * When the date on an encounter is modified and then saved, 
-	 * the encounterservice changes all of the obsdatetimes to 
-	 * the new datetime.
+	 * When the date on an encounter is modified and then saved, the encounterservice changes all of
+	 * the obsdatetimes to the new datetime.
 	 * 
 	 * @throws Exception
 	 */
@@ -367,7 +354,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure the creator is preserved when passed into 
+	 * Make sure the creator is preserved when passed into
 	 * {@link EncounterService#saveEncounter(Encounter)}
 	 * 
 	 * @throws Exception
@@ -405,8 +392,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure the creator and dateCreated values are preserved when 
-	 * passed into {@link EncounterService#saveEncounter(Encounter)}
+	 * Make sure the creator and dateCreated values are preserved when passed into
+	 * {@link EncounterService#saveEncounter(Encounter)}
 	 * 
 	 * @throws Exception
 	 */
@@ -449,9 +436,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure the dateCreated is preserved when 
-	 * passed into {@link EncounterService#saveEncounter(Encounter)}
-	 * and no creator is passed in
+	 * Make sure the dateCreated is preserved when passed into
+	 * {@link EncounterService#saveEncounter(Encounter)} and no creator is passed in
 	 * 
 	 * @throws Exception
 	 */
@@ -484,8 +470,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure the obs and order creator and dateCreated is preserved when 
-	 * passed into {@link EncounterService#saveEncounter(Encounter)}
+	 * Make sure the obs and order creator and dateCreated is preserved when passed into
+	 * {@link EncounterService#saveEncounter(Encounter)}
 	 * 
 	 * @throws Exception
 	 */
@@ -535,8 +521,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure the creator and dateCreated valueus are added when 
-	 * passed into {@link EncounterService#saveEncounter(Encounter)}
+	 * Make sure the creator and dateCreated valueus are added when passed into
+	 * {@link EncounterService#saveEncounter(Encounter)}
 	 * 
 	 * @throws Exception
 	 */
@@ -574,8 +560,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Should get all nonvoided encounters by the patient they
-	 * are associated to
+	 * Should get all nonvoided encounters by the patient they are associated to
 	 * 
 	 * @throws Exception
 	 */
@@ -598,14 +583,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowErrorWhenGettingEncountersByPatientWithNullParam() throws Exception {
 		Context.getEncounterService().getEncountersByPatient(null);
 	}
 	
 	/**
-	 * Should get all nonvoided encounters by the patient id they
-	 * are associated to
+	 * Should get all nonvoided encounters by the patient id they are associated to
 	 * 
 	 * @throws Exception
 	 */
@@ -628,14 +612,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowErrorWhenGettingEncountersByPatientIdWithNullParam() throws Exception {
 		Context.getEncounterService().getEncountersByPatientId(null);
 	}
 	
 	/**
-	 * Should get all nonvoided encounters by the patient they
-	 * are associated to
+	 * Should get all nonvoided encounters by the patient they are associated to
 	 * 
 	 * @throws Exception
 	 */
@@ -658,14 +641,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowErrorWhenGettingEncountersByPatientIdentifierWithNullParam() throws Exception {
 		Context.getEncounterService().getEncountersByPatientIdentifier(null);
 	}
 	
 	/**
-	 * Make sure {@link EncounterService#voidEncounter(Encounter, String)}
-	 * marks all the voided stuff correctly
+	 * Make sure {@link EncounterService#voidEncounter(Encounter, String)} marks all the voided
+	 * stuff correctly
 	 * 
 	 * @throws Exception
 	 */
@@ -766,10 +749,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * A void_reason value should be required
-	 *  
+	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowErrorWhenVoidingEncounterWithNullReason() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		Encounter type = encounterService.getEncounter(1);
@@ -777,8 +760,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure {@link EncounterService#unvoidEncounter(Encounter)}
-	 * unmarks all the voided stuff correctly
+	 * Make sure {@link EncounterService#unvoidEncounter(Encounter)} unmarks all the voided stuff
+	 * correctly
 	 * 
 	 * @throws Exception
 	 */
@@ -812,12 +795,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldGetEncountersByLocation() throws Exception {
-		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, new Location(1), null, null, null, null, true);
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, new Location(1), null, null, null,
+		    null, true);
 		assertEquals(4, encounters.size());
 	}
 	
 	/**
-	 * Get encounters that are after a certain date, and ensure the comparison is INCLUSIVE of the given date
+	 * Get encounters that are after a certain date, and ensure the comparison is INCLUSIVE of the
+	 * given date
 	 * 
 	 * @throws Exception
 	 */
@@ -825,14 +810,17 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void shouldGetEncountersOnOrAfterDate() throws Exception {
 		// there is only one unvoided encounter, on 2005-01-01
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
-		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2004-12-31"), null, null, null, false);
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2004-12-31"), null,
+		    null, null, false);
 		assertEquals(4, encounters.size());
 		assertEquals(1, encounters.get(0).getEncounterId().intValue());
-
-		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-01"), null, null, null, false);
+		
+		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-01"), null, null, null,
+		    false);
 		assertEquals(4, encounters.size());
-
-		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-02"), null, null, null, false); 
+		
+		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-02"), null, null, null,
+		    false);
 		assertEquals(3, encounters.size());
 		assertEquals(3, encounters.get(0).getEncounterId().intValue());
 		assertEquals(4, encounters.get(1).getEncounterId().intValue());
@@ -915,7 +903,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure the creator is preserved when passed into 
+	 * Make sure the creator is preserved when passed into
 	 * {@link EncounterService#saveEncounterType(EncounterType)}
 	 * 
 	 * @throws Exception
@@ -951,8 +939,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure the creator and dateCreated values are preserved when 
-	 * passed into {@link EncounterService#saveEncounterType(EncounterType)}
+	 * Make sure the creator and dateCreated values are preserved when passed into
+	 * {@link EncounterService#saveEncounterType(EncounterType)}
 	 * 
 	 * @throws Exception
 	 */
@@ -993,9 +981,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure the dateCreated is preserved when 
-	 * passed into {@link EncounterService#saveEncounterType(EncounterType)}
-	 * and no creator is passed in
+	 * Make sure the dateCreated is preserved when passed into
+	 * {@link EncounterService#saveEncounterType(EncounterType)} and no creator is passed in
 	 * 
 	 * @throws Exception
 	 */
@@ -1029,8 +1016,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * There should be two encounters in the system with the name "Test Enc Type A" and
-	 * one should be retired and one not.  Only the non retired one should be returned here 
+	 * There should be two encounters in the system with the name "Test Enc Type A" and one should
+	 * be retired and one not. Only the non retired one should be returned here
 	 * 
 	 * @throws Exception
 	 */
@@ -1064,8 +1051,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure that the "Some Retired Type" type is not returned
-	 * because it is retired in {@link EncounterService#getEncounterType(String)}
+	 * Make sure that the "Some Retired Type" type is not returned because it is retired in
+	 * {@link EncounterService#getEncounterType(String)}
 	 * 
 	 * @throws Exception
 	 */
@@ -1079,8 +1066,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure that we are matching on exact name and not partial name
-	 * in {@link EncounterService#getEncounterType(String)}
+	 * Make sure that we are matching on exact name and not partial name in
+	 * {@link EncounterService#getEncounterType(String)}
 	 * 
 	 * @throws Exception
 	 */
@@ -1109,13 +1096,12 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// we should not get an error here...but silently return nothing
-		EncounterType type = encounterService.getEncounterType((String)null);
+		EncounterType type = encounterService.getEncounterType((String) null);
 		assertNull(type);
 	}
 	
 	/**
-	 * Test that getting the current encounter types from
-	 * the database works
+	 * Test that getting the current encounter types from the database works
 	 * 
 	 * @throws Exception
 	 */
@@ -1133,8 +1119,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Tests {@link EncounterService#getAllEncounterTypes()} pass through
-	 * to {@link EncounterService#getAllEncounterTypes(boolean)} with false
+	 * Tests {@link EncounterService#getAllEncounterTypes()} pass through to
+	 * {@link EncounterService#getAllEncounterTypes(boolean)} with false
 	 * 
 	 * @throws Exception
 	 */
@@ -1158,12 +1144,14 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 			if (type.isRetired())
 				foundRetired = true;
 		}
-		assertTrue("There should be a retired type in the database so that the getAllEncounterTypes() method can be tested correctly", foundRetired);
+		assertTrue(
+		    "There should be a retired type in the database so that the getAllEncounterTypes() method can be tested correctly",
+		    foundRetired);
 	}
 	
 	/**
-	 * Make sure that {@link EncounterService#getAllEncounterTypes(boolean)}
-	 * with a true parameter returns the retired types
+	 * Make sure that {@link EncounterService#getAllEncounterTypes(boolean)} with a true parameter
+	 * returns the retired types
 	 * 
 	 * @throws Exception
 	 */
@@ -1184,7 +1172,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Find the types that start with "Test Enc" using 
+	 * Find the types that start with "Test Enc" using
 	 * {@link EncounterService#findEncounterTypes(String)}
 	 * 
 	 * @throws Exception
@@ -1197,7 +1185,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Find the types that start with "Test Enc" case-INsensitive using 
+	 * Find the types that start with "Test Enc" case-INsensitive using
 	 * {@link EncounterService#findEncounterTypes(String)}
 	 * 
 	 * @throws Exception
@@ -1210,8 +1198,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * {@link EncounterService#findEncounterTypes(String)} should return 
-	 * retired types as well as nonretired ones
+	 * {@link EncounterService#findEncounterTypes(String)} should return retired types as well as
+	 * nonretired ones
 	 * 
 	 * @throws Exception
 	 */
@@ -1231,8 +1219,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * No types should be returned when using a substring other than the
-	 * starting substring from {@link EncounterService#findEncounterTypes(String)}
+	 * No types should be returned when using a substring other than the starting substring from
+	 * {@link EncounterService#findEncounterTypes(String)}
 	 * 
 	 * @throws Exception
 	 */
@@ -1247,8 +1235,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * {@link EncounterService#findEncounterTypes(String)} should return results
-	 * ordered on EncounterType.name with nonretired ones first
+	 * {@link EncounterService#findEncounterTypes(String)} should return results ordered on
+	 * EncounterType.name with nonretired ones first
 	 * 
 	 * @throws Exception
 	 */
@@ -1269,8 +1257,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure {@link EncounterService#retireEncounterType(EncounterType, String)}
-	 * marks all the retired stuff correctly
+	 * Make sure {@link EncounterService#retireEncounterType(EncounterType, String)} marks all the
+	 * retired stuff correctly
 	 * 
 	 * @throws Exception
 	 */
@@ -1297,10 +1285,10 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * A retire_reason value should be required
-	 *  
+	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowErrorWhenRetiringEncounterTypeWithNullReason() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		EncounterType type = encounterService.getEncounterType(1);
@@ -1308,8 +1296,8 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure {@link EncounterService#unretireEncounterType(EncounterType)}
-	 * unmarks all the retired stuff correctly
+	 * Make sure {@link EncounterService#unretireEncounterType(EncounterType)} unmarks all the
+	 * retired stuff correctly
 	 * 
 	 * @throws Exception
 	 */
@@ -1382,7 +1370,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowErrorWhenGettingEncounterById() throws Exception {
 		Context.getEncounterService().getEncounter(null);
 	}
@@ -1392,24 +1380,24 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=IllegalArgumentException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowErrorWhenGettingEncounterTypeById() throws Exception {
-		Context.getEncounterService().getEncounterType((Integer)null);
+		Context.getEncounterService().getEncounterType((Integer) null);
 	}
-
-    /**
-     * @verifies {@link EncounterService#saveEncounter(Encounter)}
-     * test = should cascade patient to orders in the encounter
-     */
-    @Test
-    public void saveEncounter_shouldCascadePatientToOrdersInTheEncounter() throws Exception {
-        Encounter enc = Context.getEncounterService().getEncounter(1);
-        Order existing = enc.getOrders().iterator().next();
-        
-        // for some reason the xml for the existing encounter has already given this order a different patient than the encounter that it's contained in, but let's verify that:
-        Assert.assertNotSame(enc.getPatient(), existing.getPatient());
-       
-        Context.getEncounterService().saveEncounter(enc);
-        Assert.assertEquals(enc.getPatient(), existing.getPatient());
-    }
+	
+	/**
+	 * @verifies {@link EncounterService#saveEncounter(Encounter)} test = should cascade patient to
+	 *           orders in the encounter
+	 */
+	@Test
+	public void saveEncounter_shouldCascadePatientToOrdersInTheEncounter() throws Exception {
+		Encounter enc = Context.getEncounterService().getEncounter(1);
+		Order existing = enc.getOrders().iterator().next();
+		
+		// for some reason the xml for the existing encounter has already given this order a different patient than the encounter that it's contained in, but let's verify that:
+		Assert.assertNotSame(enc.getPatient(), existing.getPatient());
+		
+		Context.getEncounterService().saveEncounter(enc);
+		Assert.assertEquals(enc.getPatient(), existing.getPatient());
+	}
 }

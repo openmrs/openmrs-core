@@ -23,11 +23,11 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class PersonAttributeEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
-
+	
 	public void setAsText(String text) throws IllegalArgumentException {
-		PersonService ps = Context.getPersonService(); 
+		PersonService ps = Context.getPersonService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(ps.getPersonAttribute(Integer.valueOf(text)));
@@ -36,18 +36,16 @@ public class PersonAttributeEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Person Attribute Type not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
-		PersonAttribute t = (PersonAttribute)getValue();
+		PersonAttribute t = (PersonAttribute) getValue();
 		if (t == null) {
 			return "";
-		}
-		else {
+		} else {
 			return t.getPersonAttributeId().toString();
 		}
 	}

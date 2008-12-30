@@ -24,10 +24,11 @@ import java.util.Map;
 import org.openmrs.util.OpenmrsUtil;
 
 public class DataTable {
-
+	
 	private List<String> columnOrder;
+	
 	private ArrayList<TableRow> rows;
-
+	
 	public DataTable() {
 		columnOrder = new ArrayList<String>();
 		rows = new ArrayList<TableRow>();
@@ -70,15 +71,16 @@ public class DataTable {
 	
 	public void sortByColumn(final String colName) {
 		Collections.sort(rows, new Comparator<TableRow>() {
-				@SuppressWarnings("unchecked")
-				public int compare(TableRow left, TableRow right) {
-					Comparable l = (Comparable) left.get(colName);
-					Comparable r = (Comparable) right.get(colName);
-					return OpenmrsUtil.compareWithNullAsLowest(l, r);
-				}
-			});
+			
+			@SuppressWarnings("unchecked")
+			public int compare(TableRow left, TableRow right) {
+				Comparable l = (Comparable) left.get(colName);
+				Comparable r = (Comparable) right.get(colName);
+				return OpenmrsUtil.compareWithNullAsLowest(l, r);
+			}
+		});
 	}
-
+	
 	public Map<String, DataTable> split(TableRowClassifier trc) {
 		Map<String, DataTable> ret = new HashMap<String, DataTable>();
 		for (TableRow row : rows) {
@@ -142,7 +144,7 @@ public class DataTable {
 		}
 		sb.append("</tbody></table>");
 		return sb.toString();
-	
+		
 	}
 	
 }

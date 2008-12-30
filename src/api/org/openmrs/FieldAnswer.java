@@ -16,28 +16,33 @@ package org.openmrs;
 import java.util.Date;
 
 /**
- * FieldAnswer 
+ * FieldAnswer
+ * 
  * @version 1.0
  */
 public class FieldAnswer implements java.io.Serializable {
-
+	
 	public static final long serialVersionUID = 5656L;
-
+	
 	// Fields
-
+	
 	private Date dateCreated;
+	
 	private Concept concept;
+	
 	private User creator;
+	
 	private Field field;
+	
 	private boolean dirty;
-
+	
 	// Constructors
-
+	
 	/** default constructor */
 	public FieldAnswer() {
 	}
-
-	/** 
+	
+	/**
 	 * Compares two objects for similarity
 	 * 
 	 * @param obj
@@ -45,20 +50,19 @@ public class FieldAnswer implements java.io.Serializable {
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof FieldAnswer) {
-			FieldAnswer fa = (FieldAnswer)obj;
-			return (field.equals(fa.getField()) &&
-					concept.equals(fa.getConcept()));
+			FieldAnswer fa = (FieldAnswer) obj;
+			return (field.equals(fa.getField()) && concept.equals(fa.getConcept()));
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (this.getField() == null || this.getConcept() == null) return super.hashCode();
+		if (this.getField() == null || this.getConcept() == null)
+			return super.hashCode();
 		return this.getConcept().hashCode() + this.getField().hashCode();
 	}
-
+	
 	/**
-	 * 
 	 * @return boolean whether or not this fieldAnswer has been modified
 	 */
 	public boolean isDirty() {
@@ -70,14 +74,14 @@ public class FieldAnswer implements java.io.Serializable {
 	}
 	
 	// Property accessors
-
+	
 	/**
 	 * @return Returns the concept.
 	 */
 	public Concept getConcept() {
 		return concept;
 	}
-
+	
 	/**
 	 * @param concept The concept to set.
 	 */
@@ -85,14 +89,14 @@ public class FieldAnswer implements java.io.Serializable {
 		this.dirty = true;
 		this.concept = concept;
 	}
-
+	
 	/**
 	 * @return Returns the creator.
 	 */
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	/**
 	 * @param creator The creator to set.
 	 */
@@ -100,14 +104,14 @@ public class FieldAnswer implements java.io.Serializable {
 		this.dirty = true;
 		this.creator = creator;
 	}
-
+	
 	/**
 	 * @return Returns the dateCreated.
 	 */
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
@@ -115,14 +119,14 @@ public class FieldAnswer implements java.io.Serializable {
 		this.dirty = true;
 		this.dateCreated = dateCreated;
 	}
-
+	
 	/**
 	 * @return Returns the field.
 	 */
 	public Field getField() {
 		return field;
 	}
-
+	
 	/**
 	 * @param field The field to set.
 	 */

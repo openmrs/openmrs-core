@@ -21,51 +21,48 @@ import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.TaskDefinition;
 
 /**
- *  Implementation of the stateful task that sends an email.
- *
+ * Implementation of the stateful task that sends an email.
  */
-public class TestTask extends AbstractTask { 
-
+public class TestTask extends AbstractTask {
+	
 	private static int executionCount = 0;
 	
 	// Logger 
-	private Log log = LogFactory.getLog( TestTask.class );
+	private Log log = LogFactory.getLog(TestTask.class);
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(org.openmrs.scheduler.TaskConfig)
 	 */
-	public void initialize(TaskDefinition taskDefinition) { 
-		log.info("Initializing task " + taskDefinition );
-	} 
+	public void initialize(TaskDefinition taskDefinition) {
+		log.info("Initializing task " + taskDefinition);
+	}
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
 	@Override
-	public void execute() { 
+	public void execute() {
 		log.info("Executing task at " + new Date());
 		
 		// Throw a runtime exception once every ten executions
-		if (++executionCount % 10 == 0) { 
+		if (++executionCount % 10 == 0) {
 			log.info("Throwing a runtime exception in an attempt to break the scheduler");
-			throw new RuntimeException();			
+			throw new RuntimeException();
 		}
 		
-		if (!Context.isAuthenticated()) { 
+		if (!Context.isAuthenticated()) {
 			log.info("Authenticating ...");
 			authenticate();
 		}
 		
 	}
-
-
+	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#shutdown()
 	 */
-    public void shutdown() {
-    	log.info("Shutting down task ...");
-    	super.shutdown();
-    }
-	
+	public void shutdown() {
+		log.info("Shutting down task ...");
+		super.shutdown();
+	}
 	
 }

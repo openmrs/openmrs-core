@@ -37,7 +37,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
 	private static Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
 	
-	protected Set<String> tmpMappingResources = new HashSet<String>(); 
+	protected Set<String> tmpMappingResources = new HashSet<String>();
 	
 	//public SessionFactory newSessionFactory(Configuration config) throws HibernateException {
 	public Configuration newConfiguration() throws HibernateException {
@@ -49,8 +49,8 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		
 		// loop over runtime properties and override each in the configuration
 		for (Object key : properties.keySet()) {
-			String prop = (String)key;
-			String value = (String)properties.get(key);
+			String prop = (String) key;
+			String value = (String) properties.get(key);
 			log.trace("Setting property: " + prop + ":" + value);
 			config.setProperty(prop, value);
 			if (!prop.startsWith("hibernate"))
@@ -63,7 +63,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			Properties props = new Properties();
 			props.load(propertyStream);
 			propertyStream.close();
-	
+			
 			// Only load in the default properties if they don't exist
 			config.mergeProperties(props);
 		}
@@ -103,7 +103,8 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		catch (Exception e) {
 			log.error("Error while starting up. Bad driver class: " + driver, e);
 			System.err.println(e.getMessage());
-			System.err.println("Could not find driver_class '" + driver + "'.  Can be set with runtime property: 'connection.driver_class'");
+			System.err.println("Could not find driver_class '" + driver
+			        + "'.  Can be set with runtime property: 'connection.driver_class'");
 			return 1;
 		}
 		
@@ -117,16 +118,23 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			log.error("Error while starting up.  Unable to connection using ", e);
 			System.err.println(e.getMessage());
 			pw = pw.replaceAll(".", "*");
-			System.err.println("Could not connect to database using url '" + url + "', username '" + user + "', and pw '" + pw + "'. Connection properties can be set with runtime property: 'connection.username', 'connection.password', and 'connection.url'");
+			System.err
+			        .println("Could not connect to database using url '"
+			                + url
+			                + "', username '"
+			                + user
+			                + "', and pw '"
+			                + pw
+			                + "'. Connection properties can be set with runtime property: 'connection.username', 'connection.password', and 'connection.url'");
 			return 1;
 		}
 		
 		return 0;
 	}
-
-	/** 
-	 * Collect the mapping resources for future use because the mappingResources object is
-	 * defined as 'private' instead of 'protected'
+	
+	/**
+	 * Collect the mapping resources for future use because the mappingResources object is defined
+	 * as 'private' instead of 'protected'
 	 * 
 	 * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#setMappingResources(java.lang.String[])
 	 */
@@ -147,7 +155,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		}
 		return tmpMappingResources;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.springframework.orm.hibernate3.AbstractSessionFactoryBean#afterPropertiesSet()
 	 */
@@ -159,9 +167,9 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		// just check for testing module's hbm files here?
 		
 		super.afterPropertiesSet();
-			
+		
 	}
-
+	
 	/**
 	 * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#destroy()
 	 */
@@ -175,17 +183,16 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			// see net.sf.ehcache.CacheManager#removeShutdownHook()
 		}
 	}
-
-	/**
-	 * Used by the module testing framework to set the dependent modules in the 
-	 * hibernate session factory
-	 * 
-     * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#setMappingJarLocations(org.springframework.core.io.Resource[])
-     */
-    @Override
-    public void setMappingJarLocations(Resource[] mappingJarLocations) {
-	    super.setMappingJarLocations(mappingJarLocations);
-    }
 	
+	/**
+	 * Used by the module testing framework to set the dependent modules in the hibernate session
+	 * factory
+	 * 
+	 * @see org.springframework.orm.hibernate3.LocalSessionFactoryBean#setMappingJarLocations(org.springframework.core.io.Resource[])
+	 */
+	@Override
+	public void setMappingJarLocations(Resource[] mappingJarLocations) {
+		super.setMappingJarLocations(mappingJarLocations);
+	}
 	
 }

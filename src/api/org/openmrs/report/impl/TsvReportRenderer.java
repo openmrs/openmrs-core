@@ -19,17 +19,18 @@ import org.openmrs.report.ReportSchema;
  *
  */
 public class TsvReportRenderer extends DelimitedTextReportRenderer {
-
-	public TsvReportRenderer() { }
+	
+	public TsvReportRenderer() {
+	}
 	
 	public String getLabel() {
 		return "TSV";
 	}
-
+	
 	public String getFilenameExtension() {
-    	return "tsv";
-    }
-
+		return "tsv";
+	}
+	
 	public String getBeforeColumnDelimiter() {
 		return "\"";
 	}
@@ -37,12 +38,15 @@ public class TsvReportRenderer extends DelimitedTextReportRenderer {
 	public String getAfterColumnDelimiter() {
 		return "\"\t";
 	}
+	
 	public String getBeforeRowDelimiter() {
 		return "";
 	}
+	
 	public String getAfterRowDelimiter() {
 		return "\n";
 	}
+	
 	public String escape(String text) {
 		if (text == null)
 			return null;
@@ -56,12 +60,12 @@ public class TsvReportRenderer extends DelimitedTextReportRenderer {
 	public String getLabel(ReportSchema model) {
 		return "TSV";
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.renderer.ReportRenderer#getRenderedContentType(org.openmrs.report.ReportModel)
 	 */
 	public String getRenderedContentType(ReportSchema model, String argument) {
 		return "text/tsv";
 	}
-
+	
 }

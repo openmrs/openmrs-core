@@ -23,14 +23,14 @@ import org.openmrs.notification.Template;
  * @version 1.0
  */
 public interface TemplateDAO {
-
+	
 	/**
 	 * Get all message templates
 	 * 
 	 * @throws DAOException
 	 */
 	public List<Template> getTemplates() throws DAOException;
-
+	
 	/**
 	 * Get message template by id
 	 * 
@@ -39,24 +39,24 @@ public interface TemplateDAO {
 	 * @throws DAOException
 	 */
 	public Template getTemplate(Integer id) throws DAOException;
-
+	
 	/**
 	 * Get message template by name
 	 * 
-	 * @param name	message template name
+	 * @param name message template name
 	 * @return message template with given name
 	 * @throws DAOException
 	 */
 	public List<Template> getTemplatesByName(String name) throws DAOException;
 	
-	/** 
+	/**
 	 * Create new template.
 	 * 
 	 * @param template
 	 * @throws DAOException
 	 */
 	public void createTemplate(Template template) throws DAOException;
-
+	
 	/**
 	 * Update existing template.
 	 * 

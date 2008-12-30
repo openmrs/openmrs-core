@@ -25,29 +25,30 @@ public class InversePatientFilter extends AbstractPatientFilter implements Patie
 	
 	private PatientFilter baseFilter;
 	
-	public InversePatientFilter() {	}
+	public InversePatientFilter() {
+	}
 	
 	public InversePatientFilter(PatientFilter baseFilter) {
 		this();
 		this.baseFilter = baseFilter;
 	}
-
+	
 	public PatientFilter getBaseFilter() {
 		return baseFilter;
 	}
-
+	
 	public void setBaseFilter(PatientFilter baseFilter) {
 		this.baseFilter = baseFilter;
 	}
-
+	
 	public Cohort filter(Cohort input, EvaluationContext context) {
 		return baseFilter.filterInverse(input, context);
 	}
-
+	
 	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		return baseFilter.filter(input, context);
 	}
-
+	
 	public boolean isReadyToRun() {
 		// TODO Auto-generated method stub
 		return baseFilter != null;
@@ -56,12 +57,12 @@ public class InversePatientFilter extends AbstractPatientFilter implements Patie
 	public String getDescription() {
 		return "NOT " + (baseFilter == null ? "?" : baseFilter.getDescription());
 	}
-
+	
 	/**
-     * @see org.openmrs.report.Parameterizable#getParameters()
-     */
-    public List<Parameter> getParameters() {
-	    return new ArrayList<Parameter>();
-    }
-
+	 * @see org.openmrs.report.Parameterizable#getParameters()
+	 */
+	public List<Parameter> getParameters() {
+		return new ArrayList<Parameter>();
+	}
+	
 }

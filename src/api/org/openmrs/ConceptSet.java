@@ -24,19 +24,23 @@ import org.simpleframework.xml.Root;
  */
 @Root
 public class ConceptSet implements java.io.Serializable {
-
+	
 	public static final long serialVersionUID = 3787L;
-
+	
 	// Fields
-
-	private Concept concept;  // concept in the set
+	
+	private Concept concept; // concept in the set
+	
 	private Concept conceptSet; // parent concept that uses this set
+	
 	private Double sortWeight;
+	
 	private User creator;
+	
 	private Date dateCreated;
-
+	
 	// Constructors
-
+	
 	/** default constructor */
 	public ConceptSet() {
 	}
@@ -51,20 +55,20 @@ public class ConceptSet implements java.io.Serializable {
 			if (concept == null || conceptSet == null)
 				return false;
 			
-			ConceptSet c = (ConceptSet)obj;
-			return (this.concept.equals(c.getConcept()) &&
-					this.conceptSet.equals(c.getConceptSet()));
+			ConceptSet c = (ConceptSet) obj;
+			return (this.concept.equals(c.getConcept()) && this.conceptSet.equals(c.getConceptSet()));
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (this.getConcept() == null || this.getConceptSet() == null) return super.hashCode();
+		if (this.getConcept() == null || this.getConceptSet() == null)
+			return super.hashCode();
 		return this.getConcept().hashCode() + this.getConceptSet().hashCode();
 	}
-
+	
 	// Property accessors
-
+	
 	/**
 	 * 
 	 */
@@ -72,12 +76,12 @@ public class ConceptSet implements java.io.Serializable {
 	public Concept getConcept() {
 		return concept;
 	}
-
+	
 	@Element
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -85,12 +89,12 @@ public class ConceptSet implements java.io.Serializable {
 	public Concept getConceptSet() {
 		return conceptSet;
 	}
-
+	
 	@Element
 	public void setConceptSet(Concept set) {
 		this.conceptSet = set;
 	}
-
+	
 	/**
 	 * @return Returns the sortWeight.
 	 */
@@ -98,16 +102,15 @@ public class ConceptSet implements java.io.Serializable {
 	public Double getSortWeight() {
 		return sortWeight;
 	}
-
+	
 	/**
-	 * @param sortWeight
-	 *            The sortWeight to set.
+	 * @param sortWeight The sortWeight to set.
 	 */
 	@Attribute
 	public void setSortWeight(Double sortWeight) {
 		this.sortWeight = sortWeight;
 	}
-
+	
 	/**
 	 * @return Returns the creator.
 	 */
@@ -115,16 +118,15 @@ public class ConceptSet implements java.io.Serializable {
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
 	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	/**
 	 * @return Returns the dateCreated.
 	 */
@@ -132,14 +134,13 @@ public class ConceptSet implements java.io.Serializable {
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	/**
-	 * @param dateCreated
-	 *            The dateCreated to set.
+	 * @param dateCreated The dateCreated to set.
 	 */
 	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 }

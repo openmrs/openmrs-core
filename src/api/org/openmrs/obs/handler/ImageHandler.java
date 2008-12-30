@@ -102,7 +102,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		
 		if (img == null) {
 			throw new APIException("Cannot save complex obs where obsId=" + obs.getObsId()
-		        + " because its ComplexData.getData() is null.");
+			        + " because its ComplexData.getData() is null.");
 		}
 		
 		try {

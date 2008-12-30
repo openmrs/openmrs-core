@@ -39,30 +39,31 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class ConceptClassListController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -70,11 +71,11 @@ public class ConceptClassListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			String success = "";
 			String error = "";
-
+			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
-
+			
 			String[] conceptClassList = request.getParameterValues("conceptClassId");
-			if(conceptClassList != null){
+			if (conceptClassList != null) {
 				ConceptService cs = Context.getConceptService();
 				
 				String deleted = msa.getMessage("general.deleted");
@@ -82,18 +83,18 @@ public class ConceptClassListController extends SimpleFormController {
 				for (String cc : conceptClassList) {
 					try {
 						cs.purgeConceptClass(cs.getConceptClass(Integer.valueOf(cc)));
-						if (!success.equals("")) success += "<br/>";
+						if (!success.equals(""))
+							success += "<br/>";
 						success += cc + " " + deleted;
 					}
-					catch(DataIntegrityViolationException e){
-						error = handleConceptClassIntegrityException(e,error,notDeleted);
+					catch (DataIntegrityViolationException e) {
+						error = handleConceptClassIntegrityException(e, error, notDeleted);
 					}
 					catch (APIException e) {
-						error = handleConceptClassIntegrityException(e,error,notDeleted);
+						error = handleConceptClassIntegrityException(e, error, notDeleted);
 					}
 				}
-			}
-			else
+			} else
 				error = msa.getMessage("ConceptClass.select");
 			
 			view = getSuccessView();
@@ -107,41 +108,40 @@ public class ConceptClassListController extends SimpleFormController {
 	}
 	
 	/**
-	 * 
-	 * Logs a concept class delete data integrity violation exception and 
-	 * returns a user friedly message of the problem that occured.
+	 * Logs a concept class delete data integrity violation exception and returns a user friedly
+	 * message of the problem that occured.
 	 * 
 	 * @param e the exception.
 	 * @param error the error message.
 	 * @param notDeleted the not deleted error message.
 	 * @return the formatted error message.
 	 */
-	private String handleConceptClassIntegrityException(Exception e,String error,String notDeleted){
+	private String handleConceptClassIntegrityException(Exception e, String error, String notDeleted) {
 		log.warn("Error deleting concept class", e);
-		if (!error.equals("")) error += "<br/>";
+		if (!error.equals(""))
+			error += "<br/>";
 		error += notDeleted;
 		return error;
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		//default empty Object
 		List<ConceptClass> conceptClassList = new Vector<ConceptClass>();
 		
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
-	    	conceptClassList = cs.getAllConceptClasses();
+			conceptClassList = cs.getAllConceptClasses();
 		}
-    	
-        return conceptClassList;
-    }
-    
+		
+		return conceptClassList;
+	}
+	
 }

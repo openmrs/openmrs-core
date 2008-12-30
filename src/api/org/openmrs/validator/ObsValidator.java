@@ -23,31 +23,28 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
- * Validator for the Obs class.  This class checks for 
- * anything set on the Obs object that will cause errors or
- * is incorrect.  Things checked are similar to:
+ * Validator for the Obs class. This class checks for anything set on the Obs object that will cause
+ * errors or is incorrect. Things checked are similar to:
  * <ul>
- *   <li>all required properties are filled in on the 
- *   	Obs object.
- *   <li>checks for no recursion in the obs grouping.
- *   <li>Makes sure the obs has at least one value (if not an
- *       obs grouping)
- * </li>
+ * <li>all required properties are filled in on the Obs object.
+ * <li>checks for no recursion in the obs grouping.
+ * <li>Makes sure the obs has at least one value (if not an obs grouping)</li>
  * 
  * @see org.openmrs.Obs
  */
 public class ObsValidator implements Validator {
-
+	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-    public boolean supports(Class c) {
+	public boolean supports(Class c) {
 		return Obs.class.isAssignableFrom(c);
 	}
-
+	
 	/**
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
 		Obs obs = (Obs) obj;
@@ -58,12 +55,13 @@ public class ObsValidator implements Validator {
 	
 	/**
 	 * Checks whether obs has all required values, and also checks to make sure that no obs group
-	 * contains any of its ancestors 
+	 * contains any of its ancestors
 	 * 
 	 * @param obs
 	 * @param errors
 	 * @param ancestors
-	 * @param atRootNode whether or not this is the obs that validate() was originally called on. If not then we shouldn't reject fields by name.
+	 * @param atRootNode whether or not this is the obs that validate() was originally called on. If
+	 *            not then we shouldn't reject fields by name.
 	 */
 	private void validateHelper(Obs obs, Errors errors, List<Obs> ancestors, boolean atRootNode) {
 		if (obs.getPersonId() == null && obs.getPersonId() == null)
@@ -100,14 +98,14 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
 			}
 		}
-
+		
 		// If an obs fails validation, don't bother checking its children
 		if (errors.hasErrors())
 			return;
 		
 		if (ancestors.contains(obs))
 			errors.rejectValue("groupMembers", "Obs.error.groupContainsItself");
-
+		
 		if (obs.isObsGrouping()) {
 			System.out.println("all children = " + obs.getGroupMembers());
 			ancestors.add(obs);
@@ -118,5 +116,5 @@ public class ObsValidator implements Validator {
 			ancestors.remove(ancestors.size() - 1);
 		}
 	}
-
+	
 }

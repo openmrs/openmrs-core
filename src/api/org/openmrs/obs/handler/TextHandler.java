@@ -27,46 +27,44 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Handler for storing files for complex obs to the file system. Files are
- * stored in the location specified by the global property:
- * "obs.complex_obs_dir"
+ * Handler for storing files for complex obs to the file system. Files are stored in the location
+ * specified by the global property: "obs.complex_obs_dir"
  */
 public class TextHandler extends AbstractHandler implements ComplexObsHandler {
-
+	
 	public static final Log log = LogFactory.getLog(TextHandler.class);
-
+	
 	/**
-	 * Constructor initializes formats for alternative file names to protect
-	 * from unintentionally overwriting existing files.
+	 * Constructor initializes formats for alternative file names to protect from unintentionally
+	 * overwriting existing files.
 	 */
 	public TextHandler() {
 		super();
 	}
-
+	
 	/**
 	 * Currently supports all views and is the same as {@link #getObs(Obs)}
 	 * 
-	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs,
-	 *      java.lang.String)
+	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
 	public Obs getObs(Obs obs, String view) {
 		File file = getComplexDataFile(obs);
 		log.debug("value complex: " + obs.getValueComplex());
 		log.debug("file path: " + file.getAbsolutePath());
 		ComplexData complexData = null;
-
+		
 		try {
 			complexData = new ComplexData(file.getName(), OpenmrsUtil.getFileAsBytes(file));
 		}
 		catch (IOException e) {
 			log.error("Trying to read file: " + file.getAbsolutePath(), e);
 		}
-
+		
 		obs.setComplexData(complexData);
-
+		
 		return obs;
 	}
-
+	
 	/**
 	 * TODO should this support a StringReader too?
 	 * 
@@ -79,7 +77,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 			log.error("Cannot save complex data where obsId=" + obs.getObsId() + " because its ComplexData is null.");
 			return obs;
 		}
-
+		
 		FileOutputStream fout = null;
 		try {
 			File outfile = getOutputFileToWrite(obs);
@@ -90,20 +88,20 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 				fout.write((byte[]) data);
 			} else if (InputStream.class.isAssignableFrom(data.getClass())) {
 				try {
-					OpenmrsUtil.copyFile((InputStream)data, fout);
+					OpenmrsUtil.copyFile((InputStream) data, fout);
 				}
 				catch (IOException e) {
 					throw new APIException(
 					        "Unable to convert complex data to a valid input stream and then read it into a buffered image");
 				}
 			}
-
+			
 			// Set the Title and URI for the valueComplex
 			obs.setValueComplex(outfile.getName() + " file |" + outfile.getName());
-
+			
 			// Remove the ComplexData from the Obs
 			obs.setComplexData(null);
-
+			
 		}
 		catch (IOException ioe) {
 			throw new APIException("Trying to write complex obs to the file system. ", ioe);
@@ -116,8 +114,8 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 				// pass
 			}
 		}
-
+		
 		return obs;
 	}
-
+	
 }

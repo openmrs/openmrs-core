@@ -16,13 +16,17 @@ package org.openmrs.reporting;
 import java.util.Map;
 
 public class TableGroupAndAggregate {
-
+	
 	private TableRowClassifier classifier;
+	
 	private TableRowAggregator aggregator;
+	
 	private String labelColumnName;
+	
 	private String valueColumnName;
 	
-	public TableGroupAndAggregate(TableRowClassifier classifier, TableRowAggregator aggregator, String labelColumnName, String valueColumnName) {
+	public TableGroupAndAggregate(TableRowClassifier classifier, TableRowAggregator aggregator, String labelColumnName,
+	    String valueColumnName) {
 		this.classifier = classifier;
 		this.aggregator = aggregator;
 		this.labelColumnName = labelColumnName;

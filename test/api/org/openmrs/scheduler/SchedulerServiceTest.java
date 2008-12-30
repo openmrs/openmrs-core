@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
 
-
 /**
  * TODO test all methods in ScheduleService
  */
@@ -35,50 +34,47 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	private static Log log = LogFactory.getLog(SchedulerServiceTest.class);
 	
 	@Test
-	public void shouldResolveValidTaskClass() throws Exception { 
+	public void shouldResolveValidTaskClass() throws Exception {
 		String className = "org.openmrs.scheduler.tasks.TestTask";
-		try { 
+		try {
 			Class c = OpenmrsClassLoader.getInstance().loadClass(className);
 			Object o = c.newInstance();
-			if (o instanceof Task) 
-				assertTrue("Class " + className + " is a valid Task", true);				
-			else 
+			if (o instanceof Task)
+				assertTrue("Class " + className + " is a valid Task", true);
+			else
 				fail("Class " + className + " is not a valid Task");
 			
-		} catch (ClassNotFoundException e) { 
+		}
+		catch (ClassNotFoundException e) {
 			fail(e.getMessage());
 		}
 	}
-		
+	
 	@Test
-	public void shouldNotResolveInvalidClass() throws Exception { 
+	public void shouldNotResolveInvalidClass() throws Exception {
 		String className = "org.openmrs.scheduler.tasks.InvalidTask";
-		try { 
+		try {
 			Class c = OpenmrsClassLoader.getInstance().loadClass(className);
 			Object o = c.newInstance();
-			if (o instanceof Task) 
-				fail("Class " + className + " is not supposed to be a valid Task");				
-			else 
-				assertTrue("Class " + className + " is not a valid Task", true);			
+			if (o instanceof Task)
+				fail("Class " + className + " is not supposed to be a valid Task");
+			else
+				assertTrue("Class " + className + " is not a valid Task", true);
 			
-		} catch (ClassNotFoundException e) { 
+		}
+		catch (ClassNotFoundException e) {
 			assertTrue("Class " + className + " was not found, as expected", true);
 		}
-
+		
 	}
 	
-	
-	
-	
 	@Test
-	public void shouldResolveModuleTaskClass() throws Exception { 
-		
+	public void shouldResolveModuleTaskClass() throws Exception {
 		
 	}
 	
 	/**
-	 * Tests whether the scheduler is handing out the correct execution times
-	 * for tasks.  
+	 * Tests whether the scheduler is handing out the correct execution times for tasks.
 	 * 
 	 * @throws Exception
 	 */
@@ -87,7 +83,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		
 		// Represents the start time of the task (right now)
 		Calendar startTime = Calendar.getInstance();
-
+		
 		// Execute task every 4 minutes
 		Long repeatInterval = new Long(4 * 60);
 		
@@ -101,12 +97,10 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		
 		// Get the next scheduled execution time for this task 
 		Date nextTime = SchedulerUtil.getNextExecution(taskDefinition);
-
+		
 		// Assert that the next execution time is equal to startTime + 4 minutes
 		assertEquals(startTime.getTime(), nextTime);
 		
-			
 	}
-
 	
 }

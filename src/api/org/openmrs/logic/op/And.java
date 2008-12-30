@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class And implements Operator {
-
-    public String toString() {
-        return "AND";
-    }
-    
+	
+	public String toString() {
+		return "AND";
+	}
+	
 }

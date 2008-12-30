@@ -24,31 +24,27 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.directwebremoting.WebContextFactory;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 
-import org.directwebremoting.WebContextFactory;
-
 /**
- * A collection of methods used by DWR for access users.
- * 
- * These methods are similar to the {@link UserService} methods
- * and have been chosen to be exposed via dwr to allow for 
- * access via javascript.
+ * A collection of methods used by DWR for access users. These methods are similar to the
+ * {@link UserService} methods and have been chosen to be exposed via dwr to allow for access via
+ * javascript.
  */
 public class DWRUserService {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * Find users in the database that match the given search values.
 	 * 
 	 * @see UserService#getUsers(String, List, boolean)
-	 * 
 	 * @param searchValue a query string like 'john doe'
-	 * @param rolesStrings list of role names to restrict to like '[Provider, Manager]' 
+	 * @param rolesStrings list of role names to restrict to like '[Provider, Manager]'
 	 * @param includeVoided true/false to include voided users in the search
 	 * @return list of {@link UserListItem}s (or String warning message if none found)
 	 */
@@ -56,11 +52,11 @@ public class DWRUserService {
 	public Collection<UserListItem> findUsers(String searchValue, List<String> rolesStrings, boolean includeVoided) {
 		
 		Vector userList = new Vector();
-
+		
 		try {
 			UserService userService = Context.getUserService();
 			
-			if (rolesStrings == null) 
+			if (rolesStrings == null)
 				rolesStrings = new Vector<String>();
 			
 			List<Role> roles = new Vector<Role>();
@@ -74,10 +70,11 @@ public class DWRUserService {
 			
 			userList = new Vector();
 			
-			for (User u :  userService.getUsers(searchValue, roles, includeVoided)) {
+			for (User u : userService.getUsers(searchValue, roles, includeVoided)) {
 				userList.add(new UserListItem(u));
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error("Error while searching for users", e);
 			userList.add("Error while attempting to find users - " + e.getMessage());
 		}
@@ -87,27 +84,25 @@ public class DWRUserService {
 		}
 		
 		return userList;
-
+		
 	}
-
 	
 	@SuppressWarnings("unchecked")
 	public Collection<UserListItem> getAllUsers(List<String> roleStrings, boolean includeVoided) {
 		
 		Vector userList = new Vector();
-
+		
 		HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		
 		if (!Context.isAuthenticated()) {
 			userList.add("Your session has expired.");
 			userList.add("Please <a href='" + request.getContextPath() + "/logout'>log in</a> again.");
-		}
-		else {
+		} else {
 			try {
 				UserService us = Context.getUserService();
 				Set<User> users = new TreeSet<User>(new UserComparator());
 				
-				if (roleStrings == null) 
+				if (roleStrings == null)
 					roleStrings = new Vector<String>();
 				
 				List<Role> roles = new Vector<Role>();
@@ -127,7 +122,8 @@ public class DWRUserService {
 					userList.add(new UserListItem(u));
 				}
 				
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				log.error("Error while getting all users", e);
 				userList.add("Error while attempting to get users - " + e.getMessage());
 			}
@@ -137,6 +133,7 @@ public class DWRUserService {
 	
 	/**
 	 * Get the user identified by <code>userId</code>
+	 * 
 	 * @param userId
 	 * @return
 	 */
@@ -157,10 +154,11 @@ public class DWRUserService {
 	
 	/**
 	 * Determines the order of the user's in the user list
+	 * 
 	 * @author bwolfe
 	 */
 	private class UserComparator implements Comparator<User> {
-
+		
 		public int compare(User user1, User user2) {
 			
 			// compare on full name (and then on person id in case the names are identical) 

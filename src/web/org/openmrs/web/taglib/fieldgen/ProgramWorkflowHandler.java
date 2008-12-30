@@ -23,35 +23,40 @@ import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 
 public class ProgramWorkflowHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-
+	
 	private String defaultUrl = "programWorkflow.field";
 	
 	public void run() {
 		setUrl(defaultUrl);
-
-		if ( fieldGenTag != null ) {
+		
+		if (fieldGenTag != null) {
 			String initialValue = "";
-			checkEmptyVal((ProgramWorkflow)null);
-			ProgramWorkflow pw = (ProgramWorkflow)this.fieldGenTag.getVal();
-			if ( pw != null ) if ( pw.getProgramWorkflowId() != null ) initialValue = pw.getProgramWorkflowId().toString();
+			checkEmptyVal((ProgramWorkflow) null);
+			ProgramWorkflow pw = (ProgramWorkflow) this.fieldGenTag.getVal();
+			if (pw != null)
+				if (pw.getProgramWorkflowId() != null)
+					initialValue = pw.getProgramWorkflowId().toString();
 			String optionHeader = "";
-			if ( this.fieldGenTag.getParameterMap() != null ) {
+			if (this.fieldGenTag.getParameterMap() != null) {
 				optionHeader = (String) this.fieldGenTag.getParameterMap().get("optionHeader");
 			}
-			if ( optionHeader == null ) optionHeader = "";
+			if (optionHeader == null)
+				optionHeader = "";
 			String programPrefix = "false";
-			if ( this.fieldGenTag.getParameterMap() != null ) {
-				programPrefix = "true".equalsIgnoreCase((String)(this.fieldGenTag.getParameterMap().get("programPrefix"))) ? "true" : "false";
+			if (this.fieldGenTag.getParameterMap() != null) {
+				programPrefix = "true".equalsIgnoreCase((String) (this.fieldGenTag.getParameterMap().get("programPrefix"))) ? "true"
+				        : "false";
 			}
-
+			
 			List<ProgramWorkflow> workflows = new ArrayList<ProgramWorkflow>();
 			
 			ProgramWorkflowService pws = Context.getProgramWorkflowService();
 			List<Program> programs = pws.getAllPrograms();
-			if ( programs != null ) {
-				for ( Program program : programs ) {
+			if (programs != null) {
+				for (Program program : programs) {
 					Set<ProgramWorkflow> currFlows = program.getWorkflows();
-					if ( currFlows != null ) workflows.addAll(currFlows);
+					if (currFlows != null)
+						workflows.addAll(currFlows);
 				}
 			}
 			

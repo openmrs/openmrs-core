@@ -25,8 +25,11 @@ public class CohortListItem {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private Integer cohortId;
+	
 	private String name;
+	
 	private String description;
+	
 	private Integer[] members;
 	
 	public CohortListItem(Cohort cohort) {
@@ -35,37 +38,37 @@ public class CohortListItem {
 		this.description = cohort.getDescription();
 		this.members = cohort.getMemberIds().toArray(new Integer[cohort.getMemberIds().size()]);
 	}
-
+	
 	public Integer getCohortId() {
-    	return cohortId;
-    }
-
+		return cohortId;
+	}
+	
 	public void setCohortId(Integer cohortId) {
-    	this.cohortId = cohortId;
-    }
-
+		this.cohortId = cohortId;
+	}
+	
 	public String getName() {
-    	return name;
-    }
-
+		return name;
+	}
+	
 	public void setName(String name) {
-    	this.name = name;
-    }
-
+		this.name = name;
+	}
+	
 	public String getDescription() {
-    	return description;
-    }
-
+		return description;
+	}
+	
 	public void setDescription(String description) {
-    	this.description = description;
-    }
-
+		this.description = description;
+	}
+	
 	public Integer[] getMembers() {
-    	return members;
-    }
-
+		return members;
+	}
+	
 	public void setMembers(Integer[] members) {
-    	this.members = members;
-    }
-
+		this.members = members;
+	}
+	
 }

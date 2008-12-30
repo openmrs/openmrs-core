@@ -30,30 +30,32 @@ import org.openmrs.report.Parameterizable;
  *
  */
 public class LogicPatientFilter extends AbstractPatientFilter implements PatientFilter, Parameterizable {
-
-    private static final long serialVersionUID = 1L;
-
-    private LogicCriteria criteria;
 	
-	public LogicPatientFilter() { }
+	private static final long serialVersionUID = 1L;
+	
+	private LogicCriteria criteria;
+	
+	public LogicPatientFilter() {
+	}
 	
 	public LogicPatientFilter(LogicCriteria criteria) {
 		this.criteria = criteria;
 	}
 	
 	public LogicCriteria getCriteria() {
-    	return criteria;
-    }
-
+		return criteria;
+	}
+	
 	public void setCriteria(LogicCriteria criteria) {
-    	this.criteria = criteria;
-    }
-
+		this.criteria = criteria;
+	}
+	
 	/**
-	 * @see org.openmrs.reporting.PatientFilter#filter(org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
+	 * @see org.openmrs.reporting.PatientFilter#filter(org.openmrs.Cohort,
+	 *      org.openmrs.report.EvaluationContext)
 	 */
 	public Cohort filter(Cohort input, EvaluationContext context) {
-		try	{
+		try {
 			Map<Integer, Result> results = Context.getLogicService().eval(input, criteria);
 			// Assume these results are booleans
 			Cohort matches = new Cohort();
@@ -62,13 +64,15 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 					matches.addMember(e.getKey());
 			}
 			return matches;
-		} catch (LogicException ex) {
+		}
+		catch (LogicException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
-
+	
 	/**
-	 * @see org.openmrs.reporting.PatientFilter#filterInverse(org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
+	 * @see org.openmrs.reporting.PatientFilter#filterInverse(org.openmrs.Cohort,
+	 *      org.openmrs.report.EvaluationContext)
 	 */
 	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		try {
@@ -80,28 +84,29 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 					matches.addMember(e.getKey());
 			}
 			return Cohort.subtract(input, matches);
-		} catch (LogicException ex) {
+		}
+		catch (LogicException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.PatientFilter#isReadyToRun()
 	 */
 	public boolean isReadyToRun() {
 		return criteria != null;
 	}
-
+	
 	/**
-     * @see org.openmrs.report.Parameterizable#getParameters()
-     */
-    public List<Parameter> getParameters() {
-	    return new Vector<Parameter>();
-    }
-
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
+	 * @see org.openmrs.report.Parameterizable#getParameters()
+	 */
+	public List<Parameter> getParameters() {
+		return new Vector<Parameter>();
+	}
+	
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object o) {
 		if (o == null) {
 			return false;
@@ -118,9 +123,9 @@ public class LogicPatientFilter extends AbstractPatientFilter implements Patient
 	 * @see org.openmrs.reporting.AbstractReportObject#getDescription()
 	 */
 	public String getDescription() {
-	    if (getCriteria() == null)
-	    	return "criteria==NULL";
-	    return getCriteria().toString();
+		if (getCriteria() == null)
+			return "criteria==NULL";
+		return getCriteria().toString();
 	}
-
+	
 }

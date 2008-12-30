@@ -22,17 +22,17 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * This class provides access to org.openmrs.Cohort objects that are saved
- * in the cohort table.
+ * This class provides access to org.openmrs.Cohort objects that are saved in the cohort table.
  */
-@Root(strict=false)
+@Root(strict = false)
 public class StaticCohortDefinition implements CohortDefinition {
-
-    private static final long serialVersionUID = 1L;
-    
+	
+	private static final long serialVersionUID = 1L;
+	
 	private Cohort cohort;
 	
-	public StaticCohortDefinition() { }
+	public StaticCohortDefinition() {
+	}
 	
 	public StaticCohortDefinition(Cohort cohort) {
 		if (cohort == null)
@@ -46,21 +46,21 @@ public class StaticCohortDefinition implements CohortDefinition {
 	public List<Parameter> getParameters() {
 		return new Vector<Parameter>();
 	}
-
+	
 	/**
-     * @return the cohort
-     */
-	@Element(required=false)
-    public Cohort getCohort() {
-    	return cohort;
-    }
-
+	 * @return the cohort
+	 */
+	@Element(required = false)
+	public Cohort getCohort() {
+		return cohort;
+	}
+	
 	/**
-     * @param cohort the cohort to set
-     */
-	@Element(required=false)
-    public void setCohort(Cohort cohort) {
-    	this.cohort = cohort;
-    }
-
+	 * @param cohort the cohort to set
+	 */
+	@Element(required = false)
+	public void setCohort(Cohort cohort) {
+		this.cohort = cohort;
+	}
+	
 }

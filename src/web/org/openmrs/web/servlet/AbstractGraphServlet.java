@@ -26,16 +26,18 @@ import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 
 public abstract class AbstractGraphServlet extends HttpServlet {
-
+	
 	public static final long serialVersionUID = 1231231L;
+	
 	private Log log = LogFactory.getLog(AbstractGraphServlet.class);
-
+	
 	// Supported mime types
 	public static final String PNG_MIME_TYPE = "image/png";
+	
 	public static final String JPG_MIME_TYPE = "image/jpeg";
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	
+		
 		try {
 			// Set default values
 			Integer width = new Integer(500);
@@ -45,49 +47,51 @@ public abstract class AbstractGraphServlet extends HttpServlet {
 			// Retrieve custom values
 			try {
 				width = Integer.parseInt(request.getParameter("width"));
-			} catch (Exception e) {}
+			}
+			catch (Exception e) {}
 			
 			try {
 				height = Integer.parseInt(request.getParameter("height"));
-			} catch (Exception e) {}
+			}
+			catch (Exception e) {}
 			
-			if (request.getParameter("mimeType")!=null) {
+			if (request.getParameter("mimeType") != null) {
 				mimeType = request.getParameter("mimeType");
 			}
 			
 			JFreeChart chart = createChart(request, response);
-
+			
 			// Modify response to disable caching
-			response.setHeader("Pragma", "No-cache"); 
-			response.setDateHeader("Expires", 0); 
+			response.setHeader("Pragma", "No-cache");
+			response.setDateHeader("Expires", 0);
 			response.setHeader("Cache-Control", "no-cache");
 			
 			// Write chart out to response as image 
-			try { 
-				if ( JPG_MIME_TYPE.equalsIgnoreCase(mimeType) ) { 
+			try {
+				if (JPG_MIME_TYPE.equalsIgnoreCase(mimeType)) {
 					response.setContentType(JPG_MIME_TYPE);
 					ChartUtilities.writeChartAsJPEG(response.getOutputStream(), chart, width, height);
-				} 
-				else if ( PNG_MIME_TYPE.equalsIgnoreCase(mimeType)) { 
+				} else if (PNG_MIME_TYPE.equalsIgnoreCase(mimeType)) {
 					response.setContentType(PNG_MIME_TYPE);
-					ChartUtilities.writeChartAsPNG(response.getOutputStream(), chart, width, height);	
-				} 
-				else { 
+					ChartUtilities.writeChartAsPNG(response.getOutputStream(), chart, width, height);
+				} else {
 					// Throw exception: unsupported mime type
 				}
-			} catch (IOException e) { 
+			}
+			catch (IOException e) {
 				log.error(e);
 			}
-		
-		} 
+			
+		}
 		// Add error handling above and remove this try/catch 
-		catch (Exception e) { 
+		catch (Exception e) {
 			log.error(e);
 		}
 	}
 	
 	/**
 	 * Override this method for each graph
+	 * 
 	 * @param request
 	 * @param response
 	 * @return
@@ -97,8 +101,8 @@ public abstract class AbstractGraphServlet extends HttpServlet {
 	/**
 	 * 
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
-		doGet(request,response);		
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
-
+	
 }

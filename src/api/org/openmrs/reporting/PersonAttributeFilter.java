@@ -19,24 +19,26 @@ import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
 
 public class PersonAttributeFilter extends CachingPatientFilter {
-
+	
 	private PersonAttributeType attribute;
+	
 	private String value;
 	
 	/**
 	 * This currently only returns patients, although it's named for persons.
 	 */
-	public PersonAttributeFilter() { }
+	public PersonAttributeFilter() {
+	}
 	
 	@Override
-    public String getCacheKey() {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append(getClass().getName()).append(".");
-	    sb.append(getAttribute()).append(".");
-	    sb.append(getValue());
-	    return sb.toString();
-    }
-
+	public String getCacheKey() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getName()).append(".");
+		sb.append(getAttribute()).append(".");
+		sb.append(getValue());
+		return sb.toString();
+	}
+	
 	public String getDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Patients with ");
@@ -47,31 +49,31 @@ public class PersonAttributeFilter extends CachingPatientFilter {
 		}
 		return sb.toString();
 	}
-
+	
 	@Override
 	public Cohort filterImpl(EvaluationContext context) {
 		return Context.getPatientSetService().getPatientsHavingPersonAttribute(getAttribute(), getValue());
 	}
-
+	
 	public boolean isReadyToRun() {
 		// TODO Auto-generated method stub
 		return true;
 	}
 	
 	// getters and setters
-
+	
 	public PersonAttributeType getAttribute() {
 		return attribute;
 	}
-
+	
 	public void setAttribute(PersonAttributeType attribute) {
 		this.attribute = attribute;
 	}
-
+	
 	public String getValue() {
 		return value;
 	}
-
+	
 	public void setValue(String value) {
 		this.value = value;
 	}

@@ -29,27 +29,22 @@ import org.hibernate.type.Type;
 /**
  * <b>native-if-not-assigned</b><br>
  * <br>
- * By setting the Hibernate configuration's primary key column 
- * to use a "native" implementation, Hibernate ALWAYS generates 
- * the entity's id when it is being saved. There is no way to 
- * "override" the generated id.
- * 
- * This IdentityGenerator allows a programmer to override the 
- * "generated" id, with an "assigned" id at runtime by simply 
- * setting the primary key property.
+ * By setting the Hibernate configuration's primary key column to use a "native" implementation,
+ * Hibernate ALWAYS generates the entity's id when it is being saved. There is no way to "override"
+ * the generated id. <br/>
+ * <br/>
+ * This IdentityGenerator allows a programmer to override the "generated" id, with an "assigned" id
+ * at runtime by simply setting the primary key property.
  * 
  * @author paul.shemansky@gmail.com
  */
-public class NativeIfNotAssignedIdentityGenerator extends IdentityGenerator
-        implements Configurable {
-
+public class NativeIfNotAssignedIdentityGenerator extends IdentityGenerator implements Configurable {
+	
 	private String entityName;
 	
-	public Serializable generate(SessionImplementor session, Object entity)
-	        throws HibernateException {
+	public Serializable generate(SessionImplementor session, Object entity) throws HibernateException {
 		Serializable id;
-		EntityPersister persister = session.getEntityPersister(entityName,
-		                                                       entity);
+		EntityPersister persister = session.getEntityPersister(entityName, entity);
 		// Determine if an ID has been assigned.
 		id = persister.getIdentifier(entity, session.getEntityMode());
 		if (id == null) {
@@ -59,9 +54,10 @@ public class NativeIfNotAssignedIdentityGenerator extends IdentityGenerator
 		}
 		return id;
 	}
-
+	
 	/**
-	 * @see org.hibernate.id.Configurable#configure(org.hibernate.type.Type, java.util.Properties, org.hibernate.dialect.Dialect)
+	 * @see org.hibernate.id.Configurable#configure(org.hibernate.type.Type, java.util.Properties,
+	 *      org.hibernate.dialect.Dialect)
 	 */
 	public void configure(Type type, Properties params, Dialect dialect) throws MappingException {
 		this.entityName = params.getProperty(ENTITY_NAME);
@@ -69,5 +65,5 @@ public class NativeIfNotAssignedIdentityGenerator extends IdentityGenerator
 			throw new MappingException("no entity name");
 		}
 	}
-
+	
 }

@@ -27,21 +27,17 @@ import org.openmrs.api.db.hibernate.HibernateEncounterDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
- * This class tests the {@link EncounterDAO} linked to from the Context. 
- * Currently that file is the {@link HibernateEncounterDAO}  
- * 
- * This should only have to test methods that don't really have equivalents 
- * at the {@link EncounterService} layer.    
+ * This class tests the {@link EncounterDAO} linked to from the Context. Currently that file is the
+ * {@link HibernateEncounterDAO} This should only have to test methods that don't really have
+ * equivalents at the {@link EncounterService} layer.
  */
 public class EncounterDAOTest extends BaseContextSensitiveTest {
 	
 	private EncounterDAO dao = null;
 	
 	/**
-	 * Run this before each unit test in this class.
-	 * 
-	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
-	 * right before this method.
+	 * Run this before each unit test in this class. The "@Before" method in
+	 * {@link BaseContextSensitiveTest} is run right before this method.
 	 * 
 	 * @throws Exception
 	 */
@@ -52,13 +48,12 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 		if (dao == null)
 			// fetch the dao from the spring application context
 			// this bean name matches the name in /metadata/spring/applicationContext-service.xml
-			dao = (EncounterDAO)applicationContext.getBean("encounterDAO");
+			dao = (EncounterDAO) applicationContext.getBean("encounterDAO");
 	}
 	
 	/**
-	 * Make sure that the {@link EncounterDAO#getSavedEncounterDatetime(Encounter)}
-	 * method returns the date from the database and not the date on the pojo 
-	 * object
+	 * Make sure that the {@link EncounterDAO#getSavedEncounterDatetime(Encounter)} method returns
+	 * the date from the database and not the date on the pojo object
 	 * 
 	 * @throws Exception
 	 */
@@ -83,5 +78,5 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 		Date encounterDateFromDatabase = dao.getSavedEncounterDatetime(encounter);
 		assertEquals(origDate, encounterDateFromDatabase);
 	}
-
+	
 }

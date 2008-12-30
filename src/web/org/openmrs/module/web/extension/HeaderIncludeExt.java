@@ -13,24 +13,19 @@
  */
 package org.openmrs.module.web.extension;
 
-import org.openmrs.module.Extension;
-
-import java.util.Collection;
 import java.util.List;
 
+import org.openmrs.module.Extension;
+
 /**
- * The header include extension allows a module developer to include extra
- * files (css, javascript) within the header of every page.  This could be 
- * used to include a new javascript library, CSS styles, etc.
- * 
- * In order to include headers, a module developer should implement the
- * getHeaderFiles() method and return a collection of file names 
- * ("myjavascript.js", "mycss.css") that reside in the modules resources
- * directory (i.e. "web/module/resources").
- * 
+ * The header include extension allows a module developer to include extra files (css, javascript)
+ * within the header of every page. This could be used to include a new javascript library, CSS
+ * styles, etc. In order to include headers, a module developer should implement the
+ * getHeaderFiles() method and return a collection of file names ("myjavascript.js", "mycss.css")
+ * that reside in the modules resources directory (i.e. "web/module/resources").
  */
 public abstract class HeaderIncludeExt extends Extension {
-
+	
 	/**
 	 * @see org.openmrs.module.Extension#getMediaType()
 	 */
@@ -38,13 +33,12 @@ public abstract class HeaderIncludeExt extends Extension {
 	public MEDIA_TYPE getMediaType() {
 		return MEDIA_TYPE.html;
 	}
-
+	
 	/**
 	 * Returns references to header files in the module resource directory.
 	 * 
-	 * @return	a collection of header files
+	 * @return a collection of header files
 	 */
 	public abstract List<String> getHeaderFiles();
-    
-
+	
 }

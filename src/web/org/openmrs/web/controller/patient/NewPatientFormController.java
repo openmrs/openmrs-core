@@ -77,46 +77,45 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
- * This controller is used for the "mini"/"new"/"short" patient form.  Only
- * key/important attributes for the patient are displayed and allowed to be
- * edited
+ * This controller is used for the "mini"/"new"/"short" patient form. Only key/important attributes
+ * for the patient are displayed and allowed to be edited
  * 
  * @see org.openmrs.web.controller.patient.PatientFormController
  */
 public class NewPatientFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
-    // identifiers submitted with the form.  Stored here so that they can
-    // be redisplayed for the user after an error
-    Set<PatientIdentifier> newIdentifiers = new HashSet<PatientIdentifier>();
-    String pref = "";
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	// identifiers submitted with the form.  Stored here so that they can
+	// be redisplayed for the user after an error
+	Set<PatientIdentifier> newIdentifiers = new HashSet<PatientIdentifier>();
+	
+	String pref = "";
+	
 	/**
+	 * Allows for other Objects to be used as values in input tags. Normally, only strings and lists
+	 * are expected
 	 * 
-	 * Allows for other Objects to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-        NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, nf, true));
-        binder.registerCustomEditor(java.util.Date.class, 
-        		new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
-        binder.registerCustomEditor(Location.class, new LocationEditor());
-        binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
+		NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, nf, true));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
+		binder.registerCustomEditor(Location.class, new LocationEditor());
+		binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
 	}
-
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                             BindException errors) throws Exception {
 		
 		newIdentifiers = new HashSet<PatientIdentifier>();
 		
-		ShortPatientModel shortPatient = (ShortPatientModel)obj;
+		ShortPatientModel shortPatient = (ShortPatientModel) obj;
 		
 		log.debug("\nNOW GOING THROUGH PROCESSFORMSUBMISSION METHOD.......................................\n\n");
 		
@@ -150,10 +149,10 @@ public class NewPatientFormController extends SimpleFormController {
 				
 				// loop over the identifiers to create the patient.identifiers set
 				if (identifiers != null) {
-					for (int i=0; i<identifiers.length;i++) {
+					for (int i = 0; i < identifiers.length; i++) {
 						// arguments for the spring error messages
 						String id = identifiers[i].trim();
-						String[] args = {id};
+						String[] args = { id };
 						
 						// add the new identifier only if they put in some identifier string
 						if (id.length() > 0) {
@@ -161,22 +160,21 @@ public class NewPatientFormController extends SimpleFormController {
 							// set up the actual identifier java object
 							PatientIdentifierType pit = null;
 							if (types[i] == null || types[i].equals("")) {
-								String msg = getMessageSourceAccessor().getMessage("PatientIdentifier.identifierType.null", args);
+								String msg = getMessageSourceAccessor().getMessage("PatientIdentifier.identifierType.null",
+								    args);
 								errors.reject(msg);
-							}
-							else
+							} else
 								pit = ps.getPatientIdentifierType(Integer.valueOf(types[i]));
 							
 							Location loc = null;
 							if (locs[i] == null || locs[i].equals("")) {
 								String msg = getMessageSourceAccessor().getMessage("PatientIdentifier.location.null", args);
 								errors.reject(msg);
-							}
-							else
+							} else
 								loc = Context.getLocationService().getLocation(Integer.valueOf(locs[i]));
 							
 							PatientIdentifier pi = new PatientIdentifier(id, pit, loc);
-							pi.setPreferred(pref.equals(id+types[i]));
+							pi.setPreferred(pref.equals(id + types[i]));
 							if (newIdentifiers.contains(pi))
 								newIdentifiers.remove(pi);
 							
@@ -187,7 +185,7 @@ public class NewPatientFormController extends SimpleFormController {
 								log.debug("and type: " + types[i]);
 								log.debug("and location: " + locs[i]);
 							}
-
+							
 						}
 					}
 				}
@@ -203,7 +201,7 @@ public class NewPatientFormController extends SimpleFormController {
 					Calendar c = Calendar.getInstance();
 					c.setTime(new Date());
 					c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
-					if (shortPatient.getBirthdate().before(c.getTime())){
+					if (shortPatient.getBirthdate().before(c.getTime())) {
 						errors.rejectValue("birthdate", "error.date.nonsensical");
 					}
 				}
@@ -216,25 +214,27 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		return onSubmit(request, response, shortPatient, errors);
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-
+		
 		log.debug("\nNOW GOING THROUGH ONSUBMIT METHOD.......................................\n\n");
-
+		
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			PersonService personService = Context.getPersonService();
 			
-			ShortPatientModel shortPatient = (ShortPatientModel)obj;
+			ShortPatientModel shortPatient = (ShortPatientModel) obj;
 			String view = getSuccessView();
 			boolean isError = errors.hasErrors(); // account for possible errors in the processFormSubmission method
 			
@@ -255,7 +255,7 @@ public class NewPatientFormController extends SimpleFormController {
 						//Person p2 = (Person) p;
 						patient = new Patient(p);
 						//patient = (Patient)p2;
-					} 
+					}
 					catch (ObjectRetrievalFailureException noUserEx) {
 						// continue;
 					}
@@ -264,7 +264,7 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			if (patient == null)
 				patient = new Patient();
-				
+			
 			boolean duplicate = false;
 			PersonName newName = shortPatient.getName();
 			
@@ -272,9 +272,12 @@ public class NewPatientFormController extends SimpleFormController {
 				log.debug("Checking new name: " + newName.toString());
 			
 			for (PersonName pn : patient.getNames()) {
-				if (((pn.getGivenName() == null && newName.getGivenName() == null) || OpenmrsUtil.nullSafeEquals(pn.getGivenName(), newName.getGivenName())) &&
-					((pn.getMiddleName() == null && newName.getMiddleName() == null) || OpenmrsUtil.nullSafeEquals(pn.getMiddleName(), newName.getMiddleName())) &&
-					((pn.getFamilyName() == null && newName.getFamilyName() == null) || OpenmrsUtil.nullSafeEquals(pn.getFamilyName(), newName.getFamilyName())))
+				if (((pn.getGivenName() == null && newName.getGivenName() == null) || OpenmrsUtil.nullSafeEquals(pn
+				        .getGivenName(), newName.getGivenName()))
+				        && ((pn.getMiddleName() == null && newName.getMiddleName() == null) || OpenmrsUtil.nullSafeEquals(pn
+				                .getMiddleName(), newName.getMiddleName()))
+				        && ((pn.getFamilyName() == null && newName.getFamilyName() == null) || OpenmrsUtil.nullSafeEquals(pn
+				                .getFamilyName(), newName.getFamilyName())))
 					duplicate = true;
 			}
 			
@@ -308,7 +311,7 @@ public class NewPatientFormController extends SimpleFormController {
 					log.debug("The duplicate address:  " + duplicate);
 				
 				if (!duplicate) {
-					PersonAddress newAddress = (PersonAddress)shortPatient.getAddress().clone();
+					PersonAddress newAddress = (PersonAddress) shortPatient.getAddress().clone();
 					newAddress.setPersonAddressId(null);
 					newAddress.setPreferred(true);
 					patient.addAddress(newAddress);
@@ -322,11 +325,12 @@ public class NewPatientFormController extends SimpleFormController {
 				patient.setIdentifiers(new TreeSet<PatientIdentifier>());
 			
 			for (PatientIdentifier pi : patient.getIdentifiers()) {
-				pi.setPreferred(pref.equals(pi.getIdentifier()+pi.getIdentifierType().getPatientIdentifierTypeId()));
+				pi.setPreferred(pref.equals(pi.getIdentifier() + pi.getIdentifierType().getPatientIdentifierTypeId()));
 			}
-
+			
 			// look for person attributes in the request and save to patient
-			for (PersonAttributeType type : personService.getPersonAttributeTypes(PERSON_TYPE.PATIENT, ATTR_VIEW_TYPE.VIEWING)) {
+			for (PersonAttributeType type : personService.getPersonAttributeTypes(PERSON_TYPE.PATIENT,
+			    ATTR_VIEW_TYPE.VIEWING)) {
 				String paramName = type.getPersonAttributeTypeId().toString();
 				String value = request.getParameter(paramName);
 				
@@ -339,16 +343,18 @@ public class NewPatientFormController extends SimpleFormController {
 							// if null is returned, the value should be blanked out
 							attribute.setValue("");
 						} else if (hydratedObject instanceof Attributable) {
-							attribute.setValue(((Attributable)hydratedObject).serialize());
-						}
-						else if (!hydratedObject.getClass().getName().equals(type.getFormat()))
+							attribute.setValue(((Attributable) hydratedObject).serialize());
+						} else if (!hydratedObject.getClass().getName().equals(type.getFormat()))
 							// if the classes doesn't match the format, the hydration failed somehow
 							// TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
 							throw new APIException();
 					}
 					catch (APIException e) {
-						errors.rejectValue("attributeMap[" + type.getName() + "]", "Invalid value for " + type.getName() + ": '" + value + "'");
-						log.warn("Got an invalid value: " + value + " while setting personAttributeType id #" + paramName, e);
+						errors.rejectValue("attributeMap[" + type.getName() + "]", "Invalid value for " + type.getName()
+						        + ": '" + value + "'");
+						log
+						        .warn("Got an invalid value: " + value + " while setting personAttributeType id #"
+						                + paramName, e);
 						
 						// setting the value to empty so that the user can reset the value to something else
 						attribute.setValue("");
@@ -373,7 +379,6 @@ public class NewPatientFormController extends SimpleFormController {
 			}
 			patient.addIdentifiers(newIdentifiers);
 			
-			
 			// find which identifiers they removed and void them
 			// must create a new list so that the updated identifiers in
 			// the newIdentifiers list are hashed correctly
@@ -395,72 +400,79 @@ public class NewPatientFormController extends SimpleFormController {
 			if (patient.isDead()) {
 				patient.setDeathDate(shortPatient.getDeathDate());
 				patient.setCauseOfDeath(shortPatient.getCauseOfDeath());
-			}
-			else {
+			} else {
 				patient.setDeathDate(null);
 				patient.setCauseOfDeath(null);
 			}
 			
 			Patient newPatient = null;
 			
-			if ( !isError ) {
+			if (!isError) {
 				// save or add the patient
 				try {
 					newPatient = ps.savePatient(patient);
-				} catch ( InvalidIdentifierFormatException iife ) {
+				}
+				catch (InvalidIdentifierFormatException iife) {
 					log.error(iife);
 					patient.removeIdentifier(iife.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.formatInvalid");
 					//errors = new BindException(new InvalidIdentifierFormatException(msa.getMessage("PatientIdentifier.error.formatInvalid")), "givenName");
 					isError = true;
-				} catch ( InvalidCheckDigitException icde ) {
+				}
+				catch (InvalidCheckDigitException icde) {
 					log.error(icde);
 					patient.removeIdentifier(icde.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.checkDigit");
 					//errors = new BindException(new InvalidCheckDigitException(msa.getMessage("PatientIdentifier.error.checkDigit")), "givenName");
 					isError = true;
-				} catch ( IdentifierNotUniqueException inue ) {
+				}
+				catch (IdentifierNotUniqueException inue) {
 					log.error(inue);
 					patient.removeIdentifier(inue.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.notUnique");
 					//errors = new BindException(new IdentifierNotUniqueException(msa.getMessage("PatientIdentifier.error.notUnique")), "givenName");
 					isError = true;
-				} catch ( DuplicateIdentifierException die ) {
+				}
+				catch (DuplicateIdentifierException die) {
 					log.error(die);
 					patient.removeIdentifier(die.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.duplicate");
 					//errors = new BindException(new DuplicateIdentifierException(msa.getMessage("PatientIdentifier.error.duplicate")), "givenName");
 					isError = true;
-				} catch ( InsufficientIdentifiersException iie ) {
+				}
+				catch (InsufficientIdentifiersException iie) {
 					log.error(iie);
 					patient.removeIdentifier(iie.getPatientIdentifier());
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.insufficientIdentifiers");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
+					    "PatientIdentifier.error.insufficientIdentifiers");
 					//errors = new BindException(new InsufficientIdentifiersException(msa.getMessage("PatientIdentifier.error.insufficientIdentifiers")), "givenName");
 					isError = true;
-				} catch ( PatientIdentifierException pie ) {
+				}
+				catch (PatientIdentifierException pie) {
 					log.error(pie);
 					patient.removeIdentifier(pie.getPatientIdentifier());
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
 					//errors = new BindException(new PatientIdentifierException(msa.getMessage("PatientIdentifier.error.general")), "givenName");
 					isError = true;
 				}
-						
+				
 				// update the death reason
-				if ( patient.getDead() ) {
+				if (patient.getDead()) {
 					log.debug("Patient is dead, so let's make sure there's an Obs for it");
 					// need to make sure there is an Obs that represents the patient's cause of death, if applicable
-	
+					
 					String codProp = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 					Concept causeOfDeath = Context.getConceptService().getConcept(codProp);
-	
-					if ( causeOfDeath != null ) {
-						List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, causeOfDeath);
-						if ( obssDeath != null ) {
-							if ( obssDeath.size() > 1 ) {
+					
+					if (causeOfDeath != null) {
+						List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient,
+						    causeOfDeath);
+						if (obssDeath != null) {
+							if (obssDeath.size() > 1) {
 								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
 							} else {
 								Obs obsDeath = null;
-								if ( obssDeath.size() == 1 ) {
+								if (obssDeath.size() == 1) {
 									// already has a cause of death - let's edit it.
 									log.debug("Already has a cause of death, so changing it");
 									
@@ -473,40 +485,46 @@ public class NewPatientFormController extends SimpleFormController {
 									obsDeath = new Obs();
 									obsDeath.setPerson(patient);
 									obsDeath.setConcept(causeOfDeath);
-
+									
 									// Get default location
 									Location loc = Context.getLocationService().getDefaultLocation();
 									
 									// TODO person healthcenter if ( loc == null ) loc = patient.getHealthCenter();
-									if ( loc != null ) obsDeath.setLocation(loc);
-									else log.error("Could not find a suitable location for which to create this new Obs");
+									if (loc != null)
+										obsDeath.setLocation(loc);
+									else
+										log.error("Could not find a suitable location for which to create this new Obs");
 								}
 								
 								// put the right concept and (maybe) text in this obs
 								Concept currCause = patient.getCauseOfDeath();
-								if ( currCause == null ) {
+								if (currCause == null) {
 									// set to NONE
 									log.debug("Current cause is null, attempting to set to NONE");
-									String noneConcept = Context.getAdministrationService().getGlobalProperty("concept.none");
+									String noneConcept = Context.getAdministrationService()
+									        .getGlobalProperty("concept.none");
 									currCause = Context.getConceptService().getConcept(noneConcept);
 								}
 								
-								if ( currCause != null ) {
+								if (currCause != null) {
 									log.debug("Current cause is not null, setting to value_coded");
 									obsDeath.setValueCoded(currCause);
 									obsDeath.setValueCodedName(currCause.getName()); // ABKTODO: presume current locale?
 									
 									Date dateDeath = patient.getDeathDate();
-									if ( dateDeath == null ) dateDeath = new Date();
+									if (dateDeath == null)
+										dateDeath = new Date();
 									obsDeath.setObsDatetime(dateDeath);
-	
+									
 									// check if this is an "other" concept - if so, then we need to add value_text
-									String otherConcept = Context.getAdministrationService().getGlobalProperty("concept.otherNonCoded");
+									String otherConcept = Context.getAdministrationService().getGlobalProperty(
+									    "concept.otherNonCoded");
 									Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
-									if ( conceptOther != null ) {
-										if ( conceptOther.equals(currCause) ) {
+									if (conceptOther != null) {
+										if (conceptOther.equals(currCause)) {
 											// seems like this is an other concept - let's try to get the "other" field info
-											String otherInfo = ServletRequestUtils.getStringParameter(request, "causeOfDeath_other", "");
+											String otherInfo = ServletRequestUtils.getStringParameter(request,
+											    "causeOfDeath_other", "");
 											log.debug("Setting value_text as " + otherInfo);
 											obsDeath.setValueText(otherInfo);
 										} else {
@@ -525,7 +543,8 @@ public class NewPatientFormController extends SimpleFormController {
 							}
 						}
 					} else {
-						log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
+						log
+						        .debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
 					}
 					
 				}
@@ -533,7 +552,7 @@ public class NewPatientFormController extends SimpleFormController {
 			}
 			
 			// save the relationships to the database
-			if ( !isError && !errors.hasErrors()) {
+			if (!isError && !errors.hasErrors()) {
 				Map<String, Relationship> relationships = getRelationshipsMap(patient, request);
 				for (Relationship relationship : relationships.values()) {
 					// if the user added a person to this relationship, save it 
@@ -543,7 +562,7 @@ public class NewPatientFormController extends SimpleFormController {
 			}
 			
 			// redirect if an error occurred
-			if ( isError || errors.hasErrors()) {
+			if (isError || errors.hasErrors()) {
 				log.error("Had an error during processing. Redirecting to " + this.getFormView());
 				
 				Map<String, Object> model = new HashMap<String, Object>();
@@ -554,56 +573,53 @@ public class NewPatientFormController extends SimpleFormController {
 				
 				return this.showForm(request, response, errors, model);
 				//return new ModelAndView(new RedirectView(getFormView()));
-			}
-			else {
+			} else {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.saved");
 				return new ModelAndView(new RedirectView(view + "?patientId=" + newPatient.getPatientId()));
 			}
-		}
-		else {
+		} else {
 			return new ModelAndView(new RedirectView(getFormView()));
 		}
 	}
-    
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
-    	newIdentifiers = new HashSet<PatientIdentifier>(); 
+		newIdentifiers = new HashSet<PatientIdentifier>();
 		Patient p = null;
 		Integer id = null;
-    	
+		
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			String patientId = request.getParameter("patientId");
 			if (patientId != null) {
-	    		try {
-	    			id = Integer.valueOf(patientId);
-	    			p = ps.getPatient(id);
-	    		}
-	    		catch (NumberFormatException numberError) {
-	    			log.warn("Invalid patientId supplied: '" + patientId + "'", numberError);
-	    		}
-	    		catch (ObjectRetrievalFailureException noUserEx) {
-	    			// continue
-	    		}
-	    	}
+				try {
+					id = Integer.valueOf(patientId);
+					p = ps.getPatient(id);
+				}
+				catch (NumberFormatException numberError) {
+					log.warn("Invalid patientId supplied: '" + patientId + "'", numberError);
+				}
+				catch (ObjectRetrievalFailureException noUserEx) {
+					// continue
+				}
+			}
 			
 			if (p == null) {
 				try {
-	    			Person person = Context.getPersonService().getPerson(id);
-	    			if (person != null)
-	    				p = new Patient(person);
-	    		}
-	    		catch (ObjectRetrievalFailureException noPersonEx) {
-	    			log.warn("There is no patient or person with id: '" + id + "'", noPersonEx);
-	    			throw new ServletException("There is no patient or person with id: '" + id + "'");
-	    		}
+					Person person = Context.getPersonService().getPerson(id);
+					if (person != null)
+						p = new Patient(person);
+				}
+				catch (ObjectRetrievalFailureException noPersonEx) {
+					log.warn("There is no patient or person with id: '" + id + "'", noPersonEx);
+					throw new ServletException("There is no patient or person with id: '" + id + "'");
+				}
 			}
 		}
 		
@@ -628,12 +644,10 @@ public class NewPatientFormController extends SimpleFormController {
 		}
 		
 		return patient;
-    }
-    
+	}
+	
 	/**
-	 * 
-	 * Called prior to form display.  Allows for data to be put 
-	 * 	in the request to be used in the view
+	 * Called prior to form display. Allows for data to be put in the request to be used in the view
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
@@ -647,28 +661,29 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		Patient patient = null;
 		String causeOfDeathOther = "";
-
+		
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			String patientId = request.getParameter("patientId");
-	    	if (patientId != null && !patientId.equals("")) {
-	    		
-	    		// our current patient
-	    		patient = ps.getPatient(Integer.valueOf(patientId));
-	    		
-	    		if (patient != null) {
-	    			// only show non-voided identifiers
-		    		identifiers.addAll(patient.getActiveIdentifiers());
-		    		
-		    		// get 'other' cause of death
-		    		String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+			if (patientId != null && !patientId.equals("")) {
+				
+				// our current patient
+				patient = ps.getPatient(Integer.valueOf(patientId));
+				
+				if (patient != null) {
+					// only show non-voided identifiers
+					identifiers.addAll(patient.getActiveIdentifiers());
+					
+					// get 'other' cause of death
+					String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 					Concept conceptCause = Context.getConceptService().getConcept(propCause);
-					if ( conceptCause != null && patient.getPatientId() != null) {
-						List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, conceptCause);
-						if ( obssDeath.size() == 1 ) {
+					if (conceptCause != null && patient.getPatientId() != null) {
+						List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient,
+						    conceptCause);
+						if (obssDeath.size() == 1) {
 							Obs obsDeath = obssDeath.iterator().next();
 							causeOfDeathOther = obsDeath.getValueText();
-							if ( causeOfDeathOther == null ) {
+							if (causeOfDeathOther == null) {
 								log.debug("cod is null, so setting to empty string");
 								causeOfDeathOther = "";
 							} else {
@@ -681,13 +696,13 @@ public class NewPatientFormController extends SimpleFormController {
 						log.debug("No concept cause found");
 					}
 					// end get 'other' cause of death
-	    		}
-	    	}
-	    	
-	    	// set up the property for the relationships
+				}
+			}
+			
+			// set up the property for the relationships
 			
 			// {'3a':Relationship#234, '7b':Relationship#9488} 
-			Map<String, Relationship> relationships = getRelationshipsMap(patient, request); 
+			Map<String, Relationship> relationships = getRelationshipsMap(patient, request);
 			map.put("relationships", relationships);
 		}
 		
@@ -701,106 +716,104 @@ public class NewPatientFormController extends SimpleFormController {
 		
 		if (pref.length() > 0)
 			for (PatientIdentifier pi : identifiers)
-				pi.setPreferred(pref.equals(pi.getIdentifier()+pi.getIdentifierType().getPatientIdentifierTypeId()));
+				pi.setPreferred(pref.equals(pi.getIdentifier() + pi.getIdentifierType().getPatientIdentifierTypeId()));
 		
 		if (Context.isAuthenticated())
-			map.put("defaultLocation", Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION));
+			map.put("defaultLocation", Context.getAuthenticatedUser().getUserProperty(
+			    OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION));
 		map.put("identifiers", identifiers);
 		map.put("causeOfDeathOther", causeOfDeathOther);
-				
+		
 		return map;
-	}   
+	}
 	
-    /**
-     * Convenience method to fetch the relationships to display on the 
-     * page.  
-     * 
-     * First the database is queried for the user demanded relationships to
-     * show on the new patient form.  @see OpenmrsConstants#GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS
-     * 
-     * Each 3a, 6b relationship defined there is pulled from the db and put into 
-     * the map.  If one doesn't exist in the db yet, a relationship stub is created.
-     * 
-     * If '3a' or '6b' exist as parameters in the given <code>request</code>,
-     * that parameter value is put into the returned map
-     * 
-     * @param person The person to match against
-     * @param request the current request with or without 3a-named parameters in it
-     * @return Map from relation string to defined relationship object {'3a':obj, '7b':obj}
-     */
-    private Map<String, Relationship> getRelationshipsMap(Person person, HttpServletRequest request) {
-    	Map<String, Relationship> relationshipMap = new LinkedHashMap<String, Relationship>(); 
-    	
-    	// gp is in the form "3a, 7b, 4a"
-    	String relationshipsString = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS, "");
-    	relationshipsString = relationshipsString.trim();
-    	if (relationshipsString.length() > 0) {
-    		String[] showRelations = relationshipsString.split(",");
-    		// iterate over strings like "3a"
-    		for (String showRelation : showRelations) {
-    			showRelation = showRelation.trim();
-    			
-    			boolean aIsToB = true;
-    			if (showRelation.endsWith("b")) {
-    				aIsToB = false;
-    			}
-    			
-    			// trim out the trailing a or b char
-    			String showRelationId = showRelation.replace("a", "");
-    			showRelationId = showRelationId.replace("b", "");
-    			
-    			RelationshipType relationshipType = Context.getPersonService().getRelationshipType(Integer.valueOf(showRelationId));
-    			
-    			// flag to know if we need to create a stub relationship 
-    			boolean relationshipFound = false;
-    			
-    			if (person != null && person.getPersonId() != null) {
-    				if (aIsToB) {
-	    				List<Relationship> relationships = Context.getPersonService().getRelationships(null, person, relationshipType);
-	    				if (relationships.size() > 0) {
-	        				relationshipMap.put(showRelation, relationships.get(0));
-	        				relationshipFound = true;
-	    				}
-	    			}
-	    			else {
-	    				List<Relationship> relationships = Context.getPersonService().getRelationships(person, null, relationshipType);
-	    				if (relationships.size() > 0) {
-	        				relationshipMap.put(showRelation, relationships.get(0));
-	        				relationshipFound = true;
-	    				}
-	    			}
-    			}
-    			
-    			// if no relationship was found, create a stub one now
-    			if (relationshipFound == false) {
-    				Relationship relationshipStub = new Relationship();
-    				relationshipStub.setRelationshipType(relationshipType);
-    				if (aIsToB)
-    					relationshipStub.setPersonB(person);
-    				else
-    					relationshipStub.setPersonA(person);
-    				
-    				relationshipMap.put(showRelation, relationshipStub);
-    			}
-    			
-    			
-    			// check the request to see if a parameter exists in there
-    			// that matches to the user desired relation.  Overwrite
-    			// any previous data if found
-    			String submittedPersonId = request.getParameter(showRelation);
-    			if (submittedPersonId != null && submittedPersonId.length() > 0) {
-    				Person submittedPerson = Context.getPersonService().getPerson(Integer.valueOf(submittedPersonId));
-    				if (aIsToB)
-    					relationshipMap.get(showRelation).setPersonA(submittedPerson);
+	/**
+	 * Convenience method to fetch the relationships to display on the page. First the database is
+	 * queried for the user demanded relationships to show on the new patient form. @see
+	 * OpenmrsConstants#GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS Each 3a, 6b relationship
+	 * defined there is pulled from the db and put into the map. If one doesn't exist in the db yet,
+	 * a relationship stub is created. If '3a' or '6b' exist as parameters in the given
+	 * <code>request</code>, that parameter value is put into the returned map
+	 * 
+	 * @param person The person to match against
+	 * @param request the current request with or without 3a-named parameters in it
+	 * @return Map from relation string to defined relationship object {'3a':obj, '7b':obj}
+	 */
+	private Map<String, Relationship> getRelationshipsMap(Person person, HttpServletRequest request) {
+		Map<String, Relationship> relationshipMap = new LinkedHashMap<String, Relationship>();
+		
+		// gp is in the form "3a, 7b, 4a"
+		String relationshipsString = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS, "");
+		relationshipsString = relationshipsString.trim();
+		if (relationshipsString.length() > 0) {
+			String[] showRelations = relationshipsString.split(",");
+			// iterate over strings like "3a"
+			for (String showRelation : showRelations) {
+				showRelation = showRelation.trim();
+				
+				boolean aIsToB = true;
+				if (showRelation.endsWith("b")) {
+					aIsToB = false;
+				}
+				
+				// trim out the trailing a or b char
+				String showRelationId = showRelation.replace("a", "");
+				showRelationId = showRelationId.replace("b", "");
+				
+				RelationshipType relationshipType = Context.getPersonService().getRelationshipType(
+				    Integer.valueOf(showRelationId));
+				
+				// flag to know if we need to create a stub relationship 
+				boolean relationshipFound = false;
+				
+				if (person != null && person.getPersonId() != null) {
+					if (aIsToB) {
+						List<Relationship> relationships = Context.getPersonService().getRelationships(null, person,
+						    relationshipType);
+						if (relationships.size() > 0) {
+							relationshipMap.put(showRelation, relationships.get(0));
+							relationshipFound = true;
+						}
+					} else {
+						List<Relationship> relationships = Context.getPersonService().getRelationships(person, null,
+						    relationshipType);
+						if (relationships.size() > 0) {
+							relationshipMap.put(showRelation, relationships.get(0));
+							relationshipFound = true;
+						}
+					}
+				}
+				
+				// if no relationship was found, create a stub one now
+				if (relationshipFound == false) {
+					Relationship relationshipStub = new Relationship();
+					relationshipStub.setRelationshipType(relationshipType);
+					if (aIsToB)
+						relationshipStub.setPersonB(person);
+					else
+						relationshipStub.setPersonA(person);
+					
+					relationshipMap.put(showRelation, relationshipStub);
+				}
+				
+				// check the request to see if a parameter exists in there
+				// that matches to the user desired relation.  Overwrite
+				// any previous data if found
+				String submittedPersonId = request.getParameter(showRelation);
+				if (submittedPersonId != null && submittedPersonId.length() > 0) {
+					Person submittedPerson = Context.getPersonService().getPerson(Integer.valueOf(submittedPersonId));
+					if (aIsToB)
+						relationshipMap.get(showRelation).setPersonA(submittedPerson);
 					else
 						relationshipMap.get(showRelation).setPersonB(submittedPerson);
-    			}
-    				
-    		}
-    		
-    	}
-    	
-    	return relationshipMap;
-    }
-
+				}
+				
+			}
+			
+		}
+		
+		return relationshipMap;
+	}
+	
 }
