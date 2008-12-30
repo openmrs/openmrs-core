@@ -93,9 +93,11 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public User getUserByUsername(String username) {
-		List<User> users = sessionFactory.getCurrentSession().createQuery(
-		    "from User u where u.voided = 0 and (u.username = ? or u.systemId = ?)").setString(0, username).setString(1,
-		    username).list();
+		Query query = sessionFactory.getCurrentSession().createQuery(
+		    "from User u where u.voided = 0 and (u.username = ? or u.systemId = ?)");
+		query.setString(0, username);
+		query.setString(1, username);
+		List<User> users = query.list();
 		
 		if (users == null || users.size() == 0) {
 			log.warn("request for username '" + username + "' not found");
@@ -124,12 +126,18 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		catch (Exception e) {}
 		
-		Long count = (Long) sessionFactory
+		Query query = sessionFactory
 		        .getCurrentSession()
 		        .createQuery(
-		            "select count(*) from User u where (u.username = :uname1 or u.systemId = :uname2 or u.username = :sysid1 or u.systemId = :sysid2 or u.systemId = :uname3) and u.userId <> :uid")
-		        .setString("uname1", username).setString("uname2", username).setString("sysid1", systemId).setString(
-		            "sysid2", systemId).setString("uname3", usernameWithCheckDigit).setInteger("uid", userId).uniqueResult();
+		            "select count(*) from User u where (u.username = :uname1 or u.systemId = :uname2 or u.username = :sysid1 or u.systemId = :sysid2 or u.systemId = :uname3) and u.userId <> :uid");
+		query.setString("uname1", username);
+		query.setString("uname2", username);
+		query.setString("sysid1", systemId);
+		query.setString("sysid2", systemId);
+		query.setString("uname3", usernameWithCheckDigit);
+		query.setInteger("uid", userId);
+		
+		Long count = (Long) query.uniqueResult();
 		
 		log.debug("# users found: " + count);
 		if (count == null || count == 0)
