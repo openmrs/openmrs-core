@@ -21,52 +21,55 @@ import org.simpleframework.xml.Root;
  */
 @Root
 public class SearchArgument {
-
+	
 	private String name;
+	
 	private String value;
+	
 	private Class propertyClass;
 	
-	public SearchArgument() { }
-
-    public SearchArgument(String name, String value, Class propertyClass) {
-	    super();
-	    this.name = name;
-	    this.value = value;
-	    this.propertyClass = propertyClass;
-    }
-    
-    public String toString() {
-    	return name + " (" + propertyClass + ") = " + value;
-    }
-
-    @Attribute(required=true)
+	public SearchArgument() {
+	}
+	
+	public SearchArgument(String name, String value, Class propertyClass) {
+		super();
+		this.name = name;
+		this.value = value;
+		this.propertyClass = propertyClass;
+	}
+	
+	public String toString() {
+		return name + " (" + propertyClass + ") = " + value;
+	}
+	
+	@Attribute(required = true)
 	public String getName() {
-    	return name;
-    }
-
-    @Attribute(required=true)
+		return name;
+	}
+	
+	@Attribute(required = true)
 	public void setName(String name) {
-    	this.name = name;
-    }
-
-    @Attribute(required=true)
+		this.name = name;
+	}
+	
+	@Attribute(required = true)
 	public String getValue() {
-    	return value;
-    }
-
-    @Attribute(required=true)
+		return value;
+	}
+	
+	@Attribute(required = true)
 	public void setValue(String value) {
-    	this.value = value;
-    }
-
-    @Attribute(required=true)
+		this.value = value;
+	}
+	
+	@Attribute(required = true)
 	public Class getPropertyClass() {
-    	return propertyClass;
-    }
-
-    @Attribute(required=true)
+		return propertyClass;
+	}
+	
+	@Attribute(required = true)
 	public void setPropertyClass(Class propertyClass) {
-    	this.propertyClass = propertyClass;
-    }
+		this.propertyClass = propertyClass;
+	}
 	
 }

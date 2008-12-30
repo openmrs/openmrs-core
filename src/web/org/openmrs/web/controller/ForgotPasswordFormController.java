@@ -34,43 +34,44 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
- * Controls the forgotten password form
- * Initially a form with just a username box is shown
- * Then a box for the answer to the secret question is shown
+ * Controls the forgotten password form Initially a form with just a username box is shown Then a
+ * box for the answer to the secret question is shown
  */
 public class ForgotPasswordFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected static final Log log = LogFactory.getLog(ForgotPasswordFormController.class);
-    
-    /**
+	/** Logger for this class and subclasses */
+	protected static final Log log = LogFactory.getLog(ForgotPasswordFormController.class);
+	
+	/**
 	 * Not used with the forgot password form controller.
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		return "";
-    }
-    
-    /**
-     * The mapping from user's IP address to the number of attempts at logging in from that IP
-     */
-    private Map<String, Integer> loginAttemptsByIP = new HashMap<String, Integer>();
-    
-    /**
-     * The mapping from user's IP address to the time that they were locked out
-     */
-    private Map<String, Date> lockoutDateByIP = new HashMap<String, Date>();
-    
+	}
+	
 	/**
-	 * 
-	 * This takes in the form twice.  The first time when the input their username and
-	 * the second when they submit both their username and their secret answer
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * The mapping from user's IP address to the number of attempts at logging in from that IP
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	private Map<String, Integer> loginAttemptsByIP = new HashMap<String, Integer>();
+	
+	/**
+	 * The mapping from user's IP address to the time that they were locked out
+	 */
+	private Map<String, Date> lockoutDateByIP = new HashMap<String, Date>();
+	
+	/**
+	 * This takes in the form twice. The first time when the input their username and the second
+	 * when they submit both their username and their secret answer
+	 * 
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
+	 */
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -87,24 +88,21 @@ public class ForgotPasswordFormController extends SimpleFormController {
 			lockedOut = true;
 			
 			Date lockedOutTime = lockoutDateByIP.get(ipAddress);
-			if (lockedOutTime != null && 
-				new Date().getTime() - lockedOutTime.getTime() > 300000) {
-					lockedOut = false;
-					forgotPasswordAttempts = 0;
-					lockoutDateByIP.put(ipAddress, null);
-			}
-			else {
+			if (lockedOutTime != null && new Date().getTime() - lockedOutTime.getTime() > 300000) {
+				lockedOut = false;
+				forgotPasswordAttempts = 0;
+				lockoutDateByIP.put(ipAddress, null);
+			} else {
 				// they haven't been locked out before, or they're trying again
 				// within the time limit.  Set the locked-out date to right now
 				lockoutDateByIP.put(ipAddress, new Date());
 			}
 			
 		}
-			
+		
 		if (lockedOut) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.forgotPassword.tooManyAttempts");
-		}
-		else {
+		} else {
 			// if the previous logic didn't determine that the user should be locked out,
 			// then continue with the check
 			
@@ -127,11 +125,9 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 				}
 				
-				
 				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
-				}
-				else {
+				} else {
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
 					request.setAttribute("secretQuestion", user.getSecretQuestion());
 					
@@ -140,8 +136,7 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					forgotPasswordAttempts = 0;
 				}
 				
-			}
-			else if(secretAnswer != null) {
+			} else if (secretAnswer != null) {
 				// if they've filled in the username and entered their secret answer
 				
 				User user = null;
@@ -157,12 +152,11 @@ public class ForgotPasswordFormController extends SimpleFormController {
 				// check the secret question again in case the user got here "illegally"
 				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.question.empty");
-				}
-				else if (user.getSecretQuestion() != null && Context.getUserService().isSecretAnswer(user, secretAnswer)) {
+				} else if (user.getSecretQuestion() != null && Context.getUserService().isSecretAnswer(user, secretAnswer)) {
 					
 					String randomPassword = "";
-					for (int i=0; i<8; i++) {
-						randomPassword += String.valueOf((Math.random() * (127-48) + 48));
+					for (int i = 0; i < 8; i++) {
+						randomPassword += String.valueOf((Math.random() * (127 - 48) + 48));
 					}
 					
 					try {
@@ -178,15 +172,14 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					Context.authenticate(username, randomPassword);
 					httpSession.setAttribute("loginAttempts", 0);
 					return new ModelAndView(new RedirectView(request.getContextPath() + "/options.form#Change Login Info"));
-				}
-				else {
+				} else {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.answer.invalid");
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "auth.question.fill");
 					request.setAttribute("secretQuestion", user.getSecretQuestion());
 				}
 			}
 		}
-				
+		
 		loginAttemptsByIP.put(ipAddress, forgotPasswordAttempts);
 		request.setAttribute("uname", username);
 		return showForm(request, response, errors);

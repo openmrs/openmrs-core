@@ -61,16 +61,24 @@ public class DataExportFunctions {
 	public final Log log = LogFactory.getLog(this.getClass());
 	
 	protected Integer patientId;
+	
 	protected Patient patient;
+	
 	//protected PatientSet patientSet;
 	protected Cohort patientSet;
+	
 	protected boolean isAllPatients = false;
+	
 	private Integer patientCounter = 0; // used for garbage collection (Clean up every x patients)
 	
 	protected String separator = "	";
-	protected DateFormat dateFormatLong = null; 
+	
+	protected DateFormat dateFormatLong = null;
+	
 	protected DateFormat dateFormatShort = null;
+	
 	protected DateFormat dateFormatYmd = null;
+	
 	protected Map<String, DateFormat> formats = new HashMap<String, DateFormat>();
 	
 	public Date currentDate = new Date();
@@ -100,7 +108,7 @@ public class DataExportFunctions {
 	
 	// Map<name of drug set, Map<patientId, List<DrugOrder>>>
 	protected Map<String, Map<Integer, List<DrugOrder>>> drugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
-
+	
 	// Map<name of drug set, Map<patientId, List<DrugOrder>>>
 	protected Map<String, Map<Integer, List<DrugOrder>>> currentDrugOrderMap = new HashMap<String, Map<Integer, List<DrugOrder>>>();
 	
@@ -109,22 +117,26 @@ public class DataExportFunctions {
 	
 	// Map<tablename+columnname, Map<personId, columnvalue>>
 	protected Map<String, Map<Integer, Object>> personAttributeMap = new HashMap<String, Map<Integer, Object>>();
-
+	
 	// Map<key, Collection<personId>>, where key is like "Cohort.1" or "Filter.3"
 	protected Map<String, Collection<Integer>> cohortMap = new HashMap<String, Collection<Integer>>();
 	
 	protected PatientSetService patientSetService;
+	
 	protected PatientService patientService;
+	
 	protected ConceptService conceptService;
+	
 	protected EncounterService encounterService;
 	
 	protected Locale locale = null;
+	
 	// Constructors
 	
 	public DataExportFunctions(Patient p) {
 		this(p.getPatientId());
 	}
-
+	
 	public DataExportFunctions(Integer patientId) {
 		this();
 		setPatientId(patientId);
@@ -150,7 +162,7 @@ public class DataExportFunctions {
 		for (Map map : patientIdentifierMap.values())
 			map.clear();
 		patientIdentifierMap.clear();
-		patientIdentifierMap = null;		
+		patientIdentifierMap = null;
 		for (Map map : patientFirstEncounterMap.values())
 			map.clear();
 		patientFirstEncounterMap.clear();
@@ -185,6 +197,7 @@ public class DataExportFunctions {
 	
 	/**
 	 * Called when garbage collecting this class
+	 * 
 	 * @see java.lang.Object#finalize()
 	 */
 	@Override
@@ -192,7 +205,7 @@ public class DataExportFunctions {
 		log.debug("GC is collecting the data export functions..." + this);
 		super.finalize();
 	}
-
+	
 	/**
 	 * @return Returns the patient.
 	 */
@@ -209,7 +222,7 @@ public class DataExportFunctions {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
-
+	
 	public Integer getPatientId() {
 		return patientId;
 	}
@@ -235,8 +248,7 @@ public class DataExportFunctions {
 	}
 	
 	/**
-	 * Call the system garbage collecter.  This method only calls 
-	 * every 500 patients
+	 * Call the system garbage collecter. This method only calls every 500 patients
 	 */
 	protected void garbageCollect() {
 		if (patientCounter++ % 500 == 0) {
@@ -244,7 +256,7 @@ public class DataExportFunctions {
 			System.gc();
 		}
 	}
-
+	
 	/**
 	 * @return Returns the patientSet.
 	 */
@@ -260,26 +272,26 @@ public class DataExportFunctions {
 	}
 	
 	/**
-     * @return the isAllPatients
-     */
-    public boolean isAllPatients() {
-    	return isAllPatients;
-    }
-
+	 * @return the isAllPatients
+	 */
+	public boolean isAllPatients() {
+		return isAllPatients;
+	}
+	
 	/**
-     * @param isAllPatients the isAllPatients to set
-     */
-    public void setAllPatients(boolean isAllPatients) {
-    	this.isAllPatients = isAllPatients;
-    }
-
+	 * @param isAllPatients the isAllPatients to set
+	 */
+	public void setAllPatients(boolean isAllPatients) {
+		this.isAllPatients = isAllPatients;
+	}
+	
 	/**
 	 * @return Returns the separator.
 	 */
 	public String getSeparator() {
 		return separator;
 	}
-
+	
 	/**
 	 * @param separator The separator to set.
 	 */
@@ -315,7 +327,8 @@ public class DataExportFunctions {
 			PatientFilter pf = Context.getReportObjectService().getPatientFilterById(Integer.valueOf(key.substring(2)));
 			ps = pf.filter(getPatientSet(), context);
 		} else if (key.startsWith("S.")) {
-			PatientSearchReportObject ro = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(Integer.valueOf(key.substring(2)));
+			PatientSearchReportObject ro = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(
+			    Integer.valueOf(key.substring(2)));
 			PatientFilter pf = OpenmrsUtil.toPatientFilter(ro.getPatientSearch(), null);
 			ps = pf.filter(getPatientSet(), context);
 		} else {
@@ -333,7 +346,7 @@ public class DataExportFunctions {
 	 */
 	public Encounter getLastEncounter(String encounterType) {
 		if (patientEncounterMap.containsKey(encounterType))
-			return (Encounter)patientEncounterMap.get(encounterType).get(getPatientId());
+			return (Encounter) patientEncounterMap.get(encounterType).get(getPatientId());
 		
 		log.debug("getting first encounters for type: " + encounterType);
 		
@@ -345,11 +358,10 @@ public class DataExportFunctions {
 		
 		patientEncounterMap.put(encounterType, encounterMap);
 		
-		return (Encounter)encounterMap.get(getPatientId());
+		return (Encounter) encounterMap.get(getPatientId());
 	}
 	
 	/**
-	 * 
 	 * @param typeArray
 	 * @param attr
 	 * @return
@@ -357,7 +369,7 @@ public class DataExportFunctions {
 	@SuppressWarnings("unchecked")
 	public Object getLastEncounterAttr(Object typeArray, String attr) {
 		
-		List<String> types = (List<String>)typeArray;
+		List<String> types = (List<String>) typeArray;
 		String key = OpenmrsUtil.join(types, ",") + "|" + attr;
 		
 		if (patientEncounterMap.containsKey(key))
@@ -373,7 +385,8 @@ public class DataExportFunctions {
 			try {
 				type = encounterService.getEncounterType(Integer.valueOf(typeName));
 			}
-			catch (Exception e) { /* pass */ };
+			catch (Exception e) { /* pass */}
+			;
 			
 			if (type == null)
 				type = encounterService.getEncounterType(typeName);
@@ -382,21 +395,22 @@ public class DataExportFunctions {
 				encounterTypes.add(type);
 		}
 		
-		Map<Integer, Object> encounterMap = patientSetService.getEncounterAttrsByType(getPatientSetIfNotAllPatients(), encounterTypes, attr);
+		Map<Integer, Object> encounterMap = patientSetService.getEncounterAttrsByType(getPatientSetIfNotAllPatients(),
+		    encounterTypes, attr);
 		
 		patientEncounterMap.put(key, encounterMap);
 		
 		return encounterMap.get(getPatientId());
 		
 	}
-
+	
 	/**
 	 * @return Encounter first encounter of type <code>encounterType</code>
 	 * @param encounterType
 	 */
 	public Encounter getFirstEncounter(String encounterType) {
 		if (patientFirstEncounterMap.containsKey(encounterType))
-			return (Encounter)patientFirstEncounterMap.get(encounterType).get(getPatientId());
+			return (Encounter) patientFirstEncounterMap.get(encounterType).get(getPatientId());
 		
 		log.debug("getting first encounters for type: " + encounterType);
 		
@@ -404,7 +418,8 @@ public class DataExportFunctions {
 		if (!encounterType.equals(""))
 			type = encounterService.getEncounterType(encounterType);
 		
-		Map<Integer, Encounter> encounterMap = patientSetService.getFirstEncountersByType(getPatientSetIfNotAllPatients(), type);
+		Map<Integer, Encounter> encounterMap = patientSetService.getFirstEncountersByType(getPatientSetIfNotAllPatients(),
+		    type);
 		
 		patientFirstEncounterMap.put(encounterType, encounterMap);
 		
@@ -412,7 +427,6 @@ public class DataExportFunctions {
 	}
 	
 	/**
-	 * 
 	 * @param typeArray
 	 * @param attr
 	 * @return
@@ -420,7 +434,7 @@ public class DataExportFunctions {
 	@SuppressWarnings("unchecked")
 	public Object getFirstEncounterAttr(Object typeArray, String attr) {
 		
-		List<String> types = (List<String>)typeArray;
+		List<String> types = (List<String>) typeArray;
 		String key = OpenmrsUtil.join(types, ",") + "|" + attr;
 		
 		if (patientFirstEncounterMap.containsKey(key))
@@ -436,7 +450,8 @@ public class DataExportFunctions {
 			try {
 				type = encounterService.getEncounterType(Integer.valueOf(typeName));
 			}
-			catch (Exception e) { /* pass */ };
+			catch (Exception e) { /* pass */}
+			;
 			
 			if (type == null)
 				type = encounterService.getEncounterType(typeName);
@@ -445,15 +460,14 @@ public class DataExportFunctions {
 				encounterTypes.add(type);
 		}
 		
-		Map<Integer, Object> encounterMap = patientSetService.getFirstEncounterAttrsByType(getPatientSetIfNotAllPatients(), encounterTypes, attr);
+		Map<Integer, Object> encounterMap = patientSetService.getFirstEncounterAttrsByType(getPatientSetIfNotAllPatients(),
+		    encounterTypes, attr);
 		
 		patientFirstEncounterMap.put(key, encounterMap);
 		
 		return encounterMap.get(getPatientId());
 		
 	}
-	
-	
 	
 	// methods
 	
@@ -496,7 +510,7 @@ public class DataExportFunctions {
 		return patientIdObsMap.get(patientId);
 	}
 	*/
-	
+
 	public List<List<Object>> getObsWithValues(Concept c, List<String> attrs) {
 		if (attrs == null)
 			attrs = new Vector<String>();
@@ -511,11 +525,10 @@ public class DataExportFunctions {
 		return patientIdObsMap.get(patientId);
 	}
 	
-	
 	/**
 	 * Gets a patient program given a program ID or program name.
 	 * 
-	 * @param programIdOrName	the identifier or name of the program
+	 * @param programIdOrName the identifier or name of the program
 	 * @return
 	 */
 	public PatientProgram getProgram(String programIdOrName) {
@@ -524,24 +537,25 @@ public class DataExportFunctions {
 		if (programMap.containsKey(programIdOrName)) {
 			patientIdProgramMap = programMap.get(programIdOrName);
 		} else {
-		
+			
 			Program program = null;
 			
 			//
 			// Ticket #912 - Fixed by adding some code to lookup the program by ID
 			//
-			try { 
+			try {
 				Integer programId = Integer.parseInt(programIdOrName);
 				program = Context.getProgramWorkflowService().getProgram(programId);
-			} catch (NumberFormatException e) { /* ignore error because we're going to look the program up by name */ }
+			}
+			catch (NumberFormatException e) { /* ignore error because we're going to look the program up by name */}
 			
-			if (program == null) { 
+			if (program == null) {
 				program = Context.getProgramWorkflowService().getProgramByName(programIdOrName);
 			}
 			patientIdProgramMap = patientSetService.getPatientPrograms(getPatientSetIfNotAllPatients(), program);
 			programMap.put(programIdOrName, patientIdProgramMap);
 		}
-		return patientIdProgramMap.get(patientId);		
+		return patientIdProgramMap.get(patientId);
 	}
 	
 	public List<DrugOrder> getCurrentDrugOrders(String drugSetName) {
@@ -561,7 +575,7 @@ public class DataExportFunctions {
 		if (patientOrders == null)
 			return "";
 		StringBuilder ret = new StringBuilder();
-		for (Iterator<DrugOrder> i = patientOrders.iterator(); i.hasNext(); ) {
+		for (Iterator<DrugOrder> i = patientOrders.iterator(); i.hasNext();) {
 			DrugOrder o = i.next();
 			if (o.getDrug() != null)
 				ret.append(o.getDrug().getName());
@@ -617,7 +631,7 @@ public class DataExportFunctions {
 			return "";
 		} else {
 			StringBuilder sb = new StringBuilder();
-			for (Iterator<Relationship> i = rels.iterator(); i.hasNext(); ) {
+			for (Iterator<Relationship> i = rels.iterator(); i.hasNext();) {
 				Relationship r = i.next();
 				sb.append(r.getPersonA().toString());
 				if (i.hasNext())
@@ -634,7 +648,7 @@ public class DataExportFunctions {
 			return "";
 		} else {
 			StringBuilder sb = new StringBuilder();
-			for (Iterator<Relationship> i = rels.iterator(); i.hasNext(); ) {
+			for (Iterator<Relationship> i = rels.iterator(); i.hasNext();) {
 				Relationship r = i.next();
 				r.getPersonA().toString();
 				if (i.hasNext())
@@ -650,7 +664,7 @@ public class DataExportFunctions {
 			return "";
 		} else {
 			StringBuilder sb = new StringBuilder();
-			for (Iterator<Relationship> i = rels.iterator(); i.hasNext(); ) {
+			for (Iterator<Relationship> i = rels.iterator(); i.hasNext();) {
 				Relationship r = i.next();
 				Patient p = patientService.getPatient(r.getPersonA().getPersonId());
 				if (p != null)
@@ -674,9 +688,8 @@ public class DataExportFunctions {
 	}
 	
 	/**
-	 * Retrieves properties on the patient like patient.patientName.familyName
-	 * If returnAll is set, returns an array of every matching property for 
-	 * the patient instead of just the preferred one
+	 * Retrieves properties on the patient like patient.patientName.familyName If returnAll is set,
+	 * returns an array of every matching property for the patient instead of just the preferred one
 	 * 
 	 * @param className
 	 * @param property
@@ -692,17 +705,18 @@ public class DataExportFunctions {
 		Map<Integer, Object> patientIdAttrMap;
 		if (patientAttributeMap.containsKey(key)) {
 			patientIdAttrMap = patientAttributeMap.get(key);
-		}
-		else {
+		} else {
 			//log.debug("getting patient attrs: " + key);
-			patientIdAttrMap = patientSetService.getPatientAttributes(getPatientSetIfNotAllPatients(), className, property, returnAll);
+			patientIdAttrMap = patientSetService.getPatientAttributes(getPatientSetIfNotAllPatients(), className, property,
+			    returnAll);
 			patientAttributeMap.put(key, patientIdAttrMap);
 		}
-				
+		
 		return patientIdAttrMap.get(patientId);
 	}
 	
-	public Object getPersonAttribute(String attributeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll) {
+	public Object getPersonAttribute(String attributeName, String joinClass, String joinProperty, String outputColumn,
+	                                 boolean returnAll) {
 		String key = attributeName + "." + joinClass + "." + joinProperty;
 		
 		if (returnAll)
@@ -711,10 +725,10 @@ public class DataExportFunctions {
 		Map<Integer, Object> personIdAttrMap;
 		if (personAttributeMap.containsKey(key)) {
 			personIdAttrMap = personAttributeMap.get(key);
-		}
-		else {
+		} else {
 			//log.debug("getting patient attrs: " + key);
-			personIdAttrMap = patientSetService.getPersonAttributes(getPatientSetIfNotAllPatients(), attributeName, joinClass, joinProperty, outputColumn, returnAll);
+			personIdAttrMap = patientSetService.getPersonAttributes(getPatientSetIfNotAllPatients(), attributeName,
+			    joinClass, joinProperty, outputColumn, returnAll);
 			personAttributeMap.put(key, personIdAttrMap);
 		}
 		return personIdAttrMap.get(patientId);
@@ -726,8 +740,9 @@ public class DataExportFunctions {
 	
 	/**
 	 * Gets the last <code>n</code> obs for <code>conceptName</code>
+	 * 
 	 * @param n max number of obs to return
-	 * @param conceptName 
+	 * @param conceptName
 	 * @return
 	 */
 	public List<Object> getLastNObs(Integer n, String conceptName) throws Exception {
@@ -751,11 +766,11 @@ public class DataExportFunctions {
 	}
 	
 	public List<List<Object>> getLastNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
-		return getLastNObsWithValues(n, getConcept(conceptId), (List<String>)attrs);
+		return getLastNObsWithValues(n, getConcept(conceptId), (List<String>) attrs);
 	}
 	
 	/**
-	 * Gets the most recent observation value 
+	 * Gets the most recent observation value
 	 * 
 	 * @param n max number of obs to return
 	 * @param concept
@@ -798,6 +813,7 @@ public class DataExportFunctions {
 	
 	/**
 	 * Gets the most recent Observation matching this concept
+	 * 
 	 * @param conceptName
 	 * @return
 	 */
@@ -807,6 +823,7 @@ public class DataExportFunctions {
 	
 	/**
 	 * Gets the most recent Observation value matching this concept
+	 * 
 	 * @param conceptName
 	 * @param attrs string array
 	 * @return
@@ -814,11 +831,12 @@ public class DataExportFunctions {
 	public List<Object> getLastObsWithValues(String conceptName, Object attrs) throws Exception {
 		//List<String> attrs = new Vector<String>();
 		//Collections.addAll(attrs, attrArray);
-		return getLastObsWithValues(getConcept(conceptName), (List<String>)attrs);
+		return getLastObsWithValues(getConcept(conceptName), (List<String>) attrs);
 	}
 	
 	/**
 	 * Get the most recent obs matching <code>concept</code> out of the patient's encounters
+	 * 
 	 * @param e
 	 * @param concept
 	 * @return
@@ -832,6 +850,7 @@ public class DataExportFunctions {
 	
 	/**
 	 * Get the most recent obs matching <code>concept</code> out of the patient's encounters
+	 * 
 	 * @param e
 	 * @param concept
 	 * @param attr list of Strings
@@ -846,7 +865,8 @@ public class DataExportFunctions {
 	
 	/**
 	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
-	 * @param conceptName 
+	 * 
+	 * @param conceptName
 	 * @return
 	 */
 	public Object getFirstObs(String conceptName) throws Exception {
@@ -855,6 +875,7 @@ public class DataExportFunctions {
 	
 	/**
 	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
+	 * 
 	 * @param e
 	 * @param concept
 	 * @return
@@ -875,17 +896,19 @@ public class DataExportFunctions {
 	
 	/**
 	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
-	 * @param conceptName 
+	 * 
+	 * @param conceptName
 	 * @return
 	 */
 	public List<Object> getFirstObsWithValues(String conceptName, Object attrs) throws Exception {
 		//List<String> attrs = new Vector<String>();
 		//Collections.addAll(attrs, attrArray);
-		return getFirstObsWithValues(getConcept(conceptName), (List<String>)attrs);
+		return getFirstObsWithValues(getConcept(conceptName), (List<String>) attrs);
 	}
 	
 	/**
 	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
+	 * 
 	 * @param concept
 	 * @param attrs the List of attributes to fetch
 	 * @return
@@ -915,6 +938,7 @@ public class DataExportFunctions {
 	
 	/**
 	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
+	 * 
 	 * @param concept the Concept of the obs to fetch
 	 * @param n number of obs to get
 	 * @param attrs the Extra obs attributes to get along with this obs value
@@ -940,7 +964,7 @@ public class DataExportFunctions {
 			obs.add(0, blankRow);
 		
 		int size = obs.size();
-		List<List<Object>> rList = obs.subList(size-n, size);
+		List<List<Object>> rList = obs.subList(size - n, size);
 		
 		Collections.reverse(rList);
 		
@@ -953,7 +977,7 @@ public class DataExportFunctions {
 	 * @see #getFirstNObsWithValues(Integer, Concept, List)
 	 */
 	public List<List<Object>> getFirstNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
-		return getFirstNObsWithValues(n, getConcept(conceptId), (List<String>)attrs);
+		return getFirstNObsWithValues(n, getConcept(conceptId), (List<String>) attrs);
 	}
 	
 	/**
@@ -962,81 +986,78 @@ public class DataExportFunctions {
 	 * @param typeName
 	 * @return
 	 */
-	public Object getPatientIdentifier(String typeName) { 
+	public Object getPatientIdentifier(String typeName) {
 		
 		log.debug("Identifier Type: " + typeName);
 		Map<Integer, PatientIdentifier> patientIdentifiers;
 		if (patientIdentifierMap.containsKey(typeName)) {
 			patientIdentifiers = patientIdentifierMap.get(typeName);
-		}
-		else {
+		} else {
 			PatientIdentifierType type = null;
 			// First try by Integer id
 			try {
 				Integer id = Integer.valueOf(typeName);
 				type = patientService.getPatientIdentifierType(id);
-			} catch (NumberFormatException ex) { }
+			}
+			catch (NumberFormatException ex) {}
 			// otherwise get identifier type by the given name
 			if (type == null) {
 				type = patientService.getPatientIdentifierType(typeName);
 			}
 			// Get identifiers by type 
-			patientIdentifiers = 
-				patientSetService.getPatientIdentifiersByType(getPatientSetIfNotAllPatients(), type);
-
-			log.debug("Found identifiers for patient identifier " + type + " = " + patientIdentifiers);
+			patientIdentifiers = patientSetService.getPatientIdentifiersByType(getPatientSetIfNotAllPatients(), type);
 			
+			log.debug("Found identifiers for patient identifier " + type + " = " + patientIdentifiers);
 			
 			patientIdentifierMap.put(typeName, patientIdentifiers);
 		}
-
 		
 		return patientIdentifiers.get(patientId);
-
-	}	
+		
+	}
 	
 	/**
-	 * Get all obs for the current patient that match this <code>obs.concept</code>=<code>concept</code>
-	 * and <code>obs.valueCoded</code>=<code>valueCoded</code> 
+	 * Get all obs for the current patient that match this
+	 * <code>obs.concept</code>=<code>concept</code> and
+	 * <code>obs.valueCoded</code>=<code>valueCoded</code>
 	 * 
 	 * @param conceptName
 	 * @param valueCoded
 	 * @return
 	 * @throws Exception
 	 */
-//	public Collection<Obs> getMatchingObs(String conceptName, String valueCoded) throws Exception {
-//		return getMatchingObs(getConcept(conceptName), getConcept(valueCoded));
-//	}
-	
+	//	public Collection<Obs> getMatchingObs(String conceptName, String valueCoded) throws Exception {
+	//		return getMatchingObs(getConcept(conceptName), getConcept(valueCoded));
+	//	}
 	/**
-	 * Get all obs for the current patient that match this <code>obs.concept</code>=<code>concept</code>
-	 * and <code>obs.valueCoded</code>=<code>valueCoded</code> 
+	 * Get all obs for the current patient that match this
+	 * <code>obs.concept</code>=<code>concept</code> and
+	 * <code>obs.valueCoded</code>=<code>valueCoded</code>
 	 * 
 	 * @param concept
 	 * @param valueCoded
 	 * @return
 	 * @throws Exception
 	 */
-//	public Collection<Obs> getMatchingObs(Concept concept, Concept valueCoded) throws Exception {
-//		Collection<Obs> returnList = new Vector<Obs>();
-//		for (Obs o : getObs(concept)) {
-//			if (concept.getConceptId().equals(o.getConcept().getConceptId()) && valueCoded.equals(o.getValueCoded()))
-//				returnList.add(o);
-//		}
-//		
-//		return returnList;
-//	}
-	
+	//	public Collection<Obs> getMatchingObs(Concept concept, Concept valueCoded) throws Exception {
+	//		Collection<Obs> returnList = new Vector<Obs>();
+	//		for (Obs o : getObs(concept)) {
+	//			if (concept.getConceptId().equals(o.getConcept().getConceptId()) && valueCoded.equals(o.getValueCoded()))
+	//				returnList.add(o);
+	//		}
+	//		
+	//		return returnList;
+	//	}
 	
 	/**
 	 * Calculate the years between two dates (age).
 	 * 
-	 * @param	fromDate
-	 * @param	toDate
+	 * @param fromDate
+	 * @param toDate
 	 */
-	public int calculateYearsBetween(Date fromDate, Date toDate) { 
+	public int calculateYearsBetween(Date fromDate, Date toDate) {
 		
-		if (fromDate == null || toDate == null ) { 
+		if (fromDate == null || toDate == null) {
 			return 0;
 		}
 		
@@ -1047,25 +1068,24 @@ public class DataExportFunctions {
 		to.setTime(toDate);
 		
 		int yearsBetween = to.get(Calendar.YEAR) - from.get(Calendar.YEAR);
-		if (from.get(Calendar.DAY_OF_YEAR) > to.get(Calendar.DAY_OF_YEAR)) { 
+		if (from.get(Calendar.DAY_OF_YEAR) > to.get(Calendar.DAY_OF_YEAR)) {
 			yearsBetween -= 1;
 		}
 		return yearsBetween;
-	}	
-
+	}
+	
 	/**
-	 * 
-	 * 
 	 * @param birthdate
 	 * @return
 	 */
-	public int calculateAge(Date birthdate) { 
+	public int calculateAge(Date birthdate) {
 		log.info("Calculating age " + birthdate);
 		return calculateYearsBetween(birthdate, new Date());
 	}
 	
 	/**
 	 * Format the given date according to the type ('short', 'long', 'ymd')
+	 * 
 	 * @param type
 	 * @param d
 	 * @return
@@ -1076,8 +1096,7 @@ public class DataExportFunctions {
 		
 		if ("long".equals(type)) {
 			return dateFormatLong.format(d);
-		}
-		else if ("ymd".equals(type))
+		} else if ("ymd".equals(type))
 			return dateFormatYmd.format(d);
 		else if ("short".equals(type) || type == null)
 			return dateFormatShort.format(d);
@@ -1094,6 +1113,7 @@ public class DataExportFunctions {
 	
 	/**
 	 * Check the given string against the check digit algorithm
+	 * 
 	 * @param id
 	 * @return true/false whether the string has a valid check digit
 	 */
@@ -1121,24 +1141,23 @@ public class DataExportFunctions {
 			return "";
 		
 		else if (o instanceof Concept)
-			return ((Concept)o).getName().toString();
+			return ((Concept) o).getName().toString();
 		else if (o instanceof Drug)
-			return ((Drug)o).getName();
+			return ((Drug) o).getName();
 		else if (o instanceof Location)
-			return ((Location)o).getName();
+			return ((Location) o).getName();
 		else if (o instanceof User)
-			return ((User)o).toString();
+			return ((User) o).toString();
 		else if (o instanceof EncounterType)
-			return ((EncounterType)o).getName();
+			return ((EncounterType) o).getName();
 		else if (o instanceof Date)
-			return formatDate(null, (Date)o);
+			return formatDate(null, (Date) o);
 		else
 			return o.toString();
 	}
 	
 	/**
-	 * Returns the patient set only if it is a subset of all patients.  
-	 * Returns null other wise 
+	 * Returns the patient set only if it is a subset of all patients. Returns null other wise
 	 * 
 	 * @return PatientSet object with patients or null if it isn't needed
 	 */

@@ -25,18 +25,14 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  *  
  */
-@Transactional( readOnly = true)
+@Transactional(readOnly = true)
 public interface DataSetService {
 	
 	/**
-	 * Add the given list of DataSetProviders to the providers on this service.
-	 * 
-	 * This is used by Spring and its config files.  See
-	 * /metadata/spring/applicationContext-service.xml file for how to
-	 * add objects to this.
-	 * 
-	 * This should delegate to {@link #registerProvider(DataSetProvider)} for each 
-	 * provider
+	 * Add the given list of DataSetProviders to the providers on this service. This is used by
+	 * Spring and its config files. See /metadata/spring/applicationContext-service.xml file for how
+	 * to add objects to this. This should delegate to {@link #registerProvider(DataSetProvider)}
+	 * for each provider
 	 * 
 	 * @param providers list of DataSetProvider objects to add on service
 	 */
@@ -46,14 +42,12 @@ public interface DataSetService {
 	 * Gets the list of providers that have been previously set on this service
 	 * 
 	 * @return the list of registered providers
-	 * 
 	 * @see #setProviders(List)
 	 */
 	public List<DataSetProvider> getProviders() throws APIException;
 	
 	/**
-	 * Registered a DataSetProvider and make it available to users of the
-	 * data set service
+	 * Registered a DataSetProvider and make it available to users of the data set service
 	 * 
 	 * @param provider to add
 	 */
@@ -68,21 +62,23 @@ public interface DataSetService {
 	
 	/**
 	 * @param definition
-	 * @return A registered DataSetProvider capable of evaluating the given definition 
+	 * @return A registered DataSetProvider capable of evaluating the given definition
 	 */
 	public DataSetProvider getProvider(DataSetDefinition definition) throws APIException;
 	
 	/**
-	 * Evaluate a data set definition and return a 
+	 * Evaluate a data set definition and return a
 	 * 
 	 * @param definition
-	 * @param inputCohort Input cohort optionally specified by the user. May be ignored by some data sets.
+	 * @param inputCohort Input cohort optionally specified by the user. May be ignored by some data
+	 *            sets.
 	 * @param evalContext EvaluationContext containing parameter values, etc
 	 * @return
-	 * @throws APIException when no DataSetProvider is found in the registered providers for the given definition
-	 * 
+	 * @throws APIException when no DataSetProvider is found in the registered providers for the
+	 *             given definition
 	 * @see #setProviders(List)
 	 */
-	public DataSet evaluate(DataSetDefinition definition, Cohort inputCohort, EvaluationContext evalContext) throws APIException;
+	public DataSet evaluate(DataSetDefinition definition, Cohort inputCohort, EvaluationContext evalContext)
+	                                                                                                        throws APIException;
 	
 }

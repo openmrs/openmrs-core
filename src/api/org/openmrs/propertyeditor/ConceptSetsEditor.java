@@ -28,10 +28,11 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class ConceptSetsEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public ConceptSetsEditor() { }
+	public ConceptSetsEditor() {
+	}
 	
 	@SuppressWarnings("unchecked")
 	public void setAsText(String text) throws IllegalArgumentException {
@@ -51,7 +52,7 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 			
 			// Union the original and request (submitted) sets to get the 'clean' sets
 			//   marks request as seen with Integer(-1) instead of removing to retain order
-			Collection<ConceptSet> originalConceptSets = (Collection<ConceptSet>)getValue();
+			Collection<ConceptSet> originalConceptSets = (Collection<ConceptSet>) getValue();
 			if (originalConceptSets == null)
 				originalConceptSets = new Vector<ConceptSet>();
 			for (ConceptSet origConceptSet : originalConceptSets) {
@@ -72,10 +73,9 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 			}
 			
 			setValue(newSets);
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 }

@@ -21,30 +21,31 @@ import org.junit.Ignore;
 
 /**
  * Behavior-driven tests of the ConceptName class.
- *
  */
 @Ignore
 public class ConceptNameTest {
-
+	
 	final static String NAME_PATTERN = "[a-z]*";
+	
 	final static Generator<String> nameGenerator;
 	
 	static {
 		nameGenerator = GeneratorFactory.getUniqueRegexStringGenerator(NAME_PATTERN, 2, 12, Locale.ENGLISH);
 	}
+	
 	/**
 	 * Convenient factory method to create a populated Concept.
-     * 
-     * @param i
-     */
-    public static ConceptName createMockConceptName(int conceptNameId, Locale locale) {
-    	ConceptName mockConceptName = new ConceptName();
-    	
-    	mockConceptName.setConceptNameId(conceptNameId);
-    	mockConceptName.setLocale(locale);
-    	mockConceptName.setName(nameGenerator.generate());
-    	
-    	return mockConceptName;
-    }
-
+	 * 
+	 * @param i
+	 */
+	public static ConceptName createMockConceptName(int conceptNameId, Locale locale) {
+		ConceptName mockConceptName = new ConceptName();
+		
+		mockConceptName.setConceptNameId(conceptNameId);
+		mockConceptName.setLocale(locale);
+		mockConceptName.setName(nameGenerator.generate());
+		
+		return mockConceptName;
+	}
+	
 }

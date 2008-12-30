@@ -23,14 +23,15 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class ConceptClassEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public ConceptClassEditor() {	}
+	public ConceptClassEditor() {
+	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
 		log.debug("Setting text: " + text);
-		ConceptService cs = Context.getConceptService(); 
+		ConceptService cs = Context.getConceptService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(cs.getConceptClass(Integer.valueOf(text)));
@@ -38,20 +39,18 @@ public class ConceptClassEditor extends PropertyEditorSupport {
 			catch (Exception ex) {
 				throw new IllegalArgumentException("ConceptClass not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
 		ConceptClass t = (ConceptClass) getValue();
 		if (t == null) {
 			return "";
-		}
-		else {
+		} else {
 			return t.getConceptClassId().toString();
 		}
 	}
-
+	
 }

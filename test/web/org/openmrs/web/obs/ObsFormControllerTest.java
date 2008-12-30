@@ -38,15 +38,14 @@ import org.springframework.web.servlet.ModelAndView;
  * Test the methods on the {@link org.openmrs.web.controller.observation.ObsFormController}
  */
 public class ObsFormControllerTest extends BaseContextSensitiveTest {
-
+	
 	/**
-	 * Tests that an "encounterId" parameter sets the obs.encounter
-	 * attribute on an empty obs
+	 * Tests that an "encounterId" parameter sets the obs.encounter attribute on an empty obs
 	 * 
 	 * @throws Exception
 	 */
-    @Test
-    public void shouldGetObsFormWithEncounterFilledIn() throws Exception {
+	@Test
+	public void shouldGetObsFormWithEncounterFilledIn() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "");
 		request.setParameter("encounterId", "3");
 		
@@ -57,7 +56,7 @@ public class ObsFormControllerTest extends BaseContextSensitiveTest {
 		ModelAndView modelAndView = controller.handleRequest(request, response);
 		
 		// make sure there is an "encounterId" element on the obs
-		Obs commandObs = (Obs)modelAndView.getModel().get("command");
+		Obs commandObs = (Obs) modelAndView.getModel().get("command");
 		Assert.assertNotNull(commandObs.getEncounter());
 		
 	}
@@ -67,7 +66,7 @@ public class ObsFormControllerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-    @Test
+	@Test
 	public void shouldSaveObsFormNormally() throws Exception {
 		ObsService os = Context.getObsService();
 		
@@ -106,5 +105,5 @@ public class ObsFormControllerTest extends BaseContextSensitiveTest {
 		assertEquals(new Encounter(3), obsForPatient.get(0).getEncounter());
 		assertEquals(new Location(1), obsForPatient.get(0).getLocation());
 	}
-
+	
 }

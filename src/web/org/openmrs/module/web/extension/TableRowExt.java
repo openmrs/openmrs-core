@@ -24,14 +24,12 @@ public abstract class TableRowExt extends Extension {
 	}
 	
 	/**
-	 * The map returns a listing of the rows to add to a table.  The map key will 
-	 * be attempted to be used as a Spring message.  The map value will be the 
-	 * html to insert into the table cell
-	 * 
-	 * In order to sort the links, you should use a <code>LinkedHashMap</code>. 
+	 * The map returns a listing of the rows to add to a table. The map key will be attempted to be
+	 * used as a Spring message. The map value will be the html to insert into the table cell In
+	 * order to sort the links, you should use a <code>LinkedHashMap</code>.
 	 * 
 	 * @return Map<String, String> of <label for cell, cell content>
 	 */
 	public abstract Map<String, String> getRows();
-		
+	
 }

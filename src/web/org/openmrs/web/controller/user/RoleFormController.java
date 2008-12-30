@@ -31,10 +31,10 @@ import org.openmrs.Role;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.WebConstants;
 import org.openmrs.propertyeditor.PrivilegeEditor;
 import org.openmrs.propertyeditor.RoleEditor;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -45,34 +45,34 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class RoleFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
-        binder.registerCustomEditor(Privilege.class,
-                new PrivilegeEditor());
-        binder.registerCustomEditor(Role.class,
-                new RoleEditor());
-        
-	}
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(Privilege.class, new PrivilegeEditor());
+		binder.registerCustomEditor(Role.class, new RoleEditor());
 		
-		Role role = (Role)obj;
+	}
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
+	 */
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                             BindException errors) throws Exception {
+		
+		Role role = (Role) obj;
 		
 		if (Context.isAuthenticated()) {
 			log.debug("Editing Role: " + role.getRole());
@@ -81,7 +81,7 @@ public class RoleFormController extends SimpleFormController {
 			String[] inheritedRoles = request.getParameterValues("inheritedRoles");
 			Set<Role> inheritedRoleObjs = new HashSet<Role>();
 			if (inheritedRoles != null) {
-				for(String r : inheritedRoles) {
+				for (String r : inheritedRoles) {
 					Role tmprole = Context.getUserService().getRole(r);
 					inheritedRoleObjs.add(tmprole);
 				}
@@ -92,22 +92,24 @@ public class RoleFormController extends SimpleFormController {
 		
 		return super.processFormSubmission(request, response, role, errors);
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
-			Role role = (Role)obj;
+			Role role = (Role) obj;
 			try {
 				Context.getAdministrationService().updateRole(role);
 				view = getSuccessView();
@@ -121,12 +123,12 @@ public class RoleFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	protected Map referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		Role role = (Role)object;
+		Role role = (Role) object;
 		
 		if (Context.isAuthenticated()) {
 			List<Role> allRoles = Context.getUserService().getRoles();
@@ -150,29 +152,28 @@ public class RoleFormController extends SimpleFormController {
 		
 		return map;
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		Role role = null;
 		
 		if (Context.isAuthenticated()) {
 			UserService us = Context.getUserService();
 			String r = request.getParameter("role");
-	    	if (r != null)
-	    		role = us.getRole(r);	
+			if (r != null)
+				role = us.getRole(r);
 		}
 		
 		if (role == null)
 			role = new Role();
-    	
-        return role;
-    }
-    
+		
+		return role;
+	}
+	
 }

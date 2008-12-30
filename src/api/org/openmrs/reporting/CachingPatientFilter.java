@@ -23,12 +23,11 @@ import org.openmrs.report.EvaluationContext;
  *
  */
 public abstract class CachingPatientFilter extends AbstractPatientFilter implements PatientFilter {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
-	 * 
-	 * Subclasses should implement PatientFilter.filter("all patients", evalContext) in this method 
+	 * Subclasses should implement PatientFilter.filter("all patients", evalContext) in this method
 	 * 
 	 * @param context
 	 * @return
@@ -36,7 +35,9 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 	public abstract Cohort filterImpl(EvaluationContext context);
 	
 	/**
-	 * @return The key under which this object, with its current parameter values, will store results in a cache. Changing properties of this object will typically change the cache key returned. 
+	 * @return The key under which this object, with its current parameter values, will store
+	 *         results in a cache. Changing properties of this object will typically change the
+	 *         cache key returned.
 	 */
 	public abstract String getCacheKey();
 	
@@ -45,26 +46,26 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 			return filterImpl(null);
 		} else {
 			String key = getCacheKey();
-		    Cohort cached = (Cohort) context.getFromCache(key);
-		    if (cached == null) {
-		    	cached = filterImpl(context);
-		    	context.addToCache(key, cached);
-		    }
-		    return cached;
+			Cohort cached = (Cohort) context.getFromCache(key);
+			if (cached == null) {
+				cached = filterImpl(context);
+				context.addToCache(key, cached);
+			}
+			return cached;
 		}
 	}
 	
 	public Cohort filter(Cohort input, EvaluationContext context) {
 		Cohort cached = getAndMaybeCache(context);
-	    if (input == null) {
-	    	if (context != null)
-	    		input = context.getBaseCohort();
-	    	else
-	    		input = Context.getPatientSetService().getAllPatients();
-	    }
-    	return Cohort.intersect(input, cached);	    	
-    }
-
+		if (input == null) {
+			if (context != null)
+				input = context.getBaseCohort();
+			else
+				input = Context.getPatientSetService().getAllPatients();
+		}
+		return Cohort.intersect(input, cached);
+	}
+	
 	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		Cohort cached = getAndMaybeCache(context);
 		if (input == null) {
@@ -73,9 +74,9 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 			else
 				input = Context.getPatientSetService().getAllPatients();
 		}
-    	return Cohort.subtract(input, cached);
-    }
-
+		return Cohort.subtract(input, cached);
+	}
+	
 	public abstract boolean isReadyToRun();
 	
 }

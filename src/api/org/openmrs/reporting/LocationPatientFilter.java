@@ -22,6 +22,7 @@ import org.openmrs.report.EvaluationContext;
 public class LocationPatientFilter extends CachingPatientFilter {
 	
 	private Location location;
+	
 	private PatientLocationMethod calculationMethod;
 	
 	public LocationPatientFilter() {
@@ -29,15 +30,15 @@ public class LocationPatientFilter extends CachingPatientFilter {
 	}
 	
 	@Override
-    public String getCacheKey() {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append(getClass().getName()).append(".");
-	    sb.append(getCalculationMethod()).append(".");
-	    if (getLocation() != null)
-	    	sb.append(getLocation().getLocationId());
-	    return sb.toString();
-    }
-
+	public String getCacheKey() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getName()).append(".");
+		sb.append(getCalculationMethod()).append(".");
+		if (getLocation() != null)
+			sb.append(getLocation().getLocationId());
+		return sb.toString();
+	}
+	
 	public String getDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Patients who belong to ");
@@ -50,25 +51,25 @@ public class LocationPatientFilter extends CachingPatientFilter {
 	public Cohort filterImpl(EvaluationContext context) {
 		return Context.getPatientSetService().getPatientsHavingLocation(getLocation(), getCalculationMethod());
 	}
-
+	
 	public boolean isReadyToRun() {
 		return true;
 	}
 	
 	// getters and setters
-
+	
 	public Location getLocation() {
 		return location;
 	}
-
+	
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-
+	
 	public PatientLocationMethod getCalculationMethod() {
 		return calculationMethod;
 	}
-
+	
 	public void setCalculationMethod(PatientLocationMethod method) {
 		this.calculationMethod = method;
 	}

@@ -41,8 +41,9 @@ import org.springframework.util.StringUtils;
  * API functions related to Cohorts
  */
 public class CohortServiceImpl extends BaseOpenmrsService implements CohortService {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
+	
 	private CohortDAO dao;
 	
 	private static Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> cohortDefinitionProviders = null;
@@ -58,28 +59,28 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @see org.openmrs.api.CohortService#saveCohort(org.openmrs.Cohort)
 	 */
 	public Cohort saveCohort(Cohort cohort) throws APIException {
-        if (cohort.getCohortId() == null) {
-            Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_COHORTS);
-        } else {
-            Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_COHORTS);
-        }
-        if (cohort.getName() == null) {
-            throw new APIException("Cohort name is required");
-        }
-        Date now = new Date();
-        if (cohort.getDateCreated() == null) {
-            cohort.setDateCreated(now);
-        }
-        if (cohort.getCreator() == null) {
+		if (cohort.getCohortId() == null) {
+			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_COHORTS);
+		} else {
+			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_COHORTS);
+		}
+		if (cohort.getName() == null) {
+			throw new APIException("Cohort name is required");
+		}
+		Date now = new Date();
+		if (cohort.getDateCreated() == null) {
+			cohort.setDateCreated(now);
+		}
+		if (cohort.getCreator() == null) {
 			cohort.setCreator(Context.getAuthenticatedUser());
-	}
-        if (cohort.getCohortId() != null) {
-            cohort.setChangedBy(Context.getAuthenticatedUser());
-            cohort.setDateChanged(now);
-        }
-        if (log.isInfoEnabled())
-            log.info("Saving cohort " + cohort);
-
+		}
+		if (cohort.getCohortId() != null) {
+			cohort.setChangedBy(Context.getAuthenticatedUser());
+			cohort.setDateChanged(now);
+		}
+		if (log.isInfoEnabled())
+			log.info("Saving cohort " + cohort);
+		
 		return dao.saveCohort(cohort);
 	}
 	
@@ -89,12 +90,12 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	public Cohort createCohort(Cohort cohort) {
 		return saveCohort(cohort);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.CohortService#getCohort(java.lang.Integer)
 	 */
 	public Cohort getCohort(Integer id) {
-		return dao.getCohort(id); 
+		return dao.getCohort(id);
 	}
 	
 	/**
@@ -119,214 +120,219 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 			return saveCohort(cohort);
 		}
 	}
-
+	
 	/**
-     * @see org.openmrs.api.CohortService#addPatientToCohort(org.openmrs.Cohort, org.openmrs.Patient)
-     */
-    public Cohort addPatientToCohort(Cohort cohort, Patient patient) {
-    	if (!cohort.contains(patient)) {
-    		cohort.getMemberIds().add(patient.getPatientId());
-    		saveCohort(cohort);
-    	}
-    	return cohort;
-    }
-
+	 * @see org.openmrs.api.CohortService#addPatientToCohort(org.openmrs.Cohort,
+	 *      org.openmrs.Patient)
+	 */
+	public Cohort addPatientToCohort(Cohort cohort, Patient patient) {
+		if (!cohort.contains(patient)) {
+			cohort.getMemberIds().add(patient.getPatientId());
+			saveCohort(cohort);
+		}
+		return cohort;
+	}
+	
 	/**
-     * @see org.openmrs.api.CohortService#removePatientFromCohort(org.openmrs.Cohort, org.openmrs.Patient)
-     */
-    public Cohort removePatientFromCohort(Cohort cohort, Patient patient) {
-    	if (cohort.contains(patient)) {
-	    cohort.getMemberIds().remove(patient.getPatientId());
-    		saveCohort(cohort);
-    	}
-    	return cohort;
-    }
-
+	 * @see org.openmrs.api.CohortService#removePatientFromCohort(org.openmrs.Cohort,
+	 *      org.openmrs.Patient)
+	 */
+	public Cohort removePatientFromCohort(Cohort cohort, Patient patient) {
+		if (cohort.contains(patient)) {
+			cohort.getMemberIds().remove(patient.getPatientId());
+			saveCohort(cohort);
+		}
+		return cohort;
+	}
+	
 	/**
-     * @see org.openmrs.api.CohortService#updateCohort(org.openmrs.Cohort)
-     */
-    public Cohort updateCohort(Cohort cohort) {
+	 * @see org.openmrs.api.CohortService#updateCohort(org.openmrs.Cohort)
+	 */
+	public Cohort updateCohort(Cohort cohort) {
 		return saveCohort(cohort);
 	}
-
-	/**
-     * @see org.openmrs.api.CohortService#getCohortsContainingPatient(org.openmrs.Patient)
-     */
-    public List<Cohort> getCohortsContainingPatient(Patient patient) {
-	    return dao.getCohortsContainingPatientId(patient.getPatientId());
-    }
-    
-    public List<Cohort> getCohortsContainingPatientId(Integer patientId) {
-    	return dao.getCohortsContainingPatientId(patientId);
-    }
-
-	/**
-     * @see org.openmrs.api.CohortService#getCohorts(java.lang.String)
-     */
-    public List<Cohort> getCohorts(String nameFragment) throws APIException {
-	    return dao.getCohorts(nameFragment);
-    }
-
-	/**
-     * @see org.openmrs.api.CohortService#getAllCohorts()
-     */
-    public List<Cohort> getAllCohorts() throws APIException {
-	    return getAllCohorts(false);
-    }
-
-	/**
-     * @see org.openmrs.api.CohortService#getAllCohorts(boolean)
-     */
-    public List<Cohort> getAllCohorts(boolean includeVoided) throws APIException {
-    	return dao.getAllCohorts(includeVoided);
-    }
-
-	/**
-     * @see org.openmrs.api.CohortService#getCohort(java.lang.String)
-     */
-    public Cohort getCohort(String name) throws APIException {
-    	return dao.getCohort(name);
-    }
-
-	/**
-     * @see org.openmrs.api.CohortService#purgeCohort(org.openmrs.Cohort)
-     */
-    public Cohort purgeCohort(Cohort cohort) throws APIException {
-    	return dao.deleteCohort(cohort);
-    }
 	
 	/**
-     * Auto generated method comment
-     * 
-     * @param definitionClass
-     * @return
-     * @throws APIException
-     */
-    private CohortDefinitionProvider getCohortDefinitionProvider(Class<? extends CohortDefinition> definitionClass) throws APIException {
-    	CohortDefinitionProvider ret = cohortDefinitionProviders.get(definitionClass);
-    	if (ret == null)
-    		throw new APIException("No CohortDefinitionProvider registered for " + definitionClass);
-    	else
-    		return ret;
-    }
+	 * @see org.openmrs.api.CohortService#getCohortsContainingPatient(org.openmrs.Patient)
+	 */
+	public List<Cohort> getCohortsContainingPatient(Patient patient) {
+		return dao.getCohortsContainingPatientId(patient.getPatientId());
+	}
+	
+	public List<Cohort> getCohortsContainingPatientId(Integer patientId) {
+		return dao.getCohortsContainingPatientId(patientId);
+	}
 	
 	/**
-     * @see org.openmrs.api.CohortService#evaluate(org.openmrs.cohort.CohortDefinition, org.openmrs.report.EvaluationContext)
-     */
-    public Cohort evaluate(CohortDefinition definition, EvaluationContext evalContext) throws APIException {
-	    CohortDefinitionProvider provider = getCohortDefinitionProvider(definition.getClass());
-	    return provider.evaluate(definition, evalContext);
-    }
-
-
-
+	 * @see org.openmrs.api.CohortService#getCohorts(java.lang.String)
+	 */
+	public List<Cohort> getCohorts(String nameFragment) throws APIException {
+		return dao.getCohorts(nameFragment);
+	}
+	
 	/**
-     * @see org.openmrs.api.CohortService#getAllPatientsCohortDefinition()
-     */
-    public CohortDefinition getAllPatientsCohortDefinition() {
-	    PatientSearch ps = new PatientSearch();
-	    ps.setFilterClass(PatientCharacteristicFilter.class);	    
-	    return ps;
-    }
-
+	 * @see org.openmrs.api.CohortService#getAllCohorts()
+	 */
+	public List<Cohort> getAllCohorts() throws APIException {
+		return getAllCohorts(false);
+	}
+	
 	/**
-     * @see org.openmrs.api.CohortService#getCohortDefinition(java.lang.Class, java.lang.Integer)
-     */
-    public CohortDefinition getCohortDefinition(Class<CohortDefinition> clazz, Integer id) {
-    	CohortDefinitionProvider provider = getCohortDefinitionProvider(clazz);
-    	return provider.getCohortDefinition(id);
-    }
-
-    /**
-     * @see org.openmrs.api.CohortService#getCohortDefinition(java.lang.String)
-     */
-    public CohortDefinition getCohortDefinition(String key) { 
-    	try { 
-    		
-    		String [] keyValues = key.split(":");
-    		Integer id = Integer.parseInt((keyValues[0]!=null)?keyValues[0]:"0");
-    		String className = (keyValues[1]!=null)?keyValues[1]:"";
-    		Class clazz = Class.forName(className);	    		
-    		return getCohortDefinition(clazz, id);
-    	} 
-    	catch (ClassNotFoundException e) { 
-    		throw new APIException(e);
-    	}
-    }
-    
+	 * @see org.openmrs.api.CohortService#getAllCohorts(boolean)
+	 */
+	public List<Cohort> getAllCohorts(boolean includeVoided) throws APIException {
+		return dao.getAllCohorts(includeVoided);
+	}
+	
 	/**
-     * @see org.openmrs.api.CohortService#getCohortDefinitions()
-     */
-    public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
-    	
-	    List<CohortDefinitionItemHolder> ret = new ArrayList<CohortDefinitionItemHolder>();
-	    for (CohortDefinitionProvider provider : cohortDefinitionProviders.values()) {
-	    	
-	    	log.info("Getting cohort definitions from " + provider.getClass());
-	    	ret.addAll(provider.getAllCohortDefinitions());
-	    }
-	    return ret;
-    }
-
+	 * @see org.openmrs.api.CohortService#getCohort(java.lang.String)
+	 */
+	public Cohort getCohort(String name) throws APIException {
+		return dao.getCohort(name);
+	}
+	
 	/**
-     * @see org.openmrs.api.CohortService#purgeCohortDefinition(org.openmrs.cohort.CohortDefinition)
-     */
-    public void purgeCohortDefinition(CohortDefinition definition) {
-    	CohortDefinitionProvider provider = getCohortDefinitionProvider(definition.getClass());
-	    provider.purgeCohortDefinition(definition);
-    }
-    
-    /**
-     * @see org.openmrs.api.CohortService#setCohortDefinitionProviders(Map)
-     */
-    public void setCohortDefinitionProviders(Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap) {
-    	for (Map.Entry<Class<? extends CohortDefinition>, CohortDefinitionProvider> entry : providerClassMap.entrySet()) {
-    		registerCohortDefinitionProvider(entry.getKey(), entry.getValue());
-    	}
-    }
-    
-    /**
-     * @see org.openmrs.api.CohortService#getCohortDefinitionProviders()
-     */
-    public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders() {
-    	if (cohortDefinitionProviders == null)
-    		cohortDefinitionProviders = new LinkedHashMap<Class<? extends CohortDefinition>, CohortDefinitionProvider>();
-    	
-    	return cohortDefinitionProviders;
-    }
-    
-    /**
-     * @see org.openmrs.api.CohortService#registerCohortDefinitionProvider(java.lang.Class, org.openmrs.api.CohortDefinitionService)
-     */
-    public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> defClass, CohortDefinitionProvider cohortDefProvider) throws APIException {
-    	getCohortDefinitionProviders().put(defClass, cohortDefProvider);
-    }
-    
+	 * @see org.openmrs.api.CohortService#purgeCohort(org.openmrs.Cohort)
+	 */
+	public Cohort purgeCohort(Cohort cohort) throws APIException {
+		return dao.deleteCohort(cohort);
+	}
+	
 	/**
-     * @see org.openmrs.api.CohortService#removeCohortDefinitionProvider(java.lang.Class)
-     */
-    public void removeCohortDefinitionProvider(Class<? extends CohortDefinitionProvider> providerClass) {
-    	
-    	// TODO: should this be looking through the values or the keys?
-    	for (Iterator<CohortDefinitionProvider> i = cohortDefinitionProviders.values().iterator(); i.hasNext(); ) {
-    		if (i.next().getClass().equals(providerClass))
-    			i.remove();
-    	}
-    }
-
+	 * Auto generated method comment
+	 * 
+	 * @param definitionClass
+	 * @return
+	 * @throws APIException
+	 */
+	private CohortDefinitionProvider getCohortDefinitionProvider(Class<? extends CohortDefinition> definitionClass)
+	                                                                                                               throws APIException {
+		CohortDefinitionProvider ret = cohortDefinitionProviders.get(definitionClass);
+		if (ret == null)
+			throw new APIException("No CohortDefinitionProvider registered for " + definitionClass);
+		else
+			return ret;
+	}
+	
 	/**
-     * @see org.openmrs.api.CohortService#saveCohortDefinition(org.openmrs.cohort.CohortDefinition)
-     */
-    public CohortDefinition saveCohortDefinition(CohortDefinition definition) throws APIException {
-    	CohortDefinitionProvider provider = getCohortDefinitionProvider(definition.getClass());
-    	return provider.saveCohortDefinition(definition);
-    }
-
+	 * @see org.openmrs.api.CohortService#evaluate(org.openmrs.cohort.CohortDefinition,
+	 *      org.openmrs.report.EvaluationContext)
+	 */
+	public Cohort evaluate(CohortDefinition definition, EvaluationContext evalContext) throws APIException {
+		CohortDefinitionProvider provider = getCohortDefinitionProvider(definition.getClass());
+		return provider.evaluate(definition, evalContext);
+	}
+	
 	/**
-     * @see org.openmrs.api.CohortService#getCohortDefinitions(java.lang.Class)
-     */
-    public List<CohortDefinitionItemHolder> getCohortDefinitions(Class providerClass) {
-    	CohortDefinitionProvider provider = getCohortDefinitionProvider(providerClass);
-	    return provider.getAllCohortDefinitions();
-    }
+	 * @see org.openmrs.api.CohortService#getAllPatientsCohortDefinition()
+	 */
+	public CohortDefinition getAllPatientsCohortDefinition() {
+		PatientSearch ps = new PatientSearch();
+		ps.setFilterClass(PatientCharacteristicFilter.class);
+		return ps;
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#getCohortDefinition(java.lang.Class, java.lang.Integer)
+	 */
+	public CohortDefinition getCohortDefinition(Class<CohortDefinition> clazz, Integer id) {
+		CohortDefinitionProvider provider = getCohortDefinitionProvider(clazz);
+		return provider.getCohortDefinition(id);
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#getCohortDefinition(java.lang.String)
+	 */
+	public CohortDefinition getCohortDefinition(String key) {
+		try {
+			
+			String[] keyValues = key.split(":");
+			Integer id = Integer.parseInt((keyValues[0] != null) ? keyValues[0] : "0");
+			String className = (keyValues[1] != null) ? keyValues[1] : "";
+			Class clazz = Class.forName(className);
+			return getCohortDefinition(clazz, id);
+		}
+		catch (ClassNotFoundException e) {
+			throw new APIException(e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#getCohortDefinitions()
+	 */
+	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
+		
+		List<CohortDefinitionItemHolder> ret = new ArrayList<CohortDefinitionItemHolder>();
+		for (CohortDefinitionProvider provider : cohortDefinitionProviders.values()) {
+			
+			log.info("Getting cohort definitions from " + provider.getClass());
+			ret.addAll(provider.getAllCohortDefinitions());
+		}
+		return ret;
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#purgeCohortDefinition(org.openmrs.cohort.CohortDefinition)
+	 */
+	public void purgeCohortDefinition(CohortDefinition definition) {
+		CohortDefinitionProvider provider = getCohortDefinitionProvider(definition.getClass());
+		provider.purgeCohortDefinition(definition);
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#setCohortDefinitionProviders(Map)
+	 */
+	public void setCohortDefinitionProviders(
+	                                         Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap) {
+		for (Map.Entry<Class<? extends CohortDefinition>, CohortDefinitionProvider> entry : providerClassMap.entrySet()) {
+			registerCohortDefinitionProvider(entry.getKey(), entry.getValue());
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#getCohortDefinitionProviders()
+	 */
+	public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders() {
+		if (cohortDefinitionProviders == null)
+			cohortDefinitionProviders = new LinkedHashMap<Class<? extends CohortDefinition>, CohortDefinitionProvider>();
+		
+		return cohortDefinitionProviders;
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#registerCohortDefinitionProvider(java.lang.Class,
+	 *      org.openmrs.api.CohortDefinitionService)
+	 */
+	public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> defClass,
+	                                             CohortDefinitionProvider cohortDefProvider) throws APIException {
+		getCohortDefinitionProviders().put(defClass, cohortDefProvider);
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#removeCohortDefinitionProvider(java.lang.Class)
+	 */
+	public void removeCohortDefinitionProvider(Class<? extends CohortDefinitionProvider> providerClass) {
+		
+		// TODO: should this be looking through the values or the keys?
+		for (Iterator<CohortDefinitionProvider> i = cohortDefinitionProviders.values().iterator(); i.hasNext();) {
+			if (i.next().getClass().equals(providerClass))
+				i.remove();
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#saveCohortDefinition(org.openmrs.cohort.CohortDefinition)
+	 */
+	public CohortDefinition saveCohortDefinition(CohortDefinition definition) throws APIException {
+		CohortDefinitionProvider provider = getCohortDefinitionProvider(definition.getClass());
+		return provider.saveCohortDefinition(definition);
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#getCohortDefinitions(java.lang.Class)
+	 */
+	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class providerClass) {
+		CohortDefinitionProvider provider = getCohortDefinitionProvider(providerClass);
+		return provider.getAllCohortDefinitions();
+	}
 }

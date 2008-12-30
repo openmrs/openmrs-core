@@ -30,7 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 public class PostHl7Controller implements Controller {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private String formView;
@@ -67,13 +67,13 @@ public class PostHl7Controller implements Controller {
 		model.put("success", success);
 		return new ModelAndView(formView, "model", model);
 	}
-
+	
 	public String getFormView() {
 		return formView;
 	}
-
+	
 	public void setFormView(String formView) {
 		this.formView = formView;
 	}
-
+	
 }

@@ -25,20 +25,24 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 
 /**
- * Prints out a pretty-formatted versions of an OpenMRS object
- * TODO: add the other openmrs domain objects
- * TODO: allow this to be written to a pageContext variable instead of just the jsp
- * TODO: add a size=compact|NORMAL|full|? option
+ * Prints out a pretty-formatted versions of an OpenMRS object TODO: add the other openmrs domain
+ * objects TODO: allow this to be written to a pageContext variable instead of just the jsp TODO:
+ * add a size=compact|NORMAL|full|? option
  */
 public class FormatTag extends TagSupport {
-
+	
 	private static final long serialVersionUID = 1L;
+	
 	private final Log log = LogFactory.getLog(getClass());
 	
 	private Integer conceptId;
+	
 	private Concept concept;
+	
 	private Obs obsValue;
+	
 	private Integer userId;
+	
 	private User user;
 	
 	public int doStartTag() {
@@ -56,9 +60,10 @@ public class FormatTag extends TagSupport {
 				user = Context.getUserService().getUser(userId);
 			if (user != null)
 				sb.append(user.getPersonName());
-				
+			
 			pageContext.getOut().write(sb.toString());
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			log.error("Failed to write to pageContext.getOut()", e);
 		}
 		return SKIP_BODY;
@@ -74,45 +79,45 @@ public class FormatTag extends TagSupport {
 		concept = null;
 		obsValue = null;
 	}
-
+	
 	public Integer getConceptId() {
-    	return conceptId;
-    }
-
+		return conceptId;
+	}
+	
 	public void setConceptId(Integer conceptId) {
-    	this.conceptId = conceptId;
-    }
-
+		this.conceptId = conceptId;
+	}
+	
 	public Concept getConcept() {
-    	return concept;
-    }
-
+		return concept;
+	}
+	
 	public void setConcept(Concept concept) {
-    	this.concept = concept;
-    }
-
+		this.concept = concept;
+	}
+	
 	public Obs getObsValue() {
-    	return obsValue;
-    }
-
+		return obsValue;
+	}
+	
 	public void setObsValue(Obs obsValue) {
-    	this.obsValue = obsValue;
-    }
-
+		this.obsValue = obsValue;
+	}
+	
 	public Integer getUserId() {
-    	return userId;
-    }
-
+		return userId;
+	}
+	
 	public void setUserId(Integer userId) {
-    	this.userId = userId;
-    }
-
+		this.userId = userId;
+	}
+	
 	public User getUser() {
-    	return user;
-    }
-
+		return user;
+	}
+	
 	public void setUser(User user) {
-    	this.user = user;
-    }
-
+		this.user = user;
+	}
+	
 }

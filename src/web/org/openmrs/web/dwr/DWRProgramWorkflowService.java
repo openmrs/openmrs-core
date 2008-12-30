@@ -33,8 +33,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
 public class DWRProgramWorkflowService {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
+	
 	DateFormat ymdDf = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public PatientProgramItem getPatientProgram(Integer patientProgramId) {
@@ -65,16 +66,16 @@ public class DWRProgramWorkflowService {
 			}
 		return ret;
 	}
-
+	
 	public Vector<ListItem> getStatesByWorkflow(Integer programWorkflowId) {
 		log.debug("In getStatesByWorkflow with workflowID of " + programWorkflowId.toString());
 		Vector<ListItem> ret = new Vector<ListItem>();
 		
 		ProgramWorkflow workflow = Context.getProgramWorkflowService().getWorkflow(programWorkflowId);
-		if ( workflow != null ) {
+		if (workflow != null) {
 			Set<ProgramWorkflowState> states = workflow.getSortedStates();
 			
-			if ( states != null ) {
+			if (states != null) {
 				log.debug("Got states of size " + states.size());
 				for (ProgramWorkflowState state : states) {
 					ListItem li = new ListItem();
@@ -88,34 +89,34 @@ public class DWRProgramWorkflowService {
 		} else {
 			log.debug("Workflow was null, cannot get states");
 		}
-
-		if ( ret != null ) log.debug("Returning ret of size " + ret.size());
-		else log.debug("Returning null ret");
+		
+		if (ret != null)
+			log.debug("Returning ret of size " + ret.size());
+		else
+			log.debug("Returning null ret");
 		return ret;
 	}
 	
 	/**
-	 * Updates enrollment date and completion date for a PatientProgram.
-	 * 
-	 * Compares @param enrollmentDateYmd with {@link PatientProgram#getDateEnrolled()} and
-	 * compares @param completionDateYmd with {@link PatientProgram#getDateCompleted()} .
-	 * At least one of these comparisons must return true in order to update the PatientProgram.
-	 * In other words, if neither the @param enrollmentDateYmd or the @param completionDateYmd match
-	 * with the persisted object, then the PatientProgram will not be updated.
-	 * 
-	 * Also, if the enrollment date comes after the completion date, the PatientProgram will
-	 * not be updated.
+	 * Updates enrollment date and completion date for a PatientProgram. Compares @param
+	 * enrollmentDateYmd with {@link PatientProgram#getDateEnrolled()} and compares @param
+	 * completionDateYmd with {@link PatientProgram#getDateCompleted()} . At least one of these
+	 * comparisons must return true in order to update the PatientProgram. In other words, if
+	 * neither the @param enrollmentDateYmd or the @param completionDateYmd match with the persisted
+	 * object, then the PatientProgram will not be updated. Also, if the enrollment date comes after
+	 * the completion date, the PatientProgram will not be updated.
 	 * 
 	 * @param patientProgramId
 	 * @param enrollmentDateYmd
 	 * @param completionDateYmd
 	 * @throws ParseException
 	 */
-	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd) throws ParseException {
+	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd)
+	                                                                                                              throws ParseException {
 		PatientProgram pp = Context.getProgramWorkflowService().getPatientProgram(patientProgramId);
 		Date dateEnrolled = null;
 		Date dateCompleted = null;
-		Date ppDateEnrolled = null; 
+		Date ppDateEnrolled = null;
 		Date ppDateCompleted = null;
 		// If persisted date enrolled is not null then parse to ymdDf format.
 		if (null != pp.getDateEnrolled()) {
@@ -156,9 +157,9 @@ public class DWRProgramWorkflowService {
 	
 	public Vector<ListItem> getPossibleNextStates(Integer patientProgramId, Integer programWorkflowId) {
 		Vector<ListItem> ret = new Vector<ListItem>();
-		List<ProgramWorkflowState> states = Context.getProgramWorkflowService()
-			.getPossibleNextStates(Context.getProgramWorkflowService().getPatientProgram(patientProgramId),
-								   Context.getProgramWorkflowService().getWorkflow(programWorkflowId));
+		List<ProgramWorkflowState> states = Context.getProgramWorkflowService().getPossibleNextStates(
+		    Context.getProgramWorkflowService().getPatientProgram(patientProgramId),
+		    Context.getProgramWorkflowService().getWorkflow(programWorkflowId));
 		for (ProgramWorkflowState state : states) {
 			ListItem li = new ListItem();
 			li.setId(state.getProgramWorkflowStateId());
@@ -168,9 +169,9 @@ public class DWRProgramWorkflowService {
 		return ret;
 	}
 	
-	public void changeToState(Integer patientProgramId, Integer programWorkflowId,
-		Integer programWorkflowStateId, String onDateDMY) throws ParseException {
-		ProgramWorkflowService s = Context.getProgramWorkflowService(); 
+	public void changeToState(Integer patientProgramId, Integer programWorkflowId, Integer programWorkflowStateId,
+	                          String onDateDMY) throws ParseException {
+		ProgramWorkflowService s = Context.getProgramWorkflowService();
 		PatientProgram pp = s.getPatientProgram(patientProgramId);
 		ProgramWorkflow wf = s.getWorkflow(programWorkflowId);
 		ProgramWorkflowState st = s.getState(programWorkflowStateId);

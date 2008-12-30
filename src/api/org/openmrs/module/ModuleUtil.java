@@ -45,11 +45,11 @@ import org.springframework.context.support.AbstractRefreshableApplicationContext
  * Utility methods for working and manipulating modules
  */
 public class ModuleUtil {
-
+	
 	private static Log log = LogFactory.getLog(ModuleUtil.class);
-
+	
 	/**
-	 * Start up the module system with the given properties.  
+	 * Start up the module system with the given properties.
 	 * 
 	 * @param props Properties (OpenMRS runtime properties)
 	 */
@@ -62,8 +62,7 @@ public class ModuleUtil {
 			// and store them in the modules list
 			log.debug("Starting all modules");
 			ModuleFactory.loadModules();
-		}
-		else {
+		} else {
 			// use the list of modules and load only those
 			log.debug("Starting all modules in this list: " + moduleListString);
 			
@@ -99,9 +98,12 @@ public class ModuleUtil {
 							catch (IOException io) {
 								log.error("Unable to expand classpath found module: " + modulePath, io);
 							}
-						}
-						else
-							log.error("Unable to load module at path: " + modulePath + " because no file exists there and it is not found on the classpath. (absolute path tried: " + file.getAbsolutePath() + ")");
+						} else
+							log
+							        .error("Unable to load module at path: "
+							                + modulePath
+							                + " because no file exists there and it is not found on the classpath. (absolute path tried: "
+							                + file.getAbsolutePath() + ")");
 					}
 				}
 			}
@@ -120,10 +122,9 @@ public class ModuleUtil {
 				log.debug("Found and loaded " + modules.size() + " module(s)");
 		}
 	}
-
+	
 	/**
-	 * Stops the module system by calling stopModule for all 
-	 * modules that are currently started 
+	 * Stops the module system by calling stopModule for all modules that are currently started
 	 */
 	public static void shutdown() {
 		
@@ -139,60 +140,60 @@ public class ModuleUtil {
 		}
 		
 		log.debug("done shutting down modules");
-
+		
 	}
-
+	
 	/**
 	 * Add the <code>inputStream</code> as a file in the modules repository
 	 * 
-	 * @param stream InputStream to load 
+	 * @param stream InputStream to load
 	 * @return filename String of the file's name of the stream
 	 */
 	public static File insertModuleFile(InputStream inputStream, String filename) {
 		File folder = getModuleRepository();
-
+		
 		// check if module filename is already loaded
 		if (OpenmrsUtil.folderContains(folder, filename))
-			throw new ModuleException(filename
-					+ " is already associated with a loaded module.");
-
-		File file = new File(folder.getAbsolutePath() + File.separator
-				+ filename);
+			throw new ModuleException(filename + " is already associated with a loaded module.");
+		
+		File file = new File(folder.getAbsolutePath() + File.separator + filename);
 		
 		FileOutputStream outputStream = null;
 		try {
-			 outputStream = new FileOutputStream(file);
+			outputStream = new FileOutputStream(file);
 			OpenmrsUtil.copyFile(inputStream, outputStream);
-		} catch (FileNotFoundException e) {
-			throw new ModuleException("Can't create module file for "
-					+ filename, e);
-		} catch (IOException e) {
-			throw new ModuleException("Can't create module file for "
-					+ filename, e);
+		}
+		catch (FileNotFoundException e) {
+			throw new ModuleException("Can't create module file for " + filename, e);
+		}
+		catch (IOException e) {
+			throw new ModuleException("Can't create module file for " + filename, e);
 		}
 		finally {
-			try { inputStream.close(); } catch (Exception e) { /* pass */ }
-			try { outputStream.close();} catch (Exception e) { /* pass */ }
+			try {
+				inputStream.close();
+			}
+			catch (Exception e) { /* pass */}
+			try {
+				outputStream.close();
+			}
+			catch (Exception e) { /* pass */}
 		}
-
+		
 		return file;
 	}
-
+	
 	/**
-	 * Compares <code>version</code> to <code>value</code>
-	 * version and value are strings like w.x.y.z
-	 * 
-	 * Returns <code>0</code> if either <code>version</code> or
-	 * <code>value</code> is null.
+	 * Compares <code>version</code> to <code>value</code> version and value are strings like
+	 * w.x.y.z Returns <code>0</code> if either <code>version</code> or <code>value</code> is null.
 	 * 
 	 * @param version String like w.x.y.z
 	 * @param value String like w.x.y.z
-	 * @return	the value <code>0</code> if <code>version</code> is
-     * 		equal to the argument <code>value</code>; a value less than
-     * 		<code>0</code> if <code>version</code> is numerically less
-     * 		than the argument <code>value</code>; and a value greater 
-     * 		than <code>0</code> if <code>version</code> is numerically
-     * 		 greater than the argument <code>value</code>
+	 * @return the value <code>0</code> if <code>version</code> is equal to the argument
+	 *         <code>value</code>; a value less than <code>0</code> if <code>version</code> is
+	 *         numerically less than the argument <code>value</code>; and a value greater than
+	 *         <code>0</code> if <code>version</code> is numerically greater than the argument
+	 *         <code>value</code>
 	 */
 	public static int compareVersion(String version, String value) {
 		try {
@@ -224,24 +225,25 @@ public class ModuleUtil {
 				if (ret != 0)
 					return ret;
 			}
-		} catch (NumberFormatException e) {
+		}
+		catch (NumberFormatException e) {
 			log.error("Error while converting a version/value to an integer: " + version + "/" + value, e);
 		}
 		
 		// default return value if an error occurs or elements are equal
 		return 0;
 	}
-
+	
 	/**
-	 * Gets the folder where modules are stored. ModuleExceptions are thrown on
-	 * errors
+	 * Gets the folder where modules are stored. ModuleExceptions are thrown on errors
 	 * 
 	 * @return folder containing modules
 	 */
 	public static File getModuleRepository() {
 		
 		AdministrationService as = Context.getAdministrationService();
-		String folderName = as.getGlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY, ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
+		String folderName = as.getGlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY,
+		    ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT);
 		
 		// try to load the repository folder straight away.
 		File folder = new File(folderName);
@@ -251,61 +253,58 @@ public class ModuleUtil {
 		if (!folder.exists()) {
 			folder = new File(OpenmrsUtil.getApplicationDataDirectory(), folderName);
 		}
-
+		
 		// now create the modules folder if it doesn't exist
 		if (!folder.exists()) {
 			log.warn("Module repository " + folder.getAbsolutePath() + " doesn't exist.  Creating directories now.");
 			folder.mkdirs();
 		}
-
+		
 		if (!folder.isDirectory())
-			throw new ModuleException("Module repository is not a directory at: "
-					+ folder.getAbsolutePath());
-
+			throw new ModuleException("Module repository is not a directory at: " + folder.getAbsolutePath());
+		
 		return folder;
 	}
-
+	
 	/**
 	 * Utility method to convert a {@link File} object to a local URL.
 	 * 
-	 * @param file
-	 *            a file object
+	 * @param file a file object
 	 * @return absolute URL that points to the given file
-	 * @throws MalformedURLException
-	 *             if file can't be represented as URL for some reason
+	 * @throws MalformedURLException if file can't be represented as URL for some reason
 	 */
 	public static URL file2url(final File file) throws MalformedURLException {
 		if (file == null)
 			return null;
 		try {
 			return file.getCanonicalFile().toURI().toURL();
-		} catch (MalformedURLException mue) {
+		}
+		catch (MalformedURLException mue) {
 			throw mue;
-		} catch (IOException ioe) {
-			throw new MalformedURLException("Cannot convert: " + file.getName()
-					+ " to url");
-		} catch (NoSuchMethodError nsme) {
-			throw new MalformedURLException("Cannot convert: " + file.getName()
-					+ " to url");
+		}
+		catch (IOException ioe) {
+			throw new MalformedURLException("Cannot convert: " + file.getName() + " to url");
+		}
+		catch (NoSuchMethodError nsme) {
+			throw new MalformedURLException("Cannot convert: " + file.getName() + " to url");
 		}
 	}
-
+	
 	/**
-	 * Expand the given <code>fileToExpand</code> jar to the
-	 * <code>tmpModuleFile<code> directory 
+	 * Expand the given <code>fileToExpand</code> jar to the <code>tmpModuleFile<code> directory 
 	 * 
-	 * If <code>name</code> is null, the entire jar is expanded. 
-	 * If<code>name</code> is not null, then only that path/file is expanded.
+	 * If <code>name</code> is null, the entire jar is expanded. If<code>name</code> is not null,
+	 * then only that path/file is expanded.
 	 * 
 	 * @param fileToExpand file pointing at a .jar
 	 * @param tmpModuleDir directory in which to place the files
 	 * @param name filename inside of the jar to look for and expand
-	 * @param keepFullPath if true, will recreate entire directory structure in tmpModuleDir 
-	 * 		relating to <code>name</code>.  if false will start directory structure at <code>name</code>
+	 * @param keepFullPath if true, will recreate entire directory structure in tmpModuleDir
+	 *            relating to <code>name</code>. if false will start directory structure at
+	 *            <code>name</code>
 	 */
 	@SuppressWarnings("unchecked")
-    public static void expandJar(File fileToExpand, File tmpModuleDir,
-			String name, boolean keepFullPath) throws IOException {
+	public static void expandJar(File fileToExpand, File tmpModuleDir, String name, boolean keepFullPath) throws IOException {
 		JarFile jarFile = null;
 		InputStream input = null;
 		String docBase = tmpModuleDir.getAbsolutePath();
@@ -326,11 +325,9 @@ public class ModuleUtil {
 					// if it has a slash, it's in a directory
 					int last = entryName.lastIndexOf('/');
 					if (last >= 0) {
-						File parent = new File(docBase, entryName.substring(0,
-								last));
+						File parent = new File(docBase, entryName.substring(0, last));
 						parent.mkdirs();
-						log.debug("Creating parent dirs: "
-								+ parent.getAbsolutePath());
+						log.debug("Creating parent dirs: " + parent.getAbsolutePath());
 					}
 					// we don't want to "expand" directories or empty names
 					if (entryName.endsWith("/") || entryName.equals("")) {
@@ -344,33 +341,37 @@ public class ModuleUtil {
 				}
 			}
 			if (!foundName)
-				log.debug("Unable to find: " + name + " in file "
-						+ fileToExpand.getAbsolutePath());
-
-		} catch (IOException e) {
+				log.debug("Unable to find: " + name + " in file " + fileToExpand.getAbsolutePath());
+			
+		}
+		catch (IOException e) {
 			log.warn("Unable to delete tmpModuleFile on error", e);
 			throw e;
-		} finally {
-			try { input.close(); } catch (Exception e) { /* pass */ }
-			try { jarFile.close(); } catch (Exception e) { /* pass */ }
+		}
+		finally {
+			try {
+				input.close();
+			}
+			catch (Exception e) { /* pass */}
+			try {
+				jarFile.close();
+			}
+			catch (Exception e) { /* pass */}
 		}
 	}
-
+	
 	/**
-	 * Expand the given file in the given stream to a location (fileDir/name)
-	 * 
-	 * The <code>input</code> InputStream is not closed in this method
+	 * Expand the given file in the given stream to a location (fileDir/name) The <code>input</code>
+	 * InputStream is not closed in this method
 	 * 
 	 * @param input stream to read from
-	 * @param fileDir directory to copy to 
-	 * @param name file/directory within the <code>fileDir</code> to which we expand <code>input</code>
-	 * 
-	 * @return File the file created by the expansion. 
-	 * 
+	 * @param fileDir directory to copy to
+	 * @param name file/directory within the <code>fileDir</code> to which we expand
+	 *            <code>input</code>
+	 * @return File the file created by the expansion.
 	 * @throws IOException if an error occurred while copying
 	 */
-	private static File expand(InputStream input, String fileDir, String name)
-			throws IOException {
+	private static File expand(InputStream input, String fileDir, String name) throws IOException {
 		if (log.isDebugEnabled())
 			log.debug("expanding: " + name);
 		
@@ -379,16 +380,19 @@ public class ModuleUtil {
 		try {
 			outStream = new FileOutputStream(file);
 			OpenmrsUtil.copyFile(input, outStream);
-		} finally {
-			try { outStream.close(); } catch (Exception e) { /* pass */ }
+		}
+		finally {
+			try {
+				outStream.close();
+			}
+			catch (Exception e) { /* pass */}
 		}
 		
 		return file;
 	}
 	
 	/**
-	 * Downloads the contents of a URL and copies them to a string (Borrowed
-	 * from oreilly)
+	 * Downloads the contents of a URL and copies them to a string (Borrowed from oreilly)
 	 * 
 	 * @param URL
 	 * @return InputStream of contents
@@ -402,11 +406,12 @@ public class ModuleUtil {
 			uc.setRequestProperty("Cache-Control", "max-age=0,no-cache");
 			uc.setRequestProperty("Pragma", "no-cache");
 			// uc.setRequestProperty("Cache-Control","no-cache");
-
+			
 			log.error("Logging an attempt to connect to: " + url);
-
+			
 			in = uc.getInputStream();
-		} catch (IOException io) {
+		}
+		catch (IOException io) {
 			log.warn("io while reading: " + url, io);
 		}
 		
@@ -414,8 +419,7 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Downloads the contents of a URL and copies them to a string (Borrowed
-	 * from oreilly)
+	 * Downloads the contents of a URL and copies them to a string (Borrowed from oreilly)
 	 * 
 	 * @param URL
 	 * @return String contents of the URL
@@ -432,13 +436,21 @@ public class ModuleUtil {
 			out = new ByteArrayOutputStream();
 			OpenmrsUtil.copyFile(in, out);
 			output = out.toString();
-		} catch (IOException io) {
-			log.warn("io while reading: " + url, io);
-		} finally {
-			try { in.close();  } catch (Exception e) { /* pass */ }
-			try { out.close(); } catch (Exception e) { /* pass */ }
 		}
-
+		catch (IOException io) {
+			log.warn("io while reading: " + url, io);
+		}
+		finally {
+			try {
+				in.close();
+			}
+			catch (Exception e) { /* pass */}
+			try {
+				out.close();
+			}
+			catch (Exception e) { /* pass */}
+		}
+		
 		return output;
 	}
 	
@@ -472,7 +484,8 @@ public class ModuleUtil {
 					UpdateFileParser parser = new UpdateFileParser(content);
 					parser.parse();
 					
-					log.debug("Update for mod: " + mod.getModuleId() + " compareVersion result: " + compareVersion(mod.getVersion(), parser.getCurrentVersion()));
+					log.debug("Update for mod: " + mod.getModuleId() + " compareVersion result: "
+					        + compareVersion(mod.getVersion(), parser.getCurrentVersion()));
 					
 					// check the udpate.rdf version against the installed version
 					if (compareVersion(mod.getVersion(), parser.getCurrentVersion()) < 0) {
@@ -480,11 +493,9 @@ public class ModuleUtil {
 							mod.setDownloadURL(parser.getDownloadURL());
 							mod.setUpdateVersion(parser.getCurrentVersion());
 							updateFound = true;
-						}
-						else
+						} else
 							log.warn("Module id does not match in update.rdf:" + parser.getModuleId());
-					}
-					else {
+					} else {
 						mod.setDownloadURL(null);
 						mod.setUpdateVersion(null);
 					}
@@ -502,7 +513,8 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * @return true/false whether the 'allow upload' or 'allow web admin' property has been turned on
+	 * @return true/false whether the 'allow upload' or 'allow web admin' property has been turned
+	 *         on
 	 */
 	public static Boolean allowAdmin() {
 		
@@ -515,9 +527,8 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Refreshes the given application context "properly" in OpenMRS. Will first shut down 
-	 * the Context and destroy the classloader, then will refresh and set everything
-	 * back up again 
+	 * Refreshes the given application context "properly" in OpenMRS. Will first shut down the
+	 * Context and destroy the classloader, then will refresh and set everything back up again
 	 * 
 	 * @param ctx Spring application context that needs refreshing
 	 * @return AbstractRefreshableApplicationContext the newly refreshed application context

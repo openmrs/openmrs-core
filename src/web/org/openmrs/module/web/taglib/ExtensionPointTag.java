@@ -32,10 +32,8 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Extension point tag. Loops over all extensions defined for point "pointId".
- * Makes the variable "extension"
- * 
- * Usage:
+ * Extension point tag. Loops over all extensions defined for point "pointId". Makes the variable
+ * "extension" Usage:
  * 
  * <pre>
  *  &lt;openmrs:extensionPoint pointId=&quot;org.openmrs.cohortbuilder.links&quot; type=&quot;html&quot; varStatus=&quot;stat&quot;&gt;
@@ -59,69 +57,74 @@ import org.openmrs.util.OpenmrsUtil;
  * </pre>
  * 
  * @see org.openmrs.module.Extension available in the loop.
- * 
  */
 public class ExtensionPointTag extends TagSupport implements BodyTag {
-
+	
 	// general variables
 	public static final long serialVersionUID = 12323003L;
+	
 	private final Log log = LogFactory.getLog(getClass());
-
+	
 	// variables for the varStatus map
 	private static final String STATUS_FIRST = "first";
+	
 	private static final String STATUS_LAST = "last";
+	
 	private static final String STATUS_INDEX = "index";
+	
 	private Integer index = 0;
-
+	
 	// private variables
 	private Iterator<Extension> extensions;
+	
 	private Map<String, String> parameterMap;
+	
 	private BodyContent bodyContent = null;
-
+	
 	// tag attributes
 	private String pointId;
+	
 	private String parameters = "";
+	
 	private String requiredClass;
-
+	
 	/** all tags using this should default to 'html' media type */
 	private String type = "html";
-
+	
 	/** name of Map containing variables first/last/index */
 	private String varStatus = "varStatus";
 	
 	/** actual map containing the status variables */
 	private Map<String, Object> status = new HashMap<String, Object>();
-
+	
 	// tag helpers
 	private Boolean firstIteration = true;
-
+	
 	// methods
 	public int doStartTag() {
 		log.debug("Starting tag for extension point: " + pointId);
-
+		
 		// "zero out" the extension list and other variables
 		extensions = null;
 		parameterMap = OpenmrsUtil.parseParameterList(parameters);
 		status = new HashMap<String, Object>();
 		
 		List<Extension> extensionList = null;
-
+		
 		if (type != null && type.length() > 0) {
 			try {
-				Extension.MEDIA_TYPE mediaType = Enum.valueOf(
-				        Extension.MEDIA_TYPE.class, type);
+				Extension.MEDIA_TYPE mediaType = Enum.valueOf(Extension.MEDIA_TYPE.class, type);
 				log.debug("Getting extensions: " + pointId + " : " + mediaType);
 				extensionList = ModuleFactory.getExtensions(pointId, mediaType);
-			} catch (IllegalArgumentException e) {
-				log.warn("extension point type: '" + type
-				        + "' is invalid. Must be enum of Extension.MEDIA_TYPE",
-				        e);
+			}
+			catch (IllegalArgumentException e) {
+				log.warn("extension point type: '" + type + "' is invalid. Must be enum of Extension.MEDIA_TYPE", e);
 			}
 		} else {
 			log.debug("Getting extensions: " + pointId);
 			extensionList = ModuleFactory.getExtensions(pointId);
 		}
-
+		
 		if (extensionList != null) {
 			log.debug("Found " + extensionList.size() + " extensions");
 			if (requiredClass != null) {
@@ -129,18 +132,18 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 					Class<?> clazz = Class.forName(requiredClass);
 					for (Extension ext : extensionList) {
 						if (!clazz.isAssignableFrom(ext.getClass())) {
-							throw new ClassCastException("Extensions at this point (" + pointId + ") are " +
-							                             "required to be of " + clazz + " or a subclass. " +
-							                             ext.getClass() + " is not.");
+							throw new ClassCastException("Extensions at this point (" + pointId + ") are "
+							        + "required to be of " + clazz + " or a subclass. " + ext.getClass() + " is not.");
 						}
 					}
-				} catch (ClassNotFoundException ex) {
+				}
+				catch (ClassNotFoundException ex) {
 					throw new IllegalArgumentException(ex);
 				}
 			}
 			extensions = extensionList.iterator();
 		}
-
+		
 		if (extensions == null || extensions.hasNext() == false) {
 			extensions = null;
 			return SKIP_BODY;
@@ -148,9 +151,9 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 			firstIteration = true;
 			return EVAL_BODY_BUFFERED;
 		}
-
+		
 	}
-
+	
 	/**
 	 * @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
 	 */
@@ -159,7 +162,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 		pageContext.removeAttribute("extension");
 		return;
 	}
-
+	
 	/**
 	 * @see javax.servlet.jsp.tagext.IterationTag#doAfterBody()
 	 */
@@ -174,33 +177,31 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 				firstIteration = false;
 			}
 			Extension ext = extensions.next();
-			String overrideContent = ext
-			        .getOverrideContent(getBodyContentString());
+			String overrideContent = ext.getOverrideContent(getBodyContentString());
 			if (overrideContent == null) {
 				iterate(ext);
 			} else {
 				try {
 					bodyContent.getEnclosingWriter().write(overrideContent);
-				} catch (IOException io) {
-					log.warn("Cannot write override content of extension: "
-					        + ext.toString(), io);
+				}
+				catch (IOException io) {
+					log.warn("Cannot write override content of extension: " + ext.toString(), io);
 				}
 				if (!extensions.hasNext())
 					return SKIP_BODY;
 			}
 			return EVAL_BODY_BUFFERED;
 		}
-
+		
 		return SKIP_BODY;
 	}
-
+	
 	private void iterate(Extension ext) {
 		if (ext != null) {
 			ext.initialize(parameterMap);
-			log.debug("Adding ext: " + ext.getExtensionId()
-			        + " to pageContext class: " + ext.getClass());
+			log.debug("Adding ext: " + ext.getExtensionId() + " to pageContext class: " + ext.getClass());
 			pageContext.setAttribute("extension", ext);
-
+			
 			// set up and apply the status variable
 			status.put(STATUS_FIRST, index == 0);
 			status.put(STATUS_LAST, extensions.hasNext() == false);
@@ -210,7 +211,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 			pageContext.removeAttribute("extension");
 		}
 	}
-
+	
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	 */
@@ -233,14 +234,14 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 						pageContext.getOut().write(overrideContent);
 				}
 			}
-		} catch (java.io.IOException e) {
-			throw new JspTagException("IO Error while ending tag for point: "
-			        + pointId, e);
+		}
+		catch (java.io.IOException e) {
+			throw new JspTagException("IO Error while ending tag for point: " + pointId, e);
 		}
 		release();
 		return EVAL_PAGE;
 	}
-
+	
 	@Override
 	public void release() {
 		extensions = null;
@@ -252,66 +253,66 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 		bodyContent = null;
 		super.release();
 	}
-
+	
 	public String getPointId() {
 		return pointId;
 	}
-
+	
 	public void setPointId(String pointId) {
 		this.pointId = pointId;
 	}
-
+	
 	public String getParameters() {
 		return parameters;
 	}
-
+	
 	public void setParameters(String parameters) {
 		this.parameters = parameters;
 	}
-
+	
 	public String getType() {
 		return type;
 	}
-
+	
 	public void setType(String type) {
 		this.type = type;
 	}
-
+	
 	public void setBodyContent(BodyContent b) {
 		this.bodyContent = b;
 	}
-
+	
 	public BodyContent getBodyContent() {
 		return bodyContent;
 	}
-
+	
 	public String getBodyContentString() {
 		if (bodyContent == null)
 			return "";
 		else
 			return bodyContent.getString();
 	}
-
+	
 	/**
 	 * @return the varStatus
 	 */
 	public String getVarStatus() {
 		return varStatus;
 	}
-
+	
 	/**
 	 * @param varStatus the varStatus to set
 	 */
 	public void setVarStatus(String varStatus) {
 		this.varStatus = varStatus;
 	}
-
+	
 	public String getRequiredClass() {
-    	return requiredClass;
-    }
-
+		return requiredClass;
+	}
+	
 	public void setRequiredClass(String requiredClass) {
-    	this.requiredClass = requiredClass;
-    }
-
+		this.requiredClass = requiredClass;
+	}
+	
 }

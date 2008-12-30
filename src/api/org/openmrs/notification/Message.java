@@ -16,28 +16,35 @@ package org.openmrs.notification;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Message implements Serializable {    
-
+public class Message implements Serializable {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -5392076713513109152L;
-
-	private Integer id;	
-	private StringBuffer recipients = new StringBuffer();    
+	
+	private Integer id;
+	
+	private StringBuffer recipients = new StringBuffer();
+	
 	private String sender;
+	
 	private String subject;
+	
 	private String content;
+	
 	private Date sentDate;
+	
 	private String attachment;
+	
 	private String attachmentContentType;
+	
 	private String attachmentFileName;
 	
-	public Message() {  
+	public Message() {
 	}
 	
-	public Message(Integer id, String recipients, String sender, String subject, String content) { 
+	public Message(Integer id, String recipients, String sender, String subject, String content) {
 		this.id = id;
 		this.recipients.append(recipients);
 		this.sender = sender;
@@ -45,8 +52,9 @@ public class Message implements Serializable {
 		this.content = content;
 	}
 	
-	public Message(Integer id, String recipients, String sender, String subject, String content, String attachment, String attachmentContentType, String attachmentFileName) { 
-		this(id,recipients,sender,subject,content);
+	public Message(Integer id, String recipients, String sender, String subject, String content, String attachment,
+	    String attachmentContentType, String attachmentFileName) {
+		this(id, recipients, sender, subject, content);
 		this.attachment = attachment;
 		this.attachmentContentType = attachmentContentType;
 		this.attachmentFileName = attachmentFileName;
@@ -56,84 +64,83 @@ public class Message implements Serializable {
 		this.id = id;
 	}
 	
-	public Integer getId() { 
+	public Integer getId() {
 		return this.id;
 	}
-
-	public void setRecipients(String recipients) {  
+	
+	public void setRecipients(String recipients) {
 		if (recipients != null)
 			this.recipients = new StringBuffer(recipients);
-	}    
-	
-	public String getRecipients() {        
-		return this.recipients.toString();    
 	}
 	
-	public void addRecipient(String recipient) { 
+	public String getRecipients() {
+		return this.recipients.toString();
+	}
+	
+	public void addRecipient(String recipient) {
 		if (recipient != null) {
-			this.recipients.append(",").append( recipient );
+			this.recipients.append(",").append(recipient);
 		}
 	}
 	
-
-	public void setSender(String sender) {        
-		this.sender = sender;    
-	}    
-	
-	public String getSender() {        
-		return this.sender;    
+	public void setSender(String sender) {
+		this.sender = sender;
 	}
-
-	public void setSubject(String subject) {        
-		this.subject = subject;    
-	}    
 	
-	public String getSubject() {        
-		return this.subject;    
+	public String getSender() {
+		return this.sender;
 	}
-
-	public void setSentDate(Date sentDate) {        
-		this.sentDate = sentDate;    
-	}    
 	
-	public Date getSentDate() {        
-		return this.sentDate;    
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
-
-	public void setContent(String content) { 
+	
+	public String getSubject() {
+		return this.subject;
+	}
+	
+	public void setSentDate(Date sentDate) {
+		this.sentDate = sentDate;
+	}
+	
+	public Date getSentDate() {
+		return this.sentDate;
+	}
+	
+	public void setContent(String content) {
 		this.content = content;
 	}
 	
-	public String getContent() { 
+	public String getContent() {
 		return this.content;
 	}
-
+	
 	public String getAttachment() {
-    	return attachment;
-    }
-
+		return attachment;
+	}
+	
 	public void setAttachment(String attachment) {
-    	this.attachment = attachment;
-    }
-
+		this.attachment = attachment;
+	}
+	
 	public String getAttachmentContentType() {
-    	return attachmentContentType;
-    }
-
+		return attachmentContentType;
+	}
+	
 	public void setAttachmentContentType(String attachmentContentType) {
-    	this.attachmentContentType = attachmentContentType;
-    }
-
+		this.attachmentContentType = attachmentContentType;
+	}
+	
 	public String getAttachmentFileName() {
-    	return attachmentFileName;
-    }
-
+		return attachmentFileName;
+	}
+	
 	public void setAttachmentFileName(String attachmentFileName) {
-    	this.attachmentFileName = attachmentFileName;
-    }
-
-    public boolean hasAttachment() {
-	    return attachment != null;
-    }
+		this.attachmentFileName = attachmentFileName;
+	}
+	
+	public boolean hasAttachment() {
+		return attachment != null;
+	}
 	
 }

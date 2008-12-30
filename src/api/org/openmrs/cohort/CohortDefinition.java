@@ -17,13 +17,13 @@ import org.openmrs.report.Parameterizable;
 import org.simpleframework.xml.Root;
 
 /**
- * Represents a search strategy for arriving at a cohort.
+ * Represents a search strategy for arriving at a cohort. This interface is intentionally empty. You
+ * evaluate a CohortDefinition using CohortService
  * 
- * This interface is intentionally empty. You evaluate a CohortDefinition using CohortService 
- * 
- * @see org.openmrs.cohort.api.CohortService#evaluate(CohortDefinition, org.openmrs.report.EvaluationContext)
+ * @see org.openmrs.cohort.api.CohortService#evaluate(CohortDefinition,
+ *      org.openmrs.report.EvaluationContext)
  */
-@Root(strict=false)
+@Root(strict = false)
 public interface CohortDefinition extends Parameterizable {
 
 }

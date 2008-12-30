@@ -26,9 +26,8 @@ import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.util.OpenmrsClassLoader;
 
 /**
- * Tests how modules interact and call each other.  Both when loaded by Spring during
- * OpenMRS startup and during normal file usage.
- * 
+ * Tests how modules interact and call each other. Both when loaded by Spring during OpenMRS startup
+ * and during normal file usage.
  */
 @SkipBaseSetup
 public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
@@ -61,10 +60,9 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 		// the "/lib" folder has been emptied to compact the size.
 		// the "/metadata/sqldiff.xml" file has been deleted in order to load the modules into hsql.
 		//    (the sql tables are built from hibernate mapping files automatically in unit tests)
-		props.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD, 
-		                  "org/openmrs/module/include/atd-0.51.omod " + 
-		                  "org/openmrs/module/include/dssmodule-1.44.omod");
-		                  
+		props.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD, "org/openmrs/module/include/atd-0.51.omod "
+		        + "org/openmrs/module/include/dssmodule-1.44.omod");
+		
 		return props;
 	}
 	
@@ -82,10 +80,10 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 		assertNotNull(atdServiceClass);
 		assertNotNull(dssServiceClass);
 		
-		ModuleClassLoader atdClassLoader = (ModuleClassLoader)atdServiceClass.getClassLoader();
+		ModuleClassLoader atdClassLoader = (ModuleClassLoader) atdServiceClass.getClassLoader();
 		assertEquals("atd", atdClassLoader.getModule().getModuleId());
 		
-		ModuleClassLoader dssClassLoader = (ModuleClassLoader)dssServiceClass.getClassLoader();
+		ModuleClassLoader dssClassLoader = (ModuleClassLoader) dssServiceClass.getClassLoader();
 		assertEquals("dssmodule", dssClassLoader.getModule().getModuleId());
 		
 		// load a dss class from the atd classloader.  This simulates a normal class (like a
@@ -100,5 +98,5 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 		assertEquals("dssmodule", dssServiceClassLoader.getModule().getModuleId());
 		
 	}
-
+	
 }

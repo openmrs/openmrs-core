@@ -35,7 +35,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * Controller to save do the saving and getting of the report schema
- * 
  */
 public class ReportSchemaXmlFormController extends SimpleFormController implements Validator {
 	
@@ -45,9 +44,9 @@ public class ReportSchemaXmlFormController extends SimpleFormController implemen
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		ReportService reportService = (ReportService) Context.getService(ReportService.class);
-	    
+		
 		Integer reportSchemaId = ServletRequestUtils.getIntParameter(request, "reportSchemaId");
 		
 		log.debug("Getting report schema xml with schema id: " + reportSchemaId);
@@ -60,70 +59,74 @@ public class ReportSchemaXmlFormController extends SimpleFormController implemen
 			reportSchemaXml.updateXmlFromAttributes();
 			
 			return reportSchemaXml;
-		}
-		else
+		} else
 			return new ReportSchemaXml();
-    }
-
+	}
+	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object commandObject, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object commandObject,
+	                                BindException errors) throws Exception {
 		ReportSchemaXml reportSchemaXml = (ReportSchemaXml) commandObject;
 		ReportService reportService = (ReportService) Context.getService(ReportService.class);
-
-    	try {
-    		// create a new object out of their xml in order to verify xml and copy out the id/name/desc
-    		ReportSchema schema = reportService.getReportSchema(reportSchemaXml);
-    		
-    		// if the user changed the reportSchemaId to create a new one, create a new object here 
-    		// so hibernate doesn't complain
-    		if (reportSchemaXml.getReportSchemaId() != null &&
-    			!schema.getReportSchemaId().equals(reportSchemaXml.getReportSchemaId())) {
-    			String xml = reportSchemaXml.getXml();
-    			reportSchemaXml = new ReportSchemaXml();
-    			reportSchemaXml.setXml(xml);
-    		}
-    		
-    		reportSchemaXml.populateFromReportSchema(schema);
-    		
-    		// save the xml to the database
-    		reportService.saveReportSchemaXml(reportSchemaXml);
-
-    	} catch (Exception ex) {
-    		log.warn("Exception building ReportSchema from XML", ex);
-    		if (ex.getCause() != null) {
-    			Throwable temp = ex.getCause();
-    			while (temp.getCause() != null)
-    				temp = temp.getCause();
-    			errors.rejectValue("xml", temp.getMessage());
-    		} else {
-	    		StringBuilder sb = new StringBuilder();
-	    		sb.append("Invalid XML content<br/>");
-	    		sb.append(ex).append("<br/>");
-	    		for (StackTraceElement e : ex.getStackTrace())
-	    			sb.append(e.toString()).append("<br/>");
-	    		errors.rejectValue("xml", sb.toString());
-    		}
-    		return showForm(request, response, errors);
-    	}
-	    
-	    HttpSession httpSession = request.getSession();
-	    httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Report.manageSchema.saved");
+		
+		try {
+			// create a new object out of their xml in order to verify xml and copy out the id/name/desc
+			ReportSchema schema = reportService.getReportSchema(reportSchemaXml);
+			
+			// if the user changed the reportSchemaId to create a new one, create a new object here 
+			// so hibernate doesn't complain
+			if (reportSchemaXml.getReportSchemaId() != null
+			        && !schema.getReportSchemaId().equals(reportSchemaXml.getReportSchemaId())) {
+				String xml = reportSchemaXml.getXml();
+				reportSchemaXml = new ReportSchemaXml();
+				reportSchemaXml.setXml(xml);
+			}
+			
+			reportSchemaXml.populateFromReportSchema(schema);
+			
+			// save the xml to the database
+			reportService.saveReportSchemaXml(reportSchemaXml);
+			
+		}
+		catch (Exception ex) {
+			log.warn("Exception building ReportSchema from XML", ex);
+			if (ex.getCause() != null) {
+				Throwable temp = ex.getCause();
+				while (temp.getCause() != null)
+					temp = temp.getCause();
+				errors.rejectValue("xml", temp.getMessage());
+			} else {
+				StringBuilder sb = new StringBuilder();
+				sb.append("Invalid XML content<br/>");
+				sb.append(ex).append("<br/>");
+				for (StackTraceElement e : ex.getStackTrace())
+					sb.append(e.toString()).append("<br/>");
+				errors.rejectValue("xml", sb.toString());
+			}
+			return showForm(request, response, errors);
+		}
+		
+		HttpSession httpSession = request.getSession();
+		httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Report.manageSchema.saved");
 		return new ModelAndView(new RedirectView(getSuccessView()));
-    }
+	}
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-    public boolean supports(Class c) {
-	    return c == ReportSchemaXml.class;
-    }
-
+	public boolean supports(Class c) {
+		return c == ReportSchemaXml.class;
+	}
+	
 	/**
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object commandObject, Errors errors) {
 		ValidationUtils.rejectIfEmpty(errors, "xml", "Paste XML for report before saving");
@@ -133,23 +136,24 @@ public class ReportSchemaXmlFormController extends SimpleFormController implemen
 			ReportSchema schema = reportService.getReportSchema(rsx);
 			if (schema == null)
 				throw new NullPointerException();
-		} catch (Exception ex) {
-    		log.warn("Exception building ReportSchema from XML", ex);
-    		if (ex.getCause() != null) {
-    			Throwable temp = ex.getCause();
-    			while (temp.getCause() != null) {
-    				temp = temp.getCause();
-    			}
-    			errors.rejectValue("xml", temp.getMessage());   			
-    		} else {
-	    		StringBuilder sb = new StringBuilder();
-	    		sb.append("Invalid XML content<br/>");
-	    		sb.append(ex).append("<br/>");
-	    		for (StackTraceElement e : ex.getStackTrace())
-	    			sb.append(e.toString()).append("<br/>");
-	    		errors.rejectValue("xml", sb.toString());
-    		}
 		}
-    }
+		catch (Exception ex) {
+			log.warn("Exception building ReportSchema from XML", ex);
+			if (ex.getCause() != null) {
+				Throwable temp = ex.getCause();
+				while (temp.getCause() != null) {
+					temp = temp.getCause();
+				}
+				errors.rejectValue("xml", temp.getMessage());
+			} else {
+				StringBuilder sb = new StringBuilder();
+				sb.append("Invalid XML content<br/>");
+				sb.append(ex).append("<br/>");
+				for (StackTraceElement e : ex.getStackTrace())
+					sb.append(e.toString()).append("<br/>");
+				errors.rejectValue("xml", sb.toString());
+			}
+		}
+	}
 	
 }

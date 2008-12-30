@@ -43,37 +43,38 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class RelationshipFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
+		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
 	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			Person person = (Person)obj;
+			Person person = (Person) obj;
 			PersonService ps = Context.getPersonService();
 			PatientService patientService = Context.getPatientService();
 			
@@ -91,15 +92,14 @@ public class RelationshipFormController extends SimpleFormController {
 				for (int x = 0; x < relTypes.length; x++) {
 					Relationship r = new Relationship();
 					log.error("relType: " + relTypes[x]);
-					log.error("patient: " + patients[x+1]);
+					log.error("patient: " + patients[x + 1]);
 					if (relTypes[x].equals("") && !patients[x].equals("")) {
 						errors.reject("relationshipType", "error.null");
 						return showForm(request, response, errors);
-					}
-					else if (!relTypes[x].equals("") && !patients[x+1].equals("")) {
+					} else if (!relTypes[x].equals("") && !patients[x + 1].equals("")) {
 						r.setRelationshipType(ps.getRelationshipType(Integer.valueOf(relTypes[x])));
 						// TODO change from a patient search to a person search
-						Patient patient = patientService.getPatient(Integer.valueOf(patients[x+1]));
+						Patient patient = patientService.getPatient(Integer.valueOf(patients[x + 1]));
 						log.debug("patient: " + patient);
 						Person relative = null; //patient.getPerson();
 						log.debug("relative: " + relative);
@@ -115,36 +115,33 @@ public class RelationshipFormController extends SimpleFormController {
 						ps.createRelationship(r);
 					}
 				}
-			}
-			else if (action.equals(msa.getMessage("Relationship.void"))) {
+			} else if (action.equals(msa.getMessage("Relationship.void"))) {
 				//String[] relIds = request.getParameterValues("relationshipId");
 				
-			}
-			else if (action.equals(msa.getMessage("Relationship.unvoid"))) {
+			} else if (action.equals(msa.getMessage("Relationship.unvoid"))) {
 				String[] relIds = request.getParameterValues("relationshipId");
-				for (String id : relIds)  {
+				for (String id : relIds) {
 					Relationship r = ps.getRelationship(Integer.valueOf(id));
 					ps.unvoidRelationship(r);
 				}
 				
 			}
 			view = getSuccessView();
-
+			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, msa.getMessage("Relationship.saved"));
 		}
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		Person person = null;
 		
 		if (Context.isAuthenticated()) {
@@ -154,32 +151,31 @@ public class RelationshipFormController extends SimpleFormController {
 			String personId = request.getParameter("personId");
 			String patientId = request.getParameter("patientId");
 			String userId = request.getParameter("userId");
-	    	if (personId != null)
-	    		person = ps.getPerson(Integer.valueOf(personId));
-	    	else if (patientId != null) {
-	    		//Patient pat = ps.getPatient(Integer.valueOf(patientId));
-	    		//if (pat.getPerson() == null)
-	    		//	person = new Person(pat);
-	    		//else
-	    		//	person = pat.getPerson();
-	    	}
-	    	else if (userId != null) {
-	    		User user = us.getUser(Integer.valueOf(userId));
-	    		person = user;
-	    	}
+			if (personId != null)
+				person = ps.getPerson(Integer.valueOf(personId));
+			else if (patientId != null) {
+				//Patient pat = ps.getPatient(Integer.valueOf(patientId));
+				//if (pat.getPerson() == null)
+				//	person = new Person(pat);
+				//else
+				//	person = pat.getPerson();
+			} else if (userId != null) {
+				User user = us.getUser(Integer.valueOf(userId));
+				person = user;
+			}
 		}
 		
 		if (person == null)
 			person = new Person();
-    	
-        return person;
-    }
-
+		
+		return person;
+	}
+	
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		Person person = (Person)obj;
+		Person person = (Person) obj;
 		
 		if (Context.isAuthenticated()) {
 			//AdministrationService as = Context.getAdministrationService();
@@ -190,7 +186,5 @@ public class RelationshipFormController extends SimpleFormController {
 		
 		return map;
 	}
-    
-    
-    
+	
 }

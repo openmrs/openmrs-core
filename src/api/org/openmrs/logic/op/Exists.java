@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class Exists implements Operator {
-
-    public String toString() {
-        return "EXISTS";
-    }
-    
+	
+	public String toString() {
+		return "EXISTS";
+	}
+	
 }

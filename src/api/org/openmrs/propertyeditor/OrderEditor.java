@@ -23,21 +23,20 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing a Order object to a string 
- * so that Spring knows how to pass a Order back and forth through
- * an html form or other medium
+ * Allows for serializing/deserializing a Order object to a string so that Spring knows how to pass
+ * a Order back and forth through an html form or other medium
  * 
  * @see Order
  */
 public class OrderEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	/**
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
-		OrderService ps = Context.getOrderService(); 
+		OrderService ps = Context.getOrderService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(ps.getOrder(Integer.valueOf(text)));
@@ -46,12 +45,11 @@ public class OrderEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Order not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	/**
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
@@ -59,11 +57,9 @@ public class OrderEditor extends PropertyEditorSupport {
 		Order t = (Order) getValue();
 		if (t == null) {
 			return "";
-		}
-		else {
+		} else {
 			return t.getOrderId().toString();
 		}
 	}
 	
-
 }

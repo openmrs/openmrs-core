@@ -21,46 +21,50 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * ConceptDescription is the localized description of a concept.   
- * 
+ * ConceptDescription is the localized description of a concept.
  */
 @Root
 public class ConceptDescription implements java.io.Serializable {
-
+	
 	/**
      * 
      */
-    private static final long serialVersionUID = -7223075113369136584L;
-
+	private static final long serialVersionUID = -7223075113369136584L;
+	
 	// Fields
 	private Integer conceptDescriptionId;
-
+	
 	private Concept concept;
+	
 	private String description;
+	
 	private Locale locale;
+	
 	private User creator;
+	
 	private Date dateCreated;
+	
 	private User changedBy;
+	
 	private Date dateChanged;
-
+	
 	// Constructors
-
+	
 	/** default constructor */
 	public ConceptDescription() {
 	}
 	
 	/**
-	 * Constructor specifying the description and locale. 
+	 * Constructor specifying the description and locale.
 	 * 
 	 * @param description
 	 * @param locale
 	 */
 	public ConceptDescription(String description, Locale locale) {
 		setLocale(locale);
-		setDescription(description);  
+		setDescription(description);
 	}
-
-
+	
 	/**
 	 * @return Returns the conceptDescriptionId.
 	 */
@@ -68,7 +72,7 @@ public class ConceptDescription implements java.io.Serializable {
 	public Integer getConceptDescriptionId() {
 		return conceptDescriptionId;
 	}
-
+	
 	/**
 	 * @param conceptDescriptionId The conceptId to set.
 	 */
@@ -76,9 +80,9 @@ public class ConceptDescription implements java.io.Serializable {
 	public void setConceptDescriptionId(Integer conceptDescriptionId) {
 		this.conceptDescriptionId = conceptDescriptionId;
 	}
-
+	
 	// Property accessors
-
+	
 	/**
 	 * 
 	 */
@@ -86,25 +90,25 @@ public class ConceptDescription implements java.io.Serializable {
 	public Concept getConcept() {
 		return concept;
 	}
-
+	
 	@Element
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-
+	
 	/**
 	 * 
 	 */
-	@Element(data=true)
+	@Element(data = true)
 	public String getDescription() {
 		return description;
 	}
-
-	@Element(data=true)
+	
+	@Element(data = true)
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -112,7 +116,7 @@ public class ConceptDescription implements java.io.Serializable {
 	public Locale getLocale() {
 		return locale;
 	}
-
+	
 	@Attribute
 	public void setLocale(Locale locale) {
 		this.locale = locale;
@@ -125,16 +129,15 @@ public class ConceptDescription implements java.io.Serializable {
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
 	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	/**
 	 * @return Returns the dateCreated.
 	 */
@@ -142,82 +145,76 @@ public class ConceptDescription implements java.io.Serializable {
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	/**
-	 * @param dateCreated
-	 *            The dateCreated to set.
+	 * @param dateCreated The dateCreated to set.
 	 */
 	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
-
+	
 	/**
 	 * @return Returns the User who last changed the description.
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public User getChangedBy() {
 		return changedBy;
 	}
-
+	
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-
+	
 	/**
 	 * @return Returns the date the description was last changed.
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public Date getDateChanged() {
 		return dateChanged;
 	}
-
+	
 	/**
 	 * Sets the date when the description was changed.
 	 * 
 	 * @param dateChanged the data the description was changed.
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
 	
-	
-	
 	/**
-	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getConceptDescriptionId() == null) return super.hashCode();
+		if (this.getConceptDescriptionId() == null)
+			return super.hashCode();
 		int hash = 8;
 		hash = 31 * this.getConceptDescriptionId() + hash;
 		return hash;
 	}
-
+	
 	/**
-	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
 		return this.description;
 	}
-
+	
 	/**
-     * @see java.lang.Object#equals(Object)
-     */
-    public boolean equals(Object object) {
-    	if (!(object instanceof ConceptDescription)) {
-    		return false;
-    	}
-    	ConceptDescription rhs = (ConceptDescription) object;
-    	return (this.conceptDescriptionId == rhs.conceptDescriptionId);
-    }
-
+	 * @see java.lang.Object#equals(Object)
+	 */
+	public boolean equals(Object object) {
+		if (!(object instanceof ConceptDescription)) {
+			return false;
+		}
+		ConceptDescription rhs = (ConceptDescription) object;
+		return (this.conceptDescriptionId == rhs.conceptDescriptionId);
+	}
+	
 }

@@ -25,11 +25,10 @@ public class NameTemplate extends LayoutTemplate {
 	public String getNonLayoutToken() {
 		return "IS_NOT_NAME_TOKEN";
 	}
-
+	
 	@Override
 	public LayoutSupport<?> getLayoutSupportInstance() {
 		return NameSupport.getInstance();
 	}
-	
 	
 }

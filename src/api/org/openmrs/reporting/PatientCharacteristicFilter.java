@@ -22,14 +22,21 @@ import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
 
 public class PatientCharacteristicFilter extends CachingPatientFilter implements Comparable<PatientCharacteristicFilter> {
-
+	
 	private String gender;
+	
 	private Date minBirthdate;
+	
 	private Date maxBirthdate;
+	
 	private Integer minAge;
+	
 	private Integer maxAge;
+	
 	private Boolean aliveOnly;
+	
 	private Boolean deadOnly;
+	
 	private Date effectiveDate;
 	
 	public PatientCharacteristicFilter() {
@@ -46,20 +53,20 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 	}
 	
 	@Override
-    public String getCacheKey() {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append(getClass().getName()).append(".");
-	    sb.append(getGender()).append(".");
-	    sb.append(getMinBirthdate()).append(".");
-	    sb.append(getMaxBirthdate()).append(".");
-	    sb.append(getMinAge()).append(".");
-	    sb.append(getMaxAge()).append(".");
-	    sb.append(getAliveOnly()).append(".");
-	    sb.append(getDeadOnly()).append(".");
-	    sb.append(getEffectiveDate());
-	    return sb.toString();
-    }
-
+	public String getCacheKey() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getName()).append(".");
+		sb.append(getGender()).append(".");
+		sb.append(getMinBirthdate()).append(".");
+		sb.append(getMaxBirthdate()).append(".");
+		sb.append(getMinAge()).append(".");
+		sb.append(getMaxAge()).append(".");
+		sb.append(getAliveOnly()).append(".");
+		sb.append(getDeadOnly()).append(".");
+		sb.append(getEffectiveDate());
+		return sb.toString();
+	}
+	
 	public boolean isReadyToRun() {
 		return true;
 	}
@@ -89,16 +96,20 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 		}
 		if (o instanceof PatientCharacteristicFilter) {
 			PatientCharacteristicFilter other = (PatientCharacteristicFilter) o;
-			return equals(gender, other.gender) && equals(minBirthdate, other.minBirthdate) && equals(maxBirthdate, other.maxBirthdate) && equals(minAge, other.minAge) && equals(maxAge, other.maxAge) && equals(aliveOnly, other.aliveOnly) && equals(deadOnly, other.deadOnly);
+			return equals(gender, other.gender) && equals(minBirthdate, other.minBirthdate)
+			        && equals(maxBirthdate, other.maxBirthdate) && equals(minAge, other.minAge)
+			        && equals(maxAge, other.maxAge) && equals(aliveOnly, other.aliveOnly)
+			        && equals(deadOnly, other.deadOnly);
 		} else {
 			return false;
 		}
 	}
 	
 	public String getDescription() {
-		if (gender == null && minBirthdate == null && maxBirthdate == null && minAge == null && maxAge == null && aliveOnly == null && deadOnly == null)
+		if (gender == null && minBirthdate == null && maxBirthdate == null && minAge == null && maxAge == null
+		        && aliveOnly == null && deadOnly == null)
 			return "All Patients";
-
+		
 		StringBuffer ret = new StringBuffer();
 		if (gender != null) {
 			if ("M".equals(gender)) {
@@ -122,7 +133,7 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 		} else {
 			if (maxBirthdate != null) {
 				ret.append(" born before " + df.format(maxBirthdate));
-			}			
+			}
 		}
 		if (minAge != null) {
 			if (maxAge != null) {
@@ -150,7 +161,7 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 	public String getGender() {
 		return gender;
 	}
-
+	
 	/**
 	 * @param gender The gender to set.
 	 */
@@ -163,28 +174,28 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 			}
 		}
 	}
-
+	
 	/**
 	 * @return Returns the maxBirthdate.
 	 */
 	public Date getMaxBirthdate() {
 		return maxBirthdate;
 	}
-
+	
 	/**
 	 * @param maxBirthdate The maxBirthdate to set.
 	 */
 	public void setMaxBirthdate(Date maxBirthdate) {
 		this.maxBirthdate = maxBirthdate;
 	}
-
+	
 	/**
 	 * @return Returns the minBirthdate.
 	 */
 	public Date getMinBirthdate() {
 		return minBirthdate;
 	}
-
+	
 	/**
 	 * @param minBirthdate The minBirthdate to set.
 	 */
@@ -195,47 +206,48 @@ public class PatientCharacteristicFilter extends CachingPatientFilter implements
 	public Boolean getAliveOnly() {
 		return aliveOnly;
 	}
-
+	
 	public void setAliveOnly(Boolean aliveOnly) {
 		this.aliveOnly = aliveOnly;
 	}
-
+	
 	public Boolean getDeadOnly() {
 		return deadOnly;
 	}
-
+	
 	public void setDeadOnly(Boolean deadOnly) {
 		this.deadOnly = deadOnly;
 	}
-
+	
 	public Integer getMaxAge() {
 		return maxAge;
 	}
-
+	
 	public void setMaxAge(Integer maxAge) {
 		this.maxAge = maxAge;
 	}
-
+	
 	public Integer getMinAge() {
 		return minAge;
 	}
-
+	
 	public void setMinAge(Integer minAge) {
 		this.minAge = minAge;
 	}
-
+	
 	public Date getEffectiveDate() {
-    	return effectiveDate;
-    }
-
+		return effectiveDate;
+	}
+	
 	public void setEffectiveDate(Date effectiveDate) {
-    	this.effectiveDate = effectiveDate;
-    }
-
+		this.effectiveDate = effectiveDate;
+	}
+	
 	@Override
 	public Cohort filterImpl(EvaluationContext context) {
 		PatientSetService service = Context.getPatientSetService();
-		return service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly, effectiveDate);
+		return service.getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly,
+		    effectiveDate);
 	}
 	
 }

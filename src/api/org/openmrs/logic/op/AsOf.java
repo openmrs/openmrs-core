@@ -17,9 +17,9 @@ package org.openmrs.logic.op;
  *
  */
 public class AsOf implements Operator {
-
-    public String toString() {
-        return "AS OF";
-    }
-    
+	
+	public String toString() {
+		return "AS OF";
+	}
+	
 }

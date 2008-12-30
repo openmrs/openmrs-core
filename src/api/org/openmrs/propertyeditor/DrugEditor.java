@@ -22,29 +22,27 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
-
 /**
- *  Behaviors:  Group vetted on 22/Aug/2008 at 2:22pm
- *  
+ * Behaviors: Group vetted on 22/Aug/2008 at 2:22pm
  */
 public class DrugEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public DrugEditor() {	}
-
+	public DrugEditor() {
+	}
+	
 	/**
 	 * Sets the value of the property editor given the drug identifier.
-	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 * 
-	 * @should set value to the drug with the specified identifier 
-	 * @should set value to null if given empty string 
+	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
+	 * @should set value to the drug with the specified identifier
+	 * @should set value to null if given empty string
 	 * @should set value to null if given null value
 	 * @should fail if drug does not exist with non-empty identifier
-	 * 
-	 */			
+	 */
 	public void setAsText(String text) throws IllegalArgumentException {
-		ConceptService es = Context.getConceptService(); 
+		ConceptService es = Context.getConceptService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(es.getDrug(Integer.valueOf(text)));
@@ -53,31 +51,25 @@ public class DrugEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Drug not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
 	
-	
-
-	
 	/**
 	 * Gets the drug identifier associated with this property editor.
-	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 * 
+	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 * @should return drug identifier as string when editor has a value
 	 * @should return empty string when editor has a null value
 	 */
 	public String getAsText() {
-		Drug d = (Drug)getValue();
+		Drug d = (Drug) getValue();
 		if (d == null) {
 			return "";
-		}
-		else {
+		} else {
 			return d.getDrugId().toString();
 		}
 	}
 	
-
 }

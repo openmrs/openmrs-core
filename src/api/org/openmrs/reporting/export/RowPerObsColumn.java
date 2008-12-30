@@ -15,15 +15,11 @@ package org.openmrs.reporting.export;
 
 import java.io.Serializable;
 
-import org.openmrs.api.APIException;
-
 /**
- * Used with the RowPerObsDataExport to output data for one
- * concept answered multiple times per patient.  The output will
- * repeat patients in rows in order to list off all observations
- * for the given concept
+ * Used with the RowPerObsDataExport to output data for one concept answered multiple times per
+ * patient. The output will repeat patients in rows in order to list off all observations for the
+ * given concept Example output:
  * 
- * Example output:
  * <pre>
  * PatientId, Obs Value, Obs Date
  * 123,       55.3,      1/1/2000
@@ -39,16 +35,20 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 	public static final long serialVersionUID = 987654323L;
 	
 	private String columnType = "rowPerObs";
+	
 	private String columnName = "";
+	
 	private Integer conceptId = null;
+	
 	private String conceptName = "";
+	
 	private String[] extras = null;
 	
-	public RowPerObsColumn() { }
+	public RowPerObsColumn() {
+	}
 	
 	/**
-	 * Convenience constructor to build the column with 
-	 * all values at once
+	 * Convenience constructor to build the column with all values at once
 	 * 
 	 * @param columnName
 	 * @param conceptId
@@ -78,15 +78,15 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 		
 		return s;
 	}
-
+	
 	public String getColumnType() {
 		return columnType;
 	}
-
+	
 	public void setColumnType(String columnType) {
 		this.columnType = columnType;
 	}
-
+	
 	public String getColumnName() {
 		return columnName;
 	}
@@ -110,37 +110,38 @@ public class RowPerObsColumn implements ExportColumn, Serializable {
 		}
 		return s;
 	}
-
+	
 	//// left for backwards compatibility to pre 1.0.43
 	public void setColumnName(String columnName) {
 		this.columnName = columnName;
 	}
-
+	
 	public String getConceptName() {
 		return conceptName;
 	}
+	
 	///////
-
+	
 	public Integer getConceptId() {
 		return conceptId;
 	}
-
+	
 	public void setConceptId(Integer conceptId) {
 		this.conceptId = conceptId;
 	}
-
+	
 	public void setConceptName(String conceptName) {
 		this.conceptName = conceptName;
 	}
-
+	
 	public String[] getExtras() {
 		return extras;
 	}
-
+	
 	public void setExtras(String[] extras) {
 		this.extras = extras;
 	}
-
+	
 	// returns conceptId if not null, conceptName otherwise
 	// convenience method for backwards compatibility to pre 1.0.43
 	public String getConceptIdOrName() {

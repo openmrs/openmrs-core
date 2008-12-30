@@ -29,45 +29,39 @@ import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.util.Util;
 
 /**
- * Provides access to encounter data. The keys for this data source are the
- * primary names of all tests within the concept dictionary.
- * 
- * Results have a result date equal to the encounter datetime and a value based
- * on the observed value.
+ * Provides access to encounter data. The keys for this data source are the primary names of all
+ * tests within the concept dictionary. Results have a result date equal to the encounter datetime
+ * and a value based on the observed value.
  */
 public class EncounterDataSource implements LogicDataSource {
-
+	
 	private static final Collection<String> keys = new ArrayList<String>();
+	
 	private LogicEncounterDAO logicEncounterDAO;
-
 	
 	static {
-        String[] keyList = new String[] { 
-        	"encounterDatetime"
-        };
-        
-        for (String k : keyList)
-            keys.add(k);
-    }	
+		String[] keyList = new String[] { "encounterDatetime" };
+		
+		for (String k : keyList)
+			keys.add(k);
+	}
 	
 	public void setLogicEncounterDAO(LogicEncounterDAO logicEncounterDAO) {
 		this.logicEncounterDAO = logicEncounterDAO;
 	}
-
+	
 	public LogicEncounterDAO getLogicEncounterDAO() {
 		return logicEncounterDAO;
 	}
-
+	
 	/**
-	 * 
-	 * @see org.openmrs.logic.datasource.LogicDataSource#read(org.openmrs.logic.LogicContext, org.openmrs.Cohort, org.openmrs.logic.LogicCriteria)
+	 * @see org.openmrs.logic.datasource.LogicDataSource#read(org.openmrs.logic.LogicContext,
+	 *      org.openmrs.Cohort, org.openmrs.logic.LogicCriteria)
 	 */
-	public Map<Integer, Result> read(LogicContext context, Cohort patients,
-	        LogicCriteria criteria) {
-
+	public Map<Integer, Result> read(LogicContext context, Cohort patients, LogicCriteria criteria) {
+		
 		Map<Integer, Result> finalResult = new HashMap<Integer, Result>();
-		List<Encounter> encounters = getLogicEncounterDAO().getEncounters(patients,
-		                                                                  criteria);
+		List<Encounter> encounters = getLogicEncounterDAO().getEncounters(patients, criteria);
 		
 		// group the received Encounters by patient and convert them to
 		// Results
@@ -78,39 +72,34 @@ public class EncounterDataSource implements LogicDataSource {
 				result = new Result();
 				finalResult.put(personId, result);
 			}
-
-			result.add(new Result(encounter.getEncounterDatetime(),
-			                      Datatype.DATETIME,
-			                      false,
-			                      null,
-			                      encounter.getEncounterDatetime(),
-			                      null,
-			                      null,encounter));
+			
+			result.add(new Result(encounter.getEncounterDatetime(), Datatype.DATETIME, false, null, encounter
+			        .getEncounterDatetime(), null, null, encounter));
 		}
-		Util.applyAggregators(finalResult, criteria,patients);
-
+		Util.applyAggregators(finalResult, criteria, patients);
+		
 		return finalResult;
 	}
-
+	
 	/**
 	 * @see org.openmrs.logic.datasource.LogicDataSource#getDefaultTTL()
 	 */
 	public int getDefaultTTL() {
 		return 60 * 30; // 30 minutes
 	}
-
+	
 	/**
 	 * @see org.openmrs.logic.datasource.LogicDataSource#getKeys()
 	 */
 	public Collection<String> getKeys() {
 		return keys;
 	}
-
+	
 	/**
 	 * @see org.openmrs.logic.datasource.LogicDataSource#hasKey(java.lang.String)
 	 */
 	public boolean hasKey(String key) {
 		return getKeys().contains(key);
 	}
-
+	
 }

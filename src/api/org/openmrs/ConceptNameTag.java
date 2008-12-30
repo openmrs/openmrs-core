@@ -22,61 +22,66 @@ import org.simpleframework.xml.Root;
 
 /**
  * ConceptNameTag is a textual tag which can be applied to a ConceptName.
- * 
  */
 @Root
 public class ConceptNameTag implements java.io.Serializable {
-
+	
 	public static final long serialVersionUID = 33226787L;
-
+	
 	// well-known tags
-
+	
 	/**
 	 * Name to use when nothing else is available.
 	 */
 	public static final String DEFAULT = "default";
-
+	
 	/**
-	 * Short name for a concept. Does not indicate any preference
-	 * for the name. 
+	 * Short name for a concept. Does not indicate any preference for the name.
 	 */
 	public static final String SHORT = "short";
-
+	
 	/**
 	 * A different word with similar meaning.
 	 * 
 	 * @deprecated All names for a concept are synonyms.
 	 */
 	public static final String SYNONYM = "synonym";
-
+	
 	/**
-	 * Preferred name for a language. Can be applied to only one name within the
-	 * set of names within a language.
+	 * Preferred name for a language. Can be applied to only one name within the set of names within
+	 * a language.
 	 */
 	public static final String PREFERRED = "preferred";
-
+	
 	// Fields
 	private Integer conceptNameTagId;
+	
 	private String tag;
+	
 	private String description;
+	
 	private User creator;
+	
 	private Date dateCreated;
+	
 	private Boolean voided = false;
+	
 	private User voidedBy;
+	
 	private Date dateVoided;
+	
 	private String voidReason;
 	
 	// Constructors
-
-	/** 
+	
+	/**
 	 * Default constructor.
 	 */
 	public ConceptNameTag() {
 	}
-
+	
 	/**
-	 * Public constructor. Use factory methods to obtain
-	 * copies of the desired tags. 
+	 * Public constructor. Use factory methods to obtain copies of the desired tags.
 	 * 
 	 * @param tag
 	 * @param description
@@ -85,16 +90,16 @@ public class ConceptNameTag implements java.io.Serializable {
 		setTag(tag);
 		setDescription(description);
 	}
-
+	
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ConceptNameTag)) {
 			return false;
 		}
-		ConceptNameTag rhs = (ConceptNameTag)obj;
+		ConceptNameTag rhs = (ConceptNameTag) obj;
 		
 		return (this.conceptNameTagId == rhs.conceptNameTagId);
 	}
-
+	
 	public int hashCode() {
 		if (this.getTag() == null)
 			return super.hashCode();
@@ -102,9 +107,9 @@ public class ConceptNameTag implements java.io.Serializable {
 		hash = hash + 31 * this.getTag().hashCode();
 		return hash;
 	}
-
+	
 	// Property accessors
-
+	
 	/**
 	 * Returns the textual representation of this ConceptNameTag.
 	 * 
@@ -114,7 +119,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	public String getTag() {
 		return tag;
 	}
-
+	
 	/**
 	 * Sets the textual representation of this ConceptNametag.
 	 * 
@@ -124,7 +129,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	public void setTag(String tag) {
 		this.tag = tag;
 	}
-
+	
 	/**
 	 * Returns the description of this tag.
 	 * 
@@ -134,7 +139,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	public String getDescription() {
 		return description;
 	}
-
+	
 	/**
 	 * Sets the description of this tag.
 	 * 
@@ -144,7 +149,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
 	/**
 	 * @return Returns the creator.
 	 */
@@ -152,7 +157,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	/**
 	 * @param creator The creator to set.
 	 */
@@ -160,7 +165,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	/**
 	 * @return Returns the dateCreated.
 	 */
@@ -168,7 +173,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
@@ -176,7 +181,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 	/**
 	 * Returns whether the ConceptName has been voided.
 	 * 
@@ -185,7 +190,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	public Boolean isVoided() {
 		return voided;
 	}
-
+	
 	/**
 	 * Returns whether the ConceptName has been voided.
 	 * 
@@ -195,7 +200,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	public Boolean getVoided() {
 		return isVoided();
 	}
-
+	
 	/**
 	 * Sets the voided status of the ConceptName.
 	 * 
@@ -205,71 +210,71 @@ public class ConceptNameTag implements java.io.Serializable {
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
-
+	
 	/**
 	 * Returns the User who voided this ConceptName.
 	 * 
 	 * @return the User who voided this ConceptName, or null if not set
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
-
+	
 	/**
 	 * Sets the User who voided this ConceptName.
 	 * 
 	 * @param voidedBy the user who voided this ConceptName.
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
-
+	
 	/**
 	 * Returns the Date this ConceptName was voided.
 	 * 
 	 * @return the Date this ConceptName was voided.
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
-
+	
 	/**
 	 * Sets the Data this ConceptName was voided.
 	 * 
 	 * @param dateVoided the date the ConceptName was voided.
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
-
+	
 	/**
 	 * Returns the reason this ConceptName was voided.
 	 * 
 	 * @return the reason this ConceptName was voided
 	 */
-	@Element(data=true, required=false)
+	@Element(data = true, required = false)
 	public String getVoidReason() {
 		return voidReason;
 	}
-
+	
 	/**
 	 * Sets the reason this ConceptName was voided.
 	 * 
 	 * @param voidReason the reason this ConceptName was voided
 	 */
-	@Element(data=true, required=false)
+	@Element(data = true, required = false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
-
+	
 	public String toString() {
 		return this.tag;
 	}
-
+	
 	/**
 	 * @return the conceptNameTagId
 	 */
@@ -277,7 +282,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	public Integer getConceptNameTagId() {
 		return conceptNameTagId;
 	}
-
+	
 	/**
 	 * @param conceptNameTagId the conceptNameTagId to set
 	 */
@@ -285,10 +290,10 @@ public class ConceptNameTag implements java.io.Serializable {
 	public void setConceptNameTagId(Integer conceptNameTagId) {
 		this.conceptNameTagId = conceptNameTagId;
 	}
-
+	
 	/**
-	 * A factory method for generating a tag which indicates that a 
-	 * name is the preferred term within a particular language.
+	 * A factory method for generating a tag which indicates that a name is the preferred term
+	 * within a particular language.
 	 * 
 	 * @param locale locale from which the language component will be used
 	 * @return concept-name-tag
@@ -297,13 +302,12 @@ public class ConceptNameTag implements java.io.Serializable {
 		return preferredLanguageTagFor(locale.getLanguage());
 	}
 	
-
 	/**
-	 * A factory method which generates a preferred country tag from
-	 * the country-code portion of a locale.
+	 * A factory method which generates a preferred country tag from the country-code portion of a
+	 * locale.
 	 * 
 	 * @param locale locale from which the country-code will be used
-	 * @return 	concept-name-tag for country, or null if country component wasn't specified in locale
+	 * @return concept-name-tag for country, or null if country component wasn't specified in locale
 	 */
 	public static ConceptNameTag preferredCountryTagFor(Locale locale) {
 		ConceptNameTag preferredCountryTag = null;
@@ -313,66 +317,66 @@ public class ConceptNameTag implements java.io.Serializable {
 		}
 		return preferredCountryTag;
 	}
-
+	
 	/**
 	 * A factory method that generates strings for preferred country tags.
-     * 
-     * @param country ISO-3166 two letter country code
-     * @return
-     */
-    public static ConceptNameTag preferredCountryTagFor(String country) {
-    	return new ConceptNameTag(PREFERRED + "_" + country, "");
-    }
-
+	 * 
+	 * @param country ISO-3166 two letter country code
+	 * @return
+	 */
+	public static ConceptNameTag preferredCountryTagFor(String country) {
+		return new ConceptNameTag(PREFERRED + "_" + country, "");
+	}
+	
 	/**
-	 * A factory method that generates strings for preferred language tags.
-	 * The tag will have no description.
-     * 
-     * @param language ISO-639 two letter language code
-     * @return
-     */
-    public static ConceptNameTag preferredLanguageTagFor(String language) {
-    	return new ConceptNameTag(PREFERRED + "_" + language, "");
-    }
-
+	 * A factory method that generates strings for preferred language tags. The tag will have no
+	 * description.
+	 * 
+	 * @param language ISO-639 two letter language code
+	 * @return
+	 */
+	public static ConceptNameTag preferredLanguageTagFor(String language) {
+		return new ConceptNameTag(PREFERRED + "_" + language, "");
+	}
+	
 	/**
-     * Auto generated method comment
-     * 
-     * @param locale
-     * @return
-     */
-    public static ConceptNameTag shortLanguageTagFor(Locale locale) {
-    	return shortLanguageTagFor(locale.getLanguage());
-    }
-
+	 * Auto generated method comment
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	public static ConceptNameTag shortLanguageTagFor(Locale locale) {
+		return shortLanguageTagFor(locale.getLanguage());
+	}
+	
 	/**
-     * Auto generated method comment
-     * 
-     * @param locale
-     * @return
-     */
-    public static ConceptNameTag shortCountryTagFor(Locale locale) {
-    	return shortCountryTagFor(locale.getCountry());
-    }
-    
+	 * Auto generated method comment
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	public static ConceptNameTag shortCountryTagFor(Locale locale) {
+		return shortCountryTagFor(locale.getCountry());
+	}
+	
 	/**
 	 * A factory method that generates strings for short country tags.
-     * 
-     * @param country ISO-3166 two letter country code
-     * @return
-     */
-    public static ConceptNameTag shortCountryTagFor(String country) {
-    	return new ConceptNameTag(SHORT + "_" + country, "");
-    }
-
+	 * 
+	 * @param country ISO-3166 two letter country code
+	 * @return
+	 */
+	public static ConceptNameTag shortCountryTagFor(String country) {
+		return new ConceptNameTag(SHORT + "_" + country, "");
+	}
+	
 	/**
 	 * A factory method that generates strings for short language tags.
-     * 
-     * @param language ISO-639 two letter language code
-     * @return
-     */
-    public static ConceptNameTag shortLanguageTagFor(String language) {
-    	return new ConceptNameTag(SHORT + "_" + language, "");
-    }
-
+	 * 
+	 * @param language ISO-639 two letter language code
+	 * @return
+	 */
+	public static ConceptNameTag shortLanguageTagFor(String language) {
+		return new ConceptNameTag(SHORT + "_" + language, "");
+	}
+	
 }

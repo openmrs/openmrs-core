@@ -25,37 +25,43 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 /**
- * ConceptName is the real world term used to express a Concept within the idiom of a particular locale.   
- * 
+ * ConceptName is the real world term used to express a Concept within the idiom of a particular
+ * locale.
  */
 @Root
 public class ConceptName implements java.io.Serializable {
-
+	
 	public static final long serialVersionUID = 33226787L;
 	
-
 	// Fields
 	private Integer conceptNameId;
+	
 	private Concept concept;
 	
 	private String name;
+	
 	private Locale locale; // ABK: upgraded from a plain string to a full locale object
 	
 	private User creator;
+	
 	private Date dateCreated;
+	
 	private Boolean voided = false;
+	
 	private User voidedBy;
+	
 	private Date dateVoided;
+	
 	private String voidReason;
 	
 	private Collection<ConceptNameTag> tags;
-
+	
 	// Constructors
-
+	
 	/** default constructor */
 	public ConceptName() {
 	}
-
+	
 	/**
 	 * Convenience constructor to create a ConceptName object by primary key
 	 * 
@@ -64,13 +70,12 @@ public class ConceptName implements java.io.Serializable {
 	public ConceptName(Integer conceptNameId) {
 		this.conceptNameId = conceptNameId;
 	}
-		
+	
 	public ConceptName(String name, Locale locale) {
 		setName(name);
 		setLocale(locale);
 	}
-
-
+	
 	/**
 	 * Short name and description are no longer attributes of ConceptName.
 	 * 
@@ -84,7 +89,7 @@ public class ConceptName implements java.io.Serializable {
 		setName(name);
 		setLocale(locale);
 	}
-
+	
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -92,16 +97,15 @@ public class ConceptName implements java.io.Serializable {
 		if (!(obj instanceof ConceptName)) {
 			return false;
 		}
-		ConceptName rhs = (ConceptName)obj;
+		ConceptName rhs = (ConceptName) obj;
 		return (this.conceptNameId == rhs.conceptNameId);
 	}
-
+	
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getConcept() == null || this.getName() == null
-				|| this.getLocale() == null)
+		if (this.getConcept() == null || this.getName() == null || this.getLocale() == null)
 			return super.hashCode();
 		int hash = 3;
 		hash = hash + 31 * this.getConcept().hashCode();
@@ -109,7 +113,7 @@ public class ConceptName implements java.io.Serializable {
 		hash = hash + 31 * this.getLocale().hashCode();
 		return hash;
 	}
-
+	
 	/**
 	 * Call {@link Concept#getShortestName()} instead.
 	 * 
@@ -123,7 +127,7 @@ public class ConceptName implements java.io.Serializable {
 			return getName();
 		}
 	}
-
+	
 	/**
 	 * @return Returns the conceptId.
 	 */
@@ -131,7 +135,7 @@ public class ConceptName implements java.io.Serializable {
 	public Integer getConceptNameId() {
 		return conceptNameId;
 	}
-
+	
 	/**
 	 * @param conceptNameId The conceptId to set.
 	 */
@@ -147,25 +151,25 @@ public class ConceptName implements java.io.Serializable {
 	public Concept getConcept() {
 		return concept;
 	}
-
+	
 	@Element
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-
+	
 	/**
 	 * 
 	 */
-	@Element(data=true)
+	@Element(data = true)
 	public String getName() {
 		return name;
 	}
-
-	@Element(data=true)
+	
+	@Element(data = true)
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -173,13 +177,12 @@ public class ConceptName implements java.io.Serializable {
 	public Locale getLocale() {
 		return locale;
 	}
-
+	
 	@Element
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-
-
+	
 	/**
 	 * @deprecated
 	 * @return Returns the shortName.
@@ -191,7 +194,7 @@ public class ConceptName implements java.io.Serializable {
 			return null;
 		}
 	}
-
+	
 	/**
 	 * @deprecated
 	 * @return Returns the description.
@@ -211,16 +214,15 @@ public class ConceptName implements java.io.Serializable {
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
 	@Element
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	/**
 	 * @return Returns the dateCreated.
 	 */
@@ -228,17 +230,15 @@ public class ConceptName implements java.io.Serializable {
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	/**
-	 * @param dateCreated
-	 *            The dateCreated to set.
+	 * @param dateCreated The dateCreated to set.
 	 */
 	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 	
-
 	/**
 	 * Returns whether the ConceptName has been voided.
 	 * 
@@ -247,7 +247,7 @@ public class ConceptName implements java.io.Serializable {
 	public Boolean isVoided() {
 		return voided;
 	}
-
+	
 	/**
 	 * Returns whether the ConceptName has been voided.
 	 * 
@@ -269,51 +269,51 @@ public class ConceptName implements java.io.Serializable {
 	}
 	
 	/**
-	 * Returns the User who voided this ConceptName. 
+	 * Returns the User who voided this ConceptName.
 	 * 
 	 * @return the User who voided this ConceptName, or null if not set
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public User getVoidedBy() {
 		return voidedBy;
 	}
-
+	
 	/**
 	 * Sets the User who voided this ConceptName.
 	 * 
 	 * @param voidedBy the user who voided this ConceptName.
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
-
+	
 	/**
 	 * Returns the Date this ConceptName was voided.
 	 * 
 	 * @return the Date this ConceptName was voided.
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public Date getDateVoided() {
 		return dateVoided;
 	}
-
+	
 	/**
 	 * Sets the Data this ConceptName was voided.
 	 * 
 	 * @param dateVoided the date the ConceptName was voided.
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
-
+	
 	/**
 	 * Returns the reason this ConceptName was voided.
 	 * 
 	 * @return the reason this ConceptName was voided
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public String getVoidReason() {
 		return voidReason;
 	}
@@ -323,11 +323,11 @@ public class ConceptName implements java.io.Serializable {
 	 * 
 	 * @param voidReason the reason this ConceptName was voided
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
-
+	
 	/**
 	 * Returns the tags which have been attached to this ConceptName.
 	 * 
@@ -337,7 +337,7 @@ public class ConceptName implements java.io.Serializable {
 	public Collection<ConceptNameTag> getTags() {
 		return tags;
 	}
-
+	
 	/**
 	 * Set the tags which are attached to this ConceptName.
 	 * 
@@ -349,20 +349,18 @@ public class ConceptName implements java.io.Serializable {
 	}
 	
 	/**
-	 * Adds a tag to the concept name. If the tag is new (has no
-	 * existing occurrences) a new ConceptNameTag will be created
-	 * with a blank description.
+	 * Adds a tag to the concept name. If the tag is new (has no existing occurrences) a new
+	 * ConceptNameTag will be created with a blank description.
 	 * 
 	 * @param tag human-readable text string for the tag
 	 */
 	public void addTag(String tag) {
 		addTag(tag, "");
 	}
-
+	
 	/**
-	 * Adds a tag to the concept name. If the tag is new (has no
-	 * existing occurrences) a new ConceptNameTag will be created
-	 * with the given description.
+	 * Adds a tag to the concept name. If the tag is new (has no existing occurrences) a new
+	 * ConceptNameTag will be created with the given description.
 	 * 
 	 * @param tag human-readable text string for the tag
 	 * @param description description of the tag's purpose
@@ -380,8 +378,9 @@ public class ConceptName implements java.io.Serializable {
 	public void addTag(ConceptNameTag tag) {
 		if (tags == null)
 			tags = new HashSet<ConceptNameTag>();
-
-		if (!tags.contains(tag)) tags.add(tag);
+		
+		if (!tags.contains(tag))
+			tags.add(tag);
 	}
 	
 	/**
@@ -390,7 +389,8 @@ public class ConceptName implements java.io.Serializable {
 	 * @param tag the tag to remove
 	 */
 	public void removeTag(ConceptNameTag tag) {
-		if (tags.contains(tag)) tags.remove(tag);
+		if (tags.contains(tag))
+			tags.remove(tag);
 	}
 	
 	/**
@@ -402,7 +402,7 @@ public class ConceptName implements java.io.Serializable {
 	public Boolean hasTag(ConceptNameTag tagToFind) {
 		return hasTag(tagToFind.getTag());
 	}
-
+	
 	/**
 	 * Checks whether the name has a particular tag.
 	 * 
@@ -443,8 +443,7 @@ public class ConceptName implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method for determining whether this
-	 * is a short name.
+	 * Convenience method for determining whether this is a short name.
 	 * 
 	 * @return true if the tags include "short", false otherwise
 	 */
@@ -461,7 +460,7 @@ public class ConceptName implements java.io.Serializable {
 	public Boolean isPreferredShortInLanguage(String language) {
 		return hasTag(ConceptNameTag.preferredLanguageTagFor(language));
 	}
-
+	
 	/**
 	 * Checks whether the name is the preferred short name in a particular country.
 	 * 
@@ -471,7 +470,7 @@ public class ConceptName implements java.io.Serializable {
 	public Boolean isPreferredShortInCountry(String country) {
 		return hasTag(ConceptNameTag.shortCountryTagFor(country));
 	}
-
+	
 	/**
 	 * @see java.lang.Object#toString()
 	 */

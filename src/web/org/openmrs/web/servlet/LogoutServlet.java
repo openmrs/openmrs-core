@@ -25,26 +25,22 @@ import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 
 /**
- * Servlet called by the logout link in the webapp.
- * This will call Context.logout() and then make sure the
- * current user's http session is cleaned up and ready
- * for another user to log in
+ * Servlet called by the logout link in the webapp. This will call Context.logout() and then make
+ * sure the current user's http session is cleaned up and ready for another user to log in
  * 
  * @see Context#logout()
  */
 public class LogoutServlet extends HttpServlet {
-
+	
 	public static final long serialVersionUID = 123423L;
-
+	
 	/**
-	 * 
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		HttpSession httpSession = request.getSession();
 		
 		Context.logout();
@@ -56,5 +52,5 @@ public class LogoutServlet extends HttpServlet {
 		
 		httpSession.invalidate();
 	}
-
+	
 }

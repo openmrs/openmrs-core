@@ -16,28 +16,29 @@ package org.openmrs.patient;
 import org.openmrs.api.APIException;
 
 /**
- *	UnallowedIdentifierException is thrown when a class tries to process an identifier
- *	given certain expectations and those expectations are not held up.  For example,
- *	if a class expects identifiers to consist only of numeric digits and an identifier
- *	contains a non-numeric digit, this exception could be thrown.
+ * UnallowedIdentifierException is thrown when a class tries to process an identifier given certain
+ * expectations and those expectations are not held up. For example, if a class expects identifiers
+ * to consist only of numeric digits and an identifier contains a non-numeric digit, this exception
+ * could be thrown.
  */
 public class UnallowedIdentifierException extends APIException {
+	
 	/**
-     * Compiler generated serial version uid.
-     */
-    private static final long serialVersionUID = -1460246384367910860L;
-
+	 * Compiler generated serial version uid.
+	 */
+	private static final long serialVersionUID = -1460246384367910860L;
+	
 	public UnallowedIdentifierException() {
 	}
-
+	
 	public UnallowedIdentifierException(String message) {
 		super(message);
 	}
-
+	
 	public UnallowedIdentifierException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
+	
 	public UnallowedIdentifierException(Throwable cause) {
 		super(cause);
 	}

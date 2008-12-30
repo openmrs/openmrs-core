@@ -26,15 +26,13 @@ import org.junit.Test;
 import org.openmrs.api.APIException;
 
 /**
- * This class tests all methods that are not getter or setters 
- * in the Obs java object
- * 
- * TODO: finish this test class for Obs
+ * This class tests all methods that are not getter or setters in the Obs java object TODO: finish
+ * this test class for Obs
  * 
  * @see Obs
  */
 public class ObsTest {
-
+	
 	/**
 	 * Tests the get/setValueAsString methods
 	 * 
@@ -42,7 +40,7 @@ public class ObsTest {
 	 */
 	@Test
 	public void shouldValueAsString() throws Exception {
-
+		
 		// TODO: finish this test method
 		
 		// TODO: test obs group recursive get value as string
@@ -75,12 +73,12 @@ public class ObsTest {
 		assertTrue(obsGroup.hasGroupMembers());
 		assertEquals("Duplicate add should not increase the grouped obs size", 1, obsGroup.getGroupMembers().size());
 		
-		
 		Obs obs2 = new Obs(2);
 		
 		obsGroup.removeGroupMember(obs2);
 		assertTrue(obsGroup.hasGroupMembers());
-		assertEquals("Removing a non existent obs should not decrease the number of grouped obs", 1, obsGroup.getGroupMembers().size());
+		assertEquals("Removing a non existent obs should not decrease the number of grouped obs", 1, obsGroup
+		        .getGroupMembers().size());
 		
 		// testing removing an obs from a group that has a null obs list
 		new Obs().removeGroupMember(obs2);
@@ -97,12 +95,12 @@ public class ObsTest {
 		catch (APIException e) {
 			// this exception is expected
 		}
-	}	
+	}
 	
-		/**
-		 * tests the getRelatedObservations method:
-		 */	
-		@Test
+	/**
+	 * tests the getRelatedObservations method:
+	 */
+	@Test
 	public void shouldGetRelatedObservations() throws Exception {
 		// create a child Obs
 		Obs o = new Obs();
@@ -146,22 +144,20 @@ public class ObsTest {
 		o2.setLocation(new Location(1));
 		o2.setObsDatetime(new Date());
 		o2.setPerson(new Patient(2));
-		o2.setValueText("grandparentLeafObs");	
+		o2.setValueText("grandparentLeafObs");
 		
 		oGrandparent.addGroupMember(o2);
 		
 		/**
-		 * test to make sure that if the original child obs calls getRelatedObservations,
-		 * it returns itself and its siblings:
-		 * original obs is one of two groupMembers, so relatedObservations should return a size of set 2
-		 * 
-		 * then, make sure that if oParent calls getRelatedObservations, it returns its own children
-		 * as well as the leaf obs attached to the grandparentObs
-		 * oParent has two members, and one leaf ancestor -- so a set of size 3 should be returned.
+		 * test to make sure that if the original child obs calls getRelatedObservations, it returns
+		 * itself and its siblings: original obs is one of two groupMembers, so relatedObservations
+		 * should return a size of set 2 then, make sure that if oParent calls
+		 * getRelatedObservations, it returns its own children as well as the leaf obs attached to
+		 * the grandparentObs oParent has two members, and one leaf ancestor -- so a set of size 3
+		 * should be returned.
 		 */
 		assertEquals(o.getRelatedObservations().size(), 2);
 		assertEquals(oParent.getRelatedObservations().size(), 3);
-		
 		
 		// create  a great-grandparent obs
 		Obs oGGP = new Obs();
@@ -182,9 +178,9 @@ public class ObsTest {
 		oGGP.addGroupMember(oGGPleaf);
 		
 		/**
-		 * now run the previous assertions again.  this time there are two ancestor leaf obs, so the first
-		 * assertion should still return a set of size 2, 
-		 * but the second assertion sould return a set of size 4.
+		 * now run the previous assertions again. this time there are two ancestor leaf obs, so the
+		 * first assertion should still return a set of size 2, but the second assertion sould
+		 * return a set of size 4.
 		 */
 		assertEquals(o.getRelatedObservations().size(), 2);
 		assertEquals(oParent.getRelatedObservations().size(), 4);
@@ -198,34 +194,31 @@ public class ObsTest {
 		assertEquals(oParent.getRelatedObservations().size(), 3);
 		
 		/**
-		 * finally, test a non-obsGroup and non-member Obs to the function
-		 * Obs o2 is now not connected to our heirarchy:
-		 * an empty set should be returned:
+		 * finally, test a non-obsGroup and non-member Obs to the function Obs o2 is now not
+		 * connected to our heirarchy: an empty set should be returned:
 		 */
 		
 		assertNotNull(o2.getRelatedObservations());
 		assertEquals(o2.getRelatedObservations().size(), 0);
-
 		
 	}
-
-		/**
-         * @verifies {@link Obs#isComplex()}
-         * test = should return true if the concept is complex
-         */
-        @Test
-        public void isComplex_shouldReturnTrueIfTheConceptIsComplex() throws Exception {
-        	ConceptDatatype cd = new ConceptDatatype();
-        	cd.setName("Complex");
-        	cd.setHl7Abbreviation("ED");
-        	
-        	ConceptComplex complexConcept = new ConceptComplex();
-        	complexConcept.setDatatype(cd);
-        	
-	        Obs obs = new Obs();
-	        obs.setConcept(complexConcept);
-	        
-	        Assert.assertTrue(obs.isComplex());
-        }
+	
+	/**
+	 * @verifies {@link Obs#isComplex()} test = should return true if the concept is complex
+	 */
+	@Test
+	public void isComplex_shouldReturnTrueIfTheConceptIsComplex() throws Exception {
+		ConceptDatatype cd = new ConceptDatatype();
+		cd.setName("Complex");
+		cd.setHl7Abbreviation("ED");
+		
+		ConceptComplex complexConcept = new ConceptComplex();
+		complexConcept.setDatatype(cd);
+		
+		Obs obs = new Obs();
+		obs.setConcept(complexConcept);
+		
+		Assert.assertTrue(obs.isComplex());
+	}
 	
 }

@@ -52,27 +52,27 @@ import org.openmrs.util.OpenmrsUtil;
  * @see org.openmrs.api.db.AdministrationDAO
  * @see org.openmrs.api.AdministrationService
  */
-public class HibernateAdministrationDAO implements
-		AdministrationDAO {
-
+public class HibernateAdministrationDAO implements AdministrationDAO {
+	
 	protected Log log = LogFactory.getLog(getClass());
-
+	
 	/**
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
 	
-	public HibernateAdministrationDAO() { }
+	public HibernateAdministrationDAO() {
+	}
 	
 	/**
 	 * Set session factory
 	 * 
 	 * @param sessionFactory
 	 */
-	public void setSessionFactory(SessionFactory sessionFactory) { 
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#createReport(org.openmrs.reporting.Report)
 	 */
@@ -81,7 +81,7 @@ public class HibernateAdministrationDAO implements
 		r.setDateCreated(new Date());
 		sessionFactory.getCurrentSession().save(r);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#updateReport(org.openmrs.reporting.Report)
 	 */
@@ -91,7 +91,7 @@ public class HibernateAdministrationDAO implements
 		else {
 			sessionFactory.getCurrentSession().saveOrUpdate(r);
 		}
-	}	
+	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#deleteReport(org.openmrs.reporting.Report)
@@ -139,7 +139,7 @@ public class HibernateAdministrationDAO implements
 			PreparedStatement ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
 			
 			ResultSet rs = ps.executeQuery();
-			while(rs.next()) {
+			while (rs.next()) {
 				row = new HashMap<String, Object>();
 				row.put("date", rs.getTimestamp("date_generated"));
 				row.put("user", rs.getString("generated_by"));
@@ -155,17 +155,17 @@ public class HibernateAdministrationDAO implements
 		
 		return log;
 	}
-
+	
 	public void createReportObject(AbstractReportObject ro) throws DAOException {
-
+		
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
 		wrappedReportObject.setCreator(Context.getAuthenticatedUser());
 		wrappedReportObject.setDateCreated(new Date());
 		wrappedReportObject.setVoided(false);
-
+		
 		sessionFactory.getCurrentSession().save(wrappedReportObject);
 	}
-
+	
 	public void updateReportObject(AbstractReportObject ro) throws DAOException {
 		if (ro.getReportObjectId() == null)
 			createReportObject(ro);
@@ -176,35 +176,34 @@ public class HibernateAdministrationDAO implements
 			wrappedReportObject.setDateChanged(new Date());
 			sessionFactory.getCurrentSession().saveOrUpdate(wrappedReportObject);
 		}
-	}	
+	}
 	
 	public void deleteReportObject(Integer reportObjectId) throws DAOException {
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper();
-		wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObjectId);
+		wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(ReportObjectWrapper.class,
+		    reportObjectId);
 		
 		sessionFactory.getCurrentSession().delete(wrappedReportObject);
 	}
-	
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalProperty(java.lang.String)
 	 */
 	public String getGlobalProperty(String propertyName) throws DAOException {
-		GlobalProperty gp = (GlobalProperty)sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
+		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
 		
 		// if no gp exists, return a null value
 		if (gp == null)
 			return null;
-
+		
 		return gp.getPropertyValue();
 	}
 	
 	/**
-	 * 
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertyObject(java.lang.String)
 	 */
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
-		GlobalProperty gp = (GlobalProperty)sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
+		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
 		
 		// if no gp exists, hibernate returns a null value
 		
@@ -215,7 +214,7 @@ public class HibernateAdministrationDAO implements
 	 * @see org.openmrs.api.db.AdministrationDAO#getAllGlobalProperties()
 	 */
 	@SuppressWarnings("unchecked")
-    public List<GlobalProperty> getAllGlobalProperties() throws DAOException {
+	public List<GlobalProperty> getAllGlobalProperties() throws DAOException {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).list();
 	}
 	
@@ -224,31 +223,33 @@ public class HibernateAdministrationDAO implements
 	 */
 	public void deleteGlobalProperty(GlobalProperty property) throws DAOException {
 		sessionFactory.getCurrentSession().delete(property);
-		}
-		
+	}
+	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(gp);
 		return gp;
-		}
-		
+	}
+	
 	/**
-	 * @see org.openmrs.api.db.AdministrationDAO#getDataEntryStatistics(java.util.Date, java.util.Date, java.lang.String, java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.db.AdministrationDAO#getDataEntryStatistics(java.util.Date,
+	 *      java.util.Date, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterColumn, String orderColumn, String groupBy) throws DAOException {
-				
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterColumn,
+	                                                       String orderColumn, String groupBy) throws DAOException {
+		
 		// for all encounters, find user, form name, and number of entries
 		
 		// default userColumn to creator
 		if (encounterColumn == null)
 			encounterColumn = "creator";
 		encounterColumn = encounterColumn.toLowerCase();
-
+		
 		List<DataEntryStatistic> ret = new ArrayList<DataEntryStatistic>();
-
+		
 		/*
 		if (groupBy == null) groupBy = "";
 		if (groupBy.length() != 0)
@@ -291,17 +292,17 @@ public class HibernateAdministrationDAO implements
 			ret.add(s);
 		}
 		*/
-		
-		// data entry stats with extended info
 
+		// data entry stats with extended info
 		// check if there's anything else to group by
-		if (groupBy == null) groupBy = "";
+		if (groupBy == null)
+			groupBy = "";
 		if (groupBy.length() != 0)
 			groupBy = "e." + groupBy + ", ";
 		log.debug("GROUP BY IS " + groupBy);
-
-		String hql = "select " + groupBy + "e." + encounterColumn + ", e.encounterType" + ", e.form, count(distinct e.encounterId), count(o.obsId) " +
-				"from Obs o right join o.encounter as e ";
+		
+		String hql = "select " + groupBy + "e." + encounterColumn + ", e.encounterType"
+		        + ", e.form, count(distinct e.encounterId), count(o.obsId) " + "from Obs o right join o.encounter as e ";
 		if (fromDate != null || toDate != null) {
 			String s = "where ";
 			if (fromDate != null)
@@ -315,7 +316,8 @@ public class HibernateAdministrationDAO implements
 		}
 		
 		hql += "group by ";
-		if ( groupBy.length() > 0 ) hql += groupBy + " ";
+		if (groupBy.length() > 0)
+			hql += groupBy + " ";
 		hql += "e." + encounterColumn + ", e.encounterType, e.form ";
 		Query q = sessionFactory.getCurrentSession().createQuery(hql);
 		if (fromDate != null)
@@ -330,11 +332,11 @@ public class HibernateAdministrationDAO implements
 				s.setGroupBy(holder[0]);
 				offset = 1;
 			}
-
+			
 			s.setUser((User) holder[0 + offset]);
 			EncounterType encType = ((EncounterType) holder[1 + offset]);
 			Form form = ((Form) holder[2 + offset]);
-			s.setEntryType(form != null ? form.getName() : (encType != null ? encType.getName() : "null" ));
+			s.setEntryType(form != null ? form.getName() : (encType != null ? encType.getName() : "null"));
 			int numEncounters = ((Number) holder[3 + offset]).intValue();
 			int numObs = ((Number) holder[4 + offset]).intValue();
 			s.setNumberOfEntries(numEncounters); // not sure why this comes out as a Long instead of an Integer
@@ -343,16 +345,14 @@ public class HibernateAdministrationDAO implements
 			log.debug("NEW Num obs is " + numObs);
 			ret.add(s);
 		}
-
+		
 		// default userColumn to creator
 		if (orderColumn == null)
 			orderColumn = "creator";
 		orderColumn = orderColumn.toLowerCase();
 		
-		
 		// for orders, count how many were created. (should eventually count something with voided/changed)
-		hql = "select o." + orderColumn + ", o.orderType.name, count(*) " +
-				"from Order o ";
+		hql = "select o." + orderColumn + ", o.orderType.name, count(*) " + "from Order o ";
 		if (fromDate != null || toDate != null) {
 			String s = "where ";
 			if (fromDate != null)
@@ -391,13 +391,12 @@ public class HibernateAdministrationDAO implements
 		boolean dataManipulation = false;
 		
 		String sqlLower = sql.toLowerCase();
-		if (sqlLower.startsWith("insert") || sqlLower.startsWith("update") || 
-			sqlLower.startsWith("delete") || sqlLower.startsWith("alter") ||
-			sqlLower.startsWith("drop")  || sqlLower.startsWith("create") ||
-			sqlLower.startsWith("rename")) {
-				dataManipulation = true;
+		if (sqlLower.startsWith("insert") || sqlLower.startsWith("update") || sqlLower.startsWith("delete")
+		        || sqlLower.startsWith("alter") || sqlLower.startsWith("drop") || sqlLower.startsWith("create")
+		        || sqlLower.startsWith("rename")) {
+			dataManipulation = true;
 		}
-
+		
 		if (selectOnly && dataManipulation)
 			throw new DAOException("Illegal command(s) found in query string");
 		
@@ -412,15 +411,14 @@ public class HibernateAdministrationDAO implements
 		List<List<Object>> results = new Vector<List<Object>>();
 		
 		try {
-			ps = conn.prepareStatement(sql);  
+			ps = conn.prepareStatement(sql);
 			
 			if (dataManipulation == true) {
 				Integer i = ps.executeUpdate();
 				List<Object> row = new Vector<Object>();
 				row.add(i);
 				results.add(row);
-			}
-			else {
+			} else {
 				ResultSet resultSet = ps.executeQuery();
 				
 				ResultSetMetaData rmd = resultSet.getMetaData();
@@ -428,7 +426,7 @@ public class HibernateAdministrationDAO implements
 				
 				while (resultSet.next()) {
 					List<Object> rowObjects = new Vector<Object>();
-					for (int x=1; x<=columnCount; x++) {
+					for (int x = 1; x <= columnCount; x++) {
 						rowObjects.add(resultSet.getObject(x));
 					}
 					results.add(rowObjects);
@@ -437,34 +435,34 @@ public class HibernateAdministrationDAO implements
 		}
 		catch (Exception e) {
 			log.error("Error while running sql: " + sql, e);
-			throw new DAOException("Error while running sql: " + sql + " . Message: " + e.getMessage(), e); 
+			throw new DAOException("Error while running sql: " + sql + " . Message: " + e.getMessage(), e);
 		}
 		
 		return results;
 	}
-
+	
 	/**
-     * @see org.openmrs.api.db.AdministrationDAO#getImplementationId()
-     */
-    public ImplementationId getImplementationId() {
-    	
-    	String property = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
-    	
-    	// fail early if no gp has been defined yet
-    	if (property == null)
-    		return null;
-    	
-    	try {
-    		ImplementationId implId = OpenmrsUtil.getSerializer().read(ImplementationId.class, property);
-    		
-    		return implId;
-    	}
-    	catch (Throwable t) {
-    		log.debug("Error while getting implementation id", t);
-    	}
-    	
-    	return null;
-    	
-    }
+	 * @see org.openmrs.api.db.AdministrationDAO#getImplementationId()
+	 */
+	public ImplementationId getImplementationId() {
+		
+		String property = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
+		
+		// fail early if no gp has been defined yet
+		if (property == null)
+			return null;
+		
+		try {
+			ImplementationId implId = OpenmrsUtil.getSerializer().read(ImplementationId.class, property);
+			
+			return implId;
+		}
+		catch (Throwable t) {
+			log.debug("Error while getting implementation id", t);
+		}
+		
+		return null;
+		
+	}
 	
 }

@@ -26,68 +26,69 @@ import org.openmrs.report.ReportRenderingException;
 import org.openmrs.report.ReportSchema;
 
 /**
- * A ReportRenderer that provides a dynamic web view of a CohortDataSet.
- * This renderer can only handle reports with a single data set, that's a cohort data set.
+ * A ReportRenderer that provides a dynamic web view of a CohortDataSet. This renderer can only
+ * handle reports with a single data set, that's a cohort data set.
  */
 public class CohortReportWebRenderer implements WebReportRenderer {
 	
-	public CohortReportWebRenderer() { }
-
+	public CohortReportWebRenderer() {
+	}
+	
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getRenderingModes(org.openmrs.report.ReportSchema)
 	 */
 	public Collection<RenderingMode> getRenderingModes(ReportSchema schema) {
-	    if (schema.getDataSetDefinitions().size() == 1 &&
-				schema.getDataSetDefinitions().get(0) instanceof CohortDataSetDefinition) {
-	    	return Collections.singleton(new RenderingMode(this, this.getLabel(), null, 100));
-	    } else {
-	    	return null;
-	    }
-    }
-
+		if (schema.getDataSetDefinitions().size() == 1
+		        && schema.getDataSetDefinitions().get(0) instanceof CohortDataSetDefinition) {
+			return Collections.singleton(new RenderingMode(this, this.getLabel(), null, 100));
+		} else {
+			return null;
+		}
+	}
+	
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getLabel(org.openmrs.report.ReportSchema)
 	 */
 	public String getLabel() {
 		return "Cohort report web preview";
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getLinkUrl(org.openmrs.report.ReportSchema)
 	 */
 	public String getLinkUrl(ReportSchema schema) {
 		return "admin/reports/reportData.form";
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getRenderedContentType(org.openmrs.report.ReportSchema)
 	 */
 	public String getRenderedContentType(ReportSchema schema, String argument) {
 		return "text/html";
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getFilename(org.openmrs.report.ReportSchema)
 	 */
 	public String getFilename(ReportSchema schema, String argument) {
-	    return null;
-    }
-
+		return null;
+	}
+	
 	/**
-	 * @see org.openmrs.report.ReportRenderer#render(org.openmrs.report.ReportData, java.io.OutputStream)
+	 * @see org.openmrs.report.ReportRenderer#render(org.openmrs.report.ReportData,
+	 *      java.io.OutputStream)
 	 */
-	public void render(ReportData reportData, String argument, OutputStream out)
-	        throws ReportRenderingException {
+	public void render(ReportData reportData, String argument, OutputStream out) throws ReportRenderingException {
 		// Do nothing. This renderer returns a value from getLinkUrl() 
 	}
-
+	
 	/**
-     * @see org.openmrs.report.ReportRenderer#render(org.openmrs.report.ReportData, java.lang.String, java.io.Writer)
-     */
-    public void render(ReportData reportData, String argument, Writer writer)
-            throws IOException, ReportRenderingException {
-	    // Do nothing.  This renderer returns a value from getLinkUrl()
-	    
-    }
+	 * @see org.openmrs.report.ReportRenderer#render(org.openmrs.report.ReportData,
+	 *      java.lang.String, java.io.Writer)
+	 */
+	public void render(ReportData reportData, String argument, Writer writer) throws IOException, ReportRenderingException {
+		// Do nothing.  This renderer returns a value from getLinkUrl()
+		
+	}
 	
 }

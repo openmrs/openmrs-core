@@ -28,13 +28,13 @@ import org.openmrs.api.db.DAOException;
 
 /**
  * Hibernate implementation of the CohortDAO
- *
+ * 
  * @see CohortDAO
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.CohortService
  */
 public class HibernateCohortDAO implements CohortDAO {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private SessionFactory sessionFactory;
@@ -59,61 +59,62 @@ public class HibernateCohortDAO implements CohortDAO {
 	 * @see org.openmrs.api.db.CohortDAO#getCohortsContainingPatientId(java.lang.Integer)
 	 */
 	@SuppressWarnings("unchecked")
-    public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException {
-		Query query = sessionFactory.getCurrentSession().createQuery("from Cohort c where :patientId in elements(c.memberIds) order by name");
+	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException {
+		Query query = sessionFactory.getCurrentSession().createQuery(
+		    "from Cohort c where :patientId in elements(c.memberIds) order by name");
 		query.setInteger("patientId", patientId);
 		return (List<Cohort>) query.list();
 	}
-
+	
 	/**
-     * @see org.openmrs.api.db.CohortDAO#deleteCohort(org.openmrs.Cohort)
-     */
-    public Cohort deleteCohort(Cohort cohort) throws DAOException {
-	    // TODO Auto-generated method stub
-	    return null;
-    }
-
+	 * @see org.openmrs.api.db.CohortDAO#deleteCohort(org.openmrs.Cohort)
+	 */
+	public Cohort deleteCohort(Cohort cohort) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	/**
-     * @see org.openmrs.api.db.CohortDAO#findCohorts(java.lang.String)
-     */
-    public List<Cohort> getCohorts(String nameFragment) throws DAOException {
-	    // TODO Auto-generated method stub
-	    return null;
-    }
-
+	 * @see org.openmrs.api.db.CohortDAO#findCohorts(java.lang.String)
+	 */
+	public List<Cohort> getCohorts(String nameFragment) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	/**
-     * @see org.openmrs.api.db.CohortDAO#getAllCohorts(boolean)
-     */
-    @SuppressWarnings("unchecked")
-    public List<Cohort> getAllCohorts(boolean includeVoided) throws DAOException {
-    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
-    	
-    	criteria.addOrder(Order.asc("name"));
-    	
-    	if (!includeVoided)
-    		criteria.add(Restrictions.eq("voided", false));
-    	
-    	return (List<Cohort>) criteria.list();
-    }
-
+	 * @see org.openmrs.api.db.CohortDAO#getAllCohorts(boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Cohort> getAllCohorts(boolean includeVoided) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
+		
+		criteria.addOrder(Order.asc("name"));
+		
+		if (!includeVoided)
+			criteria.add(Restrictions.eq("voided", false));
+		
+		return (List<Cohort>) criteria.list();
+	}
+	
 	/**
-     * @see org.openmrs.api.db.CohortDAO#getCohort(java.lang.String)
-     */
-    public Cohort getCohort(String name) {
-    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
-    	
-   		criteria.add(Restrictions.eq("name", name));
-   		criteria.add(Restrictions.eq("voided", false));
-    	
-    	return (Cohort) criteria.uniqueResult();
-    }
-
+	 * @see org.openmrs.api.db.CohortDAO#getCohort(java.lang.String)
+	 */
+	public Cohort getCohort(String name) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
+		
+		criteria.add(Restrictions.eq("name", name));
+		criteria.add(Restrictions.eq("voided", false));
+		
+		return (Cohort) criteria.uniqueResult();
+	}
+	
 	/**
-     * @see org.openmrs.api.db.CohortDAO#saveCohort(org.openmrs.Cohort)
-     */
-    public Cohort saveCohort(Cohort cohort) throws DAOException {
-	    sessionFactory.getCurrentSession().saveOrUpdate(cohort);
-	    return cohort;
-    }
-
+	 * @see org.openmrs.api.db.CohortDAO#saveCohort(org.openmrs.Cohort)
+	 */
+	public Cohort saveCohort(Cohort cohort) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(cohort);
+		return cohort;
+	}
+	
 }

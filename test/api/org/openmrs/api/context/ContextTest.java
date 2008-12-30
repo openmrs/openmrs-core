@@ -30,8 +30,8 @@ import org.springframework.test.AssertThrows;
 public class ContextTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * Null parameters to the authenticate method should not cause errors to be
-	 * thrown and should not ever show the Context to be authenticated  
+	 * Null parameters to the authenticate method should not cause errors to be thrown and should
+	 * not ever show the Context to be authenticated
 	 * 
 	 * @throws Exception
 	 */
@@ -39,20 +39,22 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void shouldNotAuthenticateWithNullParameters() throws Exception {
 		
 		Context.logout();
-		assertFalse("This test needs to start with an unauthenticated context",
-		            Context.isAuthenticated());
-		            
+		assertFalse("This test needs to start with an unauthenticated context", Context.isAuthenticated());
+		
 		// check null username and null password
-		new AssertThrows(ContextAuthenticationException.class) {
+		new AssertThrows(
+		                 ContextAuthenticationException.class) {
+			
 			public void test() throws Exception {
 				Context.authenticate(null, null);
 			}
 		}.runTest();
-		assertFalse("No one should ever be authenticated with null parameters",
-		            Context.isAuthenticated());
+		assertFalse("No one should ever be authenticated with null parameters", Context.isAuthenticated());
 		
 		// check non-null username and null password
-		new AssertThrows(ContextAuthenticationException.class) {
+		new AssertThrows(
+		                 ContextAuthenticationException.class) {
+			
 			public void test() throws Exception {
 				Context.authenticate("some username", null);
 			}
@@ -60,7 +62,9 @@ public class ContextTest extends BaseContextSensitiveTest {
 		assertFalse("No one should ever be authenticated with null parameters", Context.isAuthenticated());
 		
 		// check null username and non-null password
-		new AssertThrows(ContextAuthenticationException.class) {
+		new AssertThrows(
+		                 ContextAuthenticationException.class) {
+			
 			public void test() throws Exception {
 				Context.authenticate(null, "some password");
 			}
@@ -68,7 +72,9 @@ public class ContextTest extends BaseContextSensitiveTest {
 		assertFalse("No one should ever be authenticated with null parameters", Context.isAuthenticated());
 		
 		// check proper username and null pw
-		new AssertThrows(ContextAuthenticationException.class) {
+		new AssertThrows(
+		                 ContextAuthenticationException.class) {
+			
 			public void test() throws Exception {
 				Context.authenticate("admin", null);
 			}
@@ -76,7 +82,9 @@ public class ContextTest extends BaseContextSensitiveTest {
 		assertFalse("No one should ever be authenticated with null password and proper username", Context.isAuthenticated());
 		
 		// check proper system id and null pw
-		new AssertThrows(ContextAuthenticationException.class) {
+		new AssertThrows(
+		                 ContextAuthenticationException.class) {
+			
 			public void test() throws Exception {
 				Context.authenticate("1-8", null);
 			}
@@ -111,5 +119,5 @@ public class ContextTest extends BaseContextSensitiveTest {
 		// now make sure they can do High Level Task X
 		
 	}
-
+	
 }

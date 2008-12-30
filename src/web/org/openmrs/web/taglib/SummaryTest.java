@@ -44,14 +44,18 @@ public class SummaryTest extends TagSupport {
 	private final Log log = LogFactory.getLog(getClass());
 	
 	private Collection<Obs> observations;
+	
 	private Collection<Encounter> encounters;
+	
 	private String var;
+	
 	private String ifTrue;
+	
 	private String ifFalse;
 	
 	public int doStartTag() {
 		Boolean ret = false;
-		if ( (ifTrue == null || ifTrue.length() == 0) && (ifFalse == null || ifFalse.length() == 0) ) {
+		if ((ifTrue == null || ifTrue.length() == 0) && (ifFalse == null || ifFalse.length() == 0)) {
 			ret = true;
 		} else {
 			if (ifTrue != null && ifTrue.length() > 0)
@@ -104,7 +108,7 @@ public class SummaryTest extends TagSupport {
 				s = s.substring("!OBSCHECK".length()).trim();
 				commandResults.add(handleObsCheck(s));
 			} else {
-				throw new RuntimeException("Don't know how to handle command " + command + "\n" + s); 
+				throw new RuntimeException("Don't know how to handle command " + command + "\n" + s);
 			}
 		}
 		
@@ -159,7 +163,7 @@ public class SummaryTest extends TagSupport {
 					conceptsOfInterest.add(c);
 			}
 		}
-
+		
 		if (args.containsKey("timespan")) {
 			// [last|next defaults to last] [# defaults to 1] [m|d|y defaults to m]
 			boolean inPast = true;
@@ -168,7 +172,8 @@ public class SummaryTest extends TagSupport {
 			String ts = args.get("timespan");
 			String[] s = ts.split(" ");
 			for (String str : s) {
-				if (str.length() == 0) continue;
+				if (str.length() == 0)
+					continue;
 				if (str.startsWith("l"))
 					inPast = true;
 				else if (str.startsWith("n"))
@@ -197,9 +202,9 @@ public class SummaryTest extends TagSupport {
 		
 		List<Obs> obsThatMatter = new ArrayList<Obs>();
 		for (Obs o : observations) {
-			if ( conceptsOfInterest.contains(o.getConcept()) &&
-					(fromDate == null || OpenmrsUtil.compare(fromDate, o.getObsDatetime()) <= 0) &&
-					(toDate == null || OpenmrsUtil.compare(o.getObsDatetime(), toDate) <= 0) ) {
+			if (conceptsOfInterest.contains(o.getConcept())
+			        && (fromDate == null || OpenmrsUtil.compare(fromDate, o.getObsDatetime()) <= 0)
+			        && (toDate == null || OpenmrsUtil.compare(o.getObsDatetime(), toDate) <= 0)) {
 				obsThatMatter.add(o);
 			}
 		}
@@ -212,45 +217,45 @@ public class SummaryTest extends TagSupport {
 			throw new RuntimeException("Can't handle test:" + test);
 		}
 	}
-
+	
 	public String getIfFalse() {
 		return ifFalse;
 	}
-
+	
 	public void setIfFalse(String ifFalse) {
 		this.ifFalse = ifFalse;
 	}
-
+	
 	public String getIfTrue() {
 		return ifTrue;
 	}
-
+	
 	public void setIfTrue(String ifTrue) {
 		this.ifTrue = ifTrue;
 	}
-
+	
 	public Collection<Obs> getObservations() {
 		return observations;
 	}
-
+	
 	public void setObservations(Collection<Obs> observations) {
 		this.observations = observations;
 	}
-
+	
 	public String getVar() {
 		return var;
 	}
-
+	
 	public void setVar(String var) {
 		this.var = var;
 	}
-
+	
 	public Collection<Encounter> getEncounters() {
 		return encounters;
 	}
-
+	
 	public void setEncounters(Collection<Encounter> encounters) {
 		this.encounters = encounters;
 	}
-
+	
 }

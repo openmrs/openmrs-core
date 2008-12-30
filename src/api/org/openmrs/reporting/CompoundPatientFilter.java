@@ -24,15 +24,16 @@ import org.openmrs.Cohort;
 import org.openmrs.api.PatientSetService.BooleanOperator;
 import org.openmrs.report.EvaluationContext;
 
-public class CompoundPatientFilter extends AbstractPatientFilter implements
-		PatientFilter {
-
+public class CompoundPatientFilter extends AbstractPatientFilter implements PatientFilter {
+	
 	protected transient final Log log = LogFactory.getLog(getClass());
 	
 	private BooleanOperator operator;
+	
 	private List<PatientFilter> filters;
 	
-	public CompoundPatientFilter() { }
+	public CompoundPatientFilter() {
+	}
 	
 	public CompoundPatientFilter(BooleanOperator operator, List<PatientFilter> filters) {
 		this.operator = operator;
@@ -42,19 +43,19 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements
 	public List<PatientFilter> getFilters() {
 		return filters;
 	}
-
+	
 	public void setFilters(List<PatientFilter> filters) {
 		this.filters = filters;
 	}
-
+	
 	public BooleanOperator getOperator() {
 		return operator;
 	}
-
+	
 	public void setOperator(BooleanOperator operator) {
 		this.operator = operator;
 	}
-
+	
 	public Cohort filter(Cohort input, EvaluationContext context) {
 		if (operator == BooleanOperator.AND) {
 			Cohort temp = input;
@@ -73,7 +74,7 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements
 			return ret;
 		}
 	}
-
+	
 	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		if (operator == BooleanOperator.AND) {
 			// NOT(AND(x, y)) -> OR(NOT x, NOT y)
@@ -92,13 +93,13 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements
 			return temp;
 		}
 	}
-
+	
 	public String getDescription() {
 		if (super.getDescription() != null)
 			return super.getDescription();
 		else {
 			StringBuilder ret = new StringBuilder();
-			for (Iterator<PatientFilter> i = filters.iterator(); i.hasNext(); ) {
+			for (Iterator<PatientFilter> i = filters.iterator(); i.hasNext();) {
 				PatientFilter pf = i.next();
 				ret.append("[").append(pf.getName() == null ? pf.getDescription() : pf.getName()).append("]");
 				if (i.hasNext())
@@ -107,9 +108,9 @@ public class CompoundPatientFilter extends AbstractPatientFilter implements
 			return ret.toString();
 		}
 	}
-
+	
 	public boolean isReadyToRun() {
 		return operator != null && filters != null;
 	}
-
+	
 }

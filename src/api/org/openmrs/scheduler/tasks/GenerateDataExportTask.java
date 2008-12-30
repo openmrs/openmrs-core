@@ -27,37 +27,38 @@ import org.openmrs.reporting.export.DataExportUtil;
 import org.openmrs.scheduler.TaskDefinition;
 
 /**
- *  Generates a data export 
+ * Generates a data export
  */
-public class GenerateDataExportTask extends AbstractTask { 
-
+public class GenerateDataExportTask extends AbstractTask {
+	
 	// Logger 
-	private Log log = LogFactory.getLog( GenerateDataExportTask.class );
-
+	private Log log = LogFactory.getLog(GenerateDataExportTask.class);
+	
 	// Instance of configuration information for task
 	private String idString = "";
+	
 	private EvaluationContext context;
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(org.openmrs.scheduler.TaskConfig)
 	 */
-	public void initialize(TaskDefinition definition) { 
+	public void initialize(TaskDefinition definition) {
 		super.initialize(definition);
 		this.idString = definition.getProperty("dataExportIds");
-	} 
+	}
 	
 	public void setEvaluationContext(EvaluationContext context) {
 		this.context = context;
 	}
 	
-	public EvaluationContext getEvaluationContext( ) {
+	public EvaluationContext getEvaluationContext() {
 		return this.context;
 	}
-
-	/** 
-	 *  Process the next form entry in the database and then remove the form entry from the database.
+	
+	/**
+	 * Process the next form entry in the database and then remove the form entry from the database.
 	 */
-	public void execute( ) {
+	public void execute() {
 		Context.openSession();
 		try {
 			log.debug("Generating data exports...");
@@ -77,7 +78,7 @@ public class GenerateDataExportTask extends AbstractTask {
 					if (id != null) {
 						id = id.trim();
 						if (id.length() > 0) {
-							DataExportReportObject report = (DataExportReportObject)rs.getReportObject(Integer.valueOf(id));
+							DataExportReportObject report = (DataExportReportObject) rs.getReportObject(Integer.valueOf(id));
 							reports.add(report);
 						}
 					}
@@ -86,10 +87,12 @@ public class GenerateDataExportTask extends AbstractTask {
 				DataExportUtil.generateExports(reports, this.getEvaluationContext());
 			}
 			
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error("Error running generate data export queue task", e);
 			throw new APIException("Error running generate data export queue task", e);
-		} finally {
+		}
+		finally {
 			Context.closeSession();
 		}
 		

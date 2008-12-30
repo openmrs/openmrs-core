@@ -19,17 +19,18 @@ import org.openmrs.report.ReportSchema;
  *
  */
 public class CsvReportRenderer extends DelimitedTextReportRenderer {
-
-	public CsvReportRenderer() { }
+	
+	public CsvReportRenderer() {
+	}
 	
 	public String getLabel() {
 		return "CSV";
 	}
 	
-    public String getFilenameExtension() {
-    	return "csv";
-    }
-
+	public String getFilenameExtension() {
+		return "csv";
+	}
+	
 	public String getBeforeColumnDelimiter() {
 		return "\"";
 	}
@@ -37,24 +38,27 @@ public class CsvReportRenderer extends DelimitedTextReportRenderer {
 	public String getAfterColumnDelimiter() {
 		return "\",";
 	}
+	
 	public String getBeforeRowDelimiter() {
 		return "";
 	}
+	
 	public String getAfterRowDelimiter() {
 		return "\n";
 	}
+	
 	public String escape(String text) {
 		if (text == null)
 			return null;
 		else
 			return text.replaceAll("\"", "\\\"");
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.renderer.ReportRenderer#getRenderedContentType(org.openmrs.report.ReportSchema)
 	 */
 	public String getRenderedContentType(ReportSchema model, String argument) {
 		return "text/csv";
 	}
-
+	
 }

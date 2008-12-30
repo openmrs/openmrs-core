@@ -19,18 +19,18 @@ import java.util.List;
  * Holds all OpenMRS event listeners
  */
 public class EventListeners {
-
+	
 	private static List<GlobalPropertyListener> globalPropertyListeners;
 	
-	public EventListeners() { }
-
+	public EventListeners() {
+	}
+	
 	public List<GlobalPropertyListener> getGlobalPropertyListeners() {
-    	return globalPropertyListeners;
-    }
-
-	public void setGlobalPropertyListeners(
-            List<GlobalPropertyListener> globalPropertyListeners) {
-    	this.globalPropertyListeners = globalPropertyListeners;
-    }
+		return globalPropertyListeners;
+	}
+	
+	public void setGlobalPropertyListeners(List<GlobalPropertyListener> globalPropertyListeners) {
+		this.globalPropertyListeners = globalPropertyListeners;
+	}
 	
 }

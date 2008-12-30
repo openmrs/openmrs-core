@@ -15,10 +15,9 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.openmrs.util.OpenmrsUtil;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * PatientState
@@ -26,25 +25,37 @@ import org.apache.commons.logging.LogFactory;
 public class PatientState implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 0L;
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	// ******************
 	// Properties
 	// ******************
-
+	
 	private Integer patientStateId;
+	
 	private PatientProgram patientProgram;
+	
 	private ProgramWorkflowState state;
+	
 	private Date startDate;
+	
 	private Date endDate;
 	
-	private User creator; 
+	private User creator;
+	
 	private Date dateCreated;
+	
 	private User changedBy;
+	
 	private Date dateChanged;
-	private Boolean voided = false; 
+	
+	private Boolean voided = false;
+	
 	private User voidedBy;
-	private Date dateVoided; 
+	
+	private Date dateVoided;
+	
 	private String voidReason;
 	
 	// ******************
@@ -52,7 +63,8 @@ public class PatientState implements java.io.Serializable {
 	// ******************
 	
 	/** Default Constructor */
-	public PatientState() { }
+	public PatientState() {
+	}
 	
 	/** Constructor with id */
 	public PatientState(Integer patientStateId) {
@@ -61,7 +73,7 @@ public class PatientState implements java.io.Serializable {
 	
 	/**
 	 * Does a shallow copy of this PatientState. Does NOT copy patientStateId
-	 *
+	 * 
 	 * @return a copy of this PatientState
 	 */
 	public PatientState copy() {
@@ -70,7 +82,7 @@ public class PatientState implements java.io.Serializable {
 	
 	/**
 	 * The purpose of this method is to allow subclasses of PatientState to delegate a portion of
-	 * their copy() method back to the superclass, in case the base class implementation changes. 
+	 * their copy() method back to the superclass, in case the base class implementation changes.
 	 * 
 	 * @param target a PatientState that will have the state of <code>this</code> copied into it
 	 * @return the PatientState that was passed in, with state copied into it
@@ -97,6 +109,7 @@ public class PatientState implements java.io.Serializable {
 	
 	/**
 	 * Returns true if this {@link PatientState} is active as of the passed {@link Date}
+	 * 
 	 * @param onDate - {@link Date} to check for {@link PatientState} enrollment
 	 * @return boolean - true if this {@link PatientState} is active as of the passed {@link Date}
 	 */
@@ -104,11 +117,13 @@ public class PatientState implements java.io.Serializable {
 		if (onDate == null) {
 			onDate = new Date();
 		}
-		return !getVoided() && (startDate == null || OpenmrsUtil.compare(startDate, onDate) <= 0) && (endDate == null || OpenmrsUtil.compare(endDate, onDate) > 0);
+		return !getVoided() && (startDate == null || OpenmrsUtil.compare(startDate, onDate) <= 0)
+		        && (endDate == null || OpenmrsUtil.compare(endDate, onDate) > 0);
 	}
 	
 	/**
 	 * Returns true if this {@link PatientState} is currently active
+	 * 
 	 * @return boolean - true if this {@link PatientState} is currently active
 	 */
 	public boolean getActive() {
@@ -118,7 +133,7 @@ public class PatientState implements java.io.Serializable {
 	/** @see Object#equals(Object) */
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof PatientState) {
-			PatientState p = (PatientState)obj;
+			PatientState p = (PatientState) obj;
 			if (this.getPatientStateId() == null) {
 				return p.getPatientStateId() == null;
 			}
@@ -126,116 +141,118 @@ public class PatientState implements java.io.Serializable {
 		}
 		return false;
 	}
-
+	
 	/** @see Object#toString() */
 	public String toString() {
-		return "id=" + getPatientStateId() + ", patientProgram=" + getPatientProgram() + ", state=" + getState() + ", startDate=" + getStartDate() + ", endDate=" + getEndDate() + ", dateCreated=" + getDateCreated() + ", dateChanged=" + getDateChanged();
+		return "id=" + getPatientStateId() + ", patientProgram=" + getPatientProgram() + ", state=" + getState()
+		        + ", startDate=" + getStartDate() + ", endDate=" + getEndDate() + ", dateCreated=" + getDateCreated()
+		        + ", dateChanged=" + getDateChanged();
 	}
 	
 	// ******************
 	// Property Access
 	// ******************
-
+	
 	public PatientProgram getPatientProgram() {
 		return patientProgram;
 	}
-
+	
 	public void setPatientProgram(PatientProgram patientProgram) {
 		this.patientProgram = patientProgram;
 	}
-
+	
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 	public Date getDateVoided() {
 		return dateVoided;
 	}
-
+	
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
-
+	
 	public Integer getPatientStateId() {
 		return patientStateId;
 	}
-
+	
 	public void setPatientStateId(Integer patientStatusId) {
 		this.patientStateId = patientStatusId;
 	}
-
+	
 	public ProgramWorkflowState getState() {
 		return state;
 	}
-
+	
 	public void setState(ProgramWorkflowState state) {
 		this.state = state;
 	}
-
+	
 	public Boolean getVoided() {
 		return voided;
 	}
-
+	
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
-
+	
 	public User getVoidedBy() {
 		return voidedBy;
 	}
-
+	
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
-
+	
 	public String getVoidReason() {
 		return voidReason;
 	}
-
+	
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
-
+	
 	public User getChangedBy() {
 		return changedBy;
 	}
-
+	
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-
+	
 	public Date getDateChanged() {
 		return dateChanged;
 	}
-
+	
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
-
+	
 	public Date getEndDate() {
 		return endDate;
 	}
-
+	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-
+	
 	public Date getStartDate() {
 		return startDate;
 	}
-
+	
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}

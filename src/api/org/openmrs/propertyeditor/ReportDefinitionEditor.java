@@ -22,14 +22,14 @@ import org.openmrs.reporting.report.ReportDefinition;
 import org.springframework.util.StringUtils;
 
 public class ReportDefinitionEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	/**
 	 * Public constructor
-	 *
 	 */
-	public ReportDefinitionEditor() {	}
+	public ReportDefinitionEditor() {
+	}
 	
 	/**
 	 * 
@@ -45,19 +45,17 @@ public class ReportDefinitionEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Report object not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-	
 	
 	/**
 	 * 
 	 */
 	public String getAsText() {
 		log.debug("Getting cohort text " + getValue());
-		String text = "";		
+		String text = "";
 		ReportDefinition obj = (ReportDefinition) getValue();
 		if (obj != null && obj.getReportObjectId() != null) {
 			text = String.valueOf(obj.getReportObjectId());
@@ -65,7 +63,5 @@ public class ReportDefinitionEditor extends PropertyEditorSupport {
 		log.debug("Text: " + text);
 		return text;
 	}
-
-	
 	
 }

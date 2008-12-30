@@ -15,15 +15,14 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
- * This controller controls all uploading and syncing the Implementation Id with
- * the implementation id server
- * 
+ * This controller controls all uploading and syncing the Implementation Id with the implementation
+ * id server
  */
 public class ImplementationIdFormController extends SimpleFormController {
-
+	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
 	 * Actions taken when the form is submitted
 	 * 
@@ -32,11 +31,10 @@ public class ImplementationIdFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest req,
-	        HttpServletResponse response, Object object,
-	        BindException exceptions) throws Exception {
-
-		ImplementationId implId = (ImplementationId)object;
+	protected ModelAndView onSubmit(HttpServletRequest req, HttpServletResponse response, Object object,
+	                                BindException exceptions) throws Exception {
+		
+		ImplementationId implId = (ImplementationId) object;
 		
 		try {
 			Context.getAdministrationService().setImplementationId(implId);
@@ -50,16 +48,15 @@ public class ImplementationIdFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
-
+	
 	/**
-	 * The object that backs the form. The class of this object (String) is set
-	 * in the servlet descriptor file
+	 * The object that backs the form. The class of this object (String) is set in the servlet
+	 * descriptor file
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	protected Object formBackingObject(HttpServletRequest request)
-	        throws Exception {
+	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		
 		// get the impl id from the database that is the implementation id
 		ImplementationId implId = Context.getAdministrationService().getImplementationId();

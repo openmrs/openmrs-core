@@ -32,30 +32,35 @@ import org.springframework.web.servlet.tags.RequestContextAwareTag;
 import org.springframework.web.util.ExpressionEvaluationUtils;
 
 public class FormatDateTag extends TagSupport {
-
+	
 	public static final long serialVersionUID = 121341222L;
 	
 	private final Log log = LogFactory.getLog(getClass());
-
+	
 	private Date date;
+	
 	private Boolean dateWasSet = false;
+	
 	private String path;
+	
 	private String type;
+	
 	private String format;
-
+	
 	public int doStartTag() {
-		RequestContext requestContext = (RequestContext) this.pageContext.getAttribute(RequestContextAwareTag.REQUEST_CONTEXT_PAGE_ATTRIBUTE);
+		RequestContext requestContext = (RequestContext) this.pageContext
+		        .getAttribute(RequestContextAwareTag.REQUEST_CONTEXT_PAGE_ATTRIBUTE);
 		
 		if (date == null && getPath() != null) {
 			try {
 				// get the "path" object from the pageContext
 				String resolvedPath = ExpressionEvaluationUtils.evaluateString("path", getPath(), pageContext);
-				String nestedPath = (String) pageContext.getAttribute(
-						NestedPathTag.NESTED_PATH_VARIABLE_NAME, PageContext.REQUEST_SCOPE);
+				String nestedPath = (String) pageContext.getAttribute(NestedPathTag.NESTED_PATH_VARIABLE_NAME,
+				    PageContext.REQUEST_SCOPE);
 				if (nestedPath != null) {
 					resolvedPath = nestedPath + resolvedPath;
 				}
-
+				
 				BindStatus status = new BindStatus(requestContext, resolvedPath, false);
 				log.debug("status: " + status);
 				
@@ -81,7 +86,8 @@ public class FormatDateTag extends TagSupport {
 		}
 		
 		if (dateWasSet == false && date == null) {
-			log.warn("Both 'date' and 'path' cannot be null.  Page: " + pageContext.getPage() + " localname:" + pageContext.getRequest().getLocalName() + " rd:" + pageContext.getRequest().getRequestDispatcher("")); 
+			log.warn("Both 'date' and 'path' cannot be null.  Page: " + pageContext.getPage() + " localname:"
+			        + pageContext.getRequest().getLocalName() + " rd:" + pageContext.getRequest().getRequestDispatcher(""));
 			return SKIP_BODY;
 		}
 		
@@ -92,23 +98,18 @@ public class FormatDateTag extends TagSupport {
 		
 		if (format != null && format.length() > 0) {
 			dateFormat = new SimpleDateFormat(format);
-		}
-		else if (type.equals("xml")) {
+		} else if (type.equals("xml")) {
 			dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-		}
-		else {
+		} else {
 			log.debug("context locale: " + Context.getLocale());
 			
 			if (type.equals("long")) {
 				dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Context.getLocale());
-			}
-			else if (type.equals("medium")) {
+			} else if (type.equals("medium")) {
 				dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, Context.getLocale());
-			}
-			else if (type.equals("textbox")) {
+			} else if (type.equals("textbox")) {
 				dateFormat = Context.getDateFormat();
-			}
-			else {
+			} else {
 				dateFormat = Context.getDateFormat();
 			}
 		}
@@ -118,7 +119,7 @@ public class FormatDateTag extends TagSupport {
 		
 		String datestr = "";
 		
-		try {			
+		try {
 			if (date != null) {
 				datestr = dateFormat.format(date);
 			}
@@ -155,40 +156,39 @@ public class FormatDateTag extends TagSupport {
 		this.path = null;
 	}
 	
-	
 	// variable access methods
 	
 	public Date getDate() {
 		return date;
 	}
-
+	
 	public void setDate(Date date) {
 		this.dateWasSet = true;
 		this.date = date;
 	}
-
+	
 	public String getPath() {
 		return path;
 	}
-
+	
 	public void setPath(String path) {
 		this.path = path;
 	}
-
+	
 	public String getFormat() {
 		return format;
 	}
-
+	
 	public void setFormat(String format) {
 		this.format = format;
 	}
-
+	
 	public String getType() {
 		return type;
 	}
-
+	
 	public void setType(String type) {
 		this.type = type;
 	}
-
+	
 }

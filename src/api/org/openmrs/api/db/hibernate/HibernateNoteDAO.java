@@ -24,27 +24,27 @@ import org.openmrs.api.db.NoteDAO;
 import org.openmrs.notification.Note;
 
 public class HibernateNoteDAO implements NoteDAO {
-
+	
 	protected final static Log log = LogFactory.getLog(HibernateNoteDAO.class);
-
+	
 	/**
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
 	
-	public HibernateNoteDAO() { }
+	public HibernateNoteDAO() {
+	}
 	
 	/**
 	 * Set session factory
 	 * 
 	 * @param sessionFactory
 	 */
-	public void setSessionFactory(SessionFactory sessionFactory) { 
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
 	/**
-	 *  
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -57,7 +57,6 @@ public class HibernateNoteDAO implements NoteDAO {
 		return notes;
 	}
 	
-	
 	/**
 	 * @see org.openmrs.api.db.NoteService#getNote(java.lang.Long)
 	 */
@@ -66,20 +65,16 @@ public class HibernateNoteDAO implements NoteDAO {
 		return (Note) sessionFactory.getCurrentSession().get(Note.class, id);
 	}
 	
-
-	public void createNote(Note note) {		
+	public void createNote(Note note) {
 		log.debug("Creating new note");
 		sessionFactory.getCurrentSession().save(note);
 	}
-
 	
-
-	public void updateNote(Note note) {		
+	public void updateNote(Note note) {
 		log.debug("Updating existing note");
 		sessionFactory.getCurrentSession().save(note);
 	}
-
-
+	
 	public void deleteNote(Note note) throws DAOException {
 		log.debug("Deleting existing note");
 		sessionFactory.getCurrentSession().delete(note);

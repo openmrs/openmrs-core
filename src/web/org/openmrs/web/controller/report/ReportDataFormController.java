@@ -42,60 +42,62 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class ReportDataFormController extends SimpleFormController {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	@Override
-    protected Map referenceData(HttpServletRequest request) throws Exception {
+	protected Map referenceData(HttpServletRequest request) throws Exception {
 		Map<String, Object> ret = new HashMap<String, Object>();
-
+		
 		ReportData report = (ReportData) request.getSession().getAttribute(WebConstants.OPENMRS_REPORT_DATA);
-    	if (Context.isAuthenticated() && report != null) {
-    		ReportService reportService = (ReportService) Context.getService(ReportService.class);
-    		List<RenderingMode> otherRenderingModes = new ArrayList<RenderingMode>(reportService.getRenderingModes(report.getReportSchema()));
-    		for (Iterator<RenderingMode> i = otherRenderingModes.iterator(); i.hasNext(); ) {
-    			Class temp = i.next().getRenderer().getClass(); 
-    			if (temp.equals(CohortReportWebRenderer.class))
-    				i.remove();
-    		}
-    		ret.put("otherRenderingModes", otherRenderingModes);
-    	}
+		if (Context.isAuthenticated() && report != null) {
+			ReportService reportService = (ReportService) Context.getService(ReportService.class);
+			List<RenderingMode> otherRenderingModes = new ArrayList<RenderingMode>(reportService.getRenderingModes(report
+			        .getReportSchema()));
+			for (Iterator<RenderingMode> i = otherRenderingModes.iterator(); i.hasNext();) {
+				Class temp = i.next().getRenderer().getClass();
+				if (temp.equals(CohortReportWebRenderer.class))
+					i.remove();
+			}
+			ret.put("otherRenderingModes", otherRenderingModes);
+		}
 		return ret;
-    }
-
+	}
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
-
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
+		
 		ReportData report = (ReportData) request.getSession().getAttribute(WebConstants.OPENMRS_REPORT_DATA);
-    	
+		
 		// If we're authorized to render a report, the report exists, and the user has requested 
 		// "rerender" as the action, then we render the report using the appropriate report renderer 
 		if (Context.isAuthenticated() && report != null && "rerender".equals(request.getParameter("action"))) {
-    		ReportSchema schema = report.getReportSchema();
-    		ReportService reportService = (ReportService) Context.getService(ReportService.class);
-    		String renderClass = request.getParameter("renderingMode");
-    		String renderArg = "";
-    	
-    		// 
-    		if (renderClass.indexOf("!") > 0) {
-    			int ind = renderClass.indexOf("!");
-    			renderArg = renderClass.substring(ind + 1);
-    			renderClass = renderClass.substring(0, ind);
-    		}
-
-    		
-    		// Figure out how to render the report
+			ReportSchema schema = report.getReportSchema();
+			ReportService reportService = (ReportService) Context.getService(ReportService.class);
+			String renderClass = request.getParameter("renderingMode");
+			String renderArg = "";
+			
+			// 
+			if (renderClass.indexOf("!") > 0) {
+				int ind = renderClass.indexOf("!");
+				renderArg = renderClass.substring(ind + 1);
+				renderClass = renderClass.substring(0, ind);
+			}
+			
+			// Figure out how to render the report
 			ReportRenderer renderer = reportService.getReportRenderer(renderClass);
 			log.info("Re-rendering report with " + renderer.getClass() + " and argument " + renderArg);
 			
 			// If we're supposed to use a web report renderer, then we just redirect to the appropriate URL 
-			if (renderer instanceof WebReportRenderer) { 
+			if (renderer instanceof WebReportRenderer) {
 				WebReportRenderer webRenderer = (WebReportRenderer) renderer;
 				if (webRenderer.getLinkUrl(schema) != null) {
 					request.getSession().setAttribute(WebConstants.OPENMRS_REPORT_DATA, report);
@@ -110,48 +112,46 @@ public class ReportDataFormController extends SimpleFormController {
 			
 			// Otherwise, just render the report 
 			// TODO it's possible that a web renderer will handle this -- is that ok?
-			String filename = renderer.getFilename(schema, renderArg).replace(" ", "_"); 
+			String filename = renderer.getFilename(schema, renderArg).replace(" ", "_");
 			response.setContentType(renderer.getRenderedContentType(schema, renderArg));
 			response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-			response.setHeader("Pragma", "no-cache");		
+			response.setHeader("Pragma", "no-cache");
 			renderer.render(report, renderArg, response.getOutputStream());
 			return null;
+			
+		}
 
-    	} 
-    	
-    	else {
+		else {
 			String view = getFormView();
 			return new ModelAndView(new RedirectView(view));
 		}
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-        
-    	ReportData report = (ReportData)request.getSession().getAttribute(WebConstants.OPENMRS_REPORT_DATA);
-    	
-    	if (null != report) {
-    		return report;
-    	}
-    	else {
-    		// Avoid the annoying NPE
-    		CohortDataSet emptyData = new CohortDataSet();
-    		emptyData.setName("empty");
-    		Map<String, DataSet> emptyMap = new HashMap<String, DataSet>();
-    		emptyMap.put("empty", emptyData);
-    		ReportSchema emptySchema = new ReportSchema();
-    		emptySchema.setName("empty");
-    		ReportData emptyReport = new ReportData();
-    		emptyReport.setDataSets(emptyMap);
-    		emptyReport.setReportSchema(emptySchema);
-    		return emptyReport;
-    	}
-    }
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
+		ReportData report = (ReportData) request.getSession().getAttribute(WebConstants.OPENMRS_REPORT_DATA);
+		
+		if (null != report) {
+			return report;
+		} else {
+			// Avoid the annoying NPE
+			CohortDataSet emptyData = new CohortDataSet();
+			emptyData.setName("empty");
+			Map<String, DataSet> emptyMap = new HashMap<String, DataSet>();
+			emptyMap.put("empty", emptyData);
+			ReportSchema emptySchema = new ReportSchema();
+			emptySchema.setName("empty");
+			ReportData emptyReport = new ReportData();
+			emptyReport.setDataSets(emptyMap);
+			emptyReport.setReportSchema(emptySchema);
+			return emptyReport;
+		}
+	}
+	
 }

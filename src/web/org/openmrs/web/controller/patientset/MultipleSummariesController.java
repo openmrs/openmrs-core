@@ -21,18 +21,17 @@ import org.openmrs.api.context.Context;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 public class MultipleSummariesController extends SimpleFormController {
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		Cohort ps = null;
-			
+		
 		if (Context.isAuthenticated()) {
 			String source = request.getParameter("source");
 			if ("myPatientSet".equals(source))
@@ -42,7 +41,7 @@ public class MultipleSummariesController extends SimpleFormController {
 		if (ps == null)
 			ps = new Cohort();
 		
-        return ps;
-    }
+		return ps;
+	}
 	
 }

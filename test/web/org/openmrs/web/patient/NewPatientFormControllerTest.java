@@ -49,8 +49,9 @@ import org.springframework.web.servlet.view.RedirectView;
  */
 @SkipBaseSetup
 public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
-
+	
 	protected static final String CONTROLLER_DATA = "org/openmrs/web/patient/include/NewPatientFormControllerTest.xml";
+	
 	protected static final String CONTROLLER_PATIENTS_DATA = "org/openmrs/web/patient/include/NewPatientFormControllerTest-patients.xml";
 	
 	@Before
@@ -62,14 +63,13 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This test just loads the page without giving it any parameters.
-	 * This should load the page just fine without errors (and the user
-	 * would see empty input boxes all around).
+	 * This test just loads the page without giving it any parameters. This should load the page
+	 * just fine without errors (and the user would see empty input boxes all around).
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
+	@SuppressWarnings( { "unchecked" })
+	@Test
 	public void shouldPageLoadWithEmptyParameters() throws Exception {
 		NewPatientFormController controller = new NewPatientFormController();
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -78,18 +78,17 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		request.setMethod("GET");
 		ModelAndView modelAndView = controller.handleRequest(request, response);
 		
-		Map<String, Object> model = (Map<String, Object>)modelAndView.getModel().get("model");
+		Map<String, Object> model = (Map<String, Object>) modelAndView.getModel().get("model");
 		
 	}
 	
 	/**
-	 * This test will fill in all the required fields on the 
-	 * form to test a successful submission
+	 * This test will fill in all the required fields on the form to test a successful submission
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
+	@SuppressWarnings( { "unchecked" })
+	@Test
 	public void shouldSubmitWithAllFieldsEnteredCorrectly() throws Exception {
 		
 		PatientService ps = Context.getPatientService();
@@ -129,7 +128,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		
 		// make sure it is redirecting to the right place after a successful submit
 		assertEquals(RedirectView.class, modelAndView.getView().getClass());
-		RedirectView redirectView = (RedirectView)modelAndView.getView();
+		RedirectView redirectView = (RedirectView) modelAndView.getView();
 		assertTrue(redirectView.getUrl().startsWith("patientDashboard.form"));
 		
 		// make sure a John was created
@@ -138,13 +137,13 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This test submits a page without an identifier.  It should not bomb out
-	 * and it should display properly again
+	 * This test submits a page without an identifier. It should not bomb out and it should display
+	 * properly again
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
+	@SuppressWarnings( { "unchecked" })
+	@Test
 	public void shouldSubmitWithNoIdentifierFilledIn() throws Exception {
 		
 		PatientService ps = Context.getPatientService();
@@ -193,7 +192,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		Map<String, Object> model = modelAndView.getModel();
 		
 		// get the formbacking object
-		ShortPatientModel shortPatient = (ShortPatientModel)model.get(controller.getCommandName());
+		ShortPatientModel shortPatient = (ShortPatientModel) model.get(controller.getCommandName());
 		assertNotNull(shortPatient);
 		
 		// make sure the formbackingobject for the redirected form has all the data
@@ -212,8 +211,8 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
+	@SuppressWarnings( { "unchecked" })
+	@Test
 	public void shouldSubmitChangedIdentifierLocation() throws Exception {
 		executeDataSet(CONTROLLER_PATIENTS_DATA);
 		
@@ -274,7 +273,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		
 		// make sure it is redirecting to the right place after a successful submit
 		assertEquals(RedirectView.class, modelAndView.getView().getClass());
-		RedirectView redirectView = (RedirectView)modelAndView.getView();
+		RedirectView redirectView = (RedirectView) modelAndView.getView();
 		assertTrue(redirectView.getUrl().startsWith("patientDashboard.form"));
 		
 		// make sure John's identifier location was modified
@@ -282,7 +281,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		assertNotNull(patient);
 		assertNotNull(patient.getIdentifiers());
 		assertFalse(patient.getIdentifiers().isEmpty());
-		PatientIdentifier identifier = (PatientIdentifier)patient.getIdentifiers().toArray()[0]; 
+		PatientIdentifier identifier = (PatientIdentifier) patient.getIdentifiers().toArray()[0];
 		assertEquals(2, identifier.getLocation().getLocationId().intValue());
 		
 	}
@@ -292,8 +291,8 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
+	@SuppressWarnings( { "unchecked" })
+	@Test
 	public void shouldAddRelationship() throws Exception {
 		executeDataSet(CONTROLLER_PATIENTS_DATA);
 		executeDataSet("org/openmrs/web/patient/include/NewPatientFormControllerTest-addRelationship.xml");
@@ -345,7 +344,8 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		// make sure a relationship between John and person id 3 was created
 		Patient patient = ps.getPatient(2);
 		assertNotNull(patient);
-		List<Relationship> relationships = Context.getPersonService().getRelationships(null, patient, Context.getPersonService().getRelationshipType(1));
+		List<Relationship> relationships = Context.getPersonService().getRelationships(null, patient,
+		    Context.getPersonService().getRelationshipType(1));
 		assertEquals(1, relationships.size());
 		// we submitted 1a=3, so the created relationship personA should be 3
 		assertEquals(new Person(3), relationships.get(0).getPersonA());

@@ -29,23 +29,27 @@ import org.openmrs.reporting.Report;
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.AdministrationService
  */
-public interface AdministrationDAO {	
+public interface AdministrationDAO {
+	
 	/**
 	 * Create a new Report
+	 * 
 	 * @param Report to create
 	 * @throws DAOException
 	 */
 	public void createReport(Report r) throws DAOException;
-
+	
 	/**
 	 * Update Report
+	 * 
 	 * @param Report to update
 	 * @throws DAOException
 	 */
 	public void updateReport(Report r) throws DAOException;
-
+	
 	/**
 	 * Delete Report
+	 * 
 	 * @param Report to delete
 	 * @throws DAOException
 	 */
@@ -53,27 +57,31 @@ public interface AdministrationDAO {
 	
 	/**
 	 * Create a new Report Object
+	 * 
 	 * @param Report Object to create
 	 * @throws DAOException
 	 */
 	public void createReportObject(AbstractReportObject ro) throws DAOException;
-
+	
 	/**
 	 * Update Report Object
+	 * 
 	 * @param Report Object to update
 	 * @throws DAOException
 	 */
 	public void updateReportObject(AbstractReportObject ro) throws DAOException;
-
+	
 	/**
 	 * Delete Report Object
+	 * 
 	 * @param Report Objectto delete
 	 * @throws DAOException
 	 */
 	public void deleteReportObject(Integer reportObjectId) throws DAOException;
-
+	
 	/**
-	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String, java.lang.Integer, java.lang.Integer)
+	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String,
+	 *      java.lang.Integer, java.lang.Integer)
 	 */
 	public void mrnGeneratorLog(String site, Integer start, Integer count) throws DAOException;
 	
@@ -83,42 +91,44 @@ public interface AdministrationDAO {
 	public Collection<?> getMRNGeneratorLog() throws DAOException;
 	
 	/**
-     * @see org.openmrs.api.AdministrationService#getGlobalProperty(String)
+	 * @see org.openmrs.api.AdministrationService#getGlobalProperty(String)
 	 */
 	public String getGlobalProperty(String propertyName) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertyObject(java.lang.String)
 	 */
-    public GlobalProperty getGlobalPropertyObject(String propertyName);
-
-	/**
-     * @see org.openmrs.api.AdministrationService#getAllGlobalProperties()
-     */
-    public List<GlobalProperty> getAllGlobalProperties() throws DAOException;
-
-	/**
-     * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(org.openmrs.GlobalProperty)
-     */
-    public void deleteGlobalProperty(GlobalProperty gp) throws DAOException;
+	public GlobalProperty getGlobalPropertyObject(String propertyName);
 	
 	/**
-     * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
-     */
-    public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException;
-
-	/**
-	 * @see org.openmrs.api.db.AdministrationDAO#getDataEntryStatistics(java.util.Date, java.util.Date, java.lang.String, java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.AdministrationService#getAllGlobalProperties()
 	 */
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn, String orderUserColumn, String groupBy) throws DAOException;
-
+	public List<GlobalProperty> getAllGlobalProperties() throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(org.openmrs.GlobalProperty)
+	 */
+	public void deleteGlobalProperty(GlobalProperty gp) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
+	 */
+	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#getDataEntryStatistics(java.util.Date,
+	 *      java.util.Date, java.lang.String, java.lang.String, java.lang.String)
+	 */
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn,
+	                                                       String orderUserColumn, String groupBy) throws DAOException;
+	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#executeSQL(java.lang.String, boolean)
 	 */
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException;
 	
-    /**
-     * @see org.openmrs.api.AdministrationService#getImplementation()
-     */
-    public ImplementationId getImplementationId();
+	/**
+	 * @see org.openmrs.api.AdministrationService#getImplementation()
+	 */
+	public ImplementationId getImplementationId();
 }

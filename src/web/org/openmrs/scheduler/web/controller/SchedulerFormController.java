@@ -39,21 +39,22 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class SchedulerFormController extends SimpleFormController {
 	
-	/** 
-	 * Logger for this class and subclasses 
+	/**
+	 * Logger for this class and subclasses
 	 */
 	protected static final Log log = LogFactory.getLog(SchedulerFormController.class);
 	
 	// Move this to message.properties or OpenmrsConstants
 	public static String DEFAULT_DATE_PATTERN = "MM/dd/yyyy HH:mm:ss";
+	
 	public static DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat(DEFAULT_DATE_PATTERN);
 	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
@@ -64,10 +65,13 @@ public class SchedulerFormController extends SimpleFormController {
 	}
 	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object command,
+	                                             BindException errors) throws Exception {
 		
 		TaskDefinition task = (TaskDefinition) command;
 		
@@ -85,87 +89,85 @@ public class SchedulerFormController extends SimpleFormController {
 		
 		task.setProperties(properties);
 		
-		
 		// if the user selected a different repeat interval unit, fix repeatInterval
 		String units = request.getParameter("repeatIntervalUnits");
 		Long interval = task.getRepeatInterval();
 		
 		if ("minutes".equals(units)) {
 			interval = interval * 60;
-		}
-		else if ("hours".equals(units)) {
+		} else if ("hours".equals(units)) {
 			interval = interval * 60 * 60;
-		}
-		else if ("days".equals(units)) {
+		} else if ("days".equals(units)) {
 			interval = interval * 60 * 60 * 24;
 		}
 		
 		task.setRepeatInterval(interval);
 		
-		
 		return super.processFormSubmission(request, response, task, errors);
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
-
+		
 		TaskDefinition task = (TaskDefinition) command;
 		task.setStartTimePattern(DEFAULT_DATE_PATTERN);
 		log.info("task started? " + task.getStarted());
 		
 		Context.getSchedulerService().saveTask(task);
-
+		
 		view = getSuccessView();
 		
-		Object [] args = new Object[] { task.getName() };
+		Object[] args = new Object[] { task.getName() };
 		String success = getMessageSourceAccessor().getMessage("Scheduler.taskForm.saved", args);
 		httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
-	
+		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	  protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
-		  TaskDefinition task = new TaskDefinition();
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
+		TaskDefinition task = new TaskDefinition();
 		
 		String taskId = request.getParameter("taskId");
-    	if (taskId != null) {
-    		task = Context.getSchedulerService().getTask(Integer.valueOf(taskId));	
-    	}
-	
+		if (taskId != null) {
+			task = Context.getSchedulerService().getTask(Integer.valueOf(taskId));
+		}
+		
 		// Date format pattern for new and existing (currently disabled, but visible)
-		if ( task.getStartTimePattern() == null ) 
+		if (task.getStartTimePattern() == null)
 			task.setStartTimePattern(DEFAULT_DATE_PATTERN);
-
+		
 		return task;
-	  }
-
+	}
+	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Override
 	protected Map<String, String> referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
 		
 		Map<String, String> map = new HashMap<String, String>();
 		
-		TaskDefinition task = (TaskDefinition)command;
+		TaskDefinition task = (TaskDefinition) command;
 		
 		Long interval = task.getRepeatInterval();
 		
@@ -174,20 +176,15 @@ public class SchedulerFormController extends SimpleFormController {
 		else if (interval < 3600) {
 			map.put("units", "minutes");
 			task.setRepeatInterval(interval / 60);
-		}
-		else if (interval < 86400) {
+		} else if (interval < 86400) {
 			map.put("units", "hours");
 			task.setRepeatInterval(interval / 3600);
-		}
-		else {
+		} else {
 			map.put("units", "days");
 			task.setRepeatInterval(interval / 86400);
 		}
 		
 		return map;
 	}
-
-	  
-
-	  
+	
 }

@@ -35,33 +35,33 @@ import org.openmrs.web.OpenmrsCookieLocaleResolver;
 import org.openmrs.web.WebConstants;
 
 /**
- * This servlet accepts the username and password from the login form
- * and authenticates the user to OpenMRS
+ * This servlet accepts the username and password from the login form and authenticates the user to
+ * OpenMRS
  * 
  * @see org.openmrs.api.context.Context#authenticate(String, String)
  */
 public class LoginServlet extends HttpServlet {
-
+	
 	public static final long serialVersionUID = 134231247523L;
+	
 	protected static final Log log = LogFactory.getLog(LoginServlet.class);
 	
 	/**
-     * The mapping from user's IP address to the number of attempts at logging in from that IP
-     */
-    private Map<String, Integer> loginAttemptsByIP = new HashMap<String, Integer>();
-    
-    /**
-     * The mapping from user's IP address to the time that they were locked out
-     */
-    private Map<String, Date> lockoutDateByIP = new HashMap<String, Date>();
-    
+	 * The mapping from user's IP address to the number of attempts at logging in from that IP
+	 */
+	private Map<String, Integer> loginAttemptsByIP = new HashMap<String, Integer>();
+	
+	/**
+	 * The mapping from user's IP address to the time that they were locked out
+	 */
+	private Map<String, Date> lockoutDateByIP = new HashMap<String, Date>();
+	
 	/**
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession httpSession = request.getSession();
 		
 		String ipAddress = request.getRemoteAddr();
@@ -81,13 +81,11 @@ public class LoginServlet extends HttpServlet {
 			lockedOut = true;
 			
 			Date lockedOutTime = lockoutDateByIP.get(ipAddress);
-			if (lockedOutTime != null && 
-				new Date().getTime() - lockedOutTime.getTime() > 300000) {
-					lockedOut = false;
-					loginAttempts = 0;
-					lockoutDateByIP.put(ipAddress, null);
-			}
-			else {
+			if (lockedOutTime != null && new Date().getTime() - lockedOutTime.getTime() > 300000) {
+				lockedOut = false;
+				loginAttempts = 0;
+				lockoutDateByIP.put(ipAddress, null);
+			} else {
 				// they haven't been locked out before, or they're trying again
 				// within the time limit.  Set the locked-out date to right now
 				lockoutDateByIP.put(ipAddress, new Date());
@@ -101,16 +99,15 @@ public class LoginServlet extends HttpServlet {
 		
 		if (lockedOut) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.login.tooManyAttempts");
-		}
-		else {
+		} else {
 			try {
 				String username = request.getParameter("uname");
 				String password = request.getParameter("pw");
-						
+				
 				// only try to authenticate if they actually typed in a username
 				if (username == null || username.length() == 0)
 					throw new ContextAuthenticationException("Unable to authenticate with an empty username");
-					
+				
 				Context.authenticate(username, password);
 				
 				if (Context.isAuthenticated()) {
@@ -125,11 +122,10 @@ public class LoginServlet extends HttpServlet {
 							Locale locale = null;
 							if (localeString.length() == 5) {
 								//user's locale is language_COUNTRY (i.e. en_US)
-								String lang = localeString.substring(0,2);
-								String country = localeString.substring(3,5);
+								String lang = localeString.substring(0, 2);
+								String country = localeString.substring(3, 5);
 								locale = new Locale(lang, country);
-							}
-							else {
+							} else {
 								// user's locale is only the language (language plus greater than 2 char country code
 								locale = new Locale(localeString);
 							}
@@ -138,7 +134,8 @@ public class LoginServlet extends HttpServlet {
 						}
 					}
 					
-					Boolean forcePasswordChange = new Boolean(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)); 
+					Boolean forcePasswordChange = new Boolean(user
+					        .getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
 					if (forcePasswordChange) {
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.password.change");
 						redirect = request.getContextPath() + "/options.form#Change Login Info";
@@ -155,7 +152,7 @@ public class LoginServlet extends HttpServlet {
 					}
 					
 					response.sendRedirect(redirect);
-				
+					
 					httpSession.setAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR, request.getLocalAddr());
 					httpSession.removeAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR);
 					
@@ -165,7 +162,8 @@ public class LoginServlet extends HttpServlet {
 					
 					return;
 				}
-			} catch (ContextAuthenticationException e) {
+			}
+			catch (ContextAuthenticationException e) {
 				// set the error message for the user telling them
 				// to try again
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.password.invalid");
@@ -181,15 +179,14 @@ public class LoginServlet extends HttpServlet {
 	}
 	
 	/**
-	 * Convenience method for pulling the correct page to redirect
-	 * to out of the request
+	 * Convenience method for pulling the correct page to redirect to out of the request
 	 * 
 	 * @param request the current request
 	 * @return the page to redirect to as determined by parameters in the request
 	 */
 	private String determineRedirect(HttpServletRequest request) {
 		// first option for redirecting is the "redirect" parameter (set on login.jsp from the session attr)
-		String redirect = request.getParameter("redirect"); 
+		String redirect = request.getParameter("redirect");
 		
 		// second option for redirecting is the referrer parameter set at login.jsp
 		if (redirect == null || redirect.equals("")) {

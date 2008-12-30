@@ -14,12 +14,12 @@
 package org.openmrs.scheduler;
 
 public class SchedulerException extends Exception {
-
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4462693049954360187L;
-
+	
 	public SchedulerException() {
 		super();
 	}
@@ -35,5 +35,5 @@ public class SchedulerException extends Exception {
 	public SchedulerException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
+	
 }

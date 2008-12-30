@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class GreaterThan implements Operator {
-
-    public String toString() {
-        return "GREATER THAN";
-    }
-    
+	
+	public String toString() {
+		return "GREATER THAN";
+	}
+	
 }

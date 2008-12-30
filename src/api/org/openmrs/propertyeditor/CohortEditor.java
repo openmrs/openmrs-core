@@ -22,12 +22,13 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class CohortEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public CohortEditor() { }
+	public CohortEditor() {
+	}
 	
-	public void setAsText(String text) throws IllegalArgumentException { 
+	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(Context.getCohortService().getCohort(Integer.valueOf(text)));
@@ -40,13 +41,12 @@ public class CohortEditor extends PropertyEditorSupport {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
 		Cohort c = (Cohort) getValue();
 		if (c == null) {
 			return "";
-		}
-		else {
+		} else {
 			return c.getCohortId().toString();
 		}
 	}

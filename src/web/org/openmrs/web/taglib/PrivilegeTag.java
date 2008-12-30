@@ -21,16 +21,17 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 
 public class PrivilegeTag extends TagSupport {
-
+	
 	public static final long serialVersionUID = 11233L;
 	
 	private final Log log = LogFactory.getLog(getClass());
-
+	
 	private String privilege;
+	
 	private String inverse;
-
+	
 	public int doStartTag() {
-
+		
 		UserContext userContext = Context.getUserContext();
 		
 		log.debug("Checking user " + userContext.getAuthenticatedUser() + " for privs " + privilege);
@@ -44,20 +45,19 @@ public class PrivilegeTag extends TagSupport {
 					break;
 				}
 			}
-		}
-		else {
+		} else {
 			hasPrivilege = userContext.hasPrivilege(privilege);
 		}
-
+		
 		// allow inversing
 		boolean isInverted = false;
-		if ( inverse != null ) isInverted = "true".equals(inverse.toLowerCase());
-				
-		if ( (hasPrivilege && !isInverted) || (!hasPrivilege && isInverted)) {
+		if (inverse != null)
+			isInverted = "true".equals(inverse.toLowerCase());
+		
+		if ((hasPrivilege && !isInverted) || (!hasPrivilege && isInverted)) {
 			pageContext.setAttribute("authenticatedUser", userContext.getAuthenticatedUser());
 			return EVAL_BODY_INCLUDE;
-		}
-		else {
+		} else {
 			return SKIP_BODY;
 		}
 	}
@@ -68,21 +68,21 @@ public class PrivilegeTag extends TagSupport {
 	public String getPrivilege() {
 		return privilege;
 	}
-
+	
 	/**
 	 * @param converse The privilege to set.
 	 */
 	public void setPrivilege(String privilege) {
 		this.privilege = privilege;
 	}
-
+	
 	/**
 	 * @return Returns the inverse.
 	 */
 	public String getInverse() {
 		return inverse;
 	}
-
+	
 	/**
 	 * @param inverse The inverse to set.
 	 */

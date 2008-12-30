@@ -28,30 +28,31 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 /**
- * Class to convert the "programid: workflowoneid workflow2id" strings
- * to actual workflows on a program
+ * Class to convert the "programid: workflowoneid workflow2id" strings to actual workflows on a
+ * program
  */
 public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public WorkflowCollectionEditor() {	}
-
+	public WorkflowCollectionEditor() {
+	}
+	
 	private Program program = null;
 	
 	/**
-     * @param program
-     */
-    public WorkflowCollectionEditor(Program program) {
-	    this.program = program;
-    }
-
+	 * @param program
+	 */
+	public WorkflowCollectionEditor(Program program) {
+		this.program = program;
+	}
+	
 	/**
-	 * Takes a "program_id:list"
-	 * where program_id is the id of the program that this collection is for (or not present, if it's a new program)
-	 * and list is a space-separated list of concept ids.
-	 * This class is a bit of a hack, because I don't know a better way to do this. -DJ
-	 * The purpose is to retire and un-retire workflows where possible rather than deleting and creating them.  
+	 * Takes a "program_id:list" where program_id is the id of the program that this collection is
+	 * for (or not present, if it's a new program) and list is a space-separated list of concept
+	 * ids. This class is a bit of a hack, because I don't know a better way to do this. -DJ The
+	 * purpose is to retire and un-retire workflows where possible rather than deleting and creating
+	 * them.
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
@@ -64,7 +65,8 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 				if (program == null)
 					// if a program wasn't passed in, try to look it up now
 					program = pws.getProgram(Integer.valueOf(progIdStr));
-			} catch (Exception ex) { }
+			}
+			catch (Exception ex) {}
 			
 			String[] conceptIds = text.split(" ");
 			Set<ProgramWorkflow> oldSet = program == null ? new HashSet<ProgramWorkflow>() : program.getAllWorkflows();
@@ -96,7 +98,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 				pw.setConcept(cs.getConcept(conceptId));
 				oldSet.add(pw);
 			}
-
+			
 			setValue(oldSet);
 		} else {
 			setValue(null);
@@ -109,7 +111,7 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
 	@SuppressWarnings("unchecked")
-    public String getAsText() {
+	public String getAsText() {
 		Collection<ProgramWorkflow> pws = (Collection<ProgramWorkflow>) getValue();
 		if (pws == null || pws.size() == 0) {
 			return ":";
@@ -132,5 +134,5 @@ public class WorkflowCollectionEditor extends PropertyEditorSupport {
 			return ret.toString().trim();
 		}
 	}
-
+	
 }

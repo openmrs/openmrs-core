@@ -28,7 +28,7 @@ import org.openmrs.logic.rule.ReferenceRule;
  * TODO Add more tests here
  */
 public class LogicEvalTest extends LogicBaseContextSensitiveTest {
-
+	
 	@Before
 	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
@@ -36,7 +36,7 @@ public class LogicEvalTest extends LogicBaseContextSensitiveTest {
 		
 		authenticate();
 	}
-
+	
 	/**
 	 * TODO: fix this to use asserts instead of just printing to stdout
 	 * 
@@ -52,17 +52,17 @@ public class LogicEvalTest extends LogicBaseContextSensitiveTest {
 		
 		// register temperature as a rule if needed
 		Concept temperature = Context.getConceptService().getConcept(12232);
-        String name = temperature.getBestName(Context.getLocale()).getName();
-        try {
-        	Context.getLogicService().getRule(name);
-        }
-        catch (LogicException e) {
-        	// if not found, add it
-        	Rule rule = new ReferenceRule("obs." + name);
-        	Context.getLogicService().addRule(name, rule);
-        }
-
-        //Patient p = Context.getPatientService().getPatient(2);
+		String name = temperature.getBestName(Context.getLocale()).getName();
+		try {
+			Context.getLogicService().getRule(name);
+		}
+		catch (LogicException e) {
+			// if not found, add it
+			Rule rule = new ReferenceRule("obs." + name);
+			Context.getLogicService().addRule(name, rule);
+		}
+		
+		//Patient p = Context.getPatientService().getPatient(2);
 		Cohort cohort = new Cohort();
 		cohort.addMember(2);
 		

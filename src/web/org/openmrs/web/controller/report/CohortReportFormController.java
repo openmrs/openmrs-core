@@ -67,165 +67,173 @@ import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 
 /**
- * This form lets you create or edit a report with a single CohortDataSetDefinition.
- * You should <strong>not</strong> use this form to edit other types of reports.
+ * This form lets you create or edit a report with a single CohortDataSetDefinition. You should
+ * <strong>not</strong> use this form to edit other types of reports.
  */
 public class CohortReportFormController extends SimpleFormController implements Validator {
-
+	
 	Log log = LogFactory.getLog(getClass());
-
+	
 	/**
 	 * Creates a command object and tries to fill it with data from the saved report schema with the
 	 * id given by the 'reportId' parameter.
+	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws Exception {
-    	CommandObject command = new CommandObject();
-
-    	if (Context.isAuthenticated() && !isFormSubmission(request)) {
-	    	// if this is an existing report, get its data
-	    	String idString = request.getParameter("reportId");
-	    	if (idString != null) {
-	    		Integer id = Integer.valueOf(idString);
-	    		ReportSchemaXml schemaXml = Context.getReportService().getReportSchemaXml(id);
-	    		ReportSchema schema = Context.getReportService().getReportSchema(schemaXml);
-	    		CohortDataSetDefinition cohorts = null;
-	    		if (schema.getDataSetDefinitions() == null)
-	    			schema.setDataSetDefinitions(new ArrayList<DataSetDefinition>());
-	    		if (schema.getDataSetDefinitions().size() == 0)
-	    			schema.getDataSetDefinitions().add(new CohortDataSetDefinition());
-	    		for (DataSetDefinition d : schema.getDataSetDefinitions()) {
-	    			if (d instanceof CohortDataSetDefinition) {
-	    				if (cohorts != null)
-	    					throw new Exception("You may not edit a report that contains more than one Cohort Dataset Definition");
-	    				cohorts = (CohortDataSetDefinition) d;
-	    			} else {
-	    				throw new Exception("You may not edit a report that contains datasets besides Cohort Dataset Definition");
-	    			}
-	    		}
-	    		if (cohorts == null)
-	    			throw new Exception("You may only edit a report that has exactly one Cohort Dataset Definition");
-	    		
-	    		command.setReportId(id);
-	    		command.setName(schema.getName());
-	    		command.setDescription(schema.getDescription());
-	    		command.getParameters().addAll(schema.getReportParameters());
-	    		
-	    		// populate command.rows, directly from XML
-	    		Document xml = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(schemaXml.getXml())));
-	    		// xml looks like <reportSchema>...<dataSets>...<dataSetDefinition class="org.openmrs.report.CohortDataSetDefinition">
-	    		// TODO: do this with xpath
-	    		Node temp = findChild(xml, "reportSchema");
-	    		temp = findChild(temp, "dataSets");
-	    		temp = findChildWithAttribute(temp, "dataSetDefinition", "class", "org.openmrs.report.CohortDataSetDefinition");
-
-	    		Map<String, String> nameToStrategy = new LinkedHashMap<String, String>();
-	    		Node strategies = findChild(temp, "strategies");
-	    		if (strategies != null) {
-		    		NodeList nl = strategies.getChildNodes();
-		    		// each is a <entry><string>name</string><cohort ...><specification>strategy</specification></cohort></entry>
-		    		for (int i = 0; i < nl.getLength(); ++i) {
-		    			Node node = nl.item(i);
-		    			if ("entry".equals(node.getNodeName())) {
-			    			String name = findChild(node, "string").getFirstChild().getNodeValue();
-			    			String strategy = findChild(findChild(node, "cohort"), "specification").getFirstChild().getNodeValue();
-			    			nameToStrategy.put(name, strategy);
-		    			}
-		    		}
-	    		}
-	    		
-	    		Map<String, String> nameToDescription = new LinkedHashMap<String, String>();
-	    		Node descriptions = findChild(temp, "descriptions");
-	    		if (descriptions != null) {
-		    		NodeList nl = descriptions.getChildNodes();
-		    		// each is a <entry><string>name</string><string>descr</string></entry>
-		    		for (int i = 0; i < nl.getLength(); ++i) {
-		    			Node node = nl.item(i);
-		    			if ("entry".equals(node.getNodeName())) {
-			    			String name = findChild(node, "string").getFirstChild().getNodeValue();
-			    			String descr = findChild(node, "string", 2).getFirstChild().getNodeValue();
-			    			nameToDescription.put(name, descr);
-		    			}
-		    		}
-	    		}
-	    		
-	    		LinkedHashSet<String> names = new LinkedHashSet<String>();
-	    		names.addAll(nameToStrategy.keySet());
-	    		names.addAll(nameToDescription.keySet());
-	    		
-	    		List<CohortReportRow> rows = new ArrayList<CohortReportRow>();
-	    		for (String name : names) {
-	    			String descr = nameToDescription.get(name);
-	    			String strat = nameToStrategy.get(name);
-	    			CohortReportRow row = new CohortReportRow();
-	    			row.setName(name);
-	    			row.setDescription(descr);
-	    			row.setQuery(strat);
-	    			rows.add(row);
-	    		}
-	    		command.setRows(rows);
-	    	}
-    	}
+	protected Object formBackingObject(HttpServletRequest request) throws Exception {
+		CommandObject command = new CommandObject();
+		
+		if (Context.isAuthenticated() && !isFormSubmission(request)) {
+			// if this is an existing report, get its data
+			String idString = request.getParameter("reportId");
+			if (idString != null) {
+				Integer id = Integer.valueOf(idString);
+				ReportSchemaXml schemaXml = Context.getReportService().getReportSchemaXml(id);
+				ReportSchema schema = Context.getReportService().getReportSchema(schemaXml);
+				CohortDataSetDefinition cohorts = null;
+				if (schema.getDataSetDefinitions() == null)
+					schema.setDataSetDefinitions(new ArrayList<DataSetDefinition>());
+				if (schema.getDataSetDefinitions().size() == 0)
+					schema.getDataSetDefinitions().add(new CohortDataSetDefinition());
+				for (DataSetDefinition d : schema.getDataSetDefinitions()) {
+					if (d instanceof CohortDataSetDefinition) {
+						if (cohorts != null)
+							throw new Exception(
+							        "You may not edit a report that contains more than one Cohort Dataset Definition");
+						cohorts = (CohortDataSetDefinition) d;
+					} else {
+						throw new Exception(
+						        "You may not edit a report that contains datasets besides Cohort Dataset Definition");
+					}
+				}
+				if (cohorts == null)
+					throw new Exception("You may only edit a report that has exactly one Cohort Dataset Definition");
+				
+				command.setReportId(id);
+				command.setName(schema.getName());
+				command.setDescription(schema.getDescription());
+				command.getParameters().addAll(schema.getReportParameters());
+				
+				// populate command.rows, directly from XML
+				Document xml = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
+				    new InputSource(new StringReader(schemaXml.getXml())));
+				// xml looks like <reportSchema>...<dataSets>...<dataSetDefinition class="org.openmrs.report.CohortDataSetDefinition">
+				// TODO: do this with xpath
+				Node temp = findChild(xml, "reportSchema");
+				temp = findChild(temp, "dataSets");
+				temp = findChildWithAttribute(temp, "dataSetDefinition", "class",
+				    "org.openmrs.report.CohortDataSetDefinition");
+				
+				Map<String, String> nameToStrategy = new LinkedHashMap<String, String>();
+				Node strategies = findChild(temp, "strategies");
+				if (strategies != null) {
+					NodeList nl = strategies.getChildNodes();
+					// each is a <entry><string>name</string><cohort ...><specification>strategy</specification></cohort></entry>
+					for (int i = 0; i < nl.getLength(); ++i) {
+						Node node = nl.item(i);
+						if ("entry".equals(node.getNodeName())) {
+							String name = findChild(node, "string").getFirstChild().getNodeValue();
+							String strategy = findChild(findChild(node, "cohort"), "specification").getFirstChild()
+							        .getNodeValue();
+							nameToStrategy.put(name, strategy);
+						}
+					}
+				}
+				
+				Map<String, String> nameToDescription = new LinkedHashMap<String, String>();
+				Node descriptions = findChild(temp, "descriptions");
+				if (descriptions != null) {
+					NodeList nl = descriptions.getChildNodes();
+					// each is a <entry><string>name</string><string>descr</string></entry>
+					for (int i = 0; i < nl.getLength(); ++i) {
+						Node node = nl.item(i);
+						if ("entry".equals(node.getNodeName())) {
+							String name = findChild(node, "string").getFirstChild().getNodeValue();
+							String descr = findChild(node, "string", 2).getFirstChild().getNodeValue();
+							nameToDescription.put(name, descr);
+						}
+					}
+				}
+				
+				LinkedHashSet<String> names = new LinkedHashSet<String>();
+				names.addAll(nameToStrategy.keySet());
+				names.addAll(nameToDescription.keySet());
+				
+				List<CohortReportRow> rows = new ArrayList<CohortReportRow>();
+				for (String name : names) {
+					String descr = nameToDescription.get(name);
+					String strat = nameToStrategy.get(name);
+					CohortReportRow row = new CohortReportRow();
+					row.setName(name);
+					row.setDescription(descr);
+					row.setQuery(strat);
+					rows.add(row);
+				}
+				command.setRows(rows);
+			}
+		}
 		return command;
-    }
-
+	}
+	
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-    protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-	    Map<String, Object> ret = new HashMap<String, Object>();
-	    
-	    List<Class<?>> classes = new ArrayList<Class<?>>();
-	    classes.add(Date.class);
-	    classes.add(Integer.class);
-	    classes.add(Double.class);
-	    classes.add(Location.class);
-	    ret.put("parameterClasses", classes);
-	    
-	    List<AbstractReportObject> searches = Context.getReportObjectService().getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
-	    Map<String, String> map = new LinkedHashMap<String, String>();
-	    for (AbstractReportObject o : searches) {
-	    	if (o instanceof PatientSearchReportObject) {
-	    		StringBuilder searchName = new StringBuilder(o.getName());
-	    		List<Parameter> parameters = ((PatientSearchReportObject) o).getPatientSearch().getParameters();
-	    		if (parameters != null && !parameters.isEmpty()) {
-	    			searchName.append("|");
-	    			for (Iterator<Parameter> i = parameters.iterator(); i.hasNext();) {
-	    				Parameter p = i.next();
-	    				searchName.append(p.getName()).append("=${?}");
-	    				if (i.hasNext()) {
-	    					searchName.append(",");
-	    				}
-	    			}
-	    		}
-	    		map.put(searchName.toString(), o.getDescription());
-	    	}
-	    	else {
-	    		map.put(o.getName(), o.getDescription());
-	    	}
-	    }
-	    ret.put("patientSearches", map);
-	    
-	    Properties macros = Context.getReportService().getReportXmlMacros();
-	    map = new LinkedHashMap<String, String>();
-	    for (Map.Entry<Object, Object> e : macros.entrySet()) {
-	    	if (!e.getKey().toString().equals("macroPrefix") && !e.getKey().toString().equals("macroSuffix"))
-	    		map.put(e.getKey().toString(), e.getValue().toString());
-	    }
-	    ret.put("macros", map);
-	    ret.put("macroPrefix", macros.get("macroPrefix"));
-	    ret.put("macroSuffix", macros.get("macroSuffix"));
-	    
-	    return ret;
-    }
-
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
+		List<Class<?>> classes = new ArrayList<Class<?>>();
+		classes.add(Date.class);
+		classes.add(Integer.class);
+		classes.add(Double.class);
+		classes.add(Location.class);
+		ret.put("parameterClasses", classes);
+		
+		List<AbstractReportObject> searches = Context.getReportObjectService().getReportObjectsByType(
+		    OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		for (AbstractReportObject o : searches) {
+			if (o instanceof PatientSearchReportObject) {
+				StringBuilder searchName = new StringBuilder(o.getName());
+				List<Parameter> parameters = ((PatientSearchReportObject) o).getPatientSearch().getParameters();
+				if (parameters != null && !parameters.isEmpty()) {
+					searchName.append("|");
+					for (Iterator<Parameter> i = parameters.iterator(); i.hasNext();) {
+						Parameter p = i.next();
+						searchName.append(p.getName()).append("=${?}");
+						if (i.hasNext()) {
+							searchName.append(",");
+						}
+					}
+				}
+				map.put(searchName.toString(), o.getDescription());
+			} else {
+				map.put(o.getName(), o.getDescription());
+			}
+		}
+		ret.put("patientSearches", map);
+		
+		Properties macros = Context.getReportService().getReportXmlMacros();
+		map = new LinkedHashMap<String, String>();
+		for (Map.Entry<Object, Object> e : macros.entrySet()) {
+			if (!e.getKey().toString().equals("macroPrefix") && !e.getKey().toString().equals("macroSuffix"))
+				map.put(e.getKey().toString(), e.getValue().toString());
+		}
+		ret.put("macros", map);
+		ret.put("macroPrefix", macros.get("macroPrefix"));
+		ret.put("macroSuffix", macros.get("macroSuffix"));
+		
+		return ret;
+	}
+	
 	/**
 	 * Handles parameters and rows, since Spring isn't good with lists
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#onBind(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.BindException)
+	 * 
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#onBind(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.BindException)
 	 */
 	@Override
-    protected void onBind(HttpServletRequest request, Object commandObj, BindException errors) throws Exception {
+	protected void onBind(HttpServletRequest request, Object commandObj, BindException errors) throws Exception {
 		CommandObject command = (CommandObject) commandObj;
 		
 		// parameters
@@ -235,14 +243,16 @@ public class CohortReportFormController extends SimpleFormController implements 
 		List<Parameter> params = new ArrayList<Parameter>();
 		if (paramNames != null) {
 			for (int i = 0; i < paramNames.length; ++i) {
-				if (StringUtils.hasText(paramNames[i]) || StringUtils.hasText(paramLabels[i]) || StringUtils.hasText(paramClasses[i])) {
+				if (StringUtils.hasText(paramNames[i]) || StringUtils.hasText(paramLabels[i])
+				        || StringUtils.hasText(paramClasses[i])) {
 					try {
 						Class<?> clz = null;
 						if (StringUtils.hasText(paramClasses[i]))
 							clz = Class.forName(paramClasses[i]);
 						Parameter p = new Parameter(paramNames[i], paramLabels[i], clz, null);
 						params.add(p);
-					} catch (Exception ex) {
+					}
+					catch (Exception ex) {
 						errors.rejectValue("parameters", null, "Parameter error: " + ex.toString());
 					}
 				}
@@ -263,20 +273,23 @@ public class CohortReportFormController extends SimpleFormController implements 
 					row.setDescription(rowDescriptions[i]);
 					row.setQuery(rowQueries[i]);
 					rows.add(row);
-				} catch (Exception ex) {
+				}
+				catch (Exception ex) {
 					errors.rejectValue("rows", null, "Row error: " + ex.toString());
 				}
 			}
 		}
 		command.setRows(rows);
-    }
+	}
 	
 	/**
-     * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-     */
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
+	 */
 	@Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response,
-    		Object commandObj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object commandObj,
+	                                BindException errors) throws Exception {
 		CommandObject command = (CommandObject) commandObj;
 		
 		// do simpleframework serialization of everything but 'rows', and add those via handcoded xml, since
@@ -295,8 +308,9 @@ public class CohortReportFormController extends SimpleFormController implements 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setValidating(false);
 		DocumentBuilder db = dbf.newDocumentBuilder();
-
-		Document xml = db.parse(new InputSource(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + sw.toString())));
+		
+		Document xml = db.parse(new InputSource(new StringReader(
+		        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + sw.toString())));
 		Node node = findChild(xml, "reportSchema");
 		node = findChild(node, "dataSets");
 		Element dsd = xml.createElement("dataSetDefinition");
@@ -344,32 +358,32 @@ public class CohortReportFormController extends SimpleFormController implements 
 		}
 		
 		// now turn this into an xml string
-		System.setProperty("javax.xml.transform.TransformerFactory",  
-				"com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
-        TransformerFactory transfac = TransformerFactory.newInstance();
-        Transformer trans = transfac.newTransformer();        
-        trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        trans.setOutputProperty(OutputKeys.INDENT, "yes");
-        trans.setOutputProperty(OutputKeys.METHOD, "xml");
-        StringWriter out = new StringWriter();
-        StreamResult result = new StreamResult(out);
-        DOMSource source = new DOMSource(xml);
-       	trans.transform(source, result);
-        String schemaXml = out.toString();
-        
-        ReportSchemaXml rsx = new ReportSchemaXml();
-        rsx.populateFromReportSchema(rs);
-        rsx.setXml(schemaXml);
-        rsx.updateXmlFromAttributes();
-
-        if (rsx.getReportSchemaId() != null) {
-        	Context.getReportService().saveReportSchemaXml(rsx);
-        } else {
-        	Context.getReportService().saveReportSchemaXml(rsx);
-        }
-        
-	    return new ModelAndView(new RedirectView(getSuccessView() + "?reportId=" + rsx.getReportSchemaId()));
-    }
+		System.setProperty("javax.xml.transform.TransformerFactory",
+		    "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
+		TransformerFactory transfac = TransformerFactory.newInstance();
+		Transformer trans = transfac.newTransformer();
+		trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		trans.setOutputProperty(OutputKeys.INDENT, "yes");
+		trans.setOutputProperty(OutputKeys.METHOD, "xml");
+		StringWriter out = new StringWriter();
+		StreamResult result = new StreamResult(out);
+		DOMSource source = new DOMSource(xml);
+		trans.transform(source, result);
+		String schemaXml = out.toString();
+		
+		ReportSchemaXml rsx = new ReportSchemaXml();
+		rsx.populateFromReportSchema(rs);
+		rsx.setXml(schemaXml);
+		rsx.updateXmlFromAttributes();
+		
+		if (rsx.getReportSchemaId() != null) {
+			Context.getReportService().saveReportSchemaXml(rsx);
+		} else {
+			Context.getReportService().saveReportSchemaXml(rsx);
+		}
+		
+		return new ModelAndView(new RedirectView(getSuccessView() + "?reportId=" + rsx.getReportSchemaId()));
+	}
 	
 	private Node findChild(Node parent, String name) {
 		NodeList list = parent.getChildNodes();
@@ -383,10 +397,10 @@ public class CohortReportFormController extends SimpleFormController implements 
 	
 	/**
 	 * finds the ith occurrence of a child with the given name
-     */
-    private Node findChild(Node parent, String name, int index) {
-    	int soFar = 0;
-    	NodeList list = parent.getChildNodes();
+	 */
+	private Node findChild(Node parent, String name, int index) {
+		int soFar = 0;
+		NodeList list = parent.getChildNodes();
 		for (int i = 0; i < list.getLength(); ++i) {
 			Node node = list.item(i);
 			if (node.getNodeName().equals(name)) {
@@ -396,7 +410,7 @@ public class CohortReportFormController extends SimpleFormController implements 
 			}
 		}
 		return null;
-    }
+	}
 	
 	private Node findChildWithAttribute(Node parent, String name, String attrName, String attrValue) {
 		NodeList list = parent.getChildNodes();
@@ -414,107 +428,137 @@ public class CohortReportFormController extends SimpleFormController implements 
 	// ***** Validator methods *****
 	
 	/**
-     * @see org.springframework.validation.Validator#supports(java.lang.Class)
-     */
-    @SuppressWarnings("unchecked")
-    public boolean supports(Class clazz) {
-    	return clazz.equals(CommandObject.class);
-    }
-
+	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean supports(Class clazz) {
+		return clazz.equals(CommandObject.class);
+	}
+	
 	/**
-     * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
-     */
-    public void validate(Object commandObj, Errors errors) {
-	    CommandObject command = (CommandObject) commandObj;
-	    
-	    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.null");
-	    ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.null");
-	    
-	    for (Parameter p : command.getParameters()) {
-	    	if (!StringUtils.hasText(p.getName()) || !StringUtils.hasText(p.getLabel()) || p.getClazz() == null)
-	    		errors.rejectValue("parameters", null, "All parameters must have a name, a label, and a datatype");
-	    }
-	    
-	    for (CohortReportRow row : command.getRows()) {
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
+	 */
+	public void validate(Object commandObj, Errors errors) {
+		CommandObject command = (CommandObject) commandObj;
+		
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.null");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.null");
+		
+		for (Parameter p : command.getParameters()) {
+			if (!StringUtils.hasText(p.getName()) || !StringUtils.hasText(p.getLabel()) || p.getClazz() == null)
+				errors.rejectValue("parameters", null, "All parameters must have a name, a label, and a datatype");
+		}
+		
+		for (CohortReportRow row : command.getRows()) {
 			if (!StringUtils.hasText(row.getName()))
 				errors.rejectValue("rows", null, "Each row must have a name");
 			
 			try {
 				CohortDefinition def = CohortUtil.parse(row.getQuery());
-				if (def == null) throw new Exception();
-			} catch (Exception ex) {
+				if (def == null)
+					throw new Exception();
+			}
+			catch (Exception ex) {
 				errors.rejectValue("rows", null, "Failed to parse: " + row.getQuery() + " (" + ex.getMessage() + ")");
-			}				
-	    }
-    }
-    
-    // ***** Command object *****
+			}
+		}
+	}
+	
+	// ***** Command object *****
 	
 	public class CommandObject {
+		
 		private Integer reportId;
+		
 		private String name;
+		
 		private String description;
+		
 		private List<Parameter> parameters;
+		
 		private List<CohortReportRow> rows;
+		
 		public CommandObject() {
 			parameters = new ArrayList<Parameter>();
 			rows = new ArrayList<CohortReportRow>();
 		}
+		
 		public Integer getReportId() {
-        	return reportId;
-        }
+			return reportId;
+		}
+		
 		public void setReportId(Integer reportId) {
-        	this.reportId = reportId;
-        }
+			this.reportId = reportId;
+		}
+		
 		public String getName() {
-        	return name;
-        }
+			return name;
+		}
+		
 		public void setName(String name) {
-        	this.name = name;
-        }
+			this.name = name;
+		}
+		
 		public String getDescription() {
-        	return description;
-        }
+			return description;
+		}
+		
 		public void setDescription(String description) {
-        	this.description = description;
-        }
+			this.description = description;
+		}
+		
 		public List<Parameter> getParameters() {
-        	return parameters;
-        }
+			return parameters;
+		}
+		
 		public void setParameters(List<Parameter> parameters) {
-        	this.parameters = parameters;
-        }
+			this.parameters = parameters;
+		}
+		
 		public List<CohortReportRow> getRows() {
-        	return rows;
-        }
+			return rows;
+		}
+		
 		public void setRows(List<CohortReportRow> rows) {
-        	this.rows = rows;
-        }
+			this.rows = rows;
+		}
 	}
 	
 	public class CohortReportRow {
+		
 		private String name;
+		
 		private String description;
+		
 		private String query;
-		public CohortReportRow() { }
+		
+		public CohortReportRow() {
+		}
+		
 		public String getName() {
-        	return name;
-        }
+			return name;
+		}
+		
 		public void setName(String name) {
-        	this.name = name;
-        }
+			this.name = name;
+		}
+		
 		public String getDescription() {
-        	return description;
-        }
+			return description;
+		}
+		
 		public void setDescription(String description) {
-        	this.description = description;
-        }
+			this.description = description;
+		}
+		
 		public String getQuery() {
-        	return query;
-        }
+			return query;
+		}
+		
 		public void setQuery(String query) {
-        	this.query = query;
-        }
+			this.query = query;
+		}
 	}
 	
 }

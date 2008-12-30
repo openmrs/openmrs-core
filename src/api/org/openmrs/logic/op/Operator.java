@@ -14,26 +14,45 @@
 package org.openmrs.logic.op;
 
 public interface Operator {
-
+	
 	public static final Operator AND = new And();
-    public static final Operator ASOF = new AsOf();
+	
+	public static final Operator ASOF = new AsOf();
+	
 	public static final Operator OR = new Or();
+	
 	public static final Operator NOT = new Not();
+	
 	public static final Operator BEFORE = new Before();
+	
 	public static final Operator AFTER = new After();
+	
 	public static final Operator CONTAINS = new Contains();
+	
 	public static final Operator EQUALS = new Equals();
+	
 	public static final Operator GT = new GreaterThan();
+	
 	public static final Operator GTE = new GreaterThanEquals();
+	
 	public static final Operator LT = new LessThan();
+	
 	public static final Operator LTE = new LessThanEquals();
+	
 	public static final Operator LAST = new Last();
-    public static final Operator FIRST = new First();
+	
+	public static final Operator FIRST = new First();
+	
 	public static final Operator EXISTS = new Exists();
+	
 	public static final Operator NOT_EXISTS = new NotExists();
+	
 	public static final Operator WITHIN = new Within();
+	
 	public static final Operator DISTINCT = new Distinct();
+	
 	public static final Operator COUNT = new Count();
+	
 	public static final Operator AVERAGE = new Average();
-
+	
 }

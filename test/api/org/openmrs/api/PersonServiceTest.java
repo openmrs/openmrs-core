@@ -38,19 +38,21 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
- * This class tests methods in the PersonService class.
- * 
- * TODO: Test all methods in the PersonService class.
+ * This class tests methods in the PersonService class. TODO: Test all methods in the PersonService
+ * class.
  */
 public class PersonServiceTest extends BaseContextSensitiveTest {
-
+	
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
+	
 	protected static final String CREATE_RELATIONSHIP_XML = "org/openmrs/api/include/PersonServiceTest-createRelationship.xml";
-
+	
 	protected PatientService ps = null;
+	
 	protected AdministrationService adminService = null;
+	
 	protected PersonService personService = null;
-
+	
 	@Before
 	public void onSetUpInTransaction() throws Exception {
 		if (ps == null) {
@@ -59,11 +61,11 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 			personService = Context.getPersonService();
 		}
 	}
-
+	
 	/**
-	 * Tests a voided relationship between personA and Person B to see if it is
-	 * still listed when retrieving unvoided relationships for personA and if it is
-	 * still listed when retrieving unvoided relationships for personB.
+	 * Tests a voided relationship between personA and Person B to see if it is still listed when
+	 * retrieving unvoided relationships for personA and if it is still listed when retrieving
+	 * unvoided relationships for personB.
 	 * 
 	 * @throws Exception
 	 */
@@ -71,7 +73,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void shouldGetUnvoidedRelationships() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		executeDataSet(CREATE_RELATIONSHIP_XML);
-
+		
 		// Create Patient#3.
 		Patient patient = new Patient();
 		PersonName pName = new PersonName();
@@ -109,14 +111,14 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		sibling.setRelationshipType(personService.getRelationshipType(4));
 		// relationship.setCreator(Context.getUserService().getUser(1));
 		personService.saveRelationship(sibling);
-
+		
 		// Make Patient#3 the Doctor of Patient#2.
 		Relationship doctor = new Relationship();
 		doctor.setPersonB(ps.getPatient(2));
 		doctor.setPersonA(patient);
 		doctor.setRelationshipType(personService.getRelationshipType(3));
 		personService.saveRelationship(doctor);
-
+		
 		// Get unvoided relationships before voiding any.
 		Person p = personService.getPerson(2);
 		List<Relationship> aRels = personService.getRelationshipsByPerson(p);
@@ -130,18 +132,17 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		rTypeTmp = personService.getRelationshipTypeByName("booya");
 		assertNull(rTypeTmp);
 		
-
 		// Uncomment for console output.
 		//System.out.println("Relationships before voiding all:");
 		//System.out.println(aRels);
 		//System.out.println(bRels);
-
+		
 		// Void all relationships.
 		List<Relationship> allRels = personService.getAllRelationships();
 		for (Relationship r : allRels) {
 			personService.voidRelationship(r, "Because of a JUnit test.");
 		}
-
+		
 		// Get unvoided relationships after voiding all of them.
 		List<Relationship> updatedARels = personService.getRelationshipsByPerson(p);
 		List<Relationship> updatedBRels = personService.getRelationshipsByPerson(patient);
@@ -149,14 +150,13 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		//System.out.println("Relationships after voiding all:");
 		//System.out.println(updatedARels);
 		//System.out.println(updatedBRels);
-
+		
 		// Neither Patient#2 or Patient#3 should have any relationships now.
 		assertEquals(updatedARels, updatedBRels);
 	}
 	
 	/**
-	 * This test should get the first/last name out of a string into a
-	 * PersonName object.
+	 * This test should get the first/last name out of a string into a PersonName object.
 	 * 
 	 * @throws Exception
 	 */
@@ -174,9 +174,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies savePersonAttributeType
-	 * 	test = set the date created and creator on new
-	 * 
+	 * @verifies savePersonAttributeType test = set the date created and creator on new
 	 * @throws Exception
 	 */
 	@Test
@@ -194,9 +192,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies savePersonAttributeType
-	 * 	test = set the date changed and changed by on update
-	 * 
+	 * @verifies savePersonAttributeType test = set the date changed and changed by on update
 	 * @throws Exception
 	 */
 	@Test
@@ -213,5 +209,5 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertEquals(new User(1), pat.getChangedBy());
 		assertNotNull(pat.getDateChanged());
 	}
-	 
+	
 }

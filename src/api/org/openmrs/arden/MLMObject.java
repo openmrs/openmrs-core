@@ -12,6 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 package org.openmrs.arden;
+
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,127 +33,151 @@ import org.openmrs.Patient;
 public class MLMObject {
 	
 	public static int NOLIST = 0;
+	
 	public static int LIST = 1;
 	
 	//metadata
 	private String className;
+	
 	private String title;
+	
 	private String author;
+	
 	private String institution;
+	
 	private String data;
+	
 	private String logic;
+	
 	private String action;
+	
 	private String purpose;
+	
 	private String explanation;
+	
 	private String keywords;
+	
 	private String citations;
+	
 	private String links;
+	
 	private String date;
+	
 	private String specialist;
+	
 	private Integer priority;
+	
 	private Double version;
+	
 	private String type;
+	
 	private Integer ageMax;
+	
 	private Integer ageMin;
+	
 	private String ageMaxUnits;
+	
 	private String ageMinUnits;
 	
 	private HashMap<String, MLMObjectElement> conceptMap; //maps logic variables to query that assigned them
-	private HashMap<String,LinkedList<MLMEvaluateElement>> evaluateList; //tokens to evaluate
+	
+	private HashMap<String, LinkedList<MLMEvaluateElement>> evaluateList; //tokens to evaluate
 	
 	private ArrayList<Action> actions; //print action strings
+	
 	private ArrayList<LogicAssignment> logicAssignments = null;
-	private LinkedHashMap<String,LinkedHashMap<String,Comparison>> comparisons = null;
+	
+	private LinkedHashMap<String, LinkedHashMap<String, Comparison>> comparisons = null;
+	
 	private ArrayList<Conclude> concludes = null;
+	
 	private ArrayList<MLMObjectElement> objElements = null;
-	private HashMap<String,ArrayList<Call>> calls = null;
-
+	
+	private HashMap<String, ArrayList<Call>> calls = null;
+	
 	static int keyId = 1;
+	
 	static int compKeyId = 1;
+	
 	static boolean compKeyIdUsed = false;
 	
 	// default constructor
-	public MLMObject(){
-		conceptMap = new HashMap <String, MLMObjectElement>();
+	public MLMObject() {
+		conceptMap = new HashMap<String, MLMObjectElement>();
 		actions = new ArrayList<Action>();
-		evaluateList = new HashMap<String,LinkedList<MLMEvaluateElement>>();
+		evaluateList = new HashMap<String, LinkedList<MLMEvaluateElement>>();
 		logicAssignments = new ArrayList<LogicAssignment>();
-		comparisons = new LinkedHashMap<String,LinkedHashMap<String,Comparison>>();
+		comparisons = new LinkedHashMap<String, LinkedHashMap<String, Comparison>>();
 		concludes = new ArrayList<Conclude>();
 		objElements = new ArrayList<MLMObjectElement>();
-		calls = new HashMap<String,ArrayList<Call>>();
+		calls = new HashMap<String, ArrayList<Call>>();
 	}
 	
-	public MLMObject(Locale l, Patient p)
-	{
+	public MLMObject(Locale l, Patient p) {
 		this();
 	}
 	
-	public void addLogicAssignment(String variableName,String variableValue){
-		LogicAssignment logicAssignment = 
-			new LogicAssignment(variableName,variableValue);
+	public void addLogicAssignment(String variableName, String variableValue) {
+		LogicAssignment logicAssignment = new LogicAssignment(variableName, variableValue);
 		this.logicAssignments.add(logicAssignment);
 	}
-
-	public void AddConcept(String s)
-	{
-		this.objElements.get(this.objElements.size()-1).setConceptName(s);
+	
+	public void AddConcept(String s) {
+		this.objElements.get(this.objElements.size() - 1).setConceptName(s);
 	}
 	
-	public void SetConceptVar(String s)
-	{
+	public void SetConceptVar(String s) {
 		MLMObjectElement objElement = new MLMObjectElement();
-
+		
 		if (!conceptMap.containsKey(s)) {
-
+			
 			conceptMap.put(s, objElement);
 		}
 		
 		this.objElements.add(objElement);
 	}
 	
-	public void setReadType(String readType){
-		this.objElements.get(this.objElements.size()-1).setReadType(readType);
+	public void setReadType(String readType) {
+		this.objElements.get(this.objElements.size() - 1).setReadType(readType);
 	}
 	
-	public void setHowMany(String s){
+	public void setHowMany(String s) {
 		int howMany = Integer.valueOf(s).intValue();
-		this.objElements.get(this.objElements.size()-1).
-			setHowMany(howMany);
+		this.objElements.get(this.objElements.size() - 1).setHowMany(howMany);
 	}
 	
-	public void PrintEvaluateList(String section){
+	public void PrintEvaluateList(String section) {
 		System.out.println("\n Evaluate order list is  - ");
 		LinkedList<MLMEvaluateElement> evalListBySection = evaluateList.get(section);
-		if(evalListBySection == null){
+		if (evalListBySection == null) {
 			evalListBySection = new LinkedList<MLMEvaluateElement>();
 			this.evaluateList.put(section, evalListBySection);
 		}
 		ListIterator<MLMEvaluateElement> thisList = evalListBySection.listIterator(0);
-		while (thisList.hasNext()){
-		     thisList.next().printThisList();
+		while (thisList.hasNext()) {
+			thisList.next().printThisList();
 		}
 	}
-
+	
 	public void WriteAction(Writer w) throws Exception {
-		try{
-			 w.append("\tpublic void initAction() {\n");
-			 w.append("\t\tthis.actions = new ArrayList<String>();\n");
-			 
-			 int pos = 1;
-			 for(Action action:this.actions){
-				 w.append("\t\tactions.add(\""+action.getActionString());
-				 if(action.getAtVar()!=null){
-					 w.append("@"+action.getAtVar());
-				 }
-				 w.append("\");\n");
-				 pos++;
-			 }
-				   
-		     w.append("\t}\n\n");	// End of this function
-		     w.flush();
-		
-		    w.append("private String substituteString(String variable,String outStr){\n");
+		try {
+			w.append("\tpublic void initAction() {\n");
+			w.append("\t\tthis.actions = new ArrayList<String>();\n");
+			
+			int pos = 1;
+			for (Action action : this.actions) {
+				w.append("\t\tactions.add(\"" + action.getActionString());
+				if (action.getAtVar() != null) {
+					w.append("@" + action.getAtVar());
+				}
+				w.append("\");\n");
+				pos++;
+			}
+			
+			w.append("\t}\n\n"); // End of this function
+			w.flush();
+			
+			w.append("private String substituteString(String variable,String outStr){\n");
 			w.append("//see if the variable is in the user map\n");
 			w.append("String value = userVarMap.get(variable);\n");
 			w.append("if (value != null)\n");
@@ -202,124 +227,121 @@ public class MLMObject {
 			w.append("outStr+=inStr;\n");
 			w.append("return outStr;\n");
 			w.append("}\n");
-		     
-		    
-		     w.flush();
+			
+			w.flush();
 		}
 		catch (Exception e) {
-		      System.err.println("Write Action: "+e);
-		      e.printStackTrace();   // so we can get stack trace		
-		    }
+			System.err.println("Write Action: " + e);
+			e.printStackTrace(); // so we can get stack trace		
+		}
 	}
+	
 	public boolean WriteEvaluate(Writer w, String classname) throws Exception {
-	boolean retValEval = true, retVal = true;
-	try{
-		String key;
-		ListIterator<MLMEvaluateElement> thisList;
-		LinkedList<MLMEvaluateElement> evalListBySection = evaluateList.get("data");
-		if(evalListBySection == null){
-			evalListBySection = new LinkedList<MLMEvaluateElement>();
-			this.evaluateList.put("data", evalListBySection);
-		}
-		thisList = evalListBySection.listIterator(0);
-		
-		if(retValEval == false) {
-			return false;
-		}
+		boolean retValEval = true, retVal = true;
+		try {
+			String key;
+			ListIterator<MLMEvaluateElement> thisList;
+			LinkedList<MLMEvaluateElement> evalListBySection = evaluateList.get("data");
+			if (evalListBySection == null) {
+				evalListBySection = new LinkedList<MLMEvaluateElement>();
+				this.evaluateList.put("data", evalListBySection);
+			}
+			thisList = evalListBySection.listIterator(0);
 			
-		 w.append("\n\tpublic Result eval(LogicContext context, Patient patient,\n" +
-		 		"\t\t\tMap<String, Object> parameters) throws LogicException {\n\n");
-		 w.append("\t\tString actionStr = \"\";\n");
-		 w.append("\t\tresultLookup = new HashMap <String, Result>();\n");
-		 w.append("\t\tBoolean ageOK = null;\n\n\t\ttry {\n");
-		 
-		 w.append("\t\t\tthis.patient=patient;\n");
-		 w.append("\t\t\tuserVarMap = new HashMap <String, String>();\n");
-		 w.append("\t\t\tfirstname = patient.getPersonName().getGivenName();\n");
-		 w.append("\t\t\tuserVarMap.put(\"firstname\", toProperCase(firstname));\n");
-		 w.append("\t\t\tString lastName = patient.getFamilyName();\n");
-		 w.append("\t\t\tuserVarMap.put(\"lastName\", lastName);\n"); 	 
-		 w.append("\t\t\tString gender = patient.getGender();\n");
-		 w.append("\t\t\tuserVarMap.put(\"Gender\", gender);\n");
-		 w.append("\t\t\tif(gender.equalsIgnoreCase(\"M\")){\n");
-		 w.append("\t\t\t\tuserVarMap.put(\"gender\",\"his\");\n");
-		 w.append("\t\t\t\tuserVarMap.put(\"hisher\",\"his\");\n");
-		 w.append("\t\t\t}else{\n");
-		 w.append("\t\t\t\tuserVarMap.put(\"gender\",\"her\");\n");
-		 w.append("\t\t\t\tuserVarMap.put(\"hisher\",\"her\");\n");
-		 w.append("\t\t\t}\n");
-		 
-		 w.append("\t\t\tinitAction();\n");		     
-		 /************************************************************************************************
-		  *   Do the LogicCriteria here 
-		  */
-
-		 Iterator<Map.Entry<String, Comparison>> comparisonIterator = null;  
-		   if (this.comparisons.get("data") != null) {
+			if (retValEval == false) {
+				return false;
+			}
+			
+			w.append("\n\tpublic Result eval(LogicContext context, Patient patient,\n"
+			        + "\t\t\tMap<String, Object> parameters) throws LogicException {\n\n");
+			w.append("\t\tString actionStr = \"\";\n");
+			w.append("\t\tresultLookup = new HashMap <String, Result>();\n");
+			w.append("\t\tBoolean ageOK = null;\n\n\t\ttry {\n");
+			
+			w.append("\t\t\tthis.patient=patient;\n");
+			w.append("\t\t\tuserVarMap = new HashMap <String, String>();\n");
+			w.append("\t\t\tfirstname = patient.getPersonName().getGivenName();\n");
+			w.append("\t\t\tuserVarMap.put(\"firstname\", toProperCase(firstname));\n");
+			w.append("\t\t\tString lastName = patient.getFamilyName();\n");
+			w.append("\t\t\tuserVarMap.put(\"lastName\", lastName);\n");
+			w.append("\t\t\tString gender = patient.getGender();\n");
+			w.append("\t\t\tuserVarMap.put(\"Gender\", gender);\n");
+			w.append("\t\t\tif(gender.equalsIgnoreCase(\"M\")){\n");
+			w.append("\t\t\t\tuserVarMap.put(\"gender\",\"his\");\n");
+			w.append("\t\t\t\tuserVarMap.put(\"hisher\",\"his\");\n");
+			w.append("\t\t\t}else{\n");
+			w.append("\t\t\t\tuserVarMap.put(\"gender\",\"her\");\n");
+			w.append("\t\t\t\tuserVarMap.put(\"hisher\",\"her\");\n");
+			w.append("\t\t\t}\n");
+			
+			w.append("\t\t\tinitAction();\n");
+			/************************************************************************************************
+			 * Do the LogicCriteria here
+			 */
+			
+			Iterator<Map.Entry<String, Comparison>> comparisonIterator = null;
+			if (this.comparisons.get("data") != null) {
 				comparisonIterator = this.comparisons.get("data").entrySet().iterator();
-		   }
+			}
 			while (thisList.hasNext()) {
-
-				WriteData(thisList.next(),
-		        w,
-		        comparisonIterator); 
+				
+				WriteData(thisList.next(), w, comparisonIterator);
 				w.flush();
 				
-		    }
-		 //get all the distinct keys
-		 Set<String> uniqueKeys = this.conceptMap.keySet();
-		 uniqueKeys.remove("Gender");
-		 
-		 /***********************************************************************************************/
-		 
-		 w.append("\n\n\t\t\tif(evaluate_logic(parameters)){\n");	
-		 w.append("\t\t\t\tResult ruleResult = new Result();\n");
-		 if (this.calls.get("action") != null) {
+			}
+			//get all the distinct keys
+			Set<String> uniqueKeys = this.conceptMap.keySet();
+			uniqueKeys.remove("Gender");
+			
+			/***********************************************************************************************/
+			
+			w.append("\n\n\t\t\tif(evaluate_logic(parameters)){\n");
+			w.append("\t\t\t\tResult ruleResult = new Result();\n");
+			if (this.calls.get("action") != null) {
 				for (Call currCall : this.calls.get("action")) {
 					currCall.write(w);
 				}
 			}
-		 w.append("\t\t\t\tfor(String currAction:actions){\n");
-		 w.append("\t\t\t\t\tcurrAction = doAction(currAction);\n");
-		 w.append("\t\t\t\t\truleResult.add(new Result(currAction));\n");
-		 w.append("\t\t\t\t}\n");
+			w.append("\t\t\t\tfor(String currAction:actions){\n");
+			w.append("\t\t\t\t\tcurrAction = doAction(currAction);\n");
+			w.append("\t\t\t\t\truleResult.add(new Result(currAction));\n");
+			w.append("\t\t\t\t}\n");
 			
 			w.append("\t\t\t\treturn ruleResult;\n");
 			w.append("\t\t\t}\n");
-
+			
 			w.append("\t\t} catch (Exception e) {\n");
 			w.append("\t\t\treturn Result.emptyResult();");
 			w.append("\n\t\t}\n\t\treturn Result.emptyResult();\n\t}\n\n");
-
-			/***********************************************************Added to write List forming private methods ***********************/
-			LinkedHashMap<String,Comparison> compListBySection = comparisons.get("logic");
-			Iterator<Map.Entry<String,Comparison>> comparisonIteratorLogic = compListBySection.entrySet().iterator();
 			
-			while( comparisonIteratorLogic.hasNext()){
+			/*********************************************************** Added to write List forming private methods ***********************/
+			LinkedHashMap<String, Comparison> compListBySection = comparisons.get("logic");
+			Iterator<Map.Entry<String, Comparison>> comparisonIteratorLogic = compListBySection.entrySet().iterator();
+			
+			while (comparisonIteratorLogic.hasNext()) {
 				Comparison comparison = comparisonIteratorLogic.next().getValue();
-				comparison.writeComparisonList(w);		// write a list helper method only if the operator is IN
+				comparison.writeComparisonList(w); // write a list helper method only if the operator is IN
 			}
 			/******************************************************************************************************************************/
 			
 			w.append("\tprivate boolean evaluate_logic(Map<String, Object> parameters) throws LogicException {\n\n");
 			evalListBySection = evaluateList.get("logic");
-			if(evalListBySection == null){
+			if (evalListBySection == null) {
 				evalListBySection = new LinkedList<MLMEvaluateElement>();
 				this.evaluateList.put("logic", evalListBySection);
 			}
 			thisList = evalListBySection.listIterator(0); // Start the Big
-			  
 			
 			w.append("\t\tResult Gender = new Result(userVarMap.get(\"Gender\"));\n");
 			for (String uniqueKey : uniqueKeys) {
-				w.append("\t\tResult "+uniqueKey+" = (Result) resultLookup.get(\"" + uniqueKey + "\");\n");
+				w.append("\t\tResult " + uniqueKey + " = (Result) resultLookup.get(\"" + uniqueKey + "\");\n");
 			}
-			w.append("\n");		
+			w.append("\n");
 			// Evaluate()
 			boolean skipReturn = false;
 			Iterator<LogicAssignment> logicIterator = this.logicAssignments.iterator();
 			
-			if(compListBySection == null){
+			if (compListBySection == null) {
 				compListBySection = new LinkedHashMap<String, Comparison>();
 				this.comparisons.put("logic", compListBySection);
 			}
@@ -327,99 +349,96 @@ public class MLMObject {
 			ArrayList<Call> callBySection = this.calls.get("logic");
 			Iterator<Call> callIterator = null;
 			
-			if(callBySection != null){
+			if (callBySection != null) {
 				callIterator = callBySection.iterator();
 			}
 			Iterator<Conclude> concludeIterator = this.concludes.iterator();
 			comparisonIteratorLogic = compListBySection.entrySet().iterator();
-	
 			
-			while (thisList.hasNext() ) {
-					skipReturn = WriteLogic(thisList.next(), w,
-				                        logicIterator,comparisonIteratorLogic,
-				                        concludeIterator,callIterator);
+			while (thisList.hasNext()) {
+				skipReturn = WriteLogic(thisList.next(), w, logicIterator, comparisonIteratorLogic, concludeIterator,
+				    callIterator);
 				w.flush();
 				
 			}
-			if(!skipReturn){
+			if (!skipReturn) {
 				w.append("\treturn false;");
 			}
-
+			
 			w.append("\t}");
 			w.append("\n\n");
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			System.err.println("Write Evaluate: " + e);
 			e.printStackTrace(); // so we can get stack trace
 		}
 		return retValEval;
 	}
 	
-	private void WriteData(MLMEvaluateElement el, Writer w, 
+	private void WriteData(MLMEvaluateElement el, Writer w,
 	//		Comparison comparison
-			Iterator<Map.Entry<String,Comparison>> comparisonIterator
-			)
-	{
-
+	                       Iterator<Map.Entry<String, Comparison>> comparisonIterator) {
+		
 		LinkedList<Integer> openParens = new LinkedList<Integer>();
 		LinkedList<Integer> openBrackets = new LinkedList<Integer>();
 		Integer openParen = 0;
 		Integer openBracket = 0;
 		
 		try {
-
+			
 			String key = "";
 			Iterator iter = el.iterator();
 			
 			while (iter.hasNext()) { // IF
 				key = (String) iter.next();
-				if(openParens.size()>0){
+				if (openParens.size() > 0) {
 					openParen = openParens.getLast();
 				}
-				if(openBrackets.size()>0){
+				if (openBrackets.size() > 0) {
 					openBracket = openBrackets.getLast();
-					if(!(key.equalsIgnoreCase("ELSEIF")||key.startsWith("ELSE"))){
-						if(openBracket == 0){
+					if (!(key.equalsIgnoreCase("ELSEIF") || key.startsWith("ELSE"))) {
+						if (openBracket == 0) {
 							openBrackets.removeLast();
-							if(openBrackets.size()>0){
+							if (openBrackets.size() > 0) {
 								openBracket = openBrackets.getLast();
 							}
 						}
 					}
-				}			
+				}
 				if (key.equalsIgnoreCase("IF")) {
 					w.append("\t\tif(");
 					openParen = 1;
 					openParens.add(openParen);
 				} else if (key.equalsIgnoreCase("ELSEIF")) {
-				
+					
 					while (openBracket > 0) {
 						w.append("}");
 						openBracket--;
 					}
-					if(openBrackets.size()>0){
+					if (openBrackets.size() > 0) {
 						openBrackets.removeLast();
 					}
 					w.append("\t\telse if(");
 					openParen = 1;
 					openParens.add(openParen);
-				}else if (key.startsWith("ENDIF")) {
+				} else if (key.startsWith("ENDIF")) {
 					while (openBracket > 0) {
 						w.append("}");
 						openBracket--;
 					}
-					if(openBrackets.size()>0){
+					if (openBrackets.size() > 0) {
 						openBrackets.removeLast();
 					}
-				}else if (key.startsWith("ELSE")) {
-
+				} else if (key.startsWith("ELSE")) {
+					
 					while (openBracket > 0) {
 						w.append("}");
 						openBracket--;
 					}
-					if(openBrackets.size()>0){
+					if (openBrackets.size() > 0) {
 						openBrackets.removeLast();
 					}
-					openBracket=1;
+					openBracket = 1;
 					openBrackets.add(openBracket);
 					w.append("\t\telse{\n");
 					
@@ -428,11 +447,11 @@ public class MLMObject {
 						w.append(")");
 						openParen--;
 					}
-					if(openParens.size()>0){
+					if (openParens.size() > 0) {
 						openParens.removeLast();
 					}
 					w.append("{\n");
-					openBracket=1;
+					openBracket = 1;
 					openBrackets.add(openBracket);
 				} else if (key.equalsIgnoreCase("AND")) {
 					w.append("&&\n\t\t\t");
@@ -441,42 +460,42 @@ public class MLMObject {
 				} else if (key.equalsIgnoreCase("NOT")) {
 					w.append("!");
 				} else {
-
+					
 					MLMObjectElement objElement = this.conceptMap.get(key);
 					if (openParen > 0) {
 						if (comparisonIterator != null && comparisonIterator.hasNext()) {
-								Comparison comparison = comparisonIterator.next().getValue();;
-								if (comparison != null) {
-									comparison.write(w,objElement);
-								}
+							Comparison comparison = comparisonIterator.next().getValue();
+							;
+							if (comparison != null) {
+								comparison.write(w, objElement);
 							}
-					}else{
+						}
+					} else {
 						if (!key.equalsIgnoreCase("gender")) {
 							writeEvaluateConcept(key, w);
 						}
 					}
 				}
 			}
-			while(openBrackets.size()>0&&openBrackets.getLast() != null)
-			{
+			while (openBrackets.size() > 0 && openBrackets.getLast() != null) {
 				openBracket = openBrackets.removeLast();
 				while (openBracket > 0) {
 					w.append("}");
 					openBracket--;
 				}
-			}	
-		} catch (Exception e) {
+			}
+		}
+		catch (Exception e) {
 			System.err.println("Write Evaluate: " + e);
 			e.printStackTrace(); // so we can get stack trace
 		}
-	}	
+	}
 	
-	private boolean WriteLogic(MLMEvaluateElement el, Writer w, 
-			Iterator<LogicAssignment> logicIterator, 
-			//Comparison comparison,
-			Iterator<Map.Entry<String,Comparison>> comparisonIterator,
-			Iterator<Conclude> concludeIterator, Iterator<Call> callIterator) {
-
+	private boolean WriteLogic(MLMEvaluateElement el, Writer w, Iterator<LogicAssignment> logicIterator,
+	                           //Comparison comparison,
+	                           Iterator<Map.Entry<String, Comparison>> comparisonIterator,
+	                           Iterator<Conclude> concludeIterator, Iterator<Call> callIterator) {
+		
 		boolean skipReturn = false;
 		LinkedList<Integer> openParens = new LinkedList<Integer>();
 		LinkedList<Integer> openBrackets = new LinkedList<Integer>();
@@ -484,24 +503,23 @@ public class MLMObject {
 		Integer openBracket = 0;
 		
 		try {
-
+			
 			String key = "";
 			Iterator iter = el.iterator();
 			Comparison comparison;
 			
 			while (iter.hasNext()) { // IF
-				key = (String) iter.next();				
+				key = (String) iter.next();
 				
-					
-				if(openParens.size()>0){
+				if (openParens.size() > 0) {
 					openParen = openParens.getLast();
 				}
-				if(openBrackets.size()>0){
+				if (openBrackets.size() > 0) {
 					openBracket = openBrackets.getLast();
-					if(!(key.equalsIgnoreCase("ELSEIF")||key.startsWith("ELSE"))){
-						if(openBracket == 0){
+					if (!(key.equalsIgnoreCase("ELSEIF") || key.startsWith("ELSE"))) {
+						if (openBracket == 0) {
 							openBrackets.removeLast();
-							if(openBrackets.size()>0){
+							if (openBrackets.size() > 0) {
 								openBracket = openBrackets.getLast();
 							}
 						}
@@ -513,43 +531,43 @@ public class MLMObject {
 					openParen = 1;
 					openParens.add(openParen);
 				} else if (key.equalsIgnoreCase("ELSEIF")) {
-				
-					while (openBracket > 0) {
-						w.append("}");
-						openBracket--;
-					}
-					if(openBrackets.size()>0){
-						openBrackets.removeLast();
-					}
-					w.append("\t\telse if(");
-					openParen = 1;
-					openParens.add(openParen);
-				}else if (key.startsWith("ENDIF")) {
-					while (openBracket > 0) {
-						w.append("}");
-						openBracket--;
-					}
-					if(openBrackets.size()>0){
-						openBrackets.removeLast();
-					}
-				}else if (key.startsWith("ELSE")) {
 					
 					while (openBracket > 0) {
 						w.append("}");
 						openBracket--;
 					}
-					if(openBrackets.size()>0){
+					if (openBrackets.size() > 0) {
 						openBrackets.removeLast();
 					}
-					if(openBrackets.size()>0){
+					w.append("\t\telse if(");
+					openParen = 1;
+					openParens.add(openParen);
+				} else if (key.startsWith("ENDIF")) {
+					while (openBracket > 0) {
+						w.append("}");
+						openBracket--;
+					}
+					if (openBrackets.size() > 0) {
+						openBrackets.removeLast();
+					}
+				} else if (key.startsWith("ELSE")) {
+					
+					while (openBracket > 0) {
+						w.append("}");
+						openBracket--;
+					}
+					if (openBrackets.size() > 0) {
+						openBrackets.removeLast();
+					}
+					if (openBrackets.size() > 0) {
 						openBracket = openBrackets.getLast();
-						if(openBracket==0){
+						if (openBracket == 0) {
 							skipReturn = true;
 						}
-					}else{
+					} else {
 						skipReturn = true;
 					}
-					openBracket=1;
+					openBracket = 1;
 					openBrackets.add(openBracket);
 					w.append("\t\telse{\n");
 					
@@ -558,11 +576,11 @@ public class MLMObject {
 						w.append(")");
 						openParen--;
 					}
-					if(openParens.size()>0){
+					if (openParens.size() > 0) {
 						openParens.removeLast();
 					}
 					w.append("{\n");
-					openBracket=1;
+					openBracket = 1;
 					openBrackets.add(openBracket);
 				} else if (key.equalsIgnoreCase("AND")) {
 					w.append("&&\n\t\t\t");
@@ -577,16 +595,16 @@ public class MLMObject {
 						
 						//make sure to close the open bracket here
 						//we do NOT want to conclude from a logic_assignment
-						if(openBracket>0){
+						if (openBracket > 0) {
 							w.append("\t\t}\n");
-							if(openBrackets.size()>0){
+							if (openBrackets.size() > 0) {
 								openBrackets.removeLast();
 							}
 							openBrackets.add(--openBracket);
 						}
 					}
 				} else if (key.startsWith("Conclude")) {
-					if(concludeIterator.hasNext()){
+					if (concludeIterator.hasNext()) {
 						Conclude conclude = concludeIterator.next();
 						conclude.write(w);
 					}
@@ -594,68 +612,66 @@ public class MLMObject {
 					//if we conclude with no open brackets
 					//then it is the final return of the 
 					//logic method
-					if(openBracket == 0){
+					if (openBracket == 0) {
 						skipReturn = true;
 					}
 					
-					if(openBracket>0){
+					if (openBracket > 0) {
 						w.append("\t\t}\n");
-						if(openBrackets.size()>0){
+						if (openBrackets.size() > 0) {
 							openBrackets.removeLast();
 						}
 						openBrackets.add(--openBracket);
 					}
 					
-				}else if (key.equalsIgnoreCase("Call")) {
+				} else if (key.equalsIgnoreCase("Call")) {
 					Call call = callIterator.next();
 					call.write(w);
-				}else{
-
+				} else {
+					
 					MLMObjectElement objElement = this.conceptMap.get(key);
-						if( comparisonIterator.hasNext() ) {	
-						 comparison = comparisonIterator.next().getValue();
-						}   
-						else
-						{
-							comparison = null;
-						}	
-							if(comparison != null){
-								comparison.write(w, objElement);
-							}
+					if (comparisonIterator.hasNext()) {
+						comparison = comparisonIterator.next().getValue();
+					} else {
+						comparison = null;
+					}
+					if (comparison != null) {
+						comparison.write(w, objElement);
+					}
 					
 				}
 			}
 			
-			while(openBrackets.size()>0&&openBrackets.getLast() != null)
-			{
+			while (openBrackets.size() > 0 && openBrackets.getLast() != null) {
 				openBracket = openBrackets.removeLast();
 				while (openBracket > 0) {
 					w.append("}");
 					openBracket--;
 				}
-			}	
-		} catch (Exception e) {
+			}
+		}
+		catch (Exception e) {
 			System.err.println("Write Evaluate: " + e);
 			e.printStackTrace(); // so we can get stack trace
 		}
 		
 		return skipReturn;
-	}	
+	}
 	
-	public int GetSize(){
+	public int GetSize() {
 		return conceptMap.size();
 	}
 	
 	public MLMObjectElement GetMLMObjectElement(String key) {
-		if(conceptMap.containsKey(key)) {
+		if (conceptMap.containsKey(key)) {
 			return conceptMap.get(key);
-		}
-		else {
+		} else {
 			return null;
 		}
-				
+		
 	}
-	public void InitEvaluateList(String section,String keyToAdd) {
+	
+	public void InitEvaluateList(String section, String keyToAdd) {
 		if (!evaluateList.isEmpty()) {
 			LinkedList<MLMEvaluateElement> evalListBySection = evaluateList.get(section);
 			MLMEvaluateElement mEvalElem = null;
@@ -671,7 +687,7 @@ public class MLMObject {
 			} else if (mEvalElem != null && mEvalElem.getLast().equals("ELSE")) {
 				// Nested if
 				return;
-			} else{
+			} else {
 				if (openIf(mEvalElem)) {
 					return;
 				} else {
@@ -685,292 +701,305 @@ public class MLMObject {
 			this.evaluateList.put(section, evalListBySection);
 			evalListBySection.add(mEvalElemNew);
 		}
-
+		
 	}
 	
-	private boolean openIf(MLMEvaluateElement mEvalElem){
+	private boolean openIf(MLMEvaluateElement mEvalElem) {
 		
-		if(mEvalElem == null){
+		if (mEvalElem == null) {
 			return false;
 		}
 		Iterator iter = mEvalElem.iterator();
 		int numOpen = 0;
 		int numClosed = 0;
 		
-		while(iter.hasNext()){
+		while (iter.hasNext()) {
 			String currKey = (String) iter.next();
-			if(currKey.equalsIgnoreCase("If")||currKey.startsWith("Else")){
+			if (currKey.equalsIgnoreCase("If") || currKey.startsWith("Else")) {
 				numOpen++;
 			}
 			
-			if(currKey.startsWith("Conclude")||
-					currKey.equalsIgnoreCase("endif")||
-					currKey.equalsIgnoreCase("logic_assignment")){
+			if (currKey.startsWith("Conclude") || currKey.equalsIgnoreCase("endif")
+			        || currKey.equalsIgnoreCase("logic_assignment")) {
 				numClosed++;
 			}
 		}
 		
-		if(numOpen>numClosed){
+		if (numOpen > numClosed) {
 			return true;
 		}
 		return false;
 	}
 	
-	public boolean writeEvaluateConcept(String key, Writer w) throws Exception{
+	public boolean writeEvaluateConcept(String key, Writer w) throws Exception {
 		boolean retVal = true;
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null ){
+		if (mObjElem != null) {
 			retVal = mObjElem.writeEvaluate(key, w);
 			w.flush();
 		}
 		return retVal;
 	}
-
-	public void AddToEvaluateList(String section,String key){
+	
+	public void AddToEvaluateList(String section, String key) {
 		LinkedList<MLMEvaluateElement> evalListBySection = evaluateList.get(section);
-		if(evalListBySection == null){
+		if (evalListBySection == null) {
 			evalListBySection = new LinkedList<MLMEvaluateElement>();
 			this.evaluateList.put(section, evalListBySection);
 		}
 		MLMEvaluateElement mEvalElem = evalListBySection.getLast();
-		if(mEvalElem != null){
+		if (mEvalElem != null) {
 			mEvalElem.add(key);
 		}
 	}
-		
+	
 	public void setWhere(String type, String key) {
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
+		if (mObjElem != null) {
 			mObjElem.setWhere(type);
 		}
 	}
 	
 	public void setDuration(String type, String val, String op, String key) {
 		MLMObjectElement mObjElem = GetMLMObjectElement(key);
-		if(mObjElem != null){
-			mObjElem.setDuration(type, val,op);
+		if (mObjElem != null) {
+			mObjElem.setDuration(type, val, op);
 		}
 	}
 	
 	public void setClassName(String name) {
-		if(name.endsWith(".mlm")){
-			className = name.substring(0,name.indexOf(".mlm"));
-		}
-		else {
+		if (name.endsWith(".mlm")) {
+			className = name.substring(0, name.indexOf(".mlm"));
+		} else {
 			className = name.trim();
 		}
 	}
+	
 	public String getClassName() {
 		return className.trim();
 	}
 	
 	public void setTitle(String s) {
-	 title = s.trim();
+		title = s.trim();
 		
 	}
+	
 	public String getTitle() {
 		return title;
 	}
+	
 	public void setAuthor(String s) {
-		 author = s.trim();
+		author = s.trim();
 	}
+	
 	public String getAuthor() {
-			return author;
+		return author;
 	}
+	
 	public void setInstitution(String s) {
-		 institution = s.trim();
-			
-		}
+		institution = s.trim();
+		
+	}
+	
 	public String getInstitution() {
-			return institution;
+		return institution;
 	}
+	
 	public void setPriority(String s) {
-		 priority = Integer.parseInt(s.trim());
-		}
+		priority = Integer.parseInt(s.trim());
+	}
+	
 	public Integer getPriority() {
-			return priority;
+		return priority;
 	}
+	
 	public void setPurpose(String s) {
-		 purpose = s.trim();
-		}
+		purpose = s.trim();
+	}
+	
 	public String getPurpose() {
-			return purpose;
+		return purpose;
 	}
+	
 	public void setExplanation(String s) {
-		 explanation = s.trim();
-		}
+		explanation = s.trim();
+	}
+	
 	public String getExplanation() {
-			return explanation;
+		return explanation;
 	}
+	
 	public void setKeywords(String s) {
-		 keywords = s.trim();
+		keywords = s.trim();
 	}
+	
 	public String getKeywords() {
 		return keywords;
-    }
-	public void setSpecialist(String s) {
-		 specialist = s.trim();
 	}
+	
+	public void setSpecialist(String s) {
+		specialist = s.trim();
+	}
+	
 	public String getSpecialist() {
 		return specialist;
-    }
-	public void setLinks(String s) {
-		 links = s.trim();
 	}
+	
+	public void setLinks(String s) {
+		links = s.trim();
+	}
+	
 	public String getLinks() {
 		return links;
-    }
-	public void setCitations(String s) {
-		 citations = s.trim();
 	}
+	
+	public void setCitations(String s) {
+		citations = s.trim();
+	}
+	
 	public String getCitations() {
 		return citations;
-    }
-	public void setAction(String s) {
-		 action = s.trim();
 	}
+	
+	public void setAction(String s) {
+		action = s.trim();
+	}
+	
 	public String getAction() {
 		return action;
-    }
-	public void setDate(String s) {
-		 date = s.trim();
 	}
+	
+	public void setDate(String s) {
+		date = s.trim();
+	}
+	
 	public String getDate() {
 		return date;
-    }
-	public void setData(String s) {
-		 data = s.trim();
 	}
+	
+	public void setData(String s) {
+		data = s.trim();
+	}
+	
 	public String getData() {
 		return data;
-    }
-	public void setLogic(String s) {
-		 logic = s.trim();
 	}
+	
+	public void setLogic(String s) {
+		logic = s.trim();
+	}
+	
 	public String getLogic() {
 		return logic;
-    }
-	public void setVersion(String s) {
-		 version = Double.valueOf(s.trim());
 	}
+	
+	public void setVersion(String s) {
+		version = Double.valueOf(s.trim());
+	}
+	
 	public Double getVersion() {
 		return version;
-    }
-	public void setType(String s) {
-		 type = s.trim();
 	}
+	
+	public void setType(String s) {
+		type = s.trim();
+	}
+	
 	public String getType() {
 		return type;
-    }
+	}
+	
 	public void addAction(String actionString) {
 		this.actions.add(new Action(actionString.trim()));
 	}
-
-	public void addCall(String section,String var,String method){
+	
+	public void addCall(String section, String var, String method) {
 		ArrayList<Call> callsBySection = this.calls.get(section);
-		if(callsBySection == null){
+		if (callsBySection == null) {
 			callsBySection = new ArrayList<Call>();
 			this.calls.put(section, callsBySection);
 		}
-		callsBySection.add(new Call(var,method));
+		callsBySection.add(new Call(var, method));
 	}
 	
-	public void addParameter(String section,String parameter){
+	public void addParameter(String section, String parameter) {
 		ArrayList<Call> callBySection = this.calls.get(section);
 		
-		if(callBySection == null){
+		if (callBySection == null) {
 			return;
 		}
 		
-		Call lastCall = callBySection.get(callBySection.size()-1);
+		Call lastCall = callBySection.get(callBySection.size() - 1);
 		lastCall.addParameter(parameter);
 	}
 	
-	public void addCompOperator(String section,Integer operator,String key){
+	public void addCompOperator(String section, Integer operator, String key) {
 		
 		LinkedHashMap<String, Comparison> compBySection = this.comparisons.get(section);
-		if(compBySection == null){
-			compBySection = new LinkedHashMap<String,Comparison>();
+		if (compBySection == null) {
+			compBySection = new LinkedHashMap<String, Comparison>();
 			this.comparisons.put(section, compBySection);
 		}
 		Comparison thisComparison = compBySection.get(key);
-		if(thisComparison != null)
-		{
-			if(operator != null && operator == org.openmrs.arden.ArdenBaseParserTokenTypes.IN)
-			{
+		if (thisComparison != null) {
+			if (operator != null && operator == org.openmrs.arden.ArdenBaseParserTokenTypes.IN) {
 				thisComparison.setOperator(operator);
 				// Always make new Comparison object example -  if(key = A) OR (key > 2)
 				// but if key exists, modify it with __number for the hashmap only
-			}
-			else
-			{
-				compBySection.put(key + "__" +compKeyId, new Comparison(key,operator));
+			} else {
+				compBySection.put(key + "__" + compKeyId, new Comparison(key, operator));
 				compKeyIdUsed = true;
 			}
-		}
-		else
-		{
-			compBySection.put(key, new Comparison(key,operator));
+		} else {
+			compBySection.put(key, new Comparison(key, operator));
 		}
 	}
 	
-	public void SetAnswer(String section,Object answer, String key){
+	public void SetAnswer(String section, Object answer, String key) {
 		HashMap<String, Comparison> compBySection = this.comparisons.get(section);
 		
-		if(compBySection == null){
+		if (compBySection == null) {
 			return;
 		}
 		
 		//Comparison lastComparison = compBySection.get(compBySection.size()-1);
-		Comparison lastComparison; 
-		if(compKeyIdUsed == true)
-		{
-			lastComparison = compBySection.get(key+"__"+compKeyId);
+		Comparison lastComparison;
+		if (compKeyIdUsed == true) {
+			lastComparison = compBySection.get(key + "__" + compKeyId);
 			lastComparison.setAnswer(answer);
 			compKeyIdUsed = false;
-			compKeyId++;	// for next use
-		}
-		else
-		{
+			compKeyId++; // for next use
+		} else {
 			lastComparison = compBySection.get(key);
 			lastComparison.setAnswer(answer);
 		}
 	}
 	
-	public String SetAnswerList(String section,Object answer, String key)
-	{
+	public String SetAnswerList(String section, Object answer, String key) {
 		String retStr = "";
 		
-		LinkedHashMap<String,Comparison> compBySection = this.comparisons.get(section);
+		LinkedHashMap<String, Comparison> compBySection = this.comparisons.get(section);
 		
-		
-		
-		if(compBySection == null){
-			compBySection = new LinkedHashMap<String,Comparison>();
+		if (compBySection == null) {
+			compBySection = new LinkedHashMap<String, Comparison>();
 			this.comparisons.put(section, compBySection);
 		}
 		
 		//Comparison lastComparison = compBySection.get(compBySection.size()-1);
-		if(key.compareTo("") == 0)
-		{
-			Comparison thisComparison = compBySection.get("__Temp__"+keyId);
-			if(thisComparison == null)
-			{
+		if (key.compareTo("") == 0) {
+			Comparison thisComparison = compBySection.get("__Temp__" + keyId);
+			if (thisComparison == null) {
 				// Create a temp key
-				Comparison c = new Comparison("__Temp__"+keyId, null);
+				Comparison c = new Comparison("__Temp__" + keyId, null);
 				c.addAnswerToList(answer);
-				compBySection.put("__Temp__"+keyId, c);
-				retStr = "__Temp__"+keyId;
-			}
-			else
-			{
+				compBySection.put("__Temp__" + keyId, c);
+				retStr = "__Temp__" + keyId;
+			} else {
 				// Temp key found, add answers to it as no key known yet
 				thisComparison.addAnswerToList(answer);
 				retStr = key;
 			}
-		}
-		else
-		{
+		} else {
 			Comparison lastComparison = compBySection.get(key);
 			lastComparison.setAnswer(answer);
 			retStr = key;
@@ -978,132 +1007,124 @@ public class MLMObject {
 		return retStr;
 	}
 	
-	public boolean SetAnswerListKey(String section, String key){
-		LinkedHashMap<String,Comparison> compBySection = this.comparisons.get(section);
+	public boolean SetAnswerListKey(String section, String key) {
+		LinkedHashMap<String, Comparison> compBySection = this.comparisons.get(section);
 		
-		boolean retVal = false;  // indicates if several comparisons for the same key
+		boolean retVal = false; // indicates if several comparisons for the same key
 		
-		if(compBySection == null){
-			compBySection = new LinkedHashMap<String,Comparison>();
+		if (compBySection == null) {
+			compBySection = new LinkedHashMap<String, Comparison>();
 			this.comparisons.put(section, compBySection);
 			
 			// This should be an error
 		}
 		
-		
-		if(key.compareTo("") != 0)
-		{
+		if (key.compareTo("") != 0) {
 			Comparison keyComparison = compBySection.get(key);
 			
 			// get Last temp key if any
-			Comparison thisComparison = compBySection.get("__Temp__"+keyId);
+			Comparison thisComparison = compBySection.get("__Temp__" + keyId);
 			
-			if(keyComparison != null)
-			{
+			if (keyComparison != null) {
 				// Already a key with ID, we need to move all the TempKey into this key
-				if(thisComparison != null)
-				{
-				//	Iterator<Object> iterator = thisComparison.getAnswerList().iterator();
-				//	while (iterator.hasNext()) {
-				//		keyComparison.addAnswerToList(iterator.next());
-				//	}
+				if (thisComparison != null) {
+					//	Iterator<Object> iterator = thisComparison.getAnswerList().iterator();
+					//	while (iterator.hasNext()) {
+					//		keyComparison.addAnswerToList(iterator.next());
+					//	}
 					retVal = true;
-					thisComparison.setKey(key,key + "__" + keyId);
+					thisComparison.setKey(key, key + "__" + keyId);
 					compBySection.put(key + "__" + keyId, thisComparison);
-						
-					compBySection.remove("__Temp__"+keyId);
-					if(keyId > 100)			// At most 100 Temp Keys
+					
+					compBySection.remove("__Temp__" + keyId);
+					if (keyId > 100) // At most 100 Temp Keys
 						keyId = 1;
 					else
 						keyId++;
 				}
-			}
-			else  if(thisComparison != null)
-			{
+			} else if (thisComparison != null) {
 				
 				// Temp key found, add answers to it as no key known yet
-				thisComparison.setKey(key,null);
-		
+				thisComparison.setKey(key, null);
+				
 				compBySection.put(key, thisComparison);
-				compBySection.remove("__Temp__"+keyId);
+				compBySection.remove("__Temp__" + keyId);
 				retVal = false;
-				if(keyId > 100)			// At most 100 Temp Keys
+				if (keyId > 100) // At most 100 Temp Keys
 					keyId = 1;
 				else
 					keyId++;
 				
 			}
 		}
-		return retVal;		
+		return retVal;
 	}
 	
-	public void addConcludeVal(boolean concludeVal){
+	public void addConcludeVal(boolean concludeVal) {
 		this.concludes.add(new Conclude(concludeVal));
 	}
 	
-	public void setAt(String atVar){
-		Action lastAction = this.actions.get(actions.size()-1);
+	public void setAt(String atVar) {
+		Action lastAction = this.actions.get(actions.size() - 1);
 		lastAction.setAtVar(atVar);
 	}
-
-    public void setAgeMax(String ageMax) {
-
-    	int unitIndex = ageMax.indexOf("days");
-		if(unitIndex < 0){
+	
+	public void setAgeMax(String ageMax) {
+		
+		int unitIndex = ageMax.indexOf("days");
+		if (unitIndex < 0) {
 			unitIndex = ageMax.indexOf("weeks");
 		}
-		if(unitIndex < 0){
+		if (unitIndex < 0) {
 			unitIndex = ageMax.indexOf("months");
 		}
-		if(unitIndex < 0){
+		if (unitIndex < 0) {
 			unitIndex = ageMax.indexOf("years");
 		}
 		
-		if(unitIndex > 0){
-			this.ageMaxUnits = ageMax.substring(unitIndex,ageMax.length());
-			this.ageMax = Integer.parseInt(ageMax.substring(0,unitIndex));
-		}else
-		{
+		if (unitIndex > 0) {
+			this.ageMaxUnits = ageMax.substring(unitIndex, ageMax.length());
+			this.ageMax = Integer.parseInt(ageMax.substring(0, unitIndex));
+		} else {
 			this.ageMax = Integer.parseInt(ageMax);
 		}
 	}
-
+	
 	public void setAgeMin(String ageMin) {
 		
 		int unitIndex = ageMin.indexOf("days");
-		if(unitIndex < 0){
+		if (unitIndex < 0) {
 			unitIndex = ageMin.indexOf("weeks");
 		}
-		if(unitIndex < 0){
+		if (unitIndex < 0) {
 			unitIndex = ageMin.indexOf("months");
 		}
-		if(unitIndex < 0){
+		if (unitIndex < 0) {
 			unitIndex = ageMin.indexOf("years");
 		}
 		
-		if(unitIndex > 0){
-			this.ageMinUnits = ageMin.substring(unitIndex,ageMin.length());
-			this.ageMin = Integer.parseInt(ageMin.substring(0,unitIndex));
-		}else
-		{
+		if (unitIndex > 0) {
+			this.ageMinUnits = ageMin.substring(unitIndex, ageMin.length());
+			this.ageMin = Integer.parseInt(ageMin.substring(0, unitIndex));
+		} else {
 			this.ageMin = Integer.parseInt(ageMin);
 		}
 		
 	}
-
+	
 	public Integer getAgeMax() {
-    	return ageMax;
-    }
-
+		return ageMax;
+	}
+	
 	public Integer getAgeMin() {
-    	return ageMin;
-    }
-
+		return ageMin;
+	}
+	
 	public String getAgeMaxUnits() {
-    	return ageMaxUnits;
-    }
-
+		return ageMaxUnits;
+	}
+	
 	public String getAgeMinUnits() {
-    	return ageMinUnits;
-    }
+		return ageMinUnits;
+	}
 }

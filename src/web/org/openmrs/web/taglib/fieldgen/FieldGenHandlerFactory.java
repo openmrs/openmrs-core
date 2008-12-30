@@ -16,19 +16,17 @@ package org.openmrs.web.taglib.fieldgen;
 import java.util.Map;
 
 /**
- * This factory stores and returns the fieldgen handlers
- * 
- * These variables are set in the openmrs-servlet.xml and
- * are populated via spring injection
+ * This factory stores and returns the fieldgen handlers These variables are set in the
+ * openmrs-servlet.xml and are populated via spring injection
  * 
  * @see FieldGenHandler
  */
 public class FieldGenHandlerFactory {
 	
-	private Map<String,String> handlers = null;
+	private Map<String, String> handlers = null;
 	
 	private static FieldGenHandlerFactory singleton;
-
+	
 	/**
 	 * Generic constructor
 	 */
@@ -48,20 +46,20 @@ public class FieldGenHandlerFactory {
 		else
 			return singleton;
 	}
-
+	
 	/**
 	 * @return Returns the handlers.
 	 */
-	public Map<String,String> getHandlers() {
+	public Map<String, String> getHandlers() {
 		return singleton.handlers;
 	}
-
+	
 	/**
 	 * Appends the given handlers to the current map of handlers
 	 * 
 	 * @param handlers The handlers to set.
 	 */
-	public void setHandlers(Map<String,String> handlers) {
+	public void setHandlers(Map<String, String> handlers) {
 		if (singleton.handlers == null)
 			singleton.handlers = handlers;
 		else
@@ -75,8 +73,8 @@ public class FieldGenHandlerFactory {
 	 * @return
 	 */
 	public String getHandlerByClassName(String className) {
-		if ( className != null ) {
-			if ( singleton.handlers.containsKey(className) ) {
+		if (className != null) {
+			if (singleton.handlers.containsKey(className)) {
 				return singleton.handlers.get(className);
 			} else {
 				return null;

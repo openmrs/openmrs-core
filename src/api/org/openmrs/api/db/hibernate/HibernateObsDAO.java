@@ -39,50 +39,46 @@ import org.openmrs.api.db.ObsDAO;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 
 /**
- * Hibernate specific Observation related functions
- * 
- * This class should not be used directly.  All calls should go through the
- * {@link org.openmrs.api.ObsService} methods.
+ * Hibernate specific Observation related functions This class should not be used directly. All
+ * calls should go through the {@link org.openmrs.api.ObsService} methods.
  * 
  * @see org.openmrs.api.db.ObsDAO
  * @see org.openmrs.api.ObsService
  */
 public class HibernateObsDAO implements ObsDAO {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	protected SessionFactory sessionFactory;
-
+	
 	/**
-	 * Set session factory that allows us to connect to the database
-	 * that Hibernate knows about.
+	 * Set session factory that allows us to connect to the database that Hibernate knows about.
 	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.ObsService#deleteObs(org.openmrs.Obs)
 	 */
 	public void deleteObs(Obs obs) throws DAOException {
 		sessionFactory.getCurrentSession().delete(obs);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.ObsService#getObs(java.lang.Integer)
 	 */
 	public Obs getObs(Integer obsId) throws DAOException {
 		return (Obs) sessionFactory.getCurrentSession().get(Obs.class, obsId);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#getMimeType(java.lang.Integer)
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws DAOException {
-		return (MimeType)sessionFactory.getCurrentSession().get(
-				MimeType.class, mimeTypeId);
+		return (MimeType) sessionFactory.getCurrentSession().get(MimeType.class, mimeTypeId);
 	}
 	
 	/**
@@ -90,8 +86,7 @@ public class HibernateObsDAO implements ObsDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession()
-						.createCriteria(MimeType.class);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(MimeType.class);
 		
 		if (includeRetired == false)
 			crit.add(Expression.eq("retired", Boolean.FALSE));
@@ -131,68 +126,68 @@ public class HibernateObsDAO implements ObsDAO {
 		
 		return obs;
 	}
-
-	/**
-     * @see org.openmrs.api.db.ObsDAO#getObservations(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.lang.String, java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean)
-     */
-    @SuppressWarnings("unchecked")
-    public List<Obs> getObservations(List<Person> whom,
-            List<Encounter> encounters, List<Concept> questions,
-            List<Concept> answers, List<PERSON_TYPE> personTypes,
-            List<Location> locations, List<String> sortList, Integer mostRecentN,
-            Integer obsGroupId, Date fromDate, Date toDate,
-            boolean includeVoidedObs) throws DAOException {
-    	
-    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class, "obs");
-    	
-    	if (whom.size() > 0)
-    		criteria.add(Restrictions.in("person", whom));
-    		
-    	if (encounters.size() > 0)
-    		criteria.add(Restrictions.in("encounter", encounters));
-    	
-    	if (questions.size() > 0)
-    		criteria.add(Restrictions.in("concept", questions));
-    	
-    	if (answers.size() > 0)
-    		criteria.add(Restrictions.in("valueCoded", answers));
-    	
-    	getCriteriaPersonModifier(criteria, personTypes);
-    	
-    	if (locations.size() > 0)
-    		criteria.add(Restrictions.in("location", locations));
-    	
-    	// TODO add an option for each sort item to be asc/desc
-    	if (sortList.size() > 0) {
-    		for (String sort : sortList) {
-    			if (sort != null && !"".equals(sort))
-    				criteria.addOrder(Order.desc(sort));
-    		}
-    	}
-    	
-    	if (mostRecentN > 0)
-    		criteria.setMaxResults(mostRecentN);
-    	
-    	if (obsGroupId != null) {
-    		criteria.createAlias("obsGroup", "og");
-    		criteria.add(Restrictions.eq("og.obsId", obsGroupId));
-    	}
-    	
-    	if ( fromDate != null )
-			criteria.add(Restrictions.gt("obsDatetime", fromDate));
-		
-		if ( toDate != null )
-			criteria.add(Restrictions.lt("obsDatetime", toDate));
-		
-		if ( includeVoidedObs == false )
-			criteria.add(Restrictions.eq("voided", false));
-    	
-	    return criteria.list();
-    }
 	
 	/**
-	 * Convenience method that adds an expression to the given <code>criteria</code>
-	 * according to what types of person objects is wanted
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.String,
+	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
+	                                 List<String> sortList, Integer mostRecentN, Integer obsGroupId, Date fromDate,
+	                                 Date toDate, boolean includeVoidedObs) throws DAOException {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class, "obs");
+		
+		if (whom.size() > 0)
+			criteria.add(Restrictions.in("person", whom));
+		
+		if (encounters.size() > 0)
+			criteria.add(Restrictions.in("encounter", encounters));
+		
+		if (questions.size() > 0)
+			criteria.add(Restrictions.in("concept", questions));
+		
+		if (answers.size() > 0)
+			criteria.add(Restrictions.in("valueCoded", answers));
+		
+		getCriteriaPersonModifier(criteria, personTypes);
+		
+		if (locations.size() > 0)
+			criteria.add(Restrictions.in("location", locations));
+		
+		// TODO add an option for each sort item to be asc/desc
+		if (sortList.size() > 0) {
+			for (String sort : sortList) {
+				if (sort != null && !"".equals(sort))
+					criteria.addOrder(Order.desc(sort));
+			}
+		}
+		
+		if (mostRecentN > 0)
+			criteria.setMaxResults(mostRecentN);
+		
+		if (obsGroupId != null) {
+			criteria.createAlias("obsGroup", "og");
+			criteria.add(Restrictions.eq("og.obsId", obsGroupId));
+		}
+		
+		if (fromDate != null)
+			criteria.add(Restrictions.gt("obsDatetime", fromDate));
+		
+		if (toDate != null)
+			criteria.add(Restrictions.lt("obsDatetime", toDate));
+		
+		if (includeVoidedObs == false)
+			criteria.add(Restrictions.eq("voided", false));
+		
+		return criteria.list();
+	}
+	
+	/**
+	 * Convenience method that adds an expression to the given <code>criteria</code> according to
+	 * what types of person objects is wanted
 	 * 
 	 * @param criteria
 	 * @param personType
@@ -200,14 +195,13 @@ public class HibernateObsDAO implements ObsDAO {
 	 */
 	private Criteria getCriteriaPersonModifier(Criteria criteria, List<PERSON_TYPE> personTypes) {
 		if (personTypes.contains(PERSON_TYPE.PATIENT)) {
-			DetachedCriteria crit = DetachedCriteria.forClass(Patient.class, "patient")
-				.setProjection(Property.forName("patientId"));
+			DetachedCriteria crit = DetachedCriteria.forClass(Patient.class, "patient").setProjection(
+			    Property.forName("patientId"));
 			criteria.add(Subqueries.propertyIn("person.personId", crit));
 		}
 		
 		if (personTypes.contains(PERSON_TYPE.USER)) {
-			DetachedCriteria crit = DetachedCriteria.forClass(User.class, "user")
-				.setProjection(Property.forName("userId"));
+			DetachedCriteria crit = DetachedCriteria.forClass(User.class, "user").setProjection(Property.forName("userId"));
 			criteria.add(Subqueries.propertyIn("person.personId", crit));
 		}
 		

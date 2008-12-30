@@ -18,34 +18,29 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 
 /**
- *  Implementation of the stateful task that sends an email.
- *
+ * Implementation of the stateful task that sends an email.
  */
-public class SendEmailTask extends AbstractTask { 
-
+public class SendEmailTask extends AbstractTask {
+	
 	// Logger 
-	private Log log = LogFactory.getLog( SendEmailTask.class );
-
-
-	/** 
-	 *  Process the next form entry in the database and then remove the form entry from the database.
-	 *
-	 *
+	private Log log = LogFactory.getLog(SendEmailTask.class);
+	
+	/**
+	 * Process the next form entry in the database and then remove the form entry from the database.
 	 */
-	public void execute() {		
+	public void execute() {
 		log.info("****************************** SEND EMAIL TASK:  Executing task ...");
-		if (!Context.isAuthenticated()) { 
+		if (!Context.isAuthenticated()) {
 			authenticate();
 		}
-
+		
 	}
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#shutdown()
 	 */
-    public void shutdown() {
-    	log.info("****************************** SEND EMAIL TASK:  Shutting down task ...");
-    }
-	
+	public void shutdown() {
+		log.info("****************************** SEND EMAIL TASK:  Shutting down task ...");
+	}
 	
 }

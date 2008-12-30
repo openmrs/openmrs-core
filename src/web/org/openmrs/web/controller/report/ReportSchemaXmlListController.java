@@ -28,10 +28,10 @@ public class ReportSchemaXmlListController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		ReportService reportService = (ReportService) Context.getService(ReportService.class);
-	    
+		
 		return reportService.getReportSchemaXmls();
-    }
+	}
 	
 }

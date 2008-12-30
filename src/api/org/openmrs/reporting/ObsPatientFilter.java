@@ -27,49 +27,59 @@ import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
 public class ObsPatientFilter extends CachingPatientFilter {
-
-    private static final long serialVersionUID = 1L;
+	
+	private static final long serialVersionUID = 1L;
+	
 	private Concept question;
+	
 	private PatientSetService.Modifier modifier;
+	
 	private PatientSetService.TimeModifier timeModifier;
+	
 	private Object value;
+	
 	private Integer withinLastDays;
+	
 	private Integer withinLastMonths;
+	
 	private Integer untilDaysAgo;
+	
 	private Integer untilMonthsAgo;
+	
 	private Date sinceDate;
+	
 	private Date untilDate;
-
+	
 	public ObsPatientFilter() {
 		super.setType("Patient Filter");
 		super.setSubType("Observation Patient Filter");
 	}
 	
 	@Override
-    public String getCacheKey() {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append(getClass().getName()).append(".");
-	    if (getQuestion() != null)
-	    	sb.append(getQuestion().getConceptId());
-	    sb.append(".");
-	    sb.append(getModifier()).append(".");
-	    sb.append(getTimeModifier()).append(".");
-	    sb.append(OpenmrsUtil.fromDateHelper(null,
-	                                         getWithinLastDays(), getWithinLastMonths(),
-	                                         getUntilDaysAgo(), getUntilMonthsAgo(),
-	                                         getSinceDate(), getUntilDate())).append(".");
-	    sb.append(OpenmrsUtil.toDateHelper(null,
-	                                       getWithinLastDays(), getWithinLastMonths(),
-	                                       getUntilDaysAgo(), getUntilMonthsAgo(),
-	                                       getSinceDate(), getUntilDate())).append(".");
-	    sb.append(getValue());
-	    return sb.toString();
-    }
-
+	public String getCacheKey() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getName()).append(".");
+		if (getQuestion() != null)
+			sb.append(getQuestion().getConceptId());
+		sb.append(".");
+		sb.append(getModifier()).append(".");
+		sb.append(getTimeModifier()).append(".");
+		sb.append(
+		    OpenmrsUtil.fromDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(),
+		        getUntilMonthsAgo(), getSinceDate(), getUntilDate())).append(".");
+		sb.append(
+		    OpenmrsUtil.toDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(),
+		        getUntilMonthsAgo(), getSinceDate(), getUntilDate())).append(".");
+		sb.append(getValue());
+		return sb.toString();
+	}
+	
 	public boolean isReadyToRun() {
 		if (question == null)
 			return value != null && (value instanceof Concept);
-		if (question.getDatatype().getHl7Abbreviation().equals("NM") || question.getDatatype().getHl7Abbreviation().equals("DT") || question.getDatatype().getHl7Abbreviation().equals("TS")) {
+		if (question.getDatatype().getHl7Abbreviation().equals("NM")
+		        || question.getDatatype().getHl7Abbreviation().equals("DT")
+		        || question.getDatatype().getHl7Abbreviation().equals("TS")) {
 			if (getTimeModifier() == TimeModifier.ANY || getTimeModifier() == TimeModifier.NO)
 				return true;
 			else
@@ -86,7 +96,7 @@ public class ObsPatientFilter extends CachingPatientFilter {
 				return getValue() != null;
 		} else {
 			return false;
-		}		
+		}
 	}
 	
 	public boolean checkConsistancy() {
@@ -94,7 +104,9 @@ public class ObsPatientFilter extends CachingPatientFilter {
 			return false;
 		if (question == null)
 			return value != null && (value instanceof Concept);
-		if (question.getDatatype().getHl7Abbreviation().equals("NM") || question.getDatatype().getHl7Abbreviation().equals("DT") || question.getDatatype().getHl7Abbreviation().equals("TS")) {
+		if (question.getDatatype().getHl7Abbreviation().equals("NM")
+		        || question.getDatatype().getHl7Abbreviation().equals("DT")
+		        || question.getDatatype().getHl7Abbreviation().equals("TS")) {
 			return true;
 		} else if (question.getDatatype().getHl7Abbreviation().equals("ST")) {
 			TimeModifier tm = getTimeModifier();
@@ -110,9 +122,10 @@ public class ObsPatientFilter extends CachingPatientFilter {
 	@Override
 	public Cohort filterImpl(EvaluationContext context) {
 		PatientSetService service = Context.getPatientSetService();
-		return service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier, value,
-				OpenmrsUtil.fromDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()),
-				OpenmrsUtil.toDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()) );
+		return service.getPatientsHavingObs(question == null ? null : question.getConceptId(), timeModifier, modifier,
+		    value, OpenmrsUtil.fromDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(),
+		        getUntilMonthsAgo(), getSinceDate(), getUntilDate()), OpenmrsUtil.toDateHelper(null, getWithinLastDays(),
+		        getWithinLastMonths(), getUntilDaysAgo(), getUntilMonthsAgo(), getSinceDate(), getUntilDate()));
 	}
 	
 	public String getDescription() {
@@ -168,86 +181,85 @@ public class ObsPatientFilter extends CachingPatientFilter {
 			ret.append(" until " + df.format(untilDate));
 		return ret.toString();
 	}
-
 	
 	public PatientSetService.Modifier getModifier() {
 		return modifier;
 	}
-
+	
 	public void setModifier(PatientSetService.Modifier modifier) {
 		this.modifier = modifier;
 	}
-
+	
 	public Concept getQuestion() {
 		return question;
 	}
-
+	
 	public void setQuestion(Concept question) {
 		this.question = question;
 	}
-
+	
 	public Date getSinceDate() {
 		return sinceDate;
 	}
-
+	
 	public void setSinceDate(Date sinceDate) {
 		this.sinceDate = sinceDate;
 	}
-
+	
 	public PatientSetService.TimeModifier getTimeModifier() {
 		return timeModifier;
 	}
-
+	
 	public void setTimeModifier(PatientSetService.TimeModifier timeModifier) {
 		this.timeModifier = timeModifier;
 	}
-
+	
 	public Date getUntilDate() {
 		return untilDate;
 	}
-
+	
 	public void setUntilDate(Date untilDate) {
 		this.untilDate = untilDate;
 	}
-
+	
 	public Object getValue() {
 		return value;
 	}
-
+	
 	public void setValue(Object value) {
 		this.value = value;
 	}
-
+	
 	public Integer getWithinLastDays() {
 		return withinLastDays;
 	}
-
+	
 	public void setWithinLastDays(Integer withinLastDays) {
 		this.withinLastDays = withinLastDays;
 	}
-
+	
 	public Integer getWithinLastMonths() {
 		return withinLastMonths;
 	}
-
+	
 	public void setWithinLastMonths(Integer withinLastMonths) {
 		this.withinLastMonths = withinLastMonths;
 	}
-
+	
 	public Integer getUntilDaysAgo() {
 		return untilDaysAgo;
 	}
-
+	
 	public void setUntilDaysAgo(Integer untilDaysAgo) {
 		this.untilDaysAgo = untilDaysAgo;
 	}
-
+	
 	public Integer getUntilMonthsAgo() {
 		return untilMonthsAgo;
 	}
-
+	
 	public void setUntilMonthsAgo(Integer untilMonthsAgo) {
 		this.untilMonthsAgo = untilMonthsAgo;
 	}
-
+	
 }

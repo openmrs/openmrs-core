@@ -34,7 +34,6 @@ import org.openmrs.reporting.ReportObject;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.context.support.MessageSourceAccessor;
-
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -46,41 +45,44 @@ import org.springframework.web.servlet.view.RedirectView;
  *
  */
 public class CohortListController extends SimpleFormController {
-
+	
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 	}
-
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-    	List<Cohort> cohorts = new ArrayList<Cohort>();
+	
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		List<Cohort> cohorts = new ArrayList<Cohort>();
 		if (Context.isAuthenticated()) {
 			cohorts = Context.getCohortService().getCohorts();
 			Collections.sort(cohorts, new Comparator<Cohort>() {
-					public int compare(Cohort a, Cohort b) {
-						int temp = a.getVoided().compareTo(b.getVoided());
-						if (temp == 0)
-							temp = a.getCohortId().compareTo(b.getCohortId());
-						return temp;
-					}
-				});
+				
+				public int compare(Cohort a, Cohort b) {
+					int temp = a.getVoided().compareTo(b.getVoided());
+					if (temp == 0)
+						temp = a.getCohortId().compareTo(b.getCohortId());
+					return temp;
+				}
+			});
 		}
-    	return cohorts;
-    }
-    
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
-    	
-    	String action = request.getParameter("method");
-    	String error = "";
-    	MessageSourceAccessor msa = getMessageSourceAccessor();
-    	String title = msa.getMessage("Cohort.title");
-    	String refByCompSearch = msa.getMessage("Cohort.referencedByACompositePatientSearch");
-    	String couldNotDelete = msa.getMessage("Cohort.couldNotDelete");
-    	HttpSession httpSession = request.getSession();
-    	
-    	if ("delete".equals(action)) {
-    		String[] toDelete = request.getParameterValues("cohortId");
-    		if (toDelete != null) {
-    			List<AbstractReportObject> savedSearches = Context.getReportObjectService().getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
+		return cohorts;
+	}
+	
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
+		
+		String action = request.getParameter("method");
+		String error = "";
+		MessageSourceAccessor msa = getMessageSourceAccessor();
+		String title = msa.getMessage("Cohort.title");
+		String refByCompSearch = msa.getMessage("Cohort.referencedByACompositePatientSearch");
+		String couldNotDelete = msa.getMessage("Cohort.couldNotDelete");
+		HttpSession httpSession = request.getSession();
+		
+		if ("delete".equals(action)) {
+			String[] toDelete = request.getParameterValues("cohortId");
+			if (toDelete != null) {
+				List<AbstractReportObject> savedSearches = Context.getReportObjectService().getReportObjectsByType(
+				    OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
 				for (String s : toDelete) {
 					int compositeTest = 0;
 					for (ReportObject ro : savedSearches) {
@@ -115,10 +117,10 @@ public class CohortListController extends SimpleFormController {
 				}
 				return new ModelAndView(new RedirectView(getSuccessView()));
 			}
-    	}
-    	return showForm(request, response, errors);
-    }
-    
+		}
+		return showForm(request, response, errors);
+	}
+	
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
 		return new HashMap<String, Object>();
 	}

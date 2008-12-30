@@ -26,16 +26,17 @@ import org.springframework.util.StringUtils;
  * Used to get/set the ConceptName attribute of objects.
  */
 public class ConceptNameEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public ConceptNameEditor() {	}
+	public ConceptNameEditor() {
+	}
 	
 	/**
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
-		ConceptService cs = Context.getConceptService(); 
+		ConceptService cs = Context.getConceptService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(cs.getConceptName(Integer.valueOf(text)));
@@ -44,12 +45,11 @@ public class ConceptNameEditor extends PropertyEditorSupport {
 				log.error("Error setting text" + text, ex);
 				throw new IllegalArgumentException("ConceptName not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	/**
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
@@ -57,10 +57,9 @@ public class ConceptNameEditor extends PropertyEditorSupport {
 		ConceptName cn = (ConceptName) getValue();
 		if (cn == null) {
 			return "";
-		}
-		else {
+		} else {
 			return cn.getConceptNameId().toString();
 		}
 	}
-
+	
 }

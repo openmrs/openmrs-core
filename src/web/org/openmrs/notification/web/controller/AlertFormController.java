@@ -46,42 +46,39 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class AlertFormController extends SimpleFormController {
-
+	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
-	 * 
-	 * Allows for Integers to be used as values in input tags. Normally, only
-	 * strings and lists are expected
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request,
-			ServletRequestDataBinder binder) throws Exception {
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-
+		
 		Locale locale = Context.getLocale();
 		NumberFormat nf = NumberFormat.getInstance(locale);
-
+		
 		// NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
-		binder.registerCustomEditor(java.lang.Integer.class,
-				new CustomNumberEditor(java.lang.Integer.class, nf, true));
-		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(
-				OpenmrsUtil.getDateFormat(), true, 10));
-
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, nf, true));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
+		
 	}
-
+	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#processFormSubmission(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView processFormSubmission(HttpServletRequest request,
-			HttpServletResponse reponse, Object obj, BindException errors)
-			throws Exception {
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
+	                                             BindException errors) throws Exception {
 		
 		Alert alert = (Alert) obj;
-
+		
 		try {
 			// check that the user has the right privileges here because
 			// we are giving them a proxy privilege in the line following this
@@ -91,10 +88,10 @@ public class AlertFormController extends SimpleFormController {
 			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 			
 			UserService us = Context.getUserService();
-
+			
 			if (Context.isAuthenticated()) {
 				String[] userIdValues = request.getParameter("userIds").split(" ");
-				List<Integer> userIds = new Vector<Integer>(); 
+				List<Integer> userIds = new Vector<Integer>();
 				String[] roleValues = request.getParameter("newRoles").split(",");
 				List<String> roles = new Vector<String>();
 				
@@ -111,7 +108,6 @@ public class AlertFormController extends SimpleFormController {
 						if (!role.trim().equals(""))
 							roles.add(role.trim());
 					}
-				
 				
 				// remove all recipients not in the userIds list
 				List<AlertRecipient> recipientsToRemove = new Vector<AlertRecipient>();
@@ -146,7 +142,7 @@ public class AlertFormController extends SimpleFormController {
 				errors.rejectValue("users", "Alert.recipientRequired");
 			}
 			
-		} 
+		}
 		catch (Exception e) {
 			log.error("Error while processing alert form", e);
 			errors.reject(e.getMessage());
@@ -154,73 +150,68 @@ public class AlertFormController extends SimpleFormController {
 		finally {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 		}
-
+		
 		return super.processFormSubmission(request, reponse, alert, errors);
 	}
-
+	
 	/**
-	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 * by the input form and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request,
-			HttpServletResponse response, Object obj, BindException errors)
-			throws Exception {
-
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
+		
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
-
+		
 		if (Context.isAuthenticated()) {
 			Context.getAlertService().saveAlert((Alert) obj);
 			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
-					"Alert.saved");
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Alert.saved");
 		}
-
+		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time. It tells
-	 * Spring the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request)
-			throws Exception {
-
+	protected Object formBackingObject(HttpServletRequest request) throws Exception {
+		
 		Alert alert = null;
-
+		
 		if (Context.isAuthenticated()) {
 			String a = request.getParameter("alertId");
 			if (a != null)
 				alert = Context.getAlertService().getAlert(Integer.valueOf(a));
 		}
-
+		
 		if (alert == null)
 			alert = new Alert();
-
+		
 		return alert;
 	}
-
+	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object object,
-			Errors errors) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
-
+		
 		if (Context.isAuthenticated()) {
 			map.put("allRoles", Context.getUserService().getAllRoles());
 		}
-
+		
 		return map;
 	}
-
+	
 }

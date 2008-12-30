@@ -25,7 +25,7 @@ import org.openmrs.messagesource.PresentationMessage;
  *
  */
 public class CachedMessageSourceTest {
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -34,7 +34,7 @@ public class CachedMessageSourceTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -43,7 +43,7 @@ public class CachedMessageSourceTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 	}
-
+	
 	/**
 	 * The PresentationMessageCollection should be able to contain messages in different locales.
 	 */
@@ -56,11 +56,10 @@ public class CachedMessageSourceTest {
 		
 		assertEquals(3, testPmc.getLocales().size());
 	}
-
-
+	
 	/**
-	 * The PresentationMessageCollection should return messages that are the same whether
-	 * returned as Strings or when as part of full PresentationMessage object.
+	 * The PresentationMessageCollection should return messages that are the same whether returned
+	 * as Strings or when as part of full PresentationMessage object.
 	 */
 	@Test
 	public void shouldMatchMessageWithPresentationMessage() {

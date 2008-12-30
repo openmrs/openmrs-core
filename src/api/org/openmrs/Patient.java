@@ -26,37 +26,46 @@ import org.openmrs.api.APIException;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Defines a Patient in the system.  A patient is simply an extension
- * of a person and all that that implies.
+ * Defines a Patient in the system. A patient is simply an extension of a person and all that that
+ * implies.
+ * 
  * @version 2.0
  */
 public class Patient extends Person implements java.io.Serializable {
-
+	
 	public static final long serialVersionUID = 93123L;
+	
 	protected static final Log log = LogFactory.getLog(Patient.class);
-
+	
 	// Fields
 	
 	//private Person person;
-
+	
 	private Integer patientId;
+	
 	private Set<PatientIdentifier> identifiers;
-
-	private User creator; 
-	private Date dateCreated; 
+	
+	private User creator;
+	
+	private Date dateCreated;
+	
 	private User changedBy;
-	private Date dateChanged; 
-	private Boolean voided = false; 
+	
+	private Date dateChanged;
+	
+	private Boolean voided = false;
+	
 	private User voidedBy;
-	private Date dateVoided; 
+	
+	private Date dateVoided;
+	
 	private String voidReason;
 	
-
 	// Constructors
 	/** default constructor */
 	public Patient() {
 	}
-
+	
 	public Patient(Person person) {
 		super(person);
 		if (person != null)
@@ -65,7 +74,7 @@ public class Patient extends Person implements java.io.Serializable {
 	
 	/**
 	 * Constructor with default patient id
-	 *  
+	 * 
 	 * @param patientId
 	 */
 	public Patient(Integer patientId) {
@@ -74,45 +83,40 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Compares two objects for similarity
-	 * 
-	 * This must pass through to the parent object (org.openmrs.Person) in order to get similarity
-	 * of person/patient objects
+	 * Compares two objects for similarity This must pass through to the parent object
+	 * (org.openmrs.Person) in order to get similarity of person/patient objects
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
-	 * 
 	 * @see org.openmrs.Person#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
-			 return super.equals(obj);
+		return super.equals(obj);
 	}
-
+	
 	/**
-	 * The hashcode for a patient/person is used to index the objects in a tree
-	 * 
-	 * This must pass through to the parent object (org.openmrs.Person) in order to get similarity
-	 * of person/patient objects
+	 * The hashcode for a patient/person is used to index the objects in a tree This must pass
+	 * through to the parent object (org.openmrs.Person) in order to get similarity of
+	 * person/patient objects
 	 * 
 	 * @see org.openmrs.Person#hashCode()
 	 */
 	public int hashCode() {
 		return super.hashCode();
 	}
-
+	
 	// Property accessors
-
+	
 	/**
 	 * @return internal identifier for patient
 	 */
 	public Integer getPatientId() {
 		return this.patientId;
 	}
-
+	
 	/**
-	 * Sets the internal identifier for a patient. <b>This should never be
-	 * called directly</b>. It exists only for the use of the supporting
-	 * infrastructure.
+	 * Sets the internal identifier for a patient. <b>This should never be called directly</b>. It
+	 * exists only for the use of the supporting infrastructure.
 	 * 
 	 * @param patientId
 	 */
@@ -122,8 +126,8 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Overrides the parent setPersonId(Integer) so that we can be sure patient id
-	 * is also set correctly.
+	 * Overrides the parent setPersonId(Integer) so that we can be sure patient id is also set
+	 * correctly.
 	 * 
 	 * @see org.openmrs.Person#setPersonId(java.lang.Integer)
 	 */
@@ -131,30 +135,28 @@ public class Patient extends Person implements java.io.Serializable {
 		super.setPersonId(personId);
 		this.patientId = personId;
 	}
-
+	
 	/**
 	 * @return patient's tribe
-	 * @deprecated Tribe is not long a value on Patient.  Install the Tribe module
+	 * @deprecated Tribe is not long a value on Patient. Install the Tribe module
 	 */
 	public Tribe getTribe() {
 		throw new APIException("The Patient.getTribe method is no longer supported.  Install the Tribe module");
 	}
-
+	
 	/**
-	 * @param tribe
-	 *            patient's tribe
-	 * @deprecated Tribe is not long a value on Patient.  Install the Tribe module
+	 * @param tribe patient's tribe
+	 * @deprecated Tribe is not long a value on Patient. Install the Tribe module
 	 */
 	public void setTribe(Tribe tribe) {
 		throw new APIException("The Patient.setTribe(Tribe) method is no longer supported.  Install the Tribe module");
 	}
-
+	
 	/**
-	 * Get all of this patients identifiers -- both voided and non-voided
-	 * ones.  If you want only non-voided identifiers, use {@link #getActiveIdentifiers()}
+	 * Get all of this patients identifiers -- both voided and non-voided ones. If you want only
+	 * non-voided identifiers, use {@link #getActiveIdentifiers()}
 	 * 
 	 * @return Set of all known identifiers for this patient
-	 * 
 	 * @see org.openmrs.PatientIdentifier
 	 * @see #getActiveIdentifiers()
 	 */
@@ -163,24 +165,23 @@ public class Patient extends Person implements java.io.Serializable {
 			identifiers = new TreeSet<PatientIdentifier>();
 		return this.identifiers;
 	}
-
+	
 	/**
-	 * @param patientIdentifiers
-	 *            update all known identifiers for patient
+	 * @param patientIdentifiers update all known identifiers for patient
 	 * @see org.openmrs.PatientIdentifier
 	 */
 	public void setIdentifiers(Set<PatientIdentifier> identifiers) {
 		this.identifiers = identifiers;
 	}
-
+	
 	/**
 	 * Will add this PatientIdentifier if the patient doesn't contain it already
+	 * 
 	 * @param patientIdentifier
 	 */
 	/**
-	 * Will only add PatientIdentifiers in this list that this
-	 * patient does not have already
-	 *  
+	 * Will only add PatientIdentifiers in this list that this patient does not have already
+	 * 
 	 * @param patientIdentifiers
 	 */
 	public void addIdentifiers(Collection<PatientIdentifier> patientIdentifiers) {
@@ -190,6 +191,7 @@ public class Patient extends Person implements java.io.Serializable {
 	
 	/**
 	 * Will add this PatientIdentifier if the patient doesn't contain it already
+	 * 
 	 * @param patientIdentifier
 	 */
 	public void addIdentifier(PatientIdentifier patientIdentifier) {
@@ -199,12 +201,10 @@ public class Patient extends Person implements java.io.Serializable {
 		if (patientIdentifier != null && !OpenmrsUtil.collectionContains(identifiers, patientIdentifier))
 			identifiers.add(patientIdentifier);
 	}
-
+	
 	/**
-	 * Convenience method to remove the given identifier from this patient's
-	 * list of identifiers.
-	 * 
-	 * If <code>patientIdentifier</code> is null, nothing is done.
+	 * Convenience method to remove the given identifier from this patient's list of identifiers. If
+	 * <code>patientIdentifier</code> is null, nothing is done.
 	 * 
 	 * @param patientIdentifier the identifier to remove
 	 */
@@ -214,32 +214,30 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to get the first "preferred" identifier for a patient.
-	 * Otherwise, returns the first non-voided identifier
-	 * Otherwise, null
+	 * Convenience method to get the first "preferred" identifier for a patient. Otherwise, returns
+	 * the first non-voided identifier Otherwise, null
 	 * 
 	 * @return Returns the "preferred" patient identifier.
 	 */
 	public PatientIdentifier getPatientIdentifier() {
 		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
 			for (PatientIdentifier id : getIdentifiers()) {
-					if (id.isPreferred() && !id.isVoided())
-						return id;
+				if (id.isPreferred() && !id.isVoided())
+					return id;
 			}
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (!id.isVoided())
 					return id;
 			}
 			return null;
-		} 
+		}
 		return null;
-
+		
 	}
 	
 	/**
-	 * 
-	 * Returns the first (preferred) patient identifier matching a <code>PatientIdentifierType</code>
-	 * Otherwise, returns the first non-voided identifier
+	 * Returns the first (preferred) patient identifier matching a
+	 * <code>PatientIdentifierType</code> Otherwise, returns the first non-voided identifier
 	 * Otherwise, null
 	 * 
 	 * @param identifierType
@@ -248,15 +246,15 @@ public class Patient extends Person implements java.io.Serializable {
 	public PatientIdentifier getPatientIdentifier(PatientIdentifierType pit) {
 		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
 			for (PatientIdentifier id : getIdentifiers()) {
-					if (id.isPreferred() && !id.isVoided() && pit.equals(id.getIdentifierType()))
-						return id;
+				if (id.isPreferred() && !id.isVoided() && pit.equals(id.getIdentifierType()))
+					return id;
 			}
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (!id.isVoided() && pit.equals(id.getIdentifierType()))
 					return id;
 			}
 			return null;
-		} 
+		}
 		return null;
 	}
 	
@@ -265,20 +263,20 @@ public class Patient extends Person implements java.io.Serializable {
 	 * 
 	 * @param identifierTypeId
 	 * @return preferred patient identifier
-	 *
 	 */
 	public PatientIdentifier getPatientIdentifier(Integer identifierTypeId) {
 		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
 			for (PatientIdentifier id : getIdentifiers()) {
-					if (id.isPreferred() && !id.isVoided() && identifierTypeId.equals(id.getIdentifierType().getPatientIdentifierTypeId()))
-						return id;
+				if (id.isPreferred() && !id.isVoided()
+				        && identifierTypeId.equals(id.getIdentifierType().getPatientIdentifierTypeId()))
+					return id;
 			}
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (!id.isVoided() && identifierTypeId.equals(id.getIdentifierType().getPatientIdentifierTypeId()))
 					return id;
 			}
 			return null;
-		} 
+		}
 		return null;
 	}
 	
@@ -292,21 +290,21 @@ public class Patient extends Person implements java.io.Serializable {
 	public PatientIdentifier getPatientIdentifier(String identifierTypeName) {
 		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
 			for (PatientIdentifier id : getIdentifiers()) {
-					if (id.isPreferred() && !id.isVoided() && identifierTypeName.equals(id.getIdentifierType().getName()))
-						return id;
+				if (id.isPreferred() && !id.isVoided() && identifierTypeName.equals(id.getIdentifierType().getName()))
+					return id;
 			}
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (!id.isVoided() && identifierTypeName.equals(id.getIdentifierType().getName()))
 					return id;
 			}
 			return null;
-		} 
-		return null;		
+		}
+		return null;
 	}
 	
 	/**
-	 * Returns only the non-voided identifiers for this patient.
-	 * If you want <u>all</u> identifiers, use {@link #getIdentifiers()}
+	 * Returns only the non-voided identifiers for this patient. If you want <u>all</u> identifiers,
+	 * use {@link #getIdentifiers()}
 	 * 
 	 * @return list of non-voided identifiers for this patient
 	 * @see #getIdentifiers()
@@ -322,10 +320,9 @@ public class Patient extends Person implements java.io.Serializable {
 		return ids;
 	}
 	
-	
 	/**
-	 * Returns only the non-voided identifiers for this patient.
-	 * If you want <u>all</u> identifiers, use {@link #getIdentifiers()}
+	 * Returns only the non-voided identifiers for this patient. If you want <u>all</u> identifiers,
+	 * use {@link #getIdentifiers()}
 	 * 
 	 * @return list of non-voided identifiers for this patient
 	 * @param identifierType
@@ -345,47 +342,47 @@ public class Patient extends Person implements java.io.Serializable {
 	public String toString() {
 		return "Patient#" + patientId;
 	}
-
+	
 	public User getChangedBy() {
 		return changedBy;
 	}
-
+	
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
 	}
-
+	
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	public Date getDateChanged() {
 		return dateChanged;
 	}
-
+	
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
 	}
-
+	
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 	public Date getDateVoided() {
 		return dateVoided;
 	}
-
+	
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
-
+	
 	public Boolean getVoided() {
 		return isVoided();
 	}
@@ -393,23 +390,23 @@ public class Patient extends Person implements java.io.Serializable {
 	public Boolean isVoided() {
 		return voided;
 	}
-
+	
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
-
+	
 	public User getVoidedBy() {
 		return voidedBy;
 	}
-
+	
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
-
+	
 	public String getVoidReason() {
 		return voidReason;
 	}
-
+	
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}

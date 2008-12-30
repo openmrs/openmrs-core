@@ -21,20 +21,15 @@ import java.util.Date;
 import org.junit.Test;
 
 /**
- * This class should test all methods on the patient object.  It should not
- * worry about the extended Person object -- that testing is done by 
- * {@link org.openmrs.PersonTest}
- * 
- * This class does not touch the database, so it does not need to extend the 
- * normal openmrs BaseTest
- * 
- * TODO: Complete this class by testing all other non getter/setters in the
- * patient object
+ * This class should test all methods on the patient object. It should not worry about the extended
+ * Person object -- that testing is done by {@link org.openmrs.PersonTest} This class does not touch
+ * the database, so it does not need to extend the normal openmrs BaseTest TODO: Complete this class
+ * by testing all other non getter/setters in the patient object
  */
 public class PatientTest {
-
+	
 	/**
-	 * Test the add/removeIdentifiers method in the patient object 
+	 * Test the add/removeIdentifiers method in the patient object
 	 * 
 	 * @throws Exception
 	 */
@@ -54,11 +49,15 @@ public class PatientTest {
 		p.addIdentifier(pa1);
 		
 		// make sure the identifier is added.
-		assertTrue("There should be 1 identifier in the patient object but there is actually : " + p.getIdentifiers().size(), p.getIdentifiers().size() == 1);
+		assertTrue(
+		    "There should be 1 identifier in the patient object but there is actually : " + p.getIdentifiers().size(), p
+		            .getIdentifiers().size() == 1);
 		
 		// adding the same identifier should not increment the size
 		p.addIdentifier(pa1);
-		assertTrue("There should be 1 identifier in the patient object but there is actually : " + p.getIdentifiers().size(), p.getIdentifiers().size() == 1);
+		assertTrue(
+		    "There should be 1 identifier in the patient object but there is actually : " + p.getIdentifiers().size(), p
+		            .getIdentifiers().size() == 1);
 		
 		PatientIdentifier pa2 = new PatientIdentifier();
 		pa2.setIdentifier("secondtest");
@@ -68,8 +67,8 @@ public class PatientTest {
 		p.addIdentifier(pa2);
 		
 		// make sure the identifier is added
-		assertTrue("There should be 2 identifiers in the patient object but there is actually : " + p.getIdentifiers().size(), p.getIdentifiers().size() == 2);
-		
+		assertTrue("There should be 2 identifiers in the patient object but there is actually : "
+		        + p.getIdentifiers().size(), p.getIdentifiers().size() == 2);
 		
 		PatientIdentifier pa3 = new PatientIdentifier();
 		pa3.setIdentifier(pa1.getIdentifier());
@@ -79,13 +78,15 @@ public class PatientTest {
 		
 		p.addIdentifier(pa3);
 		// make sure the identifier is NOT added
-		assertTrue("There should be 2 identifiers in the patient object but there is actually : " + p.getIdentifiers().size(), p.getIdentifiers().size() == 2);
+		assertTrue("There should be 2 identifiers in the patient object but there is actually : "
+		        + p.getIdentifiers().size(), p.getIdentifiers().size() == 2);
 		
 		pa3.setIdentifier(pa3.getIdentifier() + "some new string to make sure it gets added");
 		pa3.setVoided(true);
 		p.addIdentifier(pa3);
 		// make sure the identifier IS added
-		assertTrue("There should be 3 identifiers in the patient object but there is actually : " + p.getIdentifiers().size(), p.getIdentifiers().size() == 3);
+		assertTrue("There should be 3 identifiers in the patient object but there is actually : "
+		        + p.getIdentifiers().size(), p.getIdentifiers().size() == 3);
 		
 		p.removeIdentifier(pa3);
 		assertTrue("There should be only 2 identifiers in the patient object now", p.getIdentifiers().size() == 2);
@@ -93,7 +94,8 @@ public class PatientTest {
 		pa3.setDateCreated(new Date(pa1.getDateCreated().getTime() + 1));
 		p.addIdentifier(pa3);
 		// make sure the identifier IS added
-		assertTrue("There should be 3 identifiers in the patient object but there is actually : " + p.getIdentifiers().size(), p.getIdentifiers().size() == 3);
+		assertTrue("There should be 3 identifiers in the patient object but there is actually : "
+		        + p.getIdentifiers().size(), p.getIdentifiers().size() == 3);
 		
 		// test removing all of the identifiers
 		p.removeIdentifier(pa3);
@@ -105,5 +107,5 @@ public class PatientTest {
 		p.removeIdentifier(pa1);
 		assertTrue("There shouldn't be any identifiers in the patient object now", p.getIdentifiers().size() == 0);
 	}
-		
+	
 }

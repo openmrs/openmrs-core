@@ -31,15 +31,14 @@ public interface AlertDAO {
 	 * @see org.openmrs.notification.AlertService#saveAlert(org.openmrs.notification.Alert)
 	 */
 	public Alert saveAlert(Alert alert) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#getAlert(Integer)
 	 */
 	public Alert getAlert(Integer alertId) throws DAOException;
-
+	
 	/**
-	 * @see org.openmrs.notification.AlertService#getAlerts(org.openmrs.User,
-	 *      boolean, boolean)
+	 * @see org.openmrs.notification.AlertService#getAlerts(org.openmrs.User, boolean, boolean)
 	 */
 	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeVoided) throws DAOException;
 	
@@ -47,7 +46,7 @@ public interface AlertDAO {
 	 * @see org.openmrs.notification.AlertService#purgeAlert(org.openmrs.notification.Alert)
 	 */
 	public void deleteAlert(Alert alert) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#getAllAlerts(boolean)
 	 */

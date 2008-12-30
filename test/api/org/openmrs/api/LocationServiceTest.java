@@ -32,14 +32,13 @@ import org.openmrs.test.BaseContextSensitiveTest;
  * TODO test all methods in LocationService
  */
 public class LocationServiceTest extends BaseContextSensitiveTest {
-
+	
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-initialData.xml";
-
+	
 	/**
-	 * Run this before each unit test in this class.  This adds a bit 
-	 * more data to the base data that is done in the "@Before" 
-	 * method in {@link BaseContextSensitiveTest} (which is run
-	 * right before this method).
+	 * Run this before each unit test in this class. This adds a bit more data to the base data that
+	 * is done in the "@Before" method in {@link BaseContextSensitiveTest} (which is run right
+	 * before this method).
 	 * 
 	 * @throws Exception
 	 */
@@ -47,7 +46,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(ENC_INITIAL_DATA_XML);
 	}
-
+	
 	/**
 	 * Test create/update/delete of location
 	 * 
@@ -56,11 +55,11 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldLocation() throws Exception {
 		LocationService locationService = Context.getLocationService();
-
+		
 		// testing creation
-
+		
 		Location location = new Location();
-
+		
 		location.setName("testing");
 		location.setDescription("desc");
 		location.setAddress1("123");
@@ -71,17 +70,17 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		location.setPostalCode("post");
 		location.setLatitude("lat");
 		location.setLongitude("lon");
-
+		
 		locationService.saveLocation(location);
-
+		
 		Location newLocation = locationService.getLocation(location.getLocationId());
 		assertNotNull(newLocation);
-
+		
 		List<Location> locations = locationService.getAllLocations();
-
+		
 		// make sure we get a list
 		assertNotNull(locations);
-
+		
 		boolean found = false;
 		for (Iterator<Location> i = locations.iterator(); i.hasNext();) {
 			Location location2 = i.next();
@@ -92,29 +91,28 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 			if (location.equals(location2))
 				found = true;
 		}
-
+		
 		// assert that the new location was returned in the list
 		assertTrue(found);
-
+		
 		// check update
 		newLocation.setName("another test");
 		locationService.saveLocation(newLocation);
-
+		
 		Location newerLocation = locationService.getLocation(newLocation.getLocationId());
 		assertTrue(newerLocation.getName().equals(newLocation.getName()));
-
+		
 		// check deletion
 		locationService.purgeLocation(newLocation);
 		assertNull(locationService.getLocation(newLocation.getLocationId()));
-
+		
 	}
-
+	
 	/**
-	 * Tests retiring a location. First, create a location. Then get all
-	 * locations (including/not including) retired. Then retire the location.
-	 * Then get all locations (including/not including) retired. The two lists
-	 * of all locations including retired should be the same. The two lists not
-	 * including retired locations should be different.
+	 * Tests retiring a location. First, create a location. Then get all locations (including/not
+	 * including) retired. Then retire the location. Then get all locations (including/not
+	 * including) retired. The two lists of all locations including retired should be the same. The
+	 * two lists not including retired locations should be different.
 	 * 
 	 * @throws Exception
 	 */
@@ -130,26 +128,25 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		location.setStateProvince("The Great JUnit State");
 		location.setCountry("Niceland");
 		locationService.saveLocation(location);
-
+		
 		// Get all locations.
 		List<Location> locationsBeforeRetired = locationService.getAllLocations(true);
 		List<Location> locationsNotRetiredBefore = locationService.getAllLocations(false);
-
+		
 		// Retire the location.
 		Location oldLocation = locationService.getLocation("Junitlandia");
-		locationService.retireLocation(oldLocation,
-		                               "Spend more time with its family.");
-
+		locationService.retireLocation(oldLocation, "Spend more time with its family.");
+		
 		// Get all locations again.
 		List<Location> locationsAfterRetired = locationService.getAllLocations(true);
 		List<Location> locationsNotRetiredAfter = locationService.getAllLocations(false);
-
+		
 		// Both location lists that include retired should be equal.
 		assertEquals(locationsBeforeRetired, locationsAfterRetired);
-
+		
 		// Both location lists that do not include retired should not be the same.
 		assertNotSame(locationsNotRetiredBefore, locationsNotRetiredAfter);
-
+		
 	}
-
+	
 }

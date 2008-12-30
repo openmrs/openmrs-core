@@ -30,17 +30,17 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
  * @see org.openmrs.api.ObsService
  */
 public interface ObsDAO {
-
+	
 	/**
 	 * @see org.openmrs.api.ObsService#saveObs(org.openmrs.Obs)
 	 */
 	public Obs saveObs(Obs obs) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
 	public Obs getObs(Integer obsId) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.ObsService#purgeObs(Obs)
 	 */
@@ -50,33 +50,33 @@ public interface ObsDAO {
 	 * @see org.openmrs.api.ObsService#getAllMimeTypes(boolean)
 	 */
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.ObsService#getMimeType(java.lang.Integer)
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.ObsService#saveMimeType(MimeType)
 	 */
 	public MimeType saveMimeType(MimeType mimeType) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.ObsService#purgeMimeType(MimeType)
 	 */
 	public void deleteMimeType(MimeType mimeType) throws DAOException;
-
+	
 	/**
-	 * Assumes that <code>whom</code>, <code>encounters</code>, 
-	 * <code>locations</code>, <code>personTypes</code>, 
-	 * <code>questions</code>, and <code>answers</code> are non-null lists
+	 * Assumes that <code>whom</code>, <code>encounters</code>, <code>locations</code>,
+	 * <code>personTypes</code>, <code>questions</code>, and <code>answers</code> are non-null lists
 	 * 
-     * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean)
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
+	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean)
 	 */
-    public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters,
-	                                 List<Concept> questions, List<Concept> answers,
-	                                 List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
-	                                 Integer mostRecentN, Integer obsGroupId, Date fromDate,
-	                                 Date toDate, boolean includeVoidedObs) throws DAOException;
-
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
+	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	                                 boolean includeVoidedObs) throws DAOException;
+	
 }

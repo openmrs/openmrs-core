@@ -19,10 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.tagext.TagSupport;
 
 /**
- * Prints the contextPath for the current webapp.
- * Typically you can get this via ${pageContext.request.contextPath}
- * 
-
+ * Prints the contextPath for the current webapp. Typically you can get this via
+ * ${pageContext.request.contextPath}
  */
 public class ContextPathTag extends TagSupport {
 	
@@ -31,11 +29,12 @@ public class ContextPathTag extends TagSupport {
 	//private final Log log = LogFactory.getLog(getClass());
 	
 	public int doStartTag() {
-		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
-
+		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
+		
 		try {
 			pageContext.getOut().write(request.getContextPath());
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			// pass
 		}
 		return SKIP_BODY;
@@ -44,5 +43,5 @@ public class ContextPathTag extends TagSupport {
 	public int doEndTag() {
 		return EVAL_PAGE;
 	}
-
+	
 }

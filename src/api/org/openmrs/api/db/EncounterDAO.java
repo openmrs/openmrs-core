@@ -25,10 +25,9 @@ import org.openmrs.Patient;
 
 /**
  * Encounter-related database functions
- * 
  */
 public interface EncounterDAO {
-
+	
 	/**
 	 * Saves an encounter
 	 * 
@@ -36,14 +35,14 @@ public interface EncounterDAO {
 	 * @throws DAOException
 	 */
 	public Encounter saveEncounter(Encounter encounter) throws DAOException;
-
+	
 	/**
 	 * Purge an encounter from database.
 	 * 
 	 * @param encounter encounter object to be purged
 	 */
 	public void deleteEncounter(Encounter encounter) throws DAOException;
-
+	
 	/**
 	 * Get encounter by internal identifier
 	 * 
@@ -54,15 +53,13 @@ public interface EncounterDAO {
 	public Encounter getEncounter(Integer encounterId) throws DAOException;
 	
 	/**
-	 * 
 	 * @param patientId
 	 * @param includeVoided
 	 * @return all encounters for the given patient identifer
 	 * @throws DAOException
 	 */
-	public List<Encounter> getEncountersByPatientId(Integer patientId)
-	        throws DAOException;
-
+	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException;
+	
 	/**
 	 * Get all encounters that match a variety of (nullable) criteria
 	 * 
@@ -75,10 +72,10 @@ public interface EncounterDAO {
 	 * @param includeVoided
 	 * @return
 	 */
-	public List<Encounter> getEncounters(Patient patient, Location location,
-	        Date fromDate, Date toDate, Collection<Form> enteredViaForms,
-	        Collection<EncounterType> encounterTypes, boolean includeVoided);
-
+	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     boolean includeVoided);
+	
 	/**
 	 * Save an Encounter Type
 	 * 
@@ -87,15 +84,13 @@ public interface EncounterDAO {
 	public EncounterType saveEncounterType(EncounterType encounterType);
 	
 	/**
-	 * 
 	 * Purge encounter type from database.
 	 * 
 	 * @param encounterType
 	 * @throws DAOException
 	 */
-	public void deleteEncounterType(EncounterType encounterType)
-	        throws DAOException;
-
+	public void deleteEncounterType(EncounterType encounterType) throws DAOException;
+	
 	/**
 	 * Get encounterType by internal identifier
 	 * 
@@ -103,9 +98,8 @@ public interface EncounterDAO {
 	 * @return encounterType with given internal identifier
 	 * @throws DAOException
 	 */
-	public EncounterType getEncounterType(Integer encounterTypeId)
-	        throws DAOException;
-
+	public EncounterType getEncounterType(Integer encounterTypeId) throws DAOException;
+	
 	/**
 	 * Get encounterType by name
 	 * 
@@ -121,30 +115,25 @@ public interface EncounterDAO {
 	 * @return encounter types list
 	 * @throws DAOException
 	 */
-	public List<EncounterType> getAllEncounterTypes(Boolean includeVoided)
-	        throws DAOException;
-
+	public List<EncounterType> getAllEncounterTypes(Boolean includeVoided) throws DAOException;
+	
 	/**
-	 * 
-	 * Find Encounter Types matching the given name. Search string is case
-	 * insensitive, so that "NaMe".equals("name") is true.
+	 * Find Encounter Types matching the given name. Search string is case insensitive, so that
+	 * "NaMe".equals("name") is true.
 	 * 
 	 * @param name
 	 * @return all EncounterTypes that match
 	 * @throws DAOException
 	 */
-	public List<EncounterType> findEncounterTypes(String name)
-	        throws DAOException;
+	public List<EncounterType> findEncounterTypes(String name) throws DAOException;
 	
 	/**
-     * Gets the value of encounterDatetime currently saved in the database
-     * for the given encounter, bypassing any caches. 
+	 * Gets the value of encounterDatetime currently saved in the database for the given encounter,
+	 * bypassing any caches. This is used prior to saving an encounter so that we can change the obs
+	 * if need be
 	 * 
-     * This is used prior to saving an encounter so that we can change the obs
-     * if need be
-	 * 
-     * @param encounter the Encounter go the the encounterDatetime of
-     * @return the encounterDatetime currently in the database for this encounter
+	 * @param encounter the Encounter go the the encounterDatetime of
+	 * @return the encounterDatetime currently in the database for this encounter
 	 */
-    public Date getSavedEncounterDatetime(Encounter encounter);
+	public Date getSavedEncounterDatetime(Encounter encounter);
 }

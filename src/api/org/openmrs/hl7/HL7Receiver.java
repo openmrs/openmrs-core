@@ -15,8 +15,8 @@ package org.openmrs.hl7;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.hl7.handler.ORUR01Handler;
 import org.openmrs.hl7.handler.ADTA28Handler;
+import org.openmrs.hl7.handler.ORUR01Handler;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.ApplicationException;
@@ -35,11 +35,12 @@ public class HL7Receiver {
 	Log log = LogFactory.getLog(HL7Receiver.class);
 	
 	private GenericParser parser;
+	
 	private MessageTypeRouter router;
-
+	
 	public HL7Receiver() {
 		log.debug("Register handler applications for R01 and A28");
-
+		
 		parser = new GenericParser();
 		// TODO draw registered applications from database or configuration file
 		router = new MessageTypeRouter();
@@ -55,9 +56,11 @@ public class HL7Receiver {
 		Message message;
 		try {
 			message = parser.parse(hl7);
-		} catch (EncodingNotSupportedException e) {
+		}
+		catch (EncodingNotSupportedException e) {
 			throw new HL7Exception("HL7 encoding not supported", e);
-		} catch (ca.uhn.hl7v2.HL7Exception e) {
+		}
+		catch (ca.uhn.hl7v2.HL7Exception e) {
 			throw new HL7Exception("Error parsing message", e);
 		}
 		
@@ -69,7 +72,8 @@ public class HL7Receiver {
 			if (!router.canProcess(message))
 				throw new HL7Exception("No route for message");
 			response = router.processMessage(message);
-		} catch (ApplicationException e) {
+		}
+		catch (ApplicationException e) {
 			throw new HL7Exception("Error routing HL7 message", e);
 		}
 		return response;

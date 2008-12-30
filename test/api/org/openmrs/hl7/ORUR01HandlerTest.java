@@ -45,11 +45,12 @@ import ca.uhn.hl7v2.parser.GenericParser;
  * TODO finish testing all methods ORUR01Handler
  */
 public class ORUR01HandlerTest extends BaseContextSensitiveTest {
-
+	
 	protected static final String ORU_INITIAL_DATA_XML = "org/openmrs/hl7/include/ORUTest-initialData.xml";
 	
 	// hl7 parser to be used throughout
 	protected static GenericParser parser = new GenericParser();
+	
 	private static MessageTypeRouter router = new MessageTypeRouter();
 	
 	static {
@@ -57,9 +58,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Run this before each unit test in this class.  This adds the 
-	 * hl7 specific data to the initial and demo data done in the 
-	 * "@Before" method in {@link BaseContextSensitiveTest}.
+	 * Run this before each unit test in this class. This adds the hl7 specific data to the initial
+	 * and demo data done in the "@Before" method in {@link BaseContextSensitiveTest}.
 	 * 
 	 * @throws Exception
 	 */
@@ -67,9 +67,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(ORU_INITIAL_DATA_XML);
 	}
-
+	
 	/**
-	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -97,18 +96,18 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Calendar cal = Calendar.getInstance();
 		cal.set(2008, Calendar.FEBRUARY, 29, 0, 0, 0);
 		Date returnVisitDate = cal.getTime();
-		List<Obs> returnVisitDateObsForPatient3 = obsService.getObservationsByPersonAndConcept(patient, returnVisitDateConcept);
+		List<Obs> returnVisitDateObsForPatient3 = obsService.getObservationsByPersonAndConcept(patient,
+		    returnVisitDateConcept);
 		assertEquals("There should be a return visit date", 1, returnVisitDateObsForPatient3.size());
 		
-		Obs firstObs = (Obs)returnVisitDateObsForPatient3.toArray()[0];
+		Obs firstObs = (Obs) returnVisitDateObsForPatient3.toArray()[0];
 		cal.setTime(firstObs.getValueDatetime());
 		Date firstObsValueDatetime = cal.getTime();
 		assertEquals("The date should be the 29th", returnVisitDate.toString(), firstObsValueDatetime.toString());
 	}
 	
 	/**
-	 * This method checks that obs grouping is happening correctly when 
-	 * processing an ORUR01
+	 * This method checks that obs grouping is happening correctly when processing an ORUR01
 	 * 
 	 * @throws Exception
 	 */
@@ -138,7 +137,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Date returnVisitDate = cal.getTime();
 		Set<Obs> returnVisitDateObsForPatient2 = obsService.getObservations(patient, returnVisitDateConcept, false);
 		assertEquals("There should be a return visit date", 1, returnVisitDateObsForPatient2.size());
-		Obs firstObs = (Obs)returnVisitDateObsForPatient2.toArray()[0];
+		Obs firstObs = (Obs) returnVisitDateObsForPatient2.toArray()[0];
 		
 		cal.setTime(firstObs.getValueDatetime());
 		cal.clear(Calendar.HOUR);
@@ -152,7 +151,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Concept phoneContact = Context.getConceptService().getConcept(1555);
 		Set<Obs> contactMethodObsForPatient2 = obsService.getObservations(patient, contactMethod, false);
 		assertEquals("There should be a contact method", 1, contactMethodObsForPatient2.size());
-		Obs firstContactMethodObs = (Obs)contactMethodObsForPatient2.toArray()[0];
+		Obs firstContactMethodObs = (Obs) contactMethodObsForPatient2.toArray()[0];
 		assertEquals("The contact method should be phone", phoneContact, firstContactMethodObs.getValueCoded());
 		
 		// check that there is a group id
@@ -184,9 +183,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * If an hl7 message contains a pv1-1 value, then assume its
-	 * an encounter_id and that information in the hl7 message
-	 * should be appended to that encounter.
+	 * If an hl7 message contains a pv1-1 value, then assume its an encounter_id and that
+	 * information in the hl7 message should be appended to that encounter.
 	 * 
 	 * @throws Exception
 	 */
@@ -219,7 +217,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldCreateConceptProposal() throws Exception {
-
+		
 		List<ConceptProposal> proposals = Context.getConceptService().getAllConceptProposals(false);
 		Assert.assertEquals(0, proposals.size());
 		
@@ -233,9 +231,9 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		ConceptProposal proposal = Context.getConceptService().getAllConceptProposals(false).get(0);
 		assertEquals("PELVIC MASS", proposal.getOriginalText());
-
+		
 	}
-
+	
 	/**
 	 * Should create a concept proposal because of the key string in the message
 	 * 

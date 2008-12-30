@@ -17,27 +17,29 @@ package org.openmrs.arden;
  *
  */
 public class Action {
+	
 	String actionString = null;
+	
 	String atVar = null;
 	
-	public Action(String actionString){
+	public Action(String actionString) {
 		this.actionString = actionString;
 	}
-
+	
 	public String getActionString() {
-    	return actionString;
-    }
-
+		return actionString;
+	}
+	
 	public void setActionString(String actionString) {
-    	this.actionString = actionString;
-    }
-
+		this.actionString = actionString;
+	}
+	
 	public String getAtVar() {
-    	return atVar;
-    }
-
+		return atVar;
+	}
+	
 	public void setAtVar(String atVar) {
-    	this.atVar = atVar;
-    }
+		this.atVar = atVar;
+	}
 	
 }

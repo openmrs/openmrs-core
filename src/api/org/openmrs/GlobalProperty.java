@@ -14,20 +14,22 @@
 package org.openmrs;
 
 /**
- * Global properties are simple key-value pairs persisted in the database
- * 
- * GPs can be thought of as something similar to environment variables used
- * in operating systems. 
+ * Global properties are simple key-value pairs persisted in the database GPs can be thought of as
+ * something similar to environment variables used in operating systems.
  */
 public class GlobalProperty {
+	
 	private String property = "";
+	
 	private String propertyValue = "";
+	
 	private String description = "";
 	
 	/**
 	 * Default empty constructor
 	 */
-	public GlobalProperty() {	}
+	public GlobalProperty() {
+	}
 	
 	/**
 	 * Constructor defining the key for this GP
@@ -60,24 +62,28 @@ public class GlobalProperty {
 		this(property, value);
 		this.description = description;
 	}
+	
 	/**
 	 * @return Returns the property.
 	 */
 	public String getProperty() {
 		return property;
 	}
+	
 	/**
 	 * @param property The property to set.
 	 */
 	public void setProperty(String property) {
 		this.property = property;
 	}
+	
 	/**
 	 * @return Returns the propertyValue.
 	 */
 	public String getPropertyValue() {
 		return propertyValue;
 	}
+	
 	/**
 	 * @param propertyValue The propertyValue to set.
 	 */
@@ -91,20 +97,20 @@ public class GlobalProperty {
 	public String getDescription() {
 		return description;
 	}
-
+	
 	/**
 	 * @param description the description to set
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object o) {
 		if (o instanceof GlobalProperty) {
-			GlobalProperty gp = (GlobalProperty)o;
+			GlobalProperty gp = (GlobalProperty) o;
 			return (property != null && property.equals(gp.getProperty()));
 		}
 		
@@ -115,10 +121,11 @@ public class GlobalProperty {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.property == null) return super.hashCode();
+		if (this.property == null)
+			return super.hashCode();
 		
 		int hash = 5 * this.property.hashCode();
 		
-		return hash; 
+		return hash;
 	}
 }

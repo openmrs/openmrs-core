@@ -20,46 +20,53 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * A concept source is defined as any institution that keeps a concept
- * dictionary. Examples are ICD9, ICD10, SNOMED, or any other OpenMRS
- * implementation
- * 
+ * A concept source is defined as any institution that keeps a concept dictionary. Examples are
+ * ICD9, ICD10, SNOMED, or any other OpenMRS implementation
  */
 @Root
 public class ConceptSource implements java.io.Serializable {
-
+	
 	public static final long serialVersionUID = 375L;
-
+	
 	// Fields
-
+	
 	private Integer conceptSourceId;
+	
 	private String name;
+	
 	private String description;
+	
 	private String hl7Code;
+	
 	private User creator;
+	
 	private Date dateCreated;
+	
 	private Boolean voided = false;
+	
 	private User voidedBy;
+	
 	private Date dateVoided;
+	
 	private String voidReason;
-
+	
 	// Constructors
-
+	
 	/** default constructor */
 	public ConceptSource() {
 	}
-
+	
 	/** constructor with id */
 	public ConceptSource(Integer conceptSourceId) {
 		this.conceptSourceId = conceptSourceId;
 	}
-
+	
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptSource) {
-			if (conceptSourceId == null) 
+			if (conceptSourceId == null)
 				return false;
 			
 			ConceptSource c = (ConceptSource) obj;
@@ -67,7 +74,7 @@ public class ConceptSource implements java.io.Serializable {
 		}
 		return false;
 	}
-
+	
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -76,7 +83,7 @@ public class ConceptSource implements java.io.Serializable {
 			return super.hashCode();
 		return conceptSourceId.hashCode();
 	}
-
+	
 	/**
 	 * @return Returns the conceptSourceId.
 	 */
@@ -84,7 +91,7 @@ public class ConceptSource implements java.io.Serializable {
 	public Integer getConceptSourceId() {
 		return conceptSourceId;
 	}
-
+	
 	/**
 	 * @param conceptSourceId The conceptSourceId to set.
 	 */
@@ -92,7 +99,7 @@ public class ConceptSource implements java.io.Serializable {
 	public void setConceptSourceId(Integer conceptSourceId) {
 		this.conceptSourceId = conceptSourceId;
 	}
-
+	
 	/**
 	 * @return Returns the creator.
 	 */
@@ -100,7 +107,7 @@ public class ConceptSource implements java.io.Serializable {
 	public User getCreator() {
 		return creator;
 	}
-
+	
 	/**
 	 * @param creator The creator to set.
 	 */
@@ -108,7 +115,7 @@ public class ConceptSource implements java.io.Serializable {
 	public void setCreator(User creator) {
 		this.creator = creator;
 	}
-
+	
 	/**
 	 * @return Returns the dateCreated.
 	 */
@@ -116,7 +123,7 @@ public class ConceptSource implements java.io.Serializable {
 	public Date getDateCreated() {
 		return dateCreated;
 	}
-
+	
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
@@ -124,7 +131,7 @@ public class ConceptSource implements java.io.Serializable {
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
 	}
-
+	
 	/**
 	 * @return Returns the dateVoided.
 	 */
@@ -132,7 +139,7 @@ public class ConceptSource implements java.io.Serializable {
 	public Date getDateVoided() {
 		return dateVoided;
 	}
-
+	
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
@@ -140,7 +147,7 @@ public class ConceptSource implements java.io.Serializable {
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;
 	}
-
+	
 	/**
 	 * @return Returns the description.
 	 */
@@ -148,7 +155,7 @@ public class ConceptSource implements java.io.Serializable {
 	public String getDescription() {
 		return description;
 	}
-
+	
 	/**
 	 * @param description The description to set.
 	 */
@@ -156,7 +163,7 @@ public class ConceptSource implements java.io.Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
 	/**
 	 * @return Returns the hl7Code.
 	 */
@@ -164,7 +171,7 @@ public class ConceptSource implements java.io.Serializable {
 	public String getHl7Code() {
 		return hl7Code;
 	}
-
+	
 	/**
 	 * @param hl7Code The hl7Code to set.
 	 */
@@ -172,7 +179,7 @@ public class ConceptSource implements java.io.Serializable {
 	public void setHl7Code(String hl7Code) {
 		this.hl7Code = hl7Code;
 	}
-
+	
 	/**
 	 * @return Returns the name.
 	 */
@@ -180,7 +187,7 @@ public class ConceptSource implements java.io.Serializable {
 	public String getName() {
 		return name;
 	}
-
+	
 	/**
 	 * @param name The concept source name to set.
 	 */
@@ -188,18 +195,17 @@ public class ConceptSource implements java.io.Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	/**
-	 * 
 	 * @return the voided status
 	 */
 	public Boolean isVoided() {
 		return voided;
 	}
-
+	
 	/**
-	 * This method exists to satisfy spring and hibernates slightly bung use of
-	 * Boolean object getters and setters.
+	 * This method exists to satisfy spring and hibernates slightly bung use of Boolean object
+	 * getters and setters.
 	 * 
 	 * @deprecated Use the "proper" isVoided method.
 	 * @see #isVoided()
@@ -208,7 +214,7 @@ public class ConceptSource implements java.io.Serializable {
 	public Boolean getVoided() {
 		return isVoided();
 	}
-
+	
 	/**
 	 * @param voided The voided status
 	 */
@@ -216,7 +222,7 @@ public class ConceptSource implements java.io.Serializable {
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
-
+	
 	/**
 	 * @return Returns the openmrs user that voided this source
 	 */
@@ -224,7 +230,7 @@ public class ConceptSource implements java.io.Serializable {
 	public User getVoidedBy() {
 		return voidedBy;
 	}
-
+	
 	/**
 	 * @param voidedBy The openmrs user that voided this source
 	 */
@@ -232,7 +238,7 @@ public class ConceptSource implements java.io.Serializable {
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
 	}
-
+	
 	/**
 	 * @return Returns the reason this source was voided
 	 */
@@ -240,7 +246,7 @@ public class ConceptSource implements java.io.Serializable {
 	public String getVoidReason() {
 		return voidReason;
 	}
-
+	
 	/**
 	 * @param voidReason The reason this source is voided
 	 */
@@ -248,5 +254,5 @@ public class ConceptSource implements java.io.Serializable {
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
-
+	
 }

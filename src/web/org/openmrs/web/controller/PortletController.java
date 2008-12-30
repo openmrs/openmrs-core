@@ -51,62 +51,40 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 public class PortletController implements Controller {
-
+	
 	protected Log log = LogFactory.getLog(this.getClass());
-
+	
 	/**
-	 * This method produces a model containing the following mappings:
-	 * 	   (always)
-	 * 			(java.util.Date) now
-	 *     		(String) size
-	 *         	(Locale) locale
-	 *     		(other parameters)
-	 *     (if there's currently an authenticated user)
-	 *         	(User) authenticatedUser
-	 *          (Cohort) myPatientSet (the user's selected patient set, PatientSetService.getMyPatientSet())
-	 *     (if the request has a patientId attribute)
-	 *     		(Integer) patientId
-	 *        	(Patient) patient
-	 *         	(Set<Obs>) patientObs
-	 *          (Set<Encounter>) patientEncounters
-	 *          (List<DrugOrder>) patientDrugOrders
-	 *          (List<DrugOrder>) currentDrugOrders
-	 *          (List<DrugOrder>) completedDrugOrders
-	 *          (Obs) patientWeight // most recent weight obs
-	 *          (Obs) patientHeight // most recent height obs
-	 *          (Double) patientBmi // BMI derived from most recent weight and most recent height
-	 *          (String) patientBmiAsString // BMI rounded to one decimal place, or "?" if unknown
-	 *          (Integer) personId
-	 *       (if the patient has any obs for the concept in the global property 'concept.reasonExitedCare')
-	 *          	(Obs) patientReasonForExit
-	 *     (if the request has a personId or patientId attribute)
-	 *     		(Person) person
-	 *          (List<Relationship>) personRelationships
-	 *          (Map<RelationshipType, List<Relationship>>) personRelationshipsByType
-	 *     (if the request has an encounterId attribute)
-	 *     		(Integer) encounterId
-	 *         	(Encounter) encounter
-	 *         	(Set<Obs>) encounterObs
-	 *     (if the request has a userId attribute)
-	 *     		(Integer) userId
-	 *         	(User) user
-	 *     (if the request has a patientIds attribute, which should be a (String) comma-separated list of patientIds)
-	 *     		(PatientSet) patientSet
-	 *     		(String) patientIds
-	 *     (if the request has a conceptIds attribute, which should be a (String) commas-separated list of conceptIds)
-	 *     		(Map<Integer, Concept>) conceptMap
-	 *     		(Map<String, Concept>) conceptMapByStringIds
+	 * This method produces a model containing the following mappings: (always) (java.util.Date) now
+	 * (String) size (Locale) locale (other parameters) (if there's currently an authenticated user)
+	 * (User) authenticatedUser (Cohort) myPatientSet (the user's selected patient set,
+	 * PatientSetService.getMyPatientSet()) (if the request has a patientId attribute) (Integer)
+	 * patientId (Patient) patient (Set<Obs>) patientObs (Set<Encounter>) patientEncounters
+	 * (List<DrugOrder>) patientDrugOrders (List<DrugOrder>) currentDrugOrders (List<DrugOrder>)
+	 * completedDrugOrders (Obs) patientWeight // most recent weight obs (Obs) patientHeight // most
+	 * recent height obs (Double) patientBmi // BMI derived from most recent weight and most recent
+	 * height (String) patientBmiAsString // BMI rounded to one decimal place, or "?" if unknown
+	 * (Integer) personId (if the patient has any obs for the concept in the global property
+	 * 'concept.reasonExitedCare') (Obs) patientReasonForExit (if the request has a personId or
+	 * patientId attribute) (Person) person (List<Relationship>) personRelationships
+	 * (Map<RelationshipType, List<Relationship>>) personRelationshipsByType (if the request has an
+	 * encounterId attribute) (Integer) encounterId (Encounter) encounter (Set<Obs>) encounterObs
+	 * (if the request has a userId attribute) (Integer) userId (User) user (if the request has a
+	 * patientIds attribute, which should be a (String) comma-separated list of patientIds)
+	 * (PatientSet) patientSet (String) patientIds (if the request has a conceptIds attribute, which
+	 * should be a (String) commas-separated list of conceptIds) (Map<Integer, Concept>) conceptMap
+	 * (Map<String, Concept>) conceptMapByStringIds
 	 */
 	@SuppressWarnings("unchecked")
-	public ModelAndView handleRequest(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                           IOException {
+		
 		AdministrationService as = Context.getAdministrationService();
 		ConceptService cs = Context.getConceptService();
 		
 		//HttpSession httpSession = request.getSession();
 		//
-
+		
 		// find the portlet that was identified in the openmrs:portlet taglib
 		Object uri = request.getAttribute("javax.servlet.include.servlet_path");
 		String portletPath = "";
@@ -128,18 +106,19 @@ public class PortletController implements Controller {
 		if (uri != null) {
 			long timeAtStart = System.currentTimeMillis();
 			portletPath = uri.toString();
-
+			
 			// Allowable extensions are '' (no extension) and '.portlet'
 			if (portletPath.endsWith("portlet"))
 				portletPath = portletPath.replace(".portlet", "");
 			else if (portletPath.endsWith("jsp"))
-				throw new ServletException("Illegal extension used for portlet: '.jsp'. Allowable extensions are '' (no extension) and '.portlet'");
-
+				throw new ServletException(
+				        "Illegal extension used for portlet: '.jsp'. Allowable extensions are '' (no extension) and '.portlet'");
+			
 			log.debug("Loading portlet: " + portletPath);
 			
-			String id = (String) request.getAttribute("org.openmrs.portlet.id"); 
-			String size = (String)request.getAttribute("org.openmrs.portlet.size");
-			Map<String, Object> params = (Map<String, Object>)request.getAttribute("org.openmrs.portlet.parameters");
+			String id = (String) request.getAttribute("org.openmrs.portlet.id");
+			String size = (String) request.getAttribute("org.openmrs.portlet.size");
+			Map<String, Object> params = (Map<String, Object>) request.getAttribute("org.openmrs.portlet.parameters");
 			Map<String, Object> moreParams = (Map<String, Object>) request.getAttribute("org.openmrs.portlet.parameterMap");
 			
 			model.put("now", new Date());
@@ -150,7 +129,7 @@ public class PortletController implements Controller {
 			if (moreParams != null) {
 				model.putAll(moreParams);
 			}
-
+			
 			// if there's an authenticated user, put them, and their patient set, in the model
 			if (Context.getAuthenticatedUser() != null) {
 				model.put("authenticatedUser", Context.getAuthenticatedUser());
@@ -181,14 +160,18 @@ public class PortletController implements Controller {
 							Obs latestHeight = null;
 							String bmiAsString = "?";
 							try {
-								ConceptNumeric weightConcept = cs.getConceptNumeric(cs.getConceptByIdOrName(as.getGlobalProperty("concept.weight")).getConceptId());
-								ConceptNumeric heightConcept = cs.getConceptNumeric(cs.getConceptByIdOrName(as.getGlobalProperty("concept.height")).getConceptId());
+								ConceptNumeric weightConcept = cs.getConceptNumeric(cs.getConceptByIdOrName(
+								    as.getGlobalProperty("concept.weight")).getConceptId());
+								ConceptNumeric heightConcept = cs.getConceptNumeric(cs.getConceptByIdOrName(
+								    as.getGlobalProperty("concept.height")).getConceptId());
 								for (Obs obs : patientObs) {
 									if (obs.getConcept().equals(weightConcept)) {
-										if (latestWeight == null || obs.getObsDatetime().compareTo(latestWeight.getObsDatetime()) > 0)
+										if (latestWeight == null
+										        || obs.getObsDatetime().compareTo(latestWeight.getObsDatetime()) > 0)
 											latestWeight = obs;
 									} else if (obs.getConcept().equals(heightConcept)) {
-										if (latestHeight == null || obs.getObsDatetime().compareTo(latestHeight.getObsDatetime()) > 0)
+										if (latestHeight == null
+										        || obs.getObsDatetime().compareTo(latestHeight.getObsDatetime()) > 0)
 											latestHeight = obs;
 									}
 								}
@@ -204,7 +187,8 @@ public class PortletController implements Controller {
 									else if (weightConcept.getUnits().equals("lb"))
 										weightInKg = latestWeight.getValueNumeric() * 0.45359237;
 									else
-										throw new IllegalArgumentException("Can't handle units of weight concept: " + weightConcept.getUnits());
+										throw new IllegalArgumentException("Can't handle units of weight concept: "
+										        + weightConcept.getUnits());
 									if (heightConcept.getUnits().equals("cm"))
 										heightInM = latestHeight.getValueNumeric() / 100;
 									else if (heightConcept.getUnits().equals("m"))
@@ -212,13 +196,15 @@ public class PortletController implements Controller {
 									else if (heightConcept.getUnits().equals("in"))
 										heightInM = latestHeight.getValueNumeric() * 0.0254;
 									else
-										throw new IllegalArgumentException("Can't handle units of height concept: " + heightConcept.getUnits());
+										throw new IllegalArgumentException("Can't handle units of height concept: "
+										        + heightConcept.getUnits());
 									double bmi = weightInKg / (heightInM * heightInM);
 									model.put("patientBmi", bmi);
 									String temp = "" + bmi;
 									bmiAsString = temp.substring(0, temp.indexOf('.') + 2);
 								}
-							} catch (Exception ex) {
+							}
+							catch (Exception ex) {
 								if (latestWeight != null && latestHeight != null)
 									log.error("Failed to calculate BMI even though a weight and height were found", ex);
 							}
@@ -226,23 +212,25 @@ public class PortletController implements Controller {
 						} else {
 							model.put("patientObs", new HashSet<Obs>());
 						}
-	
+						
 						// information about whether or not the patient has exited care
 						Obs reasonForExitObs = null;
-						Concept reasonForExitConcept = cs.getConceptByIdOrName(as.getGlobalProperty("concept.reasonExitedCare"));
-						if ( reasonForExitConcept != null ) {
-							Set<Obs> patientExitObs = Context.getObsService().getObservations(p, reasonForExitConcept, false);
-							if ( patientExitObs != null ) {
-								log.debug("Exit obs is size " + patientExitObs.size() );
-								if ( patientExitObs.size() == 1 ) {
+						Concept reasonForExitConcept = cs.getConceptByIdOrName(as
+						        .getGlobalProperty("concept.reasonExitedCare"));
+						if (reasonForExitConcept != null) {
+							Set<Obs> patientExitObs = Context.getObsService()
+							        .getObservations(p, reasonForExitConcept, false);
+							if (patientExitObs != null) {
+								log.debug("Exit obs is size " + patientExitObs.size());
+								if (patientExitObs.size() == 1) {
 									reasonForExitObs = patientExitObs.iterator().next();
 									Concept exitReason = reasonForExitObs.getValueCoded();
 									Date exitDate = reasonForExitObs.getObsDatetime();
-									if ( exitReason != null && exitDate != null ) {
+									if (exitReason != null && exitDate != null) {
 										patientVariation = "Exited";
 									}
 								} else {
-									if ( patientExitObs.size() == 0 ) {
+									if (patientExitObs.size() == 0) {
 										log.debug("Patient has no reason for exit");
 									} else {
 										log.error("Too many reasons for exit - not putting data into model");
@@ -257,23 +245,26 @@ public class PortletController implements Controller {
 							model.put("patientDrugOrders", drugOrderList);
 							List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>();
 							List<DrugOrder> discontinuedDrugOrders = new ArrayList<DrugOrder>();
-							for (Iterator<DrugOrder> iter = drugOrderList.iterator(); iter.hasNext(); ) {
+							for (Iterator<DrugOrder> iter = drugOrderList.iterator(); iter.hasNext();) {
 								DrugOrder next = iter.next();
-								if (next.isCurrent() || next.isFuture()) currentDrugOrders.add(next);
-								if (next.isDiscontinued()) discontinuedDrugOrders.add(next); 
+								if (next.isCurrent() || next.isFuture())
+									currentDrugOrders.add(next);
+								if (next.isDiscontinued())
+									discontinuedDrugOrders.add(next);
 							}
 							model.put("currentDrugOrders", currentDrugOrders);
 							model.put("completedDrugOrders", discontinuedDrugOrders);
-					
+							
 							List<RegimenSuggestion> standardRegimens = Context.getOrderService().getStandardRegimens();
-							if ( standardRegimens != null )
+							if (standardRegimens != null)
 								model.put("standardRegimens", standardRegimens);
 						}
 						
-						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS) &&
-							Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS)) {
+						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS)
+						        && Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS)) {
 							model.put("patientPrograms", Context.getProgramWorkflowService().getPatientPrograms(p));
-							model.put("patientCurrentPrograms", Context.getProgramWorkflowService().getCurrentPrograms(p, null));
+							model.put("patientCurrentPrograms", Context.getProgramWorkflowService().getCurrentPrograms(p,
+							    null));
 						}
 						
 						model.put("patientId", patientId);
@@ -302,24 +293,24 @@ public class PortletController implements Controller {
 						p = Context.getPersonService().getPerson(personId);
 					model.put("person", p);
 					
-						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS)) {
-							List<Relationship> relationships = new ArrayList<Relationship>();
-							relationships.addAll(Context.getPersonService().getRelationships(p, false));
-							Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
-							for (Relationship rel : relationships) {
-								List<Relationship> list = relationshipsByType.get(rel.getRelationshipType());
-								if (list == null) {
-									list = new ArrayList<Relationship>();
-									relationshipsByType.put(rel.getRelationshipType(), list);
-								}
-								list.add(rel);
+					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS)) {
+						List<Relationship> relationships = new ArrayList<Relationship>();
+						relationships.addAll(Context.getPersonService().getRelationships(p, false));
+						Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
+						for (Relationship rel : relationships) {
+							List<Relationship> list = relationshipsByType.get(rel.getRelationshipType());
+							if (list == null) {
+								list = new ArrayList<Relationship>();
+								relationshipsByType.put(rel.getRelationshipType(), list);
 							}
-							
+							list.add(rel);
+						}
+						
 						model.put("personRelationships", relationships);
 						model.put("personRelationshipsByType", relationshipsByType);
-						}
 					}
 				}
+			}
 			
 			// if an encounter id is available, put "encounter" and "encounterObs" in the model
 			o = request.getAttribute("org.openmrs.portlet.encounterId");
@@ -371,7 +362,8 @@ public class PortletController implements Controller {
 							Concept c = cs.getConcept(i);
 							concepts.put(i, c);
 							conceptsByStringIds.put(i.toString(), c);
-						} catch (Exception ex) { }
+						}
+						catch (Exception ex) {}
 					}
 					model.put("conceptMap", concepts);
 					model.put("conceptMapByStringIds", conceptsByStringIds);
@@ -381,16 +373,17 @@ public class PortletController implements Controller {
 			populateModel(request, model);
 			log.debug(portletPath + " took " + (System.currentTimeMillis() - timeAtStart) + " ms");
 		}
-
+		
 		return new ModelAndView(portletPath, "model", model);
-
+		
 	}
 	
 	/**
-	 * Subclasses should override this to put more data into the model.
-	 * This will be called AFTER handleRequest has put mappings in the model as described in its javadoc.
-	 * Note that context could be null when this method is called.  
+	 * Subclasses should override this to put more data into the model. This will be called AFTER
+	 * handleRequest has put mappings in the model as described in its javadoc. Note that context
+	 * could be null when this method is called.
 	 */
-	protected void populateModel(HttpServletRequest request, Map<String, Object> model) { }
+	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
+	}
 	
 }

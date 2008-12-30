@@ -41,30 +41,31 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class AlertListController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -78,7 +79,7 @@ public class AlertListController extends SimpleFormController {
 			
 			// expire the selected alerts
 			String[] alertIds = request.getParameterValues("alertId");
-			if(alertIds != null){
+			if (alertIds != null) {
 				for (String alertIdString : alertIds) {
 					Integer alertId = Integer.parseInt(alertIdString);
 					Alert a = as.getAlert(alertId);
@@ -86,11 +87,10 @@ public class AlertListController extends SimpleFormController {
 					as.saveAlert(a);
 				}
 				
-				msg = msa.getMessage("Alert.expired", new Object[] {alertIds.length}, locale);
-			}
-			else
+				msg = msa.getMessage("Alert.expired", new Object[] { alertIds.length }, locale);
+			} else
 				msg = msa.getMessage("Alert.select");
-					
+			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, msg);
 			return new ModelAndView(new RedirectView(getSuccessView()));
 		}
@@ -98,16 +98,15 @@ public class AlertListController extends SimpleFormController {
 		// The user isn't authenticated or their session has expired
 		return showForm(request, response, errors);
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws Exception {
-
+	protected Object formBackingObject(HttpServletRequest request) throws Exception {
+		
 		//map containing the privilege and true/false whether the privilege is core or not
 		List<Alert> alertList = new Vector<Alert>();
 		
@@ -115,22 +114,22 @@ public class AlertListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			AlertService as = Context.getAlertService();
 			boolean b = new Boolean(request.getParameter("includeExpired"));
-	    	alertList = as.getAllAlerts(b);
+			alertList = as.getAllAlerts(b);
 		}
-    	
-        return alertList;
-    }
-    
+		
+		return alertList;
+	}
+	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object object,
-			Errors errors) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
-
+		
 		map.put("today", new Date());
 		
 		return map;
 	}
-    
+	
 }

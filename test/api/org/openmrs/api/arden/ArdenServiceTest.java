@@ -21,27 +21,29 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
- * TODO Finish this arden test class?  delete this test class?
+ * TODO Finish this arden test class? delete this test class?
  */
 public class ArdenServiceTest extends BaseContextSensitiveTest {
+	
 	int MAX_MLM = 1000;
 	
 	@Ignore
 	@Test
 	public void shouldGetAndParseMLMs() throws Exception {
-
-		String mlmDirectory = System.getProperty("user.dir") + "\\mlm_to_test\\"; 
-		String javaDirectory = System.getProperty("user.dir")+ "\\mlm_to_test\\"; 
+		
+		String mlmDirectory = System.getProperty("user.dir") + "\\mlm_to_test\\";
+		String javaDirectory = System.getProperty("user.dir") + "\\mlm_to_test\\";
 		
 		File mlmDir = new File(mlmDirectory);
 		
 		String[] mlmFiles = mlmDir.list();
 		
-		for (String mlmFile:mlmFiles) {
-			if(mlmFile.endsWith(".mlm")){
-			System.out.println("Parsing: "+mlmFile);
-			Context.getArdenService().compileFile(mlmDirectory+mlmFile, javaDirectory);
-		}}
+		for (String mlmFile : mlmFiles) {
+			if (mlmFile.endsWith(".mlm")) {
+				System.out.println("Parsing: " + mlmFile);
+				Context.getArdenService().compileFile(mlmDirectory + mlmFile, javaDirectory);
+			}
+		}
 	}
 	
 }

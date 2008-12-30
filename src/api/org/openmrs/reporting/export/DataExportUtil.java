@@ -38,37 +38,34 @@ import org.openmrs.util.OpenmrsUtil;
 public class DataExportUtil {
 	
 	private static HashMap<String, Object> dataExportKeys = new HashMap<String, Object>();
-
+	
 	/**
-	 * Allows a module or some other service to add things to the available
-	 * keys in the velocity context
+	 * Allows a module or some other service to add things to the available keys in the velocity
+	 * context
 	 * 
 	 * @see #generateExport(DataExportReportObject, Cohort, DataExportFunctions, EvaluationContext)
 	 */
 	public static void putDataExportKey(String key, Object obj) {
 		dataExportKeys.put(key, obj);
 	}
-
+	
 	/**
-	 * Remove the given key from the available data export keys
-	 * 
-	 * If the key doesn't exist, this will fail silently
+	 * Remove the given key from the available data export keys If the key doesn't exist, this will
+	 * fail silently
 	 * 
 	 * @param key key to remove
-	 * 
 	 * @see #putDataExportKey(String, Object)
 	 * @see #generateExport(DataExportReportObject, Cohort, DataExportFunctions, EvaluationContext)
 	 */
 	public static void removeDataExportKey(String key) {
 		dataExportKeys.remove(key);
 	}
-
+	
 	/**
 	 * Find the data export key previously added or null if not found
 	 * 
 	 * @param key
 	 * @return
-	 * 
 	 * @see #putDataExportKey(String, Object)
 	 * @see #generateExport(DataExportReportObject, Cohort, DataExportFunctions, EvaluationContext)
 	 */
@@ -77,7 +74,6 @@ public class DataExportUtil {
 	}
 	
 	/**
-	 * 
 	 * @param exports
 	 */
 	public static void generateExports(List<DataExportReportObject> exports, EvaluationContext context) {
@@ -94,17 +90,17 @@ public class DataExportUtil {
 		}
 		
 	}
-
 	
 	/**
-	 * Generates a data export file given a data export (columns) and patient set (rows).  
+	 * Generates a data export file given a data export (columns) and patient set (rows).
 	 * 
 	 * @param dataExport
 	 * @param patientSet
 	 * @param separator
 	 * @throws Exception
 	 */
-	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, String separator, EvaluationContext context) throws Exception {
+	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, String separator,
+	                                  EvaluationContext context) throws Exception {
 		// Set up functions used in the report ( $!{fn:...} )
 		DataExportFunctions functions = new DataExportFunctions();
 		functions.setSeparator(separator);
@@ -112,12 +108,12 @@ public class DataExportUtil {
 	}
 	
 	/**
-	 * 
 	 * @param dataExport
 	 * @param patientSet
 	 * @throws Exception
 	 */
-	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, EvaluationContext context) throws Exception {
+	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, EvaluationContext context)
+	                                                                                                                  throws Exception {
 		// Set up functions used in the report ( $!{fn:...} )
 		DataExportFunctions functions = new DataExportFunctions();
 		generateExport(dataExport, patientSet, functions, context);
@@ -132,7 +128,8 @@ public class DataExportUtil {
 	 * @param context
 	 * @throws Exception
 	 */
-	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, DataExportFunctions functions, EvaluationContext context) throws Exception {
+	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, DataExportFunctions functions,
+	                                  EvaluationContext context) throws Exception {
 		
 		// defining log file here to attempt to reduce memory consumption
 		Log log = LogFactory.getLog(DataExportUtil.class);
@@ -141,7 +138,8 @@ public class DataExportUtil {
 		
 		try {
 			velocityEngine.init();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error("Error initializing Velocity engine", e);
 		}
 		
@@ -163,7 +161,7 @@ public class DataExportUtil {
 		
 		// Set up velocity utils
 		Locale locale = Context.getLocale();
-		velocityContext.put("locale", locale);		
+		velocityContext.put("locale", locale);
 		velocityContext.put("fn", functions);
 		
 		/*
@@ -183,7 +181,10 @@ public class DataExportUtil {
 		// check if some deprecated columns are being used in this export
 		// warning: hacky.
 		if (template.contains("fn.getPatientAttr('Patient', 'tribe')")) {
-			throw new APIException("Unable to generate export: " + dataExport.getName() + " because it contains a reference to an outdated 'tribe' column.  You must install the 'Tribe Module' into OpenMRS to continue to reference tribes in OpenMRS.");
+			throw new APIException(
+			        "Unable to generate export: "
+			                + dataExport.getName()
+			                + " because it contains a reference to an outdated 'tribe' column.  You must install the 'Tribe Module' into OpenMRS to continue to reference tribes in OpenMRS.");
 		}
 		
 		if (log.isDebugEnabled())
@@ -247,20 +248,21 @@ public class DataExportUtil {
 	 * Private class used for velocity error masking
 	 */
 	public static class VelocityExceptionHandler implements MethodExceptionEventHandler {
-
+		
 		private Log log = LogFactory.getLog(this.getClass());
 		
 		/**
-		 * When a user-supplied method throws an exception, the MethodExceptionEventHandler 
-		 * is invoked with the Class, method name and thrown Exception. The handler can 
-		 * either return a valid Object to be used as the return value of the method call, 
-		 * or throw the passed-in or new Exception, which will be wrapped and propogated to 
-		 * the user as a MethodInvocationException
+		 * When a user-supplied method throws an exception, the MethodExceptionEventHandler is
+		 * invoked with the Class, method name and thrown Exception. The handler can either return a
+		 * valid Object to be used as the return value of the method call, or throw the passed-in or
+		 * new Exception, which will be wrapped and propogated to the user as a
+		 * MethodInvocationException
 		 * 
-		 * @see org.apache.velocity.app.event.MethodExceptionEventHandler#methodException(java.lang.Class, java.lang.String, java.lang.Exception)
+		 * @see org.apache.velocity.app.event.MethodExceptionEventHandler#methodException(java.lang.Class,
+		 *      java.lang.String, java.lang.Exception)
 		 */
 		@SuppressWarnings("unchecked")
-        public Object methodException(Class claz, String method, Exception e) throws Exception {
+		public Object methodException(Class claz, String method, Exception e) throws Exception {
 			
 			log.debug("Claz: " + claz.getName() + " method: " + method, e);
 			
@@ -271,7 +273,7 @@ public class DataExportUtil {
 			// keep the default behaviour
 			throw e;
 		}
-
+		
 	}
 	
 }

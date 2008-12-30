@@ -27,16 +27,16 @@ import org.openmrs.api.db.LocationDAO;
  * Hibernate location-related database functions
  */
 public class HibernateLocationDAO implements LocationDAO {
-
+	
 	private SessionFactory sessionFactory;
-
+	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#setSessionFactory(org.hibernate.SessionFactory)
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#saveLocation(org.openmrs.Location)
 	 */
@@ -44,66 +44,60 @@ public class HibernateLocationDAO implements LocationDAO {
 		sessionFactory.getCurrentSession().saveOrUpdate(location);
 		return location;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocation(java.lang.Integer)
 	 */
 	public Location getLocation(Integer locationId) {
-		return (Location) sessionFactory.getCurrentSession()
-		                                .get(Location.class, locationId);
+		return (Location) sessionFactory.getCurrentSession().get(Location.class, locationId);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocation(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-    public Location getLocation(String name) {
-    	Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class)
-    	.add(Expression.eq("name", name));
-    	
-    	List<Location> locations = criteria.list();
-    	if (null == locations || locations.isEmpty()) {
-    		return null;
-    	}
-    	return locations.get(0);
-    }
-
+	public Location getLocation(String name) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class).add(
+		    Expression.eq("name", name));
+		
+		List<Location> locations = criteria.list();
+		if (null == locations || locations.isEmpty()) {
+			return null;
+		}
+		return locations.get(0);
+	}
+	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getAllLocations(boolean)
 	 */
 	@SuppressWarnings("unchecked")
-    public List<Location> getAllLocations(boolean includeRetired) {
-		Criteria criteria =  sessionFactory.getCurrentSession().createCriteria(Location.class);
+	public List<Location> getAllLocations(boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
 		if (!includeRetired) {
-            criteria.add(Expression.like("retired", false));
+			criteria.add(Expression.like("retired", false));
 		}
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#getLocations(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-    public List<Location> getLocations(String search) {
+	public List<Location> getLocations(String search) {
 		if (search == null || search.equals(""))
 			return getAllLocations(true);
-
-		return sessionFactory.getCurrentSession()
-		                     .createCriteria(Location.class)
-		                     // 'ilike' case insensitive search
-		                     .add(Expression.ilike("name",
-		                                           search,
-		                                           MatchMode.START))
-		                     .addOrder(Order.asc("name"))
-		                     .list();
+		
+		return sessionFactory.getCurrentSession().createCriteria(Location.class)
+		// 'ilike' case insensitive search
+		        .add(Expression.ilike("name", search, MatchMode.START)).addOrder(Order.asc("name")).list();
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.LocationDAO#deleteLocation(org.openmrs.Location)
 	 */
 	public void deleteLocation(Location location) {
 		sessionFactory.getCurrentSession().delete(location);
 	}
-
+	
 }

@@ -19,9 +19,8 @@ import org.openmrs.api.context.Context;
  *
  */
 public class DWRAdministrationService {
-
+	
 	/**
-	 * 
 	 * Gets the value of a global property
 	 * 
 	 * @param name
@@ -32,7 +31,6 @@ public class DWRAdministrationService {
 	}
 	
 	/**
-	 * 
 	 * Sets the value of a global property
 	 * 
 	 * @param name

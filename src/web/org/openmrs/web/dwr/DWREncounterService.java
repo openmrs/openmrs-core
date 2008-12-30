@@ -24,15 +24,15 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 
 public class DWREncounterService {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	public Vector findEncounters(String phrase, boolean includeVoided) {
-
+		
 		// List to return
 		// Object type gives ability to return error strings
-		Vector<Object> objectList = new Vector<Object>();	
-
+		Vector<Object> objectList = new Vector<Object>();
+		
 		try {
 			EncounterService es = Context.getEncounterService();
 			List<Encounter> encs = new Vector<Encounter>();
@@ -50,24 +50,23 @@ public class DWREncounterService {
 						encs.add(e);
 				}
 			}
-						
+			
 			if (phrase == null || phrase.equals("")) {
 				//TODO get all concepts for testing purposes?
-			}
-			else {
+			} else {
 				encs.addAll(es.getEncountersByPatientIdentifier(phrase, includeVoided));
 			}
-
+			
 			if (encs.size() == 0) {
 				objectList.add("No matches found for <b>" + phrase + "</b>");
-			}
-			else {
+			} else {
 				objectList = new Vector<Object>(encs.size());
 				for (Encounter e : encs) {
 					objectList.add(new EncounterListItem(e));
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error("Error while searching for encounters", e);
 			objectList.add("Error while attempting to find encounter - " + e.getMessage());
 		}
@@ -80,12 +79,12 @@ public class DWREncounterService {
 		
 		return e == null ? null : new EncounterListItem(e);
 	}
- 	
+	
 	@SuppressWarnings("unchecked")
 	public Vector findLocations(String searchValue) {
 		
 		Vector locationList = new Vector();
-
+		
 		try {
 			EncounterService es = Context.getEncounterService();
 			List<Location> locations = es.findLocations(searchValue);
@@ -95,7 +94,8 @@ public class DWREncounterService {
 			for (Location loc : locations) {
 				locationList.add(new LocationListItem(loc));
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error(e);
 			locationList.add("Error while attempting to find locations - " + e.getMessage());
 		}
@@ -103,15 +103,15 @@ public class DWREncounterService {
 		if (locationList.size() == 0) {
 			locationList.add("No locations found. Please search again.");
 		}
-	
+		
 		return locationList;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public Vector getLocations() {
 		
 		Vector locationList = new Vector();
-
+		
 		try {
 			EncounterService es = Context.getEncounterService();
 			List<Location> locations = es.getLocations();
@@ -122,7 +122,8 @@ public class DWREncounterService {
 				locationList.add(new LocationListItem(loc));
 			}
 			
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error("Error while attempting to get locations", e);
 			locationList.add("Error while attempting to get locations - " + e.getMessage());
 		}

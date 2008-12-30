@@ -25,20 +25,17 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
- * TODO clean up and finish this test class. Should test all methods
- * in the {@link AdministrationService}
+ * TODO clean up and finish this test class. Should test all methods in the
+ * {@link AdministrationService}
  */
 public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	private AdministrationService adminService = null;
 	
 	/**
-	 * Run this before each unit test in this class.  It simply assigns
-	 * the services used in this class to private variables
-	 * 
-	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
-	 * right before this method and sets up the initial data set
-	 * and authenticates to the Context
+	 * Run this before each unit test in this class. It simply assigns the services used in this
+	 * class to private variables The "@Before" method in {@link BaseContextSensitiveTest} is run
+	 * right before this method and sets up the initial data set and authenticates to the Context
 	 * 
 	 * @throws Exception
 	 */
@@ -49,11 +46,11 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Tests the AdministrationService.executeSql method with a sql statement
-	 * containing a valid group by clause
+	 * Tests the AdministrationService.executeSql method with a sql statement containing a valid
+	 * group by clause
 	 * 
-	 * @verifies {@link AdministrationService#executeSQL(String,null)}
-	 * test = should execute sql containing group by
+	 * @verifies {@link AdministrationService#executeSQL(String,null)} test = should execute sql
+	 *           containing group by
 	 */
 	@Test
 	public void executeSQL_shouldExecuteSqlContainingGroupBy() throws Exception {
@@ -66,8 +63,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This test runs over the set and get methods in AdminService to make sure
-	 * that the impl id can be saved and verified correctly
+	 * This test runs over the set and get methods in AdminService to make sure that the impl id can
+	 * be saved and verified correctly
 	 * 
 	 * @throws Exception
 	 */
@@ -143,24 +140,22 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		assertEquals(validId2, afterValid2);
 		
 	}
-
+	
 	/**
-	 * @verifies {@link AdministrationService#getGlobalProperty(String)}
-	 * test = should not fail with null propertyName
+	 * @verifies {@link AdministrationService#getGlobalProperty(String)} test = should not fail with
+	 *           null propertyName
 	 */
 	@Test
-	public void getGlobalProperty_shouldNotFailWithNullPropertyName()
-			throws Exception {
+	public void getGlobalProperty_shouldNotFailWithNullPropertyName() throws Exception {
 		adminService.getGlobalProperty(null);
 	}
-
+	
 	/**
-	 * @verifies {@link AdministrationService#getGlobalProperty(String)}
-	 * test = should get property value given valid property name
+	 * @verifies {@link AdministrationService#getGlobalProperty(String)} test = should get property
+	 *           value given valid property name
 	 */
 	@Test
-	public void getGlobalProperty_shouldGetPropertyValueGivenValidPropertyName()
-			throws Exception {
+	public void getGlobalProperty_shouldGetPropertyValueGivenValidPropertyName() throws Exception {
 		// put the global property into the database
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
 		
@@ -168,28 +163,25 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals("correct-value", propertyValue);
 	}
-
+	
 	/**
-	 * @verifies {@link AdministrationService#getGlobalProperty(String,String)}
-	 * test = should not fail with null default value
+	 * @verifies {@link AdministrationService#getGlobalProperty(String,String)} test = should not
+	 *           fail with null default value
 	 */
 	@Test
-	public void getGlobalProperty_shouldNotFailWithNullDefaultValue()
-			throws Exception {
+	public void getGlobalProperty_shouldNotFailWithNullDefaultValue() throws Exception {
 		adminService.getGlobalProperty("asdfsadfsafd", null);
 	}
-
+	
 	/**
-	 * @verifies {@link AdministrationService#getGlobalProperty(String,String)}
-	 * test = should return default value if property name does not exist
+	 * @verifies {@link AdministrationService#getGlobalProperty(String,String)} test = should return
+	 *           default value if property name does not exist
 	 */
 	@Test
-	public void getGlobalProperty_shouldReturnDefaultValueIfPropertyNameDoesNotExist()
-			throws Exception {
+	public void getGlobalProperty_shouldReturnDefaultValueIfPropertyNameDoesNotExist() throws Exception {
 		String invalidKey = "asdfasdf";
 		String propertyValue = adminService.getGlobalProperty(invalidKey);
 		Assert.assertNull(propertyValue); // make sure there isn't a gp
-		
 		
 		String value = adminService.getGlobalProperty(invalidKey, "default");
 		Assert.assertEquals("default", value);

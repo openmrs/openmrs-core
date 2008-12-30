@@ -31,20 +31,17 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 
 /**
- * Tests methods in the CohortService class
- * 
- * TODO add all the rest of the tests
+ * Tests methods in the CohortService class TODO add all the rest of the tests
  */
 public class CohortServiceTest extends BaseContextSensitiveTest {
-
+	
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
+	
 	protected static CohortService service = null;
 	
 	/**
-	 * Run this before each unit test in this class.
-	 * 
-	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
-	 * right before this method.
+	 * Run this before each unit test in this class. The "@Before" method in
+	 * {@link BaseContextSensitiveTest} is run right before this method.
 	 * 
 	 * @throws Exception
 	 */
@@ -66,7 +63,6 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Should return one member", 1, result.size());
 	}
 	
-
 	@Test
 	public void shouldOnlyGetNonVoidedCohortsByName() throws Exception {
 		executeDataSet("org/openmrs/api/include/CohortServiceTest-cohort.xml");

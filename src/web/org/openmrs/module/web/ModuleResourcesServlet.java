@@ -30,7 +30,7 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsUtil;
 
 public class ModuleResourcesServlet extends HttpServlet {
-
+	
 	private final String MODULE_PATH = "/WEB-INF/view/module/";
 	
 	private static final long serialVersionUID = 1239820102030344L;

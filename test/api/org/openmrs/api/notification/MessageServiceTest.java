@@ -28,16 +28,14 @@ import org.openmrs.test.BaseContextSensitiveTest;
  * Unit tests for the MessageService.
  */
 public class MessageServiceTest extends BaseContextSensitiveTest {
-
+	
 	private static final String NO_SMTP_SERVER_ERROR = "Could not connect to SMTP host:";
 	
 	MessageService ms = null;
 	
 	/**
-	 * Run this before each unit test in this class.
-	 * 
-	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
-	 * right before this method.
+	 * Run this before each unit test in this class. The "@Before" method in
+	 * {@link BaseContextSensitiveTest} is run right before this method.
 	 * 
 	 * @throws Exception
 	 */
@@ -61,7 +59,8 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 		Message msg1 = ms.createMessage(recipients, sender, subject, message);
 		Message msg2 = ms.createMessage(subject, message);
 		Message msg3 = ms.createMessage(sender, subject, message);
-		Message msg4 = ms.createMessage(recipients, sender, subject, message, attachment, attachmentContentType, attachmentFileName);
+		Message msg4 = ms.createMessage(recipients, sender, subject, message, attachment, attachmentContentType,
+		    attachmentFileName);
 		
 		assertEquals(recipients, msg1.getRecipients());
 		assertEquals(recipients, msg4.getRecipients());
@@ -87,32 +86,26 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldSendMessage() throws Exception {
-		Message tryToSend1 = ms.createMessage("recipient@example.com", 
-		                                     "sender@example.com", 
-		                                     "subject", 
-		                                     "content");
-		try{
+		Message tryToSend1 = ms.createMessage("recipient@example.com", "sender@example.com", "subject", "content");
+		try {
 			ms.sendMessage(tryToSend1);
-		}catch(MessageException e){
+		}
+		catch (MessageException e) {
 			//So that this test doesn't fail just because the user isn't running an SMTP server.
-			if(!e.getMessage().contains(NO_SMTP_SERVER_ERROR)){
+			if (!e.getMessage().contains(NO_SMTP_SERVER_ERROR)) {
 				e.printStackTrace();
 				fail();
 			}
 		}
 		
-		Message tryToSend2 = ms.createMessage("recipient@example.com,recipient2@example.com", 
-		                                     "openmrs.emailer@gmail.com", 
-		                                     "subject", 
-		                                     "content",
-		                                     "moo",
-		                                     "text/plain",
-		                                     "moo.txt");
-		try{
+		Message tryToSend2 = ms.createMessage("recipient@example.com,recipient2@example.com", "openmrs.emailer@gmail.com",
+		    "subject", "content", "moo", "text/plain", "moo.txt");
+		try {
 			ms.sendMessage(tryToSend2);
-		}catch(MessageException e){
+		}
+		catch (MessageException e) {
 			//So that this test doesn't fail just because the user isn't running an SMTP server.
-			if(!e.getMessage().contains(NO_SMTP_SERVER_ERROR)){
+			if (!e.getMessage().contains(NO_SMTP_SERVER_ERROR)) {
 				e.printStackTrace();
 				fail();
 			}

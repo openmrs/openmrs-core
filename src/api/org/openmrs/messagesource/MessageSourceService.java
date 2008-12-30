@@ -19,64 +19,54 @@ import java.util.Set;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Interface for a service which expands on the basic capabilities 
- * of a message source. 
- * 
+ * Interface for a service which expands on the basic capabilities of a message source.
  */
 @Transactional
 public interface MessageSourceService extends MutableMessageSource {
 	
 	/**
-	 * Get the message with the given code from the current user's
-	 * selected locale.
+	 * Get the message with the given code from the current user's selected locale.
 	 * 
 	 * @see #getMessage(String arg0, Object[] arg1, java.util.Locale arg2)
 	 * @param s message code to retrieve
 	 * @return the translated message
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public String getMessage(String s);
 	
 	/**
-	 * Gets the message source service which is currently providing
-	 * services.
+	 * Gets the message source service which is currently providing services.
 	 * 
-     * @return the activeMessageSource
-     */
-	@Transactional(readOnly=true)
+	 * @return the activeMessageSource
+	 */
+	@Transactional(readOnly = true)
 	public MutableMessageSource getActiveMessageSource();
-
+	
 	/**
-	 * Sets the message source service which will actually provide services. 
+	 * Sets the message source service which will actually provide services.
 	 * 
-     * @param activeMessageSourceService the activeMessageSourceService to set
-     */
-    public void setActiveMessageSource(MutableMessageSource activeMessageSource);
-    
-
+	 * @param activeMessageSourceService the activeMessageSourceService to set
+	 */
+	public void setActiveMessageSource(MutableMessageSource activeMessageSource);
+	
 	/**
-	 * Presumes to append the messages to a message.properties file which is
-	 * already being monitored by the super
-	 * ReloadableResourceBundleMessageSource.
-	 * 
-	 * This is a blind, trusting hack.
+	 * Presumes to append the messages to a message.properties file which is already being monitored
+	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
 	 * 
 	 * @see org.openmrs.message.MessageSourceService#publishProperties(java.util.Properties,
 	 *      java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public void publishProperties(Properties props, String locale,
-	        String namespace, String name, String version);
-
+	public void publishProperties(Properties props, String locale, String namespace, String name, String version);
+	
 	/**
-     * @return the availableMessageSources
-     */
-	@Transactional(readOnly=true)
+	 * @return the availableMessageSources
+	 */
+	@Transactional(readOnly = true)
 	public Set<MutableMessageSource> getMessageSources();
-
+	
 	/**
-     * @param availableMessageSources the availableMessageSources to set
-     */
-    public void setMessageSources(
-            Set<MutableMessageSource> availableMessageSources);
+	 * @param availableMessageSources the availableMessageSources to set
+	 */
+	public void setMessageSources(Set<MutableMessageSource> availableMessageSources);
 	
 }

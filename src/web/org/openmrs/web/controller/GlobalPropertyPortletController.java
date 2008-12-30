@@ -23,20 +23,18 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 
 /**
- * Parameters to specify:
- *    * 'propertyPrefix' will limit to only global properties starting with that prefix (e.g. "formentry.")
- *    * 'excludePrefix' will exclude global properties starting with that prefix (e.g. "formentry.started")
- *	  * 'hidePrefix' decides whether or not to trim the prefix on what is displayed (i.e. "formentry.infopath_url" -> "infopath_url") (default false)
- *	  * 'hideDescription' whether or not to show the global property's description (default: false)
- *    * 'title' will display that title
- *    * 'showHeader' whether or not to show a header row in the table (default true)
- * Values put in the model:
- *    * 'properties' -> List<GlobalProperty>
+ * Parameters to specify: * 'propertyPrefix' will limit to only global properties starting with that
+ * prefix (e.g. "formentry.") * 'excludePrefix' will exclude global properties starting with that
+ * prefix (e.g. "formentry.started") * 'hidePrefix' decides whether or not to trim the prefix on
+ * what is displayed (i.e. "formentry.infopath_url" -> "infopath_url") (default false) *
+ * 'hideDescription' whether or not to show the global property's description (default: false) *
+ * 'title' will display that title * 'showHeader' whether or not to show a header row in the table
+ * (default true) Values put in the model: * 'properties' -> List<GlobalProperty>
  */
 public class GlobalPropertyPortletController extends PortletController {
-
+	
 	@Override
-    protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
+	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		if (Context.isAuthenticated()) {
 			String propertyPrefix = (String) model.get("propertyPrefix");
 			if (propertyPrefix == null) {
@@ -51,7 +49,7 @@ public class GlobalPropertyPortletController extends PortletController {
 			List<GlobalProperty> properties = new ArrayList<GlobalProperty>();
 			for (GlobalProperty p : Context.getAdministrationService().getAllGlobalProperties()) {
 				if (p.getProperty().startsWith(propertyPrefix)
-						&& (excludePrefix == null || !p.getProperty().startsWith(excludePrefix)) ) {
+				        && (excludePrefix == null || !p.getProperty().startsWith(excludePrefix))) {
 					properties.add(p);
 				}
 			}
@@ -62,8 +60,6 @@ public class GlobalPropertyPortletController extends PortletController {
 				showHeader = false;
 			model.put("showHeader", showHeader);
 		}
-    }
-
-	
+	}
 	
 }

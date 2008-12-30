@@ -26,125 +26,115 @@ import org.openmrs.User;
  * @see org.openmrs.api.UserService
  */
 public interface UserDAO {
-
+	
 	/**
-	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User,
-	 *      java.lang.String)
+	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
 	 */
 	public User saveUser(User user, String password) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#getUser(Integer)
 	 */
 	public User getUser(Integer userId) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#getUserByUsername(java.lang.String)
 	 */
 	public User getUserByUsername(String username) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#hasDuplicateUsername(org.openmrs.User)
 	 */
-	public boolean hasDuplicateUsername(String username, String systemId,
-	        Integer userId) throws DAOException;
-
+	public boolean hasDuplicateUsername(String username, String systemId, Integer userId) throws DAOException;
+	
 	/**
 	 * @see org.openmrs.api.UserService#purgeUser(org.openmrs.User)
 	 */
 	public void deleteUser(User user) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#getAllUsers()
 	 */
 	public List<User> getAllUsers() throws DAOException;
-
+	
 	// Role stuff
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#saveRole(org.openmrs.Role)
 	 */
 	public Role saveRole(Role role) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#purgeRole(org.openmrs.Role)
 	 */
 	public void deleteRole(Role role) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#getRole(java.lang.String)
 	 */
 	public Role getRole(String r) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#getAllRoles()
 	 */
 	public List<Role> getAllRoles() throws DAOException;
-
+	
 	// Privilege stuff
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#savePrivilege(org.openmrs.Privilege)
 	 */
 	public Privilege savePrivilege(Privilege privilege) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#getPrivilege(java.lang.String)
 	 */
 	public Privilege getPrivilege(String p) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#getAllPrivileges()
 	 */
 	public List<Privilege> getAllPrivileges() throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#purgePrivilege(org.openmrs.Privilege)
 	 */
 	public void deletePrivilege(Privilege privilege) throws DAOException;
-
+	
 	/**
-	 * @see org.openmrs.api.UserService#getUsers(java.lang.String,
-	 *      java.util.List, boolean)
+	 * @see org.openmrs.api.UserService#getUsers(java.lang.String, java.util.List, boolean)
 	 */
-	public List<User> getUsers(String nameSearch, List<Role> roles,
-	        boolean includeVoided) throws DAOException;
-
+	public List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws DAOException;
+	
 	/**
-	 * @see org.openmrs.api.UserService#getUsersByName(java.lang.String,
-	 *      java.lang.String, boolean)
+	 * @see org.openmrs.api.UserService#getUsersByName(java.lang.String, java.lang.String, boolean)
 	 */
-	public List<User> getUsersByName(String givenName, String familyName,
-	        boolean includeVoided);
-
+	public List<User> getUsersByName(String givenName, String familyName, boolean includeVoided);
+	
 	/**
-	 * @see org.openmrs.api.UserService#changePassword(org.openmrs.User,
-	 *      java.lang.String)
+	 * @see org.openmrs.api.UserService#changePassword(org.openmrs.User, java.lang.String)
 	 */
 	public void changePassword(User u, String pw) throws DAOException;
-
+	
 	/**
-	 * @see org.openmrs.api.UserService#changePassword(java.lang.String,
-	 *      java.lang.String)
+	 * @see org.openmrs.api.UserService#changePassword(java.lang.String, java.lang.String)
 	 */
 	public void changePassword(String pw, String pw2) throws DAOException;
-
+	
 	/**
-	 * @see org.openmrs.api.UserService#changeQuestionAnswer(java.lang.String,
-	 *      java.lang.String, java.lang.String)
-	 */
-	public void changeQuestionAnswer(String pw, String q, String a)
-	        throws DAOException;
-
-	/**
-	 * @see org.openmrs.api.UserService#isSecretAnswer(org.openmrs.User,
+	 * @see org.openmrs.api.UserService#changeQuestionAnswer(java.lang.String, java.lang.String,
 	 *      java.lang.String)
 	 */
+	public void changeQuestionAnswer(String pw, String q, String a) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.UserService#isSecretAnswer(org.openmrs.User, java.lang.String)
+	 */
 	public boolean isSecretAnswer(User u, String answer) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
 	public Integer generateSystemId() throws DAOException;
-
+	
 }

@@ -31,10 +31,10 @@ import org.junit.Test;
  * @see Encounter
  */
 public class EncounterTest {
-
+	
 	/**
-	 * Makes sure that two different encounter objects that have the same 
-	 * encounter id are considered equal 
+	 * Makes sure that two different encounter objects that have the same encounter id are
+	 * considered equal
 	 * 
 	 * @throws Exception
 	 */
@@ -48,8 +48,8 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Makes sure that two different encounter objects that have different
-	 * encounter ids are considered unequal
+	 * Makes sure that two different encounter objects that have different encounter ids are
+	 * considered unequal
 	 * 
 	 * @throws Exception
 	 */
@@ -63,8 +63,8 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Makes sure that two different encounter objects that have the same 
-	 * encounter id are considered equal (checks for NPEs)
+	 * Makes sure that two different encounter objects that have the same encounter id are
+	 * considered equal (checks for NPEs)
 	 * 
 	 * @throws Exception
 	 */
@@ -77,8 +77,8 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Makes sure that two different encounter objects are unequal when
-	 * one of them doesn't have an encounter id defined (checks for NPEs)
+	 * Makes sure that two different encounter objects are unequal when one of them doesn't have an
+	 * encounter id defined (checks for NPEs)
 	 * 
 	 * @throws Exception
 	 */
@@ -99,8 +99,8 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure we can call {@link Encounter#hashCode()} with all null
-	 * attributes on encounter and still get a hashcode
+	 * Make sure we can call {@link Encounter#hashCode()} with all null attributes on encounter and
+	 * still get a hashcode
 	 * 
 	 * @throws Exception
 	 */
@@ -110,8 +110,8 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * When a null argument is passed to the {@link Encounter#removeObs(Obs)} 
-	 * method, errors should not be thrown.
+	 * When a null argument is passed to the {@link Encounter#removeObs(Obs)} method, errors should
+	 * not be thrown.
 	 * 
 	 * @throws Exception
 	 */
@@ -134,9 +134,8 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * This tries to remove an obs from an encounter (using the 
-	 * {@link Encounter#removeObs(Obs)} method) that currently has the 
-	 * obs in its set of obs
+	 * This tries to remove an obs from an encounter (using the {@link Encounter#removeObs(Obs)}
+	 * method) that currently has the obs in its set of obs
 	 * 
 	 * @throws Exception
 	 */
@@ -160,8 +159,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure that the getObs* methods return a non-null set when
-	 * the encounter.obs set is null
+	 * Make sure that the getObs* methods return a non-null set when the encounter.obs set is null
 	 * 
 	 * @throws Exception
 	 */
@@ -186,8 +184,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure that a non-voided obs is returned by all of the 
-	 * getObs methods
+	 * Make sure that a non-voided obs is returned by all of the getObs methods
 	 * 
 	 * @throws Exception
 	 */
@@ -217,8 +214,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure that a voided obs is not returned by any of the 
-	 * getObs* methods
+	 * Make sure that a voided obs is not returned by any of the getObs* methods
 	 * 
 	 * @throws Exception
 	 */
@@ -248,9 +244,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Test an encounter that has two obs on it: one parent obs and one 
-	 * child obs to that parent.
-	 * 
+	 * Test an encounter that has two obs on it: one parent obs and one child obs to that parent.
 	 * The getObs() method should return only the child obs
 	 * 
 	 * @throws Exception
@@ -276,9 +270,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Test an encounter that has two obs on it: one parent obs and one 
-	 * child obs to that parent.
-	 * 
+	 * Test an encounter that has two obs on it: one parent obs and one child obs to that parent.
 	 * The getObsAtTopLevel() method should return only the parent obs
 	 * 
 	 * @throws Exception
@@ -307,9 +299,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Test an encounter that has two obs on it: one parent obs and one 
-	 * child obs to that parent.
-	 * 
+	 * Test an encounter that has two obs on it: one parent obs and one child obs to that parent.
 	 * The getAllObs() method should return only the parent obs
 	 * 
 	 * @throws Exception
@@ -370,8 +360,8 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Even if the childObs of the obsGroup is associated directly with the encounter,
-	 * it should not be returned by the getObs() method
+	 * Even if the childObs of the obsGroup is associated directly with the encounter, it should not
+	 * be returned by the getObs() method
 	 * 
 	 * @throws Exception
 	 */
@@ -399,8 +389,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Only the grouped top level obs should be returned by the getObsAtTopLevel
-	 * method.
+	 * Only the grouped top level obs should be returned by the getObsAtTopLevel method.
 	 * 
 	 * @throws Exception
 	 */
@@ -419,7 +408,7 @@ public class EncounterTest {
 		// add the child obs directly to the encounter as well
 		childObs.setEncounter(encounter);
 		encounter.addObs(childObs);
-
+		
 		// do the check
 		assertEquals(1, encounter.getObsAtTopLevel(false).size());
 		Obs obsInEncounter = encounter.getObsAtTopLevel(false).toArray(new Obs[] {})[0];
@@ -446,28 +435,27 @@ public class EncounterTest {
 		// add the child obs directly to the encounter as well
 		childObs.setEncounter(enc);
 		enc.addObs(childObs);
-
+		
 		// do the check
 		assertEquals(2, enc.getAllObs(true).size());
 		
 		//this should return one of each -- the obsGroup and the child (because encounter_id is populated in the child Obs):
 		int numberOfChildObs = 0;
 		int numberofParentObs = 0;
-		for (Obs oTmp : enc.getAllObs(false)){
+		for (Obs oTmp : enc.getAllObs(false)) {
 			if (oTmp.isObsGrouping())
-				numberofParentObs ++;
-			else 
-				numberOfChildObs ++;
+				numberofParentObs++;
+			else
+				numberOfChildObs++;
 		}
 		assertEquals(1, numberOfChildObs);
 		assertEquals(1, numberofParentObs);
 	}
 	
 	/**
-	 * If a child is a direct member of an encounter.obs and also a child
-	 * of another member of that encounter.obs and then it is removed from 
-	 * the parent obs, the child obs should now be returned from the 
-	 * getObs* methods.
+	 * If a child is a direct member of an encounter.obs and also a child of another member of that
+	 * encounter.obs and then it is removed from the parent obs, the child obs should now be
+	 * returned from the getObs* methods.
 	 * 
 	 * @throws Exception
 	 */
@@ -486,7 +474,7 @@ public class EncounterTest {
 		// add the child obs directly to the encounter as well
 		childObs.setEncounter(enc);
 		enc.addObs(childObs);
-
+		
 		//remove the obsGrouping, so that both obs are now just children of the Encounter 
 		parentObs.removeGroupMember(childObs);
 		
@@ -517,13 +505,12 @@ public class EncounterTest {
 		// add the child obs directly to the encounter as well
 		childObs.setEncounter(enc);
 		enc.addObs(childObs);
-
+		
 		// make the obs two levels deep
 		Obs grandChildObsOne = new Obs();
 		Obs grandChildObsTwo = new Obs();
 		childObs.addGroupMember(grandChildObsOne);
 		childObs.addGroupMember(grandChildObsTwo);
-		
 		
 		/// now getObs() should return the two leaf obs 2 levels down:
 		assertEquals(2, enc.getObs().size());
@@ -545,7 +532,7 @@ public class EncounterTest {
 		assertEquals(3, enc.getObs().size());
 		
 		// make sure none of them are grouping obs
-		for (Obs oTmp : enc.getObs()){
+		for (Obs oTmp : enc.getObs()) {
 			assertFalse(oTmp.isObsGrouping());
 		}
 		assertTrue(enc.getObs().contains(greatGrandChildObsOne));
@@ -573,7 +560,7 @@ public class EncounterTest {
 		// add the child obs directly to the encounter as well
 		childObs.setEncounter(enc);
 		enc.addObs(childObs);
-
+		
 		// make the obs two levels deep
 		Obs grandChildObsOne = new Obs();
 		Obs grandChildObsTwo = new Obs();
@@ -583,7 +570,6 @@ public class EncounterTest {
 		childObs.addGroupMember(grandChildObsTwo);
 		grandChildObsOne.addGroupMember(greatGrandChildObsOne);
 		grandChildObsOne.addGroupMember(greatGrandChildObsTwo);
-		
 		
 		// test the third level
 		Obs greatGreatGrandChildObsOne = new Obs();
@@ -599,8 +585,8 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure that there are no voided obs returned or children of 
-	 * voided objects with them at the third layer
+	 * Make sure that there are no voided obs returned or children of voided objects with them at
+	 * the third layer
 	 * 
 	 * @throws Exception
 	 */
@@ -619,7 +605,7 @@ public class EncounterTest {
 		// add the child obs directly to the encounter as well
 		childObs.setEncounter(enc);
 		enc.addObs(childObs);
-
+		
 		// make the obs two levels deep
 		Obs grandChildObsOne = new Obs();
 		Obs grandChildObsTwo = new Obs();
@@ -684,8 +670,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure the reverse setting of Obs.encounter is set
-	 * after adding the obs. 
+	 * Make sure the reverse setting of Obs.encounter is set after adding the obs.
 	 * 
 	 * @throws Exception
 	 */
@@ -698,8 +683,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure a second obs can be added to an encounter.obs that
-	 * already had an obs in it
+	 * Make sure a second obs can be added to an encounter.obs that already had an obs in it
 	 * 
 	 * @throws Exception
 	 */
@@ -716,8 +700,8 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure that the encounter attrs are copied to the newly added obs
-	 * if the obs doesn't have them already.
+	 * Make sure that the encounter attrs are copied to the newly added obs if the obs doesn't have
+	 * them already.
 	 * 
 	 * @throws Exception
 	 */
@@ -749,7 +733,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Try to add an empty order object 
+	 * Try to add an empty order object
 	 * 
 	 * @throws Exception
 	 */
@@ -773,8 +757,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure the reverse setting of Order.encounter is set
-	 * after adding the order. 
+	 * Make sure the reverse setting of Order.encounter is set after adding the order.
 	 * 
 	 * @throws Exception
 	 */
@@ -787,8 +770,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure a second order can be added to an encounter.orders that
-	 * already had an order in it
+	 * Make sure a second order can be added to an encounter.orders that already had an order in it
 	 * 
 	 * @throws Exception
 	 */
@@ -812,7 +794,7 @@ public class EncounterTest {
 	@Test
 	public void shouldRemoveOrderFromEncounter() throws Exception {
 		Encounter encounter = new Encounter();
-		Order order=  new Order(1);
+		Order order = new Order(1);
 		encounter.addOrder(order);
 		assertEquals(1, encounter.getOrders().size());
 		
@@ -843,8 +825,7 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Call the toString method will null values for everything and make sure
-	 * an NPE isn't caused
+	 * Call the toString method will null values for everything and make sure an NPE isn't caused
 	 * 
 	 * @throws Exception
 	 */
@@ -852,7 +833,7 @@ public class EncounterTest {
 	public void shouldNotFailWithEmptyObjectAnToString() throws Exception {
 		Encounter encounter = new Encounter();
 		@SuppressWarnings("unused")
-        String toStringOutput = encounter.toString();
+		String toStringOutput = encounter.toString();
 	}
 	
 }

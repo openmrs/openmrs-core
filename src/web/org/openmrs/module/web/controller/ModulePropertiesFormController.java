@@ -36,26 +36,23 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class ModulePropertiesFormController extends SimpleFormController {
-
+	
 	/**
 	 * Logger for this class and subclasses
 	 */
-	protected static final Log log = LogFactory
-			.getLog(ModulePropertiesFormController.class);
+	protected static final Log log = LogFactory.getLog(ModulePropertiesFormController.class);
 	
 	/**
-	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 * by the input form and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request,
-			HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
-
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
+	                                BindException errors) throws Exception {
+		
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_MODULES))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_MODULES);
 		
@@ -65,20 +62,19 @@ public class ModulePropertiesFormController extends SimpleFormController {
 		String error = "";
 		
 		view = getSuccessView();
-
+		
 		if (!success.equals(""))
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 		
 		if (!error.equals(""))
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
-
+		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time. It tells
-	 * Spring the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
@@ -93,7 +89,8 @@ public class ModulePropertiesFormController extends SimpleFormController {
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 		
 		map.put("allowUpload", ModuleUtil.allowAdmin().toString());
-		map.put("disallowUploads", msa.getMessage("Module.disallowUploads", new String[] {ModuleConstants.RUNTIMEPROPERTY_ALLOW_UPLOAD}));
+		map.put("disallowUploads", msa.getMessage("Module.disallowUploads",
+		    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_UPLOAD }));
 		
 		return map;
 	}

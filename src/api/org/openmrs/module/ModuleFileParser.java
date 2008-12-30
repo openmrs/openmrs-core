@@ -48,11 +48,11 @@ import org.xml.sax.SAXException;
  * This class will parse a file into an org.openmrs.module.Module object
  */
 public class ModuleFileParser {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
-
+	
 	private File moduleFile = null;
-
+	
 	/**
 	 * Constructor
 	 * 
@@ -61,64 +61,59 @@ public class ModuleFileParser {
 	public ModuleFileParser(File moduleFile) {
 		if (moduleFile == null)
 			throw new ModuleException("Module file cannot be null");
-
+		
 		if (!moduleFile.getName().endsWith(".omod"))
-			throw new ModuleException(
-			        "Module file does not have the correct .omod file extension",
-			        moduleFile.getName());
-
+			throw new ModuleException("Module file does not have the correct .omod file extension", moduleFile.getName());
+		
 		this.moduleFile = moduleFile;
 	}
-
+	
 	private List<String> validConfigVersions() {
 		List<String> versions = new Vector<String>();
 		versions.add("1.0");
 		return versions;
 	}
-
+	
 	/**
 	 * Get the module
 	 * 
 	 * @return new module object
 	 */
 	public Module parse() throws ModuleException {
-
+		
 		Module module = null;
 		JarFile jarfile = null;
 		InputStream configStream = null;
-
+		
 		try {
 			try {
 				jarfile = new JarFile(moduleFile);
-			} catch (IOException e) {
-				throw new ModuleException("Unable to get jar file", moduleFile
-				        .getName(), e);
 			}
-
+			catch (IOException e) {
+				throw new ModuleException("Unable to get jar file", moduleFile.getName(), e);
+			}
+			
 			// look for config.xml in the root of the module
 			ZipEntry config = jarfile.getEntry("config.xml");
 			if (config == null)
-				throw new ModuleException(
-				        "Error loading module. No config.xml found.",
-				        moduleFile.getName());
-
+				throw new ModuleException("Error loading module. No config.xml found.", moduleFile.getName());
+			
 			// get a config file stream
 			try {
 				configStream = jarfile.getInputStream(config);
-			} catch (IOException e) {
-				throw new ModuleException("Unable to get config file stream",
-				        moduleFile.getName(), e);
 			}
-
+			catch (IOException e) {
+				throw new ModuleException("Unable to get config file stream", moduleFile.getName(), e);
+			}
+			
 			// turn the config file into an xml document
 			Document configDoc = null;
 			try {
-				DocumentBuilderFactory dbf = DocumentBuilderFactory
-				        .newInstance();
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				db.setEntityResolver(new EntityResolver() {
-					public InputSource resolveEntity(String publicId,
-					        String systemId) throws SAXException, IOException {
+					
+					public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 						// When asked to resolve external entities (such as a
 						// DTD) we return an InputSource
 						// with no data at the end, causing the parser to ignore
@@ -126,12 +121,12 @@ public class ModuleFileParser {
 						return new InputSource(new StringReader(""));
 					}
 				});
-
+				
 				configDoc = db.parse(configStream);
-			} catch (Exception e) {
-				log.error("Error parsing config.xml: "
-				        + configStream.toString(), e);
-
+			}
+			catch (Exception e) {
+				log.error("Error parsing config.xml: " + configStream.toString(), e);
+				
 				OutputStream out = null;
 				String output = "";
 				try {
@@ -142,59 +137,56 @@ public class ModuleFileParser {
 					while ((bytes_read = configStream.read(buffer)) != -1)
 						out.write(buffer, 0, bytes_read);
 					output = out.toString();
-				} catch (Exception e2) {
+				}
+				catch (Exception e2) {
 					log.warn("Another error parsing config.xml", e2);
-				} finally {
+				}
+				finally {
 					try {
 						out.close();
-					} catch (Exception e3) {
 					}
+					catch (Exception e3) {}
 					;
 				}
-
+				
 				log.error("config.xml content: " + output);
-				throw new ModuleException(
-				        "Error parsing module config.xml file", moduleFile
-				                .getName(), e);
+				throw new ModuleException("Error parsing module config.xml file", moduleFile.getName(), e);
 			}
-
+			
 			Element rootNode = configDoc.getDocumentElement();
-
+			
 			String configVersion = rootNode.getAttribute("configVersion");
-
+			
 			if (!validConfigVersions().contains(configVersion))
-				throw new ModuleException("Invalid config version: "
-				        + configVersion, moduleFile.getName());
-
+				throw new ModuleException("Invalid config version: " + configVersion, moduleFile.getName());
+			
 			String name = getElement(rootNode, configVersion, "name");
 			String moduleId = getElement(rootNode, configVersion, "id");
 			String packageName = getElement(rootNode, configVersion, "package");
 			String author = getElement(rootNode, configVersion, "author");
 			String desc = getElement(rootNode, configVersion, "description");
 			String version = getElement(rootNode, configVersion, "version");
-
+			
 			// do some validation
 			if (name == null || name.length() == 0)
-				throw new ModuleException("name cannot be empty", moduleFile
-				        .getName());
+				throw new ModuleException("name cannot be empty", moduleFile.getName());
 			if (moduleId == null || moduleId.length() == 0)
 				throw new ModuleException("module id cannot be empty", name);
 			if (packageName == null || packageName.length() == 0)
 				throw new ModuleException("package cannot be empty", name);
-
+			
 			// look for log4j.xml in the root of the module
 			Document log4jDoc = null;
 			try {
-	            ZipEntry log4j = jarfile.getEntry("log4j.xml");
-	            if (log4j != null) {
+				ZipEntry log4j = jarfile.getEntry("log4j.xml");
+				if (log4j != null) {
 					InputStream log4jStream = jarfile.getInputStream(log4j);
-
+					
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 					DocumentBuilder db = dbf.newDocumentBuilder();
 					db.setEntityResolver(new EntityResolver() {
-						public InputSource resolveEntity(String publicId,
-						        String systemId) throws SAXException,
-						        IOException {
+						
+						public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 							// When asked to resolve external entities (such as
 							// a
 							// DTD) we return an InputSource
@@ -204,66 +196,59 @@ public class ModuleFileParser {
 							return new InputSource(new StringReader(""));
 						}
 					});
-
+					
 					log4jDoc = db.parse(log4jStream);
 				}
-            } catch (Exception e) {
-            }
-
+			}
+			catch (Exception e) {}
+			
 			// create the module object
-			module = new Module(name, moduleId, packageName, author, desc,
-			        version);
-
+			module = new Module(name, moduleId, packageName, author, desc, version);
+			
 			// find and load the activator class
-			module.setActivatorName(getElement(rootNode, configVersion,
-			        "activator"));
-
-			module.setRequireDatabaseVersion(getElement(rootNode,
-			        configVersion, "require_database_version"));
-			module.setRequireOpenmrsVersion(getElement(rootNode, configVersion,
-			        "require_version"));
-			module
-			        .setUpdateURL(getElement(rootNode, configVersion,
-			                "updateURL"));
-			module.setRequiredModulesMap(getRequiredModules(rootNode,
-			        configVersion));
-
+			module.setActivatorName(getElement(rootNode, configVersion, "activator"));
+			
+			module.setRequireDatabaseVersion(getElement(rootNode, configVersion, "require_database_version"));
+			module.setRequireOpenmrsVersion(getElement(rootNode, configVersion, "require_version"));
+			module.setUpdateURL(getElement(rootNode, configVersion, "updateURL"));
+			module.setRequiredModulesMap(getRequiredModules(rootNode, configVersion));
+			
 			module.setAdvicePoints(getAdvice(rootNode, configVersion, module));
 			module.setExtensionNames(getExtensions(rootNode, configVersion));
-
+			
 			module.setPrivileges(getPrivileges(rootNode, configVersion));
-			module.setGlobalProperties(getGlobalProperties(rootNode,
-			        configVersion));
-
+			module.setGlobalProperties(getGlobalProperties(rootNode, configVersion));
+			
 			module.setMessages(getMessages(rootNode, configVersion, jarfile));
-
-			module.setMappingFiles(getMappingFiles(rootNode, configVersion,
-			        jarfile));
-
+			
+			module.setMappingFiles(getMappingFiles(rootNode, configVersion, jarfile));
+			
 			module.setConfig(configDoc);
 			
 			module.setLog4j(log4jDoc);
 			
 			module.setFile(moduleFile);
-		} finally {
+		}
+		finally {
 			try {
 				jarfile.close();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				log.warn("Unable to close jarfile: " + jarfile, e);
 			}
 			if (configStream != null) {
 				try {
 					configStream.close();
-				} catch (Exception io) {
-					log.error("Error while closing config stream for module: "
-					        + moduleFile.getAbsolutePath(), io);
+				}
+				catch (Exception io) {
+					log.error("Error while closing config stream for module: " + moduleFile.getAbsolutePath(), io);
 				}
 			}
 		}
-
+		
 		return module;
 	}
-
+	
 	/**
 	 * Generic method to get a module tag
 	 * 
@@ -277,7 +262,7 @@ public class ModuleFileParser {
 			return root.getElementsByTagName(tag).item(0).getTextContent();
 		return "";
 	}
-
+	
 	/**
 	 * load in required modules list
 	 * 
@@ -285,18 +270,17 @@ public class ModuleFileParser {
 	 * @param version of the config file
 	 * @return map from module package name to required version
 	 */
-	private Map<String,String> getRequiredModules(Element root, String version) {
-		NodeList requiredModulesParents = root
-		        .getElementsByTagName("require_modules");
-
-		Map<String,String> packageNamesToVersion = new HashMap<String,String>();
-
+	private Map<String, String> getRequiredModules(Element root, String version) {
+		NodeList requiredModulesParents = root.getElementsByTagName("require_modules");
+		
+		Map<String, String> packageNamesToVersion = new HashMap<String, String>();
+		
 		// TODO test require_modules section
 		if (requiredModulesParents.getLength() > 0) {
 			Node requiredModulesParent = requiredModulesParents.item(0);
-
+			
 			NodeList requiredModules = requiredModulesParent.getChildNodes();
-
+			
 			int i = 0;
 			while (i < requiredModules.getLength()) {
 				Node n = requiredModules.item(i);
@@ -311,7 +295,7 @@ public class ModuleFileParser {
 		}
 		return packageNamesToVersion;
 	}
-
+	
 	/**
 	 * load in advicePoints
 	 * 
@@ -320,9 +304,9 @@ public class ModuleFileParser {
 	 * @return
 	 */
 	private List<AdvicePoint> getAdvice(Element root, String version, Module mod) {
-
+		
 		List<AdvicePoint> advicePoints = new Vector<AdvicePoint>();
-
+		
 		NodeList advice = root.getElementsByTagName("advice");
 		if (advice.getLength() > 0) {
 			log.debug("# advice: " + advice.getLength());
@@ -341,22 +325,20 @@ public class ModuleFileParser {
 					x++;
 				}
 				log.debug("point: " + point + " class: " + adviceClass);
-
+				
 				// point and class are required
 				if (point.length() > 0 && adviceClass.length() > 0) {
 					advicePoints.add(new AdvicePoint(mod, point, adviceClass));
 				} else
-					log
-					        .warn("'point' and 'class' are required for advice. Given '"
-					                + point + "' and '" + adviceClass + "'");
-
+					log.warn("'point' and 'class' are required for advice. Given '" + point + "' and '" + adviceClass + "'");
+				
 				i++;
 			}
 		}
-
+		
 		return advicePoints;
 	}
-
+	
 	/**
 	 * load in extensions
 	 * 
@@ -364,11 +346,10 @@ public class ModuleFileParser {
 	 * @param configVersion
 	 * @return
 	 */
-	private IdentityHashMap<String, String> getExtensions(Element root,
-	        String configVersion) {
-
+	private IdentityHashMap<String, String> getExtensions(Element root, String configVersion) {
+		
 		IdentityHashMap<String, String> extensions = new IdentityHashMap<String, String>();
-
+		
 		NodeList extensionNodes = root.getElementsByTagName("extension");
 		if (extensionNodes.getLength() > 0) {
 			log.debug("# extensions: " + extensionNodes.getLength());
@@ -387,27 +368,26 @@ public class ModuleFileParser {
 					x++;
 				}
 				log.debug("point: " + point + " class: " + extClass);
-
+				
 				// point and class are required
 				if (point.length() > 0 && extClass.length() > 0) {
 					if (point.indexOf(Extension.extensionIdSeparator) != -1)
-						log.warn("Point id contains illegal character: '"
-						        + Extension.extensionIdSeparator + "'");
+						log.warn("Point id contains illegal character: '" + Extension.extensionIdSeparator + "'");
 					else {
 						extensions.put(point, extClass);
 					}
 				} else
 					log
-					        .warn("'point' and 'class' are required for extensions. Given '"
-					                + point + "' and '" + extClass + "'");
+					        .warn("'point' and 'class' are required for extensions. Given '" + point + "' and '" + extClass
+					                + "'");
 				i++;
 			}
 		}
-
+		
 		return extensions;
-
+		
 	}
-
+	
 	/**
 	 * load in messages
 	 * 
@@ -415,11 +395,10 @@ public class ModuleFileParser {
 	 * @param configVersion
 	 * @return
 	 */
-	private Map<String, Properties> getMessages(Element root,
-	        String configVersion, JarFile jarfile) {
-
+	private Map<String, Properties> getMessages(Element root, String configVersion, JarFile jarfile) {
+		
 		Map<String, Properties> messages = new HashMap<String, Properties>();
-
+		
 		NodeList messageNodes = root.getElementsByTagName("messages");
 		if (messageNodes.getLength() > 0) {
 			log.debug("# message nodes: " + messageNodes.getLength());
@@ -438,7 +417,7 @@ public class ModuleFileParser {
 					x++;
 				}
 				log.debug("lang: " + lang + " file: " + file);
-
+				
 				// lang and file are required
 				if (lang.length() > 0 && file.length() > 0) {
 					InputStream inStream = null;
@@ -448,31 +427,30 @@ public class ModuleFileParser {
 						Properties props = new Properties();
 						props.load(inStream);
 						messages.put(lang, props);
-					} catch (IOException e) {
+					}
+					catch (IOException e) {
 						log.warn("Unable to load properties: " + file);
-					} finally {
+					}
+					finally {
 						if (inStream != null) {
 							try {
 								inStream.close();
-							} catch (IOException io) {
-								log.error(
-								        "Error while closing property input stream for module: "
-								                + moduleFile.getAbsolutePath(),
-								        io);
+							}
+							catch (IOException io) {
+								log.error("Error while closing property input stream for module: "
+								        + moduleFile.getAbsolutePath(), io);
 							}
 						}
 					}
 				} else
-					log
-					        .warn("'lang' and 'file' are required for extensions. Given '"
-					                + lang + "' and '" + file + "'");
+					log.warn("'lang' and 'file' are required for extensions. Given '" + lang + "' and '" + file + "'");
 				i++;
 			}
 		}
-
+		
 		return messages;
 	}
-
+	
 	/**
 	 * load in required privileges
 	 * 
@@ -481,9 +459,9 @@ public class ModuleFileParser {
 	 * @return
 	 */
 	private List<Privilege> getPrivileges(Element root, String version) {
-
+		
 		List<Privilege> privileges = new Vector<Privilege>();
-
+		
 		NodeList privNodes = root.getElementsByTagName("privilege");
 		if (privNodes.getLength() > 0) {
 			log.debug("# privileges: " + privNodes.getLength());
@@ -502,22 +480,21 @@ public class ModuleFileParser {
 					x++;
 				}
 				log.debug("name: " + name + " description: " + description);
-
+				
 				// name and desc are required
 				if (name.length() > 0 && description.length() > 0)
 					privileges.add(new Privilege(name, description));
 				else
-					log
-					        .warn("'name' and 'description' are required for privileges. Given '"
-					                + name + "' and '" + description + "'");
-
+					log.warn("'name' and 'description' are required for privileges. Given '" + name + "' and '"
+					        + description + "'");
+				
 				i++;
 			}
 		}
-
+		
 		return privileges;
 	}
-
+	
 	/**
 	 * load in required global properties and defaults
 	 * 
@@ -525,11 +502,10 @@ public class ModuleFileParser {
 	 * @param version
 	 * @return
 	 */
-	private List<GlobalProperty> getGlobalProperties(Element root,
-	        String version) {
-
+	private List<GlobalProperty> getGlobalProperties(Element root, String version) {
+		
 		List<GlobalProperty> properties = new Vector<GlobalProperty>();
-
+		
 		NodeList propNodes = root.getElementsByTagName("globalProperty");
 		if (propNodes.getLength() > 0) {
 			log.debug("# global props: " + propNodes.getLength());
@@ -547,32 +523,28 @@ public class ModuleFileParser {
 						defaultValue = childNode.getTextContent();
 					else if ("description".equals(childNode.getNodeName()))
 						description = childNode.getTextContent();
-
+					
 					x++;
 				}
-				log.debug("property: " + property + " defaultValue: "
-				        + defaultValue + " description: " + description);
-
+				log.debug("property: " + property + " defaultValue: " + defaultValue + " description: " + description);
+				
 				// remove tabs from description and trim start/end whitespace
 				if (description != null)
 					description = description.replaceAll("	", "").trim();
-
+				
 				// name is required
 				if (property.length() > 0)
-					properties.add(new GlobalProperty(property, defaultValue,
-					        description));
+					properties.add(new GlobalProperty(property, defaultValue, description));
 				else
-					log
-					        .warn("'property' is required for global properties. Given '"
-					                + property + "'");
-
+					log.warn("'property' is required for global properties. Given '" + property + "'");
+				
 				i++;
 			}
 		}
-
+		
 		return properties;
 	}
-
+	
 	/**
 	 * Load in the defined mapping file names
 	 * 
@@ -581,10 +553,8 @@ public class ModuleFileParser {
 	 * @param jarfile
 	 * @return
 	 */
-	private List<String> getMappingFiles(Element rootNode,
-	        String configVersion, JarFile jarfile) {
-		String mappingString = getElement(rootNode, configVersion,
-		        "mappingFiles");
+	private List<String> getMappingFiles(Element rootNode, String configVersion, JarFile jarfile) {
+		String mappingString = getElement(rootNode, configVersion, "mappingFiles");
 		List<String> mappings = new Vector<String>();
 		for (String s : mappingString.split("\\s")) {
 			String s2 = s.trim();

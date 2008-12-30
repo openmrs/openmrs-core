@@ -38,8 +38,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldOrderCreateUpdateDelete() throws Exception {
 		
-		
-	}	
+	}
 	
 	/**
 	 * Adds then updates a drug order
@@ -49,10 +48,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldDrugOrderCreateUpdateDelete() throws Exception {
 		
-		
-	}	
+	}
 	
-
 	/**
 	 * TODO finish and activate this test method
 	 * 
@@ -78,7 +75,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(orderTypes);
 		
 		boolean found = false;
-		for(Iterator<OrderType> i = orderTypes.iterator(); i.hasNext();) {
+		for (Iterator<OrderType> i = orderTypes.iterator(); i.hasNext();) {
 			OrderType orderType2 = i.next();
 			assertNotNull(orderType);
 			//check .equals function
@@ -91,7 +88,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//assert that the new orderType was returned in the list
 		assertTrue(found);
 		
-		
 		//check update
 		orderType.setName("another test");
 		orderService.saveOrderType(orderType);
@@ -99,14 +95,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderType newerOrderType = orderService.getOrderType(orderType.getOrderTypeId());
 		assertTrue(newerOrderType.getName().equals(orderType.getName()));
 		
-		
 		//check deletion
 		
 		// TODO must create this method before testing it!
 		//as.deleteOrderType(orderType.getOrderTypeId());
 		
 		assertNull(orderService.getOrderType(orderType.getOrderTypeId()));
-
+		
 	}
 	
 }

@@ -28,14 +28,17 @@ import org.openmrs.api.context.Context;
 public class RowPerProgramEnrollmentDataSet implements DataSet<Object> {
 	
 	private RowPerProgramEnrollmentDataSetDefinition definition;
+	
 	private EvaluationContext evaluationContext;
+	
 	private List<PatientProgram> data;
 	
-	public RowPerProgramEnrollmentDataSet() { }
-
+	public RowPerProgramEnrollmentDataSet() {
+	}
+	
 	/**
-	 * This is wrapped around (List<Obs>).iterator()
-	 * This implementation is NOT thread-safe, so do not access the wrapped iterator. 
+	 * This is wrapped around (List<Obs>).iterator() This implementation is NOT thread-safe, so do
+	 * not access the wrapped iterator.
 	 */
 	class HelperIterator implements Iterator<Map<String, Object>> {
 		
@@ -44,56 +47,56 @@ public class RowPerProgramEnrollmentDataSet implements DataSet<Object> {
 		public HelperIterator(Iterator<PatientProgram> iter) {
 			this.iter = iter;
 		}
-
-        public boolean hasNext() {
-	        return iter.hasNext();
-        }
-
-        public Map<String, Object> next() {
+		
+		public boolean hasNext() {
+			return iter.hasNext();
+		}
+		
+		public Map<String, Object> next() {
 			Locale locale = Context.getLocale();
-        	PatientProgram pp = iter.next();
-        	Map<String, Object> ret = new HashMap<String, Object>();
-        	ret.put("patientId", pp.getPatient().getPatientId());
-        	ret.put("programName", pp.getProgram().getConcept().getName(locale, false).getName());
-        	ret.put("programId", pp.getProgram().getProgramId());
-        	ret.put("enrollmentDate", pp.getDateEnrolled());
-        	ret.put("completionDate", pp.getDateCompleted());
-        	ret.put("patientProgramId", pp.getPatientProgramId());
-        	return ret;
-        }
-
-        public void remove() {
-	        iter.remove();
-        }
+			PatientProgram pp = iter.next();
+			Map<String, Object> ret = new HashMap<String, Object>();
+			ret.put("patientId", pp.getPatient().getPatientId());
+			ret.put("programName", pp.getProgram().getConcept().getName(locale, false).getName());
+			ret.put("programId", pp.getProgram().getProgramId());
+			ret.put("enrollmentDate", pp.getDateEnrolled());
+			ret.put("completionDate", pp.getDateCompleted());
+			ret.put("patientProgramId", pp.getPatientProgramId());
+			return ret;
+		}
+		
+		public void remove() {
+			iter.remove();
+		}
 		
 	}
 	
-    public DataSetDefinition getDefinition() {
-	    return definition;
-    }
-
-    public Iterator<Map<String, Object>> iterator() {
-	    return new HelperIterator(data.iterator());
-    }
-
-    public EvaluationContext getEvaluationContext() {
-	    return evaluationContext;
-    }
-
+	public DataSetDefinition getDefinition() {
+		return definition;
+	}
+	
+	public Iterator<Map<String, Object>> iterator() {
+		return new HelperIterator(data.iterator());
+	}
+	
+	public EvaluationContext getEvaluationContext() {
+		return evaluationContext;
+	}
+	
 	public List<PatientProgram> getData() {
-    	return data;
-    }
-
+		return data;
+	}
+	
 	public void setData(List<PatientProgram> data) {
-    	this.data = data;
-    }
-
+		this.data = data;
+	}
+	
 	public void setDefinition(RowPerProgramEnrollmentDataSetDefinition definition) {
-    	this.definition = definition;
-    }
-
+		this.definition = definition;
+	}
+	
 	public void setEvaluationContext(EvaluationContext evaluationContext) {
-    	this.evaluationContext = evaluationContext;
-    }
+		this.evaluationContext = evaluationContext;
+	}
 	
 }

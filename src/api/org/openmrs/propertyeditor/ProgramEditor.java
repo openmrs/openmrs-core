@@ -23,12 +23,13 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class ProgramEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public ProgramEditor() { }
+	public ProgramEditor() {
+	}
 	
-	public void setAsText(String text) throws IllegalArgumentException { 
+	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
 			try {
 				if (text.startsWith("concept.")) {
@@ -39,7 +40,8 @@ public class ProgramEditor extends PropertyEditorSupport {
 					Integer programId = Integer.valueOf(text);
 					setValue(Context.getProgramWorkflowService().getProgram(programId));
 				}
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Program not found: " + text, ex);
 			}
@@ -47,15 +49,14 @@ public class ProgramEditor extends PropertyEditorSupport {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
 		Program p = (Program) getValue();
 		if (p == null) {
 			return "";
-		}
-		else {
+		} else {
 			return p.getProgramId().toString();
 		}
 	}
-
+	
 }

@@ -21,15 +21,13 @@ import java.util.Date;
 import org.junit.Test;
 
 /**
- * This class should test all methods on the PersonName object
- * 
- * This class does not touch the database, so it does not need to
- * extend the normal openmrs BaseTest
+ * This class should test all methods on the PersonName object This class does not touch the
+ * database, so it does not need to extend the normal openmrs BaseTest
  */
 public class PersonNameTest {
 	
 	/**
-	 * Test the .equals method  
+	 * Test the .equals method
 	 * 
 	 * @throws Exception
 	 */
@@ -60,7 +58,6 @@ public class PersonNameTest {
 		assertFalse("The names should not be equal", pn1.equals(pn2));
 		assertFalse("The names should not be equal", pn2.equals(pn1));
 		
-		
 		// test with objects supposedly equal now
 		PersonName pn3 = new PersonName();
 		pn3.setGivenName("firsttest");
@@ -75,7 +72,6 @@ public class PersonNameTest {
 		pn3.setPerson(new Person());
 		assertFalse("The names should not be equal", pn3.equals(pn1));
 		assertFalse("The names should not be equal", pn1.equals(pn3));
-		
 		
 	}
 	

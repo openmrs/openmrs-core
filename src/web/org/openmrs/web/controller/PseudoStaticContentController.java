@@ -33,12 +33,13 @@ public class PseudoStaticContentController implements Controller {
 	public Boolean getInterpretJstl() {
 		return interpretJstl;
 	}
-
+	
 	public void setInterpretJstl(Boolean interpretJstl) {
 		this.interpretJstl = interpretJstl;
 	}
-
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                           IOException {
 		String path = request.getServletPath() + request.getPathInfo();
 		if (interpretJstl)
 			path += ".withjstl";

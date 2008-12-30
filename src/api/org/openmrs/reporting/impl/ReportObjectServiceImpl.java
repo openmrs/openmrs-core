@@ -32,7 +32,7 @@ import org.openmrs.util.OpenmrsConstants;
  *
  */
 public class ReportObjectServiceImpl extends BaseOpenmrsService implements ReportObjectService {
-
+	
 	private ReportObjectDAO reportObjectDAO;
 	
 	private ReportObjectFactory reportObjectFactory;
@@ -51,14 +51,14 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	public void setReportObjectDAO(ReportObjectDAO dao) {
 		this.reportObjectDAO = dao;
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getAllReportObjects()
 	 */
 	public List<AbstractReportObject> getAllReportObjects() {
 		return reportObjectDAO.getAllReportObjects();
 	}
-		
+	
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getReportObject(java.lang.Integer)
 	 */
@@ -86,9 +86,9 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	public List<PatientSearch> getAllPatientSearches() throws APIException {
 		List<PatientSearch> allSearches = new ArrayList<PatientSearch>();
 		List<AbstractReportObject> allMatchingObjects = getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
-		if ( allMatchingObjects != null ) {
-			for ( AbstractReportObject aro : allMatchingObjects ) {
-				allSearches.add( ((PatientSearchReportObject) aro).getPatientSearch() );
+		if (allMatchingObjects != null) {
+			for (AbstractReportObject aro : allMatchingObjects) {
+				allSearches.add(((PatientSearchReportObject) aro).getPatientSearch());
 			}
 		}
 		return allSearches;
@@ -99,20 +99,20 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	 */
 	public PatientSearch getPatientSearch(String name) throws APIException {
 		List<AbstractReportObject> allMatchingObjects = getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
-		if ( allMatchingObjects != null ) {
-			for ( AbstractReportObject aro : allMatchingObjects ) {
+		if (allMatchingObjects != null) {
+			for (AbstractReportObject aro : allMatchingObjects) {
 				if (aro.getName().equals(name))
 					return ((PatientSearchReportObject) aro).getPatientSearch();
 			}
 		}
 		return null;
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getPatientFilterById(java.lang.Integer)
 	 */
 	public PatientFilter getPatientFilterById(Integer filterId) throws APIException {
-		return (PatientFilter)getReportObject(filterId);
+		return (PatientFilter) getReportObject(filterId);
 	}
 	
 	/**
@@ -135,14 +135,14 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	public List<PatientFilter> getAllPatientFilters() throws APIException {
 		ArrayList<PatientFilter> allPatientFilters = new ArrayList<PatientFilter>();
 		List<AbstractReportObject> allMatchingObjects = getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTFILTER);
-		if ( allMatchingObjects != null ) {
-			for ( AbstractReportObject aro : allMatchingObjects ) {
-				allPatientFilters.add((PatientFilter)aro);
+		if (allMatchingObjects != null) {
+			for (AbstractReportObject aro : allMatchingObjects) {
+				allPatientFilters.add((PatientFilter) aro);
 			}
 		}
 		return allPatientFilters;
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#createReportObject(org.openmrs.reporting.AbstractReportObject)
 	 * @deprecated
@@ -181,7 +181,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	public void updateReportObject(AbstractReportObject reportObject) throws APIException {
 		saveReportObject(reportObject);
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getReportObjectTypes()
 	 */
@@ -197,14 +197,15 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 		List<String> availableTypes = this.reportObjectFactory.getReportObjectSubTypes(type);
 		return availableTypes;
 	}
-
+	
 	/**
-	 * @see org.openmrs.reporting.ReportObjectService#isSubTypeOfType(java.lang.String, java.lang.String)
+	 * @see org.openmrs.reporting.ReportObjectService#isSubTypeOfType(java.lang.String,
+	 *      java.lang.String)
 	 */
 	public boolean isSubTypeOfType(String type, String subType) {
 		return this.reportObjectFactory.isSubTypeOfType(type, subType);
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getReportObjectClassBySubType(java.lang.String)
 	 */
@@ -212,7 +213,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 		String className = this.reportObjectFactory.getReportObjectClassBySubType(subType);
 		return className;
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getAllReportObjectClasses()
 	 */
@@ -220,7 +221,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 		List<String> allClasses = this.reportObjectFactory.getAllReportObjectClasses();
 		return allClasses;
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#getReportObjectValidatorByClass(java.lang.String)
 	 */
@@ -249,7 +250,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	 * @see org.openmrs.reporting.ReportObjectService#saveSearchHistory(org.openmrs.cohort.CohortSearchHistory)
 	 */
 	public CohortSearchHistory saveSearchHistory(CohortSearchHistory history) {
-		return (CohortSearchHistory)saveReportObject(history);
+		return (CohortSearchHistory) saveReportObject(history);
 	}
 	
 	/**

@@ -116,50 +116,67 @@ import org.w3c.dom.DocumentType;
  * Utility methods used in openmrs
  */
 public class OpenmrsUtil {
-
+	
 	private static Log log = LogFactory.getLog(OpenmrsUtil.class);
-
+	
 	/**
-	 * 
 	 * @param idWithoutCheckdigit
 	 * @return
 	 * @throws Exception
 	 * @deprecated Should be using PatientService.getPatientIdentifierValidator()
 	 */
-	public static int getCheckDigit(String idWithoutCheckdigit)
-	 	                        throws Exception {
+	public static int getCheckDigit(String idWithoutCheckdigit) throws Exception {
 		PatientService ps = Context.getPatientService();
 		IdentifierValidator piv = ps.getDefaultIdentifierValidator();
 		
 		String withCheckDigit = piv.getValidIdentifier(idWithoutCheckdigit);
-		char checkDigitChar = withCheckDigit.charAt(withCheckDigit.length()-1);
+		char checkDigitChar = withCheckDigit.charAt(withCheckDigit.length() - 1);
 		
-		if(Character.isDigit(checkDigitChar))
-			return Integer.parseInt(""+checkDigitChar);
-		else{
-			switch(checkDigitChar){
-				case 'A': case 'a' : return 0;
-				case 'B': case 'b' : return 1;
-				case 'C': case 'c' : return 2;
-				case 'D': case 'd' : return 3;
-				case 'E': case 'e' : return 4;
-				case 'F': case 'f' : return 5;
-				case 'G': case 'g' : return 6;
-				case 'H': case 'h' : return 7;
-				case 'I': case 'i' : return 8;
-				case 'J': case 'j' : return 9;
-				default: return 10;
+		if (Character.isDigit(checkDigitChar))
+			return Integer.parseInt("" + checkDigitChar);
+		else {
+			switch (checkDigitChar) {
+				case 'A':
+				case 'a':
+					return 0;
+				case 'B':
+				case 'b':
+					return 1;
+				case 'C':
+				case 'c':
+					return 2;
+				case 'D':
+				case 'd':
+					return 3;
+				case 'E':
+				case 'e':
+					return 4;
+				case 'F':
+				case 'f':
+					return 5;
+				case 'G':
+				case 'g':
+					return 6;
+				case 'H':
+				case 'h':
+					return 7;
+				case 'I':
+				case 'i':
+					return 8;
+				case 'J':
+				case 'j':
+					return 9;
+				default:
+					return 10;
 			}
 		}
-			
+		
 	}
 	
 	/**
-	 * 
 	 * @param id
 	 * @return true/false whether id has a valid check digit
-	 * @throws Exception
-	 *			 on invalid characters and invalid id formation
+	 * @throws Exception on invalid characters and invalid id formation
 	 * @deprecated Should be using PatientService.getPatientIdentifierValidator().isValid();
 	 */
 	public static boolean isValidCheckDigit(String id) throws Exception {
@@ -168,7 +185,7 @@ public class OpenmrsUtil {
 		
 		return piv.isValid(id);
 	}
-
+	
 	/**
 	 * Compares origList to newList returning map of differences
 	 * 
@@ -176,15 +193,14 @@ public class OpenmrsUtil {
 	 * @param newList
 	 * @return [List toAdd, List toDelete] with respect to origList
 	 */
-	public static <E extends Object> Collection<Collection<E>> compareLists(Collection<E> origList,
-			Collection<E> newList) {
+	public static <E extends Object> Collection<Collection<E>> compareLists(Collection<E> origList, Collection<E> newList) {
 		// TODO finish function
-
+		
 		Collection<Collection<E>> returnList = new Vector<Collection<E>>();
-
+		
 		Collection<E> toAdd = new LinkedList<E>();
 		Collection<E> toDel = new LinkedList<E>();
-
+		
 		// loop over the new list.
 		for (E currentNewListObj : newList) {
 			// loop over the original list
@@ -200,22 +216,22 @@ public class OpenmrsUtil {
 			}
 			if (!foundInList)
 				toAdd.add(currentNewListObj);
-
+			
 			// all found new objects were removed from the orig list,
 			// leaving only objects needing to be removed
 			toDel = origList;
-
+			
 		}
-
+		
 		returnList.add(toAdd);
 		returnList.add(toDel);
-
+		
 		return returnList;
 	}
-
+	
 	public static boolean isStringInArray(String str, String[] arr) {
 		boolean retVal = false;
-
+		
 		if (str != null && arr != null) {
 			for (int i = 0; i < arr.length; i++) {
 				if (str.equals(arr[i]))
@@ -224,39 +240,31 @@ public class OpenmrsUtil {
 		}
 		return retVal;
 	}
-
-	public static Boolean isInNormalNumericRange(Float value,
-			ConceptNumeric concept) {
+	
+	public static Boolean isInNormalNumericRange(Float value, ConceptNumeric concept) {
 		if (concept.getHiNormal() == null || concept.getLowNormal() == null)
 			return false;
-		return (value <= concept.getHiNormal() && value >= concept
-				.getLowNormal());
+		return (value <= concept.getHiNormal() && value >= concept.getLowNormal());
 	}
-
-	public static Boolean isInCriticalNumericRange(Float value,
-			ConceptNumeric concept) {
+	
+	public static Boolean isInCriticalNumericRange(Float value, ConceptNumeric concept) {
 		if (concept.getHiCritical() == null || concept.getLowCritical() == null)
 			return false;
-		return (value <= concept.getHiCritical() && value >= concept
-				.getLowCritical());
+		return (value <= concept.getHiCritical() && value >= concept.getLowCritical());
 	}
-
-	public static Boolean isInAbsoluteNumericRange(Float value,
-			ConceptNumeric concept) {
+	
+	public static Boolean isInAbsoluteNumericRange(Float value, ConceptNumeric concept) {
 		if (concept.getHiAbsolute() == null || concept.getLowAbsolute() == null)
 			return false;
-		return (value <= concept.getHiAbsolute() && value >= concept
-				.getLowAbsolute());
+		return (value <= concept.getHiAbsolute() && value >= concept.getLowAbsolute());
 	}
-
-	public static Boolean isValidNumericValue(Float value,
-			ConceptNumeric concept) {
+	
+	public static Boolean isValidNumericValue(Float value, ConceptNumeric concept) {
 		if (concept.getHiAbsolute() == null || concept.getLowAbsolute() == null)
 			return true;
-		return (value <= concept.getHiAbsolute() && value >= concept
-				.getLowAbsolute());
+		return (value <= concept.getHiAbsolute() && value >= concept.getLowAbsolute());
 	}
-
+	
 	/**
 	 * Return a string representation of the given file
 	 * 
@@ -287,10 +295,10 @@ public class OpenmrsUtil {
 	 */
 	public static byte[] getFileAsBytes(File file) throws IOException {
 		try {
-			FileInputStream fileInputStream = new FileInputStream (file);
-			byte[] b = new byte[fileInputStream.available ()];
+			FileInputStream fileInputStream = new FileInputStream(file);
+			byte[] b = new byte[fileInputStream.available()];
 			fileInputStream.read(b);
-			fileInputStream.close ();
+			fileInputStream.close();
 			return b;
 		}
 		catch (Exception e) {
@@ -299,29 +307,29 @@ public class OpenmrsUtil {
 		
 		return null;
 	}
-
+	
 	/**
-	 * Copy file from inputStream onto the outputStream
-	 * 
-	 * inputStream is not closed in this method
+	 * Copy file from inputStream onto the outputStream inputStream is not closed in this method
 	 * outputStream /is/ closed at completion of this method
 	 * 
 	 * @param inputStream Stream to copy from
 	 * @param outputStream Stream/location to copy to
 	 * @throws IOException thrown if an error occurs during read/write
 	 */
-	public static void copyFile(InputStream inputStream,
-			OutputStream outputStream) throws IOException {
+	public static void copyFile(InputStream inputStream, OutputStream outputStream) throws IOException {
 		if (inputStream == null || outputStream == null) {
 			if (outputStream != null) {
-				try { outputStream.close(); } catch (Exception e) { /* pass */ }
+				try {
+					outputStream.close();
+				}
+				catch (Exception e) { /* pass */}
 			}
 			
 			return;
 		}
 		
 		InputStream in = null;
-		OutputStream out = null; 
+		OutputStream out = null;
 		try {
 			in = new BufferedInputStream(inputStream);
 			out = new BufferedOutputStream(outputStream);
@@ -332,11 +340,16 @@ public class OpenmrsUtil {
 				}
 				out.write(data);
 			}
-		} 
+		}
 		finally {
-			if (in != null)  in.close();
-			if (out != null) out.close();
-			try { outputStream.close(); } catch (Exception e) { /* pass */ }
+			if (in != null)
+				in.close();
+			if (out != null)
+				out.close();
+			try {
+				outputStream.close();
+			}
+			catch (Exception e) { /* pass */}
 		}
 		
 	}
@@ -349,8 +362,10 @@ public class OpenmrsUtil {
 	 * @return true/false whether filename exists in folder
 	 */
 	public static boolean folderContains(File folder, String filename) {
-		if (folder == null) return false;
-		if (!folder.isDirectory()) return false;
+		if (folder == null)
+			return false;
+		if (!folder.isDirectory())
+			return false;
 		
 		for (File f : folder.listFiles()) {
 			if (f.getName().equals(filename))
@@ -360,20 +375,19 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Initialize global settings
-	 * Find and load modules
+	 * Initialize global settings Find and load modules
 	 * 
 	 * @param p properties from runtime configuration
 	 */
 	public static void startup(Properties p) {
 		
 		// Override global OpenMRS constants if specified by the user
-
+		
 		// Allow for "demo" mode where patient data is obscured
 		String val = p.getProperty("obscure_patients", null);
 		if (val != null && "true".equalsIgnoreCase(val))
 			OpenmrsConstants.OBSCURE_PATIENTS = true;
-
+		
 		val = p.getProperty("obscure_patients.family_name", null);
 		if (val != null)
 			OpenmrsConstants.OBSCURE_PATIENTS_FAMILY_NAME = val;
@@ -385,14 +399,14 @@ public class OpenmrsUtil {
 		val = p.getProperty("obscure_patients.middle_name", null);
 		if (val != null)
 			OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME = val;
-
+		
 		// Override the default "openmrs" database name
 		val = p.getProperty("connection.database_name", null);
 		if (val == null) {
 			// the database name wasn't supplied explicitly, guess it 
 			//   from the connection string
 			val = p.getProperty("connection.url", null);
-		
+			
 			if (val != null) {
 				try {
 					int endIndex = val.lastIndexOf("?");
@@ -403,8 +417,8 @@ public class OpenmrsUtil {
 					OpenmrsConstants.DATABASE_NAME = val;
 				}
 				catch (Exception e) {
-					log.fatal("Database name cannot be configured from 'connection.url' ." +
-							"Either supply 'connection.database_name' or correct the url", e);
+					log.fatal("Database name cannot be configured from 'connection.url' ."
+					        + "Either supply 'connection.database_name' or correct the url", e);
 				}
 			}
 		}
@@ -426,10 +440,9 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Set the org.openmrs log4j logger's level if global property log.level.openmrs 
-	 * ( OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL ) exists. 
-     * Valid values for global property are trace, debug, info, 
-     * warn, error or fatal.
+	 * Set the org.openmrs log4j logger's level if global property log.level.openmrs (
+	 * OpenmrsConstants.GLOBAL_PROPERTY_LOG_LEVEL ) exists. Valid values for global property are
+	 * trace, debug, info, warn, error or fatal.
 	 */
 	public static void applyLogLevels() {
 		AdministrationService adminService = Context.getAdministrationService();
@@ -441,16 +454,15 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-     * Set the log4j log level for class <code>logClass</code> to <code>logLevel</code>.
-     * 
-     * 
-     * @param logClass optional string giving the class level to change.  Defaults to 
-     * 		OpenmrsConstants.LOG_CLASS_DEFAULT .  Should be something like org.openmrs.___
-     * @param level one of OpenmrsConstants.LOG_LEVEL_*
-     */
-    public static void applyLogLevel(String logClass, String logLevel) {
-	    
-		if(logLevel != null) {
+	 * Set the log4j log level for class <code>logClass</code> to <code>logLevel</code>.
+	 * 
+	 * @param logClass optional string giving the class level to change. Defaults to
+	 *            OpenmrsConstants.LOG_CLASS_DEFAULT . Should be something like org.openmrs.___
+	 * @param level one of OpenmrsConstants.LOG_LEVEL_*
+	 */
+	public static void applyLogLevel(String logClass, String logLevel) {
+		
+		if (logLevel != null) {
 			
 			// the default log level is org.openmrs
 			if (logClass == null || "".equals(logClass))
@@ -459,27 +471,29 @@ public class OpenmrsUtil {
 			Logger logger = Logger.getLogger(logClass);
 			
 			logLevel = logLevel.toLowerCase();
-			if(OpenmrsConstants.LOG_LEVEL_TRACE.equals(logLevel) ) {
+			if (OpenmrsConstants.LOG_LEVEL_TRACE.equals(logLevel)) {
 				logger.setLevel(Level.TRACE);
-			} else if(OpenmrsConstants.LOG_LEVEL_DEBUG.equals(logLevel) ) {
+			} else if (OpenmrsConstants.LOG_LEVEL_DEBUG.equals(logLevel)) {
 				logger.setLevel(Level.DEBUG);
-			} else if(OpenmrsConstants.LOG_LEVEL_INFO.equals(logLevel) ) {
+			} else if (OpenmrsConstants.LOG_LEVEL_INFO.equals(logLevel)) {
 				logger.setLevel(Level.INFO);
-			} else if(OpenmrsConstants.LOG_LEVEL_WARN.equals(logLevel) ) {
+			} else if (OpenmrsConstants.LOG_LEVEL_WARN.equals(logLevel)) {
 				logger.setLevel(Level.WARN);
-			} else if(OpenmrsConstants.LOG_LEVEL_ERROR.equals(logLevel) ) {
+			} else if (OpenmrsConstants.LOG_LEVEL_ERROR.equals(logLevel)) {
 				logger.setLevel(Level.ERROR);
-			} else if(OpenmrsConstants.LOG_LEVEL_FATAL.equals(logLevel) ) {
+			} else if (OpenmrsConstants.LOG_LEVEL_FATAL.equals(logLevel)) {
 				logger.setLevel(Level.FATAL);
 			} else {
-				log.warn("Global property " + logLevel + " is invalid. " +
-						"Valid values are trace, debug, info, warn, error or fatal");
+				log.warn("Global property " + logLevel + " is invalid. "
+				        + "Valid values are trace, debug, info, warn, error or fatal");
 			}
 		}
-    }
+	}
 	
 	/**
-	 * Takes a String like "size=compact|order=date" and returns a Map<String,String> from the keys to the values.
+	 * Takes a String like "size=compact|order=date" and returns a Map<String,String> from the keys
+	 * to the values.
+	 * 
 	 * @param paramList
 	 * @return
 	 */
@@ -490,7 +504,8 @@ public class OpenmrsUtil {
 			for (String s : args) {
 				int ind = s.indexOf('=');
 				if (ind <= 0) {
-					throw new IllegalArgumentException("Misformed argument in dynamic page specification string: '" + s + "' is not 'key=value'.");
+					throw new IllegalArgumentException("Misformed argument in dynamic page specification string: '" + s
+					        + "' is not 'key=value'.");
 				}
 				String name = s.substring(0, ind);
 				String value = s.substring(ind + 1);
@@ -508,10 +523,10 @@ public class OpenmrsUtil {
 		else
 			return d1.equals(d2);
 	}
-
+	
 	/**
-	 * Compares two java.util.Date objects, but handles java.sql.Timestamp (which is not directly comparable to a date)
-	 * by dropping its nanosecond value.
+	 * Compares two java.util.Date objects, but handles java.sql.Timestamp (which is not directly
+	 * comparable to a date) by dropping its nanosecond value.
 	 */
 	public static int compare(Date d1, Date d2) {
 		if (d1 instanceof Timestamp && d2 instanceof Timestamp) {
@@ -573,7 +588,7 @@ public class OpenmrsUtil {
 		else
 			return c1.compareTo(c2);
 	}
-
+	
 	public static Integer ageFromBirthdate(Date birthdate) {
 		if (birthdate == null)
 			return null;
@@ -590,23 +605,25 @@ public class OpenmrsUtil {
 		// if the current date is less that the new 'birthday', subtract a year
 		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
 		if (today.before(bday)) {
-				age = age -1;
+			age = age - 1;
 		}
-
+		
 		return age;
 	}
 	
 	/**
 	 * Converts a collection to a String with a specified separator between all elements
+	 * 
 	 * @param c Collection to be joined
 	 * @param separator string to put between all elements
 	 * @return a String representing the toString() of all elements in c, separated by separator
 	 */
 	public static <E extends Object> String join(Collection<E> c, String separator) {
-		if (c == null) return "";
+		if (c == null)
+			return "";
 		
 		StringBuilder ret = new StringBuilder();
-		for (Iterator<E> i = c.iterator(); i.hasNext(); ) {
+		for (Iterator<E> i = c.iterator(); i.hasNext();) {
 			ret.append(i.next());
 			if (i.hasNext())
 				ret.append(separator);
@@ -620,7 +637,7 @@ public class OpenmrsUtil {
 			return ret;
 		ConceptService cs = Context.getConceptService();
 		
-		for (StringTokenizer st = new StringTokenizer(descriptor, "|"); st.hasMoreTokens(); ) {
+		for (StringTokenizer st = new StringTokenizer(descriptor, "|"); st.hasMoreTokens();) {
 			String s = st.nextToken().trim();
 			boolean isSet = s.startsWith("set:");
 			if (isSet)
@@ -632,7 +649,8 @@ public class OpenmrsUtil {
 			} else {
 				try {
 					c = cs.getConcept(Integer.valueOf(s.trim()));
-				} catch (Exception ex) { }
+				}
+				catch (Exception ex) {}
 			}
 			if (c != null) {
 				if (isSet) {
@@ -645,31 +663,33 @@ public class OpenmrsUtil {
 		}
 		return ret;
 	}
-
-	public static List<Concept> delimitedStringToConceptList( String delimitedString, String delimiter, Context context ) {
+	
+	public static List<Concept> delimitedStringToConceptList(String delimitedString, String delimiter, Context context) {
 		List<Concept> ret = null;
 		
-		if ( delimitedString != null && context != null ) {
+		if (delimitedString != null && context != null) {
 			String[] tokens = delimitedString.split(delimiter);
-			for ( String token : tokens ) {
+			for (String token : tokens) {
 				Integer conceptId = null;
 				
 				try {
 					conceptId = new Integer(token);
-				} catch (NumberFormatException nfe) {
+				}
+				catch (NumberFormatException nfe) {
 					conceptId = null;
 				}
 				
 				Concept c = null;
 				
-				if ( conceptId != null ) {
+				if (conceptId != null) {
 					c = Context.getConceptService().getConcept(conceptId);
 				} else {
 					c = Context.getConceptService().getConceptByName(token);
 				}
 				
-				if ( c != null ) {
-					if ( ret == null ) ret = new ArrayList<Concept>();
+				if (c != null) {
+					if (ret == null)
+						ret = new ArrayList<Concept>();
 					ret.add(c);
 				}
 			}
@@ -677,17 +697,18 @@ public class OpenmrsUtil {
 		
 		return ret;
 	}
-
-	public static Map<String, Concept> delimitedStringToConceptMap( String delimitedString, String delimiter) {
-		Map<String,Concept> ret = null;
+	
+	public static Map<String, Concept> delimitedStringToConceptMap(String delimitedString, String delimiter) {
+		Map<String, Concept> ret = null;
 		
-		if ( delimitedString != null) {
+		if (delimitedString != null) {
 			String[] tokens = delimitedString.split(delimiter);
-			for ( String token : tokens ) {
+			for (String token : tokens) {
 				Concept c = OpenmrsUtil.getConceptByIdOrName(token);
 				
-				if ( c != null ) {
-					if ( ret == null ) ret = new HashMap<String, Concept>();
+				if (c != null) {
+					if (ret == null)
+						ret = new HashMap<String, Concept>();
 					ret.put(token, c);
 				}
 			}
@@ -695,7 +716,7 @@ public class OpenmrsUtil {
 		
 		return ret;
 	}
-
+	
 	// DEPRECATED: This method should now be replaced with ConceptService.getConceptByIdOrName()
 	public static Concept getConceptByIdOrName(String idOrName) {
 		Concept c = null;
@@ -703,16 +724,17 @@ public class OpenmrsUtil {
 		
 		try {
 			conceptId = new Integer(idOrName);
-		} catch (NumberFormatException nfe) {
+		}
+		catch (NumberFormatException nfe) {
 			conceptId = null;
 		}
 		
-		if ( conceptId != null ) {
+		if (conceptId != null) {
 			c = Context.getConceptService().getConcept(conceptId);
 		} else {
 			c = Context.getConceptService().getConceptByName(idOrName);
 		}
-
+		
 		return c;
 	}
 	
@@ -723,7 +745,7 @@ public class OpenmrsUtil {
 			return ret;
 		ConceptService cs = Context.getConceptService();
 		
-		for (StringTokenizer st = new StringTokenizer(descriptor, "|"); st.hasMoreTokens(); ) {
+		for (StringTokenizer st = new StringTokenizer(descriptor, "|"); st.hasMoreTokens();) {
 			String s = st.nextToken().trim();
 			boolean isSet = s.startsWith("set:");
 			if (isSet)
@@ -735,7 +757,8 @@ public class OpenmrsUtil {
 			} else {
 				try {
 					c = cs.getConcept(Integer.valueOf(s.trim()));
-				} catch (Exception ex) { }
+				}
+				catch (Exception ex) {}
 			}
 			if (c != null) {
 				if (isSet) {
@@ -762,11 +785,11 @@ public class OpenmrsUtil {
 		c.add(Calendar.SECOND, -1);
 		return c.getTime();
 	}
-
+	
 	public static Date safeDate(Date d1) {
 		return new Date(d1.getTime());
 	}
-
+	
 	/**
 	 * Recursively deletes files in the given <code>dir</code> folder
 	 * 
@@ -776,8 +799,7 @@ public class OpenmrsUtil {
 	 */
 	public static boolean deleteDirectory(File dir) throws IOException {
 		if (!dir.exists() || !dir.isDirectory())
-			throw new IOException("Could not delete directory '" + dir.getAbsolutePath()
-				+ "' (not a directory)");
+			throw new IOException("Could not delete directory '" + dir.getAbsolutePath() + "' (not a directory)");
 		
 		if (log.isDebugEnabled())
 			log.debug("Deleting directory " + dir.getAbsolutePath());
@@ -810,114 +832,112 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Utility method to convert local URL to a File object.
+	 * 
 	 * @param url an URL
-	 * @return file object for given URL or <code>null</code> if URL is not
-	 *		 local
+	 * @return file object for given URL or <code>null</code> if URL is not local
 	 */
 	public static File url2file(final URL url) {
 		if (url == null || !"file".equalsIgnoreCase(url.getProtocol())) {
 			return null;
-		}	
+		}
 		return new File(url.getFile().replaceAll("%20", " "));
 	}
 	
 	/**
-     * Opens input stream for given resource. This method behaves differently
-     * for different URL types:
-     * <ul>
-     *   <li>for <b>local files</b> it returns buffered file input stream;</li>
-     *   <li>for <b>local JAR files</b> it reads resource content into memory
-     *     buffer and returns byte array input stream that wraps those
-     *     buffer (this prevents locking JAR file);</li>
-     *   <li>for <b>common URL's</b> this method simply opens stream to that URL
-     *     using standard URL API.</li>
-     * </ul>
-     * It is not recommended to use this method for big resources within JAR
-     * files.
-     * @param url resource URL
-     * @return input stream for given resource
-     * @throws IOException if any I/O error has occurred
-     */
-    public static InputStream getResourceInputStream(final URL url)
-            throws IOException {
-        File file = url2file(url);
-        if (file != null) {
-            return new BufferedInputStream(new FileInputStream(file));
-        }
-        if (!"jar".equalsIgnoreCase(url.getProtocol())) {
-            return url.openStream();
-        }
-        String urlStr = url.toExternalForm();
-        if (urlStr.endsWith("!/")) {
-            //JAR URL points to a root entry
-            throw new FileNotFoundException(url.toExternalForm());
-        }
-        int p = urlStr.indexOf("!/");
-        if (p == -1) {
-            throw new MalformedURLException(url.toExternalForm());
-        }
-        String path = urlStr.substring(p + 2);
-        file = url2file(new URL(urlStr.substring(4, p)));
-        if (file == null) {// non-local JAR file URL
-            return url.openStream();
-        }
-        JarFile jarFile = new JarFile(file);
-        try {
-            ZipEntry entry = jarFile.getEntry(path);
-            if (entry == null) {
-                throw new FileNotFoundException(url.toExternalForm());
-            }
-            InputStream in = jarFile.getInputStream(entry);
-            try {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                copyFile(in, out);
-                return new ByteArrayInputStream(out.toByteArray());
-            } finally {
-                in.close();
-            }
-        } finally {
-            jarFile.close();
-        }
-    }
-    
-    /**
-     * @return The path to the directory on the file system that will hold miscellaneous
-     * 			data about the application (runtime properties, modules, etc)
-     */
-    public static String getApplicationDataDirectory() {
-    	
-    	String filepath = null;
-    	
-    	if (OpenmrsConstants.APPLICATION_DATA_DIRECTORY != null) {
-    		filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
-    	}
-    	else {
-	        if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM)
+	 * Opens input stream for given resource. This method behaves differently for different URL
+	 * types:
+	 * <ul>
+	 * <li>for <b>local files</b> it returns buffered file input stream;</li>
+	 * <li>for <b>local JAR files</b> it reads resource content into memory buffer and returns byte
+	 * array input stream that wraps those buffer (this prevents locking JAR file);</li>
+	 * <li>for <b>common URL's</b> this method simply opens stream to that URL using standard URL
+	 * API.</li>
+	 * </ul>
+	 * It is not recommended to use this method for big resources within JAR files.
+	 * 
+	 * @param url resource URL
+	 * @return input stream for given resource
+	 * @throws IOException if any I/O error has occurred
+	 */
+	public static InputStream getResourceInputStream(final URL url) throws IOException {
+		File file = url2file(url);
+		if (file != null) {
+			return new BufferedInputStream(new FileInputStream(file));
+		}
+		if (!"jar".equalsIgnoreCase(url.getProtocol())) {
+			return url.openStream();
+		}
+		String urlStr = url.toExternalForm();
+		if (urlStr.endsWith("!/")) {
+			//JAR URL points to a root entry
+			throw new FileNotFoundException(url.toExternalForm());
+		}
+		int p = urlStr.indexOf("!/");
+		if (p == -1) {
+			throw new MalformedURLException(url.toExternalForm());
+		}
+		String path = urlStr.substring(p + 2);
+		file = url2file(new URL(urlStr.substring(4, p)));
+		if (file == null) {// non-local JAR file URL
+			return url.openStream();
+		}
+		JarFile jarFile = new JarFile(file);
+		try {
+			ZipEntry entry = jarFile.getEntry(path);
+			if (entry == null) {
+				throw new FileNotFoundException(url.toExternalForm());
+			}
+			InputStream in = jarFile.getInputStream(entry);
+			try {
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				copyFile(in, out);
+				return new ByteArrayInputStream(out.toByteArray());
+			}
+			finally {
+				in.close();
+			}
+		}
+		finally {
+			jarFile.close();
+		}
+	}
+	
+	/**
+	 * @return The path to the directory on the file system that will hold miscellaneous data about
+	 *         the application (runtime properties, modules, etc)
+	 */
+	public static String getApplicationDataDirectory() {
+		
+		String filepath = null;
+		
+		if (OpenmrsConstants.APPLICATION_DATA_DIRECTORY != null) {
+			filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
+		} else {
+			if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM)
 				filepath = System.getProperty("user.home") + File.separator + ".OpenMRS";
 			else
-				filepath = System.getProperty("user.home") + File.separator + 
-						"Application Data" + File.separator + 
-						"OpenMRS";
-					
+				filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
+				        + "OpenMRS";
+			
 			filepath = filepath + File.separator;
-    	}
+		}
 		
 		File folder = new File(filepath);
 		if (!folder.exists())
 			folder.mkdirs();
 		
 		return filepath;
-    }
-    
-    /**
-     * Find the given folderName in the application data directory.  Or, treat
-     * folderName like an absolute url to a directory 
-     * 
-     * @param folderName
-     * @return folder capable of storing information
-     */
-    public static File getDirectoryInApplicationDataDirectory(String folderName) throws APIException {
-    	//  try to load the repository folder straight away.
+	}
+	
+	/**
+	 * Find the given folderName in the application data directory. Or, treat folderName like an
+	 * absolute url to a directory
+	 * 
+	 * @param folderName
+	 * @return folder capable of storing information
+	 */
+	public static File getDirectoryInApplicationDataDirectory(String folderName) throws APIException {
+		//  try to load the repository folder straight away.
 		File folder = new File(folderName);
 		
 		// if the property wasn't a full path already, assume it was intended to be a folder in the 
@@ -931,22 +951,23 @@ public class OpenmrsUtil {
 			log.warn("'" + folder.getAbsolutePath() + "' doesn't exist.  Creating directories now.");
 			folder.mkdirs();
 		}
-	
+		
 		if (!folder.isDirectory())
 			throw new APIException("'" + folder.getAbsolutePath() + "' should be a directory but it is not");
-	
+		
 		return folder;
-    }
-    
-    /**
-     * Save the given xml document to the given outfile
-     * @param doc Document to be saved
-     * @param outFile file pointer to the location the xml file is to be saved to
-     */
-    public static void saveDocument(Document doc, File outFile) {
-    	OutputStream outStream = null;
-    	try {
-    		outStream = new FileOutputStream(outFile);
+	}
+	
+	/**
+	 * Save the given xml document to the given outfile
+	 * 
+	 * @param doc Document to be saved
+	 * @param outFile file pointer to the location the xml file is to be saved to
+	 */
+	public static void saveDocument(Document doc, File outFile) {
+		OutputStream outStream = null;
+		try {
+			outStream = new FileOutputStream(outFile);
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			Transformer transformer = tFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -960,8 +981,8 @@ public class OpenmrsUtil {
 			DOMSource source = new DOMSource(doc);
 			StreamResult result = new StreamResult(outStream);
 			transformer.transform(source, result);
-    	}
-    	catch (TransformerException e) {
+		}
+		catch (TransformerException e) {
 			throw new ModuleException("Error while saving dwrmodulexml back to dwr-modules.xml", e);
 		}
 		catch (FileNotFoundException e) {
@@ -976,9 +997,9 @@ public class OpenmrsUtil {
 				log.warn("Unable to close outstream", e);
 			}
 		}
-    }
-    
-    public static List<Integer> delimitedStringToIntegerList(String delimitedString, String delimiter) {
+	}
+	
+	public static List<Integer> delimitedStringToIntegerList(String delimitedString, String delimiter) {
 		List<Integer> ret = new ArrayList<Integer>();
 		String[] tokens = delimitedString.split(delimiter);
 		for (String token : tokens) {
@@ -990,29 +1011,26 @@ public class OpenmrsUtil {
 		}
 		return ret;
 	}
-
-    public static boolean isConceptInList(Concept concept, List<Concept> list) {
-    	boolean ret = false;
-
-    	if ( concept != null && list != null ) {
-    		for ( Concept c : list ) {
-    			if ( c.equals(concept) ) {
-    				ret = true;
-    				break;
-    			}
-    		}
-    	}
-    	
-    	return ret;
+	
+	public static boolean isConceptInList(Concept concept, List<Concept> list) {
+		boolean ret = false;
+		
+		if (concept != null && list != null) {
+			for (Concept c : list) {
+				if (c.equals(concept)) {
+					ret = true;
+					break;
+				}
+			}
+		}
+		
+		return ret;
 	}
-    
-    public static Date fromDateHelper(
-    		Date comparisonDate,
-    		Integer withinLastDays, Integer withinLastMonths,
-    		Integer untilDaysAgo, Integer untilMonthsAgo,
-    		Date sinceDate, Date untilDate) {
-
-    	Date ret = null;
+	
+	public static Date fromDateHelper(Date comparisonDate, Integer withinLastDays, Integer withinLastMonths,
+	                                  Integer untilDaysAgo, Integer untilMonthsAgo, Date sinceDate, Date untilDate) {
+		
+		Date ret = null;
 		if (withinLastDays != null || withinLastMonths != null) {
 			Calendar gc = new GregorianCalendar();
 			gc.setTime(comparisonDate != null ? comparisonDate : new Date());
@@ -1025,15 +1043,12 @@ public class OpenmrsUtil {
 		if (sinceDate != null && (ret == null || sinceDate.after(ret)))
 			ret = sinceDate;
 		return ret;
-    }
-    
-    public static Date toDateHelper(
-    		Date comparisonDate,
-    		Integer withinLastDays, Integer withinLastMonths,
-    		Integer untilDaysAgo, Integer untilMonthsAgo,
-    		Date sinceDate, Date untilDate) {
-
-    	Date ret = null;
+	}
+	
+	public static Date toDateHelper(Date comparisonDate, Integer withinLastDays, Integer withinLastMonths,
+	                                Integer untilDaysAgo, Integer untilMonthsAgo, Date sinceDate, Date untilDate) {
+		
+		Date ret = null;
 		if (untilDaysAgo != null || untilMonthsAgo != null) {
 			Calendar gc = new GregorianCalendar();
 			gc.setTime(comparisonDate != null ? comparisonDate : new Date());
@@ -1046,111 +1061,113 @@ public class OpenmrsUtil {
 		if (untilDate != null && (ret == null || untilDate.before(ret)))
 			ret = untilDate;
 		return ret;
-    }
-    
-    /**
-     * @param collection
-     * @param elements
-     * @return Whether _collection_ contains any of _elements_
-     */
-    public static <T> boolean containsAny(Collection<T> collection, Collection<T> elements) {
-    	for (T obj : elements) {
-    		if (collection.contains(obj))
-    			return true;
-    	}
-    	return false;
-    }
-    
-    /**
-     * Allows easy manipulation of a Map<?, Set> 
-     */
-    public static <K, V> void addToSetMap(Map<K, Set<V>> map, K key, V obj) {
-    	Set<V> set = map.get(key);
-    	if (set == null) {
-    		set = new HashSet<V>();
-    		map.put(key, set);
-    	}
-    	set.add(obj);
-    }
-    
-    public static <K, V> void addToListMap(Map<K, List<V>> map, K key, V obj) {
-    	List<V> list = map.get(key);
-    	if (list == null) {
-    		list = new ArrayList<V>();
-    		map.put(key, list);
-    	}
-    	list.add(obj);
-    }
-    
-    /**
-     * Get the current user's date format
-     * Will look similar to "mm-dd-yyyy".  Depends on user's locale.
-     * 
-     * @return a simple date format
-     */
-    public static SimpleDateFormat getDateFormat() {
-    	String localeKey = Context.getLocale().toString().toLowerCase();
-    	
-    	// get the actual pattern from the constants
-    	String pattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(localeKey);
-    	
-    	// default to the "first" locale pattern
-    	if (pattern == null)
-    		pattern = (String)OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().values().toArray()[0];
-    	
-    	return new SimpleDateFormat(pattern, Context.getLocale());
-    }
-    
-    public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history) {
-    	return toPatientFilter(search, history, null);
-    }
-    
-    /**
-     * Takes a String (e.g. a user-entered one) and parses it into an object of the specified class  
-     * 
-     * @param string
-     * @param clazz
-     * @return
-     */
-    public static Object parse(String string, Class clazz) {
-    	try {
-    		// If there's a valueOf(String) method, just use that (will cover at least String, Integer, Double, Boolean) 
-    		Method valueOfMethod = null;
-    		try {
-    			valueOfMethod = clazz.getMethod("valueOf", String.class );
-    		} catch (NoSuchMethodException ex) { }
-    		if (valueOfMethod != null) {
-    			return valueOfMethod.invoke(null, string);
-    		} else if (clazz.isEnum()) {
-        		// Special-case for enum types
-        		List<Enum> constants = Arrays.asList((Enum[]) clazz.getEnumConstants());
+	}
+	
+	/**
+	 * @param collection
+	 * @param elements
+	 * @return Whether _collection_ contains any of _elements_
+	 */
+	public static <T> boolean containsAny(Collection<T> collection, Collection<T> elements) {
+		for (T obj : elements) {
+			if (collection.contains(obj))
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Allows easy manipulation of a Map<?, Set>
+	 */
+	public static <K, V> void addToSetMap(Map<K, Set<V>> map, K key, V obj) {
+		Set<V> set = map.get(key);
+		if (set == null) {
+			set = new HashSet<V>();
+			map.put(key, set);
+		}
+		set.add(obj);
+	}
+	
+	public static <K, V> void addToListMap(Map<K, List<V>> map, K key, V obj) {
+		List<V> list = map.get(key);
+		if (list == null) {
+			list = new ArrayList<V>();
+			map.put(key, list);
+		}
+		list.add(obj);
+	}
+	
+	/**
+	 * Get the current user's date format Will look similar to "mm-dd-yyyy". Depends on user's
+	 * locale.
+	 * 
+	 * @return a simple date format
+	 */
+	public static SimpleDateFormat getDateFormat() {
+		String localeKey = Context.getLocale().toString().toLowerCase();
+		
+		// get the actual pattern from the constants
+		String pattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(localeKey);
+		
+		// default to the "first" locale pattern
+		if (pattern == null)
+			pattern = (String) OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().values().toArray()[0];
+		
+		return new SimpleDateFormat(pattern, Context.getLocale());
+	}
+	
+	public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history) {
+		return toPatientFilter(search, history, null);
+	}
+	
+	/**
+	 * Takes a String (e.g. a user-entered one) and parses it into an object of the specified class
+	 * 
+	 * @param string
+	 * @param clazz
+	 * @return
+	 */
+	public static Object parse(String string, Class clazz) {
+		try {
+			// If there's a valueOf(String) method, just use that (will cover at least String, Integer, Double, Boolean) 
+			Method valueOfMethod = null;
+			try {
+				valueOfMethod = clazz.getMethod("valueOf", String.class);
+			}
+			catch (NoSuchMethodException ex) {}
+			if (valueOfMethod != null) {
+				return valueOfMethod.invoke(null, string);
+			} else if (clazz.isEnum()) {
+				// Special-case for enum types
+				List<Enum> constants = Arrays.asList((Enum[]) clazz.getEnumConstants());
 				for (Enum e : constants)
 					if (e.toString().equals(string))
 						return e;
 				throw new IllegalArgumentException(string + " is not a legal value of enum class " + clazz);
-    		} else if (String.class.equals(clazz)) {
-        		return string;
-    		} else if (Location.class.equals(clazz)) {
-    			try {
-    				Integer.parseInt(string);
-    				LocationEditor ed = new LocationEditor();
-            		ed.setAsText(string);
-            		return ed.getValue();
-    			} catch (NumberFormatException ex) {
-    				return Context.getLocationService().getLocation(string);
-    			}
-        	} else if (Concept.class.equals(clazz)) {
-        		ConceptEditor ed = new ConceptEditor();
-        		ed.setAsText(string);
-        		return ed.getValue();
-        	} else if (Program.class.equals(clazz)) {
-        		ProgramEditor ed = new ProgramEditor();
-        		ed.setAsText(string);
-        		return ed.getValue();
-        	} else if (ProgramWorkflowState.class.equals(clazz)) {
-        		ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
-        		ed.setAsText(string);
-        		return ed.getValue();
+			} else if (String.class.equals(clazz)) {
+				return string;
+			} else if (Location.class.equals(clazz)) {
+				try {
+					Integer.parseInt(string);
+					LocationEditor ed = new LocationEditor();
+					ed.setAsText(string);
+					return ed.getValue();
+				}
+				catch (NumberFormatException ex) {
+					return Context.getLocationService().getLocation(string);
+				}
+			} else if (Concept.class.equals(clazz)) {
+				ConceptEditor ed = new ConceptEditor();
+				ed.setAsText(string);
+				return ed.getValue();
+			} else if (Program.class.equals(clazz)) {
+				ProgramEditor ed = new ProgramEditor();
+				ed.setAsText(string);
+				return ed.getValue();
+			} else if (ProgramWorkflowState.class.equals(clazz)) {
+				ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
+				ed.setAsText(string);
+				return ed.getValue();
 			} else if (EncounterType.class.equals(clazz)) {
 				EncounterTypeEditor ed = new EncounterTypeEditor();
 				ed.setAsText(string);
@@ -1171,123 +1188,130 @@ public class OpenmrsUtil {
 				CohortEditor ed = new CohortEditor();
 				ed.setAsText(string);
 				return ed.getValue();
-        	} else if (Date.class.equals(clazz)) {
-        		// TODO: this uses the date format from the current session, which could cause problems if the user changes it after searching. 
-        		DateFormat df = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+			} else if (Date.class.equals(clazz)) {
+				// TODO: this uses the date format from the current session, which could cause problems if the user changes it after searching. 
+				DateFormat df = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(
+				    Context.getLocale().toString().toLowerCase()), Context.getLocale());
 				CustomDateEditor ed = new CustomDateEditor(df, true, 10);
 				ed.setAsText(string);
 				return ed.getValue();
-        	} else if (Object.class.equals(clazz)) {
-        		// TODO: Decide whether this is a hack. Currently setting Object arguments with a String
-        		return string;
-        	} else {
-        		throw new IllegalArgumentException("Don't know how to handle class: " + clazz);
-        	}
-    	} catch (Exception ex) {
-    		log.error("error converting \"" + string + "\" to " + clazz, ex);
-    		throw new IllegalArgumentException(ex);
-    	}
-    }
-
-    /**
-     * Uses reflection to translate a PatientSearch into a PatientFilter  
-     */
-    @SuppressWarnings("unchecked")
-    public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history, EvaluationContext evalContext) {
-    	if (search.isSavedSearchReference()) {
-    		PatientSearch ps = ((PatientSearchReportObject) Context.getReportObjectService().getReportObject(search.getSavedSearchId())).getPatientSearch();
-    		return toPatientFilter(ps, history, evalContext);
-    	} else if (search.isSavedFilterReference()) {
-    		return Context.getReportObjectService().getPatientFilterById(search.getSavedFilterId());
-    	} else if (search.isSavedCohortReference()) {
-    		Cohort c = Context.getCohortService().getCohort(search.getSavedCohortId());
-    		// to prevent lazy loading exceptions, cache the member ids here
-    		if (c != null)
-    			c.getMemberIds().size();
-    		return new CohortFilter(c);
-    	} else if (search.isComposition()) {
-    		if (history == null && search.requiresHistory())
-    			throw new IllegalArgumentException("You can't evaluate this search without a history");
-    		else
-    			return search.cloneCompositionAsFilter(history, evalContext);
-    	} else {
-	    	Class clz = search.getFilterClass(); 
-	    	if (clz == null)
-	    		throw new IllegalArgumentException("search must be saved, composition, or must have a class specified");
-	    	log.debug("About to instantiate " + clz);
-	    	PatientFilter pf = null;
-	    	try {
-		        pf = (PatientFilter) clz.newInstance();
-	        } catch (Exception ex) {
-		        log.error("Couldn't instantiate a " + search.getFilterClass(), ex);
-		        return null;
-	        }
-	        Class[] stringSingleton = { String.class };
-	        if (search.getArguments() != null) {
-	        	for (SearchArgument sa : search.getArguments()) {
-		        	if (log.isDebugEnabled())
-		        		log.debug("Looking at (" + sa.getPropertyClass() + ") " + sa.getName() + " -> " + sa.getValue());
-		        	PropertyDescriptor pd = null;
-		        	try {
-			        	pd = new PropertyDescriptor(sa.getName(), clz);
-		        	} catch (IntrospectionException ex) {
-		        		log.error("Error while examining property " + sa.getName(), ex);
-		        		continue;
-		        	}
-		        	Class<?> realPropertyType = pd.getPropertyType();
-		
-		        	// instantiate the value of the search argument
-		        	String valueAsString = sa.getValue();
-		        	String testForExpression = search.getArgumentValue(sa.getName());
-		        	if (evalContext != null && EvaluationContext.isExpression(testForExpression)) {
-		        		log.debug("found expression: " + testForExpression);
-		        		Object evaluated = evalContext.evaluateExpression(testForExpression);
-		        		if (evaluated != null) {
-		        			if (evaluated instanceof Date)
-		        				valueAsString = Context.getDateFormat().format((Date) evaluated); 
-		        			else
-		        				valueAsString = evaluated.toString();
-		        		}
-		        		log.debug("evaluated to: " + valueAsString);
-		        	}
-		        	Object value = null;
-		        	Class<?> valueClass = sa.getPropertyClass();
-		        	try {
-		        		// If there's a valueOf(String) method, just use that (will cover at least String, Integer, Double, Boolean) 
-		        		Method valueOfMethod = null;
-		        		try {
-		        			valueOfMethod = valueClass.getMethod("valueOf", stringSingleton);
-		        		} catch (NoSuchMethodException ex) { }
-		        		if (valueOfMethod != null) {
-		        			Object[] holder = { valueAsString };
-		        			value = valueOfMethod.invoke(pf, holder);
-		        		} else if (realPropertyType.isEnum()) { 
-		            		// Special-case for enum types
-		            		List<Enum> constants = Arrays.asList((Enum[]) realPropertyType.getEnumConstants());
-		    				for (Enum e : constants) {
-		    					if (e.toString().equals(valueAsString)) {
-		    						value = e;
-		    						break;
-		    					}
-		    				}
-		        		} else if (String.class.equals(valueClass)) {
-			        		value = valueAsString;
-		        		} else if (Location.class.equals(valueClass)) {
-			        		LocationEditor ed = new LocationEditor();
-			        		ed.setAsText(valueAsString);
-			        		value = ed.getValue();
-			        	} else if (Concept.class.equals(valueClass)) {
-			        		ConceptEditor ed = new ConceptEditor();
-			        		ed.setAsText(valueAsString);
-			        		value = ed.getValue();
-			        	} else if (Program.class.equals(valueClass)) {
-			        		ProgramEditor ed = new ProgramEditor();
-			        		ed.setAsText(valueAsString);
-			        		value = ed.getValue();
-			        	} else if (ProgramWorkflowState.class.equals(valueClass)) {
-			        		ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
-			        		ed.setAsText(valueAsString);
-			        		value = ed.getValue();
+			} else if (Object.class.equals(clazz)) {
+				// TODO: Decide whether this is a hack. Currently setting Object arguments with a String
+				return string;
+			} else {
+				throw new IllegalArgumentException("Don't know how to handle class: " + clazz);
+			}
+		}
+		catch (Exception ex) {
+			log.error("error converting \"" + string + "\" to " + clazz, ex);
+			throw new IllegalArgumentException(ex);
+		}
+	}
+	
+	/**
+	 * Uses reflection to translate a PatientSearch into a PatientFilter
+	 */
+	@SuppressWarnings("unchecked")
+	public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history,
+	                                            EvaluationContext evalContext) {
+		if (search.isSavedSearchReference()) {
+			PatientSearch ps = ((PatientSearchReportObject) Context.getReportObjectService().getReportObject(
+			    search.getSavedSearchId())).getPatientSearch();
+			return toPatientFilter(ps, history, evalContext);
+		} else if (search.isSavedFilterReference()) {
+			return Context.getReportObjectService().getPatientFilterById(search.getSavedFilterId());
+		} else if (search.isSavedCohortReference()) {
+			Cohort c = Context.getCohortService().getCohort(search.getSavedCohortId());
+			// to prevent lazy loading exceptions, cache the member ids here
+			if (c != null)
+				c.getMemberIds().size();
+			return new CohortFilter(c);
+		} else if (search.isComposition()) {
+			if (history == null && search.requiresHistory())
+				throw new IllegalArgumentException("You can't evaluate this search without a history");
+			else
+				return search.cloneCompositionAsFilter(history, evalContext);
+		} else {
+			Class clz = search.getFilterClass();
+			if (clz == null)
+				throw new IllegalArgumentException("search must be saved, composition, or must have a class specified");
+			log.debug("About to instantiate " + clz);
+			PatientFilter pf = null;
+			try {
+				pf = (PatientFilter) clz.newInstance();
+			}
+			catch (Exception ex) {
+				log.error("Couldn't instantiate a " + search.getFilterClass(), ex);
+				return null;
+			}
+			Class[] stringSingleton = { String.class };
+			if (search.getArguments() != null) {
+				for (SearchArgument sa : search.getArguments()) {
+					if (log.isDebugEnabled())
+						log.debug("Looking at (" + sa.getPropertyClass() + ") " + sa.getName() + " -> " + sa.getValue());
+					PropertyDescriptor pd = null;
+					try {
+						pd = new PropertyDescriptor(sa.getName(), clz);
+					}
+					catch (IntrospectionException ex) {
+						log.error("Error while examining property " + sa.getName(), ex);
+						continue;
+					}
+					Class<?> realPropertyType = pd.getPropertyType();
+					
+					// instantiate the value of the search argument
+					String valueAsString = sa.getValue();
+					String testForExpression = search.getArgumentValue(sa.getName());
+					if (evalContext != null && EvaluationContext.isExpression(testForExpression)) {
+						log.debug("found expression: " + testForExpression);
+						Object evaluated = evalContext.evaluateExpression(testForExpression);
+						if (evaluated != null) {
+							if (evaluated instanceof Date)
+								valueAsString = Context.getDateFormat().format((Date) evaluated);
+							else
+								valueAsString = evaluated.toString();
+						}
+						log.debug("evaluated to: " + valueAsString);
+					}
+					Object value = null;
+					Class<?> valueClass = sa.getPropertyClass();
+					try {
+						// If there's a valueOf(String) method, just use that (will cover at least String, Integer, Double, Boolean) 
+						Method valueOfMethod = null;
+						try {
+							valueOfMethod = valueClass.getMethod("valueOf", stringSingleton);
+						}
+						catch (NoSuchMethodException ex) {}
+						if (valueOfMethod != null) {
+							Object[] holder = { valueAsString };
+							value = valueOfMethod.invoke(pf, holder);
+						} else if (realPropertyType.isEnum()) {
+							// Special-case for enum types
+							List<Enum> constants = Arrays.asList((Enum[]) realPropertyType.getEnumConstants());
+							for (Enum e : constants) {
+								if (e.toString().equals(valueAsString)) {
+									value = e;
+									break;
+								}
+							}
+						} else if (String.class.equals(valueClass)) {
+							value = valueAsString;
+						} else if (Location.class.equals(valueClass)) {
+							LocationEditor ed = new LocationEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+						} else if (Concept.class.equals(valueClass)) {
+							ConceptEditor ed = new ConceptEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+						} else if (Program.class.equals(valueClass)) {
+							ProgramEditor ed = new ProgramEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
+						} else if (ProgramWorkflowState.class.equals(valueClass)) {
+							ProgramWorkflowStateEditor ed = new ProgramWorkflowStateEditor();
+							ed.setAsText(valueAsString);
+							value = ed.getValue();
 						} else if (EncounterType.class.equals(valueClass)) {
 							EncounterTypeEditor ed = new EncounterTypeEditor();
 							ed.setAsText(valueAsString);
@@ -1308,164 +1332,158 @@ public class OpenmrsUtil {
 							CohortEditor ed = new CohortEditor();
 							ed.setAsText(valueAsString);
 							value = ed.getValue();
-			        	} else if (Date.class.equals(valueClass)) {
-			        		// TODO: this uses the date format from the current session, which could cause problems if the user changes it after searching. 
-			        		DateFormat df = Context.getDateFormat(); // new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
+						} else if (Date.class.equals(valueClass)) {
+							// TODO: this uses the date format from the current session, which could cause problems if the user changes it after searching. 
+							DateFormat df = Context.getDateFormat(); // new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale());
 							CustomDateEditor ed = new CustomDateEditor(df, true, 10);
 							ed.setAsText(valueAsString);
 							value = ed.getValue();
-			        	} else if (LogicCriteria.class.equals(valueClass)) {
-			        		value = Context.getLogicService().parseString(valueAsString);
-			        	} else {
-			        		// TODO: Decide whether this is a hack. Currently setting Object arguments with a String
-		        			value = valueAsString;
-			        	}
-		        	} catch (Exception ex) {
-		        		log.error("error converting \"" + valueAsString + "\" to " + valueClass, ex);
-		        		continue;
-		        	}
+						} else if (LogicCriteria.class.equals(valueClass)) {
+							value = Context.getLogicService().parseString(valueAsString);
+						} else {
+							// TODO: Decide whether this is a hack. Currently setting Object arguments with a String
+							value = valueAsString;
+						}
+					}
+					catch (Exception ex) {
+						log.error("error converting \"" + valueAsString + "\" to " + valueClass, ex);
+						continue;
+					}
+					
+					if (value != null) {
+						
+						if (realPropertyType.isAssignableFrom(valueClass)) {
+							log.debug("setting value of " + sa.getName() + " to " + value);
+							try {
+								pd.getWriteMethod().invoke(pf, value);
+							}
+							catch (Exception ex) {
+								log.error(
+								    "Error setting value of " + sa.getName() + " to " + sa.getValue() + " -> " + value, ex);
+								continue;
+							}
+						} else if (Collection.class.isAssignableFrom(realPropertyType)) {
+							log.debug(sa.getName() + " is a Collection property");
+							// if realPropertyType is a collection, add this value to it (possibly after instantiating)
+							try {
+								Collection collection = (Collection) pd.getReadMethod().invoke(pf, (Object[]) null);
+								if (collection == null) {
+									// we need to instantiate this collection. I'm going with the following rules, which should be rethought:
+									//	 SortedSet -> TreeSet
+									//	 Set -> HashSet
+									//   Otherwise -> ArrayList
+									if (SortedSet.class.isAssignableFrom(realPropertyType)) {
+										collection = new TreeSet();
+										log.debug("instantiated a TreeSet");
+										pd.getWriteMethod().invoke(pf, collection);
+									} else if (Set.class.isAssignableFrom(realPropertyType)) {
+										collection = new HashSet();
+										log.debug("instantiated a HashSet");
+										pd.getWriteMethod().invoke(pf, collection);
+									} else {
+										collection = new ArrayList();
+										log.debug("instantiated an ArrayList");
+										pd.getWriteMethod().invoke(pf, collection);
+									}
+								}
+								collection.add(value);
+							}
+							catch (Exception ex) {
+								log.error("Error instantiating collection for property " + sa.getName() + " whose class is "
+								        + realPropertyType, ex);
+								continue;
+							}
+						} else {
+							log.error(pf.getClass() + " . " + sa.getName() + " should be " + realPropertyType
+							        + " but is given as " + valueClass);
+						}
+					}
+				}
+			}
+			log.debug("Returning " + pf);
+			return pf;
+		}
+	}
+	
+	/**
+	 * Loops over the collection to check to see if the given object is in that collection. This
+	 * method <i>only</i> uses the .equals() method for comparison. This should be used in the
+	 * patient/person objects on their collections. Their collections are SortedSets which use the
+	 * compareTo method for equality as well. The compareTo method is currently optimized for
+	 * sorting, not for equality A null <code>obj</code> will return false
+	 * 
+	 * @param objects collection to loop over
+	 * @param obj Object to look for in the <code>objects</code>
+	 * @return true/false whether the given object is found
+	 */
+	public static boolean collectionContains(Collection<?> objects, Object obj) {
+		if (obj == null || objects == null)
+			return false;
 		
-		        	if (value != null) {
-		        	
-		        		if (realPropertyType.isAssignableFrom(valueClass)) {
-		        			log.debug("setting value of " + sa.getName() + " to " + value);
-		        			try {
-		        				pd.getWriteMethod().invoke(pf, value);
-		        			} catch (Exception ex) {
-		        				log.error("Error setting value of " + sa.getName() + " to " + sa.getValue() + " -> " + value, ex);
-		        				continue;
-		        			}
-		        		} else if (Collection.class.isAssignableFrom(realPropertyType)) {
-		        			log.debug(sa.getName() + " is a Collection property");
-		        			// if realPropertyType is a collection, add this value to it (possibly after instantiating)
-		        			try {
-			        			Collection collection = (Collection) pd.getReadMethod().invoke(pf, (Object[]) null);
-			        			if (collection == null) {
-			        				// we need to instantiate this collection. I'm going with the following rules, which should be rethought:
-			        				//	 SortedSet -> TreeSet
-			        				//	 Set -> HashSet
-			        				//   Otherwise -> ArrayList
-			        				if (SortedSet.class.isAssignableFrom(realPropertyType)) {
-			        					collection = new TreeSet();
-			        					log.debug("instantiated a TreeSet");
-			        					pd.getWriteMethod().invoke(pf, collection);
-			        				} else if (Set.class.isAssignableFrom(realPropertyType)) {
-			        					collection = new HashSet();
-			        					log.debug("instantiated a HashSet");
-			        					pd.getWriteMethod().invoke(pf, collection);
-			        				} else {
-			        					collection = new ArrayList();
-			        					log.debug("instantiated an ArrayList");
-			        					pd.getWriteMethod().invoke(pf, collection);
-			        				}
-			        			}
-			        			collection.add(value);
-		        			} catch (Exception ex) {
-		        				log.error("Error instantiating collection for property " + sa.getName() + " whose class is " + realPropertyType, ex);
-		    					continue;
-		        			}
-		        		} else {
-		        			log.error(pf.getClass() + " . " + sa.getName() + " should be " + realPropertyType + " but is given as " + valueClass); 
-		        		}
-		        	}
-		        }
-	        }
-	        log.debug("Returning " + pf);
-	    	return pf;
-        }
-    }
-
+		for (Object o : objects) {
+			if (o.equals(obj))
+				return true;
+		}
+		
+		return false;
+	}
+	
 	/**
-     * Loops over the collection to check to see if the given object is in that
-     * collection.  
-     * 
-     * This method <i>only</i> uses the .equals() method for comparison.  This should
-     * be used in the patient/person objects on their collections.  Their collections
-     * are SortedSets which use the compareTo method for equality as well.  The compareTo
-     * method is currently optimized for sorting, not for equality
-     * 
-     * A null <code>obj</code> will return false
-     * 
-     * @param objects collection to loop over
-     * @param obj Object to look for in the <code>objects</code>
-     * @return true/false whether the given object is found
-     */
-    public static boolean collectionContains(Collection<?> objects, Object obj) {
-    	if (obj == null || objects == null)
-    		return false;
-    	
-    	for (Object o : objects) {
-    		if (o.equals(obj))
-    			return true;
-    	}
-    	
-    	return false;
-    }
-
-    /**
-     * Get a serializer that will do the common type of serialization and deserialization.  
-     * Cycles of objects are taken into account
-     * 
-     * @return Serializer to do the (de)serialization
-     */
-    public static Serializer getSerializer() {
-	   return new Persister(new OpenmrsCycleStrategy());
-    }
-    
+	 * Get a serializer that will do the common type of serialization and deserialization. Cycles of
+	 * objects are taken into account
+	 * 
+	 * @return Serializer to do the (de)serialization
+	 */
+	public static Serializer getSerializer() {
+		return new Persister(new OpenmrsCycleStrategy());
+	}
+	
 	/**
-     * Get a short serializer that will only do the very basic serialization
-     * necessary.  This is controlled by the objects that are being serialized
-     * via the @Replace methods
-     * 
-     * @return Serializer to do the short (de)serialization
-     * 
-     * @see OpenmrsConstants#SHORT_SERIALIZATION
-     */
-    public static Serializer getShortSerializer() {
-	   return new Persister(new OpenmrsCycleStrategy(true));
-    }
-    
-    /**
-     * True/false whether the current serialization is supposed to be a short serialization. 
-     * A shortened serialization
-     * 
-     * This should be called from methods marked with the @Replace notation that take in
-     * a single <code>Map</code> parameter.
-     * 
-     * @param sessionMap current serialization session
-     * @return true/false whether or not to do the shortened serialization
-     */
-    public static boolean isShortSerialization(Map<?, ?> sessionMap) {
-    	return sessionMap.containsKey(OpenmrsConstants.SHORT_SERIALIZATION);
-    }
-    
-    /**
-     * Gets an out File object.  If date is not provided, the current 
-     * timestamp is used.
-     * 
-     * If user is not provided, the user id is not put into the filename.
-     * 
-     * Assumes dir is already created
-     * 
-     * @param dir directory to make the random filename in
-     * @param date optional Date object used for the name
-     * @param user optional User creating this file object 
-     * @return file new file that is able to be written to
-     */
-    public static File getOutFile(File dir, Date date, User user) {
-    	
-    	File outFile;
+	 * Get a short serializer that will only do the very basic serialization necessary. This is
+	 * controlled by the objects that are being serialized via the @Replace methods
+	 * 
+	 * @return Serializer to do the short (de)serialization
+	 * @see OpenmrsConstants#SHORT_SERIALIZATION
+	 */
+	public static Serializer getShortSerializer() {
+		return new Persister(new OpenmrsCycleStrategy(true));
+	}
+	
+	/**
+	 * True/false whether the current serialization is supposed to be a short serialization. A
+	 * shortened serialization This should be called from methods marked with the @Replace notation
+	 * that take in a single <code>Map</code> parameter.
+	 * 
+	 * @param sessionMap current serialization session
+	 * @return true/false whether or not to do the shortened serialization
+	 */
+	public static boolean isShortSerialization(Map<?, ?> sessionMap) {
+		return sessionMap.containsKey(OpenmrsConstants.SHORT_SERIALIZATION);
+	}
+	
+	/**
+	 * Gets an out File object. If date is not provided, the current timestamp is used. If user is
+	 * not provided, the user id is not put into the filename. Assumes dir is already created
+	 * 
+	 * @param dir directory to make the random filename in
+	 * @param date optional Date object used for the name
+	 * @param user optional User creating this file object
+	 * @return file new file that is able to be written to
+	 */
+	public static File getOutFile(File dir, Date date, User user) {
+		
+		File outFile;
 		do {
-	    	// format to print date in filenmae
-	    	DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HHmm-ssSSS");
-	    	
-	    	// use current date if none provided
-	    	if (date == null)
-	    		date = new Date();
-	    	
-	    	StringBuilder filename = new StringBuilder();
-	    	
-	    	// the start of the filename is the time so we can do some sorting
+			// format to print date in filenmae
+			DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd-HHmm-ssSSS");
+			
+			// use current date if none provided
+			if (date == null)
+				date = new Date();
+			
+			StringBuilder filename = new StringBuilder();
+			
+			// the start of the filename is the time so we can do some sorting
 			filename.append(dateFormat.format(date));
 			
 			// insert the user id if they provided it
@@ -1476,7 +1494,7 @@ public class OpenmrsUtil {
 			}
 			
 			// the end of the filename is a randome number between 0 and 10000
-			filename.append((int)(Math.random() * 10000));
+			filename.append((int) (Math.random() * 10000));
 			filename.append(".xml");
 			
 			outFile = new File(dir, filename.toString());
@@ -1487,10 +1505,10 @@ public class OpenmrsUtil {
 		} while (outFile.exists());
 		
 		return outFile;
-    }
-    
+	}
+	
 	/**
-	 * Creates a relatively acceptable unique string of the give size 
+	 * Creates a relatively acceptable unique string of the give size
 	 * 
 	 * @return unique string
 	 */
@@ -1517,72 +1535,78 @@ public class OpenmrsUtil {
 		return generateUid(20);
 	}
 	
-    
-    /**
-     * Post the given map of variables to the given url string
-     * 
-     * @param urlString valid http url to post data to
-     * @param dataToPost Map<String, String> of key value pairs to post to urlString
-     * @return response from urlString after posting
-     */
-    public static String postToUrl(String urlString, Map<String, String> dataToPost) {
-    	OutputStreamWriter wr = null;
-    	BufferedReader rd = null;
-    	String response = "";
-    	StringBuffer data = null;
-        
-	    try {
-	        // Construct data
-	        for (Map.Entry<String, String> entry : dataToPost.entrySet()) {
-	        	
-	        	// skip over invalid post variables
-	        	if (entry.getKey() == null || entry.getValue() == null)
-	        		continue;
-	        	
-	        	// create the string buffer if this is the first variable
-	        	if (data == null)
-	        		data = new StringBuffer();
-	        	else
-	        		data.append("&"); // only append this if its _not_ the first datum
-	        	
-	        	// finally, setup the actual post string
-	        	data.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-	        	data.append("=");
-	        	data.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-	        }
-	        
-	        // Send the data
-	        URL url = new URL(urlString);
-	        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-	        conn.setDoOutput(true);
-	        conn.setDoInput(true);
-	        conn.setRequestMethod("POST");
-	        conn.setRequestProperty("Content-Length", String.valueOf(data.length()));
-	        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-	        
-	        wr = new OutputStreamWriter(conn.getOutputStream());
-	        wr.write(data.toString());
-	        wr.flush();
-	        wr.close();
-	        
-	        // Get the response
-	        rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-	        String line;
-	        while ((line = rd.readLine()) != null) {
-	            response = response + line + "\n";
-	        }
-	        
-	    } catch (Exception e) {
-	    	log.warn("Exception while posting to : " + urlString, e);
-	    	log.warn("Reponse from server was: " + response);
-	    }
-	    finally {
-	    	if (wr != null)
-	    		try { wr.close(); } catch (Exception e) { /* pass */ }
-	    	if (rd != null)
-	    		try { rd.close(); } catch (Exception e) { /* pass */ }
-	    }
-	    
-	    return response;
-    }
+	/**
+	 * Post the given map of variables to the given url string
+	 * 
+	 * @param urlString valid http url to post data to
+	 * @param dataToPost Map<String, String> of key value pairs to post to urlString
+	 * @return response from urlString after posting
+	 */
+	public static String postToUrl(String urlString, Map<String, String> dataToPost) {
+		OutputStreamWriter wr = null;
+		BufferedReader rd = null;
+		String response = "";
+		StringBuffer data = null;
+		
+		try {
+			// Construct data
+			for (Map.Entry<String, String> entry : dataToPost.entrySet()) {
+				
+				// skip over invalid post variables
+				if (entry.getKey() == null || entry.getValue() == null)
+					continue;
+				
+				// create the string buffer if this is the first variable
+				if (data == null)
+					data = new StringBuffer();
+				else
+					data.append("&"); // only append this if its _not_ the first datum
+					
+				// finally, setup the actual post string
+				data.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+				data.append("=");
+				data.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+			}
+			
+			// Send the data
+			URL url = new URL(urlString);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Length", String.valueOf(data.length()));
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			
+			wr = new OutputStreamWriter(conn.getOutputStream());
+			wr.write(data.toString());
+			wr.flush();
+			wr.close();
+			
+			// Get the response
+			rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String line;
+			while ((line = rd.readLine()) != null) {
+				response = response + line + "\n";
+			}
+			
+		}
+		catch (Exception e) {
+			log.warn("Exception while posting to : " + urlString, e);
+			log.warn("Reponse from server was: " + response);
+		}
+		finally {
+			if (wr != null)
+				try {
+					wr.close();
+				}
+				catch (Exception e) { /* pass */}
+			if (rd != null)
+				try {
+					rd.close();
+				}
+				catch (Exception e) { /* pass */}
+		}
+		
+		return response;
+	}
 }

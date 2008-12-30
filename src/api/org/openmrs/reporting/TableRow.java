@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class TableRow extends HashMap<String, Object> {
-
+	
 	private static final long serialVersionUID = 1L;
-
+	
 	public TableRow() {
 		super();
 	}
@@ -32,5 +32,5 @@ public class TableRow extends HashMap<String, Object> {
 	public Set<String> getColumnNames() {
 		return keySet();
 	}
-
+	
 }

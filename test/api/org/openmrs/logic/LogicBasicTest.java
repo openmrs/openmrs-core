@@ -28,22 +28,17 @@ import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ServiceContext;
-import org.openmrs.logic.datasource.LogicDataSource;
-import org.openmrs.logic.impl.LogicServiceImpl;
 import org.openmrs.logic.result.Result;
 import org.openmrs.test.SkipBaseSetup;
-import org.openmrs.test.TestUtil;
 
 /**
  * TODO add more tests
  */
 @SkipBaseSetup
 public class LogicBasicTest extends LogicBaseContextSensitiveTest {
-
+	
 	/**
-	 * Runs the basic stuff since we have SkipBaseSetup on the 
-	 * whole class
+	 * Runs the basic stuff since we have SkipBaseSetup on the whole class
 	 * 
 	 * @throws Exception
 	 */
@@ -55,7 +50,7 @@ public class LogicBasicTest extends LogicBaseContextSensitiveTest {
 		
 		authenticate();
 	}
-
+	
 	/**
 	 * TODO comment on this method
 	 * 
@@ -64,13 +59,11 @@ public class LogicBasicTest extends LogicBaseContextSensitiveTest {
 	@Test
 	public void shouldCheckWhetherRecentResultsExist() throws Exception {
 		executeDataSet("org/openmrs/logic/include/LogicBasicTest.concepts.xml");
-				
+		
 		// Result = NO CD4 COUNT IN LAST 6 MONTHS
 		Patient patient = Context.getPatientService().getPatient(2);
-		Result result = Context.getLogicService()
-		                       .eval(patient,
-		                             new LogicCriteria("CD4 COUNT").within(Duration.months(6))
-		                                                           .exists());
+		Result result = Context.getLogicService().eval(patient,
+		    new LogicCriteria("CD4 COUNT").within(Duration.months(6)).exists());
 		
 		assertFalse(result.exists());
 	}
@@ -85,17 +78,14 @@ public class LogicBasicTest extends LogicBaseContextSensitiveTest {
 		executeDataSet("org/openmrs/logic/include/LogicBasicTest.concepts.xml");
 		// Result = LAST CD4 COUNT < 350
 		Patient patient = Context.getPatientService().getPatient(3);
-		Result result = Context.getLogicService()
-		                       .eval(patient,
-		                             new LogicCriteria("CD4 COUNT").last()
-		                                                           .lt(350));
+		Result result = Context.getLogicService().eval(patient, new LogicCriteria("CD4 COUNT").last().lt(350));
 		assertTrue(result.exists());
 		assertEquals(125.0, result.toNumber(), 0);
 	}
 	
 	/**
-	 * This test looks for "LAST CD4 COUNT < 350".  The catch is that
-	 * the last cd4 count for patient #2 is voided
+	 * This test looks for "LAST CD4 COUNT < 350". The catch is that the last cd4 count for patient
+	 * #2 is voided
 	 * 
 	 * @throws Exception
 	 */
@@ -104,18 +94,13 @@ public class LogicBasicTest extends LogicBaseContextSensitiveTest {
 		executeDataSet("org/openmrs/logic/include/LogicBasicTest.concepts.xml");
 		// Result = LAST CD4 COUNT < 350
 		Patient patient = Context.getPatientService().getPatient(2);
-		Result result = Context.getLogicService()
-		                       .eval(patient,
-		                             new LogicCriteria("CD4 COUNT").last()
-		                                                           .lt(350));
+		Result result = Context.getLogicService().eval(patient, new LogicCriteria("CD4 COUNT").last().lt(350));
 		assertTrue("A result should exist", result.exists());
 		assertEquals(100.0, result.toNumber().doubleValue(), 0);
 	}
-
+	
 	/**
-	 * TODO fix this test.  This needs to be renamed for a better description
-	 * of what its testing
-	 * 
+	 * TODO fix this test. This needs to be renamed for a better description of what its testing
 	 * TODO result.exists() returns false right now.
 	 * 
 	 * @throws Exception
@@ -128,31 +113,28 @@ public class LogicBasicTest extends LogicBaseContextSensitiveTest {
 		
 		// Result = ACTIVE MEDICATIONS
 		Patient patient = Context.getPatientService().getPatient(2);
-		Result result = Context.getLogicService()
-		                       .eval(patient,
-		                             new LogicCriteria("CURRENT ANTIRETROVIRAL DRUGS USED FOR TREATMENT"));
+		Result result = Context.getLogicService().eval(patient,
+		    new LogicCriteria("CURRENT ANTIRETROVIRAL DRUGS USED FOR TREATMENT"));
 		//Assert.assertTrue(result.exists());
 	}
-
+	
 	/**
 	 * This test is invalid until an OrderDataSource is written
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	@Ignore //until we have an OrderDataSource
+	@Ignore
+	//until we have an OrderDataSource
 	public void shouldFilterUsingComposition() throws Exception {
 		executeDataSet("org/openmrs/logic/include/LogicBasicTest.concepts.xml");
 		// LAST CD4 COUNT < 350 AND NO ACTIVE MEDICATIONS
 		Patient patient = Context.getPatientService().getPatient(2);
-		Result result = Context.getLogicService()
-		                       .eval(patient,
-		                             new LogicCriteria("CD4 COUNT").last()
-		                                                           .lt(350)
-		                                                           .and(new LogicCriteria("%%orders.ACTIVE MEDS").notExists()));
+		Result result = Context.getLogicService().eval(patient,
+		    new LogicCriteria("CD4 COUNT").last().lt(350).and(new LogicCriteria("%%orders.ACTIVE MEDS").notExists()));
 		Assert.assertTrue(result.exists());
 	}
-
+	
 	/**
 	 * TODO comment on this method
 	 * 
@@ -162,12 +144,10 @@ public class LogicBasicTest extends LogicBaseContextSensitiveTest {
 	@Test
 	public void shouldSimpleLogic() throws Exception {
 		executeDataSet("org/openmrs/logic/include/LogicBasicTest.concepts.xml");
-
+		
 		// Patient p = Context.getPatientService().getPatient(2);
 		Cohort cohort = new Cohort();
-		ArrayList<Integer> ids = new java.util.ArrayList(Context.getPatientSetService()
-		                                                        .getAllPatients()
-		                                                        .getMemberIds());
+		ArrayList<Integer> ids = new java.util.ArrayList(Context.getPatientSetService().getAllPatients().getMemberIds());
 		for (int i = 1; i < ids.size(); i++) {
 			cohort.addMember(ids.get(i));
 		}
@@ -177,8 +157,7 @@ public class LogicBasicTest extends LogicBaseContextSensitiveTest {
 		LogicService ls = Context.getLogicService();
 		Map<Integer, Result> m = ls.eval(cohort, "WEIGHT (KG)");
 		System.out.println(m.toString());
-		System.out.println(String.valueOf(System.currentTimeMillis() - l)
-		        + " milliseconds");
-
+		System.out.println(String.valueOf(System.currentTimeMillis() - l) + " milliseconds");
+		
 	}
 }

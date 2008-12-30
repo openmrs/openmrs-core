@@ -14,27 +14,31 @@
 package org.openmrs.report;
 
 import java.io.StringWriter;
+
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Serializer;
 
 /**
- * This represents a very simplified saving technique for ReportSchemas. The
- * "xml" attribute is assumed to be a serialized ReportSchema object.
- * 
+ * This represents a very simplified saving technique for ReportSchemas. The "xml" attribute is
+ * assumed to be a serialized ReportSchema object.
  */
 public class ReportSchemaXml {
-
+	
 	private static final long serialVersionUID = 9330457450L;
-
+	
 	private Integer reportSchemaId;
+	
 	private String name;
+	
 	private String description;
+	
 	private String xml;
 	
 	/**
 	 * Default constructor
 	 */
-	public ReportSchemaXml() { }
+	public ReportSchemaXml() {
+	}
 	
 	/**
 	 * Convenience constructor taking in a primary key report schema id
@@ -46,12 +50,10 @@ public class ReportSchemaXml {
 	}
 	
 	/**
-	 * Convenience constructor to allow a user to create this shlub of a class
-	 * from a full ReportSchema object
+	 * Convenience constructor to allow a user to create this shlub of a class from a full
+	 * ReportSchema object
 	 * 
-	 * @param schema the ReportSchema to serialize and store with this tiny
-	 *        class
-	 * 
+	 * @param schema the ReportSchema to serialize and store with this tiny class
 	 * @throws Exception if serialization fails
 	 */
 	public ReportSchemaXml(ReportSchema schema) throws Exception {
@@ -71,7 +73,7 @@ public class ReportSchemaXml {
 	public void setReportSchemaId(Integer reportSchemaId) {
 		this.reportSchemaId = reportSchemaId;
 	}
-
+	
 	/**
 	 * Returns the ReportSchema Id
 	 * 
@@ -82,33 +84,33 @@ public class ReportSchemaXml {
 	}
 	
 	/**
-     * @return the name
-     */
-    public String getName() {
-    	return name;
-    }
-
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+	
 	/**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-    	this.name = name;
-    }
-
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	/**
-     * @return the description
-     */
-    public String getDescription() {
-    	return description;
-    }
-
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+	
 	/**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-    	this.description = description;
-    }
-
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	/**
 	 * Set the xml content for the ReportSchemaXml
 	 * 
@@ -117,7 +119,7 @@ public class ReportSchemaXml {
 	public void setXml(String xml) {
 		this.xml = xml;
 	}
-
+	
 	/**
 	 * Returns the xml of the ReportSchemaXml
 	 * 
@@ -126,10 +128,10 @@ public class ReportSchemaXml {
 	public String getXml() {
 		return this.xml;
 	}
-
+	
 	/**
-	 * Convenience helper method to set the attributes on this ReportSchemaXML object
-	 * with what is in the report schema object
+	 * Convenience helper method to set the attributes on this ReportSchemaXML object with what is
+	 * in the report schema object
 	 * 
 	 * @param reportSchema ReportSchema from which to pull values
 	 */
@@ -138,23 +140,23 @@ public class ReportSchemaXml {
 		setName(reportSchema.getName());
 		setDescription(reportSchema.getDescription());
 	}
-
+	
 	/**
-     * Convenience helper method that will deserialize the "xml" string to a ReportSchema,
-     * update that report schema with the id/name/desc attributes that are on this ReportSchemaXml
-     * object, and then re serialize that ReportSchema object into the "xml" string
-     *
-     */
-    public void updateXmlFromAttributes() throws Exception {
-    	if (getXml() != null && getReportSchemaId() != null) {
-    		String newXml;
-	    	if (xml.contains("reportSchemaId="))
-	    		newXml = xml.replaceFirst("reportSchemaId=[\"'][^ ]*[\"']", "reportSchemaId=\"" + reportSchemaId + "\"");
-	    	else
-	    		newXml = xml.replaceFirst("<reportSchema([ >])", "<reportSchema reportSchemaId=\"" + reportSchemaId + "\"$1");
-	    	
+	 * Convenience helper method that will deserialize the "xml" string to a ReportSchema, update
+	 * that report schema with the id/name/desc attributes that are on this ReportSchemaXml object,
+	 * and then re serialize that ReportSchema object into the "xml" string
+	 */
+	public void updateXmlFromAttributes() throws Exception {
+		if (getXml() != null && getReportSchemaId() != null) {
+			String newXml;
+			if (xml.contains("reportSchemaId="))
+				newXml = xml.replaceFirst("reportSchemaId=[\"'][^ ]*[\"']", "reportSchemaId=\"" + reportSchemaId + "\"");
+			else
+				newXml = xml
+				        .replaceFirst("<reportSchema([ >])", "<reportSchema reportSchemaId=\"" + reportSchemaId + "\"$1");
+			
 			setXml(newXml);
-    	}
-    }
+		}
+	}
 	
 }

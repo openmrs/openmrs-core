@@ -16,9 +16,9 @@ package org.openmrs.logic.op;
 /**
  *
  */
-public class Distinct implements Operator{
-
-	 public String toString() {
-	        return "DISTINCT";
-	    }
+public class Distinct implements Operator {
+	
+	public String toString() {
+		return "DISTINCT";
+	}
 }

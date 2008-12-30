@@ -22,21 +22,35 @@ import org.apache.commons.io.IOUtils;
 import ca.uhn.hl7v2.HL7Exception;
 
 public class HL7Message {
-
+	
 	String[] segments;
+	
 	HL7Segment[] hl7Segments;
+	
 	int cursor = 0;
+	
 	String fieldSeparator;
+	
 	String componentSeparator;
+	
 	String repetitionSeparator;
+	
 	String escapeCharacter;
+	
 	String subcomponentSeparator;
+	
 	Date dateTime;
+	
 	String messageType;
+	
 	String eventType;
+	
 	String controlId;
+	
 	String processingId;
+	
 	String version;
+	
 	String profileId;
 	
 	public HL7Message(String message) throws HL7Exception {
@@ -62,29 +76,30 @@ public class HL7Message {
 		
 		// Parse the MSH segment before proceeding
 		try {
-			fieldSeparator = msh.substring(3,4);
+			fieldSeparator = msh.substring(3, 4);
 			String[] mshFields = msh.split("\\" + fieldSeparator);
 			
-			String encodingCharacters = safeArrayElement(mshFields, 1);			
+			String encodingCharacters = safeArrayElement(mshFields, 1);
 			componentSeparator = safeSubstring(encodingCharacters, 0, 1);
 			repetitionSeparator = safeSubstring(encodingCharacters, 1, 2);
 			escapeCharacter = safeSubstring(encodingCharacters, 2, 3);
 			subcomponentSeparator = safeSubstring(encodingCharacters, 3, 4);
 			
 			dateTime = HL7Util.parseHL7Timestamp(mshFields[6]);
-			String[] typeComponents = safeArrayElement(mshFields,8).split("\\" + componentSeparator);
+			String[] typeComponents = safeArrayElement(mshFields, 8).split("\\" + componentSeparator);
 			messageType = safeArrayElement(typeComponents, 0);
 			eventType = safeArrayElement(typeComponents, 1);
 			controlId = safeArrayElement(mshFields, 9);
 			processingId = safeArrayElement(mshFields, 10);
 			version = safeArrayElement(mshFields, 11);
 			profileId = safeArrayElement(mshFields, 20);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new HL7Exception("Error parsing MSH segment", e);
 		}
 		
 	}
-
+	
 	/* Return a substring while tolerating invalid index references */
 	private String safeSubstring(String s, int beginIndex, int endIndex) {
 		if (beginIndex < 0 || beginIndex >= s.length() || endIndex <= beginIndex)
@@ -99,23 +114,23 @@ public class HL7Message {
 			return "";
 		return array[index];
 	}
-
+	
 	public String getComponentSeparator() {
 		return componentSeparator;
 	}
-
+	
 	public String getEscapeCharacter() {
 		return escapeCharacter;
 	}
-
+	
 	public String getFieldSeparator() {
 		return fieldSeparator;
 	}
-
+	
 	public String getRepetitionSeparator() {
 		return repetitionSeparator;
 	}
-
+	
 	public String getSubcomponentSeparator() {
 		return subcomponentSeparator;
 	}
@@ -123,7 +138,7 @@ public class HL7Message {
 	public Date getDateTime() {
 		return dateTime;
 	}
-
+	
 	public String getMessageType() {
 		return messageType;
 	}
@@ -131,11 +146,11 @@ public class HL7Message {
 	public String getEventType() {
 		return eventType;
 	}
-
+	
 	public String getControlId() {
 		return controlId;
 	}
-
+	
 	public String getProcessingId() {
 		return processingId;
 	}
@@ -155,7 +170,7 @@ public class HL7Message {
 	}
 	
 	public HL7Segment getNextSegment() {
-		if (cursor < segments.length-1) {
+		if (cursor < segments.length - 1) {
 			cursor++;
 			return getSegment(cursor);
 		}
@@ -171,8 +186,8 @@ public class HL7Message {
 	}
 	
 	public boolean hasNextSegment(String segmentId) {
-		if (cursor < segments.length-1) {
-			return getSegment(cursor+1).getId().equals(segmentId);
+		if (cursor < segments.length - 1) {
+			return getSegment(cursor + 1).getId().equals(segmentId);
 		}
 		return false;
 	}
@@ -180,5 +195,5 @@ public class HL7Message {
 	public void resetCursor() {
 		cursor = 0;
 	}
-
+	
 }

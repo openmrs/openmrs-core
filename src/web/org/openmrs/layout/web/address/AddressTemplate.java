@@ -25,7 +25,7 @@ public class AddressTemplate extends LayoutTemplate {
 	public String getNonLayoutToken() {
 		return "IS_NOT_ADDR_TOKEN";
 	}
-
+	
 	@Override
 	public LayoutSupport<?> getLayoutSupportInstance() {
 		return AddressSupport.getInstance();

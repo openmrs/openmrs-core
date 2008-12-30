@@ -27,7 +27,7 @@ import org.junit.Test;
  *
  */
 public class PresentationMessageMapTest {
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -36,7 +36,7 @@ public class PresentationMessageMapTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -45,10 +45,10 @@ public class PresentationMessageMapTest {
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 	}
-
+	
 	/**
-	 * PresentationMessageMap should not add PresentationMessages which
-	 * are not from the same locale set for the PresentationMessageMap.
+	 * PresentationMessageMap should not add PresentationMessages which are not from the same locale
+	 * set for the PresentationMessageMap.
 	 */
 	@Test
 	public void shouldIgnoreNonMatchingLocaleMessages() {
@@ -58,10 +58,10 @@ public class PresentationMessageMapTest {
 		
 		assertEquals(1, testPmm.size());
 	}
-
+	
 	/**
-	 * PresentationMessageMap should only add PresentationMessages which
-	 * are from the same locale, even when adding from a batch.
+	 * PresentationMessageMap should only add PresentationMessages which are from the same locale,
+	 * even when adding from a batch.
 	 */
 	@Test
 	public void shouldFilterOutNonMatchingLocaleMessagesFromBatchAdd() {
@@ -69,11 +69,10 @@ public class PresentationMessageMapTest {
 		mockMessageMap.put("right_locale", MockPresentationMessage.createMockPresentationMessage("en"));
 		mockMessageMap.put("wrong_locale", MockPresentationMessage.createMockPresentationMessage(Locale.GERMAN));
 		
-
 		PresentationMessageMap testPmm = new PresentationMessageMap(Locale.ENGLISH);
 		testPmm.putAll(mockMessageMap);
-
+		
 		assertEquals(1, testPmm.size());
 	}
-
+	
 }

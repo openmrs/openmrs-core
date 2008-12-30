@@ -38,42 +38,42 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class ConceptDrugFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-        //NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
-        binder.registerCustomEditor(java.lang.Double.class,
-                new CustomNumberEditor(java.lang.Double.class, true));
-        
+		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(java.lang.Double.class, new CustomNumberEditor(java.lang.Double.class, true));
+		
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
-			Drug drug = (Drug)obj;
+			Drug drug = (Drug) obj;
 			drug.setConcept(Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
 			Context.getConceptService().saveDrug(drug);
 			view = getSuccessView();
@@ -82,38 +82,38 @@ public class ConceptDrugFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		Drug drug = null;
 		
 		if (Context.isAuthenticated()) {
 			ConceptService cs = Context.getConceptService();
 			String id = request.getParameter("drugId");
-	    	if (id != null) {
-	    		drug = cs.getDrug(Integer.valueOf(id));
-	    	}
+			if (id != null) {
+				drug = cs.getDrug(Integer.valueOf(id));
+			}
 		}
 		
 		if (drug == null)
 			drug = new Drug();
-    	
-        return drug;
-    }
-    
-    /**
-     * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
-     */
-    protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
 		
-		Drug drug = (Drug)obj;
+		return drug;
+	}
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
+		
+		Drug drug = (Drug) obj;
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";
@@ -123,7 +123,7 @@ public class ConceptDrugFormController extends SimpleFormController {
 				map.put("conceptName", drug.getConcept().getName(request.getLocale()));
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
-
+		
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
 		String editReason = request.getParameter("editReason");
@@ -134,5 +134,5 @@ public class ConceptDrugFormController extends SimpleFormController {
 		
 		return map;
 	}
-
+	
 }

@@ -13,7 +13,6 @@
  */
 package org.openmrs.arden;
 
-import java.io.IOException;
 import java.io.Writer;
 
 /**
@@ -22,31 +21,36 @@ import java.io.Writer;
 public class LogicAssignment {
 	
 	private String variableName = null;
+	
 	private String variableValue = null;
 	
-	public LogicAssignment(String variableName,String variableValue){
+	public LogicAssignment(String variableName, String variableValue) {
 		this.variableName = variableName;
 		this.variableValue = variableValue;
 	}
 	
 	public String getVariableName() {
-    	return variableName;
-    }
+		return variableName;
+	}
+	
 	public void setVariableName(String variableName) {
-    	this.variableName = variableName;
-    }
+		this.variableName = variableName;
+	}
+	
 	public String getVariableValue() {
-    	return variableValue;
-    }
+		return variableValue;
+	}
+	
 	public void setVariableValue(String variableValue) {
-    	this.variableValue = variableValue;
-    }
-	public void write(Writer w){
+		this.variableValue = variableValue;
+	}
+	
+	public void write(Writer w) {
 		String name = getVariableName();
 		String value = getVariableValue();
 		try {
-	        w.append("\t\t\tuserVarMap.put(\"" + name + "\", \"" + value+ "\");\n");
-        } catch (Exception e) {
-        }
+			w.append("\t\t\tuserVarMap.put(\"" + name + "\", \"" + value + "\");\n");
+		}
+		catch (Exception e) {}
 	}
 }

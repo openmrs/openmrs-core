@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 
 public class AuthTag extends TagSupport {
-
+	
 	public static final long serialVersionUID = 11233L;
 	
 	private final Log log = LogFactory.getLog(getClass());
