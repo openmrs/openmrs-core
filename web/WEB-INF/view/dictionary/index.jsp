@@ -42,7 +42,16 @@
 </div>
 
 <br/>
-<a href="concept.form"><spring:message code="Concept.add"/></a> (Use sparingly)
+
+<openmrs:globalProperty key="concepts.locked" var="conceptsLocked"/>
+<c:choose>
+	<c:when test="${conceptsLocked != 'true'}"> 
+		<a href="concept.form"><spring:message code="Concept.add"/></a> (Use sparingly)
+	</c:when>
+	<c:otherwise>
+		(<spring:message code="Concept.concepts.locked" />)
+	</c:otherwise>
+</c:choose>		
 
 <openmrs:extensionPoint pointId="org.openmrs.dictionary.index" type="html" />
 

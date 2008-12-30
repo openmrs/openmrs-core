@@ -96,11 +96,14 @@
 		<a href="conceptStats.form?conceptId=${concept.conceptId}" id="conceptStats" accesskey="s" valign="middle"><spring:message code="Concept.stats"/></a>
 			|
 		<a href="#nextConcept" id="nextConcept" valign="middle" accesskey="." onclick="return jumpToConcept('next')"><spring:message code="general.next"/></a>
-			|
 	</form>
 </c:if>
 
-<a href="concept.form" id="newConcept" valign="middle"><spring:message code="general.new"/></a>
+<openmrs:globalProperty key="concepts.locked" var="conceptsLocked"/>
+
+<c:if test="${conceptsLocked != 'true'}">
+	| <a href="concept.form" id="newConcept" valign="middle"><spring:message code="general.new"/></a>
+</c:if>
 
 <openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
 
@@ -577,7 +580,7 @@
 </table>
 
 <div id="saveDeleteButtons" style="margin-top: 15px">
-	
+<c:if test="${conceptsLocked != 'true'}">	
 	<input type="submit" name="action" value="<spring:message code="Concept.save"/>" onMouseUp="removeHiddenRows()"/>
 	
 	<c:if test="${concept.conceptId != null}">
@@ -586,6 +589,7 @@
 			<input type="submit" name="action" value="<spring:message code="Concept.delete"/>" onclick="return confirm('Are you sure you want to delete this ENTIRE CONCEPT?')"/>
 		</openmrs:hasPrivilege>
 	</c:if>
+</c:if>
 </div>
 
 </form>

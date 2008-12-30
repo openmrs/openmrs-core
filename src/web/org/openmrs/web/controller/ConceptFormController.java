@@ -48,6 +48,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.propertyeditor.ConceptClassEditor;
@@ -152,7 +153,7 @@ public class ConceptFormController extends SimpleFormController {
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 
-			if (!action.equals(msa.getMessage("Concept.delete"))) {
+			if (!action.equals(msa.getMessage("Concept.delete", "Delete Concept"))) {
 				
 				Collection<Locale> conceptLocales = cs.getLocalesOfConceptNames();
                 String newLocaleSpec = request.getParameter("newLocaleAdded");
@@ -420,20 +421,23 @@ public class ConceptFormController extends SimpleFormController {
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 
-			if (action.equals(msa.getMessage("Concept.delete"))) {
+			if (action.equals(msa.getMessage("Concept.delete", "Delete Concept"))) {
 				try {
 					cs.purgeConcept(concept);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.deleted");
 					return new ModelAndView(new RedirectView("index.htm"));
+				} catch(ConceptsLockedException cle) {
+					log.error("Tried to delete concept while concepts were locked", cle);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.concepts.locked");
 				} catch (DataIntegrityViolationException e) {
 					log.error("Unable to delete a concept because it is in use: " + concept, e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.delete");
-					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 				} catch (Exception e) {
 					log.error("Unable to delete concept because an error occurred: " + concept, e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.delete");
-					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 				}
+				// return to the edit screen because an error was thrown
+				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 			} else {
 				String isSet = ServletRequestUtils.getStringParameter(request,
 				        "conceptSet", "");
@@ -465,8 +469,15 @@ public class ConceptFormController extends SimpleFormController {
 					}
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 					        "Concept.saved");
-				}
-				catch (APIException e) {
+				} catch(ConceptsLockedException cle) {
+					log.error("Tried to save concept while concepts were locked", cle);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.concepts.locked");
+					if (isNew) {
+						errors.reject("concept", "Concept.concepts.locked");
+						return new ModelAndView(new RedirectView(
+						        getSuccessView()));
+					}
+				} catch (APIException e) {
 					log.error("Error while trying to save concept", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
 					        "Concept.cannot.save");
