@@ -217,6 +217,12 @@ public class LoginServlet extends HttpServlet {
 				log.debug("redirect is outside of openmrs, redirecting to main page");
 				redirect = request.getContextPath();
 			}
+			
+			// don't redirect back to the initialsetup page
+			if (redirect.endsWith(WebConstants.SETUP_PAGE_URL)) {
+				log.debug("redirect is back to the setup page because this is their first ever login");
+				redirect = request.getContextPath();
+			}
 		}
 		
 		return redirect;

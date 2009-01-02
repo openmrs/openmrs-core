@@ -160,6 +160,7 @@
 			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
 			<fileset dir="${metadata.dir}/api/spring" includes="applicationContext-service.xml" />
 			<fileset dir="${metadata.dir}/api/log4j" includes="log4j.*" />
+			<fileset dir="${metadata.dir}/model" includes="liquibase-update-to-latest.xml" />
 		</copy>
 		<javac destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.compile.classpath">
 			<compilerarg line="${compile.arguments}" />
@@ -198,6 +199,7 @@
 				<exclude name="**/include/" /> <!-- to skip all xml and omod files -->
 				<exclude name="**/test/" />
 				<exclude name="log4j*" />
+				<exclude name="liquibase-data/" /> <!-- to skip the liquibase starter xml files -->
 			</fileset>
 		</jar>
 	</target>
@@ -267,6 +269,13 @@
 				<path location="${dist.dir}/${openmrs.api.name}" />
 			</classpath>
 		</javac>
+		
+		<!-- copy the extra files to the build dir in case an ant-clean was just done -->
+		<copy todir="${build.dir}">
+			<!-- vm files for the initial setup wizard -->
+			<fileset dir="${src.dir}/web" includes="**/*.vm"/>
+		</copy>
+		
 	</target>
 
 	<!-- 
@@ -296,7 +305,7 @@
 				<include name="**/*_theme*.properties"/>
 				<include name="**/images/**/*" />
 				<!-- This fileset doesn't exclude /web/test so that 
-					 developers can easily test files -->
+					 developers can easily test /web/test files by running deploy-web -->
 			</fileset>
 		</copy>
 	</target>
@@ -309,6 +318,10 @@
 			<fileset file="web/WEB-INF/web.xml" />
 			<filterset refid="web.xml.variables.to.replace" />
 		</copy>
+		
+		<!-- Extract the liquibase files so they can be included in the war file -->
+		<unzip src="${metadata.dir}/model/liquibase-data.zip" 
+			   dest="${build.dir}/liquibase-data" />
 		
 		<property name="libs-zipped-temp" value="${dist.dir}/web/temp-war-libs-zipped.zip" />
 		<zip destfile="${libs-zipped-temp}">
@@ -345,6 +358,7 @@
 			<zipfileset dir="${velocity.dir}" includes="*.jar" />
 			<zipfileset dir="${xerces.dir}" includes="*.jar" excludes="*Samples*.jar" />
 			<zipfileset dir="${xstream.dir}" includes="*.jar" />
+			<zipfileset dir="${liquibase.dir}" includes="*.jar" />
 		</zip>
 		
 	</target>
@@ -353,7 +367,11 @@
 		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml, **/test/" webxml="${dist.dir}/web/web.xml" duplicate="add">
 			<classes dir="${build.dir}">
 				<include name="**/web/**/*.class" />
+				<include name="**/web/**/*.vm" /> <!-- velocity macro files for initial setup -->
 				<include name="log4j.xml" />
+			</classes>
+			<classes dir="${build.dir}/liquibase-data">
+				<include name="*" /> <!-- for the initial setup files: liquibase-schema-only.xml, liquibase-core-data.xml, liquibase-demo-data.xml-->
 			</classes>
 			<classes dir="web/WEB-INF">
 				<include name="*_theme*.properties"/>
@@ -381,7 +399,11 @@
 		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml, **/test/" webxml="${dist.dir}/web/web.xml" duplicate="add">
 			<classes dir="${build.dir}" >
 				<include name="**/web/**/*.class" />
+				<include name="**/web/**/*.vm" /> <!-- velocity macro files for initial setup -->
 				<include name="log4j.xml" />
+			</classes>
+			<classes dir="${build.dir}/liquibase-data">
+				<include name="*" /> <!-- for the initial setup files: liquibase-schema-only.xml, liquibase-core-data.xml, liquibase-demo-data.xml-->
 			</classes>
 			<classes dir="web/WEB-INF">
 				<include name="*_theme*.properties"/>
@@ -395,27 +417,6 @@
 			<zipfileset src="${libs-zipped-temp}" />
 		</zip>
 	</target>
-	
-	<!-- 
-	<target name="compile-web-tests" description="compile webapp tests">
-		<mkdir dir="${build.dir}" />
-		<javac srcdir="${test.dir}/web" destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="web.test.classpath">
-			<compilerarg line="${compile.arguments}" />
-		</javac>
-	</target>
-	
-	<target name="package-web-tests" depends="compile-web-tests" description="create webapp tests jar">
-		<mkdir dir="${dist.dir}" />
-		<jar destfile="${dist.dir}/${webapp.name}-web-tests-${webapp.version}.jar">
-			<manifest>
-				<attribute name="Class-Path" value="${webapp.name}-web-tests-${webapp.version}.jar" />
-			</manifest>
-			<fileset dir="${build.dir}" >
-				<include name="**/web/**/*Test.class" />
-			</fileset>
-		</jar>
-	</target>
-	-->
 
 	<target name="dist" depends="package-web" description="create distribution packages" />
 
@@ -602,6 +603,88 @@
 				</fileset>
 			</batchtest>
 		</junit>
+	</target>
+	
+	<target name="liquibase-init" description="setup the path and properties for liquibase targets">
+		<mkdir dir="build" />
+		<path id="classpath">
+            <fileset dir="${liquibase.dir}">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${database.dir}">
+                <include name="*.jar"/>
+            </fileset>
+        </path>
+
+        <property name="db.changelog.file" value="root.changelog.xml"/>
+        <property name="database.url" value="jdbc:mysql://localhost/openmrs125"/>
+        <property name="database.username" value="root"/>
+        <property name="database.password" value="password"/>
+        <property name="database.driver" value="com.mysql.jdbc.Driver"/>
+        <property name="prompt.user.if.not.local.database" value="true"/>
+
+        <taskdef resource="liquibasetasks.properties">
+        	<classpath refid="classpath"/>
+        </taskdef>
+    </target>
+	
+	<target name="liquibase-generate-change-log" depends="liquibase-init" description="Create changelog xml file from database for table schema only">
+		<generateChangeLog
+                driver="${database.driver}"
+                url="${database.url}"
+                username="${database.username}"
+                password="${database.password}"
+                promptOnNonLocalDatabase="${prompt.user.if.not.local.database}"
+                classpathref="classpath"
+				databaseChangeLogTableName="liquibasechangelog"
+				databaseChangeLogLockTableName="liquibasechangeloglock"
+							
+                outputFile="build/liquibase-tables.xml"
+                >
+        </generateChangeLog>
+    </target>
+	
+	<target name="liquibase-diff-change-log" depends="liquibase-init" description="Create changelog xml file with rows comparing two databases">
+		<diffDatabaseToChangeLog
+                changeLogFile="${db.changelog.file}"
+                driver="${database.driver}"
+                url="${database.url}"
+                username="${database.username}"
+                password="${database.password}"
+                promptOnNonLocalDatabase="${prompt.user.if.not.local.database}"
+                classpathref="classpath"
+				diffTypes="data"
+
+                baseUrl="jdbc:mysql://localhost/openmrs-with-core"
+                baseUsername="${database.username}"
+                basePassword="${database.password}"
+                baseDefaultSchemaName="liquibase"
+
+				databaseChangeLogTableName="liquibasechangelog"
+				databaseChangeLogLockTableName="liquibasechangeloglock"
+							
+				outputFile="build/liquibase-diff.xml"
+                >
+        </diffDatabaseToChangeLog>
+    </target>
+	
+	<target name="liquibase-generate-sql" depends="liquibase-init">
+		<updateDatabase 
+				changeLogFile="${metadata.dir}/model/liquibase-update-to-latest.xml"
+				driver="${database.driver}"
+				url="${database.url}"
+				username="${database.username}"
+				password="${database.password}"
+				promptOnNonLocalDatabase="${prompt.user.if.not.local.database}"
+				dropFirst="false"
+				classpathref="classpath"
+				
+				databaseChangeLogTableName="liquibasechangelog"
+				databaseChangeLogLockTableName="liquibasechangeloglock"
+				
+				outputFile="dist/update-to-latest.sql"
+				>
+		</updateDatabase>
 	</target>
 	
 </project>

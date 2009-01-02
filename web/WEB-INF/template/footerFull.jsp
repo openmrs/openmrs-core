@@ -16,8 +16,6 @@
 					pageContext.setAttribute("qs", qs.substring(0, i));
 					pageContext.setAttribute("locales", org.openmrs.api.context.Context.getAdministrationService().getPresentationLocales());
 					pageContext.setAttribute("openmrsVersion", org.openmrs.util.OpenmrsConstants.OPENMRS_VERSION);
-					pageContext.setAttribute("databaseVersion", org.openmrs.util.OpenmrsConstants.DATABASE_VERSION);
-					pageContext.setAttribute("databaseVersionExpected", org.openmrs.util.OpenmrsConstants.DATABASE_VERSION_EXPECTED);
 					pageContext.setAttribute("locale", org.openmrs.api.context.Context.getLocale());
 				%>
 		
@@ -35,12 +33,6 @@
 			<span id="buildDate">Last Build: <%= org.openmrs.web.WebConstants.BUILD_TIMESTAMP %></span>
 			
 			<span id="codeVersion">Version: ${openmrsVersion}</span>
-	
-			<span id="databaseVersion">Database Version: ${databaseVersion}</span>
-			
-			<c:if test="${databaseVersionExpected != databaseVersion}">
-				<span id="databaseVersionError"><img src="${pageContext.request.contextPath}/images/problem.gif" align="top"> Expected: ${databaseVersionExpected}</span>
-			</c:if>
 		</div>
 	</div>
 

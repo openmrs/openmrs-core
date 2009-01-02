@@ -24,5 +24,4 @@
   <form_field form_field_id="2" form_id="1" field_id="2" field_number="1" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:11:53.0" creator="1" date_created="2006-07-18 11:04:36.0" sort_weight="10.0"/>
   <form_field form_field_id="3" form_id="1" field_id="3" field_number="2" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:12:05.0" creator="1" date_created="2006-07-18 11:06:52.0" sort_weight="20.0"/>
   <form_field form_field_id="5" form_id="1" field_id="5" field_number="3" field_part="" required="false" changed_by="1" date_changed="2006-07-18 11:13:59.0" creator="1" date_created="2006-07-18 11:13:57.0" sort_weight="30.0"/>
-  <global_property property="database_version" property_value="1.4.0.16"/>
 </dataset>

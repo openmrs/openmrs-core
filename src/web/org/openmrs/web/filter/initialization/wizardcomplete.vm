@@ -1,0 +1,25 @@
+#parse($headerTemplate)
+	
+	<form method="post">
+		<input type="hidden" name="page" value="wizardcomplete.vm" /> 
+		
+		All required input has been collected and is ready to be processed.
+		
+		<!-- TODO list off all collected properties here -->
+		
+		<br/><br/>
+		
+		Click the "finish" button to create tables, data, etc.
+		
+		<br/><br/>
+		
+		This could take up to several minutes.  When complete you will be taken
+		to the OpenMRS main screen.   
+		
+		<br/><br/>
+		
+		<input type="submit" value="Finish" />
+	
+	</form>
+	
+#parse($footerTemplate)

@@ -113,8 +113,7 @@ public interface PatientService extends OpenmrsService {
 	public Patient identifierInUse(String identifier, PatientIdentifierType type, Patient ignorePatient);
 	
 	/**
-	 * @deprecated replaced by {@link #getPatients(String, String, List)
-
+	 * @deprecated replaced by {@link #getPatients(String, String, List)}
 	 */
 	@Transactional(readOnly = true)
 	public List<Patient> getPatientsByIdentifier(String identifier, boolean includeVoided) throws APIException;

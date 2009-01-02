@@ -1,0 +1,28 @@
+#parse($headerTemplate)
+	
+	<form method="post" autocomplete="off">
+		<input type="hidden" name="page" value="adminusersetup.vm" /> 
+		
+		Currently the default administrator log in is admin:test.  Please specify a new
+		password for that user 
+     	<table>
+     		<tr>
+     			<td>Username</td>
+     			<td>admin</td>
+     		</tr>
+     		<tr>
+     			<td>Password</td>
+     			<td><input type="password" name="new_admin_password" value=""/ autocomplete="off"></td>
+     		</tr>
+     		<tr>
+     			<td>Retype Password</td>
+     			<td><input type="password" name="new_admin_password_confirm" value="" autocomplete="off"/></td>
+     		</tr>
+     	</table>
+		
+		<br>
+		<input type="submit" value="Save Credentials" />
+	
+	</form>
+	
+#parse($footerTemplate)

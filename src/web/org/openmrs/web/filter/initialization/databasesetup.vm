@@ -1,0 +1,87 @@
+#parse($headerTemplate)
+	
+	#if( $canCreate != true )
+		<br/>
+		<span style="color: red">
+			<b>Error!</b> <br/>
+			A runtime properties file is needed for OpenMRS to start up consistently. <br/>
+			OpenMRS is unable to create this file: ${runtimePropertiesPath}<br/>
+			Because of this error: ${cannotCreateErrorMessage}
+			<br/><br/>
+			You must correct this before continuing.
+		</span>
+		<br/><br/>
+		<a href="retry">Retry</a>
+	#{else}
+	
+		#if( $canWrite != true )
+			<span style="color: red">
+				OpenMRS cannot edit the file: ${runtimePropertiesPath}
+				<br/><br/>
+				You must correct this before continuing.
+			</span>
+			<br/><br/>
+			<a href="retry">Retry</a>
+		#{else}
+	
+			<form method="post" autocomplete="off">
+			<input type="hidden" name="page" value="databasesetup.vm" /> 
+			
+			<span class="question">
+				Please specify how to connect to your currently installed database server: (@DBNAME@ will be replaced with your chosen database name)<br/>
+			</span> 
+			<input type="text" name="database_connection" size="45" value="${databaseConnection}" />
+			
+			<br/><br/>
+			
+			<span class="question">
+				Do you currently have an OpenMRS database installed that you would like to connect to?
+			</span>
+			<table>
+			  <tr>
+			     <td valign="top">Yes</td>
+			     <td>
+			     	<input type="radio" name="current_openmrs_database" value="yes" #if( $hasCurrentOpenmrsDatabase == true )checked="checked"#end />
+			     	<br/><br/>
+			     	
+			     	If yes, what is the name this database?<br/>
+			     	<input type="text" name="openmrs_current_database_name" value="${databaseName}" />
+			     </td>
+			     </td>
+			  </tr>
+			  <tr>
+			     <td valign="top">No</td>
+			     <td>
+			     	<input type="radio" name="current_openmrs_database" value="no" #if( $hasCurrentOpenmrsDatabase == false )checked="checked"#end/>
+			     	
+			     	<br/><br/>
+			     	
+			     	If no, what would you like to name this database? (alphanumeric characters only)<br/>
+			     	<input type="text" name="openmrs_new_database_name" value="${databaseName}" />
+			     	
+			     	<br/><br/>
+		     	
+			     	A user that has "CREATE DATABASE" privileges must be specified here so that 
+			     	this wizard can create the new database.
+			     	<table>
+			     		<tr>
+			     			<td>Username</td>
+			     			<td><input type="text" name="create_database_username" value="${createDatabaseUsername}"/></td>
+			     		</tr>
+			     		<tr>
+			     			<td>Password</td>
+			     			<td><input type="password" name="create_database_password" value="${createDatabasePassword}"/></td>
+			     		</tr>
+			     	</table>
+			     </td>
+			  </tr>
+			</table>
+			
+			<br>
+			<input type="submit" value="Continue"/>
+			
+			</form>
+		#end
+	#end
+
+#parse($footerTemplate)

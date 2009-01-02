@@ -26,5 +26,4 @@
   <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
   <concept_name_tag_map concept_name_id="2" concept_name_tag_id="4"/>
   <concept_numeric concept_id="2" hi_absolute="123.0" precise="false"/>
-  <global_property property="database_version" property_value="1.4.0.16"/>
 </dataset>

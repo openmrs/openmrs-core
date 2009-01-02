@@ -65,8 +65,8 @@ public class ArdenClause {
 	}
 	
 	/*
-	 * getters
-	 */
+	* getters
+	*/
 	public Concept getConcept() {
 		return concept;
 	}
@@ -139,8 +139,8 @@ public class ArdenClause {
 	}
 	
 	/*
-	 * Temporal operations
-	 */
+	* Temporal operations
+	*/
 	public ArdenClause within() {
 		return this;
 	}

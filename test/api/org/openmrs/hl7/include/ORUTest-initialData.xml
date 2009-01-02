@@ -70,7 +70,6 @@
   <concept_set concept_id="1558" concept_set="1726" sort_weight="0.0" creator="305" date_created="2007-06-05 17:38:53.0"/>
   <encounter_type encounter_type_id="1" name="Test Enc Type" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
   <encounter_type encounter_type_id="2" name="Test Enc Type 2" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
-  <global_property property="database_version" property_value="1.4.0.16"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
   <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
   <obs obs_id="1" person_id="2" concept_id="905" obs_datetime="2007-05-01 00:00:00.0" location_id="1" value_numeric="100.0" creator="1" date_created="2005-03-01 00:00:00.0" voided="false"/>

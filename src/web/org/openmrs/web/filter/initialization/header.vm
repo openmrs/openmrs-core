@@ -1,0 +1,13 @@
+<html>
+<head>
+</head>
+<body>
+	<h1>Welcome to OpenMRS!</h1>
+	
+	#if( $errorMessage != '' )
+		<div style="color: red">
+			${errorMessage}
+		</div>
+		<br/>
+	#end
+	

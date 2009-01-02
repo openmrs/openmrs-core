@@ -180,8 +180,7 @@ public interface PersonService {
 	public void deletePersonAttributeType(Integer attrTypeId) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)
-
+	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public void updatePersonAttributeType(PersonAttributeType type) throws APIException;

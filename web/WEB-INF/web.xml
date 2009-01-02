@@ -198,20 +198,33 @@
 		<url-pattern>/dwr/*</url-pattern>
 	</servlet-mapping>
 
-	<!--  Should be the first filter -->
+	<!--  Should be the first filter so that if setup is needed, all requests go
+	      through this filter first-->
+	<filter>
+        <filter-name>InitializationFilter</filter-name>
+        <filter-class>org.openmrs.web.filter.initialization.InitializationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+		<filter-name>InitializationFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
+	<!--  End first filter -->
+	
+	<!--  Should be the second filter so that all requests are first wrapped by a 
+	      hibernate filter (to help with lazy loading) -->
 	<filter>
         <filter-name>HibernateFilter</filter-name>
         <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
     </filter>
-    <!--  End first filter -->
-	<filter-mapping>
+    <filter-mapping>
 		<filter-name>HibernateFilter</filter-name> 
 		<url-pattern>/*</url-pattern> 
 	</filter-mapping>
+	<!--  End second filter -->
 	
 	<filter>
 		<filter-name>OpenmrsFilter</filter-name> 
-		<filter-class>org.openmrs.web.OpenmrsFilter</filter-class> 
+		<filter-class>org.openmrs.web.filter.OpenmrsFilter</filter-class> 
 	</filter>
 	<filter-mapping>
 		<filter-name>OpenmrsFilter</filter-name> 
@@ -291,20 +304,20 @@
        			classpath*:/moduleApplicationContext.xml
 	        </param-value>
 	    </init-param>
-		<load-on-startup>1</load-on-startup>
+		<!-- Don't use "load-on-startup" in case initial setup wizard is needed -->
 	</servlet>
 
 	<servlet>
 		<servlet-name>openmrs_static_content</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<load-on-startup>3</load-on-startup>
+		<!-- Don't use "load-on-startup" in case initial setup wizard is needed -->
 	</servlet>
 	
 	<!-- Gives acess to servlets within modules -->
 	<servlet>
 		<servlet-name>module_servlet</servlet-name>
 		<servlet-class>org.openmrs.module.web.ModuleServlet</servlet-class>
-		<load-on-startup>2</load-on-startup>
+		<!-- Don't "load-on-startup" in case initial setup wizard is needed -->
 	</servlet>
 	<servlet-mapping>
  		<servlet-name>module_servlet</servlet-name>
@@ -315,7 +328,7 @@
 	<servlet>
 		<servlet-name>module_resources</servlet-name>
 		<servlet-class>org.openmrs.module.web.ModuleResourcesServlet</servlet-class>
-		<load-on-startup>2</load-on-startup>
+		<!-- Don't "load-on-startup" in case initial setup wizard is needed -->
 	</servlet>
 	<servlet-mapping>
  		<servlet-name>module_resources</servlet-name>

@@ -17,7 +17,6 @@
   <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
   <concept_name_tag_map concept_name_id="2" concept_name_tag_id="4"/>
   <concept_name_tag_map concept_name_id="3" concept_name_tag_id="4"/>
-  <global_property property="database_version" property_value="1.4.0.16"/>
 
   <!-- A cd4 count obs older than 6 months -->
   <obs obs_id="1" person_id="2" concept_id="1" obs_datetime="2006-02-10 00:00:00.0" location_id="1" value_numeric="100" creator="1"  date_created="2006-02-11 15:57:35.0" voided="false"/>

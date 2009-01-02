@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.8
+                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.8.xsd">
+	
+	<!-- 
+	
+		See http://www.liquibase.org/manual/home#available_database_refactorings 
+		for a list of supported elements and attributes 
+		
+	-->
+	
+	
+	<!--
+		Check that the sqldiff has been run up to at least the 1.4.0.20 version.
+		If it hasn't, this script won't run.  
+	  -->
+	<preConditions>
+		<or>
+			<sqlCheck expectedResult="database_version greater than 1.4.0.20">
+				<![CDATA[
+				SELECT case when REPLACE(property_value, '.', '0') >= REPLACE('1.4.0.20', '.', '0') then 'database_version greater than 1.4.0.20' else 'The update-to-latest.sql file needs to be run on this db.' end FROM global_property WHERE property = 'database_version';
+				]]>
+			</sqlCheck>
+			<sqlCheck expectedResult="no database_version property after v1.4.0.20">
+				<![CDATA[
+				SELECT case when count(*) = 1 then 'a non-empty database_version global property' else 'no database_version property after v1.4.0.20' end FROM global_property WHERE property = 'database_version';
+				]]>
+			</sqlCheck>
+		</or>
+	</preConditions>
+	
+	
+	
+	<changeSet id="1" author="upul">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				<![CDATA[
+				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.01', '.', '0') FROM global_property WHERE property = 'database_version';
+				]]>
+			</sqlCheck>
+		</preConditions>
+		<comment>
+			Add the column to person_attribute type to connect
+			each type to a privilege
+			(preCondition database_version check in place because this change was in the old format in trunk for a while)
+		</comment>
+		<addColumn tableName="person_attribute_type">
+			<column name="edit_privilege" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="2" author="upul">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				<![CDATA[
+				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.01', '.', '0') FROM global_property WHERE property = 'database_version';
+				]]>
+			</sqlCheck>
+		</preConditions>
+		<comment>
+			Create the foreign key from the privilege required for to edit
+			a person attribute type and the privilege.privilege column
+			(preCondition database_version check in place because this change was in the old format in trunk for a while)
+		</comment>
+		<addForeignKeyConstraint constraintName="privilege_which_can_edit"
+		baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
+		referencedTableName="privilege" referencedColumnNames="privilege"
+	    />
+    </changeSet>
+    
+	<changeSet id="200811261102" author="bwolfe">
+		<comment>
+			Fix field property for new Tribe person attribute
+		</comment>
+		<update tableName="field">
+		<column name="default_value" value="$!{patient.attributeMap.Tribe.hydratedObject.tribeId}^$!{patient.attributeMap.Tribe.hydratedObject.name}"/>
+		<where>default_value='$!{patient.getTribe().getTribeId()}^$!{patient.getTribe().getName()}'</where>
+		</update>
+    </changeSet>
+    
+	<changeSet id="200805281223" author="bmckown">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				<![CDATA[
+				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.03', '.', '0') FROM global_property WHERE property = 'database_version';
+				]]>
+			</sqlCheck>
+		</preConditions>
+		<comment>
+			Create the concept_complex table
+			(preCondition database_version check in place because this change was in the old format in trunk for a while)
+		</comment>
+		<createTable tableName="concept_complex">
+			<column name="concept_id" type="int">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="handler" type="varchar(255)"/>
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="concept_attributes"
+			baseTableName="concept_complex" baseColumnNames="concept_id"
+			referencedTableName="concept" referencedColumnNames="concept_id"
+			/>		
+    </changeSet>
+    
+	<changeSet id="200805281224" author="bmckown">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				<![CDATA[
+				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.03', '.', '0') FROM global_property WHERE property = 'database_version';
+				]]>
+			</sqlCheck>
+		</preConditions>
+		<comment>
+			Adding the value_complex column to obs.  This may take a long time if you have a large number of observations.
+			
+			(preCondition database_version check in place because this change was in the old format in trunk for a while)
+		</comment>
+		<addColumn tableName="obs">
+			<column name="value_complex" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="200805281225" author="bmckown">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				<![CDATA[
+				SELECT count(*) FROM concept_datatype where name='Complex';
+				]]>
+			</sqlCheck>
+		</preConditions>
+		<comment>
+			Adding a 'complex' Concept Datatype
+		</comment>
+		<insert tableName="concept_datatype">
+			<column name="name" value="Complex"/>
+			<column name="hl7_abbreviation" value="ED"/>
+			<column name="description" value="Complex value.  Analogous to HL7 Embedded Datatype"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2008-05-28T12:25:34" />
+		</insert>
+	</changeSet>
+	
+	<changeSet id="200805281226" author="bmckown">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				<![CDATA[
+				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.03', '.', '0') FROM global_property WHERE property = 'database_version';
+				]]>
+			</sqlCheck>
+		</preConditions>
+		<comment>
+			Dropping the mimetype and complex_obs tables as they aren't needed in the new complex obs setup
+			
+			(preCondition database_version check in place because this change was in the old format in trunk for a while)
+		</comment>
+		
+		<dropTable tableName="complex_obs"/>
+		<dropTable tableName="mime_type"/>
+		
+	</changeSet>
+	
+	<changeSet id="200809191226" author="smbugua">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				<![CDATA[
+				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.04', '.', '0') FROM global_property WHERE property = 'database_version';
+				]]>
+			</sqlCheck>
+		</preConditions>
+		<comment>
+			Adding the hl7 archive message_state column so that archives can be tracked
+			
+			(preCondition database_version check in place because this change was in the old format in trunk for a while)
+		</comment>
+		<addColumn tableName="hl7_in_archive">
+			<column name="message_state" type="int(1)" defaultValueNumeric="0" remarks="2=processed, 4=deleted" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="200809191927" author="smbugua">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				<![CDATA[
+				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.04', '.', '0') FROM global_property WHERE property = 'database_version';
+				]]>
+			</sqlCheck>
+		</preConditions>
+		<comment>
+			Adding the hl7 archive message_state column so that archives can be tracked
+			
+			(preCondition database_version check in place because this change was in the old format in trunk for a while)
+		</comment>
+		<renameColumn tableName="hl7_in_queue" oldColumnName="state" newColumnName="message_state" columnDataType="int(1)"/>
+		
+		<modifyColumn tableName="hl7_in_queue">
+			<column name="message_state" type="int(1)" defaultValueNumeric="0" remarks="0=pending, 1=processing, 2=processed, 3=error">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+	</changeSet>
+	
+</databaseChangeLog>

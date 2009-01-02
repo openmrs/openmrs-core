@@ -1,0 +1,69 @@
+#parse($headerTemplate)
+	
+	<form method="post" autocomplete="off">
+		<input type="hidden" name="page" value="databasetablesanduser.vm" />
+		
+		#if($hasCurrentOpenmrsDatabase == true)
+			<span class="question">
+				Do you need OpenMRS to automatically create the tables for your current database - ${databaseName}?
+			</span>
+			<br/>
+			Yes: <input type="radio" name="create_tables" value="yes" #if( $createTables == true )checked="checked"#end/>
+			No: <input type="radio" name="create_tables" value="no" #if( $createTables == false )checked="checked"#end/>
+			 
+			<br/><br/>
+		#end
+		
+		<span class="question">
+			Do you currently have a database user <i>other than root</i> that has read/write access to the ${databaseName} database?
+		</span>
+		<table>
+		  <tr>
+		     <td valign="top">Yes</td>
+		     <td>
+		     	<input type="radio" name="current_database_user" value="yes" #if( $hasCurrentDatabaseUser == true )checked="checked"#end/>
+		     	
+		     	<br/><br/>
+		     	
+		     	If yes, specify the log in user name and password for that database user:
+		     	<table>
+		     		<tr>
+		     			<td>Username</td>
+		     			<td><input type="text" name="current_database_username" value="${currentDatabaseUsername}"/></td>
+		     		</tr>
+		     		<tr>
+		     			<td>Password</td>
+		     			<td><input type="password" name="current_database_password" value="${currentDatabasePassword}"/></td>
+		     		</tr>
+		     	</table>
+		     </td>
+		  </tr>
+		  <tr>
+		     <td valign="top">No</td>
+		     <td>
+		     	<input type="radio" name="current_database_user" value="no" #if( $hasCurrentDatabaseUser == false )checked="checked"#end/>
+		     	
+		     	<br/><br/>
+		     	
+		     	If no, one will be created for you.  However, a user that has "CREATE USER" privileges
+		     	on the database must be specified here so that this wizard can create the user.
+		     	<table>
+		     		<tr>
+		     			<td>Username</td>
+		     			<td><input type="text" name="create_user_username" value="${createUserUsername}"/></td>
+		     		</tr>
+		     		<tr>
+		     			<td>Password</td>
+		     			<td><input type="password" name="create_user_password" value="${createUserPassword}"/></td>
+		     		</tr>
+		     	</table>
+		     </td>
+		  </tr>
+		</table>
+		
+		<br>
+		<input type="submit" value="Continue"/>
+		
+	</form>
+
+#parse($footerTemplate)

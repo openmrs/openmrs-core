@@ -26,7 +26,6 @@
   <concept_name_tag_map concept_name_id="2" concept_name_tag_id="4"/>
   <encounter encounter_id="1" patient_id="2" provider_id="0" location_id="1" encounter_datetime="2005-01-01 00:00:00.0" creator="1" date_created="2005-02-01 00:00:00.0" voided="false"/>
   <encounter encounter_id="2" patient_id="2" provider_id="0" location_id="1" encounter_datetime="2005-02-01 00:00:00.0" creator="1" date_created="2005-03-01 00:00:00.0" voided="false"/>
-  <global_property property="database_version" property_value="1.4.0.16"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
   <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
   <obs obs_id="1" person_id="2" concept_id="1" obs_datetime="2006-02-09 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="false"/>

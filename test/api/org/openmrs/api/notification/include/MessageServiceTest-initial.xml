@@ -15,7 +15,6 @@
   <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
   <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
   <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <global_property property="database_version" property_value="1.4.0.16"/>
   <global_property property="mail.debug" property_value="false" description="true/false whether to print debugging information during mailing"/>
   <global_property property="mail.default_content_type" property_value="text/plain" description="Content type to append to the mail messages"/>
   <global_property property="mail.from" property_value="info@openmrs.org" description="Email address to use as the default from address"/>

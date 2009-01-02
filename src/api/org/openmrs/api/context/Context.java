@@ -61,6 +61,9 @@ import org.openmrs.notification.mail.velocity.VelocityMessagePreparator;
 import org.openmrs.reporting.ReportObjectService;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
+import org.openmrs.util.DatabaseUpdateException;
+import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -606,16 +609,24 @@ public class Context {
 	}
 	
 	/**
-	 * Starts the OpenMRS System Should be called prior to any kind of activity
+	 * Starts the OpenMRS System Should be called prior to any kind of activity <br/>
+	 * <br/>
+	 * If an {@link InputRequiredException} is thrown, a call to {@link DatabaseUpdater#update(Map)}
+	 * will be required with a mapping from question prompt to user answer before startup can be
+	 * called again.
 	 * 
 	 * @param Properties runtime properties to use for startup
+	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
+	 *             cannot continue without input from the user
+	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
+	 *      the required question/datatypes
 	 */
-	public static void startup(Properties props) {
+	public static void startup(Properties props) throws DatabaseUpdateException, InputRequiredException {
 		// do any context database specific startup
 		getContextDAO().startup(props);
 		
 		// find/set/check whether the current database version is compatible
-		checkDatabaseVersion();
+		checkForDatabaseUpdates(props);
 		
 		// this should be first in the startup routines so that the application
 		// data directory can be set from the runtime properties
@@ -633,14 +644,25 @@ public class Context {
 	}
 	
 	/**
-	 * Starts the OpenMRS System in a _non-webapp_ environment
+	 * Starts the OpenMRS System in a _non-webapp_ environment<br/>
+	 * <br/>
+	 * If an {@link InputRequiredException} is thrown, a call to {@link DatabaseUpdater#update(Map)}
+	 * will be required with a mapping from question prompt to user answer before startup can be
+	 * called again.
 	 * 
 	 * @param url database url like "jdbc:mysql://localhost:3306/openmrs?autoReconnect=true"
 	 * @param username connection username
 	 * @param password connection password
 	 * @param Properties other startup properties
+	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
+	 *             cannot continue without input from the user
+	 * @see #startup(Properties)
+	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
+	 *      the required question/datatypes
 	 */
-	public static void startup(String url, String username, String password, Properties properties) {
+	public static void startup(String url, String username, String password, Properties properties)
+	                                                                                               throws DatabaseUpdateException,
+	                                                                                               InputRequiredException {
 		if (properties == null)
 			properties = new Properties();
 		
@@ -760,11 +782,31 @@ public class Context {
 	}
 	
 	/**
-	 * Selects the current database version out of the database from global_property.property =
-	 * 'database_version' Sets OpenmrsConstants.DATABASE_VERSION accordingly
+	 * Sets {@link OpenmrsConstants#DATABASE_VERSION} accordingly for backwards compatibility,
+	 * however, this is no longer needed because we are using individual liquibase updates now that
+	 * can be run out of order.<br/>
+	 * <br/>
+	 * If an {@link InputRequiredException} is thrown, a call to {@link DatabaseUpdater#update(Map)}
+	 * will be required with a mapping from question prompt to user answer
+	 * 
+	 * @param props the runtime properties
+	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
+	 *             cannot continue without input from the user
+	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
+	 *      the required question/datatypes
 	 */
-	private static void checkDatabaseVersion() {
-		OpenmrsConstants.DATABASE_VERSION = getAdministrationService().getGlobalProperty("database_version");
+	private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
+		try {
+			Context.addProxyPrivilege("");
+			OpenmrsConstants.DATABASE_VERSION = getAdministrationService().getGlobalProperty("database_version");
+		}
+		finally {
+			Context.removeProxyPrivilege("");
+		}
+		
+		// TODO make sure the user has "permission" to run these updates by checking the runtime property for auto updating
+		
+		DatabaseUpdater.update();
 	}
 	
 	/**

@@ -2,7 +2,6 @@
 
 package org.openmrs.arden;
 
-
 public interface ArdenBaseTreeParserTokenTypes {
 	
 	int EOF = 1;

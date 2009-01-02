@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <global_property property="database_version" property_value="1.4.0.16"/>
   <person person_id="1" gender="" birthdate="1975-06-30" birthdate_estimated="false" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" changed_by="1" date_changed="2007-09-20 21:54:12.0" voided="false" void_reason=""/>
   <role role="Anonymous" description="Everyone and their brother should have this role"/>
   <role role="Authenticated" description="Every person logged in automatically has this role."/>

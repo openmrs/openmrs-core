@@ -21,7 +21,6 @@
   <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
   <drug drug_id="1" concept_id="1" name="INH 300mg" combination="false" dose_strength="300.0" units="mg" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
   <drug_order order_id="1" drug_inventory_id="1" dose="900.0" units="mg" frequency="1/day 2/week" prn="false" complex="false"/>
-  <global_property property="database_version" property_value="1.4.0.16"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
   <order_type order_type_id="1" name="Drug Order" description="Prescriptions" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
   <orders order_id="1" order_type_id="1" concept_id="1" orderer="1" start_date="2005-01-01 00:00:00.0" auto_expire_date="2005-12-31 00:00:00.0" discontinued="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" patient_id="2"/>

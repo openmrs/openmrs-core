@@ -39,42 +39,42 @@ public class DefaultArdenDataSource implements ArdenDataSource {
 	}
 	
 	/*	
-		private Obs getPatientObsForConcept(Concept concept, Patient patient) {
-			Set <Obs> MyObs;
-			Obs obs = new Obs();
-			{		MyObs = Context.getObsService().getObservations(patient, concept);
-				Iterator iter = MyObs.iterator();
-				if(iter.hasNext()) {
-					while(iter.hasNext())	{
-						obs = (Obs) iter.next();
-						System.out.println(obs.getValueAsString(Context.getLocale()) + " --- " + obs.getObsDatetime());
-					}
-						return obs;
+	private Obs getPatientObsForConcept(Concept concept, Patient patient) {
+		Set <Obs> MyObs;
+		Obs obs = new Obs();
+		{		MyObs = Context.getObsService().getObservations(patient, concept);
+			Iterator iter = MyObs.iterator();
+			if(iter.hasNext()) {
+				while(iter.hasNext())	{
+					obs = (Obs) iter.next();
+					System.out.println(obs.getValueAsString(Context.getLocale()) + " --- " + obs.getObsDatetime());
 				}
-				else {
-					return null;
-				}
+					return obs;
+			}
+			else {
+				return null;
 			}
 		}
-		
-		private Obs getLastPatientObsForConcept(Concept concept, Patient patient, int howMany) {
-			List <Obs> MyObs;
-			Obs obs = new Obs();
-			{	
-				MyObs = Context.getObsService().getLastNObservations(howMany, patient, concept);
-				Iterator iter = MyObs.iterator();
-				if(iter.hasNext()) {
-					while(iter.hasNext())	{
-						obs = (Obs) iter.next();
-						System.out.println(obs.getValueAsString(Context.getLocale())
-								+ " --- " + obs.getObsDatetime());
-					}
-						return obs;
+	}
+	
+	private Obs getLastPatientObsForConcept(Concept concept, Patient patient, int howMany) {
+		List <Obs> MyObs;
+		Obs obs = new Obs();
+		{	
+			MyObs = Context.getObsService().getLastNObservations(howMany, patient, concept);
+			Iterator iter = MyObs.iterator();
+			if(iter.hasNext()) {
+				while(iter.hasNext())	{
+					obs = (Obs) iter.next();
+					System.out.println(obs.getValueAsString(Context.getLocale())
+							+ " --- " + obs.getObsDatetime());
 				}
-				else {
-					return null;
-				}
+					return obs;
 			}
+			else {
+				return null;
+			}
+		}
 	}
 	*/
 	public ArdenValue eval(Patient p, ArdenClause c) {

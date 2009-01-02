@@ -36,6 +36,12 @@ public class GZIPFilter extends OncePerRequestFilter {
 	
 	private final transient Log log = LogFactory.getLog(GZIPFilter.class);
 	
+	private Boolean cachedGZipEnabledFlag = null;
+	
+	/**
+	 * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
+	 */
 	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 	                                                                                                         throws IOException,
 	                                                                                                         ServletException {
@@ -80,8 +86,23 @@ public class GZIPFilter extends OncePerRequestFilter {
 	 * Returns global property gzip.enabled as boolean
 	 */
 	private boolean isGZIPEnabled() {
-		String gzipEnabled = Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, "");
-		return gzipEnabled.toLowerCase().equals("true");
+		if (cachedGZipEnabledFlag != null)
+			return cachedGZipEnabledFlag;
+		
+		try {
+			String gzipEnabled = Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, "");
+			
+			boolean isEnabled = gzipEnabled.toLowerCase().equals("true");
+			cachedGZipEnabledFlag = isEnabled;
+			return cachedGZipEnabledFlag;
+		}
+		catch (Throwable t) {
+			log.warn("Unable to get the global property: " + OpenmrsConstants.GLOBAL_PROPERTY_GZIP_ENABLED, t);
+			// not caching the enabled flag here in case it becomes available 
+			// before the next request
+			
+			return false;
+		}
 	}
 }

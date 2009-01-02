@@ -1,0 +1,847 @@
+Index: META-INF/MANIFEST.MF
+===================================================================
+--- META-INF/MANIFEST.MF	(revision 748)
++++ META-INF/MANIFEST.MF	(working copy)
+@@ -8,7 +8,6 @@
+ Export-Package: liquibase,
+  liquibase.database,
+  liquibase.database.structure,
+- liquibase.migrator,
+  liquibase.ant,
+  liquibase.change,
+  liquibase.commandline,
+Index: src/java/liquibase/change/AbstractChange.java
+===================================================================
+--- src/java/liquibase/change/AbstractChange.java	(revision 748)
++++ src/java/liquibase/change/AbstractChange.java	(working copy)
+@@ -1,26 +1,37 @@
+ package liquibase.change;
+ 
++import java.io.IOException;
++import java.io.Writer;
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.List;
++import java.util.Map;
++import java.util.SortedMap;
++import java.util.TreeMap;
++
++import javax.xml.parsers.DocumentBuilderFactory;
++import javax.xml.parsers.ParserConfigurationException;
++
+ import liquibase.ChangeSet;
+ import liquibase.FileOpener;
+ import liquibase.database.Database;
+ import liquibase.database.sql.SqlStatement;
+-import liquibase.exception.*;
++import liquibase.exception.JDBCException;
++import liquibase.exception.RollbackImpossibleException;
++import liquibase.exception.SetupException;
++import liquibase.exception.StatementNotSupportedOnDatabaseException;
++import liquibase.exception.UnsupportedChangeException;
+ import liquibase.log.LogFactory;
+ import liquibase.util.MD5Util;
+ import liquibase.util.StreamUtil;
+ import liquibase.util.StringUtils;
+ import liquibase.util.XMLUtil;
++
+ import org.w3c.dom.Element;
+ import org.w3c.dom.NamedNodeMap;
+ import org.w3c.dom.Node;
+ import org.w3c.dom.NodeList;
+ 
+-import javax.xml.parsers.DocumentBuilderFactory;
+-import javax.xml.parsers.ParserConfigurationException;
+-import java.io.IOException;
+-import java.io.Writer;
+-import java.util.*;
+-
+ /**
+  * Standard superclass for Changes to implement. This is a <i>skeletal implementation</i>,
+  * as defined in Effective Java#16.
+@@ -201,7 +212,7 @@
+      * @param buffer a {@link StringBuffer} object used to hold the {@link String}
+      *               representation of the change
+      */
+-    private void nodeToStringBuffer(Element node, StringBuffer buffer) {
++    private void nodeToStringBuffer(Node node, StringBuffer buffer) {
+         buffer.append("<").append(node.getNodeName());
+         SortedMap<String, String> attributeMap = new TreeMap<String, String>();
+         NamedNodeMap attributes = node.getAttributes();
+Index: src/java/liquibase/change/Change.java
+===================================================================
+--- src/java/liquibase/change/Change.java	(revision 748)
++++ src/java/liquibase/change/Change.java	(working copy)
+@@ -1,17 +1,23 @@
+ package liquibase.change;
+ 
++import java.io.IOException;
++import java.io.Writer;
++import java.util.Set;
++
+ import liquibase.ChangeSet;
+ import liquibase.FileOpener;
+ import liquibase.database.Database;
+ import liquibase.database.sql.SqlStatement;
+ import liquibase.database.structure.DatabaseObject;
+-import liquibase.exception.*;
++import liquibase.exception.InvalidChangeDefinitionException;
++import liquibase.exception.JDBCException;
++import liquibase.exception.RollbackImpossibleException;
++import liquibase.exception.SetupException;
++import liquibase.exception.StatementNotSupportedOnDatabaseException;
++import liquibase.exception.UnsupportedChangeException;
++
+ import org.w3c.dom.Document;
+-import org.w3c.dom.Element;
+-
+-import java.io.IOException;
+-import java.io.Writer;
+-import java.util.Set;
++import org.w3c.dom.Node;
+ 
+ /**
+  * Interface all changes (refactorings) implement.
+@@ -139,13 +145,13 @@
+     public String getConfirmationMessage();
+ 
+     /**
+-     * Creates an XML element (of type {@link Element}) of the change object, and adds it
++     * Creates an XML element (of type {@link Node}) of the change object, and adds it
+      * to the {@link Document} object passed as argument
+      *
+      * @param currentChangeLogDOM the current {@link Document} where this element is being added
+-     * @return the {@link Element} object created
++     * @return the {@link Node} object created
+      */
+-    public Element createNode(Document currentChangeLogDOM);
++    public Node createNode(Document currentChangeLogDOM);
+ 
+     /**
+      * Calculates the MD5 hash for the string representation of the XML element
+Index: src/java/liquibase/change/ColumnConfig.java
+===================================================================
+--- src/java/liquibase/change/ColumnConfig.java	(revision 748)
++++ src/java/liquibase/change/ColumnConfig.java	(working copy)
+@@ -95,9 +95,13 @@
+         // Since we have two rules for the value it can either be specifed as an attribute
+         // or as the tag body in case of long values then the check is necessary so that it
+         // should not override the value specifed as an attribute.
+-        if (StringUtils.trimToNull(value) != null) {
+-            this.value = value;
+-        }
++//        if (StringUtils.trimToNull(value) != null) {
++//            this.value = value;
++//        }
++    	// TODO find where this is being called with the tag body 
++    	// and fix the code there.  this logic does not belong here
++    	// because it prevents a column from being the empty string
++    	this.value = value;
+     }
+ 
+     public Number getValueNumeric() {
+Index: src/java/liquibase/change/GroupedChange.java
+===================================================================
+--- src/java/liquibase/change/GroupedChange.java	(revision 0)
++++ src/java/liquibase/change/GroupedChange.java	(revision 0)
+@@ -0,0 +1,163 @@
++package liquibase.change;
++
++import java.lang.reflect.Field;
++import java.util.HashSet;
++import java.util.List;
++import java.util.Set;
++import java.util.Vector;
++
++import liquibase.database.Database;
++import liquibase.database.sql.SqlStatement;
++import liquibase.database.structure.DatabaseObject;
++import liquibase.database.structure.Table;
++import liquibase.exception.InvalidChangeDefinitionException;
++import liquibase.exception.JDBCException;
++import liquibase.exception.RollbackImpossibleException;
++import liquibase.exception.UnsupportedChangeException;
++
++import org.w3c.dom.Document;
++import org.w3c.dom.DocumentFragment;
++import org.w3c.dom.Node;
++
++/**
++ * Class to group sets of {@link Change}s that 
++ * will be put into one ChangeSet element when
++ * serialized out.
++ * 
++ * Changes are serialized out in the order that
++ * they were added to this {@link GroupedChange}
++ */
++public class GroupedChange extends AbstractChange implements Change {
++	
++	/**
++	 * The changes that will be within this one changeSet tag
++	 */
++	private List<Change> changes = new Vector<Change>();
++	
++	/**
++	 * Default constructor
++	 */
++	public GroupedChange() {
++		this("", "");
++	}
++	
++	/**
++	 * @param tagName
++	 * @param changeName
++	 */
++	protected GroupedChange(String tagName, String changeName) {
++		super(tagName, changeName);
++	}
++
++	/**
++	 * Convenience method to add a new {@link Change}
++	 * to this list of changes in this group
++	 * 
++	 * @param change
++	 */
++	public void addChange(Change change) {
++		changes.add(change);
++	}
++	
++	/**
++	 * @return the registered changes
++	 */
++	public List<Change> getChanges() {
++		return changes;
++	}
++
++	/**
++	 * @param changes the changes to set
++	 */
++	public void setChanges(List<Change> changes) {
++		this.changes = changes;
++	}
++
++	/**
++	 * Not implemented 
++	 * 
++	 * @see liquibase.change.Change#canRollBack()
++	 */
++	public boolean canRollBack() {
++		return false;
++	}
++
++	/**
++	 * Loops over each {@link Change} in the list of #getChanges()
++	 * @see liquibase.change.Change#createNode(org.w3c.dom.Document)
++	 */
++	public Node createNode(Document currentChangeLogDOM) {
++		DocumentFragment fragment = currentChangeLogDOM.createDocumentFragment();
++		
++		for (Change change : changes) {
++			fragment.appendChild(change.createNode(currentChangeLogDOM));
++		}
++		
++		return fragment;
++	}
++
++	public void executeRollbackStatements(Database database)
++			throws JDBCException, UnsupportedChangeException,
++			RollbackImpossibleException {
++		throw new RollbackImpossibleException("rollback not implemented for grouped changes");
++	}
++
++	public void executeStatements(Database database) throws JDBCException,
++			UnsupportedChangeException {
++		throw new UnsupportedChangeException("This type of Change is not meant to be executed");
++	}
++
++	public SqlStatement[] generateRollbackStatements(Database database)
++			throws UnsupportedChangeException, RollbackImpossibleException {
++		throw new RollbackImpossibleException("rollback not implemented for grouped changes");
++	}
++
++	public SqlStatement[] generateStatements(Database database)
++			throws UnsupportedChangeException {
++		throw new UnsupportedChangeException("This type of Change is not meant to be executed");
++	}
++
++	public Set<DatabaseObject> getAffectedDatabaseObjects() {
++		List<Table> tables = new Vector<Table>();
++		
++		// loop over each change and add it 
++		for (Change change : changes) {
++			try {
++				Field tableName = change.getClass().getField("tableName");
++				tables.add(new Table((String)tableName.get(change)));
++			}
++			catch (NoSuchFieldException e) {
++				// pass
++			} catch (IllegalArgumentException e) {
++				// pass
++			} catch (IllegalAccessException e) {
++				// pass
++			}
++		}
++
++        return new HashSet<DatabaseObject>(tables);
++	}
++
++	/**
++	 * This should not be used on a group
++	 * 
++	 * @see liquibase.change.Change#getConfirmationMessage()
++	 */
++	public String getConfirmationMessage() {
++		return "";
++	}
++
++	/**
++	 * Validates each change in this group
++	 * 
++	 * @see liquibase.change.Change#validate(liquibase.database.Database)
++	 */
++	public void validate(Database database)
++			throws InvalidChangeDefinitionException {
++		for (Change change : changes) {
++			change.validate(database);
++		}
++	}
++
++
++}
+Index: src/java/liquibase/change/InsertDataChange.java
+===================================================================
+--- src/java/liquibase/change/InsertDataChange.java	(revision 748)
++++ src/java/liquibase/change/InsertDataChange.java	(working copy)
+@@ -84,10 +84,16 @@
+         };
+     }
+ 
++    /**
++     * @see liquibase.change.Change#getConfirmationMessage()
++     */
+     public String getConfirmationMessage() {
+         return "New row inserted into " + getTableName();
+     }
+ 
++    /**
++     * @see liquibase.change.Change#createNode(org.w3c.dom.Document)
++     */
+     public Element createNode(Document currentChangeLogFileDOM) {
+         Element node = currentChangeLogFileDOM.createElement("insert");
+         if (getSchemaName() != null) {
+@@ -103,6 +109,9 @@
+         return node;
+     }
+ 
++    /**
++     * @see liquibase.change.Change#getAffectedDatabaseObjects()
++     */
+     public Set<DatabaseObject> getAffectedDatabaseObjects() {
+         Table dbObject = new Table(getTableName());
+ 
+Index: src/java/liquibase/database/sql/TagDatabaseStatement.java
+===================================================================
+--- src/java/liquibase/database/sql/TagDatabaseStatement.java	(revision 748)
++++ src/java/liquibase/database/sql/TagDatabaseStatement.java	(working copy)
+@@ -3,7 +3,6 @@
+ import liquibase.database.Database;
+ import liquibase.database.MySQLDatabase;
+ import liquibase.exception.StatementNotSupportedOnDatabaseException;
+-import liquibase.exception.JDBCException;
+ 
+ public class TagDatabaseStatement implements SqlStatement {
+ 
+@@ -25,7 +24,7 @@
+                 long version = Long.parseLong(database.getDatabaseProductVersion().substring(0,1));
+ 
+                 if (version < 5) {
+-                    return new RawSqlStatement("UPDATE DATABASECHANGELOG C LEFT JOIN (SELECT MAX(DATEEXECUTED) as MAXDATE FROM (SELECT DATEEXECUTED FROM`DATABASECHANGELOG`) AS X) D ON C.DATEEXECUTED = D.MAXDATE SET C.TAG = '"+tag+"'").getSqlStatement(database);
++                    return new RawSqlStatement("UPDATE " + database.escapeTableName(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName()) + " C LEFT JOIN (SELECT MAX(DATEEXECUTED) as MAXDATE FROM (SELECT DATEEXECUTED FROM `" + database.escapeTableName(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName()) + "`) AS X) D ON C.DATEEXECUTED = D.MAXDATE SET C.TAG = '"+tag+"'").getSqlStatement(database);
+                 }
+ 
+             } catch (Throwable e) {
+Index: src/java/liquibase/database/AbstractDatabase.java
+===================================================================
+--- src/java/liquibase/database/AbstractDatabase.java	(revision 748)
++++ src/java/liquibase/database/AbstractDatabase.java	(working copy)
+@@ -41,6 +41,9 @@
+ 
+     private JdbcTemplate jdbcTemplate = new JdbcTemplate(this);
+     private List<RanChangeSet> ranChangeSetList;
++    
++	private String databaseChangeLogTableName = "DatabaseChangeLog".toUpperCase();
++	private String databaseChangeLogLockTableName = "DatabaseChangeLogLock".toUpperCase();;
+ 
+     protected AbstractDatabase() {
+     }
+@@ -416,12 +419,32 @@
+ 
+ // ------- DATABASECHANGELOG / DATABASECHANGELOGLOCK METHODS ---- //
+ 
++    /**
++     * @see liquibase.database.Database#getDatabaseChangeLogTableName()
++     */
+     public String getDatabaseChangeLogTableName() {
+-        return "DatabaseChangeLog".toUpperCase();
++        return databaseChangeLogTableName;
+     }
+ 
++    /**
++     * @see liquibase.database.Database#getDatabaseChangeLogLockTableName()
++     */
+     public String getDatabaseChangeLogLockTableName() {
+-        return "DatabaseChangeLogLock".toUpperCase();
++        return databaseChangeLogLockTableName;
++    }
++    
++    /**
++     * @see liquibase.database.Database#setDatabaseChangeLogTableName(java.lang.String)
++     */
++    public void setDatabaseChangeLogTableName(String tableName) {
++        this.databaseChangeLogTableName = tableName;
++    }
++
++    /**
++     * @see liquibase.database.Database#setDatabaseChangeLogLockTableName(java.lang.String)
++     */
++    public void setDatabaseChangeLogLockTableName(String tableName) {
++        this.databaseChangeLogLockTableName = tableName;
+     }
+ 
+     private SqlStatement getChangeLogLockInsertSQL() {
+@@ -1135,7 +1158,7 @@
+ 
+     public void markChangeSetAsReRan(ChangeSet changeSet) throws JDBCException {
+         String dateValue = getCurrentDateTimeFunction();
+-        String sql = "UPDATE " + escapeTableName(getDefaultSchemaName(), "DATABASECHANGELOG") + " SET DATEEXECUTED=" + dateValue + ", MD5SUM='?' WHERE ID='?' AND AUTHOR='?' AND FILENAME='?'";
++        String sql = "UPDATE " + escapeTableName(getDefaultSchemaName(), getDatabaseChangeLogTableName()) + " SET DATEEXECUTED=" + dateValue + ", MD5SUM='?' WHERE ID='?' AND AUTHOR='?' AND FILENAME='?'";
+         sql = sql.replaceFirst("\\?", escapeStringForDatabase(changeSet.getMd5sum()));
+         sql = sql.replaceFirst("\\?", escapeStringForDatabase(changeSet.getId()));
+         sql = sql.replaceFirst("\\?", escapeStringForDatabase(changeSet.getAuthor()));
+Index: src/java/liquibase/database/Database.java
+===================================================================
+--- src/java/liquibase/database/Database.java	(revision 748)
++++ src/java/liquibase/database/Database.java	(working copy)
+@@ -105,6 +105,20 @@
+     String getDatabaseChangeLogTableName();
+ 
+     String getDatabaseChangeLogLockTableName();
++    
++    /**
++     * Set the table name of the change log to the given table name
++     * 
++     * @param tableName
++     */
++    public void setDatabaseChangeLogTableName(String tableName);
++    
++    /**
++     * Set the table name of the change log lock to the given table name
++     * 
++     * @param tableName
++     */
++    public void setDatabaseChangeLogLockTableName(String tableName);
+ 
+     /**
+      * Returns SQL to concat the passed values.
+Index: src/java/liquibase/database/HibernateDatabase.java
+===================================================================
+--- src/java/liquibase/database/HibernateDatabase.java	(revision 748)
++++ src/java/liquibase/database/HibernateDatabase.java	(working copy)
+@@ -154,8 +154,22 @@
+     public String getDatabaseChangeLogLockTableName() {
+         return null;
+     }
++    
++    /**
++     * Does nothing because this is a hibernate database
++     * @see liquibase.database.Database#setDatabaseChangeLogLockTableName(java.lang.String)
++     */
++    public void setDatabaseChangeLogLockTableName(String tableName) {
++    }
+ 
+-    public String getConcatSql(String... values) {
++	/**
++	 * Does nothing because this is a hibernate database
++     * @see liquibase.database.Database#setDatabaseChangeLogTableName(java.lang.String)
++     */
++    public void setDatabaseChangeLogTableName(String tableName) {
++    }
++
++	public String getConcatSql(String... values) {
+         return null;
+     }
+ 
+Index: src/java/liquibase/diff/DiffResult.java
+===================================================================
+--- src/java/liquibase/diff/DiffResult.java	(revision 748)
++++ src/java/liquibase/diff/DiffResult.java	(working copy)
+@@ -1,9 +1,62 @@
+ package liquibase.diff;
+ 
+-import liquibase.change.*;
++import java.io.BufferedReader;
++import java.io.ByteArrayOutputStream;
++import java.io.File;
++import java.io.FileOutputStream;
++import java.io.FileReader;
++import java.io.FileWriter;
++import java.io.IOException;
++import java.io.PrintStream;
++import java.io.RandomAccessFile;
++import java.sql.ResultSet;
++import java.sql.ResultSetMetaData;
++import java.sql.Statement;
++import java.sql.Types;
++import java.util.ArrayList;
++import java.util.Date;
++import java.util.List;
++import java.util.SortedSet;
++import java.util.TreeSet;
++
++import javax.xml.parsers.DocumentBuilder;
++import javax.xml.parsers.DocumentBuilderFactory;
++import javax.xml.parsers.ParserConfigurationException;
++
++import liquibase.change.AddColumnChange;
++import liquibase.change.AddForeignKeyConstraintChange;
++import liquibase.change.AddNotNullConstraintChange;
++import liquibase.change.AddPrimaryKeyChange;
++import liquibase.change.Change;
++import liquibase.change.ColumnConfig;
++import liquibase.change.ConstraintsConfig;
++import liquibase.change.CreateIndexChange;
++import liquibase.change.CreateSequenceChange;
++import liquibase.change.CreateTableChange;
++import liquibase.change.CreateViewChange;
++import liquibase.change.DropColumnChange;
++import liquibase.change.DropForeignKeyConstraintChange;
++import liquibase.change.DropIndexChange;
++import liquibase.change.DropNotNullConstraintChange;
++import liquibase.change.DropPrimaryKeyChange;
++import liquibase.change.DropSequenceChange;
++import liquibase.change.DropTableChange;
++import liquibase.change.DropViewChange;
++import liquibase.change.GroupedChange;
++import liquibase.change.InsertDataChange;
++import liquibase.change.LoadDataChange;
++import liquibase.change.LoadDataColumnConfig;
++import liquibase.change.ModifyColumnChange;
+ import liquibase.csv.CSVWriter;
+ import liquibase.database.Database;
+-import liquibase.database.structure.*;
++import liquibase.database.structure.Column;
++import liquibase.database.structure.DatabaseSnapshot;
++import liquibase.database.structure.ForeignKey;
++import liquibase.database.structure.Index;
++import liquibase.database.structure.PrimaryKey;
++import liquibase.database.structure.Sequence;
++import liquibase.database.structure.Table;
++import liquibase.database.structure.View;
+ import liquibase.exception.JDBCException;
+ import liquibase.log.LogFactory;
+ import liquibase.parser.LiquibaseSchemaResolver;
+@@ -12,18 +65,10 @@
+ import liquibase.util.StringUtils;
+ import liquibase.xml.DefaultXmlWriter;
+ import liquibase.xml.XmlWriter;
++
+ import org.w3c.dom.Document;
+ import org.w3c.dom.Element;
+ 
+-import javax.xml.parsers.DocumentBuilder;
+-import javax.xml.parsers.DocumentBuilderFactory;
+-import javax.xml.parsers.ParserConfigurationException;
+-import java.io.*;
+-import java.sql.ResultSet;
+-import java.sql.ResultSetMetaData;
+-import java.sql.Statement;
+-import java.util.*;
+-
+ public class DiffResult {
+ 
+     private Long baseId = new Date().getTime();
+@@ -764,52 +809,118 @@
+             Statement stmt = baseSnapshot.getDatabase().getConnection().createStatement();
+             for (Table table : baseSnapshot.getTables()) {
+                 ResultSet rs = stmt.executeQuery("SELECT * FROM " + baseSnapshot.getDatabase().escapeTableName(schema, table.getName()));
+-                String fileName = table.getName() + ".csv";
+-                if (dataDir != null) {
+-                    fileName = dataDir + "/" + fileName;
+-                }
+-
+-
+-                File parentDir = new File(dataDir);
+-                if (!parentDir.exists()) {
+-                    parentDir.mkdirs();
+-                }
+-                if (!parentDir.isDirectory()) {
+-                    throw new RuntimeException(parentDir + " is not a directory");
+-                }
+-
+-                CSVWriter outputFile = new CSVWriter(new FileWriter(fileName));
+-                outputFile.writeAll(rs, true);
+-                outputFile.flush();
+-                outputFile.close();
+-
+-                LoadDataChange change = new LoadDataChange();
+-                change.setFile(fileName);
+-                change.setEncoding("UTF-8");
+-                change.setSchemaName(schema);
+-                change.setTableName(table.getName());
+-
++                
+                 ResultSetMetaData columnData = rs.getMetaData();
+-                for (int col = 1; col <= columnData.getColumnCount(); col++) {
+-                    String colName = columnData.getColumnName(col);
+-                    int dataType = columnData.getColumnType(col);
+-                    String typeString = "STRING";
+-                    if (SqlUtil.isNumeric(dataType)) {
+-                        typeString = "NUMERIC";
+-                    } else if (SqlUtil.isBoolean(dataType)) {
+-                        typeString = "BOOLEAN";
+-                    } else if (SqlUtil.isDate(dataType)) {
+-                        typeString = "DATE";
++                int columnCount = columnData.getColumnCount();
++                
++                // if dataDir is not null, print out a csv file and use loadData tag
++                if (dataDir != null) {
++                	String fileName = table.getName() + ".csv";
++                    if (dataDir != null) {
++                        fileName = dataDir + "/" + fileName;
+                     }
+-
+-                    LoadDataColumnConfig columnConfig = new LoadDataColumnConfig();
+-                    columnConfig.setHeader(colName);
+-                    columnConfig.setType(typeString);
+-
+-                    change.addColumn(columnConfig);
++                    
++                	File parentDir = new File(dataDir);
++	                if (!parentDir.exists()) {
++	                    parentDir.mkdirs();
++	                }
++	                if (!parentDir.isDirectory()) {
++	                    throw new RuntimeException(parentDir + " is not a directory");
++	                }
++	
++	                CSVWriter outputFile = new CSVWriter(new FileWriter(fileName));
++	                outputFile.writeAll(rs, true);
++	                outputFile.flush();
++	                outputFile.close();
++	
++	                LoadDataChange change = new LoadDataChange();
++	                change.setFile(fileName);
++	                change.setEncoding("UTF-8");
++	                change.setSchemaName(schema);
++	                change.setTableName(table.getName());
++	
++	                for (int col = 1; col <= columnCount; col++) {
++	                    String colName = columnData.getColumnName(col);
++	                    int dataType = columnData.getColumnType(col);
++	                    String typeString = "STRING";
++	                    if (SqlUtil.isNumeric(dataType)) {
++	                        typeString = "NUMERIC";
++	                    } else if (SqlUtil.isBoolean(dataType)) {
++	                        typeString = "BOOLEAN";
++	                    } else if (SqlUtil.isDate(dataType)) {
++	                        typeString = "DATE";
++	                    }
++	
++	                    LoadDataColumnConfig columnConfig = new LoadDataColumnConfig();
++	                    columnConfig.setHeader(colName);
++	                    columnConfig.setType(typeString);
++	
++	                    change.addColumn(columnConfig);
++	                }
++	
++	                changes.add(change);
+                 }
+-
+-                changes.add(change);
++                else { // if dataDir is null, build and use insert tags
++                	
++                	GroupedChange groupOfChanges = new GroupedChange();
++                	
++                	// loop over all rows
++                	while (rs.next()) {
++                		InsertDataChange change = new InsertDataChange();
++                    	change.setSchemaName(schema);
++                    	change.setTableName(table.getName());
++                    	
++                		// loop over all columns for this row
++                		for (int col = 1; col <= columnCount; col++) {
++                			ColumnConfig column = new ColumnConfig();
++                			column.setName(columnData.getColumnName(col));
++                			
++                			// set the value for this column
++                			int dataType = columnData.getColumnType(col);
++                			if (SqlUtil.isNumeric(dataType)) {
++                				String columnValue = rs.getString(col);
++                				if (columnValue == null) {
++                					column.setValueNumeric((Number)null);
++                				}
++                				else {
++                					// its some sort of non-null number
++                					if (dataType == Types.DOUBLE ||
++                						dataType == Types.NUMERIC ||
++                						dataType == Types.DECIMAL) {
++                							column.setValueNumeric(new Double(columnValue));
++                					}
++                					else if (dataType == Types.FLOAT ||
++                							 dataType == Types.REAL) {
++                								 column.setValueNumeric(new Float(columnValue));
++                					}
++                					else {
++                						// its an integer type of column
++                						column.setValueNumeric(new Integer(columnValue));
++                					}
++                						
++                				}
++                					
++    	                    } else if (SqlUtil.isBoolean(dataType)) {
++    	                        column.setValueBoolean(rs.getBoolean(col));
++    	                    } else if (SqlUtil.isDate(dataType)) {
++    	                        column.setValueDate(rs.getDate(col));
++    	                    }
++    	                    else { //string
++    	                    	column.setValue(rs.getString(col));
++    	                    }
++                			
++                			change.addColumn(column);
++                			
++                		}
++                		
++                		// for each row, add a new change
++                		// (there will be one group per table)
++                		groupOfChanges.addChange(change);
++                	}
++                	
++                	if (groupOfChanges.getChanges().size() > 0)
++                		changes.add(groupOfChanges);
++                }
+             }
+ 
+         } catch (Exception e) {
+Index: src/java/liquibase/util/XMLUtil.java
+===================================================================
+--- src/java/liquibase/util/XMLUtil.java	(revision 748)
++++ src/java/liquibase/util/XMLUtil.java	(working copy)
+@@ -1,6 +1,5 @@
+ package liquibase.util;
+ 
+-import org.w3c.dom.Element;
+ import org.w3c.dom.Node;
+ import org.w3c.dom.NodeList;
+ import org.w3c.dom.Text;
+@@ -13,7 +12,7 @@
+      * Extracts the text from the given element.
+      * Element.getTextContet() is java5 specific, so we need to use this until we drop 1.4 support.
+      */
+-    public static String getTextContent(Element element) {
++    public static String getTextContent(Node element) {
+         StringBuffer text = new StringBuffer();
+         NodeList childNodes = element.getChildNodes();
+         for (int i=0; i< childNodes.getLength(); i++) {
+Index: src/java-test/liquibase/change/ColumnConfigTest.java
+===================================================================
+--- src/java-test/liquibase/change/ColumnConfigTest.java	(revision 748)
++++ src/java-test/liquibase/change/ColumnConfigTest.java	(working copy)
+@@ -22,10 +22,10 @@
+         assertEquals("abc", column.getValue());
+ 
+         column.setValue(null);
+-        assertEquals("passed null doesn't override the value", "abc", column.getValue());
++        assertEquals("passed null should override the value", null, column.getValue());
+         
+         column.setValue("");
+-        assertEquals("passed empty strings don't override the value", "abc", column.getValue());
++        assertEquals("passed empty strings should override the value", "", column.getValue());
+ 
+     }
+ 
+Index: src/java-test/liquibase/database/MockDatabase.java
+===================================================================
+--- src/java-test/liquibase/database/MockDatabase.java	(revision 748)
++++ src/java-test/liquibase/database/MockDatabase.java	(working copy)
+@@ -149,15 +149,37 @@
+         return null;
+     }
+ 
++    /**
++     * @see liquibase.database.Database#getDatabaseChangeLogTableName()
++     */
+     public String getDatabaseChangeLogTableName() {
+         return "DATABASECHANGELOG";
+     }
+ 
++    /**
++     * @see liquibase.database.Database#getDatabaseChangeLogLockTableName()
++     */
+     public String getDatabaseChangeLogLockTableName() {
+         return "DATABASECHANGELOGLOCK";
+     }
++    
++    /**
++     * Does nothing
++     * 
++     * @see liquibase.database.Database#setDatabaseChangeLogLockTableName(java.lang.String)
++     */
++    public void setDatabaseChangeLogLockTableName(String tableName) {
++    }
+ 
+-    public String getConcatSql(String... values) {
++	/**
++	 * Does nothing
++	 * 
++     * @see liquibase.database.Database#setDatabaseChangeLogTableName(java.lang.String)
++     */
++    public void setDatabaseChangeLogTableName(String tableName) {
++    }
++
++	public String getConcatSql(String... values) {
+         return null;
+     }
+ 
+Index: src/build.properties
+===================================================================
+--- src/build.properties	(revision 748)
++++ src/build.properties	(working copy)
+@@ -1,4 +1,4 @@
+-target.java.version=1.5
++target.java.version=1.6
+ build.version=1.8.1
+ maven.build.version=0
+ intellij.build.version=0
+Index: src/build.xml
+===================================================================
+--- src/build.xml	(revision 748)
++++ src/build.xml	(working copy)
+@@ -279,8 +279,7 @@
+             <tarfileset dir="${package.dir}/liquibase-${build.version}-14jvm" prefix="liquibase-${build.version}"
+                         includes="liquibase" mode="755"/>
+         </tar>
+-        <zip destfile="${release.dir}/liquibase-intellij-${build.version}-src.zip" basedir="${intellij.basedir}"
+-                excludes="build/**,build-test/**"/>
++        
+     </target>
+ 
+     <!-- target: SITE -->
+Index: .classpath
+===================================================================
+--- .classpath	(revision 748)
++++ .classpath	(working copy)
+@@ -9,11 +9,14 @@
+ 	<classpathentry kind="lib" path="lib/easymock-2.2.jar"/>
+ 	<classpathentry kind="lib" path="lib/easymockclassextension-2.2.jar"/>
+ 	<classpathentry kind="lib" path="lib/junit-4.1.jar"/>
++	<classpathentry kind="lib" path="lib/opencsv-1.8.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/ant_doxygen-1.4.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/ant-1.6.5.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/jsdk-2.4.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/spring-2.0.6.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/spring-aspects-2.0.6.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/spring-mock-2.0.6.jar"/>
++	<classpathentry kind="lib" path="lib-compile/hibernate3-3.2.6.jar"/>
++	<classpathentry kind="lib" path="lib-compile/hibernate-annotations-3.3.1.jar"/>
+ 	<classpathentry kind="output" path="build"/>
+ </classpath>

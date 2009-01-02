@@ -1,0 +1,7 @@
+<c3p0-config>
+	<default-config>
+		<!-- down from the default of 30 to speed up startup -->
+		<property name="acquireRetryAttempts">5</property>
+		
+	</default-config>
+</c3p0-config> 
