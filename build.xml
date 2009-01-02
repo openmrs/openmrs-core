@@ -87,21 +87,6 @@
 	<!-- *********************************************************** -->
 	<target name="init" description="initialization">
 		
-		<!-- Discover code and database versions via regular expressions -->
-		<loadfile srcfile="${openmrs.database.version.expected.filename}" property="diffFileInput" />
-		<propertyregex property="openmrs.database.version.expected"
-			input="${diffFileInput}"
-			regexp="${openmrs.database.version.expected.regexp}"
-			select="\1"
-			defaultValue="${openmrs.version.major}.${openmrs.version.minor}.0.00" 
-			casesensitive="false" />
-        <echo>openmrs.database.version.expected: ${openmrs.database.version.expected}</echo>
-		<propertyregex property="openmrs.database.version.expected.short"
-			input="${openmrs.database.version.expected}"
-			regexp="${openmrs.version.major}\.${openmrs.version.minor}\.${openmrs.version.maintenance}\.([0-9][0-9]+)"
-			select="\1"
-			defaultValue="00" />
-		
 		<loadfile srcfile="${openmrs.version.revision.filename}" property="repositoryFileInput" />
 		<if>
 			<contains string="${repositoryFileInput}" substring="&lt;?xml" casesensitive="false" />
@@ -186,9 +171,6 @@
 					<attribute name="Specification-Title" value="OpenMRS Build Version and Short Version"/>
 					<attribute name="Specification-Vendor" value="${openmrs.version.long}"/>
 					<attribute name="Specification-Version" value="${openmrs.version.shortnumericonly}"/>
-					
-					<attribute name="Implementation-Title" value="OpenMRS Expected Database Version"/>
-					<attribute name="Implementation-Version" value="${openmrs.database.version.expected}"/>
 				</section>
 			</manifest>
 			<fileset dir="${build.dir}">
@@ -617,7 +599,7 @@
         </path>
 
         <property name="db.changelog.file" value="root.changelog.xml"/>
-        <property name="database.url" value="jdbc:mysql://localhost/openmrs125"/>
+        <property name="database.url" value="jdbc:mysql://localhost/openmrs"/>
         <property name="database.username" value="root"/>
         <property name="database.password" value="password"/>
         <property name="database.driver" value="com.mysql.jdbc.Driver"/>
