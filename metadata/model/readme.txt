@@ -3,36 +3,25 @@ metadata/model folder
 Contains model-specific information, including SQL scripts,
 model image, version information, etc.
 
-x.y.0-createdb-from-scratch-with-demo-data.sql..Drops the current "openmrs" database and creates a new one with demo data
-x.y.0-schema-only.sql...........................Uses currently selected database to create the tables (no row data)
-x.y.0-schema-with-core-and-demo-data.sql........Uses currently selected database to create tables and demo data.  This file
-                                                is the same as the "createdb..." script except that it allows you to run 
-                                                this against any database name (not just "openmrs")
-x.y.0-schema-with-core-data.sql.................Uses currently selected database to create tables and the very base data needed
-                                                for openmrs to run
-readme.txt......................................The file you're reading right now
-update-to-latest-db.mysqldiff.sql...............Updates any openmrs version to the latest version incrementally
-util/...........................................Utility scripts to work on the database
+liquibase-data.zip...................Liquibase xml files to create a database schema, core data, and demo data
+                                     Used by the OpenMRS InitializationFilter to create a database if one does
+                                     not exist and the user has no openmrs runtime properties file defined.
+liquibase-update-to-latest.xml.......Run by openmrs at startup to keep the user's database up to date with the
+									 latest code installed.  This file is packaged with the openmrs api jar 
+readme.txt...........................The file you're reading right now
+util/................................Utility scripts to work on the database
 
 --------
 
-Install the database in 2 easy steps:
+These scripts are not usually used alone.  Install the war file into tomcat and a wizard will walk you through
+creating and populating a database.  (as long as you don't have a runtime properties file defined)
 
-	1. Choose one of the x.y.0________.sql files according to your
-	   situation.  See descriptions above.
-	   
-	   1a) If x.y.0-createdb____.sql, type this at the command line:
-	   		mysql -uroot -p -e"source x.y.0-createdb-from-scratch-with-demo-data.sql"
-	   		
-	   1b) If x.y.0-schema___.sql, type these lines at the command line:
-	   		mysql -uroot -p
-	   		create database custom_openmrs_db default character set utf8;
-	   		use custom_openmrs_db;
-	   		source x.y.0-schema_____.sql
-	   		
-	2. Run update-to-latest-db.mysqldiff.sql (MUST BE DONE LAST)
-			mysql -uroot -p -e"source update-to-latest-db.mysqldiff.sql" -Dopenmrs
+--------
 
+To create a .sql file, use the ant build.xml file:
+  "ant liquibase-create-sql-diff"
+  ...
+  (TODO: enumerate the liquibase ant targets here)
 --------
 
 NOTE: Paul Biondich is in charge of this section

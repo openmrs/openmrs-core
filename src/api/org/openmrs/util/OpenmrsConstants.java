@@ -62,6 +62,13 @@ public final class OpenmrsConstants {
 	
 	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion();
 	
+	/**
+	 * See {@link DatabaseUpdater#updatesRequired()} to see what changesets in the
+	 * liquibase-update-to-latest.xml file in the openmrs api jar file need to be run to bring the
+	 * db up to date with what the api requires.
+	 * 
+	 * @deprecated the database doesn't have just one main version now that we are using liquibase.
+	 */
 	public static final String DATABASE_VERSION_EXPECTED = THIS_PACKAGE.getImplementationVersion();
 	
 	public static String DATABASE_NAME = "openmrs";
@@ -69,8 +76,11 @@ public final class OpenmrsConstants {
 	public static String DATABASE_BUSINESS_NAME = "openmrs";
 	
 	/**
-	 * This is loaded at runtime from (Hibernate)Util.checkDatabaseVersion and will contain the
-	 * current database version
+	 * See {@link DatabaseUpdater#updatesRequired()} to see what changesets in the
+	 * liquibase-update-to-latest.xml file in the openmrs api jar file need to be run to bring the
+	 * db up to date with what the api requires.
+	 * 
+	 * @deprecated the database doesn't have just one main version now that we are using liquibase.
 	 */
 	public static String DATABASE_VERSION = null;
 	
@@ -113,6 +123,12 @@ public final class OpenmrsConstants {
 	 * @see #APPLICATION_DATA_DIRECTORY
 	 */
 	public static String APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY = "application_data_directory";
+	
+	/**
+	 * The name of the runtime property that a user can set that will specify whether the database
+	 * is automatically updated on startup
+	 */
+	public static String AUTO_UPDATE_DATABASE_RUNTIME_PROPERTY = "auto_update_database";
 	
 	/**
 	 * These words are ignored in concept and patient searches
@@ -1054,13 +1070,6 @@ public final class OpenmrsConstants {
 	 * URL to the concept source id verification server
 	 */
 	public static final String IMPLEMENTATION_ID_REMOTE_CONNECTION_URL = "http://resources.openmrs.org/tools/implementationid";
-	
-	/**
-	 * Runtime property to specify the application data directory.
-	 * 
-	 * @see OpenmrsUtil#getApplicationDataDirectory()
-	 */
-	public static final String RUNTIMEPROPERTY_APPLICATION_DATA_DIR = "openmrs.application_data_dir";
 	
 	/**
 	 * Shortcut booleans used to make some OS specific checks more generic; note the *nix flavored

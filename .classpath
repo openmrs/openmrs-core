@@ -19,9 +19,9 @@
 	<classpathentry kind="lib" path="lib/jta/jta.jar"/>
 	<classpathentry kind="lib" path="lib/junit/junit-4.4.jar" sourcepath="/openmrs-source/junit-4.4-src.jar"/>
 	<classpathentry kind="lib" path="lib/junit/xmlunit-1.2.jar" sourcepath="/openmrs-source/xmlunit-1.2-src.zip"/>
-	<classpathentry kind="lib" path="lib/junit/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/junit/hsqldb.jar" sourcepath="/openmrs-source/hsqldb_1_8_0_9.zip"/>
 	<classpathentry kind="lib" path="lib/junit/dbunit-2.2.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
-	<classpathentry kind="lib" path="lib/mysql-connector-java/mysql-connector-java-3.1.10-bin.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java/mysql-connector-java-5.1.7-bin.jar"/>
 	<classpathentry kind="lib" path="lib/asm/asm-attrs.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-bean-collections-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-core-1.7.0.jar"/>
@@ -56,14 +56,16 @@
 	<classpathentry kind="lib" path="metadata/api/spring"/>
 	<classpathentry kind="lib" path="metadata/api/hibernate"/>
 	<classpathentry kind="lib" path="metadata/api/log4j"/>
+	<classpathentry kind="lib" path="metadata/model"/>
 	<classpathentry kind="lib" path="lib/xstream/xstream-1.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-beta1.jar"/>
+	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-beta1.jar" sourcepath="/openmrs-source/velocity-1.6-beta1.zip"/>
 	<classpathentry kind="lib" path="lib/commons-lang/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/benerator/databene-benerator-0.5.5.jar"/>
 	<classpathentry kind="lib" path="lib/benerator/databene-commons-0.4.5.jar"/>
 	<classpathentry kind="lib" path="lib/benerator/databene-webdecs-0.4.5.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/dwr/dwr-205.jar" sourcepath="/openmrs-source/dwr-2.0.5-src.zip"/>
+	<classpathentry kind="lib" path="lib/liquibase/liquibase-1.8.1-mod.jar" sourcepath="/liquibase"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>

@@ -13,6 +13,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,6 +32,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
+import org.hibernate.util.ConfigHelper;
 import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -407,8 +410,50 @@ public class HibernateContextDAO implements ContextDAO {
 		}
 	}
 	
-	public void closeDatabaseConnection() {
-		sessionFactory.close();
+	/**
+	 * Takes the default properties defined in /metadata/api/hibernate/hibernate.default.properties
+	 * and merges it into the user-defined runtime properties
+	 * 
+	 * @see org.openmrs.api.db.ContextDAO#mergeDefaultRuntimeProperties(java.util.Properties)
+	 */
+	public void mergeDefaultRuntimeProperties(Properties runtimeProperties) {
+		
+		// loop over runtime properties and precede each with "hibernate" if
+		// it isn't already
+		for (Object key : runtimeProperties.keySet()) {
+			String prop = (String) key;
+			String value = (String) runtimeProperties.get(key);
+			log.trace("Setting property: " + prop + ":" + value);
+			if (!prop.startsWith("hibernate") && !runtimeProperties.containsKey("hibernate." + prop))
+				runtimeProperties.setProperty("hibernate." + prop, value);
+		}
+		
+		// load in the default hibernate properties from hibernate.default.properties
+		InputStream propertyStream = null;
+		try {
+			Properties props = new Properties();
+			propertyStream = ConfigHelper.getResourceAsStream("/hibernate.default.properties");
+			props.load(propertyStream);
+			
+			// add in all default properties that don't exist in the runtime 
+			// properties yet
+			for (Map.Entry<Object, Object> entry : props.entrySet()) {
+				if (!runtimeProperties.containsKey(entry.getKey()))
+					runtimeProperties.put(entry.getKey(), entry.getValue());
+			}
+		}
+		catch (IOException e) {
+			log.fatal("Unable to load default hibernate properties", e);
+		}
+		finally {
+			try {
+				propertyStream.close();
+			}
+			catch (Throwable t) {
+				// pass 
+			}
+		}
+		
 	}
 	
 }

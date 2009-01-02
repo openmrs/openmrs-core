@@ -9,7 +9,6 @@
   <concept_name_tag_map concept_name_id="7" concept_name_tag_id="4"/>
   <concept_name_tag_map concept_name_id="12" concept_name_tag_id="4"/>
   <concept_set concept_id="1553" concept_set="1726" sort_weight="1.0" creator="1" date_created="2007-06-05 17:38:53.0"/>
-  <global_property property="database_version" property_value="1.4.0.16"/>
   <obs obs_id="17" person_id="7" concept_id="1553" encounter_id="5" obs_datetime="2008-08-01 00:00:00.0" location_id="1" obs_group_id="16" value_numeric="1.0" comments="" creator="1" date_created="2008-08-18 14:09:35.0" voided="false"/>
   <obs obs_id="18" person_id="7" concept_id="1553" encounter_id="5" obs_datetime="2008-08-01 00:00:00.0" location_id="1" obs_group_id="16" value_numeric="5.0" comments="" creator="1" date_created="2008-08-18 14:09:35.0" voided="false"/>
   

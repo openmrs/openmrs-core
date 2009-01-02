@@ -21,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Defines the functions that the Context needs to access the database
- * 
- * @version 1.1
  */
 public interface ContextDAO {
 	
@@ -99,6 +97,10 @@ public interface ContextDAO {
 	@Transactional
 	public void checkCoreDataset();
 	
-	public void closeDatabaseConnection();
-	
+	/**
+	 * Merge in the default properties defined for this database connection
+	 * 
+	 * @param runtimeProperties The current user specific runtime properties
+	 */
+	public void mergeDefaultRuntimeProperties(Properties runtimeProperties);
 }

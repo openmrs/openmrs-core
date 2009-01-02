@@ -5,5 +5,4 @@
   <concept_name concept_id="12232" name="TEMPERATURE (C)" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="12232" voided="false"/>
   <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
   <concept_name_tag_map concept_name_id="12232" concept_name_tag_id="4"/>
-  <global_property property="database_version" property_value="1.4.0.16"/>
 </dataset>

@@ -1,0 +1,48 @@
+#parse($headerTemplate)
+	
+	<form method="post">
+		<input type="hidden" name="page" value="otherruntimeproperties.vm" /> 
+		
+		<span class="question">
+			Do you want to be able to upload modules from the web interface?<br/>
+		</span>
+		<i>Disclaimer: This could be a security risk if a user with upload permissions is ever compromised.  The
+		alternative is to drop .omod module files into your application data directory and restart OpenMRS)</i>
+		<table>
+		  <tr>
+		     <td>Yes</td>
+		     <td>
+		     	<input type="radio" name="module_web_admin" value="yes" checked="checked"/>
+		     </td>
+		  </tr>
+		  <tr>
+		     <td>No</td>
+		     <td><input type="radio" name="module_web_admin" value="no" /></td>
+		  </tr>
+		</table>
+		
+		<br/><br/><br/>
+		
+		<span class="question">
+			Do you want updates to the database to be automatically applied on startup when a new 
+			web application is deployed?
+		</span> 
+		<table>
+		  <tr>
+		     <td>Yes</td>
+		     <td>
+		     	<input type="radio" name="auto_update_database" value="yes" checked="checked"/>
+		     </td>
+		  </tr>
+		  <tr>
+		     <td>No</td>
+		     <td><input type="radio" name="auto_update_database" value="no" /></td>
+		  </tr>
+		</table>
+		
+		<br>
+		<input type="submit" value="Save Properties" />
+	
+	</form>
+
+#parse($footerTemplate)

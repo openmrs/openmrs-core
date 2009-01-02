@@ -22,5 +22,4 @@
   <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
   <field_type field_type_id="1" name="some field type" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
   <field_type field_type_id="2" name="some field type 2" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
-  <global_property property="database_version" property_value="1.4.0.16"/>
 </dataset>

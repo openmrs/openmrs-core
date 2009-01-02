@@ -69,4 +69,9 @@ public class WebConstants {
 	
 	public static final String HYPERLINK_VIEW = "hyperlink_view";
 	
+	/**
+	 * Page in the webapp used for initial setup of the database connection if no valid one exists
+	 */
+	public static final String SETUP_PAGE_URL = "initialsetup";
+	
 }

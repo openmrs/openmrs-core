@@ -36,11 +36,11 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.WebModuleUtil;
+import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
-import org.springframework.beans.factory.CannotLoadBeanClassException;
+import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.EntityResolver;
@@ -55,7 +55,20 @@ import org.xml.sax.SAXException;
  */
 public final class Listener extends ContextLoaderListener {
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private static final Log log = LogFactory.getLog(Listener.class);
+	
+	private static boolean runtimePropertiesFound = false;
+	
+	/**
+	 * Boolean flag set on webapp startup marking whether there is a runtime properties file or not.
+	 * If there is not, then the {@link InitializationFilter} takes over any openmrs url and
+	 * redirects to the {@link #SETUP_PAGE_URL}
+	 * 
+	 * @return true/false whether an openmrs runtime properties file is defined
+	 */
+	public static boolean runtimePropertiesFound() {
+		return runtimePropertiesFound;
+	}
 	
 	/**
 	 * This method is called when the servlet context is initialized(when the Web Application is
@@ -64,23 +77,105 @@ public final class Listener extends ContextLoaderListener {
 	 * @param event
 	 */
 	public void contextInitialized(ServletContextEvent event) {
-		log.debug("Initializing OpenMRS");
-		ServletContext servletContext = event.getServletContext();
+		log.debug("Starting the OpenMRS webapp");
+		
+		try {
+			ServletContext servletContext = event.getServletContext();
+			
+			// pulled from web.xml.
+			loadConstants(servletContext);
+			
+			// erase things in the dwr file
+			clearDWRFile(servletContext);
+			
+			// Try to get the runtime properties 
+			Properties props = getRuntimeProperties();
+			
+			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+			
+			if (props != null) {
+				// the user has defined a runtime properties file
+				runtimePropertiesFound = true;
+				
+				// set it to the context so that they can be 
+				// used during sessionFactory creation 
+				Context.setRuntimeProperties(props);
+				
+				// must be done after the runtime properties are
+				// found but before the database update is done
+				copyCustomizationIntoWebapp(servletContext, props);
+				
+				// Do the parent spring setup (but don't start spring and its servlets until accessed) 
+				super.contextInitialized(event);
+				
+				// Do the normal OpenMRS API startup now
+				Context.startup(props);
+				
+				// TODO catch an input required exception here and deal with it with the user
+				
+				// Load the core modules from the webapp coreModules folder
+				loadCoreModules(servletContext);
+				
+				// do the web specific starting of the modules
+				performWebStartOfModules(servletContext);
+			}
+		}
+		catch (DatabaseUpdateException updateException) {
+			log.error("Unable to update the database to the latest version", updateException);
+			throw new RuntimeException(
+			        "Unable to update the database to the latest version.  See the logs for more information",
+			        updateException);
+		}
+		catch (Throwable t) {
+			log.warn("Got exception while starting up: ", t);
+		}
+		
+	}
+	
+	/**
+	 * Load the openmrs constants with values from web.xml init parameters
+	 * 
+	 * @param servletContext startup context (web.xml)
+	 */
+	private void loadConstants(ServletContext servletContext) {
+		WebConstants.BUILD_TIMESTAMP = servletContext.getInitParameter("build.timestamp");
+		WebConstants.WEBAPP_NAME = getContextPath(servletContext);
+	}
+	
+	/**
+	 * Hacky way to get the current contextPath. This will usually be "openmrs". This method will be
+	 * obsolete when servlet api ~2.6 comes out...at which point a call like
+	 * servletContext.getContextRoot() would be sufficient
+	 * 
+	 * @return current contextPath of this webapp without initial slash
+	 */
+	private String getContextPath(ServletContext servletContext) {
+		// Get the context path without the request.
+		String contextPath = "";
+		try {
+			String path = servletContext.getResource("/").getPath();
+			contextPath = path.substring(0, path.lastIndexOf("/"));
+			contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		// trim off initial slash if it exists
+		if (contextPath.indexOf("/") != -1)
+			contextPath = contextPath.substring(1);
+		
+		return contextPath;
+	}
+	
+	/**
+	 * Convenience method to empty out the dwr-modules.xml file to fix any errors that might have
+	 * occurred in it when loading or unloading modules.
+	 * 
+	 * @param servletContext
+	 */
+	private void clearDWRFile(ServletContext servletContext) {
 		String realPath = servletContext.getRealPath("");
-		
-		// pulled from web.xml.
-		loadConstants(servletContext);
-		
-		/**
-		 * Get the runtime properties and set it to the context so that they can be used during
-		 * sessionFactory creation
-		 */
-		Properties props = getRuntimeProperties();
-		Context.setRuntimeProperties(props);
-		
-		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-		
-		// clear the dwr file
 		String absPath = realPath + "/WEB-INF/dwr-modules.xml";
 		File dwrFile = new File(absPath.replace("/", File.separator));
 		if (dwrFile.exists()) {
@@ -113,74 +208,15 @@ public final class Listener extends ContextLoaderListener {
 				log.debug("Error clearing dwr-modules.xml", t);
 			}
 		}
-		
-		try {
-			// start the spring context
-			super.contextInitialized(event);
-		}
-		catch (CannotLoadBeanClassException e) {
-			log
-			        .warn("Error while initializing spring context.  More than likely caused by an improper shutdown that leaves 1 or more module contexts lying around");
-			log.warn("Stacktrace: ", e);
-			log.warn("Stopping all modules (most importantly, deleting the context files) and trying again: ");
-			
-			// Spring places a throwable in the servlet context as the wac if an error occurs.
-			// we need to remove it in order to refresh the wac
-			servletContext.removeAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
-			
-			// retry starting the spring context
-			getContextLoader().initWebApplicationContext(servletContext);
-		}
-		
-		/**
-		 * Do the normal API startup now
-		 */
-		Context.startup(props);
-		
-		/**
-		 * Load the core modules from the webapp coreModules folder
-		 */
-		loadCoreModules(servletContext);
-		
-		/**
-		 * Copy the module messages over into the webapp and perform web portion of startup
-		 */
-		List<Module> startedModules = new ArrayList<Module>();
-		startedModules.addAll(ModuleFactory.getStartedModules());
-		boolean someModuleNeedsARefresh = false;
-		for (Module mod : startedModules) {
-			try {
-				boolean thisModuleCausesRefresh = WebModuleUtil.startModule(mod, servletContext, /* delayContextRefresh */
-				    true);
-				someModuleNeedsARefresh = someModuleNeedsARefresh || thisModuleCausesRefresh;
-			}
-			catch (Throwable t) {
-				mod.setStartupErrorMessage("Unable to start module", t);
-			}
-		}
-		
-		if (someModuleNeedsARefresh) {
-			try {
-				WebModuleUtil.refreshWAC(servletContext);
-			}
-			catch (Throwable t) {
-				log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", t);
-				try {
-					WebModuleUtil.shutdownModules(servletContext);
-					for (Module mod : ModuleFactory.getLoadedModules()) {// use loadedModules to avoid a concurrentmodificationexception
-						ModuleFactory.stopModule(mod, true); // pass in the true value here so that the global properties aren't written to
-					}
-					WebModuleUtil.refreshWAC(servletContext);
-				}
-				catch (Throwable t2) {
-					log.warn("caught another error: ", t2);
-				}
-			}
-		}
-		
-		/**
-		 * Copy the customization scripts over into the webapp
-		 */
+	}
+	
+	/**
+	 * Copy the customization scripts over into the webapp
+	 * 
+	 * @param servletContext
+	 */
+	private void copyCustomizationIntoWebapp(ServletContext servletContext, Properties props) {
+		String realPath = servletContext.getRealPath("");
 		// TODO centralize map to WebConstants?
 		Map<String, String> custom = new HashMap<String, String>();
 		custom.put("custom.template.dir", "/WEB-INF/template");
@@ -231,43 +267,6 @@ public final class Listener extends ContextLoaderListener {
 			}
 			
 		}
-		
-	}
-	
-	/**
-	 * Load the openmrs constants with values from web.xml init parameters
-	 * 
-	 * @param servletContext startup context (web.xml)
-	 */
-	private void loadConstants(ServletContext servletContext) {
-		WebConstants.BUILD_TIMESTAMP = servletContext.getInitParameter("build.timestamp");
-		WebConstants.WEBAPP_NAME = getContextPath(servletContext);
-	}
-	
-	/**
-	 * Hacky way to get the current contextPath. This will usually be "openmrs". This method will be
-	 * obsolete when servlet api ~2.6 comes out...at which point a call like
-	 * servletContext.getContextRoot() would be sufficient
-	 * 
-	 * @return current contextPath of this webapp without initial slash
-	 */
-	private String getContextPath(ServletContext servletContext) {
-		// Get the context path without the request.
-		String contextPath = "";
-		try {
-			String path = servletContext.getResource("/").getPath();
-			contextPath = path.substring(0, path.lastIndexOf("/"));
-			contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		// trim off initial slash if it exists
-		if (contextPath.indexOf("/") != -1)
-			contextPath = contextPath.substring(1);
-		
-		return contextPath;
 	}
 	
 	/**
@@ -310,8 +309,10 @@ public final class Listener extends ContextLoaderListener {
 	/**
 	 * Load the core modules This method assumes that the WebModuleUtil.startup() will be called
 	 * later for modules loaded here
+	 * 
+	 * @param servletContext
 	 */
-	private void loadCoreModules(ServletContext servletContext) {
+	public static void loadCoreModules(ServletContext servletContext) {
 		String path = servletContext.getRealPath("");
 		path += File.separator + "WEB-INF" + File.separator + "coreModules";
 		File folder = new File(path);
@@ -342,6 +343,8 @@ public final class Listener extends ContextLoaderListener {
 	/**
 	 * Called when the webapp is shut down properly Must call Context.shutdown() and then shutdown
 	 * all the web layers of the modules
+	 * 
+	 * @see org.springframework.web.context.ContextLoaderListener#contextDestroyed(javax.servlet.ServletContextEvent)
 	 */
 	public void contextDestroyed(ServletContextEvent event) {
 		
@@ -350,55 +353,19 @@ public final class Listener extends ContextLoaderListener {
 			
 			WebModuleUtil.shutdownModules(event.getServletContext());
 		}
-		catch (Exception e) {
-			log.warn("Error while shutting down openmrs", e);
+		catch (Throwable t) {
+			log.warn("Error while shutting down openmrs", t);
 		}
 		
 		super.contextDestroyed(event);
 		
-		/*
-		// DriverManager cleanup code taken from
-		// http://opensource2.atlassian.com/confluence/spring/pages/viewpage.action?pageId=2669
-		try {
-			Enumeration drivers = DriverManager.getDrivers();
-			while (drivers.hasMoreElements()) {
-				Driver o = (Driver) drivers.nextElement();
-				if (doesClassLoaderMatch(o)) {
-					// log.debug("The current driver '" + o + "' is being
-					// deregistered.");
-					try {
-						DriverManager.deregisterDriver(o);
-					} catch (SQLException e) {
-						throw new RuntimeException(e);
-					}
-				} else {
-					// log.info("Driver '" + o + "' wasn't loaded by this
-					// webapp, so not touching it.");
-				}
-			}
-
-			// log.debug("flushing caches");
-
-		} catch (Throwable e) {
-			// log.error("Failed to cleanup ClassLoader for webapp");
-		}
-
-		// log.debug("undeploying application : LogFactory() being destroyed");
-		// LogFactory.release(Thread.currentThread().getContextClassLoader());
-		LogFactory.releaseAll();
-		  
-		 */
 	}
-	
-	//private boolean doesClassLoaderMatch(Driver o) {
-	//	return o.getClass().getClassLoader() == this.getClass()
-	//			.getClassLoader();
-	//}
 	
 	/**
 	 * Looks for and loads in the runtime properties. Searches for an the file in this order: 1)
 	 * environment variable called "OPENMRS_RUNTIME_PROPERTIES_FILE" 2)
-	 * {user_home}/WEBAPPNAME_runtime.properties 3) ./WEBAPPNAME_runtime.properties
+	 * {user_home}/WEBAPPNAME_runtime.properties 3) ./WEBAPPNAME_runtime.properties Returns null if
+	 * no runtime properties file was found
 	 * 
 	 * @return Properties
 	 */
@@ -465,9 +432,50 @@ public final class Listener extends ContextLoaderListener {
 			
 		}
 		catch (Throwable t) {
-			log.warn("Unable to load properties file. Starting with default properties.", t);
+			log.warn("Unable to find a runtime properties file. Initial setup is needed", t);
+			return null;
 		}
 		return props;
+	}
+	
+	/**
+	 * Call WebModuleUtil.startModule on each started module
+	 * 
+	 * @param servletContext
+	 */
+	public static void performWebStartOfModules(ServletContext servletContext) {
+		List<Module> startedModules = new ArrayList<Module>();
+		startedModules.addAll(ModuleFactory.getStartedModules());
+		boolean someModuleNeedsARefresh = false;
+		for (Module mod : startedModules) {
+			try {
+				boolean thisModuleCausesRefresh = WebModuleUtil.startModule(mod, servletContext,
+				/* delayContextRefresh */true);
+				someModuleNeedsARefresh = someModuleNeedsARefresh || thisModuleCausesRefresh;
+			}
+			catch (Throwable t) {
+				mod.setStartupErrorMessage("Unable to start module", t);
+			}
+		}
+		
+		if (someModuleNeedsARefresh) {
+			try {
+				WebModuleUtil.refreshWAC(servletContext);
+			}
+			catch (Throwable t) {
+				log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", t);
+				try {
+					WebModuleUtil.shutdownModules(servletContext);
+					for (Module mod : ModuleFactory.getLoadedModules()) {// use loadedModules to avoid a concurrentmodificationexception
+						ModuleFactory.stopModule(mod, true); // pass in the true value here so that the global properties aren't written to
+					}
+					WebModuleUtil.refreshWAC(servletContext);
+				}
+				catch (Throwable t2) {
+					log.warn("caught another error: ", t2);
+				}
+			}
+		}
 	}
 	
 }

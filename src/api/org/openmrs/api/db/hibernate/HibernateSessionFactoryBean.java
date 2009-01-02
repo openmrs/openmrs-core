@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.util.ConfigHelper;
-import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
@@ -71,18 +70,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			log.fatal("Unable to load default hibernate properties", e);
 		}
 		
-		// check database connection before configuring session factory
-		// If not done, Hibernate blocks until a successful connection is made
-		String driver = config.getProperty("hibernate.connection.driver_class");
-		String username = config.getProperty("hibernate.connection.username");
-		String password = config.getProperty("hibernate.connection.password");
-		String url = config.getProperty("hibernate.connection.url");
-		int check = checkDatabaseConnection(driver, username, password, url);
-		
-		if (check == 0)
-			return config;
-		else
-			throw new APIException("Error connecting to database. See error log for details.");
+		return config;
 		
 	}
 	

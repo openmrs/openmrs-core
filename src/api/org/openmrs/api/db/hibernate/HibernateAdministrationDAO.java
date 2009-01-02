@@ -434,7 +434,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 			}
 		}
 		catch (Exception e) {
-			log.error("Error while running sql: " + sql, e);
+			log.debug("Error while running sql: " + sql, e);
 			throw new DAOException("Error while running sql: " + sql + " . Message: " + e.getMessage(), e);
 		}
 		

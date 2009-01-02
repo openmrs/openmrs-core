@@ -382,15 +382,6 @@ public class ModuleFactory {
 						        + "'.  Current code version is only '" + OpenmrsConstants.OPENMRS_VERSION_SHORT + "'",
 						        module.getName());
 				
-				// check to be sure this module can run with our current version
-				// of the OpenMRS database
-				String requireDBVersion = module.getRequireDatabaseVersion();
-				if (requireDBVersion != null && !requireDBVersion.equals(""))
-					if (ModuleUtil.compareVersion(OpenmrsConstants.DATABASE_VERSION, requireDBVersion) < 0)
-						throw new ModuleException("Module requires at least database version '" + requireDBVersion
-						        + "'. Current database version is only '" + OpenmrsConstants.DATABASE_VERSION + "'", module
-						        .getName());
-				
 				// check for required modules
 				if (!requiredModulesStarted(module)) {
 					throw new ModuleException("Not all required modules are started: "

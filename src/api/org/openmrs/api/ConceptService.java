@@ -383,7 +383,7 @@ public interface ConceptService extends OpenmrsService {
 	
 	/**
 	 * @deprecated Use
-	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Integer, Integer)
+	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Integer, Integer)}
 
 	 */
 	@Transactional(readOnly = true)
@@ -403,7 +403,7 @@ public interface ConceptService extends OpenmrsService {
 	
 	/**
 	 * @deprecated Use
-	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Integer, Integer)
+	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Integer, Integer)}
 
 	 */
 	@Transactional(readOnly = true)

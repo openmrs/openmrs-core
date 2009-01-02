@@ -309,7 +309,7 @@ public interface UserService extends OpenmrsService {
 	 * @param pw2 new password
 	 * @throws APIException
 	 */
-	@Logging(ignoredArgumentIndexes = { 1 })
+	@Logging(ignoredArgumentIndexes = { 0, 1 })
 	public void changePassword(String pw, String pw2) throws APIException;
 	
 	/**
