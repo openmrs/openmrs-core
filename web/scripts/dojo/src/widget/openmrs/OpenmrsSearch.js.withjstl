@@ -773,10 +773,10 @@ dojo.widget.defineWidget(
 			lastItemDisplayed = total;
 		
 		// there may be strings mixed in the list, correct the list size here
-		//if (lastItemDisplayed != this.objectsFound.length) {
-		//	total = total - (lastItemDisplayed - this.objectsFound.length);
-		//	lastItemDisplayed = this.objectsFound.length;
-		//}
+		if (lastItemDisplayed != this.objectsFound.length) {
+			total = total - (lastItemDisplayed - this.objectsFound.length);
+			lastItemDisplayed = this.objectsFound.length;
+		}
 		
 		this.infoBar.innerHTML = '';
 		if (this.lastPhraseSearched != null)
