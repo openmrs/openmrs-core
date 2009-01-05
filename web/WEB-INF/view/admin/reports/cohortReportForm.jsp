@@ -223,137 +223,138 @@
 			<br/>
 			<input type="submit" value="<spring:message code="general.save"/>"/>
 		</div>
-		
-		<div id="reportTab2">
-			<spring:bind path="command.parameters">
-				<c:if test="${status.errorMessage != ''}"><div class="error">${status.errorMessage}</div></c:if>
-			</spring:bind>
-			<span style="color:blue;"><spring:message code="Report.cohortReport.help.parameters" /></span><br/><br/>
-			<table id="parametersTable">
-				<tr>
-					<th><spring:message code="Report.parameter.name" /></th>
-					<th><spring:message code="Report.parameter.label" /></th>
-					<th><spring:message code="Report.parameter.type" /></th>
-				</tr>
-				<c:forEach var="parameter" items="${command.parameters}">
+		<c:if test="${!empty command.reportId}">
+			<div id="reportTab2">
+				<spring:bind path="command.parameters">
+					<c:if test="${status.errorMessage != ''}"><div class="error">${status.errorMessage}</div></c:if>
+				</spring:bind>
+				<span style="color:blue;"><spring:message code="Report.cohortReport.help.parameters" /></span><br/><br/>
+				<table id="parametersTable">
 					<tr>
-						<td><input type="text" name="parameterName" value="${parameter.name}"/></td>
-						<td><input type="text" size="40" name="parameterLabel" value="${parameter.label}"/></td>
-						<td>
-							<select name="parameterClass">
-								<option value=""></option>
-								<c:forEach var="clazz" items="${parameterClasses}">
-									<option <c:if test="${parameter.clazz == clazz}">selected="true"</c:if> value="${clazz.name}">
-										${clazz.simpleName}
-									</option>
-								</c:forEach>
-							</select>
-						</td>
-						<td>
-							<span class="voidButton" onClick="deleteTableRow(this.parentNode.parentNode)">X</span>
-						</td>
+						<th><spring:message code="Report.parameter.name" /></th>
+						<th><spring:message code="Report.parameter.label" /></th>
+						<th><spring:message code="Report.parameter.type" /></th>
 					</tr>
-				</c:forEach>
-			</table>
-			<a onClick="addAnotherParameter()"><spring:message code="Report.parameter.add" /></a>
-			<br/><br/>
-			<input type="submit" value="<spring:message code="general.save"/>"/>
-		</div>
-	
-		<div id="reportTab3">
-			<div id="cohortResult" style="display: none; position: absolute; z-index: 5; border: 2px black solid; background-color: #e0f0d0">
-				<div style="float: right">
-					<a onClick="hideDiv('cohortResult')">[X]</a>
-				</div>
-				<b><u><spring:message code="Report.cohortReport.preview" /></u></b>
-				<br/>
-				<openmrs:portlet url="cohort" parameters="linkUrl="/>
-			</div>
-			<span style="color:blue;"><spring:message code="Report.cohortReport.help.indicators" /></span><br/><br/>
-			<table><tr valign="top">
-				<td>
-					<spring:bind path="command.rows">
-						<c:if test="${status.errorMessage != ''}"><div class="error">${status.errorMessage}</div></c:if>
-					</spring:bind>
-					
-					<table id="rowsTable">
+					<c:forEach var="parameter" items="${command.parameters}">
 						<tr>
-							<th nowrap>
-								<spring:message code="Report.cohortReport.indicatorName" />
-								(<spring:message code="Report.cohortReport.indicatorName.example" />)
-							</th>
-							<th nowrap>
-								<spring:message code="Report.cohortReport.indicatorDescription" />
-								(<spring:message code="Report.cohortReport.indicatorDescription.example" />)
-							</th>
-							<th nowrap>
-								<spring:message code="Report.cohortReport.indicatorSpecification" />
-								(<spring:message code="Report.cohortReport.indicatorSpecification.example" />)
-							</th>
-							<th colspan="2">&nbsp;</th>
+							<td><input type="text" name="parameterName" value="${parameter.name}"/></td>
+							<td><input type="text" size="40" name="parameterLabel" value="${parameter.label}"/></td>
+							<td>
+								<select name="parameterClass">
+									<option value=""></option>
+									<c:forEach var="clazz" items="${parameterClasses}">
+										<option <c:if test="${parameter.clazz == clazz}">selected="true"</c:if> value="${clazz.name}">
+											${clazz.simpleName}
+										</option>
+									</c:forEach>
+								</select>
+							</td>
+							<td>
+								<span class="voidButton" onClick="deleteTableRow(this.parentNode.parentNode)">X</span>
+							</td>
 						</tr>
-						<c:forEach var="row" items="${command.rows}">
-							<tr valign="top">
-								<td><input type="text" name="rowName" value="${row.name}"/></td>
-								<td><input type="text" size="40" name="rowDescription" value="${row.description}"/></td>
-								<td><textarea name="rowQuery" class="rowQuery" onFocus="showShortcuts(this)">${row.query}</textarea></td>
-								<td><input type="button" value="Test" onClick="testQuery(this)"/></td>
-								<td><span class="voidButton" onClick="deleteTableRow(this.parentNode.parentNode)">X</span></td>
-							</tr>
-						</c:forEach>
-					</table>
-					<a onClick="addAnotherRow()"><spring:message code="Report.cohortReport.indicator.add" /></a>
-				</td>
-				<td width="*">
-		
-					<div id="shortcuts" style="border: 1px black solid; padding: 5px; background-color: #f0f0f0">
-						<span style="font-weight:bold;"><spring:message code="Report.cohortReport.operators" />:<br/></span><br/>
-						<span class="button" onClick="handleShortcut('(')">&nbsp;(&nbsp;</span>
-						<span class="button" onClick="handleShortcut(')')">&nbsp;)&nbsp;</span>
-						<span class="button" onClick="handleShortcut('AND')"><spring:message code="Report.cohortReport.operator.and" /></span>
-						<span class="button" onClick="handleShortcut('OR')"><spring:message code="Report.cohortReport.operator.or" /></span>
-						<span class="button" onClick="handleShortcut('NOT')"><spring:message code="Report.cohortReport.operator.not" /></span>
-						<br/>
-							
-						<c:if test="${fn:length(macros) > 0}">
-							<br/>
-							<b><spring:message code="Report.macros" />:</b>
-							<c:forEach var="macro" items="${macros}">
-								<br/><a class="shortcut" onClick="handleShortcut('${macroPrefix}${macro.key}${macroSuffix}')" title="${macro.value}">${macro.key}</a>
-							</c:forEach>
-							<br/>
-						</c:if>
-				
-						<c:if test="${fn:length(patientSearches) > 0}">
-							<br/>
-							<b><spring:message code="Report.cohortReport.savedPatientSearches" />:</b>
-							<c:forEach var="search" items="${patientSearches}">
-								<br/><a class="shortcut" onClick="handleShortcut('[${search.key}]')" title="${search.value}">${search.key}</a>
-							</c:forEach>
-							<br/>
-						</c:if>
-					</div>
-				</td>
-			</tr></table>
-			<input type="submit" value="<spring:message code="general.save"/>"/>
-		</div>
-	</form>
-
-	<openmrs:extensionPoint pointId="org.openmrs.report.cohortReportFormTab" type="html">
-		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-			<div id="reportExtensionTab${extension.tabId}">
-				<c:choose>
-					<c:when test="${extension.portletUrl == '' || extension.portletUrl == null}">
-						portletId is null: '${extension.extensionId}'
-					</c:when>
-					<c:otherwise>
-						<openmrs:portlet url="${extension.portletUrl}" id="${extension.tabId}" moduleId="${extension.moduleId}" parameters="reportId=${command.reportId}" />
-					</c:otherwise>
-				</c:choose>
+					</c:forEach>
+				</table>
+				<a onClick="addAnotherParameter()"><spring:message code="Report.parameter.add" /></a>
+				<br/><br/>
+				<input type="submit" value="<spring:message code="general.save"/>"/>
 			</div>
-		</openmrs:hasPrivilege>
-	</openmrs:extensionPoint>
-
+		
+			<div id="reportTab3">
+				<div id="cohortResult" style="display: none; position: absolute; z-index: 5; border: 2px black solid; background-color: #e0f0d0">
+					<div style="float: right">
+						<a onClick="hideDiv('cohortResult')">[X]</a>
+					</div>
+					<b><u><spring:message code="Report.cohortReport.preview" /></u></b>
+					<br/>
+					<openmrs:portlet url="cohort" parameters="linkUrl="/>
+				</div>
+				<span style="color:blue;"><spring:message code="Report.cohortReport.help.indicators" /></span><br/><br/>
+				<table><tr valign="top">
+					<td>
+						<spring:bind path="command.rows">
+							<c:if test="${status.errorMessage != ''}"><div class="error">${status.errorMessage}</div></c:if>
+						</spring:bind>
+						
+						<table id="rowsTable">
+							<tr>
+								<th nowrap>
+									<spring:message code="Report.cohortReport.indicatorName" />
+									(<spring:message code="Report.cohortReport.indicatorName.example" />)
+								</th>
+								<th nowrap>
+									<spring:message code="Report.cohortReport.indicatorDescription" />
+									(<spring:message code="Report.cohortReport.indicatorDescription.example" />)
+								</th>
+								<th nowrap>
+									<spring:message code="Report.cohortReport.indicatorSpecification" />
+									(<spring:message code="Report.cohortReport.indicatorSpecification.example" />)
+								</th>
+								<th colspan="2">&nbsp;</th>
+							</tr>
+							<c:forEach var="row" items="${command.rows}">
+								<tr valign="top">
+									<td><input type="text" name="rowName" value="${row.name}"/></td>
+									<td><input type="text" size="40" name="rowDescription" value="${row.description}"/></td>
+									<td><textarea name="rowQuery" class="rowQuery" onFocus="showShortcuts(this)">${row.query}</textarea></td>
+									<td><input type="button" value="Test" onClick="testQuery(this)"/></td>
+									<td><span class="voidButton" onClick="deleteTableRow(this.parentNode.parentNode)">X</span></td>
+								</tr>
+							</c:forEach>
+						</table>
+						<a onClick="addAnotherRow()"><spring:message code="Report.cohortReport.indicator.add" /></a>
+					</td>
+					<td width="*">
+			
+						<div id="shortcuts" style="border: 1px black solid; padding: 5px; background-color: #f0f0f0">
+							<span style="font-weight:bold;"><spring:message code="Report.cohortReport.operators" />:<br/></span><br/>
+							<span class="button" onClick="handleShortcut('(')">&nbsp;(&nbsp;</span>
+							<span class="button" onClick="handleShortcut(')')">&nbsp;)&nbsp;</span>
+							<span class="button" onClick="handleShortcut('AND')"><spring:message code="Report.cohortReport.operator.and" /></span>
+							<span class="button" onClick="handleShortcut('OR')"><spring:message code="Report.cohortReport.operator.or" /></span>
+							<span class="button" onClick="handleShortcut('NOT')"><spring:message code="Report.cohortReport.operator.not" /></span>
+							<br/>
+								
+							<c:if test="${fn:length(macros) > 0}">
+								<br/>
+								<b><spring:message code="Report.macros" />:</b>
+								<c:forEach var="macro" items="${macros}">
+									<br/><a class="shortcut" onClick="handleShortcut('${macroPrefix}${macro.key}${macroSuffix}')" title="${macro.value}">${macro.key}</a>
+								</c:forEach>
+								<br/>
+							</c:if>
+					
+							<c:if test="${fn:length(patientSearches) > 0}">
+								<br/>
+								<b><spring:message code="Report.cohortReport.savedPatientSearches" />:</b>
+								<c:forEach var="search" items="${patientSearches}">
+									<br/><a class="shortcut" onClick="handleShortcut('[${search.key}]')" title="${search.value}">${search.key}</a>
+								</c:forEach>
+								<br/>
+							</c:if>
+						</div>
+					</td>
+				</tr></table>
+				<input type="submit" value="<spring:message code="general.save"/>"/>
+			</div>
+		</c:if>
+	</form>
+	<c:if test="${!empty command.reportId}">	
+		<openmrs:extensionPoint pointId="org.openmrs.report.cohortReportFormTab" type="html">
+			<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+				<div id="reportExtensionTab${extension.tabId}">
+					<c:choose>
+						<c:when test="${extension.portletUrl == '' || extension.portletUrl == null}">
+							portletId is null: '${extension.extensionId}'
+						</c:when>
+						<c:otherwise>
+							<openmrs:portlet url="${extension.portletUrl}" id="${extension.tabId}" moduleId="${extension.moduleId}" parameters="reportId=${command.reportId}" />
+						</c:otherwise>
+					</c:choose>
+				</div>
+			</openmrs:hasPrivilege>
+		</openmrs:extensionPoint>
+	</c:if>
 </div>
 <br/>
 
