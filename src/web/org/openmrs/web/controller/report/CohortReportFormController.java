@@ -455,7 +455,9 @@ public class CohortReportFormController extends SimpleFormController implements 
 				errors.rejectValue("rows", null, "Each row must have a name");
 			
 			try {
-				CohortDefinition def = CohortUtil.parse(row.getQuery());
+				String query = row.getQuery();
+				query = Context.getReportService().applyReportXmlMacros(query);
+				CohortDefinition def = CohortUtil.parse(query);
 				if (def == null)
 					throw new Exception();
 			}
