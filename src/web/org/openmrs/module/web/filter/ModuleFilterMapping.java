@@ -255,15 +255,17 @@ public class ModuleFilterMapping implements Serializable {
      * Static method to parse through a Module's configuration file and return a List of
      * ModuleFilterMapping objects for which there are configuration elements.
      * Expected XML Format:
-     * 	<filter-mapping>
-     * 		<filter-name>MyFilterName</filter-name>
-     * 		<url-pattern>The pattern of URLs to match</filter-class>
-     * 	</filter-mapping>
+     * <pre>
+     * 	&lt;filter-mapping&gt;
+     * 		&lt;filter-name&gt;MyFilterName&lt;/filter-name&gt;
+     * 		&lt;url-pattern&gt;The pattern of URLs to match&lt;/filter-class&gt;
+     * 	&lt;/filter-mapping&gt;
      * or
-     * 	<filter-mapping>
-     * 		<filter-name>MyFilterName</filter-name>
-     * 		<servlet-name>The servlet name to match</servlet-name>
-     * 	</filter-mapping>
+     * 	&lt;filter-mapping&gt;
+     * 		&lt;filter-name&gt;MyFilterName&lt;/filter-name&gt;
+     * 		&lt;servlet-name&gt;The servlet name to match&lt;/servlet-name&gt;
+     * 	&lt;/filter-mapping&gt;
+     * </pre>
      * 
      * @param module - The {@link Module} for which you want to retrieve the defined {@link ModuleFilterMapping}s
      * @return - a List of {@link ModuleFilterMapping}s that are defined for the passed {@link Module}
