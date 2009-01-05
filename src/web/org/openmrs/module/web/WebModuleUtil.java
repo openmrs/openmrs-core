@@ -21,9 +21,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -32,9 +34,12 @@ import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -45,6 +50,9 @@ import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
+import org.openmrs.module.web.filter.ModuleFilterConfig;
+import org.openmrs.module.web.filter.ModuleFilterDefinition;
+import org.openmrs.module.web.filter.ModuleFilterMapping;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.DispatcherServlet;
 import org.openmrs.web.dwr.OpenmrsDWRServlet;
@@ -70,6 +78,11 @@ public class WebModuleUtil {
 	// caches all of the modules' mapped servlets
 	private static Map<Module, Map<String, HttpServlet>> moduleServlets = Collections
 	        .synchronizedMap(new HashMap<Module, Map<String, HttpServlet>>());
+	
+	// caches all of the module loaded filters and filter-mappings
+	private static Map<Module, Collection<Filter>> moduleFilters = Collections.synchronizedMap(new HashMap<Module, Collection<Filter>>());
+	private static Map<String, Filter> moduleFiltersByName = Collections.synchronizedMap(new HashMap<String, Filter>());
+	private static List<ModuleFilterMapping> moduleFilterMappings = Collections.synchronizedList(new Vector<ModuleFilterMapping>());
 	
 	/**
 	 * Performs the webapp specific startup needs for modules Normal startup is done in
@@ -322,11 +335,14 @@ public class WebModuleUtil {
 				
 				// find and cache the module's servlets 
 				//(only if the module started successfully previously)
-				if (ModuleFactory.isModuleStarted(mod))
+				if (ModuleFactory.isModuleStarted(mod)) {
 					loadServlets(mod);
-				
+					loadFilters(mod, servletContext);
+				}
 				return false;
 			}
+			
+			loadFilters(mod, servletContext);
 			
 			// return true if the module needs a context refresh and we didn't do it here
 			return (moduleNeedsContextRefresh && delayContextRefresh == true);
@@ -394,6 +410,129 @@ public class WebModuleUtil {
 		return servletMap;
 	}
 	
+	/** 
+	 * This method will initialize and store this module's filters
+	 * 
+	 * @param module - The Module to load and register Filters
+	 * @param servletContext - The servletContext within which this method is called
+	 */
+	public static void loadFilters(Module module, ServletContext servletContext) {
+
+		// Load Filters
+		Map<String, Filter> filters = new HashMap<String, Filter>();
+		try {
+			for (ModuleFilterDefinition def : ModuleFilterDefinition.retrieveFilterDefinitions(module)) {
+				if (moduleFiltersByName.containsKey(def.getFilterName())) {
+					throw new ModuleException("A filter with name <" + def.getFilterName() + "> has already been registered.");
+				}
+				ModuleFilterConfig config = ModuleFilterConfig.getInstance(def, servletContext);
+				Filter f = (Filter)ModuleFactory.getModuleClassLoader(module).loadClass(def.getFilterClass()).newInstance();
+				f.init(config);
+				filters.put(def.getFilterName(), f);
+			}
+		}
+		catch (ModuleException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new ModuleException("An error occurred initializing Filters for module: " + module.getModuleId(), e);
+		}
+		moduleFilters.put(module, filters.values());
+		moduleFiltersByName.putAll(filters);
+		log.debug("Module: " + module.getModuleId() + " successfully loaded " + filters.size() + " filters.");
+		
+		// Load Filter Mappings
+		List<ModuleFilterMapping> modMappings = ModuleFilterMapping.retrieveFilterMappings(module);
+		moduleFilterMappings.addAll(modMappings);
+		log.debug("Module: " + module.getModuleId() + " successfully loaded " + modMappings.size() + " filter mappings.");
+	}
+	
+	/** 
+	 * This method will destroy and remove all filters that were registered by the passed {@link Module}
+	 * @param module - The Module for which you want to remove and destroy filters.
+	 */
+	public static void unloadFilters(Module module) {
+		
+		// Unload Filter Mappings
+		for (java.util.Iterator<ModuleFilterMapping> mapIter = moduleFilterMappings.iterator(); mapIter.hasNext();) {
+			ModuleFilterMapping mapping = mapIter.next();
+			if (module.equals(mapping.getModule())) {
+				mapIter.remove();
+				log.debug("Removed ModuleFilterMapping: " + mapping);
+			}
+		}
+
+		// unload Filters
+		Collection<Filter> filters = moduleFilters.get(module);
+		if (filters != null) {
+			try {
+				for (Filter f : filters) {
+					f.destroy();
+				}
+			}
+			catch (Exception e) {
+				log.warn("An error occurred while trying to destroy and remove module Filter.", e);
+			}
+			log.debug("Module: " + module.getModuleId() + " successfully unloaded " + filters.size() + " filters.");
+			moduleFilters.remove(module);
+			
+			for (Iterator<String> i = moduleFiltersByName.keySet().iterator(); i.hasNext();) {
+				String filterName = i.next();
+				Filter filterVal = moduleFiltersByName.get(filterName);
+				if (filters.contains(filterVal)) {
+					i.remove();
+				}
+			}		
+		}
+	}
+	
+	/** 
+	 * This method will return all Filters that have been registered a module
+	 * @return A Collection of {@link Filter}s that have been registered by a module
+	 */
+	public static Collection<Filter> getFilters() {
+		return moduleFiltersByName.values();
+	}
+	
+	/** 
+	 * This method will return all Filter Mappings that have been registered by a module
+	 * @return A Collection of all {@link ModuleFilterMapping}s that have been registered by a Module
+	 */
+	public static Collection<ModuleFilterMapping> getFilterMappings() {
+		return moduleFilterMappings;
+	}
+	
+	/** 
+	 * Return List of Filters that have been loaded through Modules that
+     * have mappings that pass for the passed request
+	 * 
+	 * @param request - The request to check for matching {@link Filter}s
+	 * @return List of all {@link Filter}s that have filter mappings that match the passed request
+	 */
+    public static List<Filter> getFiltersForRequest(ServletRequest request) {
+    	
+    	List<Filter> filters = new Vector<Filter>();
+    	if (request != null) {
+    		HttpServletRequest httpRequest = (HttpServletRequest) request;
+    		String requestPath = httpRequest.getRequestURI();
+    		
+    		if (requestPath != null) {
+		    	for (ModuleFilterMapping filterMapping : WebModuleUtil.getFilterMappings()) {
+		    		if (ModuleFilterMapping.filterMappingPasses(filterMapping, requestPath)) {
+		    			Filter passedFilter = moduleFiltersByName.get(filterMapping.getFilterName());
+		    			if (passedFilter != null) {
+		    				filters.add(passedFilter);
+		    			}
+		    			else {
+		    				log.warn("Unable to retrieve filter that has a name of " + filterMapping.getFilterName() + " in filter mapping.");
+		    			}
+		    		}
+		    	}
+    		}
+    	}
+    	return filters;
+    }
+
 	/**
 	 * @param inputStream
 	 * @param realPath
@@ -515,6 +654,9 @@ public class WebModuleUtil {
 		// remove the module's servlets
 		moduleServlets.remove(mod);
 		
+		// remove the module's filters and filter mappings
+		unloadFilters(mod);
+
 		// remove this module's entries in the dwr xml file
 		InputStream inputStream = null;
 		try {

@@ -1,0 +1,197 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
+package org.openmrs.module.web.filter;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleException;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+/**
+ * This class captures all of the information needed to create 
+ * and initialize a Filter included in a Module.  This object is 
+ * initialized from an xml element that has the following syntax.
+ * 
+ * Expected XML Format:
+ * <pre>
+ * 	&lt;filter&gt;
+ * 		&lt;filter-name&gt;MyFilterName&lt;/filter-name&gt;
+ * 		&lt;filter-class&gt;Fully qualified classname of the Filter class&lt;/filter-class&gt;
+ * 		&lt;init-param&gt;
+ * 			&lt;param-name&gt;filterParameterName1&lt;/param-name&gt;
+ * 			&lt;param-value&gt;filterParameterValue1&lt;/param-value&gt;
+ * 		&lt;/init-param&gt;
+ * 	&lt;/filter&gt;
+ * </pre>
+*/
+public class ModuleFilterDefinition implements Serializable {
+	
+	public static final long serialVersionUID = 1;
+	private static Log log = LogFactory.getLog(ModuleFilterDefinition.class);
+	
+	// Properties
+	private Module module;
+	private String filterName;
+	private String filterClass;
+	private Map<String, String> initParameters = new HashMap<String, String>();
+
+	/**
+	 * Default constructor, requires a Module
+	 * @param module - The Module to use to construct this {@link ModuleFilterDefinition}
+	 */
+	public ModuleFilterDefinition(Module module) {
+		this.module = module;
+	}
+
+	/**
+	 * @return - The {@link Module} that registered this FilterDefinition
+	 */
+    public Module getModule() {
+    	return module;
+    }
+
+    /**
+     * @param the {@link Module} to set
+     */
+    public void setModule(Module module) {
+    	this.module = module;
+    }
+
+	/**
+	 * @return - the name of the Filter
+	 */
+    public String getFilterName() {
+    	return filterName;
+    }
+
+	/**
+	 * @param - the name of the filter
+	 */
+    public void setFilterName(String filterName) {
+    	this.filterName = filterName;
+    }
+
+	/**
+	 * @eturn - the class name of the filter
+	 */
+    public String getFilterClass() {
+    	return filterClass;
+    }
+	
+	/**
+	 * @param - the class name of the filter
+	 */
+    public void setFilterClass(String filterClass) {
+    	this.filterClass = filterClass;
+    }
+
+    /**
+     * @return - A map of parameters to use to initialize the filter
+     */
+    public Map<String, String> getInitParameters() {
+    	return initParameters;
+    }
+
+    /**
+     * #param - A map of parameters to use to initialize the filter
+     */
+    public void setInitParameters(Map<String, String> initParameters) {
+    	this.initParameters = initParameters;
+    }
+    
+    /**
+     * Adds a Parameter that should be passed in to initialize this Filter
+     * @param parameterName - The name of the parameter
+     * @param parameterValue - The value of the parameter
+     */
+    public void addInitParameter(String parameterName, String parameterValue) {
+    	this.initParameters.put(parameterName, parameterValue);
+    }
+    
+    // Static methods
+    
+    /**
+     * Static method to parse through a Module's configuration file and return a List of
+     * ModuleFilterDefinition objects for which there are configuration elements.
+     * Expected XML Format:
+     * <pre>
+	 * 	&lt;filter&gt;
+	 * 		&lt;filter-name&gt;MyFilterName&lt;/filter-name&gt;
+	 * 		&lt;filter-class&gt;Fully qualified classname of the Filter class&lt;/filter-class&gt;
+	 * 		&lt;init-param&gt;
+	 * 			&lt;param-name&gt;filterParameterName1&lt;/param-name&gt;
+	 * 			&lt;param-value&gt;filterParameterValue1&lt;/param-value&gt;
+	 * 		&lt;/init-param&gt;
+	 * 	&lt;/filter&gt;
+	 * </pre>
+     * 
+     * @param module - The {@link Module} for which to retrieve filter the defined {@link ModuleFilterDefinition}s
+     * @return List of {@link ModuleFilterDefinition}s that have been defined for the passed {@link Module}
+     */
+    public static List<ModuleFilterDefinition> retrieveFilterDefinitions(Module module) throws ModuleException {
+	
+		List<ModuleFilterDefinition> filters = new Vector<ModuleFilterDefinition>();
+
+		try {
+			Element rootNode = module.getConfig().getDocumentElement();
+			NodeList filterNodes = rootNode.getElementsByTagName("filter");
+			if (filterNodes.getLength() > 0) {
+				for (int i=0; i<filterNodes.getLength(); i++) {
+					ModuleFilterDefinition filter = new ModuleFilterDefinition(module);
+					Node node = filterNodes.item(i);
+					NodeList configNodes = node.getChildNodes();
+					for (int j=0; j<configNodes.getLength(); j++) {
+						Node configNode = configNodes.item(j);
+						if ("filter-name".equals(configNode.getNodeName())) {
+							filter.setFilterName(configNode.getTextContent());
+						}
+						else if ("filter-class".equals(configNode.getNodeName())) {
+							filter.setFilterClass(configNode.getTextContent());
+						}
+						else if ("init-param".equals(configNode.getNodeName())) {
+							NodeList paramNodes = configNode.getChildNodes();
+							String paramName = "";
+							String paramValue = "";
+							for (int k=0; k<paramNodes.getLength(); k++) {
+								Node paramNode = paramNodes.item(k);
+								if ("param-name".equals(paramNode.getNodeName())) {
+									paramName = paramNode.getTextContent();
+								}
+								else if ("param-value".equals(paramNode.getNodeName())) {
+									paramValue = paramNode.getTextContent();
+								}
+							}
+							filter.addInitParameter(paramName, paramValue);
+						}
+					}
+					filters.add(filter);
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new ModuleException("Unable to parse filters in module configuration.", e);
+		}
+		log.debug("Retrieved " + filters.size() + " filters for " + module + ": " + filters);
+		return filters;
+	}
+}
