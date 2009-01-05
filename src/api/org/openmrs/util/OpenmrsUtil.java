@@ -1262,17 +1262,21 @@ public class OpenmrsUtil {
 					// instantiate the value of the search argument
 					String valueAsString = sa.getValue();
 					String testForExpression = search.getArgumentValue(sa.getName());
-					if (evalContext != null && EvaluationContext.isExpression(testForExpression)) {
-						log.debug("found expression: " + testForExpression);
-						Object evaluated = evalContext.evaluateExpression(testForExpression);
-						if (evaluated != null) {
-							if (evaluated instanceof Date)
-								valueAsString = Context.getDateFormat().format((Date) evaluated);
-							else
-								valueAsString = evaluated.toString();
+					if (testForExpression != null) {
+						valueAsString = testForExpression;
+						log.debug("Setting " + sa.getName() + " to: " + valueAsString);
+						if (evalContext != null && EvaluationContext.isExpression(valueAsString)) {
+							Object evaluated = evalContext.evaluateExpression(testForExpression);
+							if (evaluated != null) {
+								if (evaluated instanceof Date)
+									valueAsString = Context.getDateFormat().format((Date) evaluated);
+								else
+									valueAsString = evaluated.toString();
+							}
+							log.debug("Evaluated " + sa.getName() + " to: " + valueAsString);
 						}
-						log.debug("evaluated to: " + valueAsString);
 					}
+
 					Object value = null;
 					Class<?> valueClass = sa.getPropertyClass();
 					try {
