@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.PrivilegeEditor;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -123,7 +125,10 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 			privileges = Context.getUserService().getAllPrivileges();
 		}
 		
+		Set<String> formats = FieldGenHandlerFactory.getSingletonInstance().getHandlers().keySet();
+		
 		map.put("privileges", privileges);
+		map.put("formats", formats);
 		
 		return map;
 	}
