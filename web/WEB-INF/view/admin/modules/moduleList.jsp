@@ -7,7 +7,7 @@
 
 <h2><spring:message code="Module.header" /></h2>	
 
-<br/>
+<p><spring:message code="Module.notice" /></p>
 
 <b class="boxHeader"><spring:message code="Module.add" /></b>
 <div class="box">
