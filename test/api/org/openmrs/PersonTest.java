@@ -21,13 +21,16 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Test;
+import org.openmrs.test.Verifies;
 
 /**
- * This class should test all methods on the person object This class does not touch the database,
- * so it does not need to extend the normal openmrs BaseTest
+ * This class should test all methods on the person object.<br/>
+ * <br/>
+ * This class does not touch the database, so it does not need to extend the normal openmrs BaseTest
  */
 public class PersonTest {
 	
@@ -273,18 +276,6 @@ public class PersonTest {
 		assertTrue("There shouldn't be any attributes in the person object now", p.getAttributes().size() == 0);
 	}
 	
-	@Test
-	public void shouldAge() throws Exception {
-		Person p = new Person();
-		assertNull(p.getAge());
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		p.setBirthdate(df.parse("1978-04-11"));
-		assertEquals(p.getAge(df.parse("1978-05-20")).intValue(), 0);
-		assertEquals(p.getAge(df.parse("2007-04-11")).intValue(), 29);
-		assertEquals(p.getAge(df.parse("2007-04-12")).intValue(), 29);
-		assertEquals(p.getAge(df.parse("2007-04-10")).intValue(), 28);
-	}
-	
 	/**
 	 * Test that setting a person's age correctly sets their birth date and records that this is
 	 * inexact
@@ -312,5 +303,65 @@ public class PersonTest {
 		assertEquals(p.getBirthdate(), df.parse("1969-01-01"));
 		p.setBirthdateFromAge(0, df.parse("2008-05-20"));
 		assertEquals(p.getBirthdate(), df.parse("2008-01-01"));
+	}
+	
+	/**
+	 * @see {@link Person#getAge(Date)}
+	 */
+	@Test
+	@Verifies(value = "should get age after birthday", method = "getAge(Date)")
+	public void getAge_shouldGetAgeAfterBirthday() throws Exception {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(2006, Calendar.JUNE, 2);
+		Calendar onDate = Calendar.getInstance();
+		onDate.set(2008, Calendar.JUNE, 3);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+		assertEquals(person.getAge(onDate.getTime()), 2, 0);
+	}
+	
+	/**
+	 * @see {@link Person#getAge(Date)}
+	 */
+	@Test
+	@Verifies(value = "should get age before birthday", method = "getAge(Date)")
+	public void getAge_shouldGetAgeBeforeBirthday() throws Exception {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(2006, Calendar.JUNE, 2);
+		Calendar onDate = Calendar.getInstance();
+		onDate.set(2008, Calendar.JUNE, 1);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+		assertEquals(person.getAge(onDate.getTime()), 1, 0);
+	}
+	
+	/**
+	 * @see {@link Person#getAge(Date)}
+	 */
+	@Test
+	@Verifies(value = "should get age on birthday with minutes defined", method = "getAge(Date)")
+	public void getAge_shouldGetAgeOnBirthdayWithMinutesDefined() throws Exception {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(2006, Calendar.JUNE, 2, 9, 9, 9);
+		Calendar onDate = Calendar.getInstance();
+		onDate.set(2008, Calendar.JUNE, 2, 7, 7, 7);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+		assertEquals(person.getAge(onDate.getTime()), 2, 0);
+	}
+	
+	/**
+	 * @see {@link Person#getAge(Date)}
+	 */
+	@Test
+	@Verifies(value = "should get age on birthday with no minutes defined", method = "getAge(Date)")
+	public void getAge_shouldGetAgeOnBirthdayWithNoMinutesDefined() throws Exception {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(2006, Calendar.JUNE, 2);
+		Calendar onDate = Calendar.getInstance();
+		onDate.set(2008, Calendar.JUNE, 2);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+		assertEquals(person.getAge(onDate.getTime()), 2, 0);
 	}
 }

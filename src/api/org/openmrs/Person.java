@@ -375,7 +375,7 @@ public class Person implements java.io.Serializable {
 	/**
 	 * Convenience Method Adds the <code>attribute</code> to this person's attribute list if the
 	 * attribute doesn't exist already Voids any current attribute with type =
-	 * <code>newAttribute.getAttributeType()</code> ** NOTE: This effectively limits persons to only
+	 * <code>newAttribute.getAttributeType()</code> NOTE: This effectively limits persons to only
 	 * one attribute of any given type **
 	 * 
 	 * @param name
@@ -688,7 +688,12 @@ public class Person implements java.io.Serializable {
 	 * Convenience method: calculates the person's age on a given date based on the birthdate
 	 * 
 	 * @param onDate (null defaults to today)
-	 * @return
+	 * @return int value of the person's age
+	 * 
+	 * @should get age before birthday
+	 * @should get age on birthday with no minutes defined
+	 * @should get age on birthday with minutes defined
+	 * @should get age after birthday
 	 */
 	public Integer getAge(Date onDate) {
 		if (birthdate == null)
@@ -703,12 +708,18 @@ public class Person implements java.io.Serializable {
 		
 		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
 		
-		//tricky bit:
-		// set birthday calendar to this year
-		// if the current date is less that the new 'birthday', subtract a year
-		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
-		if (today.before(bday))
-			age = age - 1;
+		//Adjust age when today's date is before the person's birthday
+		int todaysMonth = today.get(Calendar.MONTH);
+		int bdayMonth = bday.get(Calendar.MONTH);
+		int todaysDay = today.get(Calendar.DAY_OF_MONTH);
+		int bdayDay = bday.get(Calendar.DAY_OF_MONTH);
+		
+		if (todaysMonth < bdayMonth) {
+			age--;
+		} else if (todaysMonth == bdayMonth && todaysDay < bdayDay) {
+			// we're only comparing on month and day, not minutes, etc
+			age--;
+		}
 		
 		return age;
 	}
