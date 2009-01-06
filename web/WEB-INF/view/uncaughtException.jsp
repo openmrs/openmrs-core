@@ -104,7 +104,6 @@ try {
 	
 	// Display current version
 	out.println("<br/><br/>OpenMRS Version: " + OpenmrsConstants.OPENMRS_VERSION);
-	out.println("<br/>Database Version: " + OpenmrsConstants.DATABASE_VERSION);
 	    
 } catch (Exception ex) { 
 	ex.printStackTrace(new java.io.PrintWriter(out));
