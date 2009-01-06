@@ -22,7 +22,12 @@
 		<td><spring:message code="PersonAttributeType.format"/></td>
 		<td>
 			<spring:bind path="personAttributeType.format">
-				<input type="text" name="format" value="${status.value}" size="35" />
+				<select name="format">
+					<option value=""></option>
+					<c:forEach items="${formats}" var="format">
+						<option value="${format}" <c:if test="${format == status.value}">selected</c:if>>${format}</option>
+					</c:forEach>
+				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
