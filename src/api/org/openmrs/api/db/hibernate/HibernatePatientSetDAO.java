@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -910,7 +909,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		Date maxBirthFromAge = null;
 		if (minAge != null) {
-			Calendar cal = new GregorianCalendar();
+			Calendar cal = Calendar.getInstance();
 			cal.setTime(effectiveDate);
 			cal.add(Calendar.YEAR, -minAge);
 			maxBirthFromAge = cal.getTime();
@@ -918,7 +917,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 		Date minBirthFromAge = null;
 		if (maxAge != null) {
-			Calendar cal = new GregorianCalendar();
+			Calendar cal = Calendar.getInstance();
 			cal.setTime(effectiveDate);
 			cal.add(Calendar.YEAR, -(maxAge + 1));
 			minBirthFromAge = cal.getTime();

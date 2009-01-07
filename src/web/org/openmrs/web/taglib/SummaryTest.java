@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -187,7 +186,7 @@ public class SummaryTest extends TagSupport {
 				else
 					time = Integer.valueOf(str);
 			}
-			Calendar c = new GregorianCalendar();
+			Calendar c = Calendar.getInstance();
 			c.add(timeUnit, (inPast ? -1 : 1) * time);
 			if (inPast)
 				fromDate = c.getTime();

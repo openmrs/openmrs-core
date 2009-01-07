@@ -17,7 +17,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -244,7 +243,7 @@ public class PersonFormController extends SimpleFormController {
 			try {
 				// only a year was passed as parameter
 				if (date.length() < 5) {
-					Calendar c = new GregorianCalendar();
+					Calendar c = Calendar.getInstance();
 					c.set(Calendar.YEAR, Integer.valueOf(date));
 					c.set(Calendar.MONTH, 0);
 					c.set(Calendar.DATE, 1);

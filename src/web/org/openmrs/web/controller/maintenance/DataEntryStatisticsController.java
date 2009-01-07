@@ -15,7 +15,6 @@ package org.openmrs.web.controller.maintenance;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -122,7 +121,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 	
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		StatisticsCommand ret = new StatisticsCommand();
-		Calendar c = new GregorianCalendar();
+		Calendar c = Calendar.getInstance();
 		c.set(Calendar.HOUR_OF_DAY, 0);
 		c.set(Calendar.MINUTE, 0);
 		c.set(Calendar.SECOND, 0);

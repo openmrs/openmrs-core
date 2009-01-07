@@ -43,7 +43,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -70,6 +69,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.databene.domain.person.Person;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
@@ -589,23 +589,32 @@ public class OpenmrsUtil {
 			return c1.compareTo(c2);
 	}
 	
+	/**
+	 *
+	 * @deprecated this method is not currently used within OpenMRS and is a duplicate of {@link Person#getAge(Date)}
+	 */
 	public static Integer ageFromBirthdate(Date birthdate) {
 		if (birthdate == null)
 			return null;
 		
 		Calendar today = Calendar.getInstance();
 		
-		Calendar bday = new GregorianCalendar();
+		Calendar bday = Calendar.getInstance();
 		bday.setTime(birthdate);
 		
 		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
 		
-		//tricky bit:
-		// set birthday calendar to this year
-		// if the current date is less that the new 'birthday', subtract a year
-		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
-		if (today.before(bday)) {
-			age = age - 1;
+		//Adjust age when today's date is before the person's birthday
+		int todaysMonth = today.get(Calendar.MONTH);
+		int bdayMonth = bday.get(Calendar.MONTH);
+		int todaysDay = today.get(Calendar.DAY_OF_MONTH);
+		int bdayDay = bday.get(Calendar.DAY_OF_MONTH);
+		
+		if (todaysMonth < bdayMonth) {
+			age--;
+		} else if (todaysMonth == bdayMonth && todaysDay < bdayDay) {
+			// we're only comparing on month and day, not minutes, etc
+			age--;
 		}
 		
 		return age;
@@ -772,10 +781,17 @@ public class OpenmrsUtil {
 		return ret;
 	}
 	
+	/**
+	 * Return a date that is the same day as the passed in date, but the hours and seconds are
+	 * the latest possible for that day.
+	 * 
+	 * @param date date to adjust
+	 * @return a date that is the last possible time in the day
+	 */
 	public static Date lastSecondOfDay(Date date) {
 		if (date == null)
 			return null;
-		Calendar c = new GregorianCalendar();
+		Calendar c = Calendar.getInstance();
 		c.setTime(date);
 		// TODO: figure out the right way to do this (or at least set milliseconds to zero)
 		c.set(Calendar.HOUR_OF_DAY, 0);
@@ -1032,7 +1048,7 @@ public class OpenmrsUtil {
 		
 		Date ret = null;
 		if (withinLastDays != null || withinLastMonths != null) {
-			Calendar gc = new GregorianCalendar();
+			Calendar gc = Calendar.getInstance();
 			gc.setTime(comparisonDate != null ? comparisonDate : new Date());
 			if (withinLastDays != null)
 				gc.add(Calendar.DAY_OF_MONTH, -withinLastDays);
@@ -1050,7 +1066,7 @@ public class OpenmrsUtil {
 		
 		Date ret = null;
 		if (untilDaysAgo != null || untilMonthsAgo != null) {
-			Calendar gc = new GregorianCalendar();
+			Calendar gc = Calendar.getInstance();
 			gc.setTime(comparisonDate != null ? comparisonDate : new Date());
 			if (untilDaysAgo != null)
 				gc.add(Calendar.DAY_OF_MONTH, -untilDaysAgo);

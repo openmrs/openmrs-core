@@ -15,7 +15,6 @@ package org.openmrs.web.servlet;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Set;
 
@@ -85,8 +84,9 @@ public class SampleFlowsheetServlet extends HttpServlet {
 		out.println("</style>");
 		out.println("<table cellspacing=0 cellpadding=3>");
 		Locale locale = Context.getLocale();
-		Calendar date = new GregorianCalendar(1900, Calendar.JANUARY, 1);
-		Calendar obsDate = new GregorianCalendar();
+		Calendar date = Calendar.getInstance();
+		date.set(1900, Calendar.JANUARY, 1);
+		Calendar obsDate = Calendar.getInstance();
 		for (Obs obs : obsList) {
 			obsDate.setTime(obs.getObsDatetime());
 			if (Math.abs(obsDate.getTimeInMillis() - date.getTimeInMillis()) > 86400000) {
