@@ -154,7 +154,8 @@ public class DataExportFunctions {
 		dateFormatYmd = new SimpleDateFormat("yyyy-MM-dd", locale);
 	}
 	
-	public void clear() {
+	@SuppressWarnings("unchecked")
+    public void clear() {
 		for (Map map : patientEncounterMap.values())
 			map.clear();
 		patientEncounterMap.clear();
@@ -617,7 +618,7 @@ public class DataExportFunctions {
 			patientIdRelationshipMap = relationshipMap.get(relationshipTypeName);
 		} else {
 			//log.debug("getting relationship list for type: " + relationshipTypeName);
-			RelationshipType relType = Context.getPersonService().findRelationshipType(relationshipTypeName);
+			RelationshipType relType = Context.getPersonService().getRelationshipTypeByName(relationshipTypeName);
 			patientIdRelationshipMap = patientSetService.getRelationships(getPatientSetIfNotAllPatients(), relType);
 			relationshipMap.put(relationshipTypeName, patientIdRelationshipMap);
 		}
@@ -765,7 +766,8 @@ public class DataExportFunctions {
 		return returnList;
 	}
 	
-	public List<List<Object>> getLastNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
+	@SuppressWarnings("unchecked")
+    public List<List<Object>> getLastNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
 		return getLastNObsWithValues(n, getConcept(conceptId), (List<String>) attrs);
 	}
 	
@@ -798,7 +800,7 @@ public class DataExportFunctions {
 		
 		// bring the list size up to 'n'
 		List<Object> blankRow = new Vector<Object>();
-		for (String attr : attrs)
+		for (@SuppressWarnings("unused") String attr : attrs)
 			blankRow.add("");
 		while (returnList.size() < n)
 			returnList.add(blankRow);
@@ -828,7 +830,8 @@ public class DataExportFunctions {
 	 * @param attrs string array
 	 * @return
 	 */
-	public List<Object> getLastObsWithValues(String conceptName, Object attrs) throws Exception {
+	@SuppressWarnings("unchecked")
+    public List<Object> getLastObsWithValues(String conceptName, Object attrs) throws Exception {
 		//List<String> attrs = new Vector<String>();
 		//Collections.addAll(attrs, attrArray);
 		return getLastObsWithValues(getConcept(conceptName), (List<String>) attrs);
@@ -900,7 +903,8 @@ public class DataExportFunctions {
 	 * @param conceptName
 	 * @return
 	 */
-	public List<Object> getFirstObsWithValues(String conceptName, Object attrs) throws Exception {
+	@SuppressWarnings("unchecked")
+    public List<Object> getFirstObsWithValues(String conceptName, Object attrs) throws Exception {
 		//List<String> attrs = new Vector<String>();
 		//Collections.addAll(attrs, attrArray);
 		return getFirstObsWithValues(getConcept(conceptName), (List<String>) attrs);
@@ -922,7 +926,7 @@ public class DataExportFunctions {
 		
 		if (obs == null) {
 			List<Object> blankRow = new Vector<Object>();
-			for (String attr : attrs)
+			for (@SuppressWarnings("unused") String attr : attrs)
 				blankRow.add("");
 			return blankRow;
 		}
@@ -958,7 +962,7 @@ public class DataExportFunctions {
 			return obs;
 		
 		List<Object> blankRow = new Vector<Object>();
-		for (String attr : attrs)
+		for (@SuppressWarnings("unused") String attr : attrs)
 			blankRow.add("");
 		while (obs.size() < n)
 			obs.add(0, blankRow);
@@ -976,7 +980,8 @@ public class DataExportFunctions {
 	 * 
 	 * @see #getFirstNObsWithValues(Integer, Concept, List)
 	 */
-	public List<List<Object>> getFirstNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
+	@SuppressWarnings("unchecked")
+    public List<List<Object>> getFirstNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
 		return getFirstNObsWithValues(n, getConcept(conceptId), (List<String>) attrs);
 	}
 	
@@ -1002,7 +1007,7 @@ public class DataExportFunctions {
 			catch (NumberFormatException ex) {}
 			// otherwise get identifier type by the given name
 			if (type == null) {
-				type = patientService.getPatientIdentifierType(typeName);
+				type = patientService.getPatientIdentifierTypeByName(typeName);
 			}
 			// Get identifiers by type 
 			patientIdentifiers = patientSetService.getPatientIdentifiersByType(getPatientSetIfNotAllPatients(), type);
@@ -1119,7 +1124,7 @@ public class DataExportFunctions {
 	 */
 	public boolean isValidCheckDigit(String id) {
 		try {
-			return OpenmrsUtil.isValidCheckDigit(id);
+			return Context.getPatientService().getDefaultIdentifierValidator().isValid(id);
 		}
 		catch (Exception e) {
 			log.error("Error evaluating identifier during report", e);

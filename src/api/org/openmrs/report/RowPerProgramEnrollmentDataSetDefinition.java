@@ -37,6 +37,8 @@ import org.simpleframework.xml.Root;
 @Root
 public class RowPerProgramEnrollmentDataSetDefinition implements DataSetDefinition {
 	
+    private static final long serialVersionUID = -1408727201579935500L;
+
 	@Attribute(required = true)
 	private String name;
 	
@@ -51,7 +53,8 @@ public class RowPerProgramEnrollmentDataSetDefinition implements DataSetDefiniti
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getColumnDatatypes()
 	 */
-	public List<Class> getColumnDatatypes() {
+	@SuppressWarnings("unchecked")
+    public List<Class> getColumnDatatypes() {
 		Class[] ret = new Class[6];
 		ret[0] = Integer.class; // patientId
 		ret[1] = String.class; // program name
