@@ -91,10 +91,10 @@ public class Hl7InErrorListController extends SimpleFormController {
 					//Restore Selected Message to the in queue table
 					HL7InError hl7InError = hL7Service.getHL7InError(Integer.valueOf(queueId));
 					HL7InQueue hl7InQueue = new HL7InQueue(hl7InError);
-					hL7Service.createHL7InQueue(hl7InQueue);
+					hL7Service.saveHL7InQueue(hl7InQueue);
 					
 					//Remove selected Message from the error table
-					hL7Service.deleteHL7InError(hl7InError);
+					hL7Service.purgeHL7InError(hl7InError);
 					
 					//Display a message for the operation
 					success.append(msa.getMessage("Hl7inError.errorList.restored", args) + "<br/>");

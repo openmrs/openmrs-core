@@ -111,7 +111,7 @@ public class RoleFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			Role role = (Role) obj;
 			try {
-				Context.getAdministrationService().updateRole(role);
+				Context.getUserService().saveRole(role);
 				view = getSuccessView();
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Role.saved");
 			}
@@ -124,14 +124,17 @@ public class RoleFormController extends SimpleFormController {
 		return new ModelAndView(new RedirectView(view));
 	}
 	
-	protected Map referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		Role role = (Role) object;
 		
 		if (Context.isAuthenticated()) {
-			List<Role> allRoles = Context.getUserService().getRoles();
+			List<Role> allRoles = Context.getUserService().getAllRoles();
 			Set<Role> inheritingRoles = new HashSet<Role>();
 			allRoles.remove(role);
 			for (Role r : allRoles) {
@@ -146,7 +149,7 @@ public class RoleFormController extends SimpleFormController {
 			
 			map.put("allRoles", allRoles);
 			map.put("inheritingRoles", inheritingRoles);
-			map.put("privileges", Context.getUserService().getPrivileges());
+			map.put("privileges", Context.getUserService().getAllPrivileges());
 			map.put("superuser", OpenmrsConstants.SUPERUSER_ROLE);
 		}
 		

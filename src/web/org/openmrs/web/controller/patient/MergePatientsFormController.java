@@ -135,7 +135,7 @@ public class MergePatientsFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
@@ -146,14 +146,14 @@ public class MergePatientsFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			EncounterService es = Context.getEncounterService();
-			patient1Encounters = es.getEncounters(p1);
+			patient1Encounters = es.getEncountersByPatient(p1);
 			
 			String[] patientIds = request.getParameterValues("patientId");
 			if (patientIds != null && patientIds.length > 1 && !patientIds[0].equals(patientIds[1])) {
 				String patientId = patientIds[1];
 				Integer pId = Integer.valueOf(patientId);
 				p2 = Context.getPatientService().getPatient(pId);
-				patient2Encounters = es.getEncounters(p2);
+				patient2Encounters = es.getEncountersByPatient(p2);
 			}
 		}
 		

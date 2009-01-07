@@ -111,8 +111,8 @@ public class RelationshipFormController extends SimpleFormController {
 						log.debug("relative: " + relative);
 						r.setPersonB(relative);
 						r.setPersonA(person);
-						ps.updatePerson(person);
-						ps.createRelationship(r);
+						ps.savePerson(person);
+						ps.saveRelationship(r);
 					}
 				}
 			} else if (action.equals(msa.getMessage("Relationship.void"))) {
@@ -171,7 +171,7 @@ public class RelationshipFormController extends SimpleFormController {
 		return person;
 	}
 	
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
@@ -180,8 +180,8 @@ public class RelationshipFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			//AdministrationService as = Context.getAdministrationService();
 			PersonService ps = Context.getPersonService();
-			map.put("relationships", ps.getRelationships(person));
-			map.put("relationshipTypes", ps.getRelationshipTypes());
+			map.put("relationships", ps.getRelationshipsByPerson(person));
+			map.put("relationshipTypes", ps.getAllRelationshipTypes());
 		}
 		
 		return map;

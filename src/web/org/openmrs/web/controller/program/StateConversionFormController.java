@@ -106,7 +106,7 @@ public class StateConversionFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			ConceptStateConversion c = (ConceptStateConversion) obj;
-			Context.getProgramWorkflowService().createConceptStateConversion(c);
+			Context.getProgramWorkflowService().saveConceptStateConversion(c);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Program.conversion.saved");
 		}

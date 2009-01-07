@@ -90,10 +90,10 @@ public class Hl7InQueueListController extends SimpleFormController {
 					HL7InQueue hl7InQueue = hL7Service.getHL7InQueue(Integer.valueOf(queueId));
 					HL7InArchive hl7InArchive = new HL7InArchive(hl7InQueue);
 					hl7InArchive.setMessageState(HL7Constants.HL7_STATUS_DELETED);
-					hL7Service.createHL7InArchive(hl7InArchive);
+					hL7Service.saveHL7InArchive(hl7InArchive);
 					
 					//Delete selected Message from the InQueue table
-					hL7Service.deleteHL7InQueue(hl7InQueue);
+					hL7Service.purgeHL7InQueue(hl7InQueue);
 					
 					//Display a message for the operation
 					success.append(msa.getMessage("Hl7inQueue.queueList.deleted", args) + "<br/>");

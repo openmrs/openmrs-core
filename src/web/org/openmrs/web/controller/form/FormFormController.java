@@ -94,7 +94,7 @@ public class FormFormController extends SimpleFormController {
 						}
 						
 						// save form
-						Context.getFormService().updateForm(form);
+						Context.getFormService().saveForm(form);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
 					}
 					catch (Exception e) {
@@ -105,7 +105,7 @@ public class FormFormController extends SimpleFormController {
 					}
 				} else if (action.equals(msa.getMessage("Form.delete"))) {
 					try {
-						Context.getFormService().deleteForm(form);
+						Context.getFormService().purgeForm(form);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.deleted");
 					}
 					catch (Exception e) {
@@ -124,7 +124,7 @@ public class FormFormController extends SimpleFormController {
 						float sortWeight = 0;
 						for (FormField formField : treeMap.get(parentFormFieldId)) {
 							formField.setSortWeight(sortWeight);
-							fs.updateFormField(formField);
+							fs.saveFormField(formField);
 							sortWeight += 50;
 						}
 					}
@@ -172,7 +172,7 @@ public class FormFormController extends SimpleFormController {
 		return form;
 	}
 	
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
@@ -180,8 +180,8 @@ public class FormFormController extends SimpleFormController {
 		List<EncounterType> encTypes = new Vector<EncounterType>();
 		
 		if (Context.isAuthenticated()) {
-			fieldTypes = Context.getFormService().getFieldTypes();
-			encTypes = Context.getEncounterService().getEncounterTypes();
+			fieldTypes = Context.getFormService().getAllFieldTypes();
+			encTypes = Context.getEncounterService().getAllEncounterTypes();
 		}
 		
 		map.put("fieldTypes", fieldTypes);

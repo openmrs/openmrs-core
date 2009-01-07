@@ -45,7 +45,7 @@ public class ProgramListController extends SimpleFormController {
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
-			programList = ps.getPrograms();
+			programList = ps.getAllPrograms();
 		}
 		
 		return programList;

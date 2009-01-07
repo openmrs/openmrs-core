@@ -69,7 +69,7 @@ public class StateConversionListController extends SimpleFormController {
 			if (conversionIdList != null) {
 				for (String id : conversionIdList) {
 					try {
-						pws.deleteConceptStateConversion(pws.getConceptStateConversion(Integer.valueOf(id)));
+						pws.purgeConceptStateConversion(pws.getConceptStateConversion(Integer.valueOf(id)));
 						if (!success.equals(""))
 							success += "<br/>";
 						success += textConversion + " " + id + " " + deleted;
@@ -112,7 +112,7 @@ public class StateConversionListController extends SimpleFormController {
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
-			conversionList = ps.getAllConversions();
+			conversionList = ps.getAllConceptStateConversions();
 		}
 		
 		return conversionList;

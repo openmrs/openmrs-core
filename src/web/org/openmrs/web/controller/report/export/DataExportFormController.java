@@ -92,7 +92,7 @@ public class DataExportFormController extends SimpleFormController {
 			
 			Integer location = ServletRequestUtils.getIntParameter(request, "location", 0);
 			if (location > 0)
-				report.setLocation(Context.getEncounterService().getLocation(location));
+				report.setLocation(Context.getLocationService().getLocation(location));
 			
 			//String startDate = ServletRequestUtils.getStringParameter(request, "startDate", "");
 			//String endDate = ServletRequestUtils.getStringParameter(request, "endDate", "");
@@ -178,7 +178,7 @@ public class DataExportFormController extends SimpleFormController {
 			if (!saveAsNew.equals(""))
 				report.setReportObjectId(null);
 			
-			Context.getReportObjectService().updateReportObject(report);
+			Context.getReportObjectService().saveReportObject(report);
 			
 			String action = ServletRequestUtils.getRequiredStringParameter(request, "action");
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -216,7 +216,7 @@ public class DataExportFormController extends SimpleFormController {
 		return report;
 	}
 	
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		String defaultVerbose = "false";

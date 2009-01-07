@@ -75,7 +75,7 @@ public class FieldFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			Field field = (Field) obj;
 			field = setObjects(field, request);
-			Context.getFormService().updateField(field);
+			Context.getFormService().saveField(field);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Field.saved");
 			view = view + "?phrase=" + request.getParameter("phrase");
@@ -107,7 +107,7 @@ public class FieldFormController extends SimpleFormController {
 		return field;
 	}
 	
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Field field = (Field) obj;
 		Locale locale = Context.getLocale();
@@ -118,7 +118,7 @@ public class FieldFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			FormService fs = Context.getFormService();
 			//map.put("fieldTypes", es.getFieldTypes());
-			map.put("fieldTypes", fs.getFieldTypes());
+			map.put("fieldTypes", fs.getAllFieldTypes());
 			if (field.getConcept() != null)
 				map.put("conceptName", field.getConcept().getName(locale));
 			else

@@ -585,9 +585,9 @@ public class ConceptFormController extends SimpleFormController {
 					conceptAnswers.put(key, name);
 				}
 				
-				forms = Context.getFormService().getForms(concept);
+				forms = Context.getFormService().getFormsContainingConcept(concept);
 				
-				for (Concept c : Context.getConceptService().getQuestionsForAnswer(concept)) {
+				for (Concept c : Context.getConceptService().getConceptsByAnswer(concept)) {
 					ConceptName cn = c.getName(locale);
 					if (cn == null)
 						questionsAnswered.put(c.getConceptId(), "No Name Defined");

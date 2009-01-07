@@ -52,13 +52,13 @@ public class PostHl7Controller implements Controller {
 			String hl7Source = request.getParameter("source");
 			if (StringUtils.hasText(message) && StringUtils.hasText(hl7Source)) {
 				HL7Service service = Context.getHL7Service();
-				HL7Source source = service.getHL7Source(hl7Source);
+				HL7Source source = service.getHL7SourceByName(hl7Source);
 				
 				HL7InQueue hl7InQueue = new HL7InQueue();
 				hl7InQueue.setHL7Data(message);
 				hl7InQueue.setHL7Source(source);
 				log.debug("source: " + hl7Source + " , message: " + message);
-				Context.getHL7Service().createHL7InQueue(hl7InQueue);
+				Context.getHL7Service().saveHL7InQueue(hl7InQueue);
 				success = true;
 			} else {
 				model.put("error", "RemoteCommunication.sourceAndMessageRequired");

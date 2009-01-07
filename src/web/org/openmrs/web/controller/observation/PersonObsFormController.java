@@ -50,8 +50,8 @@ public class PersonObsFormController extends SimpleFormController {
 			concept = Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId")));
 		
 		ObsService os = Context.getObsService();
-		List<Obs> ret = new ArrayList<Obs>(concept == null ? os.getObservations(person, true) : os.getObservations(person,
-		    concept, true));
+		List<Obs> ret = concept == null ? os.getObservationsByPerson(person) : os.getObservationsByPersonAndConcept(person,
+		    concept);
 		Collections.sort(ret, new Comparator<Obs>() {
 			
 			public int compare(Obs left, Obs right) {

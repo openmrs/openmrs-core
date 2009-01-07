@@ -95,7 +95,7 @@ public class UserFormController extends PersonFormController {
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ARGS, user.getPersonName());
 			return new ModelAndView(new RedirectView(request.getContextPath() + "/index.htm"));
 		} else if (msa.getMessage("User.delete").equals(action)) {
-			us.deleteUser(user);
+			us.purgeUser(user);
 			return new ModelAndView(new RedirectView(getSuccessView()));
 		} else {
 			// check if username is already in the database
@@ -213,9 +213,9 @@ public class UserFormController extends PersonFormController {
 			user.setUserProperties(properties);
 			
 			if (isNewUser(user))
-				us.createUser(user, password);
+				us.saveUser(user, password);
 			else {
-				us.updateUser(user);
+				us.saveUser(user, null);
 				
 				if (!password.equals("") && Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS)) {
 					if (log.isDebugEnabled())

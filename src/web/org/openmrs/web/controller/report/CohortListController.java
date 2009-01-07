@@ -53,11 +53,11 @@ public class CohortListController extends SimpleFormController {
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		List<Cohort> cohorts = new ArrayList<Cohort>();
 		if (Context.isAuthenticated()) {
-			cohorts = Context.getCohortService().getCohorts();
+			cohorts = Context.getCohortService().getAllCohorts();
 			Collections.sort(cohorts, new Comparator<Cohort>() {
 				
 				public int compare(Cohort a, Cohort b) {
-					int temp = a.getVoided().compareTo(b.getVoided());
+					int temp = a.isVoided().compareTo(b.isVoided());
 					if (temp == 0)
 						temp = a.getCohortId().compareTo(b.getCohortId());
 					return temp;
@@ -121,7 +121,10 @@ public class CohortListController extends SimpleFormController {
 		return showForm(request, response, errors);
 	}
 	
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
 		return new HashMap<String, Object>();
 	}
 }

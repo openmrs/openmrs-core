@@ -77,7 +77,7 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 			
 			identifierType.setCheckDigit(identifierType.hasValidator());
 			
-			Context.getAdministrationService().updatePatientIdentifierType(identifierType);
+			Context.getPatientService().savePatientIdentifierType(identifierType);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.saved");
 			toReturn = new ModelAndView(new RedirectView(getSuccessView()));
 			

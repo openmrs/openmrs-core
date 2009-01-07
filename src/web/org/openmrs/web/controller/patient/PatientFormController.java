@@ -41,10 +41,10 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateIdentifierException;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.InvalidIdentifierFormatException;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -108,7 +108,7 @@ public class PatientFormController extends PersonFormController {
 		if (Context.isAuthenticated()) {
 			
 			PatientService ps = Context.getPatientService();
-			EncounterService es = Context.getEncounterService();
+			LocationService ls = Context.getLocationService();
 			Object[] objs = null;
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
@@ -135,7 +135,7 @@ public class PatientFormController extends PersonFormController {
 							PatientIdentifier pi = new PatientIdentifier();
 							pi.setIdentifier(id);
 							pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
-							pi.setLocation(es.getLocation(Integer.valueOf(locs[i])));
+							pi.setLocation(ls.getLocation(Integer.valueOf(locs[i])));
 							if (idPrefStatus != null && idPrefStatus.length > i)
 								pi.setPreferred(new Boolean(idPrefStatus[i]));
 							patient.addIdentifier(pi);
@@ -356,7 +356,7 @@ public class PatientFormController extends PersonFormController {
 			
 			if (action.equals(msa.getMessage("Patient.delete"))) {
 				try {
-					ps.deletePatient(patient);
+					ps.purgePatient(patient);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.deleted");
 					return new ModelAndView(new RedirectView("index.htm"));
 				}
@@ -415,7 +415,7 @@ public class PatientFormController extends PersonFormController {
 					Concept causeOfDeath = Context.getConceptService().getConcept(causeOfDeathConceptId);
 					
 					if (causeOfDeath != null) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath, false);
+						List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, causeOfDeath);
 						if (obssDeath != null) {
 							if (obssDeath.size() > 1) {
 								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
@@ -449,7 +449,7 @@ public class PatientFormController extends PersonFormController {
 									log.debug("Current cause is null, attempting to set to NONE");
 									String noneConcept = Context.getAdministrationService()
 									        .getGlobalProperty("concept.none");
-									currCause = Context.getConceptService().getConceptByIdOrName(noneConcept);
+									currCause = Context.getConceptService().getConcept(noneConcept);
 								}
 								
 								if (currCause != null) {
@@ -465,7 +465,7 @@ public class PatientFormController extends PersonFormController {
 									// check if this is an "other" concept - if so, then we need to add value_text
 									String otherConcept = Context.getAdministrationService().getGlobalProperty(
 									    "concept.otherNonCoded");
-									Concept conceptOther = Context.getConceptService().getConceptByIdOrName(otherConcept);
+									Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
 									if (conceptOther != null) {
 										if (conceptOther.equals(currCause)) {
 											// seems like this is an other concept - let's try to get the "other" field info
@@ -482,7 +482,7 @@ public class PatientFormController extends PersonFormController {
 										obsDeath.setValueText("");
 									}
 									
-									Context.getObsService().updateObs(obsDeath);
+									Context.getObsService().saveObs(obsDeath, obsDeath.getVoidReason());
 								} else {
 									log.debug("Current cause is still null - aborting mission");
 								}
@@ -593,11 +593,11 @@ public class PatientFormController extends PersonFormController {
 		
 		String patientVariation = "";
 		
-		Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(
+		Concept reasonForExitConcept = Context.getConceptService().getConcept(
 		    Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
 		
 		if (reasonForExitConcept != null && patient.getPatientId() != null) {
-			Set<Obs> patientExitObs = Context.getObsService().getObservations(patient, reasonForExitConcept, false);
+			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient, reasonForExitConcept);
 			if (patientExitObs != null) {
 				log.debug("Exit obs is size " + patientExitObs.size());
 				if (patientExitObs.size() == 1) {

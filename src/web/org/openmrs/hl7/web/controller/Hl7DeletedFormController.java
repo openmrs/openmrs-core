@@ -91,10 +91,10 @@ public class Hl7DeletedFormController extends SimpleFormController {
 					//Restore Selected Message to the in queue table
 					HL7InArchive hl7InArchive = hL7Service.getHL7InArchive(Integer.valueOf(queueId));
 					HL7InQueue hl7InQueue = new HL7InQueue(hl7InArchive);
-					hL7Service.createHL7InQueue(hl7InQueue);
+					hL7Service.saveHL7InQueue(hl7InQueue);
 					
 					//Delete selected Message from the archives table
-					hL7Service.deleteHL7InArchive(hl7InArchive);
+					hL7Service.purgeHL7InArchive(hl7InArchive);
 					
 					//Display a message for the operation
 					success.append(msa.getMessage("Hl7inQueue.queueForm.restored", args) + "<br/>");

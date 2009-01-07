@@ -86,7 +86,7 @@ public class RelationshipTypeFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			RelationshipType relationshipType = (RelationshipType) obj;
-			Context.getPersonService().updateRelationshipType(relationshipType);
+			Context.getPersonService().saveRelationshipType(relationshipType);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "RelationshipType.saved");
 		}
