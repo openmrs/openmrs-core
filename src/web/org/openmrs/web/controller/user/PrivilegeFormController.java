@@ -66,7 +66,7 @@ public class PrivilegeFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			Privilege privilege = (Privilege) obj;
-			Context.getAdministrationService().updatePrivilege(privilege);
+			Context.getUserService().savePrivilege(privilege);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Privilege.saved");
 		}
@@ -81,8 +81,6 @@ public class PrivilegeFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
-		HttpSession httpSession = request.getSession();
 		
 		Privilege privilege = null;
 		

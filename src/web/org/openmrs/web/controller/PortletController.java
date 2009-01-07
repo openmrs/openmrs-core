@@ -151,18 +151,18 @@ public class PortletController implements Controller {
 						
 						// add encounters if this user can view them
 						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
-							model.put("patientEncounters", Context.getEncounterService().getEncounters(p));
+							model.put("patientEncounters", Context.getEncounterService().getEncountersByPatient(p));
 						
 						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS)) {
-							Set<Obs> patientObs = Context.getObsService().getObservations(p, false);
+							List<Obs> patientObs = Context.getObsService().getObservationsByPerson(p);
 							model.put("patientObs", patientObs);
 							Obs latestWeight = null;
 							Obs latestHeight = null;
 							String bmiAsString = "?";
 							try {
-								ConceptNumeric weightConcept = cs.getConceptNumeric(cs.getConceptByIdOrName(
+								ConceptNumeric weightConcept = cs.getConceptNumeric(cs.getConcept(
 								    as.getGlobalProperty("concept.weight")).getConceptId());
-								ConceptNumeric heightConcept = cs.getConceptNumeric(cs.getConceptByIdOrName(
+								ConceptNumeric heightConcept = cs.getConceptNumeric(cs.getConcept(
 								    as.getGlobalProperty("concept.height")).getConceptId());
 								for (Obs obs : patientObs) {
 									if (obs.getConcept().equals(weightConcept)) {
@@ -215,11 +215,11 @@ public class PortletController implements Controller {
 						
 						// information about whether or not the patient has exited care
 						Obs reasonForExitObs = null;
-						Concept reasonForExitConcept = cs.getConceptByIdOrName(as
+						Concept reasonForExitConcept = cs.getConcept(as
 						        .getGlobalProperty("concept.reasonExitedCare"));
 						if (reasonForExitConcept != null) {
-							Set<Obs> patientExitObs = Context.getObsService()
-							        .getObservations(p, reasonForExitConcept, false);
+							List<Obs> patientExitObs = Context.getObsService()
+							        .getObservationsByPersonAndConcept(p, reasonForExitConcept);
 							if (patientExitObs != null) {
 								log.debug("Exit obs is size " + patientExitObs.size());
 								if (patientExitObs.size() == 1) {
@@ -295,7 +295,7 @@ public class PortletController implements Controller {
 					
 					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS)) {
 						List<Relationship> relationships = new ArrayList<Relationship>();
-						relationships.addAll(Context.getPersonService().getRelationships(p, false));
+						relationships.addAll(Context.getPersonService().getRelationshipsByPerson(p));
 						Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
 						for (Relationship rel : relationships) {
 							List<Relationship> list = relationshipsByType.get(rel.getRelationshipType());
@@ -320,7 +320,7 @@ public class PortletController implements Controller {
 						Encounter e = Context.getEncounterService().getEncounter((Integer) o);
 						model.put("encounter", e);
 						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
-							model.put("encounterObs", Context.getObsService().getObservations(e));
+							model.put("encounterObs", e.getObs());
 					}
 					model.put("encounterId", (Integer) o);
 				}

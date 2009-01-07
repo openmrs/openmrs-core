@@ -46,10 +46,10 @@ public class RegimenPortletController extends PortletController {
 							includeOther = true;
 							continue;
 						}
-						Concept drugSet = Context.getConceptService().getConceptByIdOrName(setId);
+						Concept drugSet = Context.getConceptService().getConcept(setId);
 						Collection<Concept> members = new ArrayList<Concept>();
 						if (drugSet != null)
-							members = Context.getConceptService().getConceptsInSet(drugSet);
+							members = Context.getConceptService().getConceptsByConceptSet(drugSet);
 						drugConceptsBySetId.put(setId, members);
 					}
 				}

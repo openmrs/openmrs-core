@@ -70,7 +70,7 @@ public class FormListController extends SimpleFormController {
 				for (String p : formList) {
 					//TODO convenience method deleteForm(Integer) ??
 					try {
-						fs.deleteForm(fs.getForm(Integer.valueOf(p)));
+						fs.purgeForm(fs.getForm(Integer.valueOf(p)));
 						if (!success.equals(""))
 							success += "<br/>";
 						success += textForm + " " + p + " " + deleted;
@@ -110,7 +110,7 @@ public class FormListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			FormService fs = Context.getFormService();
 			//FormService rs = new TestFormService();
-			formList = fs.getForms();
+			formList = fs.getAllForms();
 		}
 		
 		return formList;

@@ -234,7 +234,7 @@ public class PersonFormController extends SimpleFormController {
 	 */
 	public static <P extends Person> void getMiniPerson(P person, String name, String gender, String date, String age) {
 		
-		person.addName(Context.getPersonService().splitPersonName(name));
+		person.addName(Context.getPersonService().parsePersonName(name));
 		
 		person.setGender(gender);
 		Date birthdate = null;

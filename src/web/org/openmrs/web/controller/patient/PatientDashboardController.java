@@ -89,7 +89,7 @@ public class PatientDashboardController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		
 		log.debug("Entering referenceData");
 		
@@ -103,20 +103,20 @@ public class PatientDashboardController extends SimpleFormController {
 		String causeOfDeathOther = "";
 		
 		if (Context.isAuthenticated()) {
-			boolean onlyPublishedForms = true;
 			if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS))
-				onlyPublishedForms = false;
-			forms.addAll(Context.getFormService().getForms(onlyPublishedForms));
+				forms.addAll(Context.getFormService().getAllForms());
+			else
+				forms.addAll(Context.getFormService().getPublishedForms());
 			
-			List<Encounter> encs = Context.getEncounterService().getEncounters(patient);
+			List<Encounter> encs = Context.getEncounterService().getEncountersByPatient(patient);
 			if (encs != null && encs.size() > 0)
 				encounters.addAll(encs);
 			
 			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-			Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
+			Concept conceptCause = Context.getConceptService().getConcept(propCause);
 			
 			if (conceptCause != null) {
-				Set<Obs> obssDeath = Context.getObsService().getObservations(patient, conceptCause, false);
+				List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, conceptCause);
 				if (obssDeath.size() == 1) {
 					Obs obsDeath = obssDeath.iterator().next();
 					causeOfDeathOther = obsDeath.getValueText();
@@ -136,10 +136,10 @@ public class PatientDashboardController extends SimpleFormController {
 		
 		String patientVariation = "";
 		
-		Concept reasonForExitConcept = Context.getConceptService().getConceptByIdOrName(
+		Concept reasonForExitConcept = Context.getConceptService().getConcept(
 		    Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
 		if (reasonForExitConcept != null) {
-			Set<Obs> patientExitObs = Context.getObsService().getObservations(patient, reasonForExitConcept, false);
+			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient, reasonForExitConcept);
 			if (patientExitObs != null) {
 				log.debug("Exit obs is size " + patientExitObs.size());
 				if (patientExitObs.size() == 1) {

@@ -30,7 +30,6 @@ import org.openmrs.util.OpenmrsConstants;
 
 public class PatientSetPortletController extends PortletController {
 	
-	@SuppressWarnings("unchecked")
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		String attrToUse = (String) model.get("fromAttribute");
 		log.debug("model.fromAttribute = " + model.get("fromAttribute"));

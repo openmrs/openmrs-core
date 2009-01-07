@@ -87,7 +87,7 @@ public class OrderByUserListController extends SimpleFormController {
 			String ord = msa.getMessage("Order.title");
 			for (String p : orderList) {
 				try {
-					os.deleteOrder(os.getOrder(Integer.valueOf(p)));
+					os.purgeOrder(os.getOrder(Integer.valueOf(p)));
 					if (!success.equals(""))
 						success += "<br/>";
 					success += ord + " " + p + " " + deleted;

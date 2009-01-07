@@ -83,7 +83,7 @@ public class OrderDrugListController extends SimpleFormController {
 			String ord = msa.getMessage("Order.title");
 			for (String p : orderList) {
 				try {
-					os.deleteOrder(os.getOrder(Integer.valueOf(p)));
+					os.purgeOrder(os.getOrder(Integer.valueOf(p)));
 					if (!success.equals(""))
 						success += "<br/>";
 					success += ord + " " + p + " " + deleted;
@@ -126,12 +126,12 @@ public class OrderDrugListController extends SimpleFormController {
 		return orderList;
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		Map<Integer, String> conceptNames = new HashMap<Integer, String>();
 		
 		List<Order> orderList = (List<Order>) obj;

@@ -51,7 +51,7 @@ public class FieldTypeFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			FieldType fieldType = (FieldType) obj;
-			Context.getAdministrationService().updateFieldType(fieldType);
+			Context.getFormService().saveFieldType(fieldType);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "FieldType.saved");
 		}

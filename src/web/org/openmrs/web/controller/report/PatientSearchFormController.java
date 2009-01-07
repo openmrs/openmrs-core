@@ -160,7 +160,7 @@ public class PatientSearchFormController extends SimpleFormController {
 					}
 					
 					if (testXMLerror != 1 || hasNewSearchArg) {
-						Context.getReportObjectService().updateReportObject(psroBinded);
+						Context.getReportObjectService().saveReportObject(psroBinded);
 						success = saved;
 					}
 				}
@@ -174,6 +174,9 @@ public class PatientSearchFormController extends SimpleFormController {
 		return new ModelAndView(new RedirectView(view));
 	}
 	
+	/**
+	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
+	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		PatientSearchReportObject psro = null;
 		if (Context.isAuthenticated()) {
@@ -187,7 +190,10 @@ public class PatientSearchFormController extends SimpleFormController {
 		return psro;
 	}
 	
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		if (Context.isAuthenticated()) {

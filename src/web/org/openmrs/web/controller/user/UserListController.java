@@ -19,7 +19,6 @@ import java.util.Vector;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,15 +70,13 @@ public class UserListController extends SimpleFormController {
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
-		HttpSession httpSession = request.getSession();
-		
 		//default empty Object
 		List<User> userList = new Vector<User>();
 		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			UserService us = Context.getUserService();
-			userList = us.getUsers();
+			userList = us.getAllUsers();
 		}
 		
 		return userList;

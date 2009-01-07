@@ -92,7 +92,7 @@ public class PatientListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
-			return ps.getPatientsByName("");
+			return ps.getPatients("", null, null, false);
 		}
 		
 		//default empty Object

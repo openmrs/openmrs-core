@@ -98,7 +98,7 @@ public class PatientProgramFormController implements Controller {
 		
 		PatientProgram p = Context.getProgramWorkflowService().getPatientProgram(Integer.valueOf(patientProgramIdStr));
 		p.setDateCompleted(dateCompleted);
-		Context.getProgramWorkflowService().updatePatientProgram(p);
+		Context.getProgramWorkflowService().savePatientProgram(p);
 		
 		return new ModelAndView(new RedirectView(returnPage));
 	}

@@ -92,7 +92,7 @@ public class RelationshipTypeViewFormController extends SimpleFormController {
 				RelationshipType type = ps.getRelationshipType(Integer.valueOf(id));
 				type.setWeight(Integer.valueOf(displayOrder));
 				type.setPreferred(preferred);
-				ps.updateRelationshipType(type);
+				ps.saveRelationshipType(type);
 			}
 			
 			String success = getMessageSourceAccessor().getMessage("RelationshipType.views.saved");
@@ -118,7 +118,7 @@ public class RelationshipTypeViewFormController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			PersonService ps = Context.getPersonService();
-			relationshipTypeList = ps.getRelationshipTypes();
+			relationshipTypeList = ps.getAllRelationshipTypes();
 		}
 		
 		return relationshipTypeList;

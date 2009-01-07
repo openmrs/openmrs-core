@@ -45,8 +45,12 @@ public class ReportDataFormController extends SimpleFormController {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	@Override
-	protected Map referenceData(HttpServletRequest request) throws Exception {
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
+	 */
+	@SuppressWarnings("unchecked")
+    @Override
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		ReportData report = (ReportData) request.getSession().getAttribute(WebConstants.OPENMRS_REPORT_DATA);
@@ -133,7 +137,8 @@ public class ReportDataFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@SuppressWarnings("unchecked")
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		ReportData report = (ReportData) request.getSession().getAttribute(WebConstants.OPENMRS_REPORT_DATA);
 		

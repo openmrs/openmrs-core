@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.FieldType;
 import org.openmrs.api.APIException;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
@@ -56,8 +55,7 @@ public class FieldTypeListController extends SimpleFormController {
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
 			String[] fieldTypeList = request.getParameterValues("fieldTypeId");
-			AdministrationService as = Context.getAdministrationService();
-			FormService rs = Context.getFormService();
+			FormService fs = Context.getFormService();
 			//FieldTypeService rs = new TestFieldTypeService();
 			
 			String success = "";
@@ -72,7 +70,7 @@ public class FieldTypeListController extends SimpleFormController {
 				for (String p : fieldTypeList) {
 					//TODO convenience method deleteFieldType(Integer) ??
 					try {
-						as.deleteFieldType(rs.getFieldType(Integer.valueOf(p)));
+						fs.purgeFieldType(fs.getFieldType(Integer.valueOf(p)));
 						if (!success.equals(""))
 							success += "<br/>";
 						success += textFieldType + " " + p + " " + deleted;
@@ -112,7 +110,7 @@ public class FieldTypeListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			FormService fs = Context.getFormService();
 			//FieldTypeService rs = new TestFieldTypeService();
-			fieldTypeList = fs.getFieldTypes();
+			fieldTypeList = fs.getAllFieldTypes();
 		}
 		
 		return fieldTypeList;

@@ -81,15 +81,13 @@ public class OrderDrugFormController extends SimpleFormController {
 		binder.registerCustomEditor(Double.class, new CustomNumberEditor(Double.class, true));
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	protected Map referenceData(HttpServletRequest request) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		
 		Map<String, Object> refData = new HashMap<String, Object>();
-		
-		HttpSession httpSession = request.getSession();
 		
 		// just the text that we need for an empty orderType list
 		String emptyOrderTypeList = this.getMessageSourceAccessor().getMessage("OrderType.list.empty");
@@ -136,8 +134,6 @@ public class OrderDrugFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
-		HttpSession httpSession = request.getSession();
 		
 		OrderService os = Context.getOrderService();
 		
