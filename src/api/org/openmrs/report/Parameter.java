@@ -68,7 +68,7 @@ public class Parameter {
 	 * @param clazz The data type of this parameter
 	 * @param defaultValue The value to fill in if nothing provided by the user
 	 */
-	public Parameter(String name, String label, Class clazz, Object defaultValue) {
+	public Parameter(String name, String label, Class<?> clazz, Object defaultValue) {
 		super();
 		this.name = name;
 		this.label = label;
