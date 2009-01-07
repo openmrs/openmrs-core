@@ -48,6 +48,7 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DefaultDataSet;
 import org.dbunit.dataset.DefaultTable;
 import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
@@ -408,7 +409,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * Used by {@link #executeDataSet(String)} to cache the parsed xml files. This speeds up
 	 * subsequent runs of the dataset
 	 */
-	private static Map<String, FlatXmlDataSet> cachedDatasets = new HashMap<String, FlatXmlDataSet>();
+	private static Map<String, IDataSet> cachedDatasets = new HashMap<String, IDataSet>();
 	
 	/**
 	 * Runs the flat xml data file at the classpath location specified by
@@ -423,7 +424,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	public void executeDataSet(String datasetFilename) throws Exception {
 		
 		// try to get the given filename from the cache
-		FlatXmlDataSet xmlDataSetToRun = cachedDatasets.get(datasetFilename);
+		IDataSet xmlDataSetToRun = cachedDatasets.get(datasetFilename);
 		
 		// if we didn't find it in the cache, load it
 		if (xmlDataSetToRun == null) {
@@ -442,7 +443,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			}
 			
 			try {
-				xmlDataSetToRun = new FlatXmlDataSet(fileInInputStreamFormat);
+				ReplacementDataSet replacementDataSet = new ReplacementDataSet(new FlatXmlDataSet(fileInInputStreamFormat));
+				replacementDataSet.addReplacementObject("[NULL]", null);
+				xmlDataSetToRun = replacementDataSet; 
 			}
 			finally {
 				fileInInputStreamFormat.close();
