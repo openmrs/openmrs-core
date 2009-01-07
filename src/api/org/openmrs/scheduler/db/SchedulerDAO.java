@@ -22,7 +22,6 @@ import org.openmrs.scheduler.TaskDefinition;
 /**
  * Scheduler-related database methods.
  * 
- * @author Justin Miranda
  * @version 1.0
  */
 public interface SchedulerDAO {

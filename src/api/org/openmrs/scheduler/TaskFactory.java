@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsClassLoader;
 
 /**
- * @author jmiranda
  */
 public class TaskFactory {
 	

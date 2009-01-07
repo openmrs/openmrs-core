@@ -11,10 +11,7 @@ import org.openmrs.scheduler.TaskDefinition;
 
 /**
  * Base class for all other task classes.
- * 
- * @author Justin Miranda
  */
-@SuppressWarnings("unused")
 public abstract class AbstractTask implements Task {
 	
 	// Logger 
