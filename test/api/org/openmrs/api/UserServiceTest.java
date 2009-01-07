@@ -32,6 +32,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.Verifies;
 import org.springframework.test.annotation.Rollback;
 
 /**
@@ -120,7 +121,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		userService.saveUser(user, null);
 		
 		shouldCreateUserWhoIsPatientAlreadyTestWasRun = true;
-		System.out.println("Just set the boolean var");
+		//System.out.println("Just set the boolean var");
 	}
 	
 	/**
@@ -162,7 +163,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			// there should only be 2 users in the system. (the super user that is
 			// authenticated to this test and the user we just created)
 			List<User> allUsers = userService.getAllUsers();
-			assertEquals(2, allUsers.size());
+			assertEquals(4, allUsers.size());
 			
 			// there should still only be the one patient we created in the xml file
 			Cohort allPatientsSet = Context.getPatientSetService().getAllPatients();
@@ -245,6 +246,62 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		us.saveUser(u.addRole(role2), null);
 		
+	}
+	
+	/**
+	 * @see {@link UserService#changePassword(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should matchOnCorrectlyHashedStoredPassword", method = "changePassword(String,String)")
+	public void changePassword_shouldMatchOnCorrectlyHashedStoredPassword() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Context.logout();
+		Context.authenticate("correctlyhashed", "test");
+		
+		UserService us = Context.getUserService();
+		us.changePassword("test", "test2");
+	}
+	
+	/**
+	 * @see {@link UserService#changePassword(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should matchOnIncorrectlyHashedStoredPassword", method = "changePassword(String,String)")
+	public void changePassword_shouldMatchOnIncorrectlyHashedStoredPassword() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Context.logout();
+		Context.authenticate("incorrectlyhashed", "test");
+		
+		UserService us = Context.getUserService();
+		us.changePassword("test", "test2");
+	}
+	
+	/**
+	 * @see {@link UserService#changeQuestionAnswer(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should matchOnCorrectlyHashedStoredPassword", method = "changeQuestionAnswer(String,String,String)")
+	public void changeQuestionAnswer_shouldMatchOnCorrectlyHashedStoredPassword() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Context.logout();
+		Context.authenticate("correctlyhashed", "test");
+		
+		UserService us = Context.getUserService();
+		us.changeQuestionAnswer("test", "some question", "some answer");
+	}
+	
+	/**
+	 * @see {@link UserService#changeQuestionAnswer(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should matchOnIncorrectlyHashedStoredPassword", method = "changeQuestionAnswer(String,String,String)")
+	public void changeQuestionAnswer_shouldMatchOnIncorrectlyHashedStoredPassword() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Context.logout();
+		Context.authenticate("incorrectlyhashed", "test");
+		
+		UserService us = Context.getUserService();
+		us.changeQuestionAnswer("test", "some question", "some answer");
 	}
 	
 }
