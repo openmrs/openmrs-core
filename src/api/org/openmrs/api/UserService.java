@@ -308,6 +308,9 @@ public interface UserService extends OpenmrsService {
 	 * @param pw current password
 	 * @param pw2 new password
 	 * @throws APIException
+	 * 
+	 * @should matchOnCorrectlyHashedStoredPassword
+	 * @should matchOnIncorrectlyHashedStoredPassword
 	 */
 	@Logging(ignoredArgumentIndexes = { 0, 1 })
 	public void changePassword(String pw, String pw2) throws APIException;
@@ -319,6 +322,9 @@ public interface UserService extends OpenmrsService {
 	 * @param question
 	 * @param answer
 	 * @throws APIException
+	 * 
+	 * @should matchOnCorrectlyHashedStoredPassword
+	 * @should matchOnIncorrectlyHashedStoredPassword
 	 */
 	@Logging(ignoreAllArgumentValues = true)
 	public void changeQuestionAnswer(String pw, String q, String a) throws APIException;

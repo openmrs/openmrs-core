@@ -392,9 +392,8 @@ public class HibernateUserDAO implements UserDAO {
 		    "select salt from users where user_id = ?").addScalar("salt", Hibernate.STRING).setInteger(0, u.getUserId())
 		        .uniqueResult();
 		
-		String hashedPassword = Security.encodeString(pw + saltOnRecord);
-		
-		if (!passwordOnRecord.equals(hashedPassword)) {
+		// check to make sure the old password that was passed in is the correct one
+		if (!Security.hashMatches(passwordOnRecord, pw + saltOnRecord)) {
 			log.error("Passwords don't match");
 			throw new DAOException("Passwords don't match");
 		}
@@ -425,21 +424,28 @@ public class HibernateUserDAO implements UserDAO {
 		        .uniqueResult();
 		
 		try {
-			String hashedPassword = Security.encodeString(pw + saltOnRecord);
-			
-			if (!passwordOnRecord.equals(hashedPassword)) {
+			if (!Security.hashMatches(passwordOnRecord, pw + saltOnRecord)) {
 				throw new DAOException("Passwords don't match");
 			}
 		}
 		catch (APIException e) {
-			log.error(e);
-			throw new DAOException(e);
+			log.error("Unable to check the password", e);
+			throw new DAOException("Unable to check the password", e);
 		}
 		
 		Connection connection = sessionFactory.getCurrentSession().connection();
 		try {
-			PreparedStatement ps = connection
-			        .prepareStatement("UPDATE `users` SET secret_question = ?, secret_answer = ?, date_changed = ?, changed_by = ? WHERE user_id = ?");
+			
+			String sql = "UPDATE `users` SET secret_question = ?, secret_answer = ?, date_changed = ?, changed_by = ? WHERE user_id = ?";
+			
+			// if we're in a junit test, we're probably using hsql...and hsql
+			// does not like the backtick.  Replace the backtick with the hsql
+			// escape character: the double quote (or nothing).
+			Dialect dialect = HibernateUtil.getDialect(sessionFactory);
+			if (HSQLDialect.class.getName().equals(dialect.getClass().getName()))
+				sql = sql.replace("`", "");
+			
+			PreparedStatement ps = connection.prepareStatement(sql);
 			
 			ps.setString(1, question);
 			ps.setString(2, answer);
@@ -450,7 +456,7 @@ public class HibernateUserDAO implements UserDAO {
 			ps.executeUpdate();
 		}
 		catch (SQLException e) {
-			log.warn("SQL Exception while trying to update a user's password", e);
+			throw new DAOException("SQL Exception while trying to update a user's secret question", e);
 		}
 		
 	}

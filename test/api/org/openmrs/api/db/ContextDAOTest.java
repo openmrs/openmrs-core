@@ -21,11 +21,16 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * This class tests the {@link ContextDAO} linked to from the Context. Currently that file is the
- * {@link HibernateContextDAO} So far we have thoroughly analyzed: public User authenticate(String,
- * String) on 21/Aug/2008
+ * {@link HibernateContextDAO}.<br/>
+ * <br/>
+ * So far we have thoroughly analyzed:
+ * <ul>
+ * <li>public User authenticate(String, String) on 21/Aug/2008</li>
+ * </ul>
  */
 public class ContextDAOTest extends BaseContextSensitiveTest {
 	
@@ -204,8 +209,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ContextDAO#authenticate(String, String)} test = lockout user after five
-	 *           failed attempts
+	 * @verifies {@link ContextDAO#authenticate(String, String)}
 	 * @throws Exception
 	 */
 	@Test(expected = ContextAuthenticationException.class)
@@ -239,4 +243,23 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		// (with the same user and right pw) should fail
 		dao.authenticate("admin", "test");
 	}
+	
+	/**
+	 * @see {@link ContextDAO#authenticate(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should authenticateWithCorrectHashedPassword", method = "authenticate(String,String)")
+	public void authenticate_shouldAuthenticateWithCorrectHashedPassword() throws Exception {
+		dao.authenticate("correct", "test");
+	}
+	
+	/**
+	 * @see {@link ContextDAO#authenticate(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should authenticateWithIncorrectHashedPassword", method = "authenticate(String,String)")
+	public void authenticate_shouldAuthenticateWithIncorrectHashedPassword() throws Exception {
+		dao.authenticate("incorrect", "test");
+	}
+	
 }
