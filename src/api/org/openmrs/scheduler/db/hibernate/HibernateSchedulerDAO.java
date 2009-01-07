@@ -17,7 +17,6 @@ import org.openmrs.scheduler.db.SchedulerDAO;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
- * @author Justin Miranda
  */
 public class HibernateSchedulerDAO implements SchedulerDAO {
 	

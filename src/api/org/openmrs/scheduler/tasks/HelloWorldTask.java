@@ -16,7 +16,6 @@ package org.openmrs.scheduler.tasks;
 /**
  * Implementation of a task that writes "Hello World" to a log file.
  * 
- * @author Justin Miranda
  * @version 1.0
  */
 public class HelloWorldTask extends AbstractTask {

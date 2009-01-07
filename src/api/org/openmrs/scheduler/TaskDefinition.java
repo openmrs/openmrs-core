@@ -23,8 +23,6 @@ import org.openmrs.User;
 
 /**
  * Represents the metadata for a task that can be scheduled.
- * 
- * @author Justin Miranda
  */
 public class TaskDefinition {
 	
