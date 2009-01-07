@@ -17,7 +17,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -318,7 +317,7 @@ public class EvaluationContext {
 							
 							// Attempt to evaluate any date arithmetic
 							Matcher m = DATE_OPERATION_PATTERN.matcher(replacement);
-							Calendar cal = new GregorianCalendar();
+							Calendar cal = Calendar.getInstance();
 							try {
 								while (m.find()) {
 									log.debug("Found date expression of: " + m.group());

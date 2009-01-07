@@ -15,7 +15,6 @@ package org.openmrs;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -703,7 +702,7 @@ public class Person implements java.io.Serializable {
 		if (onDate != null)
 			today.setTime(onDate);
 		
-		Calendar bday = new GregorianCalendar();
+		Calendar bday = Calendar.getInstance();
 		bday.setTime(birthdate);
 		
 		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);

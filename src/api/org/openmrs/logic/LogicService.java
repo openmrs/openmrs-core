@@ -56,7 +56,9 @@ import org.openmrs.logic.rule.RuleParameterInfo;
  * or within 6 months of 11-November-2006:
  * 
  * <pre>
- *   Date targetDate = new GregorianCalendar(2006, 11, 11).getTime();
+ *   Calendar calendar = Calendar.getInstance();
+ *   calendar.set(2006, 11, 11);
+ *   Date targetDate = calendar.getTime();
  *   Result result = logicService.eval(myPatient, new LogicCriteria("CD4 COUNT")
  *     .asOf(targetDate).within(Duration.months(6)).max();
  * </pre>
