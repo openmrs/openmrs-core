@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<%@ attribute name="observations" required="true" type="java.util.Set" %>
+<%@ attribute name="observations" required="true" type="java.util.Collection" %>
 <%@ attribute name="concept" required="true" type="java.lang.Integer" %>
 <%@ attribute name="locale" required="true" type="java.util.Locale" %>
 <%@ attribute name="label" required="false" type="java.lang.String" %>
