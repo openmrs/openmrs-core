@@ -1,7 +1,4 @@
-metadata/model folder
-
-Contains model-specific information, including SQL scripts,
-model image, version information, etc.
+The metadata/model folder contains database model specific information.
 
 liquibase-data.zip...................Liquibase xml files to create a database schema, core data, and demo data
                                      Used by the OpenMRS InitializationFilter to create a database if one does
@@ -13,10 +10,22 @@ util/................................Utility scripts to work on the database
 
 --------
 
-These scripts are not usually used alone.  Install the war file into tomcat and a wizard will walk you through
-creating and populating a database.  (as long as you don't have a runtime properties file defined)
+The scripts in liquibase-data.zip are not usually used alone.  Install the war file into tomcat and a wizard 
+will walk you through creating and populating a database.  
+(as long as you don't have a runtime properties file defined)
 
 --------
+
+The liquibase-update-to-latest.xml file is run on the connected database everytime the API and/or the webapp is 
+started.
+
+--------
+
+Do not modify the schema in the liquibase-data.zip files unless you are preparing a new release.  The files
+should contain the same schema through a development lifecycle and are only changed right after a release
+by the release manager.
+
+--------  
 
 To create a .sql file, use the ant build.xml file:
   "ant liquibase-create-sql-diff"
