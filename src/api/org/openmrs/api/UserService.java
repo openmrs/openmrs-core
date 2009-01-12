@@ -298,7 +298,7 @@ public interface UserService extends OpenmrsService {
 	 * @param pw2 new password
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+	@Authorized( { OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	public void changePassword(User u, String pw) throws APIException;
 	
@@ -328,7 +328,7 @@ public interface UserService extends OpenmrsService {
 	 * 
 	 * @should successfullySaveToTheDatabase
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+	@Authorized( { OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS })
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException;
 	
 	/**
