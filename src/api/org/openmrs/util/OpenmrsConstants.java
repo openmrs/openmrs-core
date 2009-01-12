@@ -645,9 +645,13 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES = "patient.viewingAttributeTypes";
 	
+	public static final String GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES = "patient.headerAttributeTypes";
+	
 	public static final String GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES = "user.listingAttributeTypes";
 	
 	public static final String GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES = "user.viewingAttributeTypes";
+	
+	public static final String GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES = "user.headerAttributeTypes";
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX = "patient.identifierRegex";
 	
@@ -822,12 +826,16 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "",
 		                "A comma delimited list of PersonAttributeType names that should be displayed for patients when _viewing individually_"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "",
+		        "A comma delimited list of PersonAttributeType names that will be shown on the patient dashboard"));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "",
 		        "A comma delimited list of PersonAttributeType names that should be displayed for users in _lists_"));
 		props
 		        .add(new GlobalProperty(GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "",
 		                "A comma delimited list of PersonAttributeType names that should be displayed for users when _viewing individually_"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "",
+		        "A comma delimited list of PersonAttributeType names that will be shown on the user dashboard. (not used in v1.5)"));
 		
 		props
 		        .add(new GlobalProperty(

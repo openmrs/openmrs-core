@@ -660,6 +660,18 @@ public class PersonServiceImpl implements PersonService {
 				attrString = userViewing;
 			else
 				log.fatal("Should not be here");
+		} else if (viewType == ATTR_VIEW_TYPE.HEADER) {
+			String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "");
+			String userHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "");
+			if (personType == null || personType == PERSON_TYPE.PERSON)
+				attrString = patientHeader + "," + userHeader;
+			else if (personType == PERSON_TYPE.PATIENT)
+				attrString = patientHeader;
+			else if (personType == PERSON_TYPE.USER)
+				attrString = userHeader;
+			else
+				log.fatal("Should not be here");
+			
 		} else
 			log.fatal("Should not be here");
 		
@@ -714,6 +726,8 @@ public class PersonServiceImpl implements PersonService {
 			attrDisplayType = ATTR_VIEW_TYPE.LISTING;
 		else if ("viewing".equals(displayTypeStr))
 			attrDisplayType = ATTR_VIEW_TYPE.VIEWING;
+		else if ("header".equals(displayTypeStr))
+			attrDisplayType = ATTR_VIEW_TYPE.HEADER;
 		else if ("all".equals(displayTypeStr))
 			attrDisplayType = null;
 		else

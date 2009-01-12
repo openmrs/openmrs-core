@@ -58,7 +58,13 @@ public interface PersonService {
 		/**
 		 * Attributes to be shown when only showing one patient or user
 		 */
-		VIEWING
+		VIEWING,
+		
+		/**
+		 * Attributes to be shown in the header
+		 */
+		HEADER,
+		
 	}
 	
 	/**
