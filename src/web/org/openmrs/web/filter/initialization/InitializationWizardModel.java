@@ -13,6 +13,9 @@
  */
 package org.openmrs.web.filter.initialization;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * The {@link InitializationFilter} uses this model object to hold all properties that are edited by
@@ -31,6 +34,11 @@ public class InitializationWizardModel {
 	 * If an error occurs during setup, this is displayed at the top of the page
 	 */
 	protected String errorMessage = "";
+	
+	/**
+	 * Records completed tasks
+	 */
+	protected List<String> workLog = new ArrayList<String>();
 	
 	/**
 	 * Whether the runtime properties file could possible be created. (only read by the velocity

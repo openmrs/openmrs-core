@@ -2,12 +2,23 @@
 <head>
 </head>
 <body>
-	<h1>Welcome to OpenMRS!</h1>
+	<h1 id="title">Welcome to OpenMRS!</h1>
 	
 	#if( $errorMessage != '' )
-		<div style="color: red">
+		<div style="color: red" class="error">
 			${errorMessage}
 		</div>
 		<br/>
 	#end
 	
+	#if( ! $workLog.isEmpty() )
+	<div style="color: red" class="error">
+	Tasks completed so far:
+	<ul>
+		#foreach ($task in $workLog)
+			<li>${task}</li>
+		#end
+	</ul>
+	</div>
+	<br/>
+	#end

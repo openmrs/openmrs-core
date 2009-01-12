@@ -15,6 +15,7 @@ package org.openmrs.web;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -393,7 +394,7 @@ public final class Listener extends ContextLoaderListener {
 					        + ". (derived from environment variable " + env + ")", e);
 				}
 			} else {
-				log.warn("Couldn't find an environment variable named " + env);
+				log.info("Couldn't find an environment variable named " + env);
 				log.debug("Available environment variables are named: " + System.getenv().keySet());
 			}
 			
@@ -406,8 +407,8 @@ public final class Listener extends ContextLoaderListener {
 				try {
 					propertyStream = new FileInputStream(filepath);
 				}
-				catch (IOException e) {
-					log.warn("Unable to load properties file: " + filepath, e);
+				catch (FileNotFoundException e) {
+					log.warn("Unable to find properties file: " + filepath);
 				}
 			}
 			
@@ -418,8 +419,8 @@ public final class Listener extends ContextLoaderListener {
 				try {
 					propertyStream = new FileInputStream(filepath);
 				}
-				catch (IOException e) {
-					log.warn("Unable to load properties file: " + new File(filepath).getAbsolutePath(), e);
+				catch (FileNotFoundException e) {
+					log.warn("Also unable to find a runtime properties file named " + new File(filepath).getAbsolutePath());
 				}
 			}
 			
@@ -428,11 +429,11 @@ public final class Listener extends ContextLoaderListener {
 			
 			props.load(propertyStream);
 			propertyStream.close();
-			log.warn("Using runtime properties file: " + filepath);
+			log.info("Using runtime properties file: " + filepath);
 			
 		}
 		catch (Throwable t) {
-			log.warn("Unable to find a runtime properties file. Initial setup is needed", t);
+			log.warn("Unable to find a runtime properties file. Initial setup is needed");
 			return null;
 		}
 		return props;
