@@ -111,6 +111,8 @@ public class PersonAttributeTypeListController extends SimpleFormController {
 				        request.getParameter("patient.listingAttributeTypes")));
 				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES,
 				        request.getParameter("patient.viewingAttributeTypes")));
+				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES,
+			        request.getParameter("patient.headerAttributeTypes")));
 				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, request
 				        .getParameter("user.listingAttributeTypes")));
 				as.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, request
@@ -164,6 +166,8 @@ public class PersonAttributeTypeListController extends SimpleFormController {
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES));
 		map.put("patientViewingAttributeTypes", as
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES));
+		map.put("patientHeaderAttributeTypes", as
+	        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES));
 		map.put("userListingAttributeTypes", as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES));
 		map.put("userViewingAttributeTypes", as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES));
 		

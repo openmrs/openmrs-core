@@ -56,6 +56,11 @@
 			<td><spring:message code="PersonAttributeType.patient.viewing.help" /></td>
 		</tr>
 		<tr>
+			<th><spring:message code="PersonAttributeType.patient.header" /></th>
+			<td><input type="text" size="50" name="patient.headerAttributeTypes" value="${patientHeaderAttributeTypes}"/></td>
+			<td><spring:message code="PersonAttributeType.patient.header.help" /></td>
+		</tr>		
+		<tr>
 			<th><spring:message code="PersonAttributeType.user.listing" /></th>
 			<td><input type="text" size="50" name="user.listingAttributeTypes" value="${userListingAttributeTypes}"/></td>
 			<td><spring:message code="PersonAttributeType.user.listing.help" /></td>
