@@ -1102,13 +1102,13 @@
 <function>
 	<name>filterObsByConcept</name>
 	<function-class>org.openmrs.web.taglib.functions.Filter</function-class>
-	<function-signature>java.util.Set filterObsByConcept(java.util.Set, java.lang.Integer)</function-signature>
+	<function-signature>java.util.Set filterObsByConcept(java.util.Collection, java.lang.Integer)</function-signature>
 </function>
 
 <function>
 	<name>filterEncountersByType</name>
 	<function-class>org.openmrs.web.taglib.functions.Filter</function-class>
-	<function-signature>java.util.Set filterEncountersByType(java.util.Set, java.lang.Integer)</function-signature>
+	<function-signature>java.util.Set filterEncountersByType(java.util.Collection, java.lang.Integer)</function-signature>
 </function>	
 	
 </taglib>
