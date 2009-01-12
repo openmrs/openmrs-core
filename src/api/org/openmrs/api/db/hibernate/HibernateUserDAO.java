@@ -313,6 +313,14 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.UserDAO#changeHashedPassword(User, String, String)
+	 */
+	public void changeHashedPassword(User user, String hashedPassword, String salt) throws DAOException {
+		User authUser = Context.getAuthenticatedUser();
+		updateUserPassword(hashedPassword, salt, authUser.getUserId(), new Date(), user.getUserId());
+	}
+	
+	/**
 	 * We have to change the password manually because we don't store the password and salt on the
 	 * user
 	 * 

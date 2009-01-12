@@ -320,6 +320,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
+	 * @see org.openmrs.api.UserService#changeHashedPassword(User, String, String)
+	 */
+	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException {
+		dao.changeHashedPassword(user, hashedPassword, salt);
+	}
+	
+	/**
 	 * @see org.openmrs.api.UserService#changeQuestionAnswer(java.lang.String, java.lang.String,
 	 *      java.lang.String)
 	 */

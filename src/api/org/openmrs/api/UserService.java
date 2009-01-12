@@ -316,6 +316,22 @@ public interface UserService extends OpenmrsService {
 	public void changePassword(String pw, String pw2) throws APIException;
 	
 	/**
+	 * Changes the current user's password directly.
+	 * This is most useful if migrating users from other systems and you
+	 * want to retain the existing passwords.  This method will simply
+	 * save the passed hashed password and salt directly to the database.
+	 * 
+	 * @param user the user whose password you want to change
+	 * @param hashedPassword - the <em>already hashed</em> password to store
+	 * @param salt - the salt which should be used with this hashed password
+	 * @throws APIException
+	 * 
+	 * @should successfullySaveToTheDatabase
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException;
+	
+	/**
 	 * Changes the current user's secret question and answer.
 	 * 
 	 * @param pw user's password
