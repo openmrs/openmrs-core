@@ -780,6 +780,7 @@ public class DataExportFunctions {
 	 * @return
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unused")
 	public List<List<Object>> getLastNObsWithValues(Integer n, Concept concept, List<String> attrs) throws Exception {
 		//log.debug("Looking for n concepts: " + n + " " + concept);
 		
@@ -800,7 +801,7 @@ public class DataExportFunctions {
 		
 		// bring the list size up to 'n'
 		List<Object> blankRow = new Vector<Object>();
-		for (@SuppressWarnings("unused") String attr : attrs)
+		for (String attr : attrs)
 			blankRow.add("");
 		while (returnList.size() < n)
 			returnList.add(blankRow);
@@ -918,6 +919,7 @@ public class DataExportFunctions {
 	 * @return
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unused")
 	public List<Object> getFirstObsWithValues(Concept concept, List<String> attrs) throws Exception {
 		// add a null first column for the actual obs value
 		attrs.add(0, null);
@@ -926,7 +928,7 @@ public class DataExportFunctions {
 		
 		if (obs == null) {
 			List<Object> blankRow = new Vector<Object>();
-			for (@SuppressWarnings("unused") String attr : attrs)
+			for (String attr : attrs)
 				blankRow.add("");
 			return blankRow;
 		}
@@ -949,6 +951,7 @@ public class DataExportFunctions {
 	 * @return
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unused")
 	public List<List<Object>> getFirstNObsWithValues(Integer n, Concept concept, List<String> attrs) throws Exception {
 		// add a null first column for the actual obs value
 		attrs.add(0, null);
@@ -962,7 +965,7 @@ public class DataExportFunctions {
 			return obs;
 		
 		List<Object> blankRow = new Vector<Object>();
-		for (@SuppressWarnings("unused") String attr : attrs)
+		for (String attr : attrs)
 			blankRow.add("");
 		while (obs.size() < n)
 			obs.add(0, blankRow);
