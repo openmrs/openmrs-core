@@ -160,11 +160,11 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					}
 					
 					try {
-						Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+						Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
 						Context.getUserService().changePassword(user, randomPassword);
 					}
 					finally {
-						Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+						Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
 					}
 					
 					httpSession.setAttribute("resetPassword", randomPassword);
