@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -55,25 +54,50 @@ public class PortletController implements Controller {
 	protected Log log = LogFactory.getLog(this.getClass());
 	
 	/**
-	 * This method produces a model containing the following mappings: (always) (java.util.Date) now
-	 * (String) size (Locale) locale (other parameters) (if there's currently an authenticated user)
-	 * (User) authenticatedUser (Cohort) myPatientSet (the user's selected patient set,
-	 * PatientSetService.getMyPatientSet()) (if the request has a patientId attribute) (Integer)
-	 * patientId (Patient) patient (Set<Obs>) patientObs (Set<Encounter>) patientEncounters
-	 * (List<DrugOrder>) patientDrugOrders (List<DrugOrder>) currentDrugOrders (List<DrugOrder>)
-	 * completedDrugOrders (Obs) patientWeight // most recent weight obs (Obs) patientHeight // most
-	 * recent height obs (Double) patientBmi // BMI derived from most recent weight and most recent
-	 * height (String) patientBmiAsString // BMI rounded to one decimal place, or "?" if unknown
-	 * (Integer) personId (if the patient has any obs for the concept in the global property
-	 * 'concept.reasonExitedCare') (Obs) patientReasonForExit (if the request has a personId or
-	 * patientId attribute) (Person) person (List<Relationship>) personRelationships
-	 * (Map<RelationshipType, List<Relationship>>) personRelationshipsByType (if the request has an
-	 * encounterId attribute) (Integer) encounterId (Encounter) encounter (Set<Obs>) encounterObs
-	 * (if the request has a userId attribute) (Integer) userId (User) user (if the request has a
-	 * patientIds attribute, which should be a (String) comma-separated list of patientIds)
-	 * (PatientSet) patientSet (String) patientIds (if the request has a conceptIds attribute, which
-	 * should be a (String) commas-separated list of conceptIds) (Map<Integer, Concept>) conceptMap
-	 * (Map<String, Concept>) conceptMapByStringIds
+	 * This method produces a model containing the following mappings:
+	 * 
+	 * <pre>
+     *     (always)
+     *          (java.util.Date) now
+     *          (String) size
+     *          (Locale) locale
+     *          (other parameters)
+     *     (if there's currently an authenticated user)
+     *          (User) authenticatedUser
+     *          (Cohort) myPatientSet (the user's selected patient set, PatientSetService.getMyPatientSet())
+     *     (if the request has a patientId attribute)
+     *          (Integer) patientId
+     *          (Patient) patient
+     *          (Set<Obs>) patientObs
+     *          (Set<Encounter>) patientEncounters
+     *          (List<DrugOrder>) patientDrugOrders
+     *          (List<DrugOrder>) currentDrugOrders
+     *          (List<DrugOrder>) completedDrugOrders
+     *          (Obs) patientWeight // most recent weight obs
+     *          (Obs) patientHeight // most recent height obs
+     *          (Double) patientBmi // BMI derived from most recent weight and most recent height
+     *          (String) patientBmiAsString // BMI rounded to one decimal place, or "?" if unknown
+     *          (Integer) personId
+     *          (if the patient has any obs for the concept in the global property 'concept.reasonExitedCare')
+     *              (Obs) patientReasonForExit
+     *     (if the request has a personId or patientId attribute)
+     *          (Person) person
+     *          (List<Relationship>) personRelationships
+     *          (Map<RelationshipType, List<Relationship>>) personRelationshipsByType
+     *     (if the request has an encounterId attribute)
+     *          (Integer) encounterId
+     *          (Encounter) encounter
+     *          (Set<Obs>) encounterObs
+     *     (if the request has a userId attribute)
+     *          (Integer) userId
+     *          (User) user
+     *     (if the request has a patientIds attribute, which should be a (String) comma-separated list of patientIds)
+     *          (PatientSet) patientSet
+     *          (String) patientIds
+     *     (if the request has a conceptIds attribute, which should be a (String) commas-separated list of conceptIds)
+     *          (Map<Integer, Concept>) conceptMap
+     *          (Map<String, Concept>) conceptMapByStringIds
+	 * </pre>
 	 */
 	@SuppressWarnings("unchecked")
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
@@ -215,11 +239,10 @@ public class PortletController implements Controller {
 						
 						// information about whether or not the patient has exited care
 						Obs reasonForExitObs = null;
-						Concept reasonForExitConcept = cs.getConcept(as
-						        .getGlobalProperty("concept.reasonExitedCare"));
+						Concept reasonForExitConcept = cs.getConcept(as.getGlobalProperty("concept.reasonExitedCare"));
 						if (reasonForExitConcept != null) {
-							List<Obs> patientExitObs = Context.getObsService()
-							        .getObservationsByPersonAndConcept(p, reasonForExitConcept);
+							List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(p,
+							    reasonForExitConcept);
 							if (patientExitObs != null) {
 								log.debug("Exit obs is size " + patientExitObs.size());
 								if (patientExitObs.size() == 1) {
