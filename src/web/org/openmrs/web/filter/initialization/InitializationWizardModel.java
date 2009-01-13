@@ -31,14 +31,15 @@ public class InitializationWizardModel {
 	protected static final String footerTemplate = "org/openmrs/web/filter/initialization/footer.vm";
 	
 	/**
-	 * If an error occurs during setup, this is displayed at the top of the page
-	 */
-	protected String errorMessage = "";
-	
-	/**
-	 * Records completed tasks
+	 * Records completed tasks and are displayed at the top of the page upon error
 	 */
 	protected List<String> workLog = new ArrayList<String>();
+	
+	/**
+	 * Records errors that will be displayed to the user
+	 */
+	protected List<String> errors = new ArrayList<String>();
+
 	
 	/**
 	 * Whether the runtime properties file could possible be created. (only read by the velocity
@@ -124,12 +125,22 @@ public class InitializationWizardModel {
 	 * tables or not
 	 */
 	protected Boolean createTables = Boolean.FALSE;
+
+	/**
+	 * if the user asked us to create the user for openmrs
+	 */
+	protected Boolean createDatabaseUser = Boolean.FALSE;
+
+	/**
+	 * Does the user want to add the demo data to the database?
+	 */
+	protected Boolean addDemoData = Boolean.FALSE;
 	
 	/**
 	 * Asked for on the otherproperties.vm page to know if the allow_web_admin runtime property is
 	 * true/false
 	 */
-	protected Boolean moduleWebAdmin = Boolean.FALSE;
+	protected Boolean moduleWebAdmin = Boolean.TRUE;
 	
 	/**
 	 * Asked for on otherproperties.vm page to know if the runtime property for auto updating their
@@ -141,10 +152,4 @@ public class InitializationWizardModel {
 	 * Password for the admin user if the database was created now
 	 */
 	protected String adminUserPassword = "";
-	
-	/**
-	 * if the user asked us to creat the user for openmrs
-	 */
-	protected Boolean createDatabaseUser = Boolean.FALSE;
-	
 }

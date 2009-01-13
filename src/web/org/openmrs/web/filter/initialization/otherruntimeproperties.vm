@@ -1,4 +1,6 @@
 #parse($headerTemplate)
+
+<p>Step 3 of 5</p>
 	
 	<form method="post">
 		<input type="hidden" name="page" value="otherruntimeproperties.vm" /> 
@@ -12,12 +14,12 @@
 		  <tr>
 		     <td>Yes</td>
 		     <td>
-		     	<input type="radio" name="module_web_admin" value="yes" checked="checked"/>
+		     	<input type="radio" name="module_web_admin" value="yes" #if( $moduleWebAdmin == true )checked="checked"#end/>
 		     </td>
 		  </tr>
 		  <tr>
 		     <td>No</td>
-		     <td><input type="radio" name="module_web_admin" value="no" /></td>
+		     <td><input type="radio" name="module_web_admin" value="no" #if( $moduleWebAdmin == false )checked="checked"#end/></td>
 		  </tr>
 		</table>
 		
@@ -31,18 +33,18 @@
 		  <tr>
 		     <td>Yes</td>
 		     <td>
-		     	<input type="radio" name="auto_update_database" value="yes" checked="checked"/>
+		     	<input type="radio" name="auto_update_database" value="yes" #if( $autoUpdateDatabase == true )checked="checked"#end/>
 		     </td>
 		  </tr>
 		  <tr>
 		     <td>No</td>
-		     <td><input type="radio" name="auto_update_database" value="no" /></td>
+		     <td><input type="radio" name="auto_update_database" value="no" #if( $autoUpdateDatabase == false )checked="checked"#end/></td>
 		  </tr>
 		</table>
 		
 		<br>
-		<input type="submit" value="Save Properties" />
-	
+		<input name="back" type="submit" value="Back"/>
+		<input type="submit" value="Continue"/>	
 	</form>
 
 #parse($footerTemplate)

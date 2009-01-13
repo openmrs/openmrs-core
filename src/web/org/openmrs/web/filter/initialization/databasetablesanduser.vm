@@ -1,5 +1,7 @@
 #parse($headerTemplate)
-	
+
+<p>Step 2 of 5</p>
+
 	<form method="post" autocomplete="off">
 		<input type="hidden" name="page" value="databasetablesanduser.vm" />
 		
@@ -13,7 +15,16 @@
 			 
 			<br/><br/>
 		#end
-		
+
+		<span class="question">
+			Do you want to also add demo data to your database - ${databaseName}? (This option only available if creating new tables.)
+		</span>
+		<br/>
+		Yes: <input type="radio" name="add_demo_data" value="yes" #if( $addDemoData == true )checked="checked"#end/>
+		No: <input type="radio" name="add_demo_data" value="no" #if( $addDemoData == false )checked="checked"#end/>
+		 
+		<br/><br/>
+							
 		<span class="question">
 			Do you currently have a database user <i>other than root</i> that has read/write access to the ${databaseName} database?
 		</span>
@@ -29,11 +40,11 @@
 		     	<table>
 		     		<tr>
 		     			<td>Username</td>
-		     			<td><input type="text" name="current_database_username" value="${currentDatabaseUsername}"/></td>
+		     			<td><input type="text" name="current_database_username" value="${currentDatabaseUsername}" onfocus="clickRadio('current_database_user', 'yes')"/></td>
 		     		</tr>
 		     		<tr>
 		     			<td>Password</td>
-		     			<td><input type="password" name="current_database_password" value="${currentDatabasePassword}"/></td>
+		     			<td><input type="password" name="current_database_password" value="${currentDatabasePassword}" onfocus="clickRadio('current_database_user', 'yes')"/></td>
 		     		</tr>
 		     	</table>
 		     </td>
@@ -50,11 +61,11 @@
 		     	<table>
 		     		<tr>
 		     			<td>Username</td>
-		     			<td><input type="text" name="create_user_username" value="${createUserUsername}"/></td>
+		     			<td><input type="text" name="create_user_username" value="${createUserUsername}" onfocus="clickRadio('current_database_user', 'no')"/></td>
 		     		</tr>
 		     		<tr>
 		     			<td>Password</td>
-		     			<td><input type="password" name="create_user_password" value="${createUserPassword}"/></td>
+		     			<td><input type="password" name="create_user_password" value="${createUserPassword}" onfocus="clickRadio('current_database_user', 'no')"/></td>
 		     		</tr>
 		     	</table>
 		     </td>
@@ -62,8 +73,8 @@
 		</table>
 		
 		<br>
-		<input type="submit" value="Continue"/>
-		
+		<input name="back" type="submit" value="Back"/>
+		<input type="submit" value="Continue"/>			
 	</form>
 
 #parse($footerTemplate)
