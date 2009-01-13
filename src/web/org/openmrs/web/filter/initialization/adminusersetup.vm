@@ -1,4 +1,6 @@
 #parse($headerTemplate)
+
+<p>Step 4 of 5</p>
 	
 	<form method="post" autocomplete="off">
 		<input type="hidden" name="page" value="adminusersetup.vm" /> 
@@ -21,8 +23,8 @@
      	</table>
 		
 		<br>
-		<input type="submit" value="Save Credentials" />
-	
+		<input name="back" type="submit" value="Back"/>
+		<input type="submit" value="Continue"/>	
 	</form>
 	
 #parse($footerTemplate)

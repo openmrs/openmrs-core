@@ -1,5 +1,7 @@
 #parse($headerTemplate)
-	
+
+<p>Step 5 of 5</p>
+
 	<form method="post">
 		<input type="hidden" name="page" value="wizardcomplete.vm" /> 
 		
@@ -17,7 +19,8 @@
 		to the OpenMRS main screen.   
 		
 		<br/><br/>
-		
+
+		<input name="back" type="submit" value="Back"/>
 		<input type="submit" value="Finish" />
 	
 	</form>

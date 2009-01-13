@@ -25,6 +25,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
@@ -120,8 +121,8 @@ public class InitializationFilter implements Filter {
 				
 				// clear the error message that was potentially there from
 				// the last page
-				wizardModel.errorMessage = "";
 				wizardModel.workLog.clear();
+				wizardModel.errors.clear();
 				
 				if (httpRequest.getMethod().equals("GET")) {
 					doGet(httpRequest, httpResponse);
@@ -216,14 +217,20 @@ public class InitializationFilter implements Filter {
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
 		Writer writer = httpResponse.getWriter();
 		
+		// clear existing errors
+		wizardModel.errors.clear();
+		
 		// step one
 		if ("databasesetup.vm".equals(page)) {
+			
 			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
+			checkForEmptyValue(wizardModel.databaseConnection, wizardModel.errors, "Database connection string");
 			
 			// asked the user for their desired database name
 			
 			if ("yes".equals(httpRequest.getParameter("current_openmrs_database"))) {
 				wizardModel.databaseName = httpRequest.getParameter("openmrs_current_database_name");
+				checkForEmptyValue(wizardModel.databaseName, wizardModel.errors, "Current database name");
 				wizardModel.hasCurrentOpenmrsDatabase = true;
 				// TODO check to see if this is an active database
 				
@@ -234,24 +241,37 @@ public class InitializationFilter implements Filter {
 				wizardModel.createTables = true;
 				
 				wizardModel.databaseName = httpRequest.getParameter("openmrs_new_database_name");
+				checkForEmptyValue(wizardModel.databaseName, wizardModel.errors, "New database name");
 				// TODO create database now to check if its possible?
 				
 				wizardModel.createDatabaseUsername = httpRequest.getParameter("create_database_username");
+				checkForEmptyValue(wizardModel.createDatabaseUsername, wizardModel.errors, "A user that has 'CREATE DATABASE' privileges");
 				wizardModel.createDatabasePassword = httpRequest.getParameter("create_database_password");
-				// TODO if either username or pw is null, ask again
-				
+				// password could be optional
 			}
 			
-			renderTemplate("databasetablesanduser.vm", referenceMap, writer);
+			if (wizardModel.errors.isEmpty())
+				page = "databasetablesanduser.vm";
+			
+			renderTemplate(page, referenceMap, writer);
+
 		}
 		// step two
 		else if ("databasetablesanduser.vm".equals(page)) {
 			
+			if ("Back".equals(httpRequest.getParameter("back"))) {
+				renderTemplate("databasesetup.vm", referenceMap, writer);
+				return;
+			}			
+			
 			if (wizardModel.hasCurrentOpenmrsDatabase)
 				wizardModel.createTables = "yes".equals(httpRequest.getParameter("create_tables"));
+
+			wizardModel.addDemoData = "yes".equals(httpRequest.getParameter("add_demo_data"));
 			
 			if ("yes".equals(httpRequest.getParameter("current_database_user"))) {
 				wizardModel.currentDatabaseUsername = httpRequest.getParameter("current_database_username");
+				checkForEmptyValue(wizardModel.currentDatabaseUsername, wizardModel.errors, "Curent user account");
 				wizardModel.currentDatabasePassword = httpRequest.getParameter("current_database_password");
 				wizardModel.hasCurrentDatabaseUser = true;
 				wizardModel.createDatabaseUser = false;
@@ -260,32 +280,64 @@ public class InitializationFilter implements Filter {
 				wizardModel.createDatabaseUser = true;
 				// asked for the root mysql username/password 
 				wizardModel.createUserUsername = httpRequest.getParameter("create_user_username");
+				checkForEmptyValue(wizardModel.createUserUsername, wizardModel.errors, "A user that has 'CREATE USER' privileges");
 				wizardModel.createUserPassword = httpRequest.getParameter("create_user_password");
 			}
-			renderTemplate("otherruntimeproperties.vm", referenceMap, writer);
+
+			if(wizardModel.errors.isEmpty())
+				// go to next page
+				page = "otherruntimeproperties.vm";
+			
+			renderTemplate(page, referenceMap, writer);
 		}
 		// step three
 		else if ("otherruntimeproperties.vm".equals(page)) {
+			
+			if ("Back".equals(httpRequest.getParameter("back"))) {
+				renderTemplate("databasetablesanduser.vm", referenceMap, writer);
+				return;
+			}
+			
 			wizardModel.moduleWebAdmin = "yes".equals(httpRequest.getParameter("module_web_admin"));
 			wizardModel.autoUpdateDatabase = "yes".equals(httpRequest.getParameter("auto_update_database"));
 			
-			renderTemplate("adminusersetup.vm", referenceMap, writer);
+			if(wizardModel.errors.isEmpty())
+				// go to next page
+				page = "adminusersetup.vm";
+			
+			renderTemplate(page, referenceMap, writer);
+			
 		}
 		// optional step four
 		else if ("adminusersetup.vm".equals(page)) {
+			
+			if ("Back".equals(httpRequest.getParameter("back"))) {
+				renderTemplate("otherruntimeproperties.vm", referenceMap, writer);
+				return;
+			}
 			
 			wizardModel.adminUserPassword = httpRequest.getParameter("new_admin_password");
 			String adminUserConfirm = httpRequest.getParameter("new_admin_password_confirm");
 			
 			// throw back to admin user if passwords don't match
 			if (!wizardModel.adminUserPassword.equals(adminUserConfirm)) {
-				wizardModel.errorMessage = "Admin passwords don't match";
+				wizardModel.errors.add("Admin passwords don't match");
 				renderTemplate("adminusersetup.vm", referenceMap, writer);
 				return;
 			}
 			
-			renderTemplate("wizardcomplete.vm", referenceMap, writer);
+			if(wizardModel.errors.isEmpty())
+				// go to next page
+				page = "wizardcomplete.vm";
+			
+			renderTemplate(page, referenceMap, writer);
+			
 		} else if ("wizardcomplete.vm".equals(page)) {
+			
+			if ("Back".equals(httpRequest.getParameter("back"))) {
+				renderTemplate("adminusersetup.vm", referenceMap, writer);
+				return;
+			}
 			
 			Properties runtimeProperties = new Properties();
 			String connectionUsername;
@@ -325,14 +377,25 @@ public class InitializationFilter implements Filter {
 				if (-1 != executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 				    connectionUsername, connectionPassword)) {
 					wizardModel.workLog.add("Created user " + connectionUsername);
+					
+				} else {
+					// if error occurs stop
+					renderTemplate(DEFAULT_PAGE, null, writer);
+					return;
 				}
 				
 				// grant the roles
 				sql = "GRANT ALL ON ?.* TO ?";
-				executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
+				int result = executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 				    wizardModel.databaseName, connectionUsername);
-				wizardModel.workLog.add("Granted user " + connectionUsername + " all privileges to database "
+				// throw the user back to the main screen if this error occurs
+				if (result < 0) {
+					renderTemplate(DEFAULT_PAGE, null, writer);
+					return;
+				} else {
+					wizardModel.workLog.add("Granted user " + connectionUsername + " all privileges to database "
 				        + wizardModel.databaseName);
+				}				
 				
 			} else {
 				connectionUsername = wizardModel.currentDatabaseUsername;
@@ -360,34 +423,39 @@ public class InitializationFilter implements Filter {
 			
 			if (wizardModel.createTables) {
 				// use liquibase to create core data + tables
-				// TODO also give option of creating demo data
 				try {
-					DatabaseUpdater.executeChangelog(LIQUIBASE_SCHEMA_DATA, null);
-					DatabaseUpdater.executeChangelog(LIQUIBASE_CORE_DATA, null);
-					DatabaseUpdater.executeChangelog(LIQUIBASE_DEMO_DATA, null);
+						DatabaseUpdater.executeChangelog(LIQUIBASE_SCHEMA_DATA, null);
+						DatabaseUpdater.executeChangelog(LIQUIBASE_CORE_DATA, null);
+						wizardModel.workLog.add("Created database tables and added core data");
 				}
 				catch (Exception e) {
-					wizardModel.errorMessage += "<br/>" + e.getMessage();
-					wizardModel.errorMessage += "<br/>See the error log for more details"; // TODO internationalize this
+					wizardModel.errors.add(e.getMessage() + " See the error log for more details"); // TODO internationalize this
 					log.warn("Error while trying to create tables and demo data", e);
 				}
 			}
-			
+
+			// add demo data only if creating tables fresh and user selected the option add demo data
+			if (wizardModel.createTables && wizardModel.addDemoData) {
+				try {
+					DatabaseUpdater.executeChangelog(LIQUIBASE_DEMO_DATA, null);
+					wizardModel.workLog.add("Added demo data");
+				}
+				catch (Exception e) {
+					wizardModel.errors.add(e.getMessage() + " See the error log for more details"); // TODO internationalize this
+					log.warn("Error while trying to add demo data", e);
+				}
+			}			
 			// update the database to the latest version
 			try {
 				DatabaseUpdater.update();
 			}
 			catch (Exception e) {
-				wizardModel.errorMessage += "<br/>" + e.getMessage();
+				wizardModel.errors.add(e.getMessage() + " Error while trying to update to the latest database version"); // TODO internationalize this
 				log.warn("Error while trying to update to the latest database version", e);
-			}
-			
-			// redirect to setup page if we got an error
-			if (wizardModel.errorMessage != null && !wizardModel.errorMessage.equals("")) {
 				renderTemplate(DEFAULT_PAGE, null, writer);
 				return;
 			}
-			
+						
 			// output properties to the openmrs runtime properties file
 			FileOutputStream fos = null;
 			try {
@@ -413,8 +481,7 @@ public class InitializationFilter implements Filter {
 			}
 			catch (DatabaseUpdateException updateEx) {
 				log.warn("Error while running the database update file", updateEx);
-				wizardModel.errorMessage = "There was an error while running the database update file: "
-				        + updateEx.getMessage();
+				wizardModel.errors.add(updateEx.getMessage() + " There was an error while running the database update file: " + updateEx.getMessage()); // TODO internationalize this
 				renderTemplate(DEFAULT_PAGE, null, writer);
 				return;
 			}
@@ -422,9 +489,8 @@ public class InitializationFilter implements Filter {
 				// TODO display a page looping over the required input and ask the user for each.  
 				// 		When done and the user and put in their say, call DatabaseUpdater.update(Map); 
 				//		with the user's question/answer pairs
-				log
-				        .warn("Unable to continue because user input is required for the db updates, but I am not doing anything about that right now");
-				wizardModel.errorMessage = "Unable to continue because user input is required for the db updates, but I am not doing anything about that right now";
+				log.warn("Unable to continue because user input is required for the db updates, but I am not doing anything about that right now");
+				wizardModel.errors.add("Unable to continue because user input is required for the db updates, but I am not doing anything about that right now");
 				renderTemplate(DEFAULT_PAGE, null, writer);
 				return;
 			}
@@ -472,10 +538,8 @@ public class InitializationFilter implements Filter {
 			
 		}
 		catch (Exception e) {
-			wizardModel.errorMessage += "<br/>User account " + connectionUsername + " does not work. " + e.getMessage();
-			wizardModel.errorMessage += "<br/>See the error log for more details"; // TODO internationalize this
+			wizardModel.errors.add("User account " + connectionUsername + " does not work. " + e.getMessage() + " See the error log for more details"); // TODO internationalize this
 			log.warn("Error while checking the connection user account", e);
-			
 			return false;
 		}
 	}
@@ -588,7 +652,7 @@ public class InitializationFilter implements Filter {
 			if (!silent) {
 				// log and add error
 				log.warn("error executing sql: " + sql, sqlex);
-				wizardModel.errorMessage += "<br/>Error executing sql: " + sql + " - " + sqlex.getMessage();
+				wizardModel.errors.add("Error executing sql: " + sql + " - " + sqlex.getMessage());
 			}
 		}
 		catch (InstantiationException e) {
@@ -602,7 +666,9 @@ public class InitializationFilter implements Filter {
 		}
 		finally {
 			try {
-				connection.close();
+				if(connection != null) {
+					connection.close();
+				}
 			}
 			catch (Throwable t) {
 				log.warn("Error while closing connection", t);
@@ -620,5 +686,21 @@ public class InitializationFilter implements Filter {
 	 */
 	private boolean isInitializationComplete() {
 		return initializationComplete;
+	}
+	
+	/**
+	 * Check if the given value is null or a zero-length String
+	 * 
+	 * @param value the string to check
+	 * @param errors the list of errors to append the errorMessage to if value is empty
+	 * @param errorMessage the string error message to append if value is empty
+	 * @return true if the value is non-empty
+	 */
+	private boolean checkForEmptyValue(String value, List<String> errors, String errorMessage) {
+		if(value != null && !value.isEmpty()) {
+			return true;
+		}
+		errors.add(errorMessage + " required.");
+		return false;
 	}
 }
