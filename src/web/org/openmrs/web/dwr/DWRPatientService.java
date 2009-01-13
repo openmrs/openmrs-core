@@ -17,9 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -30,13 +28,14 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateIdentifierException;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.InvalidIdentifierFormatException;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -77,7 +76,14 @@ public class DWRPatientService {
 		PatientService ps = Context.getPatientService();
 		Collection<Patient> patients;
 		
-		patients = ps.getPatients(searchValue);
+		try {
+			patients = ps.getPatients(searchValue);
+		}
+		catch (APIAuthenticationException e) {
+			patientList.add("Error while attempting to find patients - " + e.getMessage());
+			return patientList;
+		}
+		
 		patientList = new Vector<Object>(patients.size());
 		for (Patient p : patients)
 			patientList.add(new PatientListItem(p));
@@ -169,15 +175,15 @@ public class DWRPatientService {
 	 * @param searchOn
 	 * @return list of patientListItems
 	 */
-	public Vector findDuplicatePatients(String[] searchOn) {
+	public Vector<Object> findDuplicatePatients(String[] searchOn) {
 		Vector<Object> patientList = new Vector<Object>();
 		
 		try {
-			Set<String> options = new HashSet<String>(searchOn.length);
+			List<String> options = new Vector<String>(searchOn.length);
 			for (String s : searchOn)
 				options.add(s);
 			
-			List<Patient> patients = Context.getPatientService().findDuplicatePatients(options);
+			List<Patient> patients = Context.getPatientService().getDuplicatePatientsByAttributes(options);
 			
 			if (patients.size() > 200)
 				patients.subList(0, 200);
@@ -209,11 +215,11 @@ public class DWRPatientService {
 		if (identifier == null || identifier.length() == 0)
 			return "PatientIdentifier.error.general";
 		PatientService ps = Context.getPatientService();
-		EncounterService es = Context.getEncounterService();
+		LocationService ls = Context.getLocationService();
 		Patient p = ps.getPatient(patientId);
-		PatientIdentifierType idType = ps.getPatientIdentifierType(identifierType);
+		PatientIdentifierType idType = ps.getPatientIdentifierTypeByName(identifierType);
 		//ps.updatePatientIdentifier(pi);
-		Location location = es.getLocation(identifierLocationId);
+		Location location = ls.getLocation(identifierLocationId);
 		log.debug("idType=" + identifierType + "->" + idType + " , location=" + identifierLocationId + "->" + location
 		        + " identifier=" + identifier);
 		PatientIdentifier id = new PatientIdentifier();
