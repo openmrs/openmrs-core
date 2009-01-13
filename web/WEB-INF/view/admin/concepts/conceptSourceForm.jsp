@@ -24,6 +24,7 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
+		<td class="description"><spring:message code="ConceptSource.name.help"/></td>
 	</tr>
 	<tr>
 		<td><spring:message code="ConceptSource.hl7Code"/></td>
@@ -33,6 +34,7 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
+		<td class="description"><spring:message code="ConceptSource.hl7Code.help"/></td>
 	</tr>
 	<tr>
 		<td valign="top"><spring:message code="general.description"/></td>
@@ -42,6 +44,7 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
+		<td class="description"><spring:message code="ConceptSource.description.help"/></td>
 	</tr>
 	<c:if test="${conceptSource.creator != null}">
 		<tr>
@@ -50,6 +53,7 @@
 				${conceptSource.creator.personName} -
 				<openmrs:formatDate date="${conceptSource.dateCreated}" type="long" />
 			</td>
+			<td class="description"></td>
 		</tr>
 	</c:if>
 </table>
