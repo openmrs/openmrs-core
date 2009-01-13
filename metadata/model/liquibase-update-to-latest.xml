@@ -203,4 +203,33 @@
 		</modifyColumn>
 	</changeSet>
 	
+	<changeSet id="200901130950" author="bwolfe">
+		<comment>
+			Remove Manage Tribes and View Tribes privileges from all roles
+		</comment>
+		
+		<delete tableName="role_privilege">
+			<where>privilege='Manage Tribes' and not exists (select * from privilege where privilege = 'Manage Tribes')</where>
+		</delete>
+		
+		<delete tableName="role_privilege">
+			<where>privilege='View Tribes' and not exists (select * from privilege where privilege = 'View Tribes')</where>
+		</delete>
+	</changeSet>
+	
+	<changeSet id="200901130951" author="bwolfe">
+		<comment>
+			Remove Manage Mime Types, View Mime Types, and Purge Mime Types privilege
+		</comment>
+		
+		<delete tableName="role_privilege">
+			<where>privilege in ('Manage Mime Types', 'View Mime Types', 'Purge Mime Types')</where>
+		</delete>
+		
+		<delete tableName="privilege">
+			<where>privilege in ('Manage Mime Types', 'View Mime Types', 'Purge Mime Types')</where>
+		</delete>
+	</changeSet>
+	
+	
 </databaseChangeLog>
