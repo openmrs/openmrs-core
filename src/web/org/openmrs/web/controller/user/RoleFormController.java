@@ -61,7 +61,6 @@ public class RoleFormController extends SimpleFormController {
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(Privilege.class, new PrivilegeEditor());
 		binder.registerCustomEditor(Role.class, new RoleEditor());
-		
 	}
 	
 	/**
@@ -125,7 +124,8 @@ public class RoleFormController extends SimpleFormController {
 	}
 	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		
@@ -168,7 +168,7 @@ public class RoleFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			UserService us = Context.getUserService();
-			String r = request.getParameter("role");
+			String r = request.getParameter("roleName");
 			if (r != null)
 				role = us.getRole(r);
 		}
