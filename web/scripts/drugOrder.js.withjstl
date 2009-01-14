@@ -345,9 +345,10 @@
 		}
 		
 		function addCurrentDrugOrders(drugOrders) {
-			if ( drugOrders.length > 0 ) setHasOrders(1);
-			var tableName = 'regimenTableCurrent';
 			if ( drugOrders ) {
+				if ( drugOrders.length > 0 ) setHasOrders(1);
+				var tableName = 'regimenTableCurrent';
+				
 				var firstOrder = drugOrders[0];
 				if ( firstOrder ) { 
 					if ( firstOrder.drugSetLabel ) {
@@ -449,6 +450,7 @@
 		
 		function dwrOrderNotifyComplete(notUsed) {
 			var popped = addStack.pop();
+			waitToRefreshRegimenTables();
 		}
 		
 		function waitToRefreshRegimenTables() {

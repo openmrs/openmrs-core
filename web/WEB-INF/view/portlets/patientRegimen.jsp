@@ -266,7 +266,7 @@
 						addStandardDrug('${drugComponent.drugId}', '${drugComponent.dose}', '${drugComponent.units}', '${drugComponent.frequency}', '${drugComponent.instructions}', startDate);
 					</c:forEach>
 					//alert('and now here');
-					waitToRefreshRegimenTables();
+					//waitToRefreshRegimenTables();
 					selectStandard('${standardRegimen.codeName}');
 				}
 			</c:forEach>
