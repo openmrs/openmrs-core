@@ -233,8 +233,9 @@ function gotoUser(select, userId) {
 	var scriptElements = document.getElementsByTagName('script');
 	var foundMatchingScript = false;
 	for (var i = 0; i < scriptElements.length && !foundMatchingScript; i++) {
+		var src = scriptElements[i].src;
 		// check to see if src ends with filename
-		if (scriptElements[i].src.indexOf(filename)==(scriptElements[i].src.length-filename.length)) {
+		if (src.length >= filename.length && src.indexOf(filename)==(src.length - filename.length)) {
         	foundMatchingScript = true;
 		}
     }
