@@ -77,7 +77,7 @@ public class DWROrderService {
 		drugOrder.setDateCreated(new Date());
 		drugOrder.setVoided(new Boolean(false));
 		
-		Context.getOrderService().updateOrder(drugOrder);
+		Context.getOrderService().saveOrder(drugOrder);
 		
 		log.debug("Finished creating new drug order");
 		return ret;
@@ -101,7 +101,7 @@ public class DWROrderService {
 		}
 		
 		Order o = Context.getOrderService().getOrder(orderId);
-		Context.getOrderService().discontinueOrder(o, Context.getConceptService().getConceptByIdOrName(discontinueReason),
+		Context.getOrderService().discontinueOrder(o, Context.getConceptService().getConcept(discontinueReason),
 		    dDiscDate);
 	}
 	
@@ -348,7 +348,7 @@ public class DWROrderService {
 		
 		for (DrugOrder o : currentOrders) {
 			Context.getOrderService().discontinueOrder(o,
-			    Context.getConceptService().getConceptByIdOrName(discontinueReason), discDate);
+			    Context.getConceptService().getConcept(discontinueReason), discDate);
 		}
 		
 		return ret;
