@@ -225,12 +225,26 @@ function gotoUser(select, userId) {
  * Writes a <script src=... > tag to the current body
  * element.  This precludes the need for document.write(<script...)  
  * 
+ * This won't add the script file import to the header if one exists in <head> already.
+ * 
  * @param filename the full path to the file to include
  */
  function importJavascriptFile(filename) {
-	var body = document.getElementsByTagName('head').item(0);
-	script = document.createElement('script');
-	script.src = filename;
-	script.type = 'text/javascript';
-	body.appendChild(script)
+	var scriptElements = document.getElementsByTagName('script');
+	var foundMatchingScript = false;
+	for (var i = 0; i < scriptElements.length && !foundMatchingScript; i++) {
+		// check to see if src ends with filename
+		if (scriptElements[i].src.indexOf(filename)==(scriptElements[i].src.length-filename.length)) {
+        	foundMatchingScript = true;
+		}
+    }
+    
+    // only append the new script if one wasn't found already
+    if (!foundMatchingScript) {
+    	var headElement = document.getElementsByTagName('head').item(0);
+    	script = document.createElement('script');
+		script.src = filename;
+		script.type = 'text/javascript';
+		headElement.appendChild(script);
+    }
  }

@@ -95,9 +95,12 @@
 
 			<script type="text/javascript">
 				//// prevents users getting popup alerts when viewing pages
-				var handler = function(ex) {
-					if (typeof ex == "string")
-						window.status = "DWR warning/error: " + ex;
+				var handler = function(msg, ex) {
+					if (ex.message) {
+						alert("An error occurred: " + ex.message);
+					}
+					else if (typeof msg == "string")
+						window.status = "DWR warning/error: " + msg + ". " + ex;
 				};
 				dwr.engine.setErrorHandler(handler);
 				dwr.engine.setWarningHandler(handler);
