@@ -42,7 +42,7 @@ public class DWROrderService {
 	 * to refresh view
 	 */
 	public boolean createDrugOrder(Integer patientId, String drugId, Double dose, String units, String frequency,
-	                               String startDate, String instructions) {
+	                               String startDate, String instructions) throws Exception {
 		log.debug("PatientId is " + patientId + " and drugId is " + drugId + " and dose is " + dose + " and units are "
 		        + units + " and frequency is " + frequency + " and startDate is " + startDate + " and instructions are "
 		        + instructions);
@@ -52,10 +52,17 @@ public class DWROrderService {
 		DrugOrder drugOrder = new DrugOrder();
 		Patient patient = Context.getPatientService().getPatient(patientId);
 		Drug drug = Context.getConceptService().getDrugByNameOrId(drugId);
+		if (drug == null)
+			throw new DWRException("There is no drug with the name or drugId of: " + drugId);
+		
+		OrderType orderType = Context.getOrderService().getOrderType(OpenmrsConstants.ORDERTYPE_DRUG);
+		if (orderType == null)
+			throw new DWRException("There is no 'Drug' Order Type in the system.  This must be an Order Type with orderTypeId = " + OpenmrsConstants.ORDERTYPE_DRUG);
+		
 		drugOrder.setDrug(drug);
 		Concept concept = drug.getConcept();
 		drugOrder.setConcept(concept);
-		drugOrder.setOrderType(new OrderType(new Integer(OpenmrsConstants.ORDERTYPE_DRUG)));
+		drugOrder.setOrderType(orderType);
 		drugOrder.setPatient(patient);
 		drugOrder.setDose(dose);
 		drugOrder.setUnits(units);

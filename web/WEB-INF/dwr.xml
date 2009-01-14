@@ -9,7 +9,11 @@
 		<create creator="new" javascript="JDate">
 	      <param name="class" value="java.util.Date"/>
 		</create>
-	
+		
+		<convert match="org.openmrs.web.dwr.DWRException" converter="exception">
+			<param name="exclude" value="stackTrace"/>
+		</convert>
+		
 		<convert converter="bean" match="org.openmrs.web.dwr.PatientListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.PersonListItem"/>
 		<convert converter="bean" match="org.openmrs.web.dwr.ConceptListItem"/>

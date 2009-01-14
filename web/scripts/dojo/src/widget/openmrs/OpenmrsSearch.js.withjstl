@@ -98,14 +98,6 @@ dojo.widget.defineWidget(
 		// add search label
 		if (this.searchLabel)
 			this.searchLabelNode.innerHTML = this.searchLabel;
-			
-		// move default DWR error handling to the status bar
-		var handler = function(ex) {
-			if (typeof ex == "string")
-				window.status = "DWR warning/error: " + ex;
-		};
-		dwr.engine.setErrorHandler(handler);
-		dwr.engine.setWarningHandler(handler);
 	},
 		
 	fillInTemplate: function(args, frag){
