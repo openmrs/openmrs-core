@@ -201,12 +201,24 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	
 	/**
 	 * Authenticate to the Context. A popup box will appear asking the current user to enter
-	 * credentials unless there is a junit.username and junit.userpwd defined in the runtime
+	 * credentials unless there is a junit.username and junit.password defined in the runtime
 	 * properties
 	 * 
 	 * @throws Exception
 	 */
 	public void authenticate() throws Exception {
+		if (Context.isAuthenticated())
+			return;
+		
+		try {
+			Context.authenticate("admin", "test");
+			return;
+		}
+		catch (ContextAuthenticationException wrongCredentialsError) {
+			// if we get here the user is using some database other than the standard 
+			// in-memory database, prompt the user for input
+		}
+		
 		Integer attempts = 0;
 		
 		// TODO: how to make this a locale specific message for the user to see?
@@ -445,7 +457,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			try {
 				ReplacementDataSet replacementDataSet = new ReplacementDataSet(new FlatXmlDataSet(fileInInputStreamFormat));
 				replacementDataSet.addReplacementObject("[NULL]", null);
-				xmlDataSetToRun = replacementDataSet; 
+				xmlDataSetToRun = replacementDataSet;
 			}
 			finally {
 				fileInInputStreamFormat.close();
