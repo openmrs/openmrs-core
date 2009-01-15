@@ -14,6 +14,8 @@
 package org.openmrs.web.filter.initialization;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -114,10 +116,26 @@ public class InitializationFilter implements Filter {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpServletResponse httpResponse = (HttpServletResponse) response;
 			
-			if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)) {
+			// for all /images files, write the path
+			if (httpRequest.getServletPath().startsWith("/images")) {
+				
+				// writes the actual image file path to the response
+				File imageFile = new File(filterConfig.getServletContext().getRealPath(httpRequest.getServletPath()));
+				try {
+					InputStream imageFileInputStream = new FileInputStream(imageFile);
+					OpenmrsUtil.copyFile(imageFileInputStream, httpResponse.getOutputStream());
+					imageFileInputStream.close();
+				}
+				catch (FileNotFoundException e) {
+					log.error("Unable to find image file: " + imageFile.getAbsolutePath());
+				}
+			}
+			// for anything but /initialsetup
+			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)) {
 				// send the user to the setup page 
 				httpResponse.sendRedirect("/" + WebConstants.WEBAPP_NAME + "/" + WebConstants.SETUP_PAGE_URL);
 			} else {
+				// does the wizard
 				
 				// clear the error message that was potentially there from
 				// the last page
@@ -245,7 +263,8 @@ public class InitializationFilter implements Filter {
 				// TODO create database now to check if its possible?
 				
 				wizardModel.createDatabaseUsername = httpRequest.getParameter("create_database_username");
-				checkForEmptyValue(wizardModel.createDatabaseUsername, wizardModel.errors, "A user that has 'CREATE DATABASE' privileges");
+				checkForEmptyValue(wizardModel.createDatabaseUsername, wizardModel.errors,
+				    "A user that has 'CREATE DATABASE' privileges");
 				wizardModel.createDatabasePassword = httpRequest.getParameter("create_database_password");
 				// password could be optional
 			}
@@ -254,7 +273,7 @@ public class InitializationFilter implements Filter {
 				page = "databasetablesanduser.vm";
 			
 			renderTemplate(page, referenceMap, writer);
-
+			
 		}
 		// step two
 		else if ("databasetablesanduser.vm".equals(page)) {
@@ -262,11 +281,11 @@ public class InitializationFilter implements Filter {
 			if ("Back".equals(httpRequest.getParameter("back"))) {
 				renderTemplate("databasesetup.vm", referenceMap, writer);
 				return;
-			}			
+			}
 			
 			if (wizardModel.hasCurrentOpenmrsDatabase)
 				wizardModel.createTables = "yes".equals(httpRequest.getParameter("create_tables"));
-
+			
 			wizardModel.addDemoData = "yes".equals(httpRequest.getParameter("add_demo_data"));
 			
 			if ("yes".equals(httpRequest.getParameter("current_database_user"))) {
@@ -280,11 +299,12 @@ public class InitializationFilter implements Filter {
 				wizardModel.createDatabaseUser = true;
 				// asked for the root mysql username/password 
 				wizardModel.createUserUsername = httpRequest.getParameter("create_user_username");
-				checkForEmptyValue(wizardModel.createUserUsername, wizardModel.errors, "A user that has 'CREATE USER' privileges");
+				checkForEmptyValue(wizardModel.createUserUsername, wizardModel.errors,
+				    "A user that has 'CREATE USER' privileges");
 				wizardModel.createUserPassword = httpRequest.getParameter("create_user_password");
 			}
-
-			if(wizardModel.errors.isEmpty())
+			
+			if (wizardModel.errors.isEmpty())
 				// go to next page
 				page = "otherruntimeproperties.vm";
 			
@@ -301,7 +321,7 @@ public class InitializationFilter implements Filter {
 			wizardModel.moduleWebAdmin = "yes".equals(httpRequest.getParameter("module_web_admin"));
 			wizardModel.autoUpdateDatabase = "yes".equals(httpRequest.getParameter("auto_update_database"));
 			
-			if(wizardModel.errors.isEmpty())
+			if (wizardModel.errors.isEmpty())
 				// go to next page
 				page = "adminusersetup.vm";
 			
@@ -326,7 +346,7 @@ public class InitializationFilter implements Filter {
 				return;
 			}
 			
-			if(wizardModel.errors.isEmpty())
+			if (wizardModel.errors.isEmpty())
 				// go to next page
 				page = "wizardcomplete.vm";
 			
@@ -394,8 +414,8 @@ public class InitializationFilter implements Filter {
 					return;
 				} else {
 					wizardModel.workLog.add("Granted user " + connectionUsername + " all privileges to database "
-				        + wizardModel.databaseName);
-				}				
+					        + wizardModel.databaseName);
+				}
 				
 			} else {
 				connectionUsername = wizardModel.currentDatabaseUsername;
@@ -424,16 +444,16 @@ public class InitializationFilter implements Filter {
 			if (wizardModel.createTables) {
 				// use liquibase to create core data + tables
 				try {
-						DatabaseUpdater.executeChangelog(LIQUIBASE_SCHEMA_DATA, null);
-						DatabaseUpdater.executeChangelog(LIQUIBASE_CORE_DATA, null);
-						wizardModel.workLog.add("Created database tables and added core data");
+					DatabaseUpdater.executeChangelog(LIQUIBASE_SCHEMA_DATA, null);
+					DatabaseUpdater.executeChangelog(LIQUIBASE_CORE_DATA, null);
+					wizardModel.workLog.add("Created database tables and added core data");
 				}
 				catch (Exception e) {
 					wizardModel.errors.add(e.getMessage() + " See the error log for more details"); // TODO internationalize this
 					log.warn("Error while trying to create tables and demo data", e);
 				}
 			}
-
+			
 			// add demo data only if creating tables fresh and user selected the option add demo data
 			if (wizardModel.createTables && wizardModel.addDemoData) {
 				try {
@@ -444,7 +464,7 @@ public class InitializationFilter implements Filter {
 					wizardModel.errors.add(e.getMessage() + " See the error log for more details"); // TODO internationalize this
 					log.warn("Error while trying to add demo data", e);
 				}
-			}			
+			}
 			// update the database to the latest version
 			try {
 				DatabaseUpdater.update();
@@ -455,7 +475,7 @@ public class InitializationFilter implements Filter {
 				renderTemplate(DEFAULT_PAGE, null, writer);
 				return;
 			}
-						
+			
 			// output properties to the openmrs runtime properties file
 			FileOutputStream fos = null;
 			try {
@@ -481,7 +501,8 @@ public class InitializationFilter implements Filter {
 			}
 			catch (DatabaseUpdateException updateEx) {
 				log.warn("Error while running the database update file", updateEx);
-				wizardModel.errors.add(updateEx.getMessage() + " There was an error while running the database update file: " + updateEx.getMessage()); // TODO internationalize this
+				wizardModel.errors.add(updateEx.getMessage()
+				        + " There was an error while running the database update file: " + updateEx.getMessage()); // TODO internationalize this
 				renderTemplate(DEFAULT_PAGE, null, writer);
 				return;
 			}
@@ -489,8 +510,10 @@ public class InitializationFilter implements Filter {
 				// TODO display a page looping over the required input and ask the user for each.  
 				// 		When done and the user and put in their say, call DatabaseUpdater.update(Map); 
 				//		with the user's question/answer pairs
-				log.warn("Unable to continue because user input is required for the db updates, but I am not doing anything about that right now");
-				wizardModel.errors.add("Unable to continue because user input is required for the db updates, but I am not doing anything about that right now");
+				log
+				        .warn("Unable to continue because user input is required for the db updates, but I am not doing anything about that right now");
+				wizardModel.errors
+				        .add("Unable to continue because user input is required for the db updates, but I am not doing anything about that right now");
 				renderTemplate(DEFAULT_PAGE, null, writer);
 				return;
 			}
@@ -525,7 +548,6 @@ public class InitializationFilter implements Filter {
 	 * @param connectionUsername
 	 * @param connectionPassword
 	 * @param databaseConnectionFinalUrl
-	 * 
 	 * @return true/false whether it was verified or not
 	 */
 	private boolean verifyConnection(String connectionUsername, String connectionPassword, String databaseConnectionFinalUrl) {
@@ -538,7 +560,8 @@ public class InitializationFilter implements Filter {
 			
 		}
 		catch (Exception e) {
-			wizardModel.errors.add("User account " + connectionUsername + " does not work. " + e.getMessage() + " See the error log for more details"); // TODO internationalize this
+			wizardModel.errors.add("User account " + connectionUsername + " does not work. " + e.getMessage()
+			        + " See the error log for more details"); // TODO internationalize this
 			log.warn("Error while checking the connection user account", e);
 			return false;
 		}
@@ -666,7 +689,7 @@ public class InitializationFilter implements Filter {
 		}
 		finally {
 			try {
-				if(connection != null) {
+				if (connection != null) {
 					connection.close();
 				}
 			}
@@ -697,7 +720,7 @@ public class InitializationFilter implements Filter {
 	 * @return true if the value is non-empty
 	 */
 	private boolean checkForEmptyValue(String value, List<String> errors, String errorMessage) {
-		if(value != null && !value.equals("")) {
+		if (value != null && !value.equals("")) {
 			return true;
 		}
 		errors.add(errorMessage + " required.");
