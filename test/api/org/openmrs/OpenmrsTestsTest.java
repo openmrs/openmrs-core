@@ -150,7 +150,7 @@ public class OpenmrsTestsTest {
 				String className = currentFile.getAbsolutePath().replace(".class", "");
 				
 				// switch to dot separation
-				className = className.replace("/", ".");
+				className = className.replace(File.separator, ".");
 				
 				// strip out the beginning up to org.openmrs.
 				className = className.substring(className.indexOf("org.openmrs."));
