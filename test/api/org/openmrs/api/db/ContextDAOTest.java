@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +52,15 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			// this bean name matches the name in /metadata/spring/applicationContext-service.xml
 			dao = (ContextDAO) applicationContext.getBean("contextDAO");
 		}
+	}
+	
+	/**
+	 * Methods in this class might authenticate with a different user, so log that user out after
+	 * this whole junit class is done.
+	 */
+	@AfterClass
+	public static void logOutAfterThisTest() {
+		Context.logout();
 	}
 	
 	/**

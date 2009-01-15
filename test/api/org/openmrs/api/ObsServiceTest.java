@@ -990,7 +990,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
 		File createdFile = new File(complexObsDir, "nameOfFile.txt");
-		Assert.assertFalse(createdFile.exists());
+		if (createdFile.exists())
+			createdFile.delete();
 		
 		// the complex data to put onto an obs that will be saved
 		InputStream inputStream = new ByteArrayInputStream("This is a string to save to a file".getBytes());

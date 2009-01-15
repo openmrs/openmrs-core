@@ -16,6 +16,7 @@ package org.openmrs.api.context;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.openmrs.User;
 import org.openmrs.api.UserService;
@@ -28,6 +29,15 @@ import org.springframework.test.AssertThrows;
  * @See {@link Context}
  */
 public class ContextTest extends BaseContextSensitiveTest {
+	
+	/**
+	 * Methods in this class might authenticate with a different user, so log that user out after
+	 * this whole junit class is done.
+	 */
+	@AfterClass
+	public static void logOutAfterThisTest() {
+		Context.logout();
+	}
 	
 	/**
 	 * Null parameters to the authenticate method should not cause errors to be thrown and should
