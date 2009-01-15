@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
@@ -41,6 +42,15 @@ import org.springframework.test.annotation.Rollback;
 public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
+	
+	/**
+	 * Methods in this class might authenticate with a different user, so log that user out after
+	 * this whole junit class is done.
+	 */
+	@AfterClass
+	public static void logOutAfterThisTest() {
+		Context.logout();
+	}
 	
 	/**
 	 * Test that we can create a user
