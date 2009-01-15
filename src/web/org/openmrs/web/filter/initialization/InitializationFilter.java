@@ -697,7 +697,7 @@ public class InitializationFilter implements Filter {
 	 * @return true if the value is non-empty
 	 */
 	private boolean checkForEmptyValue(String value, List<String> errors, String errorMessage) {
-		if(value != null && !value.isEmpty()) {
+		if(value != null && !value.equals("")) {
 			return true;
 		}
 		errors.add(errorMessage + " required.");
