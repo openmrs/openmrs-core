@@ -78,7 +78,7 @@
 		dwr.util.addRows(tableId, values, [
 				function(id) { return idToNameMap[id]; },
 				function(id) { return '<a href="javascript:removeWorkflow(' + id + ')">[x]</a>';},
-			]);
+			], {escapeHtml: false});
 	}
 </script>
 
