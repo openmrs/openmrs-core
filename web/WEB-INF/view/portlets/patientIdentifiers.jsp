@@ -109,6 +109,7 @@ highlightMissing=true/false (defaults to true)
 							type="org.openmrs.Location"
 							formFieldName="identifierLocationId_${iter.index}"
 							val="${found.location}"
+							allowUserDefault="true"
 						/>
 					</c:if>
 					<c:if test="${found==null}">
@@ -117,6 +118,7 @@ highlightMissing=true/false (defaults to true)
 							type="org.openmrs.Location"
 							formFieldName="identifierLocationId_${iter.index}"
 							val=""
+							allowUserDefault="true"
 						/>
 					</c:if>
 					<input id="idSaveButton_${iter.index}" type="button" value="<spring:message code="general.save" />" disabled="true" onClick="handleSaveIdentifier(${iter.index})"/>

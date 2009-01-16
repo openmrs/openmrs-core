@@ -69,7 +69,7 @@
 			str += ' <input type="button" value="<spring:message code="general.delete" javaScriptEscape="true"/>" onClick="handleDeleteRelationship(' + relId + ')"/>';
 			str += ' <input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv(\'del_rel_' + relId + '\'); hideDiv(\'voidRel' + relId + '\')"/>';
 			str += '</span>';
-			dwr.util.addOptions('new_relationships', [ str ]);
+			dwr.util.addOptions('new_relationships', [ str ], {escapeHtml: false});
 		}
 	}
 	
