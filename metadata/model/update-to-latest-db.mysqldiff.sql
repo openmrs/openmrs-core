@@ -1675,7 +1675,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
 
-		select 'Updating obs' AS '*** Step: ***', new_db_version from dual;
+		select 'Updating obs (this may take a while)' AS '*** Step: ***', new_db_version from dual;
 
 		ALTER TABLE `obs` ADD COLUMN `value_coded_name_id` int(11) AFTER `value_coded`;
 
@@ -1704,7 +1704,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
 
-		select 'Constraining obs' AS '*** Step: ***', new_db_version from dual;
+		select 'Constraining obs (this may take a while)' AS '*** Step: ***', new_db_version from dual;
 		
 		ALTER TABLE `obs` ADD CONSTRAINT `obs_name_of_coded_value` FOREIGN KEY (`value_coded_name_id`) 
 			REFERENCES `concept_name` (`concept_name_id`);
@@ -1723,8 +1723,7 @@ call diff_procedure('1.4.0.14');
 # OpenMRS Datamodel version 1.4.0.15
 # Andreas Kollegger   Sep 26th, 2008
 #
-# update concept_word table
-# delete all concept_words - forcing a rebuild
+# update concept_word table with concept_name_ids
 # add concept_name columns
 #
 #-----------------------------------------------------------
@@ -1735,9 +1734,98 @@ BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
 
 		select 'Updating concept_word table' AS '*** Step: ***', new_db_version from dual;
-
-		delete from `concept_word`;
+		
+		# delete all orphan concept_names and concept_words
+		delete from concept_name_tag_map where exists (select * from concept_name where concept_name.concept_name_id = concept_name_tag_map.concept_name_id and not exists (select * from concept where concept.concept_id = concept_name.concept_id));
+		delete from concept_name where not exists (select * from concept where concept.concept_id = concept_name.concept_id);
+		
 		ALTER TABLE `concept_word` ADD COLUMN `concept_name_id` INTEGER NOT NULL AFTER `locale`;
+		
+		# Update all non-synonym words
+		update 
+		 concept_word
+		set
+		  concept_name_id = 
+		    (select 
+		      min(cn.concept_name_id)
+		     from
+		      concept_name cn,
+		      concept_name_tag_map map
+		     where
+		      cn.concept_id = concept_word.concept_id
+		      and
+		      locate(word, cn.name) > 0
+		      and
+		      map.concept_name_id = cn.concept_name_id
+		      and
+		      map.concept_name_tag_id = 4)
+		where synonym = '';
+		
+		# update all synonym words
+		update 
+		 concept_word
+		set
+		  concept_name_id = 
+		    (select 
+		      min(cn.concept_name_id)
+		     from
+		      concept_name cn,
+		      concept_name_tag_map map
+		     where
+		      cn.concept_id = concept_word.concept_id
+		      and
+		      locate(word, cn.name) > 0
+		      and
+		      map.concept_name_id = cn.concept_name_id
+		      and
+		      map.concept_name_tag_id = 3)
+		where synonym <> '';
+
+		
+		# find duplicate words and delete the synonym part
+		drop table if exists tmp_concept_word_helper;
+		create table tmp_concept_word_helper like concept_word;
+		insert into 
+		 tmp_concept_word_helper
+		(select
+		  cw2.*
+		from
+		  concept_word cw1,
+		  concept_word cw2
+		where
+		  cw1.concept_id = cw2.concept_id
+		  and
+		  cw1.word = cw2.word
+		  and
+		  cw1.synonym = ''
+		  and
+		  cw2.synonym <> ''
+		);
+		
+		# delete those synonym words that are duplicate.
+		delete from
+		concept_word
+		where
+		  exists (
+		  select
+		    *
+		  from
+		   tmp_concept_word_helper tmp
+		  where
+		   concept_word.concept_id = tmp.concept_id
+		   and
+		   concept_word.word = tmp.word
+		   and
+		   concept_word.synonym = tmp.synonym
+		   and
+		   concept_word.concept_name_id = tmp.concept_name_id);
+		
+		# clean up any synonyms that were in the word table but werent really ever synonyms
+		delete from concept_word where concept_name_id = 0;
+		
+		# clean up
+		drop table tmp_concept_word_helper;
+
 		ALTER TABLE `concept_word` ADD CONSTRAINT `word_for_name` FOREIGN KEY `word_for_name` (`concept_name_id`)
 		    REFERENCES `concept_name` (`concept_name_id`);
 
