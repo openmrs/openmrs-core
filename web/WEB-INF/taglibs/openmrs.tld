@@ -191,6 +191,12 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+		<name>allowUserDefault</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+		<type>java.lang.Boolean</type>
+	</attribute>
 </tag>
 
 <tag>

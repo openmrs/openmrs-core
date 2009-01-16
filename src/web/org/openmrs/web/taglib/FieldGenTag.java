@@ -30,6 +30,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.taglib.fieldgen.FieldGenHandler;
 import org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory;
+import org.openmrs.web.taglib.fieldgen.LocationHandler;
 
 public class FieldGenTag extends TagSupport {
 	
@@ -56,6 +57,8 @@ public class FieldGenTag extends TagSupport {
 	private String parameters = "";
 	
 	private Map<String, Object> parameterMap = null;
+	
+	private Boolean allowUserDefault = Boolean.FALSE;
 	
 	// should not be reset each time
 	private FieldGenHandlerFactory factory = null;
@@ -321,6 +324,8 @@ public class FieldGenTag extends TagSupport {
 	}
 	
 	/**
+	 * This is the initial value or the stored value for this tag.
+	 * 
 	 * @return Returns the startVal.
 	 */
 	public Object getVal() {
@@ -389,6 +394,30 @@ public class FieldGenTag extends TagSupport {
 		catch (ArrayIndexOutOfBoundsException ae) {
 			log.error("Out of bounds while trying to parse " + parameters + " with delimiter " + delimiter);
 		}
+	}
+	
+	/**
+	 * @return the allowUserDefault
+	 */
+	public Boolean getAllowUserDefault() {
+		return allowUserDefault;
+	}
+	
+	/**
+	 * If this is set to true, the user's stored default value for this value will be used if the
+	 * {@link #getVal()} is null. <br/>
+	 * <br/>
+	 * Usage of this is up to the individual handlers. See {@link LocationHandler} for an example. <br/>
+	 * <br/>
+	 * An example of when the dev doesn't want a default value is if location is set to null by a
+	 * previous user and the current user is only editing. Therefore, the
+	 * FieldGenTag.java#setAllowUserDefault() should only be set to true if creating an object for
+	 * the first time)
+	 * 
+	 * @param allowUserDefault the allowUserDefault to set
+	 */
+	public void setAllowUserDefault(Boolean allowUserDefault) {
+		this.allowUserDefault = allowUserDefault;
 	}
 	
 	public FieldGenHandler getHandlerByClassName(String className) {
