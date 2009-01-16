@@ -20,9 +20,9 @@
 		var currentRegimenTableCellFuncs = regimenMode != "view" ? [
 			function(data) { 
 				if (data.drugName != null)
-					return "&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"patientRegimenDrugName\" href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; 
+					return "&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"patientRegimenDrugName\" href=\"admin/orders/orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; 
 				else
-					return "&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"patientRegimenDrugName\" href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.conceptName + "</a>"; 
+					return "&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"patientRegimenDrugName\" href=\"admin/orders/orderDrug.form?orderId=" + data.orderId + "\">" + data.conceptName + "</a>"; 
 			},
 			function(data) { return data.dose + " " + data.units; },
 			function(data) { return "" + data.frequency; },
@@ -54,9 +54,9 @@
 		] : [
 			function(data) { 
 			if (data.drugName != null)
-				return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; 
+				return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"admin/orders/orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; 
 			else
-				return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.conceptName + "</a>"; 
+				return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"admin/orders/orderDrug.form?orderId=" + data.orderId + "\">" + data.conceptName + "</a>"; 
 			},
 			function(data) { return data.dose + " " + data.units; },
 			function(data) { return "" + data.frequency; },
@@ -68,9 +68,9 @@
 		var completedRegimenTableCellFuncs = regimenMode != "view" ? [
 			function(data) { 
 			if (data.drugName != null)
-				return "&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"patientRegimenDrugName\" href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; 
+				return "&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"patientRegimenDrugName\" href=\"admin/orders/orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; 
 			else
-				return "&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"patientRegimenDrugName\" href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.conceptName + "</a>";
+				return "&nbsp;&nbsp;&nbsp;&nbsp;<a class=\"patientRegimenDrugName\" href=\"admin/orders/orderDrug.form?orderId=" + data.orderId + "\">" + data.conceptName + "</a>";
 			},
 			function(data) { return data.dose + " " + data.units; },
 			function(data) { return "" + data.frequency; },
@@ -92,9 +92,9 @@
 		] : [
 			function(data) { 
 				if (data.drugName != null)
-					return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; 
+					return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"admin/orders/orderDrug.form?orderId=" + data.orderId + "\">" + data.drugName + "</a>"; 
 				else 
-					return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"orderDrug.form?orderId=" + data.orderId + "\">" + data.conceptName + "</a>"; 
+					return "&nbsp;&nbsp;&nbsp;&nbsp;<a href=\"admin/orders/orderDrug.form?orderId=" + data.orderId + "\">" + data.conceptName + "</a>"; 
 			},
 			function(data) { return data.dose + " " + data.units; },
 			function(data) { return "" + data.frequency; },
