@@ -231,5 +231,15 @@
 		</delete>
 	</changeSet>
 	
+	<changeSet id="200901161126" author="bwolfe">
+		<comment>
+			Removed the database_version global property
+		</comment>
+		
+		<delete tableName="global_property">
+			<where>property = 'database_version'</where>
+		</delete>
+		
+	</changeSet>
 	
 </databaseChangeLog>
