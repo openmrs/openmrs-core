@@ -186,13 +186,19 @@ public class ShowGraphServlet extends HttpServlet {
 				}
 			}
 			catch (IOException e) {
-				log.error(e);
+				// if its tomcat and the user simply navigated away from the page, don't throw an error
+				if (e.getClass().getName().equals("ClientAbortException")) {
+					// do nothing
+				}
+				else {
+					log.error("Unable to write chart", e);
+				}
 			}
 			
 		}
 		// Add error handling above and remove this try/catch 
 		catch (Exception e) {
-			log.error(e);
+			log.error("An unknown expected exception was thrown while rendering a graph", e);
 		}
 	}
 	
