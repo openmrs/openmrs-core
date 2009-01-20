@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
@@ -118,6 +119,10 @@ public class ShowGraphServlet extends HttpServlet {
 			}
 			// Add series to dataset
 			dataset.addSeries(series);
+			
+			// As of JFreeChart 1.0.11 the default background color is dark grey instead of white.
+			// This line restores the original white background.
+			ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
 			
 			JFreeChart chart = ChartFactory.createTimeSeriesChart(chartTitle, null, null, dataset, false, false, false);
 			

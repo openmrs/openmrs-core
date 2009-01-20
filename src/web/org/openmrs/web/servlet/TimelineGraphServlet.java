@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickMarkPosition;
 import org.jfree.chart.axis.NumberAxis;
@@ -89,6 +90,11 @@ public class TimelineGraphServlet extends AbstractGraphServlet {
 		
 		// Add series to dataset
 		dataset.addSeries(series);
+		
+		// As of JFreeChart 1.0.11 the default background color is dark grey instead of white.
+		// This line restores the original white background.
+		ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
+		
 		// Create graph
 		JFreeChart chart = ChartFactory.createXYBarChart(chartTitle, domainAxisTitle, true, rangeAxisTitle, dataset,
 		    PlotOrientation.VERTICAL, true, false, false);
