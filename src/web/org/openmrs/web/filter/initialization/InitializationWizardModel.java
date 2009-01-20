@@ -46,7 +46,7 @@ public class InitializationWizardModel {
 	 * scripts)
 	 */
 	
-	protected boolean canCreate = false;
+	protected boolean canCreate = true;
 	
 	/**
 	 * Error message from not being able to create the runtime properties file (only read by the
@@ -59,7 +59,7 @@ public class InitializationWizardModel {
 	 * Whether the runtime file can be edited (only read by the velocity scripts)
 	 */
 	
-	protected boolean canWrite = false;
+	protected boolean canWrite = true;
 	
 	/**
 	 * The location of the runtime properties file (only read by the velocity scripts)

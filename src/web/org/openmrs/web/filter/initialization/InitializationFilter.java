@@ -200,24 +200,29 @@ public class InitializationFilter implements Filter {
 		
 		File runtimeProperties = getRuntimePropertiesFile();
 		
-		try {
-			runtimeProperties.createNewFile();
-			wizardModel.canCreate = true;
+		if (!runtimeProperties.exists()) {
+			try {
+				runtimeProperties.createNewFile();
+			}
+			catch (IOException io) {
+				wizardModel.canCreate = false;
+				wizardModel.cannotCreateErrorMessage = io.getMessage();
+			}
+			
+			// check this before deleting the file again
+			wizardModel.canWrite = runtimeProperties.canWrite();
+			
+			// delete the file again after testing the create/write
+			// so that if the user stops the webapp before finishing
+			// this wizard, they can still get back into it
+			runtimeProperties.delete();
+			
 		}
-		catch (IOException io) {
-			wizardModel.cannotCreateErrorMessage = io.getMessage();
-		}
-		
-		if (runtimeProperties.canWrite()) {
-			wizardModel.canWrite = true;
+		else {
+			wizardModel.canWrite = runtimeProperties.canWrite();
 		}
 		
 		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
-		
-		// delete the file again after testing the create/write
-		// so that if the user stops the webapp before finishing
-		// this wizard, they can still get back into it
-		runtimeProperties.delete();
 		
 		// do step one of the wizard
 		renderTemplate(DEFAULT_PAGE, referenceMap, writer);
