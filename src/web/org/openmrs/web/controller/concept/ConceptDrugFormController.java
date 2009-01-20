@@ -54,7 +54,6 @@ public class ConceptDrugFormController extends SimpleFormController {
 		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(java.lang.Double.class, new CustomNumberEditor(java.lang.Double.class, true));
-		
 	}
 	
 	/**
@@ -74,8 +73,20 @@ public class ConceptDrugFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			Drug drug = (Drug) obj;
-			drug.setConcept(Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId"))));
-			Context.getConceptService().saveDrug(drug);
+			ConceptService conceptService = Context.getConceptService();
+			drug.setConcept(conceptService.getConcept(Integer.valueOf(request.getParameter("conceptId"))));
+			if (drug.isRetired() && drug.getRetiredBy() == null) {
+				// if this is a "new" retiring, call retireDrug to set appropriate attributes
+				drug.setRetired(false);
+				conceptService.retireDrug(drug, drug.getRetireReason());
+			} else if (!drug.isRetired() && drug.getRetiredBy() != null) {
+				// if this was just retired, call unretireDrug to unset appropriate attributes
+				drug.setRetired(true);
+				conceptService.unretireDrug(drug);
+			} else {
+				conceptService.saveDrug(drug);
+			}
+			
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.saved");
 		}
@@ -134,5 +145,4 @@ public class ConceptDrugFormController extends SimpleFormController {
 		
 		return map;
 	}
-	
 }

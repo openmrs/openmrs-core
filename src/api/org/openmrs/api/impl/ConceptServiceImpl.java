@@ -219,6 +219,21 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
+     * @see org.openmrs.api.ConceptService#unretireDrug(org.openmrs.Drug)
+     */
+    public Drug unretireDrug(Drug drug) throws APIException {
+		if (drug.isRetired() == true) {
+			drug.setRetired(false);
+			drug.setRetiredBy(null);
+			drug.setRetireReason(null);
+			drug.setDateRetired(null);
+			return dao.saveDrug(drug);
+		}
+		
+		return drug;
+    }
+
+    /**
 	 * @see org.openmrs.api.ConceptService#purgeDrug(org.openmrs.Drug)
 	 * @throws APIException
 	 */
@@ -1368,6 +1383,5 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		conceptWordUpdateTaskDef
 		        .setDescription("Iterates through the concept dictionary, re-creating concept words (which are used for searcing). This task is started when using the \"Update Concept Word Storage\" page and no range is given.");
 		return conceptWordUpdateTaskDef;
-	}
-	
+	}	
 }
