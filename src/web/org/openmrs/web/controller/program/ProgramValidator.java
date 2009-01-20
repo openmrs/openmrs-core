@@ -13,9 +13,12 @@
  */
 package org.openmrs.web.controller.program;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Program;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -30,7 +33,7 @@ public class ProgramValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-    public boolean supports(Class c) {
+	public boolean supports(Class c) {
 		return c.equals(Program.class);
 	}
 	
@@ -46,8 +49,15 @@ public class ProgramValidator implements Validator {
 			errors.rejectValue("program", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			List<Program> programs = Context.getProgramWorkflowService().getAllPrograms(false);
+			for (Program program : programs) {
+				if (program.getName().equals(p.getName()) && !program.getProgramId().equals(p.getProgramId())) {
+					errors.rejectValue("name", "general.error.nameAlreadyInUse");
+					break;
+				}
+			}
+			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "concept", "error.concept");
 		}
 	}
-	
 }
