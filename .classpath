@@ -45,8 +45,6 @@
 	<classpathentry kind="lib" path="lib/xerces/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xerces/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/neal-reporting/reports.jar"/>
-	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.1.jar" sourcepath="/openmrs-source/jfreechart-1.0.3-src.zip"/>
-	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.1.jar" sourcepath="/openmrs-source/c3p0-0.9.1-pre9.zip"/>
 	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5.jar" sourcepath="/openmrs-source/hapi-0.5_source_v25.zip"/>
@@ -58,6 +56,8 @@
 	<classpathentry kind="lib" path="metadata/api/log4j"/>
 	<classpathentry kind="lib" path="metadata/model"/>
 	<classpathentry kind="lib" path="lib/xstream/xstream-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.15.jar"/>
+	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.12.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-beta1.jar" sourcepath="/openmrs-source/velocity-1.6-beta1.zip"/>
 	<classpathentry kind="lib" path="lib/commons-lang/commons-lang-2.4.jar"/>
