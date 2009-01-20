@@ -1,30 +1,33 @@
 #parse($headerTemplate)
-
-<p>Step 4 of 5</p>
-	
 	<form method="post" autocomplete="off">
 		<input type="hidden" name="page" value="adminusersetup.vm" /> 
-		
-		Currently the default administrator log in is admin:test.  Please specify a new
-		password for that user 
-     	<table>
+        <div class="content">
+            <table cellpadding="9" align="center" cellspacing="5" >
      		<tr>
-     			<td>Username</td>
-     			<td>admin</td>
+                    <td colspan="2"><strong>Step 4 of 5</strong></td>
      		</tr>
      		<tr>
-     			<td>Password</td>
+                    <td colspan="2" class="question" >Currently the default administrator user/pass is <strong>admin:test</strong>. Please specify a new password for that user</td>
+                </tr>
+                <tr>
+                    <td>Username:</td>
+                    <td><strong>admin</strong></td>
+                </tr>
+                <tr>
+                    <td>Password:</td>
      			<td><input type="password" name="new_admin_password" value=""/ autocomplete="off"></td>
      		</tr>
      		<tr>
-     			<td>Retype Password</td>
+                    <td>Retype password:</td>
      			<td><input type="password" name="new_admin_password_confirm" value="" autocomplete="off"/></td>
      		</tr>
+                <tr>
+                    <td colspan= "2">
+                        <input class="button" name="back" type="submit" value="Back"/> &nbsp; &nbsp;
+                        <input class="button" type="submit" value="Continue"/>
+                    </td>
+                </tr>
      	</table>
-		
-		<br>
-		<input name="back" type="submit" value="Back"/>
-		<input type="submit" value="Continue"/>	
+        </div>
 	</form>
-	
 #parse($footerTemplate)
