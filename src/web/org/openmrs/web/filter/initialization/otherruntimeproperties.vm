@@ -1,50 +1,34 @@
 #parse($headerTemplate)
-
-<p>Step 3 of 5</p>
-	
 	<form method="post">
 		<input type="hidden" name="page" value="otherruntimeproperties.vm" /> 
-		
-		<span class="question">
-			Do you want to be able to upload modules from the web interface?<br/>
-		</span>
-		<i>Disclaimer: This could be a security risk if a user with upload permissions is ever compromised.  The
-		alternative is to drop .omod module files into your application data directory and restart OpenMRS)</i>
-		<table>
+		<div class="content">
+            <table cellpadding="9" align="center" cellspacing="5" >
 		  <tr>
-		     <td>Yes</td>
-		     <td>
-		     	<input type="radio" name="module_web_admin" value="yes" #if( $moduleWebAdmin == true )checked="checked"#end/>
+                    <td colspan="2"><strong>Step 3 of 5</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="question" >Do you want to be able to upload modules from the web interface? <br/> <i style="font-size:12px;">Disclaimer: This could be a security risk if a user with upload permissions is ever compromised. <br/>
+                        (The alternative is to drop .omod module files into your application data directory and restart OpenMRS)</i>
 		     </td>
 		  </tr>
 		  <tr>
-		     <td>No</td>
-		     <td><input type="radio" name="module_web_admin" value="no" #if( $moduleWebAdmin == false )checked="checked"#end/></td>
-		  </tr>
-		</table>
-		
-		<br/><br/><br/>
-		
-		<span class="question">
-			Do you want updates to the database to be automatically applied on startup when a new 
-			web application is deployed?
-		</span> 
-		<table>
-		  <tr>
-		     <td>Yes</td>
-		     <td>
-		     	<input type="radio" name="auto_update_database" value="yes" #if( $autoUpdateDatabase == true )checked="checked"#end/>
-		     </td>
+                    <td>Yes: <input type="radio" name="module_web_admin" value="yes" #if( $moduleWebAdmin == true )checked="checked"#end /></td>
+                    <td>No: <input type="radio" name="module_web_admin" value="no" #if( $moduleWebAdmin == false )checked="checked"#end /></td>
 		  </tr>
 		  <tr>
-		     <td>No</td>
-		     <td><input type="radio" name="auto_update_database" value="no" #if( $autoUpdateDatabase == false )checked="checked"#end/></td>
+                    <td colspan="2" class="question" >Do you want updates to the database to be automatically applied on startup when a new web application is deployed? </td>
 		  </tr>
+		  <tr>
+                    <td>Yes: <input type="radio" name="auto_update_database" value="yes" #if( $autoUpdateDatabase == true )checked="checked"#end/></td>
+                    <td>No: <input type="radio" name="auto_update_database" value="no" #if( $autoUpdateDatabase == false )checked="checked"#end/></td>
+		  </tr>
+                <tr>
+                    <td colspan= "2">
+                        <input class="button" name="back" type="submit" value="Back"/> &nbsp; &nbsp;
+                        <input class="button" type="submit" value="Continue"/>
+                    </td>
+                </tr>
 		</table>
-		
-		<br>
-		<input name="back" type="submit" value="Back"/>
-		<input type="submit" value="Continue"/>	
+        </div>
 	</form>
-
 #parse($footerTemplate)

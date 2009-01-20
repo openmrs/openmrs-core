@@ -1,7 +1,5 @@
 #parse($headerTemplate)
 
-<p>Step 1 of 5</p>
-
 	#if( $canCreate != true )
 		<br/>
 		<span style="color: red">
@@ -25,65 +23,56 @@
 			<br/><br/>
 			<a href="retry">Retry</a>
 		#{else}
-	
 			<form method="post" autocomplete="off">
 			<input type="hidden" name="page" value="databasesetup.vm" /> 
 			
-			<span class="question">
-				Please specify how to connect to your currently installed database server: (@DBNAME@ will be replaced with your chosen database name)<br/>
-			</span> 
-			<input type="text" name="database_connection" size="45" value="${databaseConnection}" />
-			
-			<br/><br/>
-			
-			<span class="question">
-				Do you currently have an OpenMRS database installed that you would like to connect to?
-			</span>
-			<table>
+		<div class="content">
+            <table align="center" cellspacing="5" cellpadding="9">
 			  <tr>
-			     <td valign="top">Yes</td>
-			     <td>
-			     	<input type="radio" name="current_openmrs_database" value="yes" #if( $hasCurrentOpenmrsDatabase == true )checked="checked"#end/>
-			     	<br/><br/>
-			     	
-			     	If yes, what is the name this database?<br/>
-			     	<input type="text" name="openmrs_current_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'yes')"/>
-			     </td>
-			     </td>
+                    <td colspan="2"><strong>Step 1 of 5</strong></td>
 			  </tr>
 			  <tr>
-			     <td valign="top">No</td>
-			     <td>
-			     	<input type="radio" name="current_openmrs_database" value="no" #if( $hasCurrentOpenmrsDatabase == false )checked="checked"#end/>
-			     	
-			     	<br/><br/>
-			     	
-			     	If no, what would you like to name this database? (alphanumeric characters only)<br/>
-			     	<input type="text" name="openmrs_new_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'no')"/>
-			     	
-			     	<br/><br/>
-		     	
-			     	A user that has "CREATE DATABASE" privileges must be specified here so that 
-			     	this wizard can create the new database.
-			     	<table>
+                    <td colspan="2" class="question">Please specify how to connect to your currently installed database server:</td>
+                </tr>
 			     		<tr>
-			     			<td>Username</td>
-			     			<td><input type="text" name="create_database_username" value="${createDatabaseUsername}" onfocus="clickRadio('current_openmrs_database', 'no')"/></td>
+                    <td colspan="2" >Database Connection: &nbsp;<input type="text" name="database_connection" size="45" value="${databaseConnection}" /> <span style="font-size:12px;">(@DBNAME@ will be replaced with your chosen database name)</span></td>
 			     		</tr>
 			     		<tr>
-			     			<td>Password</td>
-			     			<td><input type="password" name="create_database_password" value="${createDatabasePassword}" onfocus="clickRadio('current_openmrs_database', 'no')"/></td>
+                    <td colspan="2" class="question">Do you currently have an OpenMRS database installed that you would like to connect to?</td>
 			     		</tr>
-			     	</table>
-			     </td>
+                <tr>
+                    <td rowspan="2"  valign="top" class="yes">Yes
+                        <input type="radio" name="current_openmrs_database" value="yes" #if( $hasCurrentOpenmrsDatabase == true )checked="checked"#end/></td>
+                    <td class="yes">If yes, what is the name this database?</td>
 			  </tr>
+                <tr>
+                    <td>Database Name: &nbsp;<input type="text" name="openmrs_current_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'yes')"/></td>
+                </tr>
+                <tr>
+                    <td rowspan="5"  valign="top" class="no">No
+                        <input type="radio" name="current_openmrs_database" value="no" #if( $hasCurrentOpenmrsDatabase == false )checked="checked"#end/></td>
+                    <td class="no">If no, what would you like to name this database? (alphanumeric characters only)</td>
+                </tr>
+                <tr>
+                    <td>Database Name: &nbsp;<input type="text" name="openmrs_new_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'no')"/></td>
+                </tr>
+                <tr>
+                    <td class="no"> A user that has "CREATE DATABASE" privileges must be specified here so that this wizard can create the new database.</td>
+                </tr>
+                <tr>
+                    <td>Username &nbsp;
+                    <input type="text" name="create_database_username" value="${createDatabaseUsername}" onfocus="clickRadio('current_openmrs_database', 'no')"/></td>
+                </tr>
+                <tr>
+                    <td>Password &nbsp;
+                    <input type="password" name="create_database_password" value="${createDatabasePassword}" onfocus="clickRadio('current_openmrs_database', 'no')"/></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input class="button" type="submit" value="Continue"/></td>
+                </tr>
 			</table>
-			
-			<br>
-			<input type="submit" value="Continue"/>
-			
+		</div>
 			</form>
 		#end
 	#end
-
 #parse($footerTemplate)

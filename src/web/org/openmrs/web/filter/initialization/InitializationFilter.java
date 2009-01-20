@@ -116,27 +116,28 @@ public class InitializationFilter implements Filter {
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpServletResponse httpResponse = (HttpServletResponse) response;
 			
+			String servletPath = httpRequest.getServletPath();
 			// for all /images files, write the path
-			if (httpRequest.getServletPath().startsWith("/images")) {
-				
+			if (servletPath.startsWith("/images") || servletPath.startsWith("/scripts")) {
 				// writes the actual image file path to the response
-				File imageFile = new File(filterConfig.getServletContext().getRealPath(httpRequest.getServletPath()));
+				File file = new File(filterConfig.getServletContext().getRealPath(httpRequest.getServletPath()));
+				if (httpRequest.getPathInfo() != null)
+					file = new File(file, httpRequest.getPathInfo());
+				
 				try {
-					InputStream imageFileInputStream = new FileInputStream(imageFile);
+					InputStream imageFileInputStream = new FileInputStream(file);
 					OpenmrsUtil.copyFile(imageFileInputStream, httpResponse.getOutputStream());
 					imageFileInputStream.close();
 				}
 				catch (FileNotFoundException e) {
-					log.error("Unable to find image file: " + imageFile.getAbsolutePath());
+					log.error("Unable to find image file: " + file.getAbsolutePath());
 				}
-			}
-			// for anything but /initialsetup
+			} // for anything but /initialsetup
 			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)) {
 				// send the user to the setup page 
 				httpResponse.sendRedirect("/" + WebConstants.WEBAPP_NAME + "/" + WebConstants.SETUP_PAGE_URL);
 			} else {
 				// does the wizard
-				
 				// clear the error message that was potentially there from
 				// the last page
 				wizardModel.workLog.clear();
@@ -148,13 +149,11 @@ public class InitializationFilter implements Filter {
 					doPost(httpRequest, httpResponse);
 				}
 			}
-			
 			// Don't continue down the filter chain otherwise Spring complains
 			// that it hasn't been set up yet.
 			// The jsp and servlet filter are also on this chain, so writing to
 			// the response directly here is the only option 
 		}
-		
 	}
 	
 	/**
@@ -217,8 +216,7 @@ public class InitializationFilter implements Filter {
 			// this wizard, they can still get back into it
 			runtimeProperties.delete();
 			
-		}
-		else {
+		} else {
 			wizardModel.canWrite = runtimeProperties.canWrite();
 		}
 		
@@ -274,13 +272,13 @@ public class InitializationFilter implements Filter {
 				// password could be optional
 			}
 			
-			if (wizardModel.errors.isEmpty())
+			if (wizardModel.errors.isEmpty()) {
 				page = "databasetablesanduser.vm";
+			}
 			
 			renderTemplate(page, referenceMap, writer);
 			
-		}
-		// step two
+		} // step two
 		else if ("databasetablesanduser.vm".equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
@@ -288,8 +286,9 @@ public class InitializationFilter implements Filter {
 				return;
 			}
 			
-			if (wizardModel.hasCurrentOpenmrsDatabase)
+			if (wizardModel.hasCurrentOpenmrsDatabase) {
 				wizardModel.createTables = "yes".equals(httpRequest.getParameter("create_tables"));
+			}
 			
 			wizardModel.addDemoData = "yes".equals(httpRequest.getParameter("add_demo_data"));
 			
@@ -309,13 +308,12 @@ public class InitializationFilter implements Filter {
 				wizardModel.createUserPassword = httpRequest.getParameter("create_user_password");
 			}
 			
-			if (wizardModel.errors.isEmpty())
-				// go to next page
+			if (wizardModel.errors.isEmpty()) { // go to next page
 				page = "otherruntimeproperties.vm";
+			}
 			
 			renderTemplate(page, referenceMap, writer);
-		}
-		// step three
+		} // step three
 		else if ("otherruntimeproperties.vm".equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
@@ -326,14 +324,13 @@ public class InitializationFilter implements Filter {
 			wizardModel.moduleWebAdmin = "yes".equals(httpRequest.getParameter("module_web_admin"));
 			wizardModel.autoUpdateDatabase = "yes".equals(httpRequest.getParameter("auto_update_database"));
 			
-			if (wizardModel.errors.isEmpty())
-				// go to next page
+			if (wizardModel.errors.isEmpty()) { // go to next page
 				page = "adminusersetup.vm";
+			}
 			
 			renderTemplate(page, referenceMap, writer);
 			
-		}
-		// optional step four
+		} // optional step four
 		else if ("adminusersetup.vm".equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
@@ -351,9 +348,16 @@ public class InitializationFilter implements Filter {
 				return;
 			}
 			
-			if (wizardModel.errors.isEmpty())
-				// go to next page
+			// throw back if the user didn't put in a password
+			if (wizardModel.adminUserPassword.equals("")) {
+				wizardModel.errors.add("An admin password is required");
+				renderTemplate("adminusersetup.vm", referenceMap, writer);
+				return;
+			}
+			
+			if (wizardModel.errors.isEmpty()) { // go to next page
 				page = "wizardcomplete.vm";
+			}
 			
 			renderTemplate(page, referenceMap, writer);
 			
@@ -619,8 +623,9 @@ public class InitializationFilter implements Filter {
 		
 		String fullTemplatePath = "org/openmrs/web/filter/initialization/" + templateName;
 		InputStream templateInputStream = getClass().getClassLoader().getResourceAsStream(fullTemplatePath);
-		if (templateInputStream == null)
+		if (templateInputStream == null) {
 			throw new IOException("Unable to find " + fullTemplatePath);
+		}
 		
 		try {
 			velocityEngine.evaluate(velocityContext, writer, this.getClass().getName(), new InputStreamReader(
