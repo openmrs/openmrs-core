@@ -396,6 +396,8 @@ public class ModuleUtil {
 	 * 
 	 * @param URL
 	 * @return InputStream of contents
+	 * 
+	 * @should return a valid input stream for old module urls
 	 */
 	public static InputStream getURLStream(URL url) {
 		InputStream in = null;
@@ -405,7 +407,6 @@ public class ModuleUtil {
 			uc.setUseCaches(false);
 			uc.setRequestProperty("Cache-Control", "max-age=0,no-cache");
 			uc.setRequestProperty("Pragma", "no-cache");
-			// uc.setRequestProperty("Cache-Control","no-cache");
 			
 			log.error("Logging an attempt to connect to: " + url);
 			
@@ -423,6 +424,10 @@ public class ModuleUtil {
 	 * 
 	 * @param URL
 	 * @return String contents of the URL
+	 * 
+	 * @should return an update rdf page for old https dev urls
+	 * @should return an update rdf page for old https module urls
+	 * @should return an update rdf page for module urls
 	 */
 	public static String getURL(URL url) {
 		InputStream in = null;
