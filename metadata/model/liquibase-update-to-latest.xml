@@ -203,6 +203,15 @@
 		</modifyColumn>
 	</changeSet>
 	
+	<changeSet id="200901101524" author="Knoll_Frank">
+		<comment>
+			Changing datatype of drug.retire_reason from DATETIME to varchar(255)
+		</comment>
+		<modifyColumn tableName="drug">
+		    <column name="retire_reason" type="varchar(255)"/>
+		</modifyColumn>
+	</changeSet>
+	
 	<changeSet id="200901130950" author="bwolfe">
 		<comment>
 			Remove Manage Tribes and View Tribes privileges from all roles

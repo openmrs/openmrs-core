@@ -26,9 +26,6 @@
 			}
 		);
 	});
-</script>
-
-<script type="text/javascript">
 
 	function gotoConcept(tagName, conceptId) {
 		if (conceptId == null)
@@ -48,6 +45,10 @@
 <h2><spring:message code="ConceptDrug.manage.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.afterTitle" type="html" parameters="drugId=${drug.drugId}" />
+
+<c:if test="${drug.retired}">
+	<div class="retiredMessage"><div><spring:message code="ConceptDrug.retiredMessage"/></div></div>
+</c:if>
 
 <spring:hasBindErrors name="drug">
 	<spring:message code="fix.error"/>
@@ -128,16 +129,37 @@
 		</td>
 	</tr>
 	<tr>
-		<th><spring:message code="general.voided"/></th>
+		<th><spring:message code="general.retired"/></th>
 		<td>
-			<spring:bind path="drug.retired">	
+			<spring:bind path="drug.retired">
 				<input type="hidden" name="_${status.expression}" value=""/>		
-				<input type="checkbox" name="${status.expression}" 
-					   <c:if test="${status.value == true}">checked</c:if> />
+				<input type="checkbox" name="${status.expression}"
+					   id="${status.expression}" 
+					   <c:if test="${status.value == true}">checked</c:if>
+					   onchange="document.getElementById('retiredReasonRow').style.display = (this.checked == true) ? '' : 'none';"
+			    />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
 		</td>
 	</tr>
+	<tr id="retiredReasonRow">
+		<th><spring:message code="general.retiredReason"/></th>
+		<td>
+			<spring:bind path="drug.retireReason">
+				<input type="text" name="${status.expression}" id="retiredReason" value="${status.value}" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<c:if test="${drug.retired && drug.retiredBy != null}">
+		<tr>
+			<th><spring:message code="general.retiredBy" /></th>
+			<td>
+				<a href="#View User" onclick="return gotoUser(null, '${drug.retiredBy.userId}')">${drug.retiredBy.personName}</a> -
+				<openmrs:formatDate date="${drug.dateRetired}" type="medium" />
+			</td>
+		</tr>
+	</c:if>
 	<c:if test="${drug.creator != null}">
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>
@@ -157,6 +179,10 @@
 &nbsp;
 <input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1); return; document.location='index.htm?autoJump=false&phrase=<request:parameter name="phrase"/>'">
 </form>
+
+<script type="text/javascript">
+	document.getElementById('retiredReasonRow').style.display = document.getElementById('retired').checked ==true ? '' : 'none';
+</script>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.footer" type="html" parameters="drugId=${drug.drugId}" />
 

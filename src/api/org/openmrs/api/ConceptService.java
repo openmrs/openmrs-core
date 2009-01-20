@@ -195,6 +195,19 @@ public interface ConceptService extends OpenmrsService {
 	public Drug retireDrug(Drug drug, String reason) throws APIException;
 	
 	/**
+	 * Marks a drug that is currently retired as not retired.
+	 * 
+	 * @param drug that is current set as retired
+	 * @return the given drug, marked as not retired now, and saved to the db
+	 * @throws APIException
+	 * 
+	 * @should mark drug as retired 
+	 * @should not change attributes of drug that is already retired
+	 */
+	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPTS)
+	public Drug unretireDrug(Drug drug) throws APIException;
+
+	/**
 	 * Completely purge a Drug from the database. This should not typically be used unless
 	 * desperately needed. Most Drugs should just be retired.
 	 * 
