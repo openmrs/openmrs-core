@@ -183,7 +183,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * If an hl7 message contains a pv1-1 value, then assume its an encounter_id and that
+	 * If an hl7 message contains a "visit number" pv1-19 value, then assume its an encounter_id and that
 	 * information in the hl7 message should be appended to that encounter.
 	 * 
 	 * @throws Exception
@@ -195,7 +195,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// to append to
 		assertNotNull(Context.getEncounterService().getEncounter(3));
 		
-		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080902151831||ORU^R01|yow3LEP6bycnLfoPyI31|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^||Indakasi^Testarius^Ambote||\rPV1|3|O||||||||||||||||||||||||||||||||||||||||||20080831|||||||V\rORC|RE||||||||20080902150000|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|NM|10^CD4 COUNT^99DCT||250|||||||||20080831";
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080902151831||ORU^R01|yow3LEP6bycnLfoPyI31|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^||Indakasi^Testarius^Ambote||\rPV1||O|1||||1^Super User (1-8)||||||||||||3|||||||||||||||||||||||||20080831|||||||V\rORC|RE||||||||20080902150000|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|NM|10^CD4 COUNT^99DCT||250|||||||||20080831";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
