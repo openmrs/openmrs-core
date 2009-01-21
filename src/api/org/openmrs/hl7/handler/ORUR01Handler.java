@@ -48,13 +48,13 @@ import ca.uhn.hl7v2.model.Type;
 import ca.uhn.hl7v2.model.Varies;
 import ca.uhn.hl7v2.model.v25.datatype.CE;
 import ca.uhn.hl7v2.model.v25.datatype.CWE;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
 import ca.uhn.hl7v2.model.v25.datatype.DLD;
 import ca.uhn.hl7v2.model.v25.datatype.DT;
 import ca.uhn.hl7v2.model.v25.datatype.DTM;
 import ca.uhn.hl7v2.model.v25.datatype.IS;
 import ca.uhn.hl7v2.model.v25.datatype.NM;
 import ca.uhn.hl7v2.model.v25.datatype.PL;
-import ca.uhn.hl7v2.model.v25.datatype.SI;
 import ca.uhn.hl7v2.model.v25.datatype.ST;
 import ca.uhn.hl7v2.model.v25.datatype.TM;
 import ca.uhn.hl7v2.model.v25.datatype.TS;
@@ -347,11 +347,11 @@ public class ORUR01Handler implements Application {
 		// the encounter we will return
 		Encounter encounter = null;
 		
-		// look for the encounter id in PV1-1
-		SI idType = pv1.getSetIDPV1();
+		// look for the encounter id in PV1-19
+		CX visitNumber = pv1.getVisitNumber();
 		Integer encounterId = null;
 		try {
-			encounterId = Integer.valueOf(idType.getValue());
+			encounterId = Integer.valueOf(visitNumber.getIDNumber().getValue());
 		}
 		catch (NumberFormatException e) {
 			// pass
