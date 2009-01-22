@@ -206,6 +206,8 @@ public interface FormService extends OpenmrsService {
 	 * @param form
 	 * @return New duplicated form
 	 * @throws APIException
+	 * 
+	 * @should clear changed details and update creation details
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public Form duplicateForm(Form form) throws APIException;

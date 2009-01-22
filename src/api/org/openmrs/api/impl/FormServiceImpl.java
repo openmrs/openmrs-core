@@ -143,6 +143,12 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		
 		form.setFormId(null);
 		
+		form.setChangedBy(null);
+		form.setDateChanged(null);
+		
+		form.setCreator(Context.getAuthenticatedUser());
+		form.setDateCreated(new Date());
+		
 		Context.clearSession();
 		
 		Form newForm = dao.duplicateForm(form);
