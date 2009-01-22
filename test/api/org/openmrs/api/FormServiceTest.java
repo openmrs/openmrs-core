@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -31,6 +32,7 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * TODO clean up and finish this test for all methods in FormService
@@ -375,4 +377,20 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("SOME OTHER NEW NAME", refetchedFieldType.getName());
 	}
 	
+	/**
+	 * @see {@link FormService#duplicateForm(Form)}
+	 */
+	@Test
+	@Verifies(value = "should clear changed details and update creation details", method = "duplicateForm(Form)")
+	public void duplicateForm_shouldClearChangedDetailsAndUpdateCreationDetails() throws Exception {
+		FormService formService = Context.getFormService();
+		Form form = formService.getForm(1);
+		
+		Form dupForm = formService.duplicateForm(form);
+		Assert.assertNull(dupForm.getChangedBy());
+		Assert.assertNull(dupForm.getDateChanged());
+		Assert.assertEquals(Context.getAuthenticatedUser(), dupForm.getCreator());
+		long oneMinuteDelta = 60 * 1000;
+		Assert.assertEquals(new Date().getTime(), dupForm.getDateCreated().getTime(), oneMinuteDelta);
+	}
 }
