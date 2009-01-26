@@ -598,7 +598,7 @@ public class PatientFormController extends PersonFormController {
 		
 		if (reasonForExitConcept != null && patient.getPatientId() != null) {
 			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient, reasonForExitConcept);
-			if (patientExitObs != null) {
+			if (patientExitObs != null && patientExitObs.size() > 0) {
 				log.debug("Exit obs is size " + patientExitObs.size());
 				if (patientExitObs.size() == 1) {
 					Obs exitObs = patientExitObs.iterator().next();
