@@ -74,8 +74,11 @@ public class EncounterTest {
 	@Test
 	@Verifies(value = "should have different hash code when not equal", method = "hashCode()")
 	public void hashCode_shouldHaveDifferentHashCodeWhenNotEqual() throws Exception {
-		//TODO auto-generated
-		Assert.fail("Not yet implemented");
+		Encounter encounter1 = new Encounter(1);
+		// another encounter with a different encounter id
+		Encounter encounter2 = new Encounter(2);
+		
+		Assert.assertNotSame(encounter1.hashCode(), encounter2.hashCode());
 	}
 	
 	/**
@@ -84,8 +87,11 @@ public class EncounterTest {
 	@Test
 	@Verifies(value = "should have same hashcode when equal", method = "hashCode()")
 	public void hashCode_shouldHaveSameHashcodeWhenEqual() throws Exception {
-		//TODO auto-generated
-		Assert.fail("Not yet implemented");
+		Encounter encounter1 = new Encounter(1);
+		// another encounter with a different encounter id
+		Encounter encounter2 = new Encounter(1);
+		
+		Assert.assertSame(encounter1.hashCode(), encounter2.hashCode());
 	}
 	
 	/**
