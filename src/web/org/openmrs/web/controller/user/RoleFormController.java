@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller.user;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -68,26 +69,19 @@ public class RoleFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
+	@SuppressWarnings("unchecked")
+    protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                             BindException errors) throws Exception {
 		
 		Role role = (Role) obj;
 		
-		if (Context.isAuthenticated()) {
-			log.debug("Editing Role: " + role.getRole());
-			
-			// retrieving the inheritedRoles from the request
-			String[] inheritedRoles = request.getParameterValues("inheritedRoles");
-			Set<Role> inheritedRoleObjs = new HashSet<Role>();
-			if (inheritedRoles != null) {
-				for (String r : inheritedRoles) {
-					Role tmprole = Context.getUserService().getRole(r);
-					inheritedRoleObjs.add(tmprole);
-				}
-			}
-			role.setInheritedRoles(inheritedRoleObjs);
-			
-		}
+		String[] inheritiedRoles = request.getParameterValues("inheritedRoles");
+		if (inheritiedRoles == null)
+			role.setInheritedRoles(Collections.EMPTY_SET);
+		
+		String[] privileges = request.getParameterValues("privileges");
+		if (privileges == null)
+			role.setPrivileges(Collections.EMPTY_SET);
 		
 		return super.processFormSubmission(request, response, role, errors);
 	}
