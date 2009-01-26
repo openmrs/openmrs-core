@@ -429,6 +429,7 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 		setVoided(true);
 		setVoidedBy(Context.getAuthenticatedUser());
 		setVoidReason(reason);
+		setDateVoided(new Date());
 	}
 
 	/**

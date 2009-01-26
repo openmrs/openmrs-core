@@ -71,7 +71,6 @@ public class RoleFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
-		
 		Role role = (Role)obj;
 		
 		if (Context.isAuthenticated()) {
@@ -122,7 +121,11 @@ public class RoleFormController extends SimpleFormController {
 		return new ModelAndView(new RedirectView(view));
 	}
 
-	protected Map referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
@@ -164,7 +167,7 @@ public class RoleFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			UserService us = Context.getUserService();
-			String r = request.getParameter("role");
+			String r = request.getParameter("roleName");
 	    	if (r != null)
 	    		role = us.getRole(r);	
 		}
