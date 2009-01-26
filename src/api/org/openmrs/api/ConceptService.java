@@ -969,7 +969,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_CONCEPTS })
 	public ConceptNameTag getConceptNameTagByName(String tag);
 	
 	/**
@@ -1023,7 +1023,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param nameTag the name tag to be saved
 	 * @return the newly created Concept name tag
 	 */
-	@Authorized( { "Add Concepts" })
+	@Authorized( OpenmrsConstants.PRIV_MANAGE_CONCEPTS )
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
 	
 	/**
@@ -1060,7 +1060,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the matching {@link ConceptNameTag} or null if none found
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_CONCEPTS })
 	public ConceptNameTag getConceptNameTag(Integer id);
 	
 }
