@@ -72,7 +72,10 @@ public class Encounter implements java.io.Serializable {
 	public Encounter() {
 	}
 	
-	/** constructor with id */
+	/**
+	 * @param encounterId
+	 * @should set encounter id
+	 */
 	public Encounter(Integer encounterId) {
 		this.encounterId = encounterId;
 	}
@@ -85,7 +88,9 @@ public class Encounter implements java.io.Serializable {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 * @should equal encounter with same encounter id
 	 * @should not equal encounter with different encounter id
-	 * @should fail on null
+	 * @should not equal on null
+	 * @should have equal encounter objects with no encounter ids
+	 * @should not have equal encounter objects when one has null encounter id
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Encounter) {
@@ -106,6 +111,7 @@ public class Encounter implements java.io.Serializable {
 	 * @see java.lang.Object#hashCode()
 	 * @should have same hashcode when equal
 	 * @should have different hash code when not equal
+	 * @should get hash code with null attributes
 	 */
 	public int hashCode() {
 		if (this.getEncounterId() == null)
@@ -201,6 +207,15 @@ public class Encounter implements java.io.Serializable {
 	
 	/**
 	 * @return Returns a Set<Obs> of all non-voided, non-obsGroup children Obs of this Encounter
+	 * @should not return null with null obs set
+	 * @should get obs
+	 * @should not get voided obs
+	 * @should only get child obs
+	 * @should not get child obs if child also on encounter
+	 * @should get both child and parent obs after removing child from parent grouping
+	 * @should get obs with two levels of hierarchy
+	 * @should get obs with three levels of hierarchy
+	 * @should not get voided obs with three layers of hierarchy
 	 */
 	public Set<Obs> getObs() {
 		Set<Obs> ret = new HashSet<Obs>();
@@ -249,6 +264,11 @@ public class Encounter implements java.io.Serializable {
 	 * 
 	 * @param boolean includeVoided specifies whether or not to include voided Obs
 	 * @return Returns the all Obs.
+	 * @should not return null with null obs set
+	 * @should get obs
+	 * @should get both parent and child obs
+	 * @should get both parent and child with child directly on encounter
+	 * @should get both child and parent obs after removing child from parent grouping
 	 */
 	public Set<Obs> getAllObs(boolean includeVoided) {
 		if (includeVoided && obs != null)
@@ -271,6 +291,7 @@ public class Encounter implements java.io.Serializable {
 	 * Convenience method to call {@link #getAllObs(boolean)} with a false parameter
 	 * 
 	 * @return all non-voided obs
+	 * @should not get voided obs
 	 */
 	public Set<Obs> getAllObs() {
 		return getAllObs(false);
@@ -281,6 +302,12 @@ public class Encounter implements java.io.Serializable {
 	 * 
 	 * @param boolean includeVoided specifies whether or not to include voided Obs
 	 * @return Returns all obs at top level -- will not be null
+	 * @should not return null with null obs set
+	 * @should get obs
+	 * @should not get voided obs
+	 * @should only get parents obs
+	 * @should only return the grouped top level obs
+	 * @should get both child and parent obs after removing child from parent grouping
 	 */
 	public Set<Obs> getObsAtTopLevel(boolean includeVoided) {
 		Set<Obs> ret = new HashSet<Obs>();
@@ -302,6 +329,11 @@ public class Encounter implements java.io.Serializable {
 	 * Add the given Obs to the list of obs for this Encounter.
 	 * 
 	 * @param observation the Obs to add to this encounter
+	 * @should add obs with null values
+	 * @should not fail with null obs
+	 * @should set encounter attribute on obs
+	 * @should add obs to non null initial obs set
+	 * @should add encounter attrs to obs if attributes are null
 	 */
 	public void addObs(Obs observation) {
 		if (obs == null)
@@ -323,6 +355,9 @@ public class Encounter implements java.io.Serializable {
 	 * Remove the given observation from the list of obs for this Encounter
 	 * 
 	 * @param observation
+	 * @should remove obs successfully
+	 * @should not throw error when removing null obs from empty set
+	 * @should not throw error when removing null obs from non empty set
 	 */
 	public void removeObs(Obs observation) {
 		if (obs != null)
@@ -350,6 +385,10 @@ public class Encounter implements java.io.Serializable {
 	 * Add the given Order to the list of orders for this Encounter
 	 * 
 	 * @param order
+	 * @should add order with null values
+	 * @should not fail with null obs passed to add order
+	 * @should set encounter attribute 
+	 * @should add order to non nul initial order set
 	 */
 	public void addOrder(Order order) {
 		if (orders == null)
@@ -364,6 +403,9 @@ public class Encounter implements java.io.Serializable {
 	 * Remove the given observation from the list of orders for this Encounter
 	 * 
 	 * @param order
+	 * @should remove order from encounter
+	 * @should not fail when removing null order
+	 * @should not fail when removing non existent order
 	 */
 	public void removeOrder(Order order) {
 		if (orders != null)
@@ -489,6 +531,10 @@ public class Encounter implements java.io.Serializable {
 		this.dateVoided = dateVoided;
 	}
 	
+	/**
+	 * @see java.lang.Object#toString()
+	 * @should not fail with empty object
+	 */
 	@Override
 	public String toString() {
 		String ret = "";

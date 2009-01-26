@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.test.Verifies;
 
 /**
  * This class tests the all of the {@link Encounter} non-trivial object methods.
@@ -33,13 +34,11 @@ import org.junit.Test;
 public class EncounterTest {
 	
 	/**
-	 * Makes sure that two different encounter objects that have the same encounter id are
-	 * considered equal
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#equals(Object)}
 	 */
 	@Test
-	public void shouldHaveEqualEncounterObjectsByEncounterId() throws Exception {
+	@Verifies(value = "should equal encounter with same encounter id", method = "equals(Object)")
+	public void equals_shouldEqualEncounterWithSameEncounterId() throws Exception {
 		Encounter encounter1 = new Encounter(1);
 		// another encounter with the same encounter id
 		Encounter encounter2 = new Encounter(1);
@@ -48,13 +47,11 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Makes sure that two different encounter objects that have different encounter ids are
-	 * considered unequal
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#equals(Object)}
 	 */
 	@Test
-	public void shouldNotHaveEqualEncounterObjectsByEncounterId() throws Exception {
+	@Verifies(value = "should not equal encounter with different encounter id", method = "equals(Object)")
+	public void equals_shouldNotEqualEncounterWithDifferentEncounterId() throws Exception {
 		Encounter encounter1 = new Encounter(1);
 		// another encounter with a different encounter id
 		Encounter encounter2 = new Encounter(2);
@@ -63,13 +60,40 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Makes sure that two different encounter objects that have the same encounter id are
-	 * considered equal (checks for NPEs)
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#equals(Object)}
 	 */
 	@Test
-	public void shouldHaveEqualEncounterObjectsWithNoEncounterId() throws Exception {
+	@Verifies(value = "should not equal on null", method = "equals(Object)")
+	public void equals_shouldNotEqualOnNull() throws Exception {
+		Assert.assertFalse(new Encounter(1).equals(null));
+	}
+	
+	/**
+	 * @see {@link Encounter#hashCode()}
+	 */
+	@Test
+	@Verifies(value = "should have different hash code when not equal", method = "hashCode()")
+	public void hashCode_shouldHaveDifferentHashCodeWhenNotEqual() throws Exception {
+		//TODO auto-generated
+		Assert.fail("Not yet implemented");
+	}
+	
+	/**
+	 * @see {@link Encounter#hashCode()}
+	 */
+	@Test
+	@Verifies(value = "should have same hashcode when equal", method = "hashCode()")
+	public void hashCode_shouldHaveSameHashcodeWhenEqual() throws Exception {
+		//TODO auto-generated
+		Assert.fail("Not yet implemented");
+	}
+	
+	/**
+	 * @see {@link Encounter#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should have equal encounter objects with no encounter ids", method = "equals(Object)")
+	public void equals_shouldHaveEqualEncounterObjectsWithNoEncounterIds() throws Exception {
 		// an encounter object with no encounter id
 		Encounter encounter = new Encounter();
 		
@@ -77,13 +101,11 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Makes sure that two different encounter objects are unequal when one of them doesn't have an
-	 * encounter id defined (checks for NPEs)
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#equals(Object)}
 	 */
 	@Test
-	public void shouldNotHaveEqualEncounterObjectsWhenOneHasNullEncounterId() throws Exception {
+	@Verifies(value = "should not have equal encounter objects when one has null encounter id", method = "equals(Object)")
+	public void equals_shouldNotHaveEqualEncounterObjectsWhenOneHasNullEncounterId() throws Exception {
 		Encounter encounterWithId = new Encounter(1);
 		// another encounter that doesn't have an encounter id
 		Encounter encounterWithoutId = new Encounter();
@@ -99,49 +121,31 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure we can call {@link Encounter#hashCode()} with all null attributes on encounter and
-	 * still get a hashcode
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#hashCode()}
 	 */
 	@Test
-	public void shouldGetHashCodeWithNullAttributes() throws Exception {
+	@Verifies(value = "should get hash code with null attributes", method = "hashCode()")
+	public void hashCode_shouldGetHashCodeWithNullAttributes() throws Exception {
 		new Encounter().hashCode();
 	}
 	
 	/**
-	 * When a null argument is passed to the {@link Encounter#removeObs(Obs)} method, errors should
-	 * not be thrown.
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#toString()}
 	 */
 	@Test
-	public void shouldNotThrowErrorWhenRemovingNullObs() throws Exception {
-		
-		// test removing a null obs from a null encounter.obs set
-		Encounter encounterWithoutObsSet = new Encounter();
-		encounterWithoutObsSet.removeObs(null);
-		Encounter encounterWithObsSet = new Encounter();
-		
-		Set<Obs> obsSet = new HashSet<Obs>();
-		obsSet.add(new Obs());
-		
-		// test removing a null obs from a non-null encounter.obs set
-		encounterWithObsSet.setObs(obsSet);
-		// make sure the encounter got the obs
-		Assert.assertEquals(1, encounterWithObsSet.getAllObs(true).size());
-		encounterWithObsSet.removeObs(null);
+	@Verifies(value = "should not fail with empty object", method = "toString()")
+	public void toString_shouldNotFailWithEmptyObject() throws Exception {
+		Encounter encounter = new Encounter();
+		@SuppressWarnings("unused")
+		String toStringOutput = encounter.toString();
 	}
 	
 	/**
-	 * This tries to remove an obs from an encounter (using the {@link Encounter#removeObs(Obs)}
-	 * method) that currently has the obs in its set of obs
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#removeObs(Obs)}
 	 */
 	@Test
-	public void shouldRemoveObsSuccessfully() throws Exception {
-		
+	@Verifies(value = "should remove obs successfully", method = "removeObs(Obs)")
+	public void removeObs_shouldRemoveObsSuccessfully() throws Exception {
 		Obs obsToRemove = new Obs();
 		
 		Set<Obs> obsSet = new HashSet<Obs>();
@@ -159,24 +163,50 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure that the getObs* methods return a non-null set when the encounter.obs set is null
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#removeObs(Obs)}
 	 */
 	@Test
-	public void shouldNotReturnNullFromGetObsMethodsWithNullObsSet() throws Exception {
-		//create an Encounter 
+	@Verifies(value = "should not throw error when removing null obs from empty set", method = "removeObs(Obs)")
+	public void removeObs_shouldNotThrowErrorWhenRemovingNullObsFromEmptySet() throws Exception {
+		Encounter encounterWithoutObsSet = new Encounter();
+		encounterWithoutObsSet.removeObs(null);
+	}
+	
+	/**
+	 * @see {@link Encounter#removeObs(Obs)}
+	 */
+	@Test
+	@Verifies(value = "should not throw error when removing null obs from non empty set", method = "removeObs(Obs)")
+	public void removeObs_shouldNotThrowErrorWhenRemovingNullObsFromNonEmptySet() throws Exception {
+		Encounter encounterWithObsSet = new Encounter();
+		Set<Obs> obsSet = new HashSet<Obs>();
+		obsSet.add(new Obs());
+		
+		encounterWithObsSet.setObs(obsSet);
+		// make sure the encounter got the obs
+		Assert.assertEquals(1, encounterWithObsSet.getAllObs(true).size());
+		encounterWithObsSet.removeObs(null);
+	}
+	
+	/**
+	 * @see {@link Encounter#getObs()}
+	 */
+	@Test
+	@Verifies(value = "should not return null with null obs set", method = "getObs()")
+	public void getObs_shouldNotReturnNullWithNullObsSet() throws Exception {
 		Encounter encounter = new Encounter();
 		
-		//assert that the three methods return an empty set when there are no Obs in the encounter:
 		assertNotNull(encounter.getObs());
 		assertEquals(encounter.getObs().size(), 0);
-		
-		assertNotNull(encounter.getObsAtTopLevel(true));
-		assertEquals(encounter.getObsAtTopLevel(true).size(), 0);
-		assertNotNull(encounter.getObsAtTopLevel(false));
-		assertEquals(encounter.getObsAtTopLevel(false).size(), 0);
-		
+	}
+	
+	/**
+	 * @see {@link Encounter#getAllObs(null)}
+	 */
+	@Test
+	@Verifies(value = "should not return null with null obs set", method = "getAllObs(null)")
+	public void getAllObs_shouldNotReturnNullWithNullObsSet() throws Exception {
+		Encounter encounter = new Encounter();
 		assertNotNull(encounter.getAllObs(true));
 		assertEquals(encounter.getAllObs(true).size(), 0);
 		assertNotNull(encounter.getAllObs(false));
@@ -184,29 +214,64 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure that a non-voided obs is returned by all of the getObs methods
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getObsAtTopLevel(null)}
 	 */
 	@Test
-	public void shouldGetObsFromGetObsStarMethods() throws Exception {
+	@Verifies(value = "should not return null with null obs set", method = "getObsAtTopLevel(null)")
+	public void getObsAtTopLevel_shouldNotReturnNullWithNullObsSet() throws Exception {
+		Encounter encounter = new Encounter();
+		assertNotNull(encounter.getObsAtTopLevel(true));
+		assertEquals(encounter.getObsAtTopLevel(true).size(), 0);
+		assertNotNull(encounter.getObsAtTopLevel(false));
+		assertEquals(encounter.getObsAtTopLevel(false).size(), 0);
+	}
+	
+	/**
+	 * @see {@link Encounter#getObs()}
+	 */
+	@Test
+	@Verifies(value = "should get obs", method = "getObs()")
+	public void getObs_shouldGetObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
 		//create and add an Obs
 		Obs o = new Obs();
 		encounter.addObs(o);
 		
-		//now assert that the obs is returned by getObs()
 		assertNotNull(encounter.getObs());
 		assertEquals(1, encounter.getObs().size());
+	}
+	
+	/**
+	 * @see {@link Encounter#getObsAtTopLevel(null)}
+	 */
+	@Test
+	@Verifies(value = "should get obs", method = "getObsAtTopLevel(null)")
+	public void getObsAtTopLevel_shouldGetObs() throws Exception {
+		Encounter encounter = new Encounter();
 		
-		//assert that the obs is returned by getObsAtTopLevel()
+		//create and add an Obs
+		Obs o = new Obs();
+		encounter.addObs(o);
+		
 		assertNotNull(encounter.getObsAtTopLevel(true));
 		assertEquals(1, encounter.getObsAtTopLevel(true).size());
 		assertNotNull(encounter.getObsAtTopLevel(false));
 		assertEquals(1, encounter.getObsAtTopLevel(false).size());
+	}
+	
+	/**
+	 * @see {@link Encounter#getAllObs(null)}
+	 */
+	@Test
+	@Verifies(value = "should get obs", method = "getAllObs(null)")
+	public void getAllObs_shouldGetObs() throws Exception {
+		Encounter encounter = new Encounter();
 		
-		//assert that theobs is returned by getAllObs()
+		//create and add an Obs
+		Obs o = new Obs();
+		encounter.addObs(o);
+		
 		assertNotNull(encounter.getAllObs(true));
 		assertEquals(1, encounter.getAllObs(true).size());
 		assertNotNull(encounter.getAllObs(false));
@@ -214,12 +279,11 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure that a voided obs is not returned by any of the getObs* methods
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getObs()}
 	 */
 	@Test
-	public void shouldNotGetVoidedObsFromObsStarMethods() throws Exception {
+	@Verifies(value = "should not get voided obs", method = "getObs()")
+	public void getObs_shouldNotGetVoidedObs() throws Exception {
 		Encounter enc = new Encounter();
 		
 		//create and add an Obs
@@ -227,16 +291,41 @@ public class EncounterTest {
 		o.setVoided(true);
 		enc.addObs(o);
 		
-		//the child Obs shouldn't be returned by the function getObs()
 		assertEquals(0, enc.getObs().size());
+	}
+	
+	/**
+	 * @see {@link Encounter#getObsAtTopLevel(null)}
+	 */
+	@Test
+	@Verifies(value = "should not get voided obs", method = "getObsAtTopLevel(null)")
+	public void getObsAtTopLevel_shouldNotGetVoidedObs() throws Exception {
+		Encounter enc = new Encounter();
 		
-		//test getObsAtTopLevel()
+		//create and add an Obs
+		Obs o = new Obs();
+		o.setVoided(true);
+		enc.addObs(o);
+		
 		assertNotNull(enc.getObsAtTopLevel(true));
 		assertEquals(1, enc.getObsAtTopLevel(true).size());
 		assertNotNull(enc.getObsAtTopLevel(false));
 		assertEquals(0, enc.getObsAtTopLevel(false).size());
+	}
+	
+	/**
+	 * @see {@link Encounter#getAllObs(null)}
+	 */
+	@Test
+	@Verifies(value = "should not get voided obs", method = "getAllObs(null)")
+	public void getAllObs_shouldNotGetVoidedObs() throws Exception {
+		Encounter enc = new Encounter();
 		
-		//test getAllObs()
+		//create and add an Obs
+		Obs o = new Obs();
+		o.setVoided(true);
+		enc.addObs(o);
+		
 		assertNotNull(enc.getAllObs(true));
 		assertEquals(1, enc.getAllObs(true).size());
 		assertNotNull(enc.getAllObs(false));
@@ -244,13 +333,11 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Test an encounter that has two obs on it: one parent obs and one child obs to that parent.
-	 * The getObs() method should return only the child obs
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getObs()}
 	 */
 	@Test
-	public void shouldOnlyGetChildObsFromGetObsMethod() throws Exception {
+	@Verifies(value = "should only get child obs", method = "getObs()")
+	public void getObs_shouldOnlyGetChildObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
 		//create and add an Obs
@@ -270,13 +357,11 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Test an encounter that has two obs on it: one parent obs and one child obs to that parent.
-	 * The getObsAtTopLevel() method should return only the parent obs
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getObsAtTopLevel(null)}
 	 */
 	@Test
-	public void shouldOnlyGetParentObsFromGetObsAtTopLevelMethod() throws Exception {
+	@Verifies(value = "should only get parents obs", method = "getObsAtTopLevel(null)")
+	public void getObsAtTopLevel_shouldOnlyGetParentsObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
 		//create and add an Obs
@@ -299,13 +384,11 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Test an encounter that has two obs on it: one parent obs and one child obs to that parent.
-	 * The getAllObs() method should return only the parent obs
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getAllObs(null)}
 	 */
 	@Test
-	public void shouldGetBothParentAndChildObsFromGetAllObsMethod() throws Exception {
+	@Verifies(value = "should get both parent and child obs", method = "getAllObs(null)")
+	public void getAllObs_shouldGetBothParentAndChildObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
 		//create and add an Obs
@@ -316,57 +399,21 @@ public class EncounterTest {
 		Obs childObs = new Obs();
 		parentObs.addGroupMember(childObs);
 		
-		//assert that the parent obs is returned by getAllObs()
+		//assert that the parent obs is returned 
 		assertNotNull(encounter.getAllObs(true));
 		assertEquals(1, encounter.getAllObs(true).size());
 		assertNotNull(encounter.getAllObs(false));
 		assertEquals(1, encounter.getAllObs(false).size());
 		Obs obsInEncounter = encounter.getAllObs(false).toArray(new Obs[] {})[0];
 		assertTrue(obsInEncounter.isObsGrouping());
-		
 	}
 	
 	/**
-	 * Test that a voided parent obs is not returned from the getObs* methods
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getObs()}
 	 */
 	@Test
-	public void shouldNotGetVoidedObsFromGetObsStarMethods() throws Exception {
-		Encounter enc = new Encounter();
-		
-		//create and add an Obs
-		Obs parentObs = new Obs();
-		enc.addObs(parentObs);
-		parentObs.setVoided(true);
-		
-		//add a child to the obs and make sure that now that the Obs is an ObsGroup with one child:
-		Obs childObs = new Obs();
-		parentObs.addGroupMember(childObs);
-		
-		assertNotNull(enc.getObsAtTopLevel(true));
-		assertEquals(1, enc.getObsAtTopLevel(true).size());
-		
-		// should not get an obs back here because its voided
-		assertNotNull(enc.getObsAtTopLevel(false));
-		assertEquals(0, enc.getObsAtTopLevel(false).size());
-		
-		assertNotNull(enc.getAllObs(true));
-		assertEquals(1, enc.getAllObs(true).size());
-		
-		// should not get an obs back here because its voided
-		assertNotNull(enc.getAllObs(false));
-		assertEquals(0, enc.getAllObs(false).size());
-	}
-	
-	/**
-	 * Even if the childObs of the obsGroup is associated directly with the encounter, it should not
-	 * be returned by the getObs() method
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldNotGetChildObsFromGetObsMethodsIfChildAlsoOnEncounter() throws Exception {
+	@Verifies(value = "should not get child obs if child also on encounter", method = "getObs()")
+	public void getObs_shouldNotGetChildObsIfChildAlsoOnEncounter() throws Exception {
 		Encounter encounter = new Encounter();
 		
 		//create and add an Obs
@@ -385,16 +432,14 @@ public class EncounterTest {
 		assertEquals(1, encounter.getObs().size());
 		Obs obsInEncounter = encounter.getObs().toArray(new Obs[] {})[0];
 		assertFalse(obsInEncounter.isObsGrouping());
-		
 	}
 	
 	/**
-	 * Only the grouped top level obs should be returned by the getObsAtTopLevel method.
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getObsAtTopLevel(null)}
 	 */
 	@Test
-	public void shouldGetParentObsOnlyWithChildObsAlsoInEncounterObsSet() throws Exception {
+	@Verifies(value = "should only return the grouped top level obs", method = "getObsAtTopLevel(null)")
+	public void getObsAtTopLevel_shouldOnlyReturnTheGroupedTopLevelObs() throws Exception {
 		Encounter encounter = new Encounter();
 		
 		//create and add an Obs
@@ -416,12 +461,11 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Both the parent and the child obs should be returned by the getAllObs method
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getAllObs(null)}
 	 */
 	@Test
-	public void shouldGetBothParentAndChildFromGetAllObsWithChildDirectlyOnEncounter() throws Exception {
+	@Verifies(value = "should get both parent and child with child directly on encounter", method = "getAllObs(null)")
+	public void getAllObs_shouldGetBothParentAndChildWithChildDirectlyOnEncounter() throws Exception {
 		Encounter enc = new Encounter();
 		
 		//create and add an Obs
@@ -453,14 +497,37 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * If a child is a direct member of an encounter.obs and also a child of another member of that
-	 * encounter.obs and then it is removed from the parent obs, the child obs should now be
-	 * returned from the getObs* methods.
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getAllObs(null)}
 	 */
 	@Test
-	public void shouldGetBothChildAndParentObsFromGetObsStarMethodsAfterRemovingChildFromParentGrouping() throws Exception {
+	@Verifies(value = "should get both child and parent obs after removing child from parent grouping", method = "getAllObs(null)")
+	public void getAllObs_shouldGetBothChildAndParentObsAfterRemovingChildFromParentGrouping() throws Exception {
+		Encounter enc = new Encounter();
+		
+		//create and add an Obs
+		Obs parentObs = new Obs();
+		enc.addObs(parentObs);
+		
+		//add a child to the obs and make sure that now that the Obs is an ObsGroup with one child:
+		Obs childObs = new Obs();
+		parentObs.addGroupMember(childObs);
+		
+		// add the child obs directly to the encounter as well
+		childObs.setEncounter(enc);
+		enc.addObs(childObs);
+		
+		//remove the obsGrouping, so that both obs are now just children of the Encounter 
+		parentObs.removeGroupMember(childObs);
+		
+		assertEquals(2, enc.getAllObs(true).size());
+	}
+	
+	/**
+	 * @see {@link Encounter#getObs()}
+	 */
+	@Test
+	@Verifies(value = "should get both child and parent obs after removing child from parent grouping", method = "getObs()")
+	public void getObs_shouldGetBothChildAndParentObsAfterRemovingChildFromParentGrouping() throws Exception {
 		Encounter enc = new Encounter();
 		
 		//create and add an Obs
@@ -479,19 +546,41 @@ public class EncounterTest {
 		parentObs.removeGroupMember(childObs);
 		
 		// do the check
-		// now all three methods should return  both obs:
 		assertEquals(2, enc.getObs().size());
-		assertEquals(2, enc.getObsAtTopLevel(false).size());
-		assertEquals(2, enc.getAllObs(true).size());
 	}
 	
 	/**
-	 * Test an obs group setup with multiple levels of hierarchy.
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getObsAtTopLevel(null)}
 	 */
 	@Test
-	public void shouldGetObsWithTwoLevelsOfHierarchy() throws Exception {
+	@Verifies(value = "should get both child and parent obs after removing child from parent grouping", method = "getObsAtTopLevel(null)")
+	public void getObsAtTopLevel_shouldGetBothChildAndParentObsAfterRemovingChildFromParentGrouping() throws Exception {
+		Encounter enc = new Encounter();
+		
+		//create and add an Obs
+		Obs parentObs = new Obs();
+		enc.addObs(parentObs);
+		
+		//add a child to the obs and make sure that now that the Obs is an ObsGroup with one child:
+		Obs childObs = new Obs();
+		parentObs.addGroupMember(childObs);
+		
+		// add the child obs directly to the encounter as well
+		childObs.setEncounter(enc);
+		enc.addObs(childObs);
+		
+		//remove the obsGrouping, so that both obs are now just children of the Encounter 
+		parentObs.removeGroupMember(childObs);
+		
+		assertEquals(2, enc.getObsAtTopLevel(false).size());
+	}
+	
+	/**
+	 * @see {@link Encounter#getObs()}
+	 */
+	@Test
+	@Verifies(value = "should get obs with two levels of hierarchy", method = "getObs()")
+	public void getObs_shouldGetObsWithTwoLevelsOfHierarchy() throws Exception {
 		Encounter enc = new Encounter();
 		
 		//create and add an Obs
@@ -541,12 +630,11 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure obs groups work for a third layer of grouping
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getObs()}
 	 */
 	@Test
-	public void shouldGetObsWithThreeLevelsOfHierarchy() throws Exception {
+	@Verifies(value = "should get obs with three levels of hierarchy", method = "getObs()")
+	public void getObs_shouldGetObsWithThreeLevelsOfHierarchy() throws Exception {
 		Encounter enc = new Encounter();
 		
 		//create and add an Obs
@@ -585,13 +673,11 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure that there are no voided obs returned or children of voided objects with them at
-	 * the third layer
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#getObs()}
 	 */
 	@Test
-	public void shouldNotGetViodedObsWithThreeLayersOfHierarchy() throws Exception {
+	@Verifies(value = "should not get voided obs with three layers of hierarchy", method = "getObs()")
+	public void getObs_shouldNotGetVoidedObsWithThreeLayersOfHierarchy() throws Exception {
 		Encounter enc = new Encounter();
 		
 		//create and add an Obs
@@ -631,51 +717,46 @@ public class EncounterTest {
 		assertTrue(enc.getObs().contains(grandChildObsTwo));
 		assertFalse(enc.getObs().contains(greatGreatGrandChildObsOne));
 		assertFalse(enc.getObs().contains(greatGreatGrandChildObsTwo));
-		
 	}
 	
 	/**
-	 * Make sure the Encounter(Integer) constructor sets the encounterId
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#Encounter(Integer)}
 	 */
 	@Test
-	public void shouldSetEncounterIdFromConstructor() throws Exception {
+	@Verifies(value = "should set encounter id", method = "Encounter(Integer)")
+	public void Encounter_shouldSetEncounterId() throws Exception {
 		Encounter encounter = new Encounter(123);
 		Assert.assertEquals(123, encounter.getEncounterId().intValue());
 	}
 	
 	/**
-	 * Try to add an empty obs object
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#addObs(Obs)}
 	 */
 	@Test
-	public void shouldAddObsWithNullValues() throws Exception {
+	@Verifies(value = "should add obs with null values", method = "addObs(Obs)")
+	public void addObs_shouldAddObsWithNullValues() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.addObs(new Obs());
 		assertEquals(1, encounter.getAllObs(true).size());
 	}
 	
 	/**
-	 * A null parameter passed to addObs should fail silently
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#addObs(Obs)}
 	 */
 	@Test
-	public void shouldNotFailWithNullObsPassedToAddObs() throws Exception {
+	@Verifies(value = "should not fail with null obs", method = "addObs(Obs)")
+	public void addObs_shouldNotFailWithNullObs() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.addObs(null);
 		assertEquals(0, encounter.getAllObs(true).size());
 	}
 	
 	/**
-	 * Make sure the reverse setting of Obs.encounter is set after adding the obs.
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#addObs(Obs)}
 	 */
 	@Test
-	public void shouldGetReverseEncounterAttributeSetDuringAddObs() throws Exception {
+	@Verifies(value = "should set encounter attribute on obs", method = "addObs(Obs)")
+	public void addObs_shouldSetEncounterAttributeOnObs() throws Exception {
 		Encounter encounter = new Encounter();
 		Obs obs = new Obs();
 		encounter.addObs(obs);
@@ -683,12 +764,11 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure a second obs can be added to an encounter.obs that already had an obs in it
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#addObs(Obs)}
 	 */
 	@Test
-	public void shouldAddObsToNonNullInitialObsSet() throws Exception {
+	@Verifies(value = "should add obs to non null initial obs set", method = "addObs(Obs)")
+	public void addObs_shouldAddObsToNonNullInitialObsSet() throws Exception {
 		Encounter encounter = new Encounter();
 		Set<Obs> obsSet = new HashSet<Obs>();
 		obsSet.add(new Obs(1));
@@ -700,14 +780,12 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure that the encounter attrs are copied to the newly added obs if the obs doesn't have
-	 * them already.
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#addObs(Obs)}
 	 */
 	@Test
-	public void shouldAddEncounterAttrsToObsIfAttributesAreNull() throws Exception {
-		// an encounter that will hav the date/location/patient on it
+	@Verifies(value = "should add encounter attrs to obs if attributes are null", method = "addObs(Obs)")
+	public void addObs_shouldAddEncounterAttrsToObsIfAttributesAreNull() throws Exception {
+		/// an encounter that will hav the date/location/patient on it
 		Encounter encounter = new Encounter();
 		
 		Date date = new Date();
@@ -733,36 +811,33 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Try to add an empty order object
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#addOrder(Order)}
 	 */
 	@Test
-	public void shouldAddOrderWithNullValues() throws Exception {
+	@Verifies(value = "should add order with null values", method = "addOrder(Order)")
+	public void addOrder_shouldAddOrderWithNullValues() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.addOrder(new Order());
 		assertEquals(1, encounter.getOrders().size());
 	}
 	
 	/**
-	 * A null parameter passed to addOrder should fail silently
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#addOrder(Order)}
 	 */
 	@Test
-	public void shouldNotFailWithNullObsPassedToAddOrder() throws Exception {
+	@Verifies(value = "should not fail with null obs passed to add order", method = "addOrder(Order)")
+	public void addOrder_shouldNotFailWithNullObsPassedToAddOrder() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.addOrder(null);
 		assertEquals(0, encounter.getOrders().size());
 	}
 	
 	/**
-	 * Make sure the reverse setting of Order.encounter is set after adding the order.
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#addOrder(Order)}
 	 */
 	@Test
-	public void shouldGetReverseEncounterAttributeSetDuringAddOrder() throws Exception {
+	@Verifies(value = "should set encounter attribute", method = "addOrder(Order)")
+	public void addOrder_shouldSetEncounterAttribute() throws Exception {
 		Encounter encounter = new Encounter();
 		Order order = new Order();
 		encounter.addOrder(order);
@@ -770,12 +845,11 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Make sure a second order can be added to an encounter.orders that already had an order in it
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#addOrder(Order)}
 	 */
 	@Test
-	public void shouldAddOrderToNonNullInitialOrderSet() throws Exception {
+	@Verifies(value = "should add order to non nul initial order set", method = "addOrder(Order)")
+	public void addOrder_shouldAddOrderToNonNulInitialOrderSet() throws Exception {
 		Encounter encounter = new Encounter();
 		Set<Order> orderSet = new HashSet<Order>();
 		orderSet.add(new Order(1));
@@ -787,53 +861,38 @@ public class EncounterTest {
 	}
 	
 	/**
-	 * Should remove an order from an encounter.orders
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#removeOrder(Order)}
 	 */
 	@Test
-	public void shouldRemoveOrderFromEncounter() throws Exception {
-		Encounter encounter = new Encounter();
+    @Verifies(value = "should remove order from encounter", method = "removeOrder(Order)")
+    public void removeOrder_shouldRemoveOrderFromEncounter() throws Exception {
+	    Encounter encounter = new Encounter();
 		Order order = new Order(1);
 		encounter.addOrder(order);
 		assertEquals(1, encounter.getOrders().size());
 		
 		encounter.removeOrder(order);
 		assertEquals(0, encounter.getOrders().size());
-	}
+    }
 	
 	/**
-	 * The removeOrder method should fail quietly if given a null parameter
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#removeOrder(Order)}
 	 */
 	@Test
-	public void shouldNotFailWhenRemovingNullOrderFromEncounter() throws Exception {
+	@Verifies(value = "should not fail when removing null order", method = "removeOrder(Order)")
+	public void removeOrder_shouldNotFailWhenRemovingNullOrder() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.removeOrder(null);
 	}
 	
 	/**
-	 * The removeOrder method should do nothing if given a Order is not in encounter.orders
-	 * 
-	 * @throws Exception
+	 * @see {@link Encounter#removeOrder(Order)}
 	 */
 	@Test
-	public void shouldNotFailWhenRemovingNonExistantOrderFromEncounter() throws Exception {
+	@Verifies(value = "should not fail when removing non existent order", method = "removeOrder(Order)")
+	public void removeOrder_shouldNotFailWhenRemovingNonExistentOrder() throws Exception {
 		Encounter encounter = new Encounter();
 		encounter.removeOrder(new Order(123));
-	}
-	
-	/**
-	 * Call the toString method will null values for everything and make sure an NPE isn't caused
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldNotFailWithEmptyObjectAnToString() throws Exception {
-		Encounter encounter = new Encounter();
-		@SuppressWarnings("unused")
-		String toStringOutput = encounter.toString();
 	}
 	
 }
