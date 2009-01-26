@@ -5,6 +5,8 @@
 	All Rights Reserved.
 */
 
+<openmrs:globalProperty var="minSearchCharacters" key="minSearchCharacters" defaultValue="3"/>
+
 dojo.provide("dojo.widget.openmrs.OpenmrsSearch");
 
 dojo.require("dojo.widget.*");
@@ -19,6 +21,7 @@ importJavascriptFile(openmrsSearchBase + "/dwr/util.js");
 // Add parse handler.  
 dojo.widget.tags.addParseTreeHandler("dojo:OpenmrsSearch");
 
+<openmrs:globalProperty var="minSearchCharacters" key="minSearchCharacters" defaultValue="3"/>
 
 dojo.widget.openmrs.OpenmrsSearch = function() {
 	//dojo.widget.HtmlWidget.call(this);
@@ -46,7 +49,7 @@ dojo.widget.defineWidget(
 	event: null,
 	pagingBar: null,
 	infoBar: null,
-	minSearchCharacters: 2,
+	minSearchCharacters: ${minSearchCharacters},
 	tableHeight: 0,
 	headerRow: null,
 	showHeaderRow: false,
@@ -252,8 +255,7 @@ dojo.widget.defineWidget(
 						
 						// If there isn't a number in the search (force usage of enter key)
 						this.hideHighlight();
-						if (this.text.length > 1 && 
-								(this.text.length != 2 || !this.text.match(/\d/) || this.objectsFound == null || this.objectsFound.length < this.text)) {
+						if (!this.text.match(/\d/) || this.objectsFound == null || this.objectsFound.length < this.text) {
 							this.clearPagingBars();
 							dojo.debug('setting preFindObjects timeout for other key: ' + this.key);
 							var callback = function(ts, text) { return function() {ts.findObjects(text)}};
