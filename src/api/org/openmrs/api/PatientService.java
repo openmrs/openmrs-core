@@ -409,6 +409,8 @@ public interface PatientService extends OpenmrsService {
 	 * 
 	 * @param query the string to search on
 	 * @return a list of matching Patients
+	 * @should force search string to be greater than minsearchcharacters global property
+	 * @should allow search string to be one according to minsearchcharacters global property
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS })

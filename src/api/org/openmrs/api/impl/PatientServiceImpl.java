@@ -594,14 +594,22 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientService#findPatients(java.lang.String)
+	 * @see org.openmrs.api.PatientService#getPatients(java.lang.String)
 	 */
 	public List<Patient> getPatients(String query) throws APIException {
 		List<Patient> patients = new Vector<Patient>();
 		
-		// TODO create a global property that users can change for this
-		//query must be more than 2 characters
-		if (query.length() < 3)
+		String minSearchCharactersStr = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS);
+		int minSearchCharacters;
+		try {
+			minSearchCharacters = Integer.valueOf(minSearchCharactersStr);
+		}
+		catch (NumberFormatException e) {
+			minSearchCharacters = 3;
+		}
+
+		if (query.length() < minSearchCharacters)
 			return patients;
 		
 		// if there is a number in the query string

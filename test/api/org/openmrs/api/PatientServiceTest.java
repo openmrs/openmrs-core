@@ -46,6 +46,8 @@ import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
+import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -499,6 +501,36 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		PatientIdentifierType newerPatientIdentifierType = patientService.getPatientIdentifierType(1);
 		assertEquals("SOME NEW NAME", newerPatientIdentifierType.getName());
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatients(String)}
+	 */
+	@Test
+	@Verifies(value = "should force search string to be greater than minsearchcharacters global property", method = "getPatients(String)")
+	public void getPatients_shouldForceSearchStringToBeGreaterThanMinsearchcharactersGlobalProperty() throws Exception {
+		// make sure we can get patients with the default of 3 
+		assertEquals(1, Context.getPatientService().getPatients("Colle").size());
+		
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "4"));
+		
+		assertEquals(0, Context.getPatientService().getPatients("Col").size());
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatients(String)}
+	 */
+	@Test
+	@Verifies(value = "should allow search string to be one according to minsearchcharacters global property", method = "getPatients(String)")
+	public void getPatients_shouldAllowSearchStringToBeOneAccordingToMinsearchcharactersGlobalProperty() throws Exception {
+		// make sure the default of "3" kicks in and blocks any results
+		assertEquals(0, Context.getPatientService().getPatients("Co").size());
+		
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "1"));
+		
+		assertEquals(1, Context.getPatientService().getPatients("Co").size());
 	}
 	
 }

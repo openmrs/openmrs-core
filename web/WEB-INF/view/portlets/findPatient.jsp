@@ -146,8 +146,7 @@
 				
 				dojo.addOnLoad( function() {
 					
-					searchWidget = dojo.widget.manager.getWidgetById("pSearch");			
-					
+					searchWidget = dojo.widget.manager.getWidgetById("pSearch");
 					dojo.event.topic.subscribe("pSearch/select", 
 						function(msg) {
 							if (msg.objs[0].patientId)
