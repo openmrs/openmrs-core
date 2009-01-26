@@ -14,6 +14,8 @@
 		
 		<discriminator column="concept_map_id" insert="false" />
 		
+		<many-to-one name="concept" column="concept_id" class="Concept" not-null="true"/>
+			
 		<property name="sourceCode" type="java.lang.String" column="source_code" length="255" />
 		
 		<property name="comment" type="java.lang.String" length="255" />

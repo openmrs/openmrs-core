@@ -13,14 +13,20 @@
  */
 package org.openmrs.web.controller;
 
+import java.util.Locale;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.ConceptComplex;
-import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptMap;
+import org.openmrs.ConceptName;
+import org.openmrs.web.controller.ConceptFormController.ConceptFormBackingObject;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+/**
+ * The web validator for the concept editing form
+ */
 public class ConceptFormValidator implements Validator {
 	
 	/** Log for this class and subclasses */
@@ -32,8 +38,8 @@ public class ConceptFormValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-    public boolean supports(Class c) {
-		return c.equals(Concept.class) || c.equals(ConceptNumeric.class) || c.equals(ConceptComplex.class);
+	public boolean supports(Class c) {
+		return c.equals(ConceptFormBackingObject.class);
 	}
 	
 	/**
@@ -43,13 +49,49 @@ public class ConceptFormValidator implements Validator {
 	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
-		Concept concept = (Concept) obj;
-		if (concept == null) {
+		ConceptFormBackingObject backingObject = (ConceptFormBackingObject) obj;
+		if (backingObject.getConcept() == null) {
 			errors.rejectValue("concept", "error.general");
 		} else {
-			//Won't work without name and description properties on Concept
-			//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
+			// TODO add more validation here
+			
+			// validate that each mapping's concept source text is not empty
+			for (int x = 0; x < backingObject.getMappings().size(); x++) {
+				ConceptMap map = backingObject.getMappings().get(x);
+				// skip over null ones...those are deleted mappings
+				if (map.getSourceCode() != null && map.getSourceCode().length() == 0) {
+					errors.rejectValue("mappings[" + x + "].sourceCode", "Concept.mappings.sourceCodeRequired");
+				}
+			}
+			
+			boolean foundAtLeastOnePreferredName = false;
+			
+			for (Locale locale : backingObject.getLocales()) {
+				// validate that a void reason was given for voided synonyms
+				for (int x = 0; x < backingObject.getSynonymsByLocale().get(locale).size(); x++) {
+					ConceptName synonym = backingObject.getSynonymsByLocale().get(locale).get(x);
+					if (synonym.isVoided() && !StringUtils.hasLength(synonym.getVoidReason())) {
+						errors.rejectValue("synonymsByLocale[" + locale + "][" + x + "].voidReason", "Concept.synonyms.voidReasonRequired");
+					}
+					
+					// validate that synonym names are non-empty (null name means it was invalid and then removed)
+					if (synonym.getName() != null && synonym.getName().length() == 0) {
+						errors.rejectValue("synonymsByLocale[" + locale + "][" + x + "].name", "Concept.synonyms.textRequired");
+					}
+				}
+				
+				// validate that at least one name in a locale is non-empty
+				if (StringUtils.hasLength(backingObject.getNamesByLocale().get(locale).getName())) {
+					foundAtLeastOnePreferredName = true;
+				}
+				
+			}
+			
+			if (foundAtLeastOnePreferredName == false) {
+				errors.rejectValue("namesByLocale[" + backingObject.getLocales().get(0) + "].name", "Concept.name.atLeastOneRequired");
+			}
+			
+			
 		}
 	}
 	

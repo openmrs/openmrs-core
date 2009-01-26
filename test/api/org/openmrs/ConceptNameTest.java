@@ -15,14 +15,16 @@ package org.openmrs;
 
 import java.util.Locale;
 
+import junit.framework.Assert;
+
 import org.databene.benerator.Generator;
 import org.databene.benerator.factory.GeneratorFactory;
-import org.junit.Ignore;
+import org.junit.Test;
+import org.openmrs.test.Verifies;
 
 /**
  * Behavior-driven tests of the ConceptName class.
  */
-@Ignore
 public class ConceptNameTest {
 	
 	final static String NAME_PATTERN = "[a-z]*";
@@ -46,6 +48,38 @@ public class ConceptNameTest {
 		mockConceptName.setName(nameGenerator.generate());
 		
 		return mockConceptName;
+	}
+	
+	/**
+	 * @see {@link ConceptName#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should compare on conceptNameId if non null", method = "equals(Object)")
+	public void equals_shouldCompareOnConceptNameIdIfNonNull() throws Exception {
+		ConceptName firstName = new ConceptName(1);
+		ConceptName secondName = new ConceptName(1);
+		Assert.assertTrue(firstName.equals(secondName));
+	}
+	
+	/**
+	 * @see {@link ConceptName#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should not return true with different objects and null ids", method = "equals(Object)")
+	public void equals_shouldNotReturnTrueWithDifferentObjectsAndNullIds() throws Exception {
+		ConceptName firstName = new ConceptName();
+		ConceptName secondName = new ConceptName();
+		Assert.assertFalse(firstName.equals(secondName));
+	}
+	
+	/**
+	 * @see {@link ConceptName#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should default to object equality", method = "equals(Object)")
+	public void equals_shouldDefaultToObjectEquality() throws Exception {
+		ConceptName firstName = new ConceptName();
+		Assert.assertTrue(firstName.equals(firstName));
 	}
 	
 }

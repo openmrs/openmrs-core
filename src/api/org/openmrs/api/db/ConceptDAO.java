@@ -270,7 +270,10 @@ public interface ConceptDAO {
 	
 	public ConceptNameTag getConceptNameTagByName(String name);
 	
-	public List<ConceptNameTag> getConceptNameTags();
+	/**
+	 * @see org.openmrs.api.ConceptService#getAllConceptNameTags()
+	 */
+	public List<ConceptNameTag> getAllConceptNameTags();
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptSource(java.lang.Integer)

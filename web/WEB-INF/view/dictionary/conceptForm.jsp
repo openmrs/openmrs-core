@@ -72,28 +72,28 @@
 		padding-left: 3px;
 		padding-right: 3px;
 	}
-	#newConceptMapping {
+	.hidden, #newConceptSynonym, #newConceptMapping {
 		display: none;
 	}
 </style>
 
 <c:choose>
-	<c:when test="${concept.conceptId != null}">
-		<h2><spring:message code="Concept.edit.title" arguments="${concept.name}" /></h2>
+	<c:when test="${command.concept.conceptId != null}">
+		<h2><spring:message code="Concept.edit.title" arguments="${command.concept.name}" /></h2>
 	</c:when>
 	<c:otherwise>
 		<h2><spring:message code="Concept.creatingNewConcept" /></h2>
 	</c:otherwise>
 </c:choose>
 
-<c:if test="${concept.conceptId != null}">
+<c:if test="${command.concept.conceptId != null}">
 	<form class="inlineForm" id="jumpForm" action="" method="post">
 		<input type="hidden" name="jumpAction" id="jumpAction" value="previous"/>
 		<a href="#previousConcept" id="previousConcept" valign="middle" accesskey="," onclick="return jumpToConcept('previous')"><spring:message code="general.previous"/></a>
 			|
-		<a href="concept.htm?conceptId=${concept.conceptId}" id="viewConcept" accesskey="v"><spring:message code="general.view"/></a>
+		<a href="concept.htm?conceptId=${command.concept.conceptId}" id="viewConcept" accesskey="v"><spring:message code="general.view"/></a>
 			|
-		<a href="conceptStats.form?conceptId=${concept.conceptId}" id="conceptStats" accesskey="s" valign="middle"><spring:message code="Concept.stats"/></a>
+		<a href="conceptStats.form?conceptId=${command.concept.conceptId}" id="conceptStats" accesskey="s" valign="middle"><spring:message code="Concept.stats"/></a>
 			|
 		<a href="#nextConcept" id="nextConcept" valign="middle" accesskey="." onclick="return jumpToConcept('next')"><spring:message code="general.next"/></a>
 	</form>
@@ -114,11 +114,11 @@
 </form>
 
 <br/><br/>
-<c:if test="${concept.retired}">
+<c:if test="${command.concept.retired}">
 	<div class="retiredMessage"><div><spring:message code="Concept.retiredMessage"/></div></div>
 </c:if>
 
-<spring:hasBindErrors name="concept">
+<spring:hasBindErrors name="command">
 	<spring:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
@@ -128,8 +128,8 @@
 	<br />
 </spring:hasBindErrors>
 
-<c:if test="${concept.conceptId != null}">
-	<c:if test="${concept.conceptClass.name == 'Question' && concept.datatype.name == 'N/A'}">
+<c:if test="${command.concept.conceptId != null}">
+	<c:if test="${command.concept.conceptClass.name == 'Question' && command.concept.datatype.name == 'N/A'}">
 		<div class="highlighted">
 			<spring:message code="Concept.checkClassAndDatatype"/>
 		</div>
@@ -137,40 +137,21 @@
 	</c:if>
 </c:if>
 
-<div id="newLocaleDialog" style="display:none; border: 1px dashed gray;padding:1em;">
-	<spring:message code="Concept.newLocale" />	
-	<p>
-		<form name="newLocalForm" method="get" action="concept.form">
-			<input type="hidden" name="conceptId" value="${concept.conceptId}" />			
-			<spring:message code="Concept.newLocale.label"/>:
-			<input type="text" name="newLocale" />
-			<input type="submit" value="<spring:message code="general.submit"/>" /> |
-			<a href="#" onclick="document.getElementById('newLocaleDialog').style.display = 'none';"><spring:message code="general.cancel"/></a>
-		</form>
-	</p>
-</div>
-
 <form method="post" action="">
-<c:if test="${newLocaleProposed != null}">				
-	<input type="hidden" name="newLocaleAdded" value="${newLocaleProposed}" />
-</c:if>
 
 <table id="conceptTable" cellpadding="2" cellspacing="0">
 
 	<tr>
 		<th><spring:message code="general.id"/></th>
-		<td colspan="${fn:length(locales)}">${concept.conceptId}</td>
+		<td colspan="${fn:length(locales)}">${command.concept.conceptId}</td>
 	</tr>
 
 	<tr>
 		<th><spring:message code="general.locale"/></th>
 		<td style="padding-bottom: 0px; padding-left: 0px;">
-			<c:forEach items="${locales}" var="loc" varStatus="varStatus">
+			<c:forEach items="${command.locales}" var="loc" varStatus="varStatus">
 				<a id="${loc}Tab" class="tab ${loc}" href="#select${loc.displayName}" onclick="return selectTab(this)">${loc.displayName}</a><c:if test="${varStatus.last==false}"> | </c:if>
 			</c:forEach>
-			<a id="newLocaleTab" class="tab newLocale" href="#" onclick="document.getElementById('newLocaleDialog').style.display = '';">
-				<spring:message code="general.add"/>
-			</a>
 			
 		</td>
 	</tr>
@@ -178,14 +159,11 @@
 		<th title="<spring:message code="Concept.name.help"/>">
 			<spring:message code="general.name" />
 		</th>
-		<c:forEach items="${locales}" var="loc">
+		<c:forEach items="${command.locales}" var="loc">
 			<td class="${loc}">
-				<spring:bind path="conceptName_${loc}.name">
-				<input type="text" name="${status.expression}_${loc}"
-					value="${status.value}" id="conceptName_${loc}" class="largeWidth" />
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">${status.errorMessage}</span>
-				</c:if>
+				<spring:bind path="command.namesByLocale[${loc}].name">
+					<input type="text" name="${status.expression}" value="${status.value}" id="${status.expression}" class="largeWidth" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</c:forEach>
@@ -194,15 +172,11 @@
 		<th title="<spring:message code="Concept.shortName.help"/>">
 			<spring:message code="Concept.shortName" />
 		</th>
-		<c:forEach items="${locales}" var="loc">
+		<c:forEach items="${command.locales}" var="loc">
 			<td class="${loc}">
-				<spring:bind path="conceptShortName_${loc}.name">
-					<!-- input class="smallWidth" type="text" name="${status.expression}_${loc}" -->
-					<input class="smallWidth" type="text" name="shortName_${loc}"
-						value="${status.value}" size="10" />
-					<c:if test="${status.errorMessage != ''}">
-						<span class="error">${status.errorMessage}</span>
-					</c:if>
+				<spring:bind path="command.shortNamesByLocale[${loc}].name">
+					<input class="smallWidth" type="text" name="${status.expression}" value="${status.value}" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</c:forEach>
@@ -211,13 +185,11 @@
 		<th valign="top" title="<spring:message code="Concept.description.help"/>">
 			<spring:message code="general.description" />
 		</th>
-		<c:forEach items="${locales}" var="loc">
+		<c:forEach items="${command.locales}" var="loc">
 			<td valign="top" class="${loc}">
-				<spring:bind path="conceptDescription_${loc}.description">
-					<textarea name="${status.expression}_${loc}" rows="4" cols="50">${status.value}</textarea>
-					<c:if test="${status.errorMessage != ''}">
-						<span class="error">${status.errorMessage}</span>
-					</c:if>
+				<spring:bind path="command.descriptionsByLocale[${loc}].description">
+					<textarea name="${status.expression}" rows="4" cols="50">${status.value}</textarea>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
 		</c:forEach>
@@ -227,55 +199,72 @@
 		<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">
 			<spring:message code="Concept.synonyms" />
 		</th>
-		<c:forEach items="${locales}" var="loc">
-			<td valign="top" class="${loc}">
-				<input type="text" class="largeWidth" id="addSyn${loc}" onKeyDown="return synonymKeyPress(this, event, '${loc}');"/>
-				<input type="button" class="smallButton" value="<spring:message code="Concept.synonym.add"/>" onClick="addSynonym('${loc}');"/>
-				<input type="hidden" name="newSynonyms_${loc}" id="newSynonyms${loc}" value="<c:forEach items="${conceptSynonymsByLocale[loc]}" var="syn">${syn},</c:forEach>" />
-			</td>
-		</c:forEach>
-	</tr>
-	<tr class="localeSpecific">
-		<th></th>
-		<c:forEach items="${locales}" var="loc">
+		<c:forEach items="${command.locales}" var="loc">
 			<td class="${loc}">
-				<table cellpadding="0" cellspacing="0">
-					<tr>
-						<td>
-							<select class="largeWidth" size="5" multiple id="syns${loc}" onkeydown="listKeyPress('syns${loc}', 'newSynonyms${loc}', ',', event);">
-								<c:forEach items="${conceptSynonymsByLocale[loc]}" var="syn"><option value="${syn}">${syn}</option></c:forEach>
-							</select>
-						</td>
-						<td valign="top" class="buttons">
-							&nbsp;<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('syns${loc}', 'newSynonyms${loc}', ',');" /> <br/>
-						</td>
-					</tr>
-				</table>
+				<c:forEach var="synonym" items="${command.synonymsByLocale[loc]}" varStatus="varStatus">
+					<spring:nestedPath path="command.synonymsByLocale[${loc}][${varStatus.index}]">
+						<input type="hidden" name="_synonymsByLocale[${loc}][${varStatus.index}].name" value="" />
+						<div>
+							<spring:bind path="name">
+								<input type="text" name="${status.expression}" value="${status.value}" class="largeWidth" />
+								<c:if test="${status.errorMessage != ''}">
+									<span class="error">${status.errorMessage}</span>
+									<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
+								</c:if>
+							</spring:bind>
+							<spring:message code="general.voided" />?
+								<spring:bind path="voided">
+									<input type="hidden" name="_${status.expression}" value="" />
+									<input type="checkbox" name="${status.expression}" value="true" onclick="toggleLayer('synonymsByLocale[${loc}][${varStatus.index}].voidedInfo')" <c:if test="${status.value}">checked=checked</c:if>/>
+								</spring:bind>
+								<span id="synonymsByLocale[${loc}][${varStatus.index}].voidedInfo" <c:if test="${!command.synonymsByLocale[loc][varStatus.index].voided}">style="display: none"</c:if> >
+									<spring:bind path="voidReason">
+										<input type="text" value="${status.value}" size="mediumWidth" name="${status.expression}" />
+										<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+									</spring:bind>
+									<spring:bind path="voidedBy">
+										<c:if test="${status.value != null}">
+											<spring:message code="general.voidedBy" />:
+											${status.value.personName} -
+											<openmrs:formatDate date="${command.synonymsByLocale[loc][varStatus.index].dateVoided}" type="long" />
+										</c:if>
+									</spring:bind>
+								</span>
+						</div>
+					</spring:nestedPath>
+				</c:forEach>
+				<div id="newConceptSynonym-${loc}" style="display: none">
+					<input type="text" name="[x].name" value="" class="largeWidth" />
+					<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
+				</div>
+				<input type="button" value='<spring:message code="Concept.synonym.add"/>' class="smallButton" onClick="cloneElement('newConceptSynonym-${loc}', ${fn:length(command.synonymsByLocale[loc])}, 'synonymsByLocale[${loc}]')" />
 			</td>
+			
 		</c:forEach>
 	</tr>
-	
 	<tr>
 		<th title="<spring:message code="Concept.conceptClass.help"/>">
 			<spring:message code="Concept.conceptClass" />
 		</th>
-		<td valign="top"><spring:bind path="concept.conceptClass">
-			<select class="smallWidth" name="${status.expression}" id="conceptClass" onChange="changeClass(this);">
-				<c:forEach items="${classes}" var="cc">
-					<option value="${cc.conceptClassId}"
-						<c:if test="${cc.conceptClassId == status.value}">selected="selected"</c:if>>${cc.name}</option>
-				</c:forEach>
-			</select>
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
+		<td valign="top">
+			<spring:bind path="command.concept.conceptClass">
+				<select class="smallWidth" name="${status.expression}" id="conceptClass" onChange="changeClass(this);">
+					<c:forEach items="${classes}" var="cc">
+						<option value="${cc.conceptClassId}"
+							<c:if test="${cc.conceptClassId == status.value}">selected="selected"</c:if>>${cc.name}
+						</option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
 	</tr>
 	<tr>
 		<th valign="top"><spring:message code="Concept.set"/></th>
 		<td>
-			<spring:bind path="concept.set">
-				<input type="checkbox" name="conceptSet" id="conceptSet" <c:if test="${status.value}">checked="checked"</c:if> onClick="changeSetStatus(this)" />
+			<spring:bind path="command.concept.set">
+				<input type="hidden" name="_${status.expression}" value=""/>
+				<input type="checkbox" name="${status.expression}" id="conceptSet" <c:if test="${status.value}">checked="checked"</c:if> onClick="changeSetStatus(this)" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
@@ -283,13 +272,15 @@
 	<tr id="conceptSetRow">
 		<th valign="top"><spring:message code="Concept.conceptSets"/></th>
 		<td valign="top">
-			<input type="hidden" name="conceptSets" id="conceptSets" size="40" value='<c:forEach items="${conceptSets}" var="set">${set.value[0]} </c:forEach>' />
+			<spring:bind path="command.concept.conceptSets">
+				<input type="hidden" name="${status.expression}" id="conceptSets" size="40" value='<c:forEach items="${command.concept.conceptSets}" var="set">${set.concept.conceptId} </c:forEach>' />
+			</spring:bind>
 			<table cellpadding="0" cellspacing="0">
 				<tr>
 					<td valign="top">
-						<select class="largeWidth" size="6" id="conceptSetsNames" multiple onkeyup="listKeyPress('conceptSetsNames', 'conceptSets', ' ', event);">
-							<c:forEach items="${conceptSets}" var="set">
-								<option value="${set.value[0]}">${set.value[1]} (${set.value[0]})</option>
+						<select class="largeWidth" size="6" id="conceptSetsNames" multiple="multiple" onkeyup="listKeyPress('conceptSetsNames', 'conceptSets', ' ', event);">
+							<c:forEach items="${command.concept.conceptSets}" var="set">
+								<option value="${set.concept.conceptId}"><openmrs:format concept="${set.concept}"/> (${set.concept.conceptId})</option>
 							</c:forEach>
 						</select>
 					</td>
@@ -307,27 +298,30 @@
 		<th title="<spring:message code="Concept.datatype.help"/>">
 			<spring:message code="Concept.datatype" />
 		</th>
-		<td valign="top"><spring:bind path="concept.datatype">
-			<select class="smallWidth" name="${status.expression}" id="datatype" onChange="changeDatatype(this);">
-				<c:forEach items="${datatypes}" var="cd">
-					<option value="${cd.conceptDatatypeId}"
-						<c:if test="${cd.conceptDatatypeId == status.value}">selected="selected"</c:if>>${cd.name}</option>
-				</c:forEach>
-			</select>
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
+		<td valign="top">
+			<spring:bind path="command.concept.datatype">
+				<select class="smallWidth" name="${status.expression}" id="datatype" onChange="changeDatatype(this);">
+					<c:forEach items="${datatypes}" var="cd">
+						<option value="${cd.conceptDatatypeId}"
+							<c:if test="${cd.conceptDatatypeId == status.value}">selected="selected"</c:if>>${cd.name}</option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
 	</tr>
 	<tr id="codedDatatypeRow">
 		<th valign="top"><spring:message code="Concept.answers"/></th>
 		<td>
-			<input type="hidden" name="answers" id="answerIds" size="40" value='<c:forEach items="${conceptAnswers}" var="answer">${answer.key} </c:forEach>' />
+			<spring:bind path="command.concept.answers">
+				<input type="hidden" name="${status.expression}" id="answerIds" size="40" value='<c:forEach items="${command.conceptAnswers}" var="answer">${answer.key} </c:forEach>' />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
 			<table cellspacing="0" cellpadding="0">
 				<tr>
 					<td valign="top">
-						<select class="largeWidth" size="6" id="answerNames" multiple onKeyUp="listKeyPress('answerNames', 'answerIds', ' ', event)">
-							<c:forEach items="${conceptAnswers}" var="answer">
+						<select class="largeWidth" size="6" id="answerNames" multiple="multiple" onKeyUp="listKeyPress('answerNames', 'answerIds', ' ', event)">
+							<c:forEach items="${command.conceptAnswers}" var="answer">
 								<option value="${answer.key}">${answer.value} (${fn:substring(answer.key, 0, fn:indexOf(answer.key, '^'))})</option>
 							</c:forEach>
 						</select>
@@ -352,28 +346,46 @@
 				<tr>
 					<th valign="middle"><spring:message code="ConceptNumeric.absolute"/></th>
 					<td valign="middle">
-						<input type="text" name="lowAbsolute" value="<c:if test="${concept.numeric}">${concept.lowAbsolute}</c:if>" size="10" />
+						<spring:bind path="command.lowAbsolute">
+							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
 					</td>
 					<td valign="middle">
-						<input type="text" name="hiAbsolute" value="<c:if test="${concept.numeric}">${concept.hiAbsolute}</c:if>" size="10"/>
+						<spring:bind path="command.hiAbsolute">
+							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
 					</td>
 				</tr>
 				<tr>
 					<th valign="middle"><spring:message code="ConceptNumeric.critical"/></th>
 					<td valign="middle">
-						<input type="text" name="lowCritical" value="<c:if test="${concept.numeric}">${concept.lowCritical}</c:if>" size="10" />
+						<spring:bind path="command.lowCritical">
+							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
 					</td>
 					<td valign="middle">
-						<input type="text" name="hiCritical" value="<c:if test="${concept.numeric}">${concept.hiCritical}</c:if>" size="10"/>
+						<spring:bind path="command.hiCritical">
+							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
 					</td>
 				</tr>
 				<tr>
 					<th valign="middle"><spring:message code="ConceptNumeric.normal"/></th>
 					<td valign="middle">
-						<input type="text" name="lowNormal" value="<c:if test="${concept.numeric}">${concept.lowNormal}</c:if>" size="10" />
+						<spring:bind path="command.lowNormal">
+							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
 					</td>
 					<td valign="middle">
-						<input type="text" name="hiNormal" value="<c:if test="${concept.numeric}">${concept.hiNormal}</c:if>" size="10"/>
+						<spring:bind path="command.hiNormal">
+							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
 					</td>
 				</tr>
 				<tr>
@@ -384,14 +396,20 @@
 				<tr>
 					<th><spring:message code="ConceptNumeric.units"/></th>
 					<td colspan="2">
-						<input type="text" name="units" value="<c:if test="${concept.numeric}">${concept.units}</c:if>" size="15"/>
+						<spring:bind path="command.units">
+							<input type="text" name="${status.expression}" value="${status.value}" class="mediumWidth" />
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
 					</td>
 				</tr>
 				<tr>
 					<th><spring:message code="ConceptNumeric.precise"/></th>
 					<td colspan="2">
-						<input type="hidden" name="_precise" value=""/>
-						<input type="checkbox" name="precise" <c:if test="${concept.numeric && concept.precise}">checked="checked"</c:if>/>
+						<spring:bind path="command.precise">
+							<input type="hidden" name="_${status.expression}" value=""/>
+							<input type="checkbox" name="${status.expression}" <c:if test="${status.value}">checked="checked"</c:if>/>
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
 					</td>
 				</tr>
 			</table>
@@ -400,14 +418,17 @@
     <tr id="complexDatatypeRow">
         <th valign="top"><spring:message code="ConceptComplex.handler"/></th>
         <td>
-            <select name="handlerSelect"> 
-             <option value=""><spring:message code="general.select"/>...</option>
-             <c:forEach var="handler" items="${handlers}">
-             	<option value="${handler.key}" <c:if test="${concept.complex && handler.key == concept.handler}">selected="selected"</c:if>>
-                     ${handler.key}
-                 </option>
-             </c:forEach>
-            </select>
+			<spring:bind path="command.handlerKey">
+				<select name="${status.expression}"> 
+					<option value=""><spring:message code="general.select"/>...</option>
+					<c:forEach var="handler" items="${handlers}">
+						<option value="${handler.key}" <c:if test="${handler.key == status.value}">selected="selected"</c:if>>
+					        ${handler.key}
+					    </option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
                  
             <!-- All handler key to class mappings
             <table>
@@ -430,11 +451,12 @@
 			<spring:message code="Concept.mappings"/>
 		</th>
 		<td>
-			<c:forEach var="mapping" items="${concept.conceptMappings}" varStatus="mapStatus">
-				<span id="mapping-${mapStatus.index}">
-					<spring:nestedPath path="concept.conceptMappings[${mapStatus.index}]">
+			<c:forEach var="mapping" items="${command.mappings}" varStatus="mapStatus">
+				<spring:nestedPath path="command.mappings[${mapStatus.index}]">
+					<span id="mapping-${mapStatus.index}">
 						<spring:bind path="sourceCode">
-							<input type="text" name="${status.expression}" value="${status.value}" size="10">
+							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth">
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
 						<spring:bind path="source">
 							<select name="${status.expression}">
@@ -444,111 +466,98 @@
 									</option>
 								</openmrs:forEachRecord>
 							</select>
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
-					</spring:nestedPath>
-					<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeMapping(this)" />
-					<br/>
-				</span>
+						<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
+						<br/>
+					</span>
+					<input type="hidden" name="_mappings[${mapStatus.index}].sourceCode" value="" />
+				</spring:nestedPath>
 			</c:forEach>
 			<span id="newConceptMapping">
-				<input type="text" name="newConceptMappingSourceCode" value="${status.value}" size="10">
-				<select name="newConceptMappingSource">
+				<input type="text" name="[x].sourceCode" value="${status.value}" class="smallWidth">
+				<select name="[x].source">
 					<openmrs:forEachRecord name="conceptSource">
 						<option value="${record.conceptSourceId}">
 								${record.name} (${record.hl7Code})
 						</option>
 					</openmrs:forEachRecord>
 				</select>
-				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeMapping(this)" />
+				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
 				<br/>
 			</span>
-			<input type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" onClick="addMapping(this)" />
+			<input type="button" value='<spring:message code="Concept.mapping.add"/>' class="smallButton" onClick="cloneElement('newConceptMapping', ${fn:length(command.mappings)}, 'mappings')" />
 			<br/>
 		</td>
 	</tr>
 	<tr>
 		<th><spring:message code="Concept.version" /></th>
-		<td><spring:bind path="concept.version">
-			<input class="smallWidth" type="text" name="${status.expression}"
-				value="${status.value}" size="10" />
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
+		<td>
+			<spring:bind path="command.concept.version">
+				<input class="smallWidth" type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
 	</tr>
 	<tr>
 		<th><spring:message code="general.retired" /></th>
-		<td><spring:bind path="concept.retired">
-			<input type="hidden" name="_${status.expression}">
-			<input type="checkbox" name="${status.expression}" value="true"
-				<c:if test="${status.value == true}">checked</c:if> />
-			<c:if test="${status.errorMessage != ''}">
-				<span class="error">${status.errorMessage}</span>
-			</c:if>
-		</spring:bind></td>
+		<td>
+			<spring:bind path="command.concept.retired">
+				<input type="hidden" name="_${status.expression}" value="">
+				<input type="checkbox" name="${status.expression}" value="true" <c:if test="${status.value}">checked</c:if> />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
 	</tr>
-	<c:if test="${!(concept.creator == null)}">
+	<c:if test="${command.concept.creator != null}">
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>
 			<td>
-				${concept.creator.personName} -
-				<openmrs:formatDate date="${concept.dateCreated}" type="long" />
+				${command.concept.creator.personName} -
+				<openmrs:formatDate date="${command.concept.dateCreated}" type="long" />
 			</td>
 		</tr>
 	</c:if>
-	<c:if test="${!(concept.changedBy == null)}">
+	<c:if test="${command.concept.changedBy != null}">
 		<tr>
 			<th><spring:message code="general.changedBy" /></th>
 			<td>
-				${concept.changedBy.personName} -
-				<openmrs:formatDate date="${concept.dateChanged}" type="long" />
+				${command.concept.changedBy.personName} -
+				<openmrs:formatDate date="${command.concept.dateChanged}" type="long" />
 			</td>
 		</tr>
 	</c:if>
-	<!--
-	<cif test="${forms != null}">
-		<tr>
-			<td>
-				<b><spring:message code="Concept.forms" /></b><br />
-					<c:forEach items="${formsInUse}" var="form">
-						${form} <br/>
-					</c:forEach>
-				<br/>
-			</td>
-		</tr>
-	</cif>
-	-->
 	
 	<tr><td colspan="2"><br/></td></tr>
 	
-	<c:if test="${fn:length(questionsAnswered) > 0}">
+	<c:if test="${fn:length(command.questionsAnswered) > 0}">
 		<tr>
 			<th valign="top"><spring:message code="dictionary.questionsAnswered" /></th>
 			<td>
-				<c:forEach items="${questionsAnswered}" var="question">
-					<a href="concept.htm?conceptId=${question.key}">${question.value}<br/>
+				<c:forEach items="${command.questionsAnswered}" var="question">
+					<a href="concept.htm?conceptId=${question.conceptId}"><openmrs:format concept="${question}" /></a><br/>
 				</c:forEach>
 			</td>
 		</tr>
 	</c:if>
 	
-	<c:if test="${fn:length(containedInSets) > 0}">
+	<c:if test="${fn:length(command.containedInSets) > 0}">
 		<tr>
 			<th valign="top"><spring:message code="dictionary.containedInSets" /></th>
 			<td>
-				<c:forEach items="${containedInSets}" var="set">
-					<a href="concept.htm?conceptId=${set.key}">${set.value}<br/>
+				<c:forEach items="${command.containedInSets}" var="set">
+					<a href="concept.htm?conceptId=${set.conceptSet.conceptId}"><openmrs:format concept="${set.conceptSet}" /></a><br/>
 				</c:forEach>
 			</td>
 		</tr>
 	</c:if>
 	
-	<c:if test="${fn:length(formsInUse) > 0}">
+	<c:if test="${fn:length(command.formsInUse) > 0}">
 		<tr>
 			<th valign="top"><spring:message code="dictionary.forms" /></th>
 			<td>
-				<c:forEach items="${formsInUse}" var="form">
-					<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}<br/>
+				<c:forEach items="${command.formsInUse}" var="form">
+					<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}</a><br/>
 				</c:forEach>
 			</td>
 		</tr>
@@ -561,22 +570,23 @@
 			<b><spring:message code="Concept.resources" /></b>
 		</td>
 		<td>
-			<a href="index.htm?phrase=${conceptName.name}"
+			<a href="index.htm?phrase=<openmrs:format concept="${concept}" />"
 			       target="_similar_terms" onclick="addName(this)">Similar Concepts</a><br/>
-			<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=${conceptName.name}"
+			<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=<openmrs:format concept="${concept}" />"
 			       target="_blank" onclick="addName(this)">Merriam Webster&reg;</a><br/>
-			<a href="http://www.google.com/search?q=${conceptName.name}"
+			<a href="http://www.google.com/search?q=<openmrs:format concept="${concept}" />"
 			       target="_blank" onclick="addName(this)">Google&trade;</a><br/>
-			<a href="http://www.utdol.com/application/vocab.asp?submit=Go&search=${conceptName.name}"
+			<a href="http://www.utdol.com/application/vocab.asp?submit=Go&search=<openmrs:format concept="${concept}" />"
 			       target="_blank" onclick="addName(this)">UpToDate&reg;</a><br/>
-			<a href="http://dictionary.reference.com/search?submit=Go&q=${conceptName.name}"
+			<a href="http://dictionary.reference.com/search?submit=Go&q=<openmrs:format concept="${concept}" />"
 			       target="_blank" onclick="addName(this)">Dictionary.com&reg;</a><br/>
-			<a href="http://search.atomz.com/search/?sp-a=sp1001878c&sp-q=${conceptName.name}"
+			<a href="http://search.atomz.com/search/?sp-a=sp1001878c&sp-q=<openmrs:format concept="${concept}" />"
 			       target="_blank" onclick="addName(this)">Lab Tests Online</a><br/>
-			<a href="http://en.wikipedia.org/wiki/${concept.name}"
+			<a href="http://en.wikipedia.org/wiki/<openmrs:format concept="${concept}" />"
 			       target="_blank"><spring:message code="Concept.wikipedia" /></a>
 		</td>
 	</tr>
+	
 </table>
 
 <div id="saveDeleteButtons" style="margin-top: 15px">
@@ -595,7 +605,7 @@
 </form>
 
 <script type="text/javascript">
-	selectTab(document.getElementById("${locale}Tab"));
+	selectTab(document.getElementById("${command.locales[0]}Tab"));
 </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

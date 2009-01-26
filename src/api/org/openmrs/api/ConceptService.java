@@ -200,13 +200,12 @@ public interface ConceptService extends OpenmrsService {
 	 * @param drug that is current set as retired
 	 * @return the given drug, marked as not retired now, and saved to the db
 	 * @throws APIException
-	 * 
-	 * @should mark drug as retired 
+	 * @should mark drug as retired
 	 * @should not change attributes of drug that is already retired
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPTS)
 	public Drug unretireDrug(Drug drug) throws APIException;
-
+	
 	/**
 	 * Completely purge a Drug from the database. This should not typically be used unless
 	 * desperately needed. Most Drugs should just be retired.
@@ -397,7 +396,6 @@ public interface ConceptService extends OpenmrsService {
 	/**
 	 * @deprecated Use
 	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Integer, Integer)}
-
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
@@ -417,7 +415,6 @@ public interface ConceptService extends OpenmrsService {
 	/**
 	 * @deprecated Use
 	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Integer, Integer)}
-
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
@@ -1047,5 +1044,23 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Iterator<Concept> conceptIterator();
+	
+	/**
+	 * Get all the concept name tags defined in the database, included voided ones
+	 * 
+	 * @return a list of the concept name tags stored in the database
+	 */
+	@Transactional(readOnly = true)
+	public List<ConceptNameTag> getAllConceptNameTags();
+	
+	/**
+	 * Gets the {@link ConceptNameTag} with the given database primary key
+	 * 
+	 * @param id the concept name tag id to find
+	 * @return the matching {@link ConceptNameTag} or null if none found
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	public ConceptNameTag getConceptNameTag(Integer id);
 	
 }

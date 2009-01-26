@@ -522,6 +522,7 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @should never return null
 	 */
+	@Transactional(readOnly = true)
 	public Map<String, ComplexObsHandler> getHandlers() throws APIException;
 	
 	/**

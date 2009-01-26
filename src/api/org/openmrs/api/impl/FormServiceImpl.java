@@ -701,6 +701,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#getFormsContainingConcept(org.openmrs.Concept)
 	 */
 	public List<Form> getFormsContainingConcept(Concept concept) throws APIException {
+		if (concept.getConceptId() == null)
+			return Collections.emptyList();
+		
 		return dao.getFormsContainingConcept(concept);
 	}
 	

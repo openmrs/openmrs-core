@@ -939,9 +939,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptNameTags()
+	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptNameTags()
 	 */
-	public List<ConceptNameTag> getConceptNameTags() {
+	public List<ConceptNameTag> getAllConceptNameTags() {
 		return sessionFactory.getCurrentSession().createQuery("from ConceptNameTag cnt order by cnt.tag").list();
 	}
 	
@@ -1060,4 +1060,5 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 	}
+	
 }

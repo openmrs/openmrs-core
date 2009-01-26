@@ -18,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -27,9 +28,11 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -232,4 +235,32 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(numberofconcepts, iteratorCount);
 	}
 	
+	/**
+     * @see {@link ConceptService#saveConcept(Concept)}
+     */
+    @Test
+    @Verifies(value = "should reuse concept name tags that already exist in the database", method = "saveConcept(Concept)")
+    public void saveConcept_shouldReuseConceptNameTagsThatAlreadyExistInTheDatabase() throws Exception {
+    	executeDataSet("org/openmrs/api/include/ConceptServiceTest-tags.xml");
+    	
+    	ConceptService cs = Context.getConceptService();
+    	
+    	// make sure the name tag exists already
+    	ConceptNameTag cnt = cs.getConceptNameTagByName("preferred_en");
+    	Assert.assertNotNull(cnt);
+    	
+    	ConceptName cn = new ConceptName("Some name", Locale.ENGLISH);
+    	
+    	Concept concept = new Concept();
+    	concept.setPreferredName(Locale.ENGLISH, cn);
+    	concept.setDatatype(new ConceptDatatype(1));
+    	concept.setConceptClass(new ConceptClass(1));
+    	
+    	cs.saveConcept(concept);
+    	
+    	Collection<ConceptNameTag> savedConceptNameTags = concept.getBestName(Locale.ENGLISH).getTags();
+    	ConceptNameTag savedConceptNameTag = (ConceptNameTag)savedConceptNameTags.toArray()[0];
+    	Assert.assertEquals(cnt.getConceptNameTagId(), savedConceptNameTag.getConceptNameTagId());
+    }
+
 }

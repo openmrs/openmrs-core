@@ -906,8 +906,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 				} else {
 					// to be sure, check for language-only matches
 					for (Locale allowedLocale : allowedLocales) {
-						if ((allowedLocale.getCountry() == "")
-						        && (allowedLocale.getLanguage() == possibleLocale.getLanguage())) {
+						if ((allowedLocale.getCountry() == "" || possibleLocale.getCountry() == "")
+						        && (allowedLocale.getLanguage().equals(possibleLocale.getLanguage()))) {
 							presentationLocales.add(possibleLocale);
 							break;
 						}

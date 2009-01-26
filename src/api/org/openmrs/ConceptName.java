@@ -92,13 +92,20 @@ public class ConceptName implements java.io.Serializable {
 	
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
+	 * 
+	 * @should compare on conceptNameId if non null
+	 * @should not return true with different objects and null ids
+	 * @should default to object equality
 	 */
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ConceptName)) {
 			return false;
 		}
 		ConceptName rhs = (ConceptName) obj;
-		return (this.conceptNameId == rhs.conceptNameId);
+		if (this.conceptNameId != null && rhs.conceptNameId != null)  
+			return (this.conceptNameId == rhs.conceptNameId);
+		else
+			return this == obj;
 	}
 	
 	/**
