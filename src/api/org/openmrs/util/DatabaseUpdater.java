@@ -59,7 +59,6 @@ public class DatabaseUpdater {
 	 *             error object will list of the user prompts and type of data for each prompt
 	 * @see #update(Map)
 	 * @see #executeChangelog(String, Map)
-	 * @should always have a valid update to latest file
 	 */
 	public static void update() throws DatabaseUpdateException, InputRequiredException {
 		update(null);
@@ -85,6 +84,8 @@ public class DatabaseUpdater {
 	 * Ask Liquibase if it needs to do any updates
 	 * 
 	 * @return true/false whether database updates are required
+	 * 
+	 * @should always have a valid update to latest file
 	 */
 	public static boolean updatesRequired() {
 		log.debug("checking for updates");
@@ -211,6 +212,11 @@ public class DatabaseUpdater {
 			String username = props.getProperty("hibernate.connection.username");
 			String password = props.getProperty("hibernate.connection.password");
 			String url = props.getProperty("hibernate.connection.url");
+			
+			// hack for mysql to make sure innodb tables are created
+			if (url.contains("mysql") && !url.contains("InnoDB")) {
+				url = url + "&sessionVariables=storage_engine=InnoDB";
+			}
 			
 			Class.forName(driver);
 			connection = DriverManager.getConnection(url, username, password);

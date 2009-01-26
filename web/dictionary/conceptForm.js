@@ -123,31 +123,6 @@ function copyIds(from, to, delimiter)
 	input.value = remaining.join(delimiter);
 }
 
-function addSynonym(locale) {
-	var obj = document.getElementById("addSyn" + locale);
-	var synonyms = document.getElementById("syns" + locale).options;
-	var syn = obj.value.toUpperCase();
-	if (syn != "") {
-		var addable = true;
-		for (var i=0; i<synonyms.length; i++) {
-			synonyms[i].selected = false;
-			if (synonyms[i].value == syn) {
-				addable = false;
-				synonyms[i].selected = true;
-			}
-		}
-		if (addable) {
-			var opt = new Option(syn, syn);
-			opt.selected = true;
-			synonyms[synonyms.length] = opt;
-		}
-	}
-	obj.value = "";
-	obj.focus();
-	copyIds("syns" + locale, "newSynonyms" + locale, ",");
-	window.Event.keyCode = 0;  //disable enter key submitting form
-}
-
 function addOption(obj, options) {
 	var objId = obj.conceptId;
 	var objName = obj.name + ' ('+objId+')';
@@ -212,18 +187,6 @@ function listKeyPress(from, to, delim, event) {
 	}
 }
 
-function synonymKeyPress(obj, event, locale) {
-	if (event.keyCode==13) {
-		addSynonym(locale); 
-		return false;
-	}
-	else if (event.keyCode == 46 && obj.value == "") {
-		var selectedItem = removeItem('syns' + locale, 'newSynonyms' + locale, ',');
-		if (selectedItem != null)
-			selectedItem.selected = false;
-	}
-}
-
 function hotkeys(event) {
 	var k = event.keyCode;
 	if (event.cntrlKey == true) {
@@ -239,16 +202,46 @@ function hotkeys(event) {
 	}
 }
 
-function addMapping(btn) {
-	var newMapping = document.getElementById("newConceptMapping");
-	var clone = newMapping.cloneNode(true);
+var numberOfClonedElements = {};
+
+/**
+ * Clone the element given by the id and put the newly cloned
+ * element right before said id.
+ * 
+ * This method replaces all "[]" strings in input names with the next 
+ * iteration.  This allows spring to save the elements in order.
+ * 
+ * The iteration will start at (int)initialSizeOfClonedSiblings.
+ * 
+ * @param id the string id of the element to clone
+ * @param initialSizeOfClonedSiblings integer number of other objects
+ * @param inputNamePrefix string to prepend to all input names in the cloned element
+ */
+function cloneElement(id, initialSizeOfClonedSiblings, inputNamePrefix) {
+	if (numberOfClonedElements[id] != null) {
+		numberOfClonedElements[id] = numberOfClonedElements[id] + 1;
+	}
+	else {
+		numberOfClonedElements[id] = initialSizeOfClonedSiblings;
+	}
+	
+	var elementToClone = document.getElementById(id);
+	var clone = elementToClone.cloneNode(true);
+	var inputs = clone.childNodes;
+	for (var x = 0; x < inputs.length; x++) {
+		var input = inputs[x];
+		if (input.name) {
+			input.name = inputNamePrefix + input.name.replace('[x]', '[' + numberOfClonedElements[id] + ']')
+		}
+	}
 	clone.id = "";
-	newMapping.parentNode.insertBefore(clone, btn);
+	elementToClone.parentNode.insertBefore(clone, elementToClone);
 	clone.style.display = "";
 	
 }
 
-function removeMapping(btn) {
+function removeParentElement(btn) {
 	btn.parentNode.parentNode.removeChild(btn.parentNode);
 }
+
 document.onkeypress = hotkeys;

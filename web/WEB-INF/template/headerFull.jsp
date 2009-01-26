@@ -96,7 +96,7 @@
 			<script type="text/javascript">
 				//// prevents users getting popup alerts when viewing pages
 				var handler = function(msg, ex) {
-					if (ex.message) {
+					if (ex.localizedMessage) {
 						alert("An error occurred: " + ex.message);
 					}
 					else if (typeof msg == "string")

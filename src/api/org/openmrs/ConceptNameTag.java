@@ -42,8 +42,6 @@ public class ConceptNameTag implements java.io.Serializable {
 	
 	/**
 	 * A different word with similar meaning.
-	 * 
-	 * @deprecated All names for a concept are synonyms.
 	 */
 	public static final String SYNONYM = "synonym";
 	

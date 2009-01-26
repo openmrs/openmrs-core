@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.event.ListSelectionEvent;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -34,6 +36,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
@@ -219,9 +222,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-     * @see org.openmrs.api.ConceptService#unretireDrug(org.openmrs.Drug)
-     */
-    public Drug unretireDrug(Drug drug) throws APIException {
+	 * @see org.openmrs.api.ConceptService#unretireDrug(org.openmrs.Drug)
+	 */
+	public Drug unretireDrug(Drug drug) throws APIException {
 		if (drug.isRetired() == true) {
 			drug.setRetired(false);
 			drug.setRetiredBy(null);
@@ -231,9 +234,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 		
 		return drug;
-    }
-
-    /**
+	}
+	
+	/**
 	 * @see org.openmrs.api.ConceptService#purgeDrug(org.openmrs.Drug)
 	 * @throws APIException
 	 */
@@ -767,6 +770,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#getSetsContainingConcept(org.openmrs.Concept)
 	 */
 	public List<ConceptSet> getSetsContainingConcept(Concept concept) {
+		if (concept.getConceptId() == null)
+			return Collections.emptyList();
+		
 		return dao.getSetsContainingConcept(concept);
 	}
 	
@@ -954,6 +960,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#getConceptsByAnswer(org.openmrs.Concept)
 	 */
 	public List<Concept> getConceptsByAnswer(Concept concept) throws APIException {
+		if (concept.getConceptId() == null)
+			return Collections.emptyList();
+		
 		return dao.getConceptsByAnswer(concept);
 	}
 	
@@ -1137,11 +1146,30 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				
 				if (cn.getTags() != null) {
 					for (ConceptNameTag tag : cn.getTags()) {
+						if (tag.getConceptNameTagId() == null) {
+							ConceptNameTag possibleReplacementTag = getConceptNameTagByName(tag.getTag());
+							if (possibleReplacementTag != null) {
+								cn.removeTag(tag);
+								cn.addTag(possibleReplacementTag);
+							}
+						}
 						if (tag.getCreator() == null)
 							tag.setCreator(authUser);
 						if (tag.getDateCreated() == null)
 							tag.setDateCreated(timestamp);
 					}
+				}
+				
+				// alter the other voided info
+				if (cn.isVoided()) {
+					if (cn.getVoidedBy() == null)
+						cn.setVoidedBy(authUser);
+					if (cn.getDateVoided() == null)
+						cn.setDateVoided(timestamp);
+				} else {
+					cn.setVoidReason(null);
+					cn.setDateVoided(null);
+					cn.setVoidedBy(null);
 				}
 			}
 		}
@@ -1176,18 +1204,17 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				cd.setConcept(concept);
 			}
 		}
-		/*
-		if (c.getConceptNumeric() != null) {
-			ConceptNumeric cn = c.getConceptNumeric();
-			if (cn.getCreator() == null) {
-				cn.setCreator(authUser);
-				cn.setDateCreated(timestamp);
+		if (concept.getConceptMappings() != null) {
+			for (ConceptMap map : concept.getConceptMappings()) {
+				if (map.getCreator() == null)
+					map.setCreator(authUser);
+				if (map.getDateCreated() == null)
+					map.setDateCreated(timestamp);
+				
+				map.setConcept(concept);
 			}
-			cn.setConcept(c);
-			cn.setChangedBy(authUser);
-			cn.setDateChanged(timestamp);
 		}
-		*/
+		
 	}
 	
 	/**
@@ -1383,5 +1410,20 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		conceptWordUpdateTaskDef
 		        .setDescription("Iterates through the concept dictionary, re-creating concept words (which are used for searcing). This task is started when using the \"Update Concept Word Storage\" page and no range is given.");
 		return conceptWordUpdateTaskDef;
-	}	
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getAllConceptNameTags()
+	 */
+	public List<ConceptNameTag> getAllConceptNameTags() {
+		return dao.getAllConceptNameTags();
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptNameTag(java.lang.Integer)
+	 */
+	public ConceptNameTag getConceptNameTag(Integer id) {
+		return dao.getConceptNameTag(id);
+	}
+	
 }

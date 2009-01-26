@@ -654,6 +654,8 @@ public class User extends Person implements java.io.Serializable {
 				}
 			}
 		}
-		return proficientLocales;
+		
+		// return a copy so that the list isn't changed by other processes
+		return new ArrayList<Locale>(proficientLocales);
 	}
 }

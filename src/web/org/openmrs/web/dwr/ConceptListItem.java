@@ -87,7 +87,7 @@ public class ConceptListItem {
 		if (concept != null) {
 			conceptId = concept.getConceptId();
 			conceptNameId = conceptName.getConceptNameId();
-			ConceptName conceptShortName = concept.getBestShortName(locale);
+			ConceptName conceptShortName = concept.getShortNameInLocale(locale);
 			name = shortName = description = "";
 			if (conceptName != null) {
 				name = WebUtil.escapeHTML(conceptName.getName());

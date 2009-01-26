@@ -15,15 +15,10 @@ package org.openmrs.web.controller;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -32,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections.FactoryUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -40,12 +37,10 @@ import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
-import org.openmrs.ConceptSource;
 import org.openmrs.Form;
-import org.openmrs.User;
-import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
@@ -55,16 +50,15 @@ import org.openmrs.propertyeditor.ConceptClassEditor;
 import org.openmrs.propertyeditor.ConceptDatatypeEditor;
 import org.openmrs.propertyeditor.ConceptSetsEditor;
 import org.openmrs.propertyeditor.ConceptSourceEditor;
-import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -98,14 +92,9 @@ public class ConceptFormController extends SimpleFormController {
 		    SimpleDateFormat.SHORT, Context.getLocale()), true));
 		binder.registerCustomEditor(org.openmrs.ConceptClass.class, new ConceptClassEditor());
 		binder.registerCustomEditor(org.openmrs.ConceptDatatype.class, new ConceptDatatypeEditor());
-		/*
-		 * binder.registerCustomEditor(java.util.Collection.class, "synonyms",
-		 * new ConceptSynonymsEditor(locale));
-		 */
-		binder.registerCustomEditor(java.util.Collection.class, "conceptSets", new ConceptSetsEditor());
-		binder.registerCustomEditor(java.util.Collection.class, "answers", new ConceptAnswersEditor());
+		binder.registerCustomEditor(java.util.Collection.class, "concept.conceptSets", new ConceptSetsEditor());
+		binder.registerCustomEditor(java.util.Collection.class, "concept.answers", new ConceptAnswersEditor());
 		binder.registerCustomEditor(org.openmrs.ConceptSource.class, new ConceptSourceEditor());
-		
 	}
 	
 	/**
@@ -116,7 +105,7 @@ public class ConceptFormController extends SimpleFormController {
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
 	                                             BindException errors) throws Exception {
 		
-		Concept concept = (Concept) object;
+		Concept concept = ((ConceptFormBackingObject) object).getConcept();
 		ConceptService cs = Context.getConceptService();
 		
 		// check to see if they clicked next/previous concept:
@@ -133,238 +122,7 @@ public class ConceptFormController extends SimpleFormController {
 				return new ModelAndView(new RedirectView(getSuccessView()));
 		}
 		
-		if (Context.isAuthenticated()) {
-			
-			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String action = request.getParameter("action");
-			
-			if (!action.equals(msa.getMessage("Concept.delete", "Delete Concept"))) {
-				
-				Collection<Locale> conceptLocales = cs.getLocalesOfConceptNames();
-				String newLocaleSpec = request.getParameter("newLocaleAdded");
-				if (newLocaleSpec != null) {
-					Locale newLocale = LocaleUtility.fromSpecification(newLocaleSpec);
-					conceptLocales.add(newLocale);
-				}
-				
-				String isSet = ServletRequestUtils.getStringParameter(request, "conceptSet", "");
-				if (isSet.equals(""))
-					concept.setSet(false);
-				else
-					concept.setSet(true);
-				log.debug("isSet: '" + isSet + "' ");
-				log.debug("concept.set: '" + concept.isSet() + "'");
-				
-				int numberOfNewConceptNames = 0;
-				
-				// ==== Concept Synonyms ====
-				Collection<ConceptName> originalSyns = concept.getNames();
-				if (originalSyns == null)
-					originalSyns = new HashSet<ConceptName>();
-				
-				for (Locale l : conceptLocales) {
-					// the attribute *must* be named differently than the
-					// property, otherwise
-					// spring will modify the property as a text array
-					String localeName = l.toString();
-					log.debug("newSynonyms: " + request.getParameter("newSynonyms_" + localeName));
-					String[] tempSyns = request.getParameter("newSynonyms_" + localeName).split(",");
-					log.debug("tempSyns: ");
-					for (String s : tempSyns)
-						log.debug(s);
-					Set<ConceptName> parameterSyns = new HashSet<ConceptName>();
-					
-					// set up parameter Synonym Set for easier add/delete
-					// functions
-					// and removal of duplicates
-					for (String syn : tempSyns) {
-						syn = syn.trim();
-						if (!syn.equals("")) {
-							ConceptName anotherSynonym = new ConceptName(syn.toUpperCase(), l);
-							anotherSynonym.setConcept(concept);
-							parameterSyns.add(anotherSynonym);
-						}
-					}
-					
-					if (log.isDebugEnabled()) {
-						log.debug("initial originalSyns: ");
-						for (ConceptName s : originalSyns)
-							log.debug(s);
-					}
-					// Union the originalSyns and parameterSyns to get the
-					// 'clean' synonyms
-					// remove synonym from originalSynonym if 'clean' (already
-					// in db)
-					Set<ConceptName> originalSynsCopy = new HashSet<ConceptName>();
-					originalSynsCopy.addAll(originalSyns);
-					for (ConceptName o : originalSynsCopy) {
-						if (o.getLocale().equals(l) && !parameterSyns.contains(o)) { // .contains()
-							// is only
-							// usable
-							// because
-							// we
-							// overrode
-							// .equals()
-							originalSyns.remove(o);
-						}
-						
-						if (log.isDebugEnabled()) {
-							log.debug("evaluated parameterSyns: ");
-							for (ConceptName s : parameterSyns)
-								log.debug(s);
-							
-							log.debug("evaluated originalSyns: ");
-							for (ConceptName s : originalSyns)
-								log.debug(s);
-						}
-						
-					}
-					
-					// add all new syns from parameter set
-					for (ConceptName p : parameterSyns) {
-						if (!originalSyns.contains(p)) { // .contains() is
-							// only usable
-							// because we
-							// overrode
-							// .equals()
-							originalSyns.add(p);
-							++numberOfNewConceptNames;
-						}
-					}
-					
-					log.debug("evaluated parameterSyns: ");
-					for (ConceptName s : parameterSyns)
-						log.debug(s);
-					
-					log.debug("evaluated originalSyns: ");
-					for (ConceptName s : originalSyns)
-						log.debug(s);
-					
-				}
-				concept.setNames(originalSyns);
-				
-				// ====zero out conceptSets====
-				String conceptSets = request.getParameter("conceptSets");
-				if (conceptSets == null)
-					concept.setConceptSets(null);
-				
-				// ====set concept_name properties for locales in this page
-				User currentUser = Context.getAuthenticatedUser();
-				int numberOfNamesSpecified = 0;
-				for (Locale l : conceptLocales) {
-					String localeName = l.toString();
-					String conceptName = request.getParameter("name_" + localeName);
-					String shortName = request.getParameter("shortName_" + localeName);
-					String description = request.getParameter("description_" + localeName);
-					if ((shortName.length() > 0 || description.length() > 0) && conceptName.length() < 1) {
-						errors.reject("dictionary.error.needName");
-					}
-					ConceptName preferredName = concept.getPreferredName(l);
-					if (preferredName != null) {
-						if (conceptName.length() > 0) {
-							++numberOfNamesSpecified;
-							preferredName.setName(conceptName);
-						} else {
-							concept.removeName(preferredName);
-						}
-					} else {
-						if (conceptName.length() > 0) {
-							++numberOfNamesSpecified;
-							preferredName = new ConceptName(conceptName, l);
-							concept.setPreferredName(l, preferredName);
-							++numberOfNewConceptNames;
-						}
-					}
-					/*
-					 * ABK: ConceptName.ShortName has been promoted to a name,
-					 * tagged as a short name.
-					 */
-					if (shortName.length() > 0) {
-						ConceptName conceptShortName = new ConceptName(shortName, l);
-						concept.setShortName(l, conceptShortName);
-						++numberOfNewConceptNames;
-					}
-					/*
-					 * ABK: ConceptName.Description is now an independent entity
-					 * (was a field of ConceptName).
-					 */
-					if (description.length() > 0) {
-						ConceptDescription cd = concept.getDescription(l, true);
-						if (cd != null) {
-							if (!cd.getDescription().equals(description)) {
-								cd.setDescription(description);
-								cd.setChangedBy(currentUser);
-								cd.setDateChanged(new Date());
-							}
-						} else {
-							cd = new ConceptDescription(description, l);
-							concept.addDescription(cd);
-						}
-					}
-				} // end loop over concept locales
-				
-				if (numberOfNamesSpecified == 0) {
-					errors.reject("error.names.length");
-				}
-				
-				// remove deleted concept mappings from this concept (ignoring
-				// just added ones)
-				// must do this before adding new ones to avoid the set be
-				// rearranged
-				int i = 0;
-				List<ConceptMap> conceptMappingsToDelete = new ArrayList<ConceptMap>();
-				Collection<ConceptMap> currentConceptMappings = concept.getConceptMappings();
-				if (currentConceptMappings != null) {
-					for (ConceptMap mapping : currentConceptMappings) {
-						String sourceCode = request.getParameter("conceptMappings[" + i++ + "].sourceCode");
-						
-						// if there isn't a query param by this name, it was removed
-						// (via js)
-						if (sourceCode == null) {
-							if (currentConceptMappings.contains(mapping))
-								conceptMappingsToDelete.add(mapping);
-						}
-					}
-				}
-				
-				// add new concept mappings to this concept's mappings set
-				String[] sourceCodes = ServletRequestUtils.getStringParameters(request, "newConceptMappingSourceCode");
-				String[] sources = ServletRequestUtils.getStringParameters(request, "newConceptMappingSource");
-				for (int x = 0; x < sourceCodes.length; x++) {
-					String sourceCode = sourceCodes[x];
-					if (sourceCode.length() == 0)
-						break; // ABKTODO: this is obviously a hack
-					String sourceString = sources[x];
-					
-					// both code and source are required, skip this one
-					// if they aren't both filled in
-					if (sourceCode.length() < 1 || sourceString.length() < 1)
-						continue;
-					
-					// create the new map object
-					ConceptMap newConceptMap = new ConceptMap();
-					newConceptMap.setSourceCode(sourceCode);
-					ConceptSource source = cs.getConceptSource(Integer.valueOf(sourceString));
-					newConceptMap.setSource(source);
-					
-					concept.addConceptMapping(newConceptMap);
-				}
-				
-				// perform this after addition of new mappings so users can't
-				// delete and
-				// add a mapping in one go
-				// ABKTODO: another hack! yay me!
-				currentConceptMappings = concept.getConceptMappings(); // ABKTODO: get the latest, which may still be null
-				if (currentConceptMappings != null) {
-					concept.getConceptMappings().removeAll(conceptMappingsToDelete);
-				}
-				
-			} // end "if action != delete"
-		} else {
-			errors.reject("auth.invalid");
-		}
-		
-		return super.processFormSubmission(request, response, concept, errors);
+		return super.processFormSubmission(request, response, object, errors);
 	}
 	
 	/**
@@ -382,7 +140,9 @@ public class ConceptFormController extends SimpleFormController {
 		ConceptService cs = Context.getConceptService();
 		if (Context.isAuthenticated()) {
 			
-			Concept concept = (Concept) obj;
+			ConceptFormBackingObject conceptBackingObject = (ConceptFormBackingObject) obj;
+			Concept concept = conceptBackingObject.getConceptFromFormData();
+			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 			
@@ -407,50 +167,23 @@ public class ConceptFormController extends SimpleFormController {
 				// return to the edit screen because an error was thrown
 				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 			} else {
-				String isSet = ServletRequestUtils.getStringParameter(request, "conceptSet", "");
-				if (isSet.equals(""))
-					concept.setSet(false);
-				else
-					concept.setSet(true);
-				
-				boolean isNew = false;
 				try {
-					if (concept.getConceptId() == null) {
-						isNew = true;
-						if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Numeric")) {
-							concept = getConceptNumeric(concept, request);
-						} else if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Complex")) {
-							concept = getConceptComplex(concept, request);
-						}
-						cs.saveConcept(concept);
-					} else {
-						if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Numeric")) {
-							concept = getConceptNumeric(concept, request);
-						} else if (concept.getDatatype() != null && concept.getDatatype().getName().equals("Complex")) {
-							concept = getConceptComplex(concept, request);
-						}
-						cs.saveConcept(concept);
-					}
+					cs.saveConcept(concept);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
+					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 				}
 				catch (ConceptsLockedException cle) {
 					log.error("Tried to save concept while concepts were locked", cle);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.concepts.locked");
-					if (isNew) {
-						errors.reject("concept", "Concept.concepts.locked");
-						return new ModelAndView(new RedirectView(getSuccessView()));
-					}
+					errors.reject("concept", "Concept.concepts.locked");
 				}
 				catch (APIException e) {
 					log.error("Error while trying to save concept", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
-					if (isNew) {
-						errors.reject("concept", "Concept.cannot.save");
-						return new ModelAndView(new RedirectView(getSuccessView()));
-					}
+					errors.reject("concept", "Concept.cannot.save");
 				}
-				
-				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
+				// return to the edit form because an error was thrown
+				return showForm(request, response, errors);
 			}
 		}
 		
@@ -463,22 +196,17 @@ public class ConceptFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	protected ConceptFormBackingObject formBackingObject(HttpServletRequest request) throws ServletException {
 		
-		Concept concept = null;
-		
-		ConceptService cs = Context.getConceptService();
 		String conceptId = request.getParameter("conceptId");
 		if (conceptId == null) {
-			// do nothing
-		} else if (conceptId != null) {
-			concept = cs.getConcept(Integer.valueOf(conceptId));
+			return new ConceptFormBackingObject(new Concept());
+		} else {
+			ConceptService cs = Context.getConceptService();
+			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
+			return new ConceptFormBackingObject(concept);
 		}
 		
-		if (concept == null)
-			concept = new Concept();
-		
-		return concept;
 	}
 	
 	/**
@@ -488,158 +216,16 @@ public class ConceptFormController extends SimpleFormController {
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		
-		Locale locale = Context.getLocale();
 		Map<String, Object> map = new HashMap<String, Object>();
-		String defaultVerbose = "false";
 		
 		ConceptService cs = Context.getConceptService();
-		String conceptId = request.getParameter("conceptId");
-		ConceptName conceptName = new ConceptName();
-		Collection<ConceptName> conceptSynonyms = new Vector<ConceptName>();
-		Map<String, ConceptName> conceptNamesByLocale = new HashMap<String, ConceptName>();
-		Map<String, ConceptName> conceptShortNamesByLocale = new HashMap<String, ConceptName>();
-		HashMap<String, ConceptDescription> conceptDescriptionsByLocale = new HashMap<String, ConceptDescription>();
-		Map<Locale, Collection<ConceptName>> conceptSynonymsByLocale = new HashMap<Locale, Collection<ConceptName>>();
-		Map<Double, Object[]> conceptSets = new TreeMap<Double, Object[]>();
-		Map<String, String> conceptAnswers = new TreeMap<String, String>();
-		Collection<Form> forms = new HashSet<Form>();
-		Map<Integer, String> questionsAnswered = new TreeMap<Integer, String>();
-		Map<Integer, String> containedInSets = new TreeMap<Integer, String>();
 		
-		boolean isNew = true;
+		String defaultVerbose = "false";
+		if (Context.isAuthenticated())
+			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
+		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
 		
-		Collection<Locale> conceptLocales = cs.getLocalesOfConceptNames();
-		
-		if (conceptId != null) {
-			Concept concept = null;
-			try {
-				concept = cs.getConcept(Integer.valueOf(conceptId));
-			}
-			catch (APIAuthenticationException ex) {
-				// pass
-			}
-			
-			if (concept != null) {
-				isNew = false;
-				// get conceptNames for all locales
-				for (Locale l : conceptLocales) {
-					ConceptName cn = concept.getName(l, true);
-					if (cn == null) {
-						cn = new ConceptName();
-					}
-					conceptNamesByLocale.put(l.toString(), cn);
-				}
-				
-				// get conceptShortNames for all locales
-				for (Locale l : conceptLocales) {
-					ConceptName cn = concept.getShortNameInLocale(l);
-					if (cn == null) {
-						cn = new ConceptName();
-					}
-					conceptShortNamesByLocale.put(l.toString(), cn);
-				}
-				
-				// get conceptDescriptions for all locales
-				for (Locale l : conceptLocales) {
-					ConceptDescription cd = concept.getDescription(l, true);
-					if (cd == null) {
-						cd = new ConceptDescription();
-					}
-					conceptDescriptionsByLocale.put(l.toString(), cd);
-				}
-				// get concept names for all locales
-				for (Locale l : conceptLocales) {
-					conceptSynonymsByLocale.put(l, concept.getNames(l));
-				}
-				
-				// get locale specific preferred conceptName object
-				conceptName = concept.getName(locale);
-				if (conceptName == null)
-					conceptName = new ConceptName();
-				
-				// get locale specific names
-				conceptSynonyms = concept.getNames(locale);
-				
-				// get concept sets with locale decoded names
-				for (ConceptSet set : concept.getConceptSets()) {
-					Object[] arr = { set.getConcept().getConceptId().toString(), set.getConcept().getName(locale) };
-					conceptSets.put(set.getSortWeight(), arr);
-				}
-				
-				// get concept answers with locale decoded names
-				for (ConceptAnswer answer : concept.getAnswers(true)) {
-					log.debug("getting answers");
-					String key = answer.getAnswerConcept().getConceptId().toString();
-					ConceptName cn = answer.getAnswerConcept().getName(locale);
-					String name = "";
-					if (cn != null)
-						name = cn.toString();
-					if (answer.getAnswerDrug() != null) {
-						// if this answer is a drug, append the drug id
-						// information
-						key = key + "^" + answer.getAnswerDrug().getDrugId();
-						name = answer.getAnswerDrug().getFullName(locale);
-					}
-					if (answer.getAnswerConcept().isRetired())
-						name = "<span class='retired'>" + name + "</span>";
-					conceptAnswers.put(key, name);
-				}
-				
-				forms = Context.getFormService().getFormsContainingConcept(concept);
-				
-				for (Concept c : Context.getConceptService().getConceptsByAnswer(concept)) {
-					ConceptName cn = c.getName(locale);
-					if (cn == null)
-						questionsAnswered.put(c.getConceptId(), "No Name Defined");
-					else
-						questionsAnswered.put(c.getConceptId(), cn.getName());
-				}
-				
-				for (ConceptSet set : Context.getConceptService().getSetsContainingConcept(concept)) {
-					Concept c = set.getConceptSet();
-					ConceptName cn = c.getName(locale);
-					if (cn == null)
-						containedInSets.put(c.getConceptId(), "No Name Defined");
-					else
-						containedInSets.put(c.getConceptId(), cn.getName());
-				}
-			}
-			
-			if (Context.isAuthenticated())
-				defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
-		}
-		
-		if (isNew) {
-			for (Locale l : conceptLocales) {
-				conceptNamesByLocale.put(l.toString(), new ConceptName());
-				conceptShortNamesByLocale.put(l.toString(), new ConceptName());
-				conceptDescriptionsByLocale.put(l.toString(), new ConceptDescription());
-			}
-			
-			// get conceptSynonyms for all locales
-			for (Locale l : conceptLocales) {
-				conceptSynonymsByLocale.put(l, new HashSet<ConceptName>());
-			}
-		}
-		
-		map.put("locales", conceptLocales);
-		map.put("conceptName", conceptName);
-		for (Map.Entry<String, ConceptName> e : conceptNamesByLocale.entrySet()) {
-			map.put("conceptName_" + e.getKey(), e.getValue());
-		}
-		for (Map.Entry<String, ConceptName> e : conceptShortNamesByLocale.entrySet()) {
-			map.put("conceptShortName_" + e.getKey(), e.getValue());
-		}
-		for (Map.Entry<String, ConceptDescription> e : conceptDescriptionsByLocale.entrySet()) {
-			map.put("conceptDescription_" + e.getKey(), e.getValue());
-		}
-		map.put("conceptSynonyms", conceptSynonyms);
-		map.put("conceptSynonymsByLocale", conceptSynonymsByLocale);
-		map.put("conceptSets", conceptSets);
-		map.put("conceptAnswers", conceptAnswers);
-		map.put("formsInUse", forms);
-		map.put("questionsAnswered", questionsAnswered);
-		map.put("containedInSets", containedInSets);
+		map.put("tags", cs.getAllConceptNameTags());
 		
 		//get complete class and datatype lists 
 		map.put("classes", cs.getAllConceptClasses());
@@ -649,83 +235,464 @@ public class ConceptFormController extends SimpleFormController {
 		map.put("handlers", Context.getObsService().getHandlers());
 		
 		// make spring locale available to jsp
-		map.put("locale", locale.getLanguage().substring(0, 2));
-		
-		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
+		map.put("locale", Context.getLocale()); // should be same string format as conceptNamesByLocale map keys
 		
 		return map;
 	}
 	
 	/**
-	 * Convenience method to get the ConceptNumeric specific values out of the request and put them
-	 * onto an object
-	 * 
-	 * @param concept
-	 * @param request
-	 * @return
+	 * Class that represents all data on this form
 	 */
-	private ConceptNumeric getConceptNumeric(Concept concept, HttpServletRequest request) {
+	public class ConceptFormBackingObject {
 		
-		ConceptNumeric cn = null;
-		if (concept instanceof ConceptNumeric)
-			cn = (ConceptNumeric) concept;
-		else {
-			cn = new ConceptNumeric(concept);
+		public Concept concept = null;
+		
+		public List<Locale> locales = null;
+		
+		public Map<Locale, ConceptName> namesByLocale = new HashMap<Locale, ConceptName>();
+		
+		public Map<Locale, ConceptName> shortNamesByLocale = new HashMap<Locale, ConceptName>();
+		
+		public Map<Locale, List<ConceptName>> synonymsByLocale = new HashMap<Locale, List<ConceptName>>();
+		
+		public Map<Locale, ConceptDescription> descriptionsByLocale = new HashMap<Locale, ConceptDescription>();
+		
+		public List<ConceptMap> mappings; // a "lazy list" version of the concept.getMappings() list
+		
+		public Double hiAbsolute;
+		
+		public Double lowAbsolute;
+		
+		public Double lowCritical;
+		
+		public Double hiCritical;
+		
+		public Double lowNormal;
+		
+		public Double hiNormal;
+		
+		public boolean precise = false;
+		
+		public String units;
+		
+		public String handlerKey;
+		
+		/**
+		 * Default constructor must take in a Concept object to create itself
+		 * 
+		 * @param concept The concept for this page
+		 */
+		@SuppressWarnings("unchecked")
+		public ConceptFormBackingObject(Concept concept) {
+			this.concept = concept;
+			this.locales = Context.getAdministrationService().getAllowedLocales();
+			for (Locale locale : locales) {
+				namesByLocale.put(locale, concept.getPreferredName(locale));
+				shortNamesByLocale.put(locale, concept.getShortNameInLocale(locale));
+				synonymsByLocale.put(locale, (List<ConceptName>) concept.getSynonyms(locale));
+				descriptionsByLocale.put(locale, concept.getDescription(locale, true));
+				
+				// put in default values so the binding doesn't fail
+				if (namesByLocale.get(locale) == null)
+					namesByLocale.put(locale, new ConceptName(null, locale));
+				if (shortNamesByLocale.get(locale) == null)
+					shortNamesByLocale.put(locale, new ConceptName(null, locale));
+				if (descriptionsByLocale.get(locale) == null)
+					descriptionsByLocale.put(locale, new ConceptDescription(null, locale));
+				
+				synonymsByLocale.put(locale, ListUtils.lazyList(synonymsByLocale.get(locale), FactoryUtils
+				        .instantiateFactory(ConceptName.class)));
+				
+			}
+			
+			// turn the list objects into lazy lists
+			mappings = ListUtils.lazyList(new Vector(concept.getConceptMappings()), FactoryUtils
+			        .instantiateFactory(ConceptMap.class));
+			
+			if (concept.isNumeric()) {
+				ConceptNumeric cn = (ConceptNumeric) concept;
+				this.hiAbsolute = cn.getHiAbsolute();
+				this.lowAbsolute = cn.getLowAbsolute();
+				this.lowCritical = cn.getLowCritical();
+				this.hiCritical = cn.getHiCritical();
+				this.lowNormal = cn.getLowNormal();
+				this.hiNormal = cn.getLowNormal();
+				this.precise = cn.getPrecise();
+				this.units = cn.getUnits();
+			} else if (concept.isComplex()) {
+				ConceptComplex complex = (ConceptComplex) concept;
+				this.handlerKey = complex.getHandler();
+			}
 		}
 		
-		String d = null;
-		
-		d = request.getParameter("hiAbsolute");
-		if (d != null && d.length() > 0)
-			cn.setHiAbsolute(new Double(d));
-		d = request.getParameter("hiCritical");
-		if (d != null && d.length() > 0)
-			cn.setHiCritical(new Double(d));
-		d = request.getParameter("hiNormal");
-		if (d != null && d.length() > 0)
-			cn.setHiNormal(new Double(d));
-		
-		d = request.getParameter("lowAbsolute");
-		if (d != null && d.length() > 0)
-			cn.setLowAbsolute(new Double(d));
-		d = request.getParameter("lowCritical");
-		if (d != null && d.length() > 0)
-			cn.setLowCritical(new Double(d));
-		d = request.getParameter("lowNormal");
-		if (d != null && d.length() > 0)
-			cn.setLowNormal(new Double(d));
-		
-		cn.setUnits(request.getParameter("units"));
-		
-		Boolean precise = false;
-		if (request.getParameter("precise") != null)
-			precise = true;
-		cn.setPrecise(precise);
-		
-		return cn;
-	}
-	
-	/**
-	 * Creates a ConceptComplex from the concept, attaches the ComplexObsHandler from the request,
-	 * and returns the ConceptComplex
-	 * 
-	 * @param concept
-	 * @param request
-	 * @return
-	 */
-	private ConceptComplex getConceptComplex(Concept concept, HttpServletRequest request) {
-		ConceptComplex cc = null;
-		if (concept instanceof ConceptComplex) {
-			cc = (ConceptComplex) concept;
-		} else {
-			cc = new ConceptComplex(concept);
+		/**
+		 * This method takes all the form data from the input boxes and puts it onto the concept
+		 * object so that it can be saved to the database
+		 * 
+		 * @return the concept to be saved to the database
+		 */
+		public Concept getConceptFromFormData() {
+			ConceptNameTag preferredTag = Context.getConceptService().getConceptNameTagByName(ConceptNameTag.PREFERRED);
+			ConceptNameTag shortTag = Context.getConceptService().getConceptNameTagByName(ConceptNameTag.SHORT);
+			ConceptNameTag synonymTag = Context.getConceptService().getConceptNameTagByName(ConceptNameTag.SYNONYM);
+			
+			// add all the new names/descriptions to the concept
+			for (Locale locale : locales) {
+				ConceptName preferredNameInLocale = namesByLocale.get(locale);
+				if (StringUtils.hasLength(preferredNameInLocale.getName())
+				        && !concept.getNames().contains(preferredNameInLocale)) {
+					preferredNameInLocale.addTag(preferredTag);
+					concept.addName(preferredNameInLocale);
+				}
+				ConceptName shortNameInLocale = shortNamesByLocale.get(locale);
+				if (StringUtils.hasLength(shortNameInLocale.getName()) && !concept.getNames().contains(shortNameInLocale)) {
+					shortNameInLocale.addTag(shortTag);
+					concept.addName(shortNameInLocale);
+				}
+				for (ConceptName synonym : synonymsByLocale.get(locale)) {
+					if (synonym != null && synonym.getName() != null && !concept.getNames().contains(synonym)) {
+						synonym.addTag(synonymTag);
+						synonym.setLocale(locale);
+						concept.addName(synonym);
+					}
+				}
+				ConceptDescription descInLocale = descriptionsByLocale.get(locale);
+				if (StringUtils.hasLength(descInLocale.getDescription())
+				        && !concept.getDescriptions().contains(descInLocale)) {
+					concept.addDescription(descInLocale);
+				}
+			}
+			
+			// add in all the mappings
+			for (ConceptMap map : mappings) {
+				if (map != null) {
+					if (map.getSourceCode() == null) {
+						// because of the _mappings[x].sourceCode input name in the jsp, the sourceCode will be empty for 
+						// deleted mappings.  remove those from the concept object now.
+						concept.removeConceptMapping(map);
+					} else if (!concept.getConceptMappings().contains(map)) {
+						// assumes null sources also don't get here
+						concept.addConceptMapping(map);
+					}
+				}
+			}
+			
+			// if the user unchecked the concept sets box, erase past saved sets
+			if (!concept.isSet())
+				concept.setConceptSets(null);
+			
+			// add in subobject specific code
+			if (concept.getDatatype().getName().equals("Numeric")) {
+				ConceptNumeric cn;
+				if (concept instanceof ConceptNumeric)
+					cn = (ConceptNumeric) concept;
+				else {
+					cn = new ConceptNumeric(concept);
+				}
+				cn.setHiAbsolute(hiAbsolute);
+				cn.setLowAbsolute(lowAbsolute);
+				cn.setHiCritical(hiCritical);
+				cn.setLowCritical(lowCritical);
+				cn.setHiNormal(hiNormal);
+				cn.setLowNormal(lowNormal);
+				cn.setPrecise(precise);
+				cn.setUnits(units);
+				
+				concept = cn;
+				
+			} else if (concept.getDatatype().getName().equals("Complex")) {
+				ConceptComplex complexConcept;
+				if (concept instanceof ConceptNumeric)
+					complexConcept = (ConceptComplex) concept;
+				else {
+					complexConcept = new ConceptComplex(concept);
+				}
+				complexConcept.setHandler(handlerKey);
+				concept = complexConcept;
+			}
+			
+			return concept;
 		}
 		
-		String handler = null;
-		handler = request.getParameter("handlerSelect");
-		cc.setHandler(handler);
+		/**
+		 * @return the concept
+		 */
+		public Concept getConcept() {
+			return concept;
+		}
 		
-		return cc;
+		/**
+		 * @param concept the concept to set
+		 */
+		public void setConcept(Concept concept) {
+			this.concept = concept;
+		}
+		
+		/**
+		 * @return the locales
+		 */
+		public List<Locale> getLocales() {
+			return locales;
+		}
+		
+		/**
+		 * @param locales the locales to set
+		 */
+		public void setLocales(List<Locale> locales) {
+			this.locales = locales;
+		}
+		
+		/**
+		 * @return the namesByLocale
+		 */
+		public Map<Locale, ConceptName> getNamesByLocale() {
+			return namesByLocale;
+		}
+		
+		/**
+		 * @param namesByLocale the namesByLocale to set
+		 */
+		public void setNamesByLocale(Map<Locale, ConceptName> namesByLocale) {
+			this.namesByLocale = namesByLocale;
+		}
+		
+		/**
+		 * @return the shortNamesByLocale
+		 */
+		public Map<Locale, ConceptName> getShortNamesByLocale() {
+			return shortNamesByLocale;
+		}
+		
+		/**
+		 * @param shortNamesByLocale the shortNamesByLocale to set
+		 */
+		public void setShortNamesByLocale(Map<Locale, ConceptName> shortNamesByLocale) {
+			this.shortNamesByLocale = shortNamesByLocale;
+		}
+		
+		/**
+		 * @return the descriptionsByLocale
+		 */
+		public Map<Locale, ConceptDescription> getDescriptionsByLocale() {
+			return descriptionsByLocale;
+		}
+		
+		/**
+		 * @param descriptionsByLocale the descriptionsByLocale to set
+		 */
+		public void setDescriptionsByLocale(Map<Locale, ConceptDescription> descriptionsByLocale) {
+			this.descriptionsByLocale = descriptionsByLocale;
+		}
+		
+		/**
+		 * @return the mappings
+		 */
+		public List<ConceptMap> getMappings() {
+			return mappings;
+		}
+		
+		/**
+		 * @param mappings the mappings to set
+		 */
+		public void setMappings(List<ConceptMap> mappings) {
+			this.mappings = mappings;
+		}
+		
+		/**
+		 * @return the synonymsByLocale
+		 */
+		public Map<Locale, List<ConceptName>> getSynonymsByLocale() {
+			return synonymsByLocale;
+		}
+		
+		/**
+		 * @param synonymsByLocale the synonymsByLocale to set
+		 */
+		public void setSynonymsByLocale(Map<Locale, List<ConceptName>> synonymsByLocale) {
+			this.synonymsByLocale = synonymsByLocale;
+		}
+		
+		/**
+		 * @return the hiAbsolute
+		 */
+		public Double getHiAbsolute() {
+			return hiAbsolute;
+		}
+		
+		/**
+		 * @param hiAbsolute the hiAbsolute to set
+		 */
+		public void setHiAbsolute(Double hiAbsolute) {
+			this.hiAbsolute = hiAbsolute;
+		}
+		
+		/**
+		 * @return the lowAbsolute
+		 */
+		public Double getLowAbsolute() {
+			return lowAbsolute;
+		}
+		
+		/**
+		 * @param lowAbsolute the lowAbsolute to set
+		 */
+		public void setLowAbsolute(Double lowAbsolute) {
+			this.lowAbsolute = lowAbsolute;
+		}
+		
+		/**
+		 * @return the lowCritical
+		 */
+		public Double getLowCritical() {
+			return lowCritical;
+		}
+		
+		/**
+		 * @param lowCritical the lowCritical to set
+		 */
+		public void setLowCritical(Double lowCritical) {
+			this.lowCritical = lowCritical;
+		}
+		
+		/**
+		 * @return the hiCritical
+		 */
+		public Double getHiCritical() {
+			return hiCritical;
+		}
+		
+		/**
+		 * @param hiCritical the hiCritical to set
+		 */
+		public void setHiCritical(Double hiCritical) {
+			this.hiCritical = hiCritical;
+		}
+		
+		/**
+		 * @return the lowNormal
+		 */
+		public Double getLowNormal() {
+			return lowNormal;
+		}
+		
+		/**
+		 * @param lowNormal the lowNormal to set
+		 */
+		public void setLowNormal(Double lowNormal) {
+			this.lowNormal = lowNormal;
+		}
+		
+		/**
+		 * @return the hiNormal
+		 */
+		public Double getHiNormal() {
+			return hiNormal;
+		}
+		
+		/**
+		 * @param hiNormal the hiNormal to set
+		 */
+		public void setHiNormal(Double hiNormal) {
+			this.hiNormal = hiNormal;
+		}
+		
+		/**
+		 * @return the precise
+		 */
+		public boolean isPrecise() {
+			return precise;
+		}
+		
+		/**
+		 * @param precise the precise to set
+		 */
+		public void setPrecise(boolean precise) {
+			this.precise = precise;
+		}
+		
+		/**
+		 * @return the units
+		 */
+		public String getUnits() {
+			return units;
+		}
+		
+		/**
+		 * @param units the units to set
+		 */
+		public void setUnits(String units) {
+			this.units = units;
+		}
+		
+		/**
+		 * @return the handlerKey
+		 */
+		public String getHandlerKey() {
+			return handlerKey;
+		}
+		
+		/**
+		 * @param handlerKey the handlerKey to set
+		 */
+		public void setHandlerKey(String handlerKey) {
+			this.handlerKey = handlerKey;
+		}
+		
+		/**
+		 * Get the forms that this concept is declared to be used in
+		 * 
+		 * @return
+		 */
+		public List<Form> getFormsInUse() {
+			return Context.getFormService().getFormsContainingConcept(concept);
+		}
+		
+		/**
+		 * Get the other concept questions that this concept is declared as an answer for
+		 * 
+		 * @return
+		 */
+		public List<Concept> getQuestionsAnswered() {
+			return Context.getConceptService().getConceptsByAnswer(concept);
+		}
+		
+		/**
+		 * Get the sets that this concept is declared to be a child member of
+		 * 
+		 * @return
+		 */
+		public List<ConceptSet> getContainedInSets() {
+			return Context.getConceptService().getSetsContainingConcept(concept);
+		}
+		
+		/**
+		 * Get the answers for this concept with decoded names. The keys to this map are the
+		 * conceptIds or the conceptIds^drugId if applicable
+		 * 
+		 * @return
+		 */
+		public Map<String, String> getConceptAnswers() {
+			Map<String, String> conceptAnswers = new TreeMap<String, String>();
+			// get concept answers with locale decoded names
+			for (ConceptAnswer answer : concept.getAnswers(true)) {
+				log.debug("getting answers");
+				String key = answer.getAnswerConcept().getConceptId().toString();
+				ConceptName cn = answer.getAnswerConcept().getName(Context.getLocale());
+				String name = "";
+				if (cn != null)
+					name = cn.toString();
+				if (answer.getAnswerDrug() != null) {
+					// if this answer is a drug, append the drug id information
+					key = key + "^" + answer.getAnswerDrug().getDrugId();
+					name = answer.getAnswerDrug().getFullName(Context.getLocale());
+				}
+				if (answer.getAnswerConcept().isRetired())
+					name = "<span class='retired'>" + name + "</span>";
+				conceptAnswers.put(key, name);
+			}
+			
+			return conceptAnswers;
+		}
 	}
 	
 }

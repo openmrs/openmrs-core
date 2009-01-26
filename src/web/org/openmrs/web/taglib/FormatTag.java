@@ -50,8 +50,10 @@ public class FormatTag extends TagSupport {
 			StringBuilder sb = new StringBuilder();
 			if (conceptId != null)
 				concept = Context.getConceptService().getConcept(conceptId);
-			if (concept != null)
-				sb.append(concept.getName().getName());
+			if (concept != null) {
+				if (concept.getName() != null)
+					sb.append(concept.getName().getName());
+			}
 			
 			if (obsValue != null)
 				sb.append(obsValue.getValueAsString(Context.getLocale()));

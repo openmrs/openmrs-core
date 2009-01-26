@@ -10,14 +10,15 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @verifies {@link DatabaseUpdater#update()} test = should always have a valid update to latest
+	 * @verifies {@link DatabaseUpdater#updatesRequired()} test = should always have a valid update to latest
 	 *           file
 	 */
 	@Test
-	public void update_shouldAlwaysHaveAValidUpdateToLatestFile() throws Exception {
+	public void updatesRequired_shouldAlwaysHaveAValidUpdateToLatestFile() throws Exception {
 		// expects /metadata/model to be on the classpath so that
 		// the liquibase-update-to-latest.xml can be found.
+		DatabaseUpdater.updatesRequired();
 		
-		DatabaseUpdater.update();
+		// does not run DatabaseUpdater.update() because hsqldb doesn't like single quotes in strings
 	}
 }
