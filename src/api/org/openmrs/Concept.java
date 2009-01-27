@@ -122,7 +122,6 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	/**
 	 *  Possibly used for decapitating a ConceptNumeric (to remove the row in
 	 * @param cn
-	 * @deprecated
 	 */
 	public Concept(ConceptNumeric cn) {
 		conceptId = cn.getConceptId();
@@ -980,18 +979,25 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * short in that country, otherwise the name must be tagged 
 	 * as short in that language. 
      * 
-     * @param l locale for which to return a short name
+	 * @param locale locale for which to return a short name
      * @return the short name, or null if none has been explicitly set
      */
-    public ConceptName getShortNameInLocale(Locale l) {
+	public ConceptName getShortNameInLocale(Locale locale) {
     	ConceptName shortName = null;
     	// ABK: country will always be non-null. Empty string (instead 
     	// of null) indicates no country was specified
-    	String country = l.getCountry(); 
+		String country = locale.getCountry();
     	if (country.length() != 0) {
     		shortName = getShortNameForCountry(country);
     	} else {
-    		shortName = getShortNameInLanguage(l.getLanguage());
+			shortName = getShortNameInLanguage(locale.getLanguage());
+		}
+		// default to getting the name in the specific locale tagged as "short"
+		if (shortName == null) {
+			for (ConceptName name : getCompatibleNames(locale)) {
+				if (name.hasTag(ConceptNameTag.SHORT))
+					return name;
+			}
     	}
     	return shortName;
     }
@@ -1084,7 +1090,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		conceptName.setConcept(this);
 		if (names == null)
 			names = new HashSet<ConceptName>();
-		if (!names.contains(conceptName) && conceptName != null) {
+		if (conceptName != null && !names.contains(conceptName)) {
 			nameListWasModified = names.add(conceptName);
 			if (compatibleCache != null) {
 				compatibleCache.clear(); // clear the locale cache, forcing it to be rebuilt
@@ -1311,9 +1317,11 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		String desiredLanguage = locale.getLanguage();
 		Collection<ConceptName> syns = new Vector<ConceptName>();
 		for (ConceptName possibleSynonym : names) {
-			String lang = possibleSynonym.getLocale().getLanguage();
-			if (lang.equals(desiredLanguage))
-				syns.add(possibleSynonym);
+			if (possibleSynonym.hasTag(ConceptNameTag.SYNONYM)) {
+				String lang = possibleSynonym.getLocale().getLanguage();
+				if (lang.equals(desiredLanguage))
+					syns.add(possibleSynonym);
+			}
 		}
 		log.debug("returning: " + syns);
 		return syns;

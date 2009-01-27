@@ -388,6 +388,7 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @see {@link #getObservations(List, List, List, List, List, List, List, Integer, Integer, Date, Date, boolean)}
 	 */
+	@Transactional(readOnly = true)
 	public List<Obs> getObservationsByPersonAndConcept(Person who, Concept question) throws APIException;
 	
 	/**

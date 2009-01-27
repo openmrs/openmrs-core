@@ -859,6 +859,7 @@ y	 * returns a list of n-generations of parents of a concept in a concept set
 		
 		return locales;
 	}
+	
 
 	/**
      * @see org.openmrs.api.db.ConceptDAO#getConceptNameTag(java.lang.Integer)
@@ -883,9 +884,9 @@ y	 * returns a list of n-generations of parents of a concept in a concept set
     }
 
 	/**
-     * @see org.openmrs.api.db.ConceptDAO#getConceptNameTags()
+     * @see org.openmrs.api.db.ConceptDAO#getAllConceptNameTags()
      */
-    public List<ConceptNameTag> getConceptNameTags() {
+    public List<ConceptNameTag> getAllConceptNameTags() {
 		return sessionFactory.getCurrentSession().createQuery("from ConceptNameTag cnt order by cnt.tag").list();
     }
 

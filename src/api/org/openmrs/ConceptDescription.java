@@ -27,9 +27,6 @@ import org.simpleframework.xml.Root;
 @Root
 public class ConceptDescription implements java.io.Serializable {
 
-	/**
-     * 
-     */
     private static final long serialVersionUID = -7223075113369136584L;
 
 	// Fields
@@ -47,6 +44,15 @@ public class ConceptDescription implements java.io.Serializable {
 
 	/** default constructor */
 	public ConceptDescription() {
+	}
+	
+	/**
+	 * Constructor that takes in the primary key for this object
+	 * 
+	 * @param conceptDescriptionId the id for this description
+	 */
+	public ConceptDescription(Integer conceptDescriptionId) {
+		this.conceptDescriptionId = conceptDescriptionId;
 	}
 	
 	/**
@@ -211,13 +217,20 @@ public class ConceptDescription implements java.io.Serializable {
 
 	/**
      * @see java.lang.Object#equals(Object)
+	 * 
+	 * @should compare on id if its non null
+	 * @should not return true with different objects and null ids
+	 * @should default to object equality
      */
     public boolean equals(Object object) {
     	if (!(object instanceof ConceptDescription)) {
     		return false;
     	}
     	ConceptDescription rhs = (ConceptDescription) object;
-    	return (this.conceptDescriptionId == rhs.conceptDescriptionId);
+    	if (conceptDescriptionId != null && rhs.conceptDescriptionId != null)
+			return this.conceptDescriptionId == rhs.conceptDescriptionId;
+		else
+			return this == object;
     }
 
 }

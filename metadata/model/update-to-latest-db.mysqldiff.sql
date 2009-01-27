@@ -1548,8 +1548,8 @@ BEGIN
 
 		select 'Migrate synonyms.' AS '*** Step: ***', new_db_version from dual;
 		# make new concept_names for the synonym
-		INSERT INTO `concept_name` (short_name, description, concept_id, name, locale, creator, date_created)
-            SELECT 'MVP-SYNONYM', 'deprecated', cs.concept_id, cs.synonym, cs.locale,
+		INSERT INTO `concept_name` (short_name, concept_id, name, locale, creator, date_created)
+            SELECT 'MVP-SYNONYM', cs.concept_id, cs.synonym, cs.locale,
                 cs.creator, cs.date_created
                 FROM `concept_synonym` cs
                 INNER JOIN `concept` c on c.concept_id=cs.concept_id 
@@ -2000,6 +2000,57 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 
 delimiter ;
 call diff_procedure('1.4.0.21');
+
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.22
+# Ben Wolfe 			Jan 22nd 2008
+#
+# Remove duplicate concept name tags
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	
+		UPDATE 
+				concept_name_tag_map map 
+			SET 
+				concept_name_tag_id = (SELECT 
+										 min(concept_name_tag_id)
+									   FROM concept_name_tag
+									   WHERE 
+									     tag = (select tag from concept_name_tag where concept_name_tag_id = map.concept_name_tag_id)
+									  );
+									  
+		CREATE TABLE `tmp_concept_name_tag_duplicates` (
+			`concept_name_tag_id` int(11) NOT NULL,
+		PRIMARY KEY (`concept_name_tag_id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		
+		INSERT INTO tmp_concept_name_tag_duplicates (concept_name_tag_id) (select concept_name_tag_id from concept_name_tag where tag in (select tag from concept_name_tag group by tag having count(*) > 1));
+		
+		DELETE FROM concept_name_tag
+		WHERE
+			concept_name_tag_id in (select concept_name_tag_id from tmp_concept_name_tag_duplicates)
+			and
+			concept_name_tag_id not in (select distinct(concept_name_tag_id) from concept_name_tag_map);
+		
+		DROP TABLE tmp_concept_name_tag_duplicates;
+		
+		ALTER TABLE `concept_name_tag` ADD CONSTRAINT concept_name_tag_unique_tags UNIQUE (`tag`);
+
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.22');
+
+
+
 
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
