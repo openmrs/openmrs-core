@@ -21,8 +21,6 @@ importJavascriptFile(openmrsSearchBase + "/dwr/util.js");
 // Add parse handler.  
 dojo.widget.tags.addParseTreeHandler("dojo:OpenmrsSearch");
 
-<openmrs:globalProperty var="minSearchCharacters" key="minSearchCharacters" defaultValue="3"/>
-
 dojo.widget.openmrs.OpenmrsSearch = function() {
 	//dojo.widget.HtmlWidget.call(this);
 
