@@ -22,6 +22,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.web.controller.ConceptFormController;
+import org.openmrs.web.controller.ConceptFormController.ConceptFormBackingObject;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -49,8 +50,8 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		ModelAndView modelAndView = controller.handleRequest(request, response);
 		
 		// make sure there is an "conceptId" filled in on the concept
-		Concept commandConcept = (Concept) modelAndView.getModel().get("command");
-		Assert.assertNotNull(commandConcept.getConceptId());
+		ConceptFormBackingObject command = (ConceptFormBackingObject) modelAndView.getModel().get("command");
+		Assert.assertNotNull(command.getConcept().getConceptId());
 		
 	}
 	

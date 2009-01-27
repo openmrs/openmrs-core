@@ -141,12 +141,12 @@ public class ConceptFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			
 			ConceptFormBackingObject conceptBackingObject = (ConceptFormBackingObject) obj;
-			Concept concept = conceptBackingObject.getConceptFromFormData();
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 			
 			if (action.equals(msa.getMessage("Concept.delete", "Delete Concept"))) {
+				Concept concept = conceptBackingObject.getConcept();
 				try {
 					cs.purgeConcept(concept);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.deleted");
@@ -167,6 +167,8 @@ public class ConceptFormController extends SimpleFormController {
 				// return to the edit screen because an error was thrown
 				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 			} else {
+				Concept concept = conceptBackingObject.getConceptFromFormData();
+				
 				try {
 					cs.saveConcept(concept);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
