@@ -255,7 +255,17 @@
 				</td>
 			</tr>
 		</c:if>
-	 
+	 	<tr id="conceptMapRow">
+			<th valign="top" title="<spring:message code="Concept.mappings.help"/>">
+				<spring:message code="Concept.mappings"/>
+			</th>
+			<td>
+				<c:forEach var="mapping" items="${command.mappings}" varStatus="mapStatus">
+					${mapping.source.name}: ${mapping.sourceCode} <br/>
+				</c:forEach>
+			</td>
+		</tr>
+		
         <c:if test="${command.concept.complex}">
             <tr>
                 <th valign="top"><spring:message code="ConceptComplex.handler"/></th>
