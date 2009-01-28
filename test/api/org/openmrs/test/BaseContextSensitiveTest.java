@@ -72,7 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
  * down. (because spring is started before test cases are run). Normal test cases do not need to
  * extend anything
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml" })
+@ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath:openmrs-servlet.xml" })
 @TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class })
 @Transactional
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
