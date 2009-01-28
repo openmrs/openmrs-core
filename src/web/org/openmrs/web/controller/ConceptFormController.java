@@ -140,12 +140,12 @@ public class ConceptFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			
 			ConceptFormBackingObject conceptBackingObject = (ConceptFormBackingObject) obj;
-			Concept concept = conceptBackingObject.getConceptFromFormData();
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 			
 			if (action.equals(msa.getMessage("Concept.delete", "Delete Concept"))) {
+				Concept concept = conceptBackingObject.getConcept();
 				try {
 					cs.purgeConcept(concept);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.deleted");
@@ -166,6 +166,8 @@ public class ConceptFormController extends SimpleFormController {
 				// return to the edit screen because an error was thrown
 				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 			} else {
+				Concept concept = conceptBackingObject.getConceptFromFormData();
+				
 				try {
 					cs.saveConcept(concept);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
@@ -338,12 +340,12 @@ public class ConceptFormController extends SimpleFormController {
 					concept.addName(preferredNameInLocale);
 				}
 				ConceptName shortNameInLocale = shortNamesByLocale.get(locale);
-				if (StringUtils.hasLength(shortNameInLocale.getName()) && !concept.getNames().contains(shortNameInLocale)) {
+				if (StringUtils.hasLength(shortNameInLocale.getName()) && !concept.getNames().contains(shortNameInLocale) && !concept.hasName(shortNameInLocale.getName(), locale)) {
 					shortNameInLocale.addTag(shortTag);
 					concept.addName(shortNameInLocale);
 				}
 				for (ConceptName synonym : synonymsByLocale.get(locale)) {
-					if (synonym != null && synonym.getName() != null && !concept.getNames().contains(synonym)) {
+					if (synonym != null && synonym.getName() != null && !concept.getNames().contains(synonym) && !concept.hasName(synonym.getName(), locale)) {
 						synonym.addTag(synonymTag);
 						synonym.setLocale(locale);
 						concept.addName(synonym);

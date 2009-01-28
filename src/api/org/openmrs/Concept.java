@@ -504,6 +504,32 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
     	}
     	return taggedName;
     }
+    
+    /**
+     * Checks whether this concept has the given string in any of the names
+     * in the given locale already.
+     * 
+     * @param name the ConceptName.name to compare to
+     * @param locale the locale to look in (null to check all locales)
+     * @return true/false whether the name exists already
+     */
+    public boolean hasName(String name, Locale locale) {
+    	if (name == null)
+    		return false;
+    	
+    	Collection<ConceptName> currentNames = null;
+    	if (locale == null)
+    		currentNames = getNames();
+    	else
+    		currentNames = getNames(locale);
+    	
+    	for (ConceptName currentName : currentNames) {
+    		if (name.equals(currentName.getName()))
+    			return true;
+    	}
+    	
+    	return false;
+    }
 
 	/**
 	 * Finds the name of the concept in the given locale. Returns null if none
