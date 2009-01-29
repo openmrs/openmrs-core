@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,14 +29,17 @@ import java.util.Set;
 import liquibase.ChangeSet;
 import liquibase.ClassLoaderFileOpener;
 import liquibase.CompositeFileOpener;
+import liquibase.DatabaseChangeLog;
 import liquibase.FileOpener;
 import liquibase.FileSystemFileOpener;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
+import liquibase.parser.ChangeLogParser;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.annotation.Authorized;
 import org.openmrs.api.context.Context;
 
 /**
@@ -84,7 +90,6 @@ public class DatabaseUpdater {
 	 * Ask Liquibase if it needs to do any updates
 	 * 
 	 * @return true/false whether database updates are required
-	 * 
 	 * @should always have a valid update to latest file
 	 */
 	public static boolean updatesRequired() {
@@ -245,6 +250,134 @@ public class DatabaseUpdater {
 			if (connection != null)
 				connection.close();
 			throw e;
+		}
+	}
+	
+	/**
+	 * Represents each change in the liquibase-update-to-latest
+	 */
+	public static class OpenMRSChangeSet {
+		
+		private String author;
+		
+		private String comments;
+		
+		private String description;
+		
+		private ChangeSet.RunStatus runStatus;
+		
+		private Date ranDate;
+		
+		/**
+		 * @return the author
+		 */
+		public String getAuthor() {
+			return author;
+		}
+		
+		/**
+		 * @param author the author to set
+		 */
+		public void setAuthor(String author) {
+			this.author = author;
+		}
+		
+		/**
+		 * @return the comments
+		 */
+		public String getComments() {
+			return comments;
+		}
+		
+		/**
+		 * @param comments the comments to set
+		 */
+		public void setComments(String comments) {
+			this.comments = comments;
+		}
+		
+		/**
+		 * @return the description
+		 */
+		public String getDescription() {
+			return description;
+		}
+		
+		/**
+		 * @param description the description to set
+		 */
+		public void setDescription(String description) {
+			this.description = description;
+		}
+		
+		/**
+		 * @return the runStatus
+		 */
+		public ChangeSet.RunStatus getRunStatus() {
+			return runStatus;
+		}
+		
+		/**
+		 * @param runStatus the runStatus to set
+		 */
+		public void setRunStatus(ChangeSet.RunStatus runStatus) {
+			this.runStatus = runStatus;
+		}
+		
+		/**
+		 * @return the ranDate
+		 */
+		public Date getRanDate() {
+			return ranDate;
+		}
+		
+		/**
+		 * @param ranDate the ranDate to set
+		 */
+		public void setRanDate(Date ranDate) {
+			this.ranDate = ranDate;
+		}
+	}
+	
+	/**
+	 * Looks at the current liquibase-update-to-latest.xml file and then checks the database to see
+	 * if they have been run.
+	 * 
+	 * @return list of changesets
+	 */
+	@Authorized(OpenmrsConstants.PRIV_VIEW_DATABASE_CHANGES)
+	public static List<OpenMRSChangeSet> getDatabaseChanges() throws Exception {
+		Database database = null;
+		
+		try {
+			Liquibase liquibase = getLiquibase(CHANGE_LOG_FILE);
+			database = liquibase.getDatabase();
+			DatabaseChangeLog changeLog = new ChangeLogParser(new HashMap<String, Object>()).parse(CHANGE_LOG_FILE,
+			    liquibase.getFileOpener());
+			List<ChangeSet> changeSets = changeLog.getChangeSets();
+			
+			List<OpenMRSChangeSet> results = new ArrayList<OpenMRSChangeSet>();
+			for (ChangeSet changeSet : changeSets) {
+				OpenMRSChangeSet omrschangeset = new OpenMRSChangeSet();
+				omrschangeset.setAuthor(changeSet.getAuthor());
+				omrschangeset.setComments(changeSet.getComments());
+				omrschangeset.setDescription(changeSet.getDescription());
+				omrschangeset.setRunStatus(database.getRunStatus(changeSet));
+				omrschangeset.setRanDate(database.getRanDate(changeSet));
+				results.add(omrschangeset);
+			}
+			
+			return results;
+		}
+		finally {
+			try {
+				if (database != null) {
+					database.getConnection().close();
+				}
+			}
+			catch (Throwable t) {
+				//pass
+			}
 		}
 	}
 }
