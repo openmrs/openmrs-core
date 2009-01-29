@@ -51,6 +51,13 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="View Database Changes">
+		<li <c:if test='<%= request.getRequestURI().contains("databaseChangesInfo") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/maintenance/databaseChangesInfo.list">
+				<spring:message code="DatabaseChangesInfo.overview"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.maintenance.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >
