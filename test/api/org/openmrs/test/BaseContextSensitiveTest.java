@@ -72,7 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
  * down. (because spring is started before test cases are run). Normal test cases do not need to
  * extend anything
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath:openmrs-servlet.xml" })
+@ContextConfiguration(locations = { "classpath:applicationContext-service.xml" })
 @TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class })
 @Transactional
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
@@ -382,6 +382,25 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
+	 * True/false whether the extra columns not in the hbm mapping files have been added to the
+	 * current database or not.
+	 * 
+	 * @return the columnsAdded value
+	 */
+	public boolean areColumnsAdded() {
+		return BaseContextSensitiveTest.columnsAdded;
+	}
+	
+	/**
+	 * Set the columns added value as either done or not done.
+	 * 
+	 * @param columnsAdded the columnsAdded to save
+	 */
+	public void setColumnsAdded(boolean columnsAdded) {
+		BaseContextSensitiveTest.columnsAdded = columnsAdded;
+	}
+	
+	/**
 	 * This initializes the empty in-memory hsql database with some rows in order to actually run
 	 * some tests
 	 */
@@ -393,7 +412,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		// we only want to add columns once. Hsql won't roll back "alter table" 
 		// commands
-		if (columnsAdded == false) {
+		if (areColumnsAdded() == false) {
 			Connection connection = getConnection();
 			
 			// add the password and salt columns to the users table
@@ -411,7 +430,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			ps.execute();
 			ps.close();
 			
-			columnsAdded = true;
+			setColumnsAdded(true);
 		}
 		
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);

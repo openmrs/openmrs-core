@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Obs;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.web.controller.encounter.EncounterDisplayController;
 import org.openmrs.web.controller.encounter.EncounterDisplayController.FieldHolder;
@@ -32,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * Test the methods on the org.openmrs.web.controller.encounter.EncounterDisplayController
  */
-public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
+public class EncounterDisplayControllerTest extends BaseWebContextSensitiveTest {
 	
 	protected static final String DISPLAY_CONTROLLER_DATA = "org/openmrs/web/encounter/include/EncounterDisplayControllerTest.xml";
 	
