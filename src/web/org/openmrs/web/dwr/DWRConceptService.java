@@ -119,9 +119,9 @@ public class DWRConceptService {
 				// user searched on a number. Insert concept with
 				// corresponding conceptId
 				Concept c = cs.getConcept(Integer.valueOf(phrase));
-				ConceptName cn = c.getName(defaultLocale);
 				if (c != null) {
-					ConceptWord word = new ConceptWord(phrase, c, cn, defaultLocale, "Concept Id #" + phrase);
+					ConceptName cn = c.getName(defaultLocale);
+					ConceptWord word = new ConceptWord(phrase, c, cn, defaultLocale, "Exact match on concept id: #" + phrase);
 					words.add(word);
 				}
 			}
@@ -162,7 +162,6 @@ public class DWRConceptService {
 				objectList.add("No matches found for <b>" + phrase + "</b> in locale: "
 				        + OpenmrsUtil.join(localesToSearchOn, ", "));
 			} else {
-				objectList = new Vector<Object>(words.size());
 				int maxCount = 500;
 				int curCount = 0;
 				
