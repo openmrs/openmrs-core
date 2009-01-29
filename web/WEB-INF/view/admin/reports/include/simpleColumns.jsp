@@ -45,7 +45,7 @@
 				<option value="$!{fn.getPersonAttribute('Race')}">&nbsp; <spring:message code="PersonAttributeType.Race" /></option>
                 <option value="$!{fn.getPatientAttr('Person', 'dead')}">&nbsp; <spring:message code="Person.dead" /></option>
 				<option value="$!{fn.formatDate('short', $fn.getPatientAttr('Person', 'deathDate'))}">&nbsp; <spring:message code="Person.deathDate" /></option>
-				<option value="$!{fn.getPatientAttr('Person', 'causeOfDeath')}">&nbsp; <spring:message code="Person.causeOfDeath" /></option>
+				<option value="$!{fn.getPatientAttr('Person', 'causeOfDeath').name}">&nbsp; <spring:message code="Person.causeOfDeath" /></option>
 
 				<option value=""> </option>
 				<option disabled><spring:message code="DataExport.simple.programs"/></option>
