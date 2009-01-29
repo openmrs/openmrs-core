@@ -401,7 +401,24 @@ dojo.widget.defineWidget(
 			
 	},
 	
-	doObjectsFound: function(objs) {
+	/* the most recently returned call count */
+	lastCallCount: 0,
+	
+	/* The most recently sent call count */
+	callCount: 1,
+	
+	doObjectsFound: function(objs, unusedData, extraData, currentCallCount) {
+		/* optionally passed in from the doFindObjects method */
+		if (currentCallCount) {
+			if (this.lastCallCount > currentCallCount) {
+				/* There has been a callback to this method after the call for these
+				   results was made.  Ignore this request. */
+				/* alert("Ignoring: " + objs.length + " results"); */
+				return;
+			}
+			this.lastCallCount = currentCallCount;
+		}
+	
 		// convert objs from single obj into array (if needed)
 		if (objs.length == null)
 			objs = [objs]
@@ -906,9 +923,15 @@ dojo.widget.defineWidget(
 		
 	},
 	
+	/* This call keeps track of the order in which calls are sent and received 
+	   from the server.  This information is passed on to the "method" given
+	   in the params.  (Ideally the method would look at this id and ignore
+	   any calls that were sent before, and yet received after, the latest call)  
+	 */
 	simpleClosure: function(thisObj, method, extra) { 
+		var storedCallCount = this.callCount++;
 		return function(arg1, arg2) {
-				  return thisObj[method](arg1, arg2, extra);
+				  return thisObj[method](arg1, arg2, extra, storedCallCount);
 				}; 
 	},
 	
