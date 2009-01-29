@@ -16,14 +16,14 @@ package org.openmrs.web.servlet;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Tests the {@link LoginServlet}
  */
-public class LoginServletTest extends BaseContextSensitiveTest {
+public class LoginServletTest extends BaseWebContextSensitiveTest {
 	
 	/**
 	 * The servlet should send the user back to the login box if the user enters the wrong username

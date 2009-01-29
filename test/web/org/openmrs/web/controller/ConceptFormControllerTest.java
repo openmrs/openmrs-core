@@ -30,8 +30,8 @@ import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.web.controller.ConceptFormController.ConceptFormBackingObject;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -40,7 +40,7 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * Unit testing for the ConceptFormController.
  */
-public class ConceptFormControllerTest extends BaseContextSensitiveTest {
+public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
 	 * Checks that the conceptId query param gets a concept from the database

@@ -257,6 +257,22 @@
 		</copy>
 		
 	</target>
+				
+	<target name="compile-web-tests" depends="compile-api-tests,compile-web" description="compile the java files in /test/api">
+		<mkdir dir="${build.dir}" />
+		<javac srcdir="${test.dir}/web" destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.test.classpath">
+			<compilerarg line="${compile.arguments}" />
+		</javac>
+
+		<!-- copy the extra files to the build dir in case an ant-clean was just done -->
+		<copy todir="${build.dir}">
+			<!-- dbunit files for db and api tests -->
+			<fileset dir="${test.dir}/web" includes="**/*.xml"/>
+			<!-- module files for module tests -->
+			<fileset dir="${test.dir}/web" includes="**/*.omod"/>
+		</copy>
+		
+	</target>
 
     <target name="deploy" depends="package-web" if="tomcat.home" description="Move war into the tomcat's webapps directory - ">
 		<echo message="Deploying war file to Tomcat webapps directory"/>
@@ -489,20 +505,20 @@
 		</java>
 	</target>
 	
-	<target name="junit-report" depends="compile-api-tests" description="Run tests and create JUnit report (requires driver.jar property)">
+	<target name="junit-report" depends="compile-api-tests,compile-web-tests" description="Run tests and create JUnit report (requires driver.jar property)">
 		<delete dir="${junit-tests.dir}" failonerror="false"/>
 		<mkdir dir="${junit-tests.dir}" />
 		
 	    <path id="junit-path">
 			<fileset refid="lib.files" />
 		    <pathelement path="${build.dir}"/>
+	    	<pathelement path="web/WEB-INF/"/>
 			<pathelement location="${dist.dir}/${openmrs.api.name}"/>
 		</path>
 		
-        <junit dir="${junit-tests.dir}" maxmemory="256M" fork="yes" forkmode="perBatch" newenvironment="true">
+        <junit>
 			<classpath refid="junit-path"/>
-        	<sysproperty key="diffFileInput" value="--"/> <!-- put here so this property isn't printed and wasting space -->
-			<formatter type="brief"/>
+			<formatter type="plain"/>
         	<formatter type="xml"/>
             <batchtest todir="${junit-tests.dir}" haltonfailure="no">
 				<fileset dir="${build.dir}">
