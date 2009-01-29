@@ -68,7 +68,7 @@ public class DWRProgramWorkflowService {
 	}
 	
 	public Vector<ListItem> getStatesByWorkflow(Integer programWorkflowId) {
-		log.debug("In getStatesByWorkflow with workflowID of " + programWorkflowId.toString());
+		log.debug("In getStatesByWorkflow with workflowID of " + programWorkflowId);
 		Vector<ListItem> ret = new Vector<ListItem>();
 		
 		ProgramWorkflow workflow = Context.getProgramWorkflowService().getWorkflow(programWorkflowId);
