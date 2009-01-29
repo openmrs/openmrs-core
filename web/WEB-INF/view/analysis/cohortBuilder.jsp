@@ -798,7 +798,7 @@
 								<select name="program" id="program" onChange="refreshWorkflowOptions()">
 									<option value=""></option>
 									<c:forEach var="program" items="${model.programs}">
-										<option value="${program.programId}">${program.concept.name.name}</option>
+										<option value="${program.programId}">${program.name}</option>
 									</c:forEach>
 								</select>
 							</td>
