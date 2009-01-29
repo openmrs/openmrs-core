@@ -16,6 +16,7 @@ package org.openmrs.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -28,7 +29,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -107,14 +107,20 @@ public final class Listener extends ContextLoaderListener {
 				elem.setTextContent("");
 				OpenmrsUtil.saveDocument(doc, dwrFile);
 			}
-			catch (IOException io) {
-				log.warn("Unable to parse the simple xml string", io);
-			} catch (ParserConfigurationException parseError) {
-				log.warn("Unable to clear the dwr document", parseError);
-			} catch (SAXException sax) {
-				log.warn("Unable to clear the dwr document", sax);
-			} catch (Throwable t) {
+			catch (Throwable t) {
+				// got here because the dwr-modules.xml file is empty for some reason.  This might 
+				// happen because the servlet container (i.e. tomcat) crashes when first loading this file
 				log.debug("Error clearing dwr-modules.xml", t);
+				dwrFile.delete();
+				try {
+					FileWriter writer = new FileWriter(dwrFile);
+					writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 1.0//EN\" \"http://resources.openmrs.org/doctype/dwr-1.0mod.dtd\">\n<dwr></dwr>");
+					writer.close();
+				}
+				catch (IOException io) {
+					log.error("Unable to clear out the " + dwrFile.getAbsolutePath() + " file.  Please redeploy the openmrs war file", io);
+				}
+				
 			}
 		}
 		
