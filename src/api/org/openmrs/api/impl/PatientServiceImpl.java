@@ -162,11 +162,20 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
     public List<Patient> getPatients(String name, String identifier,
             List<PatientIdentifierType> identifierTypes)
             throws APIException {
+            return getPatients(name, identifier, identifierTypes, false);
+    }
+            
+    /**
+     * @see org.openmrs.api.PatientService#getPatients(java.lang.String, java.lang.String, java.util.List, boolean)
+     */
+    public List<Patient> getPatients(String name, String identifier,
+            List<PatientIdentifierType> identifierTypes, boolean matchIdentifierExactly)
+            throws APIException {
 		
     	if (identifierTypes == null)
     		identifierTypes = Collections.emptyList();
 		
-    	return dao.getPatients(name, identifier, identifierTypes);
+    	return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly);
 	}
 	
 	/**
@@ -339,7 +348,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// get all patients with this identifier
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		types.add(type);
-		List<Patient> patients = getPatients(null, identifier, types);
+		List<Patient> patients = getPatients(null, identifier, types, true);
 		
 		// ignore this patient (loop until no changes made)
 		while (patients.remove(ignorePatient)) { };

@@ -665,6 +665,7 @@ public interface PersonService {
 	 * @see #parsePersonName(String)
 	 * @deprecated replaced by parsePersonName(String)
 	 */
+	@Transactional( readOnly=true )
 	public PersonName splitPersonName(String name);
 
 	/**
@@ -674,6 +675,7 @@ public interface PersonService {
 	 * @param name person name to be parsed
 	 * @return parsed person name
 	 */
+	@Transactional( readOnly=true )
 	public PersonName parsePersonName(String name) throws APIException;
 
 	/**

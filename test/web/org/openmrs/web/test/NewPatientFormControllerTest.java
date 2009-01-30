@@ -196,7 +196,6 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
     public void testSubmitChangedIdentifierLocation() throws Exception {
 		executeDataSet(CONTROLLER_PATIENTS_DATA);
 		

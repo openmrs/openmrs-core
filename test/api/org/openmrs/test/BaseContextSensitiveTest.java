@@ -215,6 +215,18 @@ public abstract class BaseContextSensitiveTest extends
 	 * @throws Exception
 	 */
 	public void authenticate() throws Exception {
+		if (Context.isAuthenticated())
+			return;
+		
+		try {
+			Context.authenticate("admin", "test");
+			return;
+		}
+		catch (ContextAuthenticationException wrongCredentialsError) {
+			// if we get here the user is using some database other than the standard 
+			// in-memory database, prompt the user for input
+		}
+		
 		Integer attempts = 0;
 
 		// TODO: how to make this a locale specific message for the user to see?
