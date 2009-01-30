@@ -539,13 +539,13 @@
 		</junitreport>
 		
 		<!-- TODO add other execs for different OS's. Switch to osfamily with Ant 1.7 -->
-		<exec os="Windows XP" executable="C:/Program Files/Mozilla Firefox/firefox.exe" spawn="true">
+		<exec os="Windows XP" executable="C:/Program Files/Mozilla Firefox/firefox.exe" spawn="true" failifexecutionfails="false" failonerror="false">
 			<arg value="file:///${junit-reports.dir}/index.html"/>
 		</exec>
-		<exec os="Linux" executable="firefox" spawn="true">
+		<exec os="Linux" executable="firefox" spawn="true" failifexecutionfails="false" failonerror="false">
 			<arg value="file:///${junit-reports.dir}/index.html"/>
 		</exec>
-		<exec os="Mac OS X" executable="open" spawn="true">
+		<exec os="Mac OS X" executable="open" spawn="true" failifexecutionfails="false" failonerror="false">
 			<arg line="-a Firefox"/>
 			<arg value="file:///${junit-reports.dir}/index.html"/>
 		</exec>
