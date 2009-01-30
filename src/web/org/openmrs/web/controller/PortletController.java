@@ -68,7 +68,7 @@ public class PortletController implements Controller {
      *     (if the request has a patientId attribute)
      *          (Integer) patientId
      *          (Patient) patient
-     *          (Set<Obs>) patientObs
+     *          (List<Obs>) patientObs
      *          (Set<Encounter>) patientEncounters
      *          (List<DrugOrder>) patientDrugOrders
      *          (List<DrugOrder>) currentDrugOrders
