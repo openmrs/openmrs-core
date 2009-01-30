@@ -1123,13 +1123,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * 
 	 * Sets required fields for a concept before saving it.
 	 * 
-						if (tag.getConceptNameTagId() == null) {
-							ConceptNameTag possibleReplacementTag = getConceptNameTagByName(tag.getTag());
-							if (possibleReplacementTag != null) {
-								cn.removeTag(tag);
-								cn.addTag(possibleReplacementTag);
-							}
-						}
 	 * @param concept
 	 */
 	protected void modifyCollections(Concept concept) {
@@ -1158,6 +1151,13 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				
 				if (cn.getTags() != null) {
 					for (ConceptNameTag tag : cn.getTags()) {
+						if (tag.getConceptNameTagId() == null) {
+							ConceptNameTag possibleReplacementTag = getConceptNameTagByName(tag.getTag());
+							if (possibleReplacementTag != null) {
+								cn.removeTag(tag);
+								cn.addTag(possibleReplacementTag);
+							}
+						}
 						if (tag.getCreator() == null )
 							tag.setCreator(authUser);
 						if (tag.getDateCreated() == null)
