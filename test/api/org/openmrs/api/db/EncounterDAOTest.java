@@ -25,6 +25,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateEncounterDAO;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * This class tests the {@link EncounterDAO} linked to from the Context. Currently that file is the
@@ -52,13 +53,11 @@ public class EncounterDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure that the {@link EncounterDAO#getSavedEncounterDatetime(Encounter)} method returns
-	 * the date from the database and not the date on the pojo object
-	 * 
-	 * @throws Exception
+	 * @see {@link EncounterDAO#getSavedEncounterDatetime(Encounter)}
 	 */
 	@Test
-	public void shouldGetSavedEncounterDatetimeFromDatabase() throws Exception {
+	@Verifies(value = "should get saved encounter datetime from database", method = "getSavedEncounterDatetime(Encounter)")
+	public void getSavedEncounterDatetime_shouldGetSavedEncounterDatetimeFromDatabase() throws Exception {
 		
 		Encounter encounter = Context.getEncounterService().getEncounter(1);
 		

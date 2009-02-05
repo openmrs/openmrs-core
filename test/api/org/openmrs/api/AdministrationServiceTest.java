@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * TODO clean up and finish this test class. Should test all methods in the
@@ -49,10 +50,10 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * Tests the AdministrationService.executeSql method with a sql statement containing a valid
 	 * group by clause
 	 * 
-	 * @verifies {@link AdministrationService#executeSQL(String,null)} test = should execute sql
-	 *           containing group by
+	 * @see {@link AdministrationService#executeSQL(String,null)}
 	 */
 	@Test
+	@Verifies(value = "should execute sql containing group by", method = "executeSQL(String,null)")
 	public void executeSQL_shouldExecuteSqlContainingGroupBy() throws Exception {
 		
 		String sql = "select encounter1_.location_id, encounter1_.creator, encounter1_.encounter_type, encounter1_.form_id, location2_.location_id, count(obs0_.obs_id) from obs obs0_ right outer join encounter encounter1_ on obs0_.encounter_id=encounter1_.encounter_id inner join location location2_ on encounter1_.location_id=location2_.location_id inner join users user3_ on encounter1_.creator=user3_.user_id inner join person user3_1_ on user3_.user_id=user3_1_.person_id inner join encounter_type encountert4_ on encounter1_.encounter_type=encountert4_.encounter_type_id inner join form form5_ on encounter1_.form_id=form5_.form_id where encounter1_.date_created>='2007-05-05' and encounter1_.date_created<= '2008-05-05' group by encounter1_.location_id, encounter1_.creator , encounter1_.encounter_type , encounter1_.form_id";
@@ -142,19 +143,19 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link AdministrationService#getGlobalProperty(String)} test = should not fail with
-	 *           null propertyName
+	 * @see {@link AdministrationService#getGlobalProperty(String)}
 	 */
 	@Test
+	@Verifies(value = "should not fail with null propertyName", method = "getGlobalProperty(String)")
 	public void getGlobalProperty_shouldNotFailWithNullPropertyName() throws Exception {
 		adminService.getGlobalProperty(null);
 	}
 	
 	/**
-	 * @verifies {@link AdministrationService#getGlobalProperty(String)} test = should get property
-	 *           value given valid property name
+	 * @see {@link AdministrationService#getGlobalProperty(String)}
 	 */
 	@Test
+	@Verifies(value = "should get property value given valid property name", method = "getGlobalProperty(String)")
 	public void getGlobalProperty_shouldGetPropertyValueGivenValidPropertyName() throws Exception {
 		// put the global property into the database
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
@@ -165,19 +166,19 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link AdministrationService#getGlobalProperty(String,String)} test = should not
-	 *           fail with null default value
+	 * @see {@link AdministrationService#getGlobalProperty(String,String)}
 	 */
 	@Test
+	@Verifies(value = "should not fail with null default value", method = "getGlobalProperty(String,String)")
 	public void getGlobalProperty_shouldNotFailWithNullDefaultValue() throws Exception {
 		adminService.getGlobalProperty("asdfsadfsafd", null);
 	}
 	
 	/**
-	 * @verifies {@link AdministrationService#getGlobalProperty(String,String)} test = should return
-	 *           default value if property name does not exist
+	 * @see {@link AdministrationService#getGlobalProperty(String,String)}
 	 */
 	@Test
+	@Verifies(value = "should return default value if property name does not exist", method = "getGlobalProperty(String,String)")
 	public void getGlobalProperty_shouldReturnDefaultValueIfPropertyNameDoesNotExist() throws Exception {
 		String invalidKey = "asdfasdf";
 		String propertyValue = adminService.getGlobalProperty(invalidKey);

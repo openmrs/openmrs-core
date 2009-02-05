@@ -15,8 +15,6 @@ package org.openmrs.api.context;
 
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +25,7 @@ import org.openmrs.module.ModuleInteroperabilityTest;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.Verifies;
 
 /**
  * This test class is meant just for testing the {@link Context#loadClass(String)} method. This
@@ -36,8 +35,6 @@ import org.openmrs.test.SkipBaseSetup;
  * @see ContextTest
  */
 public class ContextWithModuleTest extends BaseContextSensitiveTest {
-	
-	private static Log log = LogFactory.getLog(ContextWithModuleTest.class);
 	
 	@Before
 	public void startupBeforeEachTest() throws Exception {
@@ -68,14 +65,12 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link Context#loadClass(String)} test = should load class with the
-	 *           OpenmrsClassLoader
-	 * @throws Exception
+	 * @see {@link Context#loadClass(String)}
 	 */
 	@Test
 	@SkipBaseSetup
+	@Verifies(value = "should load class with the OpenmrsClassLoader", method = "loadClass(String)")
 	public void loadClass_shouldLoadClassWithOpenmrsClassLoader() throws Exception {
-		log.error("ASDFASDF");
 		Class<?> c = Context.loadClass("org.openmrs.module.dssmodule.DssService");
 		Assert.assertTrue("Should be loaded by OpenmrsClassLoader", c.getClassLoader() instanceof ModuleClassLoader);
 	}

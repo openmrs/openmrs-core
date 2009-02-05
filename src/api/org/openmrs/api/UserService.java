@@ -72,6 +72,7 @@ public interface UserService extends OpenmrsService {
 	 * @param username user's identifier used for authentication
 	 * @return requested user
 	 * @throws APIException
+	 * @should get user by username
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
@@ -308,7 +309,6 @@ public interface UserService extends OpenmrsService {
 	 * @param pw current password
 	 * @param pw2 new password
 	 * @throws APIException
-	 * 
 	 * @should matchOnCorrectlyHashedStoredPassword
 	 * @should matchOnIncorrectlyHashedStoredPassword
 	 */
@@ -316,16 +316,14 @@ public interface UserService extends OpenmrsService {
 	public void changePassword(String pw, String pw2) throws APIException;
 	
 	/**
-	 * Changes the current user's password directly.
-	 * This is most useful if migrating users from other systems and you
-	 * want to retain the existing passwords.  This method will simply
-	 * save the passed hashed password and salt directly to the database.
+	 * Changes the current user's password directly. This is most useful if migrating users from
+	 * other systems and you want to retain the existing passwords. This method will simply save the
+	 * passed hashed password and salt directly to the database.
 	 * 
 	 * @param user the user whose password you want to change
 	 * @param hashedPassword - the <em>already hashed</em> password to store
 	 * @param salt - the salt which should be used with this hashed password
 	 * @throws APIException
-	 * 
 	 * @should successfullySaveToTheDatabase
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS })
@@ -338,7 +336,6 @@ public interface UserService extends OpenmrsService {
 	 * @param question
 	 * @param answer
 	 * @throws APIException
-	 * 
 	 * @should matchOnCorrectlyHashedStoredPassword
 	 * @should matchOnIncorrectlyHashedStoredPassword
 	 */

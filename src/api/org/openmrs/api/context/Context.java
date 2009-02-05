@@ -219,6 +219,11 @@ public class Context {
 	 * @param username user's identifier token for login
 	 * @param password user's password for authenticating to context
 	 * @throws ContextAuthenticationException
+	 * @should not authenticate with null username and password
+	 * @should not authenticate with null password
+	 * @should not authenticate with null username
+	 * @should not authenticate with null password and proper username
+	 * @should not authenticate with null password and proper system id
 	 */
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
 		if (log.isDebugEnabled())

@@ -13,15 +13,10 @@
  */
 package org.openmrs.api.context;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.AfterClass;
 import org.junit.Test;
-import org.openmrs.User;
-import org.openmrs.api.UserService;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.springframework.test.AssertThrows;
+import org.openmrs.test.Verifies;
 
 /**
  * TODO add methods for all context tests
@@ -40,94 +35,48 @@ public class ContextTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Null parameters to the authenticate method should not cause errors to be thrown and should
-	 * not ever show the Context to be authenticated
-	 * 
-	 * @throws Exception
+	 * @see {@link Context#authenticate(String,String)}
 	 */
-	@Test
-	public void shouldNotAuthenticateWithNullParameters() throws Exception {
-		
-		Context.logout();
-		assertFalse("This test needs to start with an unauthenticated context", Context.isAuthenticated());
-		
-		// check null username and null password
-		new AssertThrows(
-		                 ContextAuthenticationException.class) {
-			
-			public void test() throws Exception {
-				Context.authenticate(null, null);
-			}
-		}.runTest();
-		assertFalse("No one should ever be authenticated with null parameters", Context.isAuthenticated());
-		
-		// check non-null username and null password
-		new AssertThrows(
-		                 ContextAuthenticationException.class) {
-			
-			public void test() throws Exception {
-				Context.authenticate("some username", null);
-			}
-		}.runTest();
-		assertFalse("No one should ever be authenticated with null parameters", Context.isAuthenticated());
-		
-		// check null username and non-null password
-		new AssertThrows(
-		                 ContextAuthenticationException.class) {
-			
-			public void test() throws Exception {
-				Context.authenticate(null, "some password");
-			}
-		}.runTest();
-		assertFalse("No one should ever be authenticated with null parameters", Context.isAuthenticated());
-		
-		// check proper username and null pw
-		new AssertThrows(
-		                 ContextAuthenticationException.class) {
-			
-			public void test() throws Exception {
-				Context.authenticate("admin", null);
-			}
-		}.runTest();
-		assertFalse("No one should ever be authenticated with null password and proper username", Context.isAuthenticated());
-		
-		// check proper system id and null pw
-		new AssertThrows(
-		                 ContextAuthenticationException.class) {
-			
-			public void test() throws Exception {
-				Context.authenticate("1-8", null);
-			}
-		}.runTest();
-		assertFalse("No one should ever be authenticated with null password and proper system id", Context.isAuthenticated());
-		
+	@Test(expected = ContextAuthenticationException.class)
+	@Verifies(value = "should not authenticate with null password", method = "authenticate(String,String)")
+	public void authenticate_shouldNotAuthenticateWithNullPassword() throws Exception {
+		Context.authenticate("some username", null);
 	}
 	
 	/**
-	 * 
+	 * @see {@link Context#authenticate(String,String)}
 	 */
-	@Test
-	public void shouldGetUserByUsername() throws Exception {
-		UserService us = Context.getUserService();
-		String username = "admin";
-		User user = us.getUserByUsername(username);
-		assertNotNull("user " + username, user);
+	@Test(expected = ContextAuthenticationException.class)
+	@Verifies(value = "should not authenticate with null password and proper system id", method = "authenticate(String,String)")
+	public void authenticate_shouldNotAuthenticateWithNullPasswordAndProperSystemId() throws Exception {
+		Context.authenticate("1-8", null);
 	}
 	
 	/**
-	 * TODO create method
+	 * @see {@link Context#authenticate(String,String)}
 	 */
-	@Test
-	public void shouldProxyPrivilege() throws Exception {
-		
-		// create a non-admin user using dbunit xml 
-		
-		// make sure they can't do High Level Task X
-		
-		// give them proxy privileges to do High Level Task X
-		
-		// now make sure they can do High Level Task X
-		
+	@Test(expected = ContextAuthenticationException.class)
+	@Verifies(value = "should not authenticate with null password and proper username", method = "authenticate(String,String)")
+	public void authenticate_shouldNotAuthenticateWithNullPasswordAndProperUsername() throws Exception {
+		Context.authenticate("admin", null);
+	}
+	
+	/**
+	 * @see {@link Context#authenticate(String,String)}
+	 */
+	@Test(expected = ContextAuthenticationException.class)
+	@Verifies(value = "should not authenticate with null username", method = "authenticate(String,String)")
+	public void authenticate_shouldNotAuthenticateWithNullUsername() throws Exception {
+		Context.authenticate(null, "some password");
+	}
+	
+	/**
+	 * @see {@link Context#authenticate(String,String)}
+	 */
+	@Test(expected = ContextAuthenticationException.class)
+	@Verifies(value = "should not authenticate with null username and password", method = "authenticate(String,String)")
+	public void authenticate_shouldNotAuthenticateWithNullUsernameAndPassword() throws Exception {
+		Context.authenticate(null, null);
 	}
 	
 }
