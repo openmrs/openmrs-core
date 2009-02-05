@@ -314,4 +314,16 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		us.changeQuestionAnswer("test", "some question", "some answer");
 	}
 	
+	/**
+	 * @see {@link UserService#getUserByUsername(String)}
+	 */
+	@Test
+	@Verifies(value = "should get user by username", method = "getUserByUsername(String)")
+	public void getUserByUsername_shouldGetUserByUsername() throws Exception {
+		UserService us = Context.getUserService();
+		String username = "admin";
+		User user = us.getUserByUsername(username);
+		assertNotNull("user " + username, user);
+	}
+	
 }
