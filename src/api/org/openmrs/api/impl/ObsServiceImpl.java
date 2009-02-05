@@ -622,17 +622,17 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 *      java.lang.Boolean, java.lang.Integer, boolean includeVoided)
 	 * @deprecated
 	 */
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType,
+	public List<Object[]> getNumericAnswersForConcept(Concept question, Boolean sortByValue, Integer personType,
 	                                                  boolean includeVoided) {
 		List<String> sortList = new Vector<String>();
 		if (sortByValue) {
 			sortList.add("valueNumeric");
 		}
 		
-		List<Concept> answers = new Vector<Concept>();
-		answers.add(answer);
+		List<Concept> questions = new Vector<Concept>();
+		questions.add(question);
 		
-		List<Obs> obs = getObservations(null, null, null, answers, getPersonTypeEnumerations(personType), null, sortList,
+		List<Obs> obs = getObservations(null, null, questions, null, getPersonTypeEnumerations(personType), null, sortList,
 		    null, null, null, null, includeVoided);
 		
 		List<Object[]> returnList = new Vector<Object[]>();
