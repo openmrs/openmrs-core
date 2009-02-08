@@ -316,44 +316,6 @@
 		<unzip src="${metadata.dir}/model/liquibase-data.zip" 
 			   dest="${build.dir}/liquibase-data" />
 		
-		<property name="libs-zipped-temp" value="${dist.dir}/web/temp-war-libs-zipped.zip" />
-		<zip destfile="${libs-zipped-temp}">
-			
-			<!-- NOTE: You must do an ant "clean" after changing these libraries -->
-			
-			<zipfileset dir="${antlr.dir}" includes="*.jar" />
-			<zipfileset dir="${asm.dir}" includes="*.jar" />
-			<zipfileset dir="${c3p0.dir}" includes="*.jar" />
-			<zipfileset dir="${cglib.dir}" includes="*.jar" />
-			<zipfileset dir="${commons-beanutils.dir}" includes="*.jar" />
-			<zipfileset dir="${commons-collections.dir}" includes="*.jar" excludes="*test*.jar" />
-			<zipfileset dir="${commons-fileupload.dir}" includes="*.jar" />
-			<zipfileset dir="${commons-io.dir}" includes="*.jar" />
-			<zipfileset dir="${commons-lang.dir}" includes="*.jar" />
-			<zipfileset dir="${commons-logging.dir}" includes="*.jar" excludes="*api*.jar" />
-			<zipfileset dir="${database.dir}" includes="*.jar" />
-			<zipfileset dir="${dom4j.dir}" includes="*.jar" />
-			<zipfileset dir="${dwr.dir}" includes="*.jar" />
-			<zipfileset dir="${ehcache.dir}" includes="*.jar" />
-			<zipfileset dir="${hl7api.dir}" includes="*.jar" />
-			<zipfileset dir="${hibernate.dir}" includes="*.jar" />
-			<zipfileset dir="${jfreechart.dir}" includes="*.jar" />
-			<zipfileset dir="${jstl.dir}" includes="*.jar" />
-			<zipfileset dir="${jta.dir}" includes="*.jar" />
-			<zipfileset dir="${log4j.dir}" includes="*.jar" />
-			<zipfileset dir="${mail.dir}" includes="*.jar" />
-			<zipfileset dir="${neal-reporting.dir}" includes="*.jar" />
-			<zipfileset dir="${saxon.dir}" includes="*.jar" />
-			<zipfileset dir="${simple.dir}" includes="*.jar" />
-			<zipfileset dir="${spring.dir}" includes="*.jar" excludes="*test*.jar"/>
-			<zipfileset dir="${stax.dir}" includes="*.jar" />
-			<zipfileset dir="${taglibs.dir}" includes="*.jar" />
-			<zipfileset dir="${velocity.dir}" includes="*.jar" />
-			<zipfileset dir="${xerces.dir}" includes="*.jar" excludes="*Samples*.jar" />
-			<zipfileset dir="${xstream.dir}" includes="*.jar" />
-			<zipfileset dir="${liquibase.dir}" includes="*.jar" />
-		</zip>
-		
 		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml, **/test/" webxml="${dist.dir}/web/web.xml" duplicate="add">
 			<classes dir="${build.dir}">
 				<include name="**/web/**/*.class" />
@@ -367,7 +329,37 @@
 				<include name="*_theme*.properties"/>
 			</classes>
 			<lib file="${dist.dir}/${openmrs.api.name}" />
-			<lib src="${libs-zipped-temp}" />
+			<lib dir="${antlr.dir}" includes="*.jar" />
+			<lib dir="${asm.dir}" includes="*.jar" />
+			<lib dir="${c3p0.dir}" includes="*.jar" />
+			<lib dir="${cglib.dir}" includes="*.jar" />
+			<lib dir="${commons-beanutils.dir}" includes="*.jar" />
+			<lib dir="${commons-collections.dir}" includes="*.jar" excludes="*test*.jar" />
+			<lib dir="${commons-fileupload.dir}" includes="*.jar" />
+			<lib dir="${commons-io.dir}" includes="*.jar" />
+			<lib dir="${commons-lang.dir}" includes="*.jar" />
+			<lib dir="${commons-logging.dir}" includes="*.jar" excludes="*api*.jar" />
+			<lib dir="${database.dir}" includes="*.jar" />
+			<lib dir="${dom4j.dir}" includes="*.jar" />
+			<lib dir="${dwr.dir}" includes="*.jar" />
+			<lib dir="${ehcache.dir}" includes="*.jar" />
+			<lib dir="${hl7api.dir}" includes="*.jar" />
+			<lib dir="${hibernate.dir}" includes="*.jar" />
+			<lib dir="${jfreechart.dir}" includes="*.jar" />
+			<lib dir="${jstl.dir}" includes="*.jar" />
+			<lib dir="${jta.dir}" includes="*.jar" />
+			<lib dir="${log4j.dir}" includes="*.jar" />
+			<lib dir="${mail.dir}" includes="*.jar" />
+			<lib dir="${neal-reporting.dir}" includes="*.jar" />
+			<lib dir="${saxon.dir}" includes="*.jar" />
+			<lib dir="${simple.dir}" includes="*.jar" />
+			<lib dir="${spring.dir}" includes="*.jar" excludes="*test*.jar"/>
+			<lib dir="${stax.dir}" includes="*.jar" />
+			<lib dir="${taglibs.dir}" includes="*.jar" />
+			<lib dir="${velocity.dir}" includes="*.jar" />
+			<lib dir="${xerces.dir}" includes="*.jar" excludes="*Samples*.jar" />
+			<lib dir="${xstream.dir}" includes="*.jar" />
+			<lib dir="${liquibase.dir}" includes="*.jar" />
 		</war>
 	</target>
 	
