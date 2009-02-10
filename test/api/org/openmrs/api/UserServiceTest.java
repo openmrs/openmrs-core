@@ -259,17 +259,15 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#changePassword(String,String)}
+	 * @see {@link UserService#getUserByUsername(String)}
 	 */
 	@Test
-	@Verifies(value = "should matchOnCorrectlyHashedStoredPassword", method = "changePassword(String,String)")
-	public void changePassword_shouldMatchOnCorrectlyHashedStoredPassword() throws Exception {
-		executeDataSet(XML_FILENAME);
-		Context.logout();
-		Context.authenticate("correctlyhashed", "test");
-		
+	@Verifies(value = "should get user by username", method = "getUserByUsername(String)")
+	public void getUserByUsername_shouldGetUserByUsername() throws Exception {
 		UserService us = Context.getUserService();
-		us.changePassword("test", "test2");
+		String username = "admin";
+		User user = us.getUserByUsername(username);
+		assertNotNull("username not found " + username, user);
 	}
 	
 	/**
@@ -284,6 +282,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		UserService us = Context.getUserService();
 		us.changePassword("test", "test2");
+		
+		Context.logout(); // so that the next test reauthenticates
 	}
 	
 	/**
@@ -298,6 +298,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		UserService us = Context.getUserService();
 		us.changeQuestionAnswer("test", "some question", "some answer");
+		
+		Context.logout(); // so that the next test reauthenticates
 	}
 	
 	/**
@@ -312,18 +314,22 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		UserService us = Context.getUserService();
 		us.changeQuestionAnswer("test", "some question", "some answer");
+		
+		Context.logout(); // so that the next test reauthenticates
 	}
 	
 	/**
-	 * @see {@link UserService#getUserByUsername(String)}
+	 * @see {@link UserService#changePassword(String,String)}
 	 */
 	@Test
-	@Verifies(value = "should get user by username", method = "getUserByUsername(String)")
-	public void getUserByUsername_shouldGetUserByUsername() throws Exception {
+	@Verifies(value = "should matchOnCorrectlyHashedStoredPassword", method = "changePassword(String,String)")
+	public void changePassword_shouldMatchOnCorrectlyHashedStoredPassword() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Context.logout();
+		Context.authenticate("correctlyhashed", "test");
+		
 		UserService us = Context.getUserService();
-		String username = "admin";
-		User user = us.getUserByUsername(username);
-		assertNotNull("user " + username, user);
+		us.changePassword("test", "test2");
 	}
 	
 }
