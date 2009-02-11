@@ -69,7 +69,7 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	 * 
 	 * @see java.util.Timer#Timer(boolean)
 	 */
-	private Timer timerScheduler = new Timer(true);
+	private Map<TaskDefinition, Timer> taskDefinitionTimerMap = new HashMap<TaskDefinition, Timer>();
 	
 	/**
 	 * Global data access object context
@@ -127,7 +127,7 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 		// gracefully shutdown all tasks and remove all references to the timers, scheduler
 		try {
 			shutdownAllTasks();
-			timerScheduler.cancel(); // Just a precaution - this shouldn't be necessary if shutdownAllTasks() does its job
+			cancelAllTimers(); // Just a precaution - this shouldn't be necessary if shutdownAllTasks() does its job
 		}
 		catch (APIException e) {
 			log.error("Failed to stop all tasks due to API exception", e);
@@ -136,6 +136,15 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 			scheduledTasks = null;
 		}
 		
+	}
+	
+	/**
+	 * Convenience method to stop all tasks in the {@link #taskDefinitionTimerMap}
+	 */
+	private void cancelAllTimers() {
+		for (Timer timer : taskDefinitionTimerMap.values()) {
+			timer.cancel();
+		}
 	}
 	
 	/**
@@ -157,6 +166,26 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 				log.error("Failed to stop task " + task.getTaskClass() + " due to API exception", e);
 			}
 		}
+	}
+	
+	/**
+	 * Get the {@link Timer} that is assigned to the given {@link TaskDefinition} 
+	 * object.  If a Timer doesn't exist yet, one is created, added to 
+	 * {@link #taskDefinitionTimerMap} and then returned
+	 * 
+	 * @param taskDefinition the {@link TaskDefinition} to look for
+	 * @return the {@link Timer} associated with the given {@link TaskDefinition}
+	 */
+	private Timer getTimer(TaskDefinition taskDefinition) {
+		Timer timer;
+		if (taskDefinitionTimerMap.containsKey(taskDefinition)) {
+			timer = taskDefinitionTimerMap.get(taskDefinition);
+		} else {
+			timer = new Timer(true);
+			taskDefinitionTimerMap.put(taskDefinition, timer);
+		}
+		
+		return timer;
 	}
 	
 	/**
@@ -207,16 +236,16 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 						log.info("Starting task ... the task will execute for the first time at " + nextTime);
 						
 						// Schedule the task to run at a fixed rate
-						timerScheduler.scheduleAtFixedRate(schedulerTask, nextTime, repeatInterval);
+						getTimer(taskDefinition).scheduleAtFixedRate(schedulerTask, nextTime, repeatInterval);
 					} else if (repeatInterval > 0) {
 						// Start task on repeating schedule, delay for SCHEDULER_DEFAULT_DELAY seconds	
 						log.info("Delaying start time by " + SchedulerConstants.SCHEDULER_DEFAULT_DELAY + " seconds");
-						timerScheduler.scheduleAtFixedRate(schedulerTask, SchedulerConstants.SCHEDULER_DEFAULT_DELAY,
-						    repeatInterval);
+						getTimer(taskDefinition).scheduleAtFixedRate(schedulerTask,
+						    SchedulerConstants.SCHEDULER_DEFAULT_DELAY, repeatInterval);
 					} else {
 						// schedule for single execution, starting now
 						log.info("Starting one-shot task");
-						timerScheduler.schedule(schedulerTask, new Date());
+						getTimer(taskDefinition).schedule(schedulerTask, new Date());
 					}
 					
 					// Update task that has been started

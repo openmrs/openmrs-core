@@ -2,6 +2,7 @@ package org.openmrs.scheduler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.scheduler.tasks.TaskThreadedInitializationWrapper;
 import org.openmrs.util.OpenmrsClassLoader;
 
 /**
@@ -28,7 +29,9 @@ public class TaskFactory {
 	}
 	
 	/**
-	 * Creates a new instance of Schedulable used to run tasks.
+	 * Creates a new instance of Schedulable used to run tasks. By default the returned task will be
+	 * the given task wrapped with the {@link TaskThreadedInitializationWrapper} class so that the
+	 * {@link Task#initialize(TaskDefinition)} method runs in a new thread.
 	 * 
 	 * @param taskConfig
 	 * @return
@@ -41,7 +44,7 @@ public class TaskFactory {
 			Class<?> taskClass = OpenmrsClassLoader.getInstance().loadClass(taskDefinition.getTaskClass());
 			
 			// Create a new instance of the schedulable class 
-			Task task = (Task) taskClass.newInstance();
+			Task task = new TaskThreadedInitializationWrapper((Task) taskClass.newInstance());
 			
 			if (log.isDebugEnabled()) {
 				log.debug("initializing " + taskClass.getName());
