@@ -17,12 +17,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.openmrs.api.context.Context;
+import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
 
@@ -103,4 +108,191 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	private static List<String> outputForConcurrentTasks = new ArrayList<String>();
+	
+	/**
+	 * Longer running class used to demonstrate tasks running concurrently
+	 */
+	static class SampleTask1 extends AbstractTask {
+		
+		public void execute() {
+			synchronized (outputForConcurrentTasks) {
+				outputForConcurrentTasks.add("START-1");
+			}
+			try {
+				Thread.sleep(3000);
+			}
+			catch (InterruptedException e) {
+				log.error("Error generated", e);
+			}
+			synchronized (outputForConcurrentTasks) {
+				outputForConcurrentTasks.add("END-1");
+			}
+		}
+	}
+	
+	/**
+	 * Shorter running class used to demonstrate tasks running concurrently
+	 */
+	static class SampleTask2 extends AbstractTask {
+		
+		public void execute() {
+			synchronized (outputForConcurrentTasks) {
+				outputForConcurrentTasks.add("START-2");
+			}
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException e) {
+				log.error("Error generated", e);
+			}
+			synchronized (outputForConcurrentTasks) {
+				outputForConcurrentTasks.add("END-2");
+			}
+		}
+	}
+	
+	/**
+	 * Demonstrates concurrent running for tasks
+	 * 
+	 * <pre>
+	 *             |
+	 * SampleTask2 |    ----
+	 * SampleTask1 |------------
+	 *             |_____________ time
+	 *              ^   ^   ^   ^
+	 * Output:     S-1 S-2 E-2 E-1
+	 * </pre>
+	 */
+	@Test
+	public void shouldAllowTwoTasksToRunConcurrently() throws Exception {
+		SchedulerService schedulerService = Context.getSchedulerService();
+		
+		TaskDefinition t1 = new TaskDefinition();
+		t1.setId(1);
+		t1.setStartOnStartup(false);
+		t1.setRepeatInterval(10L);
+		t1.setTaskClass(SampleTask1.class.getName());
+		
+		TaskDefinition t2 = new TaskDefinition();
+		t2.setId(2);
+		t2.setStartOnStartup(false);
+		t2.setRepeatInterval(10L);
+		t2.setTaskClass(SampleTask2.class.getName());
+		
+		Calendar startTime1 = Calendar.getInstance();
+		startTime1.add(Calendar.SECOND, 1);
+		t1.setStartTime(startTime1.getTime());
+		
+		Calendar startTime2 = Calendar.getInstance();
+		startTime2.setTime(startTime1.getTime());
+		// Task2 starts one second after Task1
+		startTime2.add(Calendar.SECOND, 1);
+		t2.setStartTime(startTime2.getTime());
+		
+		schedulerService.scheduleTask(t1);
+		schedulerService.scheduleTask(t2);
+		Thread.sleep(4000);
+		schedulerService.shutdownTask(t1);
+		schedulerService.shutdownTask(t2);
+		assertEquals(Arrays.asList("START-1", "START-2", "END-2", "END-1"), outputForConcurrentTasks);
+	}
+	
+	private static List<String> outputForConcurrentInit = new ArrayList<String>();
+	
+	/**
+	 * Longer init'ing class for concurrent init test
+	 */
+	static class SampleTask3 extends AbstractTask {
+		
+		public void initialize(TaskDefinition config) {
+			synchronized (outputForConcurrentInit) {
+				outputForConcurrentInit.add("INIT-START-3");
+			}
+			super.initialize(config);
+			try {
+				Thread.sleep(3000);
+			}
+			catch (InterruptedException e) {
+				log.error("Error generated", e);
+			}
+			synchronized (outputForConcurrentInit) {
+				outputForConcurrentInit.add("INIT-END-3");
+			}
+		}
+		
+		public void execute() {
+		}
+	}
+	
+	/**
+	 * Shorter init'ing class for the concurrent init test
+	 */
+	static class SampleTask4 extends AbstractTask {
+		
+		public void initialize(TaskDefinition config) {
+			synchronized (outputForConcurrentInit) {
+				outputForConcurrentInit.add("INIT-START-4");
+			}
+			super.initialize(config);
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException e) {
+				log.error("Error generated", e);
+			}
+			synchronized (outputForConcurrentInit) {
+				outputForConcurrentInit.add("INIT-END-4");
+			}
+		}
+		
+		public void execute() {
+		}
+	}
+	
+	/**
+	 * Demonstrates concurrent initializing for tasks
+	 * 
+	 * <pre>
+	 *             |
+	 * SampleTask4 |    ----
+	 * SampleTask3 |------------
+	 *             |_____________ time
+	 *              ^   ^   ^   ^
+	 * Output:     S-3 S-4 E-4 E-3
+	 * </pre>
+	 */
+	@Test
+	public void shouldAllowTwoTasksInitMethodsToRunConcurrently() throws Exception {
+		SchedulerService schedulerService = Context.getSchedulerService();
+		
+		TaskDefinition t3 = new TaskDefinition();
+		t3.setId(3);
+		t3.setStartOnStartup(false);
+		t3.setRepeatInterval(10L);
+		t3.setTaskClass(SampleTask3.class.getName());
+		
+		TaskDefinition t4 = new TaskDefinition();
+		t4.setId(4);
+		t4.setStartOnStartup(false);
+		t4.setRepeatInterval(10L);
+		t4.setTaskClass(SampleTask4.class.getName());
+		
+		Calendar startTime3 = Calendar.getInstance();
+		startTime3.add(Calendar.SECOND, 1);
+		t3.setStartTime(startTime3.getTime());
+		
+		Calendar startTime4 = Calendar.getInstance();
+		startTime4.setTime(startTime3.getTime());
+		// Task4 starts one second after Task3
+		startTime4.add(Calendar.SECOND, 1);
+		t4.setStartTime(startTime4.getTime());
+		
+		schedulerService.scheduleTask(t3);
+		schedulerService.scheduleTask(t4);
+		Thread.sleep(4000);
+		schedulerService.shutdownTask(t3);
+		schedulerService.shutdownTask(t4);
+		assertEquals(Arrays.asList("INIT-START-3", "INIT-START-4", "INIT-END-4", "INIT-END-3"), outputForConcurrentInit);
+	}
 }
