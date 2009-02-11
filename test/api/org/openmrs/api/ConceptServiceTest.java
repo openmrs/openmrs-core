@@ -156,7 +156,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptComplex(Integer)}
 	 */
 	@Test
-	//@Verifies(value = "should return a concept complex object", method = "getConceptComplex(Integer)")
+	@Verifies(value = "should return a concept complex object", method = "getConceptComplex(Integer)")
 	public void getConceptComplex_shouldReturnAConceptComplexObject() throws Exception {
 		executeDataSet("org/openmrs/api/include/ObsServiceTest-complex.xml");
 		ConceptComplex concept = Context.getConceptService().getConceptComplex(8473);

@@ -25,10 +25,12 @@ import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortDefinition;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.Verifies;
 
 /**
  * Tests methods in the CohortService class TODO add all the rest of the tests
@@ -50,9 +52,13 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		service = Context.getCohortService();
 	}
 	
+	/**
+	 * @see {@link CohortService#evaluate(CohortDefinition,EvaluationContext)}
+	 */
 	@Test
 	@SkipBaseSetup
-	public void shouldPatientSearchCohortDefinitionProvider() throws Exception {
+	@Verifies(value = "should return all patients with blank patient search cohort definition provider", method = "evaluate(CohortDefinition,EvaluationContext)")
+	public void evaluate_shouldReturnAllPatientsWithBlankPatientSearchCohortDefinitionProvider() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(CREATE_PATIENT_XML);
 		authenticate();
@@ -63,8 +69,12 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Should return one member", 1, result.size());
 	}
 	
+	/**
+	 * @see {@link CohortService#getCohort(String)}
+	 */
 	@Test
-	public void shouldOnlyGetNonVoidedCohortsByName() throws Exception {
+	@Verifies(value = "should only get non voided cohorts by name", method = "getCohort(String)")
+	public void getCohort_shouldOnlyGetNonVoidedCohortsByName() throws Exception {
 		executeDataSet("org/openmrs/api/include/CohortServiceTest-cohort.xml");
 		
 		// make sure we have two cohorts with the same name and the first is voided
@@ -80,4 +90,5 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, exampleCohort.size());
 		assertFalse(exampleCohort.isVoided());
 	}
+	
 }
