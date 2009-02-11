@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -340,7 +341,7 @@ public class ObsTableWidget extends TagSupport {
 					List<Obs> list = groupedObs.get(key);
 					if (list != null) {
 						if (combineEqualResults) {
-							List<String> unique = new ArrayList<String>();
+							Collection<String> unique = new LinkedHashSet<String>();
 							for (Obs obs : list)
 								unique.add(obs.getValueAsString(loc));
 							for (String s : unique)
@@ -384,7 +385,7 @@ public class ObsTableWidget extends TagSupport {
 					List<Obs> list = groupedObs.get(key);
 					if (list != null) {
 						if (combineEqualResults) {
-							List<String> unique = new ArrayList<String>();
+							Collection<String> unique = new LinkedHashSet<String>();
 							for (Obs obs : list)
 								unique.add(obs.getValueAsString(loc));
 							for (String s : unique)
