@@ -120,6 +120,7 @@ public interface CohortService extends OpenmrsService {
 	 * @throws APIException
 	 * @should get cohort given a name
 	 * @should get the nonvoided cohort if two exist with same name
+	 * @should only get non voided cohorts by name
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS })
 	public Cohort getCohort(String name) throws APIException;
@@ -294,6 +295,15 @@ public interface CohortService extends OpenmrsService {
 	@Transactional
 	public void purgeCohortDefinition(CohortDefinition definition) throws APIException;
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param definition
+	 * @param evalContext
+	 * @return
+	 * @throws APIException
+	 * @should return all patients with blank patient search cohort definition provider
+	 */
 	@Transactional(readOnly = true)
 	public Cohort evaluate(CohortDefinition definition, EvaluationContext evalContext) throws APIException;
 	
