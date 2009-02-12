@@ -532,5 +532,15 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		assertEquals(1, Context.getPatientService().getPatients("Co").size());
 	}
+
+	/**
+     * @see {@link PatientService#getPatient(Integer)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should return null object if patient id doesnt exist", method = "getPatient(Integer)")
+    public void getPatient_shouldReturnNullObjectIfPatientIdDoesntExist() throws Exception {
+	    Assert.assertNull(Context.getPatientService().getPatient(1234512093));
+    }
 	
 }
