@@ -73,6 +73,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientId internal patient identifier
 	 * @return patient with given internal identifier
 	 * @throws APIException
+	 * @should return null object if patient id doesnt exist
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS })
 	@Transactional(readOnly = true)
