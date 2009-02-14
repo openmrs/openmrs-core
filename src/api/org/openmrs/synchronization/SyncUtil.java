@@ -142,7 +142,7 @@ public class SyncUtil {
 		Object propVal = null;
 		propVal = SyncUtil.valForField(propName, n.getTextContent(), allFields);
 		
-		log.info("Trying to set value to " + propVal + " when propName is " + propName + " and context is " + n.getTextContent());
+		log.debug("Trying to set value to " + propVal + " when propName is " + propName + " and context is " + n.getTextContent());
 		
 		if ( propVal !=  null ) {
 			SyncUtil.setProperty(o, propName, propVal);
