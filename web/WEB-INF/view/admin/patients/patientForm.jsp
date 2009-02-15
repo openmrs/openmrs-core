@@ -243,21 +243,21 @@
 					<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifier${varStatus.index}" <c:if test="${identifier.voided}">class='voided'</c:if>><span>${identifier.identifierType.name}</span>&nbsp;</a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'identifier');" id="identifierTab" style="display: none"><span></span>&nbsp;</a>
-				<input type="button" onClick="return addNew('identifier');" class="addNew" id="identifier" value="Add New Identifier"/>
+				<input type="button" onClick="return addNew('identifier');" class="addNew" id="identifier" value='<spring:message code="Patient.addNewIdentifier"/>'/>
 			</div>
 			<div class="tabBoxes" id="identifierDataBoxes">
 				<c:forEach var="identifier" items="${patient.identifiers}" varStatus="varStatus">
 					<spring:nestedPath path="patient.identifiers[${varStatus.index}]">
 						<div id="identifier${varStatus.index}Data" class="tabBox">
 							<%@ include file="include/editPatientIdentifier.jsp" %>
-							<!-- <input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value="Remove this identifier"/><br/> --> <br/>
+							<!-- <input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value='<spring:message code="Patient.removeThisIdentifier"/>'/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="identifierData" class="tabBox">
 					<spring:nestedPath path="emptyIdentifier">
 						<%@ include file="include/editPatientIdentifier.jsp" %>
-						<!-- <input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value="Remove this identifier"/><br/> --> <br/>
+						<!-- <input type="button" onClick="return removeTab(this, 'identifier');" class="removeTab" value='<spring:message code="Patient.removeThisIdentifier"/>'/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
 			</div>
@@ -275,21 +275,21 @@
 					<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="name${varStatus.index}" <c:if test="${name.voided}">class='voided'</c:if>><span>${name.givenName}</span>&nbsp;<span>${name.familyName}</span></a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'name');" id="nameTab" style="display: none"><span></span>&nbsp;<span></span></a>
-				<input type="button" onClick="return addNew('name');" class="addNew" id="name" value="Add New Name"/>
+				<input type="button" onClick="return addNew('name');" class="addNew" id="name" value='<spring:message code="Patient.addNewName"/>'/>
 			</div>
 			<div class="tabBoxes" id="nameDataBoxes">
 				<c:forEach var="name" items="${patient.names}" varStatus="varStatus">
 					<spring:nestedPath path="patient.names[${varStatus.index}]">
 						<div id="name${varStatus.index}Data" class="tabBox">
 							<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true" />
-							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this name"/><br/> --> <br/>
+							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<spring:message code="Patient.removeThisName"/>'/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="nameData" class="tabBox">
 					<spring:nestedPath path="emptyName">
 						<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true" />
-						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this name"/><br/> --> <br/>
+						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<spring:message code="Patient.removeThisName"/>'/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
 			</div>
@@ -307,7 +307,7 @@
 					<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="address${varStatus.index}" <c:if test="${address.voided}">class='voided'</c:if>><span>${address.cityVillage}</span>&nbsp;</a>
 				</c:forEach>
 				<a href="javascript:return false;" onClick="return selectTab(this, 'address');" id="addressTab" style="display: none"><span></span>&nbsp;</a>
-				<input type="button" onClick="return addNew('address');" class="addNew" id="address" value="Add New Address"/>			
+				<input type="button" onClick="return addNew('address');" class="addNew" id="address" value='<spring:message code="Patient.addNewAddress"/>'/>			
 			</div>
 			<div class="tabBoxes" id="addressDataBoxes">
 				<c:forEach var="address" items="${patient.addresses}" varStatus="varStatus">
@@ -315,14 +315,14 @@
 						<div id="address${varStatus.index}Data" class="tabBox">
 							<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true" />
 							<%-- @ include file="include/editPersonAddress.jsp" --%>
-							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this address"/><br/> --> <br/>
+							<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<spring:message code="Patient.removeThisAddress"/>'/><br/> --> <br/>
 						</div>
 					</spring:nestedPath>
 				</c:forEach>
 				<div id="addressData" class="tabBox">
 					<spring:nestedPath path="emptyAddress">
 						<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=true|layoutShowExtended=true" />
-						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value="Remove this address"/><br/> --> <br/>
+						<!-- <input type="button" onClick="return removeTab(this, 'name');" class="removeTab" value='<spring:message code="Patient.removeThisAddress"/>'/><br/> --> <br/>
 					</spring:nestedPath>
 				</div>
 			</div>
