@@ -402,7 +402,7 @@ public class InitializationFilter implements Filter {
 				String sql = "drop user ?";
 				executeStatement(true, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 				    connectionUsername);
-				sql = "create user ? identified by '?'";
+				sql = "create user ?@'localhost' identified by '?'";
 				if (-1 != executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 				    connectionUsername, connectionPassword)) {
 					wizardModel.workLog.add("Created user " + connectionUsername);
@@ -414,7 +414,7 @@ public class InitializationFilter implements Filter {
 				}
 				
 				// grant the roles
-				sql = "GRANT ALL ON ?.* TO ?";
+				sql = "GRANT ALL ON ?.* TO ?@'localhost'";
 				int result = executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 				    wizardModel.databaseName, connectionUsername);
 				// throw the user back to the main screen if this error occurs
