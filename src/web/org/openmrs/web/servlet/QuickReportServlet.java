@@ -99,7 +99,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 	}
 	
-	private void doReturnVisitDate(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request)
+    private void doReturnVisitDate(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request)
 	                                                                                                               throws ServletException {
 		ObsService os = Context.getObsService();
 		EncounterService es = Context.getEncounterService();
@@ -240,16 +240,61 @@ public class QuickReportServlet extends HttpServlet {
 	                                                                                                         throws ServletException {
 		ObsService os = Context.getObsService();
 		
-		velocityContext.put("date", OpenmrsUtil.getDateFormat());
-		velocityContext.put("locale", Context.getLocale());
-		List<Obs> obs = os.getVoidedObservations();
+		DateFormat dateFormat = OpenmrsUtil.getDateFormat();
+		velocityContext.put("date", dateFormat);
+		
+		Calendar cal = Calendar.getInstance();
+		
+		Date start = new Date();
+		Date end = new Date();
+		
+		String startDate = request.getParameter("startDate");
+		String endDate = request.getParameter("endDate");
+		
+		if (startDate != null && startDate.length() != 0) {
+			try {
+				cal.setTime(dateFormat.parse(startDate));
+			}
+			catch (ParseException e) {
+				throw new ServletException("Error parsing 'Start Date'", e);
+			}
+		} else
+			cal.setTime(new Date());
+		
+		// if they don't input an end date, assume they meant "this week"
+		if (endDate == null || endDate.equals("")) {
+			while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+				cal.add(Calendar.DAY_OF_MONTH, -1);
+			}
+			start = cal.getTime();
+			cal.add(Calendar.DAY_OF_MONTH, 7);
+			end = cal.getTime();
+		} else {
+			// they put in an end date, assume literal start and end
+			start = cal.getTime();
+			try {
+				cal.setTime(dateFormat.parse(endDate));
+			}
+			catch (ParseException e) {
+				throw new ServletException("Error parsing 'End Date'", e);
+			}
+			end = cal.getTime();
+		}
+		
+		List<Obs> allObs = null;
+		allObs = os.getObservations(null, null, null, null, null, null, null, null, null, start, end, true);
+		
+		List<Obs> obs = new Vector<Obs>();
+		for (Obs o : allObs) {
+			if (o.getVoided() == true)
+				obs.add(o);
+		}
 		
 		if (obs != null) {
 			velocityContext.put("observations", obs);
 		} else {
 			report.append("No Observations found");
 		}
-		
 	}
 	
 	// TODO temporary placement of template string
@@ -287,7 +332,7 @@ public class QuickReportServlet extends HttpServlet {
 			template += "#foreach($o in $observations)\n";
 			template += " <tr>\n";
 			template += "  <td><a href='admin/observations/obs.form?obsId=$!{o.ObsId}'>$!{o.ObsId}</a></td>\n";
-			template += "  <td><a href='admin/patients/patient.form?patientId=$!{o.Patient.patientId}'>$!{o.Patient.PatientIdentifier}</a></td>\n";
+			template += "  <td><a href='admin/patients/patient.form?patientId=$!{o.Person.personId}'>$!{o.Person.personName}</a></td>\n";
 			template += "  <td><a href='admin/encounters/encounter.form?encounterId=$!{o.Encounter.EncounterId}'>$!{o.Encounter.EncounterId}</a></td>\n";
 			template += "  <td>$!{o.Concept.getName(locale)}</td>\n";
 			template += "  <td>$!{o.getValueAsString(locale)}</td>\n";

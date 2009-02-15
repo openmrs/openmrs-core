@@ -52,7 +52,7 @@
 				<select name="reportType">
 					<option value="RETURN VISIT DATE THIS WEEK" onclick="show(['reportType', 'startDate', 'endDate', 'location'])">Return Visit Date This Week</option>
 					<option value="ATTENDED CLINIC THIS WEEK" onclick="show(['reportType', 'startDate', 'endDate', 'location'])">Attended Clinic This Week</option>
-					<option value="VOIDED OBS" onclick="show(['reportType'])">Voided Obs</option>
+					<option value="VOIDED OBS" onclick="show(['reportType', 'startDate', 'endDate'])">Voided Obs</option>
 				</select>
 			</td>
 		</tr>
