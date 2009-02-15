@@ -15,7 +15,6 @@ package org.openmrs.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -37,7 +36,6 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
-import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 
 /**
@@ -64,42 +62,100 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Test getting a concept by name and by partial name. NOTE: This test assumes that there are at
-	 * least a few concepts in the database system
+	 * Test getting a concept by name and by partial name.
 	 * 
-	 * @throws Exception
+	 * @see {@link ConceptService#getConceptByName(String)}
 	 */
 	@Test
-	public void shouldGetConceptByName() throws Exception {
+	@Verifies(value = "should get concept by name", method = "getConceptByName(String)")
+	public void getConceptByName_shouldGetConceptByName() throws Exception {
+		
+		String nameToFetch = "Some non numeric concept name";
 		
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
-		// get the first concept in the dictionary
-		Concept firstConcept = conceptService.getConcept(1);
-		assertNotNull("There should be a concept with id of 1", firstConcept);
-		
-		// get the concept by its name
-		String name = firstConcept.getName().getName();
-		Concept firstConceptByName = conceptService.getConceptByName(name);
-		assertNotNull("You should be able to get this concept by name", firstConceptByName);
-		
-		// substring the name and try to get it again
-		List<Concept> firstConceptsByPartialNameList = conceptService.getConceptsByName(name.substring(1));
-		assertTrue("You should be able to get the concept by partial name", firstConceptsByPartialNameList
-		        .contains(firstConcept));
-		
+		Concept conceptByName = conceptService.getConceptByName(nameToFetch);
+		assertEquals("Unable to fetch concept by name", conceptByName, new Concept(1));
 	}
 	
+	/**
+	 * @see {@link ConceptService#getConceptByName(String)}
+	 */
+	@Test
+	@Verifies(value = "should get concept by partial name", method = "getConceptByName(String)")
+	public void getConceptByName_shouldGetConceptByPartialName() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// substring of the name 
+		String partialNameToFetch = "So";
+		
+		List<Concept> firstConceptsByPartialNameList = conceptService.getConceptsByName(partialNameToFetch);
+		assertTrue("You should be able to get the concept by partial name", firstConceptsByPartialNameList
+		        .contains(new Concept(1)));
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
 	@Test
 	@SkipBaseSetup
-	public void shouldSaveConceptNumeric() throws Exception {
-		TestUtil.printOutTableContents(getConnection(), "concept");
-		
+	@Verifies(value = "should save a ConceptNumeric as a concept", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSaveAConceptNumericAsAConcept() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		authenticate();
 		
-		ConceptService conceptService = Context.getConceptService();
+		// this tests saving a previously conceptnumeric as just a concept
+		Concept c2 = new Concept(2);
+		c2.addName(new ConceptName("not a numeric anymore", Locale.US));
+		c2.setDatatype(new ConceptDatatype(3));
+		conceptService.saveConcept(c2);
+		
+		Concept secondConcept = conceptService.getConcept(2);
+		// this will probably still be a ConceptNumeric object.  what to do about that?
+		// revisit this problem when discriminators are in place
+		//assertFalse(secondConcept instanceof ConceptNumeric);
+		// this shouldn't think its a conceptnumeric object though
+		assertFalse(secondConcept.isNumeric());
+		assertEquals("not a numeric anymore", secondConcept.getName(Locale.US).getName());
+		
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@SkipBaseSetup
+	@Verifies(value = "should save a new ConceptNumeric", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSaveANewConceptNumeric() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		authenticate();
+		
+		// this tests saving a never before in the database conceptnumeric
+		ConceptNumeric cn3 = new ConceptNumeric();
+		cn3.setDatatype(new ConceptDatatype(1));
+		cn3.addName(new ConceptName("a brand new conceptnumeric", Locale.US));
+		cn3.setHiAbsolute(50.0);
+		conceptService.saveConcept(cn3);
+		
+		Concept thirdConcept = conceptService.getConcept(cn3.getConceptId());
+		assertTrue(thirdConcept instanceof ConceptNumeric);
+		ConceptNumeric thirdConceptNumeric = (ConceptNumeric) thirdConcept;
+		assertEquals("a brand new conceptnumeric", thirdConceptNumeric.getName(Locale.US).getName());
+		assertEquals(50.0, thirdConceptNumeric.getHiAbsolute().doubleValue(), 0);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@SkipBaseSetup
+	@Verifies(value = "should save non ConceptNumeric object as conceptNumeric", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSaveNonConceptNumericObjectAsConceptNumeric() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		authenticate();
 		
 		// this tests saving a current concept as a newly changed conceptnumeric
 		// assumes there is already a concept in the database  
@@ -110,45 +166,11 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		cn.setHiAbsolute(20.0);
 		conceptService.saveConcept(cn);
 		
-		// this tests saving a previously conceptnumeric as just a concept
-		Concept c2 = new Concept(2);
-		c2.addName(new ConceptName("not a numeric anymore", Locale.US));
-		c2.setDatatype(new ConceptDatatype(3));
-		conceptService.saveConcept(c2);
-		
-		// this tests saving a never before in the database conceptnumeric
-		ConceptNumeric cn3 = new ConceptNumeric();
-		cn3.setDatatype(new ConceptDatatype(1));
-		cn3.addName(new ConceptName("a brand new conceptnumeric", Locale.US));
-		cn3.setHiAbsolute(50.0);
-		conceptService.saveConcept(cn3);
-		
-		// commit these so we can refetch from the database cleanly
-		// commenting this out because junit4 doesn't seem to care
-		//commitTransaction(true);
-		
-		// check the first concept
 		Concept firstConcept = conceptService.getConcept(1);
 		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
 		assertTrue(firstConcept instanceof ConceptNumeric);
 		ConceptNumeric firstConceptNumeric = (ConceptNumeric) firstConcept;
 		assertEquals(20.0, firstConceptNumeric.getHiAbsolute().doubleValue(), 0);
-		
-		// check the second concept
-		Concept secondConcept = conceptService.getConcept(2);
-		// this will probably still be a ConceptNumeric object.  what to do about that?
-		// revisit this problem when discriminators are in place
-		//assertFalse(secondConcept instanceof ConceptNumeric);
-		// this shouldn't think its a conceptnumeric object though
-		assertFalse(secondConcept.isNumeric());
-		assertEquals("not a numeric anymore", secondConcept.getName(Locale.US).getName());
-		
-		// check the third concept
-		Concept thirdConcept = conceptService.getConcept(cn3.getConceptId());
-		assertTrue(thirdConcept instanceof ConceptNumeric);
-		ConceptNumeric thirdConceptNumeric = (ConceptNumeric) thirdConcept;
-		assertEquals("a brand new conceptnumeric", thirdConceptNumeric.getName(Locale.US).getName());
-		assertEquals(50.0, thirdConceptNumeric.getHiAbsolute().doubleValue(), 0);
 		
 	}
 	
@@ -164,10 +186,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#saveConcept(Concept)} test = should generate id for new
-	 *           concept if none is specified
+	 * @see {@link ConceptService#saveConcept(Concept)}
 	 */
 	@Test
+	@Verifies(value = "should generate id for new concept if none is specified", method = "saveConcept(Concept)")
 	public void saveConcept_shouldGenerateIdForNewConceptIfNoneIsSpecified() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Weight", Locale.US));
@@ -180,10 +202,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#saveConcept(Concept)} test = should keep id for new concept
-	 *           if one is specified
+	 * @see {@link ConceptService#saveConcept(Concept)}
 	 */
 	@Test
+	@Verifies(value = "should keep id for new concept if one is specified", method = "saveConcept(Concept)")
 	public void saveConcept_shouldKeepIdForNewConceptIfOneIsSpecified() throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Weight", Locale.US));
@@ -210,10 +232,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * This test will fail if it takes more than 15 seconds to run. (Checks for an error with the
 	 * iterator looping forever) The @Timed annotation is used as an alternative to
-	 * @Test(timeout=15000) so that the Spring transactions work correctly. Junit has a "feature"
-	 * where it executes the befores/afters in a thread separate from the one that the actual test
-	 * ends up running in when timed.
 	 * 
+	 * @Test(timeout=15000) so that the Spring transactions work correctly. Junit has a "feature"
+	 *                      where it executes the befores/afters in a thread separate from the one
+	 *                      that the actual test ends up running in when timed.
 	 * @see {@link ConceptService#conceptIterator()}
 	 */
 	@Test()
@@ -236,31 +258,31 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-     * @see {@link ConceptService#saveConcept(Concept)}
-     */
-    @Test
-    @Verifies(value = "should reuse concept name tags that already exist in the database", method = "saveConcept(Concept)")
-    public void saveConcept_shouldReuseConceptNameTagsThatAlreadyExistInTheDatabase() throws Exception {
-    	executeDataSet("org/openmrs/api/include/ConceptServiceTest-tags.xml");
-    	
-    	ConceptService cs = Context.getConceptService();
-    	
-    	// make sure the name tag exists already
-    	ConceptNameTag cnt = cs.getConceptNameTagByName("preferred_en");
-    	Assert.assertNotNull(cnt);
-    	
-    	ConceptName cn = new ConceptName("Some name", Locale.ENGLISH);
-    	
-    	Concept concept = new Concept();
-    	concept.setPreferredName(Locale.ENGLISH, cn);
-    	concept.setDatatype(new ConceptDatatype(1));
-    	concept.setConceptClass(new ConceptClass(1));
-    	
-    	cs.saveConcept(concept);
-    	
-    	Collection<ConceptNameTag> savedConceptNameTags = concept.getBestName(Locale.ENGLISH).getTags();
-    	ConceptNameTag savedConceptNameTag = (ConceptNameTag)savedConceptNameTags.toArray()[0];
-    	Assert.assertEquals(cnt.getConceptNameTagId(), savedConceptNameTag.getConceptNameTagId());
-    }
-
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should reuse concept name tags that already exist in the database", method = "saveConcept(Concept)")
+	public void saveConcept_shouldReuseConceptNameTagsThatAlreadyExistInTheDatabase() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-tags.xml");
+		
+		ConceptService cs = Context.getConceptService();
+		
+		// make sure the name tag exists already
+		ConceptNameTag cnt = cs.getConceptNameTagByName("preferred_en");
+		Assert.assertNotNull(cnt);
+		
+		ConceptName cn = new ConceptName("Some name", Locale.ENGLISH);
+		
+		Concept concept = new Concept();
+		concept.setPreferredName(Locale.ENGLISH, cn);
+		concept.setDatatype(new ConceptDatatype(1));
+		concept.setConceptClass(new ConceptClass(1));
+		
+		cs.saveConcept(concept);
+		
+		Collection<ConceptNameTag> savedConceptNameTags = concept.getBestName(Locale.ENGLISH).getTags();
+		ConceptNameTag savedConceptNameTag = (ConceptNameTag) savedConceptNameTags.toArray()[0];
+		Assert.assertEquals(cnt.getConceptNameTagId(), savedConceptNameTag.getConceptNameTagId());
+	}
+	
 }
