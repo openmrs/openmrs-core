@@ -17,9 +17,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -186,6 +189,22 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		String value = adminService.getGlobalProperty(invalidKey, "default");
 		Assert.assertEquals("default", value);
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getGlobalPropertiesByPrefix(String)}
+	 */
+	@Test
+	@Verifies(value = "should return all relevant global properties in the database", method = "getGlobalPropertiesByPrefix(String)")
+	public void getGlobalPropertiesByPrefix_shouldReturnAllRelevantGlobalPropertiesInTheDatabase() throws Exception {
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		
+		List<GlobalProperty> properties = adminService.getGlobalPropertiesByPrefix("fake.module.");
+		
+		for (GlobalProperty property : properties) {
+			Assert.assertTrue(property.getProperty().startsWith("fake.module."));
+			Assert.assertTrue(property.getPropertyValue().startsWith("correct-value"));
+		}
 	}
 	
 }

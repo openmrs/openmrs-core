@@ -30,6 +30,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -216,6 +218,15 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getAllGlobalProperties() throws DAOException {
 		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertiesByPrefix(java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix) {
+		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).add(
+		    Restrictions.like("property", prefix, MatchMode.START)).list();
 	}
 	
 	/**

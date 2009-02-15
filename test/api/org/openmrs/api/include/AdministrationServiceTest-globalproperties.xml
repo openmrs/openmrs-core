@@ -2,4 +2,9 @@
 <dataset>
   <global_property property="a_valid_gp_key" property_value="correct-value"/>
   <global_property property="another-global-property" property_value="anothervalue"/>
+  <global_property property="fake.module.abcd" property_value="correct-value1"/>
+  <global_property property="fake.module.bcde" property_value="correct-value2"/>
+  <global_property property="fake.module.cdef" property_value="correct-value3"/>
+  <global_property property="fake.module1.abcd" property_value="YOU LOSE"/>
+  <global_property property="fake.moduleabcd" property_value="EPIC FAIL"/> 
 </dataset>

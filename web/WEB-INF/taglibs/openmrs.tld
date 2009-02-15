@@ -1098,6 +1098,60 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>
+<tag>
+	<description>
+		Retrieves the matching global properties, and if any are missing, redirects to configuration page.
+		
+		Example parameters:
+			propertyList="concept.height, concept.weight"
+			configurationPage="/configplz.htm"
+			
+		This tag should be placed before the header import tag.
+	</description>
+	<name>requireConfiguration</name>
+	<tag-class>org.openmrs.web.taglib.RequireConfigurationTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>propertyList</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>configurationPage</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
+<tag>
+	<description>
+		Retrieves global properties starting with a given prefix, ignoring a specified subset, and if any are missing, redirects to configuration page.
+		
+		Example parameters:
+			prefix="mail."
+			ignoreList="debug, from"
+			configurationPage="/configplz.htm"
+		
+		This tag should be placed before the header import tag.
+	</description>
+	<name>requireConfigurationByPrefix</name>
+	<tag-class>org.openmrs.web.taglib.RequireConfigurationByPrefixTag</tag-class>
+	<body-content>empty</body-content>
+	<attribute>
+		<name>propertyPrefix</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>ignoreList</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>configurationPage</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+</tag>
 
 <function>
 	<name>sort</name>

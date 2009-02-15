@@ -454,6 +454,16 @@ public interface AdministrationService extends OpenmrsService {
 	public GlobalProperty getGlobalPropertyObject(String propertyName);
 	
 	/**
+	 * Gets all global properties that begin with <code>prefix</code>.
+	 * 
+	 * @param prefix The beginning of the property name to match.
+	 * @return a <code>List</code> of <code>GlobalProperty</code>s that match <code>prefix</code>
+	 * @should return all relevant global properties in the database
+	 */
+	@Transactional(readOnly = true)
+	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix);
+	
+	/**
 	 * Get a list of all global properties in the system
 	 * 
 	 * @return list of global properties
