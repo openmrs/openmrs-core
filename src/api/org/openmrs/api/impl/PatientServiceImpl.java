@@ -608,7 +608,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		catch (NumberFormatException e) {
 			minSearchCharacters = 3;
 		}
-
+		
 		if (query.length() < minSearchCharacters)
 			return patients;
 		
@@ -680,6 +680,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException {
 		log.debug("Merging patients: (preferred)" + preferred.getPatientId() + ", (notPreferred) "
 		        + notPreferred.getPatientId());
+		if (preferred.getPatientId().equals(notPreferred.getPatientId())) {
+			log.debug("Merge operation cancelled: Cannot merge user" + preferred.getPatientId() + " to self");
+			throw new APIException("Merge operation cancelled: Cannot merge user " + preferred.getPatientId() + " to self");
+		}
 		
 		// change all encounters. This will cascade to obs and orders contained in those encounters
 		// TODO: this should be a copy, not a move
@@ -881,7 +885,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// This must be called _after_ voiding the nonPreferred patient so that
 		//  a "Duplicate Identifier" error doesn't pop up.
 		savePatient(preferred);
-		
 	}
 	
 	/**

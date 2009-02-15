@@ -473,6 +473,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param preferred The Patient to merge to
 	 * @param notPreferred The Patient to merge from (and then void)
 	 * @throws APIException
+	 * @should not merge the same patient to itself
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_PATIENTS })
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException;
