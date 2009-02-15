@@ -659,6 +659,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	}
 	
 	/**
+     * @see org.openmrs.api.AdministrationService#getGlobalPropertiesByPrefix(java.lang.String)
+     */
+    public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix) {
+	    return dao.getGlobalPropertiesByPrefix(prefix);
+    }
+	
+	/**
 	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public void purgeGlobalProperty(GlobalProperty globalProperty) throws APIException {

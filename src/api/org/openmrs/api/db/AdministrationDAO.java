@@ -106,6 +106,11 @@ public interface AdministrationDAO {
 	public List<GlobalProperty> getAllGlobalProperties() throws DAOException;
 	
 	/**
+	 * @see org.openmrs.api.AdministrationService#getGlobalPropertiesByPrefix(java.lang.String)
+	 */
+	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix);
+	
+	/**
 	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public void deleteGlobalProperty(GlobalProperty gp) throws DAOException;
