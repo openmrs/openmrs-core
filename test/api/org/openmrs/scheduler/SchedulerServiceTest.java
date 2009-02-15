@@ -192,7 +192,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		
 		schedulerService.scheduleTask(t1);
 		schedulerService.scheduleTask(t2);
-		Thread.sleep(4000);
+		Thread.sleep(5000);
 		schedulerService.shutdownTask(t1);
 		schedulerService.shutdownTask(t2);
 		assertEquals(Arrays.asList("START-1", "START-2", "END-2", "END-1"), outputForConcurrentTasks);
