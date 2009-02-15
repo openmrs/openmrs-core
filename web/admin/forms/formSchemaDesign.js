@@ -585,6 +585,9 @@ function getFieldLabel(data) {
 			fieldLabel += data["fieldName"] + " (" + data["conceptId"] + ")";
 		else
 			fieldLabel += data["fieldName"];
+		
+		if (data["selectMultiple"])
+			fieldLabel += " [multi]";
 	
 	}
 	
