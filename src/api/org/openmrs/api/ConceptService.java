@@ -140,6 +140,9 @@ public interface ConceptService extends OpenmrsService {
 	 * @should update concept already existing in database
 	 * @should generate id for new concept if none is specified
 	 * @should keep id for new concept if one is specified
+	 * @should save non ConceptNumeric object as conceptNumeric
+	 * @should save a ConceptNumeric as a concept
+	 * @should save a new ConceptNumeric
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
 	public Concept saveConcept(Concept concept) throws APIException;
@@ -329,6 +332,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param String name The search string
 	 * @throws APIException
 	 * @return the found Concept
+	 * @should get concept by name
+	 * @should get concept by partial name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
@@ -1023,7 +1028,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param nameTag the name tag to be saved
 	 * @return the newly created Concept name tag
 	 */
-	@Authorized( OpenmrsConstants.PRIV_MANAGE_CONCEPTS )
+	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPTS)
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
 	
 	/**

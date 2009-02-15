@@ -49,7 +49,17 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounter to be saved
 	 * @throws APIException
+	 * @should save encounter with basic details
+	 * @should update encounter successfully
+	 * @should cascade save to contained obs
 	 * @should cascade patient to orders in the encounter
+	 * @should cascade save to contained obs when encounter already exists
+	 * @should cascade encounter datetime to obs
+	 * @should only cascade the obsdatetimes to obs with different initial obsdatetimes
+	 * @should not overwrite creator if non null
+	 * @should not overwrite dateCreated if non null
+	 * @should not overwrite obs and orders creator or dateCreated
+	 * @should cascade creator and dateCreated to orders
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_ENCOUNTERS, OpenmrsConstants.PRIV_EDIT_ENCOUNTERS })
 	public Encounter saveEncounter(Encounter encounter) throws APIException;
@@ -60,6 +70,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterId encounter id
 	 * @return encounter with given internal identifier
 	 * @throws APIException
+	 * @should throw error if given null parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
@@ -70,6 +81,8 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param patient
 	 * @return List<Encounter> encounters (not voided) for a patient.
+	 * @should not get voided encounters
+	 * @should throw error when given null parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
@@ -79,8 +92,10 @@ public interface EncounterService extends OpenmrsService {
 	 * Get encounters for a patientId
 	 * 
 	 * @param patientId
-	 * @return all encounters (not voided) for the given patient identifer
+	 * @return all encounters (not voided) for the given patient identifier
 	 * @throws APIException
+	 * @should not get voided encounters
+	 * @should throw error if given a null parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
@@ -92,22 +107,32 @@ public interface EncounterService extends OpenmrsService {
 	 * @param identifier
 	 * @return all encounters (not retired) for the given patient identifer
 	 * @throws APIException
+	 * @should not get voided encounters
+	 * @should throw error if given null parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatientIdentifier(String identifier) throws APIException;
 	
 	/**
-	 * Get all encounters that match a variety of (nullable) criteria
+	 * Get all encounters that match a variety of (nullable) criteria. Each extra value for a
+	 * parameter that is provided acts as an "and" and will reduce the number of results returned
 	 * 
-	 * @param who
-	 * @param loc
-	 * @param fromDate
-	 * @param toDate
-	 * @param enteredViaForms
-	 * @param encounterTypes
-	 * @param includeVoided
-	 * @return
+	 * @param who the patient the encounter is for
+	 * @param loc the location this encounter took place
+	 * @param fromDate the minimum date (inclusive) this encounter took place
+	 * @param toDate the maximum date (exclusive) this encounter took place
+	 * @param enteredViaForms the form that entered this encounter must be in this list
+	 * @param encounterTypes the type of encounter must be in this list
+	 * @param includeVoided true/false to include the voided encounters or not
+	 * @return a list of encounters ordered by increasing encounterDatetime
+	 * @should get encounters by location
+	 * @should get encounters on or after date
+	 * @should get encounters on or up to a date
+	 * @should get encounters by form
+	 * @should get encounters by type
+	 * @should exclude voided encounters
+	 * @should include voided encounters
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
@@ -120,6 +145,10 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param Encounter encounter
 	 * @param String reason
+	 * @should void encounter and set attributes
+	 * @should cascade to obs
+	 * @should cascade to orders
+	 * @should throw error with null reason parameter
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_ENCOUNTERS })
 	public Encounter voidEncounter(Encounter encounter, String reason);
@@ -128,6 +157,9 @@ public interface EncounterService extends OpenmrsService {
 	 * Unvoid encounter record
 	 * 
 	 * @param encounter encounter to be revived
+	 * @should cascade unvoid to obs
+	 * @should cascade unvoid to orders
+	 * @should unvoid and unmark all attributes
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_ENCOUNTERS })
 	public Encounter unvoidEncounter(Encounter encounter) throws APIException;
@@ -137,6 +169,7 @@ public interface EncounterService extends OpenmrsService {
 	 * encounters, use <code>voidEncounter(org.openmrs.Encounter)</code>
 	 * 
 	 * @param encounter encounter object to be purged
+	 * @should purgeEncounter
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_ENCOUNTERS })
 	public void purgeEncounter(Encounter encounter) throws APIException;
@@ -147,6 +180,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounter encounter object to be purged
 	 * @param cascade also purge observations
+	 * @should cascade purge to obs and orders
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_ENCOUNTERS })
 	public void purgeEncounter(Encounter encounter, boolean cascade) throws APIException;
@@ -155,6 +189,11 @@ public interface EncounterService extends OpenmrsService {
 	 * Save a new Encounter Type or update an existing Encounter Type.
 	 * 
 	 * @param encounterType
+	 * @should save encounter type
+	 * @should not overwrite creator
+	 * @should not overwrite creator or date created
+	 * @should not overwrite date created
+	 * @should update an existing encounter type name
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES })
 	public EncounterType saveEncounterType(EncounterType encounterType);
@@ -165,6 +204,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType id
 	 * @return encounterType with given internal identifier
 	 * @throws APIException
+	 * @should throw error if given null parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
@@ -176,6 +216,10 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType string to match to an Encounter.name
 	 * @return EncounterType that is not retired
 	 * @throws APIException
+	 * @should not get retired types
+	 * @should return null if only retired type found
+	 * @should not get by inexact name
+	 * @should return null with null name parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
@@ -186,6 +230,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @return encounter types list
 	 * @throws APIException
+	 * @should not return retired types
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
@@ -197,6 +242,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param includeRetired
 	 * @return encounter types list
 	 * @throws APIException
+	 * @should non return retired types
+	 * @should include retired types with true includeRetired parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
@@ -209,6 +256,11 @@ public interface EncounterService extends OpenmrsService {
 	 * @param name of the encounter type to find
 	 * @return List<EncounterType> matching encounters
 	 * @throws APIException
+	 * @should return types by partial name match
+	 * @should return types by partial case insensitive match
+	 * @should include retired types in the results
+	 * @should not partial match name on internal substrings
+	 * @should return types ordered on name and nonretired first
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
@@ -221,6 +273,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounterType the encounter type to retire
 	 * @param reason required non-null purpose for retiring this encounter type
 	 * @throws APIException
+	 * @should retire type and set attributes
+	 * @should throw error if given null reason parameter
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES })
 	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws APIException;
@@ -231,6 +285,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounterType the encounter type to unretire
 	 * @throws APIException
+	 * @should unretire type and unmark attributes
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ENCOUNTER_TYPES })
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException;
@@ -240,6 +295,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param encounterType
 	 * @throws APIException
+	 * @should purge type
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_ENCOUNTER_TYPES })
 	public void purgeEncounterType(EncounterType encounterType) throws APIException;
