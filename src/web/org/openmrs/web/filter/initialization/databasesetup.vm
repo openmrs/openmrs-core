@@ -57,7 +57,7 @@
                     <td>Database Name: &nbsp;<input type="text" name="openmrs_new_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'no')"/></td>
                 </tr>
                 <tr>
-                    <td class="no"> A user that has "CREATE DATABASE" privileges must be specified here so that this wizard can create the new database.</td>
+                    <td class="no"> A user that has "CREATE DATABASE" privileges must be specified here so that this wizard can create the new database. <br />(Empty MySQL passwords are not allowed here. If you don't have a MySQL password set for the given user, please set one.)</td>
                 </tr>
                 <tr>
                     <td>Username &nbsp;

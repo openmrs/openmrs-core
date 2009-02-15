@@ -269,7 +269,8 @@ public class InitializationFilter implements Filter {
 				checkForEmptyValue(wizardModel.createDatabaseUsername, wizardModel.errors,
 				    "A user that has 'CREATE DATABASE' privileges");
 				wizardModel.createDatabasePassword = httpRequest.getParameter("create_database_password");
-				// password could be optional
+				checkForEmptyValue(wizardModel.createDatabasePassword, wizardModel.errors,
+					"Password for user with 'CREATE DATABASE' privileges");				
 			}
 			
 			if (wizardModel.errors.isEmpty()) {
@@ -296,6 +297,7 @@ public class InitializationFilter implements Filter {
 				wizardModel.currentDatabaseUsername = httpRequest.getParameter("current_database_username");
 				checkForEmptyValue(wizardModel.currentDatabaseUsername, wizardModel.errors, "Curent user account");
 				wizardModel.currentDatabasePassword = httpRequest.getParameter("current_database_password");
+				checkForEmptyValue(wizardModel.currentDatabasePassword, wizardModel.errors, "Current user account password");
 				wizardModel.hasCurrentDatabaseUser = true;
 				wizardModel.createDatabaseUser = false;
 			} else {
@@ -306,6 +308,8 @@ public class InitializationFilter implements Filter {
 				checkForEmptyValue(wizardModel.createUserUsername, wizardModel.errors,
 				    "A user that has 'CREATE USER' privileges");
 				wizardModel.createUserPassword = httpRequest.getParameter("create_user_password");
+				checkForEmptyValue(wizardModel.createUserPassword, wizardModel.errors,
+					"Password for user that has 'CREATE USER' privileges");
 			}
 			
 			if (wizardModel.errors.isEmpty()) { // go to next page
