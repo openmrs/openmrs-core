@@ -31,9 +31,7 @@
 
 <h2><spring:message code="Patient.title"/></h2>
 
-<a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?personType=patient&viewType=edit"><spring:message code="Patient.create"/></a> | 
-
-<a href="${pageContext.request.contextPath}/admin/patients/findDuplicatePatients.htm"><spring:message code="Patient.merge.find"/></a><br/><br/>
+<a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?personType=patient&viewType=edit"><spring:message code="Patient.create"/></a><br/><br/>
 
 <div id="findPatient">
 	<b class="boxHeader"><spring:message code="Patient.find"/></b>
