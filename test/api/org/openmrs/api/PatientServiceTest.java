@@ -532,15 +532,23 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		assertEquals(1, Context.getPatientService().getPatients("Co").size());
 	}
-
+	
 	/**
-     * @see {@link PatientService#getPatient(Integer)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return null object if patient id doesnt exist", method = "getPatient(Integer)")
-    public void getPatient_shouldReturnNullObjectIfPatientIdDoesntExist() throws Exception {
-	    Assert.assertNull(Context.getPatientService().getPatient(1234512093));
-    }
+	 * @see {@link PatientService#getPatient(Integer)}
+	 */
+	@Test
+	@Verifies(value = "should return null object if patient id doesnt exist", method = "getPatient(Integer)")
+	public void getPatient_shouldReturnNullObjectIfPatientIdDoesntExist() throws Exception {
+		Assert.assertNull(Context.getPatientService().getPatient(1234512093));
+	}
+	
+	/**
+	 * @see {@link PatientServiceImpl#mergePatients(Patient,Patient)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should not merge the same patient to itself", method = "mergePatients(Patient,Patient)")
+	public void mergePatients_shouldNotMergeTheSamePatientToItself() throws Exception {
+		Context.getPatientService().mergePatients(new Patient(2), new Patient(2));
+	}
 	
 }

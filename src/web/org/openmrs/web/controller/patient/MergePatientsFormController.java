@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -96,13 +97,20 @@ public class MergePatientsFormController extends SimpleFormController {
 				preferred = ps.getPatient(Integer.valueOf(patient2Id));
 			}
 			
-			ps.mergePatients(preferred, notPreferred);
+			try {
+				ps.mergePatients(preferred, notPreferred);
+			}
+			catch (APIException e)
+			{
+				log.error("Unable to merge patients", e);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.merge.fail");
+				return new ModelAndView(new RedirectView(view + "?patientId=" + preferred.getPatientId() + "&patientId=" + notPreferred.getPatientId()));
+			}
 			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.merged");
 			
-			view += "?patientId=" + preferred.getPatientId() + "&patientId=" + notPreferred.getPatientId();
-			
-			return new ModelAndView(new RedirectView(view));
+			return new ModelAndView(new RedirectView(view + "?patientId=" + preferred.getPatientId() + "&patientId="
+			        + notPreferred.getPatientId()));
 		}
 		
 		return new ModelAndView(new RedirectView(getFormView()));
