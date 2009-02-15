@@ -163,7 +163,9 @@ public class FormFormController extends SimpleFormController {
 			FormService fs = Context.getFormService();
 			String formId = request.getParameter("formId");
 			if (formId != null)
-				form = fs.getForm(Integer.valueOf(formId));
+				try {
+					form = fs.getForm(Integer.valueOf(formId));
+				} catch (NumberFormatException e) {;} //If formId has no readable value defaults to the case where form==null
 		}
 		
 		if (form == null)
