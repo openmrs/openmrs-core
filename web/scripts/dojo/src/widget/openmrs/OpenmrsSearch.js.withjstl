@@ -57,13 +57,13 @@ dojo.widget.defineWidget(
 	// check box options
 	showIncludeRetired: false,
 	includeRetired: null,
-	includeRetiredLabel: 'Include Retired',
+	includeRetiredLabel: '<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>',
 	showIncludeVoided: false,
 	includeVoided: null,
-	includeVoidedLabel: 'Include Voided',
+	includeVoidedLabel: '<spring:message code="SearchResults.includeVoided" javaScriptEscape="true"/>',
 	showVerboseListing: false,
 	verboseListing: null,
-	verboseListingLabel: 'Include Verbose',
+	verboseListingLabel: '<spring:message code="SearchResults.includeVerbose" javaScriptEscape="true"/>',
 	
 	eventNamesDefault: {
 		select : "select",
@@ -385,7 +385,7 @@ dojo.widget.defineWidget(
 		}
 		else {
 			this.objectsFound = new Array();
-			this.objectsFound.push("You must have at least " + this.minSearchCharacters + " search characters");
+			this.objectsFound.push('<spring:message code="SearchResults.minCharactersPhrase1" javaScriptEscape="true"/> ' + this.minSearchCharacters + ' <spring:message code="SearchResults.minCharactersPhrase2" javaScriptEscape="true"/>');
 			this.doObjectsFound(this.objectsFound);
 		}
 		
@@ -789,10 +789,10 @@ dojo.widget.defineWidget(
 		
 		this.infoBar.innerHTML = '';
 		if (this.lastPhraseSearched != null)
-			this.infoBar.innerHTML = ' &nbsp; Results for "' + this.lastPhraseSearched + '". &nbsp;';
+			this.infoBar.innerHTML = ' &nbsp; <spring:message code="SearchResults.resultsFor" javaScriptEscape="true"/> "' + this.lastPhraseSearched + '". &nbsp;';
 		
 		if (this.objectsFound.length > 0)
-			this.infoBar.innerHTML += " Viewing <b>" + this.firstItemDisplayed + "-" + lastItemDisplayed + "</b> of <b>" + total + "</b> &nbsp; ";
+			this.infoBar.innerHTML += "<spring:message code="SearchResults.viewing" javaScriptEscape="true"/> <b>" + this.firstItemDisplayed + "-" + lastItemDisplayed + "</b> <spring:message code="SearchResults.of" javaScriptEscape="true"/> <b>" + total + "</b> &nbsp; ";
 		
 		this.pagingBar.innerHTML = "&nbsp;";
 	
