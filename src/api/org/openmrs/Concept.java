@@ -1146,7 +1146,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept>, Syn
 	 * @return ConceptDescription attributed to the Concept in the given locale
 	 */
 	public ConceptDescription getDescription(Locale locale) {
-		return getDescription(locale, true);
+		return getDescription(locale, false);
 	}
 
 	/**
