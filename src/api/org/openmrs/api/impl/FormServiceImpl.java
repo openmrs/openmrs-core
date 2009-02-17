@@ -700,9 +700,6 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
      * @see org.openmrs.api.FormService#getFieldsByConcept(org.openmrs.Concept)
      */
     public List<Field> getFieldsByConcept(Concept concept) throws APIException {
-    	if (concept.getConceptId() == null)
-			return Collections.emptyList();
-    	
     	return getFields(null, null, Collections.singleton(concept), null, null, null, null, null, null);
     }
 
@@ -710,6 +707,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
      * @see org.openmrs.api.FormService#getFormsContainingConcept(org.openmrs.Concept)
      */
     public List<Form> getFormsContainingConcept(Concept concept) throws APIException {
+    	if (concept.getConceptId() == null)
+			return Collections.emptyList();
+
 	    return dao.getFormsContainingConcept(concept);
     }
 
