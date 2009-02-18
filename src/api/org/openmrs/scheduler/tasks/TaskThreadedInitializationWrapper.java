@@ -82,10 +82,14 @@ public class TaskThreadedInitializationWrapper implements Task {
 			
 			public void run() {
 				lock.lock();
-				task.initialize(config);
-				initialized = true;
-				initializedCond.signalAll();
-				lock.unlock();
+				try {
+					task.initialize(config);
+					initialized = true;
+					initializedCond.signalAll();
+				}
+				finally {
+					lock.unlock();
+				}
 			}
 		};
 		
