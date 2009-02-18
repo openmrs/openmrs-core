@@ -37,6 +37,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.WebModuleUtil;
+import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
@@ -119,6 +120,9 @@ public final class Listener extends ContextLoaderListener {
 				
 				// do the web specific starting of the modules
 				performWebStartOfModules(servletContext);
+				
+				// start the scheduled tasks
+				SchedulerUtil.startup(props);
 			}
 		}
 		catch (DatabaseUpdateException updateException) {

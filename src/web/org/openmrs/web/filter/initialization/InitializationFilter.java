@@ -49,6 +49,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.SchedulerConstants;
+import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
@@ -545,6 +546,9 @@ public class InitializationFilter implements Filter {
 			
 			// web load modules
 			Listener.performWebStartOfModules(filterConfig.getServletContext());
+			
+			// start the scheduled tasks
+			SchedulerUtil.startup(runtimeProperties);
 			
 			// set this so that the wizard isn't run again on next page load
 			initializationComplete = true;

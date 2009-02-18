@@ -640,9 +640,6 @@ public class Context {
 		// Loop over each module and startup each with these custom properties
 		ModuleUtil.startup(props);
 		
-		// start the scheduled tasks
-		SchedulerUtil.startup(props);
-		
 		// add any privileges/roles that /must/ exist for openmrs to work correctly.
 		// TODO: Should this be one of the first things executed at startup? 
 		checkCoreDataset();
@@ -680,6 +677,9 @@ public class Context {
 		AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext-service.xml");
 		
 		startup(properties);
+		
+		// start the scheduled tasks
+		SchedulerUtil.startup(properties);
 	}
 	
 	/**
