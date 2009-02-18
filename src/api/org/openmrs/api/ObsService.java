@@ -312,14 +312,20 @@ public interface ObsService extends OpenmrsService {
 	 * arguments are optional and nullable. If more than one argument is non-null, the result is
 	 * equivalent to an "and"ing of the arguments. (e.g. if both a <code>location</code> and a
 	 * <code>fromDate</code> are given, only Obs that are <u>both</u> at that Location and after the
-	 * fromDate are returned). Note: If <code>whom</code> has elements, <code>personType</code> is
-	 * ignored
+	 * fromDate are returned). <br/>
+	 * <br/>
+	 * Note: If <code>whom</code> has elements, <code>personType</code> is ignored <br/>
+	 * <br/>
+	 * Note: to get all observations on a certain date, use:<br/>
+	 * Date fromDate = "2009-08-15";<br/>
+	 * Date toDate = OpenmrsUtil.lastSecondOfDate(fromDate); List<Obs> obs = getObservations(....,
+	 * fromDate, toDate, ...);
 	 * 
 	 * @param whom List<Person> to restrict obs to (optional)
 	 * @param encounters List<Encounter> to restrict obs to (optional)
 	 * @param questions List<Concept> to restrict the obs to (optional)
 	 * @param answers List<Concept> to restrict the valueCoded to (optional)
-	 * @param personType PERSON_TYPE objects to restrict this to. Only used if <code>whom</code> not
+	 * @param personType PERSON_TYPE objects to restrict this to. Only used if <code>whom</code> is
 	 *            an empty list (optional)
 	 * @param locations The org.openmrs.Location objects to restrict to (optional)
 	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to
@@ -331,6 +337,7 @@ public interface ObsService extends OpenmrsService {
 	 * @param includeVoidedObs true/false whether to also include the voided obs (required)
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @throws APIException
+	 * @should compare dates using lte and gte
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)

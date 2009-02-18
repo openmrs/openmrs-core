@@ -107,10 +107,8 @@ public class ObsValidator implements Validator {
 			errors.rejectValue("groupMembers", "Obs.error.groupContainsItself");
 		
 		if (obs.isObsGrouping()) {
-			System.out.println("all children = " + obs.getGroupMembers());
 			ancestors.add(obs);
 			for (Obs child : obs.getGroupMembers()) {
-				System.out.println("\tchild=" + child);
 				validateHelper(child, errors, ancestors, false);
 			}
 			ancestors.remove(ancestors.size() - 1);

@@ -32,7 +32,7 @@
   <obs obs_id="2" person_id="2" concept_id="1" obs_datetime="2006-02-10 00:00:00.0" location_id="1" value_numeric="2.0" creator="1" date_created="2006-02-11 15:57:35.0" voided="false"/>
   <obs obs_id="3" person_id="3" concept_id="1" obs_datetime="2006-02-11 00:00:00.0" location_id="1" value_numeric="3.0" creator="1" date_created="2006-02-12 15:57:35.0" voided="false"/>
   <obs obs_id="4" person_id="3" concept_id="1" obs_datetime="2006-02-12 00:00:00.0" location_id="1" value_numeric="4.0" creator="1" date_created="2006-02-13 15:57:35.0" voided="false"/>
-  <obs obs_id="5" person_id="4" concept_id="1" obs_datetime="2006-02-13 00:00:00.0" location_id="1" value_numeric="5.0" creator="1" date_created="2006-02-14 15:57:35.0" voided="false"/>
+  <obs obs_id="5" person_id="4" concept_id="1" obs_datetime="2006-02-13 01:00:00.0" location_id="1" value_numeric="5.0" creator="1" date_created="2006-02-14 15:57:35.0" voided="false"/>
   <obs obs_id="6" person_id="4" concept_id="1" obs_datetime="2006-02-14 00:00:00.0" location_id="1" value_numeric="6.0" creator="1" date_created="2006-02-15 15:57:35.0" voided="false"/>
   <obs obs_id="7" person_id="5" concept_id="1" obs_datetime="2006-02-15 00:00:00.0" location_id="1" value_numeric="7.0" creator="1" date_created="2006-02-16 15:57:35.0" voided="false"/>
   <obs obs_id="8" person_id="5" concept_id="1" obs_datetime="2006-02-16 00:00:00.0" location_id="1" value_numeric="8.0" creator="1" date_created="2006-02-17 15:57:35.0" voided="false"/>
