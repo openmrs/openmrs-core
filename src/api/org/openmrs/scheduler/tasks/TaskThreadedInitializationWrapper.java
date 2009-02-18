@@ -23,9 +23,9 @@ import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 
 /**
- * This class executes the Task.initialize method in a new thread.  Extend this class
- * if you want your {@link #initialize(TaskDefinition)} method to run in a new 
- * thread (and hence not hold up the "startup" processes) 
+ * This class executes the Task.initialize method in a new thread. Extend this class if you want
+ * your {@link #initialize(TaskDefinition)} method to run in a new thread (and hence not hold up the
+ * "startup" processes)
  */
 public class TaskThreadedInitializationWrapper implements Task {
 	
@@ -60,12 +60,16 @@ public class TaskThreadedInitializationWrapper implements Task {
 			while (!initialized) {
 				initializedCond.await();
 			}
-			task.execute();
 		}
 		catch (InterruptedException e) {
 			log.error("Task could not be initialized hence not be executed.", e);
+			return;
 		}
-		lock.unlock();
+		finally {
+			lock.unlock();
+		}
+		
+		task.execute();
 	}
 	
 	/**

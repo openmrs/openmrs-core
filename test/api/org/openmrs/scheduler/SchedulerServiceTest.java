@@ -295,4 +295,72 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		schedulerService.shutdownTask(t4);
 		assertEquals(Arrays.asList("INIT-START-3", "INIT-START-4", "INIT-END-4", "INIT-END-3"), outputForConcurrentInit);
 	}
+	
+	private static List<String> outputForInitExecSync = new ArrayList<String>();
+	
+	static class SampleTask5 extends AbstractTask {
+		
+		public void initialize(TaskDefinition config) {
+			synchronized (outputForInitExecSync) {
+				outputForInitExecSync.add("INIT-START-5");
+			}
+			super.initialize(config);
+			try {
+				Thread.sleep(2000);
+			}
+			catch (InterruptedException e) {
+				log.error("Error generated", e);
+			}
+			synchronized (outputForInitExecSync) {
+				outputForInitExecSync.add("INIT-END-5");
+			}
+		}
+		
+		public void execute() {
+			synchronized (outputForInitExecSync) {
+				outputForInitExecSync.add("START-5");
+			}
+			try {
+				Thread.sleep(2000);
+			}
+			catch (InterruptedException e) {
+				log.error("Error generated", e);
+			}
+			synchronized (outputForInitExecSync) {
+				outputForInitExecSync.add("END-5");
+			}
+		}
+	}
+	
+	/**
+	 * Demonstrates that initialization of a task is accomplished before its execution without
+	 * interleaving, which is a non-trivial behavior in the presence of a threaded initialization
+	 * method (as implemented in TaskThreadedInitializationWrapper)
+	 * 
+	 * <pre>
+	 *             |
+	 * SampleTask5 |------------
+	 *             |_____________ time
+	 *              ^   ^   ^   ^
+	 * Output:     IS  IE   S   E
+	 * </pre>
+	 */
+	@Test
+	public void shouldNotAllowTaskExecuteToRunBeforeInitializationIsComplete() throws Exception {
+		SchedulerService schedulerService = Context.getSchedulerService();
+		
+		TaskDefinition t5 = new TaskDefinition();
+		t5.setId(5);
+		t5.setStartOnStartup(false);
+		t5.setRepeatInterval(10L);
+		t5.setTaskClass(SampleTask5.class.getName());
+		
+		Calendar startTime5 = Calendar.getInstance();
+		startTime5.add(Calendar.SECOND, 1);
+		t5.setStartTime(startTime5.getTime());
+		schedulerService.scheduleTask(t5);
+		Thread.sleep(5000);
+		schedulerService.shutdownTask(t5);
+		assertEquals(Arrays.asList("INIT-START-5", "INIT-END-5", "START-5", "END-5"), outputForInitExecSync);
+	}
 }
