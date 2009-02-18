@@ -24,6 +24,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,7 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.obs.handler.ImageHandler;
 import org.openmrs.obs.handler.TextHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
@@ -128,7 +131,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Order order2 = null;
 		Concept concept2 = conceptService.getConcept(2);
 		Patient patient2 = new Patient(1);
-		System.out.println("patient2: " + patient2.getPatientId());
 		Encounter encounter2 = (Encounter) es.getEncounter(2);
 		Date datetime2 = new Date();
 		Location location2 = locationService.getLocation(1);
@@ -813,6 +815,76 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * This method gets observations and only fetches obs that are for patients
+	 * 
+	 * @see ObsService#getObservations(List, List, List, List, List, List, List, Integer, Integer,
+	 *      Date, Date, boolean)
+	 */
+	@Test
+	@Verifies(value = "should compare dates using lte and gte", method = "getObservations(List<QPerson;>,List<QEncounter;>,List<QConcept;>,List<QConcept;>,List<QPERSON_TYPE;>,List<QLocation;>,List<QString;>,Integer,Integer,Date,Date,null)")
+	public void getObservations_shouldCompareDatesUsingLteAndGte() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService os = Context.getObsService();
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		
+		// Test 1, No bounderies
+		Date sd = df.parse("2006-02-01");
+		Date ed = df.parse("2006-02-20");
+		List<Obs> obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(8, obs.size());
+		
+		// Test 2, From boundary
+		sd = df.parse("2006-02-13");
+		ed = df.parse("2006-02-20");
+		obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(4, obs.size());
+		
+		// Test 3, To boundary
+		sd = df.parse("2006-02-01");
+		ed = df.parse("2006-02-15");
+		obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(7, obs.size());
+		
+		// Test 4, Both Boundaries
+		sd = df.parse("2006-02-11");
+		ed = new SimpleDateFormat("yyyy-MM-dd-hh-mm").parse("2006-02-11-11-59");
+		obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(1, obs.size());
+		
+		// Test 5, Outside before
+		sd = df.parse("2006-02-01");
+		ed = df.parse("2006-02-08");
+		obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(0, obs.size());
+		
+		// Test 6, Outside After
+		sd = df.parse("2006-02-17");
+		ed = df.parse("2006-02-20");
+		obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, ed, false);
+		assertEquals(0, obs.size());
+	}
+	
+	/**
+	 * Uses the OpenmrsUtil.lastSecondOfDay(Date) method to get all observations for a given day
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetObservationsOnDay() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService os = Context.getObsService();
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Date sd = df.parse("2006-02-13");
+		Date ed = df.parse("2006-02-13");
+		List<Obs> obs = os.getObservations(null, null, null, null, null, null, null, null, null, sd, OpenmrsUtil
+		        .lastSecondOfDay(ed), false);
+		assertEquals(1, obs.size());
+	}
+	
+	/**
 	 * This method gets observations and only fetches obs that are for users
 	 * 
 	 * @throws Exception
@@ -1132,4 +1204,5 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(dummyHandlerToOverrideAgain instanceof TextHandler);
 		
 	}
+	
 }

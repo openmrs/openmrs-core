@@ -590,8 +590,8 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 *
-	 * @deprecated this method is not currently used within OpenMRS and is a duplicate of {@link Person#getAge(Date)}
+	 * @deprecated this method is not currently used within OpenMRS and is a duplicate of
+	 *             {@link Person#getAge(Date)}
 	 */
 	public static Integer ageFromBirthdate(Date birthdate) {
 		if (birthdate == null)
@@ -782,8 +782,8 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Return a date that is the same day as the passed in date, but the hours and seconds are
-	 * the latest possible for that day.
+	 * Return a date that is the same day as the passed in date, but the hours and seconds are the
+	 * latest possible for that day.
 	 * 
 	 * @param date date to adjust
 	 * @return a date that is the last possible time in the day
@@ -1292,7 +1292,7 @@ public class OpenmrsUtil {
 							log.debug("Evaluated " + sa.getName() + " to: " + valueAsString);
 						}
 					}
-
+					
 					Object value = null;
 					Class<?> valueClass = sa.getPropertyClass();
 					try {

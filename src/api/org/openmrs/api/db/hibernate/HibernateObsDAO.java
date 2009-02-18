@@ -174,10 +174,10 @@ public class HibernateObsDAO implements ObsDAO {
 		}
 		
 		if (fromDate != null)
-			criteria.add(Restrictions.gt("obsDatetime", fromDate));
+			criteria.add(Restrictions.ge("obsDatetime", fromDate));
 		
 		if (toDate != null)
-			criteria.add(Restrictions.lt("obsDatetime", toDate));
+			criteria.add(Restrictions.le("obsDatetime", toDate));
 		
 		if (includeVoidedObs == false)
 			criteria.add(Restrictions.eq("voided", false));
