@@ -130,7 +130,7 @@ public class InitializationFilter implements Filter {
 					imageFileInputStream.close();
 				}
 				catch (FileNotFoundException e) {
-					log.error("Unable to find image file: " + file.getAbsolutePath());
+					log.error("Unable to find file: " + file.getAbsolutePath());
 				}
 			} // for anything but /initialsetup
 			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)) {
