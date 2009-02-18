@@ -38,7 +38,7 @@ public class TaskDefinition {
 	private String taskClass; // This class must implement the schedulable
 	
 	// interface or it will fail to start
-	private Task taskInstance = null;;
+	private Task taskInstance = null;
 	
 	// Scheduling metadata
 	private Date startTime;
