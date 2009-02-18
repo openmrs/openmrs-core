@@ -1,7 +1,6 @@
 <html>
 <head>
 	<script type="text/javascript" src="scripts/jquery/jquery-1.2.6.min.js"></script>
-    <script type="text/javascript" src="scripts/jquery/jquery-ui-personalized-1.6rc4.min.js"></script>
     <script type="text/javascript" src="scripts/initialsetup.js"></script>
 
     <style type="text/css" media="all">
