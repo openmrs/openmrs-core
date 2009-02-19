@@ -404,7 +404,7 @@ public class InitializationFilter implements Filter {
 				}
 				
 				// connect via jdbc with root user and create an openmrs user
-				String sql = "drop user ?";
+				String sql = "drop user ?@'localhost'";
 				executeStatement(true, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 				    connectionUsername);
 				sql = "create user ?@'localhost' identified by '?'";
