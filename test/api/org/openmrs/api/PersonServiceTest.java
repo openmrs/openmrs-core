@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Patient;
@@ -36,6 +37,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * This class tests methods in the PersonService class. TODO: Test all methods in the PersonService
@@ -208,6 +210,72 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		assertEquals(new User(1), pat.getChangedBy());
 		assertNotNull(pat.getDateChanged());
+	}
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String)}
+	 */
+	@Test
+	@Verifies(value = "should accept greater than three names", method = "getSimilarPeople(String,Integer,String)")
+	public void getSimilarPeople_shouldAcceptGreaterThanThreeNames() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri Junior", 1979, "M");
+		Assert.assertEquals(2, matches.size());
+		Assert.assertTrue(matches.contains(new Person(1006)));
+		Assert.assertTrue(matches.contains(new Person(1007)));
+	}
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String)}
+	 */
+	@Test
+	@Verifies(value = "should match single search to any name part", method = "getSimilarPeople(String,Integer,String)")
+	public void getSimilarPeople_shouldMatchSingleSearchToAnyNamePart() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius", 1979, "M");
+		Assert.assertEquals(9, matches.size());
+		Assert.assertTrue(matches.contains(new Person(1000)));
+		Assert.assertTrue(matches.contains(new Person(1001)));
+		Assert.assertTrue(matches.contains(new Person(1002)));
+		Assert.assertTrue(matches.contains(new Person(1003)));
+		Assert.assertTrue(matches.contains(new Person(1004)));
+		Assert.assertTrue(matches.contains(new Person(1005)));
+		Assert.assertTrue(matches.contains(new Person(1006)));
+		Assert.assertTrue(matches.contains(new Person(1007)));
+		Assert.assertTrue(matches.contains(new Person(1008)));
+	}
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String)}
+	 */
+	@Test
+	@Verifies(value = "should match two word search to any name part", method = "getSimilarPeople(String,Integer,String)")
+	public void getSimilarPeople_shouldMatchTwoWordSearchToAnyNamePart() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham", 1979, "M");
+		Assert.assertEquals(8, matches.size());
+		Assert.assertTrue(matches.contains(new Person(1000)));
+		Assert.assertTrue(matches.contains(new Person(1001)));
+		Assert.assertTrue(matches.contains(new Person(1002)));
+		Assert.assertTrue(matches.contains(new Person(1003)));
+		Assert.assertTrue(matches.contains(new Person(1004)));
+		Assert.assertTrue(matches.contains(new Person(1005)));
+		Assert.assertTrue(matches.contains(new Person(1006)));
+		Assert.assertTrue(matches.contains(new Person(1007)));
+	}
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String)}
+	 */
+	@Test
+	@Verifies(value = "should match three word search to any name part", method = "getSimilarPeople(String,Integer,String)")
+	public void getSimilarPeople_shouldMatchThreeWordSearchToAnyNamePart() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri", 1979, "M");
+		Assert.assertEquals(3, matches.size());
+		Assert.assertTrue(matches.contains(new Person(1003)));
+		Assert.assertTrue(matches.contains(new Person(1006)));
+		Assert.assertTrue(matches.contains(new Person(1007)));
 	}
 	
 }
