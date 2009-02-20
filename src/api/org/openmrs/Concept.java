@@ -236,7 +236,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 */
 	public void addAnswer(ConceptAnswer conceptAnswer) {
 		if (conceptAnswer != null) {
-			if (answers == null) {
+			if (getAnswers() == null) {
 				answers = new HashSet<ConceptAnswer>();
 				conceptAnswer.setConcept(this);
 				answers.add(conceptAnswer);
@@ -257,7 +257,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * @should not fail if given answer does not exist in list
 	 */
 	public boolean removeAnswer(ConceptAnswer conceptAnswer) {
-		if (answers != null)
+		if (getAnswers() != null)
 			return answers.remove(conceptAnswer);
 		else
 			return false;
@@ -455,7 +455,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
      */
     public ConceptName getNameKnownAs(String term, Locale inLocale) {
     	ConceptName foundName = null;
-    	for (ConceptName possibleName : names) {
+    	for (ConceptName possibleName : getNames()) {
     		if (possibleName.getName().equals(term) &&
     				possibleName.getLocale().equals(inLocale))
     		{
@@ -496,7 +496,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
      */
     public ConceptName findNameTaggedWith(ConceptNameTag conceptNameTag) {
     	ConceptName taggedName = null;
-    	for (ConceptName possibleName : names) {
+    	for (ConceptName possibleName : getNames()) {
     		if (possibleName.hasTag(conceptNameTag)) {
     			taggedName = possibleName;
     			break;
@@ -572,7 +572,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public ConceptName getName(Locale locale, boolean exact) {
 		
 		// fail early if this concept has no names defined
-		if (names == null || names.size() == 0) {
+		if (getNames() == null || names.size() == 0) {
 			if (log.isDebugEnabled()) log.debug("there are no names defined for: " + conceptId);
 			return null;
 		}
@@ -667,7 +667,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 */
 	public ConceptName getPreferredName(Locale forLocale) {
 		// fail early if this concept has no names defined
-		if (names == null || names.size() == 0) {
+		if (getNames() == null || names.size() == 0) {
 			if (log.isDebugEnabled()) log.debug("there are no names defined for: " + conceptId);
 			return null;
 		}
@@ -734,7 +734,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public ConceptName getBestName(Locale locale) {
 
 		// fail early if this concept has no names defined
-		if (names == null || names.size() == 0) {
+		if (getNames() == null || names.size() == 0) {
 			if (log.isDebugEnabled()) log.debug("there are no names defined for: " + conceptId);
 			return null;
 		}
@@ -812,7 +812,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 */
 	public Collection<ConceptName> getNames(Locale locale) {
 		Collection<ConceptName> localeNames = new Vector<ConceptName>();
-		for (ConceptName possibleName : names) {
+		for (ConceptName possibleName : getNames()) {
 			if (possibleName.getLocale().equals(locale)) {
 				localeNames.add(possibleName);
 			}
@@ -843,7 +843,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		
 		if (compatibleNames == null) {
 			compatibleNames = new Vector<ConceptName>();
-			for (ConceptName possibleName : names) {
+			for (ConceptName possibleName : getNames()) {
 				if (LocaleUtility.areCompatible(possibleName.getLocale(), desiredLocale)) {
 					compatibleNames.add(possibleName);
 				}
@@ -871,7 +871,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public ConceptName getBestShortName(Locale locale) {
 
 		// fail early if this concept has no names defined
-		if (names == null || names.size() == 0) {
+		if (getNames() == null || names.size() == 0) {
 			if (log.isDebugEnabled()) log.debug("there are no names defined for: " + conceptId);
 			return null;
 		}
@@ -1114,7 +1114,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public boolean addName(ConceptName conceptName) {
 		boolean nameListWasModified = false;
 		conceptName.setConcept(this);
-		if (names == null)
+		if (getNames() == null)
 			names = new HashSet<ConceptName>();
 		if (conceptName != null && !names.contains(conceptName)) {
 			nameListWasModified = names.add(conceptName);
@@ -1132,7 +1132,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * @return true if the entity was removed, false otherwise
 	 */
 	public boolean removeName(ConceptName conceptName) {
-		if (names != null)
+		if (getNames() != null)
 			return names.remove(conceptName);
 		else
 			return false;
@@ -1277,7 +1277,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 */
 	public void addDescription(ConceptDescription description) {
 		if (description != null) {
-			if (descriptions == null) {
+			if (getDescriptions() == null) {
 				descriptions = new HashSet<ConceptDescription>();
 				description.setConcept(this);
 				descriptions.add(description);
@@ -1296,7 +1296,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * @return true if the entity was removed, false otherwise
 	 */
 	public boolean removeDescription(ConceptDescription description) {
-		if (descriptions != null)
+		if (getDescriptions() != null)
 			return descriptions.remove(description);
 		else
 			return false;
@@ -1342,7 +1342,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public Collection<ConceptName> getSynonyms(Locale locale) {
 		String desiredLanguage = locale.getLanguage();
 		Collection<ConceptName> syns = new Vector<ConceptName>();
-		for (ConceptName possibleSynonym : names) {
+		for (ConceptName possibleSynonym : getNames()) {
 			if (possibleSynonym.hasTag(ConceptNameTag.SYNONYM)) {
 				String lang = possibleSynonym.getLocale().getLanguage();
 				if (lang.equals(desiredLanguage))
@@ -1421,7 +1421,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 */
 	public void addConceptMapping(ConceptMap newConceptMap) {
 		newConceptMap.setConcept(this);
-		if (conceptMappings == null)
+		if (getConceptMappings() == null)
 			conceptMappings = new HashSet<ConceptMap>();
 		if (newConceptMap != null && !conceptMappings.contains(newConceptMap))
 			conceptMappings.add(newConceptMap);
@@ -1434,7 +1434,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * @return true if the entity was removed, false otherwise
 	 */
 	public boolean removeConceptMapping(ConceptMap conceptMap) {
-		if (conceptMappings != null)
+		if (getConceptMappings() != null)
 			return conceptMappings.remove(conceptMap);
 		else
 			return false;
