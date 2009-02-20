@@ -379,7 +379,7 @@ public class InitializationFilter implements Filter {
 			
 			if (!wizardModel.hasCurrentOpenmrsDatabase) {
 				// connect via jdbc and create a database
-				String sql = "create database ? default character set utf8";
+				String sql = "create database `?` default character set utf8";
 				int result = executeStatement(false, wizardModel.createDatabaseUsername, wizardModel.createDatabasePassword,
 				    sql, wizardModel.databaseName);
 				// throw the user back to the main screen if this error occurs
@@ -390,6 +390,9 @@ public class InitializationFilter implements Filter {
 					wizardModel.workLog.add("Created database " + wizardModel.databaseName);
 				}
 			}
+			
+			// put the database name into the connection string so that user creation works properly
+			wizardModel.databaseConnection = wizardModel.databaseConnection.replace("@DBNAME@", wizardModel.databaseName);
 			
 			if (wizardModel.createDatabaseUser) {
 				// TODO should we have a different user for each db created ?
@@ -419,7 +422,7 @@ public class InitializationFilter implements Filter {
 				}
 				
 				// grant the roles
-				sql = "GRANT ALL ON ?.* TO ?@'localhost'";
+				sql = "GRANT ALL ON `?`.* TO ?@'localhost'";
 				int result = executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 				    wizardModel.databaseName, connectionUsername);
 				// throw the user back to the main screen if this error occurs
@@ -437,8 +440,7 @@ public class InitializationFilter implements Filter {
 			}
 			
 			// save the properties for startup purposes
-			String databaseConnectionFinalUrl = wizardModel.databaseConnection.replace("@DBNAME@", wizardModel.databaseName);
-			runtimeProperties.put("connection.url", databaseConnectionFinalUrl);
+			runtimeProperties.put("connection.url", wizardModel.databaseConnection);
 			runtimeProperties.put("connection.username", connectionUsername);
 			runtimeProperties.put("connection.password", connectionPassword);
 			runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
@@ -449,7 +451,7 @@ public class InitializationFilter implements Filter {
 			Context.setRuntimeProperties(runtimeProperties);
 			
 			// verify that the database connection works
-			if (!verifyConnection(connectionUsername, connectionPassword, databaseConnectionFinalUrl)) {
+			if (!verifyConnection(connectionUsername, connectionPassword, wizardModel.databaseConnection)) {
 				// redirect to setup page if we got an error
 				renderTemplate(DEFAULT_PAGE, null, writer);
 				return;
@@ -672,19 +674,25 @@ public class InitializationFilter implements Filter {
 		
 		Connection connection = null;
 		try {
+			String replacedSql = sql;
+			
 			// TODO how to get the driver for the other dbs...
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			if (wizardModel.databaseConnection.contains("mysql")) {
+				Class.forName("com.mysql.jdbc.Driver").newInstance();
+			}
+			else {
+				replacedSql = replacedSql.replaceAll("`", "\"");
+			}
 			
 			String tempDatabaseConnection = wizardModel.databaseConnection.replace("@DBNAME@", ""); // make this dbname agnostic so we can create the db
 			connection = DriverManager.getConnection(tempDatabaseConnection, user, pw);
 			
-			String replacedSql = sql;
 			for (String arg : args) {
-				arg = arg.replace(";", "&#094");
+				arg = arg.replace(";", "&#094"); // to prevent any sql injection
 				replacedSql = replacedSql.replaceFirst("\\?", arg);
 			}
 			
-			// do the create
+			// run the sql statement
 			Statement statement = connection.createStatement();
 			return statement.executeUpdate(replacedSql);
 			
