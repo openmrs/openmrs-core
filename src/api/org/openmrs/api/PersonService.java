@@ -85,6 +85,10 @@ public interface PersonService {
 	 * @param gender The gender field to search on (Typically just "M" or "F")
 	 * @return
 	 * @throws APIException
+	 * @should accept greater than three names
+	 * @should match single search to any name part
+	 * @should match two word search to any name part
+	 * @should match three word search to any name part
 	 */
 	// TODO: make gender a (definable?) constant 
 	@Transactional(readOnly = true)
