@@ -478,7 +478,7 @@ dojo.widget.defineWidget(
 		td.style.display = "none";
 		return td;
 	},
-	
+		
 	getNumber: function(searchHit) {
 		if (typeof searchHit == 'string') return "";
     	
@@ -726,42 +726,19 @@ dojo.widget.defineWidget(
 				table.parentNode.insertBefore(this.pagingBar, table.nextSibling);
 		}
 		
-		var height = this.getRowHeight(); //approx. row height
-		dojo.debug("this.rowHeight(): " + height);
+		this.numItemsDisplayed = 20;
 		
-		var remainder = this.getTableBodySize();
-		
-		//numItemsDisplayed=Math.floor(remainder/(height + 6))-2;
-		//make this work in full page and popup mode
-		//numItemsDisplayed=Math.floor(remainder/(height + 6))-6;
-		//reasonable compromise for this to work in mini div popups
-		this.numItemsDisplayed=Math.floor(remainder/(height + 6))-4;
-		//must always show at least 1 item
-		if (this.numItemsDisplayed <= 0) 
-			this.numItemsDisplayed = 1;
-		//also round (down) to the nearest 5
-		if (this.numItemsDisplayed > 5) {
-			var idealNumItemsDisplayed = this.numItemsDisplayed;
-			this.numItemsDisplayed = Math.round(this.numItemsDisplayed / 5) * 5;
-			if (this.numItemsDisplayed > idealNumItemsDisplayed) this.numItemsDisplayed += -5;
+		//If the number of objects is less than the number being displayed, set the number to be displayed to the number of objects
+		if (this.numItemsDisplayed > this.allObjectsFound.length){
+			this.numItemsDisplayed = this.allObjectsFound.length;
 		}
 		
 		// if last object would be the only item on the 'next page', add it back in
 		if (this.numItemsDisplayed + 1 == this.allObjectsFound.length) {
 			this.numItemsDisplayed = this.numItemsDisplayed + 1;
 		}
+		
 		dojo.debug("end update paging");
-	},
-	
-	getTableBodySize: function() {
-		if (this.tableHeight)
-			return this.tableHeight;
-		else {
-			// get approx room for tablebody according to the space left on the page
-			var top = dojo.style.totalOffsetTop(this.objHitsTableBody);
-			dojo.debug("top: " + top);
-			return (dojo.html.getViewportHeight() - top);
-		}
 	},
 	
 	updatePagingBars: function() {
@@ -857,30 +834,6 @@ dojo.widget.defineWidget(
 				this.showNext();
 		}
 	},
-	
-	
-	getRowHeight: function() {
-		var h = 0;
-		h = dojo.style.getStyle(this.inputNode, 'height');
-		if (h == '')
-			h = 13;
-		else if (h == 'auto') {
-			// this silly code is brought to you courtesy of the ever-standards-compliant IE web browser designers
-			h = dojo.style.getStyle(this.inputNode, 'lineHeight');
-			if (h == 'largest')
-				h = 17;
-			else if (h == 'smallest')
-				h = 10;
-			else
-				h = 13; //normal
-		}
-		else {
-			h = parseInt(h.slice(0, h.length - 2)) - 4; //remove 'px' from height
-		}
-	
-		return h;
-	},
-	
 	
 	destroy: function() {
 		dojo.event.topic.publish(this.eventNames.destroy, { source: this } );
