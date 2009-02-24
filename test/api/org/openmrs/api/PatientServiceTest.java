@@ -512,6 +512,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// make sure we can get patients with the default of 3 
 		assertEquals(1, Context.getPatientService().getPatients("Colle").size());
 		
+		Context.clearSession();
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "4"));
 		
@@ -527,6 +528,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// make sure the default of "3" kicks in and blocks any results
 		assertEquals(0, Context.getPatientService().getPatients("Co").size());
 		
+		Context.clearSession();
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "1"));
 		
