@@ -210,6 +210,17 @@ public class UserFormController extends PersonFormController {
 				properties.put(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, newChangePassword.toString());
 			}
 			
+			String[] keys = request.getParameterValues("property");
+			String[] values = request.getParameterValues("value");
+			
+			if (keys != null && values != null) {
+				for (int x = 0; x < keys.length; x++) {
+					String key = keys[x];
+					String val = values[x];
+					properties.put(key, val);
+				}
+			}
+			
 			user.setUserProperties(properties);
 			
 			if (isNewUser(user))
@@ -300,7 +311,7 @@ public class UserFormController extends PersonFormController {
 		
 		User user = (User) obj;
 		
-		List<Role> roles = Context.getUserService().getRoles();
+		List<Role> roles = Context.getUserService().getAllRoles();
 		if (roles == null)
 			roles = new Vector<Role>();
 		
