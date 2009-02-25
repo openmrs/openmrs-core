@@ -26,12 +26,6 @@
 		</li>
 	</openmrs:hasPrivilege>
 	
-	<openmrs:hasPrivilege privilege="View Administration Functions">
-		<li id="administrationNavLink">
-			<a href="${pageContext.request.contextPath}/admin"><spring:message code="Navigation.administration"/></a>
-		</li>
-	</openmrs:hasPrivilege>
-	
 	<openmrs:extensionPoint pointId="org.openmrs.gutter.tools" type="html">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 			<li>
@@ -39,5 +33,12 @@
 			</li>
 		</openmrs:hasPrivilege>
 	</openmrs:extensionPoint>
+
+	<openmrs:hasPrivilege privilege="View Administration Functions">
+		<li id="administrationNavLink">
+			<a href="${pageContext.request.contextPath}/admin"><spring:message code="Navigation.administration"/></a>
+		</li>
+	</openmrs:hasPrivilege>
+	
 	
 </ul>
