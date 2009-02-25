@@ -49,10 +49,10 @@
 
 		<!-- Associations -->
 		
-		<many-to-one name="parentLocation" class="Location" column="parent_location_id" />
+		<many-to-one name="parentLocation" class="Location" column="parent_location" />
 		
 		<set name="childLocations" inverse="true" cascade="all" order-by="name">
-			<key column="parent_location_id" />
+			<key column="parent_location" />
 			<one-to-many class="Location" />
  		</set>
 		
