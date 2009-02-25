@@ -47,6 +47,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/OrderType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Order.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Location.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/LocationTag.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/EncounterType.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Encounter.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Program.hbm.xml" />

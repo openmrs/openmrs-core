@@ -74,7 +74,7 @@ public class TaskFactory {
 			if (log.isDebugEnabled())
 				log.debug("Full error trace of ClassNotFoundException", cnfe);
 			
-			throw new SchedulerException(cnfe);
+			throw new SchedulerException("could not load class", cnfe);
 		}
 		catch (Exception e) {
 			if (log.isDebugEnabled()) {
@@ -82,7 +82,7 @@ public class TaskFactory {
 				log.debug("Error creating new task for class " + taskDefinition.getTaskClass(), e);
 			}
 			
-			throw new SchedulerException(e);
+			throw new SchedulerException("error creating new task for class " + taskDefinition.getTaskClass(), e);
 		}
 	}
 }

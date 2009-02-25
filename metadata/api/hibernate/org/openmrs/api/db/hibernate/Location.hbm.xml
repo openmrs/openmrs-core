@@ -48,6 +48,20 @@
 			column="date_created" not-null="true" length="19" />
 
 		<!-- Associations -->
+		
+		<many-to-one name="parentLocation" class="Location" column="parent_location_id" />
+		
+		<set name="childLocations" inverse="true" cascade="all" order-by="name">
+			<key column="parent_location_id" />
+			<one-to-many class="Location" />
+ 		</set>
+		
+		<set name="tags" table="location_tag_map" lazy="false" cascade="none">
+			<key column="location_id" />
+			<many-to-many class="org.openmrs.LocationTag">
+ 				<column name="location_tag_id" />
+			</many-to-many>
+		</set>
 
 		<!-- bi-directional many-to-one association to User -->
 		<many-to-one name="creator" class="User" not-null="true">
