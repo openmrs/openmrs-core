@@ -13,16 +13,20 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
+import org.openmrs.LocationTag;
+import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LocationDAO;
+import org.springframework.util.StringUtils;
 
 /**
  * Default implementation of the {@link LocationService} This class should not be instantiated
@@ -46,18 +50,55 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
+	 * In order to cascade save child locations, all creator and dateCreated members must be not
+	 * null. However, locations can have an indefinite hierarchy depth, so this method is used to
+	 * assign these values recursively.
+	 * 
+	 * @param location
+	 */
+	protected void populateMetadata(Location location, User who, Date now) {
+		if (location.getDateCreated() == null) {
+			location.setDateCreated(now);
+		}
+		if (location.getCreator() == null) {
+			location.setCreator(who);
+		}
+		if (location.getChildLocations() != null) {
+			for (Location child : location.getChildLocations())
+				populateMetadata(child, who, now);
+		}
+	}
+	
+	/**
 	 * @see org.openmrs.api.LocationService#saveLocation(org.openmrs.Location)
 	 */
 	public Location saveLocation(Location location) throws APIException {
 		if (location.getName() == null) {
 			throw new APIException("Location name is required");
 		}
-		if (location.getDateCreated() == null) {
-			location.setDateCreated(new Date());
+		
+		// Check for transient tags. If found, try to match by name and overwrite, otherwise throw exception.
+		if (location.getTags() != null) {
+			for (LocationTag tag : location.getTags()) {
+				
+				// only check transient (aka non-precreated) location tags
+				if (tag.getLocationTagId() == null) {
+					if (!StringUtils.hasLength(tag.getTag()))
+						throw new APIException("A tag name is required");
+					
+					LocationTag existing = Context.getLocationService().getLocationTagByName(tag.getTag());
+					if (existing != null) {
+						location.removeTag(tag);
+						location.addTag(existing);
+					} else
+						throw new APIException(
+						        "Cannot add transient tags!  Save all location tags to the database before saving this location");
+				}
+			}
 		}
-		if (location.getCreator() == null) {
-			location.setCreator(Context.getAuthenticatedUser());
-		}
+		
+		populateMetadata(location, Context.getAuthenticatedUser(), new Date());
+		
 		return dao.saveLocation(location);
 	}
 	
@@ -115,14 +156,14 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
-	 * @see org.openmrs.api.LocationService#getLocations()
+	 * @see org.openmrs.api.LocationService#getAllLocations()
 	 */
 	public List<Location> getAllLocations() throws APIException {
 		return dao.getAllLocations(true);
 	}
 	
 	/**
-	 * @see org.openmrs.api.LocationService#getLocations(boolean)
+	 * @see org.openmrs.api.LocationService#getAllLocations(boolean)
 	 */
 	public List<Location> getAllLocations(boolean includeRetired) throws APIException {
 		return dao.getAllLocations(includeRetired);
@@ -136,10 +177,53 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
+	 * @see org.openmrs.api.LocationService#getLocationsByTag(org.openmrs. LocationTag)
+	 */
+	public List<Location> getLocationsByTag(LocationTag tag) throws APIException {
+		List<Location> locations = new ArrayList<Location>();
+		
+		for (Location l : dao.getAllLocations(false))
+			if (l.getTags().contains(tag))
+				locations.add(l);
+		
+		return locations;
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationsHavingAllTags(List<org.openmrs.
+	 *      LocationTag>)
+	 */
+	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) throws APIException {
+		List<Location> locations = new ArrayList<Location>();
+		
+		for (Location loc : dao.getAllLocations(false))
+			if (loc.getTags().containsAll(tags))
+				locations.add(loc);
+		
+		return locations;
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationsHavingAnyTag(List<org.openmrs. LocationTag>)
+	 */
+	public List<Location> getLocationsHavingAnyTag(List<LocationTag> tags) throws APIException {
+		List<Location> locations = new ArrayList<Location>();
+		
+		for (Location loc : dao.getAllLocations(false)) {
+			for (LocationTag t : tags) {
+				if (loc.getTags().contains(t) && !locations.contains(loc))
+					locations.add(loc);
+			}
+		}
+		
+		return locations;
+	}
+	
+	/**
 	 * @see org.openmrs.api.LocationService#retireLocation(org.openmrs.Location)
 	 */
 	public Location retireLocation(Location location, String reason) throws APIException {
-		if (location.getRetired()) {
+		if (location.isRetired()) {
 			return location;
 		} else {
 			if (reason == null)
@@ -170,4 +254,92 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 		dao.deleteLocation(location);
 	}
 	
+	/**
+	 * @see org.openmrs.api.LocationService#saveLocationTag(org.openmrs.LocationTag)
+	 */
+	public LocationTag saveLocationTag(LocationTag tag) throws APIException {
+		if (tag.getTag() == null) {
+			throw new APIException("Tag name is required");
+		}
+		if (tag.getDateCreated() == null) {
+			tag.setDateCreated(new Date());
+		}
+		if (tag.getCreator() == null) {
+			tag.setCreator(Context.getAuthenticatedUser());
+		}
+		return dao.saveLocationTag(tag);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationTag(java.lang.Integer)
+	 */
+	public LocationTag getLocationTag(Integer locationTagId) throws APIException {
+		return dao.getLocationTag(locationTagId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationTagByName(java.lang.String)
+	 */
+	public LocationTag getLocationTagByName(String tag) throws APIException {
+		return dao.getLocationTagByName(tag);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getAllLocationTags()
+	 */
+	public List<LocationTag> getAllLocationTags() throws APIException {
+		return dao.getAllLocationTags(true);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getAllLocationTags(boolean)
+	 */
+	public List<LocationTag> getAllLocationTags(boolean includeRetired) throws APIException {
+		return dao.getAllLocationTags(includeRetired);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationTags(java.lang.String)
+	 */
+	public List<LocationTag> getLocationTags(String search) throws APIException {
+		if (search == null || search.equals(""))
+			return getAllLocationTags(true);
+		
+		return dao.getLocationTags(search);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#retireLocationTag(org.openmrs.LocationTag)
+	 */
+	public LocationTag retireLocationTag(LocationTag tag, String reason) throws APIException {
+		if (tag.isRetired()) {
+			return tag;
+		} else {
+			if (reason == null)
+				throw new APIException("Reason is required");
+			tag.setRetired(true);
+			tag.setRetireReason(reason);
+			tag.setRetiredBy(Context.getAuthenticatedUser());
+			tag.setDateRetired(new Date());
+			return saveLocationTag(tag);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#unretireLocationTag(org.openmrs.LocationTag)
+	 */
+	public LocationTag unretireLocationTag(LocationTag tag) throws APIException {
+		tag.setRetired(false);
+		tag.setRetireReason(null);
+		tag.setRetiredBy(null);
+		tag.setDateRetired(null);
+		return saveLocationTag(tag);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#purgeLocationTag(org.openmrs.LocationTag)
+	 */
+	public void purgeLocationTag(LocationTag tag) throws APIException {
+		dao.deleteLocationTag(tag);
+	}
 }

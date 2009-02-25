@@ -66,9 +66,9 @@
 			(preCondition database_version check in place because this change was in the old format in trunk for a while)
 		</comment>
 		<addForeignKeyConstraint constraintName="privilege_which_can_edit"
-		baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
-		referencedTableName="privilege" referencedColumnNames="privilege"
-	    />
+			baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
+			referencedTableName="privilege" referencedColumnNames="privilege"
+		    />
     </changeSet>
     
 	<changeSet id="200811261102" author="bwolfe">
@@ -328,6 +328,86 @@
 		
 		<addUniqueConstraint tableName="concept_name_tag" columnNames="tag" constraintName="concept_name_tag_unique_tags"/>
 		
+	</changeSet>
+	
+	<changeSet id="20090224-1229" author="Keelhaul+bwolfe">
+		<comment>
+			Add location tags table
+		</comment>
+		
+		<createTable tableName="location_tag">
+			<column name="location_tag_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(255)" defaultValue="null"/>
+			<column name="creator" type="int(11)" >
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime" >
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired" type="tinyint" defaultValueNumeric="0">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int(11)" />
+			<column name="date_retired" type="datetime" />
+			<column name="retired_reason" type="varchar(255)" defaultValue="null"/>
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="location_tag_creator"
+			baseTableName="location_tag" baseColumnNames="creator"
+			referencedTableName="users" referencedColumnNames="user_id"
+			/>
+		<addForeignKeyConstraint constraintName="location_tag_retired_by"
+			baseTableName="location_tag" baseColumnNames="retired_by"
+			referencedTableName="users" referencedColumnNames="user_id"
+			/>
+	</changeSet>
+	
+	<changeSet id="20090224-1250" author="Keelhaul+bwolfe">
+		<comment>
+			Add location tag map table
+		</comment>
+		
+		<createTable tableName="location_tag_map">
+			<column name="location_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="location_tag_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="location_tag_map_location"
+			baseTableName="location_tag_map" baseColumnNames="location_id"
+			referencedTableName="location" referencedColumnNames="location_id"
+			/>
+	    <addForeignKeyConstraint constraintName="location_tag_map_tag"
+			baseTableName="location_tag_map" baseColumnNames="location_tag_id"
+			referencedTableName="location_tag" referencedColumnNames="location_tag_id"
+			/>
+		<addPrimaryKey tableName="location_tag_map"
+			columnNames="location_id,location_tag_id"
+			constraintName="key_for_location_tag_map"/>
+		
+	</changeSet>
+	
+	<changeSet id="20090224-1256" author="Keelhaul+bwolfe">
+		<comment>
+			Add parent_location column to location table
+		</comment>
+		
+		<addColumn tableName="location">
+			<column name="parent_location" type="int(11)" />
+		</addColumn>
+		
+		<addForeignKeyConstraint constraintName="parent_location"
+			baseTableName="location" baseColumnNames="parent_location"
+			referencedTableName="location" referencedColumnNames="location_id"
+			/>
 	</changeSet>
 	
 </databaseChangeLog>

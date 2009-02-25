@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.hibernate.SessionFactory;
 import org.openmrs.Location;
+import org.openmrs.LocationTag;
 
 /**
  * Location-related database functions
@@ -77,4 +78,50 @@ public interface LocationDAO {
 	 */
 	public void deleteLocation(Location location);
 	
+	/**
+	 * Create or update a location tag.
+	 * 
+	 * @param tag
+	 * @return
+	 */
+	public LocationTag saveLocationTag(LocationTag tag);
+	
+	/**
+	 * Get a location tag by <code>locationTagId</code>
+	 * 
+	 * @param locationTagId of the tag to get
+	 * @return
+	 */
+	public LocationTag getLocationTag(Integer locationTagId);
+	
+	/**
+	 * Get a location tag by name
+	 * 
+	 * @param tag of the tag to get
+	 * @return
+	 */
+	public LocationTag getLocationTagByName(String tag);
+	
+	/**
+	 * Get all location tags
+	 * 
+	 * @param includeRetired if <code>true</code> then return retired tags as well.
+	 * @return
+	 */
+	public List<LocationTag> getAllLocationTags(boolean includeRetired);
+	
+	/**
+	 * Find all location tags with matching names.
+	 * 
+	 * @param search name to search
+	 * @return
+	 */
+	public List<LocationTag> getLocationTags(String search);
+	
+	/**
+	 * Completely remove the location tag from the database.
+	 * 
+	 * @param tag
+	 */
+	public void deleteLocationTag(LocationTag tag);
 }

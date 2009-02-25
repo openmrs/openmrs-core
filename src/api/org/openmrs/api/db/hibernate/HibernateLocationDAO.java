@@ -21,6 +21,7 @@ import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.openmrs.Location;
+import org.openmrs.LocationTag;
 import org.openmrs.api.db.LocationDAO;
 
 /**
@@ -41,6 +42,15 @@ public class HibernateLocationDAO implements LocationDAO {
 	 * @see org.openmrs.api.db.LocationDAO#saveLocation(org.openmrs.Location)
 	 */
 	public Location saveLocation(Location location) {
+		if (location.getChildLocations() != null && location.getLocationId() != null) {
+			// hibernate has a problem updating child collections
+			// if the parent object was already saved so we do it 
+			// explicitly here
+			for (Location child : location.getChildLocations())
+				if (child.getLocationId() == null)
+					saveLocation(child);
+		}
+		
 		sessionFactory.getCurrentSession().saveOrUpdate(location);
 		return location;
 	}
@@ -100,4 +110,63 @@ public class HibernateLocationDAO implements LocationDAO {
 		sessionFactory.getCurrentSession().delete(location);
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#saveLocation(org.openmrs.Location)
+	 */
+	public LocationTag saveLocationTag(LocationTag tag) {
+		sessionFactory.getCurrentSession().saveOrUpdate(tag);
+		return tag;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationTag(java.lang.Integer)
+	 */
+	public LocationTag getLocationTag(Integer locationTagId) {
+		return (LocationTag) sessionFactory.getCurrentSession().get(LocationTag.class, locationTagId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationTagByName(java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public LocationTag getLocationTagByName(String tag) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class).add(
+		    Expression.eq("tag", tag));
+		
+		List<LocationTag> tags = criteria.list();
+		if (null == tags || tags.isEmpty()) {
+			return null;
+		}
+		return tags.get(0);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getAllLocationTags(boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<LocationTag> getAllLocationTags(boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class);
+		if (!includeRetired) {
+			criteria.add(Expression.like("retired", false));
+		}
+		criteria.addOrder(Order.asc("tag"));
+		return criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocations(java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<LocationTag> getLocationTags(String search) {
+		return sessionFactory.getCurrentSession().createCriteria(LocationTag.class)
+		// 'ilike' case insensitive search
+		        .add(Expression.ilike("tag", search, MatchMode.START)).addOrder(Order.asc("tag")).list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#deleteLocationTag(org.openmrs.LocationTag)
+	 */
+	public void deleteLocationTag(LocationTag tag) {
+		sessionFactory.getCurrentSession().delete(tag);
+	}
 }

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <global_property property="database_version" property_value="1.5.0.02" />
+  <location location_id="1" name="Test Parent Location" parent_location_id="[NULL]" description="test description" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
+  <location location_id="2" name="Test Level A Child Location 1" parent_location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
+  <location location_id="3" name="Test Level A Child Location 2" parent_location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
+  <location location_id="4" name="Test Level B Child Location 1" parent_location_id="3" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
+  <location_tag location_tag_id="1" tag="General Hospital" description="test desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
+  <location_tag location_tag_id="2" tag="Gastroenteritis infection scandal of 1993" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
+  <location_tag location_tag_id="3" tag="Department" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
+  <location_tag location_tag_id="4" tag="Everyone gets this one" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
+  <location_tag_map location_id="1" location_tag_id="1" />
+  <location_tag_map location_id="1" location_tag_id="2" />
+  <location_tag_map location_id="1" location_tag_id="4" />
+  <location_tag_map location_id="2" location_tag_id="3" />
+  <location_tag_map location_id="2" location_tag_id="4" />
+  <location_tag_map location_id="3" location_tag_id="3" />
+  <location_tag_map location_id="3" location_tag_id="4" />
+  <location_tag_map location_id="4" location_tag_id="4" />
+</dataset>
