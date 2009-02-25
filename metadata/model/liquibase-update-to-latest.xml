@@ -410,4 +410,14 @@
 			/>
 	</changeSet>
 	
+	<changeSet id="20090225-1551" author="dthomas">
+		<comment>
+			Change location_tag.name to location_tag.tag and location_tag.retired_reason to location_tag.retire_reason
+		</comment>
+		<renameColumn tableName="location_tag"
+   			 oldColumnName="name" newColumnName="tag" columnDataType="varchar(50)"/>
+		<renameColumn tableName="location_tag"
+   			 oldColumnName="retired_reason" newColumnName="retire_reason" columnDataType="varchar(255)"/>
+	</changeSet>
+	
 </databaseChangeLog>
