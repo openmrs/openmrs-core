@@ -41,6 +41,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.patient.IdentifierValidator;
@@ -503,7 +504,30 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifierType newerPatientIdentifierType = patientService.getPatientIdentifierType(1);
 		assertEquals("SOME NEW NAME", newerPatientIdentifierType.getName());
 	}
-	
+	/**
+	 * Make sure the api can handle having a User object that is also a 
+	 * patient and was previously loaded via hibernate 
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testAllowUsersWhoArePatients() throws Exception {
+		executeDataSet(USERS_WHO_ARE_PATIENTS_XML);
+		
+		// we must fetch this person first, because this person is
+		// the creator of the next.  We need to make sure hibernate isn't
+		// caching and returning different person objects when it shouldn't be
+		Patient patient2 = patientService.getPatient(2);
+		assertTrue("When getting a patient, it should be of the class patient, not: " + patient2.getClass(), patient2.getClass().equals(Patient.class));
+		
+		Patient patient3 = patientService.getPatient(3);
+		assertTrue("When getting a patient, it should be of the class patient, not: " + patient3.getClass(), patient3.getClass().equals(Patient.class));
+		
+		User user2 = Context.getUserService().getUser(2);
+		assertTrue("When getting a user, it should be of the class user, not: " + user2.getClass(), User.class.isAssignableFrom(user2.getClass()));
+		
+	}
+
 	/**
 	 * @see {@link PatientService#getPatients(String)}
 	 */

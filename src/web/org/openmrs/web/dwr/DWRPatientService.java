@@ -67,6 +67,8 @@ public class DWRPatientService {
 	 * @should include string in results if doing extra decapitated search
 	 * @should not return duplicate patient list items if doing decapitated search
 	 * @should not do decapitated search if numbers are in the search string
+	 * @should get results for patients that have edited themselves
+	 * @should logged in user should load their own patient object
 	 */
 	public Collection<Object> findPatients(String searchValue, boolean includeVoided) {
 		
