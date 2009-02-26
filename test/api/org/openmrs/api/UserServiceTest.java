@@ -22,9 +22,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import junit.framework.Assert;
+
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.openmrs.Cohort;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
@@ -330,6 +333,23 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		UserService us = Context.getUserService();
 		us.changePassword("test", "test2");
+		
+		Context.logout(); // so that the next test reauthenticates
+	}
+	
+	/**
+	 * @see {@link UserService#getUsers(String,List,boolean)}
+	 */
+	@Test
+	@Verifies(value = "should match search to familyName2", method = "getUsers(String,List<QRole;>,null)")
+	public void getUsers_shouldMatchSearchToFamilyName2() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		
+		List<User> users = Context.getUserService().getUsers("Johnson", null, false);
+		Assert.assertEquals(3, users.size());
+		Assert.assertTrue(users.contains(new Patient(2)));
+		Assert.assertTrue(users.contains(new Patient(4)));
+		Assert.assertTrue(users.contains(new Patient(5)));
 	}
 	
 }

@@ -59,7 +59,7 @@ public interface PersonService {
 		 * Attributes to be shown when only showing one patient or user
 		 */
 		VIEWING,
-		
+
 		/**
 		 * Attributes to be shown in the header
 		 */
@@ -89,6 +89,7 @@ public interface PersonService {
 	 * @should match single search to any name part
 	 * @should match two word search to any name part
 	 * @should match three word search to any name part
+	 * @should match search to familyName2
 	 */
 	// TODO: make gender a (definable?) constant 
 	@Transactional(readOnly = true)
@@ -102,6 +103,7 @@ public interface PersonService {
 	 * @param dead if true will return only dead patients, if false will return only alive patients,
 	 *            if null will return both
 	 * @return list of person objects matches the parameters
+	 * @should match search to familyName2
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })

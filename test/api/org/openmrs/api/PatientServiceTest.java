@@ -579,4 +579,19 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	    Assert.assertNull(patientService.getPatient(503)); // make sure a new row with a new person id WASN'T created
     }
 
+	/**
+	 * @see {@link PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)}
+	 */
+	@Test
+	@Verifies(value = "should search familyName2 with name", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
+	public void getPatients_shouldSearchFamilyName2WithName() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		
+		List<Patient> patients = patientService.getPatients("Johnson", null, null, false);
+		Assert.assertEquals(3, patients.size());
+		Assert.assertTrue(patients.contains(new Patient(2)));
+		Assert.assertTrue(patients.contains(new Patient(4)));
+		Assert.assertTrue(patients.contains(new Patient(5)));
+	}
+	
 }
