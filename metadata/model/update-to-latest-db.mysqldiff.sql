@@ -1548,8 +1548,8 @@ BEGIN
 
 		select 'Migrate synonyms.' AS '*** Step: ***', new_db_version from dual;
 		# make new concept_names for the synonym
-		INSERT INTO `concept_name` (short_name, concept_id, name, locale, creator, date_created)
-            SELECT 'MVP-SYNONYM', cs.concept_id, cs.synonym, cs.locale,
+		INSERT INTO `concept_name` (short_name, description, concept_id, name, locale, creator, date_created)
+            SELECT 'MVP-SYNONYM', '', cs.concept_id, cs.synonym, cs.locale,
                 cs.creator, cs.date_created
                 FROM `concept_synonym` cs
                 INNER JOIN `concept` c on c.concept_id=cs.concept_id 
