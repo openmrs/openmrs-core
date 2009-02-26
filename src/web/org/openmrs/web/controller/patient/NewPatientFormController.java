@@ -224,7 +224,7 @@ public class NewPatientFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	@SuppressWarnings("unchecked")
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
@@ -252,10 +252,8 @@ public class NewPatientFormController extends SimpleFormController {
 				if (patient == null) {
 					try {
 						Person p = personService.getPerson(shortPatient.getPatientId());
-						//Context.clearSession();
-						//Person p2 = (Person) p;
+						Context.clearSession(); // so that this Person doesn't cause hibernate to think the new Patient is in the cache already (only needed until #725 is fixed)
 						patient = new Patient(p);
-						//patient = (Patient)p2;
 					}
 					catch (ObjectRetrievalFailureException noUserEx) {
 						// continue;
@@ -284,7 +282,7 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			// if this is a new name, add it to the patient
 			if (!duplicate) {
-				// set the current name to "non-prefered"
+				// set the current name to "non-preferred"
 				if (patient.getPersonName() != null)
 					patient.getPersonName().setPreferred(false);
 				

@@ -38,6 +38,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
@@ -552,5 +553,30 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void mergePatients_shouldNotMergeTheSamePatientToItself() throws Exception {
 		Context.getPatientService().mergePatients(new Patient(2), new Patient(2));
 	}
-	
+
+	/**
+     * @see {@link PatientService#savePatient(Patient)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should create new patient from existing person plus user object", method = "savePatient(Patient)")
+    public void savePatient_shouldCreateNewPatientFromExistingPersonPlusUserObject() throws Exception {
+    	// sanity check, make sure there isn't a 501 patient already
+    	Assert.assertNull(patientService.getPatient(501));
+    	
+    	Person existingPerson = Context.getPersonService().getPerson(501); // fetch Bruno from the database
+    	Context.clearSession();
+	    Patient patient = new Patient(existingPerson);
+	    patient.addIdentifier(new PatientIdentifier("some identifier", new PatientIdentifierType(2), new Location(1)));
+	    
+		patientService.savePatient(patient);
+	    
+	    Assert.assertEquals(501, patient.getPatientId().intValue());
+	    TestUtil.printOutTableContents(getConnection(), "patient");
+	    TestUtil.printOutTableContents(getConnection(), "patient_identifier");
+	    TestUtil.printOutTableContents(getConnection(), "person");
+	    Assert.assertNotNull(patientService.getPatient(501)); // make sure a new row with a patient id WAS created
+	    Assert.assertNull(patientService.getPatient(503)); // make sure a new row with a new person id WASN'T created
+    }
+
 }
