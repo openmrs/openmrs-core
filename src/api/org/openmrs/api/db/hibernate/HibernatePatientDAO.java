@@ -97,15 +97,13 @@ public class HibernatePatientDAO implements PatientDAO {
 			// Check to make sure we have a row in the patient table already.
 			// If we don't have a row, create it so Hibernate doesn't bung
 			// things up
-			Object obj = sessionFactory.getCurrentSession().get(Patient.class, patient.getPatientId());
-			if (!(obj instanceof Patient)) {
-				insertPatientStub(patient);
-			}
+			insertPatientStubIfNeeded(patient);
 			
-			// TODO: look at UserService.saveUser(User) to see how to do it without
-			// 		it requiring a merge
-			// do a merge here because of the previous get 2 lines up
-			patient = (Patient) sessionFactory.getCurrentSession().merge(patient);
+			// TODO: A merge is necessary here because hibernate thinks that Patients and 
+			// 		Persons are the same objects.  So it sees a Person object in the 
+			//      cache and claims it is a duplicate of this Patient object.
+			//patient = (Patient) sessionFactory.getCurrentSession().merge(patient);
+			sessionFactory.getCurrentSession().saveOrUpdate(patient);
 			
 			return patient;
 		}
@@ -117,23 +115,47 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * 
 	 * @param patient
 	 */
-	private void insertPatientStub(Patient patient) {
+	private void insertPatientStubIfNeeded(Patient patient) {
 		Connection connection = sessionFactory.getCurrentSession().connection();
-		try {
-			PreparedStatement ps = connection
-			        .prepareStatement("INSERT INTO patient (patient_id, creator, date_created) VALUES (?, ?, ?)");
-			
-			ps.setInt(1, patient.getPatientId());
-			ps.setInt(2, patient.getCreator().getUserId());
-			ps.setDate(3, new java.sql.Date(patient.getDateCreated().getTime()));
-			
-			ps.executeUpdate();
-		}
-		catch (SQLException e) {
-			log.warn("SQL Exception while trying to create a patient stub", e);
+		
+		boolean stubInsertNeeded = false;
+		
+		if (patient.getPatientId() != null) {
+			// check if there is a row with a matching patient.patient_id 
+			try {
+				PreparedStatement ps = connection.prepareStatement("SELECT * FROM patient WHERE patient_id = ?");
+				ps.setInt(1, patient.getPatientId());
+				ps.execute();
+				
+				if (ps.getResultSet().next())
+					stubInsertNeeded = false;
+				else
+					stubInsertNeeded = true;
+				
+			}
+			catch (SQLException e) {
+				log.error("Error while trying to see if this person is a patient already", e);
+			}
 		}
 		
-		sessionFactory.getCurrentSession().flush();
+		if (stubInsertNeeded) {
+			try {
+				PreparedStatement ps = connection
+				        .prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
+				
+				ps.setInt(1, patient.getPatientId());
+				ps.setInt(2, patient.getCreator().getUserId());
+				ps.setDate(3, new java.sql.Date(patient.getDateCreated().getTime()));
+				
+				ps.executeUpdate();
+			}
+			catch (SQLException e) {
+				log.warn("SQL Exception while trying to create a patient stub", e);
+			}
+		}
+		
+		// commenting this out to get the save patient as a user option to work correctly
+		//sessionFactory.getCurrentSession().flush();
 	}
 	
 	/**

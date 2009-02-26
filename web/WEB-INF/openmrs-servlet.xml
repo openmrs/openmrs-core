@@ -387,7 +387,6 @@
 
 	<!-- ** New (mini) Patient ** -->
 	<bean id="newPatientForm" class="org.openmrs.web.controller.patient.NewPatientFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>patient</value></property>
 		<property name="commandClass"><value>org.openmrs.web.controller.patient.ShortPatientModel</value></property>
 		<property name="formView"><value>/admin/patients/newPatientForm</value></property>

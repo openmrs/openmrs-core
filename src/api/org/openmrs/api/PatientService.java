@@ -63,6 +63,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param patient patient to be created or updated
 	 * @return patient who was created or updated
 	 * @throws APIException
+	 * @should create new patient from existing person plus user object
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENTS, OpenmrsConstants.PRIV_EDIT_PATIENTS })
 	public Patient savePatient(Patient patient) throws APIException;

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Location;
@@ -33,11 +34,11 @@ import org.openmrs.Relationship;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.web.controller.patient.NewPatientFormController;
 import org.openmrs.web.controller.patient.ShortPatientModel;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -237,7 +238,6 @@ public class NewPatientFormControllerTest extends BaseWebContextSensitiveTest {
 		controller.setApplicationContext(applicationContext);
 		controller.setSuccessView("patientDashboard.form");
 		controller.setFormView("newPatient.form");
-		controller.setSessionForm(true);
 		
 		// set up the request and do an initial "get" as if the user loaded the
 		// page for the first time
@@ -304,7 +304,6 @@ public class NewPatientFormControllerTest extends BaseWebContextSensitiveTest {
 		controller.setApplicationContext(applicationContext);
 		controller.setSuccessView("patientDashboard.form");
 		controller.setFormView("newPatient.form");
-		controller.setSessionForm(true);
 		
 		// set up the request and do an initial "get" as if the user loaded the
 		// page for the first time
@@ -350,5 +349,62 @@ public class NewPatientFormControllerTest extends BaseWebContextSensitiveTest {
 		// we submitted 1a=3, so the created relationship personA should be 3
 		assertEquals(new Person(3), relationships.get(0).getPersonA());
 		
+	}
+	
+	/**
+	 * This test changes creating a patient object from an already existing user object
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCreatePatientFromExistingUser() throws Exception {
+		PatientService ps = Context.getPatientService();
+		
+		// sanity check to make sure a patient#1 doesn't exist
+		Assert.assertNull(ps.getPatient(3));
+		Assert.assertNull(ps.getPatient(4));
+		
+		executeDataSet(CONTROLLER_PATIENTS_DATA);
+		
+		// set up the controller
+		NewPatientFormController controller = new NewPatientFormController();
+		controller.setApplicationContext(applicationContext);
+		controller.setSuccessView("patientDashboard.form");
+		controller.setFormView("newPatient.form");
+		
+		// set up the request and do an initial "get" as if the user loaded the
+		// page for the first time and selected an existing user (that isn't a patient yet0)
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin/patients/newPatient.form?patientId=3");
+		request.setSession(new MockHttpSession(null));
+		HttpServletResponse response = new MockHttpServletResponse();
+		ModelAndView initialPageLoad = controller.handleRequest(request, response);
+		
+		// set this to be a page submission
+		request.setMethod("POST");
+		
+		// add all of the parameters that are expected
+		// all but the location should match the patient info in the xml file
+		request.addParameter("patientId", "3");
+		request.addParameter("name.givenName", "John");
+		request.addParameter("name.familyName", "Doe");
+		request.addParameter("identifier", "12345678");
+		request.addParameter("identifierType", "1");
+		request.addParameter("location", "2");
+		request.addParameter("preferred", "1");
+		request.addParameter("gender", "F");
+		request.addParameter("birthdate", "05/05/1959");
+		request.addParameter("birthdateEstimated", "0");
+		
+		// send the parameters to the controller
+		ModelAndView modelAndView = controller.handleRequest(request, response);
+		
+		// make sure it is redirecting to the right place after a successful submit
+		assertEquals(RedirectView.class, modelAndView.getView().getClass());
+		RedirectView redirectView = (RedirectView) modelAndView.getView();
+		assertTrue(redirectView.getUrl().startsWith("patientDashboard.form"));
+		
+		// make sure a patient row for #1 was created, not #3
+		Assert.assertNotNull(ps.getPatient(3));
+		Assert.assertNull(ps.getPatient(4));
 	}
 }
