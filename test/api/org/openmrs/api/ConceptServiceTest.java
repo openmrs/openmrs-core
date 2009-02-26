@@ -166,7 +166,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		cn.setHiAbsolute(20.0);
 		conceptService.saveConcept(cn);
 		
-		Concept firstConcept = conceptService.getConcept(1);
+		Concept firstConcept = conceptService.getConceptNumeric(1);
 		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
 		assertTrue(firstConcept instanceof ConceptNumeric);
 		ConceptNumeric firstConceptNumeric = (ConceptNumeric) firstConcept;
