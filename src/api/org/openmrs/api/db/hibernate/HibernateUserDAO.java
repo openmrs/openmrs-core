@@ -507,10 +507,11 @@ public class HibernateUserDAO implements UserDAO {
 			String[] names = name.split(" ");
 			for (String n : names) {
 				if (n != null && n.length() > 0) {
-					criteria.add(Expression.or(Expression.like("name.givenName", n, MatchMode.START), Expression.or(
-					    Expression.like("name.familyName", n, MatchMode.START), Expression.or(Expression.like(
-					        "name.middleName", n, MatchMode.START), Expression.or(Expression.like("systemId", n,
-					        MatchMode.START), Expression.like("username", n, MatchMode.START))))));
+					criteria.add(Expression.or(Expression.like("name.familyName2", name, MatchMode.START), Expression.or(
+					    Expression.like("name.givenName", n, MatchMode.START), Expression.or(Expression.like(
+					        "name.familyName", n, MatchMode.START), Expression.or(Expression.like("name.middleName", n,
+					        MatchMode.START), Expression.or(Expression.like("systemId", n, MatchMode.START), Expression
+					            .like("username", n, MatchMode.START)))))));
 				}
 			}
 		}

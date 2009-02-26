@@ -34,6 +34,7 @@ import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.SimpleExpression;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -271,17 +272,26 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * Auto generated method comment
+	 * Returns a criteria object comparing the given string to each part of the name. <br/>
+	 * <br/>
+	 * This criteria is essentially:
+	 * 
+	 * <pre>
+	 * ... where voided = false && name in (familyName2, familyName, middleName, givenName)
+	 * </pre>
 	 * 
 	 * @param name
 	 * @return
 	 */
 	private LogicalExpression getNameSearch(String name) {
-		// this criteria is essentially:
-		// where voided = false && name in [familyName, middleName, givenName]
-		return Expression.and(Expression.eq("name.voided", false), Expression.or(Expression.like("name.familyName", name,
-		    MatchMode.START), Expression.or(Expression.like("name.middleName", name, MatchMode.START), Expression.like(
-		    "name.givenName", name, MatchMode.START))));
+		
+		SimpleExpression givenName = Expression.like("name.givenName", name, MatchMode.START);
+		SimpleExpression middleName = Expression.like("name.middleName", name, MatchMode.START);
+		SimpleExpression familyName = Expression.like("name.familyName", name, MatchMode.START);
+		SimpleExpression familyName2 = Expression.like("name.familyName2", name, MatchMode.START);
+		
+		return Expression.and(Expression.eq("name.voided", false), Expression.or(familyName2, Expression.or(familyName,
+		    Expression.or(middleName, givenName))));
 	}
 	
 	/**

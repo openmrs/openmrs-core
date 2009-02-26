@@ -278,4 +278,33 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(matches.contains(new Person(1007)));
 	}
 	
+	/**
+	 * @see {@link PersonService#getPeople(String,Boolean)}
+	 */
+	@Test
+	@Verifies(value = "should match search to familyName2", method = "getPeople(String,Boolean)")
+	public void getPeople_shouldMatchSearchToFamilyName2() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		
+		List<Person> people = Context.getPersonService().getPeople("Johnson", false);
+		Assert.assertEquals(3, people.size());
+		Assert.assertTrue(people.contains(new Patient(2)));
+		Assert.assertTrue(people.contains(new Patient(4)));
+		Assert.assertTrue(people.contains(new Patient(5)));
+	}
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String)}
+	 */
+	@Test
+	@Verifies(value = "should match search to familyName2", method = "getSimilarPeople(String,Integer,String)")
+	public void getSimilarPeople_shouldMatchSearchToFamilyName2() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		
+		Set<Person> people = Context.getPersonService().getSimilarPeople("Johnson", null, "M");
+		Assert.assertEquals(2, people.size());
+		Assert.assertTrue(people.contains(new Patient(2)));
+		Assert.assertTrue(people.contains(new Patient(4)));
+	}
+	
 }

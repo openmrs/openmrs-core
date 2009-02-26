@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.hibernate.criterion.Expression;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -357,10 +358,12 @@ public interface UserService extends OpenmrsService {
 	 * Return a user if any part of the search matches first/last/system id and the user has one at
 	 * least one of the given <code>roles</code> assigned to them
 	 * 
-	 * @param nameSearch
-	 * @param roles
-	 * @param includeVoided
-	 * @return
+	 * @param nameSearch string to compare to the beginning of user's given/middle/family/family2
+	 *            names
+	 * @param roles all the Roles the user must contain
+	 * @param includeVoided true/false whether to include voided users
+	 * @return list of users matching the given attributes
+	 * @should match search to familyName2
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })

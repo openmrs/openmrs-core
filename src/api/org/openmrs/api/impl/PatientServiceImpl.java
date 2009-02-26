@@ -618,7 +618,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			return getPatients(null, query, null);
 		} else {
 			// there is no number in the string, search on name
-			return getPatients(query, null, null);
+			return getPatients(query, null, null, false);
 		}
 	}
 	

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="true"/>
+  <patient patient_id="4" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient patient_id="5" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <users user_id="2" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <users user_id="3" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="true"/>
+  <users user_id="4" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <users user_id="5" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_id="2" identifier="12345" identifier_type="1" preferred="0" location_id="1" creator="1" date_created="2004-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_id="3" identifier="4567" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_id="4" identifier="5634" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="true"/>
+  <patient_identifier patient_id="5" identifier="563422" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person person_id="3" gender="M" dead="true" creator="1" date_created="2005-01-01 00:00:00.0" voided="true"/>
+  <person person_id="4" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person person_id="5" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" prefix="Dr." given_name="John" middle_name="Andrew" family_name="Smith" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="3" preferred="true" person_id="3" prefix="" given_name="I" middle_name="am" family_name="voided" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="4" preferred="true" person_id="4" prefix="Mr." given_name="John" middle_name="Andrew" family_name="Johnson" family_name2="" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="5" preferred="true" person_id="5" prefix="Mrs." given_name="Jean" middle_name="Joan" family_name="Claude" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+</dataset>
