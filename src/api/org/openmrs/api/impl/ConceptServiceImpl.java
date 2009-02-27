@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.event.ListSelectionEvent;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -74,7 +72,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * Name of the concept word update task. A constant, because we only
 	 * manage a single task with this name. 
 	 */
-	private final String CONCEPT_WORD_UPDATE_TASK_NAME = "Update Concept Words";
+	public static final String CONCEPT_WORD_UPDATE_TASK_NAME = "Update Concept Words";
 	
 	/**
 	 * Task managed by the scheduler to update concept words. May be null.
@@ -1408,7 +1406,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		conceptWordUpdateTaskDef.setStartTime(null); // to induce immediate execution
 		conceptWordUpdateTaskDef.setName(CONCEPT_WORD_UPDATE_TASK_NAME);
 		conceptWordUpdateTaskDef
-		        .setDescription("Iterates through the concept dictionary, re-creating concept words (which are used for searcing). This task is started when using the \"Update Concept Word Storage\" page and no range is given.");
+		        .setDescription("Iterates through the concept dictionary, re-creating concept words (which are used for searcing). This task is started when using the \"Update Concept Word Storage\" page and no range is given.  This task stops itself when one iteration has completed.");
 		return conceptWordUpdateTaskDef;
 	}
 	
