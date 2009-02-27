@@ -25,10 +25,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
-import org.hibernate.type.Type;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -87,13 +85,14 @@ public class HibernatePersonDAO implements PersonDAO {
 		name = name.replace(", ", " ");
 		String[] names = name.split(" ");
 		
-		String q = "select p from Person p left join p.names as pname where";
+		String q = "select p from Person p left join p.names as pname where p.personVoided = false and pname.voided = false and ";
 		
 		if (names.length == 1) {
 			q += "(";
 			q += " soundex(pname.givenName) = soundex(:n1)";
 			q += " or soundex(pname.middleName) = soundex(:n1)";
 			q += " or soundex(pname.familyName) = soundex(:n1) ";
+			q += " or soundex(pname.familyName2) = soundex(:n1) ";
 			q += ")";
 		} else if (names.length == 2) {
 			q += "(";
@@ -112,12 +111,20 @@ public class HibernatePersonDAO implements PersonDAO {
 			q += "  when soundex(pname.middleName) = soundex(:n2) then 4";
 			q += "  else 0 ";
 			q += " end";
-			q += " +";
+			q += " + ";
 			q += " case";
 			q += "  when pname.familyName is null then 1";
 			q += "  when pname.familyName = '' then 1";
 			q += "  when soundex(pname.familyName) = soundex(:n1) then 3";
 			q += "  when soundex(pname.familyName) = soundex(:n2) then 4";
+			q += "  else 0 ";
+			q += " end";
+			q += " +";
+			q += " case";
+			q += "  when pname.familyName2 is null then 1";
+			q += "  when pname.familyName2 = '' then 1";
+			q += "  when soundex(pname.familyName2) = soundex(:n1) then 3";
+			q += "  when soundex(pname.familyName2) = soundex(:n2) then 4";
 			q += "  else 0 ";
 			q += " end";
 			q += ") >= 5";
@@ -138,12 +145,20 @@ public class HibernatePersonDAO implements PersonDAO {
 			q += "  when soundex(pname.middleName) = soundex(:n3) then 1";
 			q += "  else 0";
 			q += " end";
-			q += " +";
+			q += " + ";
 			q += " case";
 			q += "  when pname.familyName is null then 0";
 			q += "  when soundex(pname.familyName) = soundex(:n1) then 1";
 			q += "  when soundex(pname.familyName) = soundex(:n2) then 2";
 			q += "  when soundex(pname.familyName) = soundex(:n3) then 3";
+			q += "  else 0";
+			q += " end";
+			q += " +";
+			q += " case";
+			q += "  when pname.familyName2 is null then 0";
+			q += "  when soundex(pname.familyName2) = soundex(:n1) then 1";
+			q += "  when soundex(pname.familyName2) = soundex(:n2) then 2";
+			q += "  when soundex(pname.familyName2) = soundex(:n3) then 3";
 			q += "  else 0";
 			q += " end";
 			q += ") >= 5";
@@ -182,6 +197,16 @@ public class HibernatePersonDAO implements PersonDAO {
 			}
 			q += "  else 0";
 			q += " end";
+			q += ")";
+			q += "+";
+			q += "(";
+			q += " case";
+			q += "  when pname.familyName2 is null then 0";
+			for (int i = 0; i < names.length; i++) {
+				q += "  when soundex(pname.familyName2) = soundex(:n" + (i + 1) + ") then 1";
+			}
+			q += "  else 0";
+			q += " end";
 			q += ") >= " + (int) (names.length * .75); // if most of the names have at least a hit somewhere
 		}
 		
@@ -201,6 +226,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		q += " order by pname.givenName asc,";
 		q += " pname.middleName asc,";
 		q += " pname.familyName asc";
+		q += " pname.familyName2 asc";
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(q);
 		
@@ -230,7 +256,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			if (n != null && n.length() > 0) {
 				criteria.add(Expression.or(Expression.like("name.givenName", n, MatchMode.START), Expression.or(Expression
 				        .like("name.familyName", n, MatchMode.START), Expression.or(Expression.like("name.middleName", n,
-				    MatchMode.START), Expression.like("systemId", n, MatchMode.START)))));
+				    MatchMode.START), Expression.like("name.familyName2", n, MatchMode.START)))));
 			}
 		}
 		

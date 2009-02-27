@@ -22,8 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Cohort;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
@@ -32,6 +34,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.Verifies;
 import org.springframework.test.annotation.Rollback;
 
 /**
@@ -245,6 +248,21 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		us.saveUser(u.addRole(role2), null);
 		
+	}
+	
+	/**
+	 * @see {@link UserService#getUsers(String,List,boolean)}
+	 */
+	@Test
+	@Verifies(value = "should match search to familyName2", method = "getUsers(String,List<QRole;>,null)")
+	public void getUsers_shouldMatchSearchToFamilyName2() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		
+		List<User> users = Context.getUserService().getUsers("Johnson", null, false);
+		Assert.assertEquals(3, users.size());
+		Assert.assertTrue(users.contains(new Patient(2)));
+		Assert.assertTrue(users.contains(new Patient(4)));
+		Assert.assertTrue(users.contains(new Patient(5)));
 	}
 	
 }

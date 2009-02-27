@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
-import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
@@ -41,7 +40,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 
 /**
@@ -485,10 +483,11 @@ public class HibernateUserDAO implements UserDAO {
 			String[] names = name.split(" ");
 			for (String n : names) {
 				if (n != null && n.length() > 0) {
-					criteria.add(Expression.or(Expression.like("name.givenName", n, MatchMode.START), Expression.or(
-					    Expression.like("name.familyName", n, MatchMode.START), Expression.or(Expression.like(
-					        "name.middleName", n, MatchMode.START), Expression.or(Expression.like("systemId", n,
-					        MatchMode.START), Expression.like("username", n, MatchMode.START))))));
+					criteria.add(Expression.or(Expression.like("name.familyName2", name, MatchMode.START), Expression.or(
+					    Expression.like("name.givenName", n, MatchMode.START), Expression.or(Expression.like(
+					        "name.familyName", n, MatchMode.START), Expression.or(Expression.like("name.middleName", n,
+					        MatchMode.START), Expression.or(Expression.like("systemId", n, MatchMode.START), Expression
+					            .like("username", n, MatchMode.START)))))));
 				}
 			}
 		}

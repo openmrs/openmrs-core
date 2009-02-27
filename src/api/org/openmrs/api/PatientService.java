@@ -134,6 +134,7 @@ public interface PatientService extends OpenmrsService {
 	 *            using a regular expression
 	 * @return patients that matched the given criteria (and are not voided)
 	 * @throws APIException
+	 * @should search familyName2 with name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS })

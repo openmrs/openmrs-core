@@ -46,6 +46,7 @@ import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
+import org.openmrs.test.Verifies;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -496,6 +497,21 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		PatientIdentifierType newerPatientIdentifierType = patientService.getPatientIdentifierType(1);
 		assertEquals("SOME NEW NAME", newerPatientIdentifierType.getName());
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)}
+	 */
+	@Test
+	@Verifies(value = "should search familyName2 with name", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
+	public void getPatients_shouldSearchFamilyName2WithName() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		
+		List<Patient> patients = patientService.getPatients("Johnson", null, null, false);
+		Assert.assertEquals(3, patients.size());
+		Assert.assertTrue(patients.contains(new Patient(2)));
+		Assert.assertTrue(patients.contains(new Patient(4)));
+		Assert.assertTrue(patients.contains(new Patient(5)));
 	}
 	
 }
