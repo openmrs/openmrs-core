@@ -30,10 +30,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
  * Test the different aspects of {@link org.openmrs.web.controller.ForgotPasswordFormController}
  */
 public class ForgotPasswordFormControllerTest extends BaseContextSensitiveTest {
-
+	
 	/**
-	 * Log out before every test (authentication is done
-	 * in the "@Before" in the parent class)
+	 * Log out before every test (authentication is done in the "@Before" in the parent class)
 	 * 
 	 * @throws Exception
 	 */
@@ -42,37 +41,36 @@ public class ForgotPasswordFormControllerTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/web/include/ForgotPasswordFormControllerTest.xml");
 		Context.logout();
 	}
-
-    /**
-     * Log out the current user after all unit test cases just in 
-     * case the password was reset 
-     */
-    @After
-    public void cleanupAndLogoutUserAfterEachTest() {
-    	Context.logout();
-    }
-
+	
+	/**
+	 * Log out the current user after all unit test cases just in case the password was reset
+	 */
+	@After
+	public void cleanupAndLogoutUserAfterEachTest() {
+		Context.logout();
+	}
+	
 	/**
 	 * Just check for no errors on normal page load
 	 * 
 	 * @throws Exception
 	 */
-    @Test
-    public void shouldLoadPageNormallyWithNoInput() throws Exception {
-    	MockHttpServletRequest request = new MockHttpServletRequest("GET", "/forgotPassword.form");
+	@Test
+	public void shouldLoadPageNormallyWithNoInput() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/forgotPassword.form");
 		new ForgotPasswordFormController().handleRequest(request, new MockHttpServletResponse());
 	}
-    
-    /**
+	
+	/**
 	 * Check to see if the admin's secret question comes back
 	 * 
 	 * @throws Exception
 	 */
-    @Test
-    public void shouldNotNotFailOnNotFoundUsername() throws Exception {
-    	ForgotPasswordFormController controller = new ForgotPasswordFormController();
+	@Test
+	public void shouldNotNotFailOnNotFoundUsername() throws Exception {
+		ForgotPasswordFormController controller = new ForgotPasswordFormController();
 		
-    	MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setMethod("POST");
 		
 		request.addParameter("uname", "validuser");
@@ -83,17 +81,17 @@ public class ForgotPasswordFormControllerTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("validuser", request.getAttribute("uname"));
 		Assert.assertEquals("valid secret question", request.getAttribute("secretQuestion"));
 	}
-    
-    /**
+	
+	/**
 	 * Check to see if the admin's secret question comes back
 	 * 
 	 * @throws Exception
 	 */
-    @Test
-    public void shouldAuthenticateAsUserWithValidSecretQuestion() throws Exception {
-    	ForgotPasswordFormController controller = new ForgotPasswordFormController();
+	@Test
+	public void shouldAuthenticateAsUserWithValidSecretQuestion() throws Exception {
+		ForgotPasswordFormController controller = new ForgotPasswordFormController();
 		
-    	MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setMethod("POST");
 		
 		request.addParameter("uname", "validuser");
@@ -104,18 +102,18 @@ public class ForgotPasswordFormControllerTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(new User(2), Context.getAuthenticatedUser());
 	}
-    
-    /**
-	 * If a user enters the wrong secret answer, they should be kicked
-	 * back to the form and not be authenticated
+	
+	/**
+	 * If a user enters the wrong secret answer, they should be kicked back to the form and not be
+	 * authenticated
 	 * 
 	 * @throws Exception
 	 */
-    @Test
-    public void shouldNotAuthenticateAsUserWithValidSecretQuestion() throws Exception {
-    	ForgotPasswordFormController controller = new ForgotPasswordFormController();
+	@Test
+	public void shouldNotAuthenticateAsUserWithValidSecretQuestion() throws Exception {
+		ForgotPasswordFormController controller = new ForgotPasswordFormController();
 		
-    	MockHttpServletRequest request = new MockHttpServletRequest();
+		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setMethod("POST");
 		
 		request.addParameter("uname", "validuser");
@@ -126,110 +124,108 @@ public class ForgotPasswordFormControllerTest extends BaseContextSensitiveTest {
 		
 		Assert.assertFalse(Context.isAuthenticated());
 	}
-    
-    /**
-	 * If a user enters 5 requests, the 6th should fail even if that one has
-	 * a valid username in it
+	
+	/**
+	 * If a user enters 5 requests, the 6th should fail even if that one has a valid username in it
 	 * 
 	 * @throws Exception
 	 */
-    @Test
-    public void shouldLockOutAfterFiveFailedInvalidUsernames() throws Exception {
-    	ForgotPasswordFormController controller = new ForgotPasswordFormController();
+	@Test
+	public void shouldLockOutAfterFiveFailedInvalidUsernames() throws Exception {
+		ForgotPasswordFormController controller = new ForgotPasswordFormController();
 		
-    	for (int x = 1; x <= 5; x++) {
-	    	MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
+		for (int x = 1; x <= 5; x++) {
+			MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
 			request.addParameter("uname", "invaliduser");
 			
 			controller.handleRequest(request, new MockHttpServletResponse());
-    	}
-    	
-    	// those were the first five, now the sixth request (with a valid user) should fail
-    	MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
+		}
+		
+		// those were the first five, now the sixth request (with a valid user) should fail
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
 		request.addParameter("uname", "validuser");
 		
 		controller.handleRequest(request, new MockHttpServletResponse());
 		Assert.assertNull(request.getAttribute("secretQuestion"));
 	}
-    
-    /**
-	 * If a user enters 5 requests, the 6th should fail even if that one has
-	 * a valid username and a secret answer associated with it
+	
+	/**
+	 * If a user enters 5 requests, the 6th should fail even if that one has a valid username and a
+	 * secret answer associated with it
 	 * 
 	 * @throws Exception
 	 */
-    @Test
-    public void shouldNotAuthenticateAfterFiveFailedInvalidUsernames() throws Exception {
-    	ForgotPasswordFormController controller = new ForgotPasswordFormController();
+	@Test
+	public void shouldNotAuthenticateAfterFiveFailedInvalidUsernames() throws Exception {
+		ForgotPasswordFormController controller = new ForgotPasswordFormController();
 		
-    	for (int x = 1; x <= 5; x++) {
-	    	MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
+		for (int x = 1; x <= 5; x++) {
+			MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
 			request.addParameter("uname", "invaliduser");
 			
 			controller.handleRequest(request, new MockHttpServletResponse());
-    	}
-    	
-    	// those were the first five, now the sixth request (with a valid user) should fail
-    	MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
+		}
+		
+		// those were the first five, now the sixth request (with a valid user) should fail
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
 		request.addParameter("uname", "validuser");
 		request.addParameter("secretAnswer", "valid secret answer");
 		controller.handleRequest(request, new MockHttpServletResponse());
 		
 		Assert.assertFalse(Context.isAuthenticated());
 	}
-    
-    /**
-	 * If a user enters 5 requests with username+secret answer, the 6th should fail even if that one has
-	 * a valid answer in it
+	
+	/**
+	 * If a user enters 5 requests with username+secret answer, the 6th should fail even if that one
+	 * has a valid answer in it
 	 * 
 	 * @throws Exception
 	 */
-    @Test
-    public void shouldLockOutAfterFiveFailedInvalidSecretAnswers() throws Exception {
-    	ForgotPasswordFormController controller = new ForgotPasswordFormController();
+	@Test
+	public void shouldLockOutAfterFiveFailedInvalidSecretAnswers() throws Exception {
+		ForgotPasswordFormController controller = new ForgotPasswordFormController();
 		
-    	for (int x = 1; x <= 5; x++) {
-	    	MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
+		for (int x = 1; x <= 5; x++) {
+			MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
 			request.addParameter("uname", "validuser");
 			request.addParameter("secretAnswer", "invalid secret answer");
 			
 			controller.handleRequest(request, new MockHttpServletResponse());
-    	}
-    	
-    	// those were the first five, now the sixth request (with a valid user) should fail
-    	MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
+		}
+		
+		// those were the first five, now the sixth request (with a valid user) should fail
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
 		request.addParameter("uname", "validuser");
 		request.addParameter("secretAnswer", "valid secret answer");
 		controller.handleRequest(request, new MockHttpServletResponse());
 		
 		Assert.assertFalse(Context.isAuthenticated());
 	}
-    
-    /**
-	 * If a user enters 4 username requests, the 5th one should reset the lockout and
-	 * they should be allowed 5 attempts at the secret answer
+	
+	/**
+	 * If a user enters 4 username requests, the 5th one should reset the lockout and they should be
+	 * allowed 5 attempts at the secret answer
 	 * 
 	 * @throws Exception
 	 */
-    @Test
-    public void shouldGiveUserFiveSecretAnswerAttemptsAfterLessThanFiveFailedUsernameAttempts() throws Exception {
-    	ForgotPasswordFormController controller = new ForgotPasswordFormController();
+	@Test
+	public void shouldGiveUserFiveSecretAnswerAttemptsAfterLessThanFiveFailedUsernameAttempts() throws Exception {
+		ForgotPasswordFormController controller = new ForgotPasswordFormController();
 		
-    	for (int x = 1; x <= 4; x++) {
-	    	MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
+		for (int x = 1; x <= 4; x++) {
+			MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
 			request.addParameter("uname", "invaliduser");
 			
 			controller.handleRequest(request, new MockHttpServletResponse());
-    	}
-    	
-    	// those were the first four, now the fifth is a valid username 
-    	MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
+		}
+		
+		// those were the first four, now the fifth is a valid username 
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/forgotPassword.form");
 		request.addParameter("uname", "validuser");
 		
 		controller.handleRequest(request, new MockHttpServletResponse());
 		
 		Assert.assertNotNull(request.getAttribute("secretQuestion"));
-		
 		
 		// now the user has 5 chances at the secret answer
 		
@@ -255,5 +251,5 @@ public class ForgotPasswordFormControllerTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue(Context.isAuthenticated());
 	}
-    
+	
 }

@@ -20,15 +20,15 @@ public abstract class PortletExt extends Extension {
 	public MEDIA_TYPE getMediaType() {
 		return Extension.MEDIA_TYPE.html;
 	}
-
+	
 	/**
 	 * @return The message code of the label of this link
 	 */
 	public abstract String getPortletUrl();
-
+	
 	/**
 	 * @return The url that this link should go to
 	 */
 	public abstract String getPortletParameters();
-
+	
 }

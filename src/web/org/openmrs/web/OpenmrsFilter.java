@@ -35,57 +35,57 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- * This is the custom OpenMRS filter.  It is defined as the filter of choice
- * in the web.xml file.
- * 
- * All page/object calls run through the doFilter method so we can wrap every 
- * session with the user's userContext (which holds the user's authenticated info)
+ * This is the custom OpenMRS filter. It is defined as the filter of choice in the web.xml file. All
+ * page/object calls run through the doFilter method so we can wrap every session with the user's
+ * userContext (which holds the user's authenticated info)
  */
 public class OpenmrsFilter implements Filter {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
-		
+	
 	/**
 	 * @see javax.servlet.Filter#destroy()
 	 */
-	public void destroy() {	
+	public void destroy() {
 		log.debug("Destroying filter");
 	}
-
-	/**
-	 * This method is called for every request for a page/image/javascript file/etc
-	 * The main point of this is to make sure the user's current userContext is on
-	 * the session and on the current thread
-	 * 
-	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
-	 */
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 	
-		HttpServletRequest httpRequest = (HttpServletRequest)request;
+	/**
+	 * This method is called for every request for a page/image/javascript file/etc The main point
+	 * of this is to make sure the user's current userContext is on the session and on the current
+	 * thread
+	 * 
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	 */
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+	                                                                                         ServletException {
+		
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpSession httpSession = httpRequest.getSession();
 		UserContext userContext = null;
 		
-		Object val = httpRequest.getAttribute( WebConstants.INIT_REQ_UNIQUE_ID );
+		Object val = httpRequest.getAttribute(WebConstants.INIT_REQ_UNIQUE_ID);
 		
 		//the request will not have the value if this is the initial request
-		boolean initialRequest = ( val == null );
-        
-        if (log.isDebugEnabled()) {
-	        log.debug("initial Request? " + initialRequest);
-	        log.debug("requestURI " + httpRequest.getRequestURI());
-	        log.debug("requestURL " + httpRequest.getRequestURL());
-	        log.debug("request path info " + httpRequest.getPathInfo());
-        }
-        
-        //set/forward the request init attribute
-        if (initialRequest)
-        	httpRequest.setAttribute( WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(new Date().getTime()) );
-        
-        //context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-        //context = (Context)httpRequest.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-        
-        if (initialRequest == true) {
-        	// default the session username attribute to anonymous
+		boolean initialRequest = (val == null);
+		
+		if (log.isDebugEnabled()) {
+			log.debug("initial Request? " + initialRequest);
+			log.debug("requestURI " + httpRequest.getRequestURI());
+			log.debug("requestURL " + httpRequest.getRequestURL());
+			log.debug("request path info " + httpRequest.getPathInfo());
+		}
+		
+		//set/forward the request init attribute
+		if (initialRequest)
+			httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(new Date().getTime()));
+		
+		//context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		//context = (Context)httpRequest.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		
+		if (initialRequest == true) {
+			// default the session username attribute to anonymous
 			httpSession.setAttribute("username", "-anonymous user-");
 			
 			// User context is created if it doesn't already exist and added to the session
@@ -95,14 +95,13 @@ public class OpenmrsFilter implements Filter {
 			
 			// if there isn't a userContext on the session yet, create one
 			// and set it onto the session
-			if (userContext == null) { 
+			if (userContext == null) {
 				userContext = new UserContext();
 				httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
 				
 				if (log.isDebugEnabled())
 					log.debug("Just set user context " + userContext + " as attribute on session");
-			}
-			else {
+			} else {
 				// set username as attribute on session so parent servlet container 
 				// can identify sessions easier
 				User user;
@@ -112,12 +111,12 @@ public class OpenmrsFilter implements Filter {
 			
 			// set the locale on the session (for the servlet container as well)
 			httpSession.setAttribute("locale", userContext.getLocale());
-        	
-        	// Add the user context to the current thread 
-        	Context.setUserContext(userContext);
-        }
-        
-        log.debug("before doFilter");
+			
+			// Add the user context to the current thread 
+			Context.setUserContext(userContext);
+		}
+		
+		log.debug("before doFilter");
 		
 		// continue the filter chain (going on to spring, authorization, etc)
 		try {
@@ -137,7 +136,7 @@ public class OpenmrsFilter implements Filter {
 		log.debug("after doFilter");
 		
 	}
-
+	
 	/**
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
@@ -151,9 +150,9 @@ public class OpenmrsFilter implements Filter {
 	 * @param httpRequest
 	 * @return
 	 */
-	public ApplicationContext getApplicationContext(HttpServletRequest httpRequest) { 
+	public ApplicationContext getApplicationContext(HttpServletRequest httpRequest) {
 		ServletContext servletContext = httpRequest.getSession().getServletContext();
 		return WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
-	}	
-
+	}
+	
 }

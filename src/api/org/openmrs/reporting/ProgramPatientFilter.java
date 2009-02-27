@@ -27,22 +27,27 @@ import org.openmrs.report.EvaluationContext;
 import org.openmrs.report.Parameter;
 
 /**
- * Currently can only determine whether a patient was in a given program ever, or on a specific date, or relative to dates
+ * Currently can only determine whether a patient was in a given program ever, or on a specific
+ * date, or relative to dates
+ * 
  * @author djazayeri
  * @deprecated Use @see org.openmrs.reporting.ProgramStatePatientFilter instead
  */
 public class ProgramPatientFilter extends AbstractPatientFilter implements PatientFilter {
 	
 	private Program program;
+	
 	private Date onDate;
+	
 	private Date fromDate;
+	
 	private Date toDate;
 	
 	public ProgramPatientFilter() {
 		super.setType("Patient Filter");
 		super.setSubType("Program Patient Filter");
 	}
-
+	
 	public Cohort filter(Cohort input, EvaluationContext context) {
 		if (!isReadyToRun())
 			return null;
@@ -54,7 +59,7 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 			matches = service.getPatientsInProgram(program, fromDate, toDate);
 		return input == null ? matches : Cohort.intersect(input, matches);
 	}
-
+	
 	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		if (!isReadyToRun())
 			return null;
@@ -66,7 +71,7 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 			matches = service.getPatientsInProgram(program, fromDate, toDate);
 		return Cohort.subtract(input, matches);
 	}
-	 
+	
 	public String getDescription() {
 		if (!isReadyToRun())
 			return "";
@@ -85,41 +90,41 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 		}
 		return ret.toString();
 	}
-
+	
 	public boolean isReadyToRun() {
 		return program != null;
 	}
-
+	
 	public Date getFromDate() {
 		return fromDate;
 	}
-
+	
 	public void setFromDate(Date fromDate) {
 		this.fromDate = fromDate;
 	}
-
+	
 	public Date getOnDate() {
 		return onDate;
 	}
-
+	
 	public void setOnDate(Date onDate) {
 		this.onDate = onDate;
 	}
-
+	
 	public Program getProgram() {
 		return program;
 	}
-
+	
 	public void setProgram(Program program) {
 		this.program = program;
 	}
-
+	
 	public Date getToDate() {
 		return toDate;
 	}
-
+	
 	public void setToDate(Date toDate) {
 		this.toDate = toDate;
 	}
-
+	
 }

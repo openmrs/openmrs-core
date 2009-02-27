@@ -24,23 +24,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
- * This class simply creates a shortened URL for concept links 
- * 
- * /concept/### to /dictionary/concept.htm?conceptId=###
- * /concept to /dictionary/index.htm
- * /concept/** to /dictionary/index.htm?phrase=**
- * 
-
- *
+ * This class simply creates a shortened URL for concept links /concept/### to
+ * /dictionary/concept.htm?conceptId=### /concept to /dictionary/index.htm /concept/** to
+ * /dictionary/index.htm?phrase=**
  */
 public class ConceptRedirectServlet extends HttpServlet {
-
+	
 	public static final long serialVersionUID = 1231231123454545L;
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String contextPath = request.getContextPath();
 		String path = request.getPathInfo();
@@ -53,7 +47,7 @@ public class ConceptRedirectServlet extends HttpServlet {
 				path = path.substring(0, nextSlash);
 			log.debug("new concept id: " + path);
 			try {
-				Integer i = new Integer(path); 
+				Integer i = new Integer(path);
 				// view the concept if the path info was an integer 
 				response.sendRedirect(contextPath + "/dictionary/concept.htm?conceptId=" + i);
 				return;

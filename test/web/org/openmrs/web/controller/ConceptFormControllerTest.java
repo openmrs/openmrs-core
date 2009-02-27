@@ -39,7 +39,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Unit testing for the ConceptFormController.
- * 
  */
 public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 	
@@ -106,7 +105,7 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldAddConceptWithOnlyNameSpecified() throws Exception {
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
-
+		
 		ConceptService cs = Context.getConceptService();
 		
 		// make sure the concept doesn't already exist
@@ -116,11 +115,11 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
 		
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-
+		
 		mockRequest.setMethod("POST");
 		mockRequest.setParameter("action", "");
-		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME ); 
-		mockRequest.setParameter("concept.datatype", "1" );
+		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("concept.datatype", "1");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
 		assertNotNull(mav);
@@ -149,12 +148,12 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
 		
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-
+		
 		mockRequest.setMethod("POST");
 		mockRequest.setParameter("action", "");
-		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME); 
-		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME ); 
-		mockRequest.setParameter("concept.datatype", "1" );
+		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
+		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("concept.datatype", "1");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
 		assertNotNull(mav);
@@ -186,13 +185,13 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		
 		mockRequest.setMethod("POST");
 		mockRequest.setParameter("action", "");
-		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME); 
-		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION); 
-		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME ); 
-		mockRequest.setParameter("concept.datatype", "4" );
+		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
+		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION);
+		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("concept.datatype", "4");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
 		assertNotNull(mav);
@@ -226,13 +225,13 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		
 		mockRequest.setMethod("POST");
 		mockRequest.setParameter("action", "");
-		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME); 
-		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION); 
-		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME ); 
-		mockRequest.setParameter("concept.datatype", "1" );
+		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
+		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION);
+		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("concept.datatype", "1");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
 		assertNotNull(mav);
@@ -252,6 +251,7 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Test adding a concept with a preferred name, short name, description and synonyms.
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -273,16 +273,16 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		
 		mockRequest.setMethod("POST");
 		mockRequest.setParameter("action", "");
 		mockRequest.setParameter("synonymsByLocale[en][0].name", EXPECTED_SYNONYM_A);
 		mockRequest.setParameter("synonymsByLocale[en][1].name", EXPECTED_SYNONYM_B);
 		mockRequest.setParameter("synonymsByLocale[en][2].name", EXPECTED_SYNONYM_C);
-		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME); 
-		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION); 
-		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME ); 
-		mockRequest.setParameter("concept.datatype", "1" );
+		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
+		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION);
+		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("concept.datatype", "1");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
 		assertNotNull(mav);
@@ -300,9 +300,10 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		assertEquals(EXPECTED_DESCRIPTION, actualConcept.getDescription(Locale.ENGLISH).getDescription());
 		
 	}
-
+	
 	/**
 	 * Test adding a concept with a preferred name, short name, description and synonyms.
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -324,16 +325,16 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		
 		mockRequest.setMethod("POST");
 		mockRequest.setParameter("action", "");
 		mockRequest.setParameter("synonymsByLocale[en][0].name", EXPECTED_SYNONYM_A);
 		mockRequest.setParameter("synonymsByLocale[en][1].name", EXPECTED_SYNONYM_B);
 		mockRequest.setParameter("synonymsByLocale[en][2].name", EXPECTED_SYNONYM_C);
-		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME); 
-		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION); 
-		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME ); 
-		mockRequest.setParameter("concept.datatype", "1" );
+		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
+		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION);
+		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("concept.datatype", "1");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
 		assertNotNull(mav);
@@ -348,9 +349,10 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		assertEquals(EXPECTED_SHORT_NAME, actualConcept.getShortNameInLocale(Locale.ENGLISH).getName());
 		
 	}
-
+	
 	/**
 	 * Test adding a concept with a preferred name, short name, description and synonyms.
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -372,16 +374,16 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		
 		mockRequest.setMethod("POST");
 		mockRequest.setParameter("action", "");
 		mockRequest.setParameter("synonymsByLocale[en][0].name", EXPECTED_SYNONYM_A);
 		mockRequest.setParameter("synonymsByLocale[en][1].name", EXPECTED_SYNONYM_B);
 		mockRequest.setParameter("synonymsByLocale[en][2].name", EXPECTED_SYNONYM_C);
-		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME); 
-		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION); 
-		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME ); 
-		mockRequest.setParameter("concept.datatype", "1" );
+		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
+		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION);
+		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("concept.datatype", "1");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
 		assertNotNull(mav);
@@ -396,9 +398,10 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		assertEquals(EXPECTED_SHORT_NAME, actualConcept.getShortNameInLocale(Locale.ENGLISH).getName());
 		
 	}
-
+	
 	/**
 	 * Test adding a concept with a preferred name, short name, description and synonyms.
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -426,16 +429,16 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
+		
 		mockRequest.setMethod("POST");
 		mockRequest.setParameter("action", "");
 		mockRequest.setParameter("synonymsByLocale[en][0].name", EXPECTED_SYNONYM_A);
 		mockRequest.setParameter("synonymsByLocale[en][1].name", EXPECTED_SYNONYM_B);
 		mockRequest.setParameter("synonymsByLocale[en][2].name", EXPECTED_SYNONYM_C);
-		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME); 
-		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION); 
-		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME ); 
-		mockRequest.setParameter("concept.datatype", "1" );
+		mockRequest.setParameter("shortNamesByLocale[en].name", EXPECTED_SHORT_NAME);
+		mockRequest.setParameter("descriptionsByLocale[en].description", EXPECTED_DESCRIPTION);
+		mockRequest.setParameter("namesByLocale[en].name", EXPECTED_PREFERRED_NAME);
+		mockRequest.setParameter("concept.datatype", "1");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, response);
 		assertNotNull(mav);
@@ -443,7 +446,7 @@ public class ConceptFormControllerTest extends BaseContextSensitiveTest {
 		
 		Concept actualConcept = cs.getConceptByName(EXPECTED_PREFERRED_NAME);
 		assertNotNull(actualConcept);
-
+		
 		assertNotNull(actualConcept.getDescription(Locale.ENGLISH));
 		assertEquals(EXPECTED_DESCRIPTION, actualConcept.getDescription(Locale.ENGLISH).getDescription());
 	}

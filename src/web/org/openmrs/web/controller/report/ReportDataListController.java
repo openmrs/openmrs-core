@@ -36,69 +36,69 @@ import org.springframework.web.servlet.view.RedirectView;
 public class ReportDataListController extends SimpleFormController {
 	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		String view = getFormView();
-
+		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
-    	String key = ServletRequestUtils.getStringParameter(request, "indicator", "empty");
-    	
-    	// If there is no parameter named 'indicator' then return an empty Person stub.
-    	if (null == key || "empty".equals(key)) {
-    		Person p = new Person();
-    		p.setPersonId(-1);
-    		return p;
-    	}
-    	
-    	// Get the ReportData that is in the current Session.
-    	ReportData report = (ReportData)request.getSession().getAttribute(WebConstants.OPENMRS_REPORT_DATA);
- 
-    	// Extract the Collection<DataSet> from the ReportData and put it into an ArrayList so it is usable.
-    	ArrayList<DataSet> cohortDataSets = new ArrayList<DataSet>();
-    	Map<String,DataSet> dataSetMap = report.getDataSets();
-    	cohortDataSets.addAll(dataSetMap.values());
-    	
-    	// For each CohortDataSet.cohortData in the DataSet row...
-    	Iterator<Map<String,Cohort>> iterator = cohortDataSets.get(0).iterator();
-    	Cohort cohort = null;
-    	while (iterator.hasNext()) {
-    		Map<String, Cohort> cohortData = iterator.next();
-    		// ... if the cohortData contains the indicator key...
-    		if (cohortData.containsKey(key)) {
-    			// ... then use that Cohort.
-    			cohort = cohortData.get(key);
-    		}
-    	}
-    	
-    	// Set the 'patientIds' attribute of the request to the Cohort.personIds
-    	Set<Integer> ids = cohort.getMemberIds();
-    	String personIds = ids.toString();
-    	personIds = personIds.replaceAll("\\[", "");
-    	personIds = personIds.replaceAll("\\]", "");
-    	personIds = personIds.replaceAll(", ", ",");
-    	personIds = personIds.trim();
-    	request.setAttribute("patientIds", personIds);
-    	
-    	// return the ReportData 
-    	return report;
-    }
-    
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
+		String key = ServletRequestUtils.getStringParameter(request, "indicator", "empty");
+		
+		// If there is no parameter named 'indicator' then return an empty Person stub.
+		if (null == key || "empty".equals(key)) {
+			Person p = new Person();
+			p.setPersonId(-1);
+			return p;
+		}
+		
+		// Get the ReportData that is in the current Session.
+		ReportData report = (ReportData) request.getSession().getAttribute(WebConstants.OPENMRS_REPORT_DATA);
+		
+		// Extract the Collection<DataSet> from the ReportData and put it into an ArrayList so it is usable.
+		ArrayList<DataSet> cohortDataSets = new ArrayList<DataSet>();
+		Map<String, DataSet> dataSetMap = report.getDataSets();
+		cohortDataSets.addAll(dataSetMap.values());
+		
+		// For each CohortDataSet.cohortData in the DataSet row...
+		Iterator<Map<String, Cohort>> iterator = cohortDataSets.get(0).iterator();
+		Cohort cohort = null;
+		while (iterator.hasNext()) {
+			Map<String, Cohort> cohortData = iterator.next();
+			// ... if the cohortData contains the indicator key...
+			if (cohortData.containsKey(key)) {
+				// ... then use that Cohort.
+				cohort = cohortData.get(key);
+			}
+		}
+		
+		// Set the 'patientIds' attribute of the request to the Cohort.personIds
+		Set<Integer> ids = cohort.getMemberIds();
+		String personIds = ids.toString();
+		personIds = personIds.replaceAll("\\[", "");
+		personIds = personIds.replaceAll("\\]", "");
+		personIds = personIds.replaceAll(", ", ",");
+		personIds = personIds.trim();
+		request.setAttribute("patientIds", personIds);
+		
+		// return the ReportData 
+		return report;
+	}
 	
 }

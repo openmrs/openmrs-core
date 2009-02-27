@@ -19,76 +19,80 @@ import org.openmrs.logic.op.Operator;
  *
  */
 public class LogicTransform {
-
+	
 	private Operator transformOperator = null;
+	
 	private Integer numResults = null;
+	
 	private String sortColumn = null;
 	
-	public LogicTransform(Operator transformOperator,
-			Integer numResults){
+	public LogicTransform(Operator transformOperator, Integer numResults) {
 		this.transformOperator = transformOperator;
 		this.numResults = numResults;
 	}
-	public LogicTransform(Operator transformOperator){
+	
+	public LogicTransform(Operator transformOperator) {
 		this.transformOperator = transformOperator;
 	}
-	public Operator getTransformOperator() {
-    	return transformOperator;
-    }
 	
-	public String toString(){
+	public Operator getTransformOperator() {
+		return transformOperator;
+	}
+	
+	public String toString() {
 		StringBuffer result = new StringBuffer();
 		
-		if(transformOperator != null){
+		if (transformOperator != null) {
 			result.append(transformOperator);
 		}
 		
-		if(numResults != null){
-			result.append(" "+numResults);
+		if (numResults != null) {
+			result.append(" " + numResults);
 		}
 		
-		if(sortColumn != null){
-			result.append(" ordered by "+sortColumn);
+		if (sortColumn != null) {
+			result.append(" ordered by " + sortColumn);
 		}
 		return result.toString();
 	}
 	
 	public Integer getNumResults() {
-    	return numResults;
-    }
+		return numResults;
+	}
 	
 	public String getSortColumn() {
-    	return sortColumn;
-    }
+		return sortColumn;
+	}
 	
 	public void setNumResults(Integer numResults) {
-    	this.numResults = numResults;
-    }
+		this.numResults = numResults;
+	}
+	
 	public void setSortColumn(String sortColumn) {
-    	this.sortColumn = sortColumn;
-    }
+		this.sortColumn = sortColumn;
+	}
+	
 	@Override
-	public boolean equals(Object obj){
-    	if(!(obj instanceof LogicTransform))
-    	{
-    		return false;
-    	}
-    	
-    	LogicTransform compTransform = (LogicTransform) obj;
-    	
-    	if(!safeEquals(this.transformOperator,compTransform.getTransformOperator())){
-    		return false;
-    	}
-    	
-    	if(!safeEquals(numResults,compTransform.getNumResults())){
-    		return false;
-    	}
-    	
-    	if(!safeEquals(sortColumn,compTransform.getSortColumn())){
-    		return false;
-    	}
-    	    
-	    return true;
+	public boolean equals(Object obj) {
+		if (!(obj instanceof LogicTransform)) {
+			return false;
+		}
+		
+		LogicTransform compTransform = (LogicTransform) obj;
+		
+		if (!safeEquals(this.transformOperator, compTransform.getTransformOperator())) {
+			return false;
+		}
+		
+		if (!safeEquals(numResults, compTransform.getNumResults())) {
+			return false;
+		}
+		
+		if (!safeEquals(sortColumn, compTransform.getSortColumn())) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	private boolean safeEquals(Object a, Object b) {
@@ -103,14 +107,9 @@ public class LogicTransform {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-		        * result
-		        + ((transformOperator == null) ? 0
-		                : transformOperator.hashCode());
-		result = prime * result
-		        + ((numResults == null) ? 0 : numResults.hashCode());
-		result = prime * result
-        		+ ((sortColumn == null) ? 0 : sortColumn.hashCode());
+		result = prime * result + ((transformOperator == null) ? 0 : transformOperator.hashCode());
+		result = prime * result + ((numResults == null) ? 0 : numResults.hashCode());
+		result = prime * result + ((sortColumn == null) ? 0 : sortColumn.hashCode());
 		return result;
 	}
 }

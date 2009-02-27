@@ -23,18 +23,17 @@ import java.util.Set;
 import org.springframework.metadata.Attributes;
 
 /**
- * Annotation attributes metadata implementation used for 
- * authorization method interception. 
+ * Annotation attributes metadata implementation used for authorization method interception.
+ * <p>
+ * This <code>Attributes</code> implementation will return security configuration for classes
+ * described using the <code>Secured</code> Java 5 annotation.
+ * <p>
+ * The <code>SecurityAnnotationAttributes</code> implementation can be used to configure a
+ * <code>MethodDefinitionAttributes</code> and <code>MethodSecurityInterceptor</code> bean
+ * definition (see below).
+ * <p>
+ * For example:
  * 
- * <p>This <code>Attributes</code> implementation will return security 
- * configuration for classes described using the <code>Secured</code> Java 5
- * annotation. 
- * 
- * <p>The <code>SecurityAnnotationAttributes</code> implementation can be used
- * to configure a <code>MethodDefinitionAttributes</code> and 
- * <code>MethodSecurityInterceptor</code> bean definition (see below).
- * 
- * <p>For example: 
  * <pre>
  * &lt;bean id="attributes" 
  *     class="org.acegisecurity.annotation.SecurityAnnotationAttributes"/>
@@ -54,17 +53,18 @@ import org.springframework.metadata.Attributes;
  *      &lt;/property>
  * &lt;/bean>
  * </pre>
+ * <p>
+ * These security annotations are similiar to the Commons Attributes approach, however they are
+ * using Java 5 language-level metadata support.
  * 
- * <p>These security annotations are similiar to the Commons Attributes
- * approach, however they are using Java 5 language-level metadata support.
- *
  * @see org.openmrs.annotation.Authorized
  */
 @SuppressWarnings("unchecked")
 public class AuthorizedAnnotationAttributes implements Attributes {
-
+	
 	/**
 	 * Get the <code>Secured</code> attributes for a given target class.
+	 * 
 	 * @param method The target method
 	 * @return Collection of <code>SecurityConfig</code>
 	 * @see Attributes#getAttributes
@@ -83,16 +83,17 @@ public class AuthorizedAnnotationAttributes implements Attributes {
 		}
 		return attributes;
 	}
-
+	
 	/**
 	 * Get the <code>Secured</code> attributes for a given target method.
+	 * 
 	 * @param method The target method
 	 * @return Collection of <code>SecurityConfig</code>
 	 * @see Attributes#getAttributes
-	 */	
+	 */
 	public Collection getAttributes(Method method) {
 		Set<String> attributes = new HashSet<String>();
-
+		
 		for (Annotation annotation : method.getAnnotations()) {
 			// check for Secured annotations
 			if (annotation instanceof Authorized) {
@@ -107,12 +108,11 @@ public class AuthorizedAnnotationAttributes implements Attributes {
 	}
 	
 	/**
-	 * Returns whether or not to require that the user have all
-	 * of the privileges in order to be "authorized" for this class
+	 * Returns whether or not to require that the user have all of the privileges in order to be
+	 * "authorized" for this class
 	 * 
 	 * @param method
 	 * @return boolean true/false whether to "and" privileges together
-	 * 
 	 * @see org.openmrs.annotation.Authorized#requireAll()
 	 */
 	public boolean getRequireAll(Class target) {
@@ -127,12 +127,11 @@ public class AuthorizedAnnotationAttributes implements Attributes {
 	}
 	
 	/**
-	 * Returns whether or not to require that the user have all
-	 * of the privileges in order to be "authorized" for this method
+	 * Returns whether or not to require that the user have all of the privileges in order to be
+	 * "authorized" for this method
 	 * 
 	 * @param method
 	 * @return boolean true/false whether to "and" privileges together
-	 * 
 	 * @see org.openmrs.annotation.Authorized#requireAll()
 	 */
 	public boolean getRequireAll(Method method) {
@@ -147,23 +146,22 @@ public class AuthorizedAnnotationAttributes implements Attributes {
 	}
 	
 	/**
-     * Determine if this method has the @Authorized annotation even on it
-     * 
-     * @param method
-     * @return boolean true/false whether this method is annotated for OpenMRS
-     */
-    public boolean hasAuthorizedAnnotation(Method method) {
-    	for (Annotation annotation : method.getAnnotations()) {
+	 * Determine if this method has the @Authorized annotation even on it
+	 * 
+	 * @param method
+	 * @return boolean true/false whether this method is annotated for OpenMRS
+	 */
+	public boolean hasAuthorizedAnnotation(Method method) {
+		for (Annotation annotation : method.getAnnotations()) {
 			// check for Secured annotations
 			if (annotation instanceof Authorized) {
 				return true;
 			}
-    	}
-    	
-    	return false;
-    }
-
-
+		}
+		
+		return false;
+	}
+	
 	public Collection getAttributes(Class clazz, Class filter) {
 		throw new UnsupportedOperationException("Unsupported operation");
 	}
@@ -171,13 +169,13 @@ public class AuthorizedAnnotationAttributes implements Attributes {
 	public Collection getAttributes(Method method, Class clazz) {
 		throw new UnsupportedOperationException("Unsupported operation");
 	}
-
+	
 	public Collection getAttributes(Field field) {
 		throw new UnsupportedOperationException("Unsupported operation");
 	}
-
+	
 	public Collection getAttributes(Field field, Class clazz) {
 		throw new UnsupportedOperationException("Unsupported operation");
 	}
-
+	
 }

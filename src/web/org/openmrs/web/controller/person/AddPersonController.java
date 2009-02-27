@@ -36,28 +36,40 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class AddPersonController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
-    private final String PATIENT_SHORT_EDIT_URL = "/admin/patients/newPatient.form";
-    private final String PATIENT_EDIT_URL = "/admin/patients/patient.form";
-    private final String PATIENT_VIEW_URL = "/patientDashboard.form";
-    private final String USER_EDIT_URL = "/admin/users/user.form";
-        
-    /** Parameters passed in view request object **/
-    private String name = "";
-    private String birthdate = "";
-    private String age = "";
-    private String gender = "";
-    private String personType = "patient";
-    private String personId = "";
-    private String viewType = "view";
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	private final String PATIENT_SHORT_EDIT_URL = "/admin/patients/newPatient.form";
+	
+	private final String PATIENT_EDIT_URL = "/admin/patients/patient.form";
+	
+	private final String PATIENT_VIEW_URL = "/patientDashboard.form";
+	
+	private final String USER_EDIT_URL = "/admin/users/user.form";
+	
+	/** Parameters passed in view request object **/
+	private String name = "";
+	
+	private String birthdate = "";
+	
+	private String age = "";
+	
+	private String gender = "";
+	
+	private String personType = "patient";
+	
+	private String personId = "";
+	
+	private String viewType = "view";
 	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
+	                                BindException errors) throws Exception {
 		
 		getParametersFromRequest(request);
 		
@@ -69,8 +81,7 @@ public class AddPersonController extends SimpleFormController {
 				viewType = "edit";
 			
 			return new ModelAndView(new RedirectView(getPersonURL("", personType, viewType, request)));
-		}
-		else {
+		} else {
 			// if they picked a person, go to the type of view that was requested
 			
 			// if they selected view, do a double check to make sure that type of person already exists
@@ -93,22 +104,21 @@ public class AddPersonController extends SimpleFormController {
 			return new ModelAndView(new RedirectView(getPersonURL(personId, personType, viewType, request)));
 		}
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    @Override
-    protected List<PersonListItem> formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+	protected List<PersonListItem> formBackingObject(HttpServletRequest request) throws ServletException {
 		
-    	log.debug("Entering formBackingObject()");
-    	
-    	List<PersonListItem> personList = new Vector<PersonListItem>();
-    	
-    	if (Context.isAuthenticated()) {
+		log.debug("Entering formBackingObject()");
+		
+		List<PersonListItem> personList = new Vector<PersonListItem>();
+		
+		if (Context.isAuthenticated()) {
 			PersonService ps = Context.getPersonService();
 			
 			Integer userId = Context.getAuthenticatedUser().getUserId();
@@ -118,7 +128,7 @@ public class AddPersonController extends SimpleFormController {
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
 			
 			if (!name.equals("") || !birthdate.equals("") || !age.equals("") || !gender.equals("")) {
-					
+				
 				log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
 				
 				Integer d = null;
@@ -126,8 +136,8 @@ public class AddPersonController extends SimpleFormController {
 				
 				String birthyear = "";
 				if (birthdate.length() > 6)
-					birthyear = birthdate.substring(6);  //parse out the year. assuming XX-XX-XXXX
-				
+					birthyear = birthdate.substring(6); //parse out the year. assuming XX-XX-XXXX
+					
 				age = age.trim();
 				
 				if (birthyear.length() > 3)
@@ -149,30 +159,31 @@ public class AddPersonController extends SimpleFormController {
 			}
 			
 		}
-    	
-    	log.debug("Returning personList of size: " + personList.size() + " from formBackingObject");
+		
+		log.debug("Returning personList of size: " + personList.size() + " from formBackingObject");
 		
 		return personList;
-    }
-    
-    /**
-     * Prepares the form view
-     */
-    public ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors) throws Exception {
-    	
-    	log.debug("In showForm method");
-    	
-    	ModelAndView mav = super.showForm(request, response, errors);
-    	
-    	Object o = mav.getModel().get(this.getCommandName());
-    	
-    	List personList = (List) o;
-    	
-    	log.debug("Found list of size: " + personList.size());
-    	
-    	if (personList.size() < 1 && Context.isAuthenticated()) {
-    		getParametersFromRequest(request);
-    		if (viewType == null)
+	}
+	
+	/**
+	 * Prepares the form view
+	 */
+	public ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors)
+	                                                                                                            throws Exception {
+		
+		log.debug("In showForm method");
+		
+		ModelAndView mav = super.showForm(request, response, errors);
+		
+		Object o = mav.getModel().get(this.getCommandName());
+		
+		List personList = (List) o;
+		
+		log.debug("Found list of size: " + personList.size());
+		
+		if (personList.size() < 1 && Context.isAuthenticated()) {
+			getParametersFromRequest(request);
+			if (viewType == null)
 				viewType = "edit";
 			
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
@@ -181,60 +192,60 @@ public class AddPersonController extends SimpleFormController {
 				mav.clear();
 				mav.setView(new RedirectView(getPersonURL("", personType, viewType, request)));
 			}
-    	}
-    	
-    	return mav;
-    }
-    
-    /**
-     * Returns the url string for the given personType and viewType
-     * @param personId
-     * @param personType
-     * @param viewType
-     * @param request
-     * @return url string
-     * @throws ServletException
-     */
-    private String getPersonURL(String personId, String personType, String viewType, HttpServletRequest request) throws ServletException {
-    	if ("patient".equals(personType)) {
-    		if ("edit".equals(viewType))
-    			return request.getContextPath() + PATIENT_EDIT_URL + getParametersForURL(personId, personType);
-    		if ("shortEdit".equals(viewType))
-    			return request.getContextPath() + PATIENT_SHORT_EDIT_URL + getParametersForURL(personId, personType);
-    		else if ("view".equals(viewType))
-    			return request.getContextPath() + PATIENT_VIEW_URL + getParametersForURL(personId, personType);
-    	}
-		else if ("user".equals(personType)) {
+		}
+		
+		return mav;
+	}
+	
+	/**
+	 * Returns the url string for the given personType and viewType
+	 * 
+	 * @param personId
+	 * @param personType
+	 * @param viewType
+	 * @param request
+	 * @return url string
+	 * @throws ServletException
+	 */
+	private String getPersonURL(String personId, String personType, String viewType, HttpServletRequest request)
+	                                                                                                            throws ServletException {
+		if ("patient".equals(personType)) {
+			if ("edit".equals(viewType))
+				return request.getContextPath() + PATIENT_EDIT_URL + getParametersForURL(personId, personType);
+			if ("shortEdit".equals(viewType))
+				return request.getContextPath() + PATIENT_SHORT_EDIT_URL + getParametersForURL(personId, personType);
+			else if ("view".equals(viewType))
+				return request.getContextPath() + PATIENT_VIEW_URL + getParametersForURL(personId, personType);
+		} else if ("user".equals(personType)) {
 			return request.getContextPath() + USER_EDIT_URL + getParametersForURL(personId, personType);
 		}
-    	throw new ServletException("Undefined personType/viewType combo: " + personType + "/" + viewType);
-    }
-    
-    /**
-     * Returns the appropriate ?patientId/?userId/?name&age&birthyear etc
-     * 
-     * @param personId
-     * @param personType
-     * @return
-     */
-    private String getParametersForURL(String personId, String personType) {
-    	if ("".equals(personId))
+		throw new ServletException("Undefined personType/viewType combo: " + personType + "/" + viewType);
+	}
+	
+	/**
+	 * Returns the appropriate ?patientId/?userId/?name&age&birthyear etc
+	 * 
+	 * @param personId
+	 * @param personType
+	 * @return
+	 */
+	private String getParametersForURL(String personId, String personType) {
+		if ("".equals(personId))
 			return "?addName=" + name + "&addBirthdate=" + birthdate + "&addAge=" + age + "&addGender=" + gender;
-    	else {
-    		if ("patient".equals(personType))
-    			return "?patientId=" + personId;
-    		else if ("user".equals(personType))
-    			return "?userId=" + personId;
-    	}
-    	return "";
-    }
-    
-    /**
-     * 
-     * @param request
-     */
-    private void getParametersFromRequest(HttpServletRequest request) {
-    	name = ServletRequestUtils.getStringParameter(request, "addName", "");
+		else {
+			if ("patient".equals(personType))
+				return "?patientId=" + personId;
+			else if ("user".equals(personType))
+				return "?userId=" + personId;
+		}
+		return "";
+	}
+	
+	/**
+	 * @param request
+	 */
+	private void getParametersFromRequest(HttpServletRequest request) {
+		name = ServletRequestUtils.getStringParameter(request, "addName", "");
 		birthdate = ServletRequestUtils.getStringParameter(request, "addBirthdate", "");
 		age = ServletRequestUtils.getStringParameter(request, "addAge", "");
 		gender = ServletRequestUtils.getStringParameter(request, "addGender", "");
@@ -242,5 +253,5 @@ public class AddPersonController extends SimpleFormController {
 		personType = ServletRequestUtils.getStringParameter(request, "personType", "patient");
 		personId = ServletRequestUtils.getStringParameter(request, "personId", "");
 		viewType = ServletRequestUtils.getStringParameter(request, "viewType", "");
-    }
+	}
 }

@@ -21,7 +21,7 @@ import org.openmrs.util.OpenmrsConstants;
  * This is the controller for the /web/web-inf/tags/locationField.tag.
  */
 public class LocationHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-
+	
 	private String defaultUrl = "location.field";
 	
 	/**
@@ -29,10 +29,10 @@ public class LocationHandler extends AbstractFieldGenHandler implements FieldGen
 	 */
 	public void run() {
 		setUrl(defaultUrl);
-
-		if ( fieldGenTag != null ) {
+		
+		if (fieldGenTag != null) {
 			String initialValue = "";
-			checkEmptyVal((Location)null);
+			checkEmptyVal((Location) null);
 			Location l = (Location) this.fieldGenTag.getVal(); // get the initial value
 			if (l != null) {
 				if (l.getLocationId() != null)
@@ -50,11 +50,12 @@ public class LocationHandler extends AbstractFieldGenHandler implements FieldGen
 			}
 			
 			String optionHeader = "";
-			if ( this.fieldGenTag.getParameterMap() != null ) {
+			if (this.fieldGenTag.getParameterMap() != null) {
 				optionHeader = (String) this.fieldGenTag.getParameterMap().get("optionHeader");
 			}
-			if ( optionHeader == null ) optionHeader = "";
-
+			if (optionHeader == null)
+				optionHeader = "";
+			
 			setParameter("initialValue", initialValue);
 			setParameter("optionHeader", optionHeader);
 		}

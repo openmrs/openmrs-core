@@ -22,13 +22,13 @@ import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 
 public class PatientProgramsPortletController extends PortletController {
-
+	
 	@SuppressWarnings("unchecked")
 	protected void populateModel(HttpServletRequest request, Map model) {
-		if ( !model.containsKey("programs")) {
+		if (!model.containsKey("programs")) {
 			List<Program> programs = Context.getProgramWorkflowService().getPrograms();
 			model.put("programs", programs);
 		}
 	}
-
+	
 }

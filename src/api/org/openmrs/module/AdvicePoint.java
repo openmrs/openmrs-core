@@ -17,15 +17,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class AdvicePoint {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	private String point;
+	
 	private Object classInstance;
+	
 	private Module module;
+	
 	private String className;
-
-	public AdvicePoint() { }
+	
+	public AdvicePoint() {
+	}
 	
 	public AdvicePoint(String point, Class<?> clazz) {
 		this.point = point;
@@ -42,11 +46,11 @@ public class AdvicePoint {
 		this.module = mod;
 		this.className = className;
 	}
-
+	
 	public String getPoint() {
 		return point;
 	}
-
+	
 	/**
 	 * @return the classInstance
 	 */
@@ -65,19 +69,19 @@ public class AdvicePoint {
 		classInstance = o;
 		return o;
 	}
-
+	
 	/**
 	 * @return the className
 	 */
 	public String getClassName() {
 		return className;
 	}
-
+	
 	/**
 	 * @return the module
 	 */
 	public Module getModule() {
 		return module;
 	}
-
+	
 }

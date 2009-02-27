@@ -23,13 +23,14 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class FormEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public FormEditor() {	}
+	public FormEditor() {
+	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		FormService ps = Context.getFormService(); 
+		FormService ps = Context.getFormService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(ps.getForm(Integer.valueOf(text)));
@@ -38,20 +39,18 @@ public class FormEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Form not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
 		Form t = (Form) getValue();
 		if (t == null) {
 			return "";
-		}
-		else {
+		} else {
 			return t.getFormId().toString();
 		}
 	}
-
+	
 }

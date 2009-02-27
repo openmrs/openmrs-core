@@ -35,21 +35,28 @@ import org.springframework.web.servlet.support.RequestContext;
  *
  */
 public class ExtensionPopupMenuTag extends TagSupport {
-
-    private static final long serialVersionUID = 1L;
+	
+	private static final long serialVersionUID = 1L;
+	
 	private final Log log = LogFactory.getLog(getClass());
 	
 	private String label;
+	
 	private String pointId;
+	
 	private String popupDivId;
+	
 	private String position;
+	
 	private String parameters;
+	
 	private Boolean showLabelIfNoExtensions;
-
-	public ExtensionPopupMenuTag() { }
+	
+	public ExtensionPopupMenuTag() {
+	}
 	
 	private String randomString() {
-		return "" + ((int) (1000000 * Math.random()));		
+		return "" + ((int) (1000000 * Math.random()));
 	}
 	
 	public int doStartTag() throws JspException {
@@ -57,20 +64,27 @@ public class ExtensionPopupMenuTag extends TagSupport {
 			showLabelIfNoExtensions = true;
 		// using this as we'd use MessageSourceAccessor
 		RequestContext context = new RequestContext((HttpServletRequest) this.pageContext.getRequest());
-
+		
 		boolean below = !"above".equals(position);
 		Map<String, String> parameters = new HashMap<String, String>();
 		if (this.parameters != null)
 			parameters.putAll(OpenmrsUtil.parseParameterList(this.parameters));
-
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("<span style=\"position: relative\">");
 		if (below)
-			sb.append("<div id=\"" + popupDivId + "\" style=\"width: 35em; border: 1px solid black; background-color: #f0f0a0; position: absolute; top: 0px; padding-right: 1.2em; z-index: 1; display: none\">");
+			sb
+			        .append("<div id=\""
+			                + popupDivId
+			                + "\" style=\"width: 35em; border: 1px solid black; background-color: #f0f0a0; position: absolute; top: 0px; padding-right: 1.2em; z-index: 1; display: none\">");
 		else
-			sb.append("<div id=\"" + popupDivId + "\" style=\"width: 35em; border: 1px solid black; background-color: #f0f0a0; position: absolute; bottom: 0px; padding-right: 1.2em; z-index: 1; display: none\">");
-
-		sb.append("<div style=\"float: right\"><a href=\"javascript:hideLayer('" + popupDivId + "');\" >[" + context.getMessage("general.close") + "]</a></div>");
+			sb
+			        .append("<div id=\""
+			                + popupDivId
+			                + "\" style=\"width: 35em; border: 1px solid black; background-color: #f0f0a0; position: absolute; bottom: 0px; padding-right: 1.2em; z-index: 1; display: none\">");
+		
+		sb.append("<div style=\"float: right\"><a href=\"javascript:hideLayer('" + popupDivId + "');\" >["
+		        + context.getMessage("general.close") + "]</a></div>");
 		sb.append("<ul>");
 		boolean anyExtensionsFound = false;
 		List<Extension> extensions = ModuleFactory.getExtensions(pointId, Extension.MEDIA_TYPE.html);
@@ -86,9 +100,10 @@ public class ExtensionPopupMenuTag extends TagSupport {
 					StringBuilder hiddenVars = new StringBuilder();
 					Map<String, String> javascriptSubstitutions = new HashMap<String, String>();
 					for (Map.Entry<String, String> entry : link.getQueryParameters().entrySet())
-						hiddenVars.append("<input type=\"hidden\" name=\"" + entry.getKey() + "\" value=\"" + entry.getValue() + "\"/>\n");
+						hiddenVars.append("<input type=\"hidden\" name=\"" + entry.getKey() + "\" value=\""
+						        + entry.getValue() + "\"/>\n");
 					for (Map.Entry<String, String> entry : parameters.entrySet()) {
-						hiddenVars.append("<input type=\"hidden\" name=\"" + entry.getKey() + "\" "); 
+						hiddenVars.append("<input type=\"hidden\" name=\"" + entry.getKey() + "\" ");
 						if (entry.getValue().startsWith("javascript:")) {
 							String function = entry.getValue();
 							function = function.substring(function.indexOf(":") + 1);
@@ -108,16 +123,20 @@ public class ExtensionPopupMenuTag extends TagSupport {
 					for (Map.Entry<String, String> entry : javascriptSubstitutions.entrySet()) {
 						String id = entry.getKey();
 						String function = entry.getValue();
-						onClick.append(" _popup_tmp = " + function + "; if (_popup_tmp == null) return; document.getElementById('" + id + "').value = _popup_tmp; ");
+						onClick.append(" _popup_tmp = " + function
+						        + "; if (_popup_tmp == null) return; document.getElementById('" + id
+						        + "').value = _popup_tmp; ");
 					}
 					onClick.append("document.getElementById('" + formId + "').submit();");
 					
 					sb.append("<li>");
 					sb.append("<form id=\"" + formId + "\" method=\"post\" action=\"" + url + "\">\n");
 					sb.append(hiddenVars);
-					sb.append("\n<a href=\"#\" onClick=\"javascript:" + onClick + "\">" + context.getMessage(link.getLabel(), link.getLabel()) + "</a>");
+					sb.append("\n<a href=\"#\" onClick=\"javascript:" + onClick + "\">"
+					        + context.getMessage(link.getLabel(), link.getLabel()) + "</a>");
 					if (link.getDescription() != null)
-						sb.append("<br/><small>" + context.getMessage(link.getDescription(), link.getDescription()) + "</small>");
+						sb.append("<br/><small>" + context.getMessage(link.getDescription(), link.getDescription())
+						        + "</small>");
 					sb.append("</form>");
 					sb.append("</li>");
 				}
@@ -125,22 +144,24 @@ public class ExtensionPopupMenuTag extends TagSupport {
 		}
 		if (!anyExtensionsFound)
 			sb.append("<li>" + context.getMessage("general.none") + "</li>");
-
+		
 		sb.append("</ul>");
 		sb.append("</div>");
 		sb.append("</span>");
-		sb.append("<a href=\"#\" onClick=\"toggleLayer('" + popupDivId + "')\" style=\"border: 1px black solid\">" + context.getMessage(label, label) + "</a>");
+		sb.append("<a href=\"#\" onClick=\"toggleLayer('" + popupDivId + "')\" style=\"border: 1px black solid\">"
+		        + context.getMessage(label, label) + "</a>");
 		
 		try {
 			if (anyExtensionsFound || showLabelIfNoExtensions)
 				pageContext.getOut().print(sb);
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			throw new JspException(ex);
 		}
 		
 		resetValues();
 		return SKIP_BODY;
-    }
+	}
 	
 	private void resetValues() {
 		pointId = null;
@@ -150,53 +171,53 @@ public class ExtensionPopupMenuTag extends TagSupport {
 		parameters = null;
 		showLabelIfNoExtensions = null;
 	}
-
+	
 	public String getPointId() {
-    	return pointId;
-    }
-
+		return pointId;
+	}
+	
 	public void setPointId(String pointId) {
-    	this.pointId = pointId;
-    }
-
+		this.pointId = pointId;
+	}
+	
 	public String getPopupDivId() {
-    	return popupDivId;
-    }
-
+		return popupDivId;
+	}
+	
 	public void setPopupDivId(String divId) {
-    	this.popupDivId = divId;
-    }
-
+		this.popupDivId = divId;
+	}
+	
 	public String getLabel() {
-    	return label;
-    }
-
+		return label;
+	}
+	
 	public void setLabel(String label) {
-    	this.label = label;
-    }
-
+		this.label = label;
+	}
+	
 	public String getPosition() {
-    	return position;
-    }
-
+		return position;
+	}
+	
 	public void setPosition(String position) {
-    	this.position = position;
-    }
-
+		this.position = position;
+	}
+	
 	public String getParameters() {
-    	return parameters;
-    }
-
+		return parameters;
+	}
+	
 	public void setParameters(String parameters) {
-    	this.parameters = parameters;
-    }
-
+		this.parameters = parameters;
+	}
+	
 	public Boolean getShowLabelIfNoExtensions() {
-    	return showLabelIfNoExtensions;
-    }
-
+		return showLabelIfNoExtensions;
+	}
+	
 	public void setShowLabelIfNoExtensions(Boolean showLabelIfNoExtensions) {
-    	this.showLabelIfNoExtensions = showLabelIfNoExtensions;
-    }
-
+		this.showLabelIfNoExtensions = showLabelIfNoExtensions;
+	}
+	
 }

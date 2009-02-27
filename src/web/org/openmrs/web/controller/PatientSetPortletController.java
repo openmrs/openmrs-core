@@ -29,7 +29,7 @@ import org.openmrs.report.Parameter;
 import org.openmrs.util.OpenmrsConstants;
 
 public class PatientSetPortletController extends PortletController {
-
+	
 	@SuppressWarnings("unchecked")
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		String attrToUse = (String) model.get("fromAttribute");
@@ -38,7 +38,8 @@ public class PatientSetPortletController extends PortletController {
 		if (httpSession != null) {
 			Cohort patientSet = null;
 			EvaluationContext evalContext = new EvaluationContext();
-			evalContext.addParameterValue(new Parameter("general.user", "Authenticated User", org.openmrs.User.class, null), Context.getAuthenticatedUser());
+			evalContext.addParameterValue(new Parameter("general.user", "Authenticated User", org.openmrs.User.class, null),
+			    Context.getAuthenticatedUser());
 			if (attrToUse != null) {
 				Object o = httpSession.getAttribute(attrToUse);
 				if (model.get("mutable") != null) {
@@ -65,16 +66,19 @@ public class PatientSetPortletController extends PortletController {
 			}
 			model.put("patientSet", patientSet);
 			
-			if (Context.isAuthenticated() && !model.containsKey("batchEntryForms") && Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS)) {
+			if (Context.isAuthenticated() && !model.containsKey("batchEntryForms")
+			        && Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_FORMS)) {
 				if ("true".equals(model.get("allowBatchEntry"))) {
 					Collection<Form> forms = Context.getFormService().getAllForms(false);
 					List<Form> shortForms = new ArrayList<Form>();
 					int maxBatchEntryFields = 25; //default number
-					String maxEntryGlobal = Context.getAdministrationService().getGlobalProperty("formentry.batch.max_fields");
-					if ( maxEntryGlobal != null ) {
+					String maxEntryGlobal = Context.getAdministrationService().getGlobalProperty(
+					    "formentry.batch.max_fields");
+					if (maxEntryGlobal != null) {
 						try {
 							maxBatchEntryFields = Integer.parseInt(maxEntryGlobal);
-						} catch ( NumberFormatException nfe ) {
+						}
+						catch (NumberFormatException nfe) {
 							maxBatchEntryFields = 25;
 						}
 					}
@@ -88,5 +92,5 @@ public class PatientSetPortletController extends PortletController {
 			}
 		}
 	}
-
+	
 }

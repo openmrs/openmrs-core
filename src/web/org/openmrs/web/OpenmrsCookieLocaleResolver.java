@@ -23,7 +23,7 @@ import org.openmrs.api.context.Context;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
-
+	
 	public Locale resolveLocale(HttpServletRequest request) {
 		
 		Locale locale;
@@ -31,14 +31,14 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 		locale = Context.getLocale();
 		if (locale != null)
 			return locale;
-				
+		
 		//fall back to cookie that was set
 		return super.resolveLocale(request);
 	}
-
+	
 	public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
-
-		HttpSession session = (HttpSession)request.getSession();
+		
+		HttpSession session = (HttpSession) request.getSession();
 		
 		// if a user clicks on the locale change links 
 		// AND their current default locale is different (so the msg isn't repeated)
@@ -57,9 +57,9 @@ public class OpenmrsCookieLocaleResolver extends CookieLocaleResolver {
 		super.setLocale(request, response, locale);
 		
 	}
-
+	
 	public String getCookieName() {
 		return WebConstants.OPENMRS_LANGUAGE_COOKIE_NAME;
 	}
-
+	
 }

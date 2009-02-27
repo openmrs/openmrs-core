@@ -35,18 +35,20 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class StateConversionListController extends SimpleFormController {
-
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-
-	/** 
+	
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -64,21 +66,25 @@ public class StateConversionListController extends SimpleFormController {
 			String notDeleted = msa.getMessage("general.cannot.delete");
 			String textConversion = msa.getMessage("Program.conversion");
 			String noneDeleted = msa.getMessage("Program.conversion.nonedeleted");
-			if ( conversionIdList != null ) {
+			if (conversionIdList != null) {
 				for (String id : conversionIdList) {
 					try {
 						pws.deleteConceptStateConversion(pws.getConceptStateConversion(Integer.valueOf(id)));
-						if (!success.equals("")) success += "<br/>";
+						if (!success.equals(""))
+							success += "<br/>";
 						success += textConversion + " " + id + " " + deleted;
 						numDeleted++;
-					} catch (APIException e) {
+					}
+					catch (APIException e) {
 						log.warn("Error deleting concept state conversion", e);
-						if (!error.equals("")) error += "<br/>";
+						if (!error.equals(""))
+							error += "<br/>";
 						error += textConversion + " " + id + " " + notDeleted;
 					}
 				}
 				
-				if ( numDeleted > 3 ) success = numDeleted + " " + deleted;
+				if (numDeleted > 3)
+					success = numDeleted + " " + deleted;
 			} else {
 				success += noneDeleted;
 			}
@@ -88,30 +94,28 @@ public class StateConversionListController extends SimpleFormController {
 			if (!error.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
-			
+		
 		return new ModelAndView(new RedirectView(view));
 	}
-
-    
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		//default empty Object
 		List<ConceptStateConversion> conversionList = new ArrayList<ConceptStateConversion>();
 		
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
-	    	conversionList = ps.getAllConversions();
+			conversionList = ps.getAllConversions();
 		}
-    	
-        return conversionList;
-    }
+		
+		return conversionList;
+	}
 	
 }

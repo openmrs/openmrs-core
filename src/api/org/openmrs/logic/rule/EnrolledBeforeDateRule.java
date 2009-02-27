@@ -29,53 +29,51 @@ import org.openmrs.logic.result.Result.Datatype;
  * 
  */
 public class EnrolledBeforeDateRule implements Rule {
-
-    /**
-     * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext,
-     *      org.openmrs.Patient, java.util.Map)
-     */
-    public Result eval(LogicContext context, Patient patient,
-            Map<String, Object> parameters) throws LogicException {
-
-        Result lastProgram = context.read(patient,
-                context.getLogicDataSource("program"),
-                (String) parameters.get("programName")).latest();
-
-        PatientProgram p = (PatientProgram)lastProgram.toObject();
-        
-        return new Result(p.getDateEnrolled().before((Date)parameters.get("enrollmentDate")));
-    }
-
-    /**
-     * @see org.openmrs.logic.Rule#getChildRules()
-     */
-    public String[] getDependencies() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * @see org.openmrs.logic.Rule#getDefaultDatatype()
-     */
-    public Datatype getDefaultDatatype() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * @see org.openmrs.logic.Rule#getParameterList()
-     */
-    public Set<RuleParameterInfo> getParameterList() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * @see org.openmrs.logic.Rule#getTTL()
-     */
-    public int getTTL() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
+	
+	/**
+	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
+	 *      java.util.Map)
+	 */
+	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException {
+		
+		Result lastProgram = context.read(patient, context.getLogicDataSource("program"),
+		    (String) parameters.get("programName")).latest();
+		
+		PatientProgram p = (PatientProgram) lastProgram.toObject();
+		
+		return new Result(p.getDateEnrolled().before((Date) parameters.get("enrollmentDate")));
+	}
+	
+	/**
+	 * @see org.openmrs.logic.Rule#getChildRules()
+	 */
+	public String[] getDependencies() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/**
+	 * @see org.openmrs.logic.Rule#getDefaultDatatype()
+	 */
+	public Datatype getDefaultDatatype() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/**
+	 * @see org.openmrs.logic.Rule#getParameterList()
+	 */
+	public Set<RuleParameterInfo> getParameterList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/**
+	 * @see org.openmrs.logic.Rule#getTTL()
+	 */
+	public int getTTL() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 }

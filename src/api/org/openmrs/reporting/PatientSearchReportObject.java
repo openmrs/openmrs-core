@@ -29,13 +29,13 @@ public class PatientSearchReportObject extends AbstractReportObject {
 		setName(name);
 		setPatientSearch(search);
 	}
-
+	
 	public PatientSearch getPatientSearch() {
-    	return patientSearch;
-    }
-
+		return patientSearch;
+	}
+	
 	public void setPatientSearch(PatientSearch patientSearch) {
-    	this.patientSearch = patientSearch;
-    }
+		this.patientSearch = patientSearch;
+	}
 	
 }

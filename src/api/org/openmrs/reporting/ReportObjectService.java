@@ -22,28 +22,27 @@ import org.openmrs.reporting.db.ReportObjectDAO;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 
  * TODO comment this class
  */
 @Transactional
 public interface ReportObjectService extends OpenmrsService {
-
+	
 	/**
 	 * Used by spring to set the data access class to use
 	 * 
 	 * @param dao
 	 */
 	public void setReportObjectDAO(ReportObjectDAO dao);
-
+	
 	/**
 	 * Get all report objects stored in the system
 	 * 
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<AbstractReportObject> getAllReportObjects() throws APIException;
-
+	
 	/**
 	 * Get the report object by internal id
 	 * 
@@ -51,23 +50,21 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	public AbstractReportObject getReportObject(Integer reportObjectId)
-			throws APIException;
-
+	@Transactional(readOnly = true)
+	public AbstractReportObject getReportObject(Integer reportObjectId) throws APIException;
+	
 	/**
-	 * Get report objects by type that was stored.  Report objects are basically
-	 * just xml blobs, so this parameter lets you specify which type of blob to get
-	 * Current possibilities are "Search History", Patient Search, Data Export, etc
+	 * Get report objects by type that was stored. Report objects are basically just xml blobs, so
+	 * this parameter lets you specify which type of blob to get Current possibilities are
+	 * "Search History", Patient Search, Data Export, etc
 	 * 
 	 * @param reportObjectType String representing the type of the object
-	 * @return 
+	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	public List<AbstractReportObject> getReportObjectsByType(
-			String reportObjectType) throws APIException;
-
+	@Transactional(readOnly = true)
+	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws APIException;
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -75,10 +72,9 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	public PatientFilter getPatientFilterById(Integer filterId)
-			throws APIException;
-
+	@Transactional(readOnly = true)
+	public PatientFilter getPatientFilterById(Integer filterId) throws APIException;
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -86,25 +82,23 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
-	public PatientFilter getPatientFilterByName(String filterName)
-			throws APIException;
-
+	@Transactional(readOnly = true)
+	public PatientFilter getPatientFilterByName(String filterName) throws APIException;
+	
 	/**
 	 * Auto generated method comment
 	 * 
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<PatientFilter> getAllPatientFilters() throws APIException;
-
+	
 	/**
 	 * @deprecated use {@link #saveReportObject(AbstractReportObject)}
 	 */
-	public Integer createReportObject(AbstractReportObject reportObject)
-			throws APIException;
-
+	public Integer createReportObject(AbstractReportObject reportObject) throws APIException;
+	
 	/**
 	 * @deprecated use {@link #purgeReportObject(AbstractReportObject)}
 	 */
@@ -131,25 +125,25 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	public AbstractReportObject saveReportObject(AbstractReportObject reportObject) throws APIException;
-
+	
 	/**
-	 * Get the current list of different reportObjectTypes stored in the system 
+	 * Get the current list of different reportObjectTypes stored in the system
 	 * 
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<String> getReportObjectTypes() throws APIException;
 	
 	/**
-	 * Get the current list of different sub types stored in the system 
+	 * Get the current list of different sub types stored in the system
 	 * 
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<String> getReportObjectSubTypes(String type) throws APIException;
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -159,19 +153,19 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	public boolean isSubTypeOfType(String type, String subType) throws APIException;
-
-	@Transactional(readOnly=true)
+	
+	@Transactional(readOnly = true)
 	public String getReportObjectClassBySubType(String subType) throws APIException;
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<String> getAllReportObjectClasses() throws APIException;
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -179,16 +173,16 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public String getReportObjectValidatorByClass(String currentClassName) throws APIException;
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public String getDefaultReportObjectValidator() throws APIException;
 	
 	/**
@@ -225,13 +219,13 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public CohortSearchHistory getSearchHistory(Integer id) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllSearchHistories()}
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<CohortSearchHistory> getSearchHistories() throws APIException;
 	
 	/**
@@ -240,9 +234,9 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<CohortSearchHistory> getAllSearchHistories() throws APIException;
-
+	
 	/**
 	 * Get patient search object by internal id or null if none found
 	 * 
@@ -250,7 +244,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public PatientSearch getPatientSearch(Integer searchId) throws APIException;
 	
 	/**
@@ -259,7 +253,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<PatientSearch> getAllPatientSearches() throws APIException;
 	
 	/**
@@ -269,7 +263,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @return
 	 * @throws APIException
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public PatientSearch getPatientSearch(String name) throws APIException;
 	
 }

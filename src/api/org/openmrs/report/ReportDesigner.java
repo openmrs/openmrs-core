@@ -18,5 +18,4 @@ package org.openmrs.report;
  */
 public interface ReportDesigner {
 
-
 }

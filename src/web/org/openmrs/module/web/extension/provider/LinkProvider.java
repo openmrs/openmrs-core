@@ -21,5 +21,5 @@ import java.util.List;
 public interface LinkProvider {
 	
 	public List<Link> getLinks();
-
+	
 }

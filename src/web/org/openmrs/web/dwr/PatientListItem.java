@@ -21,14 +21,19 @@ import org.openmrs.PatientIdentifier;
 public class PatientListItem extends PersonListItem {
 	
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	private Integer patientId;
+	
 	private String identifier = "";
+	
 	private Boolean identifierCheckDigit = false;
+	
 	private String otherIdentifiers = "";
+	
 	private String tribe = "";
 	
-	public PatientListItem() { }
+	public PatientListItem() {
+	}
 	
 	public PatientListItem(Patient patient) {
 		super(patient);
@@ -44,8 +49,7 @@ public class PatientListItem extends PersonListItem {
 					identifier = pi.getIdentifier();
 					identifierCheckDigit = pi.getIdentifierType().hasCheckDigit();
 					first = false;
-				}
-				else {
+				} else {
 					if (otherIdentifiers != "")
 						otherIdentifiers += ",";
 					otherIdentifiers += " " + pi.getIdentifier();
@@ -59,7 +63,7 @@ public class PatientListItem extends PersonListItem {
 	
 	public boolean equals(Object obj) {
 		if (obj instanceof PatientListItem) {
-			PatientListItem pi = (PatientListItem)obj;
+			PatientListItem pi = (PatientListItem) obj;
 			if (pi.getPatientId() == null || patientId == null)
 				return false;
 			return pi.getPatientId().equals(patientId);
@@ -76,7 +80,7 @@ public class PatientListItem extends PersonListItem {
 	public String getIdentifier() {
 		return identifier;
 	}
-
+	
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
@@ -84,7 +88,7 @@ public class PatientListItem extends PersonListItem {
 	public String getOtherIdentifiers() {
 		return otherIdentifiers;
 	}
-
+	
 	public void setOtherIdentifiers(String otherIdentifiers) {
 		this.otherIdentifiers = otherIdentifiers;
 	}
@@ -92,27 +96,28 @@ public class PatientListItem extends PersonListItem {
 	public Integer getPatientId() {
 		return patientId;
 	}
-
+	
 	public void setPatientId(Integer patientId) {
 		this.patientId = patientId;
 	}
-
+	
 	public String getTribe() {
-		if (tribe == null) tribe = "";
+		if (tribe == null)
+			tribe = "";
 		return tribe;
 	}
-
+	
 	public void setTribe(String tribe) {
 		this.tribe = tribe;
 	}
-
+	
 	/**
 	 * @return Returns the identifierIdentifierCheckdigit.
 	 */
 	public Boolean getIdentifierCheckDigit() {
 		return identifierCheckDigit;
 	}
-
+	
 	/**
 	 * @param identifierIdentifierCheckdigit The identifierIdentifierCheckdigit to set.
 	 */

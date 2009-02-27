@@ -25,10 +25,9 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 
 /**
- * A mini/simplified Person object.  Used as the return object from
- * DWR methods to allow javascript and other consumers to easily use
- * all methods.  This class guarantees that all objects in this class
- * will be initialized (copied) off of the Person object.
+ * A mini/simplified Person object. Used as the return object from DWR methods to allow javascript
+ * and other consumers to easily use all methods. This class guarantees that all objects in this
+ * class will be initialized (copied) off of the Person object.
  * 
  * @see Person
  * @see DWRPersonService
@@ -36,17 +35,27 @@ import org.openmrs.PersonName;
 public class PersonListItem {
 	
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	private Integer personId;
+	
 	private String familyName = "";
+	
 	private String middleName = "";
+	
 	private String givenName = "";
+	
 	private String otherNames = "";
+	
 	private String gender;
+	
 	private Date birthdate;
+	
 	private Boolean birthdateEstimated = false;
+	
 	private String address1;
+	
 	private String address2;
+	
 	private Boolean voided = false;
 	
 	private Map<String, String> attributes = new HashMap<String, String>();
@@ -54,11 +63,11 @@ public class PersonListItem {
 	/**
 	 * Default empty constructor
 	 */
-	public PersonListItem() { }
+	public PersonListItem() {
+	}
 	
 	/**
-	 * Convenience constructor to create a PersonListItem that
-	 * has only this personId
+	 * Convenience constructor to create a PersonListItem that has only this personId
 	 * 
 	 * @param personId the person id to assign
 	 */
@@ -67,14 +76,13 @@ public class PersonListItem {
 	}
 	
 	/**
-	 * Convenience constructor that creates a PersonListItem
-	 * from the given Person.  All relevant attributes are pulled
-	 * off of the Person object and copied to this PersonListItem
+	 * Convenience constructor that creates a PersonListItem from the given Person. All relevant
+	 * attributes are pulled off of the Person object and copied to this PersonListItem
 	 * 
 	 * @param person the Person to turn into a PersonListItem
 	 */
 	public PersonListItem(Person person) {
-
+		
 		if (person != null) {
 			personId = person.getPersonId();
 			
@@ -113,7 +121,7 @@ public class PersonListItem {
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof PersonListItem) {
-			PersonListItem pi = (PersonListItem)obj;
+			PersonListItem pi = (PersonListItem) obj;
 			if (pi.getPersonId() == null || personId == null)
 				return false;
 			return pi.getPersonId().equals(personId);
@@ -133,50 +141,53 @@ public class PersonListItem {
 	public Date getBirthdate() {
 		return birthdate;
 	}
-
+	
 	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
 	}
-
+	
 	public Boolean getBirthdateEstimated() {
 		return birthdateEstimated;
 	}
-
+	
 	public void setBirthdateEstimated(Boolean birthdateEstimated) {
 		this.birthdateEstimated = birthdateEstimated;
 	}
-
+	
 	public String getFamilyName() {
-		if (familyName == null) familyName = "";
+		if (familyName == null)
+			familyName = "";
 		return familyName;
 	}
-
+	
 	public void setFamilyName(String familyName) {
 		this.familyName = familyName;
 	}
-
+	
 	public String getMiddleName() {
-		if (middleName == null) middleName = "";
+		if (middleName == null)
+			middleName = "";
 		return middleName;
 	}
-
+	
 	public void setMiddleName(String middleName) {
 		this.middleName = middleName;
 	}
-
+	
 	public String getGender() {
 		return gender;
 	}
-
+	
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-
+	
 	public String getGivenName() {
-		if (givenName == null) givenName = "";
+		if (givenName == null)
+			givenName = "";
 		return givenName;
 	}
-
+	
 	public void setGivenName(String givenName) {
 		this.givenName = givenName;
 	}
@@ -204,7 +215,7 @@ public class PersonListItem {
 	public String getAddress1() {
 		return address1;
 	}
-
+	
 	public void setAddress1(String address1) {
 		this.address1 = address1;
 	}
@@ -212,27 +223,27 @@ public class PersonListItem {
 	public String getAddress2() {
 		return address2;
 	}
-
+	
 	public void setAddress2(String address2) {
 		this.address2 = address2;
 	}
-
+	
 	public Boolean getVoided() {
 		return voided;
 	}
-
+	
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
-
+	
 	public String getOtherNames() {
 		return otherNames;
 	}
-
+	
 	public void setOtherNames(String otherNames) {
 		this.otherNames = otherNames;
 	}
-
+	
 	public Integer getAge() {
 		
 		if (birthdate == null)
@@ -250,7 +261,7 @@ public class PersonListItem {
 		// if the current date is less that the new 'birthday', subtract a year
 		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
 		if (today.before(bday)) {
-				age = age -1;
+			age = age - 1;
 		}
 		
 		return age;
@@ -259,14 +270,14 @@ public class PersonListItem {
 	public Map<String, String> getAttributes() {
 		return attributes;
 	}
-
+	
 	/**
 	 * @return the personId
 	 */
 	public Integer getPersonId() {
 		return personId;
 	}
-
+	
 	/**
 	 * @param personId the personId to set
 	 */

@@ -69,40 +69,40 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.openmrs.messagesource.MessageSourceService;
 
 /**
- * Represents an OpenMRS <code>Context</code>, which may be used to
- * authenticate to the database and obtain services in order to interact with
- * the system.
- * 
- * The Context is split into a UserContext and ServiceContext.  The UserContext is 
- * lightweight and there is an instance for every user logged into the system.  The 
- * ServiceContext is heavier and contains each service class.  This is more static 
- * and there is only one ServiceContext per OpenMRS instance.
+ * Represents an OpenMRS <code>Context</code>, which may be used to authenticate to the database and
+ * obtain services in order to interact with the system. The Context is split into a UserContext and
+ * ServiceContext. The UserContext is lightweight and there is an instance for every user logged
+ * into the system. The ServiceContext is heavier and contains each service class. This is more
+ * static and there is only one ServiceContext per OpenMRS instance.
  * 
  * @see org.openmrs.api.context.UserContext
  * @see org.openmrs.api.context.ServiceContext
  */
 public class Context {
-
+	
 	private static final Log log = LogFactory.getLog(Context.class);
 	
 	// Global resources 
 	private static ContextDAO contextDAO;
+	
 	private static Session mailSession;
 	
 	// Using "wrapper" (Object array) around UserContext to avoid ThreadLocal bug in Java 1.5
 	private static final ThreadLocal<Object[] /*UserContext */> userContextHolder = new ThreadLocal<Object[] /*UserContext*/>();
+	
 	private static ServiceContext serviceContext;
+	
 	private static Properties runtimeProperties = new Properties();
 	
 	// A place to store data that will persist longer than a session, but won't persist beyond application restart
 	// TODO: put an optional expire date on these items
 	private static Map<User, Map<String, Object>> volatileUserData = new HashMap<User, Map<String, Object>>();
-
+	
 	/**
 	 * Default public constructor
-	 * 
 	 */
-	public Context() { }
+	public Context() {
+	}
 	
 	/**
 	 * Gets the context's data access object
@@ -110,10 +110,11 @@ public class Context {
 	 * @return ContextDAO
 	 */
 	private static ContextDAO getContextDAO() {
-		if (contextDAO == null) throw new APIException("contextDAO is null");
+		if (contextDAO == null)
+			throw new APIException("contextDAO is null");
 		return contextDAO;
 	}
-
+	
 	/**
 	 * Used to set the context's DAO for the application.
 	 * 
@@ -124,33 +125,30 @@ public class Context {
 	}
 	
 	/**
-	 * Loads a class with an instance of the OpenmrsClassLoader.
-	 * Convenience method equivalent to OpenmrsClassLoader.getInstance().loadClass(className);
+	 * Loads a class with an instance of the OpenmrsClassLoader. Convenience method equivalent to
+	 * OpenmrsClassLoader.getInstance().loadClass(className);
 	 * 
 	 * @param className the class to load
 	 * @return the class that was loaded
 	 * @throws ClassNotFoundException
-	 * 
 	 * @should load class with the OpenmrsClassLoader
 	 */
 	public static Class<?> loadClass(String className) throws ClassNotFoundException {
 		return OpenmrsClassLoader.getInstance().loadClass(className);
 	}
-
+	
 	/**
-	 * Sets the user context on the thread local so that the service layer can 
-	 * perform authentication/authorization checks.
-     *
-	 * TODO Make thread-safe because this might be accessed by several thread at the same time.
-	 * Making this thread safe might make this a bottleneck.
+	 * Sets the user context on the thread local so that the service layer can perform
+	 * authentication/authorization checks. TODO Make thread-safe because this might be accessed by
+	 * several thread at the same time. Making this thread safe might make this a bottleneck.
 	 * 
 	 * @param userContext
 	 */
-	public static void setUserContext(UserContext ctx) { 
+	public static void setUserContext(UserContext ctx) {
 		if (log.isTraceEnabled())
 			log.trace("Setting user context " + ctx);
 		
-		Object[] arr = new Object[] {ctx};
+		Object[] arr = new Object[] { ctx };
 		userContextHolder.set(arr);
 	}
 	
@@ -165,8 +163,8 @@ public class Context {
 	}
 	
 	/**
-	 * Gets the user context from the thread local.
-	 * This might be accessed by several threads at the same time.
+	 * Gets the user context from the thread local. This might be accessed by several threads at the
+	 * same time.
 	 * 
 	 * @return
 	 */
@@ -178,13 +176,13 @@ public class Context {
 		
 		if (arr == null) {
 			log.trace("userContext is null. Creating new userContext");
-            setUserContext(new UserContext());
-        }
-		return (UserContext)userContextHolder.get()[0];
+			setUserContext(new UserContext());
+		}
+		return (UserContext) userContextHolder.get()[0];
 	}
 	
 	/**
-	 * Gets the service context.  
+	 * Gets the service context.
 	 * 
 	 * @return
 	 */
@@ -205,17 +203,15 @@ public class Context {
 	 * 
 	 * @param ctx
 	 */
-	public void setServiceContext(ServiceContext ctx) { 
+	public void setServiceContext(ServiceContext ctx) {
 		serviceContext = ctx;
 	}
 	
 	/**
 	 * Used to authenticate user within the context
 	 * 
-	 * @param username
-	 *            user's identifier token for login
-	 * @param password
-	 *            user's password for authenticating to context
+	 * @param username user's identifier token for login
+	 * @param password user's password for authenticating to context
 	 * @throws ContextAuthenticationException
 	 */
 	public static void authenticate(String username, String password) throws ContextAuthenticationException {
@@ -227,6 +223,7 @@ public class Context {
 	
 	/**
 	 * Become a different user. (You should only be able to do this as a superuser.)
+	 * 
 	 * @param systemId
 	 * @throws ContextAuthenticationException
 	 */
@@ -260,14 +257,14 @@ public class Context {
 	public static void setRuntimeProperties(Properties props) {
 		runtimeProperties = props;
 	}
-
+	
 	/**
 	 * @return concept dictionary-related services
 	 */
 	public static ConceptService getConceptService() {
 		return getServiceContext().getConceptService();
 	}
-
+	
 	/**
 	 * @return encounter-related services
 	 */
@@ -281,14 +278,14 @@ public class Context {
 	public static LocationService getLocationService() {
 		return getServiceContext().getLocationService();
 	}
-
+	
 	/**
 	 * @return observation services
 	 */
 	public static ObsService getObsService() {
 		return getServiceContext().getObsService();
 	}
-
+	
 	/**
 	 * @return patient-related services
 	 */
@@ -299,7 +296,7 @@ public class Context {
 	public static CohortService getCohortService() {
 		return getServiceContext().getCohortService();
 	}
-
+	
 	/**
 	 * @return person-related services
 	 */
@@ -313,28 +310,28 @@ public class Context {
 	public static HL7Service getHL7Service() {
 		return getServiceContext().getHL7Service();
 	}
-
+	
 	/**
 	 * @return patientset-related services
 	 */
 	public static PatientSetService getPatientSetService() {
 		return getServiceContext().getPatientSetService();
 	}
-
+	
 	/**
 	 * @return user-related services
 	 */
 	public static UserService getUserService() {
 		return getServiceContext().getUserService();
 	}
-
+	
 	/**
 	 * @return order service
 	 */
 	public static OrderService getOrderService() {
 		return getServiceContext().getOrderService();
 	}
-
+	
 	/**
 	 * @return form service
 	 */
@@ -348,7 +345,7 @@ public class Context {
 	public static ReportService getReportService() {
 		return getServiceContext().getReportService();
 	}
-
+	
 	/**
 	 * @return report object service
 	 */
@@ -369,7 +366,7 @@ public class Context {
 	public static LogicService getLogicService() {
 		return getServiceContext().getLogicService();
 	}
-
+	
 	/**
 	 * @return admin-related services
 	 */
@@ -378,13 +375,12 @@ public class Context {
 	}
 	
 	/**
-	 * 
 	 * @return MessageSourceService
 	 */
 	public static MessageSourceService getMessageSourceService() {
 		return getServiceContext().getMessageSourceService();
 	}
- 	
+	
 	/**
 	 * @return scheduler service
 	 */
@@ -398,7 +394,7 @@ public class Context {
 	public static AlertService getAlertService() {
 		return getServiceContext().getAlertService();
 	}
-
+	
 	/**
 	 * @return arden service
 	 */
@@ -424,25 +420,25 @@ public class Context {
 			// Message service dependencies
 			if (ms.getMessagePreparator() == null)
 				ms.setMessagePreparator(getMessagePreparator());
-
+			
 			if (ms.getMessageSender() == null)
 				ms.setMessageSender(getMessageSender());
-
-		} catch (Exception e) {
+			
+		}
+		catch (Exception e) {
 			log.error("Unable to create message service due", e);
 		}
 		return ms;
 	}
 	
 	/**
-	 * Gets the mail session required by the mail message service.
-	 * 
-	 * This function forces authentication via the getAdministrationService() method call
+	 * Gets the mail session required by the mail message service. This function forces
+	 * authentication via the getAdministrationService() method call
 	 * 
 	 * @return a java mail session
 	 */
-	private static javax.mail.Session getMailSession() { 
-		if ( mailSession == null ) { 
+	private static javax.mail.Session getMailSession() {
+		if (mailSession == null) {
 			
 			AdministrationService adminService = getAdministrationService();
 			
@@ -453,10 +449,12 @@ public class Context {
 			props.setProperty("mail.from", adminService.getGlobalProperty("mail.from"));
 			props.setProperty("mail.debug", adminService.getGlobalProperty("mail.debug"));
 			props.setProperty("mail.smtp.auth", adminService.getGlobalProperty("mail.smtp_auth"));
-
-			Authenticator auth = new Authenticator() { 
-				public PasswordAuthentication getPasswordAuthentication() { 
-					return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"), getAdministrationService().getGlobalProperty("mail.password"));				
+			
+			Authenticator auth = new Authenticator() {
+				
+				public PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"),
+					        getAdministrationService().getGlobalProperty("mail.password"));
 				}
 			};
 			
@@ -465,45 +463,40 @@ public class Context {
 		return mailSession;
 	}
 	
-	
-	
-	
 	/**
-	 * Convenience method to allow us to change the configuration more easily. 
+	 * Convenience method to allow us to change the configuration more easily. TODO Ideally, we
+	 * would be using Spring's method injection to set the dependencies for the message service.
 	 * 
-	 * TODO Ideally, we would be using Spring's method injection to set the dependencies
-	 * for the message service. 
 	 * @return
-	 */	
-	private static MessageSender getMessageSender() { 
+	 */
+	private static MessageSender getMessageSender() {
 		return new MailMessageSender(getMailSession());
 	}
 	
 	/**
-	 * Convenience method to allow us to change the configuration more easily. 
+	 * Convenience method to allow us to change the configuration more easily. TODO See todo for
+	 * message sender.
 	 * 
-	 * TODO See todo for message sender. 
 	 * @return
 	 */
-	private static MessagePreparator getMessagePreparator() throws MessageException { 
+	private static MessagePreparator getMessagePreparator() throws MessageException {
 		return new VelocityMessagePreparator();
 	}
 	
 	/**
-	 * @return "active" user who has been authenticated, otherwise
-	 *         <code>null</code>
+	 * @return "active" user who has been authenticated, otherwise <code>null</code>
 	 */
 	public static User getAuthenticatedUser() {
 		return getUserContext().getAuthenticatedUser();
 	}
-
+	
 	/**
 	 * @return true if user has been authenticated in this context
 	 */
 	public static boolean isAuthenticated() {
 		return getAuthenticatedUser() != null;
 	}
-
+	
 	/**
 	 * logs out the "active" (authenticated) user within context
 	 * 
@@ -518,21 +511,22 @@ public class Context {
 	}
 	
 	/**
-	 * Convenience method.  Passes through to userContext.getAllRoles(User)
+	 * Convenience method. Passes through to userContext.getAllRoles(User)
 	 */
 	public static Set<Role> getAllRoles(User user) throws Exception {
 		return getUserContext().getAllRoles();
 	}
-		
+	
 	/**
-	 * Convenience method.  Passes through to userContext.hasPrivilege(String)
+	 * Convenience method. Passes through to userContext.hasPrivilege(String)
 	 */
 	public static boolean hasPrivilege(String privilege) {
 		return getUserContext().hasPrivilege(privilege);
 	}
 	
 	/**
-	 * Throws an exception if the currently authenticated user does not have the specified privilege. 
+	 * Throws an exception if the currently authenticated user does not have the specified
+	 * privilege.
 	 * 
 	 * @param privilege
 	 * @throws ContextAuthenticationException
@@ -543,46 +537,46 @@ public class Context {
 	}
 	
 	/**
-	 * Convenience method.  Passes through to @see org.openmrs.api.context.UserContext#addProxyPrivilege(java.lang.String)
+	 * Convenience method. Passes through to @see
+	 * org.openmrs.api.context.UserContext#addProxyPrivilege(java.lang.String)
 	 */
 	public static void addProxyPrivilege(String privilege) {
 		getUserContext().addProxyPrivilege(privilege);
 	}
 	
 	/**
-	 * Convenience method.  Passes through to userContext.removeProxyPrivilege(String)
+	 * Convenience method. Passes through to userContext.removeProxyPrivilege(String)
 	 */
 	public static void removeProxyPrivilege(String privilege) {
 		getUserContext().removeProxyPrivilege(privilege);
 	}
 	
 	/**
-	 * Convenience method.  Passes through to userContext.setLocale(Locale)
+	 * Convenience method. Passes through to userContext.setLocale(Locale)
 	 */
 	public static void setLocale(Locale locale) {
 		getUserContext().setLocale(locale);
 	}
 	
 	/**
-	 * Convenience method.  Passes through to userContext.getLocale()
+	 * Convenience method. Passes through to userContext.getLocale()
 	 */
 	public static Locale getLocale() {
 		return getUserContext().getLocale();
 	}
 	
-	
 	/**
-	 * Used to define a unit of work.  All "units of work" should be surrounded by 
-	 * openSession and closeSession calls.  
+	 * Used to define a unit of work. All "units of work" should be surrounded by openSession and
+	 * closeSession calls.
 	 */
 	public static void openSession() {
 		log.trace("opening session");
 		getContextDAO().openSession();
 	}
-
+	
 	/**
-	 * Used to define a unit of work.  All "units of work" should be surrounded by 
-	 * openSession and closeSession calls.  
+	 * Used to define a unit of work. All "units of work" should be surrounded by openSession and
+	 * closeSession calls.
 	 */
 	public static void closeSession() {
 		log.trace("closing session");
@@ -598,10 +592,9 @@ public class Context {
 	}
 	
 	/**
-	 * Used to clear a cached object out of a session in the middle of a unit of work.
-	 * 
-	 * Future updates to this object will not be saved.  Future gets of this object will
-	 * not fetch this cached copy
+	 * Used to clear a cached object out of a session in the middle of a unit of work. Future
+	 * updates to this object will not be saved. Future gets of this object will not fetch this
+	 * cached copy
 	 * 
 	 * @param obj The object to evict/remove from the session
 	 */
@@ -611,8 +604,7 @@ public class Context {
 	}
 	
 	/**
-	 * Starts the OpenMRS System
-	 * Should be called prior to any kind of activity
+	 * Starts the OpenMRS System Should be called prior to any kind of activity
 	 * 
 	 * @param Properties runtime properties to use for startup
 	 */
@@ -662,8 +654,8 @@ public class Context {
 	}
 	
 	/**
-	 * Stops the OpenMRS System
-	 * Should be called after all activity has ended and application is closing
+	 * Stops the OpenMRS System Should be called after all activity has ended and application is
+	 * closing
 	 */
 	public static void shutdown() {
 		
@@ -708,31 +700,31 @@ public class Context {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-    public static <T extends Object> T getService(Class<? extends T> cls) {
+	public static <T extends Object> T getService(Class<? extends T> cls) {
 		return getServiceContext().getService(cls);
 	}
 	
 	/**
-	 * Adds an AOP advisor around the given Class <code>cls</code>
-	 * Advisors can wrap around a method and effect the method before or after
+	 * Adds an AOP advisor around the given Class <code>cls</code> Advisors can wrap around a method
+	 * and effect the method before or after
 	 * 
 	 * @param cls
 	 * @param advisor
 	 */
 	@SuppressWarnings("unchecked")
-    public static void addAdvisor(Class cls, Advisor advisor) {
+	public static void addAdvisor(Class cls, Advisor advisor) {
 		getServiceContext().addAdvisor(cls, advisor);
 	}
 	
 	/**
-	 * Adds an AOP advice object around the given Class <code>cls</code>
-	 * Advice comes in the form of before or afterReturning methods
+	 * Adds an AOP advice object around the given Class <code>cls</code> Advice comes in the form of
+	 * before or afterReturning methods
 	 * 
 	 * @param cls
 	 * @param advice
 	 */
 	@SuppressWarnings("unchecked")
-    public static void addAdvice(Class cls, Advice advice) {
+	public static void addAdvice(Class cls, Advice advice) {
 		getServiceContext().addAdvice(cls, advice);
 	}
 	
@@ -743,7 +735,7 @@ public class Context {
 	 * @param advisor
 	 */
 	@SuppressWarnings("unchecked")
-    public static void removeAdvisor(Class cls, Advisor advisor) {
+	public static void removeAdvisor(Class cls, Advisor advisor) {
 		getServiceContext().removeAdvisor(cls, advisor);
 	}
 	
@@ -754,38 +746,31 @@ public class Context {
 	 * @param advice
 	 */
 	@SuppressWarnings("unchecked")
-    public static void removeAdvice(Class cls, Advice advice) {
+	public static void removeAdvice(Class cls, Advice advice) {
 		getServiceContext().removeAdvice(cls, advice);
 	}
 	
 	/**
-	 * Runs through the core data (e.g. privileges and global properties) and 
-	 * adds them if necessary.
+	 * Runs through the core data (e.g. privileges and global properties) and adds them if
+	 * necessary.
 	 */
 	public static void checkCoreDataset() {
 		getContextDAO().checkCoreDataset();
 	}
 	
 	/**
-	 * Selects the current database version out of the database from
-	 * global_property.property = 'database_version'
-	 * 
-	 * Sets OpenmrsConstants.DATABASE_VERSION accordingly
-	 * 
+	 * Selects the current database version out of the database from global_property.property =
+	 * 'database_version' Sets OpenmrsConstants.DATABASE_VERSION accordingly
 	 */
 	private static void checkDatabaseVersion() {
 		OpenmrsConstants.DATABASE_VERSION = getAdministrationService().getGlobalProperty("database_version");
 	}
 	
 	/**
-	 * Get a piece of information for the currently authenticated user.
-	 * This information is stored only temporarily.  When a new module
-	 * is loaded or the server is restarted, this information will
-	 * disappear.
-	 * 
-	 * If there is not information by this key, null is returned
-	 * 
-	 * TODO: This needs to be refactored/removed
+	 * Get a piece of information for the currently authenticated user. This information is stored
+	 * only temporarily. When a new module is loaded or the server is restarted, this information
+	 * will disappear. If there is not information by this key, null is returned TODO: This needs to
+	 * be refactored/removed
 	 * 
 	 * @param key identifying string for the information
 	 * @return the information stored
@@ -802,12 +787,9 @@ public class Context {
 	}
 	
 	/**
-	 * Set a piece of information for the currently authenticated user.
-	 * This information is stored only temporarily.  When a new module
-	 * is loaded or the server is restarted, this information will
-	 * disappear
-	 * 
-	 * TODO: This needs to be refactored/removed
+	 * Set a piece of information for the currently authenticated user. This information is stored
+	 * only temporarily. When a new module is loaded or the server is restarted, this information
+	 * will disappear TODO: This needs to be refactored/removed
 	 * 
 	 * @param key identifying string for this information
 	 * @param value information to be stored
@@ -825,18 +807,15 @@ public class Context {
 	}
 	
 	/**
-	 * Gets the simple date format for the current user's locale.
-	 * 
-	 * The format will be similar in size to mm/dd/yyyy
+	 * Gets the simple date format for the current user's locale. The format will be similar in size
+	 * to mm/dd/yyyy
 	 * 
 	 * @return SimpleDateFormat
-	 * 
 	 * @see org.openmrs.util.OpenmrsConstants#OPENMRS_LOCALE_DATE_PATTERNS()
 	 */
 	public static SimpleDateFormat getDateFormat() {
-		return new SimpleDateFormat(
-					OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(getLocale().toString().toLowerCase()), 
-					getLocale());
+		return new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS()
+		        .get(getLocale().toString().toLowerCase()), getLocale());
 	}
 	
 	/**

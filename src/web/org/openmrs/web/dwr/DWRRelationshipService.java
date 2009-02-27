@@ -25,9 +25,9 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 
 public class DWRRelationshipService {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	public void createRelationship(Integer personAId, Integer personBId, Integer relationshipTypeId) {
 		PersonService ps = Context.getPersonService();
 		Person personA = ps.getPerson(personAId);
@@ -49,14 +49,16 @@ public class DWRRelationshipService {
 		Context.clearSession();
 		
 		Vector<RelationshipListItem> ret = new Vector<RelationshipListItem>();
-		List<Relationship> rels = Context.getPersonService().getRelationships(Context.getPersonService().getPerson(personId));
+		List<Relationship> rels = Context.getPersonService()
+		        .getRelationships(Context.getPersonService().getPerson(personId));
 		for (Relationship rel : rels) {
-			if (!rel.isVoided() && 
-					(relationshipTypeId == null || rel.getRelationshipType().getRelationshipTypeId().equals(relationshipTypeId))) {
+			if (!rel.isVoided()
+			        && (relationshipTypeId == null || rel.getRelationshipType().getRelationshipTypeId().equals(
+			            relationshipTypeId))) {
 				ret.add(new RelationshipListItem(rel));
 			}
 		}
 		return ret;
 	}
-
+	
 }

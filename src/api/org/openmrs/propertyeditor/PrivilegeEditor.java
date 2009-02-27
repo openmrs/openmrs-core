@@ -23,13 +23,14 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class PrivilegeEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public PrivilegeEditor() {	}
+	public PrivilegeEditor() {
+	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		UserService es = Context.getUserService(); 
+		UserService es = Context.getUserService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(es.getPrivilege(text));
@@ -38,12 +39,11 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Role not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
 		Privilege p = (Privilege) getValue();
 		if (p == null)
@@ -51,5 +51,5 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 		else
 			return p.getPrivilege();
 	}
-
+	
 }

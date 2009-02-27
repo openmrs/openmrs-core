@@ -28,7 +28,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
  *
  */
 public class PatientSetServiceTest extends BaseContextSensitiveTest {
-
+	
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
 	
 	@Test

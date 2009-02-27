@@ -28,22 +28,27 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 /**
- * Definition of a dataset that produces one-row-per-obs. Output might look like:
- *   patientId, question, questionConceptId, answer, answerConceptId, obsDatetime, encounterId
- *   123, "WEIGHT (KG)", 5089, 70, null, "2007-05-23", 2345
- *   123, "OCCUPATION", 987, "STUDENT", 988, "2008-01-30", 2658
+ * Definition of a dataset that produces one-row-per-obs. Output might look like: patientId,
+ * question, questionConceptId, answer, answerConceptId, obsDatetime, encounterId 123,
+ * "WEIGHT (KG)", 5089, 70, null, "2007-05-23", 2345 123, "OCCUPATION", 987, "STUDENT", 988,
+ * "2008-01-30", 2658
+ * 
  * @see RowPerObsDataSet
  */
 @Root
 public class RowPerObsDataSetDefinition implements DataSetDefinition {
-
+	
 	private static final long serialVersionUID = 1L;
-    
-	@Attribute(required=true)
+	
+	@Attribute(required = true)
 	private String name;
+	
 	private Collection<Concept> questions;
+	
 	private CohortDefinition filter;
+	
 	private Date fromDate;
+	
 	private Date toDate;
 	
 	public RowPerObsDataSetDefinition() {
@@ -65,7 +70,7 @@ public class RowPerObsDataSetDefinition implements DataSetDefinition {
 		ret[7] = Integer.class; // obsGroupId
 		return Arrays.asList(ret);
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getColumnKeys()
 	 */
@@ -81,90 +86,90 @@ public class RowPerObsDataSetDefinition implements DataSetDefinition {
 		ret[7] = "obsGroupId";
 		return Arrays.asList(ret);
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getName()
 	 */
 	public String getName() {
 		return name;
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#setName(java.lang.String)
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.Parameterizable#getParameters()
 	 */
 	public List<Parameter> getParameters() {
 		return new ArrayList<Parameter>();
 	}
-
+	
 	/**
-     * @return the filter
-     */
-	@Element(data=true, required=false)
-    public CohortDefinition getFilter() {
-    	return filter;
-    }
-
+	 * @return the filter
+	 */
+	@Element(data = true, required = false)
+	public CohortDefinition getFilter() {
+		return filter;
+	}
+	
 	/**
-     * @param filter the filter to set
-     */
-	@Element(data=true, required=false)
-    public void setFilter(CohortDefinition filter) {
-    	this.filter = filter;
-    }
-
+	 * @param filter the filter to set
+	 */
+	@Element(data = true, required = false)
+	public void setFilter(CohortDefinition filter) {
+		this.filter = filter;
+	}
+	
 	/**
-     * @return the fromDate
-     */
-	@Element(data=true, required=false)
-    public Date getFromDate() {
-    	return fromDate;
-    }
-
+	 * @return the fromDate
+	 */
+	@Element(data = true, required = false)
+	public Date getFromDate() {
+		return fromDate;
+	}
+	
 	/**
-     * @param fromDate the fromDate to set
-     */
-	@Element(data=true, required=false)
-    public void setFromDate(Date fromDate) {
-    	this.fromDate = fromDate;
-    }
-
+	 * @param fromDate the fromDate to set
+	 */
+	@Element(data = true, required = false)
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+	
 	/**
-     * @return the questions
-     */
-	@ElementList(required=true)
-    public Collection<Concept> getQuestions() {
-    	return questions;
-    }
-
+	 * @return the questions
+	 */
+	@ElementList(required = true)
+	public Collection<Concept> getQuestions() {
+		return questions;
+	}
+	
 	/**
-     * @param questions the questions to set
-     */
-	@ElementList(required=true)
-    public void setQuestions(Collection<Concept> questions) {
-    	this.questions = questions;
-    }
-
+	 * @param questions the questions to set
+	 */
+	@ElementList(required = true)
+	public void setQuestions(Collection<Concept> questions) {
+		this.questions = questions;
+	}
+	
 	/**
-     * @return the toDate
-     */
-    @Element(data=true, required=false)
-    public Date getToDate() {
-    	return toDate;
-    }
-
+	 * @return the toDate
+	 */
+	@Element(data = true, required = false)
+	public Date getToDate() {
+		return toDate;
+	}
+	
 	/**
-     * @param toDate the toDate to set
-     */
-    @Element(data=true, required=false)
-    public void setToDate(Date toDate) {
-    	this.toDate = toDate;
-    }
+	 * @param toDate the toDate to set
+	 */
+	@Element(data = true, required = false)
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
 	
 }

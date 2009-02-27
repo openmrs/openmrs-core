@@ -23,21 +23,20 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 /**
- * Allows for serializing/deserializing a Person object to a string 
- * so that Spring knows how to pass a Person back and forth through
- * an html form or other medium
+ * Allows for serializing/deserializing a Person object to a string so that Spring knows how to pass
+ * a Person back and forth through an html form or other medium
  * 
  * @see Person
  */
 public class PersonEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	/**
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
-		PersonService ps = Context.getPersonService(); 
+		PersonService ps = Context.getPersonService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(ps.getPerson(Integer.valueOf(text)));
@@ -46,12 +45,11 @@ public class PersonEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Person not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	/**
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
@@ -59,11 +57,9 @@ public class PersonEditor extends PropertyEditorSupport {
 		Person t = (Person) getValue();
 		if (t == null) {
 			return "";
-		}
-		else {
+		} else {
 			return t.getPersonId().toString();
 		}
 	}
 	
-
 }

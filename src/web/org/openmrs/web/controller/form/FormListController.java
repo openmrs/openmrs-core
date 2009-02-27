@@ -36,20 +36,22 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class FormListController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-
-	/** 
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-
+		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
 			String[] formList = request.getParameterValues("formId");
@@ -64,17 +66,19 @@ public class FormListController extends SimpleFormController {
 			String notDeleted = msa.getMessage("general.cannot.delete");
 			String textForm = msa.getMessage("Form.form");
 			String noneDeleted = msa.getMessage("Form.nonedeleted");
-			if ( formList != null ) {
+			if (formList != null) {
 				for (String p : formList) {
 					//TODO convenience method deleteForm(Integer) ??
 					try {
 						fs.deleteForm(fs.getForm(Integer.valueOf(p)));
-						if (!success.equals("")) success += "<br/>";
+						if (!success.equals(""))
+							success += "<br/>";
 						success += textForm + " " + p + " " + deleted;
 					}
 					catch (APIException e) {
 						log.warn("Error deleting form", e);
-						if (!error.equals("")) error += "<br/>";
+						if (!error.equals(""))
+							error += "<br/>";
 						error += textForm + " " + p + " " + notDeleted;
 					}
 				}
@@ -87,19 +91,18 @@ public class FormListController extends SimpleFormController {
 			if (!error.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
-			
+		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		//default empty Object
 		List<Form> formList = new Vector<Form>();
 		
@@ -107,10 +110,10 @@ public class FormListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			FormService fs = Context.getFormService();
 			//FormService rs = new TestFormService();
-	    	formList = fs.getForms();
+			formList = fs.getForms();
 		}
-    	
-        return formList;
-    }
-    
+		
+		return formList;
+	}
+	
 }

@@ -22,14 +22,14 @@ import org.openmrs.Location;
  * Location-related database functions
  */
 public interface LocationDAO {
-
+	
 	/**
 	 * Set the Hibernate SessionFactory to connect to the database.
 	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory);
-
+	
 	/**
 	 * Create or update a location.
 	 * 
@@ -37,7 +37,7 @@ public interface LocationDAO {
 	 * @return
 	 */
 	public Location saveLocation(Location location);
-
+	
 	/**
 	 * Get a location by locationId
 	 * 
@@ -45,7 +45,7 @@ public interface LocationDAO {
 	 * @return
 	 */
 	public Location getLocation(Integer locationId);
-
+	
 	/**
 	 * Get a location by name
 	 * 
@@ -53,29 +53,28 @@ public interface LocationDAO {
 	 * @return
 	 */
 	public Location getLocation(String name);
-
+	
 	/**
 	 * Get all locations
 	 * 
-	 * @param includeRetired if <code>true</code> then return retired
-	 *        locations as well.
+	 * @param includeRetired if <code>true</code> then return retired locations as well.
 	 * @return
 	 */
 	public List<Location> getAllLocations(boolean includeRetired);
-
+	
 	/**
-	 * Find all locations with matching names. 
+	 * Find all locations with matching names.
 	 * 
 	 * @param search name to search
 	 * @return
 	 */
 	public List<Location> getLocations(String search);
-
+	
 	/**
 	 * Completely remove the location from the database.
 	 * 
 	 * @param location
 	 */
 	public void deleteLocation(Location location);
-
+	
 }

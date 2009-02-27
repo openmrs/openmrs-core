@@ -23,13 +23,14 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class TribeEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public TribeEditor() {	}
+	public TribeEditor() {
+	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		PatientService ps = Context.getPatientService(); 
+		PatientService ps = Context.getPatientService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(ps.getTribe(Integer.valueOf(text)));
@@ -38,20 +39,18 @@ public class TribeEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Tribe not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
 		Tribe t = (Tribe) getValue();
 		if (t == null) {
 			return "";
-		}
-		else {
+		} else {
 			return t.getTribeId().toString();
 		}
 	}
-
+	
 }

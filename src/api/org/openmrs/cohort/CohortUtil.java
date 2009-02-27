@@ -27,64 +27,59 @@ import org.openmrs.reporting.PatientSearch;
  *  
  */
 public class CohortUtil {
-		
+	
 	/**
-	 * Parses an input string like: 
-	 *   [Male] and [Adult] and [EnrolledInHivOnDate|program="1"|untilDate="${report.startDate}"]
-	 * Names between brackets are treated as saved PatientSearch objects with that name.
-	 * Parameter values for those loaded searches are specified after a |
-	 * The following are handled like they would be in a cohort builder composition search:
-	 *    (
-	 *    )
-	 *    and
-	 *    or
-	 *    not
+	 * Parses an input string like: [Male] and [Adult] and
+	 * [EnrolledInHivOnDate|program="1"|untilDate="${report.startDate}"] Names between brackets are
+	 * treated as saved PatientSearch objects with that name. Parameter values for those loaded
+	 * searches are specified after a | The following are handled like they would be in a cohort
+	 * builder composition search: ( ) and or not
 	 * 
 	 * @param spec
-	 * @return A CohortDefinition (currently always a PatientSearch) parsed from the spec string. 
+	 * @return A CohortDefinition (currently always a PatientSearch) parsed from the spec string.
 	 */
 	public static CohortDefinition parse(String spec) {
 		List<Object> tokens = new ArrayList<Object>();
 		{
-			StringBuilder thisElement = null; 
+			StringBuilder thisElement = null;
 			for (int i = 0; i < spec.length(); ++i) {
 				char c = spec.charAt(i);
 				switch (c) {
-				case '(':
-				case ')':
-					if (thisElement != null) {
-						tokens.add(thisElement.toString().trim());
-						thisElement = null;
-					}
-					tokens.add("" + c);
-					break;
-				case ' ':
-				case '\t':
-				case '\n':
-					if (thisElement != null)
-						thisElement.append(c);
-					break;
-				case '[':
-					if (thisElement != null)
-						tokens.add(thisElement.toString().trim());
-					thisElement = new StringBuilder();
-					thisElement.append(c);
-					break;
-				default:
-					if (thisElement == null)
+					case '(':
+					case ')':
+						if (thisElement != null) {
+							tokens.add(thisElement.toString().trim());
+							thisElement = null;
+						}
+						tokens.add("" + c);
+						break;
+					case ' ':
+					case '\t':
+					case '\n':
+						if (thisElement != null)
+							thisElement.append(c);
+						break;
+					case '[':
+						if (thisElement != null)
+							tokens.add(thisElement.toString().trim());
 						thisElement = new StringBuilder();
-					thisElement.append(c);
-					if (c == ']') {
-						tokens.add(thisElement.toString().trim());
-						thisElement = null;
-					}
-					break;
+						thisElement.append(c);
+						break;
+					default:
+						if (thisElement == null)
+							thisElement = new StringBuilder();
+						thisElement.append(c);
+						if (c == ']') {
+							tokens.add(thisElement.toString().trim());
+							thisElement = null;
+						}
+						break;
 				}
 			}
 			if (thisElement != null)
 				tokens.add(thisElement.toString().trim());
 		}
-		for (ListIterator<Object> i = tokens.listIterator(); i.hasNext(); ) {
+		for (ListIterator<Object> i = tokens.listIterator(); i.hasNext();) {
 			Object o = i.next();
 			if (o instanceof String) {
 				String s = (String) o;
@@ -116,7 +111,7 @@ public class CohortUtil {
 				}
 			}
 		}
-
+		
 		return PatientSearch.createCompositionSearch(tokens);
 	}
 	

@@ -23,15 +23,15 @@ import uk.ltd.getahead.dwr.DWRServlet;
 
 /**
  * Simply used so that we have a way we can restart the DWR HttpServlet
+ * 
  * @author bwolfe
  */
 public class OpenmrsDWRServlet extends DWRServlet {
-
+	
 	private static final long serialVersionUID = 121212111335789L;
-
+	
 	/**
-	 * Overriding the init(ServletConfig) method to save the dwr servlet to the 
-	 * ModuleWebUtil class
+	 * Overriding the init(ServletConfig) method to save the dwr servlet to the ModuleWebUtil class
 	 */
 	public void init(ServletConfig config) throws ServletException {
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
@@ -41,6 +41,7 @@ public class OpenmrsDWRServlet extends DWRServlet {
 	
 	/**
 	 * This method is called to remake all of the dwr methods
+	 * 
 	 * @throws ServletException
 	 */
 	public void reInitServlet() throws ServletException {

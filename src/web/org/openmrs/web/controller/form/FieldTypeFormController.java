@@ -31,24 +31,26 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class FieldTypeFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-
-	/** 
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
-			FieldType fieldType = (FieldType)obj;
+			FieldType fieldType = (FieldType) obj;
 			Context.getAdministrationService().updateFieldType(fieldType);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "FieldType.saved");
@@ -56,29 +58,28 @@ public class FieldTypeFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		FieldType fieldType = null;
 		
 		if (Context.isAuthenticated()) {
 			FormService rs = Context.getFormService();
 			String fieldTypeId = request.getParameter("fieldTypeId");
-	    	if (fieldTypeId != null)
-	    		fieldType = rs.getFieldType(Integer.valueOf(fieldTypeId));	
+			if (fieldTypeId != null)
+				fieldType = rs.getFieldType(Integer.valueOf(fieldTypeId));
 		}
 		
 		if (fieldType == null)
 			fieldType = new FieldType();
-    	
-        return fieldType;
-    }
-    
+		
+		return fieldType;
+	}
+	
 }

@@ -20,24 +20,26 @@ import org.openmrs.report.EvaluationContext;
  * PatientFilters may use an EvaluationContext for caching, but they ignore parameter values
  */
 public interface PatientFilter extends ReportObject {
-
+	
 	/**
-	 * Determine all patients in _input_ who also match some criteria.
-	 * If input is null, then this should return all patients who match.
+	 * Determine all patients in _input_ who also match some criteria. If input is null, then this
+	 * should return all patients who match.
+	 * 
 	 * @param context
 	 * @param input
 	 * @return
 	 */
 	public Cohort filter(Cohort input, EvaluationContext context);
-
+	
 	/**
 	 * Determine all patients in _input_ who do *not* match some criteria
+	 * 
 	 * @param context
 	 * @param input
 	 * @return
 	 */
 	public Cohort filterInverse(Cohort input, EvaluationContext context);
-
+	
 	/**
 	 * @return Whether or not this filter has had enough parameters set to be run properly
 	 */

@@ -40,30 +40,31 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class MimeTypeListController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -83,12 +84,14 @@ public class MimeTypeListController extends SimpleFormController {
 			for (String m : mimeTypeList) {
 				try {
 					as.deleteMimeType(os.getMimeType(Integer.valueOf(m)));
-					if (!success.equals("")) success += "<br/>";
+					if (!success.equals(""))
+						success += "<br/>";
 					success += m + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting mime type", e);
-					if (!error.equals("")) error += "<br/>";
+					if (!error.equals(""))
+						error += "<br/>";
 					error += m + " " + notDeleted;
 				}
 			}
@@ -99,21 +102,19 @@ public class MimeTypeListController extends SimpleFormController {
 			if (!error.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
-			
+		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
-    	HttpSession httpSession = request.getSession();
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
+		HttpSession httpSession = request.getSession();
 		
 		//default empty Object
 		List<MimeType> mimeTypeList = new Vector<MimeType>();
@@ -121,10 +122,10 @@ public class MimeTypeListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ObsService os = Context.getObsService();
-	    	mimeTypeList = os.getMimeTypes();
+			mimeTypeList = os.getMimeTypes();
 		}
-    	
-        return mimeTypeList;
-    }
-    
+		
+		return mimeTypeList;
+	}
+	
 }

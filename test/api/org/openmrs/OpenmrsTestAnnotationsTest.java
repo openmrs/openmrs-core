@@ -25,8 +25,7 @@ import org.openmrs.test.SkipBaseSetup;
 public class OpenmrsTestAnnotationsTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * Make sure the "@Before" method on {@link BaseContextSensitiveTest} is
-	 * authenticating the user
+	 * Make sure the "@Before" method on {@link BaseContextSensitiveTest} is authenticating the user
 	 * 
 	 * @throws Exception
 	 */
@@ -45,8 +44,8 @@ public class OpenmrsTestAnnotationsTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure the "@Before" method on {@link BaseContextSensitiveTest} is
-	 * not authenticating the user when told to skip 
+	 * Make sure the "@Before" method on {@link BaseContextSensitiveTest} is not authenticating the
+	 * user when told to skip
 	 * 
 	 * @throws Exception
 	 */
@@ -60,6 +59,4 @@ public class OpenmrsTestAnnotationsTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(Context.isAuthenticated());
 	}
 	
-	
-		
 }

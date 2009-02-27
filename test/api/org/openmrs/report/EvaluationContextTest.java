@@ -27,7 +27,7 @@ import org.junit.Test;
  *
  */
 public class EvaluationContextTest {
-
+	
 	@Test
 	public void shouldEvaluateExpression() throws Exception {
 		
@@ -68,11 +68,12 @@ public class EvaluationContextTest {
 		catch (Exception e) {
 			assertEquals(e.getClass(), ParameterException.class);
 		}
-
+		
 		assertEquals(context.evaluateExpression(expression8).toString(), "male");
 		assertEquals(context.evaluateExpression(expression9).toString(), "report.gender");
 		assertEquals(context.evaluateExpression(expression10).toString(), "hello male person");
-		assertEquals(context.evaluateExpression(expression11).toString(), "This report is from 2007-01-10 10:30:17 to 2007-01-31 10:30:17 for male patients");
+		assertEquals(context.evaluateExpression(expression11).toString(),
+		    "This report is from 2007-01-10 10:30:17 to 2007-01-31 10:30:17 for male patients");
 	}
 	
 }

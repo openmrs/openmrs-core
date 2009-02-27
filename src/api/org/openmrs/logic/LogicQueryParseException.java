@@ -21,8 +21,8 @@ package org.openmrs.logic;
  */
 public class LogicQueryParseException extends Exception {
 	
-    private static final long serialVersionUID = 5337024824358532576L;
-
+	private static final long serialVersionUID = 5337024824358532576L;
+	
 	public LogicQueryParseException() {
 		super();
 	}
@@ -38,5 +38,5 @@ public class LogicQueryParseException extends Exception {
 	public LogicQueryParseException(String message, Throwable t) {
 		super(message, t);
 	}
-
+	
 }

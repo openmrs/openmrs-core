@@ -18,14 +18,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class is intended to be used with either SortedSets or SortedMaps.  The keys will be 
- * sorted on the order which they are inserted (and hence compared).
- * 
- * Caveat: If an item is removed and readded, it will retain the old order
+ * This class is intended to be used with either SortedSets or SortedMaps. The keys will be sorted
+ * on the order which they are inserted (and hence compared). Caveat: If an item is removed and
+ * readded, it will retain the old order
  * 
  * @author bwolfe
  */
 public class InsertedOrderComparator implements Comparator<String> {
+	
 	Map<String, Integer> insertedOrder = new HashMap<String, Integer>();
 	
 	public int compare(String a1, String a2) {

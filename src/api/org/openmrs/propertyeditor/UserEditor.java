@@ -23,13 +23,14 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class UserEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public UserEditor() {	}
+	public UserEditor() {
+	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		UserService ps = Context.getUserService(); 
+		UserService ps = Context.getUserService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(ps.getUser(Integer.valueOf(text)));
@@ -38,8 +39,7 @@ public class UserEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("User not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
@@ -48,10 +48,9 @@ public class UserEditor extends PropertyEditorSupport {
 		User t = (User) getValue();
 		if (t == null) {
 			return "";
-		}
-		else {
+		} else {
 			return t.getUserId().toString();
 		}
 	}
-
+	
 }

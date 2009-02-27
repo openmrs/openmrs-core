@@ -28,27 +28,45 @@ import org.openmrs.web.WebUtil;
 public class ConceptListItem {
 	
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	private Integer conceptId;
+	
 	private Integer conceptNameId;
+	
 	private String name;
+	
 	private String shortName;
+	
 	private String description;
-	private String synonym; 
+	
+	private String synonym;
+	
 	private Boolean retired;
+	
 	private String hl7Abbreviation;
+	
 	private String className;
+	
 	private Boolean isSet;
+	
 	private Boolean isNumeric;
+	
 	private Double hiAbsolute;
+	
 	private Double hiCritical;
+	
 	private Double hiNormal;
+	
 	private Double lowAbsolute;
+	
 	private Double lowCritical;
+	
 	private Double lowNormal;
+	
 	private String units;
-
-	public ConceptListItem() { }
+	
+	public ConceptListItem() {
+	}
 	
 	public ConceptListItem(ConceptWord word) {
 		if (word != null) {
@@ -61,7 +79,7 @@ public class ConceptListItem {
 		}
 	}
 	
-	public ConceptListItem(Concept concept, ConceptName conceptName, Locale locale){
+	public ConceptListItem(Concept concept, ConceptName conceptName, Locale locale) {
 		initialize(concept, conceptName, locale);
 	}
 	
@@ -74,14 +92,12 @@ public class ConceptListItem {
 			if (conceptName != null) {
 				name = WebUtil.escapeHTML(conceptName.getName());
 			}
-			if (conceptShortName != null)
-			{
+			if (conceptShortName != null) {
 				shortName = WebUtil.escapeHTML(conceptShortName.getName());
 			}
 			// ABK: descriptions used to allow non-exact locale match
-			ConceptDescription conceptDescription = concept.getDescription(locale, true); 
-			if (conceptDescription != null)
-			{
+			ConceptDescription conceptDescription = concept.getDescription(locale, true);
+			if (conceptDescription != null) {
 				description = WebUtil.escapeHTML(conceptDescription.getDescription());
 			}
 			synonym = "";
@@ -99,7 +115,7 @@ public class ConceptListItem {
 				lowAbsolute = num.getLowAbsolute();
 				lowCritical = num.getLowCritical();
 				lowNormal = num.getLowNormal();
-				units = num.getUnits();				
+				units = num.getUnits();
 			}
 		}
 	}
@@ -107,7 +123,7 @@ public class ConceptListItem {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptListItem) {
-			ConceptListItem c2 = (ConceptListItem)obj;
+			ConceptListItem c2 = (ConceptListItem) obj;
 			if (conceptId != null)
 				return conceptId.equals(c2.getConceptId());
 		}
@@ -129,63 +145,63 @@ public class ConceptListItem {
 	public Integer getConceptNameId() {
 		return conceptNameId;
 	}
-
+	
 	public void setConceptId(Integer conceptId) {
 		this.conceptId = conceptId;
 	}
-
+	
 	public String getDescription() {
 		return description;
 	}
-
+	
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
+	
 	public String getName() {
 		return name;
 	}
-
+	
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	public String getShortName() {
 		return shortName;
 	}
-
+	
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}
-
+	
 	public String getSynonym() {
 		return synonym;
 	}
-
+	
 	public void setSynonym(String synonym) {
 		this.synonym = synonym;
 	}
-
+	
 	public Boolean getRetired() {
 		return retired;
 	}
-
+	
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
-
+	
 	public String getHl7Abbreviation() {
 		return hl7Abbreviation;
 	}
-
+	
 	public void setHl7Abbreviation(String hl7Abbreviation) {
 		this.hl7Abbreviation = hl7Abbreviation;
 	}
-
+	
 	public String getClassName() {
 		return className;
 	}
-
+	
 	public void setClassName(String className) {
 		this.className = className;
 	}
@@ -193,70 +209,69 @@ public class ConceptListItem {
 	public Boolean getIsSet() {
 		return isSet;
 	}
-
+	
 	public Double getHiAbsolute() {
 		return hiAbsolute;
 	}
-
+	
 	public void setHiAbsolute(Double hiAbsolute) {
 		this.hiAbsolute = hiAbsolute;
 	}
-
+	
 	public Double getHiCritical() {
 		return hiCritical;
 	}
-
+	
 	public void setHiCritical(Double hiCritical) {
 		this.hiCritical = hiCritical;
 	}
-
+	
 	public Double getHiNormal() {
 		return hiNormal;
 	}
-
+	
 	public void setHiNormal(Double hiNormal) {
 		this.hiNormal = hiNormal;
 	}
-
+	
 	public Double getLowAbsolute() {
 		return lowAbsolute;
 	}
-
+	
 	public void setLowAbsolute(Double lowAbsolute) {
 		this.lowAbsolute = lowAbsolute;
 	}
-
+	
 	public Double getLowCritical() {
 		return lowCritical;
 	}
-
+	
 	public void setLowCritical(Double lowCritical) {
 		this.lowCritical = lowCritical;
 	}
-
+	
 	public Double getLowNormal() {
 		return lowNormal;
 	}
-
+	
 	public void setLowNormal(Double lowNormal) {
 		this.lowNormal = lowNormal;
 	}
-
+	
 	public String getUnits() {
 		return units;
 	}
-
+	
 	public void setUnits(String units) {
 		this.units = units;
 	}
-
+	
 	public Boolean getIsNumeric() {
 		return isNumeric;
 	}
-
+	
 	public void setIsNumeric(Boolean isNumeric) {
 		this.isNumeric = isNumeric;
 	}
-	
 	
 }

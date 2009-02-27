@@ -33,19 +33,19 @@ import org.springframework.web.servlet.ModelAndView;
  * Test the methods on the org.openmrs.web.controller.encounter.EncounterDisplayController
  */
 public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
-
+	
 	protected static final String DISPLAY_CONTROLLER_DATA = "org/openmrs/web/encounter/include/EncounterDisplayControllerTest.xml";
 	
 	/**
-	 * Makes sure that the processing done in the encounter form
-	 * controller is done properly for a normal encounter
+	 * Makes sure that the processing done in the encounter form controller is done properly for a
+	 * normal encounter
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
-    @SkipBaseSetup
-    public void shouldGetNormalEncounterPageData() throws Exception {
+	@SuppressWarnings( { "unchecked" })
+	@Test
+	@SkipBaseSetup
+	public void shouldGetNormalEncounterPageData() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(DISPLAY_CONTROLLER_DATA);
 		authenticate();
@@ -59,26 +59,23 @@ public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 		
 		ModelAndView modelAndView = controller.handleRequest(request, response);
 		
-		Map<String, Object> model = (Map<String, Object>)modelAndView.getModel().get("model");
+		Map<String, Object> model = (Map<String, Object>) modelAndView.getModel().get("model");
 		
 		// make sure there is a "pages" element on the page
-		Map<Integer, List<FieldHolder>> pages = (Map<Integer, List<FieldHolder>>)model.get("pages");
+		Map<Integer, List<FieldHolder>> pages = (Map<Integer, List<FieldHolder>>) model.get("pages");
 		Assert.assertNotNull(pages);
 		
 	}
 	
 	/**
-	 * If there are multiple obs in an obs group that share the 
-	 * same concept (question), then they should each be able to
-	 * be displayed
-	 * 
-	 * Verifies fix for bug #1025
+	 * If there are multiple obs in an obs group that share the same concept (question), then they
+	 * should each be able to be displayed Verifies fix for bug #1025
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
-    public void shouldAllowMoreThanOneObsPerConceptInObsGroup() throws Exception {
+	@SuppressWarnings( { "unchecked" })
+	@Test
+	public void shouldAllowMoreThanOneObsPerConceptInObsGroup() throws Exception {
 		executeDataSet("org/openmrs/web/encounter/include/EncounterDisplayControllerTest-multiconceptsinobsGroup.xml");
 		
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -86,10 +83,10 @@ public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 		EncounterDisplayController controller = new EncounterDisplayController();
 		ModelAndView modelAndView = controller.handleRequest(request, new MockHttpServletResponse());
 		
-		Map<String, Object> model = (Map<String, Object>)modelAndView.getModel().get("model");
+		Map<String, Object> model = (Map<String, Object>) modelAndView.getModel().get("model");
 		
 		// make sure there is a "pages" element on the page
-		Map<Integer, List<FieldHolder>> pages = (Map<Integer, List<FieldHolder>>)model.get("pages");
+		Map<Integer, List<FieldHolder>> pages = (Map<Integer, List<FieldHolder>>) model.get("pages");
 		Assert.assertNotNull(pages);
 		
 		// this should be the only page
@@ -117,5 +114,5 @@ public class EncounterDisplayControllerTest extends BaseContextSensitiveTest {
 			Assert.assertTrue(firstAndOnlyCell.contains(new Obs(18)));
 		}
 	}
-
+	
 }

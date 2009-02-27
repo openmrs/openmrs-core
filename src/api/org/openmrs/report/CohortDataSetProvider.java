@@ -25,24 +25,27 @@ import org.openmrs.cohort.CohortDefinition;
 
 /**
  * The logic that evaluates a {@link CohortDataSetDefinition} and produces a {@link CohortDataSet}
+ * 
  * @see CohortDataSetDefinition
  * @see CohortDataSet
  */
 public class CohortDataSetProvider implements DataSetProvider {
-
+	
 	protected Log log = LogFactory.getLog(this.getClass());
 	
-	public CohortDataSetProvider() { }
+	public CohortDataSetProvider() {
+	}
 	
 	/**
 	 * @see org.openmrs.report.DataSetProvider#canEvaluate(org.openmrs.report.DataSetDefinition)
 	 */
 	public boolean canEvaluate(DataSetDefinition dataSetDefinition) {
-		return (dataSetDefinition instanceof CohortDataSetDefinition); 
+		return (dataSetDefinition instanceof CohortDataSetDefinition);
 	}
-
+	
 	/**
-	 * @see org.openmrs.report.DataSetProvider#evaluate(org.openmrs.report.DataSetDefinition, org.openmrs.Cohort)
+	 * @see org.openmrs.report.DataSetProvider#evaluate(org.openmrs.report.DataSetDefinition,
+	 *      org.openmrs.Cohort)
 	 */
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {
 		CohortDataSetDefinition def = (CohortDataSetDefinition) dataSetDefinition;
@@ -64,5 +67,5 @@ public class CohortDataSetProvider implements DataSetProvider {
 		
 		return data;
 	}
-
+	
 }

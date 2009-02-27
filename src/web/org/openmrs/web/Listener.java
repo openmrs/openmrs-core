@@ -48,25 +48,18 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Our Listener class performs the basic starting functions for our webapp.
- * Basic needs for starting the API:
- *  1) Get the runtime properties
- *  2) Start Spring
- *  3) Start the OpenMRS APi (via Context.startup)
- * 
- * Basic startup needs specific to the web layer:
- *  1) Do the web startup of the modules
- *  2) Copy the custom look/images/messages over into the web layer
- *  
+ * Our Listener class performs the basic starting functions for our webapp. Basic needs for starting
+ * the API: 1) Get the runtime properties 2) Start Spring 3) Start the OpenMRS APi (via
+ * Context.startup) Basic startup needs specific to the web layer: 1) Do the web startup of the
+ * modules 2) Copy the custom look/images/messages over into the web layer
  */
 public final class Listener extends ContextLoaderListener {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	/**
-	 * This method is called when the servlet context is initialized(when the
-	 * Web Application is deployed). You can initialize servlet context related
-	 * data here.
+	 * This method is called when the servlet context is initialized(when the Web Application is
+	 * deployed). You can initialize servlet context related data here.
 	 * 
 	 * @param event
 	 */
@@ -78,9 +71,9 @@ public final class Listener extends ContextLoaderListener {
 		// pulled from web.xml.
 		loadConstants(servletContext);
 		
-		/** 
-		 * Get the runtime properties and set it to the context
-		 * so that they can be used during sessionFactory creation
+		/**
+		 * Get the runtime properties and set it to the context so that they can be used during
+		 * sessionFactory creation
 		 */
 		Properties props = getRuntimeProperties();
 		Context.setRuntimeProperties(props);
@@ -90,13 +83,13 @@ public final class Listener extends ContextLoaderListener {
 		// clear the dwr file
 		String absPath = realPath + "/WEB-INF/dwr-modules.xml";
 		File dwrFile = new File(absPath.replace("/", File.separator));
-		if(dwrFile.exists()) {
+		if (dwrFile.exists()) {
 			try {
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
-				db.setEntityResolver(new EntityResolver(){
-					public InputSource resolveEntity(String publicId, String systemId) 
-							throws SAXException, IOException {
+				db.setEntityResolver(new EntityResolver() {
+					
+					public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 						// When asked to resolve external entities (such as a DTD) we return an InputSource
 						// with no data at the end, causing the parser to ignore the DTD.
 						return new InputSource(new StringReader(""));
@@ -114,11 +107,13 @@ public final class Listener extends ContextLoaderListener {
 				dwrFile.delete();
 				try {
 					FileWriter writer = new FileWriter(dwrFile);
-					writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 1.0//EN\" \"http://resources.openmrs.org/doctype/dwr-1.0mod.dtd\">\n<dwr></dwr>");
+					writer
+					        .write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 1.0//EN\" \"http://resources.openmrs.org/doctype/dwr-1.0mod.dtd\">\n<dwr></dwr>");
 					writer.close();
 				}
 				catch (IOException io) {
-					log.error("Unable to clear out the " + dwrFile.getAbsolutePath() + " file.  Please redeploy the openmrs war file", io);
+					log.error("Unable to clear out the " + dwrFile.getAbsolutePath()
+					        + " file.  Please redeploy the openmrs war file", io);
 				}
 				
 			}
@@ -129,7 +124,8 @@ public final class Listener extends ContextLoaderListener {
 			super.contextInitialized(event);
 		}
 		catch (CannotLoadBeanClassException e) {
-			log.warn("Error while initializing spring context.  More than likely caused by an improper shutdown that leaves 1 or more module contexts lying around");
+			log
+			        .warn("Error while initializing spring context.  More than likely caused by an improper shutdown that leaves 1 or more module contexts lying around");
 			log.warn("Stacktrace: ", e);
 			log.warn("Stopping all modules (most importantly, deleting the context files) and trying again: ");
 			
@@ -159,9 +155,11 @@ public final class Listener extends ContextLoaderListener {
 		boolean someModuleNeedsARefresh = false;
 		for (Module mod : startedModules) {
 			try {
-				boolean thisModuleCausesRefresh = WebModuleUtil.startModule(mod, servletContext, /* delayContextRefresh */ true); 
+				boolean thisModuleCausesRefresh = WebModuleUtil.startModule(mod, servletContext, /* delayContextRefresh */
+				    true);
 				someModuleNeedsARefresh = someModuleNeedsARefresh || thisModuleCausesRefresh;
-			} catch (Throwable t) {
+			}
+			catch (Throwable t) {
 				mod.setStartupErrorMessage("Unable to start module", t);
 			}
 		}
@@ -185,7 +183,7 @@ public final class Listener extends ContextLoaderListener {
 			}
 		}
 		
-		/** 
+		/**
 		 * Copy the customization scripts over into the webapp
 		 */
 		// TODO centralize map to WebConstants?
@@ -208,7 +206,7 @@ public final class Listener extends ContextLoaderListener {
 			if (userOverridePath != null) {
 				String absolutePath = realPath + webappPath;
 				File file = new File(userOverridePath);
-
+				
 				// if they got the path correct
 				// also, if file does not start with a "." (hidden files, like SVN files) 
 				if (file.exists() && !userOverridePath.startsWith(".")) {
@@ -217,12 +215,12 @@ public final class Listener extends ContextLoaderListener {
 					if (file.isDirectory()) {
 						for (File f : file.listFiles()) {
 							userOverridePath = f.getAbsolutePath();
-							if ( !f.getName().startsWith(".") ) {
-								String tmpAbsolutePath = absolutePath + "/"
-								+ f.getName();
+							if (!f.getName().startsWith(".")) {
+								String tmpAbsolutePath = absolutePath + "/" + f.getName();
 								if (!copyFile(userOverridePath, tmpAbsolutePath)) {
 									log.warn("Unable to copy file in folder defined by runtime property: " + prop);
-									log.warn("Your source directory (or a file in it) '" + userOverridePath + " cannot be loaded or destination '" + tmpAbsolutePath + "' cannot be found");
+									log.warn("Your source directory (or a file in it) '" + userOverridePath
+									        + " cannot be loaded or destination '" + tmpAbsolutePath + "' cannot be found");
 								}
 							}
 						}
@@ -230,7 +228,8 @@ public final class Listener extends ContextLoaderListener {
 						// file is not a directory
 						if (!copyFile(userOverridePath, absolutePath)) {
 							log.warn("Unable to copy file defined by runtime property: " + prop);
-							log.warn("Your source file '" + userOverridePath + " cannot be loaded or destination '" + absolutePath + "' cannot be found");
+							log.warn("Your source file '" + userOverridePath + " cannot be loaded or destination '"
+							        + absolutePath + "' cannot be found");
 						}
 					}
 				}
@@ -239,33 +238,33 @@ public final class Listener extends ContextLoaderListener {
 		}
 		
 	}
-
+	
 	/**
-     * Load the openmrs constants with values from web.xml init parameters 
-     * 
-     * @param servletContext startup context (web.xml)
-     */
-    private void loadConstants(ServletContext servletContext) {
+	 * Load the openmrs constants with values from web.xml init parameters
+	 * 
+	 * @param servletContext startup context (web.xml)
+	 */
+	private void loadConstants(ServletContext servletContext) {
 		WebConstants.BUILD_TIMESTAMP = servletContext.getInitParameter("build.timestamp");
 		WebConstants.WEBAPP_NAME = getContextPath(servletContext);
-    }
-
+	}
+	
 	/**
-     * Hacky way to get the current contextPath.  This will usually be "openmrs".
-     * 
-     * This method will be obsolete when servlet api ~2.6 comes out...at which point
-     * a call like servletContext.getContextRoot() would be sufficient
-     * 
-     * @return current contextPath of this webapp without initial slash
-     */
-    private String getContextPath(ServletContext servletContext) {
+	 * Hacky way to get the current contextPath. This will usually be "openmrs". This method will be
+	 * obsolete when servlet api ~2.6 comes out...at which point a call like
+	 * servletContext.getContextRoot() would be sufficient
+	 * 
+	 * @return current contextPath of this webapp without initial slash
+	 */
+	private String getContextPath(ServletContext servletContext) {
 		// Get the context path without the request.
 		String contextPath = "";
 		try {
 			String path = servletContext.getResource("/").getPath();
 			contextPath = path.substring(0, path.lastIndexOf("/"));
 			contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -274,8 +273,8 @@ public final class Listener extends ContextLoaderListener {
 			contextPath = contextPath.substring(1);
 		
 		return contextPath;
-    }
-
+	}
+	
 	/**
 	 * Copies file pointed to by <code>fromPath</code> to <code>toPath</code>
 	 * 
@@ -312,13 +311,10 @@ public final class Listener extends ContextLoaderListener {
 		}
 		return true;
 	}
-
+	
 	/**
-	 * Load the core modules
-	 * 
-	 * This method assumes that the WebModuleUtil.startup() will be 
-	 * called later for modules loaded here
-	 * 
+	 * Load the core modules This method assumes that the WebModuleUtil.startup() will be called
+	 * later for modules loaded here
 	 */
 	private void loadCoreModules(ServletContext servletContext) {
 		String path = servletContext.getRealPath("");
@@ -326,16 +322,14 @@ public final class Listener extends ContextLoaderListener {
 		File folder = new File(path);
 		
 		if (!folder.exists()) {
-			log.warn("Core module repository doesn't exist: "
-					+ folder.getAbsolutePath());
+			log.warn("Core module repository doesn't exist: " + folder.getAbsolutePath());
 			return;
 		}
 		if (!folder.isDirectory()) {
-			log.warn("Core module repository isn't a directory: "
-					+ folder.getAbsolutePath());
+			log.warn("Core module repository isn't a directory: " + folder.getAbsolutePath());
 			return;
 		}
-
+		
 		// loop over the modules and load the modules that we can
 		for (File f : folder.listFiles()) {
 			if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
@@ -351,9 +345,8 @@ public final class Listener extends ContextLoaderListener {
 	}
 	
 	/**
-	 * Called when the webapp is shut down properly
-	 * Must call Context.shutdown() and then shutdown all 
-	 * the web layers of the modules
+	 * Called when the webapp is shut down properly Must call Context.shutdown() and then shutdown
+	 * all the web layers of the modules
 	 */
 	public void contextDestroyed(ServletContextEvent event) {
 		
@@ -401,18 +394,16 @@ public final class Listener extends ContextLoaderListener {
 		  
 		 */
 	}
-
+	
 	//private boolean doesClassLoaderMatch(Driver o) {
 	//	return o.getClass().getClassLoader() == this.getClass()
 	//			.getClassLoader();
 	//}
 	
 	/**
-	 * Looks for and loads in the runtime properties.
-	 * Searches for an the file in this order:
-	 * 1) environment variable called "OPENMRS_RUNTIME_PROPERTIES_FILE"
-	 * 2) {user_home}/WEBAPPNAME_runtime.properties
-	 * 3) ./WEBAPPNAME_runtime.properties
+	 * Looks for and loads in the runtime properties. Searches for an the file in this order: 1)
+	 * environment variable called "OPENMRS_RUNTIME_PROPERTIES_FILE" 2)
+	 * {user_home}/WEBAPPNAME_runtime.properties 3) ./WEBAPPNAME_runtime.properties
 	 * 
 	 * @return Properties
 	 */
@@ -423,26 +414,27 @@ public final class Listener extends ContextLoaderListener {
 		
 		try {
 			FileInputStream propertyStream = null;
-
+			
 			// Look for environment variable {WEBAPP.NAME}_RUNTIME_PROPERTIES_FILE
 			String webapp = WebConstants.WEBAPP_NAME;
 			String env = webapp.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
 			
 			String filepath = System.getenv(env);
-
+			
 			if (filepath != null) {
 				log.debug("Atempting to load runtime properties from: " + filepath + " ");
 				try {
 					propertyStream = new FileInputStream(filepath);
 				}
 				catch (IOException e) {
-					log.warn("Unable to load properties file with path: " + filepath + ". (derived from environment variable " + env + ")", e);
+					log.warn("Unable to load properties file with path: " + filepath
+					        + ". (derived from environment variable " + env + ")", e);
 				}
 			} else {
 				log.warn("Couldn't find an environment variable named " + env);
 				log.debug("Available environment variables are named: " + System.getenv().keySet());
 			}
-
+			
 			// env is the name of the file to look for in the directories
 			String filename = webapp + "-runtime.properties";
 			
@@ -454,7 +446,7 @@ public final class Listener extends ContextLoaderListener {
 				}
 				catch (IOException e) {
 					log.warn("Unable to load properties file: " + filepath, e);
-				}	
+				}
 			}
 			
 			// look in current directory last
@@ -475,11 +467,12 @@ public final class Listener extends ContextLoaderListener {
 			props.load(propertyStream);
 			propertyStream.close();
 			log.warn("Using runtime properties file: " + filepath);
-
-		} catch (Throwable t) {
+			
+		}
+		catch (Throwable t) {
 			log.warn("Unable to load properties file. Starting with default properties.", t);
 		}
 		return props;
 	}
-
+	
 }

@@ -47,53 +47,50 @@ import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Serializer;
 
 /**
- * Methods specific to objects in the report package. These methods render
- * reports or save them to the database
+ * Methods specific to objects in the report package. These methods render reports or save them to
+ * the database
  * 
  * @see org.openmrs.api.ReportService
  * @see org.openmrs.api.context.Context
  */
 public class ReportServiceImpl implements ReportService {
-
+	
 	public Log log = LogFactory.getLog(this.getClass());
-
+	
 	private ReportDAO dao = null;
 	
 	/**
-	 * Report renderers that have been registered.
-	 * 
-	 * This is filled via {@link #setRenderers(Map)} and spring's applicationContext-service.xml object
+	 * Report renderers that have been registered. This is filled via {@link #setRenderers(Map)} and
+	 * spring's applicationContext-service.xml object
 	 */
 	private static Map<Class<? extends ReportRenderer>, ReportRenderer> renderers = null;
-
+	
 	/**
 	 * Default constructor
 	 */
 	public ReportServiceImpl() {
 	}
-
+	
 	/**
-	 * Method used by Spring injection to set the ReportDAO implementation to
-	 * use in this service
+	 * Method used by Spring injection to set the ReportDAO implementation to use in this service
 	 * 
 	 * @param dao The ReportDAO to use in this service
 	 */
 	@SuppressWarnings("unused")
-    public void setReportDAO(ReportDAO dao) {
+	public void setReportDAO(ReportDAO dao) {
 		this.dao = dao;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ReportService#deleteReportSchema(org.openmrs.report.ReportSchema)
 	 */
 	public void deleteReportSchema(ReportSchema reportSchema) {
 		throw new APIException("Not Yet Implemented");
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ReportService#evaluate(org.openmrs.report.ReportSchema,
-	 *      org.openmrs.Cohort,
-	 *      org.openmrs.report.EvaluationContext)
+	 *      org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
 	 */
 	public ReportData evaluate(ReportSchema reportSchema, Cohort inputCohort, EvaluationContext evalContext) {
 		ReportData ret = new ReportData();
@@ -105,10 +102,9 @@ public class ReportServiceImpl implements ReportService {
 		
 		if (reportSchema.getDataSetDefinitions() != null)
 			for (DataSetDefinition dataSetDefinition : reportSchema.getDataSetDefinitions()) {
-				data.put(dataSetDefinition.getName(),
-				         dss.evaluate(dataSetDefinition, inputCohort, evalContext));
+				data.put(dataSetDefinition.getName(), dss.evaluate(dataSetDefinition, inputCohort, evalContext));
 			}
-
+		
 		return ret;
 	}
 	
@@ -118,45 +114,47 @@ public class ReportServiceImpl implements ReportService {
 	public ReportRenderer getReportRenderer(Class<? extends ReportRenderer> clazz) {
 		try {
 			return renderers.get(clazz);
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			log.error("Failed to get report renderer for " + clazz, ex);
 			return null;
 		}
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ReportService#getReportRenderer(java.lang.String)
 	 */
 	public ReportRenderer getReportRenderer(String className) {
 		try {
 			return renderers.get(OpenmrsClassLoader.getInstance().loadClass(className));
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			log.error("Failed to get report renderer for " + className, ex);
 			return null;
 		}
-    }
-
+	}
+	
 	/**
 	 * @see org.openmrs.api.ReportService#getReportRenderers()
 	 */
 	public Collection<ReportRenderer> getReportRenderers() {
 		return getRenderers().values();
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ReportService#getRenderingModes(org.openmrs.report.ReportSchema)
 	 */
 	public List<RenderingMode> getRenderingModes(ReportSchema schema) {
-	    List<RenderingMode> ret = new Vector<RenderingMode>();
-	    for (ReportRenderer r : getReportRenderers()) {
-	    	Collection<RenderingMode> modes = r.getRenderingModes(schema);
-	    	if (modes != null)
-	    		ret.addAll(modes);
-	    }
-	    Collections.sort(ret);
-	    return ret;
-    }
-
+		List<RenderingMode> ret = new Vector<RenderingMode>();
+		for (ReportRenderer r : getReportRenderers()) {
+			Collection<RenderingMode> modes = r.getRenderingModes(schema);
+			if (modes != null)
+				ret.addAll(modes);
+		}
+		Collections.sort(ret);
+		return ret;
+	}
+	
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchema(java.lang.Integer)
 	 */
@@ -164,7 +162,7 @@ public class ReportServiceImpl implements ReportService {
 		ReportSchemaXml xml = getReportSchemaXml(reportSchemaId);
 		return getReportSchema(xml);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchema(org.openmrs.report.ReportSchemaXml)
 	 */
@@ -183,7 +181,7 @@ public class ReportServiceImpl implements ReportService {
 		}
 		return reportSchema;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchemas()
 	 */
@@ -194,9 +192,10 @@ public class ReportServiceImpl implements ReportService {
 		}
 		return ret;
 	}
-
+	
 	/**
 	 * ADDs renderers...doesn't replace them.
+	 * 
 	 * @see org.openmrs.api.ReportService#setRenderers(java.util.Map)
 	 */
 	public void setRenderers(Map<Class<? extends ReportRenderer>, ReportRenderer> newRenderers) throws APIException {
@@ -216,7 +215,8 @@ public class ReportServiceImpl implements ReportService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ReportService#registerRenderer(java.lang.Class, org.openmrs.report.ReportRenderer)
+	 * @see org.openmrs.api.ReportService#registerRenderer(java.lang.Class,
+	 *      org.openmrs.report.ReportRenderer)
 	 */
 	public void registerRenderer(Class<? extends ReportRenderer> rendererClass, ReportRenderer renderer) throws APIException {
 		getRenderers().put(rendererClass, renderer);
@@ -226,14 +226,15 @@ public class ReportServiceImpl implements ReportService {
 	 * @see org.openmrs.api.ReportService#registerRenderer(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-    public void registerRenderer(String rendererClass) throws APIException {
+	public void registerRenderer(String rendererClass) throws APIException {
 		try {
-	        Class loadedClass = OpenmrsClassLoader.getInstance().loadClass(rendererClass);
-	        registerRenderer(loadedClass, (ReportRenderer)loadedClass.newInstance());
-	        
-        } catch (Exception e) {
-	        throw new APIException("Unable to load and instantiate renderer", e);
-        }
+			Class loadedClass = OpenmrsClassLoader.getInstance().loadClass(rendererClass);
+			registerRenderer(loadedClass, (ReportRenderer) loadedClass.newInstance());
+			
+		}
+		catch (Exception e) {
+			throw new APIException("Unable to load and instantiate renderer", e);
+		}
 	}
 	
 	/**
@@ -242,103 +243,107 @@ public class ReportServiceImpl implements ReportService {
 	public void removeRenderer(Class<? extends ReportRenderer> renderingClass) {
 		renderers.remove(renderingClass);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ReportService#saveReportSchema(org.openmrs.report.ReportSchema)
 	 */
 	public void saveReportSchema(ReportSchema reportSchema) {
 		throw new APIException("Not Yet Implemented");
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ReportService#getReportSchemaXml(java.lang.Integer)
 	 */
 	public ReportSchemaXml getReportSchemaXml(Integer reportSchemaXmlId) {
 		return dao.getReportSchemaXml(reportSchemaXmlId);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ReportService#createReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 */
 	public void createReportSchemaXml(ReportSchemaXml reportSchemaXml) {
 		dao.saveReportSchemaXml(reportSchemaXml);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ReportService#updateReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 */
 	public void updateReportSchemaXml(ReportSchemaXml reportSchemaXml) {
 		dao.saveReportSchemaXml(reportSchemaXml);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ReportService#deleteReportSchemaXml(org.openmrs.report.ReportSchemaXml)
 	 */
 	public void deleteReportSchemaXml(ReportSchemaXml reportSchemaXml) {
 		dao.deleteReportSchemaXml(reportSchemaXml);
 	}
-
+	
 	/**
-     * @see org.openmrs.api.ReportService#getReportSchemaXmls()
-     */
-    public List<ReportSchemaXml> getReportSchemaXmls() {
-	    return dao.getReportSchemaXmls();
-    }
-
+	 * @see org.openmrs.api.ReportService#getReportSchemaXmls()
+	 */
+	public List<ReportSchemaXml> getReportSchemaXmls() {
+		return dao.getReportSchemaXmls();
+	}
+	
 	/**
-     * @see org.openmrs.api.ReportService#getReportXmlMacros()
-     */
-    public Properties getReportXmlMacros() {
-    	try {
-    		String macrosAsString = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS);
-    		Properties macros = new Properties();
-    		if (macrosAsString != null) {
-    			macros.load(new ByteArrayInputStream(macrosAsString.getBytes("UTF-8")));
-    		}
-    		return macros;
-   		} catch (Exception ex) {
-   			throw new APIException(ex);
-   		}
-    }
-
+	 * @see org.openmrs.api.ReportService#getReportXmlMacros()
+	 */
+	public Properties getReportXmlMacros() {
+		try {
+			String macrosAsString = Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS);
+			Properties macros = new Properties();
+			if (macrosAsString != null) {
+				macros.load(new ByteArrayInputStream(macrosAsString.getBytes("UTF-8")));
+			}
+			return macros;
+		}
+		catch (Exception ex) {
+			throw new APIException(ex);
+		}
+	}
+	
 	/**
-     * @see org.openmrs.api.ReportService#saveReportXmlMacros(java.util.Properties)
-     */
-    public void saveReportXmlMacros(Properties macros) {
-    	try {
-    		ByteArrayOutputStream out = new ByteArrayOutputStream();
-    		macros.store(out, null);
-    		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS, out.toString());
-    	} catch (Exception ex) {
-    		throw new APIException(ex);
-    	}
-    }
-
+	 * @see org.openmrs.api.ReportService#saveReportXmlMacros(java.util.Properties)
+	 */
+	public void saveReportXmlMacros(Properties macros) {
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			macros.store(out, null);
+			Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS,
+			    out.toString());
+		}
+		catch (Exception ex) {
+			throw new APIException(ex);
+		}
+	}
+	
 	/**
-     * @see org.openmrs.api.ReportService#applyReportXmlMacros(java.lang.String)
-     */
-    public String applyReportXmlMacros(String input) {
-	    Properties macros = getReportXmlMacros();
-	    if (macros != null && macros.size() > 0) {
-	    	log.debug("XML Before macros: " + input);
-		    String prefix = macros.getProperty("macroPrefix", "");
-		    String suffix = macros.getProperty("macroSuffix", "");
-		    while (true) {
-		    	String replacement = input;
-		    	for (Map.Entry<Object, Object> e : macros.entrySet()) {
-		    		String key = prefix + e.getKey() + suffix;
-		    		String value = e.getValue() == null ? "" : e.getValue().toString();
-		    		log.debug("Trying to replace " + key + " with " + value);
-		    		replacement = replacement.replace(key, (String) e.getValue());
-		    	}
-		    	if (input.equals(replacement)) {
-		    		log.debug("Macro expansion complete.");
-		    		break;
-		    	}
-		    	input = replacement;
-		    	log.debug("XML Exploded to: " + input);
-		    }
-	    }
-	    return input;
-    }
+	 * @see org.openmrs.api.ReportService#applyReportXmlMacros(java.lang.String)
+	 */
+	public String applyReportXmlMacros(String input) {
+		Properties macros = getReportXmlMacros();
+		if (macros != null && macros.size() > 0) {
+			log.debug("XML Before macros: " + input);
+			String prefix = macros.getProperty("macroPrefix", "");
+			String suffix = macros.getProperty("macroSuffix", "");
+			while (true) {
+				String replacement = input;
+				for (Map.Entry<Object, Object> e : macros.entrySet()) {
+					String key = prefix + e.getKey() + suffix;
+					String value = e.getValue() == null ? "" : e.getValue().toString();
+					log.debug("Trying to replace " + key + " with " + value);
+					replacement = replacement.replace(key, (String) e.getValue());
+				}
+				if (input.equals(replacement)) {
+					log.debug("Macro expansion complete.");
+					break;
+				}
+				input = replacement;
+				log.debug("XML Exploded to: " + input);
+			}
+		}
+		return input;
+	}
 }

@@ -16,11 +16,10 @@ package org.openmrs;
 import java.util.List;
 
 /**
- * Classes marked with this interface are able to be special values for a
- * PersonAttribute.
+ * Classes marked with this interface are able to be special values for a PersonAttribute.
  */
 public interface Attributable<E> {
-
+	
 	/**
 	 * Deserialize the given string into a full object
 	 * 
@@ -28,25 +27,22 @@ public interface Attributable<E> {
 	 * @return hydrated object
 	 */
 	public E hydrate(String s);
-
+	
 	/**
-	 * Turn the current object into an identifying string that can be retrieved
-	 * later
+	 * Turn the current object into an identifying string that can be retrieved later
 	 * 
-	 * @return String representing this object (Usually an identifier or primary
-	 *         key)
+	 * @return String representing this object (Usually an identifier or primary key)
 	 */
 	public String serialize();
-
+	
 	/**
-	 * Find all possible values of this object. For example, if this object is a
-	 * Location, the database is delved into and all Location objects should be
-	 * returned
+	 * Find all possible values of this object. For example, if this object is a Location, the
+	 * database is delved into and all Location objects should be returned
 	 * 
 	 * @return List of objects that can be assigned
 	 */
 	public List<E> getPossibleValues();
-
+	
 	/**
 	 * Search for possible values of this object using the given search string
 	 * 
@@ -56,13 +52,11 @@ public interface Attributable<E> {
 	public List<E> findPossibleValues(String searchText);
 	
 	/**
-	 * Gets a descriptive String used for display purposes 
-	 * 
-	 * This is meant as an alternative to using the toString() 
-	 * to display this object to a user
+	 * Gets a descriptive String used for display purposes This is meant as an alternative to using
+	 * the toString() to display this object to a user
 	 * 
 	 * @return String acceptable to display on a page
 	 */
 	public String getDisplayString();
-
+	
 }

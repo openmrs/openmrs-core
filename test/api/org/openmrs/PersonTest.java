@@ -33,9 +33,9 @@ import org.openmrs.test.Verifies;
  * This class does not touch the database, so it does not need to extend the normal openmrs BaseTest
  */
 public class PersonTest {
-
+	
 	/**
-	 * Test the add/removeAddresses method in the person object 
+	 * Test the add/removeAddresses method in the person object
 	 * 
 	 * @throws Exception
 	 */
@@ -55,11 +55,13 @@ public class PersonTest {
 		p.addAddress(pa1);
 		
 		// make sure the address is added.
-		assertTrue("There should be 1 address in the person object but there is actually : " + p.getAddresses().size(), p.getAddresses().size() == 1);
+		assertTrue("There should be 1 address in the person object but there is actually : " + p.getAddresses().size(), p
+		        .getAddresses().size() == 1);
 		
 		// adding the same address should not increment the size
 		p.addAddress(pa1);
-		assertTrue("There should be 1 address in the person object but there is actually : " + p.getAddresses().size(), p.getAddresses().size() == 1);
+		assertTrue("There should be 1 address in the person object but there is actually : " + p.getAddresses().size(), p
+		        .getAddresses().size() == 1);
 		
 		PersonAddress pa2 = new PersonAddress();
 		pa2.setAddress1("secondtest");
@@ -69,8 +71,8 @@ public class PersonTest {
 		p.addAddress(pa2);
 		
 		// make sure the address is added
-		assertTrue("There should be 2 addresses in the person object but there is actually : " + p.getAddresses().size(), p.getAddresses().size() == 2);
-		
+		assertTrue("There should be 2 addresses in the person object but there is actually : " + p.getAddresses().size(), p
+		        .getAddresses().size() == 2);
 		
 		PersonAddress pa3 = new PersonAddress();
 		pa3.setAddress1(pa1.getAddress1());
@@ -80,12 +82,14 @@ public class PersonTest {
 		
 		p.addAddress(pa3);
 		// make sure the address is NOT added
-		assertTrue("There should be 2 addresses in the person object but there is actually : " + p.getAddresses().size(), p.getAddresses().size() == 2);
+		assertTrue("There should be 2 addresses in the person object but there is actually : " + p.getAddresses().size(), p
+		        .getAddresses().size() == 2);
 		
 		pa3.setVoided(true);
 		p.addAddress(pa3);
 		// make sure the address IS added
-		assertTrue("There should be 3 addresses in the person object but there is actually : " + p.getAddresses().size(), p.getAddresses().size() == 3);
+		assertTrue("There should be 3 addresses in the person object but there is actually : " + p.getAddresses().size(), p
+		        .getAddresses().size() == 3);
 		
 		p.removeAddress(pa3);
 		assertTrue("There should be only 2 address in the person object now", p.getAddresses().size() == 2);
@@ -93,7 +97,8 @@ public class PersonTest {
 		pa3.setDateCreated(new Date(pa1.getDateCreated().getTime() + 1));
 		p.addAddress(pa3);
 		// make sure the address IS added
-		assertTrue("There should be 3 addresses in the person object but there is actually : " + p.getAddresses().size(), p.getAddresses().size() == 3);
+		assertTrue("There should be 3 addresses in the person object but there is actually : " + p.getAddresses().size(), p
+		        .getAddresses().size() == 3);
 		
 		// test removing all of the addresses
 		p.removeAddress(pa3);
@@ -107,7 +112,7 @@ public class PersonTest {
 	}
 	
 	/**
-	 * Test the add/removeNames method in the person object 
+	 * Test the add/removeNames method in the person object
 	 * 
 	 * @throws Exception
 	 */
@@ -127,11 +132,13 @@ public class PersonTest {
 		p.addName(pa1);
 		
 		// make sure the name is added.
-		assertTrue("There should be 1 name in the person object but there is actually : " + p.getNames().size(), p.getNames().size() == 1);
+		assertTrue("There should be 1 name in the person object but there is actually : " + p.getNames().size(), p
+		        .getNames().size() == 1);
 		
 		// adding the same name should not increment the size
 		p.addName(pa1);
-		assertTrue("There should be 1 name in the person object but there is actually : " + p.getNames().size(), p.getNames().size() == 1);
+		assertTrue("There should be 1 name in the person object but there is actually : " + p.getNames().size(), p
+		        .getNames().size() == 1);
 		
 		PersonName pa2 = new PersonName();
 		pa2.setGivenName("secondtest");
@@ -141,8 +148,8 @@ public class PersonTest {
 		p.addName(pa2);
 		
 		// make sure the name is added
-		assertTrue("There should be 2 names in the person object but there is actually : " + p.getNames().size(), p.getNames().size() == 2);
-		
+		assertTrue("There should be 2 names in the person object but there is actually : " + p.getNames().size(), p
+		        .getNames().size() == 2);
 		
 		PersonName pa3 = new PersonName();
 		pa3.setGivenName(pa1.getGivenName());
@@ -152,7 +159,8 @@ public class PersonTest {
 		
 		p.addName(pa3);
 		// make sure the name is NOT added because its the same as pa1
-		assertTrue("There should be 2 names in the person object but there is actually : " + p.getNames().size(), p.getNames().size() == 2);
+		assertTrue("There should be 2 names in the person object but there is actually : " + p.getNames().size(), p
+		        .getNames().size() == 2);
 		
 		PersonName pa4 = new PersonName();
 		pa4.setGivenName(pa1.getGivenName() + "string to change the .equals method");
@@ -162,7 +170,8 @@ public class PersonTest {
 		pa4.setVoided(true);
 		p.addName(pa4);
 		// make sure a voided name IS added
-		assertTrue("There should be 3 names in the person object but there is actually : " + p.getNames().size(), p.getNames().size() == 3);
+		assertTrue("There should be 3 names in the person object but there is actually : " + p.getNames().size(), p
+		        .getNames().size() == 3);
 		
 		p.removeName(pa3);
 		assertTrue("There should be only 2 name in the person object now", p.getNames().size() == 2);
@@ -170,7 +179,8 @@ public class PersonTest {
 		pa3.setDateCreated(new Date(pa1.getDateCreated().getTime() + 1));
 		p.addName(pa3);
 		// make sure the name IS added
-		assertTrue("There should be 3 names in the person object but there is actually : " + p.getNames().size(), p.getNames().size() == 3);
+		assertTrue("There should be 3 names in the person object but there is actually : " + p.getNames().size(), p
+		        .getNames().size() == 3);
 		
 		// test removing all of the names
 		p.removeName(pa4);
@@ -186,7 +196,7 @@ public class PersonTest {
 	}
 	
 	/**
-	 * Test the add/removeAttributes method in the person object 
+	 * Test the add/removeAttributes method in the person object
 	 * 
 	 * @throws Exception
 	 */
@@ -206,11 +216,13 @@ public class PersonTest {
 		p.addAttribute(pa1);
 		
 		// make sure the attribute is added.
-		assertTrue("There should be 1 attribute in the person object but there is actually : " + p.getAttributes().size(), p.getAttributes().size() == 1);
+		assertTrue("There should be 1 attribute in the person object but there is actually : " + p.getAttributes().size(), p
+		        .getAttributes().size() == 1);
 		
 		// adding the same attribute should not increment the size
 		p.addAttribute(pa1);
-		assertTrue("There should be 1 attribute in the person object but there is actually : " + p.getAttributes().size(), p.getAttributes().size() == 1);
+		assertTrue("There should be 1 attribute in the person object but there is actually : " + p.getAttributes().size(), p
+		        .getAttributes().size() == 1);
 		
 		PersonAttribute pa2 = new PersonAttribute();
 		pa2.setValue("secondtest");
@@ -220,8 +232,8 @@ public class PersonTest {
 		p.addAttribute(pa2);
 		
 		// make sure the attribute is added
-		assertTrue("There should be 2 attributes in the person object but there is actually : " + p.getAttributes().size(), p.getAttributes().size() == 2);
-		
+		assertTrue("There should be 2 attributes in the person object but there is actually : " + p.getAttributes().size(),
+		    p.getAttributes().size() == 2);
 		
 		PersonAttribute pa3 = new PersonAttribute();
 		pa3.setValue(pa1.getValue());
@@ -231,7 +243,8 @@ public class PersonTest {
 		
 		p.addAttribute(pa3);
 		// make sure the attribute is NOT added
-		assertTrue("There should be 2 attributes in the person object but there is actually : " + p.getAttributes().size(), p.getAttributes().size() == 2);
+		assertTrue("There should be 2 attributes in the person object but there is actually : " + p.getAttributes().size(),
+		    p.getAttributes().size() == 2);
 		
 		// (we must change the value here as well, because logic says that there is no
 		// point in adding an attribute that has the same value/type...even if the void
@@ -240,7 +253,8 @@ public class PersonTest {
 		pa3.setVoided(true);
 		p.addAttribute(pa3);
 		// make sure the attribute IS added
-		assertTrue("There should be 3 attributes in the person object but there is actually : " + p.getAttributes().size(), p.getAttributes().size() == 3);
+		assertTrue("There should be 3 attributes in the person object but there is actually : " + p.getAttributes().size(),
+		    p.getAttributes().size() == 3);
 		
 		p.removeAttribute(pa3);
 		assertTrue("There should be only 2 attribute in the person object now", p.getAttributes().size() == 2);
@@ -248,7 +262,8 @@ public class PersonTest {
 		pa3.setDateCreated(new Date(pa1.getDateCreated().getTime() + 1));
 		p.addAttribute(pa3);
 		// make sure the attribute IS added
-		assertTrue("There should be 3 attributes in the person object but there is actually : " + p.getAttributes().size(), p.getAttributes().size() == 3);
+		assertTrue("There should be 3 attributes in the person object but there is actually : " + p.getAttributes().size(),
+		    p.getAttributes().size() == 3);
 		
 		// test removing all of the attributes
 		p.removeAttribute(pa3);
@@ -260,34 +275,34 @@ public class PersonTest {
 		p.removeAttribute(pa1);
 		assertTrue("There shouldn't be any attributes in the person object now", p.getAttributes().size() == 0);
 	}
-
+	
 	/**
-	 * Test that setting a person's age correctly sets their birth date 
-	 * and records that this is inexact
+	 * Test that setting a person's age correctly sets their birth date and records that this is
+	 * inexact
 	 * 
 	 * @throws Exception
 	 */
 	@Test
 	public void shouldSetInexactBirthdateFromAge() throws Exception {
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-			Person p = new Person();
-			
-			// Test that default values are correct
-			assertNull(p.getAge());
-			assertFalse(p.isBirthdateEstimated());
-
-			// Test standard case and ensure estimated field is set to true
-			p.setBirthdateFromAge(10, df.parse("2008-05-20"));
-			assertEquals(p.getBirthdate(), df.parse("1998-01-01"));
-			assertTrue(p.getBirthdateEstimated());
-			
-			// Test boundary cases
-			p.setBirthdateFromAge(52, df.parse("2002-01-01"));
-			assertEquals(p.getBirthdate(), df.parse("1950-01-01"));
-			p.setBirthdateFromAge(35, df.parse("2004-12-31"));
-			assertEquals(p.getBirthdate(), df.parse("1969-01-01"));
-			p.setBirthdateFromAge(0, df.parse("2008-05-20"));
-			assertEquals(p.getBirthdate(), df.parse("2008-01-01"));
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Person p = new Person();
+		
+		// Test that default values are correct
+		assertNull(p.getAge());
+		assertFalse(p.isBirthdateEstimated());
+		
+		// Test standard case and ensure estimated field is set to true
+		p.setBirthdateFromAge(10, df.parse("2008-05-20"));
+		assertEquals(p.getBirthdate(), df.parse("1998-01-01"));
+		assertTrue(p.getBirthdateEstimated());
+		
+		// Test boundary cases
+		p.setBirthdateFromAge(52, df.parse("2002-01-01"));
+		assertEquals(p.getBirthdate(), df.parse("1950-01-01"));
+		p.setBirthdateFromAge(35, df.parse("2004-12-31"));
+		assertEquals(p.getBirthdate(), df.parse("1969-01-01"));
+		p.setBirthdateFromAge(0, df.parse("2008-05-20"));
+		assertEquals(p.getBirthdate(), df.parse("2008-01-01"));
 	}
 	
 	/**

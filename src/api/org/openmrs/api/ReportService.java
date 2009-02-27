@@ -32,93 +32,87 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 public interface ReportService {
-
+	
 	/**
-	 * 
 	 * Auto generated method comment
 	 * 
 	 * @return
 	 */
-	public ReportData evaluate(ReportSchema reportSchema, Cohort inputCohort,
-	        EvaluationContext context);
-
-
+	public ReportData evaluate(ReportSchema reportSchema, Cohort inputCohort, EvaluationContext context);
+	
 	/**
-	 * 
 	 * Auto generated method comment
 	 * 
 	 * @return
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<ReportSchema> getReportSchemas();
-
+	
 	/**
-	 * 
 	 * Auto generated method comment
 	 * 
 	 * @return
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public ReportSchema getReportSchema(Integer reportSchemaId);
 	
 	/**
-	 * Returns a ReportSchema object from a ReportSchemaXml definition
-	 * De-serialized the xml definition, applies macro definitions, and 
-	 * returns an expanded report schema object
+	 * Returns a ReportSchema object from a ReportSchemaXml definition De-serialized the xml
+	 * definition, applies macro definitions, and returns an expanded report schema object
+	 * 
 	 * @param reportSchemaXml - the ReportSchemaXml to use to return a ReportSchema instance
 	 * @return ReportSchema
 	 * @throws Exception if conversion fails
 	 */
 	public ReportSchema getReportSchema(ReportSchemaXml reportSchemaXml);
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
 	 * @param reportSchema
 	 */
 	public void saveReportSchema(ReportSchema reportSchema);
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
 	 * @param reportSchema
 	 */
 	public void deleteReportSchema(ReportSchema reportSchema);
-
+	
 	/**
 	 * @return All registered report renderers
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public Collection<ReportRenderer> getReportRenderers();
-
+	
 	/**
 	 * @return all rendering modes for the given schema, in their preferred order
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<RenderingMode> getRenderingModes(ReportSchema schema);
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
 	 * @param key
 	 * @return
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public ReportRenderer getReportRenderer(Class<? extends ReportRenderer> clazz);
 	
 	/**
-	 * Get the report renderer 
+	 * Get the report renderer
 	 * 
 	 * @param key
 	 * @return
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public ReportRenderer getReportRenderer(String className);
-
+	
 	/**
-	 * Add the given map to this service's renderers
-	 * 
-	 * This map is set via spring, see the applicationContext-service.xml file
+	 * Add the given map to this service's renderers This map is set via spring, see the
+	 * applicationContext-service.xml file
 	 * 
 	 * @param renderers Map of class to renderer object
 	 */
@@ -150,21 +144,21 @@ public interface ReportService {
 	public void registerRenderer(String rendererClass) throws APIException;
 	
 	/**
-	 * Remove the renderer associated with <code>rendererClass</code> from the
-	 * list of available renderers
+	 * Remove the renderer associated with <code>rendererClass</code> from the list of available
+	 * renderers
 	 * 
 	 * @param rendererClass
 	 */
 	public void removeRenderer(Class<? extends ReportRenderer> rendererClass) throws APIException;
-
+	
 	/**
 	 * Get the xmlified ReportSchema object that was saved previously
 	 * 
 	 * @return ReportSchemaXml object that is associated with the given id
 	 */
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public ReportSchemaXml getReportSchemaXml(Integer reportSchemaXmlId);
-
+	
 	/**
 	 * Create a new ReportSchemaXml object in the database.
 	 * 
@@ -179,7 +173,6 @@ public interface ReportService {
 	 */
 	public void updateReportSchemaXml(ReportSchemaXml reportSchemaXml);
 	
-
 	/**
 	 * Delete the given ReportSchemaXml class from the db
 	 */
@@ -188,13 +181,12 @@ public interface ReportService {
 	/**
 	 * Get all saved ReportSchemaXml objects in the db
 	 * 
-	 * @return List of ReportSchemaXml objects 
+	 * @return List of ReportSchemaXml objects
 	 */
 	public List<ReportSchemaXml> getReportSchemaXmls();
 	
-
 	/**
-	 * Gets the macros that will be used when deserializing ReportSchemaXML 
+	 * Gets the macros that will be used when deserializing ReportSchemaXML
 	 * 
 	 * @return macros
 	 */
@@ -210,9 +202,10 @@ public interface ReportService {
 	/**
 	 * Applies the report xml macros to the input, and returns it.
 	 * 
-	 * @param input The text (presumably a report schema xml definition) that you want to apply macros to 
-	 * @return the result of applying macro substitutions to input 
+	 * @param input The text (presumably a report schema xml definition) that you want to apply
+	 *            macros to
+	 * @return the result of applying macro substitutions to input
 	 */
 	public String applyReportXmlMacros(String input);
-
+	
 }

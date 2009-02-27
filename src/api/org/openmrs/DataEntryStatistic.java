@@ -28,17 +28,22 @@ import org.openmrs.reporting.DataTable;
 import org.openmrs.reporting.TableRow;
 
 public class DataEntryStatistic {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	private User user;
+	
 	private String entryType;
+	
 	private Integer numberOfEntries;
+	
 	private Integer numberOfObs;
+	
 	private Object groupBy = null;
 	
-	public DataEntryStatistic() { }
-
+	public DataEntryStatistic() {
+	}
+	
 	public String toString() {
 		return user + " entered " + numberOfEntries + " of " + entryType;
 	}
@@ -46,23 +51,23 @@ public class DataEntryStatistic {
 	public Integer getNumberOfEntries() {
 		return numberOfEntries;
 	}
-
+	
 	public void setNumberOfEntries(Integer numberOfEntries) {
 		this.numberOfEntries = numberOfEntries;
 	}
-
+	
 	public String getEntryType() {
 		return entryType;
 	}
-
+	
 	public void setEntryType(String entryType) {
 		this.entryType = entryType;
 	}
-
+	
 	public User getUser() {
 		return user;
 	}
-
+	
 	public void setUser(User user) {
 		this.user = user;
 	}
@@ -70,7 +75,7 @@ public class DataEntryStatistic {
 	public Object getGroupBy() {
 		return groupBy;
 	}
-
+	
 	public void setGroupBy(Object groupBy) {
 		this.groupBy = groupBy;
 	}
@@ -78,13 +83,13 @@ public class DataEntryStatistic {
 	public Integer getNumberOfObs() {
 		return numberOfObs;
 	}
-
+	
 	public void setNumberOfObs(Integer numberOfObs) {
 		this.numberOfObs = numberOfObs;
 	}
-
+	
 	// convenience utility methods
-
+	
 	public static DataTable tableByUserAndType(List<DataEntryStatistic> stats, Boolean hideAverageObs) {
 		Set<User> users = new HashSet<User>();
 		SortedSet<String> types = new TreeSet<String>();
@@ -112,10 +117,12 @@ public class DataEntryStatistic {
 				for (String entryType : types) {
 					Integer i = totals.get(u.getUserId() + "." + entryType + "." + group);
 					Integer j = totalObs.get(u.getUserId() + "." + entryType + "." + group);
-					if (i == null) i = 0;
-					if (j == null) j = 0;
+					if (i == null)
+						i = 0;
+					if (j == null)
+						j = 0;
 					String averageObs = "";
-					if (!hideAverageObs && i > 0 && j > 0 ) {
+					if (!hideAverageObs && i > 0 && j > 0) {
 						DecimalFormat df = new DecimalFormat("###,###.##");
 						float obss = j;
 						float encs = i;
@@ -141,6 +148,5 @@ public class DataEntryStatistic {
 		}
 		return table;
 	}
-
-
+	
 }

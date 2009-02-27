@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class First implements Operator {
-
-    public String toString() {
-        return "FIRST";
-    }
-    
+	
+	public String toString() {
+		return "FIRST";
+	}
+	
 }

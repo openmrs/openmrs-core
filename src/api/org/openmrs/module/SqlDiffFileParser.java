@@ -46,9 +46,9 @@ public class SqlDiffFileParser {
 	private static Log log = LogFactory.getLog(SqlDiffFileParser.class);
 	
 	/**
-	 * Get the diff map.  Return a sorted map<version, sql statements>
+	 * Get the diff map. Return a sorted map<version, sql statements>
 	 * 
-	 * @return SortedMap<String, String>  
+	 * @return SortedMap<String, String>
 	 * @throws ModuleException
 	 */
 	public static SortedMap<String, String> getSqlDiffs(Module module) throws ModuleException {
@@ -70,12 +70,11 @@ public class SqlDiffFileParser {
 			}
 			
 			ZipEntry diffEntry = jarfile.getEntry("sqldiff.xml");
-
+			
 			if (diffEntry == null) {
 				log.debug("No sqldiff.xml found for module: " + module.getName());
 				return map;
-			}
-			else {
+			} else {
 				try {
 					diffStream = jarfile.getInputStream(diffEntry);
 				}
@@ -83,7 +82,7 @@ public class SqlDiffFileParser {
 					throw new ModuleException("Unable to get sql diff file stream", module.getName(), e);
 				}
 			}
-		
+			
 			try {
 				
 				// turn the diff stream into an xml document
@@ -91,9 +90,9 @@ public class SqlDiffFileParser {
 				try {
 					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 					DocumentBuilder db = dbf.newDocumentBuilder();
-					db.setEntityResolver(new EntityResolver(){
-						public InputSource resolveEntity(String publicId, String systemId) 
-								throws SAXException, IOException {
+					db.setEntityResolver(new EntityResolver() {
+						
+						public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 							// When asked to resolve external entities (such as a DTD) we return an InputSource
 							// with no data at the end, causing the parser to ignore the DTD.
 							return new InputSource(new StringReader(""));
@@ -117,7 +116,7 @@ public class SqlDiffFileParser {
 				if (diffNodes != null && diffNodes.getLength() > 0) {
 					int i = 0;
 					while (i < diffNodes.getLength()) {
-						Element el = (Element)diffNodes.item(i++);
+						Element el = (Element) diffNodes.item(i++);
 						String version = getElement(el, diffVersion, "version");
 						String sql = getElement(el, diffVersion, "sql");
 						map.put(version, sql);
@@ -127,7 +126,7 @@ public class SqlDiffFileParser {
 			catch (ModuleException e) {
 				if (diffStream != null) {
 					try {
-						diffStream.close();					
+						diffStream.close();
 					}
 					catch (IOException io) {
 						log.error("Error while closing config stream for module: " + module.getModuleId(), io);
@@ -153,6 +152,7 @@ public class SqlDiffFileParser {
 	
 	/**
 	 * Generic method to get a module tag
+	 * 
 	 * @param element
 	 * @param version
 	 * @param tag
@@ -166,6 +166,7 @@ public class SqlDiffFileParser {
 	
 	/**
 	 * List of the valid sqldiff versions
+	 * 
 	 * @return
 	 */
 	private static List<String> validConfigVersions() {
@@ -176,6 +177,7 @@ public class SqlDiffFileParser {
 	
 	/**
 	 * Finds the nodes that contain diff information
+	 * 
 	 * @param element
 	 * @param version
 	 * @return

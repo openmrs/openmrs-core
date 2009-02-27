@@ -23,13 +23,14 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class EncounterEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public EncounterEditor() {	}
+	public EncounterEditor() {
+	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		EncounterService es = Context.getEncounterService(); 
+		EncounterService es = Context.getEncounterService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(es.getEncounter(Integer.valueOf(text)));
@@ -38,21 +39,18 @@ public class EncounterEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Encounter not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
-		Encounter e = (Encounter)getValue();
+		Encounter e = (Encounter) getValue();
 		if (e == null) {
 			return "";
-		}
-		else {
+		} else {
 			return e.getEncounterId().toString();
 		}
 	}
 	
-
 }

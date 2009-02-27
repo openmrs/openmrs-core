@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class LessThan implements Operator {
-
-    public String toString() {
-        return "LESS THAN";
-    }
-    
+	
+	public String toString() {
+		return "LESS THAN";
+	}
+	
 }

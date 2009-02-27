@@ -19,13 +19,13 @@ import org.openmrs.logic.LogicException;
  * 
  */
 public class InvalidReferenceRuleException extends LogicException {
-
-    public InvalidReferenceRuleException() {
-        super();
-    }
-
-    public InvalidReferenceRuleException(String message) {
-        super(message);
-    }
-
+	
+	public InvalidReferenceRuleException() {
+		super();
+	}
+	
+	public InvalidReferenceRuleException(String message) {
+		super(message);
+	}
+	
 }

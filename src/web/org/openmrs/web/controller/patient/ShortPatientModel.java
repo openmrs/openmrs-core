@@ -25,19 +25,33 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 
 public class ShortPatientModel {
+	
 	private Integer patientId;
+	
 	private String identifier = "";
+	
 	private String otherIdentifiers = "";
+	
 	private PersonName name = new PersonName();
+	
 	private String otherNames = "";
+	
 	private String gender;
+	
 	private String tribe = "";
+	
 	private Date birthdate;
+	
 	private Boolean birthdateEstimated = false;
+	
 	private PersonAddress address;
+	
 	private Boolean voided = false;
+	
 	private Boolean dead = false;
+	
 	private Concept causeOfDeath = null;
+	
 	private Date deathDate = null;
 	
 	// convenience map:
@@ -50,12 +64,13 @@ public class ShortPatientModel {
 	public Boolean getDead() {
 		return dead;
 	}
-
+	
 	public void setDead(Boolean dead) {
 		this.dead = dead;
 	}
-
-	public ShortPatientModel() { }
+	
+	public ShortPatientModel() {
+	}
 	
 	public ShortPatientModel(Patient patient) {
 		this();
@@ -68,8 +83,7 @@ public class ShortPatientModel {
 				if (first) {
 					identifier = pi.getIdentifier();
 					first = false;
-				}
-				else {
+				} else {
 					if (otherIdentifiers != "")
 						otherIdentifiers += ",";
 					otherIdentifiers += " " + pi.getIdentifier();
@@ -101,7 +115,7 @@ public class ShortPatientModel {
 			dead = patient.isDead();
 			causeOfDeath = patient.getCauseOfDeath();
 			deathDate = patient.getDeathDate();
-						
+			
 			address = patient.getPersonAddress();
 			
 			attributeMap = new HashMap<String, PersonAttribute>();
@@ -110,111 +124,111 @@ public class ShortPatientModel {
 			}
 		}
 	}
-
+	
 	public PersonAddress getAddress() {
 		return address;
 	}
-
+	
 	public void setAddress(PersonAddress address) {
 		this.address = address;
 	}
-
+	
 	public Date getBirthdate() {
 		return birthdate;
 	}
-
+	
 	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
 	}
-
+	
 	public Boolean getBirthdateEstimated() {
 		return birthdateEstimated;
 	}
-
+	
 	public void setBirthdateEstimated(Boolean birthdateEstimated) {
 		this.birthdateEstimated = birthdateEstimated;
 	}
-
+	
 	public String getGender() {
 		return gender;
 	}
-
+	
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-
+	
 	public String getIdentifier() {
 		return identifier;
 	}
-
+	
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
-
+	
 	public String getOtherIdentifiers() {
 		return otherIdentifiers;
 	}
-
+	
 	public void setOtherIdentifiers(String otherIdentifiers) {
 		this.otherIdentifiers = otherIdentifiers;
 	}
-
+	
 	public String getOtherNames() {
 		return otherNames;
 	}
-
+	
 	public void setOtherNames(String otherNames) {
 		this.otherNames = otherNames;
 	}
-
+	
 	public Integer getPatientId() {
 		return patientId;
 	}
-
+	
 	public void setPatientId(Integer patientId) {
 		this.patientId = patientId;
 	}
-
+	
 	public String getTribe() {
 		return tribe;
 	}
-
+	
 	public void setTribe(String tribe) {
 		this.tribe = tribe;
 	}
-
+	
 	public Boolean getVoided() {
 		return voided;
 	}
-
+	
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
 	}
-
+	
 	public Concept getCauseOfDeath() {
 		return causeOfDeath;
 	}
-
+	
 	public void setCauseOfDeath(Concept causeOfDeath) {
 		this.causeOfDeath = causeOfDeath;
 	}
-
+	
 	public Date getDeathDate() {
 		return deathDate;
 	}
-
+	
 	public void setDeathDate(Date deathDate) {
 		this.deathDate = deathDate;
 	}
-
+	
 	public Map<String, PersonAttribute> getAttributeMap() {
 		return attributeMap;
 	}
-
+	
 	public PersonName getName() {
 		return name;
 	}
-
+	
 	public void setName(PersonName name) {
 		this.name = name;
 	}

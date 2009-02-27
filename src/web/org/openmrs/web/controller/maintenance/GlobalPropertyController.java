@@ -41,35 +41,39 @@ import org.springframework.web.servlet.view.RedirectView;
 public class GlobalPropertyController extends SimpleFormController {
 	
 	public static final String PROP_NAME = "property";
+	
 	public static final String PROP_VAL_NAME = "value";
+	
 	public static final String PROP_DESC_NAME = "description";
 	
 	/** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-
-	/** 
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
 	@SuppressWarnings("unchecked")
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		String action = request.getParameter("action");
-		if (action == null) action = "cancel";
+		if (action == null)
+			action = "cancel";
 		
 		if (action.equals(getMessageSourceAccessor().getMessage("general.save"))) {
 			HttpSession httpSession = request.getSession();
-			
 			
 			if (Context.isAuthenticated()) {
 				AdministrationService as = Context.getAdministrationService();
 				
 				// fetch the backing object
 				// and save it to a hashmap for easy retrieval of already-used-GPs
-				List<GlobalProperty> formBackingObject = (List<GlobalProperty>)obj;
+				List<GlobalProperty> formBackingObject = (List<GlobalProperty>) obj;
 				Map<String, GlobalProperty> formBackingObjectMap = new HashMap<String, GlobalProperty>();
 				for (GlobalProperty prop : formBackingObject) {
 					formBackingObjectMap.put(prop.getProperty(), prop);
@@ -82,7 +86,7 @@ public class GlobalPropertyController extends SimpleFormController {
 				String[] values = request.getParameterValues(PROP_VAL_NAME);
 				String[] descriptions = request.getParameterValues(PROP_DESC_NAME);
 				
-				for (int x=0; x<keys.length; x++) {
+				for (int x = 0; x < keys.length; x++) {
 					String key = keys[x];
 					String val = values[x];
 					String desc = descriptions[x];
@@ -95,8 +99,7 @@ public class GlobalPropertyController extends SimpleFormController {
 						tmpGlobalProperty.setPropertyValue(val);
 						tmpGlobalProperty.setDescription(desc);
 						globalPropList.add(tmpGlobalProperty);
-					}
-					else {
+					} else {
 						// if it doesn't exist, create a new global property
 						globalPropList.add(new GlobalProperty(key, val, desc));
 					}
@@ -108,7 +111,7 @@ public class GlobalPropertyController extends SimpleFormController {
 					
 					// refresh log level from global property(ies)
 					OpenmrsUtil.applyLogLevels();
-				} 
+				}
 				catch (Exception e) {
 					log.error("Error saving properties", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.not.saved");
@@ -123,23 +126,21 @@ public class GlobalPropertyController extends SimpleFormController {
 		return showForm(request, response, errors);
 		
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		if (Context.isAuthenticated()) {
 			// return a non-empty list if the user has authenticated properly
 			AdministrationService as = Context.getAdministrationService();
 			return as.getAllGlobalProperties();
-		}
-		else
-    	    return new ArrayList<GlobalProperty>();
-    }
-    
+		} else
+			return new ArrayList<GlobalProperty>();
+	}
+	
 }

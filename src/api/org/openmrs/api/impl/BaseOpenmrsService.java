@@ -16,25 +16,25 @@ package org.openmrs.api.impl;
 import org.openmrs.api.OpenmrsService;
 
 /**
- * Default method implementations for the OpenmrsService
- * 
- * It is recommended that all services extend this class instead
- * of simply implementing the OpenmrsService class.  This will 
- * allow for some buffer room so that inheriting classes don't have
- * to immediately implement all methods in OpenmrsService
+ * Default method implementations for the OpenmrsService It is recommended that all services extend
+ * this class instead of simply implementing the OpenmrsService class. This will allow for some
+ * buffer room so that inheriting classes don't have to immediately implement all methods in
+ * OpenmrsService
  * 
  * @see OpenmrsService
  */
 public abstract class BaseOpenmrsService implements OpenmrsService {
-
+	
 	/**
 	 * @see org.openmrs.api.OpenmrsService#OnShutdown()
 	 */
-	public void onShutdown() { }
-
+	public void onShutdown() {
+	}
+	
 	/**
 	 * @see org.openmrs.api.OpenmrsService#OnStartup()
 	 */
-	public void onStartup() { }
-
+	public void onStartup() {
+	}
+	
 }

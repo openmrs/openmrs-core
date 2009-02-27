@@ -45,21 +45,20 @@ import org.openmrs.web.WebConstants;
 import org.springframework.web.bind.ServletRequestUtils;
 
 public class SummaryServlet extends HttpServlet {
-
+	
 	public static final long serialVersionUID = 1231231L;
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doAll(request, response);
 	}
 	
 	@Override
-	protected void doPost(HttpServletRequest request, 
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doAll(request, response);
 	}
-
+	
 	/**
 	 * Run both Post and Get
 	 * 
@@ -68,14 +67,14 @@ public class SummaryServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	private void doAll(HttpServletRequest request, 
-			HttpServletResponse response) throws ServletException, IOException {
+	private void doAll(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
-
+		
 		HttpSession session = request.getSession();
 		
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: "
+			        + OpenmrsConstants.PRIV_VIEW_PATIENTS);
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 			return;
 		}
@@ -96,7 +95,7 @@ public class SummaryServlet extends HttpServlet {
 				String s = xml.toString();
 				summary.write(s);
 				String[] lines = s.split("\n");
-				for (int x=1; x<lines.length; x++) {
+				for (int x = 1; x < lines.length; x++) {
 					summary.write(lines[x] + "\n");
 				}
 			}
@@ -109,14 +108,15 @@ public class SummaryServlet extends HttpServlet {
 	
 	/**
 	 * Churn through the request object and return a conglomerated patientSet
+	 * 
 	 * @param request
 	 * @param response
 	 * @return
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	private Cohort getPatientSet(HttpServletRequest request, 
-			HttpServletResponse response) throws ServletException, IOException {
+	private Cohort getPatientSet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                      IOException {
 		
 		Locale locale = Context.getLocale();
 		DateFormat dateFormat = OpenmrsUtil.getDateFormat();
@@ -128,8 +128,7 @@ public class SummaryServlet extends HttpServlet {
 		Cohort ps = new Cohort();
 		
 		// get patients according to start/end "Return Visit Date"
-		if ((startDateString.length() != 0) || 
-			(endDateString.length() != 0)) {
+		if ((startDateString.length() != 0) || (endDateString.length() != 0)) {
 			Concept c = Context.getConceptService().getConcept(new Integer("5096")); // RETURN VISIT DATE
 			Calendar cal = new GregorianCalendar();
 			Date startDate;
@@ -142,8 +141,7 @@ public class SummaryServlet extends HttpServlet {
 				catch (ParseException e) {
 					throw new ServletException("Error parsing 'Start Date'", e);
 				}
-			}
-			else
+			} else
 				cal.setTime(new Date());
 			
 			// if they don't input an end date, assume they meant "this week"
@@ -154,8 +152,7 @@ public class SummaryServlet extends HttpServlet {
 				startDate = cal.getTime();
 				cal.add(Calendar.DAY_OF_MONTH, 7);
 				endDate = cal.getTime();
-			}
-			else {
+			} else {
 				// they put in an end date, assume literal start and end
 				startDate = cal.getTime();
 				try {
@@ -166,7 +163,8 @@ public class SummaryServlet extends HttpServlet {
 				}
 				endDate = cal.getTime();
 			}
-			ps = Cohort.union(ps, Context.getPatientSetService().getPatientsHavingDateObs(c.getConceptId(), startDate, endDate));
+			ps = Cohort.union(ps, Context.getPatientSetService().getPatientsHavingDateObs(c.getConceptId(), startDate,
+			    endDate));
 			log.debug("PatientSet length after adding Return Visit obs: " + ps.size());
 		}
 		
@@ -197,14 +195,14 @@ public class SummaryServlet extends HttpServlet {
 					if (!OpenmrsUtil.isValidCheckDigit(id)) {
 						log.warn("Invalid check digit: '" + id + "' at location " + x);
 					}
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					log.warn("Invalid check digit: '" + id + "' at location " + x, e);
 				}
 			}
 			
 			ps = Cohort.union(ps, Context.getPatientSetService().convertPatientIdentifier(identifiers));
 		}
-		
 		
 		return ps;
 	}

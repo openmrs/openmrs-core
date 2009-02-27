@@ -26,28 +26,26 @@ import org.simpleframework.xml.ElementMap;
 import org.simpleframework.xml.Root;
 
 /**
- * Metadata that defines a CohortDataSet. (I.e. a list of cohorts, each of which has a name) 
+ * Metadata that defines a CohortDataSet. (I.e. a list of cohorts, each of which has a name) For
+ * example a CohortDatasetDefinition might represent: "1. Total # of Patients" -> (CohortDefinition)
+ * everyone "1.a. Male Adults" -> (CohortDefinition) Male AND Adult "1.b. Female Adults" ->
+ * (CohortDefinition) Female AND Adult "1.c. Male Children" -> (CohortDefinition) Male AND NOT Adult
+ * "1.d. Female Children" -> (CohortDefinition) Female AND NOT Adult ...
  * 
- * For example a CohortDatasetDefinition might represent:
- *    "1. Total # of Patients" -> (CohortDefinition) everyone
- *    "1.a. Male Adults" -> (CohortDefinition) Male AND Adult
- *    "1.b. Female Adults" -> (CohortDefinition) Female AND Adult
- *    "1.c. Male Children" -> (CohortDefinition) Male AND NOT Adult
- *    "1.d. Female Children" -> (CohortDefinition) Female AND NOT Adult
- *    ...
- *    
  * @see CohortDataSet
  * @see CohortDataSetProvider
  */
 @Root
 public class CohortDataSetDefinition implements DataSetDefinition {
-
-    private static final long serialVersionUID = -658417752199413012L;
-    
-    @Attribute(required=true)
+	
+	private static final long serialVersionUID = -658417752199413012L;
+	
+	@Attribute(required = true)
 	private String name;
-    private Map<String, String> descriptions;
-    private Map<String, CohortDefinition> strategies;
+	
+	private Map<String, String> descriptions;
+	
+	private Map<String, CohortDefinition> strategies;
 	
 	/**
 	 * Default constructor
@@ -58,8 +56,8 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	}
 	
 	/**
-	 * Add the given cohort as a "column" to this definition with the given key.
-	 * The name is also added as the description.
+	 * Add the given cohort as a "column" to this definition with the given key. The name is also
+	 * added as the description.
 	 * 
 	 * @param name key to refer by which to refer to this cohort
 	 * @param cohortDefinition The patients for this column
@@ -67,10 +65,10 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	public void addStrategy(String name, CohortDefinition cohortDefinition) {
 		addStrategy(name, name, cohortDefinition);
 	}
-	 
+	
 	/**
-	 * Add the given cohort as a "column" to this definition with the given key
-	 * and the given description.
+	 * Add the given cohort as a "column" to this definition with the given key and the given
+	 * description.
 	 * 
 	 * @param name
 	 * @param description
@@ -89,16 +87,16 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	}
 	
 	/**
-     * @see org.openmrs.report.DataSetDefinition#getColumnDatatypes()
-     */
-    public List<Class> getColumnDatatypes() {
-    	//return (List<Class>) Collections.nCopies(strategies.size(), Cohort.class);
-    	List<Class> ret = new ArrayList<Class>();
-    	for (int i = strategies.size(); i > 0; --i)
-    		ret.add(Cohort.class);
-    	return ret;
-    }
-
+	 * @see org.openmrs.report.DataSetDefinition#getColumnDatatypes()
+	 */
+	public List<Class> getColumnDatatypes() {
+		//return (List<Class>) Collections.nCopies(strategies.size(), Cohort.class);
+		List<Class> ret = new ArrayList<Class>();
+		for (int i = strategies.size(); i > 0; --i)
+			ret.add(Cohort.class);
+		return ret;
+	}
+	
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getName()
 	 */
@@ -110,8 +108,8 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	 * @see org.openmrs.report.DataSetDefinition#setName(java.lang.String)
 	 */
 	public void setName(String name) {
-    	this.name = name;
-    }
+		this.name = name;
+	}
 	
 	/**
 	 * @see org.openmrs.report.Parameterizable#getParameters()
@@ -123,11 +121,10 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 				ret.addAll(c.getParameters());
 		return ret;
 	}
-
+	
 	/**
-	 * Sets a description for the cohort name if it exists.
-	 * Returns true if a cohort exists with the @param name 
-	 * else returns false.
+	 * Sets a description for the cohort name if it exists. Returns true if a cohort exists with the @param
+	 * name else returns false.
 	 * 
 	 * @param name
 	 * @param description
@@ -156,40 +153,39 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	 * 
 	 * @return
 	 */
-	@ElementMap(required=false, keyType=String.class, valueType=String.class)
-	public Map<String, String> getDescriptions( ) {
+	@ElementMap(required = false, keyType = String.class, valueType = String.class)
+	public Map<String, String> getDescriptions() {
 		return this.descriptions;
 	}
-
+	
 	/**
 	 * Get the key-value pairs of names to defined cohorts
 	 * 
 	 * @return
 	 */
-	@ElementMap(required=true, keyType=String.class, valueType=CohortDefinition.class)
+	@ElementMap(required = true, keyType = String.class, valueType = CohortDefinition.class)
 	public Map<String, CohortDefinition> getStrategies() {
-    	return strategies;
-    }
-
+		return strategies;
+	}
+	
 	/**
 	 * Set the key-value pairs of names to cohorts
 	 * 
 	 * @param strategies
 	 */
-	@ElementMap(required=true, keyType=String.class, valueType=CohortDefinition.class)
+	@ElementMap(required = true, keyType = String.class, valueType = CohortDefinition.class)
 	public void setStrategies(Map<String, CohortDefinition> strategies) {
-    	this.strategies = strategies;
-    }
-     
+		this.strategies = strategies;
+	}
+	
 	/**
 	 * Set the key-value pairs of names to cohort descriptions
 	 * 
 	 * @param descriptions
 	 */
-	@ElementMap(required=false, keyType=String.class, valueType=String.class)
+	@ElementMap(required = false, keyType = String.class, valueType = String.class)
 	public void setDescriptions(Map<String, String> descriptions) {
 		this.descriptions = descriptions;
-    }
-
+	}
 	
 }

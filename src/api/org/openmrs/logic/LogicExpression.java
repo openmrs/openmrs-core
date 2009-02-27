@@ -18,12 +18,12 @@ import org.openmrs.logic.op.Operator;
 /**
  * 
  */
-public interface LogicExpression{
-
+public interface LogicExpression {
+	
 	public Operator getOperator();
-
+	
 	public String getRootToken();
-  
+	
 	public Object getRightOperand();
 	
 	public LogicTransform getTransform();

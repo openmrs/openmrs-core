@@ -33,16 +33,14 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 	protected static final String XML_FILENAME = "org/openmrs/notification/include/AlertServiceTest.xml";
 	
 	/**
-	 * Set up the database with the initial dataset before every test method
-	 * in this class.
-	 * 
-	 * Require authorization before every test method in this class
+	 * Set up the database with the initial dataset before every test method in this class. Require
+	 * authorization before every test method in this class
 	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
 		executeDataSet(XML_FILENAME);
 	}
-
+	
 	/**
 	 * Test that we can create/update an alert
 	 * 

@@ -24,23 +24,20 @@ import org.openmrs.User;
 import org.openmrs.api.OrderService.ORDER_STATUS;
 
 /**
- * Order-related database functions
- * 
- * This class should never be used directly.  It should only be used 
+ * Order-related database functions This class should never be used directly. It should only be used
  * through the {@link org.openmrs.api.OrderService}
  * 
  * @see org.openmrs.api.OrderService
  */
 public interface OrderDAO {
-
-
+	
 	// methods for the OrderType java pojo object
 	
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrderType(OrderType)
 	 */
 	public OrderType saveOrderType(OrderType orderType) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.OrderService#purgeOrderType(OrderType)
 	 */
@@ -50,16 +47,14 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getAllOrderTypes(boolean)
 	 */
 	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderType(Integer)
 	 */
 	public OrderType getOrderType(Integer orderTypeId) throws DAOException;
-
-
-
+	
 	// methods for the Order java pojo object
-
+	
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrder(Order)
 	 */
@@ -70,21 +65,21 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#purgeOrder(Order)
 	 */
 	public void deleteOrder(Order order) throws DAOException;
-
+	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(Integer, Class)
-	 * 
 	 * @see org.openmrs.api.OrderService#getOrder(Integer)
 	 * @see org.openmrs.api.OrderService#getDrugOrder(Integer)
 	 */
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> classType) throws DAOException;
-
+	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List, org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List, java.util.List)
+	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
+	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
+	 *      java.util.List)
 	 */
-	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients, 
-		                                           List<Concept> concepts, ORDER_STATUS status, 
-		                                           List<User> orderers, List<Encounter> encounters, 
-		                                           List<OrderType> orderTypes);
-
+	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
+	                                               List<Concept> concepts, ORDER_STATUS status, List<User> orderers,
+	                                               List<Encounter> encounters, List<OrderType> orderTypes);
+	
 }

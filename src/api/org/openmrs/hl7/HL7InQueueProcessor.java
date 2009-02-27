@@ -21,46 +21,42 @@ import org.springframework.transaction.annotation.Transactional;
 import ca.uhn.hl7v2.HL7Exception;
 
 /**
- * Processes message in the HL7 inbound queue. Messages are moved into either
- * the archive or error table depending on success or failure of the processing.
- * 
- * You may, however, set a global property that causes the processor to ignore
- * messages regarding unknown patients from a non-local HL7 source. (i.e. those
- * messages neither go to the archive or the error table.) 
+ * Processes message in the HL7 inbound queue. Messages are moved into either the archive or error
+ * table depending on success or failure of the processing. You may, however, set a global property
+ * that causes the processor to ignore messages regarding unknown patients from a non-local HL7
+ * source. (i.e. those messages neither go to the archive or the error table.)
  * 
  * @version 1.0
  */
 @Transactional
 public class HL7InQueueProcessor /* implements Runnable */{
-
+	
 	private final Log log = LogFactory.getLog(this.getClass());
-
+	
 	private HL7Receiver receiver = new HL7Receiver();
+	
 	private static Boolean isRunning = false; // allow only one running
-
+	
 	// processor per JVM
-
+	
 	/**
-	 * Empty constructor (requires context to be set using
-	 * <code>setContext(Context)</code> method before any other calls are
-	 * made)
+	 * Empty constructor (requires context to be set using <code>setContext(Context)</code> method
+	 * before any other calls are made)
 	 */
 	public HL7InQueueProcessor() {
 	}
-
+	
 	/**
 	 * Process a single queue entry from the inbound HL7 queue
 	 * 
-	 * @param hl7InQueue
-	 *            queue entry to be processed
+	 * @param hl7InQueue queue entry to be processed
 	 */
 	public void processHL7InQueue(HL7InQueue hl7InQueue) {
-
+		
 		if (log.isDebugEnabled())
-			log.debug("Processing HL7 inbound queue (id="
-					+ hl7InQueue.getHL7InQueueId() + ",key="
-					+ hl7InQueue.getHL7SourceKey() + ")");
-
+			log.debug("Processing HL7 inbound queue (id=" + hl7InQueue.getHL7InQueueId() + ",key="
+			        + hl7InQueue.getHL7SourceKey() + ")");
+		
 		// Parse the HL7 into an HL7Message or abort with failure
 		String hl7Message = hl7InQueue.getHL7Data();
 		try {
@@ -69,7 +65,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			if (log.isDebugEnabled())
 				log.debug("Sending HL7 message to HL7 receiver");
 			receiver.processMessage(hl7Message);
-
+			
 			// Move HL7 inbound queue entry into the archive before exiting
 			if (log.isDebugEnabled())
 				log.debug("Archiving HL7 inbound queue entry");
@@ -78,42 +74,44 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			if (log.isDebugEnabled())
 				log.debug("Removing HL7 message from inbound queue");
 			Context.getHL7Service().deleteHL7InQueue(hl7InQueue);
-		} catch (HL7Exception e) {
+		}
+		catch (HL7Exception e) {
 			boolean skipError = false;
 			log.error("Unable to process hl7inqueue: " + hl7InQueue.getHL7InQueueId(), e);
 			log.error("Hl7inqueue source: " + hl7InQueue.getHL7Source());
-			log.error("hl7_processor.ignore_missing_patient_non_local? " + Context.getAdministrationService().getGlobalProperty("hl7_processor.ignore_missing_patient_non_local", "false"));
-			if (e.getCause() != null && e.getCause().getMessage().equals("Could not resolve patient")
-					&& !hl7InQueue.getHL7Source().getName().equals("local")
-					&& Context.getAdministrationService().getGlobalProperty("hl7_processor.ignore_missing_patient_non_local", "false").equals("true") ) {
+			log.error("hl7_processor.ignore_missing_patient_non_local? "
+			        + Context.getAdministrationService().getGlobalProperty("hl7_processor.ignore_missing_patient_non_local",
+			            "false"));
+			if (e.getCause() != null
+			        && e.getCause().getMessage().equals("Could not resolve patient")
+			        && !hl7InQueue.getHL7Source().getName().equals("local")
+			        && Context.getAdministrationService().getGlobalProperty(
+			            "hl7_processor.ignore_missing_patient_non_local", "false").equals("true")) {
 				skipError = true;
 			}
 			if (!skipError)
-				setFatalError(hl7InQueue, "Trouble parsing HL7 message ("
-						+ hl7InQueue.getHL7SourceKey() + ")", e);
+				setFatalError(hl7InQueue, "Trouble parsing HL7 message (" + hl7InQueue.getHL7SourceKey() + ")", e);
 			return;
-		} catch (Exception e) {
-			setFatalError(hl7InQueue,
-					"Exception while attempting to process HL7 In Queue ("
-							+ hl7InQueue.getHL7SourceKey() + ")", e);
 		}
-
+		catch (Exception e) {
+			setFatalError(hl7InQueue, "Exception while attempting to process HL7 In Queue (" + hl7InQueue.getHL7SourceKey()
+			        + ")", e);
+		}
+		
 		// clean up memory after processing each queue entry (otherwise, the
 		// memory-intensive process may crash or eat up all our memory)
 		try {
 			Context.getHL7Service().garbageCollect();
-		} catch (Exception e) {
-			log
-					.error(
-							"Exception while performing garbagecollect in hl7 inbound processor",
-							e);
 		}
-
+		catch (Exception e) {
+			log.error("Exception while performing garbagecollect in hl7 inbound processor", e);
+		}
+		
 	}
-
+	
 	/**
-	 * Transform the next pending HL7 inbound queue entry. If there are no
-	 * pending items in the queue, this method simply returns quietly.
+	 * Transform the next pending HL7 inbound queue entry. If there are no pending items in the
+	 * queue, this method simply returns quietly.
 	 * 
 	 * @return true if a queue entry was processed, false if queue was empty
 	 */
@@ -127,13 +125,12 @@ public class HL7InQueueProcessor /* implements Runnable */{
 		}
 		return entryProcessed;
 	}
-
+	
 	/**
-	 * Convenience method to respond to fatal errors by moving the queue entry
-	 * into an error bin prior to aborting
+	 * Convenience method to respond to fatal errors by moving the queue entry into an error bin
+	 * prior to aborting
 	 */
-	private void setFatalError(HL7InQueue hl7InQueue, String error,
-			Throwable cause) {
+	private void setFatalError(HL7InQueue hl7InQueue, String error, Throwable cause) {
 		HL7InError hl7InError = new HL7InError(hl7InQueue);
 		hl7InError.setError(error);
 		hl7InError.setErrorDetails(cause == null ? "" : cause.getMessage());
@@ -141,7 +138,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 		Context.getHL7Service().deleteHL7InQueue(hl7InQueue);
 		log.error(error, cause);
 	}
-
+	
 	/*
 	 * Run method for processing all entries in the HL7 inbound queue
 	 * 
@@ -156,8 +153,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	public void processHL7InQueue() throws HL7Exception {
 		synchronized (isRunning) {
 			if (isRunning) {
-				log
-						.warn("HL7 processor aborting (another processor already running)");
+				log.warn("HL7 processor aborting (another processor already running)");
 				return;
 			}
 			isRunning = true;
@@ -173,7 +169,7 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			isRunning = false;
 		}
 	}
-
+	
 	/*
 	 * private static Hashtable<Context, Thread> threadCache = new Hashtable<Context,
 	 * Thread>();

@@ -20,13 +20,11 @@ import java.util.Locale;
 
 import org.junit.Test;
 
-
 /**
  * Behavior-driven unit tests for LocaleUtility.
- * 
  */
 public class LocaleUtilityTest {
-
+	
 	@Test
 	public void shouldConfirmMatchingLanguageAsCompatible() {
 		Locale lhs = Locale.ENGLISH;
@@ -40,7 +38,7 @@ public class LocaleUtilityTest {
 		Locale lhs = Locale.ENGLISH;
 		Locale rhs = Locale.FRENCH;
 		
-		assertFalse(LocaleUtility.areCompatible(lhs, rhs));		
+		assertFalse(LocaleUtility.areCompatible(lhs, rhs));
 	}
 	
 	@Test
@@ -56,12 +54,12 @@ public class LocaleUtilityTest {
 		Locale lhs = Locale.US;
 		Locale rhs = Locale.UK;
 		
-		assertFalse(LocaleUtility.areCompatible(lhs, rhs));		
+		assertFalse(LocaleUtility.areCompatible(lhs, rhs));
 	}
 	
 	/**
-	 * Two locales, where one has no country specified, but where
-	 * the language matches, should be considered compatible.
+	 * Two locales, where one has no country specified, but where the language matches, should be
+	 * considered compatible.
 	 */
 	@Test
 	public void shouldConfirmSameLanguageMissingCountryAsCompatible() {
@@ -71,10 +69,9 @@ public class LocaleUtilityTest {
 		assertTrue(LocaleUtility.areCompatible(lhs, rhs));
 	}
 	
-
 	/**
-	 * Two locales, where one has no country specified, but where
-	 * the language does not match, should not be considered compatible.
+	 * Two locales, where one has no country specified, but where the language does not match,
+	 * should not be considered compatible.
 	 */
 	@Test
 	public void shouldConfirmDifferentLanguageMissingCountryAsCompatible() {

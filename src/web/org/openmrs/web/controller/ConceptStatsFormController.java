@@ -48,16 +48,19 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class ConceptStatsFormController extends SimpleFormController {
-
+	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors) throws Exception {
-	
-		Concept concept = (Concept)object;
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
+	                                             BindException errors) throws Exception {
+		
+		Concept concept = (Concept) object;
 		ConceptService cs = Context.getConceptService();
 		
 		// check to see if they clicked next/previous concept:
@@ -71,38 +74,36 @@ public class ConceptStatsFormController extends SimpleFormController {
 			
 			if (newConcept != null)
 				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + newConcept.getConceptId()));
-
+			
 		}
 		
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 	
 	/**
-	 * This is called prior to displaying a form for the first time. It tells
-	 * Spring the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request)
-			throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		Concept concept = null;
-
+		
 		ConceptService cs = Context.getConceptService();
 		String conceptId = request.getParameter("conceptId");
 		if (conceptId != null) {
 			concept = cs.getConcept(Integer.valueOf(conceptId));
 		}
-
+		
 		if (concept == null)
 			concept = new Concept();
-
+		
 		return concept;
 	}
-
+	
 	/**
-	 * Called prior to form display. Allows for data to be put in the request to
-	 * be used in the view
+	 * Called prior to form display. Allows for data to be put in the request to be used in the view
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
@@ -132,17 +133,17 @@ public class ConceptStatsFormController extends SimpleFormController {
 				//obs = obsService.getObservations(concept, "valueNumeric, obsId");
 				//obsAnswered = obsService.getObservationsAnsweredByConcept(concept);
 				
-				
 				if (ConceptDatatype.NUMERIC.equals(concept.getDatatype().getHl7Abbreviation())) {
 					map.put("displayType", "numeric");
 					
 					// Object[obsId, obsDatetime, valueNumeric] 
-					List<Object[]> numericAnswers = obsService.getNumericAnswersForConcept(concept, true, ObsService.PERSON, false);
+					List<Object[]> numericAnswers = obsService.getNumericAnswersForConcept(concept, true, ObsService.PERSON,
+					    false);
 					
 					if (numericAnswers.size() > 0) {
-						Double min = (Double)numericAnswers.get(0)[2];
-						Double max = (Double)numericAnswers.get(numericAnswers.size()-1)[2];
-						Double median = (Double)numericAnswers.get(numericAnswers.size() / 2)[2];
+						Double min = (Double) numericAnswers.get(0)[2];
+						Double max = (Double) numericAnswers.get(numericAnswers.size() - 1)[2];
+						Double median = (Double) numericAnswers.get(numericAnswers.size() / 2)[2];
 						
 						Map<Double, Integer> counts = new HashMap<Double, Integer>(); // counts for the histogram
 						Double total = 0.0; // sum of values. used for mean
@@ -157,8 +158,8 @@ public class ConceptStatsFormController extends SimpleFormController {
 						
 						Integer i = 0;
 						for (Object[] values : numericAnswers) {
-							Date date = (Date)values[1];
-							Double value = (Double)values[2];
+							Date date = (Date) values[1];
+							Double value = (Double) values[2];
 							
 							// for mean calculation
 							total += value;
@@ -170,10 +171,8 @@ public class ConceptStatsFormController extends SimpleFormController {
 							
 							// for line chart
 							calendar.setTime(date);
-							Day day = new Day(
-								calendar.get(Calendar.DAY_OF_MONTH),
-								calendar.get(Calendar.MONTH)+1,			// January = 0 
-								calendar.get(Calendar.YEAR) < 1900 ? 1900 : calendar.get(Calendar.YEAR) // jfree chart doesn't like the 19th century
+							Day day = new Day(calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, // January = 0 
+							        calendar.get(Calendar.YEAR) < 1900 ? 1900 : calendar.get(Calendar.YEAR) // jfree chart doesn't like the 19th century
 							);
 							timeSeries.addOrUpdate(day, value);
 						}
@@ -187,49 +186,41 @@ public class ConceptStatsFormController extends SimpleFormController {
 						map.put("mean", mean);
 						map.put("median", median);
 						
-						
 						// create histogram chart
 						HistogramDataset histDataset = new HistogramDataset(); // dataset for histogram
 						histDataset.addSeries(concept.getName().getName(), obsNumerics, counts.size());
 						
-						JFreeChart histogram = ChartFactory.createHistogram(
-								concept.getName().getName(),
-								msa.getMessage("Concept.stats.histogramDomainAxisTitle"),
-								msa.getMessage("Concept.stats.histogramRangeAxisTitle"),
-								histDataset,
-								PlotOrientation.VERTICAL,
-								false, 
-								true, 
-								false
-							);
+						JFreeChart histogram = ChartFactory.createHistogram(concept.getName().getName(), msa
+						        .getMessage("Concept.stats.histogramDomainAxisTitle"), msa
+						        .getMessage("Concept.stats.histogramRangeAxisTitle"), histDataset, PlotOrientation.VERTICAL,
+						    false, true, false);
 						map.put("histogram", histogram);
-						
 						
 						// calculate 98th percentile of the data:
 						Double x = 0.98;
-						Integer xpercentile = (int)(x * size);
+						Integer xpercentile = (int) (x * size);
 						Object[] upperQuartile = numericAnswers.get(xpercentile);
-						Object[] lowerQuartile = numericAnswers.get((int)(size-xpercentile));
-						Double innerQuartile = (Double)upperQuartile[2] - (Double)lowerQuartile[2];
+						Object[] lowerQuartile = numericAnswers.get((int) (size - xpercentile));
+						Double innerQuartile = (Double) upperQuartile[2] - (Double) lowerQuartile[2];
 						Double innerQuartileLimit = innerQuartile * 1.5; // outliers will be greater than this from the upper/lower quartile
-						Double upperQuartileLimit = (Double)upperQuartile[2] + innerQuartileLimit;
-						Double lowerQuartileLimit = (Double)lowerQuartile[2] - innerQuartileLimit;
+						Double upperQuartileLimit = (Double) upperQuartile[2] + innerQuartileLimit;
+						Double lowerQuartileLimit = (Double) lowerQuartile[2] - innerQuartileLimit;
 						
 						List<Object[]> outliers = new Vector<Object[]>();
 						
 						// move outliers to the outliers list
 						// removing lower quartile outliers
-						for (i=0; i < size-xpercentile; i++) { 
+						for (i = 0; i < size - xpercentile; i++) {
 							Object[] possibleOutlier = numericAnswers.get(i);
-							if ((Double)(possibleOutlier[2]) >= lowerQuartileLimit)
+							if ((Double) (possibleOutlier[2]) >= lowerQuartileLimit)
 								break; // quit if this value is greater than the lower limit
 							outliers.add(possibleOutlier);
 						}
 						
 						// removing upper quartile outliers
-						for (i=size.intValue() - 1; i >= xpercentile; i--) {
+						for (i = size.intValue() - 1; i >= xpercentile; i--) {
 							Object[] possibleOutlier = numericAnswers.get(i);
-							if ((Double)(possibleOutlier[2]) <= upperQuartileLimit)
+							if ((Double) (possibleOutlier[2]) <= upperQuartileLimit)
 								break; // quit if this value is less than the upper limit
 							outliers.add(possibleOutlier);
 						}
@@ -239,7 +230,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 						i = 0;
 						counts.clear();
 						for (Object[] values : numericAnswers) {
-							Double value = (Double)values[2];
+							Double value = (Double) values[2];
 							obsNumericsOutliers[i++] = value;
 							Integer count = counts.get(value);
 							counts.put(value, count == null ? 1 : count + 1);
@@ -249,35 +240,22 @@ public class ConceptStatsFormController extends SimpleFormController {
 						HistogramDataset outlierHistDataset = new HistogramDataset();
 						outlierHistDataset.addSeries(concept.getName().getName(), obsNumericsOutliers, counts.size());
 						
-						JFreeChart histogramOutliers = ChartFactory.createHistogram(
-								concept.getName().getName(),
-								msa.getMessage("Concept.stats.histogramDomainAxisTitle"),
-								msa.getMessage("Concept.stats.histogramRangeAxisTitle"),
-								outlierHistDataset,
-								PlotOrientation.VERTICAL,
-								false, 
-								true, 
-								false
-							);
+						JFreeChart histogramOutliers = ChartFactory.createHistogram(concept.getName().getName(), msa
+						        .getMessage("Concept.stats.histogramDomainAxisTitle"), msa
+						        .getMessage("Concept.stats.histogramRangeAxisTitle"), outlierHistDataset,
+						    PlotOrientation.VERTICAL, false, true, false);
 						map.put("histogramOutliers", histogramOutliers);
 						map.put("outliers", outliers);
 						
 						// create line graph chart
 						timeDataset.addSeries(timeSeries);
-						JFreeChart lineChart = ChartFactory.createTimeSeriesChart(
-								concept.getName().getName(),
-								msa.getMessage("Concept.stats.lineChartDomainAxisLabel"),
-								msa.getMessage("Concept.stats.histogramRangeAxisLabel"),
-								timeDataset,
-								false, 
-								true, 
-								false
-							);
+						JFreeChart lineChart = ChartFactory.createTimeSeriesChart(concept.getName().getName(), msa
+						        .getMessage("Concept.stats.lineChartDomainAxisLabel"), msa
+						        .getMessage("Concept.stats.histogramRangeAxisLabel"), timeDataset, false, true, false);
 						map.put("timeSeries", lineChart);
 						
 					}
-				}
-				else if (ConceptDatatype.BOOLEAN.equals(concept.getDatatype().getHl7Abbreviation())) {
+				} else if (ConceptDatatype.BOOLEAN.equals(concept.getDatatype().getHl7Abbreviation())) {
 					// create bar chart for boolean answers
 					map.put("displayType", "boolean");
 					
@@ -300,17 +278,11 @@ public class ConceptStatsFormController extends SimpleFormController {
 					for (Map.Entry<String, Integer> entry : counts.entrySet())
 						pieDataset.setValue(entry.getKey(), entry.getValue());
 					
-					JFreeChart pieChart = ChartFactory.createPieChart(
-							concept.getName().getName(),
-							pieDataset,
-							true,
-							true,
-							false
-						);
+					JFreeChart pieChart = ChartFactory.createPieChart(concept.getName().getName(), pieDataset, true, true,
+					    false);
 					map.put("pieChart", pieChart);
 					
-				}
-				else if (ConceptDatatype.CODED.equals(concept.getDatatype().getHl7Abbreviation())) {
+				} else if (ConceptDatatype.CODED.equals(concept.getDatatype().getHl7Abbreviation())) {
 					// create pie graph for coded answers
 					map.put("displayType", "coded");
 					
@@ -335,13 +307,8 @@ public class ConceptStatsFormController extends SimpleFormController {
 					for (Map.Entry<String, Integer> entry : counts.entrySet())
 						pieDataset.setValue(entry.getKey(), entry.getValue());
 					
-					JFreeChart pieChart = ChartFactory.createPieChart(
-							concept.getName().getName(),
-							pieDataset,
-							true,
-							true,
-							false
-						);
+					JFreeChart pieChart = ChartFactory.createPieChart(concept.getName().getName(), pieDataset, true, true,
+					    false);
 					map.put("pieChart", pieChart);
 					
 				}
@@ -353,8 +320,8 @@ public class ConceptStatsFormController extends SimpleFormController {
 		//map.put("obsAnswered", obsAnswered);
 		
 		map.put("locale", locale.getLanguage().substring(0, 2));
-
+		
 		return map;
 	}
-
+	
 }

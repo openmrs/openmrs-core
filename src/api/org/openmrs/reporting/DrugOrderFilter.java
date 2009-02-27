@@ -34,42 +34,56 @@ import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
 public class DrugOrderFilter extends CachingPatientFilter {
-
-    private static final long serialVersionUID = 1L;
+	
+	private static final long serialVersionUID = 1L;
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private List<Drug> drugList;
+	
 	private List<Concept> drugSets;
+	
 	private PatientSetService.GroupMethod anyOrAll;
+	
 	private Integer withinLastDays;
+	
 	private Integer withinLastMonths;
+	
 	private Integer untilDaysAgo;
+	
 	private Integer untilMonthsAgo;
+	
 	private Date sinceDate;
+	
 	private Date untilDate;
 	
 	public DrugOrderFilter() {
 		super.setType("Patient Filter");
-		super.setSubType("Drug Order Filter");	
+		super.setSubType("Drug Order Filter");
 	}
 	
 	@Override
-    public String getCacheKey() {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append(getClass().getName()).append(".");
-	    sb.append(getAnyOrAll()).append(".");
-	    sb.append(OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
-	    sb.append(OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
-	    if (getDrugListToUse() != null)
-		    for (Drug d : getDrugListToUse())
-		    	sb.append(d.getDrugId()).append(",");
-	    return sb.toString();
-    }
-
+	public String getCacheKey() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getName()).append(".");
+		sb.append(getAnyOrAll()).append(".");
+		sb.append(
+		    OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate,
+		        untilDate)).append(".");
+		sb.append(
+		    OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate,
+		        untilDate)).append(".");
+		if (getDrugListToUse() != null)
+			for (Drug d : getDrugListToUse())
+				sb.append(d.getDrugId()).append(",");
+		return sb.toString();
+	}
+	
 	public String getDescription() {
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Context.getLocale());
 		StringBuffer ret = new StringBuffer();
-		boolean currentlyCase = getWithinLastDays() != null && getWithinLastDays() == 0 && (getWithinLastMonths() == null || getWithinLastMonths() == 0);
+		boolean currentlyCase = getWithinLastDays() != null && getWithinLastDays() == 0
+		        && (getWithinLastMonths() == null || getWithinLastMonths() == 0);
 		if (currentlyCase)
 			ret.append("Patients currently ");
 		else
@@ -88,7 +102,7 @@ public class DrugOrderFilter extends CachingPatientFilter {
 				ret.append(getDrugListToUse().get(0).getName());
 			} else {
 				ret.append("taking " + getAnyOrAll() + " of [");
-				for (Iterator<Drug> i = getDrugListToUse().iterator(); i.hasNext(); ) {
+				for (Iterator<Drug> i = getDrugListToUse().iterator(); i.hasNext();) {
 					ret.append(i.next().getName());
 					if (i.hasNext())
 						ret.append(" , ");
@@ -119,17 +133,16 @@ public class DrugOrderFilter extends CachingPatientFilter {
 				drugIds.add(d.getDrugId());
 		log.debug("filtering with these ids " + drugIds);
 		Collection<Integer> patientIds = context == null ? null : context.getBaseCohort().getMemberIds();
-		return Context.getPatientSetService().getPatientsHavingDrugOrder(patientIds, drugIds, getAnyOrAll(),  
-				OpenmrsUtil.fromDateHelper(null,
-					getWithinLastDays(), getWithinLastMonths(),
-					getUntilDaysAgo(), getUntilMonthsAgo(),
-					getSinceDate(), getUntilDate()),
-				OpenmrsUtil.toDateHelper(null,
-					getWithinLastDays(), getWithinLastMonths(),
-					getUntilDaysAgo(), getUntilMonthsAgo(),
-					getSinceDate(), getUntilDate()));
+		return Context.getPatientSetService().getPatientsHavingDrugOrder(
+		    patientIds,
+		    drugIds,
+		    getAnyOrAll(),
+		    OpenmrsUtil.fromDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(),
+		        getUntilMonthsAgo(), getSinceDate(), getUntilDate()),
+		    OpenmrsUtil.toDateHelper(null, getWithinLastDays(), getWithinLastMonths(), getUntilDaysAgo(),
+		        getUntilMonthsAgo(), getSinceDate(), getUntilDate()));
 	}
-
+	
 	public boolean isReadyToRun() {
 		return true;
 	}
@@ -156,77 +169,77 @@ public class DrugOrderFilter extends CachingPatientFilter {
 	}
 	
 	// getters and setters
-
+	
 	public PatientSetService.GroupMethod getAnyOrAll() {
 		return anyOrAll;
 	}
-
+	
 	public void setAnyOrAll(PatientSetService.GroupMethod anyOrAll) {
 		this.anyOrAll = anyOrAll;
 	}
-
+	
 	public List<Drug> getDrugList() {
 		return drugList;
 	}
-
+	
 	public void setDrugList(List<Drug> drugList) {
 		this.drugList = drugList;
 	}
-
+	
 	public Date getSinceDate() {
 		return sinceDate;
 	}
-
+	
 	public void setSinceDate(Date sinceDate) {
 		this.sinceDate = sinceDate;
 	}
-
+	
 	public Date getUntilDate() {
 		return untilDate;
 	}
-
+	
 	public void setUntilDate(Date untilDate) {
 		this.untilDate = untilDate;
 	}
-
+	
 	public Integer getUntilDaysAgo() {
 		return untilDaysAgo;
 	}
-
+	
 	public void setUntilDaysAgo(Integer untilDaysAgo) {
 		this.untilDaysAgo = untilDaysAgo;
 	}
-
+	
 	public Integer getUntilMonthsAgo() {
 		return untilMonthsAgo;
 	}
-
+	
 	public void setUntilMonthsAgo(Integer untilMonthsAgo) {
 		this.untilMonthsAgo = untilMonthsAgo;
 	}
-
+	
 	public Integer getWithinLastDays() {
 		return withinLastDays;
 	}
-
+	
 	public void setWithinLastDays(Integer withinLastDays) {
 		this.withinLastDays = withinLastDays;
 	}
-
+	
 	public Integer getWithinLastMonths() {
 		return withinLastMonths;
 	}
-
+	
 	public void setWithinLastMonths(Integer withinLastMonths) {
 		this.withinLastMonths = withinLastMonths;
 	}
-
+	
 	public List<Concept> getDrugSets() {
-    	return drugSets;
-    }
-
+		return drugSets;
+	}
+	
 	public void setDrugSets(List<Concept> drugSets) {
-    	this.drugSets = drugSets;
-    }
-
+		this.drugSets = drugSets;
+	}
+	
 }

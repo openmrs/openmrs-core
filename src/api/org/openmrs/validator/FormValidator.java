@@ -21,17 +21,15 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * This checks a Form object to make sure that it passes all API requirements.
- * E.g. it must have a name and version, if it is retired it must have metadata
- * about that, etc.
+ * This checks a Form object to make sure that it passes all API requirements. E.g. it must have a
+ * name and version, if it is retired it must have metadata about that, etc.
  */
 public class FormValidator implements Validator {
-
+	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
-	 * 
 	 * Determines if the command object being submitted is a valid type
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -39,19 +37,18 @@ public class FormValidator implements Validator {
 	public boolean supports(Class c) {
 		return c.equals(Form.class);
 	}
-
+	
 	/**
-	 * 
 	 * Checks the form object for any inconsistencies/errors
 	 * 
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
-		Form form = (Form)obj;
+		Form form = (Form) obj;
 		if (form == null) {
 			errors.rejectValue("form", "error.general");
-		}
-		else {
+		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "version", "error.null");
@@ -65,5 +62,5 @@ public class FormValidator implements Validator {
 			}
 		}
 	}
-
+	
 }

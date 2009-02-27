@@ -23,40 +23,39 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
 /**
- * This class is a stand in for using "java.util.Date" as a PersonAttribute format.
- * 
- * This will allow the end user to store a date as YYYY-MM-DD instead of storing it as
- * a string in the date format of whatever user created the string
+ * This class is a stand in for using "java.util.Date" as a PersonAttribute format. This will allow
+ * the end user to store a date as YYYY-MM-DD instead of storing it as a string in the date format
+ * of whatever user created the string
  * 
  * @see java.util.Date
  * @see org.openmrs.PersonAttribute
  * @see org.openmrs.Attributable
  */
 public class AttributableDate extends Date implements Attributable<AttributableDate> {
-
-    private static final long serialVersionUID = 4280303636131451746L;
-    private final String dateFormat = "yyyy-MM-dd";
-
-    /**
-     * Default empty constructor
-     * 
-     * @see java.util.Date#Date()
-     */
-    public AttributableDate() {
-    	super();
-    }
-    
-    /**
-     * Convenience constructor allowing creation of an AttributableDate with
-     * the given time
-     *  
-     * @param time
-     * @see java.util.Date#Date(long)
-     */
-    public AttributableDate(long time) {
-	    super(time);
-    }
-
+	
+	private static final long serialVersionUID = 4280303636131451746L;
+	
+	private final String dateFormat = "yyyy-MM-dd";
+	
+	/**
+	 * Default empty constructor
+	 * 
+	 * @see java.util.Date#Date()
+	 */
+	public AttributableDate() {
+		super();
+	}
+	
+	/**
+	 * Convenience constructor allowing creation of an AttributableDate with the given time
+	 * 
+	 * @param time
+	 * @see java.util.Date#Date(long)
+	 */
+	public AttributableDate(long time) {
+		super(time);
+	}
+	
 	/**
 	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
 	 */
@@ -64,14 +63,14 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	/**
 	 * @see org.openmrs.Attributable#getDisplayString()
 	 */
 	public String getDisplayString() {
 		return new SimpleDateFormat(dateFormat).format(this);
 	}
-
+	
 	/**
 	 * @see org.openmrs.Attributable#getPossibleValues()
 	 */
@@ -79,7 +78,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	/**
 	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
 	 */
@@ -90,11 +89,11 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 		
 		try {
 			// try to parse as the current user (
-			return new AttributableDate(((Date)Context.getDateFormat().parseObject(s)).getTime());
+			return new AttributableDate(((Date) Context.getDateFormat().parseObject(s)).getTime());
 		}
 		catch (ParseException e) {
 			try {
-				return new AttributableDate(((Date)new SimpleDateFormat(dateFormat).parseObject(s)).getTime());
+				return new AttributableDate(((Date) new SimpleDateFormat(dateFormat).parseObject(s)).getTime());
 			}
 			catch (ParseException e2) {
 				// if we can't parse it as the normalized string or as the current
@@ -106,7 +105,7 @@ public class AttributableDate extends Date implements Attributable<AttributableD
 			}
 		}
 	}
-
+	
 	/**
 	 * @see org.openmrs.Attributable#serialize()
 	 */

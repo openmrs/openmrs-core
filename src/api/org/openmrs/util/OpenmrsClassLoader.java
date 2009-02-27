@@ -36,13 +36,15 @@ import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
 
 /**
- * This classloader knows about the current ModuleClassLoaders and will 
- * attempt to load classes from them if needed
+ * This classloader knows about the current ModuleClassLoaders and will attempt to load classes from
+ * them if needed
  */
 public class OpenmrsClassLoader extends URLClassLoader {
+	
 	private static Log log = LogFactory.getLog(OpenmrsClassLoader.class);
 	
 	private static File libCacheFolder;
+	
 	private static boolean libCacheFolderInitialized = false;
 	
 	// parent class loader for all modules
@@ -71,15 +73,15 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * Normal constructor.  Sets this class as the parent classloader
+	 * Normal constructor. Sets this class as the parent classloader
 	 */
 	public OpenmrsClassLoader() {
 		this(OpenmrsClassLoader.class.getClassLoader());
 	}
 	
-	
 	/**
 	 * Get the static/singular instance of the module class loader
+	 * 
 	 * @return
 	 */
 	public static OpenmrsClassLoader getInstance() {
@@ -152,7 +154,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 		return Collections.enumeration(results);
 	}
-
+	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
@@ -161,14 +163,12 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * Destroy the current instance of the classloader.  
+	 * Destroy the current instance of the classloader. Note**: After calling this and after the new
+	 * service is set up, All classes using this instance should be flushed. This would allow all
+	 * java classes that were loaded by the old instance variable to be gc'd and modules to load in
+	 * new java classes
 	 * 
-	 * Note**:  After calling this and after the new service is set up,
-	 * All classes using this instance should be flushed.  This would allow all java classes 
-	 * that were loaded by the old instance variable to be gc'd and 
-	 * modules to load in new java classes
 	 * @see flushInstance()
-	 *
 	 */
 	public static void destroyInstance() {
 		instance = null;
@@ -193,7 +193,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		
 	}
-
+	
 	/**
 	 * This method should be called after restoring the instance
 	 * 
@@ -214,9 +214,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * All objects depending on the old classloader should be restarted here
-	 * 
-	 * Should be called after destoryInstance() and after the service is restarted
+	 * All objects depending on the old classloader should be restarted here Should be called after
+	 * destoryInstance() and after the service is restarted
 	 * 
 	 * @see destroyInstance()
 	 */
@@ -250,17 +249,16 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			return libCacheFolderInitialized ? libCacheFolder : null;
 		
 		synchronized (ModuleClassLoader.class) {
-			libCacheFolder = new File(System.getProperty("java.io.tmpdir"),
-					System.currentTimeMillis() + ".openmrs-lib-cache");
+			libCacheFolder = new File(System.getProperty("java.io.tmpdir"), System.currentTimeMillis()
+			        + ".openmrs-lib-cache");
 			
 			if (log.isDebugEnabled())
 				log.debug("libraries cache folder is " + libCacheFolder);
 			
 			File lockFile = new File(libCacheFolder, "lock");
 			if (lockFile.exists()) {
-				log.error("can't initialize libraries cache folder "
-						+ libCacheFolder + " as lock file indicates that it"
-						+ " is owned by another openmrs instance");
+				log.error("can't initialize libraries cache folder " + libCacheFolder + " as lock file indicates that it"
+				        + " is owned by another openmrs instance");
 				return null;
 			}
 			
@@ -281,13 +279,12 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			// from being created here
 			try {
 				if (!lockFile.createNewFile()) {
-					log.error("can't create lock file in JPF libraries cache folder"
-					          + libCacheFolder);
+					log.error("can't create lock file in JPF libraries cache folder" + libCacheFolder);
 					return null;
 				}
-			} catch (IOException ioe) {
-				log.error("can't create lock file in JPF libraries cache folder "
-						+ libCacheFolder, ioe);
+			}
+			catch (IOException ioe) {
+				log.error("can't create lock file in JPF libraries cache folder " + libCacheFolder, ioe);
 				return null;
 			}
 			
@@ -309,7 +306,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @param folder File (directory) to place the expanded file
 	 * @return the URL at the expanded location
 	 */
-    public static URL expandURL(URL result, File folder) {
+	public static URL expandURL(URL result, File folder) {
 		String extForm = result.toExternalForm();
 		// trim out "jar:file:/ and ascii spaces"
 		if (OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM)
@@ -322,7 +319,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 		int i = extForm.indexOf("!");
 		String jarPath = extForm.substring(0, i);
-		String filePath = extForm.substring(i+2); // skip over both the '!' and the '/'
+		String filePath = extForm.substring(i + 2); // skip over both the '!' and the '/'
 		
 		if (log.isDebugEnabled()) {
 			log.debug("jarPath: " + jarPath);
@@ -355,21 +352,21 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			return null;
 		}
 	}
-
+	
 	/**
-	 * This class exists solely so OpenmrsClassLoader can call the (should be static)
-	 * method <code>URLConnection.setDefaultUseCaches(Boolean)</code>.  This causes jars opened to not be 
+	 * This class exists solely so OpenmrsClassLoader can call the (should be static) method
+	 * <code>URLConnection.setDefaultUseCaches(Boolean)</code>. This causes jars opened to not be
 	 * locked (and allows for the webapp to be reloadable).
 	 */
 	private class OpenmrsURLConnection extends URLConnection {
-
+		
 		public OpenmrsURLConnection() {
 			super(null);
 		}
-
+		
 		public void connect() throws IOException {
 			
 		}
-
+		
 	}
 }

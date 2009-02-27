@@ -19,22 +19,18 @@ import java.util.Map;
 import org.simpleframework.xml.Root;
 
 /**
- * Implementations of this interface represent the equivalent of a spreadsheet of data, i.e. columns and rows.
- *
- * Typically subclasses will implement DataSet<Object>, but if all the cells in a table have the same
- * datatype, the subclass could implement DataSet<ThatType>, like for example {@link CohortDataSet}.
+ * Implementations of this interface represent the equivalent of a spreadsheet of data, i.e. columns
+ * and rows. Typically subclasses will implement DataSet<Object>, but if all the cells in a table
+ * have the same datatype, the subclass could implement DataSet<ThatType>, like for example
+ * {@link CohortDataSet}. This is one of three interfaces that work together to define and evaluate
+ * an OpenMRS DataSet. You need to implement all three of DataSetProvider, {@link DataSetDefinition}
+ * , and {@link DataSet} in order to get useful behavior. For example:
+ * {@link RowPerObsDataSetProvider}, {@link RowPerObsDataSetDefinition}, and
+ * {@link RowPerObsDataSet} The metadata that describes what data will be produced is defined in
+ * {@link DataSetDefinition} The logic that evaluates that metadata goes in an implementation of
+ * {@link DataSetProvider}. After evaluation, the data is represented by an implementation of this
+ * interface.
  * 
- * This is one of three interfaces that work together to define and evaluate an OpenMRS DataSet.
- * You need to implement all three of DataSetProvider, {@link DataSetDefinition}, and {@link DataSet}
- * in order to get useful behavior. For example: {@link RowPerObsDataSetProvider},
- * {@link RowPerObsDataSetDefinition}, and {@link RowPerObsDataSet}
- * 
- * The metadata that describes what data will be produced is defined in {@link DataSetDefinition}
- * 
- * The logic that evaluates that metadata goes in an implementation of {@link DataSetProvider}.
- * 
- * After evaluation, the data is represented by an implementation of this interface.
- *
  * @see DataSetProvider
  * @see DataSetDefinition
  */
@@ -47,14 +43,16 @@ public interface DataSet<T extends Object> extends Iterable<Map<String, T>> {
 	public DataSetDefinition getDefinition();
 	
 	/**
-	 * @return The evaluationContext where this DataSet was evaluated. 
+	 * @return The evaluationContext where this DataSet was evaluated.
 	 */
 	public EvaluationContext getEvaluationContext();
-
+	
 	/**
-	 * The keys of the maps that this iterator returns are given by this.getDefinition().getColumnKeys() 
+	 * The keys of the maps that this iterator returns are given by
+	 * this.getDefinition().getColumnKeys()
+	 * 
 	 * @return an iterator over the rows in this dataset.
 	 */
 	public Iterator<Map<String, T>> iterator();
-
+	
 }

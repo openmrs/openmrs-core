@@ -26,71 +26,66 @@ import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
 
 /**
- * 
- * Calculates a person's age in years based from their date of birth to the
- * index date
- * 
+ * Calculates a person's age in years based from their date of birth to the index date
  */
 public class AgeRule implements Rule {
-
-   /**
-    * 
-    * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient, java.util.Map)
-    */
-    public Result eval(LogicContext context, Patient patient,
-            Map<String, Object> parameters) throws LogicException {
-
-        Date birthdate = context.read(patient,
-                context.getLogicDataSource("person"), "BIRTHDATE").toDatetime();
-
-        if(birthdate == null){
-        	return Result.emptyResult();
-        }
-        Calendar bdate = Calendar.getInstance();
-        bdate.setTime(birthdate);
-
-        Calendar now = Calendar.getInstance();
-        now.setTime(context.getIndexDate());
-
-        // calculate age as the difference in years.
-        Integer age = now.get(Calendar.YEAR) - bdate.get(Calendar.YEAR);
-
-        // if the birthday hasn't occurred this year, subtract one from age
-        bdate.set(Calendar.YEAR, now.get(Calendar.YEAR));
-        if (now.before(bdate)) {
-            age = age - 1;
-        }
-
-        return new Result(age);
-
-    }
-
-    /**
-     * @see org.openmrs.logic.rule.Rule#getParameterList()
-     */
-    public Set<RuleParameterInfo> getParameterList() {
-        return null;
-    }
-
-    /**
-     * @see org.openmrs.logic.rule.Rule#getDependencies()
-     */
-    public String[] getDependencies() {
-        return new String[] { "%%patient.birthdate" };
-    }
-
-    /**
-     * @see org.openmrs.logic.rule.Rule#getTTL()
-     */
-    public int getTTL() {
-        return 60 * 60 * 24; // 1 day
-    }
-
-    /**
-     * @see org.openmrs.logic.rule.Rule#getDatatype(String)
-     */
-    public Datatype getDefaultDatatype() {
-        return Datatype.NUMERIC;
-    }
-
+	
+	/**
+	 * @see org.openmrs.logic.Rule#eval(org.openmrs.logic.LogicContext, org.openmrs.Patient,
+	 *      java.util.Map)
+	 */
+	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException {
+		
+		Date birthdate = context.read(patient, context.getLogicDataSource("person"), "BIRTHDATE").toDatetime();
+		
+		if (birthdate == null) {
+			return Result.emptyResult();
+		}
+		Calendar bdate = Calendar.getInstance();
+		bdate.setTime(birthdate);
+		
+		Calendar now = Calendar.getInstance();
+		now.setTime(context.getIndexDate());
+		
+		// calculate age as the difference in years.
+		Integer age = now.get(Calendar.YEAR) - bdate.get(Calendar.YEAR);
+		
+		// if the birthday hasn't occurred this year, subtract one from age
+		bdate.set(Calendar.YEAR, now.get(Calendar.YEAR));
+		if (now.before(bdate)) {
+			age = age - 1;
+		}
+		
+		return new Result(age);
+		
+	}
+	
+	/**
+	 * @see org.openmrs.logic.rule.Rule#getParameterList()
+	 */
+	public Set<RuleParameterInfo> getParameterList() {
+		return null;
+	}
+	
+	/**
+	 * @see org.openmrs.logic.rule.Rule#getDependencies()
+	 */
+	public String[] getDependencies() {
+		return new String[] { "%%patient.birthdate" };
+	}
+	
+	/**
+	 * @see org.openmrs.logic.rule.Rule#getTTL()
+	 */
+	public int getTTL() {
+		return 60 * 60 * 24; // 1 day
+	}
+	
+	/**
+	 * @see org.openmrs.logic.rule.Rule#getDatatype(String)
+	 */
+	public Datatype getDefaultDatatype() {
+		return Datatype.NUMERIC;
+	}
+	
 }

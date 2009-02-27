@@ -19,15 +19,15 @@ import java.io.Writer;
 import java.util.Collection;
 
 /**
- * Takes a ReportSchema and renders it, often acting as a connector that
- * delegates to a sophisticated package like BIRT or Jasper Reports.
- * Implementations of this class should only use a no-arg constructor, since
- * they will be instantiated by the ReportObjectService via reflection.
+ * Takes a ReportSchema and renders it, often acting as a connector that delegates to a
+ * sophisticated package like BIRT or Jasper Reports. Implementations of this class should only use
+ * a no-arg constructor, since they will be instantiated by the ReportObjectService via reflection.
  */
 public interface ReportRenderer {
-
-	/** 
-	 * @return What should this renderer be called, e.g. in a drop-down list where the user picks which renderer to use  
+	
+	/**
+	 * @return What should this renderer be called, e.g. in a drop-down list where the user picks
+	 *         which renderer to use
 	 */
 	public String getLabel();
 	
@@ -40,8 +40,8 @@ public interface ReportRenderer {
 	public Collection<RenderingMode> getRenderingModes(ReportSchema schema);
 	
 	/**
-	 * The content-type that will be rendered  
-	 * Should be null if getLinkUrl() returns a non-null value.
+	 * The content-type that will be rendered Should be null if getLinkUrl() returns a non-null
+	 * value.
 	 * 
 	 * @param schema The ReportSchema to render
 	 * @param argument Argument from the RenderingMode that the user selected
@@ -54,7 +54,7 @@ public interface ReportRenderer {
 	 * 
 	 * @param schema
 	 * @param argument Argument from the RenderingMode that the user selected
-	 * @return Suggested filename to save the rendered report as.  
+	 * @return Suggested filename to save the rendered report as.
 	 */
 	public String getFilename(ReportSchema schema, String argument);
 	
@@ -66,7 +66,8 @@ public interface ReportRenderer {
 	 * @param out
 	 * @throws ReportRenderingException
 	 */
-	public void render(ReportData reportData, String argument, OutputStream out) throws IOException, ReportRenderingException;
+	public void render(ReportData reportData, String argument, OutputStream out) throws IOException,
+	                                                                            ReportRenderingException;
 	
 	/**
 	 * Render the report's data to a stream

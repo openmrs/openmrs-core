@@ -29,26 +29,32 @@ import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Facilitates printing a data export so that a patient
- * is listed out on multiple lines to allow for all obs
- * values selected to be included.
+ * Facilitates printing a data export so that a patient is listed out on multiple lines to allow for
+ * all obs values selected to be included.
  */
 public class RowPerObsDataExportReportObject extends DataExportReportObject implements Serializable {
-
+	
 	public transient final static long serialVersionUID = 123123999L;
 	
 	private List<Integer> patientIds = new Vector<Integer>();
+	
 	private Location location;
+	
 	// cohort and cohortDefinition should really be of type Cohort and PatientFilter, but this is temporary, and I want to avoid the known bug with xml serialization of ReportObjects  
 	private Integer cohortId;
+	
 	private Integer cohortDefinitionId;
+	
 	private Integer patientSearchId;
+	
 	private boolean isAllPatients = false;
 	
 	List<ExportColumn> columns = new Vector<ExportColumn>();
+	
 	RowPerObsColumn rowPerObsColumn = null;
-
+	
 	public transient final static String TYPE_NAME = "Obs Per Row Data Export";
+	
 	public transient final static String SUB_TYPE_NAME = "Obs Per Row Data Export";
 	
 	/**
@@ -56,7 +62,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	 */
 	public RowPerObsDataExportReportObject() {
 		super.setType(RowPerObsDataExportReportObject.TYPE_NAME);
-		super.setSubType(RowPerObsDataExportReportObject.SUB_TYPE_NAME);		
+		super.setSubType(RowPerObsDataExportReportObject.SUB_TYPE_NAME);
 	}
 	
 	/**
@@ -64,7 +70,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof RowPerObsDataExportReportObject) {
-			RowPerObsDataExportReportObject c = (RowPerObsDataExportReportObject)obj;
+			RowPerObsDataExportReportObject c = (RowPerObsDataExportReportObject) obj;
 			return (this.getReportObjectId().equals(c.getReportObjectId()));
 		}
 		return false;
@@ -74,14 +80,16 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getReportObjectId() == null) return super.hashCode();
+		if (this.getReportObjectId() == null)
+			return super.hashCode();
 		int hash = 5;
 		hash = 31 * this.getReportObjectId() + hash;
 		return hash;
 	}
-
+	
 	/**
 	 * Append a simple column
+	 * 
 	 * @param columnName
 	 * @param columnValue
 	 */
@@ -102,6 +110,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	
 	/**
 	 * Append a calculated column
+	 * 
 	 * @param columnName
 	 * @param columnValue
 	 */
@@ -111,16 +120,19 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	
 	/**
 	 * Append a cohort column
+	 * 
 	 * @param columnName
-	 * @param cohortId only one of this or filterId should be non-null 
+	 * @param cohortId only one of this or filterId should be non-null
 	 * @param filterId only one of this or cohortId should be non-null
 	 */
-	public void addCohortColumn(String columnName, Integer cohortId, Integer filterId, Integer patientSearchId, String valueIfTrue, String valueIfFalse) {
+	public void addCohortColumn(String columnName, Integer cohortId, Integer filterId, Integer patientSearchId,
+	                            String valueIfTrue, String valueIfFalse) {
 		columns.add(new CohortColumn(columnName, cohortId, filterId, patientSearchId, valueIfTrue, valueIfFalse));
 	}
 	
 	/**
 	 * Add a patient to the list to be run on
+	 * 
 	 * @param p
 	 */
 	public void addPatientId(Integer p) {
@@ -128,8 +140,9 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	}
 	
 	/**
-	 * Generate a template according to this reports columns
-	 * Assumes there is a patientSet object available
+	 * Generate a template according to this reports columns Assumes there is a patientSet object
+	 * available
+	 * 
 	 * @return template string to be evaluated
 	 */
 	public String generateTemplate() {
@@ -138,7 +151,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 		// print out the column headers
 		if (columns.size() >= 1) {
 			sb.append(columns.get(0).getTemplateColumnName());
-			for (int i=1; i<columns.size(); i++) {
+			for (int i = 1; i < columns.size(); i++) {
 				sb.append("$!{fn.getSeparator()}");
 				sb.append(columns.get(i).getTemplateColumnName());
 			}
@@ -175,12 +188,13 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 			// so that the simple columns are printed out, just not any obs
 			sb.append("#set($obsValues = [''])");
 			// get the obs for this patient and then loop over them.
-			sb.append("#set($obsValues = $fn.getObsWithValues($fn.getConcept('" + rowPerObsColumn.getConceptIdOrName() + "'), $arr))");
+			sb.append("#set($obsValues = $fn.getObsWithValues($fn.getConcept('" + rowPerObsColumn.getConceptIdOrName()
+			        + "'), $arr))");
 			sb.append("#foreach($vals in $obsValues)");
 			{
 				if (columns.size() >= 1) {
 					sb.append(columns.get(0).toTemplateString());
-					for (int i=1; i<columns.size(); i++) {
+					for (int i = 1; i < columns.size(); i++) {
 						sb.append("$!{fn.getSeparator()}");
 						sb.append(columns.get(i).toTemplateString());
 					}
@@ -200,6 +214,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	
 	/**
 	 * Generate the patientSet according to this report's characteristics
+	 * 
 	 * @return patientSet to be used with report template
 	 */
 	public Cohort generatePatientSet(EvaluationContext context) {
@@ -225,25 +240,29 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 		}
 		
 		if (cohortDefinitionId != null) {
-			PatientFilter cohortDefinition = (PatientFilter) Context.getReportObjectService().getReportObject(cohortDefinitionId);
+			PatientFilter cohortDefinition = (PatientFilter) Context.getReportObjectService().getReportObject(
+			    cohortDefinitionId);
 			if (cohortDefinition != null) {
-				Cohort c = new Cohort("Cohort from Definition", "cohort from cohortdefinitionid: " + cohortDefinitionId, patientIdSet);
+				Cohort c = new Cohort("Cohort from Definition", "cohort from cohortdefinitionid: " + cohortDefinitionId,
+				        patientIdSet);
 				c = cohortDefinition.filter(c, context);
 				patientIdSet = c.getMemberIds();
 			}
 		}
 		
 		if (patientSearchId != null) {
-			PatientSearchReportObject search = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(patientSearchId);
+			PatientSearchReportObject search = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(
+			    patientSearchId);
 			PatientFilter cohortDefinition = OpenmrsUtil.toPatientFilter(search.getPatientSearch(), null);
-			org.openmrs.Cohort c = new Cohort("Cohort from patientSearch", "cohort from patientSearchId: " + patientSearchId, patientIdSet);
+			org.openmrs.Cohort c = new Cohort("Cohort from patientSearch",
+			        "cohort from patientSearchId: " + patientSearchId, patientIdSet);
 			c = cohortDefinition.filter(c, context);
 			patientIdSet = c.getMemberIds();
 		}
 		
 		return new Cohort("Cohort from selected groups", "", patientIdSet);
 	}
-
+	
 	@Override
 	public String toString() {
 		return "Data Export #" + getReportObjectId();
@@ -252,65 +271,65 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	public List<ExportColumn> getColumns() {
 		return columns;
 	}
-
+	
 	public void setColumns(List<ExportColumn> columns) {
 		this.columns = columns;
 	}
-
+	
 	public Location getLocation() {
 		return location;
 	}
-
+	
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-
+	
 	public List<Integer> getPatientIds() {
 		return patientIds;
 	}
-
+	
 	public void setPatientIds(List<Integer> patientIds) {
 		this.patientIds = patientIds;
 	}
-
+	
 	public Integer getCohortDefinitionId() {
 		return cohortDefinitionId;
 	}
-
+	
 	public void setCohortDefinitionId(Integer cohortDefinitionId) {
 		this.cohortDefinitionId = cohortDefinitionId;
 	}
-
+	
 	public Integer getCohortId() {
 		return cohortId;
 	}
-
+	
 	public void setCohortId(Integer cohortId) {
 		this.cohortId = cohortId;
 	}
-
+	
 	public Integer getPatientSearchId() {
-    	return patientSearchId;
-    }
-
+		return patientSearchId;
+	}
+	
 	public void setPatientSearchId(Integer patientSearchId) {
-    	this.patientSearchId = patientSearchId;
-    }
-
+		this.patientSearchId = patientSearchId;
+	}
+	
 	public boolean isAllPatients() {
-    	return isAllPatients;
-    }
-
+		return isAllPatients;
+	}
+	
 	public void setAllPatients(boolean isAllPatients) {
-    	this.isAllPatients = isAllPatients;
-    }
-
-    public RowPerObsColumn getRowPerObsColumn() {
-    	return rowPerObsColumn;
-    }
-
-    public void setRowPerObsColumn(RowPerObsColumn rowPerObsColumn) {
-    	this.rowPerObsColumn = rowPerObsColumn;
-    }
+		this.isAllPatients = isAllPatients;
+	}
+	
+	public RowPerObsColumn getRowPerObsColumn() {
+		return rowPerObsColumn;
+	}
+	
+	public void setRowPerObsColumn(RowPerObsColumn rowPerObsColumn) {
+		this.rowPerObsColumn = rowPerObsColumn;
+	}
 	
 }

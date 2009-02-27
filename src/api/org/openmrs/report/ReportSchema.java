@@ -23,26 +23,32 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 /**
- * This class holds the different parts of a report before generation.
- * 
- * A ReportSchema will typically be evaluated upon a Cohort, in the context of an EvaluationContext. @see {@link org.openmrs.api.ReportService#evaluate(ReportSchema, org.openmrs.Cohort, EvaluationContext)}
- * Evaluating a report really means evaluating all the DataSetDefinitions it contains, resulting in a {@link org.openmrs.report.ReportData}
- * 
- * The "filter" represents an (optional) extra filter that is applied to the input cohort before the DataSetDefinitions ever see it.   
+ * This class holds the different parts of a report before generation. A ReportSchema will typically
+ * be evaluated upon a Cohort, in the context of an EvaluationContext. @see
+ * {@link org.openmrs.api.ReportService#evaluate(ReportSchema, org.openmrs.Cohort, EvaluationContext)}
+ * Evaluating a report really means evaluating all the DataSetDefinitions it contains, resulting in
+ * a {@link org.openmrs.report.ReportData} The "filter" represents an (optional) extra filter that
+ * is applied to the input cohort before the DataSetDefinitions ever see it.
  */
-@Root(strict=false)
+@Root(strict = false)
 public class ReportSchema implements Parameterizable {
 	
-    private static final long serialVersionUID = 932347906334509564L;
-    
+	private static final long serialVersionUID = 932347906334509564L;
+	
 	private Integer reportSchemaId;
+	
 	private String name;
+	
 	private String description;
+	
 	private CohortDefinition filter;
+	
 	private List<Parameter> reportParameters;
+	
 	private List<DataSetDefinition> dataSetDefinitions;
 	
-	public ReportSchema() { }
+	public ReportSchema() {
+	}
 	
 	public void addDataSetDefinition(DataSetDefinition definition) {
 		if (getDataSetDefinitions() == null)
@@ -55,7 +61,7 @@ public class ReportSchema implements Parameterizable {
 	 * 
 	 * @param reportSchemaId
 	 */
-	@Attribute(required=false)
+	@Attribute(required = false)
 	public void setReportSchemaId(Integer reportSchemaId) {
 		this.reportSchemaId = reportSchemaId;
 	}
@@ -65,28 +71,28 @@ public class ReportSchema implements Parameterizable {
 	 * 
 	 * @return
 	 */
-	@Attribute(required=false)
-	public Integer getReportSchemaId( ) {
+	@Attribute(required = false)
+	public Integer getReportSchemaId() {
 		return this.reportSchemaId;
 	}
-
+	
 	/**
 	 * Set a name for the ReportSchema
 	 * 
 	 * @param name
 	 */
-	@Element(data=true,required=true)
+	@Element(data = true, required = true)
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	/**
 	 * Returns the name of the ReportSchema
 	 * 
 	 * @return
 	 */
-	@Element(data=true,required=true)
-	public String getName( ) {
+	@Element(data = true, required = true)
+	public String getName() {
 		return this.name;
 	}
 	
@@ -95,7 +101,7 @@ public class ReportSchema implements Parameterizable {
 	 * 
 	 * @param description
 	 */
-	@Element(data=true, required=true)
+	@Element(data = true, required = true)
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -105,8 +111,8 @@ public class ReportSchema implements Parameterizable {
 	 * 
 	 * @return
 	 */
-	@Element(data=true, required=true)
-	public String getDescription( ) {
+	@Element(data = true, required = true)
+	public String getDescription() {
 		return this.description;
 	}
 	
@@ -115,7 +121,7 @@ public class ReportSchema implements Parameterizable {
 	 * 
 	 * @param cohort
 	 */
-	@Element(required=false)
+	@Element(required = false)
 	public void setFilter(CohortDefinition filter) {
 		this.filter = filter;
 	}
@@ -125,39 +131,38 @@ public class ReportSchema implements Parameterizable {
 	 * 
 	 * @return
 	 */
-	@Element(required=false)
-	public CohortDefinition getFilter( ) {
+	@Element(required = false)
+	public CohortDefinition getFilter() {
 		return filter;
 	}
-
+	
 	/**
 	 * Sets List<Parameter> reportParameters
 	 * 
 	 * @param reportParameters
 	 */
-	@ElementList(required=false, name="parameters")
+	@ElementList(required = false, name = "parameters")
 	public void setReportParameters(List<Parameter> reportParameters) {
 		this.reportParameters = reportParameters;
 	}
 	
 	/**
-	 * Get all ReportParameters defined for this schema.  This method does not recurse
-	 * through the sub objects to find _all_ parameters.  Use 
-	 * {@link #getParameters()} for that. 
+	 * Get all ReportParameters defined for this schema. This method does not recurse through the
+	 * sub objects to find _all_ parameters. Use {@link #getParameters()} for that.
 	 * 
 	 * @param reportParameters this schema's defined parameters
 	 */
-	@ElementList(required=false, name="parameters")
+	@ElementList(required = false, name = "parameters")
 	public List<Parameter> getReportParameters() {
 		return reportParameters;
 	}
-
+	
 	/**
 	 * Set List<DataSetDefinition> dataSetDefinitions
 	 * 
 	 * @param dataSetDefinitions
 	 */
-	@ElementList(required=true, name="dataSets")
+	@ElementList(required = true, name = "dataSets")
 	public void setDataSetDefinitions(List<DataSetDefinition> definitions) {
 		this.dataSetDefinitions = definitions;
 	}
@@ -167,34 +172,32 @@ public class ReportSchema implements Parameterizable {
 	 * 
 	 * @return
 	 */
-	@ElementList(required=true, name="dataSets")
-	public List<DataSetDefinition> getDataSetDefinitions( ) {
+	@ElementList(required = true, name = "dataSets")
+	public List<DataSetDefinition> getDataSetDefinitions() {
 		return this.dataSetDefinitions;
 	}
 	
-    /**
-     * Looks through the datasetdefinitions and cohorts to get the rquired parameters
-     * 
-     * TODO 
-     * 
-     * @see org.openmrs.report.Parameterizable#getParameters()
-     */
-    public List<Parameter> getParameters() {
-    	
-    	List<Parameter> parameters = new Vector<Parameter>();
-    	
-	    // loop over cohorts and get parameters
-    	if (getFilter() != null)
-    		parameters.addAll(getFilter().getParameters());
-    	
-    	// loop over datasetdefinitions and get the parameters
-    	if (getDataSetDefinitions() != null) {
-	    	for (DataSetDefinition dataSetDef : getDataSetDefinitions()) {
-	    		parameters.addAll(dataSetDef.getParameters());
-	    	}
-    	}
-    	    	
-	    return parameters;
-    }
+	/**
+	 * Looks through the datasetdefinitions and cohorts to get the rquired parameters TODO
+	 * 
+	 * @see org.openmrs.report.Parameterizable#getParameters()
+	 */
+	public List<Parameter> getParameters() {
+		
+		List<Parameter> parameters = new Vector<Parameter>();
+		
+		// loop over cohorts and get parameters
+		if (getFilter() != null)
+			parameters.addAll(getFilter().getParameters());
+		
+		// loop over datasetdefinitions and get the parameters
+		if (getDataSetDefinitions() != null) {
+			for (DataSetDefinition dataSetDef : getDataSetDefinitions()) {
+				parameters.addAll(dataSetDef.getParameters());
+			}
+		}
+		
+		return parameters;
+	}
 	
 }

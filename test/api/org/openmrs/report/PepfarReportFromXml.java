@@ -46,11 +46,11 @@ import org.simpleframework.xml.load.Persister;
  *
  */
 public class PepfarReportFromXml extends BaseContextSensitiveTest {
-
+	
 	Log log = LogFactory.getLog(getClass());
 	
 	DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
-
+	
 	Map<Parameter, Object> getUserEnteredParameters(Collection<Parameter> params) throws ParseException {
 		Map<Parameter, Object> ret = new HashMap<Parameter, Object>();
 		if (params != null) {
@@ -63,11 +63,11 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		}
 		return ret;
 	}
-
+	
 	@Test
 	public void shouldFromXml() throws Exception {
 		executeDataSet("org/openmrs/report/include/PepfarReportTest.xml");
-
+		
 		StringBuilder xml = new StringBuilder();
 		xml.append("<reportSchema id=\"1\">\n");
 		xml.append("    <name>PEPFAR report</name>\n");
@@ -75,9 +75,12 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		xml.append("		Sample monthly PEPFAR report, modelled after the lesotho one\n");
 		xml.append("	</description>\n");
 		xml.append("	<parameters class=\"java.util.ArrayList\">\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
-		xml.append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
 		xml.append("	</parameters>\n");
 		xml.append("	<dataSets class=\"java.util.ArrayList\">\n");
 		xml.append("		<dataSetDefinition class=\"org.openmrs.report.CohortDataSetDefinition\" name=\"Cohorts\">\n");
@@ -91,7 +94,8 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		xml.append("				<entry>\n");
 		xml.append("					<string>1.b</string>\n");
 		xml.append("					<cohortDefinition class=\"org.openmrs.reporting.PatientSearch\">\n");
-		xml.append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate-1d}]</specification>\n");
+		xml
+		        .append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate-1d}]</specification>\n");
 		xml.append("					</cohortDefinition>\n");
 		xml.append("				</entry>\n");
 		xml.append("			</strategies>\n");
@@ -136,7 +140,7 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		
 		Serializer serializer = new Persister(new OpenmrsCycleStrategy());
 		ReportSchema schema = serializer.read(ReportSchema.class, xml.toString());
-
+		
 		log.info("Creating EvaluationContext");
 		EvaluationContext evalContext = new EvaluationContext();
 		
@@ -144,7 +148,7 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 			log.info("adding parameter value " + e.getKey());
 			evalContext.addParameterValue(e.getKey(), e.getValue());
 		}
-
+		
 		ReportService rs = (ReportService) Context.getService(ReportService.class);
 		ReportData data = rs.evaluate(schema, null, evalContext);
 		
@@ -152,7 +156,7 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		System.out.println("Rendering output as TSV:");
 		renderer.render(data, null, System.out);
 	}
-
+	
 	@Test
 	public void shouldBooleansInPatientSearch() throws Exception {
 		executeDataSet("org/openmrs/report/include/ReportTests-patients.xml");
@@ -180,9 +184,11 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		}
 		
 		EvaluationContext evalContext = new EvaluationContext();
-		evalContext.addParameterValue(new Parameter("report.startDate", "Start Date", Date.class, null), ymd.parse("2007-09-01"));
-		evalContext.addParameterValue(new Parameter("report.endDate", "End Date", Date.class, null), ymd.parse("2007-09-30"));
-
+		evalContext.addParameterValue(new Parameter("report.startDate", "Start Date", Date.class, null), ymd
+		        .parse("2007-09-01"));
+		evalContext
+		        .addParameterValue(new Parameter("report.endDate", "End Date", Date.class, null), ymd.parse("2007-09-30"));
+		
 		CohortService cs = Context.getCohortService();
 		
 		PatientSearch male = new PatientSearch();
@@ -192,7 +198,7 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		male.setSpecificationString("[Male]");
 		female.setSpecificationString("[Female]");
 		maleAndFemale.setSpecificationString("[Male] and [Female]");
-		maleOrFemale.setSpecificationString("[Male] or [Female]");		
+		maleOrFemale.setSpecificationString("[Male] or [Female]");
 		int numMale = cs.evaluate(male, evalContext).size();
 		int numFemale = cs.evaluate(female, evalContext).size();
 		int numMaleAndFemale = cs.evaluate(maleAndFemale, evalContext).size();
@@ -203,13 +209,14 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		PatientSearch complex1 = new PatientSearch();
 		complex1.setSpecificationString("([Male] and [Child]) or ([Female] and [Adult])");
 		assertNotSame("Should not be zero", 0, cs.evaluate(complex1, evalContext).size());
-
+		
 		PatientSearch complex2 = new PatientSearch();
 		PatientSearch complex3 = new PatientSearch();
 		complex2.setSpecificationString("[Male] or [Female]");
 		complex3.setSpecificationString("(([Male] and [Child]) or [Female])");
 		// this assertion will fail 15 years after 2008-07-01 because the birthdates are
 		// set to that in the dataset for the two "children"
-		assertNotSame("Complex2 and Complex3 should be different sizes", cs.evaluate(complex2, evalContext).size(), cs.evaluate(complex3, evalContext).size());
+		assertNotSame("Complex2 and Complex3 should be different sizes", cs.evaluate(complex2, evalContext).size(), cs
+		        .evaluate(complex3, evalContext).size());
 	}
 }

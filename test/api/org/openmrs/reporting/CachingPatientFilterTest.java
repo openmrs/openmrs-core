@@ -26,7 +26,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
  *
  */
 public class CachingPatientFilterTest extends BaseContextSensitiveTest {
-
+	
 	@Test
 	public void shouldCachingPatientFilter() throws Exception {
 		initializeInMemoryDatabase();
@@ -49,5 +49,5 @@ public class CachingPatientFilterTest extends BaseContextSensitiveTest {
 		ec.setBaseCohort(males);
 		assertEquals("Cache should have been automatically cleared", 0, ec.getCache().size());
 	}
-
+	
 }

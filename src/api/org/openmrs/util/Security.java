@@ -25,39 +25,38 @@ import org.openmrs.api.APIException;
  * OpenMRS's security class deals with the hashing of passwords.
  */
 public class Security {
-
+	
 	public static Log log = LogFactory.getLog("org.openmrs.util.Security");
 	
-    /**
-     * This method will hash <code>strToEncode</code> using the preferred
-     * algorithm.  Currently, OpenMRS's preferred algorithm is hard coded
-     * to be SHA-1.
-     *  
-     * @param strToEncode string to encode
-     * @return the SHA-1 encryption of a given string
-     */
-    public static String encodeString(String strToEncode) throws APIException {
-    	String algorithm = "SHA1";
-    	MessageDigest md;
-    	try {
-    		md = MessageDigest.getInstance(algorithm);
-    	}
-    	catch (NoSuchAlgorithmException e) {
+	/**
+	 * This method will hash <code>strToEncode</code> using the preferred algorithm. Currently,
+	 * OpenMRS's preferred algorithm is hard coded to be SHA-1.
+	 * 
+	 * @param strToEncode string to encode
+	 * @return the SHA-1 encryption of a given string
+	 */
+	public static String encodeString(String strToEncode) throws APIException {
+		String algorithm = "SHA1";
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance(algorithm);
+		}
+		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
-    		log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
+			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
 			throw new APIException("System cannot find password encryption algorithm");
-    	}
+		}
 		byte[] input = strToEncode.getBytes(); //TODO: pick a specific character encoding, don't rely on the platform default
 		return hexString(md.digest(input));
-    }
+	}
 	
-    /**
-     * Convenience method to convert a byte array to a string
-     * 
-     * @param b Byte array to convert to HexString
-     * @return Hexidecimal based string
-     */
-    
+	/**
+	 * Convenience method to convert a byte array to a string
+	 * 
+	 * @param b Byte array to convert to HexString
+	 * @return Hexidecimal based string
+	 */
+	
 	private static String hexString(byte[] b) {
 		if (b == null || b.length < 1)
 			return "";
@@ -67,16 +66,15 @@ public class Security {
 		}
 		return new String(s);
 	}
-
-    /**
-     * This method will generate a random string 
-     * 
-     * @return a secure random token.
-     */
-    public static String getRandomToken() throws APIException {
-    	Random rng = new Random();
-    	return encodeString(Long.toString(System.currentTimeMillis()) 
-    			+ Long.toString(rng.nextLong()));
-    }
+	
+	/**
+	 * This method will generate a random string
+	 * 
+	 * @return a secure random token.
+	 */
+	public static String getRandomToken() throws APIException {
+		Random rng = new Random();
+		return encodeString(Long.toString(System.currentTimeMillis()) + Long.toString(rng.nextLong()));
+	}
 	
 }

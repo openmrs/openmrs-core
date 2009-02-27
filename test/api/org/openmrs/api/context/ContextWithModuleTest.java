@@ -29,11 +29,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 
 /**
- * This test class is meant just for testing the 
- * {@link Context#loadClass(String)} method. This method needs to have a 
- * module loaded for it to test correctly, so it is put into a separate 
- * class
- * 
+ * This test class is meant just for testing the {@link Context#loadClass(String)} method. This
+ * method needs to have a module loaded for it to test correctly, so it is put into a separate class
  * The module is stolen/copied from the {@link ModuleInteroperabilityTest}
  * 
  * @see ContextTest
@@ -64,16 +61,15 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 		// the "/lib" folder has been emptied to compact the size.
 		// the "/metadata/sqldiff.xml" file has been deleted in order to load the modules into hsql.
 		//    (the sql tables are built from hibernate mapping files automatically in unit tests)
-		props.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD, 
-		                  "org/openmrs/api/context/include/dssmodule-1.44.omod");
+		props.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD,
+		    "org/openmrs/api/context/include/dssmodule-1.44.omod");
 		
 		return props;
 	}
 	
 	/**
-	 * @verifies {@link Context#loadClass(String)}
-	 *  test = should load class with the OpenmrsClassLoader
-	 * 
+	 * @verifies {@link Context#loadClass(String)} test = should load class with the
+	 *           OpenmrsClassLoader
 	 * @throws Exception
 	 */
 	@Test
@@ -83,5 +79,5 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 		Class<?> c = Context.loadClass("org.openmrs.module.dssmodule.DssService");
 		Assert.assertTrue("Should be loaded by OpenmrsClassLoader", c.getClassLoader() instanceof ModuleClassLoader);
 	}
-
+	
 }

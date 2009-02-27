@@ -27,26 +27,25 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 
 public class TribeListController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		List tribeList = new Vector();
 		
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
-	    	tribeList = ps.getTribes();
+			tribeList = ps.getTribes();
 		}
 		
-        return tribeList;
-    }
-    
+		return tribeList;
+	}
+	
 }
