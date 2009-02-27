@@ -2027,7 +2027,7 @@ call diff_procedure('1.4.0.21');
 
 #-----------------------------------------------------------
 # OpenMRS Datamodel version 1.4.0.22
-# Ben Wolfe 			Jan 22nd 2008
+# Ben Wolfe 			Jan 22nd 2009
 #
 # Remove duplicate concept name tags
 #-----------------------------------------------------------
@@ -2071,6 +2071,29 @@ END;
 //
 delimiter ;
 call diff_procedure('1.4.0.22');
+
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.23
+# Ben Wolfe 			Feb 27th 2009
+#
+# Fixed the description for name layout global property
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+	
+		UPDATE `global_property` SET property_value='Format in which to display the person names.  Valid values are short, long' WHERE property = 'layout.name.format';
+
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.23');
 
 
 
