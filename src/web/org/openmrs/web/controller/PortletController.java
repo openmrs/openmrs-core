@@ -46,6 +46,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -105,9 +106,6 @@ public class PortletController implements Controller {
 		
 		AdministrationService as = Context.getAdministrationService();
 		ConceptService cs = Context.getConceptService();
-		
-		//HttpSession httpSession = request.getSession();
-		//
 		
 		// find the portlet that was identified in the openmrs:portlet taglib
 		Object uri = request.getAttribute("javax.servlet.include.servlet_path");
@@ -184,10 +182,14 @@ public class PortletController implements Controller {
 							Obs latestHeight = null;
 							String bmiAsString = "?";
 							try {
-								ConceptNumeric weightConcept = cs.getConceptNumeric(cs.getConcept(
-								    as.getGlobalProperty("concept.weight")).getConceptId());
-								ConceptNumeric heightConcept = cs.getConceptNumeric(cs.getConcept(
-								    as.getGlobalProperty("concept.height")).getConceptId());
+								String weightString = as.getGlobalProperty("concept.weight");
+								ConceptNumeric weightConcept = null;
+								if (StringUtils.hasLength(weightString))
+									weightConcept = cs.getConceptNumeric(Integer.valueOf(weightString));
+								String heightString = as.getGlobalProperty("concept.height");
+								ConceptNumeric heightConcept = null;
+								if (StringUtils.hasLength(heightString))
+									heightConcept = cs.getConceptNumeric(Integer.valueOf(heightString));
 								for (Obs obs : patientObs) {
 									if (obs.getConcept().equals(weightConcept)) {
 										if (latestWeight == null
