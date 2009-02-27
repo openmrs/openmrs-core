@@ -21,6 +21,8 @@ import org.openmrs.Concept;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.ConceptServiceImpl;
+import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskDefinition;
 
 
@@ -31,7 +33,6 @@ import org.openmrs.scheduler.TaskDefinition;
     public class ConceptWordUpdateTask extends AbstractTask {
     	private Log log = LogFactory.getLog(ConceptWordUpdateTask.class);
 
-    	private ConceptService cs;
 		private ConceptWordUpdateThread runner;
 		private Thread thread;
 
@@ -39,7 +40,6 @@ import org.openmrs.scheduler.TaskDefinition;
     	 * No-arg constructor to allow instantiation by {@link Class#newInstance()}.
     	 */
     	public ConceptWordUpdateTask() {
-    		cs = Context.getConceptService();
     		runner = new ConceptWordUpdateThread();
     		thread = new Thread(runner);
     	}
@@ -84,27 +84,34 @@ import org.openmrs.scheduler.TaskDefinition;
              * @see java.lang.Runnable#run()
              */
             public void run() {
-            	isExecuting = true;
-            	shouldExecute = true;
-
-                Context.openSession();
-                if (log.isDebugEnabled()) log.debug("Updating concept words ... ");
-                try {
-                    if (Context.isAuthenticated() == false) 
-                        authenticate();
-    	    		Iterator<Concept> conceptIterator = cs.conceptIterator();
-    	    		while (conceptIterator.hasNext() && shouldExecute) {
-    	    			Concept currentConcept = conceptIterator.next();
-    	    			if (log.isDebugEnabled()) log.debug("updateConceptWords() : current concept: " + currentConcept);
-    	    			cs.updateConceptWord(currentConcept);
-    	    		}
-                } catch (APIException e) {
-                    log.error("ConceptWordUpdateTask failed, because:", e);
-                    throw e;
-                } finally {
-            		isExecuting = false;
-                    Context.closeSession();
-                }
+            	if (!isExecuting) {
+	            	isExecuting = true;
+	            	shouldExecute = true;
+	
+	                Context.openSession();
+	                if (log.isDebugEnabled()) log.debug("Updating concept words ... ");
+	                try {
+	                    if (Context.isAuthenticated() == false) 
+	                        authenticate();
+	                    ConceptService cs = Context.getConceptService();
+	                    Iterator<Concept> conceptIterator = cs.conceptIterator();
+	    	    		while (conceptIterator.hasNext() && shouldExecute) {
+	    	    			Concept currentConcept = conceptIterator.next();
+	    	    			if (log.isDebugEnabled()) log.debug("updateConceptWords() : current concept: " + currentConcept);
+	    	    			cs.updateConceptWord(currentConcept);
+	    	    		}
+	                } catch (APIException e) {
+	                    log.error("ConceptWordUpdateTask failed, because:", e);
+	                    throw e;
+	                } finally {
+	            		isExecuting = false;
+	            		SchedulerService ss = Context.getSchedulerService();
+	            		TaskDefinition conceptWordUpdateTaskDef = ss.getTaskByName(ConceptServiceImpl.CONCEPT_WORD_UPDATE_TASK_NAME);
+	            		conceptWordUpdateTaskDef.setStarted(false);
+	            		ss.saveTask(conceptWordUpdateTaskDef);
+	                    Context.closeSession();
+	                }
+            	}
             }
         	
         }

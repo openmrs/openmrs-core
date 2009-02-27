@@ -1724,8 +1724,6 @@ call diff_procedure('1.4.0.14');
 # Andreas Kollegger   Sep 26th, 2008
 #
 # update concept_word table with concept_name_ids
-# add concept_name columns
-#
 #-----------------------------------------------------------
 DROP PROCEDURE IF EXISTS diff_procedure;
 delimiter //
@@ -1733,13 +1731,37 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
 
-		select 'Updating concept_word table' AS '*** Step: ***', new_db_version from dual;
+		select 'Adding concept_word table columns' AS '*** Step: ***', new_db_version from dual;
 		
 		# delete all orphan concept_names and concept_words
 		delete from concept_name_tag_map where exists (select * from concept_name where concept_name.concept_name_id = concept_name_tag_map.concept_name_id and not exists (select * from concept where concept.concept_id = concept_name.concept_id));
 		delete from concept_name where not exists (select * from concept where concept.concept_id = concept_name.concept_id);
 		
 		ALTER TABLE `concept_word` ADD COLUMN `concept_name_id` INTEGER NOT NULL AFTER `locale`;
+
+		select '***' AS '...done' from dual;
+
+		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+
+	END IF;
+END;
+//
+delimiter ;
+call diff_procedure('1.4.0.15');
+
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.0.15.1
+# Ben Wolfe   Feb 27th, 2009
+#
+# update concept_word table with concept_name_ids
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
+
+		select 'Updating data in concept_word table columns' AS '*** Step: ***', new_db_version from dual;
 		
 		# Update all non-synonym words
 		update 
@@ -1780,11 +1802,11 @@ BEGIN
 		      and
 		      map.concept_name_tag_id = 3)
 		where synonym <> '';
-
 		
 		# find duplicate words and delete the synonym part
 		drop table if exists tmp_concept_word_helper;
 		create table tmp_concept_word_helper like concept_word;
+		ALTER TABLE tmp_concept_word_helper DROP PRIMARY KEY;
 		insert into 
 		 tmp_concept_word_helper
 		(select
@@ -1825,7 +1847,8 @@ BEGIN
 		
 		# clean up
 		drop table tmp_concept_word_helper;
-
+		
+		# add the contraint from concept_word.concept_name_id to concept_name.concept_name_id
 		ALTER TABLE `concept_word` ADD CONSTRAINT `word_for_name` FOREIGN KEY `word_for_name` (`concept_name_id`)
 		    REFERENCES `concept_name` (`concept_name_id`);
 
@@ -1837,7 +1860,7 @@ BEGIN
 END;
 //
 delimiter ;
-call diff_procedure('1.4.0.15');
+call diff_procedure('1.4.0.15.1');
 
 #
 # update concept source table
