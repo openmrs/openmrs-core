@@ -420,15 +420,20 @@
    			 oldColumnName="retired_reason" newColumnName="retire_reason" columnDataType="varchar(255)"/>
 	</changeSet>
 	
-	<changeSet id="20090301-1037" author="bwolfe">
+	<changeSet id="20090301-1259" author="bwolfe">
 		<comment>
 			Fixes the description for name layout global property
 		</comment>
 		
 		<update tableName="global_property">
-			<column name="property_value" value="Format in which to display the person names.  Valid values are short, long"/>
+			<column name="description" value="Format in which to display the person names.  Valid values are short, long"/>
 			<where>property='layout.name.format'</where>
 		</update>
+		<update tableName="global_property">
+			<column name="property_value" value="short"/>
+			<where>property='layout.name.format'</where>
+		</update>
+		
 		
 	</changeSet>
 	
