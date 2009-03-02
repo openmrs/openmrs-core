@@ -786,16 +786,14 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));
-		props
-		        .add(new GlobalProperty("concept.cd4_count", "5497",
-		                "Concept id of the concept defining the CD4 count concept"));
+		props.add(new GlobalProperty("concept.cd4_count", "5497", "Concept id of the concept defining the CD4 count concept"));
 		props.add(new GlobalProperty("concept.causeOfDeath", "5002",
 		        "Concept id of the concept defining the CAUSE OF DEATH concept"));
 		props.add(new GlobalProperty("concept.none", "1107", "Concept id of the concept defining the NONE concept"));
 		props.add(new GlobalProperty("concept.otherNonCoded", "5622",
 		        "Concept id of the concept defining the OTHER NON-CODED concept"));
 		props.add(new GlobalProperty("concept.patientDied", "1742",
-		        "Concept id of the concept defining the PATIEND DIED concept"));
+		        "Concept id of the concept defining the PATIENT DIED concept"));
 		props.add(new GlobalProperty("concept.reasonExitedCare", "1811",
 		        "Concept id of the concept defining the REASON EXITED CARE concept"));
 		props.add(new GlobalProperty("concept.reasonOrderStopped", "1812",
