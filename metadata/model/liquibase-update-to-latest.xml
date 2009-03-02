@@ -431,9 +431,8 @@
 		</update>
 		<update tableName="global_property">
 			<column name="property_value" value="short"/>
-			<where>property='layout.name.format'</where>
+			<where>property='layout.name.format' and property_value='Format in which to display the person names.  Valid values are short, long'</where>
 		</update>
-		
 		
 	</changeSet>
 	
