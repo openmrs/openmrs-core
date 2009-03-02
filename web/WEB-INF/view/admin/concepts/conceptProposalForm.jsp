@@ -189,7 +189,11 @@
 <br />
 <!-- TODO create some sort of mechanism to scroll through the encounters -->
 <c:if test="${fn:length(matchingProposals) > 1}">
-	Note: This update will effect ${fn:length(matchingProposals)-1} other concept proposal<c:if test="${fn:length(matchingProposals) > 2}">s</c:if><br/>
+	<spring:message code="ConceptProposal.update.note" arguments="${fn:length(matchingProposals)-1}"/>
+	<c:if test="${fn:length(matchingProposals) > 2}">
+	    <spring:message code="ConceptProposal.update.note.plural"/>
+	</c:if>
+	<br/>
 </c:if>
 <br />
 <input type="submit" name="action" value="<spring:message code="ConceptProposal.ignore"/>">

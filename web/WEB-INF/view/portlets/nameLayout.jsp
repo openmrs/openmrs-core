@@ -232,7 +232,7 @@
 		</c:when>
 		
 		<c:otherwise>
-			ERROR! unknown size '${model.size}' in Name portlet
+			<spring:message code="Portlet.nameLayout.error" arguments="${model.size}"/>
 		</c:otherwise>
 	</c:choose>
 </c:if>

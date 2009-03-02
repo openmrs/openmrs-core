@@ -166,7 +166,7 @@
 	<c:if test="${form.formId != null && form.formId != 1}">
 		<openmrs:hasPrivilege privilege="Delete Forms">
 			 &nbsp; &nbsp; &nbsp;
-			<input type="submit" name="action" value="<spring:message code="Form.delete"/>" onclick="return confirm('Are you sure you want to delete this entire form AND schema?')"/>
+			<input type="submit" name="action" value="<spring:message code="Form.delete"/>" onclick="return confirm('<spring:message code="Form.confirmation"/>')"/>
 		</openmrs:hasPrivilege>
 	</c:if>
 </c:if>

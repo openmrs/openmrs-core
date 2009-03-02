@@ -30,7 +30,7 @@
 					   ${fieldType.name}
 					</a>
 				</td>
-				<td valign="top" align="center"><c:if test="${fieldType.isSet == true}">yes</c:if></td>
+				<td valign="top" align="center"><c:if test="${fieldType.isSet == true}"><spring:message code="general.yes"/></c:if></td>
 				<td valign="top">${fieldType.description}</td>
 			</tr>
 		</c:forEach>

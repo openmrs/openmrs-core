@@ -190,7 +190,7 @@
 
 		</c:when>
 		<c:otherwise>
-			ERROR! unknown size '${model.size}' in FindOnePatientWidget
+			<spring:message code="Portlet.findPatient.error" arguments="${model.size}"/>
 		</c:otherwise>
 	</c:choose>
 

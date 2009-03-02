@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<h3 align="center">Cohort Summary <i>(${model.patientSet.size} patients)</i></h3>
+<h3 align="center"><spring:message code"Cohort.summary" arguments="${model.patientSet.size}"/></h3>
 
 	<div class="boxHeader"><spring:message code="Cohort.ageAndGender"/></div>
 	<div class="box">
