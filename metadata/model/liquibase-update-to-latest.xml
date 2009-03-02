@@ -436,4 +436,68 @@
 		
 	</changeSet>
 	
+	<changeSet id="20090214-2246" author="isherman">
+		<preConditions onFail="MARK_RAN">
+			<dbms type="mysql" />
+		</preConditions>
+		<comment>
+			Add weight and cd4 to patientGraphConcepts user property (mysql specific)
+		</comment>
+		
+		<sql>
+			UPDATE user_property
+				SET property_value = CONCAT(
+					'-', 
+					(SELECT property_value FROM global_property WHERE property = 'concept.weight'),
+					'-',
+					(SELECT property_value FROM global_property WHERE property = 'concept.cd4_count'),
+					property_value
+				) WHERE property = 'patientGraphConcepts';			
+		</sql>
+	</changeSet>
+	
+	<changeSet id="20090214-2247" author="isherman">
+		<preConditions onFail="MARK_RAN">
+			<or>
+				<dbms type="postgresql" />
+				<dbms type="oracle" />
+				<dbms type="db2" />
+			</or>
+		</preConditions>
+		<comment>
+			Add weight and cd4 to patientGraphConcepts user property (using standard sql)
+		</comment>
+		
+		<sql>
+			UPDATE user_property
+				SET property_value = 
+					'-' || 
+					(SELECT property_value FROM global_property WHERE property = 'concept.weight') ||
+					'-' ||
+					(SELECT property_value FROM global_property WHERE property = 'concept.cd4_count') ||
+					property_value
+				) WHERE property = 'patientGraphConcepts';			
+		</sql>
+	</changeSet>
+	
+	<changeSet id="20090214-2248" author="isherman">
+		<preConditions onFail="MARK_RAN">
+			<dbms type="mssql" />
+		</preConditions>
+		<comment>
+			Add weight and cd4 to patientGraphConcepts user property (mssql specific)
+		</comment>
+		
+		<sql>
+			UPDATE user_property
+				SET property_value = 
+					'-' + 
+					(SELECT property_value FROM global_property WHERE property = 'concept.weight') +
+					'-' +
+					(SELECT property_value FROM global_property WHERE property = 'concept.cd4_count') +
+					property_value
+				) WHERE property = 'patientGraphConcepts';			
+		</sql>
+	</changeSet>
+	
 </databaseChangeLog>
