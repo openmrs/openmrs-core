@@ -193,8 +193,11 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
 			
-			// check patients birthdate against future dates and really old dates
-			if (shortPatient.getBirthdate() != null) {
+			if(shortPatient.getBirthdate() == null) {
+				Object[] args = {"Birthdate"};
+				errors.rejectValue("birthdate", "error.required", args, "");
+			} else {
+				// check patients birthdate against future dates and really old dates
 				if (shortPatient.getBirthdate().after(new Date()))
 					errors.rejectValue("birthdate", "error.date.future");
 				else {
@@ -366,7 +369,7 @@ public class NewPatientFormController extends SimpleFormController {
 			// add the new identifiers.  First remove them so that things like
 			// changes to preferred status and location are persisted 
 			for (PatientIdentifier identifier : newIdentifiers) {
-				// this loop is used instead of just using removeIdentifier becuase
+				// this loop is used instead of just using removeIdentifier because
 				// the identifier set on patient is a TreeSet which will use .compareTo
 				identifier.setPatient(patient);
 				for (PatientIdentifier currentIdentifier : patient.getActiveIdentifiers()) {

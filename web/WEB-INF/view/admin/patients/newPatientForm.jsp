@@ -203,7 +203,7 @@
 	<spring:message code="fix.error"/>
 	<div class="error">
 		<c:forEach items="${errors.allErrors}" var="error">
-			<spring:message code="${error.code}" text="${error.code}"/><br/><!-- ${fn:replace(error, '--', '\\-\\-')} -->
+			<spring:message code="${error.code}" text="${error.code}" arguments="${error.arguments}"/><br/><!-- ${fn:replace(error, '--', '\\-\\-')} -->
 		</c:forEach>
 	</div>
 </spring:hasBindErrors>
