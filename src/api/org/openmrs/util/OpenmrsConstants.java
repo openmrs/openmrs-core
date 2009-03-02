@@ -821,7 +821,7 @@ public final class OpenmrsConstants {
 		        .add(new GlobalProperty("layout.address.format", "general",
 		                "Format in which to display the person addresses.  Valid values are general, kenya, rwanda, usa, and lesotho"));
 		props.add(new GlobalProperty("layout.name.format", "short",
-		        "Format in which to display the person names.  Valid values are short, full"));
+		        "Format in which to display the person names.  Valid values are short, long"));
 		
 		// TODO should be changed to text defaults and constants should be removed
 		props.add(new GlobalProperty("scheduler.username", SchedulerConstants.SCHEDULER_DEFAULT_USERNAME,
