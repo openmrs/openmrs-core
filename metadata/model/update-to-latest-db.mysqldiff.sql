@@ -1737,7 +1737,8 @@ BEGIN
 		delete from concept_name_tag_map where exists (select * from concept_name where concept_name.concept_name_id = concept_name_tag_map.concept_name_id and not exists (select * from concept where concept.concept_id = concept_name.concept_id));
 		delete from concept_name where not exists (select * from concept where concept.concept_id = concept_name.concept_id);
 		
-		ALTER TABLE `concept_word` ADD COLUMN `concept_name_id` INTEGER NOT NULL AFTER `locale`;
+		# This is made "NOT NULL" in the next changeset
+		ALTER TABLE `concept_word` ADD COLUMN `concept_name_id` INTEGER DEFAULT NULL AFTER `locale`;
 
 		select '***' AS '...done' from dual;
 
@@ -1843,10 +1844,12 @@ BEGIN
 		   concept_word.concept_name_id = tmp.concept_name_id);
 		
 		# clean up any synonyms that were in the word table but werent really ever synonyms
-		delete from concept_word where concept_name_id = 0;
+		delete from concept_word where concept_name_id = 0 or concept_name_id is null;
 		
 		# clean up
 		drop table tmp_concept_word_helper;
+		
+		ALTER TABLE concept_word CHANGE concept_name_id concept_name_id INTEGER NOT NULL; 
 		
 		# add the contraint from concept_word.concept_name_id to concept_name.concept_name_id
 		ALTER TABLE `concept_word` ADD CONSTRAINT `word_for_name` FOREIGN KEY `word_for_name` (`concept_name_id`)
