@@ -8,8 +8,8 @@
 
 <br /><br />
 
-The page "<b><%= request.getAttribute("javax.servlet.error.request_uri") %></b>"
-cannot be found.  Check the link and try again.
+<spring:message code="Missing.start"/> "<b><%= request.getAttribute("javax.servlet.error.request_uri") %></b>"
+<spring:message code="Missing.end"/>
 
 <br/><br/>
 

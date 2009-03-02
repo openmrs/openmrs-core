@@ -85,7 +85,7 @@
 	<div id="page_${pageNumber}">
 		<table class="encounterFormTable" cellpadding="0" cellspacing="0">
 			<c:if test="${model.usePages}">
-				<tr><td align="center" colspan="2" style="background-color: black; color: white;">Page ${pageNumber}</td></tr>
+				<tr><td align="center" colspan="2" style="background-color: black; color: white;"><spring:message code="Encounter.page" arguments="${pageNumber}"/></td></tr>
 			</c:if>
 		
 		<%-- The alternating odd/even status of the current row --%>	

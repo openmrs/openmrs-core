@@ -22,9 +22,9 @@
 	<table cellpadding="2" cellspacing="0">
 		<tr>
 			<th></th>
-			<th>Name</th>
-			<th>Description</th>
-			<th>Active</th>
+			<th><spring:message code="general.name"/></th>
+			<th><spring:message code="general.description"/></th>
+			<th><spring:message code="Scheduler.taskList.active"/></th>
 
 		</tr>
 		<c:forEach var="task" items="${model.scheduledTasks}">

@@ -14,7 +14,7 @@ Parameters
 	<%--
 	<openmrs:hasPrivilege privilege="Add Forms">
 		<div id="encounterForms">
-			<div class="boxHeader">Forms</div>
+			<div class="boxHeader"><spring:message code="Portlet.patientEncounter.form"/></div>
 			<div class="box">
 				<openmrs:portlet url="patientFormsSelect" id="patientDashboardFormsSelect" patientId="${patient.patientId}"/>
 				<br/>
@@ -33,7 +33,7 @@ Parameters
 					<c:if test="${fn:length(model.patientEncounters) > 0}">
 						<c:if test="${empty model.hideHeader}">
 							<tr>
-								<th colspan="8" class="tableTitle">All Encounters</th>
+								<th colspan="8" class="tableTitle"><spring:message code="Portlet.patientEncounter.allEncounter"/></th>
 							</tr>
 						</c:if>
 						<tr>

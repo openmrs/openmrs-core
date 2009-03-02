@@ -10,7 +10,7 @@
 <form method="post">
 	<spring:message code="ConceptSetDerived.instructions"/>
 	<br/><br/>
-	Concept Id: <input type="text" name="conceptId"> (Optional)<br/><br/>
+	<spring:message code="ConceptSetDerived.conceptId"/> <input type="text" name="conceptId"> <spring:message code="ConceptSetDerived.conceptId.optional"/><br/><br/>
 	<input type="submit" value="<spring:message code="ConceptSetDerived.manage"/>">
 </form>
 

@@ -34,10 +34,10 @@
 				<table cellpadding="0" cellspacing="0" width="100%">
 					<tr class="top">
 						<th></th>
-						<th>Status</th>
-						<th class="left">Task / Class</th>
-						<th class="left">Schedule</th>
-						<th>On Startup</th>
+						<th><spring:message code="Scheduler.list.status"/></th>
+						<th class="left"><spring:message code="Scheduler.list.taskClass"/></th>
+						<th class="left"><spring:message code="Scheduler.list.schedule"/></th>
+						<th><spring:message code="Scheduler.list.startOnStartup"/></th>
 					</tr>
 					<c:forEach var="task" items="${taskList}" varStatus="varStatus">
 					

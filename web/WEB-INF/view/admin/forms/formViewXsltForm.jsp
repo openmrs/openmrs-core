@@ -5,7 +5,7 @@
 <% pageContext.setAttribute("newline", "\n"); %>
 <!-- ${fn:replace(fn:escapeXml(form.xslt), newline, "<br/>")} -->
 <center>
-  <a href="javascript:window.close()">Close window</a>
+  <a href="javascript:window.close()"><spring:message code="FormViewXSLT.closeWindow"/></a>
 </center>
 <div style="background-color:#F0F0F0; border:thin solid gray; margin:0.1em; padding:0.1em; overflow:auto;">
 <pre>
@@ -13,5 +13,5 @@ ${fn:escapeXml(form.xslt)}
 </pre>
 </div>
 <center>
-  <a href="javascript:window.close()">Close window</a>
+  <a href="javascript:window.close()"><spring:message code="FormViewXSLT.closeWindow"/></a>
 </center>

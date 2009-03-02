@@ -10,7 +10,7 @@
 <form method="post">
 	<spring:message code="ConceptWord.instructions"/>
 	<br/><br/>
-	Concept Id: <input type="text" name="conceptId"/> (Optional)<br/><br/>
+	<spring:message code="ConceptWord.conceptId"/> <input type="text" name="conceptId"/> <spring:message code="ConceptWord.conceptId.optional"/><br/><br/>
 	<input type="submit" value="<spring:message code="ConceptWord.manage"/>">
 </form>
 

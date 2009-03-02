@@ -596,7 +596,7 @@
 	<c:if test="${concept.conceptId != null}">
 		<openmrs:hasPrivilege privilege="Delete Concepts">
 			 &nbsp; &nbsp; &nbsp;
-			<input type="submit" name="action" value="<spring:message code="Concept.delete"/>" onclick="return confirm('Are you sure you want to delete this ENTIRE CONCEPT?')"/>
+			<input type="submit" name="action" value="<spring:message code="Concept.delete"/>" onclick="return confirm('<spring:message code="Concept.confirmDelete"/>')"/>
 		</openmrs:hasPrivilege>
 	</c:if>
 </c:if>

@@ -100,7 +100,7 @@
 		<a class="analysisShortcutBarButton"><spring:message code="Analysis.linkButton"/></a>
 		<div id="_linkMenu" class="analysisShortcutMenu" style="display: none">
 			<br />
-			&nbsp;&nbsp;&nbsp;<span style="width: 200px; text-align: right;"><a href="#" onClick="javascript:hideLayer('_linkMenu');" >[Close]</a></span>
+			&nbsp;&nbsp;&nbsp;<span style="width: 200px; text-align: right;"><a href="#" onClick="javascript:hideLayer('_linkMenu');" >[<spring:message code="general.close"/>]</a></span>
 			<ul>
 				<c:forEach var="item" items="${model.links}" varStatus="loopStatus">
 					<li>
