@@ -375,7 +375,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
-		System.out.println("Template String: \n" + export.generateTemplate());
+		//System.out.println("Template String: \n" + export.generateTemplate());
 		expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location\n2	10.0	Test Location\n";
 		output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();

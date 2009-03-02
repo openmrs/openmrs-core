@@ -153,11 +153,11 @@ public class LogicBasicTest extends LogicBaseContextSensitiveTest {
 		}
 		cohort.addMember(2);
 		long l = System.currentTimeMillis();
-		System.out.println(new Date());
+		//System.out.println(new Date());
 		LogicService ls = Context.getLogicService();
 		Map<Integer, Result> m = ls.eval(cohort, "WEIGHT (KG)");
-		System.out.println(m.toString());
-		System.out.println(String.valueOf(System.currentTimeMillis() - l) + " milliseconds");
+		//System.out.println(m.toString());
+		//System.out.println(String.valueOf(System.currentTimeMillis() - l) + " milliseconds");
 		
 	}
 }

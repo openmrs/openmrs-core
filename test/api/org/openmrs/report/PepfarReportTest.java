@@ -179,12 +179,12 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 		Serializer serializer = OpenmrsUtil.getSerializer();
 		StringWriter writer = new StringWriter();
 		serializer.write(data, writer);
-		System.out.println("Serialized report:\n" + writer.toString());
+		//System.out.println("Serialized report:\n" + writer.toString());
 		
 		TsvReportRenderer renderer = new TsvReportRenderer();
 		
-		System.out.println("Rendering results:");
-		renderer.render(data, null, System.out);
+		//System.out.println("Rendering results:");
+		//renderer.render(data, null, System.out);
 	}
 	
 }

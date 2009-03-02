@@ -191,12 +191,12 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
 		def1.setName("Cohorts");
 		def1.addStrategy("kids", kids);
 		DataSet<Object> data1 = service.evaluate(def1, null, evalContext);
-		System.out.println("---Males---");
-		for (Map<String, Object> row : data1) {
-			for (Map.Entry<String, Object> e : row.entrySet())
-				System.out.println(e.getKey() + " -> " + e.getValue());
-			System.out.println();
-		}
+		//System.out.println("---Males---");
+		//for (Map<String, Object> row : data1) {
+		//	for (Map.Entry<String, Object> e : row.entrySet())
+		//		System.out.println(e.getKey() + " -> " + e.getValue());
+		//	System.out.println();
+		//}
 		
 		RowPerObsDataSetDefinition def2 = new RowPerObsDataSetDefinition();
 		def2.setFilter(kids);
@@ -207,11 +207,11 @@ public class DataSetServiceTest extends BaseContextSensitiveTest {
 			++count;
 			if (count > 0)
 				continue;
-			for (Map.Entry<String, Object> e : row.entrySet())
-				System.out.println(e.getKey() + " -> " + e.getValue());
-			System.out.println();
+			//for (Map.Entry<String, Object> e : row.entrySet())
+			//	System.out.println(e.getKey() + " -> " + e.getValue());
+			//System.out.println();
 		}
-		System.out.println("count = " + count);
+		//System.out.println("count = " + count);
 	}
 	
 }

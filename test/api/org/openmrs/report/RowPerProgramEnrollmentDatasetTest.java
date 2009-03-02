@@ -66,16 +66,16 @@ public class RowPerProgramEnrollmentDatasetTest extends BaseContextSensitiveTest
 		StringWriter writer = new StringWriter();
 		
 		serializer.write(rs, writer);
-		System.out.println("xml =\n" + writer.toString());
+		//System.out.println("xml =\n" + writer.toString());
 		
 		rs = (ReportSchema) serializer.read(ReportSchema.class, writer.toString());
-		System.out.println("deserialized as name=" + rs.getName());
-		System.out.println("deserialized with " + rs.getDataSetDefinitions().size() + " data set definitions");
+		//System.out.println("deserialized as name=" + rs.getName());
+		//System.out.println("deserialized with " + rs.getDataSetDefinitions().size() + " data set definitions");
 		
-		System.out.println("Evaluating...");
+		//System.out.println("Evaluating...");
 		ReportData data = Context.getReportService().evaluate(rs, kidsCohort, evalContext);
-		System.out.println("Result=");
-		new TsvReportRenderer().render(data, null, System.out);
+		//System.out.println("Result=");
+		//new TsvReportRenderer().render(data, null, System.out);
 	}
 	
 }

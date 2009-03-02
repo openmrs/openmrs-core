@@ -107,7 +107,7 @@ public class PatientSearchTest extends BaseContextSensitiveTest {
 		PatientFilter filterToRun = OpenmrsUtil.toPatientFilter(search, null, ec);
 		Cohort result = filterToRun.filter(Context.getPatientSetService().getAllPatients(), ec);
 		
-		System.out.println("results is " + result.size());
+		//System.out.println("results is " + result.size());
 		
 		assertEquals(1, result.size());
 		

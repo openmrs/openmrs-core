@@ -52,7 +52,7 @@ public class HiRiskLeadScreen {
 			if (iter.hasNext()) {
 				while (iter.hasNext()) {
 					obs = (Obs) iter.next();
-					System.out.println(obs.getValueAsString(locale));
+					//System.out.println(obs.getValueAsString(locale));
 				}
 				return obs;
 			} else {
@@ -66,7 +66,7 @@ public class HiRiskLeadScreen {
 		if (evaluate()) {
 			action();
 			String str = userVarMap.get("ActionStr");
-			System.out.println(str);
+			//System.out.println(str);
 		}
 		return retVal;
 	}

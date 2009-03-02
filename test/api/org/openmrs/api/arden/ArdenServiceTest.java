@@ -40,7 +40,7 @@ public class ArdenServiceTest extends BaseContextSensitiveTest {
 		
 		for (String mlmFile : mlmFiles) {
 			if (mlmFile.endsWith(".mlm")) {
-				System.out.println("Parsing: " + mlmFile);
+				//System.out.println("Parsing: " + mlmFile);
 				Context.getArdenService().compileFile(mlmDirectory + mlmFile, javaDirectory);
 			}
 		}
