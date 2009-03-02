@@ -95,7 +95,7 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 		assertEquals(1, rs.getDataSetDefinitions().size());
 		
 		ReportData data = Context.getReportService().evaluate(rs, kidsCohort, evalContext);
-		System.out.println("Result=");
+		//System.out.println("Result=");
 		
 		StringWriter w = new StringWriter();
 		new TsvReportRenderer().render(data, null, w);

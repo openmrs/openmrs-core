@@ -66,15 +66,15 @@ public class LogicEvalTest extends LogicBaseContextSensitiveTest {
 		Cohort cohort = new Cohort();
 		cohort.addMember(2);
 		
-		System.out.print("Patients: ");
-		for (int id : cohort.getMemberIds())
-			System.out.print(id + " ");
-		System.out.println();
+		//System.out.print("Patients: ");
+		//for (int id : cohort.getMemberIds())
+		//	System.out.print(id + " ");
+		//System.out.println();
 		long l = System.currentTimeMillis();
-		System.out.println(new Date());
+		//System.out.println(new Date());
 		Map<Integer, Result> m = Context.getLogicService().eval(cohort, "TEMPERATURE (C)");
-		System.out.println(m.toString());
-		System.out.println(System.currentTimeMillis() - l);
+		//System.out.println(m.toString());
+		//System.out.println(System.currentTimeMillis() - l);
 		
 	}
 }

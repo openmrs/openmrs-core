@@ -102,7 +102,7 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		xml.append("		</dataSetDefinition>\n");
 		xml.append("	</dataSets>\n");
 		xml.append("</reportSchema>\n");
-		System.out.println("xml\n" + xml);
+		//System.out.println("xml\n" + xml);
 		
 		// Try to get HIV PROGRAM, or else, just the first program
 		Program hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
@@ -153,8 +153,8 @@ public class PepfarReportFromXml extends BaseContextSensitiveTest {
 		ReportData data = rs.evaluate(schema, null, evalContext);
 		
 		TsvReportRenderer renderer = new TsvReportRenderer();
-		System.out.println("Rendering output as TSV:");
-		renderer.render(data, null, System.out);
+		//System.out.println("Rendering output as TSV:");
+		//renderer.render(data, null, System.out);
 	}
 	
 	@Test

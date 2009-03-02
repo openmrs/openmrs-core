@@ -83,13 +83,13 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		Date dateChanged = patientProgram.getDateChanged();
 		User changedBy = patientProgram.getChangedBy();
 		if (null != dateCompleted) {
-			System.out.println("Date Completed: " + dateCompleted);
+			//System.out.println("Date Completed: " + dateCompleted);
 		}
 		if (null != dateChanged) {
-			System.out.println("Date Changed: " + dateChanged);
+			//System.out.println("Date Changed: " + dateChanged);
 		}
 		if (null != changedBy) {
-			System.out.println("Changed By: " + changedBy.toString());
+			//System.out.println("Changed By: " + changedBy.toString());
 		}
 		
 		patientProgram.setDateCompleted(today);
@@ -106,13 +106,13 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		User changedBy2 = patientProgram.getChangedBy();
 		
 		if (null != dateCompleted2) {
-			System.out.println("Date Completed: " + dateCompleted2);
+			//System.out.println("Date Completed: " + dateCompleted2);
 		}
 		if (null != dateChanged2) {
-			System.out.println("Date Changed: " + dateChanged2);
+			//System.out.println("Date Changed: " + dateChanged2);
 		}
 		if (null != changedBy2) {
-			System.out.println("Changed By: " + changedBy2.toString());
+			//System.out.println("Changed By: " + changedBy2.toString());
 		}
 		
 		assertNotNull(ptProg.getDateCompleted());
@@ -153,7 +153,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		
 		assertEquals("Failed to create program", numBefore + 1, Context.getProgramWorkflowService().getPrograms().size());
 		Program p = Context.getProgramWorkflowService().getProgram("COUGH SYRUP");
-		System.out.println("TEST Program = " + p);
+		//System.out.println("TEST Program = " + p);
 		assertNotNull("Program is null", p);
 		assertNotNull("Workflows is null", p.getWorkflows());
 		assertEquals("Wrong number of workflows", 1, p.getWorkflows().size());

@@ -61,13 +61,13 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldGetCheckDigit() throws Exception {
 		
-		System.out.println("In testGetCheckDigit()");
+		//System.out.println("In testGetCheckDigit()");
 		
 		String[] ids = { "9", "99", "999", "123MT", "asdf" };
 		int[] cds = { 1, 2, 3, 2, 8 };
 		
 		for (int i = 0; i < ids.length; i++) {
-			System.out.println(ids[i]);
+			//System.out.println(ids[i]);
 			assertEquals(OpenmrsUtil.getCheckDigit(ids[i]), cds[i]);
 		}
 		
@@ -81,26 +81,26 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldIsValidCheckDigit() throws Exception {
 		
-		System.out.println("In testIsValidCheckDigit()");
+		//System.out.println("In testIsValidCheckDigit()");
 		
 		String[] ids2 = { "9-1", "99-2", "999-3", "123MT-2", "asdf-8", "12abd-7" };
 		String[] ids2Char = { "9-b", "99-c", "999-d", "123MT-c", "asdf-i", "12abd-h" };
 		for (int i = 0; i < ids2.length; i++) {
-			System.out.println(ids2[i]);
+			//System.out.println(ids2[i]);
 			assertTrue(OpenmrsUtil.isValidCheckDigit(ids2[i]));
 			assertTrue(OpenmrsUtil.isValidCheckDigit(ids2Char[i]));
 		}
 		
 		String[] ids3 = { "asdf-7", "9-2", "9-4" };
 		for (int i = 0; i < ids3.length; i++) {
-			System.out.println(ids3[i]);
+			//System.out.println(ids3[i]);
 			assertFalse(OpenmrsUtil.isValidCheckDigit(ids3[i]));
 		}
 		
 		String[] ids4 = { "#@!", "234-3-3", "-3", "2134" };
 		for (int i = 0; i < ids4.length; i++) {
 			try {
-				System.out.println(ids4[i]);
+				//System.out.println(ids4[i]);
 				OpenmrsUtil.isValidCheckDigit(ids4[i]);
 				fail("An exception was not thrown for invalid identifier: " + ids4[i]);
 			}

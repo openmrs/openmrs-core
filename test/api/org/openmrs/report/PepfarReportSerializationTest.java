@@ -146,7 +146,7 @@ public class PepfarReportSerializationTest extends BaseContextSensitiveTest {
 		
 		//serializer.write(cohortByPatientSearch, writer);
 		
-		System.out.println(writer.toString());
+		//System.out.println(writer.toString());
 		
 	}
 	
@@ -173,7 +173,7 @@ public class PepfarReportSerializationTest extends BaseContextSensitiveTest {
 		
 		TestUtil.printAssignableToSingleString(writer.toString());
 		
-		System.out.println("FULL:" + writer.toString());
+		//System.out.println("FULL:" + writer.toString());
 		
 	}
 	

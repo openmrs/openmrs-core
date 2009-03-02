@@ -99,6 +99,8 @@ public class PortletController implements Controller {
      *          (Map<Integer, Concept>) conceptMap
      *          (Map<String, Concept>) conceptMapByStringIds
 	 * </pre>
+	 * @should calculate bmi into patientBmiAsString
+	 * @should not fail with empty height and weight properties
 	 */
 	@SuppressWarnings("unchecked")
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
@@ -185,11 +187,11 @@ public class PortletController implements Controller {
 								String weightString = as.getGlobalProperty("concept.weight");
 								ConceptNumeric weightConcept = null;
 								if (StringUtils.hasLength(weightString))
-									weightConcept = cs.getConceptNumeric(Integer.valueOf(weightString));
+									weightConcept = cs.getConceptNumeric(cs.getConcept(Integer.valueOf(weightString)).getConceptId());
 								String heightString = as.getGlobalProperty("concept.height");
 								ConceptNumeric heightConcept = null;
 								if (StringUtils.hasLength(heightString))
-									heightConcept = cs.getConceptNumeric(Integer.valueOf(heightString));
+									heightConcept = cs.getConceptNumeric(cs.getConcept(Integer.valueOf(heightString)).getConceptId());
 								for (Obs obs : patientObs) {
 									if (obs.getConcept().equals(weightConcept)) {
 										if (latestWeight == null
@@ -241,24 +243,27 @@ public class PortletController implements Controller {
 						
 						// information about whether or not the patient has exited care
 						Obs reasonForExitObs = null;
-						Concept reasonForExitConcept = cs.getConcept(as.getGlobalProperty("concept.reasonExitedCare"));
-						if (reasonForExitConcept != null) {
-							List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(p,
-							    reasonForExitConcept);
-							if (patientExitObs != null) {
-								log.debug("Exit obs is size " + patientExitObs.size());
-								if (patientExitObs.size() == 1) {
-									reasonForExitObs = patientExitObs.iterator().next();
-									Concept exitReason = reasonForExitObs.getValueCoded();
-									Date exitDate = reasonForExitObs.getObsDatetime();
-									if (exitReason != null && exitDate != null) {
-										patientVariation = "Exited";
-									}
-								} else {
-									if (patientExitObs.size() == 0) {
-										log.debug("Patient has no reason for exit");
+						String reasonForExitConceptString = as.getGlobalProperty("concept.reasonExitedCare");
+						if (StringUtils.hasLength(reasonForExitConceptString)) {
+							Concept reasonForExitConcept = cs.getConcept(reasonForExitConceptString);
+							if (reasonForExitConcept != null) {
+								List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(p,
+								    reasonForExitConcept);
+								if (patientExitObs != null) {
+									log.debug("Exit obs is size " + patientExitObs.size());
+									if (patientExitObs.size() == 1) {
+										reasonForExitObs = patientExitObs.iterator().next();
+										Concept exitReason = reasonForExitObs.getValueCoded();
+										Date exitDate = reasonForExitObs.getObsDatetime();
+										if (exitReason != null && exitDate != null) {
+											patientVariation = "Exited";
+										}
 									} else {
-										log.error("Too many reasons for exit - not putting data into model");
+										if (patientExitObs.size() == 0) {
+											log.debug("Patient has no reason for exit");
+										} else {
+											log.error("Too many reasons for exit - not putting data into model");
+										}
 									}
 								}
 							}
