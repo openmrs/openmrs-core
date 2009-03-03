@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  
+  <privilege privilege="Manage WhirleyGigs" description="Able to manage whirleygigs"/>
+  <privilege privilege="Manage WhoopDeDoos" description="Able to manage whoopdedoos"/>
+  <privilege privilege="Manage Thingamajigs" description="Able to manage thingamajigs"/>
+  
+  <role role="WhirleyGig Manager" description="Works with WhirleyGigs only"/>
+  <role role="Manager" description="Works with all objects"/>
+  
+  <role_privilege role="WhirleyGig Manager" privilege="Manage WhirleyGigs" />
+  <role_privilege role="Manager" privilege="Manage WhirleyGigs" />
+  <role_privilege role="Manager" privilege="Manage WhoopDeDoos" />
+  <role_privilege role="Manager" privilege="Manage Thingamajigs" />
+  
+  <person person_id="505" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false"/>
+  <users user_id="505" system_id="6-7" username="whirleygiguser" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
+  <user_role user_id="505" role="WhirleyGig Manager" />
+
+  <person person_id="506" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
+  <users user_id="506" system_id="7-5" username="overallmanager" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
+  <user_role user_id="506" role="Manager" />
+  
+</dataset>
