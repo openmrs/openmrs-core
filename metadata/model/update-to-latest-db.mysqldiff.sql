@@ -2088,7 +2088,7 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
 	
-		UPDATE `global_property` SET property_value='Format in which to display the person names.  Valid values are short, long' WHERE property = 'layout.name.format';
+		UPDATE `global_property` SET description='Format in which to display the person names.  Valid values are short, long' WHERE property = 'layout.name.format';
 
 		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 
