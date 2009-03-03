@@ -46,6 +46,13 @@ public class DWRFormService {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	/**
+	 * Finds forms based on search text.
+	 * 
+	 * @param text the string to search on
+	 * @param includeUnpublished true/false whether to include unpublished forms
+	 * @return list of {@link FormListItem}s
+	 */
 	public List<FormListItem> findForms(String text, boolean includeUnpublished) {
 		List<FormListItem> forms = new Vector<FormListItem>();
 		
@@ -56,14 +63,25 @@ public class DWRFormService {
 		return forms;
 	}
 	
+	/**
+	 * Gets a list of FormListItems that correspond to forms.  If 
+	 * includueUnpublished is true, all forms are returned.  If false,
+	 * only published forms are returned.
+	 * 
+	 * @param includeUnpublished true/false to include unpublished forms
+	 * @return list of {@link FormListItem}s
+	 */
 	public List<FormListItem> getForms(boolean includeUnpublished) {
-		List<FormListItem> forms = new Vector<FormListItem>();
+		List<FormListItem> formListItems = new Vector<FormListItem>();
 		
-		for (Form form : Context.getFormService().getForms(!includeUnpublished)) {
-			forms.add(new FormListItem(form));
+		List<Form> forms = includeUnpublished ? Context.getFormService().getAllForms(false)
+				: Context.getFormService().getPublishedForms(); 
+		
+		for (Form form : forms) {
+			formListItems.add(new FormListItem(form));
 		}
 		
-		return forms;
+		return formListItems;
 	}
 	
 	public Field getField(Integer fieldId) {

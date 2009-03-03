@@ -248,21 +248,23 @@ dojo.widget.defineWidget(
 					//   mouse event)"
 					if (!this.text.match(/\d/) || this.allowAutoListWithNumber()) {
 						// force enter key for strings like 1,2,5,11
-						if (this.text.match(/^\s*\d+\s*(,\d+\s*)+$/))
+						if (this.text.match(/^\s*\d+\s*(,\d+\s*)+$/)) {
 							return false;
+						}
 						
 						// If there isn't a number in the search (force usage of enter key)
 						this.hideHighlight();
-						if (!this.text.match(/\d/) || this.objectsFound == null || this.objectsFound.length < this.text) {
+						
+						if (this.text != null && this.text.length == 0 && this.key == dojo.event.browser.keys.KEY_BACKSPACE) {
+							// allows for "resetting" default list when user hits backspace on empty field
+							this.resetSearch();
+							this.searchCleared();
+						}
+						else if (!this.text.match(/\d/) || this.objectsFound == null || this.objectsFound.length < this.text) {
 							this.clearPagingBars();
 							dojo.debug('setting preFindObjects timeout for other key: ' + this.key);
 							var callback = function(ts, text) { return function() {ts.findObjects(text)}};
 							this.searchTimeout = setTimeout(callback(this, this.text), this.searchDelay);
-						}
-						else if (this.text != null && this.text.length == 0 && this.key == dojo.event.browser.keys.KEY_BACKSPACE) {
-							// allows for "resetting" default list when user hits backspace on empty field
-							this.resetSearch();
-							this.searchCleared();
 						}
 					}
 					if (this.event.type == "submit") {

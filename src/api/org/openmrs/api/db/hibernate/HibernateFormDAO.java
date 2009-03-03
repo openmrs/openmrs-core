@@ -362,9 +362,10 @@ public class HibernateFormDAO implements FormDAO {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class, "form");
 		
-		if (partialName != null && !"".equals(partialName))
-			crit.add(Expression.like("name", partialName, MatchMode.START));
-		
+		if (partialName != null && !"".equals(partialName)) {
+			crit.add(Expression.or(Expression.like("name", partialName, MatchMode.START), Expression.like("name", " "
+			        + partialName, MatchMode.ANYWHERE)));
+		}
 		if (published != null)
 			crit.add(Expression.eq("published", published));
 		
