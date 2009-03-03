@@ -30,7 +30,22 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
+import org.springframework.util.StringUtils;
 
+/**
+ * Controller for the <openmrs:require> taglib used on jsp pages. This taglib restricts the page
+ * view to currently logged in (or anonymous) users that have the given privileges. <br/>
+ * <br/>
+ * Example use case:
+ * 
+ * <pre>
+ * &lt;openmrs:require privilege="Manage Concept Classes" otherwise="/login.htm" redirect="/admin/concepts/conceptClass.form" />
+ * </pre>
+ * 
+ * This will demand that the user have the "Manage Concept Classes" privilege. If they don't, kick
+ * the user back to the "/login.htm" page. Then, after they log in on that page, send the user to
+ * "/admin/concepts/conceptClass.form".
+ */
 public class RequireTag extends TagSupport {
 	
 	public static final long serialVersionUID = 122998L;
@@ -39,12 +54,30 @@ public class RequireTag extends TagSupport {
 	
 	private String privilege;
 	
+	private String allPrivileges;
+	
+	private String anyPrivilege;
+	
 	private String otherwise;
 	
 	private String redirect;
 	
 	private boolean errorOccurred;
 	
+	/**
+	 * This is where all the magic happens. The privileges are checked and the user is redirected if
+	 * need be. <br/>
+	 * <br/>
+	 * Returns SKIP_PAGE if the user doesn't have the privilege and SKIP_BODY if it does.
+	 * 
+	 * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
+	 * @should allow user with the privilege
+	 * @should allow user to have any privilege
+	 * @should allow user with all privileges
+	 * @should reject user without the privilege
+	 * @should reject user without any of the privileges
+	 * @should reject user without all of the privileges
+	 */
 	public int doStartTag() {
 		
 		errorOccurred = false;
@@ -63,15 +96,21 @@ public class RequireTag extends TagSupport {
 			throw new APIException("The context is currently null.  Please try reloading the site.");
 		}
 		
-		if (!userContext.hasPrivilege(privilege)) {
+		// Parse comma-separated list of privileges in allPrivileges and anyPrivileges attributes
+		String[] allPrivilegesArray = StringUtils.commaDelimitedListToStringArray(allPrivileges);
+		String[] anyPrivilegeArray = StringUtils.commaDelimitedListToStringArray(anyPrivilege);
+		
+		boolean hasPrivilege = hasPrivileges(userContext, privilege, allPrivilegesArray, anyPrivilegeArray);
+		if (!hasPrivilege) {
 			errorOccurred = true;
 			if (userContext.isAuthenticated()) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.unauthorized");
 				log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + redirect
-				        + " which requires privilege: " + privilege);
+				        + " which requires privilege: " + privilege + " or one of: " + allPrivileges + " or any of "
+				        + anyPrivilege);
 			} else
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
-		} else if (userContext.hasPrivilege(privilege) && userContext.isAuthenticated()) {
+		} else if (hasPrivilege && userContext.isAuthenticated()) {
 			// redirect users to password change form
 			User user = userContext.getAuthenticatedUser();
 			Boolean forcePasswordChange = new Boolean(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
@@ -158,6 +197,62 @@ public class RequireTag extends TagSupport {
 		return true;
 	}
 	
+	/**
+	 * Returns true if all of the following three are true:
+	 * <ul>
+	 * <li>privilege is not defined OR user has privilege</li>
+	 * <li>allPrivileges is not defined OR user has every privilege in allPrivileges</li>
+	 * <li>anyPrivilege is not defined OR user has at least one of the privileges in anyPrivileges</li>
+	 * </ul>
+	 * 
+	 * @param userContext current user context
+	 * @param privilege a single required privilege
+	 * @param allPrivilegesArray an array of required privileges
+	 * @param anyPrivilegeArray an array of privileges, at least one of which is required
+	 * @return true if privilege conditions are met
+	 */
+	private boolean hasPrivileges(UserContext userContext, String privilege, String[] allPrivilegesArray,
+	                              String[] anyPrivilegeArray) {
+		if (privilege != null && !userContext.hasPrivilege(privilege.trim()))
+			return false;
+		if (allPrivilegesArray.length > 0 && !hasAllPrivileges(userContext, allPrivilegesArray))
+			return false;
+		if (anyPrivilegeArray.length > 0 && !hasAnyPrivilege(userContext, anyPrivilegeArray))
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Returns true if user has all privileges
+	 * 
+	 * @param userContext current user context
+	 * @param allPrivilegesArray list of privileges
+	 * @return true if user has all of the privileges
+	 */
+	private boolean hasAllPrivileges(UserContext userContext, String[] allPrivilegesArray) {
+		for (String p : allPrivilegesArray)
+			if (!userContext.hasPrivilege(p.trim()))
+				return false;
+		return true;
+	}
+	
+	/**
+	 * Returns true if user has any of the privileges
+	 * 
+	 * @param userContext current user context
+	 * @param anyPriviegeArray list of privileges
+	 * @return true if user has at least one of the privileges
+	 */
+	private boolean hasAnyPrivilege(UserContext userContext, String[] anyPriviegeArray) {
+		for (String p : anyPriviegeArray)
+			if (userContext.hasPrivilege(p.trim()))
+				return true;
+		return false;
+	}
+	
+	/**
+	 * @see javax.servlet.jsp.tagext.TagSupport#doEndTag()
+	 */
 	public int doEndTag() {
 		if (errorOccurred)
 			return SKIP_PAGE;
@@ -171,6 +266,22 @@ public class RequireTag extends TagSupport {
 	
 	public void setPrivilege(String privilege) {
 		this.privilege = privilege;
+	}
+	
+	public String getAllPrivileges() {
+		return allPrivileges;
+	}
+	
+	public void setAllPrivileges(String allPrivileges) {
+		this.allPrivileges = allPrivileges;
+	}
+	
+	public String getAnyPrivileges() {
+		return anyPrivilege;
+	}
+	
+	public void setAnyPrivileges(String anyPrivilege) {
+		this.anyPrivilege = anyPrivilege;
 	}
 	
 	public String getOtherwise() {
