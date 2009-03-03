@@ -380,7 +380,10 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#findForms(java.lang.String, boolean, boolean)
 	 */
 	public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
-		return getForms(text, includeUnpublished, null, includeRetired, null, null, null);
+		if (includeUnpublished)
+			return getForms(text, null, null, includeRetired, null, null, null);
+		else
+			return getForms(text, true, null, includeRetired, null, null, null);
 	}
 	
 	/**
@@ -529,7 +532,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#getPublishedForms()
 	 */
 	public List<Form> getPublishedForms() throws APIException {
-		return getForms(null, true, null, null, null, null, null);
+		return getForms(null, true, null, false, null, null, null);
 	}
 	
 	/**
