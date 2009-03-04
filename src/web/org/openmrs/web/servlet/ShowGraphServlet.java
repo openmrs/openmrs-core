@@ -192,10 +192,11 @@ public class ShowGraphServlet extends HttpServlet {
 			}
 			catch (IOException e) {
 				// if its tomcat and the user simply navigated away from the page, don't throw an error
-				if (e.getClass().getName().equals("ClientAbortException")) {
+				if (e.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
 					// do nothing
 				}
 				else {
+					log.error("Error class name: " + e.getClass().getName());
 					log.error("Unable to write chart", e);
 				}
 			}
