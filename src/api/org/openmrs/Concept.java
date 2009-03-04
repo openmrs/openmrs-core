@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsConstants;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -541,7 +542,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public ConceptName getName(Locale locale, boolean exact) {
 		
 		// fail early if this concept has no names defined
-		if (getNames() == null || names.size() == 0) {
+		if (getNames() == null || getNames().size() == 0) {
 			if (log.isDebugEnabled())
 				log.debug("there are no names defined for: " + conceptId);
 			return null;
@@ -997,7 +998,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		ConceptName shortestName = null;
 		
 		if (locale == null)
-			locale = Locale.US;
+			locale = LocaleUtility.getDefaultLocale();
 		
 		String desiredLanguage = locale.getLanguage();
 		if (desiredLanguage.length() > 2)
@@ -1119,7 +1120,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		ConceptDescription foundDescription = null;
 		
 		if (locale == null)
-			locale = LocaleUtility.DEFAULT_LOCALE;
+			locale = LocaleUtility.getDefaultLocale();
 		
 		Locale desiredLocale = locale;
 		
@@ -1129,7 +1130,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 			Locale availableLocale = availableDescription.getLocale();
 			if (availableLocale.equals(desiredLocale))
 				foundDescription = availableDescription;
-			if (availableLocale.equals(LocaleUtility.DEFAULT_LOCALE))
+			if (availableLocale.equals(locale))
 				defaultDescription = availableDescription;
 		}
 		

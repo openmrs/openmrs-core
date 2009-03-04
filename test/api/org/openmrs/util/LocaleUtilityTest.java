@@ -18,12 +18,18 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.context.Context;
+import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.TestUtil;
+import org.openmrs.test.Verifies;
 
 /**
- * Behavior-driven unit tests for LocaleUtility.
+ * Behavior-driven unit tests for {@link LocaleUtility} class
  */
-public class LocaleUtilityTest {
+public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	
 	@Test
 	public void shouldConfirmMatchingLanguageAsCompatible() {
@@ -79,6 +85,59 @@ public class LocaleUtilityTest {
 		Locale rhs = Locale.FRENCH;
 		
 		assertFalse(LocaleUtility.areCompatible(lhs, rhs));
+	}
+	
+	/**
+	 * @see {@link LocaleUtility#getDefaultLocale()}
+	 */
+	@Test
+	@Verifies(value = "should not fail with bogus global property value", method = "getDefaultLocale()")
+	public void getDefaultLocale_shouldNotFailWithBogusGlobalPropertyValue() throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "asdfasdf"));
+		
+		// not check for nonnullness
+		Assert.assertNotNull(LocaleUtility.getDefaultLocale());
+	}
+	
+	/**
+	 * @see {@link LocaleUtility#getDefaultLocale()}
+	 */
+	@Test
+	@Verifies(value = "should not fail with empty global property value", method = "getDefaultLocale()")
+	public void getDefaultLocale_shouldNotFailWithEmptyGlobalPropertyValue() throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, ""));
+		
+		// not check for nonnullness
+		Assert.assertNotNull(LocaleUtility.getDefaultLocale());
+	}
+	
+	/**
+	 * @see {@link LocaleUtility#getDefaultLocale()}
+	 */
+	@Test
+	@Verifies(value = "should not return null if global property does not exist", method = "getDefaultLocale()")
+	public void getDefaultLocale_shouldNotReturnNullIfGlobalPropertyDoesNotExist() throws Exception {
+		TestUtil.printOutTableContents(getConnection(), "global_property");
+		// sanity check
+		Assert.assertNull(Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE));
+		
+		// not check for nonnullness
+		Assert.assertNotNull(LocaleUtility.getDefaultLocale());
+	}
+	
+	/**
+	 * @see {@link LocaleUtility#getDefaultLocale()}
+	 */
+	@Test
+	@Verifies(value = "should return locale object for global property", method = "getDefaultLocale()")
+	public void getDefaultLocale_shouldReturnLocaleObjectForGlobalProperty() throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "ja"));
+		
+		Assert.assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
 	}
 	
 }

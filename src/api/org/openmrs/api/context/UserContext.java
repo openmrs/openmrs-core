@@ -25,6 +25,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.db.ContextDAO;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -56,7 +57,7 @@ public class UserContext {
 	/**
 	 * User's locale
 	 */
-	private Locale locale = Locale.US;
+	private Locale locale = null;
 	
 	/**
 	 * Cached Role given to all authenticated users
@@ -203,6 +204,9 @@ public class UserContext {
 	 * @return current locale for this context
 	 */
 	public Locale getLocale() {
+		if (locale == null)
+			locale = LocaleUtility.getDefaultLocale();
+		
 		return locale;
 	}
 	

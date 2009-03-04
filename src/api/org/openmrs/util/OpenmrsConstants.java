@@ -694,6 +694,10 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS = "minSearchCharacters";
 	
+	public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "default_locale";
+	
+	public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE = "en_GB";
+	
 	/**
 	 * These properties (and default values) are set if not found in the database when OpenMRS is
 	 * started if they do not exist yet
@@ -786,7 +790,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));
-		props.add(new GlobalProperty("concept.cd4_count", "5497", "Concept id of the concept defining the CD4 count concept"));
+		props
+		        .add(new GlobalProperty("concept.cd4_count", "5497",
+		                "Concept id of the concept defining the CD4 count concept"));
 		props.add(new GlobalProperty("concept.causeOfDeath", "5002",
 		        "Concept id of the concept defining the CAUSE OF DEATH concept"));
 		props.add(new GlobalProperty("concept.none", "1107", "Concept id of the concept defining the NONE concept"));
@@ -923,6 +929,12 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "3",
 		        "Number of characters user must input before searching is started."));
 		
+		props
+		        .add(new GlobalProperty(
+		                OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE,
+		                OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE,
+		                "Specifies the default locale. You can specify both the language code(ISO-639) and the country code(ISO-3166), e.g. 'en_GB' or just country: e.g. 'en'"));
+		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
@@ -976,7 +988,10 @@ public final class OpenmrsConstants {
 		return languages;
 	}
 	
-	public static final Locale GLOBAL_DEFAULT_LOCALE = Locale.US;
+	/**
+	 * @deprecated use {@link LocaleUtility#getDefaultLocale()}
+	 */
+	public static final Locale GLOBAL_DEFAULT_LOCALE = LocaleUtility.DEFAULT_LOCALE;
 	
 	/**
 	 * @return Collection of locales that the concept dictionary should be aware of
