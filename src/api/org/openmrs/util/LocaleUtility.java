@@ -29,7 +29,8 @@ public class LocaleUtility {
 	
 	/**
 	 * Default internal locale.
-	 * @deprecated use {@link #getDefaultLocale()} now 
+	 * 
+	 * @deprecated use {@link #getDefaultLocale()} now
 	 */
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
 	
@@ -44,9 +45,9 @@ public class LocaleUtility {
 	 */
 	public static Locale getDefaultLocale() {
 		try {
-			String locale = Context.getAdministrationService()
-		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
-		
+			String locale = Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE);
+			
 			if (StringUtils.hasLength(locale)) {
 				try {
 					return new Locale(locale);
@@ -71,6 +72,12 @@ public class LocaleUtility {
 	 * @param lhs left hand side Locale
 	 * @param rhs right hand side Locale
 	 * @return true if the two locales are compatible, false otherwise
+	 * @should confirm different language missing country as compatible
+	 * @should confirm same language missing country as compatible
+	 * @should not confirm different country as compatible
+	 * @should confirm matching country as compatible
+	 * @should not confirm different language as compatible
+	 * @should confirm matching language as compatible
 	 */
 	public static boolean areCompatible(Locale lhs, Locale rhs) {
 		if (lhs.equals(rhs)) {
@@ -86,13 +93,20 @@ public class LocaleUtility {
 	
 	/**
 	 * Creates a locale based on a string specification. The specification must be conform with the
-	 * following format: ll_CC_vv Where: ll two-character lowercase ISO-639 language code CC
-	 * two-character uppercase ISO-3166 country code optional vv arbitrary length variant code For
-	 * example: en_US_Traditional_WIN ...represents English language in the United States with the
-	 * traditional collation for windows.
+	 * following format: ll_CC_vv <br/>
+	 * <ul>
+	 * <li>ll: two-character lowercase ISO-639 language code
+	 * <li>CC: two-character uppercase ISO-3166 country code optional
+	 * <li>vv: arbitrary length variant code
+	 * </ul>
+	 * For example: en_US_Traditional_WIN ...represents English language in the United States with
+	 * the traditional collation for windows.
 	 * 
 	 * @param localeSpecification encoded locale specification
 	 * @return the representative Locale, or null if the specification is invalid
+	 * @should get locale from two character language code
+	 * @should get locale from language code and country code
+	 * @should get locale from language code country code and variant
 	 */
 	public static Locale fromSpecification(String localeSpecification) {
 		Locale createdLocale = null;
@@ -105,7 +119,7 @@ public class LocaleUtility {
 		} else if (localeComponents.length == 2) {
 			createdLocale = new Locale(localeComponents[0], localeComponents[1]);
 		} else if (localeComponents.length > 2) {
-			String variant = localeSpecification.substring(localeSpecification.indexOf(localeComponents[2]));
+			String variant = localeSpecification.substring(localeSpecification.indexOf(localeComponents[2])); // gets everything after the second underscore
 			createdLocale = new Locale(localeComponents[0], localeComponents[1], variant);
 		}
 		
