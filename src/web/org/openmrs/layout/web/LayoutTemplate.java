@@ -13,6 +13,7 @@
  */
 package org.openmrs.layout.web;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,20 +48,15 @@ public abstract class LayoutTemplate {
 	
 	private String replaceTokens(String line) {
 		LayoutSupport<?> as = getLayoutSupportInstance();
-		List<String> specialTokens = as.getSpecialTokens();
-		
+		List<String> specialTokens = nonUniqueStringsGoLast(as.getSpecialTokens());
 		for (String token : specialTokens) {
 			line = line.replaceAll(token, this.LAYOUT_TOKEN);
 		}
-		
 		return line;
 	}
 	
 	private List<Map<String, String>> convertToTokens(String line, String[] nonTokens) {
 		List<Map<String, String>> ret = null;
-		
-		//int numTokens = 0;
-		
 		if (line != null && nonTokens != null && nonTokens.length > 0) {
 			int idxCurr = -1;
 			
@@ -81,7 +77,6 @@ public abstract class LayoutTemplate {
 					currToken.put("displaySize", this.getSizeMappings().get(realToken));
 					currToken.put("codeName", realToken);
 					//numTokens++;
-					
 					ret.add(currToken);
 				}
 				
@@ -95,12 +90,12 @@ public abstract class LayoutTemplate {
 					
 					Map<String, String> currToken = new HashMap<String, String>();
 					currToken.put("isToken", getLayoutToken());
+					//HERE:  real Token is wrong...
 					String realToken = line.substring(idxCurr + nonToken.length(), idxNext);
 					currToken.put("displayText", this.getNameMappings().get(realToken));
 					currToken.put("displaySize", this.getSizeMappings().get(realToken));
 					currToken.put("codeName", realToken);
 					//numTokens++;
-					
 					ret.add(currNonToken);
 					ret.add(currToken);
 				} else {
@@ -110,7 +105,6 @@ public abstract class LayoutTemplate {
 					currNonToken.put("displayText", nonToken);
 					
 					ret.add(currNonToken);
-					
 					if (idxCurr + nonToken.length() >= line.length()) {
 						// we are at the end, so we are done
 					} else {
@@ -122,7 +116,6 @@ public abstract class LayoutTemplate {
 						currToken.put("displaySize", this.getSizeMappings().get(realToken));
 						currToken.put("codeName", realToken);
 						//numTokens++;
-						
 						ret.add(currToken);
 					}
 				}
@@ -293,5 +286,20 @@ public abstract class LayoutTemplate {
 	}
 	
 	public abstract LayoutSupport<?> getLayoutSupportInstance();
+
+	public List<String> nonUniqueStringsGoLast(List<String> strList){
+		List<String> dup = new ArrayList<String>();
+			for (String s: strList){
+				for (String sInner: strList){
+					if (sInner.indexOf(s) != -1 && s.length() < sInner.length() && !dup.contains(s))
+						dup.add(s);
+				}
+			}
+		if (dup.size() > 1)	
+			dup = nonUniqueStringsGoLast(dup);
+		strList.removeAll(dup);
+		strList.addAll(dup);
+		return strList;
+	}
 	
 }
