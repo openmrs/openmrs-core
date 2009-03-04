@@ -152,8 +152,8 @@
   <concept_name_tag_map concept_name_id="2479" concept_name_tag_id="3"/>
   <concept_name_tag_map concept_name_id="2480" concept_name_tag_id="3"/>
   <concept_name_tag_map concept_name_id="2481" concept_name_tag_id="3"/>
+  <concept_numeric concept_id="5497" hi_normal="1497.0" low_critical="99.0" low_normal="445.0" hi_critical="1800.0" hi_absolute="2500.0" low_absolute="0.0" units="cells/mmL" precise="false"/>
   <concept_numeric concept_id="5089" hi_normal="250.0" low_critical="0.0" units="kg" precise="true"/>
-  <concept_numeric concept_id="5497" hi_normal="1497.0" low_critical="99.0" low_normal="445.0" units="cells/mmL" precise="false"/>
   <concept_set concept_id="18" concept_set="23" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0"/>
   <concept_set concept_id="19" concept_set="23" sort_weight="2.0" creator="1" date_created="2008-08-18 12:38:58.0"/>
   <concept_set concept_id="20" concept_set="23" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0"/>

@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
@@ -28,13 +29,16 @@ import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.test.Verifies;
 import org.openmrs.web.controller.ConceptFormController.ConceptFormBackingObject;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -54,7 +58,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		HttpServletResponse response = new MockHttpServletResponse();
 		
-		ConceptFormController controller = new ConceptFormController();
+		ConceptFormController controller = (ConceptFormController) applicationContext.getBean("conceptForm");
 		
 		ModelAndView modelAndView = controller.handleRequest(request, response);
 		
@@ -77,7 +81,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		ConceptService cs = Context.getConceptService();
 		
 		// set up the controller
-		ConceptFormController controller = new ConceptFormController();
+		ConceptFormController controller = (ConceptFormController) applicationContext.getBean("conceptForm");
 		controller.setApplicationContext(applicationContext);
 		controller.setSuccessView("index.htm");
 		controller.setFormView("concept.form");
@@ -102,6 +106,11 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * This test concept form being submitted with only one name supplied
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void shouldAddConceptWithOnlyNameSpecified() throws Exception {
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
@@ -134,6 +143,11 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertNull(actualConcept.getDescription(Locale.ENGLISH));
 	}
 	
+	/**
+	 * This tests a concept form being submitted with also a short name supplied
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void shouldAddConceptWithNameAndShortNameSpecified() throws Exception {
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
@@ -169,6 +183,11 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertNull(actualConcept.getDescription(Locale.ENGLISH));
 	}
 	
+	/**
+	 * Tests a concept form being submitted with name/shortname/description all filled in
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void shouldAddConceptWithNameAndShortNameAndDescriptionSpecifiedToCodeConcepts() throws Exception {
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
@@ -209,6 +228,11 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertEquals(EXPECTED_DESCRIPTION, actualConcept.getDescription(Locale.ENGLISH).getDescription());
 	}
 	
+	/**
+	 * Tests a concept form being submitted with a name and description for numeric type of concepts
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void shouldAddConceptWithNameAndShortNameAndDescriptionSpecifiedToNumericConcepts() throws Exception {
 		final String EXPECTED_PREFERRED_NAME = "no such concept";
@@ -450,4 +474,82 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertNotNull(actualConcept.getDescription(Locale.ENGLISH));
 		assertEquals(EXPECTED_DESCRIPTION, actualConcept.getDescription(Locale.ENGLISH).getDescription());
 	}
+	
+	/**
+	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should copy numeric values into numeric concepts", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldCopyNumericValuesIntoNumericConcepts() throws Exception {
+		final Double EXPECTED_LOW_ABSOLUTE = 100.0;
+		final Double EXPECTED_LOW_CRITICAL = 103.0;
+		final Double EXPECTED_LOW_NORMAL = 105.0;
+		final Double EXPECTED_HI_NORMAL = 110.0;
+		final Double EXPECTED_HI_CRITICAL = 117.0;
+		final Double EXPECTED_HI_ABSOLUTE = 120.0;
+		
+		ConceptService cs = Context.getConceptService();
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("namesByLocale[en].name", "WEIGHT (KG)");
+		mockRequest.setParameter("conceptId", "5089");
+		mockRequest.setParameter("concept.datatype", "1");
+		mockRequest.setParameter("lowAbsolute", EXPECTED_LOW_ABSOLUTE.toString());
+		mockRequest.setParameter("lowCritical", EXPECTED_LOW_CRITICAL.toString());
+		mockRequest.setParameter("lowNormal", EXPECTED_LOW_NORMAL.toString());
+		mockRequest.setParameter("hiNormal", EXPECTED_HI_NORMAL.toString());
+		mockRequest.setParameter("hiCritical", EXPECTED_HI_CRITICAL.toString());
+		mockRequest.setParameter("hiAbsolute", EXPECTED_HI_ABSOLUTE.toString());
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		ConceptNumeric concept = (ConceptNumeric)cs.getConcept(5089);
+		Assert.assertEquals(EXPECTED_LOW_NORMAL, concept.getLowNormal());
+		Assert.assertEquals(EXPECTED_HI_NORMAL, concept.getHiNormal());
+		Assert.assertEquals(EXPECTED_LOW_ABSOLUTE, concept.getLowAbsolute());
+		Assert.assertEquals(EXPECTED_HI_ABSOLUTE, concept.getHiAbsolute());
+		Assert.assertEquals(EXPECTED_LOW_CRITICAL, concept.getLowCritical());
+		Assert.assertEquals(EXPECTED_HI_CRITICAL, concept.getHiCritical());
+	}
+
+	/**
+     * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should display numeric values from table", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+    public void onSubmit_shouldDisplayNumericValuesFromTable() throws Exception {
+    	final Double EXPECTED_LOW_ABSOLUTE = 0.0;
+		final Double EXPECTED_LOW_CRITICAL = 99.0;
+		final Double EXPECTED_LOW_NORMAL = 445.0;
+		final Double EXPECTED_HI_NORMAL = 1497.0;
+		final Double EXPECTED_HI_CRITICAL = 1800.0;
+		final Double EXPECTED_HI_ABSOLUTE = 2500.0;
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		
+		mockRequest.setMethod("GET");
+		mockRequest.setParameter("conceptId", "5497");
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
+
+		assertNotNull(mav);
+		ConceptFormBackingObject formBackingObject = (ConceptFormBackingObject)mav.getModel().get("command");
+
+		Assert.assertEquals(EXPECTED_LOW_NORMAL, formBackingObject.getLowNormal());
+		Assert.assertEquals(EXPECTED_HI_NORMAL, formBackingObject.getHiNormal());
+		Assert.assertEquals(EXPECTED_LOW_ABSOLUTE, formBackingObject.getLowAbsolute());
+		Assert.assertEquals(EXPECTED_HI_ABSOLUTE, formBackingObject.getHiAbsolute());
+		Assert.assertEquals(EXPECTED_LOW_CRITICAL, formBackingObject.getLowCritical());
+		Assert.assertEquals(EXPECTED_HI_CRITICAL, formBackingObject.getHiCritical());
+    }
+	
 }
