@@ -232,7 +232,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
-		String expectedOutput = "PATIENT_ID	Other	Other_obsDatetime 	Other_(1)	Other_obsDatetime_(1)	W-last	W-last_obsDatetime 	W-last_(1)	W-last_obsDatetime_(1)\n2					10.0	02/18/2006	9.0	02/17/2006\n";
+		String expectedOutput = "PATIENT_ID	Other	Other_obsDatetime 	Other_(1)	Other_obsDatetime_(1)	W-last	W-last_obsDatetime 	W-last_(1)	W-last_obsDatetime_(1)\n2					10.0	18/02/2006	9.0	17/02/2006\n";
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		

@@ -93,13 +93,6 @@ public interface ContextDAO {
 	public void shutdown();
 	
 	/**
-	 * Compares core data against the current database and inserts data into the database where
-	 * necessary
-	 */
-	@Transactional
-	public void checkCoreDataset();
-	
-	/**
 	 * Merge in the default properties defined for this database connection
 	 * 
 	 * @param runtimeProperties The current user specific runtime properties

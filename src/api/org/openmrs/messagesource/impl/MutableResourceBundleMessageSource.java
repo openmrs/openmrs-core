@@ -80,14 +80,6 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	private Collection<Locale> findLocales() {
 		Collection<Locale> foundLocales = new HashSet<Locale>();
 		
-		/* ABK: deprecated
-		locales.add(Locale.US);
-		locales.add(Locale.UK);
-		locales.add(Locale.FRENCH);
-		locales.add(new Locale("es")); // Spanish
-		locales.add(new Locale("pt")); // Portugese
-		 */
-
 		for (File propertiesFile : findPropertiesFiles()) {
 			String filename = propertiesFile.getName();
 			

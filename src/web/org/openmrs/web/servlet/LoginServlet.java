@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.OpenmrsCookieLocaleResolver;
 import org.openmrs.web.WebConstants;
@@ -143,7 +144,7 @@ public class LoginServlet extends HttpServlet {
 					
 					// In case the user has no preferences, make sure that the context has some locale set
 					if (Context.getLocale() == null) {
-						Context.setLocale(OpenmrsConstants.GLOBAL_DEFAULT_LOCALE);
+						Context.setLocale(LocaleUtility.getDefaultLocale());
 					}
 					
 					if (log.isDebugEnabled()) {
