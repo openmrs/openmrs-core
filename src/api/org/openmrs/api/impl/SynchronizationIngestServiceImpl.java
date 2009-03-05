@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.TreeSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +31,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.synchronization.SyncConstants;
 import org.openmrs.synchronization.SyncItemState;
 import org.openmrs.synchronization.SyncRecordState;
+import org.openmrs.synchronization.SyncPreCommitAction;
 import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.synchronization.engine.SyncItem;
@@ -45,7 +49,7 @@ import org.w3c.dom.Element;
 public class SynchronizationIngestServiceImpl implements SynchronizationIngestService {
 
     private Log log = LogFactory.getLog(this.getClass());
-     
+    
     /**
      * 
      * @see org.openmrs.api.SynchronizationIngestService#processSyncImportRecord(SyncImportRecord importRecord)
@@ -93,6 +97,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         importRecord.setState(SyncRecordState.FAILED);  // by default, until we know otherwise
         importRecord.setRetryCount(record.getRetryCount());
         importRecord.setTimestamp(record.getTimestamp());
+        List<SyncPreCommitAction> preCommitRecordActions = new ArrayList<SyncPreCommitAction> ();  
         
         try {
             // first, let's see if this server even accepts this kind of syncRecord
@@ -147,7 +152,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                     	if (item.getState() == SyncItemState.DELETED) {
                     		deletedItems.add(item);
                     	} else {
-	                        SyncImportItem importedItem = this.processSyncItem(item, record.getOriginalGuid() + "|" + server.getGuid());
+	                        SyncImportItem importedItem = this.processSyncItem(item, record.getOriginalGuid() + "|" + server.getGuid(),preCommitRecordActions);
 	                        importedItem.setKey(item.getKey());
 	                        importRecord.addItem(importedItem);
 	                        if ( !importedItem.getState().equals(SyncItemState.SYNCHRONIZED)) isError = true;
@@ -167,11 +172,19 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
                      */
                 	Context.getSynchronizationService().setFlushModeManual(); 
                     for ( SyncItem item : deletedItems ) {
-                        SyncImportItem importedItem = this.processSyncItem(item, record.getOriginalGuid() + "|" + server.getGuid());
+                        SyncImportItem importedItem = this.processSyncItem(item, record.getOriginalGuid() + "|" + server.getGuid(),preCommitRecordActions);
                         importedItem.setKey(item.getKey());
                         importRecord.addItem(importedItem);
                         if ( !importedItem.getState().equals(SyncItemState.SYNCHRONIZED)) isError = true;
                     }
+                    Context.getSynchronizationService().flushSession();
+                    Context.getSynchronizationService().setFlushModeAutomatic();
+                    
+                    /* 
+                     * finally execute the pending actions that resulted from processing all sync items 
+                     */
+                    Context.getSynchronizationService().setFlushModeManual();
+                    SyncUtil.applyPreCommitRecordActions(preCommitRecordActions);
                     Context.getSynchronizationService().flushSession();
                     Context.getSynchronizationService().setFlushModeAutomatic();
                     
@@ -238,7 +251,20 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         return importRecord;
     }
     
-    public SyncImportItem processSyncItem(SyncItem item, String originalGuid)  throws APIException {
+    /**
+     * Note: preCommitRecordActions collection is provided as a way for the synchronizable instances to 'schedule' action that is necessary
+     * for processing of the object yet it cannot be applied until the end of the processing of the parent sync record. For example, rebuild XSN
+     * cannot happen until all form fields held in the sync items are applied first; thus the call to rebuild XSN need to happen after all
+     * sync items were processed and before committing the sync record.
+     * 
+     * HashMap contained in the collection is to capture the action, and the necessary object to resolve that action. The action
+     * is understood and applied by {@link org.openmrs.synchronization.SyncUtil#applyPreCommitRecordActions(ArrayList)}
+     * 
+     * @see org.openmrs.api.SynchronizationIngestService#processSyncItem(org.openmrs.synchronization.engine.SyncItem, java.lang.String, java.util.ArrayList)
+     * @see org.openmrs.synchronization.SyncUtil#applyPreCommitRecordActions(ArrayList)
+     * 
+     */
+    public SyncImportItem processSyncItem(SyncItem item, String originalGuid,List<SyncPreCommitAction> preCommitRecordActions)  throws APIException {
     	String itemContent = null;
         SyncImportItem ret = null; 
 
@@ -260,7 +286,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
             	log.debug("Processing a persistent collection");
             	processHibernateCollection(o.getClass(),itemContent,originalGuid);
             } else {
-            	processSynchronizable((Synchronizable)o,item,originalGuid);
+            	processSynchronizable((Synchronizable)o,item,originalGuid,preCommitRecordActions);
             }
             ret.setState(SyncItemState.SYNCHRONIZED);                
         } catch (SyncIngestException e) {
@@ -466,7 +492,9 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         
         //finally, trigger update
         try {
-            SyncUtil.updateOpenmrsObject2(owner, ownerClassName, ownerGuid);
+        	//no need to mess around with precommit actions for collections, at least
+        	//at this point
+            SyncUtil.updateOpenmrsObject2(owner, ownerClassName, ownerGuid,null);
         } catch ( Exception e ) {
         	e.printStackTrace();
             throw new SyncIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, ownerClassName, incoming,null);
@@ -486,18 +514,24 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
      * is the object type and its GUID. Consequently, the process for handling deletes consists of first fetching 
      * existing object by guid and then deleting it by a call to sync service API. Note, if object is not found in DB by its guid, we
      * skip the delete and record warning message. 
+     * <p/>
+     * preCommitRecordActions collection is provided as a way for the synchronizable instances to 'schedule' action that is necessary
+     * for processing of the object yet it cannot be applied until the end of the processing of the parent sync record. For example, rebuild XSN
+     * cannot happen until all form fields held in the sync items are applied first; thus the call to rebuild XSN need to happen after all
+     * sync items were processed and before committing the sync record.
      *  
      * @param o empty instance of class that this SyncItem represents 
      * @param incoming Serialized state of SyncItem.
      * @param originalGuid Unique id of the object that is stored in SyncItem recorded when this object was first created. NOTE:
      * this value is retained and forwarded unchanged throughout the network of sychronizing servers in order to avoid re-applying
      * same changes over and over.
+     * @param preCommitRecordActions collection of actions that will be applied a the end of the processing sync record
      * 
      * @see SyncUtil#setProperty(Object, String, Object)
      * @see SyncUtil#getOpenmrsObj(String, String)
      * @see SyncUtil#updateOpenmrsObject(Object, String, String, boolean)
      */
-    private void processSynchronizable(Synchronizable o, SyncItem item, String originalGuid) throws Exception {
+    private void processSynchronizable(Synchronizable o, SyncItem item, String originalGuid, List<SyncPreCommitAction> preCommitRecordActions) throws Exception {
 
     	String itemContent = null;
         String className = null;
@@ -559,7 +593,7 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 	        // now try to commit this fully inflated object
 	        try {
 	        	log.warn("About to update or create a " + className + " object, guid: " + guid);
-	            SyncUtil.updateOpenmrsObject2(o, className, guid);
+	            SyncUtil.updateOpenmrsObject2(o, className, guid,preCommitRecordActions);
 	            Context.getSynchronizationService().flushSession();
 	        } catch ( Exception e ) {
 	        	e.printStackTrace();

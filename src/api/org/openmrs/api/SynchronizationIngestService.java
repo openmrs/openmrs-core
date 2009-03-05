@@ -13,6 +13,10 @@
  */
 package org.openmrs.api;
 
+import java.util.List;
+
+import org.openmrs.synchronization.SyncPreCommitAction;
+import org.openmrs.synchronization.SyncUtil;
 import org.openmrs.synchronization.ingest.SyncIngestException;
 import org.openmrs.synchronization.engine.SyncRecord;
 import org.openmrs.synchronization.engine.SyncItem;
@@ -45,9 +49,10 @@ public interface SynchronizationIngestService {
      * 
      * @param item instance of syncItem to be processed.
      * @param originalGuid
+     * @param preCommitRecordActions
      * @return
      * @throws APIException
      */
     //@Authorized({"Manage Synchronization Records"})
-    public SyncImportItem processSyncItem(SyncItem item, String originalGuid)  throws APIException;
+    public SyncImportItem processSyncItem(SyncItem item, String originalGuid,List<SyncPreCommitAction> preCommitRecordActions)  throws APIException;
 }

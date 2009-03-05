@@ -27,9 +27,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.zip.CRC32;
@@ -107,7 +109,7 @@ import org.w3c.dom.NodeList;
 public class SyncUtil {
 
 	private static Log log = LogFactory.getLog(SyncUtil.class);		
-	    
+		
 	public static Object getRootObject(String incoming)
 			throws Exception {
 		
@@ -494,15 +496,21 @@ public class SyncUtil {
     /**
      * Replaces updateOpenmrsObject by using generic hibernate API to perform the save as oposed to service API. Exceptions that 
      * still need custom code:
-     * <br />LoginCredential: 
+     * <br />LoginCredential
+     * <br />Concept - needs name rebuild
+     * <br />Form - may need rebuild XSN  
      *  
      * @param o object to save
      * @param className type
      * @param guid unique id of the object that is being saved
+     * @param preCommitRecordActions actions set to be added to if needed, also SynchronizationIngestServiceImpl.processSynchronizable 
      * 
      * @see SyncUtil#updateOpenmrsObject(Object, String, String, boolean)
      */
-    public static synchronized void updateOpenmrsObject2(Synchronizable o, String className, String guid) {
+    public static synchronized void updateOpenmrsObject2(Synchronizable o, 
+    		String className, 
+    		String guid, 
+    		List<SyncPreCommitAction> preCommitRecordActions) {
 
     	//first handle weird stuff
     	if ( "org.openmrs.LoginCredential".equals(className) ) {
@@ -536,9 +544,10 @@ public class SyncUtil {
 			log.warn("Will not update OpenMRS object that is NULL");
 		}
     	
-    	//for forms, we need to rebuild XSN, do it here
+    	//for forms, we need signal to rebuild XSN, do it here
     	if ("org.openmrs.Form".equals(className)) {
-    		SyncUtil.rebuildXSN((Form)o);
+    		if (preCommitRecordActions != null)
+    			preCommitRecordActions.add(new SyncPreCommitAction(SyncPreCommitAction.PreCommitActionName.REBUILDXSN, o));
     	}
     }
     
@@ -1018,6 +1027,48 @@ public class SyncUtil {
 			log.error("FormEntry module present but failed to rebuild XSN, see stack for error detail." + msg,e);
 			throw new SyncException("FormEntry module present but failed to rebuild XSN, see stack for error detail" + msg,e);
 		}
+		return;
+	}
+	
+	/**
+	 * Applies the 'actions' identified during the processing of the record that need to be 
+	 * processed (for whatever reason) just before the sync record is to be committed.
+	 * 
+	 * The actions understood by this method are those listed in SyncUtil.PreCommitActionName enum:
+	 * <br/>REBUILDXSN 
+	 * <br/>- call to formentry module and attempt to rebuild XSN, 
+	 * <br/>- HashMap object will contain instance of Form object to be rebuilt
+	 * 
+	 * @param preCommitRecordActions actions to be applied
+	 * 
+	 */
+	public static void applyPreCommitRecordActions(List<SyncPreCommitAction> preCommitRecordActions) {
+		
+		if(preCommitRecordActions == null)
+			return;
+		
+		for(SyncPreCommitAction action : preCommitRecordActions) {
+			if(action ==null)
+				break; //this should never happen
+			
+			//actions.
+			//now process actions
+			if (action.getName().equals(SyncPreCommitAction.PreCommitActionName.REBUILDXSN)) {
+				
+				Object o = action.getParam();
+				if (o != null && (o instanceof Form) ) {
+					SyncUtil.rebuildXSN((Form)action.getParam());
+				} else {
+					//error: action was scheduled as rebuild XSN but param passsed was not form
+					throw new SyncException("REBUILDXSN action was scheduled for 'PreCommitRecordActions' exection but param passed was not From, parm passed was:" + action.getParam() );					
+				}
+			}
+			else {
+				//error: action was scheduled for execution that is not understood by this method, throw exception
+				throw new SyncException("Action was scheduled for 'PreCommitRecordActions' exection that is not understood, action name:" + action.getName().toString() );
+			}
+		}
+		
 		return;
 	}
 }
