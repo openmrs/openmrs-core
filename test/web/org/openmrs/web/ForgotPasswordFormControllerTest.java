@@ -21,15 +21,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.web.controller.ForgotPasswordFormController;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Test the different aspects of {@link org.openmrs.web.controller.ForgotPasswordFormController}
  */
-public class ForgotPasswordFormControllerTest extends BaseContextSensitiveTest {
+public class ForgotPasswordFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	/**
 	 * Log out before every test (authentication is done in the "@Before" in the parent class)

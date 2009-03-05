@@ -34,11 +34,11 @@ import org.openmrs.Relationship;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.web.controller.patient.NewPatientFormController;
 import org.openmrs.web.controller.patient.ShortPatientModel;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -49,7 +49,7 @@ import org.springframework.web.servlet.view.RedirectView;
  * Test the methods on the {@link org.openmrs.web.controller.patient.NewPatientFormController}
  */
 @SkipBaseSetup
-public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
+public class NewPatientFormControllerTest extends BaseWebContextSensitiveTest {
 	
 	protected static final String CONTROLLER_DATA = "org/openmrs/web/patient/include/NewPatientFormControllerTest.xml";
 	

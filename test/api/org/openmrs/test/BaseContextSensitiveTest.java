@@ -48,6 +48,7 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DefaultDataSet;
 import org.dbunit.dataset.DefaultTable;
 import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
@@ -71,7 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
  * down. (because spring is started before test cases are run). Normal test cases do not need to
  * extend anything
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath:openmrs-servlet.xml" })
+@ContextConfiguration(locations = { "classpath:applicationContext-service.xml" })
 @TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class })
 @Transactional
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
@@ -200,7 +201,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	
 	/**
 	 * Authenticate to the Context. A popup box will appear asking the current user to enter
-	 * credentials unless there is a junit.username and junit.userpwd defined in the runtime
+	 * credentials unless there is a junit.username and junit.userpassword defined in the runtime
 	 * properties
 	 * 
 	 * @throws Exception
@@ -381,6 +382,25 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
+	 * True/false whether the extra columns not in the hbm mapping files have been added to the
+	 * current database or not.
+	 * 
+	 * @return the columnsAdded value
+	 */
+	public boolean areColumnsAdded() {
+		return BaseContextSensitiveTest.columnsAdded;
+	}
+	
+	/**
+	 * Set the columns added value as either done or not done.
+	 * 
+	 * @param columnsAdded the columnsAdded to save
+	 */
+	public void setColumnsAdded(boolean columnsAdded) {
+		BaseContextSensitiveTest.columnsAdded = columnsAdded;
+	}
+	
+	/**
 	 * This initializes the empty in-memory hsql database with some rows in order to actually run
 	 * some tests
 	 */
@@ -392,7 +412,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		// we only want to add columns once. Hsql won't roll back "alter table" 
 		// commands
-		if (columnsAdded == false) {
+		if (areColumnsAdded() == false) {
 			Connection connection = getConnection();
 			
 			// add the password and salt columns to the users table
@@ -410,7 +430,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			ps.execute();
 			ps.close();
 			
-			columnsAdded = true;
+			setColumnsAdded(true);
 		}
 		
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
@@ -420,7 +440,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * Used by {@link #executeDataSet(String)} to cache the parsed xml files. This speeds up
 	 * subsequent runs of the dataset
 	 */
-	private static Map<String, FlatXmlDataSet> cachedDatasets = new HashMap<String, FlatXmlDataSet>();
+	private static Map<String, IDataSet> cachedDatasets = new HashMap<String, IDataSet>();
 	
 	/**
 	 * Runs the flat xml data file at the classpath location specified by
@@ -435,7 +455,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	public void executeDataSet(String datasetFilename) throws Exception {
 		
 		// try to get the given filename from the cache
-		FlatXmlDataSet xmlDataSetToRun = cachedDatasets.get(datasetFilename);
+		IDataSet xmlDataSetToRun = cachedDatasets.get(datasetFilename);
 		
 		// if we didn't find it in the cache, load it
 		if (xmlDataSetToRun == null) {
@@ -454,7 +474,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			}
 			
 			try {
-				xmlDataSetToRun = new FlatXmlDataSet(fileInInputStreamFormat);
+				ReplacementDataSet replacementDataSet = new ReplacementDataSet(new FlatXmlDataSet(fileInInputStreamFormat));
+				replacementDataSet.addReplacementObject("[NULL]", null);
+				xmlDataSetToRun = replacementDataSet;
 			}
 			finally {
 				fileInInputStreamFormat.close();
