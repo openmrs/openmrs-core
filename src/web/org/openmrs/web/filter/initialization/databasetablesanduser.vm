@@ -1,55 +1,55 @@
 #parse($headerTemplate)
 	<form method="post" autocomplete="off">
 		<input type="hidden" name="page" value="databasetablesanduser.vm" />
-        <div class="content">
-            <table cellpadding="9" align="center" cellspacing="5">
-		  <tr>
-                    <td colspan="2"><strong>Step 2 of 5</strong></td>
-                </tr>
-		     		<tr>
-                    <td colspan="2" class="question" >Do you need OpenMRS to automatically create the tables for your current database - openmrs?</td>
-		     		</tr>
-		     		<tr>
-                    <td>Yes: <input type="radio" name="create_tables" value="yes" #if( $createTables == true )checked="checked"#end /></td>
-                    <td>No: <input type="radio" name="create_tables" value="no" #if( $createTables == false )checked="checked"#end /></td>
-		     		</tr>
-                <tr>
-                    <td colspan="2" class="question" >Do you want to also add demo data to your database - ${databaseName}? (This option only available if creating new tables.)</td>
-		  </tr>
-		  <tr>
-                    <td>Yes: <input type="radio" name="add_demo_data" value="yes" #if( $addDemoData == true )checked="checked"#end/></td>
-                    <td>No: <input type="radio" name="add_demo_data" value="no" #if( $addDemoData == false )checked="checked"#end/></td>
-                </tr>
-		     		<tr>
-                    <td colspan="2" class="question">Do you currently have a database user<i>other than root</i>that has read/write access to the ${databaseName} database?</td>
-		     		</tr>
-		     		<tr>
-                    <td rowspan="3" class="yes" valign="top">Yes <input type="radio" name="current_database_user" value="yes" #if( $hasCurrentDatabaseUser == true )checked="checked"#end/></td>
-                    <td class="yes">If yes, specify the log in user name and password for that database user:</td>
-		     		</tr>
-                <tr>
-                    <td>Username &nbsp;<input type="text" name="current_database_username" value="${currentDatabaseUsername}" onfocus="clickRadio('current_database_user', 'yes')"/></td>
-                </tr>
-                <tr>
-                    <td>Password &nbsp;<input type="password" name="current_database_password" value="${currentDatabasePassword}" onfocus="clickRadio('current_database_user', 'yes')"/></td>
-                </tr>
-                <tr>
-                    <td rowspan="3" class="no" valign="top">No <input type="radio" name="current_database_user" value="no" #if( $hasCurrentDatabaseUser == false )checked="checked"#end/></td>
-                    <td class="no">If no, one will be created for you.  However, a user that has "CREATE USER" privileges on the database <br /> must be specified here so that this wizard can create the user.</td>
-                </tr>
-                <tr>
-                    <td>Username &nbsp; <input type="text" name="create_user_username" value="${createUserUsername}" onfocus="clickRadio('current_database_user', 'no')"/></td>
-                </tr>
-                <tr>
-                    <td>Password &nbsp; <input type="password" name="create_user_password" value="${createUserPassword}" onfocus="clickRadio('current_database_user', 'no')"/></td>
-                </tr>
-                <tr>
-                    <td colspan= "2">
-                        <input class="button" name="back" type="submit" value="Back"/> &nbsp; &nbsp;
-                        <input class="button" type="submit" value="Continue"/>
-		     </td>
-		  </tr>
+		<div class="content">
+			<table cellpadding="9" align="center" cellspacing="5">
+		  		<tr>
+					<td colspan="2"><strong>Step 2 of 6</strong></td>
+				</tr>
+			 	<tr>
+					<td colspan="2" class="question" >Do you need OpenMRS to automatically create the tables for your current database - openmrs?</td>
+			 	</tr>
+			 	<tr>
+					<td>Yes: <input type="radio" name="create_tables" value="yes" #if( $createTables == true )checked="checked"#end /></td>
+					<td>No: <input type="radio" name="create_tables" value="no" #if( $createTables == false )checked="checked"#end /></td>
+			 	</tr>
+				<tr>
+					<td colspan="2" class="question" >Do you want to also add demo data to your database - ${databaseName}? (This option only available if creating new tables.)</td>
+		  	</tr>
+		  	<tr>
+				<td>Yes: <input type="radio" name="add_demo_data" value="yes" #if( $addDemoData == true )checked="checked"#end/></td>
+				<td>No: <input type="radio" name="add_demo_data" value="no" #if( $addDemoData == false )checked="checked"#end/></td>
+			</tr>
+			 <tr>
+				<td colspan="2" class="question">Do you currently have a database user<i>other than root</i>that has read/write access to the ${databaseName} database?</td>
+	 		</tr>
+	 		<tr>
+				<td rowspan="3" class="yes" valign="top">Yes <input type="radio" name="current_database_user" value="yes" #if( $hasCurrentDatabaseUser == true )checked="checked"#end/></td>
+				<td class="yes">If yes, specify the log in user name and password for that database user:</td>
+	 		</tr>
+			<tr>
+				<td>Username &nbsp;<input type="text" name="current_database_username" value="${currentDatabaseUsername}" onfocus="clickRadio('current_database_user', 'yes')"/></td>
+			</tr>
+			<tr>
+				<td>Password &nbsp;<input type="password" name="current_database_password" value="${currentDatabasePassword}" onfocus="clickRadio('current_database_user', 'yes')"/></td>
+			</tr>
+			<tr>
+				<td rowspan="3" class="no" valign="top">No <input type="radio" name="current_database_user" value="no" #if( $hasCurrentDatabaseUser == false )checked="checked"#end/></td>
+				<td class="no">If no, one will be created for you.  However, a user that has "CREATE USER" privileges on the database <br /> must be specified here so that this wizard can create the user.</td>
+			</tr>
+			<tr>
+				<td>Username &nbsp; <input type="text" name="create_user_username" value="${createUserUsername}" onfocus="clickRadio('current_database_user', 'no')"/></td>
+			</tr>
+			<tr>
+				<td>Password &nbsp; <input type="password" name="create_user_password" value="${createUserPassword}" onfocus="clickRadio('current_database_user', 'no')"/></td>
+			</tr>
+			<tr>
+				<td colspan= "2">
+					<input class="button" name="back" type="submit" value="Back"/> &nbsp; &nbsp;
+					<input class="button" type="submit" value="Continue"/>
+			 	</td>
+			</tr>
 		</table>
-        </div>
+		</div>
 	</form>
 #parse($footerTemplate)

@@ -152,4 +152,25 @@ public class InitializationWizardModel {
 	 * Password for the admin user if the database was created now
 	 */
 	protected String adminUserPassword = "";
+
+	/**
+	 * Implementation name.
+	 */
+	protected String implementationIdName = "";
+	
+	/**
+	 * Implementation ID.
+	 */
+	protected String implementationId = "";
+	
+	/**
+	 * Pass phrase used to validate who uses your implementation ID.
+	 */
+	protected String implementationIdPassPhrase = "";
+	
+	/**
+	 * Text describing the implmentation.
+	 */
+	protected String implementationIdDescription = "";
+	
 }

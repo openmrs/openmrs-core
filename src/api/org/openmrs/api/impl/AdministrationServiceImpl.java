@@ -46,6 +46,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.Tribe;
+import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -659,11 +660,11 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	}
 	
 	/**
-     * @see org.openmrs.api.AdministrationService#getGlobalPropertiesByPrefix(java.lang.String)
-     */
-    public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix) {
-	    return dao.getGlobalPropertiesByPrefix(prefix);
-    }
+	 * @see org.openmrs.api.AdministrationService#getGlobalPropertiesByPrefix(java.lang.String)
+	 */
+	public List<GlobalProperty> getGlobalPropertiesByPrefix(String prefix) {
+		return dao.getGlobalPropertiesByPrefix(prefix);
+	}
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(org.openmrs.GlobalProperty)
@@ -809,6 +810,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 				newConceptSource.setName(implementationId.getName());
 				newConceptSource.setDescription(implementationId.getDescription());
 				newConceptSource.setHl7Code(implementationId.getImplementationId());
+				if (Context.getAuthenticatedUser() == null) // (hackish)
+					newConceptSource.setCreator(new User(1)); // fake the user because no one is logged in
 				Context.getConceptService().saveConceptSource(newConceptSource);
 			}
 			

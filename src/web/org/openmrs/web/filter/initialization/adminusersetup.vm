@@ -4,7 +4,7 @@
         <div class="content">
             <table cellpadding="9" align="center" cellspacing="5" >
      		<tr>
-                    <td colspan="2"><strong>Step 4 of 5</strong></td>
+                    <td colspan="2"><strong>Step 4 of 6</strong></td>
      		</tr>
      		<tr>
                     <td colspan="2" class="question" >Currently the default administrator user/pass is <strong>admin:test</strong>. Please specify a new password for that user</td>

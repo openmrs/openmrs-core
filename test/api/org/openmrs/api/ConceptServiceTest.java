@@ -18,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +34,8 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptSource;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
@@ -283,6 +286,43 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Collection<ConceptNameTag> savedConceptNameTags = concept.getBestName(Locale.ENGLISH).getTags();
 		ConceptNameTag savedConceptNameTag = (ConceptNameTag) savedConceptNameTags.toArray()[0];
 		Assert.assertEquals(cnt.getConceptNameTagId(), savedConceptNameTag.getConceptNameTagId());
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptSource(ConceptSource)}
+	 */
+	@Test
+	@Verifies(value = "should not set creator if one is supplied already", method = "saveConceptSource(ConceptSource)")
+	public void saveConceptSource_shouldNotSetCreatorIfOneIsSuppliedAlready() throws Exception {
+		User expectedCreator = new User(501); // a user that isn't logged in now
+		
+		ConceptSource newConceptSource = new ConceptSource();
+		newConceptSource.setName("name");
+		newConceptSource.setDescription("desc");
+		newConceptSource.setHl7Code("hl7Code");
+		newConceptSource.setCreator(expectedCreator);
+		Context.getConceptService().saveConceptSource(newConceptSource);
+		
+		Assert.assertEquals(newConceptSource.getCreator(), expectedCreator);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptSource(ConceptSource)}
+	 */
+	@Test
+	@Verifies(value = "should not set date created if one is supplied already", method = "saveConceptSource(ConceptSource)")
+	public void saveConceptSource_shouldNotSetDateCreatedIfOneIsSuppliedAlready() throws Exception {
+		Date expectedDate = new Date(new Date().getTime() - 10000);
+		
+		ConceptSource newConceptSource = new ConceptSource();
+		newConceptSource.setName("name");
+		newConceptSource.setDescription("desc");
+		newConceptSource.setHl7Code("hl7Code");
+		
+		newConceptSource.setDateCreated(expectedDate);
+		Context.getConceptService().saveConceptSource(newConceptSource);
+		
+		Assert.assertEquals(newConceptSource.getDateCreated(), expectedDate);
 	}
 	
 }
