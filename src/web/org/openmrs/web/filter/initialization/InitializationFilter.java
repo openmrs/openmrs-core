@@ -425,22 +425,24 @@ public class InitializationFilter implements Filter {
 			}
 			
 			if (wizardModel.createDatabaseUser) {
-				// TODO should we have a different user for each db created ?
-				connectionUsername = "openmrs_user";
+				connectionUsername = wizardModel.databaseName + "_user";
+				if (connectionUsername.length() > 16)
+					connectionUsername = wizardModel.databaseName.substring(0, 11) + "_user"; // trim off enough to leave space for _user at the end
+				
 				connectionPassword = "";
 				// generate random password from this subset of alphabet
-				// intentionally left out these characters: ufs$()
-				String chars = "acdeghijklmonpqrtvwxyzACDEGHIJKLMNOPQRTVWXYZ0123456789.|~@#^&";
+				// intentionally left out these characters: ufsb$() to prevent certain words forming randomly
+				String chars = "acdeghijklmnopqrtvwxyzACDEGHIJKLMNOPQRTVWXYZ0123456789.|~@#^&";
 				Random r = new Random();
 				for (int x = 0; x < 12; x++) {
 					connectionPassword += chars.charAt(r.nextInt(chars.length()));
 				}
 				
 				// connect via jdbc with root user and create an openmrs user
-				String sql = "drop user ?@'localhost'";
+				String sql = "drop user '?'@'localhost'";
 				executeStatement(true, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 				    connectionUsername);
-				sql = "create user ?@'localhost' identified by '?'";
+				sql = "create user '?'@'localhost' identified by '?'";
 				if (-1 != executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 				    connectionUsername, connectionPassword)) {
 					wizardModel.workLog.add("Created user " + connectionUsername);
@@ -452,7 +454,7 @@ public class InitializationFilter implements Filter {
 				}
 				
 				// grant the roles
-				sql = "GRANT ALL ON `?`.* TO ?@'localhost'";
+				sql = "GRANT ALL ON `?`.* TO '?'@'localhost'";
 				int result = executeStatement(false, wizardModel.createUserUsername, wizardModel.createUserPassword, sql,
 				    wizardModel.databaseName, connectionUsername);
 				// throw the user back to the main screen if this error occurs
