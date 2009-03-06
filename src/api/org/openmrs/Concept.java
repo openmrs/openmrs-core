@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
-import org.openmrs.util.OpenmrsConstants;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -1113,6 +1112,10 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * @param locale the language and country in which the description is used
 	 * @param exact true/false to return only exact locale (no default locale)
 	 * @return the appropriate description, or null if not found
+	 * @should return match on locale exactly
+	 * @should return match on language only
+	 * @should not return match on language only if exact match exists
+	 * @should not return language only match for exact matches
 	 */
 	public ConceptDescription getDescription(Locale locale, boolean exact) {
 		log.debug("Getting ConceptDescription for locale: " + locale);
@@ -1128,9 +1131,13 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		for (Iterator<ConceptDescription> i = getDescriptions().iterator(); i.hasNext() && (foundDescription == null);) {
 			ConceptDescription availableDescription = i.next();
 			Locale availableLocale = availableDescription.getLocale();
-			if (availableLocale.equals(desiredLocale))
+			if (availableLocale.equals(desiredLocale)) {
 				foundDescription = availableDescription;
-			if (availableLocale.equals(locale))
+				break; // skip out now because we found an exact locale match
+			}
+			if (!exact && LocaleUtility.areCompatible(availableLocale, desiredLocale))
+				foundDescription = availableDescription;
+			if (availableLocale.equals(LocaleUtility.getDefaultLocale()))
 				defaultDescription = availableDescription;
 		}
 		

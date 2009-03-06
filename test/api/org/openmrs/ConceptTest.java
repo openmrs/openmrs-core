@@ -23,7 +23,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Locale;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.test.Verifies;
 
 /**
  * Behavior-driven tests of the Concept class.
@@ -219,5 +221,59 @@ public class ConceptTest {
 		mockConcept.addName(generalName);
 		
 		return mockConcept;
+	}
+	
+	/**
+	 * @see {@link Concept#getDescription(Locale,null)}
+	 */
+	@Test
+	@Verifies(value = "should not return language only match for exact matches", method = "getDescription(Locale,boolean)")
+	public void getDescription_shouldNotReturnLanguageOnlyMatchForExactMatches() throws Exception {
+		Concept mockConcept = new Concept();
+		mockConcept.addDescription(new ConceptDescription("en desc", new Locale("en")));
+		
+		Assert.assertNull(mockConcept.getDescription(new Locale("en", "US"), true));
+	}
+	
+	/**
+	 * @see {@link Concept#getDescription(Locale,null)}
+	 */
+	@Test
+	@Verifies(value = "should not return match on language only if exact match exists", method = "getDescription(Locale,boolean)")
+	public void getDescription_shouldNotReturnMatchOnLanguageOnlyIfExactMatchExists() throws Exception {
+		Concept mockConcept = new Concept();
+		mockConcept.addDescription(new ConceptDescription("en desc", new Locale("en")));
+		mockConcept.addDescription(new ConceptDescription("en_US desc", new Locale("en", "US")));
+		
+		Concept mockConcept2 = new Concept();
+		mockConcept2.addDescription(new ConceptDescription("en_US desc", new Locale("en", "US")));
+		mockConcept2.addDescription(new ConceptDescription("en desc", new Locale("en")));
+		
+		Assert.assertEquals("en_US desc", mockConcept.getDescription(new Locale("en", "US"), false).getDescription());
+		Assert.assertEquals("en_US desc", mockConcept2.getDescription(new Locale("en", "US"), false).getDescription());
+	}
+	
+	/**
+	 * @see {@link Concept#getDescription(Locale,null)}
+	 */
+	@Test
+	@Verifies(value = "should return match on language only", method = "getDescription(Locale,boolean)")
+	public void getDescription_shouldReturnMatchOnLanguageOnly() throws Exception {
+		Concept mockConcept = new Concept();
+		mockConcept.addDescription(new ConceptDescription("en desc", new Locale("en")));
+		
+		Assert.assertEquals("en desc", mockConcept.getDescription(new Locale("en", "US"), false).getDescription());
+	}
+	
+	/**
+	 * @see {@link Concept#getDescription(Locale,null)}
+	 */
+	@Test
+	@Verifies(value = "should return match on locale exactly", method = "getDescription(Locale,boolean)")
+	public void getDescription_shouldReturnMatchOnLocaleExactly() throws Exception {
+		Concept mockConcept = new Concept();
+		mockConcept.addDescription(new ConceptDescription("en_US desc", new Locale("en", "US")));
+		
+		Assert.assertEquals("en_US desc", mockConcept.getDescription(new Locale("en", "US"), false).getDescription());
 	}
 }
