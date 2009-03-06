@@ -1009,6 +1009,8 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param ConceptSource to create
 	 * @throws APIException
+	 * @should not set creator if one is supplied already
+	 * @should not set date created if one is supplied already
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPT_SOURCES)
 	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws APIException;

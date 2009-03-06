@@ -47,12 +47,15 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.openmrs.ImplementationId;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
@@ -271,7 +274,7 @@ public class InitializationFilter implements Filter {
 				    "A user that has 'CREATE DATABASE' privileges");
 				wizardModel.createDatabasePassword = httpRequest.getParameter("create_database_password");
 				checkForEmptyValue(wizardModel.createDatabasePassword, wizardModel.errors,
-					"Password for user with 'CREATE DATABASE' privileges");				
+				    "Password for user with 'CREATE DATABASE' privileges");
 			}
 			
 			if (wizardModel.errors.isEmpty()) {
@@ -310,7 +313,7 @@ public class InitializationFilter implements Filter {
 				    "A user that has 'CREATE USER' privileges");
 				wizardModel.createUserPassword = httpRequest.getParameter("create_user_password");
 				checkForEmptyValue(wizardModel.createUserPassword, wizardModel.errors,
-					"Password for user that has 'CREATE USER' privileges");
+				    "Password for user that has 'CREATE USER' privileges");
 			}
 			
 			if (wizardModel.errors.isEmpty()) { // go to next page
@@ -329,8 +332,10 @@ public class InitializationFilter implements Filter {
 			wizardModel.moduleWebAdmin = "yes".equals(httpRequest.getParameter("module_web_admin"));
 			wizardModel.autoUpdateDatabase = "yes".equals(httpRequest.getParameter("auto_update_database"));
 			
-			if (wizardModel.errors.isEmpty()) { // go to next page
+			if (wizardModel.createTables) { // go to next page if they are creating tables
 				page = "adminusersetup.vm";
+			} else { // skip a page
+				page = "implementationidsetup.vm";
 			}
 			
 			renderTemplate(page, referenceMap, writer);
@@ -361,15 +366,43 @@ public class InitializationFilter implements Filter {
 			}
 			
 			if (wizardModel.errors.isEmpty()) { // go to next page
-				page = "wizardcomplete.vm";
+				page = "implementationidsetup.vm";
 			}
 			
 			renderTemplate(page, referenceMap, writer);
 			
+		} // optional step five 
+		else if ("implementationidsetup.vm".equals(page)) {
+			
+			if ("Back".equals(httpRequest.getParameter("back"))) {
+				if (wizardModel.createTables)
+					renderTemplate("adminusersetup.vm", referenceMap, writer);
+				else
+					renderTemplate("otherruntimeproperties.vm", referenceMap, writer);
+				return;
+			}
+			
+			wizardModel.implementationIdName = httpRequest.getParameter("implementation_name");
+			wizardModel.implementationId = httpRequest.getParameter("implementation_id");
+			wizardModel.implementationIdPassPhrase = httpRequest.getParameter("pass_phrase");
+			wizardModel.implementationIdDescription = httpRequest.getParameter("description");
+			
+			// throw back if the user-specified ID is invalid (contains ^ or |).
+			if (wizardModel.implementationId.indexOf('^') != -1 || wizardModel.implementationId.indexOf('|') != -1) {
+				wizardModel.errors.add("Implementation ID cannot contain '^' or '|'");
+				renderTemplate("implementationidsetup.vm", referenceMap, writer);
+				return;
+			}
+			
+			if (wizardModel.errors.isEmpty()) { // go to next page
+				page = "wizardcomplete.vm";
+			}
+			
+			renderTemplate(page, referenceMap, writer);
 		} else if ("wizardcomplete.vm".equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				renderTemplate("adminusersetup.vm", referenceMap, writer);
+				renderTemplate("implementationidsetup.vm", referenceMap, writer);
 				return;
 			}
 			
@@ -390,9 +423,6 @@ public class InitializationFilter implements Filter {
 					wizardModel.workLog.add("Created database " + wizardModel.databaseName);
 				}
 			}
-			
-			// put the database name into the connection string so that user creation works properly
-			wizardModel.databaseConnection = wizardModel.databaseConnection.replace("@DBNAME@", wizardModel.databaseName);
 			
 			if (wizardModel.createDatabaseUser) {
 				// TODO should we have a different user for each db created ?
@@ -439,8 +469,18 @@ public class InitializationFilter implements Filter {
 				connectionPassword = wizardModel.currentDatabasePassword;
 			}
 			
+			String finalDatabaseConnectionString = wizardModel.databaseConnection.replace("@DBNAME@",
+			    wizardModel.databaseName);
+			
+			// verify that the database connection works
+			if (!verifyConnection(connectionUsername, connectionPassword, finalDatabaseConnectionString)) {
+				// redirect to setup page if we got an error
+				renderTemplate(DEFAULT_PAGE, null, writer);
+				return;
+			}
+			
 			// save the properties for startup purposes
-			runtimeProperties.put("connection.url", wizardModel.databaseConnection);
+			runtimeProperties.put("connection.url", finalDatabaseConnectionString);
 			runtimeProperties.put("connection.username", connectionUsername);
 			runtimeProperties.put("connection.password", connectionPassword);
 			runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
@@ -449,13 +489,6 @@ public class InitializationFilter implements Filter {
 			runtimeProperties.put(SchedulerConstants.SCHEDULER_PASSWORD_PROPERTY, wizardModel.adminUserPassword);
 			
 			Context.setRuntimeProperties(runtimeProperties);
-			
-			// verify that the database connection works
-			if (!verifyConnection(connectionUsername, connectionPassword, wizardModel.databaseConnection)) {
-				// redirect to setup page if we got an error
-				renderTemplate(DEFAULT_PAGE, null, writer);
-				return;
-			}
 			
 			if (wizardModel.createTables) {
 				// use liquibase to create core data + tables
@@ -492,24 +525,11 @@ public class InitializationFilter implements Filter {
 				return;
 			}
 			
-			// output properties to the openmrs runtime properties file
-			FileOutputStream fos = null;
-			try {
-				fos = new FileOutputStream(getRuntimePropertiesFile());
-				runtimeProperties.store(fos, "Auto generated by OpenMRS initialization wizard");
-				wizardModel.workLog.add("Saved runtime properties file " + getRuntimePropertiesFile());
-				
-				// don't need to catch errors here because we tested it at the beginning of the wizard
-			}
-			finally {
-				if (fos != null) {
-					fos.close();
-				}
-			}
-			
 			// start spring
+			// after this point, all errors need to also call: contextLoader.closeWebApplicationContext(event.getServletContext())
 			// logic copied from org.springframework.web.context.ContextLoaderListener
-			new ContextLoader().initWebApplicationContext(filterConfig.getServletContext());
+			ContextLoader contextLoader = new ContextLoader();
+			contextLoader.initWebApplicationContext(filterConfig.getServletContext());
 			
 			// start openmrs
 			try {
@@ -536,21 +556,77 @@ public class InitializationFilter implements Filter {
 			
 			// TODO catch openmrs errors here and drop the user back out to the setup screen
 			
-			// change the admin user password from "test" to what they input above
-			if (wizardModel.createTables) {
-				Context.authenticate("admin", "test");
-				Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
-				Context.logout();
+			if (!wizardModel.implementationId.equals("")) {
+				try {
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_SOURCES);
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES);
+					
+					ImplementationId implId = new ImplementationId();
+					implId.setName(wizardModel.implementationIdName);
+					implId.setImplementationId(wizardModel.implementationId);
+					implId.setPassphrase(wizardModel.implementationIdPassPhrase);
+					implId.setDescription(wizardModel.implementationIdDescription);
+					
+					Context.getAdministrationService().setImplementationId(implId);
+				}
+				catch (Throwable t) {
+					wizardModel.errors.add(t.getMessage() + " Implementation ID could not be set.");
+					log.warn("Implementation ID could not be set.", t);
+					renderTemplate(DEFAULT_PAGE, null, writer);
+					Context.shutdown();
+					WebModuleUtil.shutdownModules(filterConfig.getServletContext());
+					contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
+					return;
+				}
+				finally {
+					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_SOURCES);
+					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES);
+				}
 			}
 			
-			// load modules
-			Listener.loadCoreModules(filterConfig.getServletContext());
+			try {
+				// change the admin user password from "test" to what they input above
+				if (wizardModel.createTables) {
+					Context.authenticate("admin", "test");
+					Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
+					Context.logout();
+				}
+				
+				// load modules
+				Listener.loadCoreModules(filterConfig.getServletContext());
+				
+				// web load modules
+				Listener.performWebStartOfModules(filterConfig.getServletContext());
+				
+				// start the scheduled tasks
+				SchedulerUtil.startup(runtimeProperties);
+			}
+			catch (Throwable t) {
+				Context.shutdown();
+				WebModuleUtil.shutdownModules(filterConfig.getServletContext());
+				contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
+				wizardModel.errors.add(t.getMessage() + " Unable to complete the startup.");
+				log.warn("Unable to complete the startup.", t);
+				renderTemplate(DEFAULT_PAGE, null, writer);
+				return;
+			}
 			
-			// web load modules
-			Listener.performWebStartOfModules(filterConfig.getServletContext());
-			
-			// start the scheduled tasks
-			SchedulerUtil.startup(runtimeProperties);
+			// output properties to the openmrs runtime properties file so that this wizard is not run again
+			FileOutputStream fos = null;
+			try {
+				fos = new FileOutputStream(getRuntimePropertiesFile());
+				runtimeProperties.store(fos, "Auto generated by OpenMRS initialization wizard");
+				wizardModel.workLog.add("Saved runtime properties file " + getRuntimePropertiesFile());
+				
+				// don't need to catch errors here because we tested it at the beginning of the wizard
+			}
+			finally {
+				if (fos != null) {
+					fos.close();
+				}
+			}
 			
 			// set this so that the wizard isn't run again on next page load
 			initializationComplete = true;
@@ -679,12 +755,17 @@ public class InitializationFilter implements Filter {
 			// TODO how to get the driver for the other dbs...
 			if (wizardModel.databaseConnection.contains("mysql")) {
 				Class.forName("com.mysql.jdbc.Driver").newInstance();
-			}
-			else {
+			} else {
 				replacedSql = replacedSql.replaceAll("`", "\"");
 			}
 			
-			String tempDatabaseConnection = wizardModel.databaseConnection.replace("@DBNAME@", ""); // make this dbname agnostic so we can create the db
+			String tempDatabaseConnection = "";
+			if (sql.contains("create database")) {
+				tempDatabaseConnection = wizardModel.databaseConnection.replace("@DBNAME@", ""); // make this dbname agnostic so we can create the db
+			} else {
+				tempDatabaseConnection = wizardModel.databaseConnection.replace("@DBNAME@", wizardModel.databaseName);
+			}
+			
 			connection = DriverManager.getConnection(tempDatabaseConnection, user, pw);
 			
 			for (String arg : args) {

@@ -29,7 +29,7 @@
 		<div class="content">
             <table align="center" cellspacing="5" cellpadding="9">
 			  <tr>
-                    <td colspan="2"><strong>Step 1 of 5</strong></td>
+                    <td colspan="2"><strong>Step 1 of 6</strong></td>
 			  </tr>
 			  <tr>
                     <td colspan="2" class="question">Please specify how to connect to your currently installed database server:</td>

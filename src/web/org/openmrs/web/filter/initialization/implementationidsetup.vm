@@ -1,0 +1,43 @@
+#parse($headerTemplate)
+	<form method="post" autocomplete="off">
+		<input type="hidden" name="page" value="implementationidsetup.vm" />
+		<div class="content">
+			<table cellpadding="9" align="center" cellspacing="5">
+		  		<tr>
+					<td colspan="3"><strong>Step 5 of 6</strong></td>
+				</tr>
+				<tr>
+					<td colspan="3" class="question">Optional. Leave ID field blank to skip.</td>
+				</tr>
+				<tr>
+					<td>Implementation Name</td>
+					<td><input type="text" name="implementation_name" value="${implementationIdName}" /></td>
+					<td>A descriptive name for this implementation (e.g. AMRS installation in Eldoret, Kenya)</td>
+				</tr>
+				<tr>
+					<td>Implementation Id</td>
+					<td><input type="text" name="implementation_id" size="8" maxlength="20" value="${implementationId}" /></td>
+					<td>This is the unique id for this implementation. Used as the HL7_CODE. Must be limited to 20 characters and numbers. The characters "^" and "|" are not allowed.</td>
+				</tr>
+				<tr>
+					<td>Pass Phrase</td>
+					<td><input type="text" name="pass_phrase" value="${implementationIdPassPhrase}"/></td>
+					<td>This text is a long text string that is used to validate who uses your implementation id. 
+						Multiple installations of openmrs can use the same implmentation id, but they must all know the passphrase. 
+			   			(Note that if an implementation id is shared, it is assumed that those installations are the same implementation).</td>
+				</tr>
+				<tr>
+					<td>Description</td>
+					<td><textarea cols="43" rows="3" name="description">${implementationIdDescription}</textarea></td>
+					<td>Text describing this implementation. (e.g. Source for the AMPATH program in Kenya. Created by Paul Biondich)</td>
+				</tr>
+				<tr>
+					<td colspan= "3">
+						<input class="button" name="back" type="submit" value="Back"/> &nbsp; &nbsp;
+						<input class="button" type="submit" value="Continue"/>
+			 		</td>
+				</tr>
+		</table>
+		</div>
+	</form>
+#parse($footerTemplate)

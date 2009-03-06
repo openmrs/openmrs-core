@@ -1370,8 +1370,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws APIException {
 		
-		conceptSource.setCreator(Context.getAuthenticatedUser());
-		conceptSource.setDateCreated(new Date());
+		if (conceptSource.getCreator() == null)
+			conceptSource.setCreator(Context.getAuthenticatedUser());
+		if (conceptSource.getDateCreated() == null)
+			conceptSource.setDateCreated(new Date());
 		
 		return dao.saveConceptSource(conceptSource);
 	}
