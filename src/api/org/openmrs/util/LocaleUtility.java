@@ -50,7 +50,7 @@ public class LocaleUtility {
 			
 			if (StringUtils.hasLength(locale)) {
 				try {
-					return new Locale(locale);
+					return fromSpecification(locale);
 				}
 				catch (Exception t) {
 					log.warn("Unable to parse default locale global property value: " + locale, t);
@@ -61,7 +61,7 @@ public class LocaleUtility {
 			log.warn("Unable to get locale global property value", t);
 		}
 		
-		return new Locale(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);
+		return fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);
 	}
 	
 	/**
