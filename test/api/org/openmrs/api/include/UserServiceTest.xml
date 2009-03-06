@@ -12,6 +12,8 @@
   
   <person person_id="505" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false"/>
   <person person_id="506" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
-  <users user_id="505" system_id="6-7" username="incorrectlyhashed" password="4a1750c8607dfa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
-  <users user_id="506" system_id="7-5" username="correctlyhashed" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
+  <person person_id="507" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
+  <users user_id="505" system_id="6-7" username="incorrectlyhashedSha1" password="4a1750c8607dfa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
+  <users user_id="506" system_id="7-5" username="correctlyhashedSha1" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
+  <users user_id="507" system_id="8-3" username="userWithSha512Hash" password="74e3ed4f9e5b955de443feabc9f12ecd291ac6a7eaa2f09a72a5c811ec618b044d7131f687c0a0465fc0c660d09fd245e410e12ffe77d78b2a0c504b40afa202" salt="1c30292f0b438b49b181950f3e831c6a9f38ef1c7d559fca566e8cd6b4efb417150585d4c3345f0fb0b520fc0884ad82ea7c1a28f48c2c562106a3d110716cfc" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
 </dataset>

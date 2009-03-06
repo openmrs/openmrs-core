@@ -419,6 +419,17 @@
 		<renameColumn tableName="location_tag"
    			 oldColumnName="retired_reason" newColumnName="retire_reason" columnDataType="varchar(255)"/>
 	</changeSet>
+
+	<changeSet id="02232009-1141" author="nribeka">
+		<comment>
+			Modify the password column to fit the output of SHA-512 function
+		</comment>
+		
+		<modifyColumn tableName="users">
+			<column name="password" type="varchar(128)"/>
+			<column name="salt" type="varchar(128)"/>
+		</modifyColumn>
+	</changeSet>	
 	
 	<changeSet id="20090301-1259" author="bwolfe">
 		<comment>

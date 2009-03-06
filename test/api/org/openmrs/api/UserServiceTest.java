@@ -176,7 +176,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			// there should only be 2 users in the system. (the super user that is
 			// authenticated to this test and the user we just created)
 			List<User> allUsers = userService.getAllUsers();
-			assertEquals(4, allUsers.size());
+			assertEquals(5, allUsers.size());
 			
 			// there should still only be the one patient we created in the xml file
 			Cohort allPatientsSet = Context.getPatientSetService().getAllPatients();
@@ -277,11 +277,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link UserService#changePassword(String,String)}
 	 */
 	@Test
-	@Verifies(value = "should matchOnIncorrectlyHashedStoredPassword", method = "changePassword(String,String)")
-	public void changePassword_shouldMatchOnIncorrectlyHashedStoredPassword() throws Exception {
+	@Verifies(value = "should match on incorrectly hashed sha1 stored password", method = "changePassword(String,String)")
+    public void changePassword_shouldMatchOnIncorrectlyHashedSha1StoredPassword() throws Exception {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
-		Context.authenticate("incorrectlyhashed", "test");
+		Context.authenticate("incorrectlyhashedSha1", "test");
 		
 		UserService us = Context.getUserService();
 		us.changePassword("test", "test2");
@@ -293,11 +293,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link UserService#changeQuestionAnswer(String,String,String)}
 	 */
 	@Test
-	@Verifies(value = "should matchOnCorrectlyHashedStoredPassword", method = "changeQuestionAnswer(String,String,String)")
-	public void changeQuestionAnswer_shouldMatchOnCorrectlyHashedStoredPassword() throws Exception {
+    @Verifies(value = "should match on correctly hashed stored password", method = "changeQuestionAnswer(String,String,String)")
+    public void changeQuestionAnswer_shouldMatchOnCorrectlyHashedStoredPassword() throws Exception {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
-		Context.authenticate("correctlyhashed", "test");
+		Context.authenticate("correctlyhashedSha1", "test");
 		
 		UserService us = Context.getUserService();
 		us.changeQuestionAnswer("test", "some question", "some answer");
@@ -309,11 +309,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link UserService#changeQuestionAnswer(String,String,String)}
 	 */
 	@Test
-	@Verifies(value = "should matchOnIncorrectlyHashedStoredPassword", method = "changeQuestionAnswer(String,String,String)")
-	public void changeQuestionAnswer_shouldMatchOnIncorrectlyHashedStoredPassword() throws Exception {
+    @Verifies(value = "should match on incorrectly hashed stored password", method = "changeQuestionAnswer(String,String,String)")
+    public void changeQuestionAnswer_shouldMatchOnIncorrectlyHashedStoredPassword() throws Exception {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
-		Context.authenticate("incorrectlyhashed", "test");
+		Context.authenticate("incorrectlyhashedSha1", "test");
 		
 		UserService us = Context.getUserService();
 		us.changeQuestionAnswer("test", "some question", "some answer");
@@ -325,11 +325,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link UserService#changePassword(String,String)}
 	 */
 	@Test
-	@Verifies(value = "should matchOnCorrectlyHashedStoredPassword", method = "changePassword(String,String)")
-	public void changePassword_shouldMatchOnCorrectlyHashedStoredPassword() throws Exception {
+	@Verifies(value = "should match on correctly hashed sha1 stored password", method = "changePassword(String,String)")
+	public void changePassword_shouldMatchOnCorrectlyHashedSha1StoredPassword() throws Exception {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
-		Context.authenticate("correctlyhashed", "test");
+		Context.authenticate("correctlyhashedSha1", "test");
 		
 		UserService us = Context.getUserService();
 		us.changePassword("test", "test2");
@@ -352,4 +352,20 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(users.contains(new Patient(5)));
 	}
 	
+	/**
+	 * @see {@link UserService#changePassword(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should match on sha512 hashed password", method = "changePassword(String,String)")
+	public void changePassword_shouldMatchOnSha512HashedPassword() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Context.logout();
+		Context.authenticate("userWithSha512Hash", "test");
+		
+		UserService us = Context.getUserService();
+		us.changePassword("test", "test2");
+		
+		Context.logout(); // so that the next test reauthenticates
+	}
+
 }
