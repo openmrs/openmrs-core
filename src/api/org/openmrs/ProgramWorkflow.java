@@ -24,7 +24,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.support.PropertyComparator;
+import org.openmrs.util.NaturalStrings;
 
 /**
  * ProgramWorkflow
@@ -195,11 +195,22 @@ public class ProgramWorkflow implements java.io.Serializable {
 	 * {@link ConceptName}
 	 * 
 	 * @return Set<ProgramWorkflowState> - all ProgramWorkflowStates, sorted by {@link ConceptName}
+	 * @should sort names containing numbers intelligently
 	 */
-	@SuppressWarnings("unchecked")
 	public Set<ProgramWorkflowState> getSortedStates() {
-		Comparator c = new PropertyComparator("concept.name.name", true, true);
-		TreeSet<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(c);
+		final Comparator<String> naturalComparator = NaturalStrings.getNaturalComparator();
+		
+		Comparator<ProgramWorkflowState> stateComparator = new Comparator<ProgramWorkflowState>() {
+
+			public int compare(ProgramWorkflowState o1, ProgramWorkflowState o2) {
+	            return naturalComparator.compare(
+	            	o1.getConcept().getBestName(null).getName(), 
+	            	o2.getConcept().getBestName(null).getName());
+            }
+			
+		};
+		
+		TreeSet<ProgramWorkflowState> sorted = new TreeSet<ProgramWorkflowState>(stateComparator);
 		if (getStates() != null) {
 			sorted.addAll(getStates());
 		}
