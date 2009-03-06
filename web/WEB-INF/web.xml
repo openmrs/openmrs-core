@@ -338,7 +338,7 @@
 		<!-- Don't use "load-on-startup" in case initial setup wizard is needed -->
 	</servlet>
 	
-	<!-- Gives acess to servlets within modules -->
+	<!-- Gives access to servlets within modules -->
 	<servlet>
 		<servlet-name>module_servlet</servlet-name>
 		<servlet-class>org.openmrs.module.web.ModuleServlet</servlet-class>
@@ -349,7 +349,7 @@
  		<url-pattern>/moduleServlet/*</url-pattern>
 	</servlet-mapping>
 	
-	<!-- Gives acess to resources within modules -->
+	<!-- Gives access to resources within modules -->
 	<servlet>
 		<servlet-name>module_resources</servlet-name>
 		<servlet-class>org.openmrs.module.web.ModuleResourcesServlet</servlet-class>
