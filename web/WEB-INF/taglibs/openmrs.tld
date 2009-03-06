@@ -12,14 +12,26 @@
 <tag>
 	<description>
 		Enforces user privileges and redirects if the active user
-		does not have the required privileges
+		does not have the required privileges.  At least one of
+		"privilege", "allPrivileges", or "anyPrivilege" must be 
+		filled in.
 	</description>
 	<name>require</name>
 	<tag-class>org.openmrs.web.taglib.RequireTag</tag-class>
 	<body-content>empty</body-content>
 	<attribute>
 		<name>privilege</name>
-		<required>true</required>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>allPrivileges</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>anyPrivilege</name>
+		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
 	<attribute>
