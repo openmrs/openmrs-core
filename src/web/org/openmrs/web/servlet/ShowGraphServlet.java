@@ -13,12 +13,14 @@
  */
 package org.openmrs.web.servlet;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,98 +35,273 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.time.Day;
+import org.jfree.data.time.Hour;
+import org.jfree.data.time.Minute;
+import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.openmrs.Concept;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
+/**
+ * This servlet returns an image graphing the numeric values for given concept(s). <br/>
+ * <br/>
+ * This servlet is currently mapped to a /showGraphServlet url in web.xml<br/>
+ * <br/>
+ * For an example of usage, see WEB-INF/view/portlets/patientGraphs.jsp <br/>
+ * <br/>
+ * The only url parameters that are required are "patientId" and "conceptId".
+ */
 public class ShowGraphServlet extends HttpServlet {
 	
 	public static final long serialVersionUID = 1231231L;
 	
 	private Log log = LogFactory.getLog(ShowGraphServlet.class);
 	
-	//private static final DateFormat Formatter = new SimpleDateFormat("MM/dd/yyyy");
+	// private static final DateFormat Formatter = new SimpleDateFormat("MM/dd/yyyy");
 	
 	// Supported mime types
 	private static final String PNG_MIME_TYPE = "image/png";
 	
 	private static final String JPG_MIME_TYPE = "image/jpeg";
 	
+	private static final Color COLOR_ABNORMAL = new Color(255, 255, 0, 64);
+	
+	private static final Color COLOR_CRITICAL = new Color(255, 128, 128, 64);
+	
+	private static final Color COLOR_ERROR = new Color(255, 28, 28, 64);
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		try {
-			// TODO (jmiranda) Need better error handling
-			Integer patientId = Integer.parseInt(request.getParameter("patientId"));
-			Integer conceptId = Integer.parseInt(request.getParameter("conceptId"));
-			Integer width = request.getParameter("width") != null ? Integer.parseInt(request.getParameter("width"))
-			        : new Integer(500);
-			Integer height = request.getParameter("width") != null ? Integer.parseInt(request.getParameter("height"))
-			        : new Integer(300);
-			String mimeType = request.getParameter("mimeType") != null ? request.getParameter("mimeType") : PNG_MIME_TYPE;
+			// All available GET parameters
+			String fromDateString = request.getParameter("fromDate");
+			String toDateString = request.getParameter("toDate");
+			String patientId = request.getParameter("patientId"); // required
+			String conceptId1 = request.getParameter("conceptId"); // required
+			String conceptId2 = request.getParameter("conceptId2");
+			String chartTitle = request.getParameter("chartTitle");
+			String seriesTitle1 = request.getParameter("seriesTitle1");
+			String seriesTitle2 = request.getParameter("seriesTitle2");
+			String units = request.getParameter("units");
+			String widthString = request.getParameter("width");
+			String heightString = request.getParameter("height");
+			String minRangeString = request.getParameter("minRange");
+			String maxRangeString = request.getParameter("maxRange");
+			String mimeType = request.getParameter("mimeType");
+			String hideDate = request.getParameter("hideDate");
 			
-			boolean userSpecifiedMaxRange = request.getParameter("maxRange") != null;
-			boolean userSpecifiedMinRange = request.getParameter("minRange") != null;
-			double maxRange = request.getParameter("maxRange") != null ? Double
-			        .parseDouble(request.getParameter("maxRange")) : 0.0;
-			double minRange = request.getParameter("minRange") != null ? Double
-			        .parseDouble(request.getParameter("minRange")) : 0.0;
+			Patient patient = Context.getPatientService().getPatient(Integer.parseInt(patientId));
 			
-			Patient patient = Context.getPatientService().getPatient(patientId);
-			Concept concept = Context.getConceptService().getConcept(conceptId);
-			
-			Set<Obs> observations = new HashSet<Obs>();
-			String chartTitle, rangeAxisTitle, domainAxisTitle, titleFontSize = "";
-			if (concept != null) {
-				// Get observations
-				observations = Context.getObsService().getObservations(patient, concept, false);
-				chartTitle = concept.getName(request.getLocale()).getName();
-				rangeAxisTitle = chartTitle;
-			} else {
-				chartTitle = "Concept " + conceptId + " not found";
-				rangeAxisTitle = "Value";
-				
+			// Set date range to passed values, otherwise set a default date range to the last 12 months
+			Calendar cal = Calendar.getInstance();
+			Date fromDate = new Date();
+			Date toDate = new Date(fromDate.getTime());
+			if (fromDateString != null && fromDateString.length() > 0)
+				fromDate.setTime(Long.parseLong(fromDateString));
+			else {
+				cal.setTime(fromDate);
+				cal.set(cal.get(Calendar.YEAR) - 1, cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+				fromDate = cal.getTime();
 			}
-			domainAxisTitle = "Date";
+			if (toDateString != null && toDateString.length() > 0)
+				cal.setTimeInMillis(Long.parseLong(toDateString));
+			else
+				cal.setTime(toDate);
+			// set +1 day so the selected toDate is fully included in the interval
+			cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH) + 1, 0, 0, 0);
+			toDate = cal.getTime();
+			
+			// Swap if fromDate is after toDate
+			if (fromDate.getTime() > toDate.getTime()) {
+				Long temp = fromDate.getTime();
+				fromDate.setTime(toDate.getTime());
+				toDate.setTime(temp);
+			}
+			
+			// Graph parameters
+			Integer width;
+			Integer height;
+			Double minRange = null;
+			Double maxRange = null;
+			Double normalLow = null;
+			Double normalHigh = null;
+			Double criticalLow = null;
+			Double criticalHigh = null;
+			String timeAxisTitle = null;
+			String rangeAxisTitle = null;
+			boolean userSpecifiedMaxRange = false;
+			boolean userSpecifiedMinRange = false;
+			
+			// Fetching obs
+			List<Obs> observations1 = new ArrayList<Obs>();
+			List<Obs> observations2 = new ArrayList<Obs>();
+			Concept concept1 = null, concept2 = null;
+			if (conceptId1 != null)
+				concept1 = Context.getConceptService().getConcept(Integer.parseInt(conceptId1));
+			if (conceptId2 != null)
+				concept2 = Context.getConceptService().getConcept(Integer.parseInt(conceptId2));
+			if (concept1 != null) {
+				observations1 = Context.getObsService().getObservationsByPersonAndConcept(patient, concept1);
+				chartTitle = concept1.getBestName(request.getLocale()).getName();
+				rangeAxisTitle = ((ConceptNumeric) concept1).getUnits();
+				minRange = ((ConceptNumeric) concept1).getLowAbsolute();
+				maxRange = ((ConceptNumeric) concept1).getHiAbsolute();
+				normalLow = ((ConceptNumeric) concept1).getLowNormal();
+				normalHigh = ((ConceptNumeric) concept1).getHiNormal();
+				criticalLow = ((ConceptNumeric) concept1).getLowCritical();
+				criticalHigh = ((ConceptNumeric) concept1).getHiCritical();
+				
+				// Only get observations2 if both concepts share the same units; update chart title and ranges
+				if (concept2 != null) {
+					String concept2Units = ((ConceptNumeric) concept2).getUnits();
+					if (concept2Units != null && concept2Units.equals(rangeAxisTitle)) {
+						observations2 = Context.getObsService().getObservationsByPersonAndConcept(patient, concept2);
+						chartTitle += " + " + concept2.getBestName(request.getLocale()).getName();
+						if (((ConceptNumeric) concept2).getHiAbsolute() != null
+						        && ((ConceptNumeric) concept2).getHiAbsolute() > maxRange)
+							maxRange = ((ConceptNumeric) concept2).getHiAbsolute();
+						if (((ConceptNumeric) concept2).getLowAbsolute() != null
+						        && ((ConceptNumeric) concept2).getLowAbsolute() < minRange)
+							minRange = ((ConceptNumeric) concept2).getLowAbsolute();
+					} else {
+						log.warn("Units for concept id: " + conceptId2 + " don't match units for concept id: " + conceptId1
+						        + ". Only displaying " + conceptId1);
+						concept2 = null; // nullify concept2 so that the legend isn't shown later
+					}
+				}
+			} else {
+				chartTitle = "Concept " + conceptId1 + " not found";
+				rangeAxisTitle = "Value";
+			}
+			
+			// Overwrite with user-specified values, otherwise use default values
+			if (widthString != null && widthString.length() > 0)
+				width = Integer.parseInt(widthString);
+			else
+				width = 500;
+			if (heightString != null && heightString.length() > 0)
+				height = Integer.parseInt(heightString);
+			else
+				height = 300;
+			if (units != null && units.length() > 0)
+				rangeAxisTitle = units;
+			if (minRangeString != null) {
+				minRange = Double.parseDouble(minRangeString);
+				userSpecifiedMinRange = true;
+			}
+			if (maxRangeString != null) {
+				maxRange = Double.parseDouble(maxRangeString);
+				userSpecifiedMaxRange = true;
+			}
+			if (mimeType == null)
+				mimeType = PNG_MIME_TYPE;
+			if (chartTitle == null)
+				chartTitle = "";
+			if (rangeAxisTitle == null)
+				rangeAxisTitle = "";
+			if (seriesTitle1 == null)
+				seriesTitle1 = chartTitle;
+			if (seriesTitle2 == null)
+				seriesTitle2 = chartTitle;
+			if (minRange == null)
+				minRange = 0.0;
+			if (maxRange == null)
+				maxRange = 200.0;
 			
 			// Create data set
-			TimeSeries series = new TimeSeries(rangeAxisTitle, Day.class);
 			TimeSeriesCollection dataset = new TimeSeriesCollection();
-			Calendar calendar = Calendar.getInstance();
-			for (Obs obs : observations) {
-				if (obs.getValueNumeric() != null) { // Shouldn't be needed but just in case
-					calendar.setTime(obs.getObsDatetime());
-					log.debug("Adding value: " + obs.getValueNumeric() + " for " + calendar.get(Calendar.MONTH) + "/"
-					        + calendar.get(Calendar.YEAR));
-					
-					// Set range
-					//if (obs.getValueNumeric().doubleValue() < minRange) 
-					//	minRange = obs.getValueNumeric().doubleValue();
-					
-					//if (obs.getValueNumeric().doubleValue() > maxRange) 
-					//	maxRange = obs.getValueNumeric().doubleValue();
-					
-					// Add data point to series
-					Day day = new Day(calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1, // January = 0 
-					        calendar.get(Calendar.YEAR));
-					series.addOrUpdate(day, obs.getValueNumeric());
+			TimeSeries series1, series2;
+			
+			// Interval-dependent units
+			Class<? extends RegularTimePeriod> timeScale = null;
+			if (toDate.getTime() - fromDate.getTime() <= 86400000) {
+				// Interval <= 1 day: minutely
+				timeScale = Minute.class;
+				timeAxisTitle = "Time";
+			} else if (toDate.getTime() - fromDate.getTime() <= 259200000) {
+				// Interval <= 3 days: hourly
+				timeScale = Hour.class;
+				timeAxisTitle = "Time";
+			} else {
+				timeScale = Day.class;
+				timeAxisTitle = "Date";
+			}
+			series1 = new TimeSeries(concept1.getBestName(Context.getLocale()).getName(), timeScale);
+			if (concept2 == null)
+				series2 = new TimeSeries("NULL", Hour.class);
+			else
+				series2 = new TimeSeries(concept2.getBestName(Context.getLocale()).getName(), timeScale);
+			
+			// Add data points for concept1
+			for (Obs obs : observations1) {
+				if (obs.getValueNumeric() != null && obs.getObsDatetime().getTime() >= fromDate.getTime()
+				        && obs.getObsDatetime().getTime() < toDate.getTime()) {
+					cal.setTime(obs.getObsDatetime());
+					if (timeScale == Minute.class) {
+						Minute min = new Minute(cal.get(Calendar.MINUTE), cal.get(Calendar.HOUR_OF_DAY), cal
+						        .get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
+						series1.addOrUpdate(min, obs.getValueNumeric());
+					} else if (timeScale == Hour.class) {
+						Hour hour = new Hour(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.DAY_OF_MONTH), cal
+						        .get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
+						series1.addOrUpdate(hour, obs.getValueNumeric());
+					} else {
+						Day day = new Day(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal
+						        .get(Calendar.YEAR));
+						series1.addOrUpdate(day, obs.getValueNumeric());
+					}
 				}
 			}
+			
+			// Add data points for concept2
+			for (Obs obs : observations2) {
+				if (obs.getValueNumeric() != null && obs.getObsDatetime().getTime() >= fromDate.getTime()
+				        && obs.getObsDatetime().getTime() < toDate.getTime()) {
+					cal.setTime(obs.getObsDatetime());
+					if (timeScale == Minute.class) {
+						Minute min = new Minute(cal.get(Calendar.MINUTE), cal.get(Calendar.HOUR_OF_DAY), cal
+						        .get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
+						series2.addOrUpdate(min, obs.getValueNumeric());
+					} else if (timeScale == Hour.class) {
+						Hour hour = new Hour(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.DAY_OF_MONTH), cal
+						        .get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR));
+						series2.addOrUpdate(hour, obs.getValueNumeric());
+					} else {
+						Day day = new Day(cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.MONTH) + 1, cal
+						        .get(Calendar.YEAR));
+						series2.addOrUpdate(day, obs.getValueNumeric());
+					}
+				}
+			}
+			
 			// Add series to dataset
-			dataset.addSeries(series);
+			dataset.addSeries(series1);
+			if (!series2.isEmpty())
+				dataset.addSeries(series2);
 			
 			// As of JFreeChart 1.0.11 the default background color is dark grey instead of white.
 			// This line restores the original white background.
 			ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
 			
-			JFreeChart chart = ChartFactory.createTimeSeriesChart(chartTitle, null, null, dataset, false, false, false);
+			JFreeChart chart = null;
+			
+			// Show legend only if more than one series
+			if (concept2 == null)
+				chart = ChartFactory.createTimeSeriesChart(chartTitle, timeAxisTitle, rangeAxisTitle, dataset, false, false,
+				    false);
+			else
+				chart = ChartFactory.createTimeSeriesChart(chartTitle, timeAxisTitle, rangeAxisTitle, dataset, true, false,
+				    false);
 			
 			// Customize title font
 			Font font = new Font("Arial", Font.BOLD, 12);
@@ -132,45 +309,76 @@ public class ShowGraphServlet extends HttpServlet {
 			title.setFont(font);
 			chart.setTitle(title);
 			
-			// Customize the plot (range and domain axes)
+			// Add subtitle, unless 'hideDate' has been passed
+			if (hideDate == null) {
+				TextTitle subtitle = new TextTitle(fromDate.toString() + " - " + toDate.toString());
+				subtitle.setFont(font);
+				chart.addSubtitle(subtitle);
+			}
+			
 			XYPlot plot = (XYPlot) chart.getPlot();
 			plot.setNoDataMessage("No Data Available");
-			// Add filled data points
+			
+			// Add abnormal/critical range background color (only for single-concept graphs)
+			if (concept2 == null) {
+				IntervalMarker abnormalLow, abnormalHigh, critical;
+				if (normalHigh != null) {
+					abnormalHigh = new IntervalMarker(normalHigh, maxRange, COLOR_ABNORMAL);
+					plot.addRangeMarker(abnormalHigh);
+				}
+				if (normalLow != null) {
+					abnormalLow = new IntervalMarker(minRange, normalLow, COLOR_ABNORMAL);
+					plot.addRangeMarker(abnormalLow);
+				}
+				if (criticalHigh != null) {
+					critical = new IntervalMarker(criticalHigh, maxRange, COLOR_CRITICAL);
+					plot.addRangeMarker(critical);
+				}
+				if (criticalLow != null) {
+					critical = new IntervalMarker(minRange, criticalLow, COLOR_CRITICAL);
+					plot.addRangeMarker(critical);
+				}
+				
+				// there is data outside of the absolute lower limits for this concept (or of what the user specified as minrange)
+				if (plot.getRangeAxis().getLowerBound() < minRange) {
+					IntervalMarker error = new IntervalMarker(plot.getRangeAxis().getLowerBound(), minRange, COLOR_ERROR);
+					plot.addRangeMarker(error);
+				}
+				
+				if (plot.getRangeAxis().getUpperBound() > maxRange) {
+					IntervalMarker error = new IntervalMarker(maxRange, plot.getRangeAxis().getUpperBound(), COLOR_ERROR);
+					plot.addRangeMarker(error);
+				}
+				
+			}
+			
+			// Visuals
 			XYItemRenderer r = plot.getRenderer();
 			if (r instanceof XYLineAndShapeRenderer) {
 				XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
-				
 				renderer.setBaseShapesFilled(true);
 				renderer.setBaseShapesVisible(true);
-				
-				// Only works with image maps (requires some work to support) 
-				/*
-				StandardXYToolTipGenerator g = new StandardXYToolTipGenerator(
-				    StandardXYToolTipGenerator.DEFAULT_TOOL_TIP_FORMAT,
-				    new SimpleDateFormat("MMM-yy"), 
-				    new DecimalFormat("0.0")
-				);
-				renderer.setToolTipGenerator(g);
-				*/
 			}
 			
+			// Customize the plot (range and domain axes)
+			
 			// Modify x-axis (datetime)
-			DateAxis axis = (DateAxis) plot.getDomainAxis();
-			axis.setDateFormatOverride(new SimpleDateFormat("MMM-yy"));
+			DateAxis timeAxis = (DateAxis) plot.getDomainAxis();
+			if (timeScale == Day.class)
+				timeAxis.setDateFormatOverride(new SimpleDateFormat("dd-MMM-yyyy"));
+			
+			timeAxis.setRange(fromDate, toDate);
 			
 			// Set y-axis range (values)
 			NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-			
 			rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 			
-			if (userSpecifiedMinRange) {
+			if (userSpecifiedMinRange)
 				minRange = (rangeAxis.getLowerBound() < minRange) ? rangeAxis.getLowerBound() : minRange;
-			}
 			
-			if (userSpecifiedMaxRange) { // otherwise we just use default range
+			if (userSpecifiedMaxRange) // otherwise we just use default range
 				maxRange = (rangeAxis.getUpperBound() > maxRange) ? rangeAxis.getUpperBound() : maxRange;
-				//maxRange = maxRange + ((maxRange - minRange) * 0.1);	// add a buffer to the max
-			}
+			
 			rangeAxis.setRange(minRange, maxRange);
 			
 			// Modify response to disable caching
@@ -178,7 +386,7 @@ public class ShowGraphServlet extends HttpServlet {
 			response.setDateHeader("Expires", 0);
 			response.setHeader("Cache-Control", "no-cache");
 			
-			// Write chart out to response as image 
+			// Write chart out to response as image
 			try {
 				if (JPG_MIME_TYPE.equalsIgnoreCase(mimeType)) {
 					response.setContentType(JPG_MIME_TYPE);
@@ -187,22 +395,20 @@ public class ShowGraphServlet extends HttpServlet {
 					response.setContentType(PNG_MIME_TYPE);
 					ChartUtilities.writeChartAsPNG(response.getOutputStream(), chart, width, height);
 				} else {
-					// Throw exception: unsupported mime type
+					throw new APIException("Unsupported MIME type");
 				}
 			}
 			catch (IOException e) {
-				// if its tomcat and the user simply navigated away from the page, don't throw an error
+				// if its tomcat and the user simply navigated away from the page, don't throw an error 
 				if (e.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-					// do nothing
-				}
-				else {
+					// do nothing 
+				} else {
 					log.error("Error class name: " + e.getClass().getName());
 					log.error("Unable to write chart", e);
 				}
 			}
-			
 		}
-		// Add error handling above and remove this try/catch 
+		// Add error handling above and remove this try/catch
 		catch (Exception e) {
 			log.error("An unknown expected exception was thrown while rendering a graph", e);
 		}
@@ -214,5 +420,4 @@ public class ShowGraphServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
-	
 }

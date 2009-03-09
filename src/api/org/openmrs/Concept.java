@@ -1128,7 +1128,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		Locale desiredLocale = locale;
 		
 		ConceptDescription defaultDescription = null;
-		for (Iterator<ConceptDescription> i = getDescriptions().iterator(); i.hasNext() && (foundDescription == null);) {
+		for (Iterator<ConceptDescription> i = getDescriptions().iterator(); i.hasNext();) {
 			ConceptDescription availableDescription = i.next();
 			Locale availableLocale = availableDescription.getLocale();
 			if (availableLocale.equals(desiredLocale)) {
