@@ -68,10 +68,10 @@ table#labTestTable th {
 		<table width="100%">
 			<tr>
 				<td align="center">
-					<c:if test="${userConcepts}">
+					<c:if test="${fn:length(userConcepts) > 0}">
 						<openmrs:obsTable
 							observations="${model.patientObs}"
-							concepts="name:CD4 COUNT|name:WEIGHT (KG)|set:name:LABORATORY EXAMINATIONS CONSTRUCT"
+							concepts="${fn:replace(userConcepts, '-', '|')}"
 							conceptLink="admin/observations/personObs.form?personId=${model.patientId}&"
 							id="labTestTable"
 							showEmptyConcepts="false"
