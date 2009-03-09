@@ -267,21 +267,27 @@
 	</div>
 	<br/>
 </spring:hasBindErrors>
-<form method="post" onSubmit="removeHiddenRows()" enctype="multipart/form-data">
-
-<spring:nestedPath path="obs">
 
 <c:if test="${obs.voided}">
-	<div class="retiredMessage">
-		<div>
-			<spring:message code="general.voidedBy"/>
-			${obs.voidedBy.personName}
-			<openmrs:formatDate date="${obs.dateVoided}" type="medium" />
-			-
-			${obs.voidReason}
+	<form action="" method="post">
+		<div class="retiredMessage">
+			<div>
+				<spring:message code="general.voidedBy"/>
+				${obs.voidedBy.personName}
+				<openmrs:formatDate date="${obs.dateVoided}" type="medium" />
+				-
+				${obs.voidReason}
+				<input type="submit" value='<spring:message code="Obs.unvoidObs"/>' name="unvoidObs"/>
+			</div>
 		</div>
-	</div>
+	</form>
 </c:if>
+
+<form method="post" onSubmit="removeHiddenRows()" enctype="multipart/form-data">
+
+<fieldset>
+
+<spring:nestedPath path="obs">
 
 <table id="obsTable">
 	<c:if test="${obs.obsId != null}">
@@ -533,29 +539,30 @@
 
 &nbsp; 
 <input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1);">
+
+</fieldset>
 </form>
 
 <br/>
 <br/>
 
-<form action="" method="post">
-<c:choose>
-	<c:when test="${obs.voided}">
-		<input type="submit" value='<spring:message code="Obs.unvoidObs"/>' name="unvoidObs"/>
-	</c:when>
-	<c:otherwise>
-		<b><spring:message code="Obs.void.reason"/></b>
-		<input type="text" value="" size="40" name="voidReason" />
-		<spring:hasBindErrors name="obs">
-			<c:forEach items="${errors.allErrors}" var="error">
-				<c:if test="${error.code == 'voidReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
-			</c:forEach>
-		</spring:hasBindErrors>
-		<br/>
-		<input type="submit" value='<spring:message code="Obs.voidObs"/>' name="voidObs"/>
-	</c:otherwise>
-</c:choose>
-</form>
+<c:if test="${not obs.voided && not empty obs.obsId}">
+	<form action="" method="post">
+		<fieldset>
+			<h4><spring:message code="Obs.voidObs"/></h4>
+			
+			<b><spring:message code="general.reason"/></b>
+			<input type="text" value="" size="40" name="voidReason" />
+			<spring:hasBindErrors name="obs">
+				<c:forEach items="${errors.allErrors}" var="error">
+					<c:if test="${error.code == 'voidReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+				</c:forEach>
+			</spring:hasBindErrors>
+			<br/>
+			<input type="submit" value='<spring:message code="Obs.voidObs"/>' name="voidObs"/>
+		</fieldset>
+	</form>
+</c:if>
 
 <script type="text/javascript">
 	$('obsTable').style.visibility = 'visible';
