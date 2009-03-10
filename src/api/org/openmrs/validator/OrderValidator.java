@@ -58,11 +58,9 @@ public class OrderValidator implements Validator {
 			
 			// for the following elements Order.hbm.xml says: not-null="true"
 			ValidationUtils.rejectIfEmpty(errors, "discontinued", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "dateCreated", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "voided", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "concept", "Concept.noConceptSelected");
 			ValidationUtils.rejectIfEmpty(errors, "patient", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "creator", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "orderType", "error.null");
 			
 			Date startDate = order.getStartDate();
