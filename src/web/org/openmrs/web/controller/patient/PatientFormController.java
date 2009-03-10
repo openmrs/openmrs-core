@@ -359,7 +359,7 @@ public class PatientFormController extends PersonFormController {
 			
 			if (action.equals(msa.getMessage("Patient.delete"))) {
 				try {
-					ps.deletePatient(patient);
+					ps.purgePatient(patient);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.deleted");
 					return new ModelAndView(new RedirectView("index.htm"));
 				}
@@ -485,7 +485,7 @@ public class PatientFormController extends PersonFormController {
 										obsDeath.setValueText("");
 									}
 									
-									Context.getObsService().updateObs(obsDeath);
+									Context.getObsService().saveObs(obsDeath, null);
 								} else {
 									log.debug("Current cause is still null - aborting mission");
 								}
