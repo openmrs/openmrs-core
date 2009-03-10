@@ -109,24 +109,24 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 * @see org.springframework.context.MessageSource#getMessage(org.springframework.context.MessageSourceResolvable,
 	 *      java.util.Locale)
 	 */
-	public String getMessage(MessageSourceResolvable arg0, Locale arg1) {
-		return activeMessageSource.getMessage(arg0, arg1);
+	public String getMessage(MessageSourceResolvable resolvable, Locale locale) {
+		return activeMessageSource.getMessage(resolvable, locale);
 	}
 	
 	/**
 	 * @see org.springframework.context.MessageSource#getMessage(java.lang.String,
 	 *      java.lang.Object[], java.util.Locale)
 	 */
-	public String getMessage(String arg0, Object[] arg1, Locale arg2) throws NoSuchMessageException {
-		return activeMessageSource.getMessage(arg0, arg1, arg2);
+	public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
+		return activeMessageSource.getMessage(code, args, code, locale);
 	}
 	
 	/**
 	 * @see org.springframework.context.MessageSource#getMessage(java.lang.String,
 	 *      java.lang.Object[], java.lang.String, java.util.Locale)
 	 */
-	public String getMessage(String arg0, Object[] arg1, String arg2, Locale arg3) {
-		return activeMessageSource.getMessage(arg0, arg1, arg2, arg3);
+	public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
+		return activeMessageSource.getMessage(code, args, defaultMessage, locale);
 	}
 	
 	/**

@@ -30,7 +30,7 @@ import org.junit.Test;
 public class OrderTest {
 	
 	/**
-	 * Tests the {@link Order#isDiscontinued()} method
+	 * Tests the {@link Order#isDiscontinuedRightNow()} method
 	 * 
 	 * @throws Exception
 	 */

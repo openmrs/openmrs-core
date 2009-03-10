@@ -1,3 +1,4 @@
 <!-- Encounter View for FieldGen module -->
-<input type="text" size="6" name="${model.formFieldName}" value="${model.obj.encounterId}" />
+<%@ include file="/WEB-INF/template/include.jsp" %>
+<openmrs_tag:encounterField formFieldName="${model.formFieldName}" initialValue="${model.obj.encounterId}" linkUrl="${pageContext.request.contextPath}/admin/encounters/encounter.form" />
 <!-- Encounter View for FieldGen module -->

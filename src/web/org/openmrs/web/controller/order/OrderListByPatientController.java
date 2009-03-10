@@ -32,11 +32,14 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.PersonName;
+import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -77,12 +80,43 @@ public class OrderListByPatientController extends SimpleFormController {
 		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
+			String[] orderList = ServletRequestUtils.getStringParameters(request, "orderId");
+			OrderService os = Context.getOrderService();
+			
+			String success = "";
+			String error = "";
+			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String success = msa.getMessage("Order.list.saved");
+			String deleted = msa.getMessage("general.deleted");
+			String notDeleted = msa.getMessage("general.cannot.delete");
+			String ord = msa.getMessage("Order.title");
+			String voidReason = ServletRequestUtils.getRequiredStringParameter(request, "voidReason");
+			if (!StringUtils.hasLength(voidReason)) {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "general.voidReason.empty");
+				return showForm(request, response, errors);
+			}
+			for (String p : orderList) {
+				try {
+					os.voidOrder(os.getOrder(Integer.valueOf(p)), voidReason);
+					if (!success.equals(""))
+						success += "<br/>";
+					success += ord + " " + p + " " + deleted;
+				}
+				catch (APIException e) {
+					log.warn("Error deleting order", e);
+					if (!error.equals(""))
+						error += "<br/>";
+					error += ord + " " + p + " " + notDeleted;
+				}
+			}
+			
 			view = getSuccessView();
 			if (ServletRequestUtils.getIntParameter(request, "patientId") != null)
 				view += "?patientId=" + ServletRequestUtils.getIntParameter(request, "patientId");
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+			if (!success.equals(""))
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
+			if (!error.equals(""))
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -112,7 +146,7 @@ public class OrderListByPatientController extends SimpleFormController {
 				
 				if (p != null) {
 					OrderService os = Context.getOrderService();
-					orderList = os.getDrugOrdersByPatient(p);
+					orderList = os.getDrugOrdersByPatient(p, ORDER_STATUS.ANY, true);
 				} else {
 					log.error("Could not get a patient corresponding to patientId [" + patientId
 					        + "], thus could not get drug orders.");
@@ -122,7 +156,8 @@ public class OrderListByPatientController extends SimpleFormController {
 				if (showAll) {
 					this.setFormView("/admin/orders/orderDrugList");
 					OrderService os = Context.getOrderService();
-					orderList = os.getDrugOrders();
+					//orderList = os.getDrugOrders();
+					orderList = os.getOrders(DrugOrder.class, null, null, ORDER_STATUS.ANY, null, null, null);
 				} else {
 					this.setFormView("/admin/orders/choosePatient");
 				}
@@ -149,7 +184,7 @@ public class OrderListByPatientController extends SimpleFormController {
 		
 		for (Order order : orderList) {
 			Concept c = order.getConcept();
-			String cName = c.getName(request.getLocale()).getName();
+			String cName = c.getBestName(Context.getLocale()).getName();
 			conceptNames.put(c.getConceptId(), cName);
 		}
 		

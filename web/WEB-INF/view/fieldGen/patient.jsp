@@ -1,3 +1,4 @@
 <!-- Patient View for FieldGen module -->
-<input type="text" size="6" name="${model.formFieldName}" value="${model.obj.patientId}" />
+<%@ include file="/WEB-INF/template/include.jsp" %>
+<openmrs_tag:patientField formFieldName="${model.formFieldName}" initialValue="${model.obj.patientId}" linkUrl="${pageContext.request.contextPath}/admin/patients/patient.form" />
 <!-- Patient View for FieldGen module -->

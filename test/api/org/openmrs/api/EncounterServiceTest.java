@@ -462,7 +462,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatient(new Patient(3));
-		assertEquals(1, encounters.size());
+		assertEquals(2, encounters.size());
 	}
 	
 	/**
@@ -483,7 +483,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatientId(3);
-		assertEquals(1, encounters.size());
+		assertEquals(2, encounters.size());
 	}
 	
 	/**
@@ -504,7 +504,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		List<Encounter> encounters = encounterService.getEncountersByPatientIdentifier("12345");
-		assertEquals(1, encounters.size());
+		assertEquals(2, encounters.size());
 	}
 	
 	/**
@@ -660,7 +660,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersByLocation() throws Exception {
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, new Location(1), null, null, null,
 		    null, true);
-		assertEquals(4, encounters.size());
+		assertEquals(5, encounters.size());
 	}
 	
 	/**
@@ -703,8 +703,9 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersOnOrUpToADate() throws Exception {
 		Date toDate = new SimpleDateFormat("yyyy-dd-MM").parse("2006-01-01");
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, toDate, null, null, true);
-		assertEquals(1, encounters.size());
-		assertEquals(1, encounters.get(0).getEncounterId().intValue());
+		assertEquals(2, encounters.size());
+		assertEquals(15, encounters.get(0).getEncounterId().intValue());
+		assertEquals(1, encounters.get(1).getEncounterId().intValue());
 	}
 	
 	/**
@@ -716,7 +717,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<Form> forms = new Vector<Form>();
 		forms.add(new Form(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, forms, null, true);
-		assertEquals(5, encounters.size());
+		assertEquals(6, encounters.size());
 	}
 	
 	/**
@@ -728,7 +729,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<EncounterType> types = new Vector<EncounterType>();
 		types.add(new EncounterType(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, types, true);
-		assertEquals(4, encounters.size());
+		assertEquals(5, encounters.size());
 	}
 	
 	/**
@@ -737,7 +738,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should exclude voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,null)")
 	public void getEncounters_shouldExcludeVoidedEncounters() throws Exception {
-		assertEquals(4, Context.getEncounterService().getEncounters(null, null, null, null, null, null, false).size());
+		assertEquals(5, Context.getEncounterService().getEncounters(null, null, null, null, null, null, false).size());
 	}
 	
 	/**
@@ -746,7 +747,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should include voided encounters", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,null)")
 	public void getEncounters_shouldIncludeVoidedEncounters() throws Exception {
-		assertEquals(5, Context.getEncounterService().getEncounters(null, null, null, null, null, null, true).size());
+		assertEquals(6, Context.getEncounterService().getEncounters(null, null, null, null, null, null, true).size());
 	}
 	
 	/**
@@ -1203,7 +1204,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should cascade patient to orders in the encounter", method = "saveEncounter(Encounter)")
 	public void xsaveEncounter_shouldCascadePatientToOrdersInTheEncounter() throws Exception {
-		Encounter enc = Context.getEncounterService().getEncounter(1);
+		Encounter enc = Context.getEncounterService().getEncounter(15);
 		Order existing = enc.getOrders().iterator().next();
 		
 		// for some reason the xml for the existing encounter has already given this order a different patient than the encounter that it's contained in, but let's verify that:

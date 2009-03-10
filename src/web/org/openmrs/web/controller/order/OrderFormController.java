@@ -13,7 +13,6 @@
  */
 package org.openmrs.web.controller.order;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,6 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,17 +27,23 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
 import org.openmrs.propertyeditor.OrderTypeEditor;
+import org.openmrs.propertyeditor.PatientEditor;
 import org.openmrs.propertyeditor.UserEditor;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -62,25 +66,61 @@ public class OrderFormController extends SimpleFormController {
 		super.initBinder(request, binder);
 		binder.registerCustomEditor(OrderType.class, new OrderTypeEditor());
 		binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor("t", "f", true));
+		binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
 		binder.registerCustomEditor(Concept.class, new ConceptEditor());
-		binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"), true));
+		binder.registerCustomEditor(Date.class, new CustomDateEditor(OpenmrsUtil.getDateFormat(), true));
 		binder.registerCustomEditor(User.class, new UserEditor());
+		binder.registerCustomEditor(Patient.class, new PatientEditor());
 		binder.registerCustomEditor(Encounter.class, new EncounterEditor());
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	protected Map referenceData(HttpServletRequest request) throws Exception {
-		Map refData = new HashMap();
-		
-		// just the text that we need for an empty orderType list
-		String emptyOrderTypeList = this.getMessageSourceAccessor().getMessage("OrderType.list.empty");
-		refData.put("emptyOrderTypeList", emptyOrderTypeList);
-		
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
+		Map<String, Object> refData = new HashMap<String, Object>();
 		return refData;
+	}
+	
+	/*
+	 * executes one of the following commands encoded in the request parameter
+	 * on the order parameter:
+	 * saveOrder, voidOrder, unvoidOrder, discontinueOrder, undiscontinueOrder
+	 * Returns true if the command execution succeeded.
+	 */
+	protected boolean executeCommand(Order order, HttpServletRequest request) {
+		if (!Context.isAuthenticated()) {
+			return false;
+		}
+		
+		OrderService orderService = Context.getOrderService();
+		
+		try {
+			if (request.getParameter("saveOrder") != null) {
+				orderService.saveOrder(order);
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.saved");
+			} else if (request.getParameter("voidOrder") != null) {
+				orderService.voidOrder(order, order.getVoidReason());
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.voidedSuccessfully");
+			} else if (request.getParameter("unvoidOrder") != null) {
+				orderService.unvoidOrder(order);
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.unvoidedSuccessfully");
+			} else if (request.getParameter("discontinueOrder") != null) {
+				orderService.discontinueOrder(order, order.getDiscontinuedReason(), order.getDiscontinuedDate());
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.discontinuedSuccessfully");
+			} else if (request.getParameter("undiscontinueOrder") != null) {
+				orderService.undiscontinueOrder(order);
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.undiscontinuedSuccessfully");
+			}
+		}
+		catch (APIException ex) {
+			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, ex.getMessage());
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -93,20 +133,13 @@ public class OrderFormController extends SimpleFormController {
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
-		
-		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
-		
-		if (Context.isAuthenticated()) {
-			Order order = (Order) obj;
-			if (order.getDateCreated() == null)
-				order.setDateCreated(new Date());
-			if (order.getVoided() == null)
-				order.setVoided(new Boolean(false));
-			Context.getOrderService().saveOrder(order);
+		String view;
+		Order order = (Order) obj;
+		boolean ok = executeCommand(order, request);
+		if (ok) {
 			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.saved");
+		} else {
+			return showForm(request, response, errors);
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -142,4 +175,5 @@ public class OrderFormController extends SimpleFormController {
 		
 		return order;
 	}
+	
 }
