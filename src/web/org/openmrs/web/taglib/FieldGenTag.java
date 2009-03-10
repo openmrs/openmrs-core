@@ -171,7 +171,7 @@ public class FieldGenTag extends TagSupport {
 							output += falseLabel;
 							output += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 							output += "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName
-							        + "_t\" =\"t\"" + ("t".equals(startVal) ? " checked" : "") + "/> ";
+							        + "_t\" value=\"t\"" + ("t".equals(startVal) ? " checked" : "") + "/> ";
 							output += trueLabel;
 						} else {
 							output = "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName
