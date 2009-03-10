@@ -102,8 +102,8 @@ public class HibernatePersonDAO implements PersonDAO {
 			q += " case";
 			q += "  when pname.givenName is null then 1";
 			q += "  when pname.givenName = '' then 1";
-			q += "  when soundex(pname.givenName) = soundex(:n1) then 3";
-			q += "  when soundex(pname.givenName) = soundex(:n2) then 4";
+			q += "  when soundex(pname.givenName) = soundex(:n1) then 4";
+			q += "  when soundex(pname.givenName) = soundex(:n2) then 3";
 			q += "  else 0 ";
 			q += " end";
 			q += " + ";
@@ -130,7 +130,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			q += "  when soundex(pname.familyName2) = soundex(:n2) then 4";
 			q += "  else 0 ";
 			q += " end";
-			q += ") >= 5";
+			q += ") > 6";
 		} else if (names.length == 3) {
 			q += "(";
 			q += " case";
