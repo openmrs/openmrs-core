@@ -227,7 +227,7 @@
 		<property name="locationDAO"><ref bean="locationDAO"/></property>	
 	</bean>
 	<bean id="orderServiceTarget" class="org.openmrs.api.impl.OrderServiceImpl">
-		<property name="orderDAO"><ref bean="orderDAO"/></property>	
+		<property name="orderDAO"><ref bean="orderDAO"/></property>
 	</bean>
 	<bean id="formServiceTarget" class="org.openmrs.api.impl.FormServiceImpl">
 		<property name="formDAO"><ref bean="formDAO"/></property>	
@@ -764,4 +764,12 @@
 		<property name="validatorClass"><value>org.openmrs.reporting.ShortDescriptionProducerValidator</value></property>
 	</bean>
 
+	<bean class="org.openmrs.validator.ValidateUtil">
+		<property name="validators">
+			<list>
+				<bean class="org.openmrs.validator.DrugOrderValidator"/>
+				<bean class="org.openmrs.validator.OrderValidator"/>
+			</list>
+		</property>
+	</bean>
 </beans>

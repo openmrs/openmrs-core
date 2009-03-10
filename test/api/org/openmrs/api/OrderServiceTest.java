@@ -21,34 +21,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
+import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * TODO clean up and test all methods in OrderService
  */
 public class OrderServiceTest extends BaseContextSensitiveTest {
-	
-	/**
-	 * Adds then updates an order
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldOrderCreateUpdateDelete() throws Exception {
-		
-	}
-	
-	/**
-	 * Adds then updates a drug order
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldDrugOrderCreateUpdateDelete() throws Exception {
-		
-	}
 	
 	/**
 	 * TODO finish and activate this test method
@@ -104,4 +86,15 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	/**
+	 * @see {@link OrderService#saveOrder(Order)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should not save order if order doesnt validate", method = "saveOrder(Order)")
+	public void saveOrder_shouldNotSaveOrderIfOrderDoesntValidate() throws Exception {
+		OrderService orderService = Context.getOrderService();
+		Order order = new Order();
+		order.setPatient(null);
+		orderService.saveOrder(order);
+	}
 }

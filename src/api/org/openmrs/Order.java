@@ -221,6 +221,7 @@ public class Order implements java.io.Serializable {
 	
 	/**
 	 * @return Returns the discontinued status.
+	 * @should get discontinued property
 	 */
 	public Boolean getDiscontinued() {
 		return discontinued;
@@ -518,7 +519,11 @@ public class Order implements java.io.Serializable {
 		return true;
 	}
 	
-	public boolean isDiscontinued() {
+	/*
+	 * orderForm:jsp: <spring:bind path="order.discontinued" /> results in a call to isDiscontinued() which doesn't give access to the discontinued property
+	 * so renamed it to isDiscontinuedRightNow which results in a call to getDiscontinued.
+	 */
+	public boolean isDiscontinuedRightNow() {
 		return isDiscontinued(new Date());
 	}
 	

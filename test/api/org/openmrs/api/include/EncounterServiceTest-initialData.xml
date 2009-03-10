@@ -65,15 +65,19 @@
   
   <!-- A voided encounter with the same patient id as encounter#1. must come before encounter#1 so that the extra columns are picked up by dbunit -->
   <encounter encounter_id="2" encounter_type="1" form_id="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because"/>
-  <obs obs_id="4" person_id="2" encounter_id="2" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because"/>
-  <orders order_id="2" order_type_id="1" patient_id="2" encounter_id="2" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="1" discontinued="false" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because"/>
+  <obs obs_id="4" person_id="3" encounter_id="2" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because"/>
+  <orders order_id="2" order_type_id="1" patient_id="3" encounter_id="2" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="1" discontinued="false" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because"/>
     
   <!-- A real non-voided encounter -->   
   <encounter encounter_id="1" encounter_type="1" form_id="1" encounter_datetime="2005-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0"/>
-  <obs obs_id="1" person_id="2" encounter_id="1" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="false"/>
-  <obs obs_id="2" person_id="2" encounter_id="1" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="2.0" creator="1" date_created="2006-02-11 15:57:35.0" voided="false"/>
+  <obs obs_id="1" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="false"/>
+  <obs obs_id="2" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="2.0" creator="1" date_created="2006-02-11 15:57:35.0" voided="false"/>
   <!--  this obs datetime is intentionally different than the encounter datetime above  -->
-  <obs obs_id="3" person_id="2" encounter_id="1" concept_id="1" obs_datetime="2006-01-01 00:00:00.0" location_id="1" value_numeric="3.0" creator="1" date_created="2006-03-11 15:57:35.0" voided="false"/>
+  <obs obs_id="3" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2006-01-01 00:00:00.0" location_id="1" value_numeric="3.0" creator="1" date_created="2006-03-11 15:57:35.0" voided="false"/>
   
-  <orders order_id="1" order_type_id="1" patient_id="2" encounter_id="1" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false"/>
+  <orders order_id="1" order_type_id="1" patient_id="3" encounter_id="1" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false"/>
+  
+  <!-- an encounter with a mismatched order.patient_id -->
+  <encounter encounter_id="15" encounter_type="1" form_id="1" encounter_datetime="2001-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0"/>
+  <orders order_id="10" order_type_id="1" patient_id="2" encounter_id="15" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false"/>
 </dataset>

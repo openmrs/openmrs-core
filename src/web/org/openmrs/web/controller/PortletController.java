@@ -275,11 +275,12 @@ public class PortletController implements Controller {
 							model.put("patientDrugOrders", drugOrderList);
 							List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>();
 							List<DrugOrder> discontinuedDrugOrders = new ArrayList<DrugOrder>();
+							Date rightNow = new Date();
 							for (Iterator<DrugOrder> iter = drugOrderList.iterator(); iter.hasNext();) {
 								DrugOrder next = iter.next();
 								if (next.isCurrent() || next.isFuture())
 									currentDrugOrders.add(next);
-								if (next.isDiscontinued())
+								if (next.isDiscontinued(rightNow))
 									discontinuedDrugOrders.add(next);
 							}
 							model.put("currentDrugOrders", currentDrugOrders);

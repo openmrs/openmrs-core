@@ -41,7 +41,6 @@
 			<props>
 				<prop key="/admin/orders/order.list">orderList</prop>
 				<prop key="/admin/orders/orderDrug.list">orderListByPatient</prop>
-				<prop key="/admin/orders/orderPlace.form">orderPlaceByPatient</prop>
 				<prop key="/admin/orders/orderDrug.form">orderDrugForm</prop>
 				<prop key="/admin/orders/order.form">orderForm</prop>
 				<prop key="/admin/orders/orderType.list">orderTypeList</prop>
@@ -320,9 +319,8 @@
 	</bean>
 
 	<!--  Validator and Form Controller for the add/edit order types page -->
-	<bean id="orderValidator" class="org.openmrs.web.controller.order.OrderValidator" />
+	<bean id="orderValidator" class="org.openmrs.validator.OrderValidator" />
 	<bean id="orderForm" class="org.openmrs.web.controller.order.OrderFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>order</value></property>
 		<property name="validator">
 			<ref bean="orderValidator" />
@@ -339,9 +337,8 @@
 	</bean>
 
 	<!--  Validator and Form Controller for the add/edit order types page -->
-	<bean id="orderDrugValidator" class="org.openmrs.web.controller.order.OrderDrugValidator" />
+	<bean id="orderDrugValidator" class="org.openmrs.validator.DrugOrderValidator" />
 	<bean id="orderDrugForm" class="org.openmrs.web.controller.order.OrderDrugFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>order</value></property>
 		<property name="validator">
 			<ref bean="orderDrugValidator" />
@@ -357,20 +354,9 @@
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>orderDrugList</value></property>
 		<property name="formView"><value>/admin/orders/orderListByPatient</value></property>
-		<property name="successView"><value>orderByPatient.list</value></property>
+		<property name="successView"><value>orderDrug.list</value></property>
 	</bean>
 
-	<bean id="orderPlaceValidator" class="org.openmrs.web.controller.order.OrderDrugValidator" />
-	<bean id="orderPlaceByPatient"
-		class="org.openmrs.web.controller.order.OrderPlaceFormController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>order</value></property>
-		<property name="validator">
-			<ref bean="orderPlaceValidator" />
-		</property>
-		<property name="formView"><value>/admin/orders/orderPlaceForm</value></property>
-		<property name="successView"><value>orderByPatient.list</value></property>
-	</bean>
 	<!-- ** /Order Placement ** -->
 	<!-- ====== /Order Sector ====== -->
 

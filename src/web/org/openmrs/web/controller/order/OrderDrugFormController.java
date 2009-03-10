@@ -13,46 +13,27 @@
  */
 package org.openmrs.web.controller.order;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
-import org.openmrs.Encounter;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
-import org.openmrs.User;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.DrugEditor;
-import org.openmrs.propertyeditor.EncounterEditor;
-import org.openmrs.propertyeditor.OrderTypeEditor;
-import org.openmrs.propertyeditor.PatientEditor;
-import org.openmrs.propertyeditor.UserEditor;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.WebConstants;
-import org.springframework.beans.propertyeditors.CustomBooleanEditor;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class OrderDrugFormController extends SimpleFormController {
+public class OrderDrugFormController extends OrderFormController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -67,33 +48,8 @@ public class OrderDrugFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		binder.registerCustomEditor(OrderType.class, new OrderTypeEditor());
-		binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor("t", "f", true));
-		binder.registerCustomEditor(Concept.class, new ConceptEditor());
-		binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat(OpenmrsConstants
-		        .OPENMRS_LOCALE_DATE_PATTERNS().get(Context.getLocale().toString().toLowerCase()), Context.getLocale()),
-		        true));
-		binder.registerCustomEditor(User.class, new UserEditor());
-		binder.registerCustomEditor(Patient.class, new PatientEditor());
-		binder.registerCustomEditor(Encounter.class, new EncounterEditor());
 		binder.registerCustomEditor(Drug.class, new DrugEditor());
-		binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
 		binder.registerCustomEditor(Double.class, new CustomNumberEditor(Double.class, true));
-	}
-	
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
-	 */
-	@Override
-	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-		
-		Map<String, Object> refData = new HashMap<String, Object>();
-		
-		// just the text that we need for an empty orderType list
-		String emptyOrderTypeList = this.getMessageSourceAccessor().getMessage("OrderType.list.empty");
-		refData.put("emptyOrderTypeList", emptyOrderTypeList);
-		
-		return refData;
 	}
 	
 	/**
@@ -106,22 +62,17 @@ public class OrderDrugFormController extends SimpleFormController {
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
+		String view;
+		DrugOrder order = (DrugOrder) obj;
+		// TODO: for now, orderType will have to be hard-coded?
+		order.setOrderType(new OrderType(new Integer(2)));
 		
-		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
-		
-		if (Context.isAuthenticated()) {
-			DrugOrder order = (DrugOrder) obj;
-			
-			// TODO: for now, orderType will have to be hard-coded?
-			order.setOrderType(new OrderType(new Integer(2)));
-			
-			if (order.getVoided() == null)
-				order.setVoided(new Boolean(false));
-			Context.getOrderService().saveOrder(order);
-			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.drug.saved");
+		boolean ok = executeCommand(order, request);
+		if (ok) {
+			int patientId = order.getPatient().getPatientId();
+			view = getSuccessView() + "?patientId=" + patientId;
+		} else {
+			return showForm(request, response, errors);
 		}
 		
 		return new ModelAndView(new RedirectView(view));
@@ -153,9 +104,16 @@ public class OrderDrugFormController extends SimpleFormController {
 				OrderType ot = os.getOrderType(orderTypeId);
 				order.setOrderType(ot);
 			}
+			
+			Integer patientId = ServletRequestUtils.getIntParameter(request, "patientId");
+			if (patientId != null) {
+				Patient patient = Context.getPatientService().getPatient(patientId);
+				if (patient != null) {
+					order.setPatient(patient);
+				}
+			}
 		}
 		
 		return order;
 	}
-	
 }

@@ -29,11 +29,14 @@ import org.openmrs.Concept;
 import org.openmrs.Order;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -58,7 +61,7 @@ public class OrderListController extends SimpleFormController {
 		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
-			String[] orderList = request.getParameterValues("orderId");
+			String[] orderList = ServletRequestUtils.getStringParameters(request, "orderId");
 			OrderService os = Context.getOrderService();
 			
 			String success = "";
@@ -68,9 +71,14 @@ public class OrderListController extends SimpleFormController {
 			String deleted = msa.getMessage("general.deleted");
 			String notDeleted = msa.getMessage("general.cannot.delete");
 			String ord = msa.getMessage("Order.title");
+			String voidReason = ServletRequestUtils.getRequiredStringParameter(request, "voidReason");
+			if (!StringUtils.hasLength(voidReason)) {
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "general.voidReason.empty");
+				return showForm(request, response, errors);
+			}
 			for (String p : orderList) {
 				try {
-					os.deleteOrder(os.getOrder(Integer.valueOf(p)));
+					os.voidOrder(os.getOrder(Integer.valueOf(p)), voidReason);
 					if (!success.equals(""))
 						success += "<br/>";
 					success += ord + " " + p + " " + deleted;
@@ -107,7 +115,8 @@ public class OrderListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			OrderService os = Context.getOrderService();
-			orderList = os.getOrders();
+			//orderList = os.getOrders();
+			orderList = os.getOrders(Order.class, null, null, ORDER_STATUS.ANY, null, null, null);
 		}
 		
 		return orderList;
@@ -125,7 +134,7 @@ public class OrderListController extends SimpleFormController {
 		
 		for (Order order : orderList) {
 			Concept c = order.getConcept();
-			String cName = c.getName(request.getLocale()).getName();
+			String cName = c.getBestName(Context.getLocale()).getName();
 			conceptNames.put(c.getConceptId(), cName);
 		}
 		
