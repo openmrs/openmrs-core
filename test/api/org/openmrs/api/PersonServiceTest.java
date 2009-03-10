@@ -253,10 +253,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void getSimilarPeople_shouldMatchTwoWordSearchToAnyNamePart() throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
 		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham", 1979, "M");
-		Assert.assertEquals(8, matches.size());
+		Assert.assertEquals(6, matches.size());
 		Assert.assertTrue(matches.contains(new Person(1000)));
-		Assert.assertTrue(matches.contains(new Person(1001)));
-		Assert.assertTrue(matches.contains(new Person(1002)));
 		Assert.assertTrue(matches.contains(new Person(1003)));
 		Assert.assertTrue(matches.contains(new Person(1004)));
 		Assert.assertTrue(matches.contains(new Person(1005)));
