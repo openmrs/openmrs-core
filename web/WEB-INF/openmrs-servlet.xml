@@ -377,7 +377,6 @@
 	<!-- ** Patient ** -->
 	<bean id="patientValidator" class="org.openmrs.validator.PatientValidator" />
 	<bean id="patientForm" class="org.openmrs.web.controller.patient.PatientFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>patient</value></property>
 		<property name="formView"><value>/admin/patients/patientForm</value></property>
 		<property name="successView"><value>patient.form</value></property>

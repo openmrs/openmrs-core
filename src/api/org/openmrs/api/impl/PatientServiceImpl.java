@@ -185,7 +185,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		List<PatientIdentifier> identifiers = new Vector<PatientIdentifier>();
 		identifiers.addAll(patient.getIdentifiers());
 		List<String> identifiersUsed = new Vector<String>();
-		List<PatientIdentifierType> requiredTypes = getPatientIdentifierTypes(null, null, true, null);
+		List<PatientIdentifierType> requiredTypes = Context.getPatientService().getPatientIdentifierTypes(null, null, true, null);
 		if (requiredTypes == null)
 			requiredTypes = new ArrayList<PatientIdentifierType>();
 		List<PatientIdentifierType> foundRequiredTypes = new ArrayList<PatientIdentifierType>();
