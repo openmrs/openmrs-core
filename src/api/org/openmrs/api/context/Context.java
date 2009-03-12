@@ -870,9 +870,10 @@ public class Context {
 	}
 	
 	/**
-	 * Sets {@link OpenmrsConstants#DATABASE_VERSION} accordingly for backwards compatibility,
-	 * however, this is no longer needed because we are using individual liquibase updates now that
-	 * can be run out of order.<br/>
+	 * Runs any needed updates on the current database. Also sets
+	 * {@link OpenmrsConstants#DATABASE_VERSION} accordingly for backwards compatibility. However,
+	 * this is no longer needed because we are using individual liquibase updates now that can be
+	 * run out of order.<br/>
 	 * <br/>
 	 * If an {@link InputRequiredException} is thrown, a call to {@link DatabaseUpdater#update(Map)}
 	 * will be required with a mapping from question prompt to user answer
@@ -883,7 +884,8 @@ public class Context {
 	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
 	 *      the required question/datatypes
 	 */
-	private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
+	@SuppressWarnings("deprecation")
+    private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
 		try {
 			Context.addProxyPrivilege("");
 			OpenmrsConstants.DATABASE_VERSION = getAdministrationService().getGlobalProperty("database_version");

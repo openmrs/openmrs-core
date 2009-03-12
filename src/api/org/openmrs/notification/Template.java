@@ -39,7 +39,8 @@ public class Template implements Serializable {
 	private String subject;
 	
 	// Not persisted
-	private Map data;
+	@SuppressWarnings("unchecked")
+    private Map data;
 	
 	private String content;
 	
@@ -108,11 +109,13 @@ public class Template implements Serializable {
 		return ordinal;
 	}
 	
-	public void setData(Map data) {
+	@SuppressWarnings("unchecked")
+    public void setData(Map data) {
 		this.data = data;
 	}
 	
-	public Map getData() {
+	@SuppressWarnings("unchecked")
+    public Map getData() {
 		return this.data;
 	}
 	

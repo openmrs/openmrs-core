@@ -24,6 +24,7 @@ public interface DataSetTransform {
 	 * @param input
 	 * @return
 	 */
-	public DataSet transform(DataSet input);
+	@SuppressWarnings("unchecked")
+    public DataSet transform(DataSet input);
 	
 }

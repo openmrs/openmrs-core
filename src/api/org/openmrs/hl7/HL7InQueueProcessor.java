@@ -70,10 +70,10 @@ public class HL7InQueueProcessor /* implements Runnable */{
 			if (log.isDebugEnabled())
 				log.debug("Archiving HL7 inbound queue entry");
 			HL7InArchive hl7InArchive = new HL7InArchive(hl7InQueue);
-			Context.getHL7Service().createHL7InArchive(hl7InArchive);
+			Context.getHL7Service().saveHL7InArchive(hl7InArchive);
 			if (log.isDebugEnabled())
 				log.debug("Removing HL7 message from inbound queue");
-			Context.getHL7Service().deleteHL7InQueue(hl7InQueue);
+			Context.getHL7Service().purgeHL7InQueue(hl7InQueue);
 		}
 		catch (HL7Exception e) {
 			boolean skipError = false;
@@ -134,8 +134,8 @@ public class HL7InQueueProcessor /* implements Runnable */{
 		HL7InError hl7InError = new HL7InError(hl7InQueue);
 		hl7InError.setError(error);
 		hl7InError.setErrorDetails(cause == null ? "" : cause.getMessage());
-		Context.getHL7Service().createHL7InError(hl7InError);
-		Context.getHL7Service().deleteHL7InQueue(hl7InQueue);
+		Context.getHL7Service().saveHL7InError(hl7InError);
+		Context.getHL7Service().purgeHL7InQueue(hl7InQueue);
 		log.error(error, cause);
 	}
 	

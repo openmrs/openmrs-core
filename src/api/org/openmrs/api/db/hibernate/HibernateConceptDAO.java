@@ -941,7 +941,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptNameTags()
 	 */
-	public List<ConceptNameTag> getAllConceptNameTags() {
+	@SuppressWarnings("unchecked")
+    public List<ConceptNameTag> getAllConceptNameTags() {
 		return sessionFactory.getCurrentSession().createQuery("from ConceptNameTag cnt order by cnt.tag").list();
 	}
 	
@@ -955,7 +956,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptSources()
 	 */
-	public List<ConceptSource> getAllConceptSources() {
+	@SuppressWarnings("unchecked")
+    public List<ConceptSource> getAllConceptSources() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class);
 		
 		criteria.add(Expression.eq("voided", false));

@@ -209,7 +209,8 @@ public class ReportObjectFactory {
 	 * @param context
 	 * @return
 	 */
-	public static AbstractReportObject getInstance(String reportObjectName, Map<String, Object> initialValues,
+	@SuppressWarnings("unchecked")
+    public static AbstractReportObject getInstance(String reportObjectName, Map<String, Object> initialValues,
 	                                               Context context) {
 		ReportObjectFactory rof = ReportObjectFactory.singleton;
 		String className = rof.getReportObjectClassByName(reportObjectName);
@@ -237,7 +238,8 @@ public class ReportObjectFactory {
 	 * @param initialValues
 	 * @return
 	 */
-	public static AbstractReportObject getInstance(Class reportObjectClass, Map<String, Object> initialValues) {
+	@SuppressWarnings("unchecked")
+    public static AbstractReportObject getInstance(Class reportObjectClass, Map<String, Object> initialValues) {
 		AbstractReportObject reportObj = null;
 		
 		if (reportObjectClass != null) {
@@ -262,7 +264,8 @@ public class ReportObjectFactory {
 	 * @param initialValues
 	 * @return
 	 */
-	private static AbstractReportObject initInstance(AbstractReportObject reportObj, Map<String, Object> initialValues) {
+	@SuppressWarnings("unchecked")
+    private static AbstractReportObject initInstance(AbstractReportObject reportObj, Map<String, Object> initialValues) {
 		if (reportObj != null && initialValues != null) {
 			for (Iterator<String> i = initialValues.keySet().iterator(); i.hasNext();) {
 				String key = i.next();
@@ -300,7 +303,7 @@ public class ReportObjectFactory {
 				
 				if (m != null) {
 					try {
-						Object fieldObj = m.invoke(reportObj, setterParams);
+						m.invoke(reportObj, setterParams);
 					}
 					catch (Exception e) {
 						log.error("Could not invoke setter method [" + methodName + "()] for field [" + key + "] in class ["

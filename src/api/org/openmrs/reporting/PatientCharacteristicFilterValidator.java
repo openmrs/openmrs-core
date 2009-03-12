@@ -18,7 +18,8 @@ import org.springframework.validation.Validator;
 
 public class PatientCharacteristicFilterValidator implements Validator {
 	
-	public boolean supports(Class cls) {
+	@SuppressWarnings("unchecked")
+    public boolean supports(Class cls) {
 		return (cls.equals(PatientCharacteristicFilter.class));
 	}
 	

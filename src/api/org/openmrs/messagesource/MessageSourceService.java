@@ -55,6 +55,7 @@ public interface MessageSourceService extends MutableMessageSource {
 	 * 
 	 * @see org.openmrs.message.MessageSourceService#publishProperties(java.util.Properties,
 	 *      java.lang.String, java.lang.String, java.lang.String)
+	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
 	 */
 	public void publishProperties(Properties props, String locale, String namespace, String name, String version);
 	

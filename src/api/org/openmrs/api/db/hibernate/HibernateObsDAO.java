@@ -76,6 +76,7 @@ public class HibernateObsDAO implements ObsDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#getMimeType(java.lang.Integer)
+	 * @deprecated
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws DAOException {
 		return (MimeType) sessionFactory.getCurrentSession().get(MimeType.class, mimeTypeId);
@@ -83,6 +84,7 @@ public class HibernateObsDAO implements ObsDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#getAllMimeTypes(boolean)
+	 * @deprecated
 	 */
 	@SuppressWarnings("unchecked")
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws DAOException {
@@ -96,6 +98,7 @@ public class HibernateObsDAO implements ObsDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.ObsSDAO#saveMimeType(org.openmrs.MimeType)
+	 * @deprecated
 	 */
 	public MimeType saveMimeType(MimeType mimeType) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(mimeType);
@@ -104,6 +107,7 @@ public class HibernateObsDAO implements ObsDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.ObsDAO#deleteMimeType(org.openmrs.MimeType)
+	 * @deprecated
 	 */
 	public void deleteMimeType(MimeType mimeType) throws DAOException {
 		sessionFactory.getCurrentSession().delete(mimeType);

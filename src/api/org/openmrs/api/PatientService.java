@@ -27,6 +27,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.validator.PatientIdentifierValidator;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -383,7 +384,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientIdentifier identifier to be validated
 	 * @see #checkPatientIdentifiers(Patient)
 	 * @throws PatientIdentifierException if the identifier is invalid
-	 * @deprecated use {@link PatientIdentifierValidator.validate(PatientIdentifier)}
+	 * @deprecated use {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_IDENTIFIERS })
 	public void checkPatientIdentifier(PatientIdentifier patientIdentifier) throws PatientIdentifierException;

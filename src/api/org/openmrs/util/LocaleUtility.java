@@ -58,7 +58,9 @@ public class LocaleUtility {
 			}
 		}
 		catch (Throwable t) {
-			log.warn("Unable to get locale global property value", t);
+			// swallow most of the stack trace for most users
+			log.warn("Unable to get locale global property value. " + t.getMessage());
+			log.trace("Unable to get locale global property value", t);
 		}
 		
 		return fromSpecification(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE);

@@ -44,5 +44,6 @@ public interface DataSetProvider {
 	 * @param inputCohort
 	 * @return
 	 */
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext);
+	@SuppressWarnings("unchecked")
+    public DataSet evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext);
 }

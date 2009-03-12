@@ -74,14 +74,14 @@ public class HibernateLogicEncounterDAO implements LogicEncounterDAO {
 		if (leftOperand instanceof LogicExpression) {
 			String conceptName = logicExpression.getRootToken();
 			
-			Concept concept = Context.getConceptService().getConceptByIdOrName(conceptName);
+			Concept concept = Context.getConceptService().getConcept(conceptName);
 			criterion.add(Restrictions.eq("concept", concept));
 		}
 		
 		if (operator == null) {
 			String conceptName = logicExpression.getRootToken();
 			
-			Concept concept = Context.getConceptService().getConceptByIdOrName(conceptName);
+			Concept concept = Context.getConceptService().getConcept(conceptName);
 			criterion.add(Restrictions.eq("concept", concept));
 		} else if (operator == Operator.BEFORE) {
 			criterion.add(Restrictions.lt("encounterDatetime", rightOperand));

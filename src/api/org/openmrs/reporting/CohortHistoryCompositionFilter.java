@@ -47,7 +47,8 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter implem
 	public void setName(String name) {
 	}
 	
-	private String nameHelper(List list) {
+	@SuppressWarnings("unchecked")
+    private String nameHelper(List list) {
 		StringBuilder ret = new StringBuilder();
 		for (Object o : list) {
 			if (ret.length() > 0)
@@ -91,7 +92,8 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter implem
 		}
 		*/
 
-	private PatientFilter toPatientFilter(List<Object> phrase) {
+	@SuppressWarnings("unchecked")
+    private PatientFilter toPatientFilter(List<Object> phrase) {
 		// Recursive step:
 		// * if anything in this list is a list, then recurse on that
 		// * if anything in this list is a number, replace it with the relevant filter from the history

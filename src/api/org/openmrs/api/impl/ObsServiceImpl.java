@@ -278,6 +278,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	/**
 	 * @see org.openmrs.api.ObsService#getAllMimeTypes()
+	 * @deprecated
 	 */
 	public List<MimeType> getAllMimeTypes() throws APIException {
 		return dao.getAllMimeTypes(true);
@@ -285,6 +286,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	/**
 	 * @see org.openmrs.api.ObsService#getAllMimeTypes(boolean)
+	 * @deprecated
 	 */
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) {
 		return dao.getAllMimeTypes(includeRetired);
@@ -292,6 +294,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	/**
 	 * @see org.openmrs.api.ObsService#saveMimeType(org.openmrs.MimeType)
+	 * @deprecated
 	 */
 	public MimeType saveMimeType(MimeType mimeType) throws APIException {
 		return dao.saveMimeType(mimeType);
@@ -299,6 +302,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	/**
 	 * @see org.openmrs.api.ObsService#voidMimeType(org.openmrs.MimeType, java.lang.String)
+	 * @deprecated
 	 */
 	public MimeType voidMimeType(MimeType mimeType, String reason) throws APIException {
 		// TODO implement voidMimeType
@@ -307,6 +311,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	/**
 	 * @see org.openmrs.api.ObsService#getMimeType(java.lang.Integer)
+	 * @deprecated
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws APIException {
 		return dao.getMimeType(mimeTypeId);
@@ -314,6 +319,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	/**
 	 * @see org.openmrs.api.ObsService#purgeMimeType(org.openmrs.MimeType)
+	 * @deprecated
 	 */
 	public void purgeMimeType(MimeType mimeType) {
 		dao.deleteMimeType(mimeType);
@@ -699,6 +705,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#getObservations(Cohort patients, List<Concept> concepts, Date
 	 *      fromDate, Date toDate)
+	 * @deprecated
 	 */
 	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate) {
 		List<Person> persons = new Vector<Person>();

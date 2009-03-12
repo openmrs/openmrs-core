@@ -17,8 +17,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.data.CohortDefinition;
@@ -29,9 +27,6 @@ public class ReportDefinition extends AbstractReportObject implements Serializab
 	
 	/* Serial version ID*/
 	private static final long serialVersionUID = 1087599736245536124L;
-	
-	/* Logger */
-	private static Log log = LogFactory.getLog(ReportDefinition.class);
 	
 	/* Set of report elements - table, grid, graph */
 	private Set<ReportElementDefinition> reportElements = new HashSet<ReportElementDefinition>();

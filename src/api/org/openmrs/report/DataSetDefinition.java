@@ -62,6 +62,7 @@ public interface DataSetDefinition extends Parameterizable {
 	 * 
 	 * @return
 	 */
-	public List<Class> getColumnDatatypes();
+	@SuppressWarnings("unchecked")
+    public List<Class> getColumnDatatypes();
 	
 }

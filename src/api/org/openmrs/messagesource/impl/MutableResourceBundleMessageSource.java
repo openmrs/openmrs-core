@@ -136,8 +136,9 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * Presumes to append the messages to a message.properties file which is already being monitored
 	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
 	 * 
-	 * @see org.openmrs.message.MessageSourceService#publishProperties(java.util.Properties,
-	 *      java.lang.String, java.lang.String, java.lang.String)
+	 * @see org.openmrs.messagesource.MutableMessageSource#publishProperties(java.util.Properties,
+	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
 	 */
 	public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
 		

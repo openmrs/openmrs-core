@@ -86,6 +86,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#createCohort(org.openmrs.Cohort)
+	 * @deprecated
 	 */
 	public Cohort createCohort(Cohort cohort) {
 		return saveCohort(cohort);
@@ -100,6 +101,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#getCohorts()
+	 * @deprecated
 	 */
 	public List<Cohort> getCohorts() {
 		return getAllCohorts();
@@ -147,6 +149,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#updateCohort(org.openmrs.Cohort)
+	 * @deprecated
 	 */
 	public Cohort updateCohort(Cohort cohort) {
 		return saveCohort(cohort);
@@ -243,7 +246,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * @see org.openmrs.api.CohortService#getCohortDefinition(java.lang.String)
 	 */
-	public CohortDefinition getCohortDefinition(String key) {
+	@SuppressWarnings("unchecked")
+    public CohortDefinition getCohortDefinition(String key) {
 		try {
 			
 			String[] keyValues = key.split(":");
@@ -331,7 +335,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * @see org.openmrs.api.CohortService#getCohortDefinitions(java.lang.Class)
 	 */
-	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class providerClass) {
+	@SuppressWarnings("unchecked")
+    public List<CohortDefinitionItemHolder> getCohortDefinitions(Class providerClass) {
 		CohortDefinitionProvider provider = getCohortDefinitionProvider(providerClass);
 		return provider.getAllCohortDefinitions();
 	}

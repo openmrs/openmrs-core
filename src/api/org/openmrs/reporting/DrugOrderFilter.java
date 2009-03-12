@@ -158,11 +158,11 @@ public class DrugOrderFilter extends CachingPatientFilter {
 		if (drugSets != null) {
 			Set<Concept> generics = new HashSet<Concept>();
 			for (Concept drugSet : drugSets) {
-				List<Concept> list = Context.getConceptService().getConceptsInSet(drugSet);
+				List<Concept> list = Context.getConceptService().getConceptsByConceptSet(drugSet);
 				generics.addAll(list);
 			}
 			for (Concept generic : generics) {
-				ret.addAll(Context.getConceptService().getDrugs(generic));
+				ret.addAll(Context.getConceptService().getDrugsByConcept(generic));
 			}
 		}
 		return ret;
