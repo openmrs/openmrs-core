@@ -87,6 +87,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * @see org.openmrs.api.FormService#getForms(boolean, boolean)
+	 * @deprecated
 	 */
 	public List<Form> getForms(boolean publishedOnly) throws APIException {
 		if (publishedOnly)
@@ -97,6 +98,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * @see org.openmrs.api.FormService#getForms(boolean, boolean)
+	 * @deprecated
 	 */
 	public List<Form> getForms(boolean publishedOnly, boolean includeRetired) throws APIException {
 		if (publishedOnly && includeRetired) {
@@ -378,6 +380,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * @see org.openmrs.api.FormService#findForms(java.lang.String, boolean, boolean)
+	 * @deprecated
 	 */
 	public List<Form> findForms(String text, boolean includeUnpublished, boolean includeRetired) {
 		if (includeUnpublished)

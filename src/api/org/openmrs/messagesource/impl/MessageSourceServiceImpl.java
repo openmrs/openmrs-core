@@ -158,15 +158,6 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	}
 	
 	/**
-	 * Auto generated method comment
-	 * 
-	 * @param beanObject
-	 */
-	private void add(MutableMessageSource beanObject) {
-		availableMessageSources.add(beanObject);
-	}
-	
-	/**
 	 * Merges messages from another message source into the active (current) message source.
 	 * 
 	 * @see org.openmrs.message.MutableMessageSource#merge(org.openmrs.message.MutableMessageSource)

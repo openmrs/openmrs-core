@@ -29,6 +29,7 @@ import org.openmrs.User;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.validator.PatientIdentifierValidator;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
@@ -165,7 +166,7 @@ public class ADTA28Handler implements Application {
 			Patient patient = createPatient(pid, sendingApp);
 			if (patient == null)
 				throw new HL7Exception("Couldn't create Patient object from PID");
-			Context.getPatientService().createPatient(patient);
+			Context.getPatientService().savePatient(patient);
 			
 		} else {
 			// TODO: Add a global property that enables different behavior here.
@@ -217,7 +218,7 @@ public class ADTA28Handler implements Application {
 			if (assigningAuthority != null && assigningAuthority.length() > 0) {
 				
 				try {
-					PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierType(assigningAuthority);
+					PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierTypeByName(assigningAuthority);
 					if (pit == null) {
 						log.warn("Can't find PatientIdentifierType named '" + assigningAuthority + "'");
 						continue; // skip identifiers with unknown type
@@ -237,7 +238,7 @@ public class ADTA28Handler implements Application {
 					pi.setLocation(location);
 					
 					try {
-						Context.getPatientService().checkPatientIdentifier(pi);
+						PatientIdentifierValidator.validateIdentifier(pi);
 						goodIdentifiers.add(pi);
 					}
 					catch (PatientIdentifierException ex) {

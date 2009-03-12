@@ -48,21 +48,25 @@ public interface ObsDAO {
 	
 	/**
 	 * @see org.openmrs.api.ObsService#getAllMimeTypes(boolean)
+	 * @deprecated
 	 */
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ObsService#getMimeType(java.lang.Integer)
+	 * @deprecated
 	 */
 	public MimeType getMimeType(Integer mimeTypeId) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ObsService#saveMimeType(MimeType)
+	 * @deprecated
 	 */
 	public MimeType saveMimeType(MimeType mimeType) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ObsService#purgeMimeType(MimeType)
+	 * @deprecated
 	 */
 	public void deleteMimeType(MimeType mimeType) throws DAOException;
 	

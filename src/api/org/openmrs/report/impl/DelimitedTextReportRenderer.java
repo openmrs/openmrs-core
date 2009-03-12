@@ -84,7 +84,8 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 	/**
 	 * @see org.openmrs.report.ReportRenderer#render(ReportData, String, Writer)
 	 */
-	public void render(ReportData results, String argument, Writer writer) throws IOException, RenderingException {
+	@SuppressWarnings("unchecked")
+    public void render(ReportData results, String argument, Writer writer) throws IOException, RenderingException {
 		DataSet dataset = results.getDataSets().values().iterator().next();
 		List<String> colKeys = dataset.getDefinition().getColumnKeys();
 		

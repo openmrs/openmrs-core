@@ -30,7 +30,7 @@ public class EventListeners {
 	}
 	
 	public void setGlobalPropertyListeners(List<GlobalPropertyListener> globalPropertyListeners) {
-		this.globalPropertyListeners = globalPropertyListeners;
+		EventListeners.globalPropertyListeners = globalPropertyListeners;
 	}
 	
 }

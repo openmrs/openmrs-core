@@ -26,12 +26,14 @@ public class SearchArgument {
 	
 	private String value;
 	
-	private Class propertyClass;
+	@SuppressWarnings("unchecked")
+    private Class propertyClass;
 	
 	public SearchArgument() {
 	}
 	
-	public SearchArgument(String name, String value, Class propertyClass) {
+	@SuppressWarnings("unchecked")
+    public SearchArgument(String name, String value, Class propertyClass) {
 		super();
 		this.name = name;
 		this.value = value;
@@ -62,12 +64,14 @@ public class SearchArgument {
 		this.value = value;
 	}
 	
-	@Attribute(required = true)
+	@SuppressWarnings("unchecked")
+    @Attribute(required = true)
 	public Class getPropertyClass() {
 		return propertyClass;
 	}
 	
-	@Attribute(required = true)
+	@SuppressWarnings("unchecked")
+    @Attribute(required = true)
 	public void setPropertyClass(Class propertyClass) {
 		this.propertyClass = propertyClass;
 	}

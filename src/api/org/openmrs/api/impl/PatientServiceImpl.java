@@ -585,6 +585,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	/**
 	 * @see org.openmrs.api.PatientService#findPatients(java.lang.String, boolean)
+	 * @deprecated
 	 */
 	public List<Patient> findPatients(String query, boolean includeVoided) throws APIException {
 		if (includeVoided == true)

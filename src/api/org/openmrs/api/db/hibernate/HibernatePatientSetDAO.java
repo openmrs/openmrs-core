@@ -778,7 +778,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @param endTime
 	 * @return PatientSet
 	 */
-	@SuppressWarnings("unchecked")
 	public Cohort getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("select o.person_id from obs o " + "where concept_id = :concept_id ");
@@ -795,7 +794,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return new Cohort(query.list());
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Cohort getPatientsHavingNumericObs(Integer conceptId, PatientSetService.TimeModifier timeModifier,
 	                                          PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate) {
 		
@@ -870,13 +868,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
 	                                           Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException {
 		return getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge, aliveOnly, deadOnly, null);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
 	                                           Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate)
 	                                                                                                                   throws DAOException {
@@ -1548,7 +1544,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	// TODO: don't return voided patients. Also, remove this method
-	@SuppressWarnings("unchecked")
 	public Cohort getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier) throws DAOException {
 		Query query;
 		StringBuffer sb = new StringBuffer();
@@ -1588,7 +1583,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	//TODO: the encounter variants may return voided patients
-	@SuppressWarnings("unchecked")
 	public Cohort getPatientsHavingLocation(Integer locationId, PatientSetService.PatientLocationMethod method)
 	                                                                                                           throws DAOException {
 		

@@ -14,6 +14,7 @@
 package org.openmrs.hl7.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -419,7 +420,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		// Care" as an internal openmrs location_id
 		try {
 			Integer locationId = new Integer(pointOfCare);
-			Location l = Context.getEncounterService().getLocation(locationId);
+			Location l = Context.getLocationService().getLocation(locationId);
 			return l == null ? null : l.getLocationId();
 		}
 		catch (Exception ex) {
@@ -432,7 +433,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		
 		// Treat the 4th component "Facility" as location.name
 		try {
-			Location l = Context.getEncounterService().getLocationByName(facility);
+			Location l = Context.getLocationService().getLocation(facility);
 			if (l == null) {
 				log.debug("Couldn't find a location named '" + facility + "'");
 			}
@@ -480,13 +481,14 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			if (assigningAuthority != null && assigningAuthority.length() > 0) {
 				// Assigning authority defined
 				try {
-					PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierType(assigningAuthority);
+					PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierTypeByName(
+					    assigningAuthority);
 					if (pit == null) {
 						log.warn("Can't find PatientIdentifierType named '" + assigningAuthority + "'");
 						continue; // skip identifiers with unknown type
 					}
 					List<PatientIdentifier> matchingIds = Context.getPatientService().getPatientIdentifiers(hl7PatientId,
-					    pit);
+					    Collections.singletonList(pit), null, null, null);
 					if (matchingIds == null || matchingIds.size() < 1) {
 						// no matches
 						log.warn("NO matches found for " + hl7PatientId);
@@ -533,6 +535,9 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#encounterCreated(org.openmrs.Encounter)
+	 * @deprecated This method is no longer needed. When an encounter is created in the ROUR01
+	 *             handler, it is created with all obs. Any AOP hooking should be done on the
+	 *             EncounterService.createEncounter(Encounter) method
 	 */
 	public void encounterCreated(Encounter encounter) {
 		// nothing is done here in core. Modules override/hook on this method

@@ -255,6 +255,7 @@ public class ReportObjectServiceImpl extends BaseOpenmrsService implements Repor
 	
 	/**
 	 * @see org.openmrs.reporting.ReportObjectService#deleteSearchHistory(org.openmrs.cohort.CohortSearchHistory)
+	 * @deprecated
 	 */
 	public void deleteSearchHistory(CohortSearchHistory history) {
 		purgeSearchHistory(history);

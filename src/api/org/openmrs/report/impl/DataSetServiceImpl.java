@@ -97,7 +97,8 @@ public class DataSetServiceImpl implements DataSetService {
 	 * @see org.openmrs.api.DataSetService#evaluate(org.openmrs.report.DataSetDefinition,
 	 *      org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
 	 */
-	public DataSet evaluate(DataSetDefinition definition, Cohort inputCohort, EvaluationContext evalContext) {
+	@SuppressWarnings("unchecked")
+    public DataSet evaluate(DataSetDefinition definition, Cohort inputCohort, EvaluationContext evalContext) {
 		DataSetProvider provider = getProvider(definition);
 		if (provider == null)
 			throw new APIException("No DataSetProvider found for (" + definition.getClass() + ") " + definition.getName());

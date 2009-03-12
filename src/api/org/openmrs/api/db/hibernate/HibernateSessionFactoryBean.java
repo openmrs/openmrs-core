@@ -15,8 +15,6 @@ package org.openmrs.api.db.hibernate;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -72,52 +70,6 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		
 		return config;
 		
-	}
-	
-	/**
-	 * Non zero represents an error and should prevent hibernate from starting
-	 * 
-	 * @param driver
-	 * @param user
-	 * @param pw
-	 * @param url
-	 * @return int
-	 */
-	private int checkDatabaseConnection(String driver, String user, String pw, String url) {
-		
-		try {
-			Class.forName(driver).newInstance();
-		}
-		catch (Exception e) {
-			log.error("Error while starting up. Bad driver class: " + driver, e);
-			System.err.println(e.getMessage());
-			System.err.println("Could not find driver_class '" + driver
-			        + "'.  Can be set with runtime property: 'connection.driver_class'");
-			return 1;
-		}
-		
-		log.debug("checking database connection");
-		try {
-			Connection db_connection = DriverManager.getConnection(url, user, pw);
-			log.debug("Successful database connection");
-			db_connection.close();
-		}
-		catch (Exception e) {
-			log.error("Error while starting up.  Unable to connection using ", e);
-			System.err.println(e.getMessage());
-			pw = pw.replaceAll(".", "*");
-			System.err
-			        .println("Could not connect to database using url '"
-			                + url
-			                + "', username '"
-			                + user
-			                + "', and pw '"
-			                + pw
-			                + "'. Connection properties can be set with runtime property: 'connection.username', 'connection.password', and 'connection.url'");
-			return 1;
-		}
-		
-		return 0;
 	}
 	
 	/**

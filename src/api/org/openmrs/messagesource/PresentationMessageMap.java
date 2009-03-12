@@ -103,7 +103,7 @@ public class PresentationMessageMap implements Map<String, PresentationMessage> 
 	 * @see java.util.Map#putAll(java.util.Map)
 	 */
 	public void putAll(Map<? extends String, ? extends PresentationMessage> t) {
-		Map<String, PresentationMessage> compatibleMap = new HashMap<String, PresentationMessage>();
+		//Map<String, PresentationMessage> compatibleMap = new HashMap<String, PresentationMessage>();
 		for (Entry<? extends String, ? extends PresentationMessage> entry : t.entrySet()) {
 			put(entry.getKey(), entry.getValue());
 		}

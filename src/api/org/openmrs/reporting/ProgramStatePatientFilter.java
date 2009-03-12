@@ -73,8 +73,8 @@ public class ProgramStatePatientFilter extends CachingPatientFilter {
 	public String getDescription() {
 		StringBuilder ret = new StringBuilder();
 		
-		boolean currentlyCase = withinLastDays != null && withinLastDays == 0
-		        && (withinLastMonths == null || withinLastMonths == 0);
+		//boolean currentlyCase = withinLastDays != null && withinLastDays == 0
+		//       && (withinLastMonths == null || withinLastMonths == 0);
 		
 		ret.append("Patients in program ");
 		

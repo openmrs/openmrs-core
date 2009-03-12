@@ -410,6 +410,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * 
 	 * @param locale the locale for which to set the preferred name
 	 * @param preferredName name which is preferred in the locale
+	 * @should only allow one preferred name
 	 */
 	public void setPreferredName(Locale locale, ConceptName preferredName) {
 		ConceptNameTag preferredLanguage = ConceptNameTag.preferredLanguageTagFor(locale);
@@ -476,27 +477,30 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	}
 	
 	/**
-	 * Finds the name of the concept in the given locale. Returns null if none found.
+	 * Returns a name in the given locale. If a name isn't found with an exact match, a compatible
+	 * locale match is returned. If no name is found matching either of those, the first name
+	 * defined for this concept is returned.
 	 * 
-	 * @param locale
+	 * @param locale the locale to fetch for
 	 * @return ConceptName attributed to the Concept in the given locale
-	 * @deprecated use either {@link Concept#getNames(Locale)} to get all the names for a locale,
-	 *             {@link Concept#getPreferredName(Locale)} for the preferred name (if any), or
-	 *             {@link Concept#getBestName(Locale) to get the best match for a locale.
+	 * @see {@link Concept#getNames(Locale)} to get all the names for a locale,
+	 * @see {@link Concept#getPreferredName(Locale)} for the preferred name (if any),
+	 * @see {@link Concept#getBestName(Locale)} to get the best match for a locale.
+	 * @should get preferred fully specified country
 	 */
 	public ConceptName getName(Locale locale) {
 		return getName(locale, false);
 	}
 	
 	/**
-	 * Finds the name of the concept using the current locale in Context.getLocale(). Returns null
-	 * if none found.
+	 * Returns a name in the current User's chosen locale via Context.getLocale(). If a name isn't
+	 * found with an exact match, a compatible locale match is returned. If no name is found
+	 * matching either of those, the first name defined for this concept is returned.
 	 * 
-	 * @param locale
-	 * @return ConceptName attributed to the Concept in the given locale
-	 * @deprecated use either {@link Concept#getNames(Locale)} to get all the names for a locale,
-	 *             {@link Concept#getPreferredName(Locale)} for the preferred name (if any), or
-	 *             {@link Concept#getBestName(Locale) to get the best match for a locale.
+	 * @return {@link ConceptName} in the current locale or any locale if none found
+	 * @see {@link Concept#getNames(Locale)} to get all the names for a locale,
+	 * @see {@link Concept#getPreferredName(Locale)} for the preferred name (if any),
+	 * @see {@link Concept#getBestName(Locale)} to get the best match for a locale.
 	 */
 	public ConceptName getName() {
 		return getName(Context.getLocale());
@@ -529,14 +533,22 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	}
 	
 	/**
-	 * Returns a name in a locale.
+	 * Returns a name in the given locale. If a name isn't found with an exact match, a compatible
+	 * locale match is returned. If no name is found matching either of those, the first name
+	 * defined for this concept is returned.
 	 * 
 	 * @param locale the language and country in which the name is used
 	 * @param exact true/false to return only exact locale (no default locale)
-	 * @return the appropriate name, or null if not found
-	 * @deprecated use either {@link Concept#getNames(Locale)} to get all the names for a locale,
-	 *             {@link Concept#getPreferredName(Locale)} for the preferred name (if any), or
-	 *             {@link Concept#getBestName(Locale) to get the best match for a locale.
+	 * @return the closest name in the given locale, or the first name
+	 * @see {@link Concept#getNames(Locale)} to get all the names for a locale,
+	 * @see {@link Concept#getPreferredName(Locale)} for the preferred name (if any),
+	 * @see {@link Concept#getBestName(Locale)} to get the best match for a locale.
+	 * @should return exact name locale match given exact equals true
+	 * @should return loose match given exact equals false
+	 * @should return any name if no locale match given exact equals false
+	 * @should not fail if no names are defined
+	 * @should return null if no locale match and exact equals true
+	 * @should support plain preferred
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
 		
@@ -550,72 +562,13 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		if (log.isDebugEnabled())
 			log.debug("Getting conceptName for locale: " + locale);
 		
-		ConceptName exactMatch = null; // name which exactly match the locale
-		// and is preferred
-		ConceptName bestMatch = null; // name from compatible locale, may not
-		// be preferred
+		// matches on any name in the current locale, or first name available
+		ConceptName bestName = getBestName(locale);
 		
-		if (locale == null)
-			locale = Context.getLocale(); // Don't presume en_US;
-			
-		ConceptNameTag desiredLanguageTag = ConceptNameTag.preferredLanguageTagFor(locale);
-		ConceptNameTag desiredCountryTag = ConceptNameTag.preferredCountryTagFor(locale);
-		
-		for (ConceptName possibleName : getCompatibleNames(locale)) {
-			if (locale.equals(possibleName.getLocale()) && possibleName.hasTag(ConceptNameTag.PREFERRED)) {
-				exactMatch = possibleName;
-				break;
-			}
-			if (desiredCountryTag != null) {
-				// country was specified, exact match must be preferred in country
-				if (possibleName.hasTag(desiredCountryTag)) {
-					exactMatch = possibleName;
-					break;
-				} else if (possibleName.hasTag(desiredLanguageTag)) {
-					bestMatch = possibleName;
-				} else if (possibleName.hasTag(ConceptNameTag.PREFERRED)) {
-					bestMatch = possibleName;
-				} else if (bestMatch == null) { // ABK: verbose, but clear
-					bestMatch = possibleName;
-				}
-			} else {
-				// no country specified, so only worry about matching language
-				if (possibleName.hasTag(desiredLanguageTag)) {
-					exactMatch = possibleName;
-					break;
-				} else if (possibleName.hasTag(ConceptNameTag.PREFERRED)) {
-					bestMatch = possibleName;
-				} else if (bestMatch == null) {
-					bestMatch = possibleName;
-				}
-			}
-		}
-		
-		if (exact) {
-			if (exactMatch == null)
-				log.warn("No concept name found for concept id " + conceptId + " for locale " + locale.toString());
-			return exactMatch;
-		}
-		
-		if (exactMatch != null)
-			return exactMatch;
-		
-		if (bestMatch != null)
-			return bestMatch;
-		
-		log.warn("No compatible concept name found for default locale for concept id " + conceptId);
-		
-		ConceptName defaultName = null; // any available name for the concept
-		
-		// populate defaultName with the first concept name
-		if (getNames() != null && getNames().size() > 0)
-			defaultName = (ConceptName) getNames().toArray()[0];
-		
-		if (defaultName == null) {
-			log.error("No concept names exist for concept id: " + conceptId);
-		}
-		
-		return defaultName;
+		if (exact && bestName.getLocale() != locale)
+			return null; // no exact match found
+		else
+			return bestName;
 	}
 	
 	/**
@@ -626,6 +579,8 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * 
 	 * @param forLocale locale for which to return a preferred name
 	 * @return preferred name for the locale, or null if none is tagged as such
+	 * @should support plain preferred
+	 * @should match to best name
 	 */
 	public ConceptName getPreferredName(Locale forLocale) {
 		// fail early if this concept has no names defined
@@ -688,10 +643,13 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * name in English)</li>
 	 * <li>any name in matching country (for example, matching Uganda)</li>
 	 * <li>any name in matching language (for example, matching English)</li>
+	 * <li>first name in any matching language</li>
 	 * </ol>
 	 * 
 	 * @param locale the language and country in which the name is used
-	 * @return best name
+	 * @return the best name possible {@link ConceptName}, never null
+	 * @should support plain preferred
+	 * @should always have a best name even if none match locale
 	 */
 	public ConceptName getBestName(Locale locale) {
 		
@@ -829,6 +787,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * 
 	 * @param locale the language and country in which the short name is used
 	 * @return the best short name
+	 * @should always return a short name even if no names are tagged as short
 	 */
 	public ConceptName getBestShortName(Locale locale) {
 		
@@ -1432,7 +1391,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public List<Concept> findPossibleValues(String searchText) {
 		List<Concept> concepts = new Vector<Concept>();
 		try {
-			for (ConceptWord word : Context.getConceptService().findConcepts(searchText, Context.getLocale(), false)) {
+			
+			for (ConceptWord word : Context.getConceptService().getConceptWords(searchText,
+			    Collections.singletonList(Context.getLocale()), false, null, null, null, null, null, null, null)) {
 				concepts.add(word.getConcept());
 			}
 		}

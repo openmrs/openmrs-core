@@ -592,6 +592,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptClasses()
+	 * @deprecated
 	 */
 	public List<ConceptClass> getConceptClasses() {
 		return getAllConceptClasses(true);
@@ -820,6 +821,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#proposeConcept(org.openmrs.ConceptProposal)
+	 * @deprecated
 	 */
 	public void proposeConcept(ConceptProposal conceptProposal) {
 		saveConceptProposal(conceptProposal);

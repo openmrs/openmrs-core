@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -252,7 +253,7 @@ public class MigrationHelper {
 			
 			RelationshipType relationship = personService.getRelationshipTypeByName(relationshipType);
 			PatientIdentifierType pit = ps.getPatientIdentifierTypeByName(identifierType);
-			List<PatientIdentifier> found = ps.getPatientIdentifiers(identifier, pit);
+			List<PatientIdentifier> found = ps.getPatientIdentifiers(identifier, Collections.singletonList(pit), null, null, null);
 			if (found.size() != 1)
 				throw new IllegalArgumentException("Found " + found.size() + " patients with identifier '" + identifier
 				        + "' of type " + identifierType);
@@ -289,7 +290,7 @@ public class MigrationHelper {
 				String[] temp = s.split(",");
 				PatientIdentifierType pit = ps.getPatientIdentifierTypeByName(temp[0]);
 				String identifier = temp[1];
-				List<PatientIdentifier> pis = ps.getPatientIdentifiers(identifier, pit);
+				List<PatientIdentifier> pis = ps.getPatientIdentifiers(identifier, Collections.singletonList(pit), null, null, null);
 				if (pis.size() != 1)
 					throw new IllegalArgumentException("Found " + pis.size() + " instances of identifier " + identifier
 					        + " of type " + pit);

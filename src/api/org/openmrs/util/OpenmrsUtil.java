@@ -1143,7 +1143,8 @@ public class OpenmrsUtil {
 	 * @param clazz
 	 * @return
 	 */
-	public static Object parse(String string, Class clazz) {
+	@SuppressWarnings("unchecked")
+    public static Object parse(String string, Class clazz) {
 		try {
 			// If there's a valueOf(String) method, just use that (will cover at least String, Integer, Double, Boolean) 
 			Method valueOfMethod = null;

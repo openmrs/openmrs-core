@@ -156,6 +156,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * 
 	 * @param Tribe to create
 	 * @throws APIException
+	 * @deprecated
 	 */
 	public void createTribe(Tribe tribe) throws APIException {
 		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
@@ -166,6 +167,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * 
 	 * @param Tribe to update
 	 * @throws APIException
+	 * @deprecated
 	 */
 	public void updateTribe(Tribe tribe) throws APIException {
 		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
@@ -176,6 +178,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * 
 	 * @param Tribe to delete
 	 * @throws APIException
+	 * @deprecated
 	 */
 	public void deleteTribe(Tribe tribe) throws APIException {
 		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
@@ -186,6 +189,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * 
 	 * @param Tribe to retire
 	 * @throws APIException
+	 * @deprecated
 	 */
 	public void retireTribe(Tribe tribe) throws APIException {
 		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
@@ -196,6 +200,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * 
 	 * @param Tribe to unretire
 	 * @throws APIException
+	 * @deprecated
 	 */
 	public void unretireTribe(Tribe tribe) throws APIException {
 		throw new APIException("The Tribe object is no longer supported.  Install the Tribe module");
@@ -502,6 +507,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String,
 	 *      java.lang.Integer, java.lang.Integer)
+	 * @deprecated
 	 */
 	public void mrnGeneratorLog(String site, Integer start, Integer count) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
@@ -512,6 +518,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getMRNGeneratorLog()
+	 * @deprecated
 	 */
 	public Collection<?> getMRNGeneratorLog() throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS))
@@ -670,6 +677,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public void purgeGlobalProperty(GlobalProperty globalProperty) throws APIException {
+		notifyGlobalPropertyDelete(globalProperty.getProperty());
 		dao.deleteGlobalProperty(globalProperty);
 	}
 	
@@ -868,8 +876,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if ("".equals(response)) {
 			String ms = Context.getMessageSourceService().getMessage("ImplementationId.connectionError",
 			    new String[] { implementationId }, Context.getLocale());
-			throw new APIException("Error while connecting to the implementation id server to verify implementation id: "
-			        + implementationId);
+			throw new APIException(ms);
 		}
 		
 		if (log.isDebugEnabled())

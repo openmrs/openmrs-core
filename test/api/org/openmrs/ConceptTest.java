@@ -33,12 +33,15 @@ import org.openmrs.test.Verifies;
 public class ConceptTest {
 	
 	/**
-	 * The concept should provide a short name even if no names are tagged as short.
+	 * The concept should provide a short name even if no names are tagged as short. <br/>
+	 * <br/>
+	 * precondition: no short names in mock concept
 	 * 
-	 * @precondition no short names in mock concept
+	 * @see {@link Concept#getBestShortName(Locale)}
 	 */
 	@Test
-	public void shouldAlwaysReturnAShortNameEvenIfNoNamesAreTaggedAsShort() {
+	@Verifies(value = "should always return a short name even if no names are tagged as short", method = "getBestShortName(Locale)")
+	public void getBestShortName_shouldAlwaysReturnAShortNameEvenIfNoNamesAreTaggedAsShort() throws Exception {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createMockConcept(1, primaryLocale);
 		
@@ -50,9 +53,12 @@ public class ConceptTest {
 	/**
 	 * The concept should provide the preferred concept name for a locale when more than one name is
 	 * available.
+	 * 
+	 * @see {@link Concept#getName(Locale)}
 	 */
 	@Test
-	public void shouldGetPreferredFullySpecifiedCountry() {
+	@Verifies(value = "should get preferred fully specified country", method = "getName(Locale)")
+	public void getName_shouldGetPreferredFullySpecifiedCountry() throws Exception {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createMockConcept(1, primaryLocale);
 		
@@ -63,9 +69,12 @@ public class ConceptTest {
 	/**
 	 * When asked for a collection of compatible names, the returned collection should not include
 	 * any incompatible names.
+	 * 
+	 * @see {@link Concept#getCompatibleNames(Locale)}
 	 */
 	@Test
-	public void shouldExcludeIncompatibleCountryLocales() {
+	@Verifies(value = "should exclude incompatible country locales", method = "getCompatibleNames(Locale)")
+	public void getCompatibleNames_shouldExcludeIncompatibleCountryLocales() throws Exception {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createMockConcept(1, primaryLocale);
 		
@@ -81,11 +90,29 @@ public class ConceptTest {
 	}
 	
 	/**
-	 * The Concept should change the tagging of concept-names to enforce the rule that only one may
-	 * be marked as preferred for a locale.
+	 * When asked for a collection of compatible names, the returned collection should not include
+	 * any incompatible names.
+	 * 
+	 * @see {@link Concept#getCompatibleNames(Locale)}
 	 */
 	@Test
-	public void shouldOnlyAllowOnePreferredName() {
+	@Verifies(value = "should exclude incompatible language locales", method = "getCompatibleNames(Locale)")
+	public void getCompatibleNames_shouldExcludeIncompatibleLanguageLocales() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("some name", new Locale("fr")));
+		
+		Assert.assertEquals(0, concept.getCompatibleNames(new Locale("en")).size());
+	}
+	
+	/**
+	 * The Concept should change the tagging of concept-names to enforce the rule that only one may
+	 * be marked as preferred for a locale.
+	 * 
+	 * @see {@link Concept#setPreferredName(Locale,ConceptName)}
+	 */
+	@Test
+	@Verifies(value = "should only allow one preferred name", method = "setPreferredName(Locale,ConceptName)")
+	public void setPreferredName_shouldOnlyAllowOnePreferredName() throws Exception {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createMockConcept(1, primaryLocale);
 		ConceptNameTag preferredTag = ConceptNameTag.preferredCountryTagFor(primaryLocale);
@@ -107,9 +134,12 @@ public class ConceptTest {
 	/**
 	 * When there is a preferred name for a locale, it should also be the "best" name for that
 	 * locale.
+	 * 
+	 * @see {@link Concept#getPreferredName(Locale)}
 	 */
 	@Test
-	public void shouldMatchPreferredAndBestName() {
+	@Verifies(value = "should match to best name", method = "getPreferredName(Locale)")
+	public void getPreferredName_shouldMatchToBestName() throws Exception {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createMockConcept(1, primaryLocale);
 		
@@ -122,9 +152,12 @@ public class ConceptTest {
 	/**
 	 * The concept should always provide a "best" name even if there are no names available for the
 	 * requested locale.
+	 * 
+	 * @see {@link Concept#getBestName(Locale)}
 	 */
 	@Test
-	public void shouldAlwaysHaveABestNameEvenIfNoneMatchLocale() {
+	@Verifies(value = "should always have a best name even if none match locale", method = "getBestName(Locale)")
+	public void getBestName_shouldAlwaysHaveABestNameEvenIfNoneMatchLocale() throws Exception {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createMockConcept(1, primaryLocale);
 		
@@ -137,9 +170,12 @@ public class ConceptTest {
 	 * The deprecated getName(Locale) should support getting a name that is only tagged as
 	 * "preferred" -- with no language or country indicated -- even when searching for a specific
 	 * language_country locale.
+	 * 
+	 * @see {@link Concept#getName(Locale,null)}
 	 */
 	@Test
-	public void shouldSupportPlainPreferredWhenAskingForName() {
+	@Verifies(value = "should support plain preferred", method = "getName(Locale,null)")
+	public void getName_shouldSupportPlainPreferred() throws Exception {
 		Locale testLocale = Locale.ENGLISH;
 		Concept testConcept = new Concept();
 		testConcept.setConceptId(1);
@@ -161,9 +197,12 @@ public class ConceptTest {
 	 * getPreferredName(Locale) should support getting a name that is only tagged as "preferred" --
 	 * with no language or country indicated -- even when searching for a specific language_country
 	 * locale.
+	 * 
+	 * @see {@link Concept#getPreferredName(Locale)}
 	 */
 	@Test
-	public void shouldSupportPlainPreferredWhenAskingForPreferredName() {
+	@Verifies(value = "should support plain preferred", method = "getPreferredName(Locale)")
+	public void getPreferredName_shouldSupportPlainPreferred() throws Exception {
 		Locale testLocale = Locale.ENGLISH;
 		Concept testConcept = new Concept();
 		testConcept.setConceptId(1);
@@ -185,9 +224,12 @@ public class ConceptTest {
 	 * getBestName(Locale) should support getting a name that is only tagged as "preferred" -- with
 	 * no language or country indicated -- even when searching for a specific language_country
 	 * locale.
+	 * 
+	 * @see {@link Concept#getBestName(Locale)}
 	 */
 	@Test
-	public void shouldSupportPlainPreferredWhenAskingForBestName() {
+	@Verifies(value = "should support plain preferred", method = "getBestName(Locale)")
+	public void getBestName_shouldSupportPlainPreferred() throws Exception {
 		Locale testLocale = Locale.ENGLISH;
 		Concept testConcept = new Concept();
 		testConcept.setConceptId(1);
@@ -276,4 +318,79 @@ public class ConceptTest {
 		
 		Assert.assertEquals("en_US desc", mockConcept.getDescription(new Locale("en", "US"), false).getDescription());
 	}
+	
+	/**
+	 * @see {@link Concept#getName(Locale,null)}
+	 */
+	@Test
+	@Verifies(value = "should not fail if no names are defined", method = "getName(Locale,null)")
+	public void getName_shouldNotFailIfNoNamesAreDefined() throws Exception {
+		Concept concept = new Concept();
+		Assert.assertNull(concept.getName(new Locale("en"), false));
+		Assert.assertNull(concept.getName(new Locale("en"), true));
+	}
+	
+	/**
+	 * @see {@link Concept#getName(Locale,null)}
+	 */
+	@Test
+	@Verifies(value = "should return any name if no locale match given exact equals false", method = "getName(Locale,null)")
+	public void getName_shouldReturnAnyNameIfNoLocaleMatchGivenExactEqualsFalse() throws Exception {
+		Locale definedNameLocale = new Locale("en", "US");
+		Locale localeToSearch = new Locale("fr");
+		
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("some name", definedNameLocale));
+		Assert.assertEquals("some name", concept.getName(localeToSearch, false).getName());
+	}
+	
+	/**
+	 * @see {@link Concept#getName(Locale,null)}
+	 */
+	@Test
+	@Verifies(value = "should return exact name locale match given exact equals true", method = "getName(Locale,null)")
+	public void getName_shouldReturnExactNameLocaleMatchGivenExactEqualsTrue() throws Exception {
+		Locale definedNameLocale = new Locale("en", "US");
+		Locale localeToSearch = new Locale("en", "US");
+		
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("some name", definedNameLocale));
+		Assert.assertNull(concept.getName(localeToSearch, true));
+	}
+	
+	/**
+	 * @see {@link Concept#getName(Locale,null)}
+	 */
+	@Test
+	@Verifies(value = "should return loose match given exact equals false", method = "getName(Locale,null)")
+	public void getName_shouldReturnLooseMatchGivenExactEqualsFalse() throws Exception {
+		Locale localeToSearch = new Locale("en", "US");
+		Locale definedNameLocale = new Locale("en");
+		
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("some name", definedNameLocale));
+		Assert.assertEquals("some name", concept.getName(localeToSearch, false).getName());
+		
+		definedNameLocale = new Locale("en", "US");
+		localeToSearch = new Locale("en");
+		
+		concept = new Concept();
+		concept.addName(new ConceptName("some name", definedNameLocale));
+		Assert.assertEquals("some name", concept.getName(localeToSearch, false).getName());
+	}
+	
+	/**
+	 * @see {@link Concept#getName(Locale,null)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no locale match and exact equals true", method = "getName(Locale,null)")
+	public void getName_shouldReturnNullIfNoLocaleMatchAndExactEqualsTrue() throws Exception {
+		Locale nonMatchingNameLocale = new Locale("en", "US");
+		Locale localeToSearch = new Locale("en");
+		
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("some name", nonMatchingNameLocale));
+		Assert.assertNull(concept.getName(localeToSearch, true));
+	}
+	
 }

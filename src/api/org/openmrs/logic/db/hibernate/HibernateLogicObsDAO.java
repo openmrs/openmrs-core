@@ -148,7 +148,7 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 				criterion.add(Restrictions.eq("valueCoded", concept));
 				
 			} else if (rightOperand instanceof String) {
-				concept = Context.getConceptService().getConceptByIdOrName((String) rightOperand);
+				concept = Context.getConceptService().getConcept((String) rightOperand);
 				criterion.add(Restrictions.eq("valueCoded", concept));
 				
 			} else if (rightOperand instanceof Concept) {

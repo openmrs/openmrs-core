@@ -14,11 +14,9 @@
 package org.openmrs.reporting;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import org.openmrs.Cohort;
 import org.openmrs.EncounterType;
@@ -81,7 +79,6 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 	}
 	
 	public String getDescription() {
-		Locale locale = Context.getLocale();
 		StringBuffer ret = new StringBuffer();
 		ret.append("Patients with ");
 		if (atLeastCount != null || atMostCount != null) {
@@ -133,36 +130,6 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 	
 	public boolean isReadyToRun() {
 		return true;
-	}
-	
-	private Date fromDateHelper() {
-		Date ret = null;
-		if (withinLastDays != null || withinLastMonths != null) {
-			Calendar gc = Calendar.getInstance();
-			if (withinLastDays != null)
-				gc.add(Calendar.DAY_OF_MONTH, -withinLastDays);
-			if (withinLastMonths != null)
-				gc.add(Calendar.MONTH, -withinLastMonths);
-			ret = gc.getTime();
-		}
-		if (sinceDate != null && (ret == null || sinceDate.after(ret)))
-			ret = sinceDate;
-		return ret;
-	}
-	
-	private Date toDateHelper() {
-		Date ret = null;
-		if (untilDaysAgo != null || untilMonthsAgo != null) {
-			Calendar gc = Calendar.getInstance();
-			if (untilDaysAgo != null)
-				gc.add(Calendar.DAY_OF_MONTH, -untilDaysAgo);
-			if (untilMonthsAgo != null)
-				gc.add(Calendar.MONTH, -untilMonthsAgo);
-			ret = gc.getTime();
-		}
-		if (untilDate != null && (ret == null || untilDate.before(ret)))
-			ret = untilDate;
-		return ret;
 	}
 	
 	// getters and setters

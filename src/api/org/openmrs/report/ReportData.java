@@ -29,17 +29,20 @@ public class ReportData {
 	
 	private EvaluationContext evaluationContext;
 	
-	private Map<String, DataSet> dataSets;
+	@SuppressWarnings("unchecked")
+    private Map<String, DataSet> dataSets;
 	
 	public ReportData() {
 	}
 	
-	@ElementMap(required = false)
+	@SuppressWarnings("unchecked")
+    @ElementMap(required = false)
 	public Map<String, DataSet> getDataSets() {
 		return dataSets;
 	}
 	
-	@ElementMap(required = false)
+	@SuppressWarnings("unchecked")
+    @ElementMap(required = false)
 	public void setDataSets(Map<String, DataSet> dataSets) {
 		this.dataSets = dataSets;
 	}

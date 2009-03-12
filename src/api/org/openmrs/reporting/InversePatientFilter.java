@@ -23,6 +23,8 @@ import org.openmrs.report.Parameterizable;
 
 public class InversePatientFilter extends AbstractPatientFilter implements PatientFilter, Parameterizable {
 	
+    private static final long serialVersionUID = -3206254139003809474L;
+    
 	private PatientFilter baseFilter;
 	
 	public InversePatientFilter() {
