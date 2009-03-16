@@ -1,0 +1,827 @@
+Index: .classpath
+===================================================================
+--- .classpath	(revision 842)
++++ .classpath	(working copy)
+@@ -8,14 +8,13 @@
+ 	<classpathentry kind="lib" path="lib/cglib-nodep-2.1_3.jar"/>
+ 	<classpathentry kind="lib" path="lib/easymock-2.2.jar"/>
+ 	<classpathentry kind="lib" path="lib/easymockclassextension-2.2.jar"/>
+-	<classpathentry kind="lib" path="lib/junit-4.4.jar" sourcepath="lib/junit-4.4-sources.jar"/>
++	<classpathentry kind="lib" path="lib/junit-4.1.jar" sourcepath="lib/junit-4.4-sources.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/ant_doxygen-1.4.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/ant-1.6.5.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/jsdk-2.4.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/spring-2.0.6.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/spring-aspects-2.0.6.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/spring-mock-2.0.6.jar"/>
+-	<classpathentry kind="lib" path="lib/opencsv-1.8.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/hibernate-annotations-3.3.1.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/hibernate-commons-annotations-3.3.1.jar"/>
+ 	<classpathentry kind="lib" path="lib-compile/hibernate3-3.2.6.jar"/>
+Index: META-INF/MANIFEST.MF
+===================================================================
+--- META-INF/MANIFEST.MF	(revision 842)
++++ META-INF/MANIFEST.MF	(working copy)
+@@ -8,7 +8,6 @@
+ Export-Package: liquibase,
+  liquibase.database,
+  liquibase.database.structure,
+- liquibase.migrator.servlet,
+  liquibase.ant,
+  liquibase.change,
+  liquibase.commandline,
+Index: src/build.properties
+===================================================================
+--- src/build.properties	(revision 842)
++++ src/build.properties	(working copy)
+@@ -1,4 +1,4 @@
+-target.java.version=1.5
++target.java.version=1.6
+ build.version=1.9.1
+ maven.build.version=0
+ intellij.build.version=0
+Index: src/build.xml
+===================================================================
+--- src/build.xml	(revision 842)
++++ src/build.xml	(working copy)
+@@ -277,8 +277,7 @@
+             <tarfileset dir="${package.dir}/liquibase-${build.version}-14jvm" prefix="liquibase-${build.version}"
+                         includes="liquibase" mode="755"/>
+         </tar>
+-        <zip destfile="${release.dir}/liquibase-intellij-${build.version}-src.zip" basedir="${intellij.basedir}"
+-                excludes="build/**,build-test/**"/>
++        
+     </target>
+ 
+     <!-- target: SITE -->
+@@ -407,6 +406,18 @@
+             </fileset>
+             <report format="frames" todir="${reports.dir}/junit-report/${ant.project.name}"/>
+         </junitreport>
++    	
++    	<!-- TODO add other execs for different OS's. Switch to osfamily with Ant 1.7 -->
++		<exec os="Windows XP" executable="C:/Program Files/Mozilla Firefox/firefox.exe" failifexecutionfails="false">
++			<arg value="file:///${reports.dir}/junit-report/${ant.project.name}/index.html"/>
++		</exec>
++		<exec os="Linux" executable="firefox" failifexecutionfails="false">
++			<arg value="file:///${reports.dir}/junit-report/${ant.project.name}/index.html"/>
++		</exec>
++		<exec os="Mac OS X" executable="open" failifexecutionfails="false">
++			<arg line="-a Firefox"/>
++			<arg value="file:///${reports.dir}/junit-report/${ant.project.name}/index.html"/>
++		</exec>
+     </target>
+ 
+     <!-- target: TEST-INT -->
+Index: src/java-test/liquibase/change/ModifyColumnChangeTest.java
+===================================================================
+--- src/java-test/liquibase/change/ModifyColumnChangeTest.java	(revision 842)
++++ src/java-test/liquibase/change/ModifyColumnChangeTest.java	(working copy)
+@@ -1,15 +1,19 @@
+ package liquibase.change;
+ 
++import static org.junit.Assert.assertEquals;
++
++import javax.xml.parsers.DocumentBuilderFactory;
++
++import liquibase.database.Database;
++import liquibase.database.MySQLDatabase;
+ import liquibase.database.OracleDatabase;
+-import static org.junit.Assert.*;
++
+ import org.junit.Before;
+ import org.junit.Test;
+ import org.w3c.dom.Document;
+ import org.w3c.dom.Element;
+ import org.w3c.dom.NodeList;
+ 
+-import javax.xml.parsers.DocumentBuilderFactory;
+-
+ /**
+  * Tests for {@link ModifyColumnChange}
+  */
+@@ -37,7 +41,7 @@
+     @Test
+     public void generateStatement() throws Exception {
+         OracleDatabase database = new OracleDatabase();
+-        assertEquals("ALTER TABLE TABLE_NAME MODIFY (NAME integer(3))", change.generateStatements(database)[0].getSqlStatement(database));
++        assertEquals("ALTER TABLE TABLE_NAME MODIFY ( NAME integer(3) )", change.generateStatements(database)[0].getSqlStatement(database));
+     }
+ 
+     @Test
+@@ -59,4 +63,27 @@
+         assertEquals("NAME", ((Element) columns.item(0)).getAttribute("name"));
+         assertEquals("integer(3)", ((Element) columns.item(0)).getAttribute("type"));
+     }
++    
++    @Test
++    public void generateFullStatementForMysql() throws Exception {
++        Database database = new MySQLDatabase();
++        ModifyColumnChange mysqlchange = new ModifyColumnChange();
++        mysqlchange.setTableName("TABLE_NAME");
++
++        ColumnConfig col1 = new ColumnConfig();
++        col1.setName("NAME");
++        col1.setType("integer(3)");
++        col1.setAutoIncrement(true);
++        col1.setDefaultValueNumeric(0);
++        
++        ConstraintsConfig constraints = new ConstraintsConfig();
++        constraints.setPrimaryKey(true);
++        constraints.setNullable(false);
++        col1.setConstraints(constraints);
++
++        mysqlchange.addColumn(col1);
++        assertEquals("ALTER TABLE `TABLE_NAME` MODIFY `NAME` integer(3) NOT NULL DEFAULT 0 AUTO_INCREMENT PRIMARY KEY", mysqlchange.generateStatements(database)[0].getSqlStatement(database));
++    }
++
++    
+ }
+Index: src/java-test/liquibase/util/MD5UtilTest.java
+===================================================================
+--- src/java-test/liquibase/util/MD5UtilTest.java	(revision 754)
++++ src/java-test/liquibase/util/MD5UtilTest.java	(working copy)
+@@ -4,15 +4,12 @@
+ 
+ import org.junit.Test;
+ 
+-import hidden.org.codehaus.plexus.util.StringInputStream;
+-
+ 
+ public class MD5UtilTest {
+ 	@Test
+ 	public void testComputeMD5InputStream() {
+ 		String s = "abc";
+-		StringInputStream is = new StringInputStream(s);
+-		String hexString = MD5Util.computeMD5(is);
++		String hexString = MD5Util.computeMD5(s);
+ 		assertEquals("90150983cd24fb0d6963f7d28e17f72",hexString);
+ 	}
+ }
+Index: src/java/liquibase/change/GroupedChange.java
+===================================================================
+--- src/java/liquibase/change/GroupedChange.java	(revision 0)
++++ src/java/liquibase/change/GroupedChange.java	(revision 0)
+@@ -0,0 +1,163 @@
++package liquibase.change;
++
++import java.lang.reflect.Field;
++import java.util.HashSet;
++import java.util.List;
++import java.util.Set;
++import java.util.Vector;
++
++import liquibase.database.Database;
++import liquibase.database.sql.SqlStatement;
++import liquibase.database.structure.DatabaseObject;
++import liquibase.database.structure.Table;
++import liquibase.exception.InvalidChangeDefinitionException;
++import liquibase.exception.JDBCException;
++import liquibase.exception.RollbackImpossibleException;
++import liquibase.exception.UnsupportedChangeException;
++
++import org.w3c.dom.Document;
++import org.w3c.dom.DocumentFragment;
++import org.w3c.dom.Node;
++
++/**
++ * Class to group sets of {@link Change}s that 
++ * will be put into one ChangeSet element when
++ * serialized out.
++ * 
++ * Changes are serialized out in the order that
++ * they were added to this {@link GroupedChange}
++ */
++public class GroupedChange extends AbstractChange implements Change {
++	
++	/**
++	 * The changes that will be within this one changeSet tag
++	 */
++	private List<Change> changes = new Vector<Change>();
++	
++	/**
++	 * Default constructor
++	 */
++	public GroupedChange() {
++		this("", "");
++	}
++	
++	/**
++	 * @param tagName
++	 * @param changeName
++	 */
++	protected GroupedChange(String tagName, String changeName) {
++		super(tagName, changeName);
++	}
++
++	/**
++	 * Convenience method to add a new {@link Change}
++	 * to this list of changes in this group
++	 * 
++	 * @param change
++	 */
++	public void addChange(Change change) {
++		changes.add(change);
++	}
++	
++	/**
++	 * @return the registered changes
++	 */
++	public List<Change> getChanges() {
++		return changes;
++	}
++
++	/**
++	 * @param changes the changes to set
++	 */
++	public void setChanges(List<Change> changes) {
++		this.changes = changes;
++	}
++
++	/**
++	 * Not implemented 
++	 * 
++	 * @see liquibase.change.Change#canRollBack()
++	 */
++	public boolean canRollBack() {
++		return false;
++	}
++
++	/**
++	 * Loops over each {@link Change} in the list of #getChanges()
++	 * @see liquibase.change.Change#createNode(org.w3c.dom.Document)
++	 */
++	public Node createNode(Document currentChangeLogDOM) {
++		DocumentFragment fragment = currentChangeLogDOM.createDocumentFragment();
++		
++		for (Change change : changes) {
++			fragment.appendChild(change.createNode(currentChangeLogDOM));
++		}
++		
++		return fragment;
++	}
++
++	public void executeRollbackStatements(Database database)
++			throws JDBCException, UnsupportedChangeException,
++			RollbackImpossibleException {
++		throw new RollbackImpossibleException("rollback not implemented for grouped changes");
++	}
++
++	public void executeStatements(Database database) throws JDBCException,
++			UnsupportedChangeException {
++		throw new UnsupportedChangeException("This type of Change is not meant to be executed");
++	}
++
++	public SqlStatement[] generateRollbackStatements(Database database)
++			throws UnsupportedChangeException, RollbackImpossibleException {
++		throw new RollbackImpossibleException("rollback not implemented for grouped changes");
++	}
++
++	public SqlStatement[] generateStatements(Database database)
++			throws UnsupportedChangeException {
++		throw new UnsupportedChangeException("This type of Change is not meant to be executed");
++	}
++
++	public Set<DatabaseObject> getAffectedDatabaseObjects() {
++		List<Table> tables = new Vector<Table>();
++		
++		// loop over each change and add it 
++		for (Change change : changes) {
++			try {
++				Field tableName = change.getClass().getField("tableName");
++				tables.add(new Table((String)tableName.get(change)));
++			}
++			catch (NoSuchFieldException e) {
++				// pass
++			} catch (IllegalArgumentException e) {
++				// pass
++			} catch (IllegalAccessException e) {
++				// pass
++			}
++		}
++
++        return new HashSet<DatabaseObject>(tables);
++	}
++
++	/**
++	 * This should not be used on a group
++	 * 
++	 * @see liquibase.change.Change#getConfirmationMessage()
++	 */
++	public String getConfirmationMessage() {
++		return "";
++	}
++
++	/**
++	 * Validates each change in this group
++	 * 
++	 * @see liquibase.change.Change#validate(liquibase.database.Database)
++	 */
++	public void validate(Database database)
++			throws InvalidChangeDefinitionException {
++		for (Change change : changes) {
++			change.validate(database);
++		}
++	}
++
++
++}
+Index: src/java/liquibase/change/InsertDataChange.java
+===================================================================
+--- src/java/liquibase/change/InsertDataChange.java	(revision 842)
++++ src/java/liquibase/change/InsertDataChange.java	(working copy)
+@@ -87,6 +87,9 @@
+     /**
+      * @see liquibase.change.Change#getConfirmationMessage()
+      */
++    /**
++     * @see liquibase.change.Change#getConfirmationMessage()
++     */
+     public String getConfirmationMessage() {
+         return "New row inserted into " + getTableName();
+     }
+@@ -94,6 +97,9 @@
+     /**
+      * @see liquibase.change.Change#createNode(org.w3c.dom.Document)
+      */
++    /**
++     * @see liquibase.change.Change#createNode(org.w3c.dom.Document)
++     */
+     public Element createNode(Document currentChangeLogFileDOM) {
+         Element node = currentChangeLogFileDOM.createElement("insert");
+         if (getSchemaName() != null) {
+@@ -106,6 +112,9 @@
+             Element subNode = col.createNode(currentChangeLogFileDOM);
+             node.appendChild(subNode);
+         }
++    /**
++     * @see liquibase.change.Change#getAffectedDatabaseObjects()
++     */
+         return node;
+     }
+ 
+Index: src/java/liquibase/change/ModifyColumnChange.java
+===================================================================
+--- src/java/liquibase/change/ModifyColumnChange.java	(revision 842)
++++ src/java/liquibase/change/ModifyColumnChange.java	(working copy)
+@@ -1,26 +1,31 @@
+ package liquibase.change;
+ 
+-import liquibase.database.*;
++import java.util.ArrayList;
++import java.util.HashSet;
++import java.util.List;
++import java.util.Set;
++
++import liquibase.database.Database;
++import liquibase.database.SQLiteDatabase;
+ import liquibase.database.SQLiteDatabase.AlterTableVisitor;
+-import liquibase.database.sql.RawSqlStatement;
++import liquibase.database.sql.AutoIncrementConstraint;
++import liquibase.database.sql.ColumnConstraint;
++import liquibase.database.sql.ModifyColumnStatement;
++import liquibase.database.sql.NotNullConstraint;
++import liquibase.database.sql.PrimaryKeyConstraint;
+ import liquibase.database.sql.SqlStatement;
+-import liquibase.database.sql.ReorganizeTableStatement;
+ import liquibase.database.structure.Column;
+ import liquibase.database.structure.DatabaseObject;
+ import liquibase.database.structure.Index;
+ import liquibase.database.structure.Table;
++import liquibase.exception.InvalidChangeDefinitionException;
+ import liquibase.exception.JDBCException;
+ import liquibase.exception.UnsupportedChangeException;
+-import liquibase.exception.InvalidChangeDefinitionException;
+ import liquibase.util.StringUtils;
++
+ import org.w3c.dom.Document;
+ import org.w3c.dom.Element;
+ 
+-import java.util.ArrayList;
+-import java.util.HashSet;
+-import java.util.List;
+-import java.util.Set;
+-
+ /**
+  * Modifies the data type of an existing column.
+  */
+@@ -84,29 +89,31 @@
+     	
+     	List<SqlStatement> sql = new ArrayList<SqlStatement>();
+     	
+-      for (ColumnConfig aColumn : columns) {
++    	
++    	for (ColumnConfig aColumn : columns) {
++    		
++    		Set<ColumnConstraint> constraints = new HashSet<ColumnConstraint>();
++            if (aColumn.getConstraints() != null) {
++                if (aColumn.getConstraints().isNullable() != null && !aColumn.getConstraints().isNullable()) {
++                    constraints.add(new NotNullConstraint());
++                }
++                if (aColumn.getConstraints().isPrimaryKey() != null && aColumn.getConstraints().isPrimaryKey()) {
++                    constraints.add(new PrimaryKeyConstraint(aColumn.getConstraints().getPrimaryKeyName()));
++                }
++            }
++            if (aColumn.isAutoIncrement() != null && aColumn.isAutoIncrement()) {
++                constraints.add(new AutoIncrementConstraint(aColumn.getName()));
++            }
++            
++    		ModifyColumnStatement modColumnStatement = new ModifyColumnStatement(schemaName,
++    				getTableName(),
++    				aColumn.getName(),
++    				aColumn.getType(),
++    				aColumn.getDefaultValueObject(),
++    				constraints.toArray(new ColumnConstraint[constraints.size()]));
+ 
+-          String schemaName = getSchemaName() == null?database.getDefaultSchemaName():getSchemaName();
+-          if(database instanceof SybaseASADatabase || database instanceof SybaseDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " MODIFY " + aColumn.getName() + " " + database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof MSSQLDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN " + aColumn.getName() + " " + database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof MySQLDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " MODIFY COLUMN " + aColumn.getName() + " " + database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof OracleDatabase || database instanceof MaxDBDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " MODIFY (" + aColumn.getName() + " " + database.getColumnType(aColumn.getType(), false) + ")"));
+-        } else if (database instanceof DerbyDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN "+aColumn.getName()+" SET DATA TYPE " + database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof HsqlDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN "+aColumn.getName()+" "+database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof CacheDatabase) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN " + aColumn.getName() + " " + database.getColumnType(aColumn.getType(), false)));
+-        } else if (database instanceof DB2Database) {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN " + aColumn.getName() + " SET DATA TYPE " + database.getColumnType(aColumn.getType(), false)));
+-        		sql.add(new ReorganizeTableStatement(schemaName, getTableName()));
+-        } else {
+-        		sql.add(new RawSqlStatement("ALTER TABLE " + database.escapeTableName(schemaName, getTableName()) + " ALTER COLUMN " + aColumn.getName() + " TYPE " + database.getColumnType(aColumn.getType(), false)));
+-        }
++    		sql.add(modColumnStatement);
++      
+       }
+         
+       return sql.toArray(new SqlStatement[sql.size()]);
+Index: src/java/liquibase/database/sql/AddColumnStatement.java
+===================================================================
+--- src/java/liquibase/database/sql/AddColumnStatement.java	(revision 842)
++++ src/java/liquibase/database/sql/AddColumnStatement.java	(working copy)
+@@ -7,6 +7,9 @@
+ import java.util.HashSet;
+ import java.util.Set;
+ 
++/**
++ * Represents statements like "ALTER TABLE tablename MODIFY COLUMN VOIDED tinyint(1) NOT NULL"
++ */
+ public class AddColumnStatement implements SqlStatement {
+ 
+     private String schemaName;
+Index: src/java/liquibase/database/sql/ModifyColumnStatement.java
+===================================================================
+--- src/java/liquibase/database/sql/ModifyColumnStatement.java	(revision 0)
++++ src/java/liquibase/database/sql/ModifyColumnStatement.java	(revision 0)
+@@ -0,0 +1,228 @@
++package liquibase.database.sql;
++
++import liquibase.database.*;
++import liquibase.exception.StatementNotSupportedOnDatabaseException;
++
++import java.util.Arrays;
++import java.util.HashSet;
++import java.util.Set;
++
++/**
++ * Represents statements like "ALTER TABLE tablename MODIFY COLUMN VOIDED tinyint(1) NOT NULL"
++ */
++public class ModifyColumnStatement implements SqlStatement {
++
++    private String schemaName;
++    private String tableName;
++    private String columnName;
++    private String columnType;
++    private Object defaultValue;
++    private Set<ColumnConstraint> constraints = new HashSet<ColumnConstraint>();
++
++    public ModifyColumnStatement(String schemaName, String tableName, String columnName, String columnType, Object defaultValue, ColumnConstraint... constraints) {
++        this.schemaName = schemaName;
++        this.tableName = tableName;
++        this.columnName = columnName;
++        this.columnType = columnType;
++        this.defaultValue = defaultValue;
++        if (constraints != null) {
++            this.constraints.addAll(Arrays.asList(constraints));
++        }
++    }
++
++    public String getSchemaName() {
++        return schemaName;
++    }
++
++    public String getTableName() {
++        return tableName;
++    }
++
++    public String getColumnName() {
++        return columnName;
++    }
++
++    public String getColumnType() {
++        return columnType;
++    }
++
++    public Set<ColumnConstraint> getConstraints() {
++        return constraints;
++    }
++
++    public String getSqlStatement(Database database) throws StatementNotSupportedOnDatabaseException {
++        if (isPrimaryKey() && (database instanceof CacheDatabase
++                || database instanceof H2Database
++                || database instanceof DB2Database
++                || database instanceof DerbyDatabase
++                || database instanceof SQLiteDatabase)) {
++            throw new StatementNotSupportedOnDatabaseException("Adding primary key columns is not supported", this, database);
++        }
++
++        String alterTable = "ALTER TABLE " + database.escapeTableName(getSchemaName(), getTableName());
++        
++        // add "MODIFY"
++        alterTable += " " + getModifyString(database) + " ";
++        
++        // add column name
++        alterTable += database.escapeColumnName(getSchemaName(), getTableName(), getColumnName());
++        
++        alterTable += getPreDataTypeString(database); // adds a space if nothing else
++        
++        // add column type
++        alterTable += database.getColumnType(getColumnType(), false);
++
++        if (supportsExtraMetaData(database)) {
++	        if (!isNullable()) {
++	            alterTable += " NOT NULL";
++	        } else {
++	            if (database instanceof SybaseDatabase || database instanceof SybaseASADatabase) {
++	                alterTable += " NULL";
++	            }
++	        }
++	        
++	        alterTable += getDefaultClause(database);
++	        
++	        if (isAutoIncrement()) {
++	            alterTable += " " + database.getAutoIncrementClause();
++	        }
++	        
++            if (isPrimaryKey()) {
++                alterTable += " PRIMARY KEY";
++            }
++        }
++        
++        alterTable += getPostDataTypeString(database);
++        
++        return alterTable;
++    }
++    
++    /**
++     * Whether the ALTER command can take things like "DEFAULT VALUE" or "PRIMARY KEY" as well as type changes
++     * 
++     * @param database
++     * @return true/false whether extra information can be included
++     */
++    private boolean supportsExtraMetaData(Database database) {
++    	if (database instanceof MSSQLDatabase
++    			|| database instanceof MySQLDatabase) {
++    		return true;
++    	}
++    	
++    	return false;
++    }
++
++	/**
++     * @return either "MODIFY" or "ALTER COLUMN" depending on the current db
++     */
++    private String getModifyString(Database database) {
++    	if (database instanceof HsqlDatabase
++                || database instanceof DerbyDatabase
++                || database instanceof DB2Database
++                || database instanceof MSSQLDatabase
++                || database instanceof CacheDatabase) {
++    		return "ALTER COLUMN";
++    	}
++    	else if (database instanceof SybaseASADatabase 
++    				|| database instanceof SybaseDatabase
++    				|| database instanceof MySQLDatabase) {
++    		return "MODIFY";
++    	}
++    	else if (database instanceof OracleDatabase
++    				|| database instanceof MaxDBDatabase) {
++    		return "MODIFY (";
++    	}
++    	else {
++    		return "ALTER COLUMN";
++    	}
++    }
++    
++    /**
++     * @return the string that comes before the column type 
++     * 		definition (like 'set data type' for derby or an open parentheses for Oracle)
++     */
++    private String getPreDataTypeString(Database database) {
++    	if (database instanceof DerbyDatabase
++    			|| database instanceof DB2Database) {
++    		return " SET DATA TYPE ";
++    	}
++    	else if (database instanceof SybaseASADatabase 
++    			|| database instanceof SybaseDatabase
++    			|| database instanceof MSSQLDatabase
++    			|| database instanceof MySQLDatabase
++    			|| database instanceof HsqlDatabase
++    			|| database instanceof CacheDatabase
++    			|| database instanceof OracleDatabase
++				|| database instanceof MaxDBDatabase) {
++    		return " ";
++    	}
++    	else {
++    		return " TYPE ";
++    	}
++    }
++    
++    /**
++     * @return the string that comes after the column type definition (like a close parentheses for Oracle)
++     */
++    private String getPostDataTypeString(Database database) {
++    	if (database instanceof OracleDatabase
++    				|| database instanceof MaxDBDatabase ) {
++    		return " )";
++    	}
++    	else {
++    		return "";
++    	}
++    }
++
++    public boolean isAutoIncrement() {
++        for (ColumnConstraint constraint : getConstraints()) {
++            if (constraint instanceof AutoIncrementConstraint) {
++                return true;
++            }
++        }
++        return false;
++    }
++
++    public boolean isPrimaryKey() {
++        for (ColumnConstraint constraint : getConstraints()) {
++            if (constraint instanceof PrimaryKeyConstraint) {
++                return true;
++            }
++        }
++        return false;
++    }
++
++    public String getEndDelimiter(Database database) {
++        return ";";
++    }
++
++    public boolean supportsDatabase(Database database) {
++        return true;
++    }
++
++    private String getDefaultClause(Database database) {
++        String clause = "";
++        if (getDefaultValue() != null) {
++            if (database instanceof MySQLDatabase) {
++            	clause += " DEFAULT " + database.convertJavaObjectToString(getDefaultValue());
++            }
++        }
++        return clause;
++    }
++
++    public boolean isNullable() {
++        if (isPrimaryKey()) {
++            return false;
++        }
++        for (ColumnConstraint constraint : getConstraints()) {
++            if (constraint instanceof NotNullConstraint) {
++                return false;
++            }
++        }
++        return true;
++    }
++
++    public Object getDefaultValue() {
++        return defaultValue;
++    }
++}
+Index: src/java/liquibase/database/sql/TagDatabaseStatement.java
+===================================================================
+--- src/java/liquibase/database/sql/TagDatabaseStatement.java	(revision 842)
++++ src/java/liquibase/database/sql/TagDatabaseStatement.java	(working copy)
+@@ -3,7 +3,6 @@
+ import liquibase.database.Database;
+ import liquibase.database.MySQLDatabase;
+ import liquibase.exception.StatementNotSupportedOnDatabaseException;
+-import liquibase.exception.JDBCException;
+ 
+ public class TagDatabaseStatement implements SqlStatement {
+ 
+@@ -25,7 +24,7 @@
+                 long version = Long.parseLong(database.getDatabaseProductVersion().substring(0,1));
+ 
+                 if (version < 5) {
+-                    return new RawSqlStatement("UPDATE DATABASECHANGELOG C LEFT JOIN (SELECT MAX(DATEEXECUTED) as MAXDATE FROM (SELECT DATEEXECUTED FROM `DATABASECHANGELOG`) AS X) D ON C.DATEEXECUTED = D.MAXDATE SET C.TAG = '"+tag+"' WHERE D.MAXDATE IS NOT NULL").getSqlStatement(database);
++                    return new RawSqlStatement("UPDATE " + database.escapeTableName(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName()) + " C LEFT JOIN (SELECT MAX(DATEEXECUTED) as MAXDATE FROM (SELECT DATEEXECUTED FROM " + database.escapeTableName(database.getDefaultSchemaName(), database.getDatabaseChangeLogTableName()) + ") AS X) D ON C.DATEEXECUTED = D.MAXDATE SET C.TAG = '"+tag+"' WHERE D.MAXDATE IS NOT NULL").getSqlStatement(database);
+                 }
+ 
+             } catch (Throwable e) {
+Index: src/java/liquibase/diff/DiffResult.java
+===================================================================
+--- src/java/liquibase/diff/DiffResult.java	(revision 842)
++++ src/java/liquibase/diff/DiffResult.java	(working copy)
+@@ -9,7 +9,10 @@
+ import java.io.IOException;
+ import java.io.PrintStream;
+ import java.io.RandomAccessFile;
+-import java.sql.*;
++import java.sql.ResultSet;
++import java.sql.ResultSetMetaData;
++import java.sql.Statement;
++import java.sql.Types;
+ import java.util.ArrayList;
+ import java.util.Date;
+ import java.util.List;
+@@ -20,11 +23,43 @@
+ import javax.xml.parsers.DocumentBuilderFactory;
+ import javax.xml.parsers.ParserConfigurationException;
+ 
+-import liquibase.change.*;
+-
++import liquibase.change.AddColumnChange;
++import liquibase.change.AddForeignKeyConstraintChange;
++import liquibase.change.AddNotNullConstraintChange;
++import liquibase.change.AddPrimaryKeyChange;
++import liquibase.change.AddUniqueConstraintChange;
++import liquibase.change.Change;
++import liquibase.change.ColumnConfig;
++import liquibase.change.ConstraintsConfig;
++import liquibase.change.CreateIndexChange;
++import liquibase.change.CreateSequenceChange;
++import liquibase.change.CreateTableChange;
++import liquibase.change.CreateViewChange;
++import liquibase.change.DropColumnChange;
++import liquibase.change.DropForeignKeyConstraintChange;
++import liquibase.change.DropIndexChange;
++import liquibase.change.DropNotNullConstraintChange;
++import liquibase.change.DropPrimaryKeyChange;
++import liquibase.change.DropSequenceChange;
++import liquibase.change.DropTableChange;
++import liquibase.change.DropUniqueConstraintChange;
++import liquibase.change.DropViewChange;
++import liquibase.change.GroupedChange;
++import liquibase.change.InsertDataChange;
++import liquibase.change.LoadDataChange;
++import liquibase.change.LoadDataColumnConfig;
++import liquibase.change.ModifyColumnChange;
+ import liquibase.csv.CSVWriter;
+ import liquibase.database.Database;
+-import liquibase.database.structure.*;
++import liquibase.database.structure.Column;
++import liquibase.database.structure.DatabaseSnapshot;
++import liquibase.database.structure.ForeignKey;
++import liquibase.database.structure.Index;
++import liquibase.database.structure.PrimaryKey;
++import liquibase.database.structure.Sequence;
++import liquibase.database.structure.Table;
++import liquibase.database.structure.UniqueConstraint;
++import liquibase.database.structure.View;
+ import liquibase.exception.JDBCException;
+ import liquibase.log.LogFactory;
+ import liquibase.parser.LiquibaseSchemaResolver;
+@@ -901,7 +936,8 @@
+                     changes.add(change);
+                 } else { // if dataDir is null, build and use insert tags
+ 
+-
++                	GroupedChange groupOfChanges = new GroupedChange();
++                	
+                     // loop over all rows
+                     while (rs.next()) {
+                         InsertDataChange change = new InsertDataChange();
+@@ -945,16 +981,21 @@
+ 
+                             change.addColumn(column);
+ 
++                            // for each row, add a new change
++                    		// (there will be one group per table)
++                    		groupOfChanges.addChange(change);
+                         }
+ 
+                         // for each row, add a new change
+                         // (there will be one group per table)
+-                        changes.add(change);
++                        //changes.add(change);
++                        if (groupOfChanges.getChanges().size() > 0)
++                    		changes.add(groupOfChanges);
+                     }
+-
++                    
+                 }
+             }
+-
++        
+         } catch (Exception e) {
+             throw new RuntimeException(e);
+         }
