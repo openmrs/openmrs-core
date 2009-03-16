@@ -3,7 +3,7 @@
 <!-- ** Ant build script for OpenMRS                          ** -->
 <!-- **                                                       ** -->
 <!-- *********************************************************** -->
-<project name="OpenMRS-trunk2" default="dist">
+<project name="OpenMRS-trunk" default="dist">
 
 	<tstamp>
 		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" />
