@@ -627,6 +627,7 @@
 				outputFile="dist/update-to-latest.sql"
 				>
 		</updateDatabase>
+		<echo>Created dist/update-to-latest.sql</echo>
 	</target>
 	
 </project>

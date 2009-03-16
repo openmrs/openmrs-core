@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.8"
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.8
-                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.8.xsd">
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 	
 	<!-- 
 	
@@ -509,6 +509,246 @@
 					property_value
 				) WHERE property = 'patientGraphConcepts';			
 		</sql>
+	</changeSet>
+	
+	<changeSet id="20090316-1008" author="vanand">
+		<comment>
+			Change column types of all boolean columns to smallint. The columns used to be either tinyint(4) or MySQL's BIT.
+			(This may take a while on large patient or obs tables)
+		</comment>
+		
+		<modifyColumn tableName="cohort">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="concept">
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="is_set" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="concept_class">
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="concept_datatype">
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="concept_name">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="concept_name_tag">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="concept_numeric">
+			<column name="precise" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<update tableName="concept_source">
+			<column name="voided" value="0" />
+			<where>voided is null</where>
+		</update>
+		<modifyColumn tableName="concept_source">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="drug">
+			<column name="combination" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="drug_order">
+			<column name="prn" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="complex" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="encounter">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="encounter_type">
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="field">
+			<column name="select_multiple" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="field_type">
+			<column name="is_set" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="form">
+			<column name="published" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>		
+		<modifyColumn tableName="form_field">
+			<column name="required" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>		
+		<modifyColumn tableName="location_tag">
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>		
+		<modifyColumn tableName="obs">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>		
+		<modifyColumn tableName="order_type">
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="orders">
+			<column name="discontinued" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="patient">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="patient_identifier">
+			<column name="preferred" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="patient_identifier_type">
+			<column name="check_digit" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="required" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="patient_program">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="patient_state">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="person">
+			<column name="birthdate_estimated" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="dead" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="person_address">
+			<column name="preferred" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="person_attribute">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="person_attribute_type">
+			<column name="searchable" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="person_name">
+			<column name="preferred" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="program">
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="program_workflow">
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="program_workflow_state">
+			<column name="initial" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="terminal" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="relationship">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="report_object">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+		<modifyColumn tableName="users">
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
 	</changeSet>
 	
 </databaseChangeLog>
