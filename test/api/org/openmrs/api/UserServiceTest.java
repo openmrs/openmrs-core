@@ -36,6 +36,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.springframework.test.annotation.Rollback;
 
@@ -58,10 +59,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Test that we can create a user
 	 * 
-	 * @throws Exception
+	 * @see {@link UserService#saveUser(User,String)}
 	 */
 	@Test
-	public void shouldCreateUser() throws Exception {
+	@Verifies(value = "should create new user with basic elements", method = "saveUser(User,String)")
+	public void saveUser_shouldCreateNewUserWithBasicElements() throws Exception {
 		assertTrue("The context needs to be correctly authenticated to by a user", Context.isAuthenticated());
 		
 		UserService us = Context.getUserService();
@@ -93,11 +95,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * directly following: {@link #shouldCheckThatPatientUserWasCreatedSuccessfully()}
 	 * 
 	 * @throws Exception
+	 * @see {@link UserService#saveUser(User,String)}
 	 */
 	@Test
 	@SkipBaseSetup
 	@Rollback(false)
-	public void shouldCreateUserWhoIsPatientAlready() throws Exception {
+	@Verifies(value = "should should create user who is patient already", method = "saveUser(User,String)")
+	public void saveUser_shouldShouldCreateUserWhoIsPatientAlready() throws Exception {
 		// create the basic user and give it full rights
 		initializeInMemoryDatabase();
 		
@@ -190,10 +194,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Test that we can update a user
 	 * 
-	 * @throws Exception
+	 * @see {@link UserService#saveUser(User,String)}
 	 */
 	@Test
-	public void shouldUpdateUsername() throws Exception {
+	@Verifies(value = "should update users username", method = "saveUser(User,String)")
+	public void saveUser_shouldUpdateUsersUsername() throws Exception {
 		UserService us = Context.getUserService();
 		
 		User u = us.getUserByUsername("admin");
@@ -210,10 +215,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Test changing a user's password multiple times in the same transaction
 	 * 
-	 * @throws Exception
+	 * @see {@link UserService#changePassword(String,String)}
 	 */
 	@Test
-	public void shouldUpdatePasswordMultipleTimes() throws Exception {
+	@Verifies(value = "should be able to update password multiple times", method = "changePassword(String,String)")
+	public void changePassword_shouldBeAbleToUpdatePasswordMultipleTimes() throws Exception {
 		UserService us = Context.getUserService();
 		
 		User u = us.getUserByUsername("admin");
@@ -226,18 +232,17 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure we can grant roles to users
 	 * 
-	 * @throws Exception
+	 * @see {@link UserService#saveUser(User,String)}
 	 */
 	@Test
-	public void shouldGrantRoles() throws Exception {
+	@Verifies(value = "should grant new roles in roles list to user", method = "saveUser(User,String)")
+	public void saveUser_shouldGrantNewRolesInRolesListToUser() throws Exception {
 		UserService us = Context.getUserService();
 		
 		// add in some basic properties
 		executeDataSet(XML_FILENAME);
 		
 		User u = us.getUserByUsername("admin");
-		//int len = u.getRoles().size();
-		//System.out.println("length: " + len);
 		
 		Role role1 = new Role();
 		role1.setDescription("testing1");
@@ -259,6 +264,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		us.saveUser(u.addRole(role2), null);
 		
+		TestUtil.printOutTableContents(getConnection(), "user_role");
+		
+		// so the contents are fetched from the db
+		Context.evictFromSession(u);
+		
+		us.getUser(u.getUserId()).hasRole("test1");
+		us.getUser(u.getUserId()).hasRole("test2");
 	}
 	
 	/**
@@ -278,7 +290,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should match on incorrectly hashed sha1 stored password", method = "changePassword(String,String)")
-    public void changePassword_shouldMatchOnIncorrectlyHashedSha1StoredPassword() throws Exception {
+	public void changePassword_shouldMatchOnIncorrectlyHashedSha1StoredPassword() throws Exception {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("incorrectlyhashedSha1", "test");
@@ -293,8 +305,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link UserService#changeQuestionAnswer(String,String,String)}
 	 */
 	@Test
-    @Verifies(value = "should match on correctly hashed stored password", method = "changeQuestionAnswer(String,String,String)")
-    public void changeQuestionAnswer_shouldMatchOnCorrectlyHashedStoredPassword() throws Exception {
+	@Verifies(value = "should match on correctly hashed stored password", method = "changeQuestionAnswer(String,String,String)")
+	public void changeQuestionAnswer_shouldMatchOnCorrectlyHashedStoredPassword() throws Exception {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("correctlyhashedSha1", "test");
@@ -309,8 +321,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link UserService#changeQuestionAnswer(String,String,String)}
 	 */
 	@Test
-    @Verifies(value = "should match on incorrectly hashed stored password", method = "changeQuestionAnswer(String,String,String)")
-    public void changeQuestionAnswer_shouldMatchOnIncorrectlyHashedStoredPassword() throws Exception {
+	@Verifies(value = "should match on incorrectly hashed stored password", method = "changeQuestionAnswer(String,String,String)")
+	public void changeQuestionAnswer_shouldMatchOnIncorrectlyHashedStoredPassword() throws Exception {
 		executeDataSet(XML_FILENAME);
 		Context.logout();
 		Context.authenticate("incorrectlyhashedSha1", "test");
@@ -367,5 +379,5 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		Context.logout(); // so that the next test reauthenticates
 	}
-
+	
 }

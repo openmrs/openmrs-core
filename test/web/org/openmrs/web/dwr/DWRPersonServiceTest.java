@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 
 /**
@@ -25,10 +26,11 @@ import org.openmrs.web.test.BaseWebContextSensitiveTest;
 public class DWRPersonServiceTest extends BaseWebContextSensitiveTest {
 	
 	/**
-	 * @verifies findPeopleByRoles test = on patient identifiers
+	 * @see {@link DWRPersonService#findPeopleByRoles(String,null,String)}
 	 */
 	@Test
-	public void findPeopleByRoles_shouldMatchOnPatientIdentifier() throws Exception {
+	@Verifies(value = "should match on patient identifiers", method = "findPeopleByRoles(String,null,String)")
+	public void findPeopleByRoles_shouldMatchOnPatientIdentifiers() throws Exception {
 		DWRPersonService dwrPersonService = new DWRPersonService();
 		
 		List<PersonListItem> persons = dwrPersonService.findPeopleByRoles("1234", false, null);
@@ -38,11 +40,12 @@ public class DWRPersonServiceTest extends BaseWebContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies findPeopleByRoles test = allow null roles parameter
-	 * @throws Exception
+	 * @see {@link DWRPersonService#findPeopleByRoles(String,null,String)}
 	 */
 	@Test
-	public void findPeopleByRoles_shouldAllNulllRolesParameter() throws Exception {
+	@Verifies(value = "should allow null roles parameter", method = "findPeopleByRoles(String,null,String)")
+	public void findPeopleByRoles_shouldAllowNullRolesParameter() throws Exception {
 		new DWRPersonService().findPeopleByRoles("some string", false, null);
 	}
+	
 }

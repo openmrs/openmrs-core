@@ -909,10 +909,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#getComplexObs(Integer,String)} test = should fill in complex data
-	 *           object for complex obs
+	 * @see {@link ObsService#getComplexObs(Integer,String)}
 	 */
 	@Test
+	@Verifies(value = "should fill in complex data object for complex obs", method = "getComplexObs(Integer,String)")
 	public void getComplexObs_shouldFillInComplexDataObjectForComplexObs() throws Exception {
 		executeDataSet(COMPLEX_OBS_XML);
 		
@@ -927,10 +927,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#getComplexObs(Integer,String)} test = should not fail with null
-	 *           view
+	 * @see {@link ObsService#getComplexObs(Integer,String)}
 	 */
 	@Test
+	@Verifies(value = "should not fail with null view", method = "getComplexObs(Integer,String)")
 	public void getComplexObs_shouldNotFailWithNullView() throws Exception {
 		executeDataSet(COMPLEX_OBS_XML);
 		
@@ -940,10 +940,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#getComplexObs(Integer,String)} test = should return normal obs
-	 *           for non complex obs
+	 * @see {@link ObsService#getComplexObs(Integer,String)}
 	 */
 	@Test
+	@Verifies(value = "should return normal obs for non complex obs", method = "getComplexObs(Integer,String)")
 	public void getComplexObs_shouldReturnNormalObsForNonComplexObs() throws Exception {
 		executeDataSet(COMPLEX_OBS_XML);
 		
@@ -955,10 +955,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#getHandler(Class)} test = should have default image and text
-	 *           handlers registered by spring
+	 * @see {@link ObsService#getHandler(String)}
 	 */
 	@Test
+	@Verifies(value = "should have default image and text handlers registered by spring", method = "getHandler(String)")
 	public void getHandler_shouldHaveDefaultImageAndTextHandlersRegisteredBySpring() throws Exception {
 		ObsService os = Context.getObsService();
 		ComplexObsHandler imgHandler = os.getHandler("ImageHandler");
@@ -969,11 +969,11 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#getHandler(String)} test = should get handler with matching class
-	 *           name
+	 * @see {@link ObsService#getHandler(String)}
 	 */
 	@Test
-	public void getHandler_shouldGetHandlerWithMatchingClassName() throws Exception {
+	@Verifies(value = "should get handler with matching key", method = "getHandler(String)")
+	public void getHandler_shouldGetHandlerWithMatchingKey() throws Exception {
 		ObsService os = Context.getObsService();
 		ComplexObsHandler handler = os.getHandler("ImageHandler");
 		Assert.assertNotNull(handler);
@@ -981,9 +981,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#getHandlers()} test = should never return null
+	 * @see {@link ObsService#getHandlers()}
 	 */
 	@Test
+	@Verifies(value = "should never return null", method = "getHandlers()")
 	public void getHandlers_shouldNeverReturnNull() throws Exception {
 		Assert.assertNotNull(Context.getObsService().getHandlers());
 		
@@ -992,10 +993,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#registerHandler(String,ComplexObsHandler)} test = should register
-	 *           handler with the given key
+	 * @see {@link ObsService#registerHandler(String,ComplexObsHandler)}
 	 */
 	@Test
+	@Verifies(value = "should register handler with the given key", method = "registerHandler(String,ComplexObsHandler)")
 	public void registerHandler_shouldRegisterHandlerWithTheGivenKey() throws Exception {
 		ObsService os = Context.getObsService();
 		
@@ -1006,10 +1007,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#registerHandler(String,String)} test = should load handler and
-	 *           register key
+	 * @see {@link ObsService#registerHandler(String,String)}
 	 */
 	@Test
+	@Verifies(value = "should load handler and register key", method = "registerHandler(String,String)")
 	public void registerHandler_shouldLoadHandlerAndRegisterKey() throws Exception {
 		ObsService os = Context.getObsService();
 		
@@ -1021,18 +1022,19 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#removeHandler(String)} test = should not fail with invalid key
+	 * @see {@link ObsService#removeHandler(String)}
 	 */
 	@Test
+	@Verifies(value = "should not fail with invalid key", method = "removeHandler(String)")
 	public void removeHandler_shouldNotFailWithInvalidKey() throws Exception {
 		Context.getObsService().removeHandler("SomeRandomHandler");
 	}
 	
 	/**
-	 * @verifies {@link ObsService#removeHandler(String)} test = should remove handler with matching
-	 *           key
+	 * @see {@link ObsService#removeHandler(String)}
 	 */
 	@Test
+	@Verifies(value = "should remove handler with matching key", method = "removeHandler(String)")
 	public void removeHandler_shouldRemoveHandlerWithMatchingKey() throws Exception {
 		ObsService os = Context.getObsService();
 		
@@ -1048,10 +1050,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#saveObs(Obs,String)} test = should create new file from complex
-	 *           data for new obs
+	 * @see {@link ObsService#saveObs(Obs,String)}
 	 */
 	@Test
+	@Verifies(value = "should create new file from complex data for new obs", method = "saveObs(Obs,String)")
 	public void saveObs_shouldCreateNewFileFromComplexDataForNewObs() throws Exception {
 		executeDataSet(COMPLEX_OBS_XML);
 		ObsService os = Context.getObsService();
@@ -1090,10 +1092,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#saveObs(Obs,String)} test = should not overwrite file when
-	 *           updating a complex obs
+	 * @see {@link ObsService#saveObs(Obs,String)}
 	 */
 	@Test
+	@Verifies(value = "should not overwrite file when updating a complex obs", method = "saveObs(Obs,String)")
 	public void saveObs_shouldNotOverwriteFileWhenUpdatingAComplexObs() throws Exception {
 		executeDataSet(COMPLEX_OBS_XML);
 		ObsService os = Context.getObsService();
@@ -1155,10 +1157,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#setHandlers(Map<QString;QComplexObsHandler;>)} test = should add
-	 *           new handlers with new keys
+	 * @see {@link ObsService#setHandlers(Map<QString;QComplexObsHandler;>)}
 	 */
 	@Test
+	@Verifies(value = "should add new handlers with new keys", method = "setHandlers(Map<QString;QComplexObsHandler;>)")
 	public void setHandlers_shouldAddNewHandlersWithNewKeys() throws Exception {
 		ObsService os = Context.getObsService();
 		
@@ -1177,10 +1179,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ObsService#setHandlers(Map<QString;QComplexObsHandler;>)} test = should
-	 *           override handlers with same key
+	 * @see {@link ObsService#setHandlers(Map<QString;QComplexObsHandler;>)}
 	 */
 	@Test
+	@Verifies(value = "should override handlers with same key", method = "setHandlers(Map<QString;QComplexObsHandler;>)")
 	public void setHandlers_shouldOverrideHandlersWithSameKey() throws Exception {
 		ObsService os = Context.getObsService();
 		

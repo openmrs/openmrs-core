@@ -89,10 +89,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientServiceImpl#getAllIdentifierValidators()} test = should return all
-	 *           registered identifier validators
+	 * @see {@link PatientService#getAllIdentifierValidators()}
 	 */
 	@Test
+	@Verifies(value = "should return all registered identifier validators", method = "getAllIdentifierValidators()")
 	public void getAllIdentifierValidators_shouldReturnAllRegisteredIdentifierValidators() throws Exception {
 		Collection<IdentifierValidator> expectedValidators = new HashSet<IdentifierValidator>();
 		expectedValidators.add(patientService.getIdentifierValidator("org.openmrs.patient.impl.LuhnIdentifierValidator"));
@@ -460,10 +460,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#purgePatientIdentifierType(PatientIdentifierType)} test =
-	 *           should delete type from database
+	 * @see {@link PatientService#purgePatientIdentifierType(PatientIdentifierType)}
 	 */
 	@Test
+	@Verifies(value = "should delete type from database", method = "purgePatientIdentifierType(PatientIdentifierType)")
 	public void purgePatientIdentifierType_shouldDeleteTypeFromDatabase() throws Exception {
 		PatientIdentifierType type = patientService.getPatientIdentifierType(1);
 		
@@ -472,10 +472,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#savePatientIdentifierType(PatientIdentifierType)} test =
-	 *           should create new type
+	 * @see {@link PatientService#savePatientIdentifierType(PatientIdentifierType)}
 	 */
 	@Test
+	@Verifies(value = "should create new type", method = "savePatientIdentifierType(PatientIdentifierType)")
 	public void savePatientIdentifierType_shouldCreateNewType() throws Exception {
 		PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
 		
@@ -491,10 +491,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#savePatientIdentifierType(PatientIdentifierType)} test =
-	 *           should update existing type
+	 * @see {@link PatientService#savePatientIdentifierType(PatientIdentifierType)}
 	 */
 	@Test
+	@Verifies(value = "should update existing type", method = "savePatientIdentifierType(PatientIdentifierType)")
 	public void savePatientIdentifierType_shouldUpdateExistingType() throws Exception {
 		
 		PatientIdentifierType type = patientService.getPatientIdentifierType(1);
@@ -504,9 +504,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifierType newerPatientIdentifierType = patientService.getPatientIdentifierType(1);
 		assertEquals("SOME NEW NAME", newerPatientIdentifierType.getName());
 	}
+	
 	/**
-	 * Make sure the api can handle having a User object that is also a 
-	 * patient and was previously loaded via hibernate 
+	 * Make sure the api can handle having a User object that is also a patient and was previously
+	 * loaded via hibernate
 	 * 
 	 * @throws Exception
 	 */
@@ -518,16 +519,19 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		// the creator of the next.  We need to make sure hibernate isn't
 		// caching and returning different person objects when it shouldn't be
 		Patient patient2 = patientService.getPatient(2);
-		assertTrue("When getting a patient, it should be of the class patient, not: " + patient2.getClass(), patient2.getClass().equals(Patient.class));
+		assertTrue("When getting a patient, it should be of the class patient, not: " + patient2.getClass(), patient2
+		        .getClass().equals(Patient.class));
 		
 		Patient patient3 = patientService.getPatient(3);
-		assertTrue("When getting a patient, it should be of the class patient, not: " + patient3.getClass(), patient3.getClass().equals(Patient.class));
+		assertTrue("When getting a patient, it should be of the class patient, not: " + patient3.getClass(), patient3
+		        .getClass().equals(Patient.class));
 		
 		User user2 = Context.getUserService().getUser(2);
-		assertTrue("When getting a user, it should be of the class user, not: " + user2.getClass(), User.class.isAssignableFrom(user2.getClass()));
+		assertTrue("When getting a user, it should be of the class user, not: " + user2.getClass(), User.class
+		        .isAssignableFrom(user2.getClass()));
 		
 	}
-
+	
 	/**
 	 * @see {@link PatientService#getPatients(String)}
 	 */
@@ -577,32 +581,31 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void mergePatients_shouldNotMergeTheSamePatientToItself() throws Exception {
 		Context.getPatientService().mergePatients(new Patient(2), new Patient(2));
 	}
-
+	
 	/**
-     * @see {@link PatientService#savePatient(Patient)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should create new patient from existing person plus user object", method = "savePatient(Patient)")
-    public void savePatient_shouldCreateNewPatientFromExistingPersonPlusUserObject() throws Exception {
-    	// sanity check, make sure there isn't a 501 patient already
-    	Assert.assertNull(patientService.getPatient(501));
-    	
-    	Person existingPerson = Context.getPersonService().getPerson(501); // fetch Bruno from the database
-    	Context.clearSession();
-	    Patient patient = new Patient(existingPerson);
-	    patient.addIdentifier(new PatientIdentifier("some identifier", new PatientIdentifierType(2), new Location(1)));
-	    
+	 * @see {@link PatientService#savePatient(Patient)}
+	 */
+	@Test
+	@Verifies(value = "should create new patient from existing person plus user object", method = "savePatient(Patient)")
+	public void savePatient_shouldCreateNewPatientFromExistingPersonPlusUserObject() throws Exception {
+		// sanity check, make sure there isn't a 501 patient already
+		Assert.assertNull(patientService.getPatient(501));
+		
+		Person existingPerson = Context.getPersonService().getPerson(501); // fetch Bruno from the database
+		Context.clearSession();
+		Patient patient = new Patient(existingPerson);
+		patient.addIdentifier(new PatientIdentifier("some identifier", new PatientIdentifierType(2), new Location(1)));
+		
 		patientService.savePatient(patient);
-	    
-	    Assert.assertEquals(501, patient.getPatientId().intValue());
-	    TestUtil.printOutTableContents(getConnection(), "patient");
-	    TestUtil.printOutTableContents(getConnection(), "patient_identifier");
-	    TestUtil.printOutTableContents(getConnection(), "person");
-	    Assert.assertNotNull(patientService.getPatient(501)); // make sure a new row with a patient id WAS created
-	    Assert.assertNull(patientService.getPatient(503)); // make sure a new row with a new person id WASN'T created
-    }
-
+		
+		Assert.assertEquals(501, patient.getPatientId().intValue());
+		TestUtil.printOutTableContents(getConnection(), "patient");
+		TestUtil.printOutTableContents(getConnection(), "patient_identifier");
+		TestUtil.printOutTableContents(getConnection(), "person");
+		Assert.assertNotNull(patientService.getPatient(501)); // make sure a new row with a patient id WAS created
+		Assert.assertNull(patientService.getPatient(503)); // make sure a new row with a new person id WASN'T created
+	}
+	
 	/**
 	 * @see {@link PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)}
 	 */

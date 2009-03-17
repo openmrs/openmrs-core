@@ -30,6 +30,7 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.PatientSetService.GroupMethod;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  *
@@ -52,20 +53,20 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientSetService#getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)}
-	 *           test = should get all patients when no parameters given
+	 * @see {@link PatientSetService#getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)}
 	 */
 	@Test
+	@Verifies(value = "should get all patients when no parameters given", method = "getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)")
 	public void getPatientsByCharacteristics_shouldGetAllPatientsWhenNoParametersGiven() throws Exception {
 		Cohort cohort = service.getPatientsByCharacteristics(null, null, null, null, null, null, null);
 		Assert.assertEquals(4, cohort.size());
 	}
 	
 	/**
-	 * @verifies {@link PatientSetService#getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)}
-	 *           test = should get patients of given gender
+	 * @see {@link PatientSetService#getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)}
 	 */
 	@Test
+	@Verifies(value = "should get patients of given gender", method = "getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)")
 	public void getPatientsByCharacteristics_shouldGetPatientsOfGivenGender() throws Exception {
 		Cohort cohort = service.getPatientsByCharacteristics("m", null, null, null, null, null, null);
 		Assert.assertEquals(2, cohort.size());
@@ -79,10 +80,10 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientSetService#getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)}
-	 *           test = should get patients who are alive
+	 * @see {@link PatientSetService#getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)}
 	 */
 	@Test
+	@Verifies(value = "should get patients who are alive", method = "getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)")
 	public void getPatientsByCharacteristics_shouldGetPatientsWhoAreAlive() throws Exception {
 		Cohort cohort = service.getPatientsByCharacteristics(null, null, null, null, null, true, null);
 		Assert.assertEquals(4, cohort.size());
@@ -93,10 +94,10 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientSetService#getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)}
-	 *           test = should get patients who are dead
+	 * @see {@link PatientSetService#getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)}
 	 */
 	@Test
+	@Verifies(value = "should get patients who are dead", method = "getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)")
 	public void getPatientsByCharacteristics_shouldGetPatientsWhoAreDead() throws Exception {
 		Cohort cohort = service.getPatientsByCharacteristics(null, null, null, null, null, null, true);
 		Assert.assertEquals(0, cohort.size());
@@ -104,11 +105,10 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link
-	 *           PatientSetService#getPatientsByProgramAndState(Program,List<QProgramWorkflowState;>,
-	 *           Date,Date)} test = should get all patients in any program given null parameters
+	 * @see {@link PatientSetService#getPatientsByProgramAndState(org.openmrs.Program,List,Date, Date)}
 	 */
 	@Test
+	@Verifies(value = "should get all patients in any program given null parameters", method = "getPatientsByProgramAndState(Program,List<QProgramWorkflowState;>,Date,Date)")
 	public void getPatientsByProgramAndState_shouldGetAllPatientsInAnyProgramGivenNullParameters() throws Exception {
 		Cohort cohort = service.getPatientsByProgramAndState(null, null, null, null);
 		Assert.assertEquals(2, cohort.size());
@@ -117,11 +117,10 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link
-	 *           PatientSetService#getPatientsByProgramAndState(Program,List<QProgramWorkflowState;>,
-	 *           Date,Date)} test = should get patients in program
+	 * @see {@link PatientSetService#getPatientsByProgramAndState(org.openmrs.Program,List,Date,Date)}
 	 */
 	@Test
+	@Verifies(value = "should get patients in program", method = "getPatientsByProgramAndState(Program,List<QProgramWorkflowState;>,Date,Date)")
 	public void getPatientsByProgramAndState_shouldGetPatientsInProgram() throws Exception {
 		Cohort cohort = service.getPatientsByProgramAndState(Context.getProgramWorkflowService().getProgram(1), null, null,
 		    null);
@@ -130,11 +129,11 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link
-	 *           PatientSetService#getPatientsByProgramAndState(Program,List<QProgramWorkflowState;>,
-	 *           Date,Date)} test = should get patients in state
+	 * @see {@link PatientSetService#getPatientsByProgramAndState(org.openmrs.Program, List, Date, Date)
+
 	 */
 	@Test
+	@Verifies(value = "should get patients in state", method = "getPatientsByProgramAndState(Program,List<QProgramWorkflowState;>,Date,Date)")
 	public void getPatientsByProgramAndState_shouldGetPatientsInState() throws Exception {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		Cohort cohort = service.getPatientsByProgramAndState(pws.getProgram(1), Collections.singletonList(pws.getState(2)),
@@ -148,11 +147,10 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link
-	 *           PatientSetService#getPatientsByProgramAndState(Program,List<QProgramWorkflowState;>,
-	 *           Date,Date)} test = should get patients in states
+	 * @see {@link PatientSetService#getPatientsByProgramAndState(org.openmrs.Program,List,Date,Date)}
 	 */
 	@Test
+	@Verifies(value = "should get patients in states", method = "getPatientsByProgramAndState(Program,List<QProgramWorkflowState;>,Date,Date)")
 	public void getPatientsByProgramAndState_shouldGetPatientsInStates() throws Exception {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		List<ProgramWorkflowState> list = new ArrayList<ProgramWorkflowState>();
@@ -166,12 +164,10 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link
-	 *           PatientSetService#getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger
-	 *           ;>,GroupMethod,Date,Date)} test = should get all patients with drug orders given
-	 *           null parameters
+	 * @see {@link PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, GroupMethod, Date, Date)}
 	 */
 	@Test
+	@Verifies(value = "should get all patients with drug orders given null parameters", method = "getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger;>,GroupMethod,Date,Date)")
 	public void getPatientsHavingDrugOrder_shouldGetAllPatientsWithDrugOrdersGivenNullParameters() throws Exception {
 		Cohort cohort = service.getPatientsHavingDrugOrder(null, null, null, null, null);
 		Assert.assertEquals(2, cohort.size());
@@ -180,11 +176,10 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link
-	 *           PatientSetService#getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger
-	 *           ;>,GroupMethod,Date,Date)} test = should get patients with no drug orders
+	 * @see {@link PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, GroupMethod, Date, Date)}
 	 */
 	@Test
+	@Verifies(value = "should get patients with no drug orders", method = "getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger;>,GroupMethod,Date,Date)")
 	public void getPatientsHavingDrugOrder_shouldGetPatientsWithNoDrugOrders() throws Exception {
 		Cohort cohort = service.getPatientsHavingDrugOrder(null, null, GroupMethod.NONE, null, null);
 		Assert.assertEquals(2, cohort.size());
@@ -193,12 +188,11 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link
-	 *           PatientSetService#getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger
-	 *           ;>,GroupMethod,Date,Date)} test = should get patients with drug orders for drugs
+	 * @see {@link PatientSetService#getPatientsHavingDrugOrder(java.util.Collection, java.util.Collection, GroupMethod, Date, Date)}
 	 */
 	@Test
-	public void getPatientsHavingDrugOrder_shouldGetPatientsWithDrugOrdersForDrugs() throws Exception {
+	@Verifies(value = "should get patients with no drug orders for drugs", method = "getPatientsHavingDrugOrder(Collection<QInteger;>,Collection<QInteger;>,GroupMethod,Date,Date)")
+	public void getPatientsHavingDrugOrder_shouldGetPatientsWithNoDrugOrdersForDrugs() throws Exception {
 		List<Integer> drugIds = new ArrayList<Integer>();
 		drugIds.add(2);
 		Cohort cohort = service.getPatientsHavingDrugOrder(drugIds, null, null, null, null);

@@ -15,7 +15,6 @@ package org.openmrs.api;
 
 import java.util.List;
 
-import org.hibernate.criterion.Expression;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -43,6 +42,10 @@ public interface UserService extends OpenmrsService {
 	 * @param password
 	 * @returns a User object
 	 * @throws APIException
+	 * @should create new user with basic elements
+	 * @should should create user who is patient already
+	 * @should update users username
+	 * @should grant new roles in roles list to user 
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_USERS, OpenmrsConstants.PRIV_EDIT_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })
@@ -313,6 +316,7 @@ public interface UserService extends OpenmrsService {
 	 * @should match on correctly hashed sha1 stored password
 	 * @should match on incorrectly hashed sha1 stored password
 	 * @should match on sha512 hashed password
+	 * @should be able to update password multiple times
 	 */
 	@Logging(ignoredArgumentIndexes = { 0, 1 })
 	public void changePassword(String pw, String pw2) throws APIException;

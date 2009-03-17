@@ -1203,7 +1203,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should cascade patient to orders in the encounter", method = "saveEncounter(Encounter)")
-	public void xsaveEncounter_shouldCascadePatientToOrdersInTheEncounter() throws Exception {
+	public void saveEncounter_shouldCascadePatientToOrdersInTheEncounter() throws Exception {
 		Encounter enc = Context.getEncounterService().getEncounter(15);
 		Order existing = enc.getOrders().iterator().next();
 		

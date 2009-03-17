@@ -176,10 +176,10 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies savePersonAttributeType test = set the date created and creator on new
-	 * @throws Exception
+	 * @see {@link PersonService#savePersonAttributeType(PersonAttributeType)}
 	 */
 	@Test
+	@Verifies(value = "should set the date created and creator on new", method = "savePersonAttributeType(PersonAttributeType)")
 	public void savePersonAttributeType_shouldSetTheDateCreatedAndCreatorOnNew() throws Exception {
 		PersonService service = Context.getPersonService();
 		
@@ -194,10 +194,10 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies savePersonAttributeType test = set the date changed and changed by on update
-	 * @throws Exception
+	 * @see {@link PersonService#savePersonAttributeType(PersonAttributeType)}
 	 */
 	@Test
+	@Verifies(value = "should set the date changed and changed by on update", method = "savePersonAttributeType(PersonAttributeType)")
 	public void savePersonAttributeType_shouldSetTheDateChangedAndChangedByOnUpdate() throws Exception {
 		PersonService service = Context.getPersonService();
 		
