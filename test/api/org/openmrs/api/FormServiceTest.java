@@ -107,98 +107,6 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Creates then updates a form field TODO fix and activate this test method
-	 * 
-	 * @throws Exception
-	 */
-	public void xtestFormFieldCreateUpdateDelete() throws Exception {
-		FormService formService = Context.getFormService();
-		
-		//testing creation
-		
-		List<Form> forms = formService.getAllForms();
-		assertNotNull(forms);
-		assertTrue(forms.size() > 2);
-		
-		List<Field> fields = formService.getAllFields();
-		assertNotNull(fields);
-		assertTrue(fields.size() > 2);
-		
-		FormField subFormField1 = null;
-		Form form1 = forms.get(1);
-		Field field1 = fields.get(1);
-		Integer fieldNumber1 = new Integer(1);
-		String fieldPart1 = "part1";
-		Integer pageNumber1 = new Integer(1);
-		Integer minOccurs1 = new Integer(1);
-		Integer maxOccurs1 = new Integer(1);
-		Boolean required1 = true;
-		
-		FormField formField1 = new FormField();
-		
-		formField1.setParent(subFormField1);
-		formField1.setForm(form1);
-		formField1.setField(field1);
-		formField1.setFieldNumber(fieldNumber1);
-		formField1.setFieldPart(fieldPart1);
-		formField1.setPageNumber(pageNumber1);
-		formField1.setMinOccurs(minOccurs1);
-		formField1.setMaxOccurs(maxOccurs1);
-		formField1.setRequired(required1);
-		
-		//formService.createFormField(formField1);
-		
-		//testing update
-		
-		FormField formField2 = null; //formService.getFormField(formField1.getFormFieldId());
-		
-		FormField subFormField2 = null;
-		Form form2 = forms.get(2);
-		Field field2 = fields.get(2);
-		Integer fieldNumber2 = new Integer(2);
-		String fieldPart2 = "part2";
-		Integer pageNumber2 = new Integer(2);
-		Integer minOccurs2 = new Integer(2);
-		Integer maxOccurs2 = new Integer(2);
-		Boolean required2 = false;
-		
-		formField2.setParent(subFormField2);
-		formField2.setForm(form2);
-		formField2.setField(field2);
-		formField2.setFieldNumber(fieldNumber2);
-		formField2.setFieldPart(fieldPart2);
-		formField2.setPageNumber(pageNumber2);
-		formField2.setMinOccurs(minOccurs2);
-		formField2.setMaxOccurs(maxOccurs2);
-		formField2.setRequired(required2);
-		
-		//formService.updateFormField(formField2);
-		
-		//testing correct update
-		
-		FormField formField3 = null; //formService.getFormField(formField2.getFormFieldId());
-		
-		assertTrue(formField3.equals(formField2));
-		
-		assertFalse(formField3.getParent().equals(formField1.getParent()));
-		assertFalse(formField3.getForm().equals(formField1.getForm()));
-		assertFalse(formField3.getField().equals(formField1.getField()));
-		assertFalse(formField3.getFieldNumber().equals(formField1.getFieldNumber()));
-		assertFalse(formField3.getFieldPart().equals(formField1.getFieldPart()));
-		assertFalse(formField3.getPageNumber().equals(formField1.getPageNumber()));
-		assertFalse(formField3.getMinOccurs().equals(formField1.getMinOccurs()));
-		assertFalse(formField3.getMaxOccurs().equals(formField1.getMaxOccurs()));
-		assertFalse(formField3.isRequired().equals(formField1.isRequired()));
-		
-		//testing deletion
-		
-		//formService.deleteFormField(formField3);
-		//formService.deleteFormField(formField3);
-		//assertNull(formService.getFormField(formField3.getFormFieldId()));
-		
-	}
-	
-	/**
 	 * Test create then update a field
 	 * 
 	 * @throws Exception
@@ -320,12 +228,10 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure that multiple forms are returned if a field is on a form more than once
 	 * 
-	 * @verifies {@link 
-	 *           FormService#getForms(String,Boolean,Collection<QEncounterType;>,Boolean,Collection
-	 *           <QFormField;>,Collection<QFormField;>,Collection<QField;>)} test = should get
-	 *           multiple of the same form by field
+	 * @see {@link FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection) 
 	 */
 	@Test
+	@Verifies(value = "should get multiple of the same form by field", method = "getForms(String,Boolean,Collection,Boolean,Collection,Collection,Collection)")
 	public void getForms_shouldGetMultipleOfTheSameFormByField() throws Exception {
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
@@ -341,9 +247,10 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link FormService#saveFieldType(FieldType)} test = should create new field type
+	 * @see {@link FormService#saveFieldType(FieldType)}
 	 */
 	@Test
+	@Verifies(value = "should create new field type", method = "saveFieldType(FieldType)")
 	public void saveFieldType_shouldCreateNewFieldType() throws Exception {
 		FieldType fieldType = new FieldType();
 		
@@ -359,10 +266,10 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link FormService#saveFieldType(FieldType)} test = should update existing field
-	 *           type
+	 * @see {@link FormService#saveFieldType(FieldType)}
 	 */
 	@Test
+	@Verifies(value = "should update existing field type", method = "saveFieldType(FieldType)")
 	public void saveFieldType_shouldUpdateExistingFieldType() throws Exception {
 		FormService formService = Context.getFormService();
 		
@@ -393,4 +300,5 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		long oneMinuteDelta = 60 * 1000;
 		Assert.assertEquals(new Date().getTime(), dupForm.getDateCreated().getTime(), oneMinuteDelta);
 	}
+	
 }

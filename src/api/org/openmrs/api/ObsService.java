@@ -505,6 +505,7 @@ public interface ObsService extends OpenmrsService {
 	 * @return Object representing the handler for the given key
 	 * @see #getHandler(Class)
 	 * @should get handler with matching key
+	 * @should have default image and text handlers registered by spring
 	 */
 	@Transactional(readOnly = true)
 	public ComplexObsHandler getHandler(String key) throws APIException;

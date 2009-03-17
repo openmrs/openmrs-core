@@ -27,26 +27,27 @@ import org.openmrs.api.context.Context;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
- * 
+ * Tests methods on the {@link PatientIdentifierValidator} class.
  */
 public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#validate(PatientIdentifier)} tests that
-	 *           validation fails if PatientIdentifier is null
+	 * @see {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
 	 */
 	@Test(expected = BlankIdentifierException.class)
+	@Verifies(value = "should fail validation if PatientIdentifier is null", method = "validateIdentifier(PatientIdentifier)")
 	public void validateIdentifier_shouldFailValidationIfPatientIdentifierIsNull() throws Exception {
 		PatientIdentifierValidator.validateIdentifier(null);
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)} tests that
-	 *           validation passes if PatientIdentifier is voided
+	 * @see {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
 	 */
 	@Test
+	@Verifies(value = "should pass validation if PatientIdentifier is voided", method = "validateIdentifier(PatientIdentifier)")
 	public void validateIdentifier_shouldPassValidationIfPatientIdentifierIsVoided() throws Exception {
 		PatientIdentifier pi = Context.getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
 		pi.setIdentifier("7TU-4");
@@ -64,10 +65,10 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)} tests that
-	 *           validation fails if another patient has a matching identifier of the same type
+	 * @see {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
 	 */
 	@Test(expected = IdentifierNotUniqueException.class)
+	@Verifies(value = "should fail validation if another patient has a matching identifier of the same type", method = "validateIdentifier(PatientIdentifier)")
 	public void validateIdentifier_shouldFailValidationIfAnotherPatientHasAMatchingIdentifierOfTheSameType()
 	                                                                                                        throws Exception {
 		PatientIdentifier pi = Context.getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
@@ -76,95 +77,91 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#validateIdentifier(String, PatientIdentifierType)}
-	 *           tests that validation fails if the PatientIdentifierType is null
+	 * @see {@link PatientIdentifierValidator#validateIdentifier(String,PatientIdentifierType)}
 	 */
 	@Test(expected = BlankIdentifierException.class)
+	@Verifies(value = "should fail validation if PatientIdentifierType is null", method = "validateIdentifier(String,PatientIdentifierType)")
 	public void validateIdentifier_shouldFailValidationIfPatientIdentifierTypeIsNull() throws Exception {
 		PatientIdentifierValidator.validateIdentifier("ABC", null);
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)} test
-	 *           = should fail validation if identifier is blank
+	 * @see {@link PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)}
 	 */
 	@Test(expected = BlankIdentifierException.class)
+	@Verifies(value = "should fail validation if identifier is blank", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldFailValidationIfIdentifierIsBlank() throws Exception {
 		PatientIdentifierValidator.validateIdentifier("", new PatientIdentifierType(1));
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#checkIdentifierAgainstFormat(String, String)}
-	 *           tests that validation fails if an identifier does not match the expected regex
-	 *           format
+	 * @see {@link PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)}
 	 */
 	@Test(expected = InvalidIdentifierFormatException.class)
+	@Verifies(value = "should fail validation if identifier does not match the format", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldFailValidationIfIdentifierDoesNotMatchTheFormat() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-222-333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}");
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#checkIdentifierAgainstFormat(String, String)}
-	 *           tests that validation passes if the identifier string matches the expected regex
-	 *           format
+	 * @see {@link PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)}
 	 */
 	@Test
+	@Verifies(value = "should pass validation if identifier matches the format", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldPassValidationIfIdentifierMatchesTheFormat() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstFormat("111-22-3333", "[0-9]{3}\\-[0-9]{2}\\-[0-9]{4}");
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#checkIdentifierAgainstFormat(String, String)}
-	 *           tests that validation passes if the regex format is blank
+	 * @see {@link PatientIdentifierValidator#checkIdentifierAgainstFormat(String,String)}
 	 */
 	@Test
+	@Verifies(value = "should pass validation if the format is blank", method = "checkIdentifierAgainstFormat(String,String)")
 	public void checkIdentifierAgainstFormat_shouldPassValidationIfTheFormatIsBlank() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstFormat("abcdefg", "");
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#checkIdentifierAgainstValidator(String, IdentifierValidator)}
-	 *           tests that validation fails if the identifier is blank
+	 * @see {@link PatientIdentifierValidator#checkIdentifierAgainstValidator(String,IdentifierValidator)}
 	 */
 	@Test(expected = BlankIdentifierException.class)
+	@Verifies(value = "should fail validation if identifier is blank", method = "checkIdentifierAgainstValidator(String,IdentifierValidator)")
 	public void checkIdentifierAgainstValidator_shouldFailValidationIfIdentifierIsBlank() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstValidator("", new LuhnIdentifierValidator());
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#checkIdentifierAgainstValidator(String, IdentifierValidator)}
-	 *           tests that validation fails if the identifier is not valid according to the
-	 *           IdentifierValidator
+	 * @see {@link PatientIdentifierValidator#checkIdentifierAgainstValidator(String,IdentifierValidator)}
 	 */
 	@Test(expected = InvalidCheckDigitException.class)
+	@Verifies(value = "should fail validation if identifier is invalid", method = "checkIdentifierAgainstValidator(String,IdentifierValidator)")
 	public void checkIdentifierAgainstValidator_shouldFailValidationIfIdentifierIsInvalid() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstValidator("7TU-4", new LuhnIdentifierValidator());
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#checkIdentifierAgainstValidator(String, IdentifierValidator)}
-	 *           tests that validation passes if the identifier is valid according to the
-	 *           IdentifierValidator
+	 * @see {@link PatientIdentifierValidator#checkIdentifierAgainstValidator(String,IdentifierValidator)}
 	 */
 	@Test
+	@Verifies(value = "should pass validation if identifier is valid", method = "checkIdentifierAgainstValidator(String,IdentifierValidator)")
 	public void checkIdentifierAgainstValidator_shouldPassValidationIfIdentifierIsValid() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstValidator("7TU-8", new LuhnIdentifierValidator());
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#checkIdentifierAgainstValidator(String, IdentifierValidator)}
-	 *           tests that validation passes if the IdentifierValidator is null
+	 * @see {@link PatientIdentifierValidator#checkIdentifierAgainstValidator(String,IdentifierValidator)}
 	 */
 	@Test
+	@Verifies(value = "should pass validation if validator is null", method = "checkIdentifierAgainstValidator(String,IdentifierValidator)")
 	public void checkIdentifierAgainstValidator_shouldPassValidationIfValidatorIsNull() throws Exception {
 		PatientIdentifierValidator.checkIdentifierAgainstValidator("7TU-4", null);
 	}
 	
 	/**
-	 * @verifies {@link PatientIdentifierValidator#validateIdentifier(String,PatientIdentifierType)}
-	 *           test = should fail validation if identifier is blank
+	 * @see {@link PatientIdentifierValidator#validateIdentifier(String,PatientIdentifierType)}
 	 */
 	@Test(expected = BlankIdentifierException.class)
+	@Verifies(value = "should fail validation if identifier is blank", method = "validateIdentifier(String,PatientIdentifierType)")
 	public void validateIdentifier_shouldFailValidationIfIdentifierIsBlank() throws Exception {
 		PatientIdentifier identifier = new PatientIdentifier("", new PatientIdentifierType(1), new Location(1));
 		PatientIdentifierValidator.validateIdentifier(identifier);
