@@ -85,7 +85,7 @@ public class OpenmrsFilter implements Filter {
 		//context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		//context = (Context)httpRequest.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
 		
-		if (initialRequest == true) {
+		if (initialRequest) {
 			// default the session username attribute to anonymous
 			httpSession.setAttribute("username", "-anonymous user-");
 			
@@ -124,7 +124,7 @@ public class OpenmrsFilter implements Filter {
 			chain.doFilter(request, response);
 		}
 		finally {
-			if (initialRequest == true) {
+			if (initialRequest) {
 				// Clear the context so there's no user information left on the thread
 				Context.clearUserContext();
 				log.debug("This was considered an initial request");
