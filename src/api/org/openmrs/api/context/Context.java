@@ -885,7 +885,7 @@ public class Context {
 	 *      the required question/datatypes
 	 */
 	@SuppressWarnings("deprecation")
-    private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
+	private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
 		try {
 			Context.addProxyPrivilege("");
 			OpenmrsConstants.DATABASE_VERSION = getAdministrationService().getGlobalProperty("database_version");

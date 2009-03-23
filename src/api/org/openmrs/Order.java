@@ -103,8 +103,8 @@ public class Order implements java.io.Serializable {
 	 * The purpose of this method is to allow subclasses of Order to delegate a portion of their
 	 * copy() method back to the superclass, in case the base class implementation changes.
 	 * 
-	 * @param ret an Order that will have the state of <code>this</code> copied into it
-	 * @return the Order that was passed in, with state copied into it
+	 * @param target an Order that will have the state of <code>this</code> copied into it
+	 * @return Returns the Order that was passed in, with state copied into it
 	 */
 	protected Order copyHelper(Order target) {
 		target.setPatient(getPatient());

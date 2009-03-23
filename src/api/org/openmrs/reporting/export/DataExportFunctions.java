@@ -155,7 +155,7 @@ public class DataExportFunctions {
 	}
 	
 	@SuppressWarnings("unchecked")
-    public void clear() {
+	public void clear() {
 		for (Map map : patientEncounterMap.values())
 			map.clear();
 		patientEncounterMap.clear();
@@ -767,7 +767,7 @@ public class DataExportFunctions {
 	}
 	
 	@SuppressWarnings("unchecked")
-    public List<List<Object>> getLastNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
+	public List<List<Object>> getLastNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
 		return getLastNObsWithValues(n, getConcept(conceptId), (List<String>) attrs);
 	}
 	
@@ -832,7 +832,7 @@ public class DataExportFunctions {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-    public List<Object> getLastObsWithValues(String conceptName, Object attrs) throws Exception {
+	public List<Object> getLastObsWithValues(String conceptName, Object attrs) throws Exception {
 		//List<String> attrs = new Vector<String>();
 		//Collections.addAll(attrs, attrArray);
 		return getLastObsWithValues(getConcept(conceptName), (List<String>) attrs);
@@ -905,7 +905,7 @@ public class DataExportFunctions {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-    public List<Object> getFirstObsWithValues(String conceptName, Object attrs) throws Exception {
+	public List<Object> getFirstObsWithValues(String conceptName, Object attrs) throws Exception {
 		//List<String> attrs = new Vector<String>();
 		//Collections.addAll(attrs, attrArray);
 		return getFirstObsWithValues(getConcept(conceptName), (List<String>) attrs);
@@ -984,7 +984,7 @@ public class DataExportFunctions {
 	 * @see #getFirstNObsWithValues(Integer, Concept, List)
 	 */
 	@SuppressWarnings("unchecked")
-    public List<List<Object>> getFirstNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
+	public List<List<Object>> getFirstNObsWithValues(Integer n, String conceptId, Object attrs) throws Exception {
 		return getFirstNObsWithValues(n, getConcept(conceptId), (List<String>) attrs);
 	}
 	
@@ -1056,7 +1056,6 @@ public class DataExportFunctions {
 	//		
 	//		return returnList;
 	//	}
-	
 	/**
 	 * Calculate the years between two dates (age).
 	 * 

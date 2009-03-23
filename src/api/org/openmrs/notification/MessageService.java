@@ -67,18 +67,18 @@ public interface MessageService {
 	                             String attachmentContentType, String attachmentFileName) throws MessageException;
 	
 	@SuppressWarnings("unchecked")
-    public Message prepareMessage(String templateName, Map data) throws MessageException;
+	public Message prepareMessage(String templateName, Map data) throws MessageException;
 	
 	public Message prepareMessage(Template template) throws MessageException;
 	
 	// Template methods
 	@SuppressWarnings("unchecked")
-    public List getAllTemplates() throws MessageException;
+	public List getAllTemplates() throws MessageException;
 	
 	public Template getTemplate(Integer id) throws MessageException;
 	
 	@SuppressWarnings("unchecked")
-    public List getTemplatesByName(String name) throws MessageException;
+	public List getTemplatesByName(String name) throws MessageException;
 	
 	/* Begin Deprecated methods */
 
@@ -116,7 +116,7 @@ public interface MessageService {
 	
 	@Deprecated
 	@SuppressWarnings("unchecked")
-    public Message prepare(String templateName, Map data) throws MessageException;
+	public Message prepare(String templateName, Map data) throws MessageException;
 	
 	@Deprecated
 	public Message prepare(Template template) throws MessageException;

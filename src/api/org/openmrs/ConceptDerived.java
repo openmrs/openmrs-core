@@ -62,7 +62,7 @@ public class ConceptDerived extends Concept implements java.io.Serializable {
 	/**
 	 * Updates date on which rule was last compiled
 	 * 
-	 * @param date on which rule was compiled
+	 * @param compileDate date on which rule was compiled
 	 */
 	public void setCompileDate(Date compileDate) {
 		this.compileDate = compileDate;

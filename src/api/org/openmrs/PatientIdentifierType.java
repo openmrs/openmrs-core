@@ -215,7 +215,7 @@ public class PatientIdentifierType implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param checkdigit The checkdigit to set.
+	 * @param checkDigit The checkdigit to set.
 	 * @deprecated No need for this field now that any validator algorithm can be chosen.
 	 */
 	public void setCheckDigit(Boolean checkDigit) {

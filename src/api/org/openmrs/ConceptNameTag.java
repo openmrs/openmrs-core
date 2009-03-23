@@ -320,7 +320,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	 * A factory method that generates strings for preferred country tags.
 	 * 
 	 * @param country ISO-3166 two letter country code
-	 * @return
+	 * @return Returns the ConceptNameTag for the specified country.
 	 */
 	public static ConceptNameTag preferredCountryTagFor(String country) {
 		return new ConceptNameTag(PREFERRED + "_" + country, "");
@@ -331,27 +331,27 @@ public class ConceptNameTag implements java.io.Serializable {
 	 * description.
 	 * 
 	 * @param language ISO-639 two letter language code
-	 * @return
+	 * @return Returns the ConceptNameTag for the specified language.
 	 */
 	public static ConceptNameTag preferredLanguageTagFor(String language) {
 		return new ConceptNameTag(PREFERRED + "_" + language, "");
 	}
 	
 	/**
-	 * Auto generated method comment
+	 * Method that generates a concept name tag based on a specific locale's language.
 	 * 
 	 * @param locale
-	 * @return
+	 * @return Returns the short language tag for the specified locale's language.
 	 */
 	public static ConceptNameTag shortLanguageTagFor(Locale locale) {
 		return shortLanguageTagFor(locale.getLanguage());
 	}
 	
 	/**
-	 * Auto generated method comment
+	 * Method that generates a concept name tag based on a specified locale's country code.
 	 * 
 	 * @param locale
-	 * @return
+	 * @return Returns the short country Name tag for the specified locale's country.
 	 */
 	public static ConceptNameTag shortCountryTagFor(Locale locale) {
 		return shortCountryTagFor(locale.getCountry());
@@ -361,7 +361,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	 * A factory method that generates strings for short country tags.
 	 * 
 	 * @param country ISO-3166 two letter country code
-	 * @return
+	 * @return Returns the Name Tag for the specified country code.
 	 */
 	public static ConceptNameTag shortCountryTagFor(String country) {
 		return new ConceptNameTag(SHORT + "_" + country, "");
@@ -371,7 +371,7 @@ public class ConceptNameTag implements java.io.Serializable {
 	 * A factory method that generates strings for short language tags.
 	 * 
 	 * @param language ISO-639 two letter language code
-	 * @return
+	 * @return Returns the short language tag for the specified language.
 	 */
 	public static ConceptNameTag shortLanguageTagFor(String language) {
 		return new ConceptNameTag(SHORT + "_" + language, "");

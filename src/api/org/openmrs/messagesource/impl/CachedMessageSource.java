@@ -59,7 +59,8 @@ public class CachedMessageSource extends AbstractMessageSource implements Mutabl
 	}
 	
 	/**
-	 * @see org.openmrs.messagesource.MutableMessageSource#publishProperties(java.util.Properties, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 * @see org.openmrs.messagesource.MutableMessageSource#publishProperties(java.util.Properties,
+	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
 	 */
 	public void publishProperties(Properties arg0, String arg1, String arg2, String arg3, String arg4) {

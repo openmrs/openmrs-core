@@ -92,7 +92,6 @@ public class ConceptName implements java.io.Serializable {
 	
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
-	 * 
 	 * @should compare on conceptNameId if non null
 	 * @should not return true with different objects and null ids
 	 * @should default to object equality
@@ -102,7 +101,7 @@ public class ConceptName implements java.io.Serializable {
 			return false;
 		}
 		ConceptName rhs = (ConceptName) obj;
-		if (this.conceptNameId != null && rhs.conceptNameId != null)  
+		if (this.conceptNameId != null && rhs.conceptNameId != null)
 			return (this.conceptNameId == rhs.conceptNameId);
 		else
 			return this == obj;
@@ -122,10 +121,10 @@ public class ConceptName implements java.io.Serializable {
 	}
 	
 	/**
-	 * Call {@link Concept#getShortestName()} instead.
+	 * Call {@link Concept#getShortestName(Locale, Boolean)} instead.
 	 * 
 	 * @deprecated
-	 * @return
+	 * @return Returns the appropriate short name
 	 */
 	public String getShortestName() {
 		if (concept != null) {

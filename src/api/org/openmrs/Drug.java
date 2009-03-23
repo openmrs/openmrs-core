@@ -173,7 +173,7 @@ public class Drug implements java.io.Serializable {
 	/**
 	 * Sets the dose strength
 	 * 
-	 * @param Double
+	 * @param doseStrength
 	 */
 	public void setDoseStrength(Double doseStrength) {
 		this.doseStrength = doseStrength;
@@ -191,7 +191,7 @@ public class Drug implements java.io.Serializable {
 	/**
 	 * Sets the units
 	 * 
-	 * @param String
+	 * @param units
 	 */
 	public void setUnits(String units) {
 		this.units = units;
@@ -209,7 +209,7 @@ public class Drug implements java.io.Serializable {
 	/**
 	 * Sets the date this was created
 	 * 
-	 * @param Date
+	 * @param dateCreated
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
@@ -227,7 +227,7 @@ public class Drug implements java.io.Serializable {
 	/**
 	 * Sets the concept this drug is tied to
 	 * 
-	 * @param Concept
+	 * @param concept
 	 */
 	public void setConcept(Concept concept) {
 		this.concept = concept;
@@ -245,7 +245,7 @@ public class Drug implements java.io.Serializable {
 	/**
 	 * Sets the creator of this drug record
 	 * 
-	 * @param User
+	 * @param creator
 	 */
 	public void setCreator(User creator) {
 		this.creator = creator;

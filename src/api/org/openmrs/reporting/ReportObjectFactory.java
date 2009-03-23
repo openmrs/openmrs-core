@@ -210,7 +210,7 @@ public class ReportObjectFactory {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-    public static AbstractReportObject getInstance(String reportObjectName, Map<String, Object> initialValues,
+	public static AbstractReportObject getInstance(String reportObjectName, Map<String, Object> initialValues,
 	                                               Context context) {
 		ReportObjectFactory rof = ReportObjectFactory.singleton;
 		String className = rof.getReportObjectClassByName(reportObjectName);
@@ -239,7 +239,7 @@ public class ReportObjectFactory {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-    public static AbstractReportObject getInstance(Class reportObjectClass, Map<String, Object> initialValues) {
+	public static AbstractReportObject getInstance(Class reportObjectClass, Map<String, Object> initialValues) {
 		AbstractReportObject reportObj = null;
 		
 		if (reportObjectClass != null) {
@@ -265,7 +265,7 @@ public class ReportObjectFactory {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-    private static AbstractReportObject initInstance(AbstractReportObject reportObj, Map<String, Object> initialValues) {
+	private static AbstractReportObject initInstance(AbstractReportObject reportObj, Map<String, Object> initialValues) {
 		if (reportObj != null && initialValues != null) {
 			for (Iterator<String> i = initialValues.keySet().iterator(); i.hasNext();) {
 				String key = i.next();

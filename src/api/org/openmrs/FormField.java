@@ -184,7 +184,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField> {
 	}
 	
 	/**
-	 * @param formField The formField to set.
+	 * @param parent The formField to set as parent.
 	 */
 	public void setParent(FormField parent) {
 		this.parent = parent;

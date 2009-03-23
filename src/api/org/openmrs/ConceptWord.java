@@ -162,9 +162,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	}
 	
 	/**
-	 * Gets the concept name from which this word was derived.
-	 * 
-	 * @return
+	 * @return Returns the concept name from which this word was derived.
 	 */
 	public ConceptName getConceptName() {
 		return conceptName;
@@ -194,8 +192,8 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	}
 	
 	/**
-	 * @param concept
-	 * @return
+	 * @param concept The concept from which to make the list of concept words.
+	 * @return Returns a list of unique concept words based on the specified concept.
 	 */
 	
 	public static Set<ConceptWord> makeConceptWords(Concept concept) {
@@ -214,7 +212,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	 * Split the given phrase on words and remove unique and stop words
 	 * 
 	 * @param phrase
-	 * @return
+	 * @return Returns a list of the unique parts of the phrase, in all upper case.
 	 */
 	public static List<String> getUniqueWords(String phrase) {
 		

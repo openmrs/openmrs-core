@@ -124,8 +124,8 @@ public class ProgramWorkflow implements java.io.Serializable {
 	/**
 	 * Returns a {@link ProgramWorkflowState} whose Concept matches the passed concept
 	 * 
-	 * @param name the Concept to match
-	 * @return a {@link ProgramWorkflowState} whose {@link Concept} matches the passed
+	 * @param concept the Concept to match
+	 * @return Returns a {@link ProgramWorkflowState} whose {@link Concept} matches the passed
 	 *         <code>concept</code>
 	 */
 	public ProgramWorkflowState getState(Concept concept) {
@@ -201,12 +201,11 @@ public class ProgramWorkflow implements java.io.Serializable {
 		final Comparator<String> naturalComparator = NaturalStrings.getNaturalComparator();
 		
 		Comparator<ProgramWorkflowState> stateComparator = new Comparator<ProgramWorkflowState>() {
-
+			
 			public int compare(ProgramWorkflowState o1, ProgramWorkflowState o2) {
-	            return naturalComparator.compare(
-	            	o1.getConcept().getBestName(null).getName(), 
-	            	o2.getConcept().getBestName(null).getName());
-            }
+				return naturalComparator.compare(o1.getConcept().getBestName(null).getName(), o2.getConcept().getBestName(
+				    null).getName());
+			}
 			
 		};
 		
@@ -221,7 +220,7 @@ public class ProgramWorkflow implements java.io.Serializable {
 	 * Returns a {@link List<ProgramWorkflowState>} including all possible next
 	 * ProgramWorkflowStates, for the passed {@link PatientProgram} ordered by {@link ConceptName}
 	 * 
-	 * @param - patientProgram - The PatientProgram to check
+	 * @param patientProgram - The PatientProgram to check
 	 * @return List<ProgramWorkflowState> - all possible next ProgramWorkflowStates, for the passed
 	 *         {@link PatientProgram} ordered by {@link ConceptName}
 	 */

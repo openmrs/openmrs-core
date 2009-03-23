@@ -19,7 +19,7 @@ import org.springframework.validation.Validator;
 public class DrugOrderPatientFilterValidator implements Validator {
 	
 	@SuppressWarnings("unchecked")
-    public boolean supports(Class cls) {
+	public boolean supports(Class cls) {
 		return (cls.equals(DrugOrderPatientFilter.class));
 	}
 	

@@ -90,7 +90,7 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	 * @see org.openmrs.report.DataSetDefinition#getColumnDatatypes()
 	 */
 	@SuppressWarnings("unchecked")
-    public List<Class> getColumnDatatypes() {
+	public List<Class> getColumnDatatypes() {
 		//return (List<Class>) Collections.nCopies(strategies.size(), Cohort.class);
 		List<Class> ret = new ArrayList<Class>();
 		for (int i = strategies.size(); i > 0; --i)

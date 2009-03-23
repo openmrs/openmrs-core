@@ -122,9 +122,7 @@ public class ConceptComplex extends Concept implements Serializable {
 	}
 	
 	/**
-	 * Get the key to the ComplexObsHandler associated with this ConceptComplex.
-	 * 
-	 * @return
+	 * @return Returns the key to the ComplexObsHandler associated with this ConceptComplex.
 	 */
 	public String getHandler() {
 		return this.handler;

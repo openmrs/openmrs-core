@@ -149,18 +149,20 @@ public class User extends Person implements java.io.Serializable {
 	 * Check if this user has the given String role
 	 * 
 	 * @param r String name of a role to check
-	 * @return true/false if this user has the role
+	 * @return Returns true if this user has the specified role, false otherwise
 	 */
 	public boolean hasRole(String r) {
 		return hasRole(r, false);
 	}
 	
 	/**
-	 * Auto generated method comment
+	 * Checks if this user has the given String role
 	 * 
-	 * @param r
-	 * @param ignoreSuperUser
-	 * @return
+	 * @param r String name of a role to check
+	 * @param ignoreSuperUser If this is false, then this method will always return true for a
+	 *            superuser.
+	 * @return Returns true if the user has the given role, or if ignoreSuperUser is false and the
+	 *         user is a superUser
 	 */
 	public boolean hasRole(String r, boolean ignoreSuperUser) {
 		if (ignoreSuperUser == false) {
@@ -284,8 +286,8 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * Add the given Role to the list of roles for this User
 	 * 
-	 * @param roleservation
-	 * @return this user with the given role attached
+	 * @param role
+	 * @return Returns this user with the given role attached
 	 */
 	public User addRole(Role role) {
 		if (roles == null)
@@ -299,7 +301,7 @@ public class User extends Person implements java.io.Serializable {
 	/**
 	 * Remove the given Role from the list of roles for this User
 	 * 
-	 * @param roleservation
+	 * @param role
 	 * @return this user with the given role removed
 	 */
 	public User removeRole(Role role) {
@@ -395,7 +397,7 @@ public class User extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param properties The properties to set.
+	 * @param userProperties A Map<String,String> of the properties to set.
 	 */
 	public void setUserProperties(Map<String, String> userProperties) {
 		this.userProperties = userProperties;
@@ -440,7 +442,7 @@ public class User extends Person implements java.io.Serializable {
 	 * @param prop
 	 * @param defaultValue
 	 * @return property value
-	 * @see getUserProperty(java.lang.String)
+	 * @see #getUserProperty(java.lang.String)
 	 */
 	public String getUserProperty(String prop, String defaultValue) {
 		if (getUserProperties() != null && userProperties.containsKey(prop))

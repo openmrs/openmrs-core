@@ -399,7 +399,7 @@ public class Form implements java.io.Serializable {
 	/**
 	 * Adds a FormField to the list of form fields
 	 * 
-	 * @param FormField to be added
+	 * @param formField FormField to be added
 	 */
 	public void addFormField(FormField formField) {
 		if (formFields == null)
@@ -413,7 +413,7 @@ public class Form implements java.io.Serializable {
 	/**
 	 * Removes a FormField from the list of form fields
 	 * 
-	 * @param FormField formField to be removed
+	 * @param formField FormField to be removed
 	 */
 	public void removeFormField(FormField formField) {
 		if (formFields != null) {

@@ -162,7 +162,7 @@ public class Relationship implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param person The person to set.
+	 * @param personA The person to set.
 	 */
 	public void setPersonA(Person personA) {
 		this.personA = personA;
@@ -176,7 +176,7 @@ public class Relationship implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param relationship The relationship type to set.
+	 * @param type The relationship type to set.
 	 */
 	public void setRelationshipType(RelationshipType type) {
 		this.relationshipType = type;
@@ -212,7 +212,7 @@ public class Relationship implements java.io.Serializable {
 	
 	/**
 	 * @deprecated Use isVoided()
-	 * @see isVoided()
+	 * @see #isVoided()
 	 * @return Returns the voided.
 	 */
 	public Boolean getVoided() {

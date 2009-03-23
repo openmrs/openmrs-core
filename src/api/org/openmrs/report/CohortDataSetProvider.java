@@ -48,7 +48,7 @@ public class CohortDataSetProvider implements DataSetProvider {
 	 *      org.openmrs.Cohort)
 	 */
 	@SuppressWarnings("unchecked")
-    public DataSet evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {
+	public DataSet evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {
 		CohortDataSetDefinition def = (CohortDataSetDefinition) dataSetDefinition;
 		
 		CohortDataSet data = new CohortDataSet();

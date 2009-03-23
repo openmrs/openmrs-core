@@ -306,7 +306,7 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param personAddresses list of known addresses for person
+	 * @param addresses Set<PersonAddress> list of known addresses for person
 	 * @see org.openmrs.PersonAddress
 	 */
 	@ElementList(required = false)
@@ -377,7 +377,7 @@ public class Person implements java.io.Serializable {
 	 * <code>newAttribute.getAttributeType()</code> NOTE: This effectively limits persons to only
 	 * one attribute of any given type **
 	 * 
-	 * @param name
+	 * @param newAttribute PersonAttribute to add to the Person
 	 */
 	public void addAttribute(PersonAttribute newAttribute) {
 		newAttribute.setPerson(this);
@@ -438,7 +438,7 @@ public class Person implements java.io.Serializable {
 	 * Convenience Method Returns this person's first attribute that has a PersonAttributeType.name
 	 * equal to <code>attributeName</code>
 	 * 
-	 * @param attribute
+	 * @param attributeName
 	 */
 	public PersonAttribute getAttribute(String attributeName) {
 		if (attributeName != null)
@@ -453,10 +453,10 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Returns this person's first attribute that has a PersonAttributeType.id
+	 * Convenience Method Returns this person's first attribute that has a PersonAttributeTypeId
 	 * equal to <code>attributeTypeId</code>
 	 * 
-	 * @param attribute
+	 * @param attributeTypeId
 	 */
 	public PersonAttribute getAttribute(Integer attributeTypeId) {
 		for (PersonAttribute attribute : getActiveAttributes()) {
@@ -471,7 +471,7 @@ public class Person implements java.io.Serializable {
 	 * Convenience Method Returns all of this person's attributes that have a
 	 * PersonAttributeType.name equal to <code>attributeName</code>
 	 * 
-	 * @param attribute
+	 * @param attributeName
 	 */
 	public List<PersonAttribute> getAttributes(String attributeName) {
 		List<PersonAttribute> ret = new Vector<PersonAttribute>();
@@ -490,7 +490,7 @@ public class Person implements java.io.Serializable {
 	 * Convenience Method Returns all of this person's attributes that have a PersonAttributeType.id
 	 * equal to <code>attributeTypeId</code>
 	 * 
-	 * @param attribute
+	 * @param attributeTypeId
 	 */
 	public List<PersonAttribute> getAttributes(Integer attributeTypeId) {
 		List<PersonAttribute> ret = new Vector<PersonAttribute>();
@@ -508,7 +508,7 @@ public class Person implements java.io.Serializable {
 	 * Convenience Method Returns all of this person's attributes that have a PersonAttributeType
 	 * equal to <code>personAttributeType</code>
 	 * 
-	 * @param attribute
+	 * @param personAttributeType
 	 */
 	public List<PersonAttribute> getAttributes(PersonAttributeType personAttributeType) {
 		List<PersonAttribute> ret = new Vector<PersonAttribute>();
@@ -521,10 +521,9 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Returns all of this person's attributes in map form: <String,
-	 * PersonAttribute>
+	 * Convenience Method
 	 * 
-	 * @param attribute
+	 * @return Returns all of this person's attributes in map form: <String attribute name, PersonAttribute>
 	 */
 	public Map<String, PersonAttribute> getAttributeMap() {
 		if (attributeMap != null)
@@ -543,6 +542,8 @@ public class Person implements java.io.Serializable {
 	
 	/**
 	 * Convenience method for viewing all of the person's current attributes
+	 * 
+	 * @return Returns a string with all the attributes
 	 */
 	public String printAttributes() {
 		String s = "";
@@ -662,7 +663,7 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method To get the "preferred" address for person.
+	 * Convenience Method to get the "preferred" address for person.
 	 * 
 	 * @return Returns the "preferred" person address.
 	 */
@@ -677,7 +678,7 @@ public class Person implements java.io.Serializable {
 	/**
 	 * Convenience Method Calculates person's age based on the birthdate
 	 * 
-	 * @return integer age
+	 * @return Returns age as an Integer.
 	 */
 	public Integer getAge() {
 		return getAge(null);
@@ -688,7 +689,6 @@ public class Person implements java.io.Serializable {
 	 * 
 	 * @param onDate (null defaults to today)
 	 * @return int value of the person's age
-	 * 
 	 * @should get age before birthday
 	 * @should get age on birthday with no minutes defined
 	 * @should get age on birthday with minutes defined
@@ -729,7 +729,7 @@ public class Person implements java.io.Serializable {
 	 * 1 of the year that matches this age and date
 	 * 
 	 * @param age (the age to set)
-	 * @param onDate (null defaults to today)
+	 * @param ageOnDate (null defaults to today)
 	 */
 	public void setBirthdateFromAge(int age, Date ageOnDate) {
 		Calendar c = Calendar.getInstance();

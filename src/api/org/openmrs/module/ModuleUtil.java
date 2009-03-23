@@ -396,7 +396,6 @@ public class ModuleUtil {
 	 * 
 	 * @param URL
 	 * @return InputStream of contents
-	 * 
 	 * @should return a valid input stream for old module urls
 	 */
 	public static InputStream getURLStream(URL url) {
@@ -424,7 +423,6 @@ public class ModuleUtil {
 	 * 
 	 * @param URL
 	 * @return String contents of the URL
-	 * 
 	 * @should return an update rdf page for old https dev urls
 	 * @should return an update rdf page for old https module urls
 	 * @should return an update rdf page for module urls

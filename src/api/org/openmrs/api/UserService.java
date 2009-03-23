@@ -45,7 +45,7 @@ public interface UserService extends OpenmrsService {
 	 * @should create new user with basic elements
 	 * @should should create user who is patient already
 	 * @should update users username
-	 * @should grant new roles in roles list to user 
+	 * @should grant new roles in roles list to user
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_USERS, OpenmrsConstants.PRIV_EDIT_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })

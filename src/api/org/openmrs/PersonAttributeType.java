@@ -309,7 +309,7 @@ public class PersonAttributeType implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param retireReason the retiredReason to set
+	 * @param retiredReason the retiredReason to set
 	 */
 	public void setRetireReason(String retiredReason) {
 		this.retireReason = retiredReason;
@@ -325,7 +325,7 @@ public class PersonAttributeType implements java.io.Serializable {
 	/**
 	 * The privilege required in order to edit this attribute
 	 * 
-	 * @return
+	 * @return Returns the required privilege
 	 */
 	public Privilege getEditPrivilege() {
 		return editPrivilege;

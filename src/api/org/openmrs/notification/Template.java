@@ -40,7 +40,7 @@ public class Template implements Serializable {
 	
 	// Not persisted
 	@SuppressWarnings("unchecked")
-    private Map data;
+	private Map data;
 	
 	private String content;
 	
@@ -110,12 +110,12 @@ public class Template implements Serializable {
 	}
 	
 	@SuppressWarnings("unchecked")
-    public void setData(Map data) {
+	public void setData(Map data) {
 		this.data = data;
 	}
 	
 	@SuppressWarnings("unchecked")
-    public Map getData() {
+	public Map getData() {
 		return this.data;
 	}
 	

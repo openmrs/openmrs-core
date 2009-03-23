@@ -399,7 +399,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 	}
 	
 	@SuppressWarnings("unchecked")
-    private static boolean testCompositionList(List<Object> list) {
+	private static boolean testCompositionList(List<Object> list) {
 		// if length > 2, make sure there's at least one operator
 		// make sure NOT is always followed by something
 		// make sure not everything is a logical operator
