@@ -73,7 +73,6 @@ public class ConceptDescription implements java.io.Serializable {
 	
 	/**
 	 * @see java.lang.Object#equals(Object)
-	 * 
 	 * @should compare on id if its non null
 	 * @should not return true with different objects and null ids
 	 * @should default to object equality
@@ -198,7 +197,7 @@ public class ConceptDescription implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param creator The creator to set.
+	 * @param changedBy The user who changed this description
 	 */
 	@Element(required = false)
 	public void setChangedBy(User changedBy) {

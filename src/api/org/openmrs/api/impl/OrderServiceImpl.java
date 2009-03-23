@@ -65,7 +65,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public void setOrderDAO(OrderDAO dao) {
 		this.dao = dao;
 	}
-		
+	
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
@@ -87,7 +87,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
-    public void createOrder(Order order) throws APIException {
+	public void createOrder(Order order) throws APIException {
 		saveOrder(order);
 	}
 	
@@ -96,7 +96,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
-    public void updateOrder(Order order) throws APIException {
+	public void updateOrder(Order order) throws APIException {
 		saveOrder(order);
 	}
 	
@@ -105,7 +105,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
-    public void deleteOrder(Order order) throws APIException {
+	public void deleteOrder(Order order) throws APIException {
 		purgeOrder(order);
 	}
 	
@@ -205,7 +205,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
-    public void createOrderType(OrderType orderType) throws APIException {
+	public void createOrderType(OrderType orderType) throws APIException {
 		saveOrderType(orderType);
 	}
 	
@@ -214,7 +214,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
-    public void updateOrderType(OrderType orderType) throws APIException {
+	public void updateOrderType(OrderType orderType) throws APIException {
 		saveOrderType(orderType);
 	}
 	
@@ -223,7 +223,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
-    public void deleteOrderType(OrderType orderType) throws APIException {
+	public void deleteOrderType(OrderType orderType) throws APIException {
 		purgeOrderType(orderType);
 	}
 	
@@ -318,7 +318,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
-    public DrugOrder getDrugOrder(Integer drugOrderId) throws APIException {
+	public DrugOrder getDrugOrder(Integer drugOrderId) throws APIException {
 		return getOrder(drugOrderId, DrugOrder.class);
 	}
 	
@@ -333,7 +333,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated This is a dumb method
 	 */
 	@Deprecated
-    public List<Order> getOrders() throws APIException {
+	public List<Order> getOrders() throws APIException {
 		return getOrders(Order.class, null, null, null, null, null, null);
 	}
 	
@@ -341,7 +341,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated This is a dumb method
 	 */
 	@Deprecated
-    public List<DrugOrder> getDrugOrders() throws APIException {
+	public List<DrugOrder> getDrugOrders() throws APIException {
 		return getOrders(DrugOrder.class, null, null, null, null, null, null);
 	}
 	
@@ -409,7 +409,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
-    public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow) {
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow) {
 		return getDrugOrdersByPatient(patient, whatToShow, false);
 	}
 	
@@ -418,7 +418,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
-    public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow, boolean includeVoided) {
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow, boolean includeVoided) {
 		return getDrugOrdersByPatient(patient, convertToOrderStatus(whatToShow), includeVoided);
 	}
 	
@@ -476,7 +476,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
-    public List<OrderType> getOrderTypes() throws APIException {
+	public List<OrderType> getOrderTypes() throws APIException {
 		return getAllOrderTypes(true);
 	}
 	
@@ -539,7 +539,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated use {@link OrderUtil#getDrugSetsByConcepts(List, List)}
 	 */
 	@Deprecated
-    public Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
+	public Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
 	                                                                                                              throws APIException {
 		return OrderUtil.getDrugSetsByConcepts(drugOrders, drugSets);
 	}
@@ -550,7 +550,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated use {@link OrderUtil#getDrugSetsByDrugSetIdList(List, String, String)}
 	 */
 	@Deprecated
-    public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
+	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
 	                                                               String delimiter) {
 		return OrderUtil.getDrugSetsByDrugSetIdList(orderList, drugSetIdList, delimiter);
 	}
@@ -560,7 +560,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated use {@link OrderUtil#getDrugSetHeadersByDrugSetIdList(String)}
 	 */
 	@Deprecated
-    public Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds) {
+	public Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds) {
 		return OrderUtil.getDrugSetHeadersByDrugSetIdList(drugSetIds);
 	}
 	
@@ -570,7 +570,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated use {@link OrderUtil#discontinueDrugSet(Patient, String, Concept, Date)}
 	 */
 	@Deprecated
-    public void discontinueDrugSet(Patient patient, String drugSetId, Concept discontinueReason, Date discontinueDate) {
+	public void discontinueDrugSet(Patient patient, String drugSetId, Concept discontinueReason, Date discontinueDate) {
 		OrderUtil.discontinueDrugSet(patient, drugSetId, discontinueReason, discontinueDate);
 	}
 	
@@ -580,7 +580,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated use {@link OrderUtil#voidDrugSet(Patient, String, String, ORDER_STATUS)}
 	 */
 	@Deprecated
-    public void voidDrugSet(Patient patient, String drugSetId, String voidReason, int whatToVoid) {
+	public void voidDrugSet(Patient patient, String drugSetId, String voidReason, int whatToVoid) {
 		OrderUtil.voidDrugSet(patient, drugSetId, voidReason, convertToOrderStatus(whatToVoid));
 	}
 	
@@ -590,7 +590,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated use {@link OrderUtil#discontinueAllOrders(Patient, Concept, Date)}
 	 */
 	@Deprecated
-    public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
+	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
 		OrderUtil.discontinueAllOrders(patient, discontinueReason, discontinueDate);
 	}
 	

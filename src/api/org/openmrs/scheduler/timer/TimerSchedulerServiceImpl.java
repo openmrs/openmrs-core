@@ -169,9 +169,8 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	}
 	
 	/**
-	 * Get the {@link Timer} that is assigned to the given {@link TaskDefinition} 
-	 * object.  If a Timer doesn't exist yet, one is created, added to 
-	 * {@link #taskDefinitionTimerMap} and then returned
+	 * Get the {@link Timer} that is assigned to the given {@link TaskDefinition} object. If a Timer
+	 * doesn't exist yet, one is created, added to {@link #taskDefinitionTimerMap} and then returned
 	 * 
 	 * @param taskDefinition the {@link TaskDefinition} to look for
 	 * @return the {@link Timer} associated with the given {@link TaskDefinition}

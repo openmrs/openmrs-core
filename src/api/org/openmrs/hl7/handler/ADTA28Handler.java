@@ -218,7 +218,8 @@ public class ADTA28Handler implements Application {
 			if (assigningAuthority != null && assigningAuthority.length() > 0) {
 				
 				try {
-					PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierTypeByName(assigningAuthority);
+					PatientIdentifierType pit = Context.getPatientService().getPatientIdentifierTypeByName(
+					    assigningAuthority);
 					if (pit == null) {
 						log.warn("Can't find PatientIdentifierType named '" + assigningAuthority + "'");
 						continue; // skip identifiers with unknown type

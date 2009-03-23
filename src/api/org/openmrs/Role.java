@@ -124,7 +124,7 @@ public class Role implements java.io.Serializable {
 	/**
 	 * Removes the given Privilege from the list of privileges
 	 * 
-	 * @param privilegen Privilege to remove
+	 * @param privilege Privilege to remove
 	 */
 	public void removePrivilege(Privilege privilege) {
 		if (privileges != null)
@@ -175,14 +175,14 @@ public class Role implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the parentRoles.
+	 * @return Returns the inheritedRoles.
 	 */
 	public Set<Role> getInheritedRoles() {
 		return inheritedRoles;
 	}
 	
 	/**
-	 * @param parentRoles The parentRoles to set.
+	 * @param inheritedRoles The inheritedRoles to set.
 	 */
 	public void setInheritedRoles(Set<Role> inheritedRoles) {
 		this.inheritedRoles = inheritedRoles;

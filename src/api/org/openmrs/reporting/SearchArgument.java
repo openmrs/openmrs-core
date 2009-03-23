@@ -27,13 +27,13 @@ public class SearchArgument {
 	private String value;
 	
 	@SuppressWarnings("unchecked")
-    private Class propertyClass;
+	private Class propertyClass;
 	
 	public SearchArgument() {
 	}
 	
 	@SuppressWarnings("unchecked")
-    public SearchArgument(String name, String value, Class propertyClass) {
+	public SearchArgument(String name, String value, Class propertyClass) {
 		super();
 		this.name = name;
 		this.value = value;
@@ -65,13 +65,13 @@ public class SearchArgument {
 	}
 	
 	@SuppressWarnings("unchecked")
-    @Attribute(required = true)
+	@Attribute(required = true)
 	public Class getPropertyClass() {
 		return propertyClass;
 	}
 	
 	@SuppressWarnings("unchecked")
-    @Attribute(required = true)
+	@Attribute(required = true)
 	public void setPropertyClass(Class propertyClass) {
 		this.propertyClass = propertyClass;
 	}

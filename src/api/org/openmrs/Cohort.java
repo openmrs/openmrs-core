@@ -177,9 +177,7 @@ public class Cohort implements Serializable {
 	}
 	
 	/**
-	 * Auto generated method comment
-	 * 
-	 * @return
+	 * @return Returns a comma-separated list of patient ids in the cohort.
 	 */
 	public String getCommaSeparatedPatientIds() {
 		StringBuilder sb = new StringBuilder();

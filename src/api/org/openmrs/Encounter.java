@@ -262,7 +262,7 @@ public class Encounter implements java.io.Serializable {
 	 * Returns all Obs where Obs.encounterId = Encounter.encounterId In practice, this method should
 	 * not be used very often...
 	 * 
-	 * @param boolean includeVoided specifies whether or not to include voided Obs
+	 * @param includeVoided specifies whether or not to include voided Obs
 	 * @return Returns the all Obs.
 	 * @should not return null with null obs set
 	 * @should get obs
@@ -300,7 +300,7 @@ public class Encounter implements java.io.Serializable {
 	/**
 	 * Returns a Set<Obs> of all root-level Obs of an Encounter, including obsGroups
 	 * 
-	 * @param boolean includeVoided specifies whether or not to include voided Obs
+	 * @param includeVoided specifies whether or not to include voided Obs
 	 * @return Returns all obs at top level -- will not be null
 	 * @should not return null with null obs set
 	 * @should get obs
@@ -387,7 +387,7 @@ public class Encounter implements java.io.Serializable {
 	 * @param order
 	 * @should add order with null values
 	 * @should not fail with null obs passed to add order
-	 * @should set encounter attribute 
+	 * @should set encounter attribute
 	 * @should add order to non nul initial order set
 	 */
 	public void addOrder(Order order) {

@@ -139,7 +139,7 @@ public class RelationshipType implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param isToB the aIsToB to set
+	 * @param aisToB the aIsToB to set
 	 */
 	public void setaIsToB(String aisToB) {
 		aIsToB = aisToB;
@@ -182,7 +182,7 @@ public class RelationshipType implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param isToA the bIsToA to set
+	 * @param bisToA the bIsToA to set
 	 */
 	public void setbIsToA(String bisToA) {
 		bIsToA = bisToA;

@@ -224,7 +224,7 @@ public class Program implements java.io.Serializable {
 	/**
 	 * Get only the non-retired workflows
 	 * 
-	 * @return
+	 * @return Returns a Set<ProgramWorkflow> of all non-retired workflows
 	 */
 	public Set<ProgramWorkflow> getWorkflows() {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
@@ -242,7 +242,7 @@ public class Program implements java.io.Serializable {
 	/**
 	 * Get all workflows...including the retired ones
 	 * 
-	 * @return
+	 * @return Returns a Set<ProgramWorkflow> of all work flows
 	 */
 	public Set<ProgramWorkflow> getAllWorkflows() {
 		return workflows;

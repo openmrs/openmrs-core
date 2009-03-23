@@ -81,8 +81,8 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	/**
 	 * Constructor for creating a basic attribute
 	 * 
-	 * @param attributeType
-	 * @param value
+	 * @param type PersonAttributeType
+	 * @param value String
 	 */
 	public PersonAttribute(PersonAttributeType type, String value) {
 		this.attributeType = type;
@@ -102,8 +102,8 @@ public class PersonAttribute implements java.io.Serializable, Comparable<PersonA
 	 * The purpose of this method is to allow subclasses of PersonAttribute to delegate a portion of
 	 * their copy() method back to the superclass, in case the base class implementation changes.
 	 * 
-	 * @param ret a PersonAttribute that will have the state of <code>this</code> copied into it
-	 * @return the PersonAttribute that was passed in, with state copied into it
+	 * @param target a PersonAttribute that will have the state of <code>this</code> copied into it
+	 * @return Returns the PersonAttribute that was passed in, with state copied into it
 	 */
 	protected PersonAttribute copyHelper(PersonAttribute target) {
 		target.setPerson(getPerson());

@@ -466,8 +466,8 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	/**
 	 * Returns all childLocations where child.locationId = this.locationId.
 	 * 
-	 * @param boolean includeRetired specifies whether or not to include voided childLocations
-	 * @return Returns the all childLocations.
+	 * @param includeRetired specifies whether or not to include voided childLocations
+	 * @return Returns a Set<Location> of all the childLocations.
 	 * @since 1.5
 	 * @should return a set of locations
 	 */
@@ -642,7 +642,7 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	}
 	
 	/**
-	 * @param retiredBy the retiredBy to set
+	 * @param retired Boolean for whether this Location is retired.
 	 */
 	public void setRetired(Boolean retired) {
 		this.retired = retired;

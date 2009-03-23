@@ -32,8 +32,11 @@ import org.openmrs.util.Format;
 import org.openmrs.util.Format.FORMAT_TYPE;
 
 /**
- * Observation object. An observation is a single unit of information Observations are collected and
- * grouped together into one Encounter (one visit). Obs can be grouped in a hierarchical fashion.
+ * An observation is a single unit of clinical information. <br/>
+ * <br/>
+ * Observations are collected and grouped together into one Encounter (one visit). Obs can be
+ * grouped in a hierarchical fashion. <br/>
+ * <br/>
  * The {@link #getObsGroup()} method returns an optional parent. That parent object is also an Obs.
  * The parent Obs object knows about its child objects through the {@link #getGroupMembers()}
  * method. (Multi-level hierarchies are achieved by an Obs parent object being a member of another
@@ -60,7 +63,7 @@ public class Obs implements java.io.Serializable {
 	 * obsGroup.getConcept().isSet() should be true This will be non-null if this obs is a member of
 	 * another groupedObs
 	 * 
-	 * @see #isGroupMember()
+	 * @see #isObsGrouping() (??)
 	 */
 	protected Obs obsGroup;
 	
@@ -196,7 +199,7 @@ public class Obs implements java.io.Serializable {
 	 * <code>obs</code> object. If either has a null obsId, then they are not equal
 	 * 
 	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
+	 * @return boolean True if the obsIds match, false otherwise or if either obsId is null.
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Obs) {
@@ -760,9 +763,7 @@ public class Obs implements java.io.Serializable {
 	}
 	
 	/**
-	 * Returns true if this Obs is complex.
-	 * 
-	 * @return
+	 * @return Returns true if this Obs is complex.
 	 * @should return true if the concept is complex
 	 */
 	public boolean isComplex() {
@@ -820,7 +821,7 @@ public class Obs implements java.io.Serializable {
 	 * This will be null unless you call:
 	 * 
 	 * <pre>
-	 *   Obs obsWithComplexData = Context.getObsService().getComplexObs(obsId, OpenmrsConstants.RAW_VIEW);
+	 * 	Obs obsWithComplexData = Context.getObsService().getComplexObs(obsId, OpenmrsConstants.RAW_VIEW);
 	 * </pre>
 	 * 
 	 * @return the complex data for this obs (if its a complex obs)

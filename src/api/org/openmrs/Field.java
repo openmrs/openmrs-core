@@ -304,7 +304,7 @@ public class Field implements java.io.Serializable {
 	/**
 	 * Adds a field answer to the list of field answers
 	 * 
-	 * @param FieldAnswer to be added
+	 * @param fieldAnswer FieldAnswer to be added
 	 */
 	public void addAnswer(FieldAnswer fieldAnswer) {
 		if (fieldAnswers == null)
@@ -316,7 +316,7 @@ public class Field implements java.io.Serializable {
 	/**
 	 * Removes a field answer from the list of field answers
 	 * 
-	 * @param FieldAnswer to be removed
+	 * @param fieldAnswer FieldAnswer to be removed
 	 */
 	public void removeAnswer(FieldAnswer fieldAnswer) {
 		if (fieldAnswers != null) {

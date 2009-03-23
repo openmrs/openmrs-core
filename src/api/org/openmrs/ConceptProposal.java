@@ -186,7 +186,7 @@ public class ConceptProposal implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param text The final text to set.
+	 * @param t The final text to set.
 	 */
 	public void setFinalText(String t) {
 		this.finalText = t;

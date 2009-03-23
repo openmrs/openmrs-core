@@ -247,7 +247,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @see org.openmrs.api.CohortService#getCohortDefinition(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-    public CohortDefinition getCohortDefinition(String key) {
+	public CohortDefinition getCohortDefinition(String key) {
 		try {
 			
 			String[] keyValues = key.split(":");
@@ -336,7 +336,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @see org.openmrs.api.CohortService#getCohortDefinitions(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-    public List<CohortDefinitionItemHolder> getCohortDefinitions(Class providerClass) {
+	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class providerClass) {
 		CohortDefinitionProvider provider = getCohortDefinitionProvider(providerClass);
 		return provider.getAllCohortDefinitions();
 	}

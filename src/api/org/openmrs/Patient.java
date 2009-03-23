@@ -167,7 +167,9 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param patientIdentifiers update all known identifiers for patient
+	 * Update all identifiers for patient
+	 * 
+	 * @param identifiers Set<PatientIdentifier> to set as update all known identifiers for patient
 	 * @see org.openmrs.PatientIdentifier
 	 */
 	public void setIdentifiers(Set<PatientIdentifier> identifiers) {
@@ -175,7 +177,7 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Will add this PatientIdentifier if the patient doesn't contain it already
+	 * Adds this PatientIdentifier if the patient doesn't contain it already
 	 * 
 	 * @param patientIdentifier
 	 */
@@ -240,8 +242,8 @@ public class Patient extends Person implements java.io.Serializable {
 	 * <code>PatientIdentifierType</code> Otherwise, returns the first non-voided identifier
 	 * Otherwise, null
 	 * 
-	 * @param identifierType
-	 * @return
+	 * @param pit The PatientIdentifierType of which to return the PatientIdentifier
+	 * @return Returns a PatientIdentifier of the specified type.
 	 */
 	public PatientIdentifier getPatientIdentifier(PatientIdentifierType pit) {
 		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
@@ -325,7 +327,7 @@ public class Patient extends Person implements java.io.Serializable {
 	 * use {@link #getIdentifiers()}
 	 * 
 	 * @return list of non-voided identifiers for this patient
-	 * @param identifierType
+	 * @param pit PatientIdentifierType
 	 * @see #getIdentifiers()
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(PatientIdentifierType pit) {

@@ -212,7 +212,7 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	@SuppressWarnings("unchecked")
-    public static PatientSearch createFilterSearch(Class filterClass) {
+	public static PatientSearch createFilterSearch(Class filterClass) {
 		PatientSearch ps = new PatientSearch();
 		ps.setFilterClass(filterClass);
 		ps.setArguments(new ArrayList<SearchArgument>());
@@ -289,7 +289,7 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	@SuppressWarnings("unchecked")
-    private String compositionStringHelper(List list) {
+	private String compositionStringHelper(List list) {
 		StringBuilder ret = new StringBuilder();
 		for (Object o : list) {
 			if (ret.length() > 0)
@@ -338,7 +338,7 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	@SuppressWarnings("unchecked")
-    private List<Object> copyAndDetachHelper(List<Object> list, CohortSearchHistory history) {
+	private List<Object> copyAndDetachHelper(List<Object> list, CohortSearchHistory history) {
 		List<Object> ret = new ArrayList<Object>();
 		for (Object o : list) {
 			if (o instanceof PatientSearch) {
@@ -373,7 +373,7 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	@SuppressWarnings("unchecked")
-    private List<Object> cloneCompositionHelper(List<Object> list, CohortSearchHistory history, EvaluationContext evalContext) {
+	private List<Object> cloneCompositionHelper(List<Object> list, CohortSearchHistory history, EvaluationContext evalContext) {
 		List<Object> ret = new ArrayList<Object>();
 		for (Object o : list) {
 			if (o instanceof List)
@@ -427,7 +427,7 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	@SuppressWarnings("unchecked")
-    private boolean removeHelper(List<Object> list, int i) {
+	private boolean removeHelper(List<Object> list, int i) {
 		boolean ret = false;
 		for (ListIterator<Object> iter = list.listIterator(); iter.hasNext();) {
 			Object o = iter.next();
@@ -492,13 +492,13 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	@SuppressWarnings("unchecked")
-    @Attribute(required = false)
+	@Attribute(required = false)
 	public Class getFilterClass() {
 		return filterClass;
 	}
 	
 	@SuppressWarnings("unchecked")
-    @Attribute(required = false)
+	@Attribute(required = false)
 	public void setFilterClass(Class clazz) {
 		if (clazz != null && !PatientFilter.class.isAssignableFrom(clazz))
 			throw new IllegalArgumentException(clazz + " is not an org.openmrs.PatientFilter");
@@ -506,7 +506,7 @@ public class PatientSearch implements CohortDefinition {
 	}
 	
 	@SuppressWarnings("unchecked")
-    public void addArgument(String name, String value, Class clz) {
+	public void addArgument(String name, String value, Class clz) {
 		addArgument(new SearchArgument(name, value, clz));
 	}
 	

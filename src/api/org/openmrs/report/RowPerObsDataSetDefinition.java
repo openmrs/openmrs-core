@@ -59,7 +59,7 @@ public class RowPerObsDataSetDefinition implements DataSetDefinition {
 	 * @see org.openmrs.report.DataSetDefinition#getColumnDatatypes()
 	 */
 	@SuppressWarnings("unchecked")
-    public List<Class> getColumnDatatypes() {
+	public List<Class> getColumnDatatypes() {
 		Class[] ret = new Class[8];
 		ret[0] = Integer.class; // patientId
 		ret[1] = String.class; // question concept name

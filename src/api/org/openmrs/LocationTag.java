@@ -58,7 +58,7 @@ public class LocationTag implements java.io.Serializable {
 	 * Required values constructor. This is the minimum number of values that must be non-null in
 	 * order to have a successful save to the database
 	 * 
-	 * @param name the name of this encounter type
+	 * @param tag the name of this encounter type
 	 * @param description a short description of why this encounter type exists
 	 */
 	public LocationTag(String tag, String description) {
@@ -69,8 +69,8 @@ public class LocationTag implements java.io.Serializable {
 	/**
 	 * Compares two LocationTag objects for similarity
 	 * 
-	 * @param obj
-	 * @return boolean true/false whether or not they are the same objects
+	 * @param obj The LocationTag object to be compared.
+	 * @return Returns true if the objects share the same locationTagId, false otherwise.
 	 */
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof LocationTag))
@@ -158,7 +158,7 @@ public class LocationTag implements java.io.Serializable {
 	}
 	
 	/**
-	 * @param name The tag to set.
+	 * @param tag The tag to set.
 	 */
 	public void setTag(String tag) {
 		this.tag = tag;

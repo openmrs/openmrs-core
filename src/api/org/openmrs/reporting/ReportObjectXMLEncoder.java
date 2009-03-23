@@ -68,7 +68,7 @@ public class ReportObjectXMLEncoder {
 	}
 	
 	@SuppressWarnings("unchecked")
-    public String toXmlString() {
+	public String toXmlString() {
 		ByteArrayOutputStream arr = new ByteArrayOutputStream();
 		EnumDelegate enumDelegate = new EnumDelegate();
 		
@@ -138,7 +138,7 @@ public class ReportObjectXMLEncoder {
 	class EnumDelegate extends DefaultPersistenceDelegate {
 		
 		@SuppressWarnings("unchecked")
-        protected Expression instantiate(Object oldInstance, Encoder out) {
+		protected Expression instantiate(Object oldInstance, Encoder out) {
 			return new Expression(Enum.class, "valueOf",
 			        new Object[] { oldInstance.getClass(), ((Enum) oldInstance).name() });
 		}

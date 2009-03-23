@@ -406,7 +406,8 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * country is specified in the locale, then the language is considered to be only implied as
 	 * preferred &mdash; it will only get set if there is not an existing preferred language name.
 	 * If the country is not specified in the locale, then the language is considered an explicit
-	 * designation and the call is the equivalent of calling {@link #setPreferredNameInLanguage()}.
+	 * designation and the call is the equivalent of calling
+	 * {@link #setPreferredNameInLanguage(String language)}.
 	 * 
 	 * @param locale the locale for which to set the preferred name
 	 * @param preferredName name which is preferred in the locale
@@ -862,7 +863,8 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * &mdash; it will only get set if there is not an existing short language name. <br/>
 	 * <br/>
 	 * If the country is not specified in the locale, then the language is considered an explicit
-	 * designation and the call is the equivalent of calling {@link #setShortNameInLanguage()}.
+	 * designation and the call is the equivalent of calling {@link #getShortNameInLanguage(String)}
+	 * .
 	 * 
 	 * @param locale the locale for which to set the short name
 	 * @param shortName name which is preferred in the locale
@@ -1048,7 +1050,6 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * Finds the description of the concept using the current locale in Context.getLocale(). Returns
 	 * null if none found.
 	 * 
-	 * @param locale
 	 * @return ConceptDescription attributed to the Concept in the given locale
 	 */
 	public ConceptDescription getDescription() {
