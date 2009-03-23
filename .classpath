@@ -8,9 +8,11 @@
 	<classpathentry kind="lib" path="lib/antlr/antlr_2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/cglib/cglib-2.1_3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-1.7.0.jar"/>
-	<classpathentry kind="lib" path="lib/commons-collections/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections/commons-collections-3.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload/commons-fileupload-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j/slf4j-api-1.5.6.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j/slf4j-log4j12-1.5.6.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j/jcl-over-slf4j-1.5.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pool/commons-pool-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache/ehcache-1.2.4.jar" sourcepath="/openmrs-source/ehcache-1.2.4-src.zip"/>
@@ -22,20 +24,18 @@
 	<classpathentry kind="lib" path="lib/junit/hsqldb.jar" sourcepath="/openmrs-source/hsqldb_1_8_0_9.zip"/>
 	<classpathentry kind="lib" path="lib/junit/dbunit-2.2.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java/mysql-connector-java-5.1.7-bin.jar"/>
-	<classpathentry kind="lib" path="lib/asm/asm-attrs.jar"/>
+	<classpathentry kind="lib" path="lib/asm/asm-1.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-bean-collections-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-core-1.7.0.jar"/>
-	<classpathentry kind="lib" path="lib/commons-collections/commons-collections-testframework-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate/hibernate325-mod.jar" sourcepath="/openmrs-source/hibernate-3.2.5ga-lite.zip"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-request-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-response-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-taglibs/taglibs-standard-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/asm/asm.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat/jsp-api.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="lib" path="lib/tomcat/servlet-api.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
-	<classpathentry kind="lib" path="lib/tomcat/catalina.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
+	<classpathentry kind="lib" path="lib/tomcat/catalina.jar" sourcepath="/openmrs-source/apache-tomcat-6.0.14-src.zip"/>
 	<classpathentry kind="lib" path="lib/tomcat/naming-resources.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
-	<classpathentry kind="lib" path="lib/spring-framework/spring-2.5.1.jar" sourcepath="/openmrs-source/spring-2.5.1-src.zip"/>
+	<classpathentry kind="lib" path="lib/spring-framework/spring-2.5.6.jar" sourcepath="/openmrs-source/spring-2.5.1-src.zip"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-test.jar" sourcepath="/openmrs-source/spring-framework-2.5.1-with-dependencies.zip"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-webmvc.jar" sourcepath="/openmrs-source/spring-webmvc-sources.zip"/>
 	<classpathentry kind="lib" path="lib/mail/activation.jar"/>
@@ -45,7 +45,7 @@
 	<classpathentry kind="lib" path="lib/xerces/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xerces/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/neal-reporting/reports.jar"/>
-	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta-log4j/log4j-1.2.15.jar" sourcepath="/openmrs-source/apache-log4j-1.2.15.zip"/>
 	<classpathentry kind="lib" path="lib/c3p0/c3p0-0.9.1.jar" sourcepath="/openmrs-source/c3p0-0.9.1-pre9.zip"/>
 	<classpathentry kind="lib" path="lib/hl7api/hapi-0.5.jar" sourcepath="/openmrs-source/hapi-0.5_source_v25.zip"/>
 	<classpathentry kind="lib" path="lib/simple/simple-xml-1.6.1-mod.jar" sourcepath="/Simple-xml-stream-clean/src"/>
