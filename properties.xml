@@ -35,7 +35,6 @@
 		<fileset dir="${commons-beanutils.dir}" includes="*.jar" />
 		<fileset dir="${commons-collections.dir}" includes="*.jar" />
         <fileset dir="${commons-lang.dir}" includes="*.jar" />
-        <fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${database.dir}" includes="*.jar" />
 		<fileset dir="${dom4j.dir}" includes="*.jar" />
         <fileset dir="${hibernate.dir}" includes="*.jar" />
@@ -49,7 +48,6 @@
 		<fileset dir="${antlr.dir}" includes="*.jar" />
 		<fileset dir="${commons-io.dir}" includes="*.jar" />
     	<fileset dir="${commons-lang.dir}" includes="*.jar"/>
-		<fileset dir="${commons-logging.dir}" includes="*.jar" />
     	<fileset dir="${commons-collections.dir}" includes="*.jar" />
 		<fileset dir="${dom4j.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
@@ -59,6 +57,7 @@
 		<fileset dir="${log4j.dir}" includes="*.jar" />
 		<fileset dir="${mail.dir}" includes="*.jar" />
 		<!--<fileset dir="${quartz.dir}" includes="*.jar" />-->
+    	<fileset dir="${slf4j.dir}" includes="*.jar" />
     	<fileset dir="${simple.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
     	<fileset dir="${stax.dir}" includes="*.jar" />
@@ -80,7 +79,6 @@
     <path id="web.compile.classpath">
 		<pathelement location="${dist.dir}/openmrs-api-${openmrs.version}.jar" />
 		<fileset dir="${commons-io.dir}" includes="*.jar" />
-		<fileset dir="${commons-logging.dir}" includes="*.jar" />
 		<fileset dir="${commons-lang.dir}" includes="*.jar" />
 		<fileset dir="${commons-beanutils.dir}" includes="*.jar" />
 		<fileset dir="${commons-collections.dir}" includes="*.jar" />
@@ -92,6 +90,7 @@
 		<fileset dir="${log4j.dir}" includes="*.jar" />
 		<fileset dir="${neal-reporting.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />
+    	<fileset dir="${slf4j.dir}" includes="*.jar" />
     	<fileset dir="${simple.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
     	<fileset dir="${stax.dir}" includes="*.jar" />
