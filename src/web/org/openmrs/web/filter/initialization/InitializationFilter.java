@@ -68,7 +68,7 @@ import org.springframework.web.context.ContextLoader;
  */
 public class InitializationFilter implements Filter {
 	
-	protected static final Log log = LogFactory.getLog(InitializationFilter.class);
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	private static final String LIQUIBASE_SCHEMA_DATA = "liquibase-schema-only.xml";
 	
@@ -428,7 +428,7 @@ public class InitializationFilter implements Filter {
 				connectionUsername = wizardModel.databaseName + "_user";
 				if (connectionUsername.length() > 16)
 					connectionUsername = wizardModel.databaseName.substring(0, 11) + "_user"; // trim off enough to leave space for _user at the end
-				
+					
 				connectionPassword = "";
 				// generate random password from this subset of alphabet
 				// intentionally left out these characters: ufsb$() to prevent certain words forming randomly

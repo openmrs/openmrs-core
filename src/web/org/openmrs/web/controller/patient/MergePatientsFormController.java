@@ -100,11 +100,11 @@ public class MergePatientsFormController extends SimpleFormController {
 			try {
 				ps.mergePatients(preferred, notPreferred);
 			}
-			catch (APIException e)
-			{
+			catch (APIException e) {
 				log.error("Unable to merge patients", e);
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.merge.fail");
-				return new ModelAndView(new RedirectView(view + "?patientId=" + preferred.getPatientId() + "&patientId=" + notPreferred.getPatientId()));
+				return new ModelAndView(new RedirectView(view + "?patientId=" + preferred.getPatientId() + "&patientId="
+				        + notPreferred.getPatientId()));
 			}
 			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.merged");

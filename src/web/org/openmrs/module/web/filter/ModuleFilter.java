@@ -27,11 +27,11 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.web.WebModuleUtil;
 
 /**
- * This filter provides a mechanism for modules to plug-in their own custom filters.
- * It is started automatically, and will iterate through all filters that have been added through Modules.
+ * This filter provides a mechanism for modules to plug-in their own custom filters. It is started
+ * automatically, and will iterate through all filters that have been added through Modules.
  */
 public class ModuleFilter implements Filter {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
@@ -40,21 +40,22 @@ public class ModuleFilter implements Filter {
 	public void init(FilterConfig filterConfig) throws ServletException {
 		log.debug("Initializating ModuleFilter");
 	}
-		
+	
 	/**
 	 * @see javax.servlet.Filter#destroy()
 	 */
-	public void destroy() {	
+	public void destroy() {
 		log.debug("Destroying the ModuleFilter");
 	}
-
+	
 	/**
-	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+	                                                                                         ServletException {
 		ModuleFilterChain moduleChain = ModuleFilterChain.getInstance(WebModuleUtil.getFiltersForRequest(request), chain);
 		moduleChain.doFilter(request, response);
 	}
-
-
+	
 }

@@ -24,9 +24,10 @@ import org.openmrs.Encounter;
 import org.openmrs.Obs;
 
 /**
- * Functions used within taglibs in a webapp jsp page.
- * <br/><br/>
+ * Functions used within taglibs in a webapp jsp page. <br/>
+ * <br/>
  * Example:
+ * 
  * <pre>
  * &lt;c:forEach items="${openmrs:filterObsByConcept(observations, concept)}" var="o" end="0">
  *   ....

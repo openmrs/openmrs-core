@@ -30,7 +30,7 @@ public class UserValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-    public boolean supports(Class c) {
+	public boolean supports(Class c) {
 		return c.equals(User.class);
 	}
 	

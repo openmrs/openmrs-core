@@ -13,6 +13,7 @@
  */
 package org.openmrs.web;
 
+
 public class OptionsForm {
 	
 	private String defaultLocation = "";

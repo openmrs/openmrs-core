@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -139,7 +138,8 @@ public class PatientDashboardController extends SimpleFormController {
 		Concept reasonForExitConcept = Context.getConceptService().getConcept(
 		    Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
 		if (reasonForExitConcept != null) {
-			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient, reasonForExitConcept);
+			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient,
+			    reasonForExitConcept);
 			if (patientExitObs != null) {
 				log.debug("Exit obs is size " + patientExitObs.size());
 				if (patientExitObs.size() == 1) {

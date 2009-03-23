@@ -28,7 +28,7 @@ public class RequireNameValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-    public boolean supports(Class clz) {
+	public boolean supports(Class clz) {
 		try {
 			PropertyDescriptor pd = new PropertyDescriptor("name", clz);
 			if (pd.getReadMethod() == null)

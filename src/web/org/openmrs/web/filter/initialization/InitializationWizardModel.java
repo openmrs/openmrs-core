@@ -16,7 +16,6 @@ package org.openmrs.web.filter.initialization;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * The {@link InitializationFilter} uses this model object to hold all properties that are edited by
  * the user in the wizard. All attributes on this model object are added to all templates rendered
@@ -39,7 +38,6 @@ public class InitializationWizardModel {
 	 * Records errors that will be displayed to the user
 	 */
 	protected List<String> errors = new ArrayList<String>();
-
 	
 	/**
 	 * Whether the runtime properties file could possible be created. (only read by the velocity
@@ -125,12 +123,12 @@ public class InitializationWizardModel {
 	 * tables or not
 	 */
 	protected Boolean createTables = Boolean.FALSE;
-
+	
 	/**
 	 * if the user asked us to create the user for openmrs
 	 */
 	protected Boolean createDatabaseUser = Boolean.FALSE;
-
+	
 	/**
 	 * Does the user want to add the demo data to the database?
 	 */
@@ -152,7 +150,7 @@ public class InitializationWizardModel {
 	 * Password for the admin user if the database was created now
 	 */
 	protected String adminUserPassword = "";
-
+	
 	/**
 	 * Implementation name.
 	 */

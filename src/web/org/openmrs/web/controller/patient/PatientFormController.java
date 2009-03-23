@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -415,7 +414,8 @@ public class PatientFormController extends PersonFormController {
 					Concept causeOfDeath = Context.getConceptService().getConcept(causeOfDeathConceptId);
 					
 					if (causeOfDeath != null) {
-						List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, causeOfDeath);
+						List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient,
+						    causeOfDeath);
 						if (obssDeath != null) {
 							if (obssDeath.size() > 1) {
 								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
@@ -597,7 +597,8 @@ public class PatientFormController extends PersonFormController {
 		    Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
 		
 		if (reasonForExitConcept != null && patient.getPatientId() != null) {
-			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient, reasonForExitConcept);
+			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient,
+			    reasonForExitConcept);
 			if (patientExitObs != null && patientExitObs.size() > 0) {
 				log.debug("Exit obs is size " + patientExitObs.size());
 				if (patientExitObs.size() == 1) {

@@ -70,7 +70,7 @@ public class RoleFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	@SuppressWarnings("unchecked")
-    protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                             BindException errors) throws Exception {
 		
 		Role role = (Role) obj;

@@ -31,7 +31,7 @@ public class ReportObjectValidator implements Validator {
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
-    public boolean supports(Class c) {
+	public boolean supports(Class c) {
 		//String clsName = c.getName();
 		// could also check if superclass is an AbstractReportObject
 		return c.getSuperclass().equals(AbstractReportObject.class);

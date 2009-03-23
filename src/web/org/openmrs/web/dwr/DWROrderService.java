@@ -71,7 +71,7 @@ public class DWROrderService {
 		drugOrder.setUnits(units);
 		drugOrder.setFrequency(frequency);
 		drugOrder.setInstructions(instructions);
-
+		
 		Date dStartDate = null;
 		if (startDate != null) {
 			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();

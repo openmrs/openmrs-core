@@ -99,6 +99,7 @@ public class PortletController implements Controller {
      *          (Map<Integer, Concept>) conceptMap
      *          (Map<String, Concept>) conceptMapByStringIds
 	 * </pre>
+	 * 
 	 * @should calculate bmi into patientBmiAsString
 	 * @should not fail with empty height and weight properties
 	 */
@@ -187,11 +188,13 @@ public class PortletController implements Controller {
 								String weightString = as.getGlobalProperty("concept.weight");
 								ConceptNumeric weightConcept = null;
 								if (StringUtils.hasLength(weightString))
-									weightConcept = cs.getConceptNumeric(cs.getConcept(Integer.valueOf(weightString)).getConceptId());
+									weightConcept = cs.getConceptNumeric(cs.getConcept(Integer.valueOf(weightString))
+									        .getConceptId());
 								String heightString = as.getGlobalProperty("concept.height");
 								ConceptNumeric heightConcept = null;
 								if (StringUtils.hasLength(heightString))
-									heightConcept = cs.getConceptNumeric(cs.getConcept(Integer.valueOf(heightString)).getConceptId());
+									heightConcept = cs.getConceptNumeric(cs.getConcept(Integer.valueOf(heightString))
+									        .getConceptId());
 								for (Obs obs : patientObs) {
 									if (obs.getConcept().equals(weightConcept)) {
 										if (latestWeight == null

@@ -99,7 +99,7 @@ public class QuickReportServlet extends HttpServlet {
 		
 	}
 	
-    private void doReturnVisitDate(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request)
+	private void doReturnVisitDate(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request)
 	                                                                                                               throws ServletException {
 		ObsService os = Context.getObsService();
 		EncounterService es = Context.getEncounterService();

@@ -31,9 +31,7 @@ import org.openmrs.web.WebConstants;
 
 /**
  * Retrieves the matching global properties, and if any are missing, redirects to configuration
- * page.
- * 
- * This tag should be placed before the header import tag.
+ * page. This tag should be placed before the header import tag.
  */
 public class RequireConfigurationByPrefixTag extends TagSupport {
 	

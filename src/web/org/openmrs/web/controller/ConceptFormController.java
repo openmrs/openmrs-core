@@ -132,7 +132,6 @@ public class ConceptFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
-	 *      
 	 * @should display numeric values from table
 	 * @should copy numeric values into numeric concepts
 	 */

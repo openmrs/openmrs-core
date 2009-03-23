@@ -71,12 +71,14 @@ public class ConceptFormValidator implements Validator {
 				for (int x = 0; x < backingObject.getSynonymsByLocale().get(locale).size(); x++) {
 					ConceptName synonym = backingObject.getSynonymsByLocale().get(locale).get(x);
 					if (synonym.isVoided() && !StringUtils.hasLength(synonym.getVoidReason())) {
-						errors.rejectValue("synonymsByLocale[" + locale + "][" + x + "].voidReason", "Concept.synonyms.voidReasonRequired");
+						errors.rejectValue("synonymsByLocale[" + locale + "][" + x + "].voidReason",
+						    "Concept.synonyms.voidReasonRequired");
 					}
 					
 					// validate that synonym names are non-empty (null name means it was invalid and then removed)
 					if (synonym.getName() != null && synonym.getName().length() == 0) {
-						errors.rejectValue("synonymsByLocale[" + locale + "][" + x + "].name", "Concept.synonyms.textRequired");
+						errors.rejectValue("synonymsByLocale[" + locale + "][" + x + "].name",
+						    "Concept.synonyms.textRequired");
 					}
 				}
 				
@@ -88,9 +90,9 @@ public class ConceptFormValidator implements Validator {
 			}
 			
 			if (foundAtLeastOnePreferredName == false) {
-				errors.rejectValue("namesByLocale[" + backingObject.getLocales().get(0) + "].name", "Concept.name.atLeastOneRequired");
+				errors.rejectValue("namesByLocale[" + backingObject.getLocales().get(0) + "].name",
+				    "Concept.name.atLeastOneRequired");
 			}
-			
 			
 		}
 	}

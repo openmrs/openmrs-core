@@ -13,6 +13,7 @@
  */
 package org.openmrs.web;
 
+
 public class WebConstants {
 	
 	public static final String INIT_REQ_UNIQUE_ID = "__INIT_REQ_UNIQUE_ID__";

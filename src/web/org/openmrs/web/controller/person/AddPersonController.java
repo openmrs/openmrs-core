@@ -208,10 +208,11 @@ public class AddPersonController extends SimpleFormController {
 	 * @param request
 	 * @return url string
 	 * @throws ServletException
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException
 	 */
 	private String getPersonURL(String personId, String personType, String viewType, HttpServletRequest request)
-	                                                                                                            throws ServletException, UnsupportedEncodingException {
+	                                                                                                            throws ServletException,
+	                                                                                                            UnsupportedEncodingException {
 		if ("patient".equals(personType)) {
 			if ("edit".equals(viewType))
 				return request.getContextPath() + PATIENT_EDIT_URL + getParametersForURL(personId, personType);
@@ -231,11 +232,12 @@ public class AddPersonController extends SimpleFormController {
 	 * @param personId
 	 * @param personType
 	 * @return
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException
 	 */
 	private String getParametersForURL(String personId, String personType) throws UnsupportedEncodingException {
 		if ("".equals(personId))
-			return "?addName=" + URLEncoder.encode(name, "UTF-8") + "&addBirthdate=" + birthdate + "&addAge=" + age + "&addGender=" + gender;
+			return "?addName=" + URLEncoder.encode(name, "UTF-8") + "&addBirthdate=" + birthdate + "&addAge=" + age
+			        + "&addGender=" + gender;
 		else {
 			if ("patient".equals(personType))
 				return "?patientId=" + personId;
