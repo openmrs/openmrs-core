@@ -341,7 +341,6 @@
 			<lib dir="${commons-fileupload.dir}" includes="*.jar" />
 			<lib dir="${commons-io.dir}" includes="*.jar" />
 			<lib dir="${commons-lang.dir}" includes="*.jar" />
-			<lib dir="${commons-logging.dir}" includes="*.jar" excludes="*api*.jar" />
 			<lib dir="${database.dir}" includes="*.jar" />
 			<lib dir="${dom4j.dir}" includes="*.jar" />
 			<lib dir="${dwr.dir}" includes="*.jar" />
@@ -352,6 +351,7 @@
 			<lib dir="${jstl.dir}" includes="*.jar" />
 			<lib dir="${jta.dir}" includes="*.jar" />
 			<lib dir="${log4j.dir}" includes="*.jar" />
+			<lib dir="${slf4j.dir}" includes="*.jar" />
 			<lib dir="${mail.dir}" includes="*.jar" />
 			<lib dir="${neal-reporting.dir}" includes="*.jar" />
 			<lib dir="${saxon.dir}" includes="*.jar" />
