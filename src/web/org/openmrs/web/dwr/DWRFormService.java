@@ -64,9 +64,8 @@ public class DWRFormService {
 	}
 	
 	/**
-	 * Gets a list of FormListItems that correspond to forms.  If 
-	 * includueUnpublished is true, all forms are returned.  If false,
-	 * only published forms are returned.
+	 * Gets a list of FormListItems that correspond to forms. If includueUnpublished is true, all
+	 * forms are returned. If false, only published forms are returned.
 	 * 
 	 * @param includeUnpublished true/false to include unpublished forms
 	 * @return list of {@link FormListItem}s
@@ -74,8 +73,8 @@ public class DWRFormService {
 	public List<FormListItem> getForms(boolean includeUnpublished) {
 		List<FormListItem> formListItems = new Vector<FormListItem>();
 		
-		List<Form> forms = includeUnpublished ? Context.getFormService().getAllForms(false)
-				: Context.getFormService().getPublishedForms(); 
+		List<Form> forms = includeUnpublished ? Context.getFormService().getAllForms(false) : Context.getFormService()
+		        .getPublishedForms();
 		
 		for (Form form : forms) {
 			formListItems.add(new FormListItem(form));

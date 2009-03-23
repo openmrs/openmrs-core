@@ -24,7 +24,8 @@ import org.openmrs.api.context.Context;
 public class PersonRelationshipsPortletController extends PortletController {
 	
 	/**
-	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest, java.util.Map)
+	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest,
+	 *      java.util.Map)
 	 */
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		List<RelationshipType> relationshipTypes = Context.getPersonService().getAllRelationshipTypes();

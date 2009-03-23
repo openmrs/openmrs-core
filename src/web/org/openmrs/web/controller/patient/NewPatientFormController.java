@@ -193,8 +193,8 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
 			
-			if(shortPatient.getBirthdate() == null) {
-				Object[] args = {"Birthdate"};
+			if (shortPatient.getBirthdate() == null) {
+				Object[] args = { "Birthdate" };
 				errors.rejectValue("birthdate", "error.required", args, "");
 			} else {
 				// check patients birthdate against future dates and really old dates

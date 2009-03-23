@@ -23,9 +23,10 @@ import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
 
 /**
- * Functions used within taglibs in a webapp jsp page.
- * <br/><br/>
+ * Functions used within taglibs in a webapp jsp page. <br/>
+ * <br/>
  * Example:
+ * 
  * <pre>
  * &lt;c:forEach items="${openmrs:sort(someListObject)}" var="o" end="0">
  *   ....

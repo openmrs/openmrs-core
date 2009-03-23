@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.taglib.fieldgen;
 
+
 public class DateHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 	
 	private String defaultUrl = "date.field";

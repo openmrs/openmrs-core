@@ -24,26 +24,24 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 /**
- * This class is an implementation of FilterChain for use
- * in using Filters defined within Modules.  It enables the Module
- * system to iterate through all of the defined Filters before
- * continuing down the initial filter chain.
+ * This class is an implementation of FilterChain for use in using Filters defined within Modules.
+ * It enables the Module system to iterate through all of the defined Filters before continuing down
+ * the initial filter chain.
  */
 public class ModuleFilterChain implements FilterChain {
 	
 	// Properties
 	private Iterator<Filter> filterIterator;
+	
 	private FilterChain initialFilterChain;
-
+	
 	/**
 	 * Private constructor which sets all required properties
 	 * 
-	 * @param filters:
-	 * The Collection of {@link Filter}s that this FilterChain will iterate over
-	 * before returning control back the the <code>initialFilterChain</code>
-	 * 
-	 * @param initialFilterChain:
-	 * The {@link FilterChain} to return control to once all of the {@link Filter}s have been executed
+	 * @param filters: The Collection of {@link Filter}s that this FilterChain will iterate over
+	 *            before returning control back the the <code>initialFilterChain</code>
+	 * @param initialFilterChain: The {@link FilterChain} to return control to once all of the
+	 *            {@link Filter}s have been executed
 	 */
 	private ModuleFilterChain(Collection<Filter> filters, FilterChain initialFilterChain) {
 		this.filterIterator = filters.iterator();
@@ -53,13 +51,10 @@ public class ModuleFilterChain implements FilterChain {
 	/**
 	 * Factory method to construct and return a ModuleFilterChain
 	 * 
-	 * @param filters:
-	 * The Collection of {@link Filter}s that this FilterChain will iterate over
-	 * before returning control back the the <code>initialFilterChain</code>
-	 * 
-	 * @param initialFilterChain:
-	 * The {@link FilterChain} to return control to once all of the {@link Filter}s have been executed
-	 * 
+	 * @param filters: The Collection of {@link Filter}s that this FilterChain will iterate over
+	 *            before returning control back the the <code>initialFilterChain</code>
+	 * @param initialFilterChain: The {@link FilterChain} to return control to once all of the
+	 *            {@link Filter}s have been executed
 	 * @return The ModuleFilterChain that is fully initialized with the passed parameters
 	 */
 	public static ModuleFilterChain getInstance(Collection<Filter> filters, FilterChain initialFilterChain) {
@@ -67,17 +62,17 @@ public class ModuleFilterChain implements FilterChain {
 	}
 	
 	/**
-	 * This Iterates across all of the Filters defined by modules before handing control
-	 * back over to the initial filter chain to continue on.
+	 * This Iterates across all of the Filters defined by modules before handing control back over
+	 * to the initial filter chain to continue on.
 	 * 
-	 * @see javax.servlet.FilterChain#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
+	 * @see javax.servlet.FilterChain#doFilter(javax.servlet.ServletRequest,
+	 *      javax.servlet.ServletResponse)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response) throws ServletException, IOException {
 		if (filterIterator.hasNext()) {
 			Filter f = filterIterator.next();
 			f.doFilter(request, response, this);
-		}
-		else {
+		} else {
 			initialFilterChain.doFilter(request, response);
 		}
 	}

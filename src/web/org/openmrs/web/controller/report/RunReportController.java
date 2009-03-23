@@ -99,7 +99,7 @@ public class RunReportController extends SimpleFormController implements Validat
 	}
 	
 	@SuppressWarnings("unchecked")
-    public boolean supports(Class c) {
+	public boolean supports(Class c) {
 		return c == CommandObject.class;
 	}
 	

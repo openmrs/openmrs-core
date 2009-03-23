@@ -286,16 +286,16 @@ public abstract class LayoutTemplate {
 	}
 	
 	public abstract LayoutSupport<?> getLayoutSupportInstance();
-
-	public List<String> nonUniqueStringsGoLast(List<String> strList){
+	
+	public List<String> nonUniqueStringsGoLast(List<String> strList) {
 		List<String> dup = new ArrayList<String>();
-			for (String s: strList){
-				for (String sInner: strList){
-					if (sInner.indexOf(s) != -1 && s.length() < sInner.length() && !dup.contains(s))
-						dup.add(s);
-				}
+		for (String s : strList) {
+			for (String sInner : strList) {
+				if (sInner.indexOf(s) != -1 && s.length() < sInner.length() && !dup.contains(s))
+					dup.add(s);
 			}
-		if (dup.size() > 1)	
+		}
+		if (dup.size() > 1)
 			dup = nonUniqueStringsGoLast(dup);
 		strList.removeAll(dup);
 		strList.addAll(dup);
