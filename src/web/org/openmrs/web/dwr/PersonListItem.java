@@ -80,6 +80,7 @@ public class PersonListItem {
 	 * attributes are pulled off of the Person object and copied to this PersonListItem
 	 * 
 	 * @param person the Person to turn into a PersonListItem
+	 * @should put attribute toString value into attributes map
 	 */
 	public PersonListItem(Person person) {
 		
@@ -108,9 +109,7 @@ public class PersonListItem {
 			
 			// add in the person attributes
 			for (PersonAttribute attribute : person.getActiveAttributes()) {
-				Object object = attribute.getHydratedObject();
-				if (object != null)
-					attributes.put(attribute.getAttributeType().getName(), object.toString());
+				attributes.put(attribute.getAttributeType().getName(), attribute.toString());
 			}
 			
 		}
