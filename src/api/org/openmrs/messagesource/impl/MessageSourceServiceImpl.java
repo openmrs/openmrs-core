@@ -38,7 +38,7 @@ import org.springframework.context.NoSuchMessageException;
  */
 public class MessageSourceServiceImpl implements MessageSourceService {
 	
-	private static Log log = LogFactory.getLog(MessageSourceServiceImpl.class);
+	private Log log = LogFactory.getLog(getClass());
 	
 	private Set<MutableMessageSource> availableMessageSources = new HashSet<MutableMessageSource>();
 	

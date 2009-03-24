@@ -82,6 +82,16 @@ public class ReportServiceImpl implements ReportService {
 	}
 	
 	/**
+	 * Clean up after this class.  Set the static var to null so that the
+	 * classloader can reclaim the space. 
+	 * 
+	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
+	 */
+	public void onShutdown() {
+		renderers = null;
+	}
+	
+	/**
 	 * @see org.openmrs.api.ReportService#deleteReportSchema(org.openmrs.report.ReportSchema)
 	 */
 	public void deleteReportSchema(ReportSchema reportSchema) {

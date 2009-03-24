@@ -20,7 +20,10 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.sql.Driver;
+import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +36,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.LogManager;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
@@ -57,8 +61,6 @@ import org.xml.sax.SAXException;
  */
 public final class Listener extends ContextLoaderListener {
 	
-	private static final Log log = LogFactory.getLog(Listener.class);
-	
 	private static boolean runtimePropertiesFound = false;
 	
 	/**
@@ -79,6 +81,8 @@ public final class Listener extends ContextLoaderListener {
 	 * @param event
 	 */
 	public void contextInitialized(ServletContextEvent event) {
+		Log log = LogFactory.getLog(Listener.class);
+		
 		log.debug("Starting the OpenMRS webapp");
 		
 		try {
@@ -110,19 +114,27 @@ public final class Listener extends ContextLoaderListener {
 				// Do the parent spring setup (but don't start spring and its servlets until accessed) 
 				super.contextInitialized(event);
 				
-				// Do the normal OpenMRS API startup now
-				Context.startup(props);
-				
-				// TODO catch an input required exception here and deal with it with the user
-				
-				// Load the core modules from the webapp coreModules folder
-				loadCoreModules(servletContext);
-				
-				// do the web specific starting of the modules
-				performWebStartOfModules(servletContext);
-				
-				// start the scheduled tasks
-				SchedulerUtil.startup(props);
+				try {
+					Context.openSession();
+					
+					// Do the normal OpenMRS API startup now
+					Context.startup(props);
+					
+					// TODO catch an input required exception here and deal with it with the user
+					
+					// Load the core modules from the webapp coreModules folder
+					loadCoreModules(servletContext);
+					
+					// do the web specific starting of the modules
+					performWebStartOfModules(servletContext);
+					
+					// start the scheduled tasks
+					SchedulerUtil.startup(props);
+				}
+				finally {
+					// remove the user context that we set earlier
+					Context.closeSession();
+				}
 			}
 		}
 		catch (DatabaseUpdateException updateException) {
@@ -180,6 +192,8 @@ public final class Listener extends ContextLoaderListener {
 	 * @param servletContext
 	 */
 	private void clearDWRFile(ServletContext servletContext) {
+		Log log = LogFactory.getLog(Listener.class);
+		
 		String realPath = servletContext.getRealPath("");
 		String absPath = realPath + "/WEB-INF/dwr-modules.xml";
 		File dwrFile = new File(absPath.replace("/", File.separator));
@@ -207,11 +221,13 @@ public final class Listener extends ContextLoaderListener {
 				dwrFile.delete();
 				try {
 					FileWriter writer = new FileWriter(dwrFile);
-					writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
+					writer
+					        .write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
 					writer.close();
 				}
 				catch (IOException io) {
-					log.error("Unable to clear out the " + dwrFile.getAbsolutePath() + " file.  Please redeploy the openmrs war file", io);
+					log.error("Unable to clear out the " + dwrFile.getAbsolutePath()
+					        + " file.  Please redeploy the openmrs war file", io);
 				}
 				
 			}
@@ -224,6 +240,8 @@ public final class Listener extends ContextLoaderListener {
 	 * @param servletContext
 	 */
 	private void copyCustomizationIntoWebapp(ServletContext servletContext, Properties props) {
+		Log log = LogFactory.getLog(Listener.class);
+		
 		String realPath = servletContext.getRealPath("");
 		// TODO centralize map to WebConstants?
 		Map<String, String> custom = new HashMap<String, String>();
@@ -285,6 +303,8 @@ public final class Listener extends ContextLoaderListener {
 	 * @return true/false whether the copy was a success
 	 */
 	private boolean copyFile(String fromPath, String toPath) {
+		Log log = LogFactory.getLog(Listener.class);
+		
 		FileInputStream inputStream = null;
 		FileOutputStream outputStream = null;
 		try {
@@ -321,6 +341,8 @@ public final class Listener extends ContextLoaderListener {
 	 * @param servletContext
 	 */
 	public static void loadCoreModules(ServletContext servletContext) {
+		Log log = LogFactory.getLog(Listener.class);
+		
 		String path = servletContext.getRealPath("");
 		path += File.separator + "WEB-INF" + File.separator + "coreModules";
 		File folder = new File(path);
@@ -357,16 +379,50 @@ public final class Listener extends ContextLoaderListener {
 	public void contextDestroyed(ServletContextEvent event) {
 		
 		try {
+			Context.openSession();
+			
 			Context.shutdown();
 			
 			WebModuleUtil.shutdownModules(event.getServletContext());
+			
 		}
 		catch (Throwable t) {
-			log.warn("Error while shutting down openmrs", t);
+			// not using log.error here so it can be garbage collected 
+			System.out.println("Listener.contextDestroyed: Error while shutting down openmrs");
+			t.printStackTrace();
+		}
+		finally {
+			// remove the user context that we set earlier
+			Context.closeSession();
 		}
 		
 		super.contextDestroyed(event);
 		
+		try {
+			for (Enumeration<Driver> e = DriverManager.getDrivers(); e.hasMoreElements();) {
+				Driver driver = e.nextElement();
+				ClassLoader classLoader = driver.getClass().getClassLoader();
+				// only unload drivers for this webapp
+				if (classLoader == null || classLoader == getClass().getClassLoader()) {
+					DriverManager.deregisterDriver(driver);
+				} else {
+					System.err.println("Didn't remove driver class: " + driver.getClass() + " with classloader of: "
+					        + driver.getClass().getClassLoader());
+				}
+			}
+		}
+		catch (Throwable e) {
+			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
+			e.printStackTrace();
+		}
+
+		OpenmrsClassLoader.onShutdown();
+		
+		LogManager.shutdown();
+		
+		// just to make things nice and clean.
+		System.gc();
+		System.gc();
 	}
 	
 	/**
@@ -452,6 +508,8 @@ public final class Listener extends ContextLoaderListener {
 	 * @param servletContext
 	 */
 	public static void performWebStartOfModules(ServletContext servletContext) {
+		Log log = LogFactory.getLog(Listener.class);
+		
 		List<Module> startedModules = new ArrayList<Module>();
 		startedModules.addAll(ModuleFactory.getStartedModules());
 		boolean someModuleNeedsARefresh = false;

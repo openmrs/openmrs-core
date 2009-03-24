@@ -129,11 +129,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 	private void insertRowIntoSubclassIfNecessary(Concept concept) {
 		Connection connection = sessionFactory.getCurrentSession().connection();
 		
+		PreparedStatement ps = null;
+		PreparedStatement ps2 = null;
+		
 		// check the concept_numeric table
 		if (concept instanceof ConceptNumeric) {
 			
 			try {
-				PreparedStatement ps = connection
+				ps = connection
 				        .prepareStatement("SELECT * FROM concept WHERE concept_id = ? and not exists (select * from concept_numeric WHERE concept_id = ?)");
 				ps.setInt(1, concept.getConceptId());
 				ps.setInt(2, concept.getConceptId());
@@ -146,9 +149,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 					// (must be done before the "insert into...")
 					sessionFactory.getCurrentSession().clear();
 					
-					ps = connection.prepareStatement("INSERT INTO concept_numeric (concept_id, precise) VALUES (?, false)");
-					ps.setInt(1, concept.getConceptId());
-					ps.executeUpdate();
+					ps2 = connection.prepareStatement("INSERT INTO concept_numeric (concept_id, precise) VALUES (?, false)");
+					ps2.setInt(1, concept.getConceptId());
+					ps2.executeUpdate();
 				} else {
 					// no stub insert is needed because either a concept row 
 					// doesn't exist or a concept_numeric row does exist
@@ -158,10 +161,28 @@ public class HibernateConceptDAO implements ConceptDAO {
 			catch (SQLException e) {
 				log.error("Error while trying to see if this ConceptNumeric is in the concept_numeric table already", e);
 			}
+			finally {
+				if (ps != null) {
+					try {
+						ps.close();
+					}
+					catch (SQLException e) {
+						log.error("Error generated while closing statement", e);
+					}
+				}
+				if (ps2 != null) {
+					try {
+						ps2.close();
+					}
+					catch (SQLException e) {
+						log.error("Error generated while closing statement", e);
+					}
+				}
+			}
 		} else if (concept instanceof ConceptComplex) {
 			
 			try {
-				PreparedStatement ps = connection
+				ps = connection
 				        .prepareStatement("SELECT * FROM concept WHERE concept_id = ? and not exists (select * from concept_complex WHERE concept_id = ?)");
 				ps.setInt(1, concept.getConceptId());
 				ps.setInt(2, concept.getConceptId());
@@ -174,9 +195,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 					// (must be done before the "insert into...")
 					sessionFactory.getCurrentSession().clear();
 					
-					ps = connection.prepareStatement("INSERT INTO concept_complex (concept_id, precise) VALUES (?, false)");
-					ps.setInt(1, concept.getConceptId());
-					ps.executeUpdate();
+					ps2 = connection.prepareStatement("INSERT INTO concept_complex (concept_id, precise) VALUES (?, false)");
+					ps2.setInt(1, concept.getConceptId());
+					ps2.executeUpdate();
 				} else {
 					// no stub insert is needed because either a concept row 
 					// doesn't exist or a concept_numeric row does exist
@@ -185,6 +206,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 			}
 			catch (SQLException e) {
 				log.error("Error while trying to see if this ConceptComplex is in the concept_complex table already", e);
+			}
+			finally {
+				if (ps != null) {
+					try {
+						ps.close();
+					}
+					catch (SQLException e) {
+						log.error("Error generated while closing statement", e);
+					}
+				}
+				if (ps2 != null) {
+					try {
+						ps2.close();
+					}
+					catch (SQLException e) {
+						log.error("Error generated while closing statement", e);
+					}
+				}
 			}
 		} else if (concept instanceof ConceptDerived) {
 			// check the concept_derived table

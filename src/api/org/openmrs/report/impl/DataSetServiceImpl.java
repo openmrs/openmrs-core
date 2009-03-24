@@ -36,12 +36,22 @@ public class DataSetServiceImpl implements DataSetService {
 	/**
 	 * Saved list of DataSetProviders allowed to be used by the dataset service
 	 */
-	private static List<DataSetProvider> providers;
+	private static List<DataSetProvider> providers = null;
 	
 	/**
 	 * Default no-arg constructor
 	 */
 	public DataSetServiceImpl() {
+	}
+	
+	/**
+	 * Clean up after this class.  Set the static var to null so that the
+	 * classloader can reclaim the space. 
+	 * 
+	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
+	 */
+	public void onShutdown() {
+		providers = null;
 	}
 	
 	/**

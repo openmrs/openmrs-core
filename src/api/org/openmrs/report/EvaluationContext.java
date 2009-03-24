@@ -22,7 +22,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
@@ -36,7 +37,7 @@ import org.openmrs.api.context.Context;
  */
 public class EvaluationContext {
 	
-	protected static Logger log = Logger.getLogger(EvaluationContext.class);
+	protected Log log = LogFactory.getLog(getClass());
 	
 	public static final String START_OF_EXPRESSION = "${";
 	

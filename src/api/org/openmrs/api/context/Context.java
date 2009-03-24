@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
@@ -67,6 +68,7 @@ import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -105,7 +107,7 @@ public class Context {
 	
 	// A place to store data that will persist longer than a session, but won't persist beyond application restart
 	// TODO: put an optional expire date on these items
-	private static Map<User, Map<String, Object>> volatileUserData = new HashMap<User, Map<String, Object>>();
+	private static Map<User, Map<String, Object>> volatileUserData = new WeakHashMap<User, Map<String, Object>>();
 	
 	/**
 	 * Default public constructor
@@ -176,6 +178,7 @@ public class Context {
 	 * same time.
 	 * 
 	 * @return
+	 * @should fail if session hasnt been opened
 	 */
 	public static UserContext getUserContext() {
 		Object[] arr = userContextHolder.get();
@@ -184,9 +187,11 @@ public class Context {
 			log.trace("Getting user context " + arr + " from userContextHolder " + userContextHolder);
 		
 		if (arr == null) {
-			log.trace("userContext is null. Creating new userContext");
-			setUserContext(new UserContext());
+			log.trace("userContext is null.");
+			throw new APIException(
+			        "A user context must first be passed to setUserContext()...use openSession() (and closeSession() to prevent memory leaks!) before using the API");
 		}
+		
 		return (UserContext) userContextHolder.get()[0];
 	}
 	
@@ -515,13 +520,19 @@ public class Context {
 	 * logs out the "active" (authenticated) user within context
 	 * 
 	 * @see #authenticate
+	 * @should not fail if session hasnt been opened yet
 	 */
 	public static void logout() {
+		if (!isSessionOpen())
+			return; // fail early if there isn't even a session open
+			
 		if (log.isDebugEnabled())
 			log.debug("Logging out : " + getAuthenticatedUser());
 		
 		getUserContext().logout();
-		clearUserContext();
+		
+		//reset the UserContext object (usually cleared out by closeSession() soon after this)
+		setUserContext(new UserContext()); 
 	}
 	
 	/**
@@ -572,9 +583,15 @@ public class Context {
 	}
 	
 	/**
-	 * Convenience method. Passes through to userContext.getLocale()
+	 * Convenience method. Passes through to {@link UserContext#getLocale()}
+	 * 
+	 * @should not fail if session hasnt been opened
 	 */
 	public static Locale getLocale() {
+		// if a session hasn't been opened, just fetch the default
+		if (!isSessionOpen())
+			return LocaleUtility.getDefaultLocale();
+		
 		return getUserContext().getLocale();
 	}
 	
@@ -584,7 +601,9 @@ public class Context {
 	 */
 	public static void openSession() {
 		log.trace("opening session");
+		setUserContext(new UserContext()); // must be cleared out in closeSession()
 		getContextDAO().openSession();
+		
 	}
 	
 	/**
@@ -593,6 +612,7 @@ public class Context {
 	 */
 	public static void closeSession() {
 		log.trace("closing session");
+		clearUserContext(); // because we set a UserContext on the current thread in openSession()
 		getContextDAO().closeSession();
 	}
 	
@@ -602,6 +622,17 @@ public class Context {
 	public static void clearSession() {
 		log.trace("clearing session");
 		getContextDAO().clearSession();
+	}
+	
+	/**
+	 * This method tells whether {@link #openSession()} has been called or not already. If it hasn't
+	 * been called, some methods won't work correctly because a {@link UserContext} isn't available.
+	 * 
+	 * @return true if {@link #openSession()} has been called already.
+	 * @should return true if session is closed
+	 */
+	public static boolean isSessionOpen() {
+		return userContextHolder.get() != null;
 	}
 	
 	/**
@@ -690,7 +721,6 @@ public class Context {
 	 * closing
 	 */
 	public static void shutdown() {
-		
 		log.debug("Shutting down the scheduler");
 		try {
 			// Needs to be shutdown before Hibernate
@@ -723,6 +753,7 @@ public class Context {
 		catch (Exception e) {
 			log.warn("Error while shutting down context dao", e);
 		}
+		
 	}
 	
 	/**

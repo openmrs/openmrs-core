@@ -121,10 +121,12 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		boolean stubInsertNeeded = false;
 		
+		PreparedStatement ps = null;
+		
 		if (patient.getPatientId() != null) {
 			// check if there is a row with a matching patient.patient_id 
 			try {
-				PreparedStatement ps = connection.prepareStatement("SELECT * FROM patient WHERE patient_id = ?");
+				ps = connection.prepareStatement("SELECT * FROM patient WHERE patient_id = ?");
 				ps.setInt(1, patient.getPatientId());
 				ps.execute();
 				
@@ -137,11 +139,19 @@ public class HibernatePatientDAO implements PatientDAO {
 			catch (SQLException e) {
 				log.error("Error while trying to see if this person is a patient already", e);
 			}
+			if (ps != null) {
+				try {
+					ps.close();
+				}
+				catch (SQLException e) {
+					log.error("Error generated while closing statement", e);
+				}
+			}
 		}
 		
 		if (stubInsertNeeded) {
 			try {
-				PreparedStatement ps = connection
+				ps = connection
 				        .prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
 				
 				ps.setInt(1, patient.getPatientId());
@@ -152,6 +162,16 @@ public class HibernatePatientDAO implements PatientDAO {
 			}
 			catch (SQLException e) {
 				log.warn("SQL Exception while trying to create a patient stub", e);
+			}
+			finally {
+				if (ps != null) {
+					try {
+						ps.close();
+					}
+					catch (SQLException e) {
+						log.error("Error generated while closing statement", e);
+					}
+				}
 			}
 		}
 		

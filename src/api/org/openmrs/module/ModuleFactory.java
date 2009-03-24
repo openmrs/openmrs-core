@@ -50,14 +50,14 @@ public class ModuleFactory {
 	
 	private static Log log = LogFactory.getLog(ModuleFactory.class);
 	
-	private static Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
+	protected static Map<String, Module> loadedModules = new WeakHashMap<String, Module>();
 	
-	private static Map<String, Module> startedModules = new WeakHashMap<String, Module>();
+	protected static Map<String, Module> startedModules = new WeakHashMap<String, Module>();
 	
-	private static Map<String, List<Extension>> extensionMap = new HashMap<String, List<Extension>>();
+	protected static Map<String, List<Extension>> extensionMap = new HashMap<String, List<Extension>>();
 	
 	// maps to keep track of the memory and objects to free/close
-	private static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
+	protected static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
 	
 	/**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an

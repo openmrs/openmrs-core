@@ -48,7 +48,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	
 	private static final String PROPERTIES_FILE_COMMENT = "OpenMRS Application Messages";
 	
-	private static Log log = LogFactory.getLog(MutableResourceBundleMessageSource.class);
+	private Log log = LogFactory.getLog(getClass());
 	
 	private ApplicationContext applicationContext;
 	

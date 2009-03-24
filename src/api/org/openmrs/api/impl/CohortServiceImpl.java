@@ -56,6 +56,16 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	}
 	
 	/**
+	 * Clean up after this class.  Set the static var to null so that the
+	 * classloader can reclaim the space. 
+	 * 
+	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
+	 */
+	public void onShutdown() {
+		cohortDefinitionProviders = null;
+	}
+	
+	/**
 	 * @see org.openmrs.api.CohortService#saveCohort(org.openmrs.Cohort)
 	 */
 	public Cohort saveCohort(Cohort cohort) throws APIException {

@@ -13,7 +13,6 @@
  */
 package org.openmrs.scheduler.tasks;
 
-//import java.net.HttpURLConnection;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -35,7 +34,7 @@ public class CheckInternetConnectivityTask extends AbstractTask {
 	/**
 	 * Logger
 	 */
-	private static Log log = LogFactory.getLog(CheckInternetConnectivityTask.class);
+	private Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()

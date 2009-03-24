@@ -13,7 +13,6 @@
  */
 package org.openmrs.logic;
 
-import java.util.Date;
 import java.util.Map;
 
 import org.junit.Before;

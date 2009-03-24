@@ -14,9 +14,12 @@
 package org.openmrs.api.context;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.api.APIException;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.LocaleUtility;
 
 /**
  * TODO add methods for all context tests
@@ -30,7 +33,7 @@ public class ContextTest extends BaseContextSensitiveTest {
 	 * this whole junit class is done.
 	 */
 	@AfterClass
-	public static void logOutAfterThisTest() {
+	public static void logOutAfterThisTestClass() {
 		Context.logout();
 	}
 	
@@ -78,5 +81,50 @@ public class ContextTest extends BaseContextSensitiveTest {
 	public void authenticate_shouldNotAuthenticateWithNullUsernameAndPassword() throws Exception {
 		Context.authenticate(null, null);
 	}
-	
+
+	/**
+     * @see {@link Context#getLocale()}
+     * 
+     */
+    @Test
+    @Verifies(value = "should not fail if session hasnt been opened", method = "getLocale()")
+    public void getLocale_shouldNotFailIfSessionHasntBeenOpened() throws Exception {
+	    Context.closeSession();
+	    Assert.assertEquals(LocaleUtility.getDefaultLocale(), Context.getLocale());
+    }
+
+	/**
+     * @see {@link Context#getUserContext()}
+     * 
+     */
+    @Test(expected = APIException.class)
+    @Verifies(value = "should fail if session hasnt been opened", method = "getUserContext()")
+    public void getUserContext_shouldFailIfSessionHasntBeenOpened() throws Exception {
+	    Context.closeSession();
+	    Context.getUserContext(); // trigger the api exception
+    }
+
+	/**
+     * @see {@link Context#logout()}
+     * 
+     */
+    @Test
+    @Verifies(value = "should not fail if session hasnt been opened yet", method = "logout()")
+    public void logout_shouldNotFailIfSessionHasntBeenOpenedYet() throws Exception {
+    	Context.closeSession();
+    	Context.logout();
+    }
+
+	/**
+     * @see {@link Context#isSessionOpen()}
+     * 
+     */
+    @Test
+    @Verifies(value = "should return true if session is closed", method = "isSessionOpen()")
+    public void isSessionOpen_shouldReturnTrueIfSessionIsClosed() throws Exception {
+    	Assert.assertTrue(Context.isSessionOpen());
+    	Context.closeSession();
+    	Assert.assertFalse(Context.isSessionOpen());
+    }
+
 }
