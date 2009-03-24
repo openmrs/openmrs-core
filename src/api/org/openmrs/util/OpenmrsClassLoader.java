@@ -15,9 +15,14 @@ package org.openmrs.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -47,18 +52,18 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	
 	private static boolean libCacheFolderInitialized = false;
 	
-	// parent class loader for all modules
-	private static OpenmrsClassLoader instance = null;
-	
 	// placeholder to hold mementos to restore
 	private static Map<String, OpenmrsMemento> mementos = new WeakHashMap<String, OpenmrsMemento>();
+	
+	// holds a list of all classes that this classloader loaded so that they can be cleaned up
+	private Set<Class<?>> loadedClasses = new HashSet<Class<?>>();
 	
 	/**
 	 * Creates the instance for the OpenmrsClassLoader
 	 */
 	public OpenmrsClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
-		instance = this;
+		OpenmrsClassLoaderHolder.INSTANCE = this;
 		
 		if (log.isDebugEnabled())
 			log.debug("Creating new OpenmrsClassLoader instance with parent: " + parent);
@@ -80,16 +85,26 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
+	 * Private class to hold the one classloader used throughout openmrs. This is an alternative to
+	 * storing the instance object on {@link OpenmrsClassLoader} itself so that garbage collection
+	 * can happen correctly.
+	 */
+	private static class OpenmrsClassLoaderHolder {
+		
+		private static OpenmrsClassLoader INSTANCE = null;
+		
+	}
+	
+	/**
 	 * Get the static/singular instance of the module class loader
 	 * 
 	 * @return
 	 */
 	public static OpenmrsClassLoader getInstance() {
-		if (instance == null) {
-			log.trace("Creating new OpenmrsClassLoader instance");
-			instance = new OpenmrsClassLoader();
-		}
-		return instance;
+		if (OpenmrsClassLoaderHolder.INSTANCE == null)
+			OpenmrsClassLoaderHolder.INSTANCE = new OpenmrsClassLoader();
+		
+		return OpenmrsClassLoaderHolder.INSTANCE;
 	}
 	
 	/**
@@ -99,14 +114,18 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			try {
 				//if (classLoader.isLoadingFromParent() == false)
-				return classLoader.loadClass(name);
+				Class<?> c = classLoader.loadClass(name);
+				loadedClasses.add(c);
+				return c;
 			}
 			catch (ClassNotFoundException e) {
 				//log.debug("Didn't find entry for: " + name);
 			}
 		}
 		
-		return getParent().loadClass(name);
+		Class<?> c = getParent().loadClass(name);
+		loadedClasses.add(c);
+		return c;
 	}
 	
 	/**
@@ -171,7 +190,149 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @see flushInstance()
 	 */
 	public static void destroyInstance() {
-		instance = null;
+		OpenmrsClassLoaderHolder.INSTANCE = null;
+	}
+	
+	public static void onShutdown() {
+		clearReferences();
+	}
+	
+	/**
+	 * This clears any references this classloader might have that will prevent garbage collection. <br/>
+	 * <br/>
+	 * Borrowed from Tomcat's WebappClassLoader#clearReferences() (not javadoc linked intentionally) <br/>
+	 * The only difference between this and Tomcat's implementation is that this one only acts on
+	 * openmrs objects and also clears out static java.* packages. Tomcat acts on all objects and
+	 * does not clear our static java.* objects.
+	 */
+	protected static void clearReferences() {
+		
+		// Unregister any JDBC drivers loaded by this classloader
+		Enumeration<Driver> drivers = DriverManager.getDrivers();
+		while (drivers.hasMoreElements()) {
+			Driver driver = drivers.nextElement();
+			if (driver.getClass().getClassLoader() == getInstance()) {
+				try {
+					DriverManager.deregisterDriver(driver);
+				}
+				catch (SQLException e) {
+					log.warn("SQL driver deregistration failed", e);
+				}
+			}
+		}
+		
+		// Null out any static or final fields from loaded classes,
+		// as a workaround for apparent garbage collection bugs
+		for (Class<?> clazz : getInstance().loadedClasses) {
+			if (clazz != null && clazz.getName().contains("openmrs")) { // only clean up openmrs classes
+				try {
+					Field[] fields = clazz.getDeclaredFields();
+					for (int i = 0; i < fields.length; i++) {
+						Field field = fields[i];
+						int mods = field.getModifiers();
+						if (field.getType().isPrimitive() || (field.getName().indexOf("$") != -1)) {
+							continue;
+						}
+						if (Modifier.isStatic(mods)) {
+							try {
+								field.setAccessible(true);
+								if (Modifier.isFinal(mods)) {
+									if (!(field.getType().getName().startsWith("javax."))) {
+										nullInstance(field.get(null));
+									}
+								} else {
+									field.set(null, null);
+									if (log.isDebugEnabled()) {
+										log.debug("Set field " + field.getName() + " to null in class " + clazz.getName());
+									}
+								}
+							}
+							catch (Throwable t) {
+								if (log.isDebugEnabled()) {
+									log.debug("Could not set field " + field.getName() + " to null in class "
+									        + clazz.getName(), t);
+								}
+							}
+						}
+					}
+				}
+				catch (Throwable t) {
+					if (log.isDebugEnabled()) {
+						log.debug("Could not clean fields for class " + clazz.getName(), t);
+					}
+				}
+			}
+		}
+		
+		getInstance().loadedClasses.clear();
+	}
+	
+	/**
+	 * Used by {@link #clearReferences()} upon application close. <br/>
+	 * <br/>
+	 * Borrowed from Tomcat's WebappClassLoader.
+	 * 
+	 * @param instance the object whose fields need to be nulled out
+	 */
+	protected static void nullInstance(Object instance) {
+		if (instance == null) {
+			return;
+		}
+		Field[] fields = instance.getClass().getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			Field field = fields[i];
+			int mods = field.getModifiers();
+			if (field.getType().isPrimitive() || (field.getName().indexOf("$") != -1)) {
+				continue;
+			}
+			try {
+				field.setAccessible(true);
+				if (Modifier.isStatic(mods) && Modifier.isFinal(mods)) {
+					// Doing something recursively is too risky
+					continue;
+				} else {
+					Object value = field.get(instance);
+					if (null != value) {
+						Class<?> valueClass = value.getClass();
+						if (!loadedByThisOrChild(valueClass)) {
+							if (log.isDebugEnabled()) {
+								log.debug("Not setting field " + field.getName() + " to null in object of class "
+								        + instance.getClass().getName() + " because the referenced object was of type "
+								        + valueClass.getName() + " which was not loaded by this WebappClassLoader.");
+							}
+						} else {
+							field.set(instance, null);
+							if (log.isDebugEnabled()) {
+								log.debug("Set field " + field.getName() + " to null in class "
+								        + instance.getClass().getName());
+							}
+						}
+					}
+				}
+			}
+			catch (Throwable t) {
+				if (log.isDebugEnabled()) {
+					log.debug("Could not set field " + field.getName() + " to null in object instance of class "
+					        + instance.getClass().getName(), t);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Determine whether a class was loaded by this class loader or one of its child class loaders. <br/>
+	 * <br/>
+	 * Borrowed from Tomcat's WebappClassLoader
+	 */
+	protected static boolean loadedByThisOrChild(Class<?> clazz) {
+		boolean result = false;
+		for (ClassLoader classLoader = clazz.getClassLoader(); null != classLoader; classLoader = classLoader.getParent()) {
+			if (classLoader.equals(getInstance())) {
+				result = true;
+				break;
+			}
+		}
+		return result;
 	}
 	
 	/**

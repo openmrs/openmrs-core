@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -106,12 +107,13 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 * @see org.openmrs.api.db.AdministrationService#mrnGeneratorLog(java.lang.String,java.lang.Integer,java.lang.Integer)
 	 */
 	public void mrnGeneratorLog(String site, Integer start, Integer count) {
+		PreparedStatement ps = null;
 		try {
 			String sql = "insert into `";
 			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + "`.ext_mrn_log ";
 			sql += "(date_generated, generated_by, site, mrn_first, mrn_count) values (?, ?, ?, ?, ?)";
 			
-			PreparedStatement ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
+			ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
 			
 			ps.setTimestamp(1, new Timestamp(new Date().getTime()));
 			ps.setInt(2, Context.getAuthenticatedUser().getUserId());
@@ -123,14 +125,25 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		catch (Exception e) {
 			throw new DAOException("Error generating mrn log", e);
 		}
+		finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				}
+				catch (SQLException e) {
+					log.error("Error generated while closing statement", e);
+				}
+			}
+		}
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationService#getMRNGeneratorLog()
 	 */
 	public Collection getMRNGeneratorLog() {
-		Collection<Map<String, Object>> log = new Vector<Map<String, Object>>();
+		Collection<Map<String, Object>> logs = new Vector<Map<String, Object>>();
 		
+		PreparedStatement ps = null;
 		try {
 			Map<String, Object> row;
 			
@@ -138,7 +151,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 			sql += OpenmrsConstants.DATABASE_BUSINESS_NAME + "`.ext_mrn_log ";
 			sql += "order by mrn_log_id desc";
 			
-			PreparedStatement ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
+			ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
 			
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
@@ -148,14 +161,24 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 				row.put("site", rs.getString("site"));
 				row.put("first", rs.getInt("mrn_first"));
 				row.put("count", rs.getInt("mrn_count"));
-				log.add(row);
+				logs.add(row);
 			}
 		}
 		catch (Exception e) {
 			throw new DAOException("Error getting mrn log", e);
 		}
+		finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				}
+				catch (SQLException e) {
+					log.error("Error generated while closing statement", e);
+				}
+			}
+		}
 		
-		return log;
+		return logs;
 	}
 	
 	public void createReportObject(AbstractReportObject ro) throws DAOException {
@@ -447,6 +470,16 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		catch (Exception e) {
 			log.debug("Error while running sql: " + sql, e);
 			throw new DAOException("Error while running sql: " + sql + " . Message: " + e.getMessage(), e);
+		}
+		finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				}
+				catch (SQLException e) {
+					log.error("Error generated while closing statement", e);
+				}
+			}
 		}
 		
 		return results;

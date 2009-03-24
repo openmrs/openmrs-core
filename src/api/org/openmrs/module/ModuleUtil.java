@@ -141,6 +141,11 @@ public class ModuleUtil {
 		
 		log.debug("done shutting down modules");
 		
+		// clean up the static variables just in case they weren't done before
+		ModuleFactory.extensionMap = null;
+		ModuleFactory.loadedModules = null;
+		ModuleFactory.moduleClassLoaders = null;
+		ModuleFactory.startedModules = null;
 	}
 	
 	/**

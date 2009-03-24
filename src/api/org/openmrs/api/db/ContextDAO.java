@@ -89,7 +89,6 @@ public interface ContextDAO {
 	 * Stops the OpenMRS System Should be called after all activity has ended and application is
 	 * closing
 	 */
-	@Transactional
 	public void shutdown();
 	
 	/**

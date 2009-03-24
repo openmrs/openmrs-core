@@ -161,17 +161,22 @@
 		<url-pattern>/concept/*</url-pattern>
 	</servlet-mapping>
 	
-	<listener>	
-		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-	</listener>
-
 	<listener>
-		<listener-class>org.openmrs.web.Listener</listener-class>
-		<!--  extends ContextLoaderListener -->
+		<listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
+		<!-- Should go before Listener so that during webapp shutdown it comes after hibernate shutdown last -->
 	</listener>
 	
 	<listener>
 		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	
+	<listener>
+		<listener-class>org.directwebremoting.servlet.EfficientShutdownServletContextListener</listener-class>
+	</listener>
+	
+	<listener>
+		<listener-class>org.openmrs.web.Listener</listener-class>
+		<!--  extends ContextLoaderListener -->
 	</listener>
 	
 	<servlet>

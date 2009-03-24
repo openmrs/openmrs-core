@@ -272,17 +272,15 @@ public class HibernateContextDAO implements ContextDAO {
 		
 		if (sessionFactory != null) {
 			
-			// session is closed by spring on session end
-			
 			log.debug("Closing any open sessions");
-			// closeSession();
-			log.debug("Shutting down threadLocalSession factory");
+			closeSession();
 			
-			// sessionFactory.close();
+			log.debug("Shutting down threadLocalSession factory");
+			if (!sessionFactory.isClosed())
+				sessionFactory.close();
+			
 			log.debug("The threadLocalSession has been closed");
 			
-			log.debug("Setting static variables to null");
-			// sessionFactory = null;
 		} else
 			log.error("SessionFactory is null");
 		

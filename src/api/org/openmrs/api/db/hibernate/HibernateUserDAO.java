@@ -175,10 +175,12 @@ public class HibernateUserDAO implements UserDAO {
 		
 		boolean stubInsertNeeded = false;
 		
+		PreparedStatement ps = null;
+		
 		if (user.getUserId() != null) {
 			// check if there is a row with a matching users.user_id 
 			try {
-				PreparedStatement ps = connection.prepareStatement("SELECT * FROM users WHERE user_id = ?");
+				ps = connection.prepareStatement("SELECT * FROM users WHERE user_id = ?");
 				ps.setInt(1, user.getUserId());
 				ps.execute();
 				
@@ -191,11 +193,21 @@ public class HibernateUserDAO implements UserDAO {
 			catch (SQLException e) {
 				log.error("Error while trying to see if this person is a user already", e);
 			}
+			finally {
+				if (ps != null) {
+					try {
+						ps.close();
+					}
+					catch (SQLException e) {
+						log.error("Error generated while closing statement", e);
+					}
+				}
+			}
 		}
 		
 		if (stubInsertNeeded) {
 			try {
-				PreparedStatement ps = connection
+				ps = connection
 				        .prepareStatement("INSERT INTO users (user_id, system_id, creator, date_created, voided) VALUES (?, ?, ?, ?, ?)");
 				
 				ps.setInt(1, user.getUserId());
@@ -209,6 +221,16 @@ public class HibernateUserDAO implements UserDAO {
 			}
 			catch (SQLException e) {
 				log.warn("SQL Exception while trying to create a user stub", e);
+			}
+			finally {
+				if (ps != null) {
+					try {
+						ps.close();
+					}
+					catch (SQLException e) {
+						log.error("Error generated while closing statement", e);
+					}
+				}
 			}
 		}
 		
@@ -332,8 +354,9 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	private void updateUserPassword(String newPassword, String salt, Integer changedBy, Date dateChanged,
 	                                Integer userIdToChange) {
+		PreparedStatement ps = null;
 		try {
-			PreparedStatement ps = getUpdateUserPasswordStatement();
+			ps = getUpdateUserPasswordStatement();
 			
 			if (ps != null) {
 				ps.setString(1, newPassword);
@@ -347,6 +370,16 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		catch (SQLException e) {
 			log.warn("SQL Exception while running user-password-update ", e);
+		}
+		finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				}
+				catch (SQLException e) {
+					log.error("Error generated while closing statement", e);
+				}
+			}
 		}
 		
 		sessionFactory.getCurrentSession().flush();
@@ -442,6 +475,8 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		
 		Connection connection = sessionFactory.getCurrentSession().connection();
+		
+		PreparedStatement ps = null;
 		try {
 			
 			String sql = "UPDATE `users` SET secret_question = ?, secret_answer = ?, date_changed = ?, changed_by = ? WHERE user_id = ?";
@@ -453,7 +488,7 @@ public class HibernateUserDAO implements UserDAO {
 			if (HSQLDialect.class.getName().equals(dialect.getClass().getName()))
 				sql = sql.replace("`", "");
 			
-			PreparedStatement ps = connection.prepareStatement(sql);
+			ps = connection.prepareStatement(sql);
 			
 			ps.setString(1, question);
 			ps.setString(2, answer);
@@ -465,6 +500,16 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		catch (SQLException e) {
 			throw new DAOException("SQL Exception while trying to update a user's secret question", e);
+		}
+		finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				}
+				catch (SQLException e) {
+					log.error("Error generated while closing statement", e);
+				}
+			}
 		}
 		
 	}

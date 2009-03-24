@@ -35,7 +35,7 @@ import org.openmrs.logic.util.Util;
  */
 public class ProgramDataSource implements LogicDataSource {
 	
-	private static Log log = LogFactory.getLog(ProgramDataSource.class);
+	private Log log = LogFactory.getLog(ProgramDataSource.class);
 	
 	private static final Collection<String> keys = new ArrayList<String>();
 	

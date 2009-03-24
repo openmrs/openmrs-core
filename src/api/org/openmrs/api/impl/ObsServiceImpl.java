@@ -71,6 +71,16 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
+	 * Clean up after this class.  Set the static var to null so that the
+	 * classloader can reclaim the space. 
+	 * 
+	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
+	 */
+	public void onShutdown() {
+		handlers = null;
+	}
+	
+	/**
 	 * @see org.openmrs.api.ObsService#saveObs(org.openmrs.Obs, String)
 	 */
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException {

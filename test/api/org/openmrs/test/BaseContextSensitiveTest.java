@@ -55,6 +55,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.HSQLDialect;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -600,6 +601,11 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	@Before
 	public void baseSetupWithStandardDataAndAuthentication() throws Exception {
+		// only open one session per class
+		if (!Context.isSessionOpen()) {
+			Context.openSession();
+		}
+		
 		// the skipBaseSetup flag is controlled by the @SkipBaseSetup
 		// annotation.  If it is deflagged or if the developer has
 		// marked this class as a non-inmemory database, skip these base steps
@@ -610,6 +616,18 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			
 			authenticate();
 		}
+	}
+	
+	/**
+	 * Called after each test class. This is called once per test class that extends
+	 * {@link BaseContextSensitiveTest}. Needed so that "unit of work" that is the test class is
+	 * surrounded by a pair of open/close session calls.
+	 * 
+	 * @throws Exception
+	 */
+	@AfterClass
+	public static void closeSessionAfterEachClass() throws Exception {
+		Context.closeSession();
 	}
 	
 	/**

@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.Timer;
 import java.util.TreeMap;
+import java.util.WeakHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +50,7 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	/**
 	 * Logger
 	 */
-	private static Log log = LogFactory.getLog(TimerSchedulerServiceImpl.class);
+	private Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * Registered task list
@@ -59,7 +60,7 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	/**
 	 * Scheduled Task Map
 	 */
-	private static Map<Integer, TimerSchedulerTask> scheduledTasks = new HashMap<Integer, TimerSchedulerTask>();
+	private static Map<Integer, TimerSchedulerTask> scheduledTasks = new WeakHashMap<Integer, TimerSchedulerTask>();
 	
 	/**
 	 * A single timer used to keep track of all scheduled tasks. The Timer's associated thread

@@ -78,6 +78,16 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	/**
+	 * Clean up after this class.  Set the static var to null so that the
+	 * classloader can reclaim the space. 
+	 * 
+	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
+	 */
+	public void onShutdown() {
+		userPatientSets = null;
+	}
+	
+	/**
 	 * @param ps The set you want to export as XML
 	 * @return an XML representation of this patient-set, including patient characteristics, and
 	 *         observations
@@ -398,7 +408,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	
 	// these should go elsewhere
 	
-	private static Map<User, Cohort> userPatientSets;
+	private static Map<User, Cohort> userPatientSets = null;
 	
 	public void setMyPatientSet(Cohort ps) {
 		if (userPatientSets == null) {

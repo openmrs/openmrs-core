@@ -13,16 +13,8 @@
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Iterator;
-import java.util.List;
-
 import org.junit.Test;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;

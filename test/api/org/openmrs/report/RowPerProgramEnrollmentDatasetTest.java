@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
-import org.openmrs.report.impl.TsvReportRenderer;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.test.BaseContextSensitiveTest;

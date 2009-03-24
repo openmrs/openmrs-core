@@ -87,6 +87,16 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
+	 * Clean up after this class.  Set the static var to null so that the
+	 * classloader can reclaim the space. 
+	 * 
+	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
+	 */
+	public void onShutdown() {
+		identifierValidators = null;
+	}
+	
+	/**
 	 * @see {@link #savePatient(Patient)}
 	 * @deprecated replaced by #savePatient(Patient)
 	 * @see org.openmrs.api.PatientService#createPatient(org.openmrs.Patient)
