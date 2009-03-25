@@ -34,47 +34,48 @@ public interface LocationDAO {
 	/**
 	 * Create or update a location.
 	 * 
-	 * @param location
-	 * @return
+	 * @param location <code>Location</code> to save
+	 * @return the saved <code>Location</code>
 	 */
 	public Location saveLocation(Location location);
 	
 	/**
 	 * Get a location by locationId
 	 * 
-	 * @param locationId of the location to get
-	 * @return
+	 * @param locationId Internal <code>Integer</code> identifier of the <code>Location<code> to get
+	 * @return the requested <code>Location</code>
 	 */
 	public Location getLocation(Integer locationId);
 	
 	/**
 	 * Get a location by name
 	 * 
-	 * @param name of the location to get
-	 * @return
+	 * @param name String name of the <code>Location</code> to get
+	 * @return the requested <code>Location</code>
 	 */
 	public Location getLocation(String name);
 	
 	/**
 	 * Get all locations
 	 * 
-	 * @param includeRetired if <code>true</code> then return retired locations as well.
-	 * @return
+	 * @param includeRetired boolean - include retired locations as well?
+	 * @return <code>List<Location></code> object of all <code>Location</code>s, possibly including
+	 *         retired locations
 	 */
 	public List<Location> getAllLocations(boolean includeRetired);
 	
 	/**
 	 * Find all locations with matching names.
 	 * 
-	 * @param search name to search
-	 * @return
+	 * @param search String name to search for
+	 * @return <code>List<Location></code> object of matching locations
 	 */
 	public List<Location> getLocations(String search);
 	
 	/**
 	 * Completely remove the location from the database.
 	 * 
-	 * @param location
+	 * @param location <code>Location</code> object to delete
 	 */
 	public void deleteLocation(Location location);
 	
@@ -82,31 +83,32 @@ public interface LocationDAO {
 	 * Create or update a location tag.
 	 * 
 	 * @param tag
-	 * @return
+	 * @return the saved <code>LocationTag</code>
 	 */
 	public LocationTag saveLocationTag(LocationTag tag);
 	
 	/**
 	 * Get a location tag by <code>locationTagId</code>
 	 * 
-	 * @param locationTagId of the tag to get
-	 * @return
+	 * @param locationTagId Internal <code>Integer</code> identifier of the tag to get
+	 * @return the requested <code>LocationTag</code>
 	 */
 	public LocationTag getLocationTag(Integer locationTagId);
 	
 	/**
 	 * Get a location tag by name
 	 * 
-	 * @param tag of the tag to get
-	 * @return
+	 * @param tag String representation of the <code>LocationTag</code> to get
+	 * @return the requested <code>LocationTag</code>
 	 */
 	public LocationTag getLocationTagByName(String tag);
 	
 	/**
 	 * Get all location tags
 	 * 
-	 * @param includeRetired if <code>true</code> then return retired tags as well.
-	 * @return
+	 * @param includeRetired boolean - include retired tags as well?
+	 * @return List<LocationTag> object with all <code>LocationTag</code>s, possibly included
+	 *         retired ones
 	 */
 	public List<LocationTag> getAllLocationTags(boolean includeRetired);
 	
@@ -114,14 +116,14 @@ public interface LocationDAO {
 	 * Find all location tags with matching names.
 	 * 
 	 * @param search name to search
-	 * @return
+	 * @return List<LocationTag> with all matching <code>LocationTags</code>
 	 */
 	public List<LocationTag> getLocationTags(String search);
 	
 	/**
 	 * Completely remove the location tag from the database.
 	 * 
-	 * @param tag
+	 * @param tag The <code>LocationTag</code> to delete
 	 */
 	public void deleteLocationTag(LocationTag tag);
 }

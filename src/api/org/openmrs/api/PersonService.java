@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Contains methods pertaining to Persons in the system Use:<br/>
  * 
  * <pre>
- *   List<Person> personObjects = Context.getPersonService().getAllPersons();
+ * List&lt;Person&gt; personObjects = Context.getPersonService().getAllPersons();
  * </pre>
  * 
  * @see org.openmrs.api.context.Context
@@ -83,7 +83,7 @@ public interface PersonService {
 	 * @param nameSearch string to search the person's name for
 	 * @param birthyear the year of birth to restrict
 	 * @param gender The gender field to search on (Typically just "M" or "F")
-	 * @return
+	 * @return Set<Person> object with all people matching criteria
 	 * @throws APIException
 	 * @should accept greater than three names
 	 * @should match single search to any name part
@@ -210,8 +210,9 @@ public interface PersonService {
 	/**
 	 * Get all PersonAttributeTypes in the database with the option of including the retired types
 	 * 
-	 * @param includeRetired true/false whether to include the person attribute types
-	 * @return
+	 * @param includeRetired boolean - include retired attribute types as well?
+	 * @return List<PersonAttributeType> object of all PersonAttributeTypes, possibly including
+	 *         retired ones
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
@@ -321,7 +322,7 @@ public interface PersonService {
 	 * Get list of relationships that include Person in person_id or relative_id Does not include
 	 * voided relationships
 	 * 
-	 * @param person object listed on either side of the relationship
+	 * @param p person object listed on either side of the relationship
 	 * @return Relationship list
 	 * @throws APIException
 	 */
@@ -383,7 +384,7 @@ public interface PersonService {
 	/**
 	 * Get relationshipType by internal identifier
 	 * 
-	 * @param relationshipType id
+	 * @param relationshipTypeId
 	 * @return relationshipType with given internal identifier or null if none found
 	 * @throws APIException
 	 */
@@ -474,7 +475,8 @@ public interface PersonService {
 	/**
 	 * Voids the given Relationship, effectively removing it from openmrs.
 	 * 
-	 * @param Relationship to void
+	 * @param relationship Relationship to void
+	 * @param voidReason String reason the relationship is being voided.
 	 * @return the newly saved relationship
 	 * @throws APIException
 	 */
@@ -484,7 +486,7 @@ public interface PersonService {
 	/**
 	 * Unvoid Relationship in the database, effectively marking this as a valid relationship again
 	 * 
-	 * @param Relationship to unvoid
+	 * @param relationship Relationship to unvoid
 	 * @return the newly unvoided relationship
 	 * @throws APIException
 	 */
@@ -611,8 +613,7 @@ public interface PersonService {
 	                                                                                                         throws APIException;
 	
 	/**
-	 * @deprecated use
-	 *             {@link #getPersonAttributeTypes(PERSON_TYPE, org.openmrs.api.PersonService.ATTR_VIEW_TYPE)}
+	 * @deprecated use {@link #getPersonAttributeTypes(PERSON_TYPE, ATTR_VIEW_TYPE)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })

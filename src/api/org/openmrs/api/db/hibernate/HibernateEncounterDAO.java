@@ -68,21 +68,21 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterService#deleteEncounter(org.openmrs.Encounter)
+	 * @see org.openmrs.api.EncounterService#deleteEncounter(org.openmrs.Encounter)
 	 */
 	public void deleteEncounter(Encounter encounter) throws DAOException {
 		sessionFactory.getCurrentSession().delete(encounter);
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterService#getEncounter(java.lang.Integer)
+	 * @see org.openmrs.api.EncounterService#getEncounter(java.lang.Integer)
 	 */
 	public Encounter getEncounter(Integer encounterId) throws DAOException {
 		return (Encounter) sessionFactory.getCurrentSession().get(Encounter.class, encounterId);
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByPatientId(java.lang.Integer, boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByPatientId(java.lang.Integer)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException {
@@ -143,14 +143,14 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterService#getEncounterType(java.lang.Integer)
+	 * @see org.openmrs.api.EncounterService#getEncounterType(java.lang.Integer)
 	 */
 	public EncounterType getEncounterType(Integer encounterTypeId) throws DAOException {
 		return (EncounterType) sessionFactory.getCurrentSession().get(EncounterType.class, encounterTypeId);
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterService#getEncounterType(java.lang.String)
+	 * @see org.openmrs.api.EncounterService#getEncounterType(java.lang.String)
 	 */
 	public EncounterType getEncounterType(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);

@@ -34,7 +34,7 @@ public interface AdministrationDAO {
 	/**
 	 * Create a new Report
 	 * 
-	 * @param Report to create
+	 * @param r Report to create
 	 * @throws DAOException
 	 */
 	public void createReport(Report r) throws DAOException;
@@ -42,7 +42,7 @@ public interface AdministrationDAO {
 	/**
 	 * Update Report
 	 * 
-	 * @param Report to update
+	 * @param r Report to update
 	 * @throws DAOException
 	 */
 	public void updateReport(Report r) throws DAOException;
@@ -50,7 +50,7 @@ public interface AdministrationDAO {
 	/**
 	 * Delete Report
 	 * 
-	 * @param Report to delete
+	 * @param r Report to delete
 	 * @throws DAOException
 	 */
 	public void deleteReport(Report r) throws DAOException;
@@ -58,7 +58,7 @@ public interface AdministrationDAO {
 	/**
 	 * Create a new Report Object
 	 * 
-	 * @param Report Object to create
+	 * @param ro AbstractReportObject to create
 	 * @throws DAOException
 	 */
 	public void createReportObject(AbstractReportObject ro) throws DAOException;
@@ -66,7 +66,7 @@ public interface AdministrationDAO {
 	/**
 	 * Update Report Object
 	 * 
-	 * @param Report Object to update
+	 * @param ro AbstractReportObject to update
 	 * @throws DAOException
 	 */
 	public void updateReportObject(AbstractReportObject ro) throws DAOException;
@@ -74,7 +74,7 @@ public interface AdministrationDAO {
 	/**
 	 * Delete Report Object
 	 * 
-	 * @param Report Objectto delete
+	 * @param reportObjectId Internal identifier for report object to delete
 	 * @throws DAOException
 	 */
 	public void deleteReportObject(Integer reportObjectId) throws DAOException;
@@ -133,7 +133,7 @@ public interface AdministrationDAO {
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#getImplementation()
+	 * @see org.openmrs.api.AdministrationService#getImplementationId()
 	 */
 	public ImplementationId getImplementationId();
 }

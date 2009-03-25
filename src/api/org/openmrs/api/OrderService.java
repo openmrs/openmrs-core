@@ -50,17 +50,17 @@ public interface OrderService extends OpenmrsService {
 	public static final int SHOW_CURRENT = 1;
 	
 	/**
-	 * @deprecated use {@link ORDER_STATUS.ANY}
+	 * @deprecated use {@link ORDER_STATUS#ANY}
 	 */
 	public static final int SHOW_ALL = 2;
 	
 	/**
-	 * @deprecated use {@link ORDER_STATUS.COMPLETE}
+	 * @deprecated use {@link ORDER_STATUS#COMPLETE}
 	 */
 	public static final int SHOW_COMPLETE = 3;
 	
 	/**
-	 * @deprecated use {@link ORDER_STATUS.NOTVOIDED}
+	 * @deprecated use {@link ORDER_STATUS#NOTVOIDED}
 	 */
 	public static final int SHOW_NOTVOIDED = 4;
 	
@@ -140,8 +140,8 @@ public interface OrderService extends OpenmrsService {
 	 * Mark an order as voided. This functionally removes the Order from the system while keeping a
 	 * semblance
 	 * 
-	 * @param voidReason
-	 * @param Order to void
+	 * @param voidReason String reason
+	 * @param order Order to void
 	 * @return the Order that was voided
 	 * @throws APIException
 	 */
@@ -153,8 +153,8 @@ public interface OrderService extends OpenmrsService {
 	 * Order. If this is was invalid Order, the {@link #voidOrder(Order, String)} method should
 	 * probably be used.
 	 * 
-	 * @param discontinueReason reason for discontinuing this order
-	 * @param Order to discontinue
+	 * @param discontinueReason String reason for discontinuing this order
+	 * @param order Order to discontinue
 	 * @return The Order that was discontinued
 	 * @throws APIException
 	 */
@@ -181,7 +181,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderId internal order identifier
 	 * @return order with given internal identifier
 	 * @throws APIException
-	 * @see {@link #getOrder(Integer, Class)}
+	 * @see #getOrder(Integer, Class)
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
@@ -212,7 +212,6 @@ public interface OrderService extends OpenmrsService {
 	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
 	 * multiple arguments are given, the returned orders will match on all arguments.
 	 * 
-	 * @param <o> The type of Order to get determined by <code>orderType</code> parameter
 	 * @param orderClassType The type of Order to get (currently only options are Order and
 	 *            DrugOrder)
 	 * @param patients The patients to get orders for
@@ -280,7 +279,7 @@ public interface OrderService extends OpenmrsService {
 	 * Get drug orders for a given patient, not including voided orders
 	 * 
 	 * @param patient
-	 * @param whatToShow
+	 * @param orderStatus
 	 * @return List of drug orders, for the given patient, not including voided orders
 	 * @see #getDrugOrdersByPatient(Patient, org.openmrs.api.OrderService.ORDER_STATUS, boolean)
 	 */
@@ -426,7 +425,7 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Get orderType by internal identifier
 	 * 
-	 * @param orderType id
+	 * @param orderTypeId
 	 * @return orderType with given internal identifier
 	 * @throws APIException
 	 */

@@ -65,7 +65,7 @@ public class AuthorizedAnnotationAttributes implements Attributes {
 	/**
 	 * Get the <code>Secured</code> attributes for a given target class.
 	 * 
-	 * @param method The target method
+	 * @param target The target method
 	 * @return Collection of <code>SecurityConfig</code>
 	 * @see Attributes#getAttributes
 	 */
@@ -111,7 +111,7 @@ public class AuthorizedAnnotationAttributes implements Attributes {
 	 * Returns whether or not to require that the user have all of the privileges in order to be
 	 * "authorized" for this class
 	 * 
-	 * @param method
+	 * @param target the class to act on
 	 * @return boolean true/false whether to "and" privileges together
 	 * @see org.openmrs.annotation.Authorized#requireAll()
 	 */

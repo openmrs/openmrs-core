@@ -135,8 +135,8 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getPatientPrograms(org.openmrs.Patient,
-	 *      org.openmrs.Program, java.util.Date, java.util.Date, java.util.Date, java.util.Date)
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getPatientPrograms(Patient, Program, Date, Date,
+	 *      Date, Date, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
@@ -214,7 +214,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getAllConceptStateConversions(boolean)
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getAllConceptStateConversions()
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptStateConversion> getAllConceptStateConversions() throws DAOException {

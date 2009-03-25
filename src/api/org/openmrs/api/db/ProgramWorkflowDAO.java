@@ -99,9 +99,9 @@ public interface ProgramWorkflowDAO {
 	 * Returns a PatientProgram given that PatientPrograms primary key <code>patientProgramId</code>
 	 * A null value is returned if no PatientProgram exists with this patientProgramId.
 	 * 
-	 * @param patientProgramId integer primary key of the PatientProgram to find
-	 * @returns PatientProgram object that has patientProgram.patientProgramId =
-	 *          <code>patientProgramId</code> passed in.
+	 * @param id integer primary key of the PatientProgram to find
+	 * @return PatientProgram object that has patientProgram.patientProgramId =
+	 *         <code>patientProgramId</code> passed in.
 	 * @throws DAOException
 	 */
 	public PatientProgram getPatientProgram(Integer id);
@@ -149,8 +149,8 @@ public interface ProgramWorkflowDAO {
 	/**
 	 * Save ConceptStateConversion to database (create if new or update if changed)
 	 * 
-	 * @param conceptStateConversion - The ConceptStateConversion to save
-	 * @return ConceptStateConversion - The saved ConceptStateConversion
+	 * @param csc The ConceptStateConversion to save
+	 * @return The saved ConceptStateConversion
 	 * @throws DAOException
 	 */
 	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion csc) throws DAOException;
@@ -168,10 +168,10 @@ public interface ProgramWorkflowDAO {
 	 * <code>conceptStateConversionId</code> A null value is returned if no conceptStateConversion
 	 * exists with this conceptStateConversionId.
 	 * 
-	 * @param conceptStateConversionId integer primary key of the conceptStateConversion to find
-	 * @returns ConceptStateConversion object that has
-	 *          conceptStateConversion.conceptStateConversionId =
-	 *          <code>conceptStateConversionId</code> passed in.
+	 * @param id integer primary key of the conceptStateConversion to find
+	 * @return ConceptStateConversion object that has
+	 *         conceptStateConversion.conceptStateConversionId =
+	 *         <code>conceptStateConversionId</code> passed in.
 	 * @throws DAOException
 	 */
 	public ConceptStateConversion getConceptStateConversion(Integer id);
@@ -179,8 +179,7 @@ public interface ProgramWorkflowDAO {
 	/**
 	 * Completely remove a conceptStateConversion from the database (not reversible)
 	 * 
-	 * @param conceptStateConversion the ConceptStateConversion to clean out of the database.
-	 * @param cascade <code>true</code> to delete related content
+	 * @param csc the ConceptStateConversion to clean out of the database.
 	 * @throws DAOException
 	 */
 	public void deleteConceptStateConversion(ConceptStateConversion csc);
@@ -189,8 +188,8 @@ public interface ProgramWorkflowDAO {
 	 * Retrieves the ConceptStateConversion that matches the passed <code>ProgramWorkflow</code> and
 	 * <code>Concept</code>
 	 * 
-	 * @param workflow - the ProgramWorkflow to check
-	 * @param trigger - the Concept to check
+	 * @param workflow the ProgramWorkflow to check
+	 * @param trigger the Concept to check
 	 * @return ConceptStateConversion that matches the passed <code>ProgramWorkflow</code> and
 	 *         <code>Concept</code>
 	 * @throws DAOException

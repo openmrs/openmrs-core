@@ -73,7 +73,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getPatient(java.lang.Long)
+	 * @see org.openmrs.api.PatientService#getPatient(java.lang.Integer)
 	 */
 	public Patient getPatient(Integer patientId) {
 		return (Patient) sessionFactory.getCurrentSession().get(Patient.class, patientId);
@@ -297,7 +297,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * This criteria is essentially:
 	 * 
 	 * <pre>
-	 * ... where voided = false && name in (familyName2, familyName, middleName, givenName)
+	 * ... where voided = false &amp;&amp; name in (familyName2, familyName, middleName, givenName)
 	 * </pre>
 	 * 
 	 * @param name

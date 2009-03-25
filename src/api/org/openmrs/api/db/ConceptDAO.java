@@ -55,7 +55,7 @@ public interface ConceptDAO {
 	 * the class name for the ComplexObsHandler key associated with this ConceptComplex.
 	 * 
 	 * @param conceptId
-	 * @return
+	 * @return the ConceptComplex
 	 */
 	public ConceptComplex getConceptComplex(Integer conceptId);
 	
@@ -77,7 +77,7 @@ public interface ConceptDAO {
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptName(java.lang.Integer)
 	 * @param conceptNameId
-	 * @return
+	 * @return The ConceptName matching the specified conceptNameId
 	 */
 	public ConceptName getConceptName(Integer conceptNameId) throws DAOException;
 	
@@ -99,9 +99,8 @@ public interface ConceptDAO {
 	                                 List<ConceptDatatype> datatypes) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptWords(java.lang.String, java.util.Locale,
-	 *      boolean, java.util.List, java.util.List, java.util.List, java.util.List, Concept, int,
-	 *      int)
+	 * @see org.openmrs.api.ConceptService#getConceptWords(String, List, boolean, List, List, List,
+	 *      List, Concept, Integer, Integer)
 	 */
 	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
 	                                         List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,

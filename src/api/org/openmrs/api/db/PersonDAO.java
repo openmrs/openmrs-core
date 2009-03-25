@@ -23,8 +23,12 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 
 /**
- * Person-related database functions This is used by the PersonService. This should not be used
- * directly, but rather used through the methods on the PersonService. Use case: <code>
+ * Person-related database functions
+ * <p>
+ * This is used by the PersonService. This should not be used directly, but rather used through the
+ * methods on the PersonService.
+ * <p>
+ * Use case: <code>
  *   PersonService ps = Context.getPersonService();
  *   ps....
  *   
@@ -42,7 +46,7 @@ public interface PersonDAO {
 	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getPeople(String, Boolean))
+	 * @see org.openmrs.api.PersonService#getPeople(String, Boolean)
 	 */
 	public List<Person> getPeople(String searchPhrase, Boolean dead) throws DAOException;
 	

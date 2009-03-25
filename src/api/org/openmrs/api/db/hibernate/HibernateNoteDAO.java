@@ -45,7 +45,7 @@ public class HibernateNoteDAO implements NoteDAO {
 	}
 	
 	/**
-	 * @return
+	 * @return List<Note> object of all Notes from the database
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Note> getNotes() {
@@ -58,7 +58,7 @@ public class HibernateNoteDAO implements NoteDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.NoteService#getNote(java.lang.Long)
+	 * @see org.openmrs.api.db.NoteDAO#getNote(Integer)
 	 */
 	public Note getNote(Integer id) {
 		log.info("Get note " + id);

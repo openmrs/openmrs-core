@@ -24,8 +24,10 @@ import org.openmrs.User;
 import org.openmrs.api.OrderService.ORDER_STATUS;
 
 /**
- * Order-related database functions This class should never be used directly. It should only be used
- * through the {@link org.openmrs.api.OrderService}
+ * Order-related database functions
+ * <p>
+ * This class should never be used directly. It should only be used through the
+ * {@link org.openmrs.api.OrderService}
  * 
  * @see org.openmrs.api.OrderService
  */
@@ -61,7 +63,6 @@ public interface OrderDAO {
 	public Order saveOrder(Order order) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.OrderService#purgeOrder(Order,boolean)
 	 * @see org.openmrs.api.OrderService#purgeOrder(Order)
 	 */
 	public void deleteOrder(Order order) throws DAOException;

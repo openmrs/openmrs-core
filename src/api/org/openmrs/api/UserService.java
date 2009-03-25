@@ -27,7 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Contains methods pertaining to Users in the system Use:<br/>
  * 
  * <pre>
- *   List<User> users = Context.getUserService().getAllUsers();
+ * 
+ * List&lt;User&gt; users = Context.getUserService().getAllUsers();
  * </pre>
  * 
  * @see org.openmrs.api.context.Context
@@ -40,7 +41,7 @@ public interface UserService extends OpenmrsService {
 	 * 
 	 * @param user
 	 * @param password
-	 * @returns a User object
+	 * @return a User object
 	 * @throws APIException
 	 * @should create new user with basic elements
 	 * @should should create user who is patient already
@@ -52,7 +53,7 @@ public interface UserService extends OpenmrsService {
 	public User saveUser(User user, String password) throws APIException;
 	
 	/**
-	 * @see {@link #saveUser(User, String)}
+	 * @see #saveUser(User, String)
 	 * @deprecated replaced by {@link #saveUser(User, String)}
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_USERS })
@@ -85,7 +86,7 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * true/false if username or systemId is already in db in username or system_id columns
 	 * 
-	 * @param User to compare
+	 * @param user User to compare
 	 * @return boolean
 	 * @throws APIException
 	 */
@@ -96,7 +97,7 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Get users by role granted
 	 * 
-	 * @param Role role that the Users must have to be returned
+	 * @param role Role that the Users must have to be returned
 	 * @return users with requested role
 	 * @throws APIException
 	 */
@@ -109,7 +110,7 @@ public interface UserService extends OpenmrsService {
 	 * 
 	 * @param user
 	 * @throws APIException
-	 * @see {@link #saveUser(User, String)}
+	 * @see #saveUser(User, String)
 	 * @deprecated replaced by {@link #saveUser(User, String)}
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
@@ -225,7 +226,7 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Save the given role in the database
 	 * 
-	 * @param Role to update
+	 * @param role Role to update
 	 * @return the saved role
 	 * @throws APIException
 	 */
@@ -235,7 +236,7 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Complete remove a role from the database
 	 * 
-	 * @param Role to delete from the database
+	 * @param role Role to delete from the database
 	 * @throws APIException
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_ROLES })
@@ -244,7 +245,7 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Save the given privilege in the database
 	 * 
-	 * @param Privilege to update
+	 * @param privilege Privilege to update
 	 * @return the saved privilege
 	 * @throws APIException
 	 */
@@ -254,7 +255,7 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Complete remove a privilege from the database
 	 * 
-	 * @param Privilege to delete
+	 * @param privilege Privilege to delete
 	 * @throws APIException
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_PRIVILEGES })
@@ -263,7 +264,7 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Returns role object with given string role
 	 * 
-	 * @return Role
+	 * @return Role object for specified string
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -300,7 +301,7 @@ public interface UserService extends OpenmrsService {
 	 * ** Restricted to Super User access**
 	 * 
 	 * @param u user
-	 * @param pw2 new password
+	 * @param pw new password
 	 * @throws APIException
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS })
@@ -339,8 +340,8 @@ public interface UserService extends OpenmrsService {
 	 * Changes the current user's secret question and answer.
 	 * 
 	 * @param pw user's password
-	 * @param question
-	 * @param answer
+	 * @param q question
+	 * @param a answer
 	 * @throws APIException
 	 * @should match on correctly hashed stored password
 	 * @should match on incorrectly hashed stored password
@@ -351,7 +352,7 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Compares <code>answer</code> against the <code>user</code>'s secret answer.
 	 * 
-	 * @param user
+	 * @param u user
 	 * @param answer
 	 * @throws APIException
 	 */
@@ -394,7 +395,7 @@ public interface UserService extends OpenmrsService {
 	 * @param givenName
 	 * @param familyName
 	 * @param includeVoided
-	 * @return
+	 * @return List<User> object of users matching criteria
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
@@ -409,6 +410,7 @@ public interface UserService extends OpenmrsService {
 	
 	/**
 	 * Adds the <code>key</code>/<code>value</code> pair to the given <code>user</code>.
+	 * <p>
 	 * <b>Implementations of this method should handle privileges</b>
 	 * 
 	 * @param user

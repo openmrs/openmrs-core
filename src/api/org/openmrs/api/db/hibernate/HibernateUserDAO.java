@@ -68,7 +68,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User)
+	 * @see org.openmrs.api.UserService#saveUser(org.openmrs.User, java.lang.String)
 	 */
 	public User saveUser(User user, String password) {
 		
@@ -147,7 +147,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#getUser(java.lang.Long)
+	 * @see org.openmrs.api.UserService#getUser(java.lang.Integer)
 	 */
 	public User getUser(Integer userId) {
 		User user = (User) sessionFactory.getCurrentSession().get(User.class, userId);
@@ -245,7 +245,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.UserService#getUserByRole(org.openmrs.Role)
+	 * @see org.openmrs.api.UserService#getUsersByRole(org.openmrs.Role)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByRole(Role role) throws DAOException {
@@ -265,7 +265,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#getPrivilege()
+	 * @see org.openmrs.api.UserService#getPrivilege(String)
 	 */
 	public Privilege getPrivilege(String p) throws DAOException {
 		return (Privilege) sessionFactory.getCurrentSession().get(Privilege.class, p);
@@ -287,7 +287,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#deleteRole(org.openmrs.Role)
+	 * @see org.openmrs.api.UserService#purgeRole(org.openmrs.Role)
 	 */
 	public void deleteRole(Role role) throws DAOException {
 		sessionFactory.getCurrentSession().delete(role);
@@ -310,7 +310,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#getRole()
+	 * @see org.openmrs.api.UserService#getRole(String)
 	 */
 	public Role getRole(String r) throws DAOException {
 		return (Role) sessionFactory.getCurrentSession().get(Role.class, r);
@@ -335,7 +335,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserDAO#changeHashedPassword(User, String, String)
+	 * @see org.openmrs.api.db.UserDAO#changeHashedPassword(User, String, String)
 	 */
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws DAOException {
 		User authUser = Context.getAuthenticatedUser();
@@ -602,7 +602,7 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.api.UserService#generateSystemId()
+	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
 	public Integer generateSystemId() {
 		

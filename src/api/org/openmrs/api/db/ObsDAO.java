@@ -32,7 +32,7 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 public interface ObsDAO {
 	
 	/**
-	 * @see org.openmrs.api.ObsService#saveObs(org.openmrs.Obs)
+	 * @see org.openmrs.api.ObsService#saveObs(org.openmrs.Obs, String)
 	 */
 	public Obs saveObs(Obs obs) throws DAOException;
 	

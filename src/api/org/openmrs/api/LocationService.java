@@ -67,7 +67,7 @@ public interface LocationService extends OpenmrsService {
 	 * returned if no location exists with this location.
 	 * 
 	 * @param locationId integer primary key of the location to find
-	 * @returns Location object that has location.locationId = <code>locationId</code> passed in.
+	 * @return Location object that has location.locationId = <code>locationId</code> passed in.
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -78,7 +78,7 @@ public interface LocationService extends OpenmrsService {
 	 * there is no location with this name
 	 * 
 	 * @param name the exact name of the location to match on
-	 * @returns Location matching the <code>name</code> to Location.name
+	 * @return Location matching the <code>name</code> to Location.name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -87,7 +87,7 @@ public interface LocationService extends OpenmrsService {
 	/**
 	 * Returns the default location for this implementation.
 	 * 
-	 * @returns The default location for this implementation.
+	 * @return The default location for this implementation.
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -97,7 +97,7 @@ public interface LocationService extends OpenmrsService {
 	 * Returns a location by guid TODO: Not yet implemented.
 	 * 
 	 * @param guid is the guid of the desired location
-	 * @returns location with the given guid
+	 * @return location with the given guid
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -107,7 +107,7 @@ public interface LocationService extends OpenmrsService {
 	 * Returns all locations, includes retired locations. This method delegates to the
 	 * #getAllLocations(boolean) method
 	 * 
-	 * @returns locations that are in the database
+	 * @return locations that are in the database
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -181,7 +181,7 @@ public interface LocationService extends OpenmrsService {
 	 * circulation and use.
 	 * 
 	 * @param location
-	 * @return
+	 * @return the newly unretired location
 	 * @throws APIException
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_LOCATIONS })
@@ -215,8 +215,8 @@ public interface LocationService extends OpenmrsService {
 	 * value is returned if no tag exists with this ID.
 	 * 
 	 * @param locationTagId integer primary key of the location tag to find
-	 * @returns LocationTag object that has LocationTag.locationTagId = <code>locationTagId</code>
-	 *          passed in.
+	 * @return LocationTag object that has LocationTag.locationTagId = <code>locationTagId</code>
+	 *         passed in.
 	 * @since 1.5
 	 */
 	@Transactional(readOnly = true)
@@ -227,8 +227,8 @@ public interface LocationService extends OpenmrsService {
 	 * Returns a location tag given the location's exact name (tag). A null value is returned if
 	 * there is no tag with this name.
 	 * 
-	 * @param name the exact name of the tag to match on
-	 * @returns LocationTag matching the name to LocationTag.tag
+	 * @param tag the exact name of the tag to match on
+	 * @return LocationTag matching the name to LocationTag.tag
 	 * @since 1.5
 	 * @should get location tag by name
 	 */
@@ -240,7 +240,7 @@ public interface LocationService extends OpenmrsService {
 	 * Returns all location tags, includes retired location tags. This method delegates to the
 	 * #getAllLocationTags(boolean) method.
 	 * 
-	 * @returns location tags that are in the database
+	 * @return location tags that are in the database
 	 * @since 1.5
 	 */
 	@Transactional(readOnly = true)
@@ -285,7 +285,7 @@ public interface LocationService extends OpenmrsService {
 	 * and use.
 	 * 
 	 * @param tag
-	 * @return
+	 * @return the newly unretired location tag
 	 * @throws APIException
 	 * @since 1.5
 	 */

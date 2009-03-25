@@ -484,9 +484,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * 
 	 * @param locale the locale to fetch for
 	 * @return ConceptName attributed to the Concept in the given locale
-	 * @see {@link Concept#getNames(Locale)} to get all the names for a locale,
-	 * @see {@link Concept#getPreferredName(Locale)} for the preferred name (if any),
-	 * @see {@link Concept#getBestName(Locale)} to get the best match for a locale.
+	 * @see Concept#getNames(Locale) to get all the names for a locale,
+	 * @see Concept#getPreferredName(Locale) for the preferred name (if any),
+	 * @see Concept#getBestName(Locale) to get the best match for a locale.
 	 * @should get preferred fully specified country
 	 */
 	public ConceptName getName(Locale locale) {
@@ -499,9 +499,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * matching either of those, the first name defined for this concept is returned.
 	 * 
 	 * @return {@link ConceptName} in the current locale or any locale if none found
-	 * @see {@link Concept#getNames(Locale)} to get all the names for a locale,
-	 * @see {@link Concept#getPreferredName(Locale)} for the preferred name (if any),
-	 * @see {@link Concept#getBestName(Locale)} to get the best match for a locale.
+	 * @see Concept#getNames(Locale) to get all the names for a locale
+	 * @see Concept#getPreferredName(Locale) for the preferred name (if any)
+	 * @see Concept#getBestName(Locale) to get the best match for a locale
 	 */
 	public ConceptName getName() {
 		return getName(Context.getLocale());
@@ -541,9 +541,9 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * @param locale the language and country in which the name is used
 	 * @param exact true/false to return only exact locale (no default locale)
 	 * @return the closest name in the given locale, or the first name
-	 * @see {@link Concept#getNames(Locale)} to get all the names for a locale,
-	 * @see {@link Concept#getPreferredName(Locale)} for the preferred name (if any),
-	 * @see {@link Concept#getBestName(Locale)} to get the best match for a locale.
+	 * @see Concept#getNames(Locale) to get all the names for a locale,
+	 * @see Concept#getPreferredName(Locale) for the preferred name (if any),
+	 * @see Concept#getBestName(Locale) to get the best match for a locale.
 	 * @should return exact name locale match given exact equals true
 	 * @should return loose match given exact equals false
 	 * @should return any name if no locale match given exact equals false

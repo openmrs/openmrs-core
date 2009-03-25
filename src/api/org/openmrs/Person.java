@@ -88,9 +88,10 @@ public class Person implements java.io.Serializable {
 	private boolean isUser;
 	
 	/**
-	 * Convenience map from PersonAttributeType.name to PersonAttribute This is "cached" for each
-	 * user upon first load. When an attribute is changed, the cache is cleared and rebuilt on next
-	 * access.
+	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br/>
+	 * <br/>
+	 * This is "cached" for each user upon first load. When an attribute is changed, the cache is
+	 * cleared and rebuilt on next access.
 	 */
 	Map<String, PersonAttribute> attributeMap = null;
 	
@@ -372,10 +373,12 @@ public class Person implements java.io.Serializable {
 	// Convenience methods
 	
 	/**
-	 * Convenience Method Adds the <code>attribute</code> to this person's attribute list if the
-	 * attribute doesn't exist already Voids any current attribute with type =
-	 * <code>newAttribute.getAttributeType()</code> NOTE: This effectively limits persons to only
-	 * one attribute of any given type **
+	 * Convenience method to add the <code>attribute</code> to this person's attribute list if the
+	 * attribute doesn't exist already.<br/>
+	 * <br/>
+	 * Voids any current attribute with type = <code>newAttribute.getAttributeType()</code><br/>
+	 * <br/>
+	 * NOTE: This effectively limits persons to only one attribute of any given type **
 	 * 
 	 * @param newAttribute PersonAttribute to add to the Person
 	 */
@@ -406,8 +409,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Removes the <code>attribute</code> from this person's attribute list if
-	 * the attribute exists already
+	 * Convenience method to get the <code>attribute</code> from this person's attribute list if the
+	 * attribute exists already.
 	 * 
 	 * @param attribute
 	 */
@@ -418,8 +421,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Returns the first non-voided person attribute matching a person attribute
-	 * type
+	 * Convenience Method to return the first non-voided person attribute matching a person
+	 * attribute type
 	 * 
 	 * @param pat
 	 * @return PersonAttribute
@@ -435,8 +438,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Returns this person's first attribute that has a PersonAttributeType.name
-	 * equal to <code>attributeName</code>
+	 * Convenience method to get this person's first attribute that has a PersonAttributeType.name
+	 * equal to <code>attributeName</code>.
 	 * 
 	 * @param attributeName
 	 */
@@ -453,8 +456,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Returns this person's first attribute that has a PersonAttributeTypeId
-	 * equal to <code>attributeTypeId</code>
+	 * Convenience method to get this person's first attribute that has a PersonAttributeTypeId
+	 * equal to <code>attributeTypeId</code>.
 	 * 
 	 * @param attributeTypeId
 	 */
@@ -468,8 +471,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Returns all of this person's attributes that have a
-	 * PersonAttributeType.name equal to <code>attributeName</code>
+	 * Convenience method< to get all of this person's attributes that have a
+	 * PersonAttributeType.name equal to <code>attributeName</code>.
 	 * 
 	 * @param attributeName
 	 */
@@ -487,8 +490,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Returns all of this person's attributes that have a PersonAttributeType.id
-	 * equal to <code>attributeTypeId</code>
+	 * Convenience method to get all of this person's attributes that have a PersonAttributeType.id
+	 * equal to <code>attributeTypeId</code>.
 	 * 
 	 * @param attributeTypeId
 	 */
@@ -505,8 +508,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Returns all of this person's attributes that have a PersonAttributeType
-	 * equal to <code>personAttributeType</code>
+	 * Convenience method to get all of this person's attributes that have a PersonAttributeType
+	 * equal to <code>personAttributeType</code>.
 	 * 
 	 * @param personAttributeType
 	 */
@@ -521,9 +524,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * 
-	 * @return Returns all of this person's attributes in map form: <String attribute name, PersonAttribute>
+	 * Convenience method to get all of this person's attributes in map form: <String,
+	 * PersonAttribute>.
 	 */
 	public Map<String, PersonAttribute> getAttributeMap() {
 		if (attributeMap != null)
@@ -556,8 +558,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Adds the <code>name</code> to this person's name list if the name doesn't
-	 * exist already
+	 * Convenience method to add the <code>name</code> to this person's name list if the name
+	 * doesn't exist already.
 	 * 
 	 * @param name
 	 */
@@ -572,8 +574,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Removes the <code>name</code> from this person's name list if the name
-	 * exists already
+	 * Convenience method remove the <code>name</code> from this person's name list if the name
+	 * exists already.
 	 * 
 	 * @param name
 	 */
@@ -583,8 +585,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Adds the <code>address</code> to this person's address list if the address
-	 * doesn't exist already
+	 * Convenience method to add the <code>address</code> to this person's address list if the
+	 * address doesn't exist already.
 	 * 
 	 * @param address
 	 */
@@ -599,8 +601,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Removes the <code>address</code> from this person's address list if the
-	 * address exists already
+	 * Convenience method to remove the <code>address</code> from this person's address list if the
+	 * address exists already.
 	 * 
 	 * @param address
 	 */
@@ -610,8 +612,8 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Get the "preferred" name for the person. Returns a blank PersonName object
-	 * if no names are given
+	 * Convenience method to get the "preferred" name for the person. Returns a blank PersonName
+	 * object if no names are given.
 	 * 
 	 * @return Returns the "preferred" person name.
 	 */
@@ -676,7 +678,7 @@ public class Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method Calculates person's age based on the birthdate
+	 * Convenience method to calculate this person's age based on the birthdate
 	 * 
 	 * @return Returns age as an Integer.
 	 */

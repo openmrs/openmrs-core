@@ -61,14 +61,14 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ObsService#deleteObs(org.openmrs.Obs)
+	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
 	 */
 	public void deleteObs(Obs obs) throws DAOException {
 		sessionFactory.getCurrentSession().delete(obs);
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ObsService#getObs(java.lang.Integer)
+	 * @see org.openmrs.api.ObsService#getObs(java.lang.Integer)
 	 */
 	public Obs getObs(Integer obsId) throws DAOException {
 		return (Obs) sessionFactory.getCurrentSession().get(Obs.class, obsId);
@@ -97,7 +97,7 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ObsSDAO#saveMimeType(org.openmrs.MimeType)
+	 * @see org.openmrs.api.db.ObsDAO#saveMimeType(org.openmrs.MimeType)
 	 * @deprecated
 	 */
 	public MimeType saveMimeType(MimeType mimeType) throws DAOException {
@@ -132,9 +132,8 @@ public class HibernateObsDAO implements ObsDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ObsDAO#getObservations(java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.String,
-	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean)
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List,
+	 *      Integer, Integer, Date, Date, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
