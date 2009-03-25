@@ -25,16 +25,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.PasswordException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -118,12 +119,12 @@ public class UserFormController extends PersonFormController {
 			
 			//check password strength
 			if (password.length() > 0) {
-				if (password.length() < 6)
-					errors.reject("error.password.length");
-				if (StringUtils.isAlpha(password))
-					errors.reject("error.password.characters");
-				if (password.equals(user.getUsername()) || password.equals(user.getSystemId()))
-					errors.reject("error.password.weak");
+				try {
+					OpenmrsUtil.validatePassword(user.getUsername(), password, String.valueOf(user.getUserId()));
+				}
+				catch (PasswordException e) {
+					errors.reject(e.getMessage());
+				}
 			}
 			
 			// add Roles to user (because spring can't handle lists as properties...)

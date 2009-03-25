@@ -30,8 +30,12 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
+import org.openmrs.api.InvalidCharactersPasswordException;
+import org.openmrs.api.ShortPasswordException;
+import org.openmrs.api.WeakPasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * Tests the methods in {@link OpenmrsUtil} TODO: finish adding tests for all methods
@@ -175,5 +179,59 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldReturnNullWithNullParameterToUrl2File() throws Exception {
 		assertNull(OpenmrsUtil.url2file(null));
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with digit only password", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithDigitOnlyPassword() throws Exception {
+		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with char only password", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithCharOnlyPassword() throws Exception {
+		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail without upper case char password", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithoutUpperCaseCharPassword() throws Exception {
+		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = WeakPasswordException.class)
+	@Verifies(value = "should fail with password equals to user name", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithPasswordEqualsToUserName() throws Exception {
+		OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = WeakPasswordException.class)
+	@Verifies(value = "should fail with password equals to system id", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithPasswordEqualsToSystemId() throws Exception {
+		OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = ShortPasswordException.class)
+	@Verifies(value = "should fail with short password", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithShortPassword() throws Exception {
+		OpenmrsUtil.validatePassword("admin", "1234567", "1-8");
 	}
 }
