@@ -56,6 +56,8 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 import javax.xml.transform.OutputKeys;
@@ -84,7 +86,11 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.InvalidCharactersPasswordException;
+import org.openmrs.api.PasswordException;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ShortPasswordException;
+import org.openmrs.api.WeakPasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.logic.LogicCriteria;
@@ -1629,5 +1635,38 @@ public class OpenmrsUtil {
 		}
 		
 		return response;
+	}
+	
+	/**
+	 * Utility to check the validity of a password for a certain {@link User}. Valid password are
+	 * string with:
+	 * <ul>
+	 * <li>8 character minimum length
+	 * <li>have at least one digit
+	 * <li>have at least one upper case character
+	 * <li>not equal to {@link User}'s username or system id
+	 * </ul>
+	 * The regular expression currently used is "^(?=.*?[0-9])(?=.*?[A-Z])[\\w]*$".
+	 * 
+	 * @param username user name of the user with password to validated
+	 * @param password string that will be validated
+	 * @param systemId system id of the user with password to be validated
+	 * @throws PasswordException
+	 * @should fail with short password
+	 * @should fail with digit only password
+	 * @should fail with char only password
+	 * @should fail without upper case char password
+	 * @should fail with password equals to user name
+	 * @should fail with password equals to system id
+	 */
+	public static void validatePassword(String username, String password, String systemId) throws PasswordException {
+		if (password.length() < 8)
+			throw new ShortPasswordException();
+		Pattern pattern = Pattern.compile("^(?=.*?[0-9])(?=.*?[A-Z])[\\w]*$");
+		Matcher matcher = pattern.matcher(password);
+		if (!matcher.matches())
+			throw new InvalidCharactersPasswordException();
+		if (password.equals(username) || password.equals(systemId))
+			throw new WeakPasswordException();
 	}
 }

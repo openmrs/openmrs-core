@@ -48,6 +48,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.openmrs.ImplementationId;
+import org.openmrs.api.PasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.SchedulerConstants;
@@ -361,6 +362,15 @@ public class InitializationFilter implements Filter {
 			// throw back if the user didn't put in a password
 			if (wizardModel.adminUserPassword.equals("")) {
 				wizardModel.errors.add("An admin password is required");
+				renderTemplate("adminusersetup.vm", referenceMap, writer);
+				return;
+			}
+			
+			try {
+				OpenmrsUtil.validatePassword("admin", wizardModel.adminUserPassword, "admin");
+			}
+			catch (PasswordException p) {
+				wizardModel.errors.add("The password is not long enough, does not contain both uppercase characters and a number, or matches the username.");
 				renderTemplate("adminusersetup.vm", referenceMap, writer);
 				return;
 			}
