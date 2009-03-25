@@ -13,7 +13,7 @@
  */
 package org.openmrs.api;
 
-import org.apache.catalina.User;
+import org.openmrs.User;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
