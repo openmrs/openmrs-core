@@ -49,14 +49,14 @@ public interface DataSetService {
 	/**
 	 * Registered a DataSetProvider and make it available to users of the data set service
 	 * 
-	 * @param provider to add
+	 * @param newProvider DataSetProvider to add
 	 */
 	public void registerProvider(DataSetProvider newProvider);
 	
 	/**
 	 * Remove a registered DataSetProvider
 	 * 
-	 * @param provider
+	 * @param provider DataSetProvider to remove
 	 */
 	public void removeProvider(DataSetProvider provider) throws APIException;
 	
@@ -67,13 +67,13 @@ public interface DataSetService {
 	public DataSetProvider getProvider(DataSetDefinition definition) throws APIException;
 	
 	/**
-	 * Evaluate a data set definition and return a
+	 * Evaluate a data set definition to get turn it into a DataSet
 	 * 
 	 * @param definition
 	 * @param inputCohort Input cohort optionally specified by the user. May be ignored by some data
 	 *            sets.
 	 * @param evalContext EvaluationContext containing parameter values, etc
-	 * @return
+	 * @return a DataSet matching the parameters
 	 * @throws APIException when no DataSetProvider is found in the registered providers for the
 	 *             given definition
 	 * @see #setProviders(List)

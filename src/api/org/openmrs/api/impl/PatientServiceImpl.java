@@ -87,8 +87,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * Clean up after this class.  Set the static var to null so that the
-	 * classloader can reclaim the space. 
+	 * Clean up after this class. Set the static var to null so that the classloader can reclaim the
+	 * space.
 	 * 
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */

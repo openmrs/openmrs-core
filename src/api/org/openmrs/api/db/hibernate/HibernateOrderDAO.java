@@ -84,7 +84,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderService#getOrderTypes()
+	 * @see org.openmrs.api.OrderService#getOrderTypes()
 	 */
 	@SuppressWarnings("unchecked")
 	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws DAOException {
@@ -127,7 +127,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderService#getOrder(java.lang.Integer)
+	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws DAOException {

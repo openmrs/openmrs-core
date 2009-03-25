@@ -129,7 +129,7 @@ public class Context {
 	/**
 	 * Used to set the context's DAO for the application.
 	 * 
-	 * @param daoContext
+	 * @param dao ContextDAO to set
 	 */
 	public void setContextDAO(ContextDAO dao) {
 		contextDAO = dao;
@@ -150,10 +150,12 @@ public class Context {
 	
 	/**
 	 * Sets the user context on the thread local so that the service layer can perform
-	 * authentication/authorization checks. TODO Make thread-safe because this might be accessed by
-	 * several thread at the same time. Making this thread safe might make this a bottleneck.
+	 * authentication/authorization checks.<br/>
+	 * <br/>
+	 * TODO Make thread-safe because this might be accessed by several thread at the same time.
+	 * Making this thread safe might make this a bottleneck.
 	 * 
-	 * @param userContext
+	 * @param ctx UserContext to set
 	 */
 	public static void setUserContext(UserContext ctx) {
 		if (log.isTraceEnabled())
@@ -198,7 +200,7 @@ public class Context {
 	/**
 	 * Gets the service context.
 	 * 
-	 * @return
+	 * @return The UserContext
 	 */
 	private static ServiceContext getServiceContext() {
 		if (serviceContext == null) {
@@ -486,7 +488,7 @@ public class Context {
 	 * Convenience method to allow us to change the configuration more easily. TODO Ideally, we
 	 * would be using Spring's method injection to set the dependencies for the message service.
 	 * 
-	 * @return
+	 * @return the ServiceContext
 	 */
 	private static MessageSender getMessageSender() {
 		return new MailMessageSender(getMailSession());
@@ -532,7 +534,7 @@ public class Context {
 		getUserContext().logout();
 		
 		//reset the UserContext object (usually cleared out by closeSession() soon after this)
-		setUserContext(new UserContext()); 
+		setUserContext(new UserContext());
 	}
 	
 	/**
@@ -654,7 +656,7 @@ public class Context {
 	 * will be required with a mapping from question prompt to user answer before startup can be
 	 * called again.
 	 * 
-	 * @param Properties runtime properties to use for startup
+	 * @param props Runtime properties to use for startup
 	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
 	 *             cannot continue without input from the user
 	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
@@ -687,9 +689,9 @@ public class Context {
 	 * called again.
 	 * 
 	 * @param url database url like "jdbc:mysql://localhost:3306/openmrs?autoReconnect=true"
-	 * @param username connection username
-	 * @param password connection password
-	 * @param Properties other startup properties
+	 * @param username Connection username
+	 * @param password Connection password
+	 * @param properties Other startup properties
 	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
 	 *             cannot continue without input from the user
 	 * @see #startup(Properties)
@@ -759,16 +761,17 @@ public class Context {
 	/**
 	 * Used for getting services not in the previous get*Service() calls
 	 * 
-	 * @param cls
-	 * @return
+	 * @param cls The Class of the service to get
+	 * @return The requested Service
 	 */
 	public static <T extends Object> T getService(Class<? extends T> cls) {
 		return getServiceContext().getService(cls);
 	}
 	
 	/**
-	 * Adds an AOP advisor around the given Class <code>cls</code> Advisors can wrap around a method
-	 * and effect the method before or after
+	 * Adds an AOP advisor around the given Class <code>cls</code>
+	 * <p>
+	 * Advisors can wrap around a method and effect the method before or after
 	 * 
 	 * @param cls
 	 * @param advisor
@@ -779,8 +782,9 @@ public class Context {
 	}
 	
 	/**
-	 * Adds an AOP advice object around the given Class <code>cls</code> Advice comes in the form of
-	 * before or afterReturning methods
+	 * Adds an AOP advice object around the given Class <code>cls</code>
+	 * <p>
+	 * Advice comes in the form of before or afterReturning methods
 	 * 
 	 * @param cls
 	 * @param advice

@@ -110,7 +110,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	/**
 	 * Set sessionFactory.getCurrentSession() factory
 	 * 
-	 * @param sessionFactory.getCurrentSession()Factory
+	 * @param sessionFactory SessionFactory to set
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
@@ -472,12 +472,13 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * given program, workflow, and state, within a given date range
 	 * 
 	 * @param program The program the patient must have been in
-	 * @param state The state the patient must have been in (implies a workflow) (can be null)
+	 * @param stateList List of states the patient must have been in (implies a workflow) (can be
+	 *            null)
 	 * @param fromDate If not null, then only patients in the given program/workflow/state on or
 	 *            after this date
 	 * @param toDate If not null, then only patients in the given program/workflow/state on or
 	 *            before this date
-	 * @return
+	 * @return Cohort of Patients matching criteria
 	 */
 	public Cohort getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate,
 	                                           Date toDate) {
@@ -2034,8 +2035,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * @param patients
-	 * @param types
-	 * @return
+	 * @param types List<PatientIdentifierTypes> of types to get
+	 * @return Map of {@link PatientIdentifier}s
 	 */
 	@SuppressWarnings("unchecked")
 	public Map<Integer, PatientIdentifier> getPatientIdentifierByType(Cohort patients, List<PatientIdentifierType> types) {

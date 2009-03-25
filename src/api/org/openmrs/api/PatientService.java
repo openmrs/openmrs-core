@@ -210,8 +210,7 @@ public interface PatientService extends OpenmrsService {
 	public void purgePatient(Patient patient) throws APIException;
 	
 	/**
-	 * @deprecated replaced by
-	 *             {@link #getPatientIdentifiers(String, List, List, List, Boolean, Boolean, boolean)}
+	 * @deprecated replaced by {@link #getPatientIdentifiers(String, List, List, List, Boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_IDENTIFIERS })
@@ -238,8 +237,7 @@ public interface PatientService extends OpenmrsService {
 	                                                     Boolean isPreferred) throws APIException;
 	
 	/**
-	 * @deprecated replaced by
-	 *             {@link #getPatientIdentifiers(String, List, List, List, Boolean, Boolean, boolean)}
+	 * @deprecated replaced by {@link #getPatientIdentifiers(String, List, List, List, Boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_IDENTIFIERS })
@@ -260,7 +258,7 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Create or update a PatientIdentifierType
 	 * 
-	 * @param PatientIdentifierType identifier type to create or update
+	 * @param patientIdentifierType PatientIdentifierType to create or update
 	 * @return the saved type
 	 * @throws APIException
 	 * @should create new type
@@ -318,8 +316,8 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Get patientIdentifierType by internal identifier
 	 * 
-	 * @param patientIdentifierType id
-	 * @return patientIdentifierType with given internal identifier
+	 * @param patientIdentifierTypeId
+	 * @return patientIdentifierType with specified internal identifier
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -370,7 +368,7 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Purge PatientIdentifierType (cannot be undone)
 	 * 
-	 * @param PatientIdentifierType to purge from the database
+	 * @param patientIdentifierType PatientIdentifierType to purge from the database
 	 * @throws APIException
 	 * @should delete type from database
 	 */
@@ -530,7 +528,7 @@ public interface PatientService extends OpenmrsService {
 	                                                                                                         throws APIException;
 	
 	/**
-	 * @param identifierValidator which validator to get.
+	 * @param clazz identifierValidator which validator to get.
 	 */
 	public IdentifierValidator getIdentifierValidator(Class<IdentifierValidator> clazz);
 	

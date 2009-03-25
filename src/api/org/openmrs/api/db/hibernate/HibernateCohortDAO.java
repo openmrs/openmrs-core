@@ -75,7 +75,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.CohortDAO#findCohorts(java.lang.String)
+	 * @see org.openmrs.api.db.CohortDAO#getCohorts(java.lang.String)
 	 */
 	public List<Cohort> getCohorts(String nameFragment) throws DAOException {
 		// TODO Auto-generated method stub

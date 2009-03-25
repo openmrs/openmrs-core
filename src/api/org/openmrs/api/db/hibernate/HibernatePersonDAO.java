@@ -355,7 +355,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getRelationship()
+	 * @see org.openmrs.api.PersonService#getRelationship(java.lang.Integer)
 	 * @see org.openmrs.api.db.PersonDAO#getRelationship(java.lang.Integer)
 	 */
 	public Relationship getRelationship(Integer relationshipId) throws DAOException {
@@ -403,8 +403,8 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getRelationshipType(java.lang.Integer)
-	 * @see org.openmrs.api.db.PatientDAO#getRelationshipType(java.lang.Integer)
+	 * @see org.openmrs.api.PersonService#getRelationshipType(java.lang.Integer)
+	 * @see org.openmrs.api.db.PersonDAO#getRelationshipType(java.lang.Integer)
 	 */
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException {
 		RelationshipType relationshipType = new RelationshipType();
@@ -432,7 +432,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getRelationshipTypes()
+	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes()
 	 * @see org.openmrs.api.db.PersonDAO#getAllRelationshipTypes()
 	 */
 	@SuppressWarnings("unchecked")

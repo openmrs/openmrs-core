@@ -165,7 +165,7 @@ public class ServiceContext {
 	}
 	
 	/**
-	 * @param cohort related service
+	 * @param cs cohort related service
 	 */
 	public void setCohortService(CohortService cs) {
 		setService(CohortService.class, cs);
@@ -237,7 +237,7 @@ public class ServiceContext {
 	/**
 	 * Set the scheduler service.
 	 * 
-	 * @param service
+	 * @param schedulerService
 	 */
 	public void setSchedulerService(SchedulerService schedulerService) {
 		setService(SchedulerService.class, schedulerService);
@@ -288,7 +288,7 @@ public class ServiceContext {
 	/**
 	 * Sets the message service.
 	 * 
-	 * @param service
+	 * @param messageService
 	 */
 	public void setMessageService(MessageService messageService) {
 		setService(MessageService.class, messageService);
@@ -380,7 +380,7 @@ public class ServiceContext {
 	}
 	
 	/**
-	 * @return
+	 * @return the DataSetService
 	 */
 	public DataSetService getDataSetService() {
 		return (DataSetService) getService(DataSetService.class);
@@ -454,7 +454,7 @@ public class ServiceContext {
 	/**
 	 * Sets the MessageSourceService used in the context.
 	 * 
-	 * @param messageService the MessageSourceService to use
+	 * @param messageSourceService the MessageSourceService to use
 	 */
 	public void setMessageSourceService(MessageSourceService messageSourceService) {
 		setService(MessageSourceService.class, messageSourceService);
@@ -580,7 +580,7 @@ public class ServiceContext {
 	 * <code>params</code>[0] = string representing the service interface<br/>
 	 * <code>params</code>[1] = service instance
 	 * 
-	 * @param list list of parameters
+	 * @param params list of parameters
 	 */
 	@SuppressWarnings("unchecked")
 	public void setModuleService(List<Object> params) {

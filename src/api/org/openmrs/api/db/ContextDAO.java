@@ -73,14 +73,16 @@ public interface ContextDAO {
 	 * cached copy
 	 * 
 	 * @param obj The object to evict/remove from the session
-	 * @see Context.evictFromSession(Object)
+	 * @see org.openmrs.api.context.Context#evictFromSession(Object)
 	 */
 	public void evictFromSession(Object obj);
 	
 	/**
-	 * Starts the OpenMRS System Should be called prior to any kind of activity
+	 * Starts the OpenMRS System
+	 * <p>
+	 * Should be called prior to any kind of activity
 	 * 
-	 * @param Properties
+	 * @param props Properties
 	 */
 	@Transactional
 	public void startup(Properties props);

@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @see org.openmrs.Cohort
  * @see org.openmrs.cohort.CohortDefinition
- * @see org.openmrs.api.CohortDefinitionProvider
+ * @see org.openmrs.cohort.CohortDefinitionProvider
  */
 @Transactional
 public interface CohortService extends OpenmrsService {
@@ -296,7 +296,7 @@ public interface CohortService extends OpenmrsService {
 	public void purgeCohortDefinition(CohortDefinition definition) throws APIException;
 	
 	/**
-	 * Auto generated method comment
+	 * TODO Auto generated method comment
 	 * 
 	 * @param definition
 	 * @param evalContext

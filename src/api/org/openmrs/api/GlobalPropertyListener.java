@@ -16,10 +16,10 @@ package org.openmrs.api;
 import org.openmrs.GlobalProperty;
 
 /**
- * This interface allows code to be run when global properties are created, edited, or deleted.
+ * This interface allows code to be run when global properties are created, edited, or deleted. <br/>
+ * TODO: Make sure listeners are notified if a global property's name is changed.
  * 
- * @see AdministrationService#addGlobalPropertyListener(String, GlobalPropertyListener) TODO: Make
- *      sure listeners are notified if a global property's name is changed.
+ * @see AdministrationService#addGlobalPropertyListener(GlobalPropertyListener)
  */
 public interface GlobalPropertyListener {
 	

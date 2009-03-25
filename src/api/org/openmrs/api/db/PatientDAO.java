@@ -44,7 +44,7 @@ public interface PatientDAO {
 	 * 
 	 * @param patient patient to be deleted
 	 * @see org.openmrs.api.PatientService#deletePatient(org.openmrs.Patient)
-	 * @see #voidPatient(Patient, String)
+	 * @see org.openmrs.api.PatientService#voidPatient(Patient, String)
 	 */
 	public void deletePatient(Patient patient) throws DAOException;
 	

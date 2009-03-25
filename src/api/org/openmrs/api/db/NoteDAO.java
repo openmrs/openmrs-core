@@ -27,7 +27,7 @@ public interface NoteDAO {
 	/**
 	 * Get all notes
 	 * 
-	 * @param note to be created
+	 * @return List<Note> object with all Notes
 	 * @throws DAOException
 	 */
 	public List<Note> getNotes() throws DAOException;
@@ -43,8 +43,8 @@ public interface NoteDAO {
 	/**
 	 * Get note by internal identifier
 	 * 
-	 * @param noteId internal note identifier
-	 * @return note with given internal identifier
+	 * @param noteId Internal integer identifier for requested Note
+	 * @return <code>Note</code> with given internal identifier
 	 * @throws DAOException
 	 */
 	public Note getNote(Integer noteId) throws DAOException;
@@ -52,7 +52,7 @@ public interface NoteDAO {
 	/**
 	 * Update note
 	 * 
-	 * @param note to be updated
+	 * @param note <code>Note</code> to be updated
 	 * @throws DAOException
 	 */
 	public void updateNote(Note note) throws DAOException;
@@ -61,7 +61,7 @@ public interface NoteDAO {
 	 * Delete note from database. This <b>should not be called</b> except for testing and
 	 * administration purposes. Use the void method instead.
 	 * 
-	 * @param note note to be deleted
+	 * @param note <code>Note</code> to be deleted
 	 * @see #voidNote(Note, String)
 	 */
 	public void deleteNote(Note note) throws DAOException;

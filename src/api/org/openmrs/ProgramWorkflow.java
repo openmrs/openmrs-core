@@ -172,7 +172,7 @@ public class ProgramWorkflow implements java.io.Serializable {
 	}
 	
 	/**
-	 * Returns a {@link Set<ProgramWorkflowState>} including all non-retired ProgramWorkflowStates
+	 * Returns a Set<{@link ProgramWorkflowState}> including all non-retired ProgramWorkflowStates
 	 * and all retired ProgramWorkflowStates in this ProgramWorkflow if <code>includeRetired</code>
 	 * is true
 	 * 
@@ -191,7 +191,7 @@ public class ProgramWorkflow implements java.io.Serializable {
 	}
 	
 	/**
-	 * Returns a {@link Set<ProgramWorkflowState>} including all ProgramWorkflowStates, sorted by
+	 * Returns a Set<{@link ProgramWorkflowState}> including all ProgramWorkflowStates, sorted by
 	 * {@link ConceptName}
 	 * 
 	 * @return Set<ProgramWorkflowState> - all ProgramWorkflowStates, sorted by {@link ConceptName}
@@ -217,7 +217,7 @@ public class ProgramWorkflow implements java.io.Serializable {
 	}
 	
 	/**
-	 * Returns a {@link List<ProgramWorkflowState>} including all possible next
+	 * Returns a List<{@link ProgramWorkflowState}> including all possible next
 	 * ProgramWorkflowStates, for the passed {@link PatientProgram} ordered by {@link ConceptName}
 	 * 
 	 * @param patientProgram - The PatientProgram to check
@@ -236,7 +236,7 @@ public class ProgramWorkflow implements java.io.Serializable {
 	}
 	
 	/**
-	 * Returns a {@link List<ProgramWorkflowState>} including all possible next
+	 * Returns a List<{@link ProgramWorkflowState}> including all possible next
 	 * ProgramWorkflowStates, for the passed {@link PatientProgram} ordered by {@link ConceptName}.
 	 * 
 	 * @param fromState {@link ProgramWorkflowState} to check transition from

@@ -54,7 +54,6 @@ public interface EncounterDAO {
 	
 	/**
 	 * @param patientId
-	 * @param includeVoided
 	 * @return all encounters for the given patient identifer
 	 * @throws DAOException
 	 */
@@ -70,7 +69,7 @@ public interface EncounterDAO {
 	 * @param enteredViaForms
 	 * @param encounterTypes
 	 * @param includeVoided
-	 * @return
+	 * @return List<Encounter> object of all Encounters matching the criteria
 	 */
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
 	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
@@ -94,8 +93,8 @@ public interface EncounterDAO {
 	/**
 	 * Get encounterType by internal identifier
 	 * 
-	 * @param encounterType id
-	 * @return encounterType with given internal identifier
+	 * @param encounterTypeId Internal Integer identifier for an EncounterType
+	 * @return EncounterType with given internal identifier
 	 * @throws DAOException
 	 */
 	public EncounterType getEncounterType(Integer encounterTypeId) throws DAOException;
@@ -103,7 +102,7 @@ public interface EncounterDAO {
 	/**
 	 * Get encounterType by name
 	 * 
-	 * @param encounterType string
+	 * @param name String representation of an encounterType
 	 * @return EncounterType
 	 * @throws DAOException
 	 */

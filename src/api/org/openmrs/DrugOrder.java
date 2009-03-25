@@ -84,8 +84,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		if (obj instanceof DrugOrder) {
 			//DrugOrder d = (DrugOrder)obj;
 			return (super.equals((Order) obj)); /* &&
-								this.getDrug().equals(d.getDrug()) &&
-								this.getDose().equals(d.getDose())); */
+										this.getDrug().equals(d.getDrug()) &&
+										this.getDose().equals(d.getDose())); */
 		}
 		return false;
 	}

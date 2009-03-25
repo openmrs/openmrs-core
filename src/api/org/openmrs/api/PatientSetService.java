@@ -66,7 +66,7 @@ public interface PatientSetService {
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException;
 	
 	/**
-	 * Get patients by specified gender birthdate range, age range, and alive status (all optional)
+	 * Get patients by specified gender, birthdate range, age range, and alive status (all optional)
 	 * 
 	 * @param gender
 	 * @param minBirthdate
@@ -75,7 +75,7 @@ public interface PatientSetService {
 	 * @param maxAge
 	 * @param aliveOnly
 	 * @param deadOnly
-	 * @return
+	 * @return Cohort with all matching patients
 	 * @throws DAOException
 	 * @should get all patients when no parameters given
 	 * @should get patients of given gender
@@ -89,6 +89,27 @@ public interface PatientSetService {
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
 	                                           Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException;
 	
+	/**
+	 * Get patients by specified gender, birthdate range, age range, and alive status (all optional)
+	 * 
+	 * @param gender
+	 * @param minBirthdate
+	 * @param maxBirthdate
+	 * @param minAge
+	 * @param maxAge
+	 * @param aliveOnly
+	 * @param deadOnly
+	 * @param effectiveDate
+	 * @return Cohort with all matching patients
+	 * @throws DAOException
+	 * @should get all patients when no parameters given
+	 * @should get patients of given gender
+	 * @should get patients born before date
+	 * @should get patients born after date
+	 * @should get patients born between dates
+	 * @should get patients who are alive
+	 * @should get patients who are dead
+	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
 	                                           Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate)
@@ -116,7 +137,7 @@ public interface PatientSetService {
 	 * @param toDate
 	 * @param minCount
 	 * @param maxCount
-	 * @return
+	 * @return Cohort with matching Patients
 	 * @should get all patients with encounters when no parameters specified
 	 * @should get patients with encounters of type
 	 * @should get patients with encounters at location
@@ -139,7 +160,7 @@ public interface PatientSetService {
 	 * @param stateList
 	 * @param fromDate
 	 * @param toDate
-	 * @return
+	 * @return Cohort with matching Patients
 	 * @should get all patients in any program given null parameters
 	 * @should get patients in program
 	 * @should get patients in program from date
@@ -184,7 +205,7 @@ public interface PatientSetService {
 	 * Can also be used to find patient with no drug orders on that date.
 	 * 
 	 * @param patientIds Collection of patientIds you're interested in. NULL means all patients.
-	 * @param takingAny Collection of drugIds the patient is taking. (Or the empty set to mean
+	 * @param takingIds Collection of drugIds the patient is taking. (Or the empty set to mean
 	 *            "any drug" or NULL to mean "no drugs")
 	 * @param onDate Which date to look at the patients' drug orders. (NULL defaults to now().)
 	 */
@@ -203,6 +224,7 @@ public interface PatientSetService {
 	 *            null, or now() if it is.)
 	 * @param toDate End of date range to look at (NULL defaults to fromDate if that isn't null, or
 	 *            now() if it is.)
+	 * @return Cohort with matching Patients
 	 * @should get all patients with drug orders given null parameters
 	 * @should get patients with no drug orders
 	 * @should get patients with drug orders for drugs
@@ -360,8 +382,8 @@ public interface PatientSetService {
 	                                                String joinProperty, String outputColumn, boolean returnAll);
 	
 	/**
-	 * @param patients
-	 * @return
+	 * @param patients Cohort of patients to look up
+	 * @return Map<Integer,Map<String,Object>> with characteristics of specified patients
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients);
@@ -369,34 +391,35 @@ public interface PatientSetService {
 	/**
 	 * Gets a map of patient identifiers by identifier type, indexed by patient primary key.
 	 * 
-	 * @param patients
-	 * @param type
-	 * @return
+	 * @param patients Cohort of patients to look up
+	 * @param type PatientIdentifierType to retrieve
+	 * @return Map of patient identifiers and PatientIdentifierTypes, for all patients in the
+	 *         specified cohort
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(Cohort patients, PatientIdentifierType type);
 	
 	/**
-	 * @param identifiers
-	 * @return
+	 * @param identifiers List of String patient identifiers
+	 * @return Cohort of patients matching specified identifiers
 	 */
 	@Transactional(readOnly = true)
 	public Cohort convertPatientIdentifier(List<String> identifiers);
 	
 	/**
 	 * @param patientIds
-	 * @return
+	 * @return List of matching patients
 	 */
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(Collection<Integer> patientIds);
 	
 	/**
-	 * @param ps
+	 * @param ps Cohort to void
 	 */
 	public void setMyPatientSet(Cohort ps);
 	
 	/**
-	 * @return
+	 * @return the Patient Set as a Cohort
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getMyPatientSet();
@@ -445,8 +468,9 @@ public interface PatientSetService {
 	/**
 	 * Gets a list of encounters associated with the given form, filtered by the given patient set.
 	 * 
-	 * @param patients the patients to filter by (null will return all encounters for all patients)
-	 * @param forms the forms to filter by
+	 * @param patients Cohort of the patients to filter by (null will return all encounters for all
+	 *            patients)
+	 * @param form List<Form> of the forms to filter by
 	 */
 	@Transactional(readOnly = true)
 	public List<Encounter> getEncountersByForm(Cohort patients, List<Form> form);

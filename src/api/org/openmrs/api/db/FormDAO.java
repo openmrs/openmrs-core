@@ -36,10 +36,10 @@ public interface FormDAO {
 	public Form saveForm(Form form) throws DAOException;
 	
 	/**
-	 * Creates new form from the given <code>form</code>
+	 * Creates new form from the given <code>Form</code>
 	 * 
-	 * @param form Form to duplicate
-	 * @return newly duplicated Form
+	 * @param form <code>Form</code> to duplicate
+	 * @return newly duplicated <code>Form</code>
 	 * @throws DAOException
 	 */
 	public Form duplicateForm(Form form) throws DAOException;
@@ -47,8 +47,8 @@ public interface FormDAO {
 	/**
 	 * Get form by internal form identifier
 	 * 
-	 * @param formId internal identifier
-	 * @return requested form
+	 * @param formId <code>Integer</code> internal identifier for requested Form
+	 * @return requested <code>Form</code>
 	 * @throws DAOException
 	 */
 	public Form getForm(Integer formId) throws DAOException;
@@ -66,7 +66,7 @@ public interface FormDAO {
 	/**
 	 * Gets all forms with the given name, sorted (alphabetically) by descending version
 	 * 
-	 * @param name the name of the forms to get
+	 * @param name String name of the forms to get
 	 * @return All forms with the given name, sorted by (alphabetically) by descending version
 	 * @throws DAOException
 	 */
@@ -81,7 +81,7 @@ public interface FormDAO {
 	 * the form record. If the form has been included in any other parts of the database (through a
 	 * foreign key), the attempt to delete the form will violate foreign key constraints and fail.
 	 * 
-	 * @param form
+	 * @param form Form to delete
 	 * @throws DAOException
 	 */
 	public void deleteForm(Form form) throws DAOException;
@@ -89,8 +89,8 @@ public interface FormDAO {
 	/**
 	 * Get all field types
 	 * 
-	 * @param includeRetired true/false whether to also include retired types
-	 * @return field types list
+	 * @param includeRetired boolean - include retired field types as well?
+	 * @return List<FieldTypes> object with all FieldTypes, possibly including retired ones
 	 * @throws DAOException
 	 */
 	public List<FieldType> getAllFieldTypes(boolean includeRetired) throws DAOException;
@@ -98,8 +98,8 @@ public interface FormDAO {
 	/**
 	 * Get fieldType by internal identifier
 	 * 
-	 * @param fieldType id
-	 * @return fieldType with given internal identifier
+	 * @param fieldTypeId Internal Integer identifier of FieldType
+	 * @return The FieldType with specified internal identifier
 	 * @throws DAOException
 	 */
 	public FieldType getFieldType(Integer fieldTypeId) throws DAOException;
@@ -107,8 +107,8 @@ public interface FormDAO {
 	/**
 	 * Returns all forms in the database, possibly including retired ones
 	 * 
-	 * @param includeRetired whether or not to include retired forms
-	 * @return all forms, possibly including retired ones
+	 * @param includeRetired boolean - include retired forms?
+	 * @return List<Form> object of all forms, possibly including retired ones
 	 * @throws DAOException
 	 */
 	public List<Form> getAllForms(boolean includeRetired) throws DAOException;
@@ -116,7 +116,7 @@ public interface FormDAO {
 	/**
 	 * Returns all FormFields in the database
 	 * 
-	 * @return
+	 * @return List<FormField> object of all FormFields in the database
 	 * @throws DAOException
 	 */
 	public List<FormField> getAllFormFields() throws DAOException;
@@ -129,7 +129,8 @@ public interface FormDAO {
 	                                                                                                                throws DAOException;
 	
 	/**
-	 * @return list of fields in the db matching search phrase
+	 * @param search String phrase to search for
+	 * @return list of fields in the database matching search phrase
 	 * @throws DAOException
 	 */
 	public List<Field> getFields(String search) throws DAOException;
@@ -154,10 +155,11 @@ public interface FormDAO {
 	public Field saveField(Field field) throws DAOException;
 	
 	/**
-	 * Deletes a field from the database. This will fail if any other entities reference this field
-	 * via a foreign key
+	 * Deletes a field from the database.
+	 * <p>
+	 * This will fail if any other entities reference this field via a foreign key
 	 * 
-	 * @param field the field to delete
+	 * @param field the Field to delete
 	 * @throws DAOException
 	 */
 	public void deleteField(Field field) throws DAOException;
@@ -184,16 +186,23 @@ public interface FormDAO {
 	/**
 	 * Returns all fields that match a broad range of (nullable) criteria
 	 * 
-	 * @param forms fields belonging to any of these forms
-	 * @param fieldTypes fields of any of these types
-	 * @param concepts fields pointing to any of these concepts
-	 * @param tableNames fields pointing to any of these table names
-	 * @param attributeNames fields pointing to any of these attribute names
-	 * @param selectMultiple fields with this selectMultiple value
-	 * @param containsAllAnswers fields that contain all these answers (not yet implemented)
-	 * @param containsAnyAnswer fields that contain any of these answers (not yet implemented)
-	 * @param retired fields with this retired status
-	 * @return
+	 * @param forms <code>Collection</code> of <code>Form</code> to which the requested Fields must
+	 *            belong
+	 * @param fieldTypes <code>Collection</code> of <code>FieldType</code> of which the requested
+	 *            fields must be
+	 * @param concepts <code>Collection</code> of <code>Concepts</code> which the fields must point
+	 *            to
+	 * @param tableNames <code>Collection of <code>TableName</code>s which the fields must point to
+	 * @param attributeNames <code>Collection of <code>String</code> attribute names which the
+	 *            fields must point to
+	 * @param selectMultiple <code>Boolean</code> value that matching fields must have for
+	 *            selectMultiple
+	 * @param containsAllAnswers <code>Collection</code> of <code>FieldAnswer</code>s, all of which
+	 *            a matching field must contain (not yet implemented)
+	 * @param containsAnyAnswer <code>Collection</code> of <code>FieldAnswer</code>s, any one of
+	 *            which a matching field must contain (not yet implemented)
+	 * @param retired <code>Boolean</code> retired status that fields must match
+	 * @return All Fields that match the criteria
 	 */
 	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
 	                             Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
@@ -201,10 +210,10 @@ public interface FormDAO {
 	                             Boolean retired) throws DAOException;
 	
 	/**
-	 * Get all forms that contain the given concept as one of their fields. (Includes retired
-	 * forms.)
+	 * Get all forms that contain the given <code>Concept</code> as one of their fields. (Includes
+	 * retired forms.)
 	 * 
-	 * @param concept the concept to search through form fields for
+	 * @param concept the <code>Concept</code> to search through form fields for
 	 * @return forms that contain a form field referencing the given concept
 	 */
 	public List<Form> getFormsContainingConcept(Concept concept) throws DAOException;
@@ -212,14 +221,16 @@ public interface FormDAO {
 	/**
 	 * Gets all forms that match all the criteria. Expects the list objects to be non-null
 	 * 
-	 * @param partialNameSearch partial search of name
-	 * @param published whether the form is published
-	 * @param encounterTypes whether the form has any of these encounter types
-	 * @param retired whether the form is retired
-	 * @param containingAnyFormField includes forms that contain any of the specified FormFields
-	 * @param containingAllFormFields includes forms that contain all of the specified FormFields
-	 * @param fields whether the form has any of these fields
-	 * @return All forms that match the
+	 * @param partialName String of partial name of form to search on
+	 * @param published boolean - is the form published?
+	 * @param encounterTypes Collection of <code>EncounterType</code>s that the form must represent
+	 * @param retired boolean - is the form retired?
+	 * @param containingAnyFormField Collection of <code>FormField</code>s, any one of which must be
+	 *            contained in the form
+	 * @param containingAllFormFields Collection of <code>FormField</code>s, all of which must be
+	 *            contained in the form
+	 * @param fields Collection of <code>Field</code>s that the form must contain
+	 * @return All forms that match the criteria
 	 * @see org.openmrs.api.FormService#getForms(java.lang.String, java.lang.Boolean,
 	 *      java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection,
 	 *      java.util.Collection)
@@ -231,14 +242,14 @@ public interface FormDAO {
 	/**
 	 * Delete the given field type from the database
 	 * 
-	 * @param fieldType
+	 * @param fieldType FieldType to delete
 	 */
 	public void deleteFieldType(FieldType fieldType) throws DAOException;
 	
 	/**
 	 * Save the given field type to the database
 	 * 
-	 * @param fieldType
+	 * @param fieldType FieldType to save to the database
 	 * @return the newly saved field type
 	 */
 	public FieldType saveFieldType(FieldType fieldType) throws DAOException;

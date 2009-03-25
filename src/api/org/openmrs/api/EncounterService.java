@@ -143,8 +143,8 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Voiding a encounter essentially removes it from circulation
 	 * 
-	 * @param Encounter encounter
-	 * @param String reason
+	 * @param encounter Encounter object to void
+	 * @param reason String reason that it's being voided
 	 * @should void encounter and set attributes
 	 * @should cascade to obs
 	 * @should cascade to orders
@@ -156,7 +156,7 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Unvoid encounter record
 	 * 
-	 * @param encounter encounter to be revived
+	 * @param encounter Encounter to be revived
 	 * @should cascade unvoid to obs
 	 * @should cascade unvoid to orders
 	 * @should unvoid and unmark all attributes
@@ -179,7 +179,7 @@ public interface EncounterService extends OpenmrsService {
 	 * encounters, use <code>voidEncounter(org.openmrs.Encounter)</code>
 	 * 
 	 * @param encounter encounter object to be purged
-	 * @param cascade also purge observations
+	 * @param cascade Purge any related observations as well?
 	 * @should cascade purge to obs and orders
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_ENCOUNTERS })
@@ -201,7 +201,7 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Get encounterType by internal identifier
 	 * 
-	 * @param encounterType id
+	 * @param encounterTypeId Integer
 	 * @return encounterType with given internal identifier
 	 * @throws APIException
 	 * @should throw error if given null parameter
@@ -213,7 +213,7 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Get encounterType by exact name
 	 * 
-	 * @param encounterType string to match to an Encounter.name
+	 * @param name string to match to an Encounter.name
 	 * @return EncounterType that is not retired
 	 * @throws APIException
 	 * @should not get retired types
@@ -326,7 +326,7 @@ public interface EncounterService extends OpenmrsService {
 	 * <code>voidEncounter(org.openmrs.Encounter)</code>
 	 * 
 	 * @param encounter encounter object to be deleted
-	 * @deprecated replaced by {@link #purgeEncounter(encounter)}
+	 * @deprecated replaced by {@link #purgeEncounter(Encounter)}
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_DELETE_ENCOUNTERS })
 	public void deleteEncounter(Encounter encounter) throws APIException;
@@ -376,7 +376,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param who
 	 * @param includeVoided No longer supported.
-	 * @return
+	 * @return List<Encounter> object of non-voided Encounters
 	 * @deprecated replaced by {@link #getEncountersByPatient(Patient)}
 	 */
 	@Transactional(readOnly = true)
@@ -388,7 +388,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param who
 	 * @param where
-	 * @return
+	 * @return List<Encounter> object of all encounters with this patient in specified location
 	 * @deprecated use
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
 	 */
@@ -403,7 +403,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param who
 	 * @param fromDate
 	 * @param toDate
-	 * @return
+	 * @return List<Encounter> object of all encounters with this patient in specified date range
 	 * @deprecated use
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
 	 */
@@ -416,7 +416,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @param fromDate
 	 * @param toDate
-	 * @return
+	 * @return Encounters from specified date range
 	 * @deprecated use
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
 	 */
@@ -431,7 +431,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param loc Location
 	 * @param fromDate
 	 * @param toDate
-	 * @return
+	 * @return Encounters from specified location and date range
 	 * @deprecated use
 	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
 	 */
@@ -442,7 +442,7 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Get all encounter types (not retired)
 	 * 
-	 * @return
+	 * @return A List<EncounterType> object of all non-retired EncounterTypes
 	 * @throws APIException
 	 * @deprecated replaced by {@link #getAllEncounterTypes()}
 	 */
@@ -455,7 +455,7 @@ public interface EncounterService extends OpenmrsService {
 	 * 
 	 * @return location list
 	 * @throws APIException
-	 * @deprecated replaced by {@link org.openmrs.api.LocationService#getAllLocations()}
+	 * @deprecated replaced by {@link LocationService#getAllLocations()}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -464,7 +464,7 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Get location by internal identifier
 	 * 
-	 * @param location id
+	 * @param locationId
 	 * @return location with given internal identifier
 	 * @throws APIException
 	 * @deprecated replaced by {@link org.openmrs.api.LocationService#getLocation(Integer)}

@@ -77,7 +77,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.AdministrationService#createReport(org.openmrs.reporting.Report)
+	 * @see org.openmrs.api.AdministrationService#createReport(org.openmrs.reporting.Report)
 	 */
 	public void createReport(Report r) throws DAOException {
 		r.setCreator(Context.getAuthenticatedUser());
@@ -86,7 +86,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.AdministrationService#updateReport(org.openmrs.reporting.Report)
+	 * @see org.openmrs.api.AdministrationService#updateReport(org.openmrs.reporting.Report)
 	 */
 	public void updateReport(Report r) throws DAOException {
 		if (r.getReportId() == null)
@@ -97,14 +97,14 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.AdministrationService#deleteReport(org.openmrs.reporting.Report)
+	 * @see org.openmrs.api.AdministrationService#deleteReport(org.openmrs.reporting.Report)
 	 */
 	public void deleteReport(Report r) throws DAOException {
 		sessionFactory.getCurrentSession().delete(r);
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.AdministrationService#mrnGeneratorLog(java.lang.String,java.lang.Integer,java.lang.Integer)
+	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String,java.lang.Integer,java.lang.Integer)
 	 */
 	public void mrnGeneratorLog(String site, Integer start, Integer count) {
 		PreparedStatement ps = null;
@@ -138,7 +138,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.AdministrationService#getMRNGeneratorLog()
+	 * @see org.openmrs.api.AdministrationService#getMRNGeneratorLog()
 	 */
 	public Collection getMRNGeneratorLog() {
 		Collection<Map<String, Object>> logs = new Vector<Map<String, Object>>();
