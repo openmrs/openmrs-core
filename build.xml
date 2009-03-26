@@ -504,6 +504,7 @@
 	    <path id="junit-path">
 			<fileset refid="lib.files" />
 		    <pathelement path="${build.dir}"/>
+	    	<pathelement path="${metadata.dir}/api/log4j/"/>
 	    	<pathelement path="web/WEB-INF/"/>
 			<pathelement location="${dist.dir}/${openmrs.api.name}"/>
 		</path>
