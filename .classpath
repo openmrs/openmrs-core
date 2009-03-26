@@ -53,7 +53,7 @@
 	<classpathentry kind="lib" path="lib/stax/stax-api-1.0.1.jar"/>
 	<classpathentry kind="lib" path="metadata/api/spring"/>
 	<classpathentry kind="lib" path="metadata/api/hibernate"/>
-	<classpathentry kind="lib" path="metadata/api/log4j"/>
+	<classpathentry kind="lib" path="metadata/api/log4j/junit"/>
 	<classpathentry kind="lib" path="metadata/model"/>
 	<classpathentry kind="lib" path="web/WEB-INF"/>
 	<classpathentry kind="lib" path="lib/xstream/xstream-1.3.jar"/>
