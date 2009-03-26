@@ -674,6 +674,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
 	
+	public static final String GLOBAL_PROPERTY_PROBLEM_LIST                = "concept.problemList";
+	
 	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS = "report.xmlMacros";
 	
 	public static final String GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS = "dashboard.regimen.standardRegimens";
@@ -889,6 +891,12 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS,
 		                "1238",
 		                "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
+		
+		props
+        .add(new GlobalProperty(
+                GLOBAL_PROPERTY_PROBLEM_LIST,
+                "1284",
+                "The concept id of the PROBLEM LIST concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
 		
 		props
 		        .add(new GlobalProperty(

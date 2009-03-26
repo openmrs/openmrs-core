@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.hl7;
+package org.openmrs.hl7.handler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,7 +21,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import org.junit.Assert;
@@ -32,10 +31,12 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
-import org.openmrs.hl7.handler.ORUR01Handler;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 import ca.uhn.hl7v2.app.MessageTypeRouter;
 import ca.uhn.hl7v2.model.Message;
@@ -69,20 +70,16 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @throws Exception
+	 * @see {@link ORUR01Handler#processMessage(Message)}
 	 */
 	@Test
-	public void shouldBasicCreate() throws Exception {
+	@Verifies(value = "should create encounter and obs from hl7 message", method = "processMessage(Message)")
+	public void processMessage_shouldCreateEncounterAndObsFromHl7Message() throws Exception {
 		ObsService obsService = Context.getObsService();
 		
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\rPID|||3^^^^||John3^Doe^||\rPV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080226102537|1^Super User\rOBR|1|||\rOBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\rOBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
-		
-		// ABKTODO: base test has changed. Is this needed?
-		// commitTransaction(false);
-		
-		//System.out.println("obs size for pat 2: " + obsService.getObservations(new Patient(2), false));
 		
 		Patient patient = new Patient(3);
 		
@@ -109,13 +106,12 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	/**
 	 * This method checks that obs grouping is happening correctly when processing an ORUR01
 	 * 
-	 * @throws Exception
+	 * @see {@link ORUR01Handler#processMessage(Message)}
 	 */
 	@Test
-	public void shouldGroupObsCreate() throws Exception {
+	@Verifies(value = "should create obs group for OBRs", method = "processMessage(Message)")
+	public void processMessage_shouldCreateObsGroupForOBRs() throws Exception {
 		ObsService obsService = Context.getObsService();
-		
-		//System.out.println("obs size for patient #2: " + obsService.getObservations(new Patient(2), false));
 		
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226103553||ORU^R01|OD9PWqcD9g0NKn81rvSD|P|2.5|1||||||||66^AMRS.ELD.FORMID\rPID|||3^^^^||John^Doe^||\rPV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080205|||||||V\rORC|RE||||||||20080226103428|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|DT|1592^MISSED RETURNED VISIT DATE^99DCT||20080201|||||||||20080205\rOBR|2|||1726^FOLLOW-UP ACTION^99DCT\rOBX|1|CWE|1558^PATIENT CONTACT METHOD^99DCT|1|1555^PHONE^99DCT|||||||||20080205\rOBX|2|NM|1553^NUMBER OF ATTEMPTS^99DCT|1|1|||||||||20080205\rOBX|3|NM|1554^SUCCESSFUL^99DCT|1|1|||||||||20080205";
 		Message hl7message = parser.parse(hl7string);
@@ -135,7 +131,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Calendar cal = new GregorianCalendar();
 		cal.set(2008, Calendar.FEBRUARY, 1, 0, 0, 0);
 		Date returnVisitDate = cal.getTime();
-		Set<Obs> returnVisitDateObsForPatient2 = obsService.getObservations(patient, returnVisitDateConcept, false);
+		List<Obs> returnVisitDateObsForPatient2 = obsService.getObservationsByPersonAndConcept(patient,
+		    returnVisitDateConcept);
 		assertEquals("There should be a return visit date", 1, returnVisitDateObsForPatient2.size());
 		Obs firstObs = (Obs) returnVisitDateObsForPatient2.toArray()[0];
 		
@@ -149,7 +146,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// check for the grouped obs
 		Concept contactMethod = new Concept(1558);
 		Concept phoneContact = Context.getConceptService().getConcept(1555);
-		Set<Obs> contactMethodObsForPatient2 = obsService.getObservations(patient, contactMethod, false);
+		List<Obs> contactMethodObsForPatient2 = obsService.getObservationsByPersonAndConcept(patient, contactMethod);
 		assertEquals("There should be a contact method", 1, contactMethodObsForPatient2.size());
 		Obs firstContactMethodObs = (Obs) contactMethodObsForPatient2.toArray()[0];
 		assertEquals("The contact method should be phone", phoneContact, firstContactMethodObs.getValueCoded());
@@ -170,7 +167,6 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		int groupedObsCount = 0;
 		for (Obs obs : obsForPatient2) {
-			//System.out.println("obs: " + obs.getConcept());
 			if (groupedConceptIds.contains(obs.getConcept().getConceptId())) {
 				groupedObsCount += 1;
 				assertEquals("All of the parent groups should match", obsGroup, obs.getObsGroup());
@@ -183,13 +179,14 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * If an hl7 message contains a "visit number" pv1-19 value, then assume its an encounter_id and that
-	 * information in the hl7 message should be appended to that encounter.
+	 * If an hl7 message contains a "visit number" pv1-19 value, then assume its an encounter_id and
+	 * that information in the hl7 message should be appended to that encounter.
 	 * 
-	 * @throws Exception
+	 * @see {@link ORUR01Handler#processMessage(Message)}
 	 */
 	@Test
-	public void shouldAppendToExistingEncounter() throws Exception {
+	@Verifies(value = "should append to an existing encounter", method = "processMessage(Message)")
+	public void processMessage_shouldAppendToAnExistingEncounter() throws Exception {
 		
 		// there should be an encounter with encounter_id == 3 for this test
 		// to append to
@@ -213,17 +210,15 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	/**
 	 * Should create a concept proposal because of the key string in the message
 	 * 
-	 * @throws Exception
+	 * @see {@link ORUR01Handler#processMessage(Message)}
 	 */
 	@Test
-	public void shouldCreateConceptProposal() throws Exception {
+	@Verifies(value = "should create basic concept proposal", method = "processMessage(Message)")
+	public void processMessage_shouldCreateBasicConceptProposal() throws Exception {
 		
+		// sanity check to make sure we have no concept proposals already
 		List<ConceptProposal> proposals = Context.getConceptService().getAllConceptProposals(false);
 		Assert.assertEquals(0, proposals.size());
-		
-		// there should be an encounter with encounter_id == 3 for this test
-		// to append to
-		assertNotNull(Context.getEncounterService().getEncounter(3));
 		
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080924022306||ORU^R01|Z185fTD0YozQ5kvQZD7i|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^||Joe^S^Mith||\rPV1||O|1^Unknown Module 2||||1^Joe (1-1)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080219085345|1^Joe\rOBR|1|||\rOBX|18|DT|5096^RETURN VISIT DATE^99DCT||20080506|||||||||20080212\rOBR|19|||5096^PROBLEM LIST^99DCT\rOBX|1|CWE|5096^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
 		Message hl7message = parser.parse(hl7string);
@@ -237,17 +232,15 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	/**
 	 * Should create a concept proposal because of the key string in the message
 	 * 
-	 * @throws Exception
+	 * @see {@link ORUR01Handler#processMessage(Message)}
 	 */
 	@Test
-	public void shouldCreateConceptProposal2() throws Exception {
+	@Verifies(value = "should create concept proposal and with obs alongside", method = "processMessage(Message)")
+	public void processMessage_shouldCreateConceptProposalAndWithObsAlongside() throws Exception {
 		
+		// sanity check to make sure we have no concept proposals already
 		List<ConceptProposal> proposals = Context.getConceptService().getAllConceptProposals(false);
 		Assert.assertEquals(0, proposals.size());
-		
-		// there should be an encounter with encounter_id == 3 for this test
-		// to append to
-		assertNotNull(Context.getEncounterService().getEncounter(3));
 		
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20081006115934||ORU^R01|a1NZBpKqu54QyrWBEUKf|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^~asdf^^^^||Joe^ ^Smith||\rPV1||O|1^Bishop Muge||||1^asdf asdf (5-9)|||||||||||||||||||||||||||||||||||||20081003|||||||V\rORC|RE||||||||20081006115645|1^Super User\rOBR|1|||\rOBX|1|CWE|5096^PAY CATEGORY^99DCT||5096^PILOT^99DCT|||||||||20081003\rOBX|2|DT|5096^RETURN VISIT DATE^99DCT||20081004|||||||||20081003\rOBR|3|||5096^PROBLEM LIST^99DCT\rOBX|1|CWE|5018^PROBLEM ADDED^99DCT||5096^HUMAN IMMUNODEFICIENCY VIRUS^99DCT|||||||||20081003\rOBX|2|CWE|5089^PROBLEM ADDED^99DCT||PROPOSED^ASDFASDFASDF^99DCT|||||||||20081003";
 		Message hl7message = parser.parse(hl7string);
@@ -258,4 +251,36 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertEquals("ASDFASDFASDF", proposal.getOriginalText());
 		
 	}
+	
+	/**
+	 * Tests that a ConceptProposal row can be written by the processor
+	 * 
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should not create problem list observation with concept proposals", method = "processMessage(Message)")
+	public void processMessage_shouldNotCreateProblemListObservationWithConceptProposals() throws Exception {
+		ObsService obsService = Context.getObsService();
+		ConceptService conceptService = Context.getConceptService();
+		EncounterService encService = Context.getEncounterService();
+		
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\rPID|||3^^^^~d3811480^^^^||John3^Doe^||\rPV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20080208|||||||V\rORC|RE||||||||20080208000000|1^Super User\rOBR|1|||\rOBR|1|||1284^PROBLEM LIST^99DCT\rOBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^SEVERO DOLOR DE CABEZA^99DCT|||||||||20080208";
+		Message hl7message = parser.parse(hl7String);
+		router.processMessage(hl7message);
+		
+		Patient patient = new Patient(3);
+		
+		// check for any obs
+		assertEquals("There should not be any obs created for #3", 0, obsService.getObservationsByPerson(patient).size());
+		
+		// check for a new encounter
+		assertEquals("There should be 1 new encounter created for #3", 1, encService.getEncountersByPatient(patient).size());
+		
+		// check for the proposed concept
+		List<ConceptProposal> proposedConcepts = conceptService.getConceptProposals("SEVERO DOLOR DE CABEZA");
+		assertEquals("There should be a proposed concept by this name", 1, proposedConcepts.size());
+		assertEquals(encService.getEncountersByPatient(patient).get(0), proposedConcepts.get(0).getEncounter());
+		
+	}
+	
 }
