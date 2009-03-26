@@ -144,7 +144,6 @@
 		<copy todir="${build.dir}">
 			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
 			<fileset dir="${metadata.dir}/api/spring" includes="applicationContext-service.xml" />
-			<fileset dir="${metadata.dir}/api/log4j" includes="*.*" />
 			<fileset dir="${metadata.dir}/model" includes="liquibase-update-to-latest.xml" />
 		</copy>
 		<javac destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.compile.classpath">
@@ -180,8 +179,6 @@
 				<exclude name="**/*Test.class" />
 				<exclude name="**/include/" /> <!-- to skip all xml and omod files -->
 				<exclude name="**/test/" />
-				<exclude name="log4j*" />
-				<exclude name="velocity.properties" />
 				<exclude name="liquibase-data/" /> <!-- to skip the liquibase starter xml files -->
 			</fileset>
 		</jar>
@@ -322,9 +319,9 @@
 			<classes dir="${build.dir}">
 				<include name="**/web/**/*.class" />
 				<include name="**/web/**/*.vm" /> <!-- velocity macro files for initial setup -->
-				<include name="log4j.xml" />
-				<include name="velocity.properties" />
 			</classes>
+			<classes file="${metadata.dir}/api/log4j/log4j.xml" />
+			<classes file="${metadata.dir}/api/log4j/velocity.properties" />
 			<classes dir="${build.dir}/liquibase-data">
 				<include name="*" /> <!-- for the initial setup files: liquibase-schema-only.xml, liquibase-core-data.xml, liquibase-demo-data.xml-->
 			</classes>
