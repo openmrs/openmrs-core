@@ -12,11 +12,11 @@
            http://www.springframework.org/schema/util
            http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<!--  **************************  Transactional Interceptor  *************************  -->
+	<!--  **************************  Transactional Intercepter  *************************  -->
 	<!--  	
 		Looks for advisors (TransactionAttributeSourceAdvisor) in the context, and automatically 
 		creates proxy objects which are the transactional wrappers.  This object looks at every 
-		class defined below to see whether it contains the Transactional annonation attribute. 
+		class defined below to see whether it contains the Transactional annotation attribute. 
 		NOTE:  I believe this needs to be defined at the top of the file (or before all Transactional
 		components) because it needs to do processing on objects after they are initialized. 
 	-->
@@ -36,9 +36,7 @@
 	-->
 	<bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
 		<property name="transactionManager" ref="transactionManager"/>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 
 	<!--  **************************  EVENT LISTENERS ***************************** -->
@@ -332,6 +330,8 @@
 		</property>
 	</bean>
 	
+	<bean id="transactionAttributeSource" class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		
 	<bean id="mutableResourceBundleMessageSource" class="org.openmrs.messagesource.impl.MutableResourceBundleMessageSource">
 		<property name="basenames">
 			<!--  ABKTODO: Ugh. Presumes to be in a web application... -->
@@ -355,9 +355,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="personService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -368,9 +366,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="conceptService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -381,9 +377,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="userService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -394,9 +388,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="obsService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -407,9 +399,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="encounterService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -420,9 +410,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="locationService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -433,9 +421,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="orderService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -446,9 +432,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="formService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -459,9 +443,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="adminService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -472,9 +454,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="programWorkflowService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -485,9 +465,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="messageService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -498,9 +476,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="patientSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -511,9 +487,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="cohortService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -524,9 +498,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	
 	
@@ -539,9 +511,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="alertService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -552,9 +522,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="reportService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -565,9 +533,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="reportObjectService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -578,9 +544,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="dataSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -591,9 +555,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="hL7Service" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -604,9 +566,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="ardenService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -617,9 +577,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	<bean id="logicService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -630,9 +588,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	
 	<bean id="messageSourceService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
@@ -644,9 +600,7 @@
 				<ref local="loggingInterceptor"/>
 			</list>
 		</property>
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 	
 	<!--
