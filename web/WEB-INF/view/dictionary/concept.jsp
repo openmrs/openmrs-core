@@ -214,24 +214,28 @@
 				<td>
 					<table border="0">
 						<tr>
-							<th></th>
-							<th><spring:message code="ConceptNumeric.low"/></th>
-							<th><spring:message code="ConceptNumeric.high"/></th>
-						</tr>
-						<tr>
-							<th valign="middle"><spring:message code="ConceptNumeric.absolute"/></th>
-							<td valign="middle">${command.concept.lowAbsolute}</td>
+							<th valign="middle"><spring:message code="ConceptNumeric.absoluteHigh"/></th>
 							<td valign="middle">${command.concept.hiAbsolute}</td>
 						</tr>
 						<tr>
-							<th valign="middle"><spring:message code="ConceptNumeric.critical"/></th>
-							<td valign="middle">${command.concept.lowCritical}</td>
+							<th valign="middle"><spring:message code="ConceptNumeric.criticalHigh"/></th>
 							<td valign="middle">${command.concept.hiCritical}</td>
 						</tr>
 						<tr>
-							<th valign="middle"><spring:message code="ConceptNumeric.normal"/></th>
-							<td valign="middle">${command.concept.lowNormal}</td>
+							<th valign="middle"><spring:message code="ConceptNumeric.normalHigh"/></th>
 							<td valign="middle">${command.concept.hiNormal}</td>
+						</tr>
+						<tr>
+							<th valign="middle"><spring:message code="ConceptNumeric.normalLow"/></th>
+							<td valign="middle">${command.concept.lowNormal}</td>
+						</tr>
+						<tr>
+							<th valign="middle"><spring:message code="ConceptNumeric.criticalLow"/></th>
+							<td valign="middle">${command.concept.lowCritical}</td>
+						</tr>
+						<tr>
+							<th valign="middle"><spring:message code="ConceptNumeric.absoluteLow"/></th>
+							<td valign="middle">${command.concept.lowAbsolute}</td>
 						</tr>
 						<tr>
 							<td></td>
