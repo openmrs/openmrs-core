@@ -339,18 +339,7 @@
 		<td>
 			<table border="0">
 				<tr>
-					<th></th>
-					<th><spring:message code="ConceptNumeric.low"/></th>
-					<th><spring:message code="ConceptNumeric.high"/></th>
-				</tr>
-				<tr>
-					<th valign="middle"><spring:message code="ConceptNumeric.absolute"/></th>
-					<td valign="middle">
-						<spring:bind path="command.lowAbsolute">
-							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
-							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-						</spring:bind>
-					</td>
+					<th valign="middle"><spring:message code="ConceptNumeric.absoluteHigh"/></th>
 					<td valign="middle">
 						<spring:bind path="command.hiAbsolute">
 							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
@@ -359,13 +348,7 @@
 					</td>
 				</tr>
 				<tr>
-					<th valign="middle"><spring:message code="ConceptNumeric.critical"/></th>
-					<td valign="middle">
-						<spring:bind path="command.lowCritical">
-							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
-							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-						</spring:bind>
-					</td>
+					<th valign="middle"><spring:message code="ConceptNumeric.criticalHigh"/></th>
 					<td valign="middle">
 						<spring:bind path="command.hiCritical">
 							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
@@ -374,15 +357,36 @@
 					</td>
 				</tr>
 				<tr>
-					<th valign="middle"><spring:message code="ConceptNumeric.normal"/></th>
+					<th valign="middle"><spring:message code="ConceptNumeric.normalHigh"/></th>
+					<td valign="middle">
+						<spring:bind path="command.hiNormal">
+							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
+					</td>
+				</tr>
+				<tr>
+					<th valign="middle"><spring:message code="ConceptNumeric.normalLow"/></th>
 					<td valign="middle">
 						<spring:bind path="command.lowNormal">
 							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
 					</td>
+				</tr>
+				<tr>
+					<th valign="middle"><spring:message code="ConceptNumeric.criticalLow"/></th>
 					<td valign="middle">
-						<spring:bind path="command.hiNormal">
+						<spring:bind path="command.lowCritical">
+							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+						</spring:bind>
+					</td>
+				</tr>
+				<tr>
+					<th valign="middle"><spring:message code="ConceptNumeric.absoluteLow"/></th>
+					<td valign="middle">
+						<spring:bind path="command.lowAbsolute">
 							<input type="text" name="${status.expression}" value="${status.value}" class="smallWidth" />
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 						</spring:bind>
