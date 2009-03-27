@@ -56,7 +56,7 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	/**
 	 * Get all notes from the database.
 	 * 
-	 * @return
+	 * @return <code>Collection<Note></code> of all notes from the database
 	 * @throws Exception
 	 */
 	public Collection<Note> getNotes() throws Exception {
@@ -101,7 +101,7 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	/**
 	 * Get notes by user.
 	 * 
-	 * @param note to be updated
+	 * @param user
 	 * @throws APIException
 	 */
 	public List<Note> getNotes(User user) throws Exception {

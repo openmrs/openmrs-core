@@ -79,21 +79,21 @@ public class ReferenceRule implements Rule {
 	}
 	
 	/**
-	 * @see org.openmrs.logic.rule.Rule#getParameterList()
+	 * @see org.openmrs.logic.Rule#getParameterList()
 	 */
 	public Set<RuleParameterInfo> getParameterList() {
 		return null;
 	}
 	
 	/**
-	 * @see org.openmrs.logic.rule.Rule#getDependencies()
+	 * @see org.openmrs.logic.Rule#getDependencies()
 	 */
 	public String[] getDependencies() {
 		return null;
 	}
 	
 	/**
-	 * @see org.openmrs.logic.rule.Rule#getDatatype(java.lang.String)
+	 * @see org.openmrs.logic.Rule#getDefaultDatatype()
 	 */
 	public Datatype getDefaultDatatype() {
 		// TODO: data type for reference rule depends on key...for now just use
@@ -102,7 +102,7 @@ public class ReferenceRule implements Rule {
 	}
 	
 	/**
-	 * @see org.openmrs.logic.rule.Rule#getTTL()
+	 * @see org.openmrs.logic.Rule#getTTL()
 	 */
 	public int getTTL() {
 		return dataSource.getDefaultTTL();

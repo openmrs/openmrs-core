@@ -174,8 +174,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * Voids an Obs If the Obs argument is an obsGroup, all group members will be voided.
 	 * 
 	 * @see org.openmrs.api.ObsService#voidObs(org.openmrs.Obs, java.lang.String)
-	 * @param Obs obs the Obs to void
-	 * @param String reason the void reason
+	 * @param obs the Obs to void
+	 * @param reason the void reason
 	 * @throws APIException
 	 */
 	public Obs voidObs(Obs obs, String reason) throws APIException {
@@ -223,12 +223,15 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * Unvoids an Obs If the Obs argument is an obsGroup, all group members with the same dateVoided
-	 * will also be unvoided.
+	 * Unvoids an Obs
+	 * <p>
+	 * If the Obs argument is an obsGroup, all group members with the same dateVoided will also be
+	 * unvoided.
 	 * 
 	 * @see org.openmrs.api.ObsService#unvoidObs(org.openmrs.Obs)
-	 * @param Obs obs the Obs to unvoid
-	 * @throw APIException
+	 * @param obs the Obs to unvoid
+	 * @return the unvoided Obs
+	 * @throws APIException
 	 */
 	public Obs unvoidObs(Obs obs) throws APIException {
 		if (obs.isVoided() == false) {
@@ -427,7 +430,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * Obs parent = new Obs();
 	 * Obs child1 = new Obs();
 	 * Obs child2 = new Obs();
-	 *
+	 * 
 	 * parent.addGroupMember(child1);
 	 * parent.addGroupMember(child2);
 	 * </pre>
@@ -695,8 +698,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(java.util.List<org.openmrs.Concept>,
-	 *      java.util.Date, java.util.Data, boolean)
+	 * @see org.openmrs.api.ObsService#getObservations(List, Date, Date)
 	 * @deprecated
 	 */
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided) {
@@ -704,8 +706,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(java.util.List<org.openmrs.Concept>,
-	 *      java.util.Date, java.util.Data)
+	 * @see org.openmrs.api.ObsService#getObservations(List, Date, Date)
 	 * @deprecated
 	 */
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate) {
@@ -713,8 +714,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(Cohort patients, List<Concept> concepts, Date
-	 *      fromDate, Date toDate)
+	 * @see org.openmrs.api.ObsService#getObservations(Cohort, List, Date, Date)
 	 * @deprecated
 	 */
 	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate) {
@@ -728,7 +728,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getComplexObs(java.lang.Integer)
+	 * @see org.openmrs.api.ObsService#getComplexObs(Integer, String)
 	 */
 	public Obs getComplexObs(Integer obsId, String view) throws APIException {
 		Obs obs = dao.getObs(obsId);
@@ -810,15 +810,14 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#registerHandler(java.lang.Class,
-	 *      org.openmrs.obs.ComplexObsHandler)
+	 * @see org.openmrs.api.ObsService#registerHandler(String, ComplexObsHandler)
 	 */
 	public void registerHandler(String key, ComplexObsHandler handler) throws APIException {
 		getHandlers().put(key, handler);
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#registerHandler(java.lang.String)
+	 * @see org.openmrs.api.ObsService#registerHandler(String, String)
 	 */
 	@SuppressWarnings("unchecked")
 	public void registerHandler(String key, String handlerClass) throws APIException {

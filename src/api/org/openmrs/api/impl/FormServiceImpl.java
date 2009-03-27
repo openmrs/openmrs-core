@@ -40,8 +40,10 @@ import org.openmrs.validator.FormValidator;
 import org.springframework.validation.BindException;
 
 /**
- * Default implementation of the {@link FormService} This class should not be instantiated alone,
- * get a service class from the Context: Context.getFormService();
+ * Default implementation of the {@link FormService}
+ * <p>
+ * This class should not be instantiated alone, get a service class from the Context:
+ * Context.getFormService();
  * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.FormService

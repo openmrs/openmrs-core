@@ -43,7 +43,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	}
 	
 	/**
-	 * Currently supports all views and is the same as {@link #getObs(Obs)}
+	 * Currently supports all views
 	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */

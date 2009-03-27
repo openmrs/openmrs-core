@@ -22,8 +22,6 @@ import org.openmrs.util.OpenmrsClassLoader;
 
 /**
  * Simply used so that we have a way we can restart the DWR HttpServlet
- * 
- * @author bwolfe
  */
 public class OpenmrsDWRServlet extends DwrServlet {
 	

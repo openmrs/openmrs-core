@@ -186,9 +186,10 @@ public class PatientSetServiceImpl implements PatientSetService {
 	 * date. Can also be used to find patient with no drug orders on that date.
 	 * 
 	 * @param patientIds Collection of patientIds you're interested in. NULL means all patients.
-	 * @param takingAny Collection of drugIds the patient is taking. (Or the empty set to mean
+	 * @param takingIds Collection of drugIds the patient is taking. (Or the empty set to mean
 	 *            "any drug" or NULL to mean "no drugs")
 	 * @param onDate Which date to look at the patients' drug orders. (NULL defaults to now().)
+	 * @return Cohort of Patients matching criteria
 	 */
 	public Cohort getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> takingIds, Date onDate) {
 		Map<Integer, Collection<Integer>> activeDrugs = getPatientSetDAO().getActiveDrugIds(patientIds, onDate, onDate);
@@ -354,8 +355,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PatientSetService#getPatientAttributes(org.openmrs.Cohort,
-	 *      java.lang.String, java.lang.String[], boolean)
+	 * @see org.openmrs.api.PatientSetService#getPatientAttributes(Cohort, String, String, boolean)
 	 */
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll) {
 		return getPatientSetDAO().getPatientAttributes(patients, className, property, returnAll);

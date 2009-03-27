@@ -66,7 +66,7 @@ public class GlobalLocaleList implements GlobalPropertyListener {
 	/**
 	 * Gets the current list of allowed locales.
 	 * 
-	 * @return
+	 * @return List<Locale> object with allowed Locales defined by the administrator
 	 */
 	public List<Locale> getAllowedLocales() {
 		if (allowedLocales == null) {

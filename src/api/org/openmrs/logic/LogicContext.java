@@ -99,7 +99,7 @@ public class LogicContext {
 	 * 
 	 * @param patient
 	 * @param token
-	 * @return
+	 * @return <code>Result</code> of the evaluation
 	 * @throws LogicException
 	 * @see org.openmrs.logic.LogicService#eval(Patient, String)
 	 */
@@ -113,9 +113,9 @@ public class LogicContext {
 	 * @param patient
 	 * @param token
 	 * @param parameters
-	 * @return
+	 * @return <code>Result</code> of the evaluation
 	 * @throws LogicException
-	 * @see {@link org.openmrs.logic.LogicService#eval(Patient, String, Map)}
+	 * @see org.openmrs.logic.LogicService#eval(Patient, String, Map)
 	 */
 	public Result eval(Patient patient, String token, Map<String, Object> parameters) throws LogicException {
 		return eval(patient, new LogicCriteria(token), parameters);
@@ -127,9 +127,9 @@ public class LogicContext {
 	 * @param patient
 	 * @param criteria
 	 * @param parameters
-	 * @return
+	 * @return A <code>Result</code> object with the result of the evaluation
 	 * @throws LogicException
-	 * @see {@link org.openmrs.logic.LogicService#eval(Patient, LogicCriteria, Map)}
+	 * @see org.openmrs.logic.LogicService#eval(Patient, LogicCriteria, Map)
 	 */
 	public Result eval(Patient patient, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException {
 		Result result = getCache().get(patient, criteria, parameters);
@@ -177,7 +177,7 @@ public class LogicContext {
 	 * Fetches a logic data source by name
 	 * 
 	 * @param name
-	 * @return
+	 * @return the requested <code>LogicDataSource</code>
 	 */
 	public LogicDataSource getLogicDataSource(String name) {
 		return Context.getLogicService().getLogicDataSource(name);
@@ -189,7 +189,7 @@ public class LogicContext {
 	 * @param patient
 	 * @param dataSource
 	 * @param key
-	 * @return
+	 * @return <code>Result</code> of the read operation
 	 * @throws LogicException
 	 */
 	public Result read(Patient patient, LogicDataSource dataSource, String key) throws LogicException {
@@ -201,7 +201,7 @@ public class LogicContext {
 	 * 
 	 * @param patient
 	 * @param key
-	 * @return
+	 * @return <code>Result</code> of the read operation
 	 * @throws LogicException
 	 */
 	public Result read(Patient patient, String key) throws LogicException {
@@ -212,11 +212,11 @@ public class LogicContext {
 	}
 	
 	/**
-	 * Auto generated method comment
+	 * Reads a key with criteria from a logic data source
 	 * 
 	 * @param patient
 	 * @param criteria
-	 * @return
+	 * @return <code>Result</code> of the read
 	 * @throws LogicException
 	 */
 	public Result read(Patient patient, LogicCriteria criteria) throws LogicException {
@@ -231,7 +231,7 @@ public class LogicContext {
 	 * @param patient
 	 * @param dataSource
 	 * @param criteria
-	 * @return
+	 * @return <code>Result</code> of the read
 	 * @throws LogicException
 	 */
 	public Result read(Patient patient, LogicDataSource dataSource, LogicCriteria criteria) throws LogicException {
@@ -252,7 +252,8 @@ public class LogicContext {
 	/**
 	 * Changes the index date for this logic context
 	 * 
-	 * @param indexDate the new value for "today" to be used by rules within this logic context
+	 * @param indexDate the new <code>Date</code> value for "today" to be used by rules within this
+	 *            logic context
 	 */
 	public void setIndexDate(Date indexDate) {
 		this.indexDate = indexDate;
@@ -278,7 +279,7 @@ public class LogicContext {
 	 * 
 	 * @param id
 	 * @param value
-	 * @return
+	 * @return the value of the parameter that was set
 	 */
 	public Object setGlobalParameter(String id, Object value) {
 		return globalParameters.put(id, value);
@@ -288,7 +289,7 @@ public class LogicContext {
 	 * Fetches a global parameter value by name
 	 * 
 	 * @param id
-	 * @return
+	 * @return The requested Global parameter <code>Object</code>
 	 */
 	public Object getGlobalParameter(String id) {
 		return globalParameters.get(id);

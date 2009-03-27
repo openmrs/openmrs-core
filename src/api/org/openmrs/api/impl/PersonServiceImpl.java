@@ -45,8 +45,10 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.springframework.util.Assert;
 
 /**
- * Default implementation of the PersonService Which implementation to use is determined by Spring.
- * See the spring application context file in /metadata/api/spring/applicatContext-service.xml
+ * Default implementation of the PersonService
+ * <p>
+ * Which implementation to use is determined by Spring. See the spring application context file in
+ * /metadata/api/spring/applicatContext-service.xml
  * 
  * @see PersonService
  * @see org.openmrs.api.context.Context
@@ -73,7 +75,7 @@ public class PersonServiceImpl implements PersonService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getPeople(String, Boolean))
+	 * @see org.openmrs.api.PersonService#getPeople(String, Boolean)
 	 */
 	public List<Person> getPeople(String searchPhrase, Boolean dead) throws APIException {
 		
@@ -81,7 +83,7 @@ public class PersonServiceImpl implements PersonService {
 	}
 	
 	/**
-	 * @deprecated use {@link #getPeople(String, List)}
+	 * @deprecated use {@link #getPeople(String, Boolean)}
 	 */
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided) {
 		if (includeVoided)
@@ -95,7 +97,7 @@ public class PersonServiceImpl implements PersonService {
 	}
 	
 	/**
-	 * @deprecated use {@link #getPeople(String, List)}
+	 * @deprecated use {@link #getPeople(String, Boolean)}
 	 */
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, String roles) {
 		List<String> roleList = null;
@@ -114,7 +116,7 @@ public class PersonServiceImpl implements PersonService {
 	}
 	
 	/**
-	 * @deprecated use {@link #getPeople(String, List)}
+	 * @deprecated use {@link #getPeople(String, Boolean)}
 	 */
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, List<String> roles) {
 		Set<Person> people = new HashSet<Person>();
@@ -587,7 +589,7 @@ public class PersonServiceImpl implements PersonService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getRelationshipType(java.lang.String)
+	 * @see org.openmrs.api.PersonService#getRelationshipTypes(java.lang.String)
 	 */
 	public List<RelationshipType> getRelationshipTypes(String searchString) throws APIException {
 		

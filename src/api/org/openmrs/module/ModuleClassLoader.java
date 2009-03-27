@@ -82,9 +82,9 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * @param descr plug-in module
-	 * @param urls resources "managed" by this class loader
-	 * @param parent parent class loader
+	 * @param module the <code>Module</code> to load
+	 * @param urls <code>List<URL></code> of thee resources "managed" by this class loader
+	 * @param parent parent <code>ClassLoader</code>
 	 * @see URLClassLoader#URLClassLoader(java.net.URL[], java.lang.ClassLoader)
 	 */
 	protected ModuleClassLoader(final Module module, final List<URL> urls, final ClassLoader parent) {
@@ -92,9 +92,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * @param aManager plug-in manager
-	 * @param descr plug-in module
-	 * @param urls resources "managed" by this class loader
+	 * @param module the <code>Module</code> to load
+	 * @param urls <code>List<URL></code> of thee resources "managed" by this class loader
 	 * @see URLClassLoader#URLClassLoader(java.net.URL[])
 	 */
 	protected ModuleClassLoader(final Module module, final List<URL> urls) {
@@ -104,9 +103,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	/**
 	 * Creates class instance configured to load classes and resources for given module.
 	 * 
-	 * @param aManager module manager instance
-	 * @param descr module module
-	 * @param parent parent class loader, usually this is the application class loader
+	 * @param module the <code>Module</code> to load
+	 * @param parent parent <code>ClassLoader</code>
 	 */
 	public ModuleClassLoader(final Module module, final ClassLoader parent) {
 		this(module, getUrls(module), parent);
@@ -783,8 +781,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @param requestor ModuleClassLoader in which to start
 	 * @param seenModules Set<String> moduleIds that have been checked already
 	 * @throws IOException
-	 * @see {@link #findResources(String)}
-	 * @see {@link #findResource(String, ModuleClassLoader, Set)}
+	 * @see #findResources(String)
+	 * @see #findResource(String, ModuleClassLoader, Set)
 	 */
 	protected void findResources(final List<URL> result, final String name, final ModuleClassLoader requestor,
 	                             Set<String> seenModules) throws IOException {

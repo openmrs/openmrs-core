@@ -61,7 +61,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	private Collection<Locale> locales;
 	
 	/**
-	 * @see org.openmrs.message.MessageSourceService#getLocalesOfConceptNames()
+	 * @see org.openmrs.messagesource.MessageSourceService#getLocales()
 	 */
 	public Collection<Locale> getLocales() {
 		if (locales == null)
@@ -187,7 +187,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	/**
 	 * Returns all available messages.
 	 * 
-	 * @see org.openmrs.message.MessageSourceService#getPresentations()
+	 * @see org.openmrs.messagesource.MessageSourceService#getPresentations()
 	 */
 	public Collection<PresentationMessage> getPresentations() {
 		Collection<PresentationMessage> presentations = new Vector<PresentationMessage>();
@@ -238,7 +238,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	}
 	
 	/**
-	 * @see org.openmrs.message.MutableMessageSource#addPresentation(org.openmrs.messagesource.PresentationMessage)
+	 * @see org.openmrs.messagesource.MutableMessageSource#addPresentation(org.openmrs.messagesource.PresentationMessage)
 	 */
 	public void addPresentation(PresentationMessage message) {
 		File propertyFile = findPropertiesFileFor(message.getCode());
@@ -263,7 +263,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	}
 	
 	/**
-	 * @see org.openmrs.message.MutableMessageSource#removePresentation(org.openmrs.messagesource.PresentationMessage)
+	 * @see org.openmrs.messagesource.MutableMessageSource#removePresentation(org.openmrs.messagesource.PresentationMessage)
 	 */
 	public void removePresentation(PresentationMessage message) {
 		File propertyFile = findPropertiesFileFor(message.getCode());
@@ -356,7 +356,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	}
 	
 	/**
-	 * @see org.openmrs.message.MutableMessageSource#merge(org.openmrs.message.MutableMessageSource)
+	 * @see org.openmrs.messagesource.MutableMessageSource#merge(MutableMessageSource, boolean)
 	 */
 	public void merge(MutableMessageSource fromSource, boolean overwrite) {
 		

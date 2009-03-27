@@ -182,7 +182,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#findPrograms(java.lang.String)
+	 * @see org.openmrs.api.ProgramWorkflowService#getPrograms(String)
 	 */
 	public List<Program> getPrograms(String nameFragment) throws APIException {
 		return dao.findPrograms(nameFragment);
@@ -327,8 +327,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#getPatientPrograms(org.openmrs.Patient,
-	 *      org.openmrs.Program, java.util.Date, java.util.Date, java.util.Date, java.util.Date)
+	 * @see org.openmrs.api.ProgramWorkflowService#getPatientPrograms(Patient, Program, Date, Date,
+	 *      Date, Date, boolean)
 	 */
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
 	                                               Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate,
@@ -338,8 +338,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getPatientPrograms(Cohort,
-	 *      Collection<Program>)
+	 * @see org.openmrs.api.ProgramWorkflowService#getPatientPrograms(Cohort, Collection)
 	 */
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
 		if (cohort.getMemberIds().size() < 1)
@@ -517,7 +516,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	// **************************
 	
 	/**
-	 * @see org.pih.api.ProgramWorkflowService#createWorkflow(ProgramWorkflow)
+	 * @see org.openmrs.api.ProgramWorkflowService#createWorkflow(ProgramWorkflow)
 	 * @deprecated
 	 */
 	public void createWorkflow(ProgramWorkflow w) {

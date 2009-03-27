@@ -87,7 +87,7 @@ public class ORUR01Handler implements Application {
 	 * Always returns true, assuming that the router calling this handler will only call this
 	 * handler with ORU_R01 messages.
 	 * 
-	 * @returns true
+	 * @return true
 	 */
 	public boolean canProcess(Message message) {
 		return message != null && "ORU_R01".equals(message.getName());

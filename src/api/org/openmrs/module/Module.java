@@ -254,7 +254,7 @@ public final class Module {
 	/**
 	 * This is a convenience method to set all the required modules without any version requirements
 	 * 
-	 * @param requireModules the requiredModules to set for this module
+	 * @param requiredModules the requiredModules to set for this module
 	 * @should set modules when there is a null required modules map
 	 */
 	public void setRequiredModules(List<String> requiredModules) {
@@ -267,7 +267,8 @@ public final class Module {
 	}
 	
 	/**
-	 * @param requireModules the requiredModules to set
+	 * @param requiredModulesMap <code>Map<String,String></code> of the <code>requiredModule</code>s
+	 *            to set
 	 */
 	public void setRequiredModulesMap(Map<String, String> requiredModulesMap) {
 		this.requiredModulesMap = requiredModulesMap;

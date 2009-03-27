@@ -61,7 +61,6 @@ public interface CohortDefinitionProvider {
 	 * called with a CohortDefinition of a class this provider is registered for.
 	 * 
 	 * @param cohortDefinition
-	 * @return the CohortDefinition that was passed in
 	 */
 	public void purgeCohortDefinition(CohortDefinition cohortDefinition);
 	

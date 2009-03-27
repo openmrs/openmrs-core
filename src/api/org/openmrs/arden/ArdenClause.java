@@ -16,13 +16,12 @@ package org.openmrs.arden;
 import org.openmrs.Concept;
 
 /**
- * @author vanand Arden Clauses are represented by ArdenClause classes. Clauses can be constructed
- *         from concepts, rules, or other clauses. They also expose aggregate and predicate methods
- *         such as earliest(), latest(), max(), and greaterThan(n). Every method returns another
- *         ArdenClause. The Arden Clauses do not actually fetch data or return values; rather, they
- *         represent a semantic hierarchy needed to resolve a particular Arden Value. The criteria
- *         are abstracted so an Arden Clause can be passed down to the database layer and, ideally,
- *         be translated to SQL or similar language.
+ * Arden Clauses are represented by ArdenClause classes. Clauses can be constructed from concepts,
+ * rules, or other clauses. They also expose aggregate and predicate methods such as earliest(),
+ * latest(), max(), and greaterThan(n). Every method returns another ArdenClause. The Arden Clauses
+ * do not actually fetch data or return values; rather, they represent a semantic hierarchy needed
+ * to resolve a particular Arden Value. The criteria are abstracted so an Arden Clause can be passed
+ * down to the database layer and, ideally, be translated to SQL or similar language.
  */
 
 public class ArdenClause {

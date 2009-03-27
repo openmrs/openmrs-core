@@ -55,7 +55,7 @@ public class DataSetServiceImpl implements DataSetService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.DataSetService#setProviders(java.util.Collection)
+	 * @see org.openmrs.api.DataSetService#setProviders(List)
 	 */
 	public void setProviders(List<DataSetProvider> newProviders) {
 		for (DataSetProvider provider : newProviders) {

@@ -52,7 +52,7 @@ public class HL7Segment {
 	/**
 	 * Returns value of component within a field
 	 * 
-	 * @param index index of field
+	 * @param fieldIndex index of field
 	 * @param componentIndex one-based component of field
 	 * @return value of sub-field (part) within specified field
 	 */

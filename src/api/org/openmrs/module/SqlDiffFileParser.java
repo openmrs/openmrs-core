@@ -38,7 +38,6 @@ import org.xml.sax.SAXException;
 /**
  * This class will parse an xml sql diff file
  * 
- * @author bwolfe
  * @version 1.0
  */
 public class SqlDiffFileParser {

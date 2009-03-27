@@ -42,7 +42,7 @@ public interface HL7DAO {
 	public HL7Source getHL7Source(Integer hl7SourceId) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#saveHL7SourceByName(String)
+	 * @see org.openmrs.hl7.HL7Service#getHL7SourceByName(String)
 	 */
 	public HL7Source getHL7SourceByName(String name) throws DAOException;
 	
@@ -74,7 +74,7 @@ public interface HL7DAO {
 	public List<HL7InQueue> getAllHL7InQueues() throws DAOException;
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#getNextHL7InQueue)
+	 * @see org.openmrs.hl7.HL7Service#getNextHL7InQueue()
 	 */
 	public HL7InQueue getNextHL7InQueue() throws DAOException;
 	
@@ -123,7 +123,7 @@ public interface HL7DAO {
 	public HL7InError getHL7InError(Integer hl7InErrorId) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#getAllHL7InError(org.openmrs.hl7.HL7InError)
+	 * @see org.openmrs.hl7.HL7Service#getAllHL7InErrors()
 	 */
 	public List<HL7InError> getAllHL7InErrors() throws DAOException;
 	

@@ -273,8 +273,7 @@ public class HibernateLogicEncounterDAO implements LogicEncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(org.openmrs.Person,
-	 *      org.openmrs.logic.LogicCriteria)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(org.openmrs.Patient, org.openmrs.Location, Date, Date, java.util.Collection, java.util.Collection, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncounters(Cohort who, LogicCriteria logicCriteria) {

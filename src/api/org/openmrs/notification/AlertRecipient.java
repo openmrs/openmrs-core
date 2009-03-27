@@ -130,7 +130,7 @@ public class AlertRecipient implements Serializable {
 	}
 	
 	/**
-	 * @see getAlertRead()
+	 * @see #getAlertRead()
 	 */
 	public Boolean getAlertRead() {
 		return isAlertRead();

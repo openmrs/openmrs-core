@@ -77,7 +77,7 @@ public class ReportSchemaXml {
 	/**
 	 * Returns the ReportSchema Id
 	 * 
-	 * @return
+	 * @return the Integer Report Schema Id
 	 */
 	public Integer getReportSchemaId() {
 		return this.reportSchemaId;

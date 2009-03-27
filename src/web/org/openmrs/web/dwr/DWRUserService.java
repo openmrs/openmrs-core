@@ -155,7 +155,6 @@ public class DWRUserService {
 	/**
 	 * Determines the order of the user's in the user list
 	 * 
-	 * @author bwolfe
 	 */
 	private class UserComparator implements Comparator<User> {
 		

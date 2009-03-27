@@ -121,7 +121,6 @@ public class MessageServiceImpl implements MessageService {
 	/**
 	 * Create a message object with the given parts.
 	 * 
-	 * @param sender the send of the message
 	 * @param subject the subject of the message
 	 * @param content the content or body of the message
 	 */
@@ -159,8 +158,8 @@ public class MessageServiceImpl implements MessageService {
 	/**
 	 * Send a message to a user that is identified by the given identifier.
 	 * 
-	 * @param message message to be sent
-	 * @param userId identifier of user (recipient)
+	 * @param message <code>Message</code> to be sent
+	 * @param recipient Integer identifier of user (recipient)
 	 */
 	public void sendMessage(Message message, Integer recipientId) throws MessageException {
 		log.debug("Sending message to user with user id " + recipientId);
@@ -173,8 +172,8 @@ public class MessageServiceImpl implements MessageService {
 	/**
 	 * Send message to a single user.
 	 * 
-	 * @param message the message to be sent
-	 * @param recipient the recipient of the message
+	 * @param message the <code>Message</code> to be sent
+	 * @param user the recipient of the message
 	 */
 	public void sendMessage(Message message, User user) throws MessageException {
 		log.debug("Sending message to user " + user);
@@ -227,8 +226,8 @@ public class MessageServiceImpl implements MessageService {
 	 * Prepare a message given the template. The template should be populated with all necessary
 	 * data including the variable name-value pairs
 	 * 
-	 * @param the given Template
-	 * @return the prepared Message
+	 * @param template the given <code>Template</code>
+	 * @return the prepared <code>Message</code>
 	 */
 	public Message prepareMessage(Template template) throws MessageException {
 		return messagePreparator.prepare(template);

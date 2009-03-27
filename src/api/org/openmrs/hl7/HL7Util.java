@@ -122,7 +122,7 @@ public class HL7Util {
 	 * Convenience method for parsing HL7 dates (treated just like a timestamp with only year,
 	 * month, and day specified)
 	 * 
-	 * @see org.openmrs.hl7.HL7Util.parseHL7Timestamp(String)
+	 * @see org.openmrs.hl7.HL7Util#parseHL7Timestamp(String)
 	 * @throws HL7Exception
 	 */
 	public static Date parseHL7Date(String s) throws HL7Exception {

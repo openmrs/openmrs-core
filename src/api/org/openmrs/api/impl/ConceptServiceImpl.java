@@ -60,7 +60,7 @@ import org.springframework.util.StringUtils;
 /**
  * Default Implementation of ConceptService service layer classes
  * 
- * @see org.openmrs.ConceptService to access these methods
+ * @see org.openmrs.api.ConceptService to access these methods
  */
 public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptService {
 	
@@ -176,7 +176,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#purgeConcept(java.lang.Object)
+	 * @see org.openmrs.api.ConceptService#purgeConcept(Concept)
 	 */
 	public void purgeConcept(Concept concept) throws APIException {
 		checkIfLocked();
@@ -337,7 +337,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptByIdOrName(java.lang.String)
-	 * @deprecated use {@link #getConcept(String))}
+	 * @deprecated use {@link #getConcept(String)}
 	 */
 	public Concept getConceptByIdOrName(String idOrName) {
 		return getConcept(idOrName);
@@ -365,9 +365,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptWords(java.lang.String, java.util.Locale,
-	 *      boolean, java.util.List, java.util.List, java.util.List, java.util.List, Concept, int,
-	 *      int)
+	 * @see org.openmrs.api.ConceptService#getConceptWords(String, List, boolean, List, List, List,
+	 *      List, Concept, Integer, Integer)
 	 */
 	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
 	                                         List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
@@ -401,7 +400,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @deprecated use
-	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Integer, Integer)}
+	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, int start, int size) {
 		List<Locale> locales = new Vector<Locale>();
@@ -418,7 +417,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @deprecated use
-	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Integer, Integer)}
+	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired) {
 		
@@ -430,7 +429,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @deprecated use
-	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Integer, Integer)}
+	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired,
 	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
@@ -445,7 +444,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @deprecated use
-	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Integer, Integer)}
+	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	public List<ConceptWord> findConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
@@ -544,7 +543,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getDrugs(org.openmrs.Concept, boolean)
+	 * @see org.openmrs.api.ConceptService#getDrugs(Concept)
 	 * @deprecated Use {@link #getDrugsByConcept(Concept)}
 	 */
 	public List<Drug> getDrugs(Concept concept, boolean includeRetired) {
@@ -555,7 +554,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getDrugs(boolean)
+	 * @see org.openmrs.api.ConceptService#getAllDrugs(boolean)
 	 * @deprecated Use {@link #getAllDrugs(boolean)}
 	 */
 	public List<Drug> getDrugs(boolean includeVoided) {
@@ -668,8 +667,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptDatatypes()
-	 * @deprecated use {@link #getAllConceptDatatypes()}
+	 * @see org.openmrs.api.ConceptService#getAllConceptDatatypes()
+	 * @deprecated use {@link #getAllConceptDatatypes() }
 	 */
 	public List<ConceptDatatype> getConceptDatatypes() {
 		return getAllConceptDatatypes();
@@ -1222,9 +1221,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * matches at the bottom
 	 * 
 	 * @param phrase that was used to get this search
-	 * @param locale that was used to get this search
+	 * @param locales List<Locale> that were used to get this search
 	 * @param conceptWords
-	 * @return
+	 * @return List<ConceptWord> object containing sorted <code>ConceptWord</code>s
 	 */
 	protected List<ConceptWord> weightWords(String phrase, List<Locale> locales, List<ConceptWord> conceptWords) {
 		

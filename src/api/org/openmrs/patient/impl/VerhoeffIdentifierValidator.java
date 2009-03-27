@@ -58,7 +58,7 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
 	}
 	
 	/**
-	 * @override to disallow numeric check digits and identifiers that are not exactly
+	 * Override to disallow numeric check digits and identifiers that are not exactly
 	 *           VERHOEFF_ID_LENGTH long.
 	 * @see org.openmrs.patient.impl.BaseHyphenatedIdentifierValidator#isValid(java.lang.String)
 	 */
@@ -76,7 +76,7 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
 	}
 	
 	/**
-	 * @override to disallow identifiers that are not exactly VERHOEFF_UNDECORATED_ID_LENGTH long.
+	 * Override to disallow identifiers that are not exactly VERHOEFF_UNDECORATED_ID_LENGTH long.
 	 * @see org.openmrs.patient.impl.BaseHyphenatedIdentifierValidator#getValidIdentifier(java.lang.String)
 	 */
 	@Override

@@ -45,7 +45,7 @@ public class EnrolledBeforeDateRule implements Rule {
 	}
 	
 	/**
-	 * @see org.openmrs.logic.Rule#getChildRules()
+	 * @see org.openmrs.logic.Rule#getDependencies()
 	 */
 	public String[] getDependencies() {
 		// TODO Auto-generated method stub

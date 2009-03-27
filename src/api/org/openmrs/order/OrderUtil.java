@@ -160,7 +160,7 @@ public class OrderUtil {
 	 * Get the drug headers...whatever those are. Ask Djazayeri
 	 * 
 	 * @param drugSetIds
-	 * @return
+	 * @return <code>Map<String, String></code> of the drug headers for the given drugSetIds
 	 */
 	public static Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds) {
 		Map<String, String> ret = null;

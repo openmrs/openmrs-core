@@ -17,7 +17,7 @@
 package org.openmrs.notification;
 
 /**
- * @author Justin Miranda
+ * 
  */
 public class NoteType {
 	

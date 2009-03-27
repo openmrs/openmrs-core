@@ -151,7 +151,7 @@ public class ModuleUtil {
 	/**
 	 * Add the <code>inputStream</code> as a file in the modules repository
 	 * 
-	 * @param stream InputStream to load
+	 * @param inputStream <code>InputStream</code> to load
 	 * @return filename String of the file's name of the stream
 	 */
 	public static File insertModuleFile(InputStream inputStream, String filename) {
@@ -399,7 +399,7 @@ public class ModuleUtil {
 	/**
 	 * Downloads the contents of a URL and copies them to a string (Borrowed from oreilly)
 	 * 
-	 * @param URL
+	 * @param url
 	 * @return InputStream of contents
 	 * @should return a valid input stream for old module urls
 	 */
@@ -426,7 +426,7 @@ public class ModuleUtil {
 	/**
 	 * Downloads the contents of a URL and copies them to a string (Borrowed from oreilly)
 	 * 
-	 * @param URL
+	 * @param url
 	 * @return String contents of the URL
 	 * @should return an update rdf page for old https dev urls
 	 * @should return an update rdf page for old https module urls
@@ -465,7 +465,7 @@ public class ModuleUtil {
 	/**
 	 * Iterates over the modules and checks each update.rdf file for an update
 	 * 
-	 * @returns true/false whether an update was found for one of the modules
+	 * @return True if an update was found for one of the modules, false if none were found
 	 * @throws ModuleException
 	 */
 	public static Boolean checkForModuleUpdates() throws ModuleException {

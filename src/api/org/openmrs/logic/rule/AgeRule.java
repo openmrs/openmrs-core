@@ -61,28 +61,28 @@ public class AgeRule implements Rule {
 	}
 	
 	/**
-	 * @see org.openmrs.logic.rule.Rule#getParameterList()
+	 * @see org.openmrs.logic.Rule#getParameterList()
 	 */
 	public Set<RuleParameterInfo> getParameterList() {
 		return null;
 	}
 	
 	/**
-	 * @see org.openmrs.logic.rule.Rule#getDependencies()
+	 * @see org.openmrs.logic.Rule#getDependencies()
 	 */
 	public String[] getDependencies() {
 		return new String[] { "%%patient.birthdate" };
 	}
 	
 	/**
-	 * @see org.openmrs.logic.rule.Rule#getTTL()
+	 * @see org.openmrs.logic.Rule#getTTL()
 	 */
 	public int getTTL() {
 		return 60 * 60 * 24; // 1 day
 	}
 	
 	/**
-	 * @see org.openmrs.logic.rule.Rule#getDatatype(String)
+	 * @see org.openmrs.logic.Rule#getDefaultDatatype()
 	 */
 	public Datatype getDefaultDatatype() {
 		return Datatype.NUMERIC;

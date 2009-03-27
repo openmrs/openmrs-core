@@ -18,8 +18,6 @@ package org.openmrs.util;
  * on the low end and open (aka exclusive) on the high end: mathematically "[low, high)". (I'm not
  * using the similarly-named class from Apache commons because it doesn't implement comparable, and
  * because it only allows inclusive bounds.)
- * 
- * @author djazayeri
  */
 public class DoubleRange implements Comparable<DoubleRange> {
 	

@@ -57,7 +57,7 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 	}
 	
 	/**
-	 * @see org.openmrs.report.ReportRenderer#getFilename(org.openmrs.report.ReportSchema)
+	 * @see org.openmrs.report.ReportRenderer#getFilename(ReportSchema, String)
 	 */
 	public String getFilename(ReportSchema schema, String argument) {
 		return schema.getName() + "." + getFilenameExtension();

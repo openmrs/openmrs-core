@@ -47,7 +47,7 @@ public class RegimenSuggestion {
 	}
 	
 	/**
-	 * @param regimenDisplayName The regimenDisplayName to set.
+	 * @param displayName The regimenDisplayName to set.
 	 */
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;

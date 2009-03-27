@@ -37,8 +37,10 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Default implementation of the {@link EncounterService} This class should not be instantiated
- * alone, get a service class from the Context: Context.getEncounterService();
+ * Default implementation of the {@link EncounterService}
+ * <p>
+ * This class should not be instantiated alone, get a service class from the Context:
+ * Context.getEncounterService();
  * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.EncounterService
@@ -259,8 +261,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#purgeEncounter(org.openmrs.Encounter,
-	 *      java.lang.boolean)
+	 * @see org.openmrs.api.EncounterService#purgeEncounter(Encounter, boolean)
 	 */
 	public void purgeEncounter(Encounter encounter, boolean cascade) throws APIException {
 		if (cascade) {
@@ -326,7 +327,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#retireEncounterType(org.openmrs.EncounterType)
+	 * @see org.openmrs.api.EncounterService#retireEncounterType(EncounterType, String)
 	 */
 	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws APIException {
 		if (reason == null)
@@ -419,8 +420,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
 	 *      org.openmrs.Location)
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)
-	 *             ;
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
 	 */
 	public List<Encounter> getEncounters(Patient who, Location where) {
 		return getEncounters(who, where, null, null, null, null, false);
@@ -430,8 +430,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient, java.util.Date,
 	 *      java.util.Date)
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)
-	 *             ;
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
 	 */
 	public List<Encounter> getEncounters(Patient who, Date fromDate, Date toDate) {
 		return getEncounters(who, null, fromDate, toDate, null, null, false);
@@ -440,8 +439,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(java.util.Date, java.util.Date)
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)
-	 *             ;
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
 	 */
 	public Collection<Encounter> getEncounters(Date fromDate, Date toDate) {
 		return getEncounters(null, null, fromDate, toDate, null, null, false);
@@ -451,8 +449,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Location, java.util.Date,
 	 *      java.util.Date)
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)
-	 *             ;
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
 	 */
 	public List<Encounter> getEncounters(Location loc, Date fromDate, Date toDate) {
 		return getEncounters(null, loc, fromDate, toDate, null, null, false);
@@ -460,7 +457,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterTypes()
-	 * @deprecated replaced by {@link# #getAllEncounterTypes()}
+	 * @deprecated replaced by {@link #getAllEncounterTypes()}
 	 */
 	public List<EncounterType> getEncounterTypes() {
 		return getAllEncounterTypes();

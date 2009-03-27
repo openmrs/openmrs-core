@@ -99,7 +99,7 @@ public class Duration {
 	 * Returns a duration for the given number of seconds
 	 * 
 	 * @param duration number of seconds for duration
-	 * @return
+	 * @return <code>Duration</code> object for given number of seconds
 	 */
 	public static Duration seconds(Double duration) {
 		return new Duration(duration, Units.SECONDS);
@@ -109,7 +109,7 @@ public class Duration {
 	 * Returns a duration for the given number of seconds
 	 * 
 	 * @param duration number of seconds for duration
-	 * @return
+	 * @return <code>Duration</code> object for given number of seconds
 	 */
 	public static Duration seconds(int duration) {
 		return seconds(new Double(duration));
@@ -119,7 +119,7 @@ public class Duration {
 	 * Returns a duration for the given number of minutes
 	 * 
 	 * @param duration number of minutes for duration
-	 * @return
+	 * @return <code>Duration</code> object for given number of minutes
 	 */
 	public static Duration minutes(Double duration) {
 		return new Duration(duration, Units.MINUTES);
@@ -129,7 +129,7 @@ public class Duration {
 	 * Returns a duration for the given number of minutes
 	 * 
 	 * @param duration number of minutes for duration
-	 * @return
+	 * @return <code>Duration</code> object for given number of minutes
 	 */
 	public static Duration minutes(int duration) {
 		return minutes(new Double(duration));
@@ -139,7 +139,7 @@ public class Duration {
 	 * Returns a duration for the given number of hours
 	 * 
 	 * @param duration number of hours for duration
-	 * @return
+	 * @return <code>Duration</code> object for given number of hours
 	 */
 	public static Duration hours(Double duration) {
 		return new Duration(duration, Units.HOURS);
@@ -149,7 +149,7 @@ public class Duration {
 	 * Returns a duration for the given number of hours
 	 * 
 	 * @param duration number of hours for duration
-	 * @return
+	 * @return <code>Duration</code> object for given number of hours
 	 */
 	public static Duration hours(int duration) {
 		return hours(new Double(duration));
@@ -159,7 +159,7 @@ public class Duration {
 	 * Returns a duration for the given number of days
 	 * 
 	 * @param duration number of days for duration
-	 * @return
+	 * @return <code>Duration</code> object with specified number of days
 	 */
 	public static Duration days(Double duration) {
 		return new Duration(duration, Units.DAYS);
@@ -169,7 +169,7 @@ public class Duration {
 	 * Returns a duration for the given number of days
 	 * 
 	 * @param duration number of days for duration
-	 * @return
+	 * @return <code>Duration</code> object with specified number of days
 	 */
 	public static Duration days(int duration) {
 		return days(new Double(duration));
@@ -179,7 +179,7 @@ public class Duration {
 	 * Returns a duration for the given number of weeks
 	 * 
 	 * @param duration number of weeks for duration
-	 * @return
+	 * @return <code>Duration</code> object with specified number of weeks
 	 */
 	public static Duration weeks(Double duration) {
 		return new Duration(duration, Units.WEEKS);
@@ -189,7 +189,7 @@ public class Duration {
 	 * Returns a duration for the given number of weeks
 	 * 
 	 * @param duration number of weeks for duration
-	 * @return
+	 * @return <code>Duration</code> object with specified number of weeks
 	 */
 	public static Duration weeks(int duration) {
 		return weeks(new Double(duration));
@@ -199,7 +199,7 @@ public class Duration {
 	 * Returns a duration for the given number of months
 	 * 
 	 * @param duration number of months for duration
-	 * @return
+	 * @return <code>Duration</code> object with specified number of months
 	 */
 	public static Duration months(Double duration) {
 		return new Duration(duration, Units.MONTHS);
@@ -209,7 +209,7 @@ public class Duration {
 	 * Returns a duration for the given number of months
 	 * 
 	 * @param duration number of months for duration
-	 * @return
+	 * @return <code>Duration</code> object with specified number of months
 	 */
 	public static Duration months(int duration) {
 		return months(new Double(duration));
@@ -219,7 +219,7 @@ public class Duration {
 	 * Returns a duration for the given number of years
 	 * 
 	 * @param duration number of years for duration
-	 * @return
+	 * @return <code>Duration</code> object with specified number of years
 	 */
 	public static Duration years(Double duration) {
 		return new Duration(duration, Units.YEARS);
@@ -229,7 +229,7 @@ public class Duration {
 	 * Returns a duration for the given number of years
 	 * 
 	 * @param duration number of years for duration
-	 * @return
+	 * @return <code>Duration</code> object with specified number of years
 	 */
 	public static Duration years(int duration) {
 		return years(new Double(duration));

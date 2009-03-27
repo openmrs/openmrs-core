@@ -26,10 +26,13 @@ import org.simpleframework.xml.ElementMap;
 import org.simpleframework.xml.Root;
 
 /**
- * Metadata that defines a CohortDataSet. (I.e. a list of cohorts, each of which has a name) For
- * example a CohortDatasetDefinition might represent: "1. Total # of Patients" -> (CohortDefinition)
- * everyone "1.a. Male Adults" -> (CohortDefinition) Male AND Adult "1.b. Female Adults" ->
- * (CohortDefinition) Female AND Adult "1.c. Male Children" -> (CohortDefinition) Male AND NOT Adult
+ * Metadata that defines a CohortDataSet. (I.e. a list of cohorts, each of which has a name)
+ * <p>
+ * For example a CohortDatasetDefinition might represent:<br/>
+ * "1. Total # of Patients" -> (CohortDefinition) everyone <br/>
+ * "1.a. Male Adults" -> (CohortDefinition) Male AND Adult<br/>
+ * "1.b. Female Adults" -> (CohortDefinition) Female AND Adult<br/>
+ * "1.c. Male Children" -> (CohortDefinition) Male AND NOT Adult<br/>
  * "1.d. Female Children" -> (CohortDefinition) Female AND NOT Adult ...
  * 
  * @see CohortDataSet
@@ -124,12 +127,12 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	}
 	
 	/**
-	 * Sets a description for the cohort name if it exists. Returns true if a cohort exists with the @param
-	 * name else returns false.
+	 * Sets a description for the cohort name if it exists. Returns true if a cohort exists with the
+	 * specified name else returns false.
 	 * 
 	 * @param name
 	 * @param description
-	 * @return
+	 * @return true if a cohort exists with the specified name, false otherwise
 	 */
 	public boolean setDescription(String name, String description) {
 		if (strategies.containsKey(name)) {
@@ -140,10 +143,10 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	}
 	
 	/**
-	 * Returns a description for the @param cohort strategy name.
+	 * Returns a description for the given cohort strategy name.
 	 * 
 	 * @param name
-	 * @return
+	 * @return a <code>String</code> description
 	 */
 	public String getDescription(String name) {
 		return descriptions.get(name);
@@ -152,7 +155,7 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	/**
 	 * Returns the map of cohort strategy names, descriptions.
 	 * 
-	 * @return
+	 * @return a <code>Map<String, String></code> of the strategy names and descriptions
 	 */
 	@ElementMap(required = false, keyType = String.class, valueType = String.class)
 	public Map<String, String> getDescriptions() {
@@ -161,8 +164,6 @@ public class CohortDataSetDefinition implements DataSetDefinition {
 	
 	/**
 	 * Get the key-value pairs of names to defined cohorts
-	 * 
-	 * @return
 	 */
 	@ElementMap(required = true, keyType = String.class, valueType = CohortDefinition.class)
 	public Map<String, CohortDefinition> getStrategies() {

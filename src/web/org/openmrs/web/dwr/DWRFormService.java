@@ -314,7 +314,6 @@ public class DWRFormService {
 	 * Sorts loosely on: FieldListItems first, then concepts FieldListItems with higher number of
 	 * forms first, then lower Concepts with shorter names before longer names
 	 * 
-	 * @author bwolfe
 	 * @param <Obj>
 	 */
 	

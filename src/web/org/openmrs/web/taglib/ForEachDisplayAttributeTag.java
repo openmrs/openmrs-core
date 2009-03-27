@@ -31,8 +31,6 @@ import org.openmrs.api.context.Context;
  * list is maintained with global properties: patient.displayAttributeTypes and
  * user.displayAttributeTypes. Both are comma delimited lists of either PersonAttributeType names or
  * ids.
- * 
- * @author bwolfe
  */
 public class ForEachDisplayAttributeTag extends LoopTagSupport {
 	

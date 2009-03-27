@@ -29,8 +29,10 @@ import org.openmrs.api.db.LocationDAO;
 import org.springframework.util.StringUtils;
 
 /**
- * Default implementation of the {@link LocationService} This class should not be instantiated
- * alone, get a service class from the Context: Context.getLocationService();
+ * Default implementation of the {@link LocationService}
+ * <p>
+ * This class should not be instantiated alone, get a service class from the Context:
+ * Context.getLocationService();
  * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.LocationService
@@ -177,7 +179,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
-	 * @see org.openmrs.api.LocationService#getLocationsByTag(org.openmrs. LocationTag)
+	 * @see org.openmrs.api.LocationService#getLocationsByTag(LocationTag)
 	 */
 	public List<Location> getLocationsByTag(LocationTag tag) throws APIException {
 		List<Location> locations = new ArrayList<Location>();
@@ -190,8 +192,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
-	 * @see org.openmrs.api.LocationService#getLocationsHavingAllTags(List<org.openmrs.
-	 *      LocationTag>)
+	 * @see org.openmrs.api.LocationService#getLocationsHavingAllTags(List)
 	 */
 	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) throws APIException {
 		List<Location> locations = new ArrayList<Location>();
@@ -204,7 +205,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
-	 * @see org.openmrs.api.LocationService#getLocationsHavingAnyTag(List<org.openmrs. LocationTag>)
+	 * @see org.openmrs.api.LocationService#getLocationsHavingAnyTag(List)
 	 */
 	public List<Location> getLocationsHavingAnyTag(List<LocationTag> tags) throws APIException {
 		List<Location> locations = new ArrayList<Location>();
@@ -220,7 +221,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
-	 * @see org.openmrs.api.LocationService#retireLocation(org.openmrs.Location)
+	 * @see org.openmrs.api.LocationService#retireLocation(Location, String)
 	 */
 	public Location retireLocation(Location location, String reason) throws APIException {
 		if (location.isRetired()) {
@@ -309,7 +310,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
-	 * @see org.openmrs.api.LocationService#retireLocationTag(org.openmrs.LocationTag)
+	 * @see org.openmrs.api.LocationService#retireLocationTag(LocationTag, String)
 	 */
 	public LocationTag retireLocationTag(LocationTag tag, String reason) throws APIException {
 		if (tag.isRetired()) {

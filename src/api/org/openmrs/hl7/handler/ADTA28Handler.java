@@ -104,7 +104,7 @@ public class ADTA28Handler implements Application {
 	 * Always returns true, assuming that the router calling this handler will only call this
 	 * handler with ADT_A28 messages.
 	 * 
-	 * @returns true
+	 * @return true
 	 */
 	public boolean canProcess(Message message) {
 		return message != null && "ADT_A28".equals(message.getName());

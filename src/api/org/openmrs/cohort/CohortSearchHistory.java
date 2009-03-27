@@ -261,7 +261,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 	}
 	
 	/**
-	 * TODO: Implement {@link org.openmrs.cohort.api.impl.CohortServiceImpl#getAllPatients()}
+	 * TODO: Implement {@link org.openmrs.api.impl.CohortServiceImpl#getAllCohorts()}
 	 * 
 	 * @param i
 	 * @param useCache whether to use a cached result, if available

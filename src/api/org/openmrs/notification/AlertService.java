@@ -113,7 +113,7 @@ public interface AlertService extends OpenmrsService {
 	/**
 	 * Find all alerts for a user that have not expired
 	 * 
-	 * @param User
+	 * @param user
 	 * @return alerts that are unread _or_ read that have not expired
 	 * @see #getAlerts(User, boolean, boolean)
 	 * @throws APIException

@@ -650,7 +650,7 @@ public class Result extends ArrayList<Result> {
 	}
 	
 	/**
-	 * @returns all results greater than the given value
+	 * @return all results greater than the given value
 	 */
 	public Result gt(Integer value) {
 		if (isSingleResult()) {
