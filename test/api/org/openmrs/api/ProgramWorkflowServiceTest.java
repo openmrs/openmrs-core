@@ -31,6 +31,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.TestUtil;
+import org.openmrs.test.Verifies;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -71,10 +72,11 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	 * updated value. To use in MySQL database: Uncomment method useInMemoryDatabase() and comment
 	 * out call to initializeInMemoryDatabase() and executeDataSet() within onSetupTransaction() .
 	 * 
-	 * @throws Exception
+	 * @see {@link ProgramWorkflowService#savePatientProgram(PatientProgram)}
 	 */
 	@Test
-	public void shouldUpdatePatientProgram() throws Exception {
+	@Verifies(value = "should update patient program", method = "savePatientProgram(PatientProgram)")
+	public void savePatientProgram_shouldUpdatePatientProgram() throws Exception {
 		
 		Date today = new Date();
 		
@@ -122,9 +124,12 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Tests creating a new program containing workflows and states
+	 * 
+	 * @see {@link ProgramWorkflowService#saveProgram(Program)}
 	 */
 	@Test
-	public void shouldCreateProgramWorkflows() throws Exception {
+	@Verifies(value = "should create program workflows", method = "saveProgram(Program)")
+	public void saveProgram_shouldCreateProgramWorkflows() throws Exception {
 		
 		int numBefore = Context.getProgramWorkflowService().getAllPrograms().size();
 		
@@ -151,8 +156,8 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		
 		Context.getProgramWorkflowService().saveProgram(program);
 		
-		assertEquals("Failed to create program", numBefore + 1, Context.getProgramWorkflowService().getPrograms().size());
-		Program p = Context.getProgramWorkflowService().getProgram("COUGH SYRUP");
+		assertEquals("Failed to create program", numBefore + 1, Context.getProgramWorkflowService().getAllPrograms().size());
+		Program p = Context.getProgramWorkflowService().getProgramByName("COUGH SYRUP");
 		//System.out.println("TEST Program = " + p);
 		assertNotNull("Program is null", p);
 		assertNotNull("Workflows is null", p.getWorkflows());

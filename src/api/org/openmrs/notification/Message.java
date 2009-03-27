@@ -52,6 +52,17 @@ public class Message implements Serializable {
 		this.content = content;
 	}
 	
+	/**
+	 * @param id
+	 * @param recipients
+	 * @param sender
+	 * @param subject
+	 * @param content
+	 * @param attachment
+	 * @param attachmentContentType
+	 * @param attachmentFileName
+	 * @should fill in all parameters
+	 */
 	public Message(Integer id, String recipients, String sender, String subject, String content, String attachment,
 	    String attachmentContentType, String attachmentFileName) {
 		this(id, recipients, sender, subject, content);
@@ -68,6 +79,12 @@ public class Message implements Serializable {
 		return this.id;
 	}
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param recipients
+	 * @should set multiple recipients
+	 */
 	public void setRecipients(String recipients) {
 		if (recipients != null)
 			this.recipients = new StringBuffer(recipients);
@@ -77,6 +94,14 @@ public class Message implements Serializable {
 		return this.recipients.toString();
 	}
 	
+	/**
+	 * Add a new receiver of this message. Will append to current list of recipients by inserting a
+	 * comma. If no recipients exist, this method has no effect (TODO is this the correct
+	 * behavior??!).
+	 * 
+	 * @param recipient a new address to assign
+	 * @should add new recipient
+	 */
 	public void addRecipient(String recipient) {
 		if (recipient != null) {
 			this.recipients.append(",").append(recipient);
@@ -139,6 +164,10 @@ public class Message implements Serializable {
 		this.attachmentFileName = attachmentFileName;
 	}
 	
+	/**
+	 * @return true if this message has an attachment
+	 * @shouldr return true if this message has an attachment
+	 */
 	public boolean hasAttachment() {
 		return attachment != null;
 	}

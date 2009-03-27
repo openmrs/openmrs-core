@@ -18,7 +18,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.test.Verifies;
 
 /**
  * This class should test all methods on the patient object. It should not worry about the extended
@@ -31,10 +33,11 @@ public class PatientTest {
 	/**
 	 * Test the add/removeIdentifiers method in the patient object
 	 * 
-	 * @throws Exception
+	 * @see {@link Patient#addIdentifier(PatientIdentifier)}
 	 */
 	@Test
-	public void shouldAddRemoveIdentifiers() throws Exception {
+	@Verifies(value = "should add identifier to current list", method = "addIdentifier(PatientIdentifier)")
+	public void addIdentifier_shouldAddIdentifierToCurrentList() throws Exception {
 		
 		Patient p = new Patient();
 		
@@ -96,6 +99,98 @@ public class PatientTest {
 		// make sure the identifier IS added
 		assertTrue("There should be 3 identifiers in the patient object but there is actually : "
 		        + p.getIdentifiers().size(), p.getIdentifiers().size() == 3);
+		
+		// test removing all of the identifiers
+		p.removeIdentifier(pa3);
+		assertTrue("There should be only 2 identifiers in the patient object now", p.getIdentifiers().size() == 2);
+		p.removeIdentifier(pa2);
+		assertTrue("There should be only 1 identifier in the patient object now", p.getIdentifiers().size() == 1);
+		p.removeIdentifier(pa2);
+		assertTrue("There should still be only 1 identifier in the patient object now", p.getIdentifiers().size() == 1);
+		p.removeIdentifier(pa1);
+		assertTrue("There shouldn't be any identifiers in the patient object now", p.getIdentifiers().size() == 0);
+	}
+	
+	/**
+	 * @see {@link Patient#addIdentifier(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should not fail with null identifiers list", method = "addIdentifier(PatientIdentifier)")
+	public void addIdentifier_shouldNotFailWithNullIdentifiersList() throws Exception {
+		Patient p = new Patient();
+		p.setIdentifiers(null);
+		p.addIdentifier(new PatientIdentifier());
+	}
+	
+	/**
+	 * @see {@link Patient#getIdentifiers()}
+	 */
+	@Test
+	@Verifies(value = "should not return null", method = "getIdentifiers()")
+	public void getIdentifiers_shouldNotReturnNull() throws Exception {
+		Patient p = new Patient();
+		p.setIdentifiers(null);
+		Assert.assertNotNull(p.getIdentifiers());
+	}
+	
+	/**
+	 * @see {@link Patient#addIdentifier(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should not add identifier that is in list already", method = "addIdentifier(PatientIdentifier)")
+	public void addIdentifier_shouldNotAddIdentifierThatIsInListAlready() throws Exception {
+		Patient p = new Patient();
+		
+		assertNotNull(p.getIdentifiers());
+		
+		PatientIdentifier pa1 = new PatientIdentifier();
+		
+		pa1.setIdentifier("firsttest");
+		pa1.setIdentifierType(new PatientIdentifierType(1));
+		pa1.setDateCreated(new Date());
+		pa1.setVoided(false);
+		p.addIdentifier(pa1);
+		
+		// adding the same identifier should not increment the size
+		p.addIdentifier(pa1);
+		assertTrue(
+		    "There should be 1 identifier in the patient object but there is actually : " + p.getIdentifiers().size(), p
+		            .getIdentifiers().size() == 1);
+		
+	}
+	
+	/**
+	 * @see {@link Patient#removeIdentifier(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should remove identifier if exists", method = "removeIdentifier(PatientIdentifier)")
+	public void removeIdentifier_shouldRemoveIdentifierIfExists() throws Exception {
+		Patient p = new Patient();
+		
+		PatientIdentifier pa1 = new PatientIdentifier();
+		
+		pa1.setIdentifier("firsttest");
+		pa1.setIdentifierType(new PatientIdentifierType(1));
+		pa1.setDateCreated(new Date());
+		pa1.setVoided(false);
+		p.addIdentifier(pa1);
+		
+		// adding the same identifier should not increment the size
+		p.addIdentifier(pa1);
+		
+		PatientIdentifier pa2 = new PatientIdentifier();
+		pa2.setIdentifier("secondtest");
+		pa2.setIdentifierType(new PatientIdentifierType(2));
+		pa2.setVoided(false);
+		
+		p.addIdentifier(pa2);
+		
+		PatientIdentifier pa3 = new PatientIdentifier();
+		pa3.setIdentifierType(pa1.getIdentifierType());
+		pa3.setIdentifier(pa3.getIdentifier() + "some new string to make sure it gets added");
+		pa3.setVoided(true);
+		pa3.setDateCreated(new Date(pa1.getDateCreated().getTime() + 1));
+		p.addIdentifier(pa3);
 		
 		// test removing all of the identifiers
 		p.removeIdentifier(pa3);

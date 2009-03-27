@@ -37,8 +37,9 @@ public class CachedMessageSource extends AbstractMessageSource implements Mutabl
 		codeMessageMap.put(message.getCode(), message);
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see org.openmrs.messagesource.MutableMessageSource#getLocales()
+	 * @should should be able to contain multiple locales
 	 */
 	public Collection<Locale> getLocales() {
 		return localizedMap.keySet();
@@ -86,6 +87,7 @@ public class CachedMessageSource extends AbstractMessageSource implements Mutabl
 	/**
 	 * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String,
 	 *      java.util.Locale)
+	 * @should match get message with presentation message
 	 */
 	public PresentationMessage getPresentation(String key, Locale forLocale) {
 		PresentationMessage foundPM = null;

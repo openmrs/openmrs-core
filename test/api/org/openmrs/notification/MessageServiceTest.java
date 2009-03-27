@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.api.notification;
+package org.openmrs.notification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -19,10 +19,8 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.notification.Message;
-import org.openmrs.notification.MessageException;
-import org.openmrs.notification.MessageService;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * Unit tests for the MessageService.
@@ -41,13 +39,17 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		executeDataSet("org/openmrs/api/notification/include/MessageServiceTest-initial.xml");
+		executeDataSet("org/openmrs/notification/include/MessageServiceTest-initial.xml");
 		
 		ms = Context.getMessageService();
 	}
 	
+	/**
+	 * @see {@link MessageService#createMessage(String,String,String,String)}
+	 */
 	@Test
-	public void shouldCreateMessage() throws Exception {
+	@Verifies(value = "should create message", method = "createMessage(String,String,String,String)")
+	public void createMessage_shouldCreateMessage() throws Exception {
 		String recipients = "foo@bar.com,marco@polo.com";
 		String sender = "me@mydomain.com";
 		String subject = "foo";
@@ -84,8 +86,12 @@ public class MessageServiceTest extends BaseContextSensitiveTest {
 		assertEquals(attachmentFileName, msg4.getAttachmentFileName());
 	}
 	
+	/**
+	 * @see {@link MessageService#sendMessage(Message)}
+	 */
 	@Test
-	public void shouldSendMessage() throws Exception {
+	@Verifies(value = "should send message", method = "sendMessage(Message)")
+	public void sendMessage_shouldSendMessage() throws Exception {
 		Message tryToSend1 = ms.createMessage("recipient@example.com", "sender@example.com", "subject", "content");
 		try {
 			ms.sendMessage(tryToSend1);

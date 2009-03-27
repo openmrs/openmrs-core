@@ -325,6 +325,7 @@ public interface PersonService {
 	 * @param p person object listed on either side of the relationship
 	 * @return Relationship list
 	 * @throws APIException
+	 * @should only get unvoided relationships
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
@@ -642,6 +643,8 @@ public interface PersonService {
 	 * 
 	 * @param name person name to be parsed
 	 * @return parsed person name
+	 * @should parse two person name with comma
+	 * @should parse two person name without comma
 	 */
 	public PersonName parsePersonName(String name) throws APIException;
 	

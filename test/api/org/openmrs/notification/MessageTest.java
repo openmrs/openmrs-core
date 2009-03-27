@@ -11,20 +11,25 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.api.notification;
+package org.openmrs.notification;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.openmrs.notification.Message;
+import org.openmrs.test.Verifies;
 
 /**
  * Unit testing for the Message class
  */
 public class MessageTest {
 	
+	/**
+	 * Convenience method to create a reusable/retestable message object with an attachment.
+	 * 
+	 * @return a testable {@link Message} object
+	 */
 	private Message createTestMessage1() {
 		int id = 1;
 		String recipients = "recipient1@example.com,recipient2@example.com";
@@ -38,6 +43,12 @@ public class MessageTest {
 		return new Message(id, recipients, sender, subject, content, attachment, attachmentContentType, attachmentFileName);
 	}
 	
+	/**
+	 * Convenience method to create a reusable/retestable message object with only the basic
+	 * to/form/subject/content filled in.
+	 * 
+	 * @return a testable {@link Message} object
+	 */
 	private Message createTestMessage2() {
 		int id = 1;
 		String recipients = "recipient1@example.com";
@@ -48,8 +59,12 @@ public class MessageTest {
 		return new Message(id, recipients, sender, subject, content);
 	}
 	
+	/**
+	 * @see {@link Message#Message(Integer,String,String,String,String,String,String,String)}
+	 */
 	@Test
-	public void shouldConstructor() throws Exception {
+	@Verifies(value = "should fill in all parameters", method = "Message(Integer,String,String,String,String,String,String,String)")
+	public void Message_shouldFillInAllParameters() throws Exception {
 		int id = 1;
 		String recipients = "recipient1@example.com,recipient2@example.com";
 		String sender = "foo@bar.com";
@@ -68,8 +83,12 @@ public class MessageTest {
 		assertEquals(content, toTest.getContent());
 	}
 	
+	/**
+	 * @see {@link Message#setRecipients(String)}
+	 */
 	@Test
-	public void shouldSetRecipients() throws Exception {
+	@Verifies(value = "should set multiple recipients", method = "setRecipients(String)")
+	public void setRecipients_shouldSetMultipleRecipients() throws Exception {
 		Message testMessage = createTestMessage1();
 		
 		String recipients = "recipient1@example.com,recipient2@example.com";
@@ -79,8 +98,12 @@ public class MessageTest {
 		assertEquals(testMessage.getRecipients(), recipients);
 	}
 	
+	/**
+	 * @see {@link Message#addRecipient(String)}
+	 */
 	@Test
-	public void shouldAddRecipient() throws Exception {
+	@Verifies(value = "should add new recipient", method = "addRecipient(String)")
+	public void addRecipient_shouldAddNewRecipient() throws Exception {
 		Message testMessage = createTestMessage1();
 		
 		String oldRecipients = testMessage.getRecipients();
@@ -91,12 +114,17 @@ public class MessageTest {
 		assertEquals(testMessage.getRecipients(), oldRecipients + "," + newRecipient);
 	}
 	
+	/**
+	 * @see {@link Message#hasAttachment()}
+	 */
 	@Test
-	public void shouldHasAttachment() throws Exception {
+	@Verifies(value = "should r return true if this message has an attachment", method = "hasAttachment()")
+	public void hasAttachment_shouldRReturnTrueIfThisMessageHasAnAttachment() throws Exception {
 		Message testMessage1 = createTestMessage1();
 		Message testMessage2 = createTestMessage2();
 		
 		assertTrue(testMessage1.hasAttachment());
 		assertFalse(testMessage2.hasAttachment());
 	}
+	
 }

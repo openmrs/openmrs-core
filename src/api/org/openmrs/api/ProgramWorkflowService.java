@@ -65,6 +65,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param program is the Program to be saved to the database
 	 * @return The Program that was saved
 	 * @throws APIException
+	 * @should create program workflows
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
 	public Program saveProgram(Program program) throws APIException;
@@ -182,6 +183,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param patientProgram is the PatientProgram to be saved to the database
 	 * @return PatientProgram - the saved PatientProgram
 	 * @throws APIException
+	 * @should update patient program
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENT_PROGRAMS, OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS })
 	public PatientProgram savePatientProgram(PatientProgram patientProgram) throws APIException;

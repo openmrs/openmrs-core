@@ -15,11 +15,12 @@ package org.openmrs.messagesource.impl;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import java.util.Locale;
+
 import org.junit.Test;
 import org.openmrs.messagesource.MockPresentationMessage;
 import org.openmrs.messagesource.PresentationMessage;
+import org.openmrs.test.Verifies;
 
 /**
  *
@@ -27,28 +28,13 @@ import org.openmrs.messagesource.PresentationMessage;
 public class CachedMessageSourceTest {
 	
 	/**
-	 * Auto generated method comment
-	 * 
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-	
-	/**
-	 * Auto generated method comment
-	 * 
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-	
-	/**
 	 * The PresentationMessageCollection should be able to contain messages in different locales.
+	 * 
+	 * @see {@link CachedMessageSource#getLocales()}
 	 */
 	@Test
-	public void shouldContainMultipleLocales() {
+	@Verifies(value = "should should be able to contain multiple locales", method = "getLocales()")
+	public void getLocales_shouldShouldBeAbleToContainMultipleLocales() throws Exception {
 		CachedMessageSource testPmc = new CachedMessageSource();
 		testPmc.addPresentation(MockPresentationMessage.createMockPresentationMessage("en"));
 		testPmc.addPresentation(MockPresentationMessage.createMockPresentationMessage("fr"));
@@ -60,9 +46,12 @@ public class CachedMessageSourceTest {
 	/**
 	 * The PresentationMessageCollection should return messages that are the same whether returned
 	 * as Strings or when as part of full PresentationMessage object.
+	 * 
+	 * @see {@link CachedMessageSource#getPresentation(String,Locale)}
 	 */
 	@Test
-	public void shouldMatchMessageWithPresentationMessage() {
+	@Verifies(value = "should match get message with presentation message", method = "getPresentation(String,Locale)")
+	public void getPresentation_shouldMatchGetMessageWithPresentationMessage() throws Exception {
 		CachedMessageSource testPmc = new CachedMessageSource();
 		
 		MockPresentationMessage mockPM = MockPresentationMessage.createMockPresentationMessage();
@@ -73,4 +62,5 @@ public class CachedMessageSourceTest {
 		
 		assertEquals(valueAsString, valueAsPM.getMessage());
 	}
+	
 }

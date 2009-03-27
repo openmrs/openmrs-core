@@ -26,14 +26,20 @@ import org.openmrs.reporting.PatientSearch;
 import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.reporting.ProgramStatePatientFilter;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
- *
+ * Tests methods in the {@link CohortUtil} class.
  */
 public class CohortUtilTest extends BaseContextSensitiveTest {
 	
+	/**
+	 * @see {@link CohortUtil#parse(String)}
+	 */
 	@Test
-	public void shouldParse() throws Exception {
+	@Verifies(value = "should parse specification with and in it", method = "parse(String)")
+	public void parse_shouldParseSpecificationWithAndInIt() throws Exception {
+		// sets up the database
 		{
 			// Create a search called "Male" 
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
@@ -47,6 +53,8 @@ public class CohortUtilTest extends BaseContextSensitiveTest {
 			ps.addArgument("untilDate", "${date}", Date.class);
 			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("EnrolledOnDate", ps));
 		}
+		
+		// TODO this is the actual test.  Move the above logic into a dbunit xml file or use the standard xml run by BaseContextSensitiveTest
 		PatientSearch ps = (PatientSearch) CohortUtil.parse("[Male] and [EnrolledOnDate|untilDate=${report.startDate}]");
 		List<Object> list = ps.getParsedComposition();
 		{
