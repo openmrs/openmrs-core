@@ -545,6 +545,7 @@ public class InitializationFilter implements Filter {
 			
 			// start openmrs
 			try {
+				Context.openSession();
 				Context.startup(runtimeProperties);
 			}
 			catch (DatabaseUpdateException updateEx) {
@@ -642,6 +643,7 @@ public class InitializationFilter implements Filter {
 			
 			// set this so that the wizard isn't run again on next page load
 			initializationComplete = true;
+			Context.closeSession();
 			
 			// TODO send user to confirmation page with results of wizard, location of runtime props, etc instead?
 			httpResponse.sendRedirect("/" + WebConstants.WEBAPP_NAME);
