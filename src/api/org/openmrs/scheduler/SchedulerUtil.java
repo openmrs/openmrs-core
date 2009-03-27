@@ -164,6 +164,7 @@ public class SchedulerUtil {
 	 * @see java.util.Timer
 	 * @param taskDefinition the task definition to be executed
 	 * @return the next "future" execution time for the given task
+	 * @should get the correct repeat interval
 	 */
 	public static Date getNextExecution(TaskDefinition taskDefinition) {
 		Calendar nextTime = Calendar.getInstance();

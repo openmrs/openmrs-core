@@ -20,6 +20,7 @@ public interface ArdenService {
 	
 	/**
 	 * @param file - mlm file to be parsed
+	 * @should get and parse mlms
 	 */
 	public void compileFile(String file, String outFolder);
 	

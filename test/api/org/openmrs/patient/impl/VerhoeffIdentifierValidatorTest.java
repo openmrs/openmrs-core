@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.patient;
+package org.openmrs.patient.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,36 +19,38 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.openmrs.patient.impl.LuhnIdentifierValidator;
+import org.openmrs.test.Verifies;
 
 /**
- * Tests the {@link LuhnIdentifierValidator}
+ *
  */
-public class LuhnIdentifierValidatorTest {
+public class VerhoeffIdentifierValidatorTest {
 	
-	private LuhnIdentifierValidator validator = new LuhnIdentifierValidator();
+	private VerhoeffIdentifierValidator validator = new VerhoeffIdentifierValidator();
 	
-	private String[] allowedIdentifiers = { "a", "123456", "ab32kcdak3", "chaseisreallycoolyay", "1", "moose", "MOOSE",
-	        "MooSE", "adD3Eddf429daD999" };
+	private String[] allowedIdentifiers = { "12345678", "87654321", "11111111", "64537218", "00000000" };
 	
-	private char[] allowedIdentifiersCheckDigits = { 'D', 'G', 'J', 'H', 'I', 'H', 'H', 'H', 'B' };
+	private char[] allowedIdentifiersCheckDigits = { 'G', 'E', 'B', 'A', 'B' };
 	
-	private char unusedCheckDigit = 'E';
+	private int[] allowedIdentifiersCheckDigitsInt = { 6, 4, 1, 0, 2 };
 	
-	private int unusedCheckDigitInt = 0;
+	private char unusedCheckDigit = 'C';
 	
-	private int[] allowedIdentifiersCheckDigitsInts = { 3, 6, 9, 7, 8, 7, 7, 7, 1 };
+	private String[] invalidIdentifiers = { "", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def ",
+	        "ab32kcdak3", "chaseisreallycoolyay", "1", "moose", "MOOSE", "MooSE", "adD3Eddf429daD999" };
 	
-	private String[] invalidIdentifiers = { "", " ", "-", "adsfalasdf-adfasdf", "ABC DEF", "!234*", "++", " ABC", "def " };
-	
+	/**
+	 * @see {@link VerhoeffIdentifierValidator#getValidIdentifier(String)}
+	 */
 	@Test
-	public void shouldGetValidIdentifier() {
+	@Verifies(value = "should get valid identifier", method = "getValidIdentifier(String)")
+	public void getValidIdentifier_shouldGetValidIdentifier() throws Exception {
 		
 		//Make sure valid identifiers come back with the right check digit
 		
 		for (int i = 0; i < allowedIdentifiers.length; i++) {
 			assertEquals(validator.getValidIdentifier(allowedIdentifiers[i]), allowedIdentifiers[i] + "-"
-			        + allowedIdentifiersCheckDigitsInts[i]);
+			        + allowedIdentifiersCheckDigits[i]);
 		}
 		
 		//Make sure invalid identifiers throw an exception
@@ -62,6 +64,9 @@ public class LuhnIdentifierValidatorTest {
 		}
 	}
 	
+	/**
+	 * Test the is valid method. TODO split this into multiple tests.
+	 */
 	@Test
 	public void shouldIsValid() {
 		//Make sure invalid identifiers throw an exception
@@ -95,17 +100,26 @@ public class LuhnIdentifierValidatorTest {
 			catch (Exception e) {}
 		}
 		
+		//Make sure check digit can't be numeric
+		for (int j = 0; j < invalidIdentifiers.length; j++) {
+			try {
+				validator.isValid(allowedIdentifiers[j] + "-" + allowedIdentifiersCheckDigitsInt[j]);
+				fail("Identifier " + allowedIdentifiers[j] + " should have failed.");
+			}
+			catch (Exception e) {}
+		}
+		
 		//Now test allowed identifiers that just have the wrong check digit.
 		for (int i = 0; i < allowedIdentifiers.length; i++) {
 			assertFalse(validator.isValid(allowedIdentifiers[i] + "-" + unusedCheckDigit));
-			assertFalse(validator.isValid(allowedIdentifiers[i] + "-" + unusedCheckDigitInt));
 		}
 		
 		//Now test allowed identifiers that have the right check digit.  Test with both
 		//chars and ints.
 		for (int i = 0; i < allowedIdentifiers.length; i++) {
 			assertTrue(validator.isValid(allowedIdentifiers[i] + "-" + allowedIdentifiersCheckDigits[i]));
-			assertTrue(validator.isValid(allowedIdentifiers[i] + "-" + allowedIdentifiersCheckDigitsInts[i]));
 		}
+		
 	}
+	
 }

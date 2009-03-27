@@ -36,7 +36,13 @@ public interface MessageService {
 	
 	/* Send Message Methods */
 
-	//sends message
+	/**
+	 * TODO Auto generated method comment
+	 * 
+	 * @param message
+	 * @throws MessageException
+	 * @should send message
+	 */
 	public void sendMessage(Message message) throws MessageException;
 	
 	//sends message to everyone of a certain role
@@ -61,6 +67,17 @@ public interface MessageService {
 	
 	public Message createMessage(String sender, String subject, String message) throws MessageException;
 	
+	/**
+	 * TODO Auto generated method comment
+	 * 
+	 * @param recipients
+	 * @param sender
+	 * @param subject
+	 * @param message
+	 * @return
+	 * @throws MessageException
+	 * @should create message
+	 */
 	public Message createMessage(String recipients, String sender, String subject, String message) throws MessageException;
 	
 	public Message createMessage(String recipients, String sender, String subject, String message, String attachment,

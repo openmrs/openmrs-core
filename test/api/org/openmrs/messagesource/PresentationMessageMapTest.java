@@ -19,9 +19,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openmrs.test.Verifies;
 
 /**
  *
@@ -29,29 +28,14 @@ import org.junit.Test;
 public class PresentationMessageMapTest {
 	
 	/**
-	 * Auto generated method comment
-	 * 
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-	
-	/**
-	 * Auto generated method comment
-	 * 
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-	
-	/**
 	 * PresentationMessageMap should not add PresentationMessages which are not from the same locale
 	 * set for the PresentationMessageMap.
+	 * 
+	 * @see {@link PresentationMessageMap#put(String,PresentationMessage)}
 	 */
 	@Test
-	public void shouldIgnoreNonMatchingLocaleMessages() {
+	@Verifies(value = "should should ignore non matching locale messages", method = "put(String,PresentationMessage)")
+	public void put_shouldShouldIgnoreNonMatchingLocaleMessages() throws Exception {
 		PresentationMessageMap testPmm = new PresentationMessageMap(Locale.ENGLISH);
 		testPmm.put("right_locale", MockPresentationMessage.createMockPresentationMessage("en"));
 		testPmm.put("wrong_locale", MockPresentationMessage.createMockPresentationMessage(Locale.GERMAN));
@@ -62,9 +46,12 @@ public class PresentationMessageMapTest {
 	/**
 	 * PresentationMessageMap should only add PresentationMessages which are from the same locale,
 	 * even when adding from a batch.
+	 * 
+	 * @see {@link PresentationMessageMap#putAll(Map<PresentationMessage>)}
 	 */
 	@Test
-	public void shouldFilterOutNonMatchingLocaleMessagesFromBatchAdd() {
+	@Verifies(value = "should filter out non matching locale messages from batch add", method = "putAll(Map<PresentationMessage>)")
+	public void putAll_shouldFilterOutNonMatchingLocaleMessagesFromBatchAdd() throws Exception {
 		Map<String, PresentationMessage> mockMessageMap = new HashMap<String, PresentationMessage>();
 		mockMessageMap.put("right_locale", MockPresentationMessage.createMockPresentationMessage("en"));
 		mockMessageMap.put("wrong_locale", MockPresentationMessage.createMockPresentationMessage(Locale.GERMAN));

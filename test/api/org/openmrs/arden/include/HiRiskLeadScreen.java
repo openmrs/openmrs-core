@@ -13,7 +13,7 @@
  Links :
 
  ********************************************************************/
-package org.openmrs.api.arden.include;
+package org.openmrs.arden.include;
 
 import java.util.HashMap;
 import java.util.Iterator;

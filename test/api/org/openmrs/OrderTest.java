@@ -32,6 +32,8 @@ public class OrderTest {
 	/**
 	 * Tests the {@link Order#isDiscontinuedRightNow()} method
 	 * 
+	 * TODO this should be split into many different tests
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -63,6 +65,8 @@ public class OrderTest {
 	
 	/**
 	 * Tests the {@link Order#isCurrent()} method
+	 * 
+	 * TODO this should be split into many different tests
 	 * 
 	 * @throws Exception
 	 */

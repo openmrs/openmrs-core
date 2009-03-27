@@ -50,6 +50,8 @@ public interface AlertService extends OpenmrsService {
 	 * @param alert the Alert object to save
 	 * @return The saved alert object
 	 * @throws APIException
+	 * @should save simple alert with one user
+	 * @should save alerts by role
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_ALERTS)
 	public Alert saveAlert(Alert alert) throws APIException;

@@ -69,13 +69,15 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * retrieving unvoided relationships for personA and if it is still listed when retrieving
 	 * unvoided relationships for personB.
 	 * 
-	 * @throws Exception
+	 * @see {@link PersonService#getRelationshipsByPerson(Person)}
 	 */
 	@Test
-	public void shouldGetUnvoidedRelationships() throws Exception {
+	@Verifies(value = "should only get unvoided relationships", method = "getRelationshipsByPerson(Person)")
+	public void getRelationshipsByPerson_shouldOnlyGetUnvoidedRelationships() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		executeDataSet(CREATE_RELATIONSHIP_XML);
 		
+		// TODO use xml imported in BaseContextSensitiveTest#baseSetupWithStandardDataAndAuthentication()
 		// Create Patient#3.
 		Patient patient = new Patient();
 		PersonName pName = new PersonName();
@@ -123,8 +125,6 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		// Get unvoided relationships before voiding any.
 		Person p = personService.getPerson(2);
-		List<Relationship> aRels = personService.getRelationshipsByPerson(p);
-		List<Relationship> bRels = personService.getRelationshipsByPerson(patient);
 		
 		//test loading relationship types real quick.
 		List<RelationshipType> rTmp = personService.getAllRelationshipTypes();
@@ -134,43 +134,43 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		rTypeTmp = personService.getRelationshipTypeByName("booya");
 		assertNull(rTypeTmp);
 		
-		// Uncomment for console output.
-		//System.out.println("Relationships before voiding all:");
-		//System.out.println(aRels);
-		//System.out.println(bRels);
-		
 		// Void all relationships.
 		List<Relationship> allRels = personService.getAllRelationships();
 		for (Relationship r : allRels) {
 			personService.voidRelationship(r, "Because of a JUnit test.");
 		}
 		
+		// TODO this is the actual test.  Cut this method down to just this
+		
 		// Get unvoided relationships after voiding all of them.
 		List<Relationship> updatedARels = personService.getRelationshipsByPerson(p);
 		List<Relationship> updatedBRels = personService.getRelationshipsByPerson(patient);
-		// Uncomment for console output
-		//System.out.println("Relationships after voiding all:");
-		//System.out.println(updatedARels);
-		//System.out.println(updatedBRels);
 		
 		// Neither Patient#2 or Patient#3 should have any relationships now.
+		assertEquals(0, updatedARels.size());
 		assertEquals(updatedARels, updatedBRels);
 	}
 	
 	/**
 	 * This test should get the first/last name out of a string into a PersonName object.
 	 * 
-	 * @throws Exception
+	 * @see {@link PersonService#parsePersonName(String)}
 	 */
 	@Test
-	public void shouldParseTwoPersonNameWithAndWithoutComma() throws Exception {
-		PersonService service = Context.getPersonService();
-		
-		PersonName pname = service.parsePersonName("Doe, John");
+	@Verifies(value = "should parse two person name with comma", method = "parsePersonName(String)")
+	public void parsePersonName_shouldParseTwoPersonNameWithComma() throws Exception {
+		PersonName pname = Context.getPersonService().parsePersonName("Doe, John");
 		assertEquals("Doe", pname.getFamilyName());
 		assertEquals("John", pname.getGivenName());
-		
-		PersonName pname2 = service.parsePersonName("John Doe");
+	}
+	
+	/**
+	 * @see {@link PersonService#parsePersonName(String)}
+	 */
+	@Test
+	@Verifies(value = "should parse two person name without comma", method = "parsePersonName(String)")
+	public void parsePersonName_shouldParseTwoPersonNameWithoutComma() throws Exception {
+		PersonName pname2 = Context.getPersonService().parsePersonName("John Doe");
 		assertEquals("Doe", pname2.getFamilyName());
 		assertEquals("John", pname2.getGivenName());
 	}

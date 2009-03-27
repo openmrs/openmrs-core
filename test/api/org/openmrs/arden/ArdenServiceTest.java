@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.api.arden;
+package org.openmrs.arden;
 
 import java.io.File;
 
@@ -19,6 +19,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
  * TODO Finish this arden test class? delete this test class?
@@ -27,9 +28,13 @@ public class ArdenServiceTest extends BaseContextSensitiveTest {
 	
 	int MAX_MLM = 1000;
 	
-	@Ignore
+	/**
+	 * @see {@link ArdenService#compileFile(String,String)}
+	 */
 	@Test
-	public void shouldGetAndParseMLMs() throws Exception {
+	@Ignore
+	@Verifies(value = "should get and parse mlms", method = "compileFile(String,String)")
+	public void compileFile_shouldGetAndParseMlms() throws Exception {
 		
 		String mlmDirectory = System.getProperty("user.dir") + "\\mlm_to_test\\";
 		String javaDirectory = System.getProperty("user.dir") + "\\mlm_to_test\\";
