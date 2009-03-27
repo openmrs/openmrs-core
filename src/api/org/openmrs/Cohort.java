@@ -17,7 +17,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -76,7 +76,7 @@ public class Cohort implements Serializable {
 	private EvaluationContext evaluationContext;
 	
 	public Cohort() {
-		memberIds = new HashSet<Integer>();
+		memberIds = new TreeSet<Integer>();
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class Cohort implements Serializable {
 	 * @param cohortId the internal identifier for this cohort
 	 */
 	public Cohort(Integer cohortId) {
-		memberIds = new HashSet<Integer>();
+		this();
 		this.cohortId = cohortId;
 	}
 	
@@ -99,9 +99,9 @@ public class Cohort implements Serializable {
 	 * @param ids option array of Integer ids
 	 */
 	public Cohort(String name, String description, Integer[] ids) {
+		this();
 		this.name = name;
 		this.description = description;
-		memberIds = new HashSet<Integer>();
 		if (ids != null)
 			memberIds.addAll(Arrays.asList(ids));
 	}
@@ -115,9 +115,7 @@ public class Cohort implements Serializable {
 	 * @param patients optional array of patients
 	 */
 	public Cohort(String name, String description, Patient[] patients) {
-		this.name = name;
-		this.description = description;
-		memberIds = new HashSet<Integer>();
+		this(name, description, (Integer[])null);
 		if (patients != null)
 			for (Patient p : patients)
 				memberIds.add(p.getPatientId());
@@ -146,9 +144,7 @@ public class Cohort implements Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public Cohort(String name, String description, Collection patientsOrIds) {
-		this.name = name;
-		this.description = description;
-		memberIds = new HashSet<Integer>();
+		this(name, description, (Integer[])null);
 		if (patientsOrIds != null) {
 			for (Object o : patientsOrIds) {
 				if (o instanceof Patient)
@@ -169,7 +165,7 @@ public class Cohort implements Serializable {
 	 * @param commaSeparatedIds
 	 */
 	public Cohort(String commaSeparatedIds) {
-		memberIds = new HashSet<Integer>();
+		this();
 		for (StringTokenizer st = new StringTokenizer(commaSeparatedIds, ","); st.hasMoreTokens();) {
 			String id = st.nextToken();
 			memberIds.add(new Integer(id.trim()));
