@@ -91,7 +91,7 @@ public interface MutableMessageSource extends MessageSource, HierarchicalMessage
 	 * Merge messages from another source into this source.
 	 * 
 	 * @param fromSource message source from which messages should be merge
-	 * @param whether to overwrite existing messages
+	 * @param overwrite whether to overwrite existing messages
 	 */
 	public void merge(MutableMessageSource fromSource, boolean overwrite);
 	

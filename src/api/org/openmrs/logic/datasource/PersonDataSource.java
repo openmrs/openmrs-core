@@ -66,8 +66,7 @@ public class PersonDataSource implements LogicDataSource {
 	}
 	
 	/**
-	 * @see org.openmrs.logic.datasource.LogicDataSource#doEval(org.openmrs.Cohort,
-	 *      org.openmrs.logic.LogicCriteria)
+	 * @see org.openmrs.logic.datasource.LogicDataSource#read(LogicContext, Cohort, LogicCriteria)
 	 */
 	public Map<Integer, Result> read(LogicContext context, Cohort who, LogicCriteria criteria) {
 		
@@ -105,7 +104,7 @@ public class PersonDataSource implements LogicDataSource {
 	}
 	
 	/**
-	 * @see org.openmrs.logic.datasource.LogicDataSource#getTTL()
+	 * @see org.openmrs.logic.datasource.LogicDataSource#getDefaultTTL()
 	 */
 	public int getDefaultTTL() {
 		return 60 * 60 * 4; // 4 hours

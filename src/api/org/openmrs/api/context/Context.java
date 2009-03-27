@@ -179,7 +179,7 @@ public class Context {
 	 * Gets the user context from the thread local. This might be accessed by several threads at the
 	 * same time.
 	 * 
-	 * @return
+	 * @return The current UserContext for this thread.
 	 * @should fail if session hasnt been opened
 	 */
 	public static UserContext getUserContext() {
@@ -198,9 +198,9 @@ public class Context {
 	}
 	
 	/**
-	 * Gets the service context.
+	 * Gets the currently defined service context.  If one is not defined, one will be created and then returned.
 	 * 
-	 * @return The UserContext
+	 * @return the current ServiceContext
 	 */
 	private static ServiceContext getServiceContext() {
 		if (serviceContext == null) {

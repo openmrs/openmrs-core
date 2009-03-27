@@ -50,7 +50,7 @@ import org.openmrs.logic.result.Result;
  * A consumer of the logic service could then use
  * 
  * <pre>
- *   Context.getLogicService().eval(myPatient, "@pharmacy visit.pharmacy");
+ * Context.getLogicService().eval(myPatient, &quot;@pharmacy visit.pharmacy&quot;);
  * </pre>
  * 
  * to get a list of the names of pharamacies visited by the patient. However, this limits the ways
@@ -63,11 +63,16 @@ import org.openmrs.logic.result.Result;
  * Now a consumer of the logic service can use the same result in several different ways:
  * 
  * <pre>
- *   Result result = Context.getLogicService().eval(myPatient, "@pharmacy visit.visit");
- *   Result lastVisit = result.latest();
- *   Date dateOfVisit = result.getResultDate();
- *   String pharmacy = result.toString();
- *   int numberOfPrescriptions = result.toNumber();
+ * 
+ * Result result = Context.getLogicService().eval(myPatient, &quot;@pharmacy visit.visit&quot;);
+ * 
+ * Result lastVisit = result.latest();
+ * 
+ * Date dateOfVisit = result.getResultDate();
+ * 
+ * String pharmacy = result.toString();
+ * 
+ * int numberOfPrescriptions = result.toNumber();
  * </pre>
  * 
  * One way to approach the design of a new data service is to avoid thinking of the individual
@@ -85,10 +90,10 @@ public interface LogicDataSource {
 	 * Extracts data from the data source. Actually, this function only checks for cached data and
 	 * forwards all non-cached requests to its subclass(es).
 	 * 
-	 * @param who patient(s) for whom to perform the queries
-	 * @param dataElements the data elements to be extracted
-	 * @return a map of results for each patient, grouped by requested data element
-	 * @see org.openmrs.logic.LogicDataElement
+	 * @param context the current logic context
+	 * @param patients Cohort of Patient(s) for whom to perform the queries
+	 * @param criteria <code>LogicCriteria</code> identifying which data is to be extracted
+	 * @return <code>Map</code> of results for each patient, grouped by requested data element
 	 */
 	public Map<Integer, Result> read(LogicContext context, Cohort patients, LogicCriteria criteria) throws LogicException;
 	

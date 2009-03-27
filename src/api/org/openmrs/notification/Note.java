@@ -20,8 +20,6 @@ import org.openmrs.Patient;
 
 /**
  * Not currently used.
- * 
- * @author Justin Miranda
  */
 public class Note implements Serializable {
 	

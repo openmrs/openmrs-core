@@ -77,7 +77,7 @@ public class ModuleFactory {
 	 * error occurred and/or module was not successfully loaded
 	 * 
 	 * @param moduleFile
-	 * @param Boolean replaceIfExists unload a module that has the same moduleId if one is loaded
+	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded
 	 *            already
 	 * @return Module
 	 */
@@ -94,7 +94,7 @@ public class ModuleFactory {
 	 * Add a module to the list of openmrs modules
 	 * 
 	 * @param module
-	 * @param Boolean replaceIfExists unload a module that has the same moduleId if one is loaded
+	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded
 	 *            already
 	 */
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
@@ -274,7 +274,7 @@ public class ModuleFactory {
 	/**
 	 * Returns all modules found/loaded into the system (started and not started)
 	 * 
-	 * @return
+	 * @return <code>Collection<Module></code> of the modules loaded into the system
 	 */
 	public static Collection<Module> getLoadedModules() {
 		if (getLoadedModulesMap().size() > 0)
@@ -299,7 +299,7 @@ public class ModuleFactory {
 	/**
 	 * Returns the modules that have been successfully started
 	 * 
-	 * @return
+	 * @return <code>Collection<Module></code> of the started modules
 	 */
 	public static Collection<Module> getStartedModules() {
 		if (getStartedModulesMap().size() > 0)
@@ -343,7 +343,7 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * @param module id
+	 * @param moduleId
 	 * @return Module matching module id or null if none
 	 */
 	public static Module getModuleById(String moduleId) {
@@ -351,7 +351,7 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * @param module package
+	 * @param modulePackage
 	 * @return Module matching module package or null if none
 	 */
 	public static Module getModuleByPackage(String modulePackage) {
@@ -824,7 +824,7 @@ public class ModuleFactory {
 	 * getExtension(pointId) if no modules extend this pointId for given media type
 	 * 
 	 * @param pointId
-	 * @param Extension.MEDIA_TYPE
+	 * @param type Extension.MEDIA_TYPE
 	 * @return List of extensions
 	 */
 	public static List<Extension> getExtensions(String pointId, Extension.MEDIA_TYPE type) {
@@ -841,7 +841,7 @@ public class ModuleFactory {
 	/**
 	 * Get a list of required Privileges defined by the modules
 	 * 
-	 * @return
+	 * @return <code>List<Privilege></code> of the required privileges
 	 */
 	public static List<Privilege> getPrivileges() {
 		
@@ -859,7 +859,7 @@ public class ModuleFactory {
 	/**
 	 * Get a list of required GlobalProperties defined by the modules
 	 * 
-	 * @return
+	 * @return <code>List<GlobalProperty></code> object of the module's global properties
 	 */
 	public static List<GlobalProperty> getGlobalProperties() {
 		
@@ -875,10 +875,10 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * Returns true/false whether the Module <code>mod</code> is activated or not
+	 * Checks whether the given module is activated
 	 * 
-	 * @param mod Module to check if its started or not
-	 * @return started status
+	 * @param mod Module to check 
+	 * @return true if the module is started, false otherwise
 	 */
 	public static boolean isModuleStarted(Module mod) {
 		return getStartedModulesMap().containsValue(mod);
@@ -904,8 +904,8 @@ public class ModuleFactory {
 	/**
 	 * Get a module's classloader via the module id
 	 * 
-	 * @param moduleId id of the module
-	 * @return ModuleClassLoader pertaining to thsi module
+	 * @param moduleId <code>String</code> id of the module
+	 * @return ModuleClassLoader pertaining to this module
 	 * @throws ModuleException if this module isn't started or doesn't have a classloader
 	 * @see #getModuleClassLoader(Module)
 	 */

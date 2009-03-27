@@ -24,8 +24,6 @@ import org.springframework.web.servlet.mvc.Controller;
 
 /**
  * Redirects the request to the given <code>formView</code>
- * 
- * @author bwolfe
  */
 public class RedirectController implements Controller {
 	

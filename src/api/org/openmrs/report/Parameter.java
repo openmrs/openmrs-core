@@ -19,14 +19,13 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * Parameters are used in a ReportSchema, LogicCriteria, and CohortFromStrategy, etc If an object is
- * parameterizable, it is willing to accept a parameter like this. Examples of a parameter would be
+ * Parameters are used in a ReportSchema, LogicCriteria, and CohortFromStrategy, etc 
+ * <p>
+ * If an object is parameterizable, it is willing to accept a parameter like this. Examples of a parameter would be
  * "What start date do you want to use?" The value of the parameter would be plugged in when the
  * object is evaluated.
  * 
- * @see ReportModel
  * @see LogicCriteria
- * @see CohortFromStrategy
  * @see Parameterizable
  */
 @Root(strict = false)

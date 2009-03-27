@@ -38,7 +38,7 @@ public interface ComplexObsHandler {
 	 * determined by the hander, and returns the Obs with the ComplexData nullified.
 	 * 
 	 * @param obs
-	 * @return
+	 * @return the Obs with the ComplexData nullified
 	 */
 	public Obs saveObs(Obs obs) throws APIException;
 	
@@ -49,9 +49,8 @@ public interface ComplexObsHandler {
 	 * This view is typically a contract between the view and the handler that has been registered,
 	 * so they those two know the types of views that can be handled.
 	 * 
-	 * @param view. Available views at the API level are found in:
 	 * @param obs an obs without complex data filled in
-	 * @param view nullable view type. This is type
+	 * @param view nullable view type. This is defined by the ui and view/handler
 	 * @return the obs with complex data filled in
 	 * @see org.openmrs.util.OpenmrsConstants
 	 */

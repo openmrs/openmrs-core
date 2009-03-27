@@ -343,8 +343,8 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 	
 	/**
 	 * @throws LogicException
-	 * @see org.openmrs.api.db.ObsDAO#getObservations(org.openmrs.Person,
-	 *      org.openmrs.logic.LogicCriteria)
+	 * @see org.openmrs.api.db.ObsDAO#getObservations(List, List, List, List, List, List, List,
+	 *      Integer, Integer, Date, Date, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Obs> getObservations(Cohort who, LogicCriteria logicCriteria) throws LogicException {

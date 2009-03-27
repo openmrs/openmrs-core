@@ -433,8 +433,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#addUserProperty(org.openmrs.User, java.lang.String,
-	 *      java.lang.String)
+	 * @see org.openmrs.api.UserService#setUserProperty(User, String, String)
 	 */
 	public User setUserProperty(User user, String key, String value) {
 		if (user != null) {

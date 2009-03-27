@@ -31,7 +31,6 @@ import org.xml.sax.InputSource;
 /**
  * This class will parse an xml update.rdf file
  * 
- * @author bwolfe
  * @version 1.0
  */
 public class UpdateFileParser {
@@ -50,7 +49,7 @@ public class UpdateFileParser {
 	/**
 	 * Default constructor
 	 * 
-	 * @param String to parse (Contents of update.rdf file)
+	 * @param s String to parse (Contents of update.rdf file)
 	 */
 	public UpdateFileParser(String s) {
 		this.content = s;

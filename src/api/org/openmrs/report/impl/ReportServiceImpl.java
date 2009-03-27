@@ -249,7 +249,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ReportService#removeReportRenderer(org.openmrs.report.ReportRenderer)
+	 * @see org.openmrs.api.ReportService#removeRenderer(Class)
 	 */
 	public void removeRenderer(Class<? extends ReportRenderer> renderingClass) {
 		renderers.remove(renderingClass);

@@ -272,7 +272,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.CohortService#getCohortDefinitions()
+	 * @see org.openmrs.api.CohortService#getAllCohortDefinitions()
 	 */
 	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
 		
@@ -314,8 +314,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.CohortService#registerCohortDefinitionProvider(java.lang.Class,
-	 *      org.openmrs.api.CohortDefinitionService)
+	 * @see org.openmrs.api.CohortService#registerCohortDefinitionProvider(Class, CohortDefinitionProvider)
 	 */
 	public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> defClass,
 	                                             CohortDefinitionProvider cohortDefProvider) throws APIException {

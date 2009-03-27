@@ -20,9 +20,11 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * An extension is a small snippet of code that is run at certain "extension points" throughout the
- * user interface An extension is not necessarily tied to only one certain point. If all of the need
- * return values are defined it can be used to extend any point. A module can contain many
- * extensions for many different points.
+ * user interface
+ * <p>
+ * An extension is not necessarily tied to only one certain point. If all of the need return values
+ * are defined it can be used to extend any point. A module can contain many extensions for many
+ * different points.
  */
 
 public abstract class Extension {
@@ -41,7 +43,7 @@ public abstract class Extension {
 	/**
 	 * String separating the pointId and media type in an extension id
 	 * 
-	 * @see toExtensionId
+	 * @see #toExtensionId(String, MEDIA_TYPE) 
 	 */
 	public static final String extensionIdSeparator = "|";
 	
@@ -74,7 +76,7 @@ public abstract class Extension {
 	/**
 	 * Get the point id
 	 * 
-	 * @return
+	 * @return the <code>String</code> Point Id
 	 */
 	public String getPointId() {
 		return pointId;
@@ -119,7 +121,7 @@ public abstract class Extension {
 	/**
 	 * Get the extension point id
 	 * 
-	 * @return
+	 * @return the <code>String</code> Extension Id
 	 */
 	public String getExtensionId() {
 		return toExtensionId(getPointId(), getMediaType());
@@ -138,7 +140,7 @@ public abstract class Extension {
 	/**
 	 * Get this extension's module id
 	 * 
-	 * @return
+	 * @return the <code>String</code> Module Id
 	 */
 	public final String getModuleId() {
 		return moduleId;

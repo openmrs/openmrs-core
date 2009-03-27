@@ -24,10 +24,13 @@ import org.simpleframework.xml.Root;
 
 /**
  * This class holds the different parts of a report before generation. A ReportSchema will typically
- * be evaluated upon a Cohort, in the context of an EvaluationContext. @see
+ * be evaluated upon a Cohort, in the context of an EvaluationContext. See
  * {@link org.openmrs.api.ReportService#evaluate(ReportSchema, org.openmrs.Cohort, EvaluationContext)}
+ * <p>
  * Evaluating a report really means evaluating all the DataSetDefinitions it contains, resulting in
- * a {@link org.openmrs.report.ReportData} The "filter" represents an (optional) extra filter that
+ * a {@link org.openmrs.report.ReportData}
+ * <p>
+ * The "filter" represents an (optional) extra filter that
  * is applied to the input cohort before the DataSetDefinitions ever see it.
  */
 @Root(strict = false)
@@ -69,7 +72,7 @@ public class ReportSchema implements Parameterizable {
 	/**
 	 * Returns the ReportSchema Id
 	 * 
-	 * @return
+	 * @return the Integer Report Schema Id
 	 */
 	@Attribute(required = false)
 	public Integer getReportSchemaId() {
@@ -79,7 +82,7 @@ public class ReportSchema implements Parameterizable {
 	/**
 	 * Set a name for the ReportSchema
 	 * 
-	 * @param name
+	 * @param name <code>String</code> name to set
 	 */
 	@Element(data = true, required = true)
 	public void setName(String name) {
@@ -89,7 +92,7 @@ public class ReportSchema implements Parameterizable {
 	/**
 	 * Returns the name of the ReportSchema
 	 * 
-	 * @return
+	 * @return the name of the ReportSchema
 	 */
 	@Element(data = true, required = true)
 	public String getName() {
@@ -109,7 +112,7 @@ public class ReportSchema implements Parameterizable {
 	/**
 	 * Returns the description of this ReportSchema
 	 * 
-	 * @return
+	 * @return the <code>String</code> description of the ReportSchema
 	 */
 	@Element(data = true, required = true)
 	public String getDescription() {
@@ -119,7 +122,7 @@ public class ReportSchema implements Parameterizable {
 	/**
 	 * Set the filter
 	 * 
-	 * @param cohort
+	 * @param filter
 	 */
 	@Element(required = false)
 	public void setFilter(CohortDefinition filter) {
@@ -129,7 +132,7 @@ public class ReportSchema implements Parameterizable {
 	/**
 	 * Returns the filter
 	 * 
-	 * @return
+	 * @return the filter as a <code>CohortDefinition</code>
 	 */
 	@Element(required = false)
 	public CohortDefinition getFilter() {
@@ -139,7 +142,7 @@ public class ReportSchema implements Parameterizable {
 	/**
 	 * Sets List<Parameter> reportParameters
 	 * 
-	 * @param reportParameters
+	 * @param reportParameters this schema's defined parameters
 	 */
 	@ElementList(required = false, name = "parameters")
 	public void setReportParameters(List<Parameter> reportParameters) {
@@ -150,7 +153,7 @@ public class ReportSchema implements Parameterizable {
 	 * Get all ReportParameters defined for this schema. This method does not recurse through the
 	 * sub objects to find _all_ parameters. Use {@link #getParameters()} for that.
 	 * 
-	 * @param reportParameters this schema's defined parameters
+	 * @return this schema's defined parameters
 	 */
 	@ElementList(required = false, name = "parameters")
 	public List<Parameter> getReportParameters() {
@@ -160,7 +163,7 @@ public class ReportSchema implements Parameterizable {
 	/**
 	 * Set List<DataSetDefinition> dataSetDefinitions
 	 * 
-	 * @param dataSetDefinitions
+	 * @param definitions
 	 */
 	@ElementList(required = true, name = "dataSets")
 	public void setDataSetDefinitions(List<DataSetDefinition> definitions) {

@@ -56,7 +56,7 @@ public class ComplexData implements java.io.Serializable {
 	/**
 	 * Get the title for this ComplexData
 	 * 
-	 * @return
+	 * @return the title as a <code>String</code>
 	 */
 	public String getTitle() {
 		return this.title;
@@ -75,7 +75,7 @@ public class ComplexData implements java.io.Serializable {
 	 * Get the data Object. If this was initialized with a byte array, the output may not be
 	 * reliable. TODO: Should this even try to return the byte array?
 	 * 
-	 * @return
+	 * @return the data as an <code>Object</code>
 	 */
 	public Object getData() {
 		return this.data;

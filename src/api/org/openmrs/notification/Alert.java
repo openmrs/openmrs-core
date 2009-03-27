@@ -181,7 +181,7 @@ public class Alert implements Serializable {
 	}
 	
 	/**
-	 * @see isSatisfiedByAny()
+	 * @see #isSatisfiedByAny()
 	 */
 	public Boolean getSatisfiedByAny() {
 		return isSatisfiedByAny();
@@ -202,7 +202,7 @@ public class Alert implements Serializable {
 	}
 	
 	/**
-	 * @see isAlertRead()
+	 * @see #isAlertRead() 
 	 */
 	public Boolean getAlertRead() {
 		return isAlertRead();

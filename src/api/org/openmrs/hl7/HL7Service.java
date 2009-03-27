@@ -60,7 +60,7 @@ public interface HL7Service extends OpenmrsService {
 	 * Auto generated method comment
 	 * 
 	 * @param hl7SourceId
-	 * @return
+	 * @return <code>HL7Source</code>object for given identifier
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_SOURCE)
@@ -295,9 +295,9 @@ public interface HL7Service extends OpenmrsService {
 	public HL7InError getHL7InError(Integer hl7InErrorId) throws APIException;
 	
 	/**
-	 * Get all hl7 in error items from the database
+	 * Get all <code>HL7InError</code> items from the database
 	 * 
-	 * @return
+	 * @return a List<HL7InError> object with all <code>HL7InError</code> items from the database
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)

@@ -16,7 +16,7 @@ package org.openmrs.logic.rule;
 /**
  * An argument passed to a logic Rule
  * 
- * @see org.openmrs.logic.rule.Rule
+ * @see org.openmrs.logic.Rule
  */
 public class RuleParameterInfo {
 	

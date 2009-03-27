@@ -57,8 +57,8 @@ public class LogicCriteria {
 	/**
 	 * Used for passing arguments to a rule
 	 * 
-	 * @param token
-	 * @param args
+	 * @param token <code>String</code> token
+	 * @param logicParameters <code>Map</code> of the parameters
 	 */
 	public LogicCriteria(String token, Map<String, Object> logicParameters) {
 		this(token);

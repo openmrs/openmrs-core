@@ -112,7 +112,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InQueues()
+	 * @see org.openmrs.hl7.db.HL7DAO#getAllHL7InQueues()
 	 */
 	@SuppressWarnings("unchecked")
 	public List<HL7InQueue> getAllHL7InQueues() throws DAOException {
@@ -177,7 +177,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.db.HL7DAO#saveHL7InException(org.openmrs.hl7.HL7InException)
+	 * @see org.openmrs.hl7.db.HL7DAO#saveHL7InError(HL7InError)
 	 */
 	public HL7InError saveHL7InError(HL7InError hl7InError) throws DAOException {
 		sessionFactory.getCurrentSession().save(hl7InError);
@@ -185,14 +185,14 @@ public class HibernateHL7DAO implements HL7DAO {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InException(java.lang.Integer)
+	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InError(Integer)
 	 */
 	public HL7InError getHL7InError(Integer hl7InErrorId) throws DAOException {
 		return (HL7InError) sessionFactory.getCurrentSession().get(HL7InError.class, hl7InErrorId);
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InExceptions()
+	 * @see org.openmrs.hl7.db.HL7DAO#getAllHL7InErrors()
 	 */
 	@SuppressWarnings("unchecked")
 	public List<HL7InError> getAllHL7InErrors() throws DAOException {
@@ -200,7 +200,7 @@ public class HibernateHL7DAO implements HL7DAO {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.db.HL7DAO#deleteHL7InException(org.openmrs.hl7.HL7InException)
+	 * @see org.openmrs.hl7.db.HL7DAO#deleteHL7InError(HL7InError)
 	 */
 	public void deleteHL7InError(HL7InError hl7InError) throws DAOException {
 		sessionFactory.getCurrentSession().delete(hl7InError);

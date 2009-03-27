@@ -117,7 +117,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#purgeOrder(org.openmrs.Order, boolean)
+	 * @see org.openmrs.api.OrderService#purgeOrder(Order)
 	 */
 	public void purgeOrder(Order order, boolean cascade) throws APIException {
 		if (cascade) {
@@ -228,7 +228,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#retiredOrderType(org.openmrs.OrderType,java.lang.String)
+	 * @see org.openmrs.api.OrderService#retireOrderType(OrderType, String)
 	 */
 	public OrderType retireOrderType(OrderType orderType, String reason) throws APIException {
 		
@@ -575,9 +575,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#voidDrugSet(org.openmrs.Patient, java.lang.String,
-	 *      java.lang.String, int)
-	 * @deprecated use {@link OrderUtil#voidDrugSet(Patient, String, String, ORDER_STATUS)}
+	 * @see org.openmrs.api.OrderService#voidDrugSet(Patient, String, String, int)
+	 * @deprecated use
+	 *             {@link OrderUtil#voidDrugSet(Patient, String, String, org.openmrs.api.OrderService.ORDER_STATUS)}
 	 */
 	@Deprecated
 	public void voidDrugSet(Patient patient, String drugSetId, String voidReason, int whatToVoid) {

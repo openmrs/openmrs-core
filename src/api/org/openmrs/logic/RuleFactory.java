@@ -233,7 +233,7 @@ public class RuleFactory {
 	 * Returns all tags that match a given string
 	 * 
 	 * @param partialTag any tags containing this string will be returned
-	 * @return
+	 * @return <code>Set<String></code> of the matching tags
 	 */
 	public Set<String> findTags(String partialTag) {
 		
@@ -249,8 +249,8 @@ public class RuleFactory {
 	/**
 	 * Returns all tags attached to a given token
 	 * 
-	 * @param token all tags attached to this token will be returned
-	 * @return
+	 * @param token <code>String</code> token to search for
+	 * @return <code>Set<String></code> object of all tags attached to given token
 	 */
 	public Set<String> getTagsByToken(String token) {
 		return tagsByToken.get(token);
@@ -259,8 +259,8 @@ public class RuleFactory {
 	/**
 	 * Returns all tokens related to a given tag
 	 * 
-	 * @param tag all tokens that have been tagged with the given tag will be returned
-	 * @return
+	 * @param tag <code>String</code> tag to search for
+	 * @return <code>Set<String></code> object of all tokens related to the given tag
 	 */
 	public Set<String> getTokensByTag(String tag) {
 		return tokensByTag.get(tag);
@@ -284,8 +284,8 @@ public class RuleFactory {
 	 * loosely typed, a default data type can be helpful in managing rules within a user interface
 	 * or providing defaults
 	 * 
-	 * @param token the default data type of the rule registered under this token will be returned
-	 * @return
+	 * @param token String token to match
+	 * @return The default <code>Datatype</code> registered under given token
 	 */
 	public Datatype getDefaultDatatype(String token) {
 		if (getRuleMap().containsKey(token))
@@ -296,8 +296,8 @@ public class RuleFactory {
 	/**
 	 * Returns the expected parameters for a given rule
 	 * 
-	 * @param token token under which the rule was registered
-	 * @return
+	 * @param token <code>String</code> token under which the rule was registered
+	 * @return <code>Set<RuleParameterInfo></code> of the expected parameters for the given rule
 	 */
 	public Set<RuleParameterInfo> getParameterList(String token) {
 		if (getRuleMap().containsKey(token))

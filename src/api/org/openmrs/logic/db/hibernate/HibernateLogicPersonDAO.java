@@ -245,7 +245,7 @@ public class HibernateLogicPersonDAO implements LogicPersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PersonDAO#getPersons(java.util.List, org.openmrs.logic.LogicCriteria)
+	 * @see org.openmrs.api.db.PersonDAO#getPeople(String, Boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Person> getPersons(Collection<Integer> personIds, LogicCriteria logicCriteria) {

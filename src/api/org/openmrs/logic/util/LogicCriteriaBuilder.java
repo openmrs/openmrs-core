@@ -42,8 +42,9 @@ public class LogicCriteriaBuilder {
 	/**
 	 * Auto generated method comment
 	 * 
-	 * @param criteriaString
-	 * @return
+	 * @param criteriaString <code>String</code> representation of a <code>LogicCriteria</code>
+	 *            object
+	 * @return <code>LogicCriteria</code> object represented by given string
 	 * @throws ParseException
 	 */
 	public static LogicCriteria serialize(String criteriaString) throws ParseException {
@@ -123,7 +124,7 @@ public class LogicCriteriaBuilder {
 	
 	/**
 	 * @param criteria
-	 * @return
+	 * @return <code>String</code> representation of given <code>LogicCriteria</code> object
 	 */
 	public static String deserialize(LogicCriteria criteria) {
 		return criteria.toString();
@@ -133,7 +134,7 @@ public class LogicCriteriaBuilder {
 	 * Parses an expression and returns the operator(operand).
 	 * 
 	 * @param expression
-	 * @return
+	 * @return String operand extracted from the expression
 	 * @throws ParseException
 	 */
 	public static String extractOperand(String expression) throws ParseException {

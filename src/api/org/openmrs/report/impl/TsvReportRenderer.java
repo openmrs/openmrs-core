@@ -55,14 +55,14 @@ public class TsvReportRenderer extends DelimitedTextReportRenderer {
 	}
 	
 	/**
-	 * @see org.openmrs.report.renderer.ReportRenderer#getLabel(org.openmrs.report.ReportModel)
+	 * @see org.openmrs.report.ReportRenderer#getLabel()
 	 */
 	public String getLabel(ReportSchema model) {
 		return "TSV";
 	}
 	
 	/**
-	 * @see org.openmrs.report.renderer.ReportRenderer#getRenderedContentType(org.openmrs.report.ReportModel)
+	 * @see org.openmrs.report.ReportRenderer#getRenderedContentType(ReportSchema, String)
 	 */
 	public String getRenderedContentType(ReportSchema model, String argument) {
 		return "text/tsv";

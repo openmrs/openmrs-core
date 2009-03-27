@@ -21,7 +21,6 @@ package org.openmrs.util;
  * @see OpenmrsClassLoader.destroyInstance()
  * @see OpenmrsClassLoader.saveState()
  * @see OpenmrsClassLoader.restoreState()
- * @author bwolfe
  */
 
 public abstract class OpenmrsMemento {

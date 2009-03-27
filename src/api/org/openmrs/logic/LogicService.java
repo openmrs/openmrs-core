@@ -37,19 +37,19 @@ import org.openmrs.logic.rule.RuleParameterInfo;
  * Usage</h3>
  * 
  * <pre>
- *   Patient myPatient = Context.getPatientService().getPatient(123);
- *   LogicService logicService = Context.getLogicService();
- *   Result result = logicService.eval(myPatient, "HIV POSITIVE");
- *   if (result.toBoolean()) {
- *     // patient is HIV positive
- *   }
+ * Patient myPatient = Context.getPatientService().getPatient(123);
+ * LogicService logicService = Context.getLogicService();
+ * Result result = logicService.eval(myPatient, &quot;HIV POSITIVE&quot;);
+ * if (result.toBoolean()) {
+ * 	// patient is HIV positive
+ * }
  * </pre>
  * 
  * Results can be derived with specific criteria as well. For example, to fetch the maximum CD4
  * count within the past six months:
  * 
  * <pre>
- *   Result result = logicService.eval(myPatient, new LogicCriteria("CD4 COUNT")
+ *   Result result = logicService.eval(myPatient, new LogicCriteria(&quot;CD4 COUNT&quot;)
  *     .within(Duration.months(6)).max();
  * </pre>
  * 
@@ -59,7 +59,7 @@ import org.openmrs.logic.rule.RuleParameterInfo;
  *   Calendar calendar = Calendar.getInstance();
  *   calendar.set(2006, 11, 11);
  *   Date targetDate = calendar.getTime();
- *   Result result = logicService.eval(myPatient, new LogicCriteria("CD4 COUNT")
+ *   Result result = logicService.eval(myPatient, new LogicCriteria(&quot;CD4 COUNT&quot;)
  *     .asOf(targetDate).within(Duration.months(6)).max();
  * </pre>
  * 
@@ -164,10 +164,11 @@ public interface LogicService {
 	/**
 	 * Evaluates a query for a given patient
 	 * 
-	 * @param who patient for whom the query is to be run
-	 * @param criteria question to be answered (along with the token) for the given patient
-	 * @param args arguments to be passed to the rule
-	 * @return result of query
+	 * @param who <code>Patient</code> for whom the query is to be run
+	 * @param criteria <code>LogicCriteria</code> question to be answered (along with the token) for
+	 *            the given patient
+	 * @param parameters <code>Map</code> of arguments to be passed to the rule
+	 * @return <code>Result</code> of query
 	 * @throws LogicException
 	 */
 	public Result eval(Patient who, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException;
@@ -219,7 +220,6 @@ public interface LogicService {
 	 * Evaluates a collection of queries for a set of patients
 	 * 
 	 * @param who patients for whom the queries are to be run
-	 * @param tokens tokens to be calculated
 	 * @param criterias parallel list of criteria to be applied for each token
 	 * @return results for each patient
 	 * @throws LogicException

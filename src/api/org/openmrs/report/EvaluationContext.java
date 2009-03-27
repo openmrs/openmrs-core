@@ -81,8 +81,6 @@ public class EvaluationContext {
 	
 	/**
 	 * Add a value to the cache with a given key
-	 * 
-	 * @return Map<String, Object>
 	 */
 	public void addToCache(String key, Object value) {
 		cache.put(key, value);
@@ -125,7 +123,7 @@ public class EvaluationContext {
 	/**
 	 * Add a parameter to the context with the given value with global scope
 	 * 
-	 * @param param
+	 * @param parameter
 	 * @param value
 	 */
 	public void addParameterValue(Parameter parameter, Object value) {
@@ -136,7 +134,8 @@ public class EvaluationContext {
 	 * Add a parameter to the context with the given value in the scope of the passed
 	 * Parameterizable object
 	 * 
-	 * @param param
+	 * @param obj <code>Parametrizable</code> object
+	 * @param parameter
 	 * @param value
 	 */
 	public void addParameterValue(Parameterizable obj, Parameter parameter, Object value) {
@@ -173,7 +172,7 @@ public class EvaluationContext {
 	 * the Parameterizable first, and if not found, check global scope It will return null if not
 	 * found in either scope
 	 * 
-	 * @param obj
+	 * @param obj <code>Parametrizable</code> object to get from
 	 * @param parameterName
 	 */
 	public Parameter getParameter(Parameterizable obj, String parameterName) {
@@ -194,7 +193,7 @@ public class EvaluationContext {
 	/**
 	 * Retrieve Parameter from Global Scope only. It will return null if not found
 	 * 
-	 * @param parameter
+	 * @param parameterName <code>String</code> name for parameter to get
 	 */
 	public Object getParameter(String parameterName) {
 		return getParameter(null, parameterName);
@@ -205,7 +204,7 @@ public class EvaluationContext {
 	 * local to the Parameterizable first, and if not found, check global scope It will return null
 	 * if not found in either scope
 	 * 
-	 * @param obj
+	 * @param obj <code>Parametrizable</code> object
 	 * @param parameter
 	 */
 	public Object getParameterValue(Parameterizable obj, Parameter parameter) {
@@ -236,8 +235,8 @@ public class EvaluationContext {
 	 * scope local to the Parameterizable first, and if not found, check global scope It will return
 	 * null if not found in either scope
 	 * 
+	 * @param obj <code>Parametrizable</code> object
 	 * @param parameterName key of the parameter to look for
-	 * @param value
 	 * @return Object value of the parameter named by <code>parameterName</code>
 	 */
 	public Object getParameterValue(Parameterizable obj, String parameterName) {
@@ -252,7 +251,6 @@ public class EvaluationContext {
 	 * Retrieve global parameter value by name
 	 * 
 	 * @param parameterName key of the parameter to look for
-	 * @param value
 	 * @return Object value of the parameter named by <code>parameterName</code>
 	 */
 	public Object getParameterValue(String parameterName) {
@@ -261,19 +259,30 @@ public class EvaluationContext {
 	
 	/**
 	 * This method will parse the passed expression and return a value based on the following
-	 * criteria: - Any string that matches a parameter within the EvaluationContext will be replaced
+	 * criteria:<br/> 
+	 * <ul>
+	 * <li>Any string that matches a parameter within the EvaluationContext will be replaced
 	 * by the value of that parameter ** CURRENTLY REPLACEMENT PARAMETERS MUST EXIST IN THE GLOBAL
-	 * SCOPE - If this date is followed by an expression, it will attempt to evaluate this by
-	 * incrementing/decrementing days/weeks/months/years as specified - Examples: Given 2
-	 * parameters: - report.startDate = java.util.Date with value of [2007-01-10] - report.gender =
-	 * "male" The following should result: evaluateExpression("${report.startDate}") -> "2007-01-10"
-	 * as Date evaluateExpression("${report.startDate+5d}") -> "2007-01-15" as Date
+	 * SCOPE</li> 
+	 * <li>If this date is followed by an expression, it will attempt to evaluate this by
+	 * incrementing/decrementing days/weeks/months/years as specified</li> 
+	 * <li>Examples: Given 2 parameters: 
+	 * <ul><li>report.startDate = java.util.Date with value of [2007-01-10] 
+	 * <li>report.gender = "male"
+	 * </ul>
+	 * The following should result:<br/>
+	 * <br/>
+	 * <pre>
+	 * evaluateExpression("${report.startDate}") -> "2007-01-10" as Date
+	 * evaluateExpression("${report.startDate+5d}") -> "2007-01-15" as Date
 	 * evaluateExpression("${report.startDate-1w}") -> "2007-01-03" as Date
 	 * evaluateExpression("${report.startDate+3m}") -> "2007-04-15" as Date
 	 * evaluateExpression("${report.startDate+1y}") -> "2008-01-10" as Date
+	 * <pre>
+	 * </ul> 
 	 * 
 	 * @param expression
-	 * @return
+	 * @return value for given expression, as an <code>Object</code>
 	 * @throws ParameterException
 	 */
 	public Object evaluateExpression(String expression) throws ParameterException {

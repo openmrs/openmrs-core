@@ -119,7 +119,7 @@ public class AbstractHandler {
 	}
 	
 	/**
-	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs)
+	 * @see org.openmrs.obs.ComplexObsHandler#getObs(Obs, String)
 	 */
 	public Obs getObs(Obs obs, String view) {
 		File file = TextHandler.getComplexDataFile(obs);
@@ -158,7 +158,7 @@ public class AbstractHandler {
 	 * Convenience method to create and return a file for the stored ComplexData.data Object
 	 * 
 	 * @param obs
-	 * @return
+	 * @return File object
 	 */
 	public static File getComplexDataFile(Obs obs) {
 		String[] names = obs.getValueComplex().split("\\|");

@@ -37,7 +37,7 @@ public class RenderingMode implements Comparable<RenderingMode> {
 	}
 	
 	/**
-	 * @param renderer;
+	 * @param renderer
 	 * @param label
 	 * @param argument
 	 * @param sortWeight

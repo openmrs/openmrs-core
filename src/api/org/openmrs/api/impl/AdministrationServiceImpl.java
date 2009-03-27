@@ -154,7 +154,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * Create a new Tribe
 	 * 
-	 * @param Tribe to create
+	 * @param tribe Tribe to create
 	 * @throws APIException
 	 * @deprecated
 	 */
@@ -165,7 +165,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * Update Tribe
 	 * 
-	 * @param Tribe to update
+	 * @param tribe Tribe to update
 	 * @throws APIException
 	 * @deprecated
 	 */
@@ -176,7 +176,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * Delete Tribe
 	 * 
-	 * @param Tribe to delete
+	 * @param tribe Tribe to delete
 	 * @throws APIException
 	 * @deprecated
 	 */
@@ -187,7 +187,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * Retire Tribe
 	 * 
-	 * @param Tribe to retire
+	 * @param tribe Tribe to retire
 	 * @throws APIException
 	 * @deprecated
 	 */
@@ -198,7 +198,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * Unretire Tribe
 	 * 
-	 * @param Tribe to unretire
+	 * @param tribe Tribe to unretire
 	 * @throws APIException
 	 * @deprecated
 	 */
@@ -365,7 +365,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * Create a new Report
 	 * 
-	 * @param Report to create
+	 * @param report Report to create
 	 * @throws APIException
 	 */
 	public void createReport(Report report) throws APIException {
@@ -378,7 +378,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * Update Report
 	 * 
-	 * @param Report to update
+	 * @param report Report to update
 	 * @throws APIException
 	 */
 	public void updateReport(Report report) throws APIException {
@@ -391,7 +391,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * Delete Report
 	 * 
-	 * @param Report to delete
+	 * @param report Report to delete
 	 * @throws APIException
 	 */
 	public void deleteReport(Report report) throws APIException {
@@ -404,7 +404,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * Create a new Report Object
 	 * 
-	 * @param Report Object to create
+	 * @param reportObject Report Object to create
 	 * @throws APIException
 	 */
 	public void createReportObject(AbstractReportObject reportObject) throws APIException {
@@ -417,7 +417,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * Update Report Object
 	 * 
-	 * @param Report Object to update
+	 * @param reportObject Report Object to update
 	 * @throws APIException
 	 */
 	public void updateReportObject(AbstractReportObject reportObject) throws APIException {
@@ -430,7 +430,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
 	 * Delete Report Object
 	 * 
-	 * @param Report Object to delete
+	 * @param reportObjectId Internal Integer identifier of Report Object to delete
 	 * @throws APIException
 	 */
 	public void deleteReportObject(Integer reportObjectId) throws APIException {
@@ -738,16 +738,14 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#addGlobalPropertyListener(java.lang.String,
-	 *      org.openmrs.api.GlobalPropertyListener)
+	 * @see org.openmrs.api.AdministrationService#addGlobalPropertyListener(GlobalPropertyListener)
 	 */
 	public void addGlobalPropertyListener(GlobalPropertyListener listener) {
 		eventListeners.getGlobalPropertyListeners().add(listener);
 	}
 	
 	/**
-	 * @see org.openmrs.api.AdministrationService#removeGlobalPropertyListener(java.lang.String,
-	 *      org.openmrs.api.GlobalPropertyListener)
+	 * @see org.openmrs.api.AdministrationService#removeGlobalPropertyListener(GlobalPropertyListener)
 	 */
 	public void removeGlobalPropertyListener(GlobalPropertyListener listener) {
 		eventListeners.getGlobalPropertyListeners().remove(listener);

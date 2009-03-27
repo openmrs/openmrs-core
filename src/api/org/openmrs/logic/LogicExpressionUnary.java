@@ -111,7 +111,7 @@ public class LogicExpressionUnary implements LogicExpression {
 	}
 	
 	/**
-	 * @see org.openmrs.logic.LogicExpression#getOperands()
+	 * @see org.openmrs.logic.LogicExpressionBinary#getOperands()
 	 */
 	public ArrayList<Object> getOperands() {
 		ArrayList<Object> operands = new ArrayList<Object>();
