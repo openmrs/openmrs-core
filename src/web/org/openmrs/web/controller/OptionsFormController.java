@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
@@ -38,6 +40,12 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
+/**
+ * This is the controller for the "My Profile" page. This lets logged in users set personal
+ * preferences, update their own information, etc.
+ * 
+ * @see OptionsForm
+ */
 public class OptionsFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
@@ -99,8 +107,9 @@ public class OptionsFormController extends SimpleFormController {
 		String view = getFormView();
 		
 		if (!errors.hasErrors()) {
-			User user = Context.getAuthenticatedUser();
+			User loginUser = Context.getAuthenticatedUser();
 			UserService us = Context.getUserService();
+			User user = us.getUser(loginUser.getUserId());
 			OptionsForm opts = (OptionsForm) obj;
 			
 			Map<String, String> properties = user.getUserProperties();
@@ -178,6 +187,24 @@ public class OptionsFormController extends SimpleFormController {
 				user.setUsername(opts.getUsername());
 				user.setUserProperties(properties);
 				
+				// new name
+				PersonName newPersonName = opts.getPersonName();
+				
+				// existing name
+				PersonName existingPersonName = user.getPersonName();
+				
+				// if two are not equal then make the new one the preferred, make the old one voided
+				if (!existingPersonName.equalsContent(newPersonName)) {
+					existingPersonName.setPreferred(false);
+					existingPersonName.setVoided(true);
+					existingPersonName.setVoidedBy(user);
+					existingPersonName.setDateVoided(new Date());
+					existingPersonName.setVoidReason("Changed name on own options form");
+					
+					newPersonName.setPreferred(true);
+					user.addName(newPersonName);
+				}
+				
 				try {
 					Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 					us.saveUser(user, null);
@@ -185,6 +212,9 @@ public class OptionsFormController extends SimpleFormController {
 				finally {
 					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
 				}
+				
+				// update login user object so that the new name is visible in the webapp
+				Context.refreshAuthenticatedUser();
 				
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "options.saved");
 			} else {
@@ -217,6 +247,10 @@ public class OptionsFormController extends SimpleFormController {
 			opts.setVerbose(new Boolean(props.get(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE)));
 			opts.setUsername(user.getUsername());
 			opts.setSecretQuestionNew(user.getSecretQuestion());
+			// Get a copy of the current person name and clear the id so that they are separate objects
+			PersonName personName = PersonName.newInstance(user.getPersonName());
+			personName.setPersonNameId(null);
+			opts.setPersonName(personName);
 			opts.setNotification(props.get(OpenmrsConstants.USER_PROPERTY_NOTIFICATION));
 			opts.setNotificationAddress(props.get(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
 		}

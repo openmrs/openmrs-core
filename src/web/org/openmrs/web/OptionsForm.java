@@ -13,7 +13,15 @@
  */
 package org.openmrs.web;
 
+import org.openmrs.PersonName;
+import org.openmrs.web.controller.OptionsFormController;
 
+/**
+ * This is the model/backing object for the "My Profile" page. This lets logged in users set
+ * personal preferences, update their own information, etc.
+ * 
+ * @see OptionsFormController
+ */
 public class OptionsForm {
 	
 	private String defaultLocation = "";
@@ -45,6 +53,8 @@ public class OptionsForm {
 	private String notification = "";
 	
 	private String notificationAddress = "";
+	
+	private PersonName personName = new PersonName();
 	
 	public OptionsForm() {
 	}
@@ -189,4 +199,17 @@ public class OptionsForm {
 		return proficientLocales;
 	}
 	
+	/**
+	 * @return the personName
+	 */
+	public PersonName getPersonName() {
+		return personName;
+	}
+	
+	/**
+	 * @param personName the personName to set
+	 */
+	public void setPersonName(PersonName personName) {
+		this.personName = personName;
+	}
 }
