@@ -56,6 +56,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/PatientProgram.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PatientState.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Cohort.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/SerializedObject.hbm.xml" />
 
 		<!-- HL7 -->
 		<mapping resource="org/openmrs/hl7/db/hibernate/HL7Source.hbm.xml" />

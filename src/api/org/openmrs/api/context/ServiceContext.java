@@ -35,6 +35,7 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ReportService;
+import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
@@ -190,6 +191,13 @@ public class ServiceContext {
 	 */
 	public ReportObjectService getReportObjectService() {
 		return (ReportObjectService) getService(ReportObjectService.class);
+	}
+	
+	/**
+	 * @return serialization service
+	 */
+	public SerializationService getSerializationService() {
+		return (SerializationService) getService(SerializationService.class);
 	}
 	
 	/**
@@ -370,6 +378,13 @@ public class ServiceContext {
 	 */
 	public void setReportService(ReportService reportService) {
 		setService(ReportService.class, reportService);
+	}
+	
+	/**
+	 * @param serializationService
+	 */
+	public void setSerializationService(SerializationService serializationService) {
+		setService(SerializationService.class, serializationService);
 	}
 	
 	/**

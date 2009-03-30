@@ -1460,7 +1460,11 @@ public class OpenmrsUtil {
 	 * objects are taken into account
 	 * 
 	 * @return Serializer to do the (de)serialization
+	 * 
+	 * @deprecated - Use OpenmrsSerializer from Context.getSerializationService.getDefaultSerializer()
+	 * 				 Note, this uses a different Serialization mechanism, so you may need to use this for conversion
 	 */
+	@Deprecated
 	public static Serializer getSerializer() {
 		return new Persister(new OpenmrsCycleStrategy());
 	}
@@ -1471,7 +1475,11 @@ public class OpenmrsUtil {
 	 * 
 	 * @return Serializer to do the short (de)serialization
 	 * @see OpenmrsConstants#SHORT_SERIALIZATION
+	 * 
+	 * @deprecated - Use OpenmrsSerializer from Context.getSerializationService.getDefaultSerializer()
+	 * 				 Note, this uses a different Serialization mechanism, so you may need to use this for conversion
 	 */
+	@Deprecated
 	public static Serializer getShortSerializer() {
 		return new Persister(new OpenmrsCycleStrategy(true));
 	}
@@ -1483,7 +1491,10 @@ public class OpenmrsUtil {
 	 * 
 	 * @param sessionMap current serialization session
 	 * @return true/false whether or not to do the shortened serialization
+	 * 
+	 * @deprecated - use SerializationService and OpenmrsSerializer implementation for Serialization
 	 */
+	@Deprecated
 	public static boolean isShortSerialization(Map<?, ?> sessionMap) {
 		return sessionMap.containsKey(OpenmrsConstants.SHORT_SERIALIZATION);
 	}

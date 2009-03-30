@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping package="org.openmrs.api">
+
+<class name="org.openmrs.api.db.hibernate.SerializedObject" table="serialized_object">
+
+    <id name="id" type="java.lang.Integer" column="serialized_object_id">
+        <generator class="native" />
+    </id>
+    
+    <property name="name" type="string" column="name" not-null="true" length="255" />
+    <property name="description" type="string" column="description" length="5000" />
+    <property name="type" type="class" column="type" not-null="true" length="255" />
+    <property name="subtype" type="class" column="subtype" not-null="true" length="255" />
+    <property name="serializationClass" type="class"  column="serialization_class" not-null="true" length="255" /> 
+	<property name="serializedData" type="text" column="serialized_data" /> 
+	<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+    <property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
+	<property name="retired" type="boolean" column="retired" not-null="true" />
+	<property name="dateRetired" type="java.util.Date" column="date_retired" length="19" />
+	<property name="retireReason" type="string" column="retire_reason" length="1000" />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to User -->
+    <many-to-one name="creator" class="org.openmrs.User" not-null="true">
+	    <column name="creator" />
+    </many-to-one>
+
+	<many-to-one name="changedBy" class="org.openmrs.User">
+		<column name="changed_by" />
+	</many-to-one>
+
+	<many-to-one name="retiredBy" class="org.openmrs.User">
+		<column name="retired_by" />
+	</many-to-one>
+
+</class>
+</hibernate-mapping>

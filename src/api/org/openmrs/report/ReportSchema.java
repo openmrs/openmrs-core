@@ -16,6 +16,7 @@ package org.openmrs.report;
 import java.util.List;
 import java.util.Vector;
 
+import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.cohort.CohortDefinition;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -34,15 +35,11 @@ import org.simpleframework.xml.Root;
  * is applied to the input cohort before the DataSetDefinitions ever see it.
  */
 @Root(strict = false)
-public class ReportSchema implements Parameterizable {
+public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable {
 	
 	private static final long serialVersionUID = 932347906334509564L;
 	
 	private Integer reportSchemaId;
-	
-	private String name;
-	
-	private String description;
 	
 	private CohortDefinition filter;
 	
@@ -59,6 +56,20 @@ public class ReportSchema implements Parameterizable {
 		getDataSetDefinitions().add(definition);
 	}
 	
+	/**
+     * @see org.openmrs.OpenmrsObject#getId()
+     */
+    public Integer getId() {
+    	return getReportSchemaId();
+    }
+
+	/**
+     * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+     */
+    public void setId(Integer id) {
+	    setReportSchemaId(id);
+    }
+
 	/**
 	 * Set the Report Schema Id
 	 * 
@@ -86,7 +97,7 @@ public class ReportSchema implements Parameterizable {
 	 */
 	@Element(data = true, required = true)
 	public void setName(String name) {
-		this.name = name;
+		super.setName(name);
 	}
 	
 	/**
@@ -96,7 +107,7 @@ public class ReportSchema implements Parameterizable {
 	 */
 	@Element(data = true, required = true)
 	public String getName() {
-		return this.name;
+		return super.getName();
 	}
 	
 	/**
@@ -106,7 +117,7 @@ public class ReportSchema implements Parameterizable {
 	 */
 	@Element(data = true, required = true)
 	public void setDescription(String description) {
-		this.description = description;
+		super.setDescription(description);
 	}
 	
 	/**
@@ -116,7 +127,7 @@ public class ReportSchema implements Parameterizable {
 	 */
 	@Element(data = true, required = true)
 	public String getDescription() {
-		return this.description;
+		return super.getDescription();
 	}
 	
 	/**
