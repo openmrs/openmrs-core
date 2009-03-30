@@ -21,7 +21,7 @@
 				<td>No: <input type="radio" name="add_demo_data" value="no" #if( $addDemoData == false )checked="checked"#end/></td>
 			</tr>
 			 <tr>
-				<td colspan="2" class="question">Do you currently have a database user<i>other than root</i>that has read/write access to the ${databaseName} database?</td>
+				<td colspan="2" class="question">Do you currently have a database user <i>other than root</i> that has read/write access to the ${databaseName} database?</td>
 	 		</tr>
 	 		<tr>
 				<td rowspan="3" class="yes" valign="top">Yes <input type="radio" name="current_database_user" value="yes" #if( $hasCurrentDatabaseUser == true )checked="checked"#end/></td>
