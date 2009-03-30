@@ -15,7 +15,7 @@
                 </tr>
                 <tr>
                     <td>Password:</td>
-     			<td><input type="password" name="new_admin_password" value=""/ autocomplete="off"></td>
+     			<td><input type="password" name="new_admin_password" value="" autocomplete="off"/></td>
      		</tr>
      		<tr>
                     <td>Retype password:</td>
