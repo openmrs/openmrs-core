@@ -394,12 +394,16 @@
 		<sleep seconds="2" />
 		<antcall target="install" />
 		
-		<exec executable="/usr/local/bin/growlnotify" os="Mac OS X" logError="true">
+		<exec executable="/usr/local/bin/growlnotify" os="Mac OS X" logError="true" failifexecutionfails="false">
 			<arg line="-m 'OpenMRS is ready' Build completed -a Eclipse" />
 		</exec>
-		
+        
+		<!-- on Ubuntu, requires "libnotify-bin" package -->
+		<exec executable="notify-send" os="Linux" logError="true" failifexecutionfails="false">
+			<arg line="'OpenMRS is ready' 'Build completed'" />
+		</exec>
 	</target>
-					
+
 	<target name="reload" depends="package-web" description="Explode war and reload application in Tomcat">
 		<mkdir dir="${tomcat.home}/webapps/${webapp.name}" />
 		<unzip src="${dist.dir}/${webapp.name}.war" dest="${tomcat.home}/webapps/${webapp.name}" overwrite="true" />
