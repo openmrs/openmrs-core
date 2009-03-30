@@ -211,6 +211,9 @@ function containsError(element) {
 			</spring:bind>
 		</td>
 	</tr>
+	<spring:nestedPath path="opts.personName">
+		<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
+	</spring:nestedPath>
 	<tr><td colspan="2"><br/></td></tr>
 	<tr>
 		<td><spring:message code="options.login.password.old" /></td>

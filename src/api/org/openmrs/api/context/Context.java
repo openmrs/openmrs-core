@@ -198,7 +198,8 @@ public class Context {
 	}
 	
 	/**
-	 * Gets the currently defined service context.  If one is not defined, one will be created and then returned.
+	 * Gets the currently defined service context. If one is not defined, one will be created and
+	 * then returned.
 	 * 
 	 * @return the current ServiceContext
 	 */
@@ -240,6 +241,19 @@ public class Context {
 			log.debug("Authenticating with username: " + username);
 		
 		getUserContext().authenticate(username, password, getContextDAO());
+	}
+	
+	/**
+	 * Refresh the authenticated user object in the current UserContext. This should be used when
+	 * updating information in the database about the current user and it needs to be reflecting in
+	 * the (cached) {@link #getAuthenticatedUser()} User object.
+	 * @should get fresh values from the database
+	 */
+	public static void refreshAuthenticatedUser() {
+		if (log.isDebugEnabled())
+			log.debug("Refreshing authenticated user");
+		
+		getUserContext().refreshAuthenticatedUser();
 	}
 	
 	/**
