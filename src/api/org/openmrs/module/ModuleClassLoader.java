@@ -608,8 +608,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * container
 	 * 
 	 * @param libUrl URL to the library/jar file
-	 * @param libname name of the
-	 * @return
+	 * @param libname name of the jar that will be the name of the cached file
+	 * @return file that is now copied and cached
 	 */
 	protected File cacheLibrary(final URL libUrl, final String libname) {
 		File cacheFolder = OpenmrsClassLoader.getLibCacheFolder();

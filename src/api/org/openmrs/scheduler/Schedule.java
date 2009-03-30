@@ -98,10 +98,10 @@ public class Schedule {
 	/**
 	 * Public constructor
 	 * 
-	 * @param start timestamp for when to start the task (does not need to be in the future if the
+	 * @param startTime Date for when to start the task (does not need to be in the future if the
 	 *            interval is specified).
-	 * @param interval time to wait between executing task (<= 0 indicates that it should only be
-	 *            run once)
+	 * @param repeatInterval interval time in seconds to wait between executing task (<= 0 indicates
+	 *            that it should only be run once)
 	 */
 	public Schedule(Date startTime, long repeatInterval) {
 		this(null, null, startTime, repeatInterval);
@@ -110,10 +110,12 @@ public class Schedule {
 	/**
 	 * Public constructor
 	 * 
-	 * @param start timestamp for when to start the task (does not need to be in the future if the
+	 * @param name
+	 * @param description
+	 * @param startTime Date for when to start the task (does not need to be in the future if the
 	 *            interval is specified).
-	 * @param interval time to wait between executing task (<= 0 indicates that it should only be
-	 *            run once)
+	 * @param repeatInterval interval time in seconds to wait between executing task (<= 0 indicates
+	 *            that it should only be run once)
 	 */
 	public Schedule(String name, String description, Date startTime, long repeatInterval) {
 		this.name = name;
@@ -200,13 +202,20 @@ public class Schedule {
 	 * Set the start time for when the task should be executed. For instance, use "new Date()", if
 	 * you want it to start now.
 	 * 
-	 * @param startTime start time for the task public void setStartTime(String startTime) { try {
-	 *            this.startTime = this.dateFormatter.parse(startTime); } catch (Exception e) { //
-	 *            If there's an error, we'll just set the start time to now. // TODO: This might not
-	 *            be the desired behavior, so I'll have to come back to it. this.startTime = new
-	 *            Date(); } }
+	 * @param startTime start time for the task
 	 */
-	
+	/*	public void setStartTime(String startTime) { 
+			try {
+		            this.startTime = this.dateFormatter.parse(startTime);
+		            }
+			catch (Exception e) { 
+				//If there's an error, we'll just set the start time to now.
+				// TODO: This might not be the desired behavior, so I'll have to come back to it.
+		             this.startTime = new	             Date(); 
+		             }
+			}
+	*/
+
 	/**
 	 * Gets the number of seconds until task is executed again.
 	 * 
@@ -219,7 +228,7 @@ public class Schedule {
 	/**
 	 * Sets the number of seconds until task is executed again.
 	 * 
-	 * @param
+	 * @param repeatInterval
 	 */
 	public void setRepeatInterval(long repeatInterval) {
 		this.repeatInterval = repeatInterval;

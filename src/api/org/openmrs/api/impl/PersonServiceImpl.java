@@ -707,8 +707,8 @@ public class PersonServiceImpl implements PersonService {
 	}
 	
 	/**
-	 * @deprecated see
-	 *             {@link #getPersonAttributeTypes(PERSON_TYPE, org.openmrs.api.PersonService.ATTR_VIEW_TYPE)}
+	 * @deprecated @see
+	 *             {@link org.openmrs.api.PersonService#getPersonAttributeTypes(java.lang.String, java.lang.String)}
 	 */
 	public List<PersonAttributeType> getPersonAttributeTypes(String personTypeStr, String displayTypeStr)
 	                                                                                                     throws APIException {

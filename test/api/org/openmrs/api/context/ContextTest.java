@@ -25,7 +25,7 @@ import org.openmrs.util.LocaleUtility;
 /**
  * TODO add methods for all context tests
  * 
- * @See {@link Context}
+ * @see Context
  */
 public class ContextTest extends BaseContextSensitiveTest {
 	

@@ -230,7 +230,6 @@ public class DataExportUtil {
 	 * Returns the path and name of the generated file
 	 * 
 	 * @param dataExport
-	 * @return
 	 */
 	public static File getGeneratedFile(DataExportReportObject dataExport) {
 		File dir = new File(OpenmrsUtil.getApplicationDataDirectory(), "dataExports");

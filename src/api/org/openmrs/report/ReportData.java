@@ -48,9 +48,7 @@ public class ReportData {
 	}
 	
 	/**
-	 * Returns the EvaluationContext that was used to obtain this ReportData.
-	 * 
-	 * @return
+	 * @return Returns the EvaluationContext that was used to obtain this ReportData.
 	 */
 	//@Element(required=false)
 	public EvaluationContext getEvaluationContext() {

@@ -19,6 +19,9 @@ import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.data.CohortDefinition;
 import org.openmrs.reporting.data.DatasetDefinition;
 
+/**
+ *
+ */
 public class ReportElementDefinition extends AbstractReportObject implements Serializable {
 	
 	/* */
@@ -31,6 +34,8 @@ public class ReportElementDefinition extends AbstractReportObject implements Ser
 	public CohortDefinition cohortDefinition = new CohortDefinition();
 	
 	/**
+	 * TODO Auto generated method comment
+	 * 
 	 * @return
 	 */
 	public CohortDefinition getCohortDefinition() {
@@ -45,6 +50,8 @@ public class ReportElementDefinition extends AbstractReportObject implements Ser
 	}
 	
 	/**
+	 * TODO Auto generated method comment
+	 * 
 	 * @return
 	 */
 	public DatasetDefinition getDatasetDefinition() {

@@ -19,7 +19,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.reporting.AbstractReportObject;
 
 /**
- *
+ * TODO: Comment this class
  */
 public interface ReportObjectDAO {
 	

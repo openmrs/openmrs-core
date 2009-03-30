@@ -38,7 +38,7 @@ public class InputRequiredException extends Exception {
 	 * Common constructor taking in a message to give the user some context as to where/why the
 	 * authentication failed.
 	 * 
-	 * @param message String describing where/why the authentication failed
+	 * @param requiredInput a list of questions that need to be answered in the form question, type
 	 */
 	public InputRequiredException(Map<String, DATATYPE> requiredInput) {
 		super("Input is required before being able to update the database");

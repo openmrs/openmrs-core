@@ -31,7 +31,7 @@ public class TestTask extends AbstractTask {
 	private Log log = LogFactory.getLog(TestTask.class);
 	
 	/**
-	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(org.openmrs.scheduler.TaskConfig)
+	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(TaskDefinition)
 	 */
 	public void initialize(TaskDefinition taskDefinition) {
 		log.info("Initializing task " + taskDefinition);

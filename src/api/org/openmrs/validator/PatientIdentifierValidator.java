@@ -168,10 +168,10 @@ public class PatientIdentifierValidator implements Validator {
 	}
 	
 	/**
-	 * Validates that a given identifier string is valid for a given regular expression format
+	 * Validates that a given identifier string is valid for a given IdentifierValidator
 	 * 
-	 * @param format - the regular expression format to validate against
-	 * @param identifier - the identifier to check against the passed {@link PatientIdentifierType}
+	 * @param identifier the identifier to check against the passed {@link PatientIdentifierType}
+	 * @param validator the IdentifierValidator to use to check the identifier
 	 * @throws PatientIdentifierException if the identifier is does not match the format
 	 * @should fail validation if identifier is blank
 	 * @should fail validation if identifier is invalid

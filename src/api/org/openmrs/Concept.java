@@ -197,10 +197,10 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	}
 	
 	/**
-	 * TODO describe use cases
+	 * TODO describe use cases 
 	 * 
 	 * @param locale
-	 * @return
+	 * @return the answers for this concept sorted according to ConceptAnswerComparator
 	 */
 	public Collection<ConceptAnswer> getSortedAnswers(Locale locale) {
 		Vector<ConceptAnswer> sortedAnswers = new Vector<ConceptAnswer>(getAnswers());
@@ -405,9 +405,6 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * is preferred for the language and country. Also, the name is added to the concept. If the
 	 * country is specified in the locale, then the language is considered to be only implied as
 	 * preferred &mdash; it will only get set if there is not an existing preferred language name.
-	 * If the country is not specified in the locale, then the language is considered an explicit
-	 * designation and the call is the equivalent of calling
-	 * {@link #setPreferredNameInLanguage(String language)}.
 	 * 
 	 * @param locale the locale for which to set the preferred name
 	 * @param preferredName name which is preferred in the locale

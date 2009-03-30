@@ -47,6 +47,7 @@ public class TaskDefinition {
 	
 	// support longer intervals (years, decades,
 	// milleniums)
+	
 	private Boolean startOnStartup;
 	
 	private String startTimePattern;
@@ -90,7 +91,7 @@ public class TaskDefinition {
 	/**
 	 * Get the task identifier.
 	 * 
-	 * @return the task identifier
+	 * @return <code>Integer</code> identifier of the task
 	 */
 	public Integer getId() {
 		return this.id;
@@ -133,9 +134,9 @@ public class TaskDefinition {
 	}
 	
 	/**
-	 * Set the name of the task.
+	 * Set the description of the task.
 	 * 
-	 * @param name of the task
+	 * @param description <code>String</code> description of the task
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -151,9 +152,10 @@ public class TaskDefinition {
 	}
 	
 	/**
-	 * Set the name of the task.
+	 * Set the properties of the task. This overrides any properties previously set with the
+	 * setProperty(String, String) method.
 	 * 
-	 * @param name of the task
+	 * @param properties <code>Map<String, String></code> of the properties to set
 	 */
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
@@ -171,7 +173,7 @@ public class TaskDefinition {
 	/**
 	 * Set the schedulable object to be executed.
 	 * 
-	 * @param schedulable schedulable object
+	 * @param taskClass <code>String</code> taskClass of a schedulable object
 	 */
 	public void setTaskClass(String taskClass) {
 		this.taskClass = taskClass;
@@ -229,14 +231,14 @@ public class TaskDefinition {
 	}
 	
 	/**
-	 * Gets the flag that indicates whether we start on scheduler startup.
+	 * Gets the flag that indicates whether the task should startup as soon as the scheduler starts.
 	 */
 	public Boolean getStartOnStartup() {
 		return this.startOnStartup;
 	}
 	
 	/**
-	 * Sets the flag that indicates whether we start on scheduler startup.
+	 * Sets the flag that indicates whether the task should startup as soon as the scheduler starts.
 	 */
 	public void setStartOnStartup(Boolean startOnStartup) {
 		this.startOnStartup = startOnStartup;
@@ -259,8 +261,8 @@ public class TaskDefinition {
 	/**
 	 * Get task configuration property.
 	 * 
-	 * @param key
-	 * @return
+	 * @param key the <code>String</code> key of the property to get
+	 * @return the <code>String</code> value for the given key
 	 */
 	public String getProperty(String key) {
 		return this.properties.get(key);
@@ -269,8 +271,8 @@ public class TaskDefinition {
 	/**
 	 * Set task configuration property. Only supports strings at the moment.
 	 * 
-	 * @param key
-	 * @param value
+	 * @param key the <code>String</code> key of the property to set
+	 * @param value the <code>String</code> value of the property to set
 	 */
 	public void setProperty(String key, String value) {
 		this.properties.put(key, value);
@@ -279,7 +281,7 @@ public class TaskDefinition {
 	/**
 	 * Convenience method that asks SchedulerUtil for it's next execution time.
 	 * 
-	 * @return
+	 * @return the <code>Date</code> of the next execution
 	 */
 	public Date getNextExecutionTime() {
 		return SchedulerUtil.getNextExecution(this);
@@ -288,7 +290,7 @@ public class TaskDefinition {
 	/**
 	 * Convenience method to calculate the seconds until the next execution time.
 	 * 
-	 * @return
+	 * @return the number of seconds until the next execution
 	 */
 	public long getSecondsUntilNextExecutionTime() {
 		return (getNextExecutionTime().getTime() - System.currentTimeMillis()) / 1000;
@@ -305,7 +307,7 @@ public class TaskDefinition {
 	}
 	
 	/**
-	 * @param creator The creator to set.
+	 * @param createdBy The creator to set.
 	 */
 	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
@@ -403,7 +405,7 @@ public class TaskDefinition {
 	 * Sets the runnable task instance associated with this definition. This should be set by the
 	 * scheduler which instantiates the task.
 	 * 
-	 * @param tastkInstance
+	 * @param taskInstance
 	 */
 	public void setTaskInstance(Task taskInstance) {
 		this.taskInstance = taskInstance;

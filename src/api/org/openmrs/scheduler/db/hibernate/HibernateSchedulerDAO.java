@@ -114,10 +114,9 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	}
 	
 	/**
-	 * Find all tasks with a given identifier
+	 * Find all tasks in the database
 	 * 
-	 * @param identifier
-	 * @return set of tasks matching identifier
+	 * @return <code>List<TaskDefinition></code> of all tasks
 	 * @throws DAOException
 	 */
 	@SuppressWarnings("unchecked")
@@ -128,7 +127,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	/**
 	 * Delete task from database.
 	 * 
-	 * @param task task to be deleted
+	 * @param taskId <code>Integer</code> identifier of task to be deleted
 	 * @throws DAOException
 	 */
 	public void deleteTask(Integer taskId) throws DAOException {
@@ -139,7 +138,7 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	/**
 	 * Delete task from database.
 	 * 
-	 * @param task task to be deleted
+	 * @param taskConfig <code>TaskDefinition</code> of task to be deleted
 	 * @throws DAOException
 	 */
 	public void deleteTask(TaskDefinition taskConfig) throws DAOException {

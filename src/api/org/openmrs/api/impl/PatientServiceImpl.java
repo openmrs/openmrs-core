@@ -97,7 +97,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @see {@link #savePatient(Patient)}
+	 * @see #savePatient(Patient)
 	 * @deprecated replaced by #savePatient(Patient)
 	 * @see org.openmrs.api.PatientService#createPatient(org.openmrs.Patient)
 	 */
@@ -248,7 +248,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	/**
 	 * @see org.openmrs.api.PatientService#checkPatientIdentifier(org.openmrs.PatientIdentifier)
-	 * @deprecated use {@link PatientIdentifierValidator.validate(PatientIdentifier)}
+	 * @deprecated use {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
+
 	 */
 	public void checkPatientIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
 		PatientIdentifierValidator.validateIdentifier(pi);
@@ -289,7 +290,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @deprecated replaced by {@link #getPatients(String, String, List, String)}
+	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)} 
 	 * @see org.openmrs.api.PatientService#getPatientsByIdentifierPattern(java.lang.String, boolean)
 	 */
 	public List<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
@@ -302,14 +303,14 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientsByName(java.lang.String)
-	 * @deprecated replaced by {@link #getPatients(String, String, List, String)}
+	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)} 
 	 */
 	public List<Patient> getPatientsByName(String name) throws APIException {
 		return getPatients(name, null, null);
 	}
 	
 	/**
-	 * @deprecated replaced by {@link #getPatients(String, String, List, String)}
+	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)}
 	 */
 	public List<Patient> getPatientsByName(String name, boolean includeVoided) throws APIException {
 		
@@ -428,8 +429,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @deprecated replaced by
-	 *             {@link #getPatientIdentifiers(String, List, List, List, Boolean, boolean)}
+	 * @deprecated replaced by {@link #getPatientIdentifiers(String, List, List, List, Boolean)}
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String,
 	 *      org.openmrs.PatientIdentifierType)
 	 */
@@ -441,9 +441,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	/**
 	 * @deprecated replaced by
-	 *             {@link #getPatientIdentifiers(String, List, List, List, Boolean, boolean)}
-	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String,
-	 *      org.openmrs.PatientIdentifierType, boolean)
+	 *             {@link #getPatientIdentifiers(String, List, List, List, Boolean)} 
+	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(String, PatientIdentifierType)
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType patientIdentifierType,
 	                                                     boolean includeVoided) throws APIException {
