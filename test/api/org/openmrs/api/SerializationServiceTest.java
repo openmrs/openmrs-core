@@ -33,14 +33,6 @@ import org.openmrs.test.Verifies;
  */
 public class SerializationServiceTest extends BaseContextSensitiveTest {
 	
-	/**
-	 * Set up the database with the initial dataset before every test method in this class.
-	 */
-	@Before
-	public void runBeforeEachTest() throws Exception {
-		executeDataSet("org/openmrs/api/include/SerializationServiceTest-serializedObjects.xml");
-	}
-	
 	@Test
 	@Verifies(value = "should return a serializer", method = "getDefaultCohort()")
 	public void getDefaultSerializer_shouldReturnASerializer() throws Exception {
