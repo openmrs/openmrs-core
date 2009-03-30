@@ -48,6 +48,7 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ReportService;
+import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.arden.ArdenService;
@@ -372,6 +373,13 @@ public class Context {
 	 */
 	public static FormService getFormService() {
 		return getServiceContext().getFormService();
+	}
+	
+	/**
+	 * @return serialization service
+	 */
+	public static SerializationService getSerializationService() {
+		return getServiceContext().getSerializationService();
 	}
 	
 	/**

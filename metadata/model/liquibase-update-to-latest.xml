@@ -751,4 +751,61 @@
 		</modifyColumn>
 	</changeSet>
 	
+	<changeSet id="200903210905" author="mseaton">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="serialized_object"/></not>
+		</preConditions>
+		<comment>
+			Add a table to enable generic storage of serialized objects
+		</comment>		
+		<createTable tableName="serialized_object">
+			<column name="serialized_object_id" type="int" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>			
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(5000)"/>
+			<column name="type" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="subtype" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="serialization_class" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="serialized_data" type="text">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="DATETIME">
+				<constraints nullable="false"/>
+			</column>
+			<column name="creator" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_changed" type="DATETIME" />
+			<column name="changed_by" type="int"/>
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_retired" type="DATETIME"/>
+			<column name="retired_by" type="int"/>
+			<column name="retire_reason" type="varchar(1000)"/>
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="serialized_object_creator" 
+								 baseTableName="serialized_object" baseColumnNames="creator"
+								 referencedTableName="users" referencedColumnNames="user_id"
+		/>
+		<addForeignKeyConstraint constraintName="serialized_object_changed_by" 
+								 baseTableName="serialized_object" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"
+		/>
+		<addForeignKeyConstraint constraintName="serialized_object_retired_by" 
+								 baseTableName="serialized_object" baseColumnNames="retired_by"
+								 referencedTableName="users" referencedColumnNames="user_id"
+		/>
+	</changeSet>
+	
 </databaseChangeLog>

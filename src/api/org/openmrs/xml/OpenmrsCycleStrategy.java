@@ -17,7 +17,10 @@ import org.simpleframework.xml.stream.NodeMap;
  * 
  * @see OpenmrsWriteState that knows about the OpenmrsWriteGraph
  * @see OpenmrsWriteGraph that knows the special hibernate stuff
+ * 
+ * @deprecated - Use OpenmrsSerializer from Context.getSerializationService.getDefaultSerializer()
  */
+@Deprecated
 public class OpenmrsCycleStrategy extends CycleStrategy {
 	
 	private static final Log log = LogFactory.getLog(OpenmrsCycleStrategy.class);

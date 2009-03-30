@@ -65,7 +65,7 @@
         <property name="patientSetService"><ref bean="patientSetService"/></property>
         <property name="cohortService"><ref bean="cohortService"/></property>
         <property name="messageService"><ref bean="messageService"/></property>
-        
+        <property name="serializationService"><ref bean="serializationService"/></property>        
         <property name="schedulerService"><ref bean="schedulerService"/></property>
         <property name="alertService"><ref bean="alertService"/></property>
         <property name="reportService"><ref bean="reportService"/></property>
@@ -133,8 +133,12 @@
 	<bean id="cohortDAO" class="org.openmrs.api.db.hibernate.HibernateCohortDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
-	
-	
+	<bean id="serializedObjectDAO" class="org.openmrs.api.db.hibernate.HibernateSerializedObjectDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="supportedTypes">
+			<list></list>
+		</property>
+	</bean>	
 	<bean id="schedulerDAO" class="org.openmrs.scheduler.db.hibernate.HibernateSchedulerDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
@@ -291,6 +295,18 @@
 		</property>
 	</bean>
 	<!-- /ReportService setup -->
+
+	<!-- SerializationService setup -->
+	<bean id="serializationServiceTarget" class="org.openmrs.api.impl.SerializationServiceImpl">
+		<property name="serializers">
+			<list>
+				<ref bean="xstreamSerializer"/>
+			</list>
+		</property>
+		<property name="defaultSerializer" ref="xstreamSerializer"/>
+	</bean>
+	<bean id="xstreamSerializer" class="org.openmrs.serialization.xstream.XStreamSerializer"/>
+	<!-- /SerializationService setup -->
 	
 	
 	<!-- Data Set Service Setup -->
@@ -546,6 +562,19 @@
 			</list>
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+	</bean>
+	<bean id="serializationService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="serializationServiceTarget"/></property>
+		<property name="preInterceptors">
+			<list>
+				<ref local="authorizationInterceptor"/>
+				<ref local="loggingInterceptor"/>
+			</list>
+		</property>
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		</property>
 	</bean>
 	<bean id="dataSetService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>

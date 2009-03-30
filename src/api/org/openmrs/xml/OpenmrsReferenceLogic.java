@@ -20,7 +20,10 @@ import org.simpleframework.xml.graph.ReferenceLogic;
 /**
  * This reference logic class allows openmrs to call serialize multiple times on separate objects
  * and carry the reference ids over
+ * 
+ * @deprecated - Use OpenmrsSerializer from Context.getSerializationService.getDefaultSerializer()
  */
+@Deprecated
 public class OpenmrsReferenceLogic implements ReferenceLogic {
 	
 	private static Log log = LogFactory.getLog(OpenmrsReferenceLogic.class);
